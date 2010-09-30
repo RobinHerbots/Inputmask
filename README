@@ -1,0 +1,76 @@
+jquery.inputmask is a jquery plugins which created an input mask ;-)
+
+The plugin is based on the maskedinput plugin of Josh Bush (http://digitalbush.com/projects/masked-input-plugin), but has finer control over the 'mask-definitions')
+
+A definitions can have a cardinality and have multiple prevalidators.
+
+Example of some new definitions:
+
+                'd': { //day
+
+                    "validator": "0[1-9]|[12][0-9]|3[01]",
+
+                    "cardinality": 2,
+
+                    "prevalidator": [{ "validator": "[0-3]", "cardinality": 1}]
+
+                },
+
+                'm': { //month
+
+                    "validator": "0[1-9]|1[012]",
+
+                    "cardinality": 2,
+
+                    "prevalidator": [{ "validator": "[01]", "cardinality": 1}]
+
+                },
+
+                'y': { //year
+
+                    "validator": "(19|20)\\d\\d",
+
+                    "cardinality": 4,
+
+                    "prevalidator": [
+
+                        { "validator": "[12]", "cardinality": 1 },
+
+                        { "validator": "(19|20)", "cardinality": 2 },
+
+                        { "validator": "(19|20)\\d", "cardinality": 3 }
+
+                        ]
+
+                }
+
+These allow for a finer date validation then 99/99/9999 which also allows 33/33/3333 for example.
+
+
+Usage:
+
+Include the js-files
+
+<script src="jquery.js" type="text/javascript"></script>
+<script src="jquery.inputmask.js" type="text/javascript"></script>
+
+Define your masks:
+
+$(document).ready(function(){
+   $("#date").mask("d/m/y");
+   $("#phone").mask("(999) 999-9999");
+   $("#tin").mask("99-9999999");
+});
+
+Extra options:
+change the placeholder
+
+$(document).ready(function(){
+   $("#date").mask("d/m/y",{ "placeholder": "*" });
+});
+
+execute a function when the mask is completed
+
+$(document).ready(function(){
+   $("#date").mask("d/m/y",{ "onComplete": function(){ alert('inputmask complete'); } });
+});
