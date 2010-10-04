@@ -2,7 +2,7 @@
 Input Mask plugin for jquery
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.0.2
+Version: 0.0.3
    
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -15,6 +15,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             placeholder: "_",
             mask: null,
             onComplete: null,
+            repeat: 0, //repetitions of the mask
             definitions: {
                 '9': {
                     "validator": "[0-9]",
@@ -85,11 +86,23 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     mask($(this));
                 });
             }
+        } if (typeof fn == "object") {
+        		opts = $.extend({}, defaults, fn); 
+        	
+        		//init buffer
+                var _buffer = getMaskTemplate();
+                var pasteEventName = $.browser.msie ? 'paste' : 'input';
+                var iPhone = (window.orientation != undefined);
+                var tests = getTestingChain();
+
+                return this.each(function() {
+                    mask($(this));
+                });
         }
 
         //functions
         function getMaskTemplate() {
-            return $.map(opts.mask.split(""), function(element, index) {
+            var singleMask = $.map(opts.mask.split(""), function(element, index) {
                 var outElem = [];
                 var maskdef = opts.definitions[element];
                 if (maskdef) {
@@ -100,6 +113,12 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
                 return outElem;
             });
+            
+            var repeatedMask = singleMask.slice();	
+				for(var i = 0; i < opts.repeat; i++){
+					repeatedMask = repeatedMask.concat(singleMask.slice());
+				}
+			return repeatedMask;
         };
 
         function getTestingChain() {
@@ -301,23 +320,27 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
 
             function isValid(pos, c) {
-                var inputValue = input.val();
-
+                var testPos = determineTestPosition(pos);
+                
                 var loopend = 0;
                 if (c) { loopend = 1; ; }
 
                 var chrs = '';
-                for (var i = tests[pos][1]; i > loopend; i--) {
-                    chrs += buffer[pos - (i - 1)];
+                for (var i = tests[testPos][1]; i > loopend; i--) {
+                    chrs += buffer[testPos - (i - 1)];
                 }
 
                 if (c) { chrs += c; }
 
-                return tests[pos][0].test(chrs);
+                return tests[testPos][0].test(chrs);
             }
 
-            function isMask(pos) {
-                return tests[pos];
+            function isMask(pos) {23/03/1973
+                return tests[determineTestPosition(pos)];
+            }
+            
+            function determineTestPosition(pos) {
+            	return pos % tests.length;
             }
 
             function checkVal(clearInvalid) {
