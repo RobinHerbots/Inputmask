@@ -57,9 +57,9 @@ Include the js-files
 Define your masks:
 
 $(document).ready(function(){
-   $("#date").mask("d/m/y");
-   $("#phone").mask("(999) 999-9999");
-   $("#tin").mask("99-9999999");
+   $("#date").mask("d/m/y");  //direct mask
+   $("#phone").mask("mask", {"mask": "(999) 999-9999"}); //specifying fn & options
+   $("#tin").mask({"mask": "99-9999999"}); //specifying options only
 });
 
 Extra options:
@@ -73,4 +73,10 @@ execute a function when the mask is completed
 
 $(document).ready(function(){
    $("#date").mask("d/m/y",{ "onComplete": function(){ alert('inputmask complete'); } });
+});
+
+mask repeat function
+
+$(document).ready(function(){
+   $("#number").mask({ "mask": "9", "repeat": 10 });  // ~ mask "9999999999"
 });
