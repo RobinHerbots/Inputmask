@@ -169,7 +169,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     var pos = checkVal();
                     writeBuffer();
                     setTimeout(function() {
-                        if (pos == _buffer.length)
+                        if (pos >= _buffer.length)
                             caret(input, 0, pos);
                         else
                             caret(input, pos);
