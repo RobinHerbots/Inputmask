@@ -338,7 +338,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 return tests[testPos][0].test(chrs);
             }
 
-            function isMask(pos) {23/03/1973
+            function isMask(pos) {
                 return tests[determineTestPosition(pos)];
             }
             
