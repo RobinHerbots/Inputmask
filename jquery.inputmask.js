@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.0.4
+Version: 0.0.5
    
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -74,10 +74,10 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             } else if (fn == 'unmaskedvalue') {
                 return unmaskedvalue($(this));
             } else { //maybe fn is a mask so we try
-            	//set mask
-            	opts.mask = fn;
-            	
-            	//init buffer
+                //set mask
+                opts.mask = fn;
+
+                //init buffer
                 var _buffer = getMaskTemplate();
                 var pasteEventName = $.browser.msie ? 'paste' : 'input';
                 var iPhone = (window.orientation != undefined);
@@ -88,17 +88,17 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 });
             }
         } if (typeof fn == "object") {
-        		opts = $.extend({}, defaults, fn); 
-        	
-        		//init buffer
-                var _buffer = getMaskTemplate();
-                var pasteEventName = $.browser.msie ? 'paste' : 'input';
-                var iPhone = (window.orientation != undefined);
-                var tests = getTestingChain();
+            opts = $.extend({}, defaults, fn);
 
-                return this.each(function() {
-                    mask($(this));
-                });
+            //init buffer
+            var _buffer = getMaskTemplate();
+            var pasteEventName = $.browser.msie ? 'paste' : 'input';
+            var iPhone = (window.orientation != undefined);
+            var tests = getTestingChain();
+
+            return this.each(function() {
+                mask($(this));
+            });
         }
 
         //functions
@@ -114,12 +114,12 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
                 return outElem;
             });
-            
-            var repeatedMask = singleMask.slice();	
-				for(var i = 0; i < opts.repeat; i++){
-					repeatedMask = repeatedMask.concat(singleMask.slice());
-				}
-			return repeatedMask;
+
+            var repeatedMask = singleMask.slice();
+            for (var i = 0; i < opts.repeat; i++) {
+                repeatedMask = repeatedMask.concat(singleMask.slice());
+            }
+            return repeatedMask;
         };
 
         function getTestingChain() {
@@ -176,7 +176,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     }, 0);
                 }).bind("mouseenter", function() {
                     if (!input.hasClass('focus') && input.val().length == 0)
-                        writeBuffer();
+                        writeBuffer(true);
                 }).bind("blur", function() {
                     input.removeClass('focus');
                     if (input.val() == _buffer.join('')) {
@@ -201,7 +201,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
 
             //private functions
-            function writeBuffer() { return input.val(buffer.join('')).val(); };
+            function writeBuffer(initial) { return input.val(initial == true ? _buffer.join('') : buffer.join('')).val(); };
             function clearBuffer(start, end) {
                 for (var i = start; i < end && i < len; i++) {
                     buffer[i] = _buffer[i];
@@ -324,7 +324,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
             function isValid(pos, c) {
                 var testPos = determineTestPosition(pos);
-                
+
                 var loopend = 0;
                 if (c) { loopend = 1; ; }
 
@@ -341,25 +341,25 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             function isMask(pos) {
                 return tests[determineTestPosition(pos)];
             }
-            
+
             function determineTestPosition(pos) {
-            	return pos % tests.length;
+                return pos % tests.length;
             }
 
             function checkVal(clearInvalid) {
                 var inputValue = input.val();
                 var lastMatch = -1;
                 for (var i = 0; i < inputValue.length; i++) {
-                    for (var pos = lastMatch+1; pos < len; pos++) {
-                    	if(isMask(pos)){
-                        	buffer[pos] = opts.placeholder;
-                        	if (isValid(pos, inputValue.charAt(i))) {
-                           		buffer[pos] = inputValue.charAt(i);
-                           		lastMatch = pos;
-                        	}
-                        	break;
-                        }else {   //nonmask
-                           lastMatch++;
+                    for (var pos = lastMatch + 1; pos < len; pos++) {
+                        if (isMask(pos)) {
+                            buffer[pos] = opts.placeholder;
+                            if (isValid(pos, inputValue.charAt(i))) {
+                                buffer[pos] = inputValue.charAt(i);
+                                lastMatch = pos;
+                            }
+                            break;
+                        } else {   //nonmask
+                            lastMatch++;
                         }
                     }
                 }
