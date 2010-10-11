@@ -201,7 +201,11 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
 
             //private functions
-            function writeBuffer(initial) { return input.val(initial == true ? _buffer.join('') : buffer.join('')).val(); };
+            function writeBuffer(initial) { 
+            	if(initial)
+            		buffer = _buffer.slice();
+            	return input.val(buffer.join('')).val(); 
+            };
             function clearBuffer(start, end) {
                 for (var i = start; i < end && i < len; i++) {
                     buffer[i] = _buffer[i];
