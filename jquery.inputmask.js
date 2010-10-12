@@ -176,7 +176,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     }, 0);
                 }).bind("mouseenter", function() {
                     if (!input.hasClass('focus') && input.val().length == 0)
-                        writeBuffer(true);
+                        writeBuffer();
                 }).bind("blur", function() {
                     input.removeClass('focus');
                     if (input.val() == _buffer.join('')) {
@@ -201,11 +201,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
 
             //private functions
-            function writeBuffer(initial) { 
-            	if(initial)
-            		buffer = _buffer.slice();
-            	return input.val(buffer.join('')).val(); 
-            };
+            function writeBuffer() { return input.val(buffer.join('')).val(); };
             function clearBuffer(start, end) {
                 for (var i = start; i < end && i < len; i++) {
                     buffer[i] = _buffer[i];
@@ -352,6 +348,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
             function checkVal(clearInvalid) {
                 var inputValue = input.val();
+                buffer = _buffer.slice(); //clear buffer
                 var lastMatch = -1;
                 for (var i = 0; i < inputValue.length; i++) {
                     for (var pos = lastMatch + 1; pos < len; pos++) {
