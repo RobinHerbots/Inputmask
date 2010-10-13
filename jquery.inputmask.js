@@ -175,8 +175,10 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             caret(input, pos);
                     }, 0);
                 }).bind("mouseenter", function() {
-                    if (!input.hasClass('focus') && input.val().length == 0)
+                    if (!input.hasClass('focus') && input.val().length == 0) {
+                        buffer = _buffer.slice();
                         writeBuffer();
+                    }
                 }).bind("blur", function() {
                     input.removeClass('focus');
                     if (input.val() == _buffer.join('')) {
