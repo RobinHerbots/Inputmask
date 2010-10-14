@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.0.5
+Version: 0.0.6
    
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -73,7 +73,10 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 });
             } else if (fn == 'unmaskedvalue') {
                 return unmaskedvalue($(this));
-            } else { //maybe fn is a mask so we try
+            } else if (fn == 'setvalue') {
+                return setvalue($(this), options);
+            } 
+            else { //maybe fn is a mask so we try
                 //set mask
                 opts.mask = fn;
 
@@ -148,6 +151,13 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             else {
                 return el.val();
             }
+        }
+
+		function setvalue(el, value) {
+		    var pasteEventName = $.browser.msie ? 'paste' : 'input';
+            el.val(value).trigger(pasteEventName);
+            el.blur();
+            return el;
         }
 
         function mask(el) {
