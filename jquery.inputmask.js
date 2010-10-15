@@ -227,7 +227,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 var buffer = _buffer.slice();
                 checkVal(el, buffer, true);
                 return $.map(el.val().split(""), function(element, index) {
-                    return isMask(index) ? element : null;
+                    return isMask(index) && element != _buffer[index] ? element : null;
                 }).join('');
             }
             else {
@@ -370,7 +370,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 if (ignore) {
                     ignore = false;
                     //Fixes Mac FF bug on backspace
-                    return (e.keyCode == 8) ? false : null;
+                    return (e.keyCode == opts.keyCode.BACKSPACE) ? false : null;
                 }
                 e = e || window.event;
                 var k = e.charCode || e.keyCode || e.which;
