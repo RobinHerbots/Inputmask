@@ -17,6 +17,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             mask: null,
             onComplete: null,
             repeat: 0, //repetitions of the mask
+            greedy: true, //true: allocated buffer for all mask repetitions - false: allocate only if needed  
             definitions: {
                 '9': {
                     "validator": "[0-9]",
@@ -124,8 +125,9 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 return outElem;
             });
 
+            //allocate repetitions
             var repeatedMask = singleMask.slice();
-            for (var i = 0; i < opts.repeat; i++) {
+            for (var i = 0; i < opts.repeat && opts.greedy; i++) {
                 repeatedMask = repeatedMask.concat(singleMask.slice());
             }
             return repeatedMask;
@@ -155,7 +157,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
             var chrs = '';
             for (var i = tests[testPos][1]; i > loopend; i--) {
-                chrs += buffer[testPos - (i - 1)];
+                chrs += getBufferElement(buffer, testPos - (i - 1));
             }
 
             if (c) { chrs += c; }
@@ -175,17 +177,25 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             return _buffer.length;
         }
 
-        function seekNext(pos) {
+        function seekNext(pos) { //check for non greedy mask repeats //TODO
             while (++pos <= getMaskLength() && !isMask(pos));
             return pos;
+        }
+        //these are needed to handle the non-greedy mask repetitions
+        function setBufferElement(buffer, position, element) {
+            buffer[position] = element;
+        }
+        function getBufferElement(buffer, position) {
+            return buffer[position];
         }
 
         function writeBuffer(input, buffer) { return input.val(buffer.join('')).val(); };
         function clearBuffer(buffer, start, end) {
             for (var i = start; i < end && i < getMaskLength(); i++) {
-                buffer[i] = _buffer[i];
+                setBufferElement(buffer, i, getBufferElement(_buffer, i));
             }
         };
+
 
 
         function checkVal(input, buffer, clearInvalid) {
@@ -195,9 +205,9 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             for (var i = 0; i < inputValue.length; i++) {
                 for (var pos = lastMatch + 1; pos < getMaskLength(); pos++) {
                     if (isMask(pos)) {
-                        buffer[pos] = opts.placeholder;
+                        setBufferElement(buffer, pos, opts.placeholder);
                         if (isValid(pos, inputValue.charAt(i), buffer)) {
-                            buffer[pos] = inputValue.charAt(i);
+                            setBufferElement(buffer, pos, inputValue.charAt(i));
                             lastMatch = pos;
                         }
                         break;
@@ -227,7 +237,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 var buffer = _buffer.slice();
                 checkVal(el, buffer, true);
                 return $.map(el.val().split(""), function(element, index) {
-                    return isMask(index) && element != _buffer[index] ? element : null;
+                    return isMask(index) && element != getBufferElement(_buffer, index) ? element : null;
                 }).join('');
             }
             else {
@@ -291,10 +301,10 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 while (!isMask(pos) && --pos >= 0);
                 for (var i = pos; i < getMaskLength(); i++) {
                     if (isMask(i)) {
-                        buffer[i] = opts.placeholder;
+                        setBufferElement(buffer, i, opts.placeholder);
                         var j = seekNext(i);
-                        if (j < getMaskLength() && isValid(i, buffer[j], buffer)) {
-                            buffer[i] = buffer[j];
+                        if (j < getMaskLength() && isValid(i, getBufferElement(buffer, j), buffer)) {
+                            setBufferElement(buffer, i, getBufferElement(buffer, j));
                         } else
                             break;
                     }
@@ -307,8 +317,8 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 for (var i = pos, c = opts.placeholder; i < getMaskLength(); i++) {
                     if (isMask(i)) {
                         var j = seekNext(i);
-                        var t = buffer[i];
-                        buffer[i] = c;
+                        var t = getBufferElement(buffer, i);
+                        setBufferElement(buffer, i, c);
                         if (j < getMaskLength() && isValid(j, t, buffer))
                             c = t;
                         else
@@ -384,7 +394,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         var c = String.fromCharCode(k);
                         if (isValid(p, c, buffer)) {
                             shiftR(p);
-                            buffer[p] = c;
+                            setBufferElement(buffer, p, c);
                             writeBuffer(input, buffer);
                             var next = seekNext(p);
                             caret($(this), next);
