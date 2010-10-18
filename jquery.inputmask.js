@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.0.7
+Version: 0.0.8
    
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -174,41 +174,53 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
         }
 
         function getMaskLength() {
-            return _buffer.length;
+            var calculatedLength = _buffer.length;
+            if (!opts.greedy) {
+                calculatedLength += (_buffer.length * opts.repeat)
+            }
+            return calculatedLength;
         }
 
-        function seekNext(pos) { //check for non greedy mask repeats //TODO
+        function seekNext(pos) {
             while (++pos <= getMaskLength() && !isMask(pos));
             return pos;
         }
         //these are needed to handle the non-greedy mask repetitions
         function setBufferElement(buffer, position, element) {
+            while (buffer.length <= position && buffer.length < getMaskLength()) {
+                $.merge(buffer, _buffer);
+            }
             buffer[position] = element;
         }
         function getBufferElement(buffer, position) {
+            while (buffer.length <= position && buffer.length < getMaskLength()) {
+                $.merge(buffer, _buffer);
+            }
             return buffer[position];
         }
 
         function writeBuffer(input, buffer) { return input.val(buffer.join('')).val(); };
         function clearBuffer(buffer, start, end) {
             for (var i = start; i < end && i < getMaskLength(); i++) {
-                setBufferElement(buffer, i, getBufferElement(_buffer, i));
+                setBufferElement(buffer, i, getBufferElement(_buffer.slice(), i));
             }
         };
 
 
 
         function checkVal(input, buffer, clearInvalid) {
-            var inputValue = input.val();
-            clearBuffer(buffer, 0, getMaskLength());
+            var inputValue = input.val().replace(new RegExp(_buffer.join('') + "$"), "");
+            clearBuffer(buffer, 0, buffer.length);
+            buffer.length = _buffer.length; //reset the buffer to its original size
             var lastMatch = -1;
             for (var i = 0; i < inputValue.length; i++) {
                 for (var pos = lastMatch + 1; pos < getMaskLength(); pos++) {
                     if (isMask(pos)) {
-                        setBufferElement(buffer, pos, opts.placeholder);
                         if (isValid(pos, inputValue.charAt(i), buffer)) {
                             setBufferElement(buffer, pos, inputValue.charAt(i));
                             lastMatch = pos;
+                        } else {
+                            setBufferElement(buffer, pos, opts.placeholder);
                         }
                         break;
                     } else {   //nonmask
@@ -224,9 +236,9 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
         //functionality fn
         function setvalue(el, value) {
+            el.val(value);
             if (tests) {
                 var buffer = _buffer.slice();
-                el.val(value);
                 checkVal(el, buffer, true);
             }
         }
@@ -275,10 +287,11 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     }
                 }).bind("blur", function() {
                     input.removeClass('focus');
+                    checkVal(input, buffer);
+                    writeBuffer(input, buffer);
                     if (input.val() == _buffer.join('')) {
                         input.val('');
                     } else {
-                        checkVal(input, buffer);
                         if (input.val() != undoBuffer)
                             input.change();
                     }
