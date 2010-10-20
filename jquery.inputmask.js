@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.0.9
+Version: 0.1.0
    
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -210,7 +210,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
 
         function checkVal(input, buffer, clearInvalid) {
-            var inputValue = input.val().replace(new RegExp(_buffer.join('') + "$"), "");
+            var inputValue = input.val().replace(new RegExp("(" + _buffer.join('') + ")*$"), "");
             clearBuffer(buffer, 0, buffer.length);
             buffer.length = _buffer.length; //reset the buffer to its original size
             var lastMatch = -1;
