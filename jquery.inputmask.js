@@ -77,11 +77,15 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 var el = $(this);
                 var tests = el.data('tests');
                 var _buffer = el.data('_buffer');
+                opts.greedy = el.data('greedy');
+                opts.repeat = el.data('repeat');
                 return unmaskedvalue(el);
             } else if (fn == 'setvalue') {
                 var el = $(this);
                 var tests = el.data('tests');
                 var _buffer = el.data('_buffer');
+                opts.greedy = el.data('greedy');
+                opts.repeat = el.data('repeat');
                 setvalue(el, options); //options in this case the value
             }
             else { //maybe fn is a mask so we try
@@ -263,6 +267,8 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             //store tests & original buffer in the input element - used to get the unmasked value
             input.data('tests', tests);
             input.data('_buffer', _buffer);
+            input.data('greedy', opts.greedy);
+            input.data('repeat', opts.repeat);
 
             //init buffer
             var buffer = _buffer.slice();
