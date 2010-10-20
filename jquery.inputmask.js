@@ -99,7 +99,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 });
             }
         } if (typeof fn == "object") {
-            opts = $.extend({}, defaults, fn);
+            opts = $.extend({}, $.inputmask.defaults, fn);
 
             //init buffer
             var _buffer = getMaskTemplate();
