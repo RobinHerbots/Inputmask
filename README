@@ -57,26 +57,54 @@ Include the js-files
 Define your masks:
 
 $(document).ready(function(){
-   $("#date").mask("d/m/y");  //direct mask
-   $("#phone").mask("mask", {"mask": "(999) 999-9999"}); //specifying fn & options
-   $("#tin").mask({"mask": "99-9999999"}); //specifying options only
+   $("#date").inputmask("d/m/y");  //direct mask
+   $("#phone").inputmask("mask", {"mask": "(999) 999-9999"}); //specifying fn & options
+   $("#tin").inputmask({"mask": "99-9999999"}); //specifying options only
 });
 
 Extra options:
 change the placeholder
 
 $(document).ready(function(){
-   $("#date").mask("d/m/y",{ "placeholder": "*" });
+   $("#date").inputmask("d/m/y",{ "placeholder": "*" });
 });
 
 execute a function when the mask is completed
 
 $(document).ready(function(){
-   $("#date").mask("d/m/y",{ "onComplete": function(){ alert('inputmask complete'); } });
+   $("#date").inputmask("d/m/y",{ "onComplete": function(){ alert('inputmask complete'); } });
 });
 
 mask repeat function
 
 $(document).ready(function(){
-   $("#number").mask({ "mask": "9", "repeat": 10 });  // ~ mask "9999999999"
+   $("#number").inputmask({ "mask": "9", "repeat": 10 });  // ~ mask "9999999999"
+});
+
+mask non-greedy repeat function
+
+$(document).ready(function(){
+   $("#number").inputmask({ "mask": "9", "repeat": 10, "greedy": false });  // ~ mask "9" or mask "99" or ... mask "9999999999"
+});
+
+get the unmaskedvalue
+
+$(document).ready(function(){
+   $("#number").inputmask('unmaskedvalue');
+});
+
+set a value and apply mask
+
+$(document).ready(function(){
+   $("#number").inputmask('setvalue', 12345); 
+});
+
+add custom definitions
+
+$.extend($.inputmask.defaults.definitions, {
+    'f': {
+        "validator": "[0-9\(\)\.\+/ ]",
+        "cardinality": 1,
+        'prevalidator': null
+    }
 });
