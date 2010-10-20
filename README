@@ -46,6 +46,8 @@ Example of some new definitions:
 
 These allow for a finer date validation then 99/99/9999 which also allows 33/33/3333 for example.
 
+Also extra features like mask-repetitions (greedy and non-gready) are included.  In the examples you will find more about them.
+
 
 Usage:
 
