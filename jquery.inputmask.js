@@ -74,19 +74,17 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     mask($(this));
                 });
             } else if (fn == 'unmaskedvalue') {
-                var el = $(this);
-                var tests = el.data('tests');
-                var _buffer = el.data('_buffer');
-                opts.greedy = el.data('greedy');
-                opts.repeat = el.data('repeat');
-                return unmaskedvalue(el);
+                var tests = this.data('tests');
+                var _buffer = this.data('_buffer');
+                opts.greedy = this.data('greedy');
+                opts.repeat = this.data('repeat');
+                return unmaskedvalue(this);
             } else if (fn == 'setvalue') {
-                var el = $(this);
-                var tests = el.data('tests');
-                var _buffer = el.data('_buffer');
-                opts.greedy = el.data('greedy');
-                opts.repeat = el.data('repeat');
-                setvalue(el, options); //options in this case the value
+                var tests = this.data('tests');
+                var _buffer = this.data('_buffer');
+                opts.greedy = this.data('greedy');
+                opts.repeat = this.data('repeat');
+                setvalue(this, options); //options in this case the value
             }
             else { //maybe fn is a mask so we try
                 //set mask
@@ -246,7 +244,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 var buffer = _buffer.slice();
                 checkVal(el, buffer, true);
                 if (el.val() == _buffer.join(''))
-                        el.val('');
+                    el.val('');
             }
         }
 
@@ -296,8 +294,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     }
                 }).bind("blur", function() {
                     input.removeClass('focus');
-                    checkVal(input, buffer);
-                    writeBuffer(input, buffer);
+                    checkVal(input, buffer, true);
                     if (input.val() == _buffer.join('')) {
                         input.val('');
                     } else {
@@ -310,13 +307,18 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 }).bind("keydown", keydownEvent
                 ).bind("keypress", keypressEvent
                 ).bind(pasteEventName, function() {
-                    setTimeout(function() { caret(input, checkVal(input, buffer, true)); }, 0);
+                    setTimeout(function() {
+                        caret(input, checkVal(input, buffer, true));
+                    }, 0);
                 });
 
             }
 
-            checkVal(input, buffer);
-
+            setTimeout(function() {
+                checkVal(input, buffer, true);
+                if (input.val() == _buffer.join(''))
+                    input.val('');
+            }, 0);
 
             //private functions
             function shiftL(pos) {
