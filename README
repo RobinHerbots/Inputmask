@@ -101,6 +101,12 @@ $(document).ready(function(){
    $("#number").inputmask('setvalue', 12345); 
 });
 
+when the option patch_eval is set to true the same can be done with the traditionnal jquery.val function
+
+$(document).ready(function(){
+   $("#number").val(12345); 
+});
+
 add custom definitions
 
 $.extend($.inputmask.defaults.definitions, {
