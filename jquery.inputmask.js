@@ -71,7 +71,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
         if (opts.patch_val && $.fn.val.inputmaskpatch != true) {
             $.fn.val = function() {
                 if (opts.autounmask && arguments.length == 0) {
-                    return unmaskedvalue(this);
+                    return $.isFunction(this.inputmask) ? this.inputmask('unmaskedvalue') : _val.apply(this, arguments); ;
                 }
                 else {
                     var result = _val.apply(this, arguments);
