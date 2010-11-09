@@ -116,3 +116,9 @@ $.extend($.inputmask.defaults.definitions, {
         'prevalidator': null
     }
 });
+
+set defaults
+
+$.extend($.inputmask.defaults, {
+    'autounmask': true
+});
