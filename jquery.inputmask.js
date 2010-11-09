@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.1.5
+Version: 0.1.6
    
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -14,10 +14,11 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
         defaults: {
             placeholder: "_",
             mask: null,
-            onComplete: null,
+            oncomplete: null,
             repeat: 0, //repetitions of the mask
             greedy: true, //true: allocated buffer for all mask repetitions - false: allocate only if needed
             patch_val: true, //override the jquery.val fn to detect changed in the inputmask by setting val(value)
+            autounmask: false, //in combination with patch_val: true => automatically unmask when retrieving the value with $.fn.val
             definitions: {
                 '9': {
                     "validator": "[0-9]",
@@ -68,12 +69,17 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
         var _val = $.inputmask.val;
         if (opts.patch_val && $.fn.val.inputmaskpatch != true) {
-            $.fn.val = function(value) {
-                var result = _val.apply(this, arguments);
-                if (value && $.isFunction(this.inputmask)) {
-                    this.trigger('blur');
+            $.fn.val = function() {
+                if (opts.autounmask && arguments.length == 0) {
+                    return unmaskedvalue(this);
                 }
-                return result;
+                else {
+                    var result = _val.apply(this, arguments);
+                    if (arguments.length > 0 && $.isFunction(this.inputmask)) {
+                        this.trigger('blur');
+                    }
+                    return result;
+                }
             };
             $.extend($.fn.val, {
                 inputmaskpatch: true
@@ -425,8 +431,8 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             writeBuffer(input, buffer);
                             var next = seekNext(p);
                             caret($(this), next);
-                            if (opts.onComplete && next == getMaskLength())
-                                opts.onComplete.call(input);
+                            if (opts.oncomplete && next == getMaskLength())
+                                opts.oncomplete.call(input);
                         }
                     }
                 }
