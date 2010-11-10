@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.1.6
+Version: 0.1.8
    
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -64,19 +64,19 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
     $.fn.inputmask = function(fn, options) {
         var opts = $.extend({}, $.inputmask.defaults, options);
-        var pasteEventName = $.browser.msie ? 'paste' : 'input';
+        var pasteEventName = $.browser.msie ? 'paste.inputmask' : 'input.inputmask';
         var iPhone = (window.orientation != undefined);
 
         var _val = $.inputmask.val;
         if (opts.patch_val && $.fn.val.inputmaskpatch != true) {
             $.fn.val = function() {
                 if (opts.autounmask && arguments.length == 0) {
-                    return $.isFunction(this.inputmask) ? this.inputmask('unmaskedvalue') : _val.apply(this, arguments); ;
+                    return this.data('inputmask') ? this.inputmask('unmaskedvalue') : _val.apply(this, arguments); ;
                 }
                 else {
                     var result = _val.apply(this, arguments);
-                    if (arguments.length > 0 && $.isFunction(this.inputmask)) {
-                        this.trigger('blur');
+                    if (arguments.length > 0 && this.data('inputmask')) {
+                        this.triggerHandler('setvalue.inputmask');
                     }
                     return result;
                 }
@@ -254,7 +254,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
         //functionality fn
         function setvalue(el, value) {
             _val.call(el, value);
-            el.trigger('blur');
+            el.triggerHandler('setvalue.inputmask');
         }
 
         function unmaskedvalue(el) {
@@ -278,6 +278,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             input.data('_buffer', _buffer);
             input.data('greedy', opts.greedy);
             input.data('repeat', opts.repeat);
+            input.data('inputmask', true);
 
             //init buffer
             var buffer = _buffer.slice();
@@ -286,39 +287,31 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
             //bind events
             if (!input.attr("readonly")) {
-                input.bind("focus", function() {
-                    input.addClass('focus');
-                    undoBuffer = _val.call(input);
-                    setTimeout(function() {
-                        var pos = checkVal(input, buffer, true);
-                        if (pos >= _buffer.length)
-                            caret(input, 0, pos);
-                        else
-                            caret(input, pos);
-                    }, 0);
-                }).bind("mouseenter", function() {
-                    if (!input.hasClass('focus') && _val.call(input).length == 0) {
+                input.bind("mouseenter.inputmask", function() {
+                    if (!input.hasClass('focus.inputmask') && _val.call(input).length == 0) {
                         buffer = _buffer.slice();
                         writeBuffer(input, buffer);
                     }
-                }).bind("blur", function() {
-                    input.removeClass('focus');
-                    checkVal(input, buffer, true);
-                    if (_val.call(input) == _buffer.join('')) {
-                        _val.call(input, '');
-                    } else {
-                        if (_val.call(input) != undoBuffer)
-                            input.change();
+                }).bind("blur.inputmask", function() {
+                    if (_val.call(input) != undoBuffer) {
+                        checkVal(input, buffer, true);
+                        input.change();
                     }
-                }).bind("mouseleave", function() {
-                    if (!input.hasClass('focus') && _val.call(input) == _buffer.join(''))
+                }).bind("click.inputmask", function() {
+                    input.addClass('focus.inputmask');
+                    undoBuffer = _val.call(input);
+                    caret(input, checkVal(input, buffer, true));
+                }).bind("mouseleave.inputmask", function() {
+                    if (!input.hasClass('focus.inputmask') && _val.call(input) == _buffer.join(''))
                         _val.call(input, '');
-                }).bind("keydown", keydownEvent
-                ).bind("keypress", keypressEvent
+                }).bind("keydown.inputmask", keydownEvent
+                ).bind("keypress.inputmask", keypressEvent
                 ).bind(pasteEventName, function() {
                     setTimeout(function() {
                         caret(input, checkVal(input, buffer, true));
                     }, 0);
+                }).bind('setvalue.inputmask', function() {
+                    checkVal(input, buffer, true);
                 });
 
             }
