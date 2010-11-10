@@ -293,14 +293,21 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         writeBuffer(input, buffer);
                     }
                 }).bind("blur.inputmask", function() {
-                    if (_val.call(input) != undoBuffer) {
+                    input.removeClass('focus.inputmask');
+                    setTimeout(function() {
                         checkVal(input, buffer, true);
-                        input.change();
-                    }
-                }).bind("click.inputmask", function() {
+                        if (_val.call(input) == _buffer.join(''))
+                            _val.call(input, '');
+                        else if (_val.call(input) != undoBuffer) {
+                            input.change();
+                        }
+                    }, 0);
+                }).bind("focus.inputmask", function() {
                     input.addClass('focus.inputmask');
                     undoBuffer = _val.call(input);
-                    caret(input, checkVal(input, buffer, true));
+                    setTimeout(function() {
+                        caret(input, checkVal(input, buffer, true));
+                    }, 0);
                 }).bind("mouseleave.inputmask", function() {
                     if (!input.hasClass('focus.inputmask') && _val.call(input) == _buffer.join(''))
                         _val.call(input, '');
@@ -311,7 +318,11 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         caret(input, checkVal(input, buffer, true));
                     }, 0);
                 }).bind('setvalue.inputmask', function() {
-                    checkVal(input, buffer, true);
+                    setTimeout(function() {
+                        checkVal(input, buffer, true);
+                        if (_val.call(input) == _buffer.join(''))
+                            _val.call(input, '');
+                    }, 0);
                 });
 
             }
