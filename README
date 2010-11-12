@@ -74,7 +74,7 @@ $(document).ready(function(){
 execute a function when the mask is completed
 
 $(document).ready(function(){
-   $("#date").inputmask("d/m/y",{ "onComplete": function(){ alert('inputmask complete'); } });
+   $("#date").inputmask("d/m/y",{ "oncomplete": function(){ alert('inputmask complete'); } });
 });
 
 mask repeat function
@@ -105,6 +105,14 @@ when the option patch_eval is set to true the same can be done with the traditio
 
 $(document).ready(function(){
    $("#number").val(12345); 
+});
+
+with the autounmaskoption you can change the return of $.fn.val  to unmaskedvalue or the maskedvalue
+
+$(document).ready(function(){
+   	$('#<%= tbDate.ClientID%>').inputmask({ "mask": "d/m/y", 'autounmask' : true});	//  value: 23/03/1973
+
+	alert($('#<%= tbDate.ClientID%>').val());	// shows 23031973     (autounmask: true)
 });
 
 add custom definitions
