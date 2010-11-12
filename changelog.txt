@@ -1,0 +1,14 @@
+jquery.inputmask changelog
+==========================
+
+version 0.1.9
+
+- allow re-masking with another mask, when their is already a mask in place.
+  ex.
+
+      $(input).inputmask('d/m/y');
+      ... do some stuff ...
+      $(input).inputmask('999999999999');  // => input mask changes to the new mask and applies it to it's value
+
+version 0.????
+
