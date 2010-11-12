@@ -292,7 +292,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             var ignore = false;              //Variable for ignoring control keys
 
 			//unbind all events - to make sure that no other mask will interfere when re-masking
-			input.unbind("mouseenter.inputmask, blur.inputmask, focus.inputmask, mouseleave.inputmask, keydown.inputmask, keypress.inputmask, setvalue.inputmask, "+ pasteEventName);
+			input.unbind(".inputmask");
         	input.removeClass('focus.inputmask');
                 //bind events
             if (!input.attr("readonly")) {
