@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.1.8
+Version: 0.1.9
    
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -70,15 +70,20 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
         var _val = $.inputmask.val;
         if (opts.patch_val && $.fn.val.inputmaskpatch != true) {
             $.fn.val = function() {
-                if (opts.autounmask && arguments.length == 0) {
-                    return this.data('inputmask') ? this.inputmask('unmaskedvalue') : _val.apply(this, arguments); ;
+            	if(this.data('inputmask')){
+               	 	if (this.data('autounmask') && arguments.length == 0) {
+                    	return this.inputmask('unmaskedvalue');
+                	}
+                	else {
+                    	var result = _val.apply(this, arguments);
+                    	if (arguments.length > 0) {
+                        	this.triggerHandler('setvalue.inputmask');
+                    	}
+                    	return result;
+                	}
                 }
                 else {
-                    var result = _val.apply(this, arguments);
-                    if (arguments.length > 0 && this.data('inputmask')) {
-                        this.triggerHandler('setvalue.inputmask');
-                    }
-                    return result;
+               		 return _val.apply(this, arguments);
                 }
             };
             $.extend($.fn.val, {
@@ -279,13 +284,17 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             input.data('greedy', opts.greedy);
             input.data('repeat', opts.repeat);
             input.data('inputmask', true);
+            input.data('autounmask', opts.autounmask);
 
             //init buffer
             var buffer = _buffer.slice();
             var undoBuffer = _val.call(input);
             var ignore = false;              //Variable for ignoring control keys
 
-            //bind events
+			//unbind all events - to make sure that no other mask will interfere when re-masking
+			input.unbind("mouseenter.inputmask, blur.inputmask, focus.inputmask, mouseleave.inputmask, keydown.inputmask, keypress.inputmask, setvalue.inputmask, "+ pasteEventName);
+        	input.removeClass('focus.inputmask');
+                //bind events
             if (!input.attr("readonly")) {
                 input.bind("mouseenter.inputmask", function() {
                     if (!input.hasClass('focus.inputmask') && _val.call(input).length == 0) {
