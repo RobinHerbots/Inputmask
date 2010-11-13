@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.1.9
+Version: 0.2.0
    
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -314,12 +314,13 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 }).bind("focus.inputmask", function() {
                     input.addClass('focus.inputmask');
                     undoBuffer = _val.call(input);
-                    setTimeout(function() {
-                        caret(input, checkVal(input, buffer, true));
-                    }, 0);
                 }).bind("mouseleave.inputmask", function() {
                     if (!input.hasClass('focus.inputmask') && _val.call(input) == _buffer.join(''))
                         _val.call(input, '');
+                }).bind("click.inputmask", function() {
+                    setTimeout(function() {
+                        caret(input, checkVal(input, buffer, true));
+                    }, 0);
                 }).bind("keydown.inputmask", keydownEvent
                 ).bind("keypress.inputmask", keypressEvent
                 ).bind(pasteEventName, function() {
