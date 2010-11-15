@@ -290,6 +290,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             var buffer = _buffer.slice();
             var undoBuffer = _val.call(input);
             var ignore = false;              //Variable for ignoring control keys
+            var lastPosition = -1;
 
             //unbind all events - to make sure that no other mask will interfere when re-masking
             input.unbind(".inputmask");
@@ -318,11 +319,12 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         _val.call(input, '');
                 }).bind("click.inputmask", function() {
                     setTimeout(function() {
-                        caret(input, checkVal(input, buffer, true));
+                        lastPosition = checkVal(input, buffer, true);
+                        caret(input, lastPosition);
                     }, 0);
                 }).bind('dblclick.inputmask', function() {
                     setTimeout(function() {
-                        caret(input, 0, checkVal(input, buffer, true));
+                        caret(input, 0, lastPosition);
                     }, 0);
                 }).bind("keydown.inputmask", keydownEvent
                 ).bind("keypress.inputmask", keypressEvent
