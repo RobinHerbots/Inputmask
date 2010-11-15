@@ -14,3 +14,11 @@ version 0.2.0
 
 - make entering the textbox via mouseclick or via tab key behave like a normal input
 
+version 0.2.1
+
+- avoid needless checking of the value 
+
+version 0.2.2
+
+- update doubleclick behavior 
+
