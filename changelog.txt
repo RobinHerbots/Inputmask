@@ -22,3 +22,6 @@ version 0.2.2
 
 - update doubleclick behavior 
 
+version 0.2.3
+
+- ui.datepicker fix
