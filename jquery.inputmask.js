@@ -262,7 +262,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
         function unmaskedvalue(el) {
 
-            if (tests) {
+            if (tests && !el.hasClass('hasDatepicker')) {
                 var buffer = _buffer.slice();
                 checkVal(el, buffer);
                 return $.map(buffer, function(element, index) {
