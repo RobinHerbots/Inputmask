@@ -13,6 +13,10 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
         //options default
         defaults: {
             placeholder: "_",
+            optionalmarker: {
+                start: "[",
+                end: "]"
+            },
             mask: null,
             oncomplete: null,
             repeat: 0, //repetitions of the mask
@@ -137,14 +141,16 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
         function getMaskTemplate() {
             var singleMask = $.map(opts.mask.split(""), function(element, index) {
                 var outElem = [];
-                var maskdef = opts.definitions[element];
-                if (maskdef) {
-                    for (i = 0; i < maskdef.cardinality; i++) {
-                        outElem.push(opts.placeholder);
-                    }
-                } else outElem.push(element);
+                if (element != opts.optionalmarker.start && element != opts.optionalmarker.end) {
+                    var maskdef = opts.definitions[element];
+                    if (maskdef) {
+                        for (i = 0; i < maskdef.cardinality; i++) {
+                            outElem.push(opts.placeholder);
+                        }
+                    } else outElem.push(element);
 
-                return outElem;
+                    return outElem;
+                }
             });
 
             //allocate repetitions
@@ -155,19 +161,28 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             return repeatedMask;
         }
 
+        //test definition => [regex, cardinality, optionality]
         function getTestingChain() {
+            var isOptional = false;
+
             return $.map(opts.mask.split(""), function(element, index) {
                 var outElem = [];
-                var maskdef = opts.definitions[element];
-                if (maskdef) {
-                    for (i = 1; i < maskdef.cardinality; i++) {
-                        var prevalidator = maskdef.prevalidator[i - 1];
-                        outElem.push([new RegExp(prevalidator.validator), prevalidator.cardinality]);
-                    }
-                    outElem.push([new RegExp(maskdef.validator), maskdef.cardinality]);
-                } else outElem.push(null);
 
-                return outElem;
+                if (element == opts.optionalmarker.start) isOptional = true;
+                else if (element == opts.optionalmarker.end) isOptional = false;
+                else {
+
+                    var maskdef = opts.definitions[element];
+                    if (maskdef) {
+                        for (i = 1; i < maskdef.cardinality; i++) {
+                            var prevalidator = maskdef.prevalidator[i - 1];
+                            outElem.push([new RegExp(prevalidator.validator), prevalidator.cardinality, isOptional]);
+                        }
+                        outElem.push([new RegExp(maskdef.validator), maskdef.cardinality, isOptional]);
+                    } else outElem.push(null);
+
+                    return outElem;
+                }
             });
         }
 
