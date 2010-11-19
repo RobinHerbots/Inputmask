@@ -161,26 +161,36 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             return repeatedMask;
         }
 
-        //test definition => [regex, cardinality, optionality]
+        //test definition => [regex, cardinality, optionality, newBlockMarker]
         function getTestingChain() {
             var isOptional = false;
+            var newBlockMarker = false; //indicates wheter the begin/ending of a block should be indicated
 
             return $.map(opts.mask.split(""), function(element, index) {
                 var outElem = [];
 
-                if (element == opts.optionalmarker.start) isOptional = true;
-                else if (element == opts.optionalmarker.end) isOptional = false;
+                if (element == opts.optionalmarker.start) {
+                    isOptional = true;
+                    newBlockMarker = true;
+                }
+                else if (element == opts.optionalmarker.end) {
+                    isOptional = false;
+                    newBlockMarker = true;
+                }
                 else {
-
                     var maskdef = opts.definitions[element];
                     if (maskdef) {
                         for (i = 1; i < maskdef.cardinality; i++) {
                             var prevalidator = maskdef.prevalidator[i - 1];
-                            outElem.push([new RegExp(prevalidator.validator), prevalidator.cardinality, isOptional]);
+                            outElem.push([new RegExp(prevalidator.validator), prevalidator.cardinality, isOptional, isOptional == true ? newBlockMarker : false]);
+                            if (isOptional == true) //reset newBlockMarker
+                                newBlockMarker = false;
                         }
-                        outElem.push([new RegExp(maskdef.validator), maskdef.cardinality, isOptional]);
+                        outElem.push([new RegExp(maskdef.validator), maskdef.cardinality, isOptional, newBlockMarker]);
                     } else outElem.push(null);
 
+                    //reset newBlockMarker
+                    newBlockMarker = false;
                     return outElem;
                 }
             });
