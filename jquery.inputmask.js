@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.2.3
+Version: 0.2.4
    
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -187,7 +187,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                                 newBlockMarker = false;
                         }
                         outElem.push([new RegExp(maskdef.validator), maskdef.cardinality, isOptional, newBlockMarker]);
-                    } else outElem.push(null);
+                    } else outElem.push([null, 0, isOptional, newBlockMarker]);
 
                     //reset newBlockMarker
                     newBlockMarker = false;
@@ -213,7 +213,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
         }
 
         function isMask(pos) {
-            return tests[determineTestPosition(pos)];
+            return tests[determineTestPosition(pos)][0];
         }
 
         function determineTestPosition(pos) {
@@ -327,13 +327,11 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     }
                 }).bind("blur.inputmask", function() {
                     input.removeClass('focus.inputmask');
-                    setTimeout(function() {
-                        if (_val.call(input) == _buffer.join(''))
-                            _val.call(input, '');
-                        else if (_val.call(input) != undoBuffer) {
-                            input.change();
-                        }
-                    }, 0);
+                    if (_val.call(input) == _buffer.join(''))
+                        _val.call(input, '');
+                    else if (_val.call(input) != undoBuffer) {
+                        input.change();
+                    }
                 }).bind("focus.inputmask", function() {
                     input.addClass('focus.inputmask');
                     undoBuffer = _val.call(input);
