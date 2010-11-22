@@ -213,7 +213,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
         }
 
         function isMask(pos) {
-            return tests[determineTestPosition(pos)][0];
+            return tests[determineTestPosition(pos)] ? tests[determineTestPosition(pos)][0] : false;
         }
 
         function determineTestPosition(pos) {
