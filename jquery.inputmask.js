@@ -209,11 +209,19 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
             if (c) { chrs += c; }
 
-            return tests[testPos][0].test(chrs);
+            var testResult = tests[testPos][0].test(chrs);
+            return !testResult && tests[testPos][2] && isFirstMaskOfBlock(testPos) ? isValid(seekNext(pos, true), c, buffer) : testResult;
         }
 
         function isMask(pos) {
             return tests[determineTestPosition(pos)] ? tests[determineTestPosition(pos)][0] : false;
+        }
+
+        function isFirstMaskOfBlock(testPosition) {
+            if (!tests[testPosition][3])
+                while (!tests[--testPosition][3] && tests[testPosition][0] == null) { }; //search marker in nonmask items
+
+            return tests[testPosition][3];
         }
 
         function determineTestPosition(pos) {
@@ -228,8 +236,13 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             return calculatedLength;
         }
 
-        function seekNext(pos) {
-            while (++pos <= getMaskLength() && !isMask(pos));
+        //pos: from position, nextBlock: true/false goto next newBlockMarker
+        function seekNext(pos, nextBlock) {
+            if (nextBlock) {
+                while (++pos <= getMaskLength() && tests[determineTestPosition(pos)][3] != nextBlock) { };
+                pos--;
+            }
+            while (++pos <= getMaskLength() && !isMask(pos)) { };
             return pos;
         }
         //these are needed to handle the non-greedy mask repetitions
