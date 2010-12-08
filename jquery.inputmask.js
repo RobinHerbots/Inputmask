@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.2.4b
+Version: 0.2.4c
    
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -204,7 +204,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     clearOffsets(testPos, testPos + tests[testPos].offset);
                 else {
                     var newPos = pos + tests[testPos].offset;
-                    while (newPos <= getMaskLength() && !isMask(newPos)) { newPos++; };
+//                    while (newPos <= getMaskLength() && !isMask(newPos)) { newPos++; };
                     testPos = determineTestPosition(newPos);
                 }
             }
@@ -225,6 +225,11 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
         function isMask(pos) {
             var testPos = determineTestPosition(pos);
+            if (tests[testPos].optionality && !isFirstMaskOfBlock(testPos)) {
+                var newPos = pos + tests[testPos].offset;
+                testPos = determineTestPosition(newPos);
+            }
+
             return tests[testPos] ? tests[testPos].regex : false;
         }
 
@@ -393,6 +398,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     }, 0);
                 }).bind('setvalue.inputmask', function() {
                     setTimeout(function() {
+                        undoBuffer = _val.call(input);
                         checkVal(input, buffer, true);
                         if (_val.call(input) == _buffer.join(''))
                             _val.call(input, '');
@@ -435,6 +441,12 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             c = t;
                         else
                             break;
+                    } else {
+                        var testPos = determineTestPosition(i);
+                        if (tests[testPos].optionality && tests[testPos].offset > 0) {
+                            var testedPosition = i + tests[testPos].offset;
+                            setBufferElement(buffer, i, getBufferElement(buffer, testedPosition));
+                        }
                     }
                 }
             };
