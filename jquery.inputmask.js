@@ -241,7 +241,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
         function clearOffsets(start, end) {
             for (var i = start; i < end && i < getMaskLength(); i++) {
-                tests[i].offset = 0;
+                tests[determineTestPosition(i)].offset = 0;
             }
         }
 
@@ -291,7 +291,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
         };
 
         function checkVal(input, buffer, clearInvalid) {
-            clearOffsets(0, getMaskLength());
+            clearOffsets(0, _buffer.length);
             var inputValue = _val.call(input).replace(new RegExp("(" + _buffer.join('') + ")*$"), "");
             clearBuffer(buffer, 0, buffer.length);
             buffer.length = _buffer.length; //reset the buffer to its original size
