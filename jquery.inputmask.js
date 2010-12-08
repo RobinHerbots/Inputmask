@@ -161,7 +161,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             return repeatedMask;
         }
 
-        //test definition => [regex, cardinality, optionality, newBlockMarker]
+        //test definition => {regex: RegExp, cardinality: int, optionality: bool, newBlockMarker: bool, offset: int}
         function getTestingChain() {
             var isOptional = false;
             var newBlockMarker = false; //indicates wheter the begin/ending of a block should be indicated
@@ -182,12 +182,12 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     if (maskdef) {
                         for (i = 1; i < maskdef.cardinality; i++) {
                             var prevalidator = maskdef.prevalidator[i - 1];
-                            outElem.push([new RegExp(prevalidator.validator), prevalidator.cardinality, isOptional, isOptional == true ? newBlockMarker : false]);
+                            outElem.push({regex: new RegExp(prevalidator.validator), cardinality: prevalidator.cardinality, optionality: isOptional, newBlockMarker: isOptional == true ? newBlockMarker : false, offset: 0});
                             if (isOptional == true) //reset newBlockMarker
                                 newBlockMarker = false;
                         }
-                        outElem.push([new RegExp(maskdef.validator), maskdef.cardinality, isOptional, newBlockMarker]);
-                    } else outElem.push([null, 0, isOptional, newBlockMarker]);
+                        outElem.push({regex: new RegExp(maskdef.validator), cardinality: maskdef.cardinality, optionality: isOptional, newBlockMarker: newBlockMarker, offset: 0});
+                    } else outElem.push({regex: null, cardinality: 0, optionality: isOptional, newBlockMarker: newBlockMarker, offset: 0});
 
                     //reset newBlockMarker
                     newBlockMarker = false;
@@ -199,35 +199,49 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
         function isValid(pos, c, buffer) {
             var testPos = determineTestPosition(pos);
 
+			//apply offset
+			if(tests[testPos].optionality){
+				if(isFirstMaskOfBlock(testPos))
+					clearOffsets();
+				else
+					testPos = determineTestPosition(pos + tests[testPos].offset);
+			}
+
             var loopend = 0;
-            if (c) { loopend = 1; ; }
+            if (c) { loopend = 1; }
 
             var chrs = '';
-            for (var i = tests[testPos][1]; i > loopend; i--) {
+            for (var i = tests[testPos].cardinality; i > loopend; i--) {
                 chrs += getBufferElement(buffer, testPos - (i - 1));
             }
 
             if (c) { chrs += c; }
 
-            var testResult = tests[testPos][0].test(chrs);
-            return !testResult && tests[testPos][2] && isFirstMaskOfBlock(testPos) ? isValid(seekNext(pos, true), c, buffer) : testResult;
+            var testResult = tests[testPos].regex.test(chrs);
+            return !testResult && tests[testPos].optionality && isFirstMaskOfBlock(testPos) ? isValid(seekNext(pos, true), c, buffer) : testResult;
         }
 
         function isMask(pos) {
             var testPos = determineTestPosition(pos);
-            return tests[testPos] ? tests[testPos][0] : false;
+            return tests[testPos] ? tests[testPos].regex : false;
         }
 
         function isFirstMaskOfBlock(testPosition) {
-            if (!tests[testPosition][3])
-                while (!tests[--testPosition][3] && tests[testPosition][0] == null) { }; //search marker in nonmask items
+            if (!tests[testPosition].newBlockMarker)
+                while (!tests[--testPosition].newBlockMarker && tests[testPosition].regex == null) { }; //search marker in nonmask items
 
-            return tests[testPosition][3];
+            return tests[testPosition].newBlockMarker;
         }
 
         function determineTestPosition(pos) {
             return pos % tests.length;
         }
+
+		function clearOffsets(){
+			$(tests).each(function(){
+				this.offset = 0;
+			});
+		}
 
         function getMaskLength() {
             var calculatedLength = _buffer.length;
@@ -239,12 +253,19 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
         //pos: from position, nextBlock: true/false goto next newBlockMarker
         function seekNext(pos, nextBlock) {
+            var position = pos;
             if (nextBlock) {
-                while (++pos <= getMaskLength() && tests[determineTestPosition(pos)][3] != nextBlock) { };
-                pos--;
+               	var offset=0;
+                while (++position <= getMaskLength() && tests[determineTestPosition(position)].newBlockMarker != nextBlock) { offset++; };
+                position--;
+                if(tests[determineTestPosition(position+1)].newBlockMarker){
+ 	               for(var i=0;i<=offset;i++){
+    	            	tests[determineTestPosition(pos+i)].offset = offset;
+        	        }
+                }
             }
-            while (++pos <= getMaskLength() && !isMask(pos)) { };
-            return pos;
+            while (++position <= getMaskLength() && !isMask(position)) { };
+            return position;
         }
         //these are needed to handle the non-greedy mask repetitions
         function setBufferElement(buffer, position, element) {
@@ -268,6 +289,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
         };
 
         function checkVal(input, buffer, clearInvalid) {
+        	clearOffsets();
             var inputValue = _val.call(input).replace(new RegExp("(" + _buffer.join('') + ")*$"), "");
             clearBuffer(buffer, 0, buffer.length);
             buffer.length = _buffer.length; //reset the buffer to its original size
