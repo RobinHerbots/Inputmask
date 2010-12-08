@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.2.4a
+Version: 0.2.4b
    
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -480,6 +480,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 //backspace, delete, and escape get special treatment
                 if (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE || (iPhone && k == 127)) {//backspace/delete
                     shiftL(pos.begin + (k == opts.keyCode.DELETE ? 0 : -1));
+                    undoBuffer = _val.call(input);
                     return false;
                 } else if (k == opts.keyCode.ESCAPE) {//escape
                     _val.call(input, undoBuffer);
