@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.2.4c
+Version: 0.2.4d
    
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -201,10 +201,11 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             //apply offset
             if (tests[testPos].optionality) {
                 if (isFirstMaskOfBlock(testPos))
-                    clearOffsets(testPos, testPos + tests[testPos].offset);
+                //retain the possible offset in the FirstMaskOfBlock - needed to clear invalid chars in shiftR - has no further impact
+                    clearOffsets(testPos + 1, testPos + tests[testPos].offset);
                 else {
                     var newPos = pos + tests[testPos].offset;
-//                    while (newPos <= getMaskLength() && !isMask(newPos)) { newPos++; };
+                    //                    while (newPos <= getMaskLength() && !isMask(newPos)) { newPos++; };
                     testPos = determineTestPosition(newPos);
                 }
             }
@@ -229,7 +230,6 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 var newPos = pos + tests[testPos].offset;
                 testPos = determineTestPosition(newPos);
             }
-
             return tests[testPos] ? tests[testPos].regex : false;
         }
 
@@ -423,7 +423,8 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             setBufferElement(buffer, i, getBufferElement(buffer, j));
                         } else
                             break;
-                    }
+                    } else
+                        SetReTargetPlaceHolder(i);
                 }
                 buffer = buffer.join('').replace(new RegExp("(" + _buffer.join('') + ")*$"), "").split('');
                 if (buffer.length == 0) buffer = _buffer.slice();
@@ -431,25 +432,28 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 caret(input, pos);
             };
 
-            function shiftR(pos) {
-                for (var i = pos, c = opts.placeholder; i < getMaskLength(); i++) {
+            function shiftR(pos, c) {
+                for (var i = pos; i < getMaskLength(); i++) {
                     if (isMask(i)) {
-                        var j = seekNext(i);
                         var t = getBufferElement(buffer, i);
                         setBufferElement(buffer, i, c);
+                        var j = seekNext(i);
+                        if (!isMask(i + 1)) SetReTargetPlaceHolder(i + 1); //remark nonmask elements
                         if (j < getMaskLength() && isValid(j, t, buffer))
                             c = t;
-                        else
-                            break;
-                    } else {
-                        var testPos = determineTestPosition(i);
-                        if (tests[testPos].optionality && tests[testPos].offset > 0) {
-                            var testedPosition = i + tests[testPos].offset;
-                            setBufferElement(buffer, i, getBufferElement(buffer, testedPosition));
-                        }
-                    }
+                        else break;
+                    } else
+                        SetReTargetPlaceHolder(i);
                 }
             };
+
+            function SetReTargetPlaceHolder(pos) {
+                var testPos = determineTestPosition(pos);
+                if (tests[testPos].optionality && tests[testPos].offset > 0) {
+                    var testedPosition = pos + tests[testPos].offset;
+                    setBufferElement(buffer, pos, getBufferElement(_buffer, testedPosition));
+                }
+            }
 
             function caret(input, begin, end) {
                 if (input.length == 0) return;
@@ -518,8 +522,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     if (p < getMaskLength()) {
                         var c = String.fromCharCode(k);
                         if (isValid(p, c, buffer)) {
-                            shiftR(p);
-                            setBufferElement(buffer, p, c);
+                            shiftR(p, c);
                             writeBuffer(input, buffer);
                             var next = seekNext(p);
                             caret($(this), next);
