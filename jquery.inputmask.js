@@ -219,7 +219,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
 
             if (c) { chrs += c; }
-            var testResult = tests[testPos].regex != null ? tests[testPos].regex.test(chrs) : false;
+            var testResult = tests[testPos].regex.test(chrs);
             return !testResult && tests[testPos].optionality && isFirstMaskOfBlock(testPos) ? isValid(seekNext(pos, true), c, buffer) : testResult;
         }
 
@@ -228,7 +228,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             var test = tests[testPos];
             if (test != undefined && test.optionality && !isFirstMaskOfBlock(testPos)) {
                 var newPos = pos + test.offset;
-                testPos = determineTestPosition(newPos);
+                test = tests[determineTestPosition(newPos)];
             }
             return test != undefined ? test.regex : false;
         }
