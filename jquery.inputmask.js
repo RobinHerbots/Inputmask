@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.2.4d
+Version: 0.2.4e
    
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -219,18 +219,18 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
 
             if (c) { chrs += c; }
-
-            var testResult = tests[testPos].regex.test(chrs);
+            var testResult = tests[testPos].regex != null ? tests[testPos].regex.test(chrs) : false;
             return !testResult && tests[testPos].optionality && isFirstMaskOfBlock(testPos) ? isValid(seekNext(pos, true), c, buffer) : testResult;
         }
 
         function isMask(pos) {
             var testPos = determineTestPosition(pos);
-            if (tests[testPos].optionality && !isFirstMaskOfBlock(testPos)) {
-                var newPos = pos + tests[testPos].offset;
+            var test = tests[testPos];
+            if (test != undefined && test.optionality && !isFirstMaskOfBlock(testPos)) {
+                var newPos = pos + test.offset;
                 testPos = determineTestPosition(newPos);
             }
-            return tests[testPos] ? tests[testPos].regex : false;
+            return test != undefined ? test.regex : false;
         }
 
         function isFirstMaskOfBlock(testPosition) {
@@ -449,8 +449,9 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
             function SetReTargetPlaceHolder(pos) {
                 var testPos = determineTestPosition(pos);
-                if (tests[testPos].optionality && tests[testPos].offset > 0) {
-                    var testedPosition = pos + tests[testPos].offset;
+                var test = tests[testPos];
+                if (test != undefined && test.optionality && test.offset > 0) {
+                    var testedPosition = pos + test.offset;
                     setBufferElement(buffer, pos, getBufferElement(_buffer, testedPosition));
                 }
             }
