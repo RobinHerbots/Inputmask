@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.2.4e
+Version: 0.2.4f
    
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -295,6 +295,15 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
         };
 
+        function SetReTargetPlaceHolder(buffer, pos) {
+            var testPos = determineTestPosition(pos);
+            var test = tests[testPos];
+            if (test != undefined && test.optionality && test.offset > 0) {
+                var testedPosition = pos + test.offset;
+                setBufferElement(buffer, pos, getBufferElement(_buffer, testedPosition));
+            }
+        }
+
         function checkVal(input, buffer, clearInvalid) {
             clearOffsets(0, _buffer.length);
             var inputValue = _val.call(input).replace(new RegExp("(" + _buffer.join('') + ")*$"), "");
@@ -308,10 +317,11 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             setBufferElement(buffer, pos, inputValue.charAt(i));
                             lastMatch = pos;
                         } else {
-                            setBufferElement(buffer, pos, opts.placeholder);
+                            SetReTargetPlaceHolder(buffer, pos);
                         }
                         break;
                     } else {   //nonmask
+                        SetReTargetPlaceHolder(buffer, pos);
                         lastMatch++;
                     }
                 }
@@ -424,7 +434,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         } else
                             break;
                     } else
-                        SetReTargetPlaceHolder(i);
+                        SetReTargetPlaceHolder(buffer, i);
                 }
                 buffer = buffer.join('').replace(new RegExp("(" + _buffer.join('') + ")*$"), "").split('');
                 if (buffer.length == 0) buffer = _buffer.slice();
@@ -438,23 +448,14 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         var t = getBufferElement(buffer, i);
                         setBufferElement(buffer, i, c);
                         var j = seekNext(i);
-                        if (!isMask(i + 1)) SetReTargetPlaceHolder(i + 1); //remark nonmask elements
+                        if (!isMask(i + 1)) SetReTargetPlaceHolder(buffer, i + 1); //remark nonmask elements
                         if (j < getMaskLength() && isValid(j, t, buffer))
                             c = t;
                         else break;
                     } else
-                        SetReTargetPlaceHolder(i);
+                        SetReTargetPlaceHolder(buffer, i);
                 }
             };
-
-            function SetReTargetPlaceHolder(pos) {
-                var testPos = determineTestPosition(pos);
-                var test = tests[testPos];
-                if (test != undefined && test.optionality && test.offset > 0) {
-                    var testedPosition = pos + test.offset;
-                    setBufferElement(buffer, pos, getBufferElement(_buffer, testedPosition));
-                }
-            }
 
             function caret(input, begin, end) {
                 if (input.length == 0) return;
