@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.2.4g
+Version: 0.2.4h
    
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -202,15 +202,18 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
         function isValid(pos, c, buffer) {
             var testPos = determineTestPosition(pos);
+            var firstMaskPosition = false;
             //apply offset
             if (tests[testPos].optionality) {
-                if (isFirstMaskOfBlock(testPos))
-                //retain the possible offset in the FirstMaskOfBlock - needed to clear invalid chars in shiftR - has no further impact
-                    clearOffsets(testPos + 1, testPos + tests[testPos].offset);
+                firstMaskPosition = isFirstMaskOfBlock(testPos);
+                if (firstMaskPosition || tests[testPos].newBlockMarker) {
+                    clearOffsets(testPos - (firstMaskPosition ? firstMaskPosition : 0), testPos + tests[testPos].offset);
+                }
                 else {
                     var newPos = pos + tests[testPos].offset;
                     //                    while (newPos <= getMaskLength() && !isMask(newPos)) { newPos++; };
                     testPos = determineTestPosition(newPos);
+                    firstMaskPosition = isFirstMaskOfBlock(testPos);
                 }
             }
 
@@ -223,23 +226,29 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
 
             if (c) { chrs += c; }
-            var testResult = tests[testPos].regex.test(chrs);
-            return !testResult && tests[testPos].optionality && isFirstMaskOfBlock(testPos) ? isValid(seekNext(pos, true), c, buffer) : testResult;
+            var testResult = tests[testPos].regex != null ? tests[testPos].regex.test(chrs) : false;
+
+            if (!testResult) {
+                if (tests[testPos].optionality && (firstMaskPosition || tests[testPos].newBlockMarker)) {
+                    return isValid(seekNext(buffer, pos - (testPos - (firstMaskPosition ? firstMaskPosition : 0)), true), c, buffer)
+                }
+            }
+            return testResult;
         }
 
         function isMask(pos) {
             var testPos = determineTestPosition(pos);
             var test = tests[testPos];
-            if (test != undefined && test.optionality && !isFirstMaskOfBlock(testPos)) {
+            if (test != undefined && test.optionality && test.offset > 0) {
                 var newPos = pos + test.offset;
-                test = tests[determineTestPosition(newPos)];
+                return test.regex || isMask(newPos);
             }
             return test != undefined ? test.regex : false;
         }
 
         function isFirstMaskOfBlock(testPosition) {
             if (!tests[testPosition].newBlockMarker)
-                while (!tests[--testPosition].newBlockMarker && tests[testPosition].regex == null) { }; //search marker in nonmask items
+                while (testPosition > 0 && !tests[--testPosition].newBlockMarker && tests[testPosition].regex == null) { }; //search marker in nonmask items
 
             return tests[testPosition].newBlockMarker ? testPosition : false;
         }
@@ -263,7 +272,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
         }
 
         //pos: from position, nextBlock: true/false goto next newBlockMarker
-        function seekNext(pos, nextBlock) {
+        function seekNext(buffer, pos, nextBlock) {
             var position = pos;
             if (nextBlock) {
                 var offset = 1;
@@ -275,7 +284,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 }
                 position--;
             }
-            while (++position <= getMaskLength() && !isMask(position)) { };
+            while (++position <= getMaskLength() && !isMask(position)) { SetReTargetPlaceHolder(buffer, position); };
             return position;
         }
         //these are needed to handle the non-greedy mask repetitions
@@ -305,18 +314,19 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             if (test != undefined) {
                 if (test.optionality && test.offset > 0) {
                     //fixme
-                    if (isFirstMaskOfBlock(testPos) && _numberOfRemovedElementsFromMask >= test.offset) {
-                        buffer.splice(pos, 0, _buffer.slice(testPos, testPos + test.offset));
-                        _numberOfRemovedElementsFromMask -= test.offset;
+                    var firstMaskPosition = isFirstMaskOfBlock(testPos);
+                    if (firstMaskPosition && _numberOfRemovedElementsFromMask >= test.offset) {
+                        //                        buffer.splice(pos, 0, _buffer.slice(testPos, testPos + test.offset));
+                        //                        _numberOfRemovedElementsFromMask -= test.offset;
                     }
                     else {
                         var testedPosition = pos + test.offset;
                         setBufferElement(buffer, pos, getBufferElement(_buffer, determineTestPosition(testedPosition)));
-                        if (testedPosition < buffer.length) {
-                            //remove RetargetPosition
-                            buffer.splice(pos + test.offset, test.offset);
-                            _numberOfRemovedElementsFromMask += test.offset;
-                        }
+                        //                        if (testedPosition < buffer.length) {
+                        //                            //remove RetargetPosition
+                        //                            buffer.splice(pos + test.offset, test.offset);
+                        //                            _numberOfRemovedElementsFromMask += test.offset;
+                        //                        }
                     }
                 } else setBufferElement(buffer, pos, getBufferElement(_buffer, testPos));
             }
@@ -348,7 +358,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             if (clearInvalid) {
                 writeBuffer(input, buffer);
             }
-            return seekNext(lastMatch);
+            return seekNext(buffer, lastMatch);
         }
 
         //functionality fn
@@ -447,7 +457,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 for (var i = pos; i < getMaskLength(); i++) {
                     if (isMask(i)) {
                         SetReTargetPlaceHolder(buffer, i);
-                        var j = seekNext(i);
+                        var j = seekNext(buffer, i);
                         if (j < getMaskLength() && isValid(i, getBufferElement(buffer, j), buffer)) {
                             setBufferElement(buffer, i, getBufferElement(buffer, j));
                         } else
@@ -466,11 +476,20 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     if (isMask(i)) {
                         var t = getBufferElement(buffer, i);
                         setBufferElement(buffer, i, c);
-                        var j = seekNext(i);
-                        if (!isMask(i + 1)) SetReTargetPlaceHolder(buffer, i + 1); //remark nonmask elements
-                        if (j < getMaskLength() && isValid(j, t, buffer))
-                            c = t;
-                        else break;
+                        if (t != opts.placeholder) {
+                            var j = seekNext(buffer, i);
+//                            if (!isMask(i + 1)) SetReTargetPlaceHolder(buffer, i + 1); //remark nonmask elements
+                            if (j < getMaskLength() && isValid(j, t, buffer))
+                                c = t;
+                            else {
+                                if (tests[j] && tests[j].newBlockMarker) {
+                                    clearOffsets(j, j + tests[j].offset);
+                                }
+                                if (isMask(j))
+                                    break;
+                                else c = t;
+                            }
+                        } else break;
                     } else
                         SetReTargetPlaceHolder(buffer, i);
                 }
@@ -539,13 +558,13 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 if (e.ctrlKey || e.altKey || e.metaKey) {//Ignore
                     return true;
                 } else if ((k >= 32 && k <= 125) || k > 186) {//typeable characters
-                    var p = seekNext(pos.begin - 1);
+                    var p = seekNext(buffer, pos.begin - 1);
                     if (p < getMaskLength()) {
                         var c = String.fromCharCode(k);
                         if (isValid(p, c, buffer)) {
                             shiftR(p, c);
                             writeBuffer(input, buffer);
-                            var next = seekNext(p);
+                            var next = seekNext(buffer, p);
                             caret($(this), next);
                             if (opts.oncomplete && next == getMaskLength())
                                 opts.oncomplete.call(input);
