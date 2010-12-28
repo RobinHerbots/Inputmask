@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.2.5a
+Version: 0.2.5b
    
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -159,7 +159,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
             //allocate repetitions
             var repeatedMask = singleMask.slice();
-            for (var i = 0; i < opts.repeat && opts.greedy; i++) {
+            for (var i = 1; i < opts.repeat && opts.greedy; i++) {
                 repeatedMask = repeatedMask.concat(singleMask.slice());
             }
             return repeatedMask;
@@ -271,7 +271,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
         function getMaskLength() {
             var calculatedLength = _buffer.length;
             if (!opts.greedy) {
-                calculatedLength += (_buffer.length * opts.repeat)
+                calculatedLength += (_buffer.length * (opts.repeat - 1))
             }
             return calculatedLength - _numberOfRemovedElementsFromMask;
         }
