@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.2.5
+Version: 0.2.5a
    
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -201,13 +201,14 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
         }
 
         function isValid(pos, c, buffer) {
+            if (pos > getMaskLength()) return false;
             var testPos = determineTestPosition(pos);
             var firstMaskPosition = false;
             //apply offset
             if (tests[testPos].optionality) {
                 firstMaskPosition = isFirstMaskOfBlock(testPos);
                 if (tests[testPos].offset > 0) {
-                    if (firstMaskPosition) {
+                    if (firstMaskPosition !== false) {
                         clearOffsets(firstMaskPosition, firstMaskPosition + tests[firstMaskPosition].offset, buffer);
                     }
                     else {
@@ -231,7 +232,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             var testResult = tests[testPos].regex != null ? tests[testPos].regex.test(chrs) : false;
 
             if (!testResult) {
-                if (tests[testPos].optionality && firstMaskPosition) {
+                if (tests[testPos].optionality && firstMaskPosition !== false) {
                     return isValid(seekNext(buffer, pos - (testPos - firstMaskPosition), true), c, buffer)
                 }
             }
@@ -319,7 +320,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             if (test != undefined) {
                 if (test.optionality && test.offset > 0) {
                     var firstMaskPosition = isFirstMaskOfBlock(testPos);
-                    if (firstMaskPosition && _numberOfRemovedElementsFromMask >= test.offset) {
+                    if (firstMaskPosition !== false && _numberOfRemovedElementsFromMask >= test.offset) {
                         setBufferElement(buffer, pos, getBufferElement(_buffer, testPos));
                         $.each(_buffer.slice(testPos, testPos + test.offset), function() {
                             buffer.splice(pos++, 0, this.toString());
