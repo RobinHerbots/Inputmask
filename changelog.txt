@@ -25,3 +25,7 @@ version 0.2.2
 version 0.2.3
 
 - ui.datepicker fix
+
+version 0.2.5
+
+- (simple) optional masks    ex:  $(selector).inputmask('9999[aaaa]9999');
