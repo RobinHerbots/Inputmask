@@ -135,6 +135,6 @@ optional masks
 
 $(document).ready(function(){
     $('#test1').inputmask('9999[aaaa]9999');           // 1234abcd1234 or 12341234
-    $('#test2').inputmask('[aaaa]9999');               // abcd1234 od 1234
+    $('#test2').inputmask('[aaaa]9999');               // abcd1234 or 1234
     $('#test3').inputmask('9999[aaaa]');               // 1234 or 1234abcd
 });
