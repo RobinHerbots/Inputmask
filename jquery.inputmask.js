@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.2.5e
+Version: 0.2.5f
    
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -348,24 +348,29 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             clearBuffer(buffer, 0, buffer.length);
             buffer.length = _buffer.length; //reset the buffer to its original size
             _numberOfRemovedElementsFromMask = 0;
-            var lastMatch = -1;
+            var lastMatch = -1, checkPosition = -1;
             for (var i = 0; i < inputValue.length; i++) {
-                for (var pos = lastMatch + 1; pos < getMaskLength(); pos++) {
+                for (var pos = checkPosition + 1; pos < getMaskLength(); pos++) {
                     if (isMask(pos)) {
                         if (isValid(pos, inputValue.charAt(i), buffer)) {
                             setBufferElement(buffer, pos, inputValue.charAt(i));
-                            lastMatch = pos;
+                            lastMatch = checkPosition = pos;
                         } else {
                             var testPos = determineTestPosition(pos);
                             if (tests[testPos] && tests[testPos].newBlockMarker) {
-                                clearOffsets(testPos, testPos + tests[testPos].offset);
+                                clearOffsets(testPos, testPos + tests[testPos].offset, buffer);
                             }
                             setBufferElement(buffer, pos, getBufferElement(_buffer, testPos));
+                            if (inputValue.charAt(i) == opts.placeholder)
+                                checkPosition = pos;
                         }
+
                         break;
                     } else {   //nonmask
                         SetReTargetPlaceHolder(buffer, pos);
-                        lastMatch++;
+                        if (lastMatch == checkPosition) //once outsync the nonmask cannot be the lastmatch
+                            lastMatch = pos;
+                        checkPosition = pos;
                     }
                 }
             }
