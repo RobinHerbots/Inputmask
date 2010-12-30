@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.2.5f
+Version: 0.2.5g
    
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -201,7 +201,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
         }
 
         function isValid(pos, c, buffer) {
-            if (pos > getMaskLength()) return false;
+            if (pos > getMaskLength() + _numberOfRemovedElementsFromMask) return false; //need the handle otherwise
             var testPos = determineTestPosition(pos);
             var firstMaskPosition = false;
             //apply offset
@@ -250,9 +250,12 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
         }
 
         function isFirstMaskOfBlock(testPosition) {
-            if (!tests[testPosition].newBlockMarker)
-                while (testPosition > 0 && !tests[testPosition - 1].newBlockMarker && tests[testPosition - 1].regex == null) { testPosition--; }; //search marker in nonmask items
-
+            if (!tests[testPosition].newBlockMarker) {
+                while (testPosition > 0 && tests[testPosition - 1].regex == null) {//search marker in nonmask items
+                    if (tests[--testPosition].newBlockMarker)
+                        break;
+                };
+            }
             return tests[testPosition].newBlockMarker ? testPosition : false;
         }
 
