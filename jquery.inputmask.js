@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.2.5g
+Version: 0.2.5f
    
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -233,7 +233,9 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
             if (!testResult) {
                 if (tests[testPos].optionality && firstMaskPosition !== false) {
-                    return isValid(seekNext(buffer, pos - (testPos - firstMaskPosition), true), c, buffer)
+                    //adjust the position with the firstMaskPosition offset
+                    var isNextValid = isValid(seekNext(buffer, pos - (testPos - firstMaskPosition), true), c, buffer);
+                    return isNextValid ? (testPos - firstMaskPosition) : false; //return the offset of the firstmask if valid
                 }
             }
             return testResult;
@@ -249,6 +251,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             return test != undefined ? test.regex : false;
         }
 
+        //returns the testPosition of the newBlockMarker or false
         function isFirstMaskOfBlock(testPosition) {
             if (!tests[testPosition].newBlockMarker) {
                 while (testPosition > 0 && tests[testPosition - 1].regex == null) {//search marker in nonmask items
@@ -355,7 +358,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             for (var i = 0; i < inputValue.length; i++) {
                 for (var pos = checkPosition + 1; pos < getMaskLength(); pos++) {
                     if (isMask(pos)) {
-                        if (isValid(pos, inputValue.charAt(i), buffer)) {
+                        if (isValid(pos, inputValue.charAt(i), buffer) !== false) {
                             setBufferElement(buffer, pos, inputValue.charAt(i));
                             lastMatch = checkPosition = pos;
                         } else {
@@ -487,7 +490,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         var j = seekNext(buffer, i);
                         var p = getBufferElement(buffer, j);
                         if (p != opts.placeholder) {
-                            if (j < getMaskLength() && isValid(i, p, buffer)) {
+                            if (j < getMaskLength() && isValid(i, p, buffer) !== false) {
                                 setBufferElement(buffer, i, getBufferElement(buffer, j));
                             } else {
                                 if (tests[testPos] && tests[testPos].newBlockMarker) {
@@ -514,7 +517,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         if (t != opts.placeholder) {
                             var j = seekNext(buffer, i);
                             //                            if (!isMask(i + 1)) SetReTargetPlaceHolder(buffer, i + 1); //remark nonmask elements
-                            if (j < getMaskLength() && isValid(j, t, buffer))
+                            if (j < getMaskLength() && isValid(j, t, buffer) !== false)
                                 c = t;
                             else {
                                 var testPos = determineTestPosition(j);
@@ -600,7 +603,10 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     var p = seekNext(buffer, pos.begin - 1);
                     if (p < getMaskLength()) {
                         var c = String.fromCharCode(k);
-                        if (isValid(p, c, buffer)) {
+                        var firstMaskOffset = isValid(p, c, buffer)
+                        if (firstMaskOffset !== false) {
+                            if (typeof (firstMaskOffset) == 'number')
+                                p = p - firstMaskOffset;
                             shiftR(p, c);
                             writeBuffer(input, buffer);
                             var next = seekNext(buffer, p);
