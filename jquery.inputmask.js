@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.2.5g
+Version: 0.2.5h
    
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -143,6 +143,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
         //helper functions
         function getMaskTemplate() {
+            if (opts.mask.length == 1 && opts.greedy == false) { opts.placeholder = ""; } //hide placeholder with single non-greedy mask
             var singleMask = $.map(opts.mask.split(""), function(element, index) {
                 var outElem = [];
                 if (element != opts.optionalmarker.start && element != opts.optionalmarker.end) {
