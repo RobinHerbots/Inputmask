@@ -355,7 +355,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             buffer.length = _buffer.length; //reset the buffer to its original size
             _numberOfRemovedElementsFromMask = 0;
             var lastMatch = -1, checkPosition = -1;
-            for (var i = 0; i < inputValue.length; i++) {
+            for (var i = 0, ivl = inputValue.length; i < ivl; i++) {
                 for (var pos = checkPosition + 1; pos < getMaskLength(); pos++) {
                     if (isMask(pos)) {
                         if (isValid(pos, inputValue.charAt(i), buffer) !== false) {
