@@ -270,7 +270,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             if (buffer)
                 SetReTargetPlaceHolder(buffer, start);
 
-            for (var i = start; i < end && i < getMaskLength(); i++) {
+            for (var i = start, maskL = getMaskLength(); i < end && i < maskL; i++) {
                 tests[determineTestPosition(i)].offset = 0;
             }
         }
@@ -581,6 +581,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     if (pos.begin == 0 && pos.end == getMaskLength()) {
                         buffer = _buffer.slice();
                         writeBuffer(input, buffer);
+                        caret(input, 0);
                     } else
                         shiftL(pos.begin + (k == opts.keyCode.DELETE || pos.begin < pos.end ? 0 : -1));
                     return false;
