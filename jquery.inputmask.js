@@ -316,7 +316,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
         function writeBuffer(input, buffer) { return _val.call(_val.call(input, buffer.join(''))); };
         function clearBuffer(buffer, start, end) {
-            for (var i = start; i < end && i < getMaskLength(); i++) {
+            for (var i = start, maskL = getMaskLength(); i < end && i < maskL; i++) {
                 setBufferElement(buffer, i, getBufferElement(_buffer.slice(), i));
             }
         };
@@ -447,9 +447,12 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         _val.call(input, '');
                 }).bind("click.inputmask", function() {
                     setTimeout(function() {
-                        var clickPosition = caret(input).begin;
-                        lastPosition = checkVal(input, buffer, true);
-                        caret(input, clickPosition < lastPosition ? clickPosition : lastPosition);
+                        var selectedCaret = caret(input);
+                        if (selectedCaret.begin == selectedCaret.end) {
+                            var clickPosition = selectedCaret.begin;
+                            lastPosition = checkVal(input, buffer, true);
+                            caret(input, clickPosition < lastPosition ? clickPosition : lastPosition);
+                        }
                     }, 0);
                 }).bind('dblclick.inputmask', function() {
                     setTimeout(function() {
@@ -579,7 +582,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         buffer = _buffer.slice();
                         writeBuffer(input, buffer);
                     } else
-                        shiftL(pos.begin + (k == opts.keyCode.DELETE ? 0 : -1));
+                        shiftL(pos.begin + (k == opts.keyCode.DELETE || pos.begin < pos.end ? 0 : -1));
                     return false;
                 } else if (k == opts.keyCode.ESCAPE) {//escape
                     _val.call(input, undoBuffer);
