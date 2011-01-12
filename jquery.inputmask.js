@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.2.5h
+Version: 0.2.5i
    
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -434,11 +434,11 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     }
                 }).bind("blur.inputmask", function() {
                     input.removeClass('focus.inputmask');
-                    if (_val.call(input) == _buffer.join(''))
-                        _val.call(input, '');
-                    else if (_val.call(input) != undoBuffer) {
+                    if (_val.call(input) != undoBuffer) {
                         input.change();
                     }
+                    if (_val.call(input) == _buffer.join(''))
+                        _val.call(input, '');
                 }).bind("focus.inputmask", function() {
                     input.addClass('focus.inputmask');
                     undoBuffer = _val.call(input);
@@ -580,7 +580,6 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         writeBuffer(input, buffer);
                     } else
                         shiftL(pos.begin + (k == opts.keyCode.DELETE ? 0 : -1));
-                    undoBuffer = _val.call(input);
                     return false;
                 } else if (k == opts.keyCode.ESCAPE) {//escape
                     _val.call(input, undoBuffer);
