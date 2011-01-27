@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.2.5i
+Version: 0.2.6
    
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -350,7 +350,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
         function checkVal(input, buffer, clearInvalid) {
             clearOffsets(0, _buffer.length);
-            var inputValue = _val.call(input).replace(new RegExp("(" + _buffer.join('') + ")*$"), "");
+            var inputValue = _val.call(input).replace(new RegExp("(" + EscapeRegex(_buffer.join('')) + ")*$"), "");
             clearBuffer(buffer, 0, buffer.length);
             buffer.length = _buffer.length; //reset the buffer to its original size
             _numberOfRemovedElementsFromMask = 0;
@@ -385,6 +385,12 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
             return seekNext(buffer, lastMatch);
         }
+
+        function EscapeRegex(str) {
+            var specials = ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\'];
+            return str.replace(new RegExp('(\\' + specials.join('|\\') + ')', 'gim'), '\\$1');
+        }
+
 
         //functionality fn
         function setvalue(el, value) {
@@ -506,7 +512,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     } else
                         SetReTargetPlaceHolder(buffer, i);
                 }
-                buffer = buffer.join('').replace(new RegExp("(" + _buffer.join('') + ")*$"), "").split('');
+                buffer = buffer.join('').replace(new RegExp("(" + EscapeRegex(_buffer.join('')) + ")*$"), "").split('');
                 if (buffer.length == 0) buffer = _buffer.slice();
                 writeBuffer(input, buffer);
                 caret(input, pos);
