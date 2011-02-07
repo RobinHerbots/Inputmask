@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.2.6c
+Version: 0.2.6d
    
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -326,21 +326,23 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             var test = tests[testPos];
             if (test != undefined) {
                 if (test.optionality && test.offset > 0) {
-                    var firstMaskPosition = isFirstMaskOfBlock(testPos); //FIXME should be testPos + test.offset
+                    var firstMaskPosition = isFirstMaskOfBlock(testPos + test.offset);
                     if (firstMaskPosition !== false && _numberOfRemovedElementsFromMask >= test.offset) {  //needs fixing does not take multiple optional masks into account
                         if (clearOptionalElement)
-                            setBufferElement(buffer, pos, getBufferElement(_buffer, testPos));
-                        for(var i = firstMaskPosition; i < testPos;i++) { //reset placeholders
-                        	setBufferElement(buffer, i, getBufferElement(_buffer, i));
+                            setBufferElement(buffer, pos, getBufferElement(_buffer, testPos + test.offset));
+                        for (var i = firstMaskPosition - test.offset; i < testPos; i++) { //reset placeholders
+                            setBufferElement(buffer, i, getBufferElement(_buffer, i));
                         }
                         $.each(_buffer.slice(testPos, testPos + test.offset), function() {
                             buffer.splice(pos++, 0, this.toString());
                         });
                         _numberOfRemovedElementsFromMask -= test.offset;
+                        clearOffsets(firstMaskPosition - test.offset, firstMaskPosition);
+
                     }
                     else {
-                        var testedPosition = pos + test.offset;
-                        setBufferElement(buffer, pos, getBufferElement(_buffer, determineTestPosition(testedPosition)));
+                        var testedPosition = testPos + test.offset;
+                        setBufferElement(buffer, pos, getBufferElement(_buffer, testedPosition));
                         if (testedPosition < buffer.length) {
                             //remove RetargetPosition
                             buffer.splice(pos, test.offset);
@@ -495,9 +497,6 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 for (var i = pos; i < getMaskLength(); i++) {
                     if (isMask(i)) {
                         SetReTargetPlaceHolder(buffer, i, true); //clear the position
-                        var firstMaskOfBlock = isFirstMaskOfBlock(determineTestPosition(i));
-                        if (firstMaskOfBlock !== false)
-                            clearOffsets(firstMaskOfBlock, firstMaskOfBlock + tests[firstMaskOfBlock].offset);
 
                         var j = seekNext(buffer, i);
                         var p = getBufferElement(buffer, j);
@@ -505,9 +504,9 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             if (j < getMaskLength() && isValid(i, p, buffer) !== false) {
                                 setBufferElement(buffer, i, getBufferElement(buffer, j));
                             } else {
-                                if (firstMaskOfBlock !== false) {
-                                    clearOffsets(firstMaskOfBlock, firstMaskOfBlock + tests[firstMaskOfBlock].offset, buffer);
-                                }
+                                //var firstMaskOfBlock = isFirstMaskOfBlock(determineTestPosition(i));
+                                //if (firstMaskOfBlock !== false)
+                                //clearOffsets(firstMaskOfBlock, firstMaskOfBlock + tests[firstMaskOfBlock].offset, buffer);
                                 if (isMask(i))
                                     break;
                             }
