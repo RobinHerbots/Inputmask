@@ -29,3 +29,7 @@ version 0.2.3
 version 0.2.5
 
 - (simple) optional masks    ex:  $(selector).inputmask('9999[aaaa]9999');
+
+version 0.2.8a
+
+- removed optional mask implementation
