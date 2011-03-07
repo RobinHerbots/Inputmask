@@ -138,3 +138,10 @@ $(document).ready(function(){
     $('#test2').inputmask('[aaaa]9999');               // abcd1234 or 1234
     $('#test3').inputmask('9999[aaaa]');               // 1234 or 1234abcd
 });
+
+numeric input direction
+
+$(document).ready(function(){
+    $('#test').inputmask('€ 999.999.999,99', { numericInput: true });    //   123456  =>  € ___.__1.234,56
+});
+
