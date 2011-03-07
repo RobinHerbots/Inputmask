@@ -33,3 +33,7 @@ version 0.2.5
 version 0.2.8a
 
 - removed optional mask implementation
+
+version 0.2.8b
+
+- added base implementation of numeric inputmask
