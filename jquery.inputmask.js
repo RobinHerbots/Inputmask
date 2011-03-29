@@ -401,11 +401,13 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             //bind events
             if (!input.attr("readonly")) {
                 input.bind("mouseenter.inputmask", function() {
+                    var input = $(this);
                     if (!input.hasClass('focus.inputmask') && _val.call(input).length == 0) {
                         buffer = _buffer.slice();
                         writeBuffer(input, buffer);
                     }
                 }).bind("blur.inputmask", function() {
+                    var input = $(this);
                     input.removeClass('focus.inputmask');
                     if (_val.call(input) != undoBuffer) {
                         input.change();
@@ -413,12 +415,15 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     if (_val.call(input) == _buffer.join(''))
                         _val.call(input, '');
                 }).bind("focus.inputmask", function() {
+                    var input = $(this);
                     input.addClass('focus.inputmask');
                     undoBuffer = _val.call(input);
                 }).bind("mouseleave.inputmask", function() {
+                    var input = $(this);
                     if (!input.hasClass('focus.inputmask') && _val.call(input) == _buffer.join(''))
                         _val.call(input, '');
                 }).bind("click.inputmask", function() {
+                    var input = $(this);
                     setTimeout(function() {
                         var selectedCaret = caret(input);
                         if (selectedCaret.begin == selectedCaret.end) {
@@ -428,12 +433,14 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         }
                     }, 0);
                 }).bind('dblclick.inputmask', function() {
+                    var input = $(this);
                     setTimeout(function() {
                         caret(input, 0, lastPosition);
                     }, 0);
                 }).bind("keydown.inputmask", keydownEvent
                 ).bind("keypress.inputmask", keypressEvent
                 ).bind("keyup.inputmask", function(e) {
+                    var input = $(this);
                     var k = e.keyCode;
                     if (k == opts.keyCode.TAB && input.hasClass('focus.inputmask') && _val.call(input).length == 0) {
                         buffer = _buffer.slice();
@@ -441,10 +448,12 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         if (!opts.numericInput) caret(input, 0);
                     }
                 }).bind(pasteEventName, function() {
+                    var input = $(this);
                     setTimeout(function() {
                         caret(input, checkVal(input, buffer, true));
                     }, 0);
                 }).bind('setvalue.inputmask', function() {
+                    var input = $(this);
                     setTimeout(function() {
                         undoBuffer = _val.call(input);
                         checkVal(input, buffer, true);
@@ -542,7 +551,8 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             };
 
             function keydownEvent(e) {
-                var pos = caret($(this));
+                var input = $(this);
+                var pos = caret(input);
                 var k = e.keyCode;
                 ignore = (k < 16 || (k > 16 && k < 32) || (k > 32 && k < 41));
 
@@ -579,6 +589,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
 
             function keypressEvent(e) {
+                var input = $(this);
                 if (ignore) {
                     ignore = false;
                     //Fixes Mac FF bug on backspace
