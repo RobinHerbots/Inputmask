@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.2.9
+Version: 0.3.0
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -110,6 +110,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 var _buffer = this.data('_buffer');
                 opts.greedy = this.data('greedy');
                 opts.repeat = this.data('repeat');
+                opts.definitions = this.data('definitions');
                 return unmaskedvalue(this);
             } else if (fn == 'setvalue') {
                 setvalue(this, options); //options in this case the value
@@ -388,6 +389,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             input.data('repeat', opts.repeat);
             input.data('inputmask', true);
             input.data('autoUnmask', opts.autoUnmask);
+            input.data('definitions', opts.definitions);
 
             //init buffer
             var buffer = _buffer.slice();
