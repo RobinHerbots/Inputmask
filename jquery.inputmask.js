@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.3.0
+Version: 0.3.1
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -24,6 +24,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             patch_val: true, //override the jquery.val fn to detect changed in the inputmask by setting val(value)
             autoUnmask: false, //in combination with patch_val: true => automatically unmask when retrieving the value with $.fn.val
             numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
+            clearMaskOnLostFocus: true,
             definitions: {
                 '9': {
                     "validator": "[0-9]",
@@ -422,7 +423,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     undoBuffer = _val.call(input);
                 }).bind("mouseleave.inputmask", function() {
                     var input = $(this);
-                    if (!input.hasClass('focus.inputmask') && _val.call(input) == _buffer.join(''))
+                    if (opts.clearMaskOnLostFocus && !input.hasClass('focus.inputmask') && _val.call(input) == _buffer.join(''))
                         _val.call(input, '');
                 }).bind("click.inputmask", function() {
                     var input = $(this);
@@ -467,7 +468,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
             setTimeout(function() {
                 checkVal(input, buffer, true);
-                if (_val.call(input) == _buffer.join(''))
+                if (opts.clearMaskOnLostFocus && _val.call(input) == _buffer.join(''))
                     _val.call(input, '');
             }, 0);
 
