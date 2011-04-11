@@ -37,3 +37,7 @@ version 0.2.8a
 version 0.2.8b
 
 - added base implementation of numeric inputmask
+
+version 0.3.1
+
+- added clearMaskOnLostFocus option
