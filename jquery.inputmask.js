@@ -104,7 +104,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 var tests = getTestingChain();
 
                 return this.each(function() {
-                    mask($(this));
+                    mask(this);
                 });
             } else if (fn == 'unmaskedvalue') {
                 var tests = this.data('tests');
@@ -125,7 +125,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 var tests = getTestingChain();
 
                 return this.each(function() {
-                    mask($(this));
+                    mask(this);
                 });
             }
         } if (typeof fn == "object") {
@@ -136,7 +136,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             var tests = getTestingChain();
 
             return this.each(function() {
-                mask($(this));
+                mask(this);
             });
         }
 
