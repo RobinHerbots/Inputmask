@@ -41,3 +41,7 @@ version 0.2.8b
 version 0.3.1
 
 - added clearMaskOnLostFocus option
+
+version 0.3.3
+
+- added insertMode option
