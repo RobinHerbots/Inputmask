@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.3.2
+Version: 0.3.3
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -25,6 +25,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             autoUnmask: false, //in combination with patch_val: true => automatically unmask when retrieving the value with $.fn.val
             numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
             clearMaskOnLostFocus: true,
+            insertMode: true, //insert the input or overwrite the input
             definitions: {
                 '9': {
                     "validator": "[0-9]",
@@ -618,7 +619,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     else {
                         var p = seekNext(buffer, pos.begin - 1);
                         if (isValid(p, c, buffer)) {
-                            shiftR(p, c);
+                            if (opts.insertMode == true) shiftR(p, c); else setBufferElement(buffer, p, c);
                             writeBuffer(input, buffer);
                             var next = seekNext(buffer, p);
                             caret($(this), next);
