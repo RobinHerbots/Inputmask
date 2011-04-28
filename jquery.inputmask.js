@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.3.3
+Version: 0.3.4
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -477,7 +477,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             //shift chars to left from start to end and put c at end position if defined
             function shiftL(start, end, c) {
                 while (!isMask(start) && --start >= 0);
-                for (var i = start; i <= end; i++) {
+                for (var i = start; i <= end && i < getMaskLength(); i++) {
                     if (isMask(i)) {
                         SetReTargetPlaceHolder(buffer, i);
                         var j = seekNext(buffer, i);
@@ -529,6 +529,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 if (input.length == 0) return;
                 if (typeof begin == 'number') {
                     end = (typeof end == 'number') ? end : begin;
+                    if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
                     return input.each(function() {
                         if (this.setSelectionRange) {
                             this.focus();
@@ -577,19 +578,44 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             writeBuffer(input, buffer);
                             caret(input, maskL);
                         }
-                        else shiftL(pos.begin + (k == opts.keyCode.DELETE || pos.begin < pos.end ? 0 : -1), maskL);
+                        else {
+                            var beginPos = pos.begin + (k == opts.keyCode.DELETE || pos.begin < pos.end ? 0 : -1);
+                            shiftL(beginPos, maskL);
+                            if (!opts.insertMode && k == opts.keyCode.BACKSPACE)
+                                caret(input, beginPos > 0 ? beginPos - 1 : beginPos);
+                        }
                     }
                     return false;
-                } else if (k == opts.keyCode.END) { //when END pressed set position at lastmatch
+                } else if (k == opts.keyCode.END || k == opts.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
                     setTimeout(function() {
-                        caret(input, checkVal(input, buffer, false));
+                        var caretPos = checkVal(input, buffer, false);
+                        if (!opts.insertMode && caretPos == getMaskLength()) caretPos--;
+                        caret(input, caretPos);
                     }, 0);
-                }
-                else if (k == opts.keyCode.ESCAPE) {//escape
+                    return false;
+                } else if (k == opts.keyCode.ESCAPE) {//escape
                     _val.call(input, undoBuffer);
                     caret(input, 0, checkVal(input, buffer));
                     return false;
+                } else if (k == opts.keyCode.INSERT) {//insert
+                    opts.insertMode = !opts.insertMode;
+                    caret(input, !opts.insertMode && pos.begin == getMaskLength() ? pos.begin - 1 : pos.begin);
+                    return false;
+                } else if (!opts.insertMode) { //overwritemode
+                    if (k == opts.keyCode.RIGHT) {//right 
+                        var caretPos = pos.begin + 1;
+                        caret(input, caretPos < getMaskLength() ? caretPos : pos.begin);
+                        return false;
+                    } else if (k == opts.keyCode.LEFT) {//left
+                        var caretPos = pos.begin - 1;
+                        caret(input, caretPos > 0 ? caretPos : 0);
+                        return false;
+                    } else if (k == opts.keyCode.HOME || k == opts.keyCode.PAGE_UP) {//Home or page_up 
+                        caret(input, 0);
+                        return false;
+                    }
                 }
+
             }
 
             function keypressEvent(e) {
