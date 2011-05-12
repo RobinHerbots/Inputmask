@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.3.4
+Version: 0.3.5
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -99,35 +99,65 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
         }
 
         if (typeof fn == "string") {
-            if (fn == 'mask') {
-                //init buffer
-                var _buffer = getMaskTemplate();
-                var tests = getTestingChain();
+            switch (fn) {
+                case "mask":
+                    //init buffer
+                    var _buffer = getMaskTemplate();
+                    var tests = getTestingChain();
 
-                return this.each(function() {
-                    mask(this);
-                });
-            } else if (fn == 'unmaskedvalue') {
-                var tests = this.data('tests');
-                var _buffer = this.data('_buffer');
-                opts.greedy = this.data('greedy');
-                opts.repeat = this.data('repeat');
-                opts.definitions = this.data('definitions');
-                return unmaskedvalue(this);
-            } else if (fn == 'setvalue') {
-                setvalue(this, options); //options in this case the value
-            }
-            else { //maybe fn is a mask so we try
-                //set mask
-                opts.mask = fn;
+                    return this.each(function() {
+                        mask(this);
+                    });
+                    break;
+                case "unmaskedvalue":
+                    var tests = this.data('tests');
+                    var _buffer = this.data('_buffer');
+                    opts.greedy = this.data('greedy');
+                    opts.repeat = this.data('repeat');
+                    opts.definitions = this.data('definitions');
+                    return unmaskedvalue(this);
+                    break;
+                case "setvalue":
+                    setvalue(this, options); //options in this case the value
+                    break;
+                case "remove":
+                    var tests, _buffer;
+                    return this.each(function() {
+                        var input = $(this);
+                        if (input.data('inputmask')) {
+                            tests = input.data('tests');
+                            _buffer = input.data('_buffer');
+                            opts.greedy = input.data('greedy');
+                            opts.repeat = input.data('repeat');
+                            opts.definitions = input.data('definitions');
+                            //writeout the unmaskedvalue
+                            _val.call(input, unmaskedvalue(input, true));
+                            //clear data
+                            input.removeData('tests');
+                            input.removeData('_buffer');
+                            input.removeData('greedy');
+                            input.removeData('repeat');
+                            input.removeData('inputmask');
+                            input.removeData('autoUnmask');
+                            input.removeData('definitions');
+                            //unbind all events
+                            input.unbind(".inputmask");
+                            input.removeClass('focus.inputmask');
+                        }
+                    });
+                    break;
+                default:  //maybe fn is a mask so we try
+                    //set mask
+                    opts.mask = fn;
 
-                //init buffer
-                var _buffer = getMaskTemplate();
-                var tests = getTestingChain();
+                    //init buffer
+                    var _buffer = getMaskTemplate();
+                    var tests = getTestingChain();
 
-                return this.each(function() {
-                    mask(this);
-                });
+                    return this.each(function() {
+                        mask(this);
+                    });
+                    break;
             }
         } if (typeof fn == "object") {
             opts = $.extend({}, $.inputmask.defaults, fn);
@@ -368,9 +398,9 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             el.triggerHandler('setvalue.inputmask');
         }
 
-        function unmaskedvalue(el) {
+        function unmaskedvalue(el, skipDatepickerCheck) {
 
-            if (tests && !el.hasClass('hasDatepicker')) {
+            if (tests && (skipDatepickerCheck === true || !el.hasClass('hasDatepicker'))) {
                 var buffer = _buffer.slice();
                 checkVal(el, buffer);
                 return $.map(buffer, function(element, index) {
