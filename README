@@ -145,3 +145,8 @@ $(document).ready(function(){
     $('#test').inputmask('€ 999.999.999,99', { numericInput: true });    //   123456  =>  € ___.__1.234,56
 });
 
+remove the inputmask
+
+$(document).ready(function(){
+    $('#test').inputmask('remove');
+});
