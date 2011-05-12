@@ -107,12 +107,12 @@ $(document).ready(function(){
    $("#number").val(12345); 
 });
 
-with the autounmaskoption you can change the return of $.fn.val  to unmaskedvalue or the maskedvalue
+with the autoUnmaskoption you can change the return of $.fn.val  to unmaskedvalue or the maskedvalue
 
 $(document).ready(function(){
-   	$('#<%= tbDate.ClientID%>').inputmask({ "mask": "d/m/y", 'autounmask' : true});	//  value: 23/03/1973
+   	$('#<%= tbDate.ClientID%>').inputmask({ "mask": "d/m/y", 'autoUnmask' : true});	//  value: 23/03/1973
 
-	alert($('#<%= tbDate.ClientID%>').val());	// shows 23031973     (autounmask: true)
+	alert($('#<%= tbDate.ClientID%>').val());	// shows 23031973     (autoUnmask: true)
 });
 
 add custom definitions
