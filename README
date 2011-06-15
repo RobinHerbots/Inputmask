@@ -150,3 +150,9 @@ remove the inputmask
 $(document).ready(function(){
     $('#test').inputmask('remove');
 });
+
+escape special mask chars
+
+$(document).ready(function(){
+    $("#months").inputmask("m \\months");
+});
