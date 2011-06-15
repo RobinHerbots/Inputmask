@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.3.5
+Version: 0.3.6
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -17,6 +17,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 start: "[",
                 end: "]"
             },
+            escapeChar: "\\",
             mask: null,
             oncomplete: null,
             repeat: 0, //repetitions of the mask
@@ -173,12 +174,16 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
         //helper functions
         function getMaskTemplate() {
+            var escaped = false;
             if (opts.mask.length == 1 && opts.greedy == false) { opts.placeholder = ""; } //hide placeholder with single non-greedy mask
             var singleMask = $.map(opts.mask.split(""), function(element, index) {
                 var outElem = [];
-                if (element != opts.optionalmarker.start && element != opts.optionalmarker.end) {
+                if (element == opts.escapeChar) {
+                    escaped = true;
+                }
+                else if ((element != opts.optionalmarker.start && element != opts.optionalmarker.end) || escaped) {
                     var maskdef = opts.definitions[element];
-                    if (maskdef) {
+                    if (maskdef && !escaped) {
                         for (i = 0; i < maskdef.cardinality; i++) {
                             outElem.push(opts.placeholder);
                         }
@@ -198,23 +203,25 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
         //test definition => {regex: RegExp, cardinality: int, optionality: bool, newBlockMarker: bool, offset: int}
         function getTestingChain() {
-            var isOptional = false;
+            var isOptional = false, escaped = false;
             var newBlockMarker = false; //indicates wheter the begin/ending of a block should be indicated
 
             return $.map(opts.mask.split(""), function(element, index) {
                 var outElem = [];
 
-                if (element == opts.optionalmarker.start) {
+                if (element == opts.escapeChar) {
+                    escaped = true;
+                } else if (element == opts.optionalmarker.start && !escaped) {
                     isOptional = true;
                     newBlockMarker = true;
                 }
-                else if (element == opts.optionalmarker.end) {
+                else if (element == opts.optionalmarker.end && !escaped) {
                     isOptional = false;
                     newBlockMarker = true;
                 }
                 else {
                     var maskdef = opts.definitions[element];
-                    if (maskdef) {
+                    if (maskdef && !escaped) {
                         for (i = 1; i < maskdef.cardinality; i++) {
                             var prevalidator = maskdef.prevalidator[i - 1];
                             outElem.push({ regex: new RegExp(prevalidator.validator), cardinality: prevalidator.cardinality, optionality: isOptional, newBlockMarker: isOptional == true ? newBlockMarker : false, offset: 0 });
