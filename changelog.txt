@@ -48,4 +48,12 @@ version 0.3.3
 
 version 0.3.5
 
--added remove option
+- added remove option
+
+version 0.3.6
+
+- added escape special chars in mask
+
+version 0.3.7
+
+- added clearIncomplete option - clear the incomplete input on blur
