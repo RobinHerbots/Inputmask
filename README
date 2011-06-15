@@ -156,3 +156,9 @@ escape special mask chars
 $(document).ready(function(){
     $("#months").inputmask("m \\months");
 });
+
+remove incomplete input on blur - clearIncomplete
+
+$(document).ready(function(){
+    $("#ssn").inputmask("999-99-9999",{placeholder:" ", clearIncomplete: true });
+});
