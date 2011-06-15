@@ -80,7 +80,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
         if (opts.patch_val && $.fn.val.inputmaskpatch != true) {
             $.fn.val = function() {
                 if (this.data('inputmask')) {
-                    if (this.data('autoUnmask') && arguments.length == 0) {
+                    if (this.data('inputmask')['autoUnmask'] && arguments.length == 0) {
                         return this.inputmask('unmaskedvalue');
                     }
                     else {
@@ -112,11 +112,11 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     });
                     break;
                 case "unmaskedvalue":
-                    var tests = this.data('tests');
-                    var _buffer = this.data('_buffer');
-                    opts.greedy = this.data('greedy');
-                    opts.repeat = this.data('repeat');
-                    opts.definitions = this.data('definitions');
+                    var tests = this.data('inputmask')['tests'];
+                    var _buffer = this.data('inputmask')['_buffer'];
+                    opts.greedy = this.data('inputmask')['greedy'];
+                    opts.repeat = this.data('inputmask')['repeat'];
+                    opts.definitions = this.data('inputmask')['definitions'];
                     return unmaskedvalue(this);
                     break;
                 case "setvalue":
@@ -127,21 +127,15 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     return this.each(function() {
                         var input = $(this);
                         if (input.data('inputmask')) {
-                            tests = input.data('tests');
-                            _buffer = input.data('_buffer');
-                            opts.greedy = input.data('greedy');
-                            opts.repeat = input.data('repeat');
-                            opts.definitions = input.data('definitions');
+                            tests = input.data('inputmask')['tests'];
+                            _buffer = input.data('inputmask')['_buffer'];
+                            opts.greedy = input.data('inputmask')['greedy'];
+                            opts.repeat = input.data('inputmask')['repeat'];
+                            opts.definitions = input.data('inputmask')['definitions'];
                             //writeout the unmaskedvalue
                             _val.call(input, unmaskedvalue(input, true));
                             //clear data
-                            input.removeData('tests');
-                            input.removeData('_buffer');
-                            input.removeData('greedy');
-                            input.removeData('repeat');
                             input.removeData('inputmask');
-                            input.removeData('autoUnmask');
-                            input.removeData('definitions');
                             //unbind all events
                             input.unbind(".inputmask");
                             input.removeClass('focus.inputmask');
@@ -423,13 +417,14 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
         function mask(el) {
             var input = $(el);
             //store tests & original buffer in the input element - used to get the unmasked value
-            input.data('tests', tests);
-            input.data('_buffer', _buffer);
-            input.data('greedy', opts.greedy);
-            input.data('repeat', opts.repeat);
-            input.data('inputmask', true);
-            input.data('autoUnmask', opts.autoUnmask);
-            input.data('definitions', opts.definitions);
+            input.data('inputmask', {
+                'tests': tests,
+                '_buffer': _buffer,
+                'greedy': opts.greedy,
+                'repeat': opts.repeat,
+                'autoUnmask': opts.autoUnmask,
+                'definitions': opts.definitions
+            });
 
             //init buffer
             var buffer = _buffer.slice();
