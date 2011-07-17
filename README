@@ -162,3 +162,9 @@ remove incomplete input on blur - clearIncomplete
 $(document).ready(function(){
     $("#ssn").inputmask("999-99-9999",{placeholder:" ", clearIncomplete: true });
 });
+
+oncleared option
+
+$(document).ready(function(){
+    $("#ssn").inputmask("999-99-9999",{placeholder:" ", oncleared: function(){ alert('Set focus somewhere else ;-)');} });
+});

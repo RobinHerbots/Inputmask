@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.3.8a
+Version: 0.3.9
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -19,7 +19,8 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             },
             escapeChar: "\\",
             mask: null,
-            oncomplete: null,
+            oncomplete: null, //executes when the mask is complete
+            oncleared: null, //executes when the mask is cleared
             repeat: 0, //repetitions of the mask
             greedy: true, //true: allocated buffer for all mask repetitions - false: allocate only if needed
             patch_val: true, //override the jquery.val fn to detect changed in the inputmask by setting val(value)
@@ -631,6 +632,9 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                                 caret(input, beginPos > 0 ? beginPos - 1 : beginPos);
                         }
                     }
+                    if (opts.oncleared && _val.call(input) == _buffer.join(''))
+                        opts.oncleared.call(input);
+                    
                     return false;
                 } else if (k == opts.keyCode.END || k == opts.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
                     setTimeout(function() {

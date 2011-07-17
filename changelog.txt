@@ -57,3 +57,7 @@ version 0.3.6
 version 0.3.7
 
 - added clearIncomplete option - clear the incomplete input on blur
+
+version 0.3.9
+
+- added oncleared option - executes when the mask is cleared
