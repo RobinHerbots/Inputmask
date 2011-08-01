@@ -163,13 +163,13 @@ $(document).ready(function(){
     $("#ssn").inputmask("999-99-9999",{placeholder:" ", clearIncomplete: true });
 });
 
-<bold>oncleared option</bold>
+oncleared option
 
 $(document).ready(function(){
     $("#ssn").inputmask("999-99-9999",{placeholder:" ", oncleared: function(){ alert('Set focus somewhere else ;-)');} });
 });
 
-<bold>aliases option</bold>
+aliases option
 
 First you have to create an alias definition (more examples can be found in jquery.inputmask.extentions.js)
 
