@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.3.9
+Version: 0.4.0
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -29,6 +29,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             clearMaskOnLostFocus: true,
             insertMode: true, //insert the input or overwrite the input
             clearIncomplete: false, //clear the incomplete input on blur
+            aliases: {}, //aliases definitions => see jquery.inputmask.extentions.js
             definitions: {
                 '9': {
                     "validator": "[0-9]",
@@ -143,10 +144,16 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         }
                     });
                     break;
-                default:  //maybe fn is a mask so we try
-                    //set mask
-                    opts.mask = fn;
-
+                default:
+                    //check if the fn is an alias
+                    if (opts.aliases[fn]) {
+                        $.extend(opts, opts.aliases[fn]);  //set alias definition in the options
+                    }
+                    else {
+                        //maybe fn is a mask so we try
+                        //set mask
+                        opts.mask = fn;
+                    }
                     //init buffer
                     var _buffer = getMaskTemplate();
                     var tests = getTestingChain();
@@ -154,6 +161,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     return this.each(function() {
                         mask(this);
                     });
+
                     break;
             }
         } if (typeof fn == "object") {
@@ -634,7 +642,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     }
                     if (opts.oncleared && _val.call(input) == _buffer.join(''))
                         opts.oncleared.call(input);
-                    
+
                     return false;
                 } else if (k == opts.keyCode.END || k == opts.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
                     setTimeout(function() {
