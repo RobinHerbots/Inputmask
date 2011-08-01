@@ -168,3 +168,18 @@ oncleared option
 $(document).ready(function(){
     $("#ssn").inputmask("999-99-9999",{placeholder:" ", oncleared: function(){ alert('Set focus somewhere else ;-)');} });
 });
+
+aliases option
+
+First you have to create an alias definition (more examples can be found in jquery.inputmask.extentions.js)
+
+$.extend($.inputmask.defaults.aliases, {
+        'date': {
+            "mask": "d/m/y"
+        }
+});
+
+use;
+$(document).ready(function(){
+   $("#date").inputmask("date");       => equals to    $("#date").inputmask("d/m/y");
+});
