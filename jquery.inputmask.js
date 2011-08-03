@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.4.0
+Version: 0.4.1
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -30,7 +30,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             insertMode: true, //insert the input or overwrite the input
             clearIncomplete: false, //clear the incomplete input on blur
             aliases: {}, //aliases definitions => see jquery.inputmask.extentions.js
-            definitions: {
+            definitions: { 
                 '9': {
                     "validator": "[0-9]",
                     "cardinality": 1,
@@ -207,7 +207,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             return repeatedMask;
         }
 
-        //test definition => {regex: RegExp, cardinality: int, optionality: bool, newBlockMarker: bool, offset: int}
+        //test definition => {fn: RegExp/function, cardinality: int, optionality: bool, newBlockMarker: bool, offset: int}
         function getTestingChain() {
             var isOptional = false, escaped = false;
             var newBlockMarker = false; //indicates wheter the begin/ending of a block should be indicated
@@ -231,13 +231,13 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         var prevalidators = maskdef["prevalidator"], prevalidatorsL = prevalidators ? prevalidators.length : 0;
                         for (i = 1; i < maskdef.cardinality; i++) {
                             var prevalidator = prevalidatorsL >= i ? prevalidators[i - 1] : [], validator = prevalidator["validator"], cardinality = prevalidator["cardinality"];
-                            outElem.push({ regex: validator ? new RegExp(validator) : new RegExp("."), cardinality: cardinality ? cardinality : 1, optionality: isOptional, newBlockMarker: isOptional == true ? newBlockMarker : false, offset: 0 });
+                            outElem.push({ fn: validator ? typeof validator == 'string'? new RegExp(validator) : new function() { this.test = validator; } : new RegExp("."), cardinality: cardinality ? cardinality : 1, optionality: isOptional, newBlockMarker: isOptional == true ? newBlockMarker : false, offset: 0 });
                             if (isOptional == true) //reset newBlockMarker
                                 newBlockMarker = false;
                         }
-                        outElem.push({ regex: new RegExp(maskdef.validator), cardinality: maskdef.cardinality, optionality: isOptional, newBlockMarker: newBlockMarker, offset: 0 });
+                        outElem.push({ fn: maskdef.validator ? typeof maskdef.validator == 'string'? new RegExp(maskdef.validator) : new function() { this.test = maskdef.validator; } : new RegExp("."), cardinality: maskdef.cardinality, optionality: isOptional, newBlockMarker: newBlockMarker, offset: 0 });
                     } else {
-                        outElem.push({ regex: null, cardinality: 0, optionality: isOptional, newBlockMarker: newBlockMarker, offset: 0 });
+                        outElem.push({ fn: null, cardinality: 0, optionality: isOptional, newBlockMarker: newBlockMarker, offset: 0 });
                         escaped = false;
                     }
                     //reset newBlockMarker
@@ -255,14 +255,14 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
 
             if (c) { chrs += c; }
-            return tests[testPos].regex != null ? tests[testPos].regex.test(chrs) : false;
+            return tests[testPos].fn != null ? tests[testPos].fn.test(chrs) : false;
         }
 
         function isMask(pos) {
             var testPos = determineTestPosition(pos);
             var test = tests[testPos];
 
-            return test != undefined ? test.regex : false;
+            return test != undefined ? test.fn : false;
         }
 
         function determineTestPosition(pos) {

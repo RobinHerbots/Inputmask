@@ -10,5 +10,8 @@ Optional extentions on the jquery.inputmask base
 $.extend($.inputmask.defaults.aliases, {
         'date': {
             "mask": "d/m/y"
+        },
+         'dd/mm/yyyy': {
+            "mask": "d/m/y"
         }
 });
