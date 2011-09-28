@@ -1,7 +1,7 @@
 /*
 Input Mask plugin extentions
 http://github.com/RobinHerbots/jquery.inputmask
-Copyright (c) 2010 - 2011 Robin Herbots
+Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
 
 Optional extentions on the jquery.inputmask base
@@ -27,7 +27,7 @@ $.extend($.inputmask.defaults.aliases, {
                 "validator": "[0-5][0-9]",
                 "cardinality": 2,
                 "prevalidator": [{ "validator": "[0-5]", "cardinality": 1}]
-            },
+            }
         }
     }
 });
