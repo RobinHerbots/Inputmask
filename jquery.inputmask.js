@@ -559,7 +559,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 }
 
                 setTimeout(function() {
-                    checkVal(input, buffer, true);
+                    caret(input, checkVal(input, buffer, true));
                     if (opts.clearMaskOnLostFocus && _val.call(input) == _buffer.join(''))
                         _val.call(input, '');
                 }, 0);
