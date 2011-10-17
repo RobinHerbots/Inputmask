@@ -560,11 +560,11 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
                 setTimeout(function() {
                     lastPosition = checkVal(input, buffer, true);
-                    if (opts.clearMaskOnLostFocus && _val.call(input) == _buffer.join(''))
-                        _val.call(input, '');
                     if(document.activeElement === input[0]) { //position the caret when in focus
+                    	input.addClass('focus.inputmask');
                     	caret(input, lastPosition);
-                    }
+                    } else if (opts.clearMaskOnLostFocus && _val.call(input) == _buffer.join(''))
+                        _val.call(input, '');
                 }, 0);
 
                 //private functions
