@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.4.2c
+Version: 0.4.2d
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -560,9 +560,9 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
                 setTimeout(function() {
                     lastPosition = checkVal(input, buffer, true);
-                    if(document.activeElement === input[0]) { //position the caret when in focus
-                    	input.addClass('focus.inputmask');
-                    	caret(input, lastPosition);
+                    if (document.activeElement === input[0]) { //position the caret when in focus
+                        input.addClass('focus.inputmask');
+                        caret(input, lastPosition);
                     } else if (opts.clearMaskOnLostFocus && _val.call(input) == _buffer.join(''))
                         _val.call(input, '');
                 }, 0);
@@ -654,11 +654,15 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     } else if (k == opts.keyCode.END || k == opts.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
                         setTimeout(function() {
                             var caretPos = checkVal(input, buffer, false);
-                            if (!opts.insertMode && caretPos == getMaskLength()) caretPos--;
-                            caret(input, caretPos);
+                            if (!opts.insertMode && caretPos == getMaskLength() && !e.shiftKey) caretPos--;
+                            caret(input, e.shiftKey ? pos.begin : caretPos, caretPos);
                         }, 0);
                         return false;
-                    } else if (k == opts.keyCode.ESCAPE) {//escape
+                    } else if (k == opts.keyCode.HOME || k == opts.keyCode.PAGE_UP) {//Home or page_up
+                        caret(input, 0, e.shiftKey ? pos.begin : 0);
+                        return false;
+                    }
+                    else if (k == opts.keyCode.ESCAPE) {//escape
                         _val.call(input, undoBuffer);
                         caret(input, 0, checkVal(input, buffer));
                         return false;
@@ -666,21 +670,20 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         opts.insertMode = !opts.insertMode;
                         caret(input, !opts.insertMode && pos.begin == getMaskLength() ? pos.begin - 1 : pos.begin);
                         return false;
-                    } else if (!opts.insertMode) { //overwritemode
+                    }
+                    else if (!opts.insertMode) { //overwritemode
                         if (k == opts.keyCode.RIGHT) {//right
-                            var caretPos = pos.begin + 1;
-                            caret(input, caretPos < getMaskLength() ? caretPos : pos.begin);
+                            var caretPos = pos.begin == pos.end ? pos.end + 1 : pos.end;
+                            caretPos = caretPos < getMaskLength() ? caretPos : pos.end;
+                            caret(input, e.shiftKey ? pos.begin : caretPos, e.shiftKey ? caretPos + 1 : caretPos);
                             return false;
                         } else if (k == opts.keyCode.LEFT) {//left
                             var caretPos = pos.begin - 1;
-                            caret(input, caretPos > 0 ? caretPos : 0);
-                            return false;
-                        } else if (k == opts.keyCode.HOME || k == opts.keyCode.PAGE_UP) {//Home or page_up
-                            caret(input, 0);
+                            caretPos = caretPos > 0 ? caretPos : 0;
+                            caret(input, caretPos, e.shiftKey ? pos.end : caretPos);
                             return false;
                         }
                     }
-
                 }
 
                 function keypressEvent(e) {
