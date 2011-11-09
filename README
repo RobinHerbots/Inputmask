@@ -175,11 +175,19 @@ First you have to create an alias definition (more examples can be found in jque
 
 $.extend($.inputmask.defaults.aliases, {
         'date': {
-            "mask": "d/m/y"
-        }
+            mask: "d/m/y"
+        },
+        'dd/mm/yyyy': {
+	    alias: "date"
+	}
 });
 
 use;
 $(document).ready(function(){
    $("#date").inputmask("date");       => equals to    $("#date").inputmask("d/m/y");
+});
+
+or use the dd/mm/yyyy alias of the data alias:
+$(document).ready(function(){
+   $("#date").inputmask("dd/mm/yyyy");       => equals to    $("#date").inputmask("d/m/y");
 });
