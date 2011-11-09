@@ -6,13 +6,13 @@ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.p
 
 Optional extentions on the jquery.inputmask base
 */
-
+(function($){
 $.extend($.inputmask.defaults.aliases, {
     'date': {
         mask: "d/m/y"
     },
     'dd/mm/yyyy': {
-        mask: "d/m/y"
+        alias: "date"
     },
     'hh:mm:ss': {
         mask: "h:s:s",
@@ -31,3 +31,4 @@ $.extend($.inputmask.defaults.aliases, {
         }
     }
 });
+})(jQuery);
