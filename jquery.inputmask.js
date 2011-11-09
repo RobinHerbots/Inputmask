@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.4.2d
+Version: 0.4.3
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -147,10 +147,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         break;
                     default:
                         //check if the fn is an alias
-                        if (opts.aliases[fn]) {
-                            $.extend(opts, opts.aliases[fn]);  //set alias definition in the options
-                        }
-                        else {
+                        if (!ResolveAlias(fn)) {
                             //maybe fn is a mask so we try
                             //set mask
                             opts.mask = fn;
@@ -178,6 +175,15 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
 
             //helper functions
+            function ResolveAlias(aliasStr){
+                var aliasDefinition = opts.aliases[aliasStr];
+                if (aliasDefinition && !aliasDefinition.alias) {
+                     $.extend(opts, aliasDefinition);  //merge alias definition in the options
+                     return true;
+                } else return ResolveAlias(aliasDefinition.alias); //alias is another alias       
+                return false;
+            }
+            
             function getMaskTemplate() {
                 var escaped = false;
                 if (opts.mask.length == 1 && opts.greedy == false) { opts.placeholder = ""; } //hide placeholder with single non-greedy mask
