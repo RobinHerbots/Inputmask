@@ -175,12 +175,13 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
 
             //helper functions
-            function ResolveAlias(aliasStr){
+            function ResolveAlias(aliasStr) {
                 var aliasDefinition = opts.aliases[aliasStr];
-                if (aliasDefinition && !aliasDefinition.alias) {
+                if (aliasDefinition)
+                   if(!aliasDefinition.alias) {
                      $.extend(opts, aliasDefinition);  //merge alias definition in the options
                      return true;
-                } else return ResolveAlias(aliasDefinition.alias); //alias is another alias       
+                   } else return ResolveAlias(aliasDefinition.alias); //alias is another alias
                 return false;
             }
             
