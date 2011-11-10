@@ -23,7 +23,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 oncomplete: null, //executes when the mask is complete
                 oncleared: null, //executes when the mask is cleared
                 repeat: 0, //repetitions of the mask
-                greedy: true, //true: allocated buffer for all mask repetitions - false: allocate only if needed
+                greedy: true, //true: allocated buffer for the mask a repetitions - false: allocate only if needed
                 patch_val: true, //override the jquery.val fn to detect changed in the inputmask by setting val(value)
                 autoUnmask: false, //in combination with patch_val: true => automatically unmask when retrieving the value with $.fn.val
                 numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
