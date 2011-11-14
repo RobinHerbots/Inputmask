@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.4.3a
+Version: 0.4.3b
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -23,7 +23,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 oncomplete: null, //executes when the mask is complete
                 oncleared: null, //executes when the mask is cleared
                 repeat: 0, //repetitions of the mask
-                greedy: true, //true: allocated buffer for the mask a repetitions - false: allocate only if needed
+                greedy: true, //true: allocated buffer for the mask and repetitions - false: allocate only if needed
                 patch_val: true, //override the jquery.val fn to detect changed in the inputmask by setting val(value)
                 autoUnmask: false, //in combination with patch_val: true => automatically unmask when retrieving the value with $.fn.val
                 numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
@@ -75,7 +75,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
         };
 
         $.fn.inputmask = function(fn, options) {
-            var opts = $.extend({}, $.inputmask.defaults, options);
+            var opts = $.extend(true, {}, $.inputmask.defaults, options);
             var pasteEventName = $.browser.msie ? 'paste.inputmask' : 'input.inputmask';
             var iPhone = (window.orientation != undefined);
 
@@ -163,7 +163,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         break;
                 }
             } if (typeof fn == "object") {
-                opts = $.extend({}, $.inputmask.defaults, fn);
+                opts = $.extend(true, {}, $.inputmask.defaults, fn);
 
                 //init buffer
                 var _buffer = getMaskTemplate();
@@ -179,7 +179,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 var aliasDefinition = opts.aliases[aliasStr];
                 if (aliasDefinition)
                    if(!aliasDefinition.alias) {
-                     $.extend(opts, aliasDefinition);  //merge alias definition in the options
+                     $.extend(true, opts, aliasDefinition);  //merge alias definition in the options
                      return true;
                    } else return ResolveAlias(aliasDefinition.alias); //alias is another alias
                 return false;
@@ -262,7 +262,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 }
 
                 if (c) { chrs += c; }
-                return tests[testPos].fn != null ? tests[testPos].fn.test(chrs) : false;
+                return tests[testPos].fn != null ? tests[testPos].fn.test(chrs, buffer) : false;
             }
 
             function isMask(pos) {
