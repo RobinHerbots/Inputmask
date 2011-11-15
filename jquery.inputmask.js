@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.4.3b
+Version: 0.4.4
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -560,7 +560,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 //private functions
                 //shift chars to left from start to end and put c at end position if defined
                 function shiftL(start, end, c) {
-                    while (!isMask(start) && --start >= 0);
+                    while (!isMask(start) && start-1 >= 0) start--;
                     for (var i = start; i <= end && i < getMaskLength(); i++) {
                         if (isMask(i)) {
                             SetReTargetPlaceHolder(buffer, i);
@@ -582,7 +582,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         setBufferElement(buffer, seekPrevious(buffer, end), c);
 
                     buffer = buffer.join('').replace(new RegExp("(" + EscapeRegex(_buffer.join('')) + ")*$"), "").split('');
-                    if (buffer.length == 0) buffer = opts.greedy === true ? _buffer.slice() : [];
+                    if (buffer.length == 0) buffer = (opts.greedy === true ? _buffer.slice() : []);
 
                     return start; //return the used start position
                 }
@@ -626,7 +626,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             writeBuffer(input, buffer);
                             if (!opts.numericInput) caret(input, 0);
                         } else {
-                            var beginPos = pos.begin + (k == opts.keyCode.DELETE || pos.begin < pos.end ? 0 : -1);
+                            var beginPos = pos.begin - (k == opts.keyCode.DELETE || pos.begin < pos.end ? 0 : 1);
                             beginPos = shiftL(beginPos, maskL);
                             if (opts.numericInput) {
                                 shiftR(0, opts.placeholder, true);
