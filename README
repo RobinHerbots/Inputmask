@@ -44,7 +44,8 @@ Example of some new definitions:
 
                 }
 
-These allow for a finer date validation then 99/99/9999 which also allows 33/33/3333 for example.
+These allow for a finer date validation then 99/99/9999 which also allows 33/33/3333 for example.  
+In the jquery.inputmask.extentions.js you find a full date input validation which takes days, months & leap years into account.
 
 Also extra features like mask-repetitions (greedy and non-gready) are included.  In the examples you will find more about them.
 
@@ -65,6 +66,7 @@ $(document).ready(function(){
 });
 
 Extra options:
+
 change the placeholder
 
 $(document).ready(function(){
@@ -129,14 +131,6 @@ set defaults
 
 $.extend($.inputmask.defaults, {
     'autounmask': true
-});
-
-optional masks - REMOVED OBSOLETE
-
-$(document).ready(function(){
-    $('#test1').inputmask('9999[aaaa]9999');           // 1234abcd1234 or 12341234
-    $('#test2').inputmask('[aaaa]9999');               // abcd1234 or 1234
-    $('#test3').inputmask('9999[aaaa]');               // 1234 or 1234abcd
 });
 
 numeric input direction
