@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.4.4
+Version: 0.4.5
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
