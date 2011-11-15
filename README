@@ -73,6 +73,12 @@ $(document).ready(function(){
    $("#date").inputmask("d/m/y",{ "placeholder": "*" });
 });
 
+or a multi-char placeholder
+
+$(document).ready(function(){
+   $("#date").inputmask("d/m/y",{ "placeholder": "dd/mm/yyyy" });
+});
+
 execute a function when the mask is completed
 
 $(document).ready(function(){
