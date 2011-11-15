@@ -10,6 +10,7 @@ Optional extentions on the jquery.inputmask base
     $.extend($.inputmask.defaults.aliases, {
         'dd/mm/yyyy': {
             mask: "d/m/y",
+            placeholder: "dd/mm/yyyy",
             regex: {
                 month: new RegExp("((0[1-9]|[12][0-9])\/(0[1-9]|1[012]))|(30\/(0[13-9]|1[012]))|(31\/(0[13578]|1[02]))"),
                 year: new RegExp("(19|20)\\d\\d")
@@ -53,6 +54,7 @@ Optional extentions on the jquery.inputmask base
         },
         'mm/dd/yyyy': {
             mask: "m/d/y",
+            placeholder: "mm/dd/yyyy",
             regex: {
                 day: new RegExp("((0[1-9]|1[012])\/(0[1-9]|[12][0-9]))|((0[13-9]|1[012])\/30)|((0[13578]|1[02])\/31)"),
                 daypre: new RegExp("((0[13-9]|1[012])\/[0-3])|(02\/[0-2])"),
