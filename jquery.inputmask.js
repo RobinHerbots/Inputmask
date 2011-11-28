@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.4.5a
+Version: 0.4.5b
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -348,7 +348,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
 
             function checkVal(input, buffer, clearInvalid) {
-                var inputValue = _val.call(input).replace(new RegExp("(" + EscapeRegex(_buffer.join('')) + ")*$"), "");
+                var inputValue = TruncateInput(_val.call(input));
                 clearBuffer(buffer, 0, buffer.length);
                 buffer.length = opts.greedy === true ? _buffer.length : 0; //reset the buffer to its original size
                 var lastMatch = -1, checkPosition = -1, maskL = getMaskLength();
@@ -409,7 +409,9 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 var specials = ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\'];
                 return str.replace(new RegExp('(\\' + specials.join('|\\') + ')', 'gim'), '\\$1');
             }
-
+            function TruncateInput(input) {
+                return input.replace(new RegExp("(" + EscapeRegex(_buffer.join('')) + ")*$"), "").split('');
+            }
 
 
             //functionality fn
@@ -590,7 +592,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     if (c != undefined)
                         setBufferElement(buffer, seekPrevious(buffer, end), c);
 
-                    buffer = buffer.join('').replace(new RegExp("(" + EscapeRegex(_buffer.join('')) + ")*$"), "").split('');
+                    buffer = TruncateInput(buffer.join(''));
                     if (buffer.length == 0) buffer = (opts.greedy === true ? _buffer.slice() : []);
 
                     return start; //return the used start position
