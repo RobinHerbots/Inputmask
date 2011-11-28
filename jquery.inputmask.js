@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.4.5b
+Version: 0.4.5c
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -317,18 +317,15 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
             function prepareBuffer(buffer, position) {
                 while ((buffer.length <= position || position < 0) && buffer.length < getMaskLength()) {
-                    var j;
+                    var j = 0;
                     if (opts.numericInput) {
                         j = determineTestPosition(position);
                         buffer.unshift(_buffer[j]);
                         position++;
-                    } else {
-                        for (var i = buffer.length; i <= position; i++) {
-                            j = determineTestPosition(i);
-                            buffer.push(_buffer[j]);
-                        }
-                    }
-                }
+                    } else while (_buffer[j] !== undefined) {
+                                buffer.push(_buffer[j++]);
+                           }
+            	}
             }
 
             function writeBuffer(input, buffer, caretPos) {
