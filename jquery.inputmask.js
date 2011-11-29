@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.4.5c
+Version: 0.4.5d
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -323,9 +323,9 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         buffer.unshift(_buffer[j]);
                         position++;
                     } else while (_buffer[j] !== undefined) {
-                                buffer.push(_buffer[j++]);
-                           }
-            	}
+                        buffer.push(_buffer[j++]);
+                    }
+                }
             }
 
             function writeBuffer(input, buffer, caretPos) {
@@ -407,7 +407,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 return str.replace(new RegExp('(\\' + specials.join('|\\') + ')', 'gim'), '\\$1');
             }
             function TruncateInput(input) {
-                return input.replace(new RegExp("(" + EscapeRegex(_buffer.join('')) + ")*$"), "").split('');
+                return input.replace(new RegExp("(" + EscapeRegex(_buffer.join('')) + ")*$"), "");
             }
 
 
@@ -589,7 +589,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     if (c != undefined)
                         setBufferElement(buffer, seekPrevious(buffer, end), c);
 
-                    buffer = TruncateInput(buffer.join(''));
+                    buffer = TruncateInput(buffer.join('')).split('');
                     if (buffer.length == 0) buffer = (opts.greedy === true ? _buffer.slice() : []);
 
                     return start; //return the used start position
