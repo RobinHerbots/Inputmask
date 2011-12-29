@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.4.5e
+Version: 0.4.5f
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -624,8 +624,10 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     ignore = (k < 16 || (k > 16 && k < 32) || (k > 32 && k < 41));
 
                     //delete selection before proceeding
-                    if ((pos.begin - pos.end) != 0 && (!ignore || k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE))
+                    if (((pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode)) && (!ignore || k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE)) {
+
                         clearBuffer(buffer, pos.begin, pos.end);
+                    }
 
                     //backspace, delete, and escape get special treatment
                     if (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE || (iPhone && k == 127)) {//backspace/delete
@@ -635,7 +637,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             writeBuffer(input, buffer);
                             if (!opts.numericInput) caret(input, 0);
                         } else {
-                            var beginPos = pos.begin - (k == opts.keyCode.DELETE || pos.begin < pos.end ? 0 : 1);
+                            var beginPos = pos.begin - (k == opts.keyCode.DELETE ? 0 : 1);
                             beginPos = shiftL(beginPos < 0 ? 0 : beginPos, maskL);
                             if (opts.numericInput) {
                                 shiftR(0, getPlaceHolder(0), true);
@@ -643,7 +645,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             }
                             writeBuffer(input, buffer, beginPos);
                             if (!opts.insertMode && k == opts.keyCode.BACKSPACE) {
-                                caret(input, seekPrevious(buffer, beginPos));
+                                caret(input, beginPos);
                             }
                         }
                         if (opts.oncleared && _val.call(input) == _buffer.join(''))
