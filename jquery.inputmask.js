@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.4.5f
+Version: 0.4.5g
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -46,25 +46,6 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         "validator": "[A-Za-z0-9]",
                         "cardinality": 1,
                         "prevalidator": null
-                    },
-                    'd': { //day
-                        "validator": "0[1-9]|[12][0-9]|3[01]",
-                        "cardinality": 2,
-                        "prevalidator": [{ "validator": "[0-3]", "cardinality": 1}]
-                    },
-                    'm': { //month
-                        "validator": "0[1-9]|1[012]",
-                        "cardinality": 2,
-                        "prevalidator": [{ "validator": "[01]", "cardinality": 1}]
-                    },
-                    'y': { //year
-                        "validator": "(19|20)\\d\\d",
-                        "cardinality": 4,
-                        "prevalidator": [
-                        { "validator": "[12]", "cardinality": 1 },
-                        { "validator": "(19|20)", "cardinality": 2 },
-                        { "validator": "(19|20)\\d", "cardinality": 3 }
-                        ]
                     }
                 },
                 keyCode: { ALT: 18, BACKSPACE: 8, CAPS_LOCK: 20, COMMA: 188, COMMAND: 91, COMMAND_LEFT: 91, COMMAND_RIGHT: 93, CONTROL: 17, DELETE: 46, DOWN: 40, END: 35, ENTER: 13, ESCAPE: 27, HOME: 36, INSERT: 45, LEFT: 37, MENU: 93, NUMPAD_ADD: 107, NUMPAD_DECIMAL: 110, NUMPAD_DIVIDE: 111, NUMPAD_ENTER: 108,
