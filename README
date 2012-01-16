@@ -195,5 +195,5 @@ $(document).ready(function(){
 auto uppercasing inputmask
 
 $(document).ready(function(){
-  todo
+   $("#test").inputmask("999-aaa", { autoCasing: "upper" });       => 123abc ===> 123-ABC 
 });

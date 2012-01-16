@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.4.5g
+Version: 0.4.6
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -30,6 +30,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 clearMaskOnLostFocus: true,
                 insertMode: true, //insert the input or overwrite the input
                 clearIncomplete: false, //clear the incomplete input on blur
+                autoCasing: null, //upper | lower automatic casing of the input
                 aliases: {}, //aliases definitions => see jquery.inputmask.extentions.js
                 definitions: {
                     '9': {
@@ -289,7 +290,18 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             //these are needed to handle the non-greedy mask repetitions
             function setBufferElement(buffer, position, element) {
                 prepareBuffer(buffer, position);
-                buffer[position] = element;
+                
+                var elem = element;
+                switch(opts.autoCasing){
+                	case "upper":
+                		elem = element.toUpperCase();
+                		break;
+                	case "lower":
+                		elem = element.toLowerCase();
+                		break;
+                }
+                
+                buffer[position] = elem;
             }
             function getBufferElement(buffer, position) {
                 prepareBuffer(buffer, position);
