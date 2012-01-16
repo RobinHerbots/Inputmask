@@ -195,5 +195,5 @@ $(document).ready(function(){
 auto uppercasing inputmask
 
 $(document).ready(function(){
-   $("#test").inputmask("AAAA");       => abcd 		=> ABCD
+  todo
 });
