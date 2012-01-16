@@ -187,7 +187,13 @@ $(document).ready(function(){
    $("#date").inputmask("date");       => equals to    $("#date").inputmask("d/m/y");
 });
 
-or use the dd/mm/yyyy alias of the data alias:
+or use the dd/mm/yyyy alias of the date alias:
 $(document).ready(function(){
    $("#date").inputmask("dd/mm/yyyy");       => equals to    $("#date").inputmask("d/m/y");
+});
+
+auto uppercasing inputmask
+
+$(document).ready(function(){
+   $("#test").inputmask("AAAA");       => abcd 		=> ABCD
 });
