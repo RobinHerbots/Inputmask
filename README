@@ -187,7 +187,16 @@ $(document).ready(function(){
    $("#date").inputmask("date");       => equals to    $("#date").inputmask("d/m/y");
 });
 
-or use the dd/mm/yyyy alias of the data alias:
+or use the dd/mm/yyyy alias of the date alias:
 $(document).ready(function(){
    $("#date").inputmask("dd/mm/yyyy");       => equals to    $("#date").inputmask("d/m/y");
+});
+
+auto upper/lower- casing inputmask
+
+see jquery.inputmask.extentions.js for an example how to define "auto"-casing in a definition (definition A)
+casing can be null, "upper" or "lower"
+
+$(document).ready(function(){
+   $("#test").inputmask("999-AAA");       => 123abc ===> 123-ABC 
 });
