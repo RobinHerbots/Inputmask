@@ -7,6 +7,45 @@ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.p
 Optional extentions on the jquery.inputmask base
 */
 (function($) {
+    //extra definitions
+    $.extend($.inputmask.defaults.definitions, {
+        'h': { //hours
+            validator: "[01][0-9]|2[0-3]",
+            cardinality: 2,
+            prevalidator: [{ validator: "[0-2]", cardinality: 1}]
+        },
+        's': { //seconds || minutes
+            validator: "[0-5][0-9]",
+            cardinality: 2,
+            prevalidator: [{ validator: "[0-5]", cardinality: 1}]
+        },
+        'd': { //day
+            validator: "0[1-9]|[12][0-9]|3[01]",
+            cardinality: 2,
+            prevalidator: [{ validator: "[0-3]", cardinality: 1}]
+        },
+        'm': { //month
+            validator: "0[1-9]|1[012]",
+            cardinality: 2,
+            prevalidator: [{ validator: "[01]", cardinality: 1}]
+        },
+        'y': { //year
+            validator: "(19|20)\\d\\d",
+            cardinality: 4,
+            prevalidator: [
+                        { validator: "[12]", cardinality: 1 },
+                        { validator: "(19|20)", cardinality: 2 },
+                        { validator: "(19|20)\\d", cardinality: 3 }
+                        ]
+        },
+        'A': {
+            validator: "[A-Za-z]",
+            cardinality: 1,
+            prevalidator: null,
+            casing: "upper"
+        }
+    });
+    //aliases
     $.extend($.inputmask.defaults.aliases, {
         'dd/mm/yyyy': {
             mask: "d/m/y",
@@ -17,15 +56,15 @@ Optional extentions on the jquery.inputmask base
             },
             definitions: {
                 'm': { //month
-                    "validator": function(chrs, buffer) {
+                    validator: function(chrs, buffer) {
                         var dayValue = buffer.join('').substr(0, 3);
                         return $.inputmask.defaults.aliases['dd/mm/yyyy'].regex.month.test(dayValue + chrs);
                     },
-                    "cardinality": 2,
-                    "prevalidator": [{ "validator": "[01]", "cardinality": 1}]
+                    cardinality: 2,
+                    prevalidator: [{ validator: "[01]", cardinality: 1}]
                 },
                 'y': { //year
-                    "validator": function(chrs, buffer) {
+                    validator: function(chrs, buffer) {
                         if ($.inputmask.defaults.aliases['dd/mm/yyyy'].regex.year.test(chrs)) {
                             var dayMonthValue = buffer.join('').substr(0, 6);
                             if (dayMonthValue != "29/02/")
@@ -34,19 +73,19 @@ Optional extentions on the jquery.inputmask base
                                 var year = parseInt(chrs);  //detect leap year
                                 if (year % 4 == 0)
                                     if (year % 100 == 0)
-                                        if (year % 400 == 0)
-                                            return true;
-                                        else return false;
-                                    else return true;
+                                    if (year % 400 == 0)
+                                    return true;
+                                else return false;
+                                else return true;
                                 else return false;
                             }
                         } else return false;
                     },
-                    "cardinality": 4,
-                    "prevalidator": [
-                        { "validator": "[12]", "cardinality": 1 },
-                        { "validator": "(19|20)", "cardinality": 2 },
-                        { "validator": "(19|20)\\d", "cardinality": 3 }
+                    cardinality: 4,
+                    prevalidator: [
+                        { validator: "[12]", cardinality: 1 },
+                        { validator: "(19|20)", cardinality: 2 },
+                        { validator: "(19|20)\\d", cardinality: 3 }
                         ]
                 }
             },
@@ -62,19 +101,19 @@ Optional extentions on the jquery.inputmask base
             },
             definitions: {
                 'd': { //day
-                    "validator": function(chrs, buffer) {
+                    validator: function(chrs, buffer) {
                         var monthValue = buffer.join('').substr(0, 3);
                         return $.inputmask.defaults.aliases['mm/dd/yyyy'].regex.day.test(monthValue + chrs);
                     },
-                    "cardinality": 2,
-                    "prevalidator": [{ "validator": function(chrs, buffer) {
+                    cardinality: 2,
+                    prevalidator: [{ validator: function(chrs, buffer) {
                         var monthValue = buffer.join('').substr(0, 3);
                         return $.inputmask.defaults.aliases['mm/dd/yyyy'].regex.daypre.test(monthValue + chrs);
                     },
-                        "cardinality": 1}]
+                        cardinality: 1}]
                     },
                     'y': { //year
-                        "validator": function(chrs, buffer) {
+                        validator: function(chrs, buffer) {
                             if ($.inputmask.defaults.aliases['mm/dd/yyyy'].regex.year.test(chrs)) {
                                 var monthDayValue = buffer.join('').substr(0, 6);
                                 if (monthDayValue != "02/29/")
@@ -83,19 +122,19 @@ Optional extentions on the jquery.inputmask base
                                     var year = parseInt(chrs);  //detect leap year
                                     if (year % 4 == 0)
                                         if (year % 100 == 0)
-                                            if (year % 400 == 0)
-                                                return true;
-                                            else return false;
-                                        else return true;
+                                        if (year % 400 == 0)
+                                        return true;
+                                    else return false;
+                                    else return true;
                                     else return false;
                                 }
                             } else return false;
                         },
-                        "cardinality": 4,
-                        "prevalidator": [
-                        { "validator": "[12]", "cardinality": 1 },
-                        { "validator": "(19|20)", "cardinality": 2 },
-                        { "validator": "(19|20)\\d", "cardinality": 3 }
+                        cardinality: 4,
+                        prevalidator: [
+                        { validator: "[12]", cardinality: 1 },
+                        { validator: "(19|20)", cardinality: 2 },
+                        { validator: "(19|20)\\d", cardinality: 3 }
                         ]
                     }
                 },
@@ -106,19 +145,7 @@ Optional extentions on the jquery.inputmask base
             },
             'hh:mm:ss': {
                 mask: "h:s:s",
-                autoUnmask: false,
-                definitions: {
-                    'h': {
-                        "validator": "[01][0-9]|2[0-3]",
-                        "cardinality": 2,
-                        "prevalidator": [{ "validator": "[0-2]", "cardinality": 1}]
-                    },
-                    's': {
-                        "validator": "[0-5][0-9]",
-                        "cardinality": 2,
-                        "prevalidator": [{ "validator": "[0-5]", "cardinality": 1}]
-                    }
-                }
+                autoUnmask: false
             }
         });
     })(jQuery);
