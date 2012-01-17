@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.4.5e
+Version: 0.4.6a
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -33,38 +33,20 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 aliases: {}, //aliases definitions => see jquery.inputmask.extentions.js
                 definitions: {
                     '9': {
-                        "validator": "[0-9]",
-                        "cardinality": 1,
-                        'prevalidator': null
+                        validator: "[0-9]",
+                        cardinality: 1,
+                        prevalidator: null
                     },
                     'a': {
-                        "validator": "[A-Za-z]",
-                        "cardinality": 1,
-                        "prevalidator": null
+                        validator: "[A-Za-z]",
+                        cardinality: 1,
+                        prevalidator: null
+                        //,casing: "upper" //casing option "upper" => toUpperCase, "lower" => toLowerCase
                     },
                     '*': {
-                        "validator": "[A-Za-z0-9]",
-                        "cardinality": 1,
-                        "prevalidator": null
-                    },
-                    'd': { //day
-                        "validator": "0[1-9]|[12][0-9]|3[01]",
-                        "cardinality": 2,
-                        "prevalidator": [{ "validator": "[0-3]", "cardinality": 1}]
-                    },
-                    'm': { //month
-                        "validator": "0[1-9]|1[012]",
-                        "cardinality": 2,
-                        "prevalidator": [{ "validator": "[01]", "cardinality": 1}]
-                    },
-                    'y': { //year
-                        "validator": "(19|20)\\d\\d",
-                        "cardinality": 4,
-                        "prevalidator": [
-                        { "validator": "[12]", "cardinality": 1 },
-                        { "validator": "(19|20)", "cardinality": 2 },
-                        { "validator": "(19|20)\\d", "cardinality": 3 }
-                        ]
+                        validator: "[A-Za-z0-9]",
+                        cardinality: 1,
+                        prevalidator: null
                     }
                 },
                 keyCode: { ALT: 18, BACKSPACE: 8, CAPS_LOCK: 20, COMMA: 188, COMMAND: 91, COMMAND_LEFT: 91, COMMAND_RIGHT: 93, CONTROL: 17, DELETE: 46, DOWN: 40, END: 35, ENTER: 13, ESCAPE: 27, HOME: 36, INSERT: 45, LEFT: 37, MENU: 93, NUMPAD_ADD: 107, NUMPAD_DECIMAL: 110, NUMPAD_DIVIDE: 111, NUMPAD_ENTER: 108,
@@ -240,13 +222,13 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             var prevalidators = maskdef["prevalidator"], prevalidatorsL = prevalidators ? prevalidators.length : 0;
                             for (i = 1; i < maskdef.cardinality; i++) {
                                 var prevalidator = prevalidatorsL >= i ? prevalidators[i - 1] : [], validator = prevalidator["validator"], cardinality = prevalidator["cardinality"];
-                                outElem.push({ fn: validator ? typeof validator == 'string' ? new RegExp(validator) : new function() { this.test = validator; } : new RegExp("."), cardinality: cardinality ? cardinality : 1, optionality: isOptional, newBlockMarker: isOptional == true ? newBlockMarker : false, offset: 0 });
+                                outElem.push({ fn: validator ? typeof validator == 'string' ? new RegExp(validator) : new function() { this.test = validator; } : new RegExp("."), cardinality: cardinality ? cardinality : 1, optionality: isOptional, newBlockMarker: isOptional == true ? newBlockMarker : false, offset: 0, casing: maskdef["casing"] });
                                 if (isOptional == true) //reset newBlockMarker
                                     newBlockMarker = false;
                             }
-                            outElem.push({ fn: maskdef.validator ? typeof maskdef.validator == 'string' ? new RegExp(maskdef.validator) : new function() { this.test = maskdef.validator; } : new RegExp("."), cardinality: maskdef.cardinality, optionality: isOptional, newBlockMarker: newBlockMarker, offset: 0 });
+                            outElem.push({ fn: maskdef.validator ? typeof maskdef.validator == 'string' ? new RegExp(maskdef.validator) : new function() { this.test = maskdef.validator; } : new RegExp("."), cardinality: maskdef.cardinality, optionality: isOptional, newBlockMarker: newBlockMarker, offset: 0, casing: maskdef["casing"] });
                         } else {
-                            outElem.push({ fn: null, cardinality: 0, optionality: isOptional, newBlockMarker: newBlockMarker, offset: 0 });
+                            outElem.push({ fn: null, cardinality: 0, optionality: isOptional, newBlockMarker: newBlockMarker, offset: 0, casing: null });
                             escaped = false;
                         }
                         //reset newBlockMarker
@@ -308,7 +290,19 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             //these are needed to handle the non-greedy mask repetitions
             function setBufferElement(buffer, position, element) {
                 prepareBuffer(buffer, position);
-                buffer[position] = element;
+
+                var test = tests[determineTestPosition(position)];
+                var elem = element;
+                switch (test.casing) {
+                    case "upper":
+                        elem = element.toUpperCase();
+                        break;
+                    case "lower":
+                        elem = element.toLowerCase();
+                        break;
+                }
+
+                buffer[position] = elem;
             }
             function getBufferElement(buffer, position) {
                 prepareBuffer(buffer, position);
@@ -624,8 +618,10 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     ignore = (k < 16 || (k > 16 && k < 32) || (k > 32 && k < 41));
 
                     //delete selection before proceeding
-                    if ((pos.begin - pos.end) != 0 && (!ignore || k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE))
+                    if (((pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode)) && (!ignore || k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE)) {
+
                         clearBuffer(buffer, pos.begin, pos.end);
+                    }
 
                     //backspace, delete, and escape get special treatment
                     if (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE || (iPhone && k == 127)) {//backspace/delete
@@ -635,7 +631,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             writeBuffer(input, buffer);
                             if (!opts.numericInput) caret(input, 0);
                         } else {
-                            var beginPos = pos.begin - (k == opts.keyCode.DELETE || pos.begin < pos.end ? 0 : 1);
+                            var beginPos = pos.begin - (k == opts.keyCode.DELETE ? 0 : 1);
                             beginPos = shiftL(beginPos < 0 ? 0 : beginPos, maskL);
                             if (opts.numericInput) {
                                 shiftR(0, getPlaceHolder(0), true);
@@ -643,7 +639,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             }
                             writeBuffer(input, buffer, beginPos);
                             if (!opts.insertMode && k == opts.keyCode.BACKSPACE) {
-                                caret(input, seekPrevious(buffer, beginPos));
+                                caret(input, beginPos);
                             }
                         }
                         if (opts.oncleared && _val.call(input) == _buffer.join(''))
