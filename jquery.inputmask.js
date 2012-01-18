@@ -34,19 +34,15 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 definitions: {
                     '9': {
                         validator: "[0-9]",
-                        cardinality: 1,
-                        prevalidator: null
+                        cardinality: 1
                     },
                     'a': {
                         validator: "[A-Za-z]",
-                        cardinality: 1,
-                        prevalidator: null
-                        //,casing: "upper" //casing option "upper" => toUpperCase, "lower" => toLowerCase
+                        cardinality: 1
                     },
                     '*': {
                         validator: "[A-Za-z0-9]",
-                        cardinality: 1,
-                        prevalidator: null
+                        cardinality: 1
                     }
                 },
                 keyCode: { ALT: 18, BACKSPACE: 8, CAPS_LOCK: 20, COMMA: 188, COMMAND: 91, COMMAND_LEFT: 91, COMMAND_RIGHT: 93, CONTROL: 17, DELETE: 46, DOWN: 40, END: 35, ENTER: 13, ESCAPE: 27, HOME: 36, INSERT: 45, LEFT: 37, MENU: 93, NUMPAD_ADD: 107, NUMPAD_DECIMAL: 110, NUMPAD_DIVIDE: 111, NUMPAD_ENTER: 108,
@@ -435,9 +431,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         var self = this;
                         if (self.setSelectionRange) {
                             self.focus();
-                            setTimeout(function() { //webkit - android fix
-                                self.setSelectionRange(begin, end);
-                            }, 0);
+                            self.setSelectionRange(begin, end);
                         } else if (self.createTextRange) {
                             var range = self.createTextRange();
                             range.collapse(true);
