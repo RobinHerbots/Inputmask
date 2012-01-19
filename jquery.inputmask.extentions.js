@@ -41,7 +41,6 @@ Optional extentions on the jquery.inputmask base
         'A': {
             validator: "[A-Za-z]",
             cardinality: 1,
-            prevalidator: null,
             casing: "upper"
         }
     });
