@@ -423,17 +423,6 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
 
             function caret(input, begin, end) {
-                function _setSelectionRange(input, begin, end) {
-                    if (document.activeElement === input) {
-                        input.setSelectionRange(begin, end);
-                    } else {
-                        input.focus();
-                        setTimeout(function() {
-                            _setSelectionRange(input, begin, end);
-                        }, 1);
-                    }
-                }
-
                 if (input.length == 0) return;
                 if (typeof begin == 'number') {
                     end = (typeof end == 'number') ? end : begin;
@@ -441,7 +430,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     return input.each(function() {
                         if (this.setSelectionRange) {
                             this.focus();
-                            _setSelectionRange(this, begin, end);
+                            this.setSelectionRange(begin, end);
                         } else if (this.createTextRange) {
                             var range = this.createTextRange();
                             range.collapse(true);
@@ -474,6 +463,21 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     'autoUnmask': opts.autoUnmask,
                     'definitions': opts.definitions
                 });
+
+                //android setSelectionRange bug workaround
+                if (el._setSelectionRange == undefined) {
+                    el._setSelectionRange = el.setSelectionRange;
+                    el.setSelectionRange = function(begin, end) {
+                        if (document.activeElement === this) {
+                            this._setSelectionRange(begin, end);
+                        } else {
+                            this.focus();
+                            setTimeout(function() {
+                                this.setSelectionRange(begin, end);
+                            }, 1);
+                        }
+                    } 
+                }
 
                 //init buffer
                 var buffer = _buffer.slice();
