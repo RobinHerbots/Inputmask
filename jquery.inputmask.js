@@ -423,17 +423,27 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
 
             function caret(input, begin, end) {
+                function _setSelectionRange(input, begin, end) {
+                    if (document.activeElement === input) {
+                        input.setSelectionRange(begin, end);
+                    } else {
+                        input.focus();
+                        setTimeout(function() {
+                            _setSelectionRange(input, begin, end);
+                        }, 1);
+                    }
+                }
+
                 if (input.length == 0) return;
                 if (typeof begin == 'number') {
                     end = (typeof end == 'number') ? end : begin;
                     if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
                     return input.each(function() {
-                        var self = this;
-                        if (self.setSelectionRange) {
-                            self.focus();
-                            self.setSelectionRange(begin, end);
-                        } else if (self.createTextRange) {
-                            var range = self.createTextRange();
+                        if (this.setSelectionRange) {
+                            this.focus();
+                            _setSelectionRange(this, begin, end);
+                        } else if (this.createTextRange) {
+                            var range = this.createTextRange();
                             range.collapse(true);
                             range.moveEnd('character', end);
                             range.moveStart('character', begin);
