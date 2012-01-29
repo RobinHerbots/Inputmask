@@ -207,6 +207,6 @@ return the default (empty) mask value
 
 $(document).ready(function(){
    $("#test").inputmask("999-AAA");    
-   alert($("#test").inputmask("getemptymask"));   => "___-___" 
+   alert($("#test").inputmask("getemptymask"));    => "___-___" 
 });
 
