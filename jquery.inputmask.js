@@ -123,7 +123,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             }
                         });
                         break;
-                    case "getemptymask":
+                    case "getemptymask": //return the default (empty) mask value, usefull for setting the default value in validation
                         if(this.data('inputmask'))
                     		return this.data('inputmask')['_buffer'].join('');
                     	else return "";
