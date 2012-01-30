@@ -429,7 +429,6 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
                     return input.each(function() {
                         if (this.setSelectionRange) {
-                            this.focus();
                             this.setSelectionRange(begin, end);
                         } else if (this.createTextRange) {
                             var range = this.createTextRange();
@@ -474,7 +473,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             this.focus();
                             setTimeout(function() {
                                 this.setSelectionRange(begin, end);
-                            }, 1);
+                            }, 10);
                         }
                     } 
                 }
