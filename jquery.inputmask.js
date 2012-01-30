@@ -436,7 +436,6 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     return input.each(function() {
                         var self = this;
                         if (self.setSelectionRange) {
-                            self.focus();
                             self.setSelectionRange(begin, end);
                         } else if (self.createTextRange) {
                             var range = self.createTextRange();
