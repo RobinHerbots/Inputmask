@@ -467,14 +467,9 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 if (el._setSelectionRange == undefined) {
                     el._setSelectionRange = el.setSelectionRange;
                     el.setSelectionRange = function(begin, end) {
-                        if (document.activeElement === this) {
-                            this._setSelectionRange(begin, end);
-                        } else {
-                            this.focus();
-                            setTimeout(function() {
-                                this.setSelectionRange(begin, end);
-                            }, 10);
-                        }
+                       setTimeout(function() {
+                                this._setSelectionRange(begin, end);
+                       }, 10);
                     } 
                 }
 
