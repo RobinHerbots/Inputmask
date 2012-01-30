@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.4.6c - dev
+Version: 0.4.6d - dev
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -124,9 +124,9 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         });
                         break;
                     case "getemptymask": //return the default (empty) mask value, usefull for setting the default value in validation
-                        if(this.data('inputmask'))
-                    		return this.data('inputmask')['_buffer'].join('');
-                    	else return "";
+                        if (this.data('inputmask'))
+                            return this.data('inputmask')['_buffer'].join('');
+                        else return "";
                     default:
                         //check if the fn is an alias
                         if (!ResolveAlias(fn)) {
@@ -387,8 +387,8 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                                 if (lastMatch == checkPosition) //once outsync the nonmask cannot be the lastmatch
                                     lastMatch = pos;
                                 checkPosition = pos;
-                                if(inputValue.charAt(i) == getBufferElement(buffer, pos))
-                                	break;
+                                if (inputValue.charAt(i) == getBufferElement(buffer, pos))
+                                    break;
                             }
                         }
                     }
@@ -616,6 +616,10 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
                 function keydownEvent(e) {
                     var input = $(this);
+
+                    //Safari 5.1.x - modal dialog fires keypress twice workaround
+                    input.data('inputmask', $.extend(input.data('inputmask'), { skipKeyPressEvent: false }));
+                    
                     var pos = caret(input);
                     var k = e.keyCode;
                     ignore = (k < 16 || (k > 16 && k < 32) || (k > 32 && k < 41));
@@ -686,6 +690,11 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
                 function keypressEvent(e) {
                     var input = $(this);
+
+                    //Safari 5.1.x - modal dialog fires keypress twice workaround
+                    if (input.data('inputmask').skipKeyPressEvent) return false;
+                    input.data('inputmask', $.extend(input.data('inputmask'), { skipKeyPressEvent: true }));
+                    
                     if (ignore) {
                         ignore = false;
                         //Fixes Mac FF bug on backspace
