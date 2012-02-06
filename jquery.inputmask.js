@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.4.6d - dev
+Version: 0.4.6e - dev
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -55,7 +55,8 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
         $.fn.inputmask = function(fn, options) {
             var opts = $.extend(true, {}, $.inputmask.defaults, options);
             var pasteEventName = $.browser.msie ? 'paste.inputmask' : 'input.inputmask';
-            var iPhone = (window.orientation != undefined);
+            var iphone =  navigator.userAgent.match(/iphone/i) != null;
+            var android =  navigator.userAgent.match(/android/i) != null;
 
             var _val = $.inputmask.val;
             if (opts.patch_val && $.fn.val.inputmaskpatch != true) {
@@ -630,7 +631,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     }
 
                     //backspace, delete, and escape get special treatment
-                    if (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE || (iPhone && k == 127)) {//backspace/delete
+                    if (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE || (iphone && k == 127)) {//backspace/delete
                         var maskL = getMaskLength();
                         if (pos.begin == 0 && pos.end == maskL) {
                             buffer = _buffer.slice();
