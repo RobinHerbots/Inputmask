@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.4.6e - dev
+Version: 0.4.7 - dev
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -55,8 +55,9 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
         $.fn.inputmask = function(fn, options) {
             var opts = $.extend(true, {}, $.inputmask.defaults, options);
             var pasteEventName = $.browser.msie ? 'paste.inputmask' : 'input.inputmask';
-            var iphone =  navigator.userAgent.match(/iphone/i) != null;
-            var android =  navigator.userAgent.match(/android/i) != null;
+
+            var iphone = navigator.userAgent.match(/iphone/i) != null;
+            var android = navigator.userAgent.match(/android/i) != null;
 
             var _val = $.inputmask.val;
             if (opts.patch_val && $.fn.val.inputmaskpatch != true) {
@@ -430,32 +431,36 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
 
             function caret(input, begin, end) {
-                if (input.length == 0) return;
+                var npt = input.jquery && input.length > 0 ? input[0] : input;
                 if (typeof begin == 'number') {
                     end = (typeof end == 'number') ? end : begin;
                     if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
-                    return input.each(function() {
-                        var self = this;
-                        if (self.setSelectionRange) {
-                            self.setSelectionRange(begin, end);
-                        } else if (self.createTextRange) {
-                            var range = self.createTextRange();
-                            range.collapse(true);
-                            range.moveEnd('character', end);
-                            range.moveStart('character', begin);
-                            range.select();
-                        }
-                    });
-                } else {
-                    if (input[0].setSelectionRange) {
-                        begin = input[0].selectionStart;
-                        end = input[0].selectionEnd;
-                    } else if (document.selection && document.selection.createRange) {
-                        var range = document.selection.createRange();
-                        begin = 0 - range.duplicate().moveStart('character', -100000);
-                        end = begin + range.text.length;
+                    if (npt.setSelectionRange) {
+                        npt.setSelectionRange(begin, end);
+                    } else if (npt.createTextRange) {
+                        var range = npt.createTextRange();
+                        range.collapse(true);
+                        range.moveEnd('character', end);
+                        range.moveStart('character', begin);
+                        range.select();
                     }
-                    return { begin: begin, end: end };
+                    npt.focus();
+                    //setSelectionRange in android is buggy - so we manually track the position
+                    if(android) input.data('inputmask', $.extend(input.data('inputmask'), { caretpos: { begin: begin, end: end} }));
+                } else {
+                	var caretpos = android ? input.data('inputmask').caretpos : null;
+                	if(caretpos == null){
+                    	if (npt.setSelectionRange) {
+                        	begin = npt.selectionStart;
+                        	end = npt.selectionEnd;
+                    	} else if (document.selection && document.selection.createRange) {
+                        	var range = document.selection.createRange();
+                        	begin = 0 - range.duplicate().moveStart('character', -100000);
+                        	end = begin + range.text.length;
+                    	}
+                    	caretpos = { begin: begin, end: end };
+                    }
+                    return caretpos;
                 }
             };
 
@@ -515,6 +520,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             _val.call(input, '');
                     }).bind("click.inputmask", function() {
                         var input = $(this);
+                        if(android) input.data('inputmask', $.extend(input.data('inputmask'), { caretpos: null })); //android workaround - see caret fn
                         setTimeout(function() {
                             var selectedCaret = caret(input);
                             if (selectedCaret.begin == selectedCaret.end) {
@@ -619,9 +625,12 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
                     //Safari 5.1.x - modal dialog fires keypress twice workaround
                     input.data('inputmask', $.extend(input.data('inputmask'), { skipKeyPressEvent: false }));
-                    
-                    var pos = caret(input);
+
                     var k = e.keyCode;
+                    if(android && (k == opts.keyCode.RIGHT || k == opts.keyCode.LEFT)) //android workaround - see caret fn
+						input.data('inputmask', $.extend(input.data('inputmask'), { caretpos: null }));
+
+					var pos = caret(input);
                     ignore = (k < 16 || (k > 16 && k < 32) || (k > 32 && k < 41));
 
                     //delete selection before proceeding
