@@ -435,7 +435,8 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     end = (typeof end == 'number') ? end : begin;
                     if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
                     if (npt.setSelectionRange) {
-                        npt.setSelectionRange(begin, end);
+                        npt.selectionStart = begin;
+                        npt.selectionEnd = end;
                     } else if (npt.createTextRange) {
                         var range = npt.createTextRange();
                         range.collapse(true);
@@ -443,6 +444,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         range.moveStart('character', begin);
                         range.select();
                     }
+                    if (android) input.data('inputmask', $.extend(input.data('inputmask'), { caretpos: { begin: begin, end: end} }));
                 } else {
                     if (npt.setSelectionRange) {
                         begin = npt.selectionStart;
@@ -535,11 +537,6 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         writeBuffer(input, buffer);
                         if (!opts.numericInput) caret(input, 0);
                     }
-                    if (android) {
-                        setTimeout(function() {
-                            input.data('inputmask', $.extend(input.data('inputmask'), { caretpos: caret(input) }));
-                        }, 0);
-                    }
                 }).bind(pasteEventName, function() {
                     var input = $(this);
                     setTimeout(function() {
@@ -623,7 +620,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     input.data('inputmask', $.extend(input.data('inputmask'), { skipKeyPressEvent: false }));
 
                     var k = e.keyCode;
-                    var pos = android && k == opts.keyCode.BACKSPACE ? input.data('inputmask').caretpos || caret(input) : caret(input);
+                    var pos = android ? input.data('inputmask').caretpos || caret(input) : caret(input);
 
                     ignore = (k < 16 || (k > 16 && k < 32) || (k > 32 && k < 41));
 
