@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.4.6a
+Version: 0.4.6e - android
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -55,7 +55,8 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
         $.fn.inputmask = function(fn, options) {
             var opts = $.extend(true, {}, $.inputmask.defaults, options);
             var pasteEventName = $.browser.msie ? 'paste.inputmask' : 'input.inputmask';
-            var iPhone = (window.orientation != undefined);
+            var iphone = navigator.userAgent.match(/iphone/i) != null;
+            var android = navigator.userAgent.match(/android/i) != null;
 
             var _val = $.inputmask.val;
             if (opts.patch_val && $.fn.val.inputmaskpatch != true) {
@@ -123,6 +124,10 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             }
                         });
                         break;
+                    case "getemptymask": //return the default (empty) mask value, usefull for setting the default value in validation
+                        if (this.data('inputmask'))
+                            return this.data('inputmask')['_buffer'].join('');
+                        else return "";
                     default:
                         //check if the fn is an alias
                         if (!ResolveAlias(fn)) {
@@ -383,6 +388,8 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                                 if (lastMatch == checkPosition) //once outsync the nonmask cannot be the lastmatch
                                     lastMatch = pos;
                                 checkPosition = pos;
+                                if (inputValue.charAt(i) == getBufferElement(buffer, pos))
+                                    break;
                             }
                         }
                     }
@@ -423,25 +430,23 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
 
             function caret(input, begin, end) {
-                if (input.length == 0) return;
+                var npt = input.jquery && input.length > 0 ? input[0] : input;
                 if (typeof begin == 'number') {
                     end = (typeof end == 'number') ? end : begin;
                     if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
-                    return input.each(function() {
-                        if (this.setSelectionRange) {
-                            this.setSelectionRange(begin, end);
-                        } else if (this.createTextRange) {
-                            var range = this.createTextRange();
-                            range.collapse(true);
-                            range.moveEnd('character', end);
-                            range.moveStart('character', begin);
-                            range.select();
-                        }
-                    });
+                    if (npt.setSelectionRange) {
+                        npt.setSelectionRange(begin, end);
+                    } else if (npt.createTextRange) {
+                        var range = npt.createTextRange();
+                        range.collapse(true);
+                        range.moveEnd('character', end);
+                        range.moveStart('character', begin);
+                        range.select();
+                    }
                 } else {
-                    if (input[0].setSelectionRange) {
-                        begin = input[0].selectionStart;
-                        end = input[0].selectionEnd;
+                    if (npt.setSelectionRange) {
+                        begin = npt.selectionStart;
+                        end = npt.selectionEnd;
                     } else if (document.selection && document.selection.createRange) {
                         var range = document.selection.createRange();
                         begin = 0 - range.duplicate().moveStart('character', -100000);
@@ -462,16 +467,6 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     'autoUnmask': opts.autoUnmask,
                     'definitions': opts.definitions
                 });
-
-                //android setSelectionRange bug workaround
-                if (el._setSelectionRange == undefined) {
-                    el._setSelectionRange = el.setSelectionRange;
-                    el.setSelectionRange = function(begin, end) {
-                       setTimeout(function() {
-                                this._setSelectionRange(begin, end);
-                       }, 10);
-                    } 
-                }
 
                 //init buffer
                 var buffer = _buffer.slice();
@@ -539,6 +534,11 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         buffer = _buffer.slice();
                         writeBuffer(input, buffer);
                         if (!opts.numericInput) caret(input, 0);
+                    }
+                    if (android) {
+                        setTimeout(function() {
+                            input.data('inputmask', $.extend(input.data('inputmask'), { caretpos: caret(input) }));
+                        }, 0);
                     }
                 }).bind(pasteEventName, function() {
                     var input = $(this);
@@ -618,8 +618,13 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
                 function keydownEvent(e) {
                     var input = $(this);
-                    var pos = caret(input);
+
+                    //Safari 5.1.x - modal dialog fires keypress twice workaround
+                    input.data('inputmask', $.extend(input.data('inputmask'), { skipKeyPressEvent: false }));
+
                     var k = e.keyCode;
+                    var pos = android && k == opts.keyCode.BACKSPACE ? input.data('inputmask').caretpos || caret(input) : caret(input);
+
                     ignore = (k < 16 || (k > 16 && k < 32) || (k > 32 && k < 41));
 
                     //delete selection before proceeding
@@ -629,7 +634,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     }
 
                     //backspace, delete, and escape get special treatment
-                    if (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE || (iPhone && k == 127)) {//backspace/delete
+                    if (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE || (iphone && k == 127)) {//backspace/delete
                         var maskL = getMaskLength();
                         if (pos.begin == 0 && pos.end == maskL) {
                             buffer = _buffer.slice();
@@ -688,6 +693,11 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
                 function keypressEvent(e) {
                     var input = $(this);
+
+                    //Safari 5.1.x - modal dialog fires keypress twice workaround
+                    if (input.data('inputmask').skipKeyPressEvent) return false;
+                    input.data('inputmask', $.extend(input.data('inputmask'), { skipKeyPressEvent: true }));
+
                     if (ignore) {
                         ignore = false;
                         //Fixes Mac FF bug on backspace
