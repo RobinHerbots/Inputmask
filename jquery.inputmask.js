@@ -444,6 +444,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         range.moveStart('character', begin);
                         range.select();
                     }
+                    npt.focus();
                     if (android) input.data('inputmask', $.extend(input.data('inputmask'), { caretpos: { begin: begin, end: end} }));
                 } else {
                     if (npt.setSelectionRange) {
