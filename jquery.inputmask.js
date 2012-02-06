@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.4.6e - android
+Version: 0.4.7 - android
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -435,8 +435,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     end = (typeof end == 'number') ? end : begin;
                     if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
                     if (npt.setSelectionRange) {
-                        npt.selectionStart = begin;
-                        npt.selectionEnd = end;
+                        npt.setSelectionRange(begin, end);
                     } else if (npt.createTextRange) {
                         var range = npt.createTextRange();
                         range.collapse(true);
@@ -445,17 +444,22 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         range.select();
                     }
                     npt.focus();
-                    if (android) input.data('inputmask', $.extend(input.data('inputmask'), { caretpos: { begin: begin, end: end} }));
+                    //setSelectionRange in android is buggy - so we manually track the position
+                    if(android) input.data('inputmask', $.extend(input.data('inputmask'), { caretpos: { begin: begin, end: end} }));
                 } else {
-                    if (npt.setSelectionRange) {
-                        begin = npt.selectionStart;
-                        end = npt.selectionEnd;
-                    } else if (document.selection && document.selection.createRange) {
-                        var range = document.selection.createRange();
-                        begin = 0 - range.duplicate().moveStart('character', -100000);
-                        end = begin + range.text.length;
+                	var caretpos = android ? input.data('inputmask').caretpos : null;
+                	if(caretpos == null){
+                    	if (npt.setSelectionRange) {
+                        	begin = npt.selectionStart;
+                        	end = npt.selectionEnd;
+                    	} else if (document.selection && document.selection.createRange) {
+                        	var range = document.selection.createRange();
+                        	begin = 0 - range.duplicate().moveStart('character', -100000);
+                        	end = begin + range.text.length;
+                    	}
+                    	caretpos = { begin: begin, end: end };
                     }
-                    return { begin: begin, end: end };
+                    return caretpos;
                 }
             };
 
@@ -515,6 +519,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             _val.call(input, '');
                     }).bind("click.inputmask", function() {
                         var input = $(this);
+                        if(android) input.data('inputmask', $.extend(input.data('inputmask'), { caretpos: null })); //android workaround - see caret fn
                         setTimeout(function() {
                             var selectedCaret = caret(input);
                             if (selectedCaret.begin == selectedCaret.end) {
@@ -621,8 +626,10 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     input.data('inputmask', $.extend(input.data('inputmask'), { skipKeyPressEvent: false }));
 
                     var k = e.keyCode;
-                    var pos = android ? input.data('inputmask').caretpos || caret(input) : caret(input);
+                    if(android && (k == opts.keyCode.RIGHT || k == opts.keyCode.LEFT)) //android workaround - see caret fn
+						input.data('inputmask', $.extend(input.data('inputmask'), { caretpos: null }));
 
+					var pos = caret(input);
                     ignore = (k < 16 || (k > 16 && k < 32) || (k > 32 && k < 41));
 
                     //delete selection before proceeding
