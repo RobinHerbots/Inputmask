@@ -22,6 +22,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 mask: null,
                 oncomplete: null, //executes when the mask is complete
                 oncleared: null, //executes when the mask is cleared
+                onfocuslost:null, //executes when the focus is lost and mask isn't complete                
                 repeat: 0, //repetitions of the mask
                 greedy: true, //true: allocated buffer for the mask and repetitions - false: allocate only if needed
                 patch_val: true, //override the jquery.val fn to detect changed in the inputmask by setting val(value)
@@ -502,6 +503,8 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         }
                         if (opts.clearMaskOnLostFocus && _val.call(input) == _buffer.join(''))
                             _val.call(input, '');
+                        if (opts.onfocuslost && checkVal(input, buffer, true) != getMaskLength())
+                            opts.onfocuslost.call(input);
                         if (opts.clearIncomplete && checkVal(input, buffer, true) != getMaskLength()) {
                             if (opts.clearMaskOnLostFocus)
                                 _val.call(input, '');
