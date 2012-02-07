@@ -21,6 +21,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 escapeChar: "\\",
                 mask: null,
                 oncomplete: null, //executes when the mask is complete
+                onincomplete: null, //executes when the mask is incomplete and focus is lost
                 oncleared: null, //executes when the mask is cleared
                 repeat: 0, //repetitions of the mask
                 greedy: true, //true: allocated buffer for the mask and repetitions - false: allocate only if needed
@@ -502,12 +503,19 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         }
                         if (opts.clearMaskOnLostFocus && _val.call(input) == _buffer.join(''))
                             _val.call(input, '');
-                        if (opts.clearIncomplete && checkVal(input, buffer, true) != getMaskLength()) {
-                            if (opts.clearMaskOnLostFocus)
-                                _val.call(input, '');
-                            else {
-                                buffer = _buffer.slice();
-                                writeBuffer(input, buffer);
+                        if ((opts.clearIncomplete || opts.onincomplete) && checkVal(input, buffer, true) != getMaskLength()) {
+                            if (opts.onincomplete)
+                            {
+                            	opts.onincomplete.call(input);
+                            }
+                            if (opts.clearIncomplete)
+                            {
+                                if (opts.clearMaskOnLostFocus)
+                                    _val.call(input, '');
+                                else {
+                                    buffer = _buffer.slice();
+                                    writeBuffer(input, buffer);
+                                }
                             }
                         }
                     }).bind("focus.inputmask", function() {
