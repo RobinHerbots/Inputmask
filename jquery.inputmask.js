@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.4.7 - android
+Version: 0.4.8 - android
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -21,6 +21,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 escapeChar: "\\",
                 mask: null,
                 oncomplete: null, //executes when the mask is complete
+                onincomplete: null, //executes when the mask is incomplete and focus is lost
                 oncleared: null, //executes when the mask is cleared
                 repeat: 0, //repetitions of the mask
                 greedy: true, //true: allocated buffer for the mask and repetitions - false: allocate only if needed
@@ -55,9 +56,10 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
         $.fn.inputmask = function(fn, options) {
             var opts = $.extend(true, {}, $.inputmask.defaults, options);
             var pasteEventName = $.browser.msie ? 'paste.inputmask' : 'input.inputmask';
-            var iphone = navigator.userAgent.match(/iphone/i) != null;
-            var android = navigator.userAgent.match(/android/i) != null;
 
+            var iphone = navigator.userAgent.match(/iphone/i) != null;
+            var android = navigator.userAgent.match(/android.*mobile safari.*/i) != null;
+			
             var _val = $.inputmask.val;
             if (opts.patch_val && $.fn.val.inputmaskpatch != true) {
                 $.fn.val = function() {
@@ -324,8 +326,14 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
             function writeBuffer(input, buffer, caretPos) {
                 _val.call(input, buffer.join(''));
-                if (caretPos != undefined)
-                    caret(input, caretPos);
+                if (caretPos != undefined){
+                	if(android){
+                		setTimeout(function(){
+                			caret(input, caretPos);
+                		},100);
+                	}
+                	else caret(input, caretPos);
+                }
             };
             function clearBuffer(buffer, start, end) {
                 for (var i = start, maskL = getMaskLength(); i < end && i < maskL; i++) {
@@ -434,7 +442,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 if (typeof begin == 'number') {
                     end = (typeof end == 'number') ? end : begin;
                     if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
-                    if (npt.setSelectionRange) {
+					if (npt.setSelectionRange) {
                         npt.setSelectionRange(begin, end);
                     } else if (npt.createTextRange) {
                         var range = npt.createTextRange();
@@ -444,11 +452,10 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         range.select();
                     }
                     npt.focus();
-                    //setSelectionRange in android is buggy - so we manually track the position
-                    if(android) input.data('inputmask', $.extend(input.data('inputmask'), { caretpos: { begin: begin, end: end} }));
+					if(android && end != npt.selectionEnd) input.data('inputmask', $.extend(input.data('inputmask'), { caretpos: { begin: begin, end: end} }));
                 } else {
                 	var caretpos = android ? input.data('inputmask').caretpos : null;
-                	if(caretpos == null){
+					if(caretpos == null){
                     	if (npt.setSelectionRange) {
                         	begin = npt.selectionStart;
                         	end = npt.selectionEnd;
@@ -458,7 +465,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         	end = begin + range.text.length;
                     	}
                     	caretpos = { begin: begin, end: end };
-                    }
+                    } else $.extend(input.data('inputmask'), { caretpos: null });
                     return caretpos;
                 }
             };
@@ -472,7 +479,8 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     'greedy': opts.greedy,
                     'repeat': opts.repeat,
                     'autoUnmask': opts.autoUnmask,
-                    'definitions': opts.definitions
+                    'definitions': opts.definitions,
+					'caretpos': null
                 });
 
                 //init buffer
@@ -501,12 +509,19 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         }
                         if (opts.clearMaskOnLostFocus && _val.call(input) == _buffer.join(''))
                             _val.call(input, '');
-                        if (opts.clearIncomplete && checkVal(input, buffer, true) != getMaskLength()) {
-                            if (opts.clearMaskOnLostFocus)
-                                _val.call(input, '');
-                            else {
-                                buffer = _buffer.slice();
-                                writeBuffer(input, buffer);
+                        if ((opts.clearIncomplete || opts.onincomplete) && checkVal(input, buffer, true) != getMaskLength()) {
+                            if (opts.onincomplete)
+                            {
+                            	opts.onincomplete.call(input);
+                            }
+                            if (opts.clearIncomplete)
+                            {
+                                if (opts.clearMaskOnLostFocus)
+                                    _val.call(input, '');
+                                else {
+                                    buffer = _buffer.slice();
+                                    writeBuffer(input, buffer);
+                                }
                             }
                         }
                     }).bind("focus.inputmask", function() {
@@ -519,7 +534,6 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             _val.call(input, '');
                     }).bind("click.inputmask", function() {
                         var input = $(this);
-                        if(android) input.data('inputmask', $.extend(input.data('inputmask'), { caretpos: null })); //android workaround - see caret fn
                         setTimeout(function() {
                             var selectedCaret = caret(input);
                             if (selectedCaret.begin == selectedCaret.end) {
@@ -626,11 +640,9 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     input.data('inputmask', $.extend(input.data('inputmask'), { skipKeyPressEvent: false }));
 
                     var k = e.keyCode;
-                    if(android && (k == opts.keyCode.RIGHT || k == opts.keyCode.LEFT)) //android workaround - see caret fn
-						input.data('inputmask', $.extend(input.data('inputmask'), { caretpos: null }));
-
-					var pos = caret(input);
-                    ignore = (k < 16 || (k > 16 && k < 32) || (k > 32 && k < 41));
+                 	var pos = caret(input);				
+					
+                    ignore = (k < 16 || (k > 16 && k < 32) || (k > 32 && k < 41)); //keystrokes to ignore - todo recheck
 
                     //delete selection before proceeding
                     if (((pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode)) && (!ignore || k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE)) {
@@ -653,9 +665,9 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                                 beginPos = seekNext(buffer, beginPos);
                             }
                             writeBuffer(input, buffer, beginPos);
-                            if (!opts.insertMode && k == opts.keyCode.BACKSPACE) {
-                                caret(input, beginPos);
-                            }
+                            // if (!opts.insertMode && k == opts.keyCode.BACKSPACE) {
+                                // caret(input, beginPos);
+                            // }
                         }
                         if (opts.oncleared && _val.call(input) == _buffer.join(''))
                             opts.oncleared.call(input);
@@ -697,23 +709,24 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 }
 
                 function keypressEvent(e) {
-                    var input = $(this);
-
-                    //Safari 5.1.x - modal dialog fires keypress twice workaround
-                    if (input.data('inputmask').skipKeyPressEvent) return false;
-                    input.data('inputmask', $.extend(input.data('inputmask'), { skipKeyPressEvent: true }));
-
                     if (ignore) {
                         ignore = false;
                         //Fixes Mac FF bug on backspace
                         return (e.keyCode == opts.keyCode.BACKSPACE) ? false : null;
                     }
+
+					var input = $(this);
+
+                    //Safari 5.1.x - modal dialog fires keypress twice workaround
+                    if (input.data('inputmask').skipKeyPressEvent) return false;
+                    input.data('inputmask', $.extend(input.data('inputmask'), { skipKeyPressEvent: true }));
+                    
                     e = e || window.event;
-                    var k = e.charCode || e.keyCode || e.which;
+                    var k = e.which || e.charCode || e.keyCode;
                     var pos = caret($(this));
                     if (e.ctrlKey || e.altKey || e.metaKey) {//Ignore
                         return true;
-                    } else if ((k >= 32 && k <= 125) || k > 186) {//typeable characters
+                    } else if ((k >= 32 && k <= 125) || k > 186) {//typeable characters - todo recheck
                         var c = String.fromCharCode(k);
                         if (opts.numericInput) {
                             var posEnd = opts.greedy ? pos.end : (pos.end + 1);
@@ -724,7 +737,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                                     writeBuffer(input, buffer, posEnd);
                                 } else if (opts.oncomplete)
                                     opts.oncomplete.call(input);
-                            }
+                            } else if (android) writeBuffer(input, buffer, pos.begin);
                         }
                         else {
                             var p = seekNext(buffer, pos.begin - 1);
@@ -735,14 +748,164 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
                                 if (opts.oncomplete && next == getMaskLength())
                                     opts.oncomplete.call(input);
-                            }
+                            } else if (android) writeBuffer(input, buffer, pos.begin);
                         }
                     }
-                    return false;
+
+					return false;
                 }
-
-
             }
         };
     }
 })(jQuery);
+
+/*
+Input Mask plugin extentions
+http://github.com/RobinHerbots/jquery.inputmask
+Copyright (c) 2010 Robin Herbots
+Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
+
+Optional extentions on the jquery.inputmask base
+*/
+(function($) {
+    //extra definitions
+    $.extend($.inputmask.defaults.definitions, {
+        'h': { //hours
+            validator: "[01][0-9]|2[0-3]",
+            cardinality: 2,
+            prevalidator: [{ validator: "[0-2]", cardinality: 1}]
+        },
+        's': { //seconds || minutes
+            validator: "[0-5][0-9]",
+            cardinality: 2,
+            prevalidator: [{ validator: "[0-5]", cardinality: 1}]
+        },
+        'd': { //day
+            validator: "0[1-9]|[12][0-9]|3[01]",
+            cardinality: 2,
+            prevalidator: [{ validator: "[0-3]", cardinality: 1}]
+        },
+        'm': { //month
+            validator: "0[1-9]|1[012]",
+            cardinality: 2,
+            prevalidator: [{ validator: "[01]", cardinality: 1}]
+        },
+        'y': { //year
+            validator: "(19|20)\\d\\d",
+            cardinality: 4,
+            prevalidator: [
+                        { validator: "[12]", cardinality: 1 },
+                        { validator: "(19|20)", cardinality: 2 },
+                        { validator: "(19|20)\\d", cardinality: 3 }
+                        ]
+        },
+        'A': {
+            validator: "[A-Za-z]",
+            cardinality: 1,
+            casing: "upper"
+        }
+    });
+    //aliases
+    $.extend($.inputmask.defaults.aliases, {
+        'dd/mm/yyyy': {
+            mask: "d/m/y",
+            placeholder: "dd/mm/yyyy",
+            regex: {
+                month: new RegExp("((0[1-9]|[12][0-9])\/(0[1-9]|1[012]))|(30\/(0[13-9]|1[012]))|(31\/(0[13578]|1[02]))"),
+                year: new RegExp("(19|20)\\d\\d")
+            },
+            definitions: {
+                'm': { //month
+                    validator: function(chrs, buffer) {
+                        var dayValue = buffer.join('').substr(0, 3);
+                        return $.inputmask.defaults.aliases['dd/mm/yyyy'].regex.month.test(dayValue + chrs);
+                    },
+                    cardinality: 2,
+                    prevalidator: [{ validator: "[01]", cardinality: 1}]
+                },
+                'y': { //year
+                    validator: function(chrs, buffer) {
+                        if ($.inputmask.defaults.aliases['dd/mm/yyyy'].regex.year.test(chrs)) {
+                            var dayMonthValue = buffer.join('').substr(0, 6);
+                            if (dayMonthValue != "29/02/")
+                                return true;
+                            else {
+                                var year = parseInt(chrs);  //detect leap year
+                                if (year % 4 == 0)
+                                    if (year % 100 == 0)
+                                    if (year % 400 == 0)
+                                    return true;
+                                else return false;
+                                else return true;
+                                else return false;
+                            }
+                        } else return false;
+                    },
+                    cardinality: 4,
+                    prevalidator: [
+                        { validator: "[12]", cardinality: 1 },
+                        { validator: "(19|20)", cardinality: 2 },
+                        { validator: "(19|20)\\d", cardinality: 3 }
+                        ]
+                }
+            },
+            insertMode: false
+        },
+        'mm/dd/yyyy': {
+            mask: "m/d/y",
+            placeholder: "mm/dd/yyyy",
+            regex: {
+                day: new RegExp("((0[1-9]|1[012])\/(0[1-9]|[12][0-9]))|((0[13-9]|1[012])\/30)|((0[13578]|1[02])\/31)"),
+                daypre: new RegExp("((0[13-9]|1[012])\/[0-3])|(02\/[0-2])"),
+                year: new RegExp("(19|20)\\d\\d")
+            },
+            definitions: {
+                'd': { //day
+                    validator: function(chrs, buffer) {
+                        var monthValue = buffer.join('').substr(0, 3);
+                        return $.inputmask.defaults.aliases['mm/dd/yyyy'].regex.day.test(monthValue + chrs);
+                    },
+                    cardinality: 2,
+                    prevalidator: [{ validator: function(chrs, buffer) {
+                        var monthValue = buffer.join('').substr(0, 3);
+                        return $.inputmask.defaults.aliases['mm/dd/yyyy'].regex.daypre.test(monthValue + chrs);
+                    },
+                        cardinality: 1}]
+                    },
+                    'y': { //year
+                        validator: function(chrs, buffer) {
+                            if ($.inputmask.defaults.aliases['mm/dd/yyyy'].regex.year.test(chrs)) {
+                                var monthDayValue = buffer.join('').substr(0, 6);
+                                if (monthDayValue != "02/29/")
+                                    return true;
+                                else {
+                                    var year = parseInt(chrs);  //detect leap year
+                                    if (year % 4 == 0)
+                                        if (year % 100 == 0)
+                                        if (year % 400 == 0)
+                                        return true;
+                                    else return false;
+                                    else return true;
+                                    else return false;
+                                }
+                            } else return false;
+                        },
+                        cardinality: 4,
+                        prevalidator: [
+                        { validator: "[12]", cardinality: 1 },
+                        { validator: "(19|20)", cardinality: 2 },
+                        { validator: "(19|20)\\d", cardinality: 3 }
+                        ]
+                    }
+                },
+                insertMode: false
+            },
+            'date': {
+                alias: "dd/mm/yyyy"
+            },
+            'hh:mm:ss': {
+                mask: "h:s:s",
+                autoUnmask: false
+            }
+        });
+    })(jQuery);
