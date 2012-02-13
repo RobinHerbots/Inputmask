@@ -455,7 +455,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     npt.focus();
                     if (android && end != npt.selectionEnd) caretposCorrection = { begin: begin, end: end };
                 } else {
-                    var caretpos = android ? caretposCorrection : null;
+                    var caretpos = android ? caretposCorrection : null, caretposCorrection = null;
                     if (caretpos == null) {
                         if (npt.setSelectionRange) {
                             begin = npt.selectionStart;
@@ -466,7 +466,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             end = begin + range.text.length;
                         }
                         caretpos = { begin: begin, end: end };
-                    } else caretposCorrection = null;
+                    } 
                     return caretpos;
                 }
             };
