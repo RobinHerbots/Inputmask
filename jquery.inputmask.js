@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.4.8a - android
+Version: 0.4.8b - android
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -59,6 +59,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
             var iphone = navigator.userAgent.match(/iphone/i) != null;
             var android = navigator.userAgent.match(/android.*mobile safari.*/i) != null; //needs to be more specific
+ 		var caretposCorrection = null;
 
             var _val = $.inputmask.val;
             if (opts.patch_val && $.fn.val.inputmaskpatch != true) {
@@ -465,7 +466,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             end = begin + range.text.length;
                         }
                         caretpos = { begin: begin, end: end };
-                    } else $.extend(input.data('inputmask'), { caretpos: null });
+                    } else caretposCorrection = null;
                     return caretpos;
                 }
             };
@@ -487,8 +488,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 undoBuffer = _val.call(input),
                 skipKeyPressEvent = false, //Safari 5.1.x - modal dialog fires keypress twice workaround
                 lastPosition = -1,
-                firstMaskPos = seekNext(buffer, -1),
-                caretposCorrection = null;
+                firstMaskPos = seekNext(buffer, -1);
 
                 //unbind all events - to make sure that no other mask will interfere when re-masking
                 input.unbind(".inputmask");
