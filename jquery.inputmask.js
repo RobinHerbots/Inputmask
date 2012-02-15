@@ -58,8 +58,13 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             var pasteEventName = $.browser.msie ? 'paste.inputmask' : 'input.inputmask';
 
             var iphone = navigator.userAgent.match(/iphone/i) != null;
-            var android = navigator.userAgent.match(/android.*mobile safari.*/i) != null; //needs to be more specific
- 		var caretposCorrection = null;
+            var android = navigator.userAgent.match(/android.*mobile safari.*/i) != null;
+	           if (android){
+		            var browser = navigator.userAgent.match(/mobile safari.*/i);
+		            var version = parseInt(new RegExp(/[0-9]+/).exec(browser));
+		            android = version <= 533;	
+	           }
+ 		         var caretposCorrection = null;
 
             var _val = $.inputmask.val;
             if (opts.patch_val && $.fn.val.inputmaskpatch != true) {
