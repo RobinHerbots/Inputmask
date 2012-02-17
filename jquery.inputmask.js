@@ -292,18 +292,20 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
             //pos: from position
             function seekPrevious(buffer, pos) {
-                if (pos <= 0) {
- 				if(isRTL && !opts.greedy)
-						prepareBuffer(buffer, -1)
-					return 0;
-				}
                 var position = pos;
+				
+				if (position <= 0) {
+					if(isRTL && !opts.greedy)
+						position = prepareBuffer(buffer, -1)
+					return position;
+				}
+                
                 while (--position > 0 && !isMask(position)) { };
                 return position;
             }
             //these are needed to handle the non-greedy mask repetitions
             function setBufferElement(buffer, position, element) {
-                prepareBuffer(buffer, position);
+                position = prepareBuffer(buffer, position);
 
                 var test = tests[determineTestPosition(position)];
                 var elem = element;
@@ -319,7 +321,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 buffer[position] = elem;
             }
             function getBufferElement(buffer, position) {
-                prepareBuffer(buffer, position);
+                position = prepareBuffer(buffer, position);
                 return buffer[position];
             }
 
@@ -328,12 +330,15 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     var j = 0;
                     if (isRTL) {
 						j = _buffer.length -1;
+						position = position + _buffer.length;
 						while (_buffer[j] !== undefined) 
 							buffer.unshift(_buffer[j--]);
                     } else while (_buffer[j] !== undefined) {
                         buffer.push(_buffer[j++]);
                     }
                 }
+				
+				return position;
             }
 
             function writeBuffer(input, buffer, caretPos) {
