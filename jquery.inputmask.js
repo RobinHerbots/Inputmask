@@ -292,7 +292,11 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
             //pos: from position
             function seekPrevious(buffer, pos) {
-                if (pos <= 0) return 0;
+                if (pos <= 0) {
+ 				if(isRTL && !opts.greedy)
+						prepareBuffer(buffer, -1)
+					return 0;
+				}
                 var position = pos;
                 while (--position > 0 && !isMask(position)) { };
                 return position;
@@ -323,8 +327,9 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 while ((buffer.length <= position || position < 0) && buffer.length < getMaskLength()) {
                     var j = 0;
                     if (isRTL) {
-                        j = determineTestPosition(position);
-                        buffer.unshift(_buffer[j]);
+						j = _buffer.length -1;
+						while (_buffer[j] !== undefined) 
+							buffer.unshift(_buffer[j--]);
                     } else while (_buffer[j] !== undefined) {
                         buffer.push(_buffer[j++]);
                     }
