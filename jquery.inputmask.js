@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.4.9 - dev
+Version: 0.4.9a - dev
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -49,7 +49,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 keyCode: { ALT: 18, BACKSPACE: 8, CAPS_LOCK: 20, COMMA: 188, COMMAND: 91, COMMAND_LEFT: 91, COMMAND_RIGHT: 93, CONTROL: 17, DELETE: 46, DOWN: 40, END: 35, ENTER: 13, ESCAPE: 27, HOME: 36, INSERT: 45, LEFT: 37, MENU: 93, NUMPAD_ADD: 107, NUMPAD_DECIMAL: 110, NUMPAD_DIVIDE: 111, NUMPAD_ENTER: 108,
                     NUMPAD_MULTIPLY: 106, NUMPAD_SUBTRACT: 109, PAGE_DOWN: 34, PAGE_UP: 33, PERIOD: 190, RIGHT: 39, SHIFT: 16, SPACE: 32, TAB: 9, UP: 38, WINDOWS: 91
                 },
-                ignorables: [8, 9, 13, 16, 17, 18, 20, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 91, 93, 106, 107, 108, 109, 110, 111]
+                ignorables: [8, 9, 13, 16, 17, 18, 20, 27, 33, 34, 35, 36, 37, 38, 39, 40, 46, 91, 93, 108]
             },
             val: $.fn.val //store the original jquery val function
         };
@@ -293,19 +293,14 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             //pos: from position
             function seekPrevious(buffer, pos) {
                 var position = pos;
-				
-				if (position <= 0) {
-					if(isRTL && !opts.greedy)
-						position = prepareBuffer(buffer, -1)
-					return position;
-				}
-                
+                if (position <= 0) return 0;
+
                 while (--position > 0 && !isMask(position)) { };
                 return position;
             }
-            //these are needed to handle the non-greedy mask repetitions
+
             function setBufferElement(buffer, position, element) {
-                position = prepareBuffer(buffer, position);
+                //position = prepareBuffer(buffer, position);
 
                 var test = tests[determineTestPosition(position)];
                 var elem = element;
@@ -321,24 +316,26 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 buffer[position] = elem;
             }
             function getBufferElement(buffer, position) {
-                position = prepareBuffer(buffer, position);
+                //position = prepareBuffer(buffer, position);
                 return buffer[position];
             }
 
+            //needed to handle the non-greedy mask repetitions
             function prepareBuffer(buffer, position) {
-                while ((buffer.length <= position || position < 0) && buffer.length < getMaskLength()) {
+                while ((buffer.length < position || position < 0) && buffer.length < getMaskLength()) {
                     var j = 0;
                     if (isRTL) {
-						j = _buffer.length -1;
-						position = position + _buffer.length;
-						while (_buffer[j] !== undefined) 
-							buffer.unshift(_buffer[j--]);
+                        j = _buffer.length - 1;
+                        position = position + _buffer.length;
+                        while (_buffer[j] !== undefined)
+                            buffer.unshift(_buffer[j--]);
+                        break;
                     } else while (_buffer[j] !== undefined) {
                         buffer.push(_buffer[j++]);
                     }
                 }
-				
-				return position;
+
+                return position;
             }
 
             function writeBuffer(input, buffer, caretPos) {
@@ -396,7 +393,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 if (clearInvalid) {
                     writeBuffer(input, buffer);
                 }
-                return seekNext(buffer, isRTL ? rtlMatch : lastMatch);
+                return seekNext(buffer, isRTL ? (opts.numericInput ? maskL : rtlMatch) : lastMatch);
             }
 
             function EscapeRegex(str) {
@@ -404,9 +401,8 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 return str.replace(new RegExp('(\\' + specials.join('|\\') + ')', 'gim'), '\\$1');
             }
             function TruncateInput(input) {
-                return input.replace(new RegExp("(" + EscapeRegex(_buffer.join('')) + ")*$"), "");
+                return isRTL ? input.replace(new RegExp("^(" + EscapeRegex(_buffer.join('')) + ")*"), "") : input.replace(new RegExp("(" + EscapeRegex(_buffer.join('')) + ")*$"), "");
             }
-
 
             //functionality fn
             function setvalue(el, value) {
@@ -478,6 +474,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 var buffer = _buffer.slice(),
                 undoBuffer = _val.call(input),
                 skipKeyPressEvent = false, //Safari 5.1.x - modal dialog fires keypress twice workaround
+				ignorable = false,
                 lastPosition = -1,
                 firstMaskPos = seekNext(buffer, -1)
                 isRTL = false;
@@ -630,6 +627,11 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         } else
                             SetReTargetPlaceHolder(buffer, i);
                     }
+                    var lengthBefore = buffer.length;
+                    buffer = TruncateInput(buffer.join('')).split('');
+                    if (buffer.length == 0) buffer = _buffer.slice();
+
+                    return end - (lengthBefore - buffer.length);  //return new start position
                 };
 
                 function keydownEvent(e) {
@@ -648,15 +650,13 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         if (pos.begin == 0 && pos.end == maskL) {
                             buffer = _buffer.slice();
                             writeBuffer(input, buffer);
-                            if (!isRTL) caret(input, 0);
+                            if (!isRTL) caret(input, firstMaskPos);
                         } else {
                             var beginPos = pos.begin - (k == opts.keyCode.DELETE ? 0 : 1);
                             if (isRTL) {
-                                shiftR(0, beginPos, getPlaceHolder(0), true);
-                                if (k == opts.keyCode.BACKSPACE) {
-                                    beginPos++;
-                                }
-                            } else beginPos = shiftL(beginPos < 0 ? 0 : beginPos, maskL);
+                                beginPos = shiftR(firstMaskPos, beginPos, getPlaceHolder(0), true);
+                                beginPos = seekNext(buffer, beginPos);
+                            } else beginPos = shiftL(beginPos < 0 ? firstMaskPos : beginPos, maskL);
                             writeBuffer(input, buffer, beginPos);
                         }
                         if (opts.oncleared && _val.call(input) == _buffer.join(''))
@@ -696,6 +696,8 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             return false;
                         }
                     }
+
+                    ignorable = $.inArray(k, opts.ignorables) != -1;
                 }
 
                 function keypressEvent(e) {
@@ -707,7 +709,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
                     e = e || window.event;
                     var k = e.which || e.charCode || e.keyCode;
-                    if (e.ctrlKey || e.altKey || e.metaKey || $.inArray(k, opts.ignorables) != -1) {//Ignore
+                    if (e.ctrlKey || e.altKey || e.metaKey || ignorable) {//Ignore
                         return true;
                     } else {
                         if (k) {
@@ -716,14 +718,19 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                                 var p = seekPrevious(buffer, pos.end);
                                 if (isValid(p, c, buffer)) {
                                     if (isValid(firstMaskPos, buffer[firstMaskPos], buffer) == false || (opts.greedy === false && buffer.length < maskL)) {
-                                        shiftL(firstMaskPos, p, c);
-                                        writeBuffer(input, buffer, opts.numericInput ? pos.end : p);
+                                        if (buffer[firstMaskPos] != getPlaceHolder(firstMaskPos) && buffer.length < maskL) {
+                                            p = seekPrevious(buffer, p + seekNext(buffer, prepareBuffer(buffer, -1)));
+                                            maskL = buffer.length;
+                                        }
+                                        shiftL(firstMaskPos, opts.numericInput ? seekPrevious(buffer, maskL) : p, c);
+                                        writeBuffer(input, buffer, opts.numericInput ? maskL : p);
                                     } else if (opts.oncomplete)
                                         opts.oncomplete.call(input);
                                 } else if (android) writeBuffer(input, buffer, pos.begin);
                             }
                             else {
                                 var p = seekNext(buffer, pos.begin - 1);
+                                prepareBuffer(buffer, p);
                                 if (isValid(p, c, buffer)) {
                                     if (opts.insertMode == true) shiftR(p, maskL, c); else setBufferElement(buffer, p, c);
                                     var next = seekNext(buffer, p);
