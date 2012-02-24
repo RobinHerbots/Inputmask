@@ -51,7 +51,7 @@ Also extra features like mask-repetitions (greedy and non-gready) and many other
 Usage:
 
 Include the js-files
-```html
+```
 <script src="jquery.js" type="text/javascript"></script>
 <script src="jquery.inputmask.js" type="text/javascript"></script>
 <script src="jquery.inputmask.extentions.js" type="text/javascript"></script>
@@ -252,7 +252,7 @@ $(document).ready(function(){
 ### RTL input 
 
 Just add the dir="rtl" attribute to the input element
-```html
+```
 <input id="test" dir="rtl" />
 ```
 
