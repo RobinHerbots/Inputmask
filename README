@@ -158,11 +158,24 @@ $(document).ready(function(){
     $("#months").inputmask("m \\months");
 });
 
-remove incomplete input on blur - clearIncomplete
+## clearIncomplere - remove incomplete input on blur
 
 $(document).ready(function(){
     $("#ssn").inputmask("999-99-9999",{placeholder:" ", clearIncomplete: true });
 });
+
+## Optional Masks
+When `clearIncomplete: true` is set in the options, the mask will treat masks marked option as separate from those that are not optional.
+
+For example, given:
+```javascript
+$('#test').inputmask('999[-AAA]',{
+	clearIncomplete: true
+});
+```
+While the field has focus and is blank, users will see the full mask `___-___`.
+When the required part of the mask is filled and the field loses focus, the user will see `123`.
+When both the required and optional parts of the mask are filled out and the field loses focus, the user will see `123-abc`.
 
 oncleared option
 
