@@ -6,41 +6,41 @@ A definition can have a cardinality and have multiple prevalidators.
 
 Example of some new definitions:
 ```javascript
-                 'm': { //month
-                    validator: function(chrs, buffer) {
-                        var dayValue = buffer.join('').substr(0, 3);
-                        return $.inputmask.defaults.aliases['dd/mm/yyyy'].regex.month.test(dayValue + chrs);
-                    },
-                    cardinality: 2,
-                    prevalidator: [{ validator: "[01]", cardinality: 1}]
-                },
-                'y': { //year
-                    validator: function(chrs, buffer) {
-                        if ($.inputmask.defaults.aliases['dd/mm/yyyy'].regex.year.test(chrs)) {
-                            var dayMonthValue = buffer.join('').substr(0, 6);
-                            if (dayMonthValue != "29/02/")
-                                return true;
-                            else {
-                                var year = parseInt(chrs);  //detect leap year
-                                if (year % 4 == 0)
-                                    if (year % 100 == 0)
-                                    if (year % 400 == 0)
-                                    return true;
-                                else return false;
-                                else return true;
-                                else return false;
-                            }
-                        } else return false;
-                    },
-                    cardinality: 4,
-                    prevalidator: [
-                        { validator: "[12]", cardinality: 1 },
-                        { validator: "(19|20)", cardinality: 2 },
-                        { validator: "(19|20)\\d", cardinality: 3 }
-                        ]
+     'm': { //month
+        validator: function(chrs, buffer) {
+            var dayValue = buffer.join('').substr(0, 3);
+            return $.inputmask.defaults.aliases['dd/mm/yyyy'].regex.month.test(dayValue + chrs);
+        },
+        cardinality: 2,
+        prevalidator: [{ validator: "[01]", cardinality: 1}]
+    },
+    'y': { //year
+        validator: function(chrs, buffer) {
+            if ($.inputmask.defaults.aliases['dd/mm/yyyy'].regex.year.test(chrs)) {
+                var dayMonthValue = buffer.join('').substr(0, 6);
+                if (dayMonthValue != "29/02/")
+                    return true;
+                else {
+                    var year = parseInt(chrs);  //detect leap year
+                    if (year % 4 == 0)
+                        if (year % 100 == 0)
+                        if (year % 400 == 0)
+                        return true;
+                    else return false;
+                    else return true;
+                    else return false;
                 }
-            },
-            insertMode: false
+            } else return false;
+        },
+        cardinality: 4,
+        prevalidator: [
+            { validator: "[12]", cardinality: 1 },
+            { validator: "(19|20)", cardinality: 2 },
+            { validator: "(19|20)\\d", cardinality: 3 }
+            ]
+    }
+},
+insertMode: false
 ```
 These allow for a finer date validation then 99/99/9999 which also allows 33/33/3333 for example.  
 In the jquery.inputmask.extentions.js you find a full date input validation which takes days, months & leap years into account.
@@ -50,12 +50,11 @@ Also extra features like mask-repetitions (greedy and non-gready) and many other
 
 Usage:
 
-Include the js-files
-```
+Include the js-files:
+
 <script src="jquery.js" type="text/javascript"></script>
 <script src="jquery.inputmask.js" type="text/javascript"></script>
 <script src="jquery.inputmask.extentions.js" type="text/javascript"></script>
-```
 
 Define your masks:
 ```javascript
@@ -252,9 +251,7 @@ $(document).ready(function(){
 ### RTL input 
 
 Just add the dir="rtl" attribute to the input element
-```
 <input id="test" dir="rtl" />
-```
 
 -----------------------------------------
 
