@@ -510,9 +510,26 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                                 opts.onincomplete.call(input);
                             }
                             if (opts.clearIncomplete) {
-                                if (opts.clearMaskOnLostFocus)
-                                    _val.call(input, '');
-                                else {
+                                if (opts.clearMaskOnLostFocus){
+                                	var result = '',
+                                		required = 0,
+                                		value = _val.call(input),
+                                		data = input.data('inputmask');
+                                	for(var i = 0, length = value.length; i < length; i++){
+                                		if(!data.tests[i].optionality){
+                                			required++;
+                                			if(value[i] !== data.placeholder){
+                                				result += value[i];
+                                			}
+                                		}else{
+                                			break;
+                                		}
+                                	}
+                                	if(result.length !== required){
+                                		result = '';
+                                	}
+                                    _val.call(input,result);
+                                } else {
                                     buffer = _buffer.slice();
                                     writeBuffer(input, buffer);
                                 }
