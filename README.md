@@ -5,6 +5,7 @@ The plugin is based on the maskedinput plugin of Josh Bush (http://digitalbush.c
 A definition can have a cardinality and have multiple prevalidators.
 
 Example of some new definitions:
+
 ```javascript
      'm': { //month
         validator: function(chrs, buffer) {
@@ -52,6 +53,7 @@ Also extra features like mask-repetitions (greedy and non-gready) and many other
 Usage:
 
 Include the js-files:
+
 ```html
 <script src="jquery.js" type="text/javascript"></script>
 <script src="jquery.inputmask.js" type="text/javascript"></script>
@@ -59,6 +61,7 @@ Include the js-files:
 ```
 
 Define your masks:
+
 ```javascript
 $(document).ready(function(){
    $("#date").inputmask("d/m/y");  //direct mask
@@ -71,6 +74,7 @@ $(document).ready(function(){
 
 ### change the placeholder
 
+
 ```javascript
 $(document).ready(function(){
    $("#date").inputmask("d/m/y",{ "placeholder": "*" });
@@ -78,6 +82,7 @@ $(document).ready(function(){
 ```
 
 or a multi-char placeholder
+
 ```javascript
 $(document).ready(function(){
    $("#date").inputmask("d/m/y",{ "placeholder": "dd/mm/yyyy" });
@@ -85,6 +90,7 @@ $(document).ready(function(){
 ```
 
 ### execute a function when the mask is completed, incomplete or cleared
+
 ```javascript
 $(document).ready(function(){
    $("#date").inputmask("d/m/y",{ "oncomplete": function(){ alert('inputmask complete'); } });
@@ -94,6 +100,7 @@ $(document).ready(function(){
 ```
 
 ### mask repeat function
+
 ```javascript
 $(document).ready(function(){
    $("#number").inputmask({ "mask": "9", "repeat": 10 });  // ~ mask "9999999999"
@@ -101,6 +108,7 @@ $(document).ready(function(){
 ```
 
 ### mask non-greedy repeat function
+
 ```javascript
 $(document).ready(function(){
    $("#number").inputmask({ "mask": "9", "repeat": 10, "greedy": false });  // ~ mask "9" or mask "99" or ... mask "9999999999"
@@ -108,6 +116,7 @@ $(document).ready(function(){
 ```
 
 ### get the unmaskedvalue
+
 ```javascript
 $(document).ready(function(){
    $("#number").inputmask('unmaskedvalue');
@@ -115,6 +124,7 @@ $(document).ready(function(){
 ```
 
 ### set a value and apply mask
+
 ```javascript
 $(document).ready(function(){
    $("#number").inputmask('setvalue', 12345); 
@@ -122,6 +132,7 @@ $(document).ready(function(){
 ```
 
 when the option patch_eval is set to true the same can be done with the traditionnal jquery.val function
+
 ```javascript
 $(document).ready(function(){
    $("#number").val(12345); 
@@ -129,6 +140,7 @@ $(document).ready(function(){
 ```
 
 with the autoUnmaskoption you can change the return of $.fn.val  to unmaskedvalue or the maskedvalue
+
 ```javascript
 $(document).ready(function(){
    	$('#<%= tbDate.ClientID%>').inputmask({ "mask": "d/m/y", 'autoUnmask' : true});	//  value: 23/03/1973
@@ -138,6 +150,7 @@ $(document).ready(function(){
 ```
 
 ### add custom definitions
+
 ```javascript
 $.extend($.inputmask.defaults.definitions, {
     'f': {
@@ -149,6 +162,7 @@ $.extend($.inputmask.defaults.definitions, {
 ```
 
 ### set defaults
+
 ```javascript
 $.extend($.inputmask.defaults, {
     'autounmask': true
@@ -156,6 +170,7 @@ $.extend($.inputmask.defaults, {
 ```
 
 ### numeric input direction
+
 ```javascript
 $(document).ready(function(){
     $('#test').inputmask('€ 999.999.999,99', { numericInput: true });    //   123456  =>  € ___.__1.234,56
@@ -163,6 +178,7 @@ $(document).ready(function(){
 ```
 
 ### remove the inputmask
+
 ```javascript
 $(document).ready(function(){
     $('#test').inputmask('remove');
@@ -170,6 +186,7 @@ $(document).ready(function(){
 ```
 
 ### escape special mask chars
+
 ```javascript
 $(document).ready(function(){
     $("#months").inputmask("m \\months");
@@ -177,6 +194,7 @@ $(document).ready(function(){
 ```
 
 ### clearIncomplete - remove incomplete input on blur
+
 ```javascript
 $(document).ready(function(){
     $("#ssn").inputmask("999-99-9999",{placeholder:" ", clearIncomplete: true });
@@ -187,6 +205,7 @@ $(document).ready(function(){
 When `clearIncomplete: true` is set in the options, the mask will treat masks marked option as separate from those that are not optional.
 
 For example, given:
+
 ```javascript
 $('#test').inputmask('999[-AAA]',{
 	clearIncomplete: true
@@ -197,6 +216,7 @@ When the required part of the mask is filled and the field loses focus, the user
 When both the required and optional parts of the mask are filled out and the field loses focus, the user will see `123-abc`.
 
 ### oncleared option
+
 ```javascript
 $(document).ready(function(){
     $("#ssn").inputmask("999-99-9999",{placeholder:" ", oncleared: function(){ alert('Set focus somewhere else ;-)');} });
@@ -206,6 +226,7 @@ $(document).ready(function(){
 ### aliases option
 
 First you have to create an alias definition (more examples can be found in jquery.inputmask.extentions.js)
+
 ```javascript
 $.extend($.inputmask.defaults.aliases, {
         'date': {
@@ -218,6 +239,7 @@ $.extend($.inputmask.defaults.aliases, {
 ```
 
 use:
+
 ```javascript
 $(document).ready(function(){
    $("#date").inputmask("date");       => equals to    $("#date").inputmask("d/m/y");
@@ -225,6 +247,7 @@ $(document).ready(function(){
 ```
 
 or use the dd/mm/yyyy alias of the date alias:
+
 ```javascript
 $(document).ready(function(){
    $("#date").inputmask("dd/mm/yyyy");       => equals to    $("#date").inputmask("d/m/y");
@@ -235,6 +258,7 @@ $(document).ready(function(){
 
 see jquery.inputmask.extentions.js for an example how to define "auto"-casing in a definition (definition A)
 casing can be null, "upper" or "lower"
+
 ```javascript
 $(document).ready(function(){
    $("#test").inputmask("999-AAA");       => 123abc ===> 123-ABC 
@@ -244,6 +268,7 @@ $(document).ready(function(){
 ### getemptymask command
 
 return the default (empty) mask value
+
 ```javascript
 $(document).ready(function(){
    $("#test").inputmask("999-AAA");    
@@ -254,6 +279,7 @@ $(document).ready(function(){
 ### RTL input 
 
 Just add the dir="rtl" attribute to the input element
+
 ```html
 <input id="test" dir="rtl" />
 ```
