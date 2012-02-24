@@ -474,7 +474,8 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     'greedy': opts.greedy,
                     'repeat': opts.repeat,
                     'autoUnmask': opts.autoUnmask,
-                    'definitions': opts.definitions
+                    'definitions': opts.definitions,
+                    'placeholder': opts.placeholder
                 });
 
                 //init buffer
