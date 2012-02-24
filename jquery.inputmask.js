@@ -518,7 +518,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                                 	for(var i = 0, length = value.length; i < length; i++){
                                 		if(!data.tests[i].optionality){
                                 			required++;
-                                			if(value[i] !== data.placeholder){
+                                			if(value[i] !== data.placeholder[i % data.placeholder.length]){
                                 				result += value[i];
                                 			}
                                 		}else{
