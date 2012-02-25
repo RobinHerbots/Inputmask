@@ -222,15 +222,6 @@ $(document).ready(function(){
 });
 ```
 
-
-### oncleared option
-
-```javascript
-$(document).ready(function(){
-    $("#ssn").inputmask("999-99-9999",{placeholder:" ", oncleared: function(){ alert('Set focus somewhere else ;-)');} });
-});
-```
-
 ### aliases option
 
 First you have to create an alias definition (more examples can be found in jquery.inputmask.extentions.js)
