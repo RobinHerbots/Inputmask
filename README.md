@@ -202,18 +202,26 @@ $(document).ready(function(){
 ```
 
 ### Optional Masks
-When `clearIncomplete: true` is set in the options, the mask will treat masks marked option as separate from those that are not optional.
+
+When `clearMaskOnLostFocus: true` is set in the options (default), the mask will always clearout masks marked as optional when not filled in.
 
 For example, given:
 
 ```javascript
-$('#test').inputmask('999[-AAA]',{
-	clearIncomplete: true
-});
+$('#test').inputmask('999[-AAA]');
 ```
 While the field has focus and is blank, users will see the full mask `___-___`.
 When the required part of the mask is filled and the field loses focus, the user will see `123`.
 When both the required and optional parts of the mask are filled out and the field loses focus, the user will see `123-abc`.
+
+### oncleared option
+
+```javascript
+$(document).ready(function(){
+    $("#ssn").inputmask("999-99-9999",{placeholder:" ", oncleared: function(){ alert('Set focus somewhere else ;-)');} });
+});
+```
+
 
 ### oncleared option
 
