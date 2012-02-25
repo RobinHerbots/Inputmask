@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.5.0 - dev
+Version: 0.5.1 - dev
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -492,9 +492,12 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 if (!input.attr("readonly")) {
                     input.bind("mouseenter.inputmask", function() {
                         var input = $(this);
-                        if (!input.hasClass('focus.inputmask') && _val.call(input).length == 0) {
-                            buffer = _buffer.slice();
-                            writeBuffer(input, buffer);
+                        if (!input.hasClass('focus.inputmask')) {
+                        	if(_val.call(input).length == 0) {
+                            	buffer = _buffer.slice();
+                            	writeBuffer(input, buffer);
+                        	} else if (_val.call(input).length < buffer.length)
+                        				writeBuffer(input, buffer);
                         }
                     }).bind("blur.inputmask", function() {
                         var input = $(this);
@@ -502,8 +505,22 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         if (_val.call(input) != undoBuffer) {
                             input.change();
                         }
-                        if (opts.clearMaskOnLostFocus && _val.call(input) == _buffer.join(''))
-                            _val.call(input, '');
+                        if (opts.clearMaskOnLostFocus) {
+                         	if(_val.call(input) == _buffer.join(''))
+                            	_val.call(input, '');
+                            else { //clearout optional tail of the mask 
+                            	var tmpBuffer = buffer.slice();
+                            	for(var pos = tmpBuffer.length - 1; pos >= 0 ; pos--) {
+                            		 var testPos = determineTestPosition(pos);
+                            		 if(tests[testPos].optionality){
+                            		 	if(getPlaceHolder(pos) == tmpBuffer[pos] || !isMask(pos))
+                            		 		tmpBuffer.pop();
+                            		 	else break;
+                            		 } else break;
+               					}
+               					writeBuffer(input, tmpBuffer);
+                            }
+                        }
                         if ((opts.clearIncomplete || opts.onincomplete) && checkVal(input, buffer, true) != getMaskLength()) {
                             if (opts.onincomplete) {
                                 opts.onincomplete.call(input);
@@ -523,8 +540,24 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         undoBuffer = _val.call(input);
                     }).bind("mouseleave.inputmask", function() {
                         var input = $(this);
-                        if (opts.clearMaskOnLostFocus && !input.hasClass('focus.inputmask') && _val.call(input) == _buffer.join(''))
-                            _val.call(input, '');
+                        if (opts.clearMaskOnLostFocus) {
+                         	if(!input.hasClass('focus.inputmask')) {
+                         		if(_val.call(input) == _buffer.join(''))
+                            	_val.call(input, '');
+                            	else { //clearout optional tail of the mask 
+                            		var tmpBuffer = buffer.slice();
+                            		for(var pos = tmpBuffer.length - 1; pos >= 0 ; pos--) {
+                            			 var testPos = determineTestPosition(pos);
+                            		 	if(tests[testPos].optionality){
+                            		 		if(getPlaceHolder(pos) == tmpBuffer[pos] || !isMask(pos))
+                            		 			tmpBuffer.pop();
+                            		 		else break;
+                            		 	} else break;
+               						}
+               						writeBuffer(input, tmpBuffer);
+                            	}
+                            }
+                        }
                     }).bind("click.inputmask", function() {
                         var input = $(this);
                         setTimeout(function() {
