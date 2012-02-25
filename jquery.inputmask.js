@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.5.1 - dev
+Version: 0.5.1a - dev
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -404,6 +404,19 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 return isRTL ? input.replace(new RegExp("^(" + EscapeRegex(_buffer.join('')) + ")*"), "") : input.replace(new RegExp("(" + EscapeRegex(_buffer.join('')) + ")*$"), "");
             }
 
+			function clearOptionalTail(input, buffer){
+				var tmpBuffer = buffer.slice();
+                for(var pos = tmpBuffer.length - 1; pos >= 0 ; pos--) {
+                	 var testPos = determineTestPosition(pos);
+                     if(tests[testPos].optionality){
+                        if(getPlaceHolder(pos) == tmpBuffer[pos] || !isMask(pos))
+                          tmpBuffer.pop();
+                        else break;
+                   	 } else break;
+               	}
+               	writeBuffer(input, tmpBuffer);
+			}
+
             //functionality fn
             function setvalue(el, value) {
                 _val.call(el, value);
@@ -509,16 +522,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                          	if(_val.call(input) == _buffer.join(''))
                             	_val.call(input, '');
                             else { //clearout optional tail of the mask 
-                            	var tmpBuffer = buffer.slice();
-                            	for(var pos = tmpBuffer.length - 1; pos >= 0 ; pos--) {
-                            		 var testPos = determineTestPosition(pos);
-                            		 if(tests[testPos].optionality){
-                            		 	if(getPlaceHolder(pos) == tmpBuffer[pos] || !isMask(pos))
-                            		 		tmpBuffer.pop();
-                            		 	else break;
-                            		 } else break;
-               					}
-               					writeBuffer(input, tmpBuffer);
+                            	clearOptionalTail(input, buffer);
                             }
                         }
                         if ((opts.clearIncomplete || opts.onincomplete) && checkVal(input, buffer, true) != getMaskLength()) {
@@ -545,16 +549,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                          		if(_val.call(input) == _buffer.join(''))
                             	_val.call(input, '');
                             	else { //clearout optional tail of the mask 
-                            		var tmpBuffer = buffer.slice();
-                            		for(var pos = tmpBuffer.length - 1; pos >= 0 ; pos--) {
-                            			 var testPos = determineTestPosition(pos);
-                            		 	if(tests[testPos].optionality){
-                            		 		if(getPlaceHolder(pos) == tmpBuffer[pos] || !isMask(pos))
-                            		 			tmpBuffer.pop();
-                            		 		else break;
-                            		 	} else break;
-               						}
-               						writeBuffer(input, tmpBuffer);
+                            		clearOptionalTail(input, buffer);
                             	}
                             }
                         }
