@@ -1,4 +1,6 @@
-jquery.inputmask is a jquery plugin which create an input mask ;-)
+#jquery.inputmask
+
+jquery.inputmask is a jquery plugin which create an input mask.
 
 The plugin is based on the maskedinput plugin of Josh Bush (http://digitalbush.com/projects/masked-input-plugin), but has finer control over the 'mask-definitions' and is fully compatible with the ui-datepicker
 
