@@ -195,11 +195,11 @@ $(document).ready(function(){
 });
 ```
 
-### clearIncomplete - remove incomplete input on blur
+### clearMaskOnLostFocus - remove the empty mask on blur or when not empty removes the optional trailing part
 
 ```javascript
 $(document).ready(function(){
-    $("#ssn").inputmask("999-99-9999",{placeholder:" ", clearIncomplete: true });
+    $("#ssn").inputmask("999-99-9999",{placeholder:" ", clearMaskOnLostFocus: true }); //default
 });
 ```
 
@@ -272,7 +272,7 @@ return the default (empty) mask value
 
 ```javascript
 $(document).ready(function(){
-   $("#test").inputmask("999-AAA");    
+   $("#test").inputmask("999-AAA");
    alert($("#test").inputmask("getemptymask"));    => "___-___" 
 });
 ```
