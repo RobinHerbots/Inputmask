@@ -218,14 +218,6 @@ While the field has focus and is blank, users will see the full mask `___-___`.
 When the required part of the mask is filled and the field loses focus, the user will see `123`.
 When both the required and optional parts of the mask are filled out and the field loses focus, the user will see `123-abc`.
 
-### oncleared option
-
-```javascript
-$(document).ready(function(){
-    $("#ssn").inputmask("999-99-9999",{placeholder:" ", oncleared: function(){ alert('Set focus somewhere else ;-)');} });
-});
-```
-
 ### aliases option
 
 First you have to create an alias definition (more examples can be found in jquery.inputmask.extentions.js)
