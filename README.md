@@ -237,7 +237,7 @@ use:
 
 ```javascript
 $(document).ready(function(){
-   $("#date").inputmask("date");       => equals to    $("#date").inputmask("d/m/y");
+   $("#date").inputmask("date");    //   => equals to    $("#date").inputmask("d/m/y");
 });
 ```
 
@@ -245,7 +245,7 @@ or use the dd/mm/yyyy alias of the date alias:
 
 ```javascript
 $(document).ready(function(){
-   $("#date").inputmask("dd/mm/yyyy");       => equals to    $("#date").inputmask("d/m/y");
+   $("#date").inputmask("dd/mm/yyyy");   //    => equals to    $("#date").inputmask("d/m/y");
 });
 ```
 
@@ -256,28 +256,26 @@ casing can be null, "upper" or "lower"
 
 ```javascript
 $(document).ready(function(){
-   $("#test").inputmask("999-AAA");       => 123abc ===> 123-ABC 
+   $("#test").inputmask("999-AAA");    //   => 123abc ===> 123-ABC 
 });
 ```
-
 ### getemptymask command
 
 return the default (empty) mask value
 
+
 ```javascript
 $(document).ready(function(){
    $("#test").inputmask("999-AAA");
-   alert($("#test").inputmask("getemptymask"));    => "___-___" 
+   var initialValue = $("#test").inputmask("getemptymask");  // initialValue  => "___-___" 
 });
 ```
 
-### RTL input 
+### rtl input
 
 Just add the dir="rtl" attribute to the input element
 
 ```html
 <input id="test" dir="rtl" />
 ```
-
------------------------------------------
 
