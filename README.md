@@ -195,7 +195,9 @@ $(document).ready(function(){
 });
 ```
 
-### clearMaskOnLostFocus - remove the empty mask on blur or when not empty removes the optional trailing part
+### clearMaskOnLostFocus
+
+remove the empty mask on blur or when not empty removes the optional trailing part
 
 ```javascript
 $(document).ready(function(){
