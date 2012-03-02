@@ -175,7 +175,7 @@ $.extend($.inputmask.defaults, {
 
 ```javascript
 $(document).ready(function(){
-    $('#test').inputmask('€ 999.999.999,99', { numericInput: true });    //   123456  =>  € ___.__1.234,56
+    $('#test').inputmask('€ 999.999.999,99', { numericInput: true });    //123456  =>  € ___.__1.234,56
 });
 ```
 
