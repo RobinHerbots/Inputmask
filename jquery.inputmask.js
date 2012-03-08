@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.5.3a
+Version: 0.5.3b
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -411,13 +411,6 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 writeBuffer(input, tmpBuffer);
             }
 
-            function _val(value) {
-                var npt = this.jquery && this.length > 0 ? this[0] : this;
-                if (value != undefined)
-                    npt._valueSet(value);
-                else return npt._valueGet();
-            }
-
             //functionality fn
             function unmaskedvalue($input, skipDatepickerCheck) {
                 var input = $input[0];
@@ -759,6 +752,10 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         opts.insertMode = !opts.insertMode;
                         caret(input, !opts.insertMode && pos.begin == getMaskLength() ? pos.begin - 1 : pos.begin);
                         return false;
+                    } else if (e.ctrlKey && k == 88) {
+                        setTimeout(function() {
+                            caret(input, checkVal(input, buffer, true));
+                        }, 0);
                     }
                     else if (!opts.insertMode) { //overwritemode
                         if (k == opts.keyCode.RIGHT) {//right
