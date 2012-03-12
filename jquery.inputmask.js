@@ -25,7 +25,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 oncleared: null, //executes when the mask is cleared
                 repeat: 0, //repetitions of the mask
                 greedy: true, //true: allocated buffer for the mask and repetitions - false: allocate only if needed
-                autoUnmask: false, //automatically unmask when retrieving the value with $.fn.val or value if the browser supports __lookupGetter__
+                autoUnmask: false, //automatically unmask when retrieving the value with $.fn.val or value if the browser supports __lookupGetter__ or getOwnPropertyDescriptor
                 numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
                 clearMaskOnLostFocus: true,
                 insertMode: true, //insert the input or overwrite the input
