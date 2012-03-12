@@ -127,27 +127,26 @@ $(document).ready(function(){
 
 ### set a value and apply mask
 
-```javascript
-$(document).ready(function(){
-   $("#number").inputmask('setvalue', 12345); 
-});
-```
-
-when the option patch_eval is set to true the same can be done with the traditionnal jquery.val function
+this can be done with the traditionnal jquery.val function (all browsers) or javascript value property for browsers which implement lookupGetter or getOwnPropertyDescriptor
 
 ```javascript
 $(document).ready(function(){
    $("#number").val(12345); 
+   
+   var number = document.getElementById("number");
+   number.value = 12345;
 });
 ```
 
-with the autoUnmaskoption you can change the return of $.fn.val  to unmaskedvalue or the maskedvalue
+with the autoUnmaskoption you can change the return of $.fn.val (or value property)  to unmaskedvalue or the maskedvalue
 
 ```javascript
 $(document).ready(function(){
    	$('#<%= tbDate.ClientID%>').inputmask({ "mask": "d/m/y", 'autoUnmask' : true});	//  value: 23/03/1973
-
 	alert($('#<%= tbDate.ClientID%>').val());	// shows 23031973     (autoUnmask: true)
+	
+	var tbDate = document.getElementById("<%= tbDate.ClientID%>");
+    alert(tbDate.value);	// shows 23031973     (autoUnmask: true)
 });
 ```
 

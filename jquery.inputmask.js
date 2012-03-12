@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.5.2
+Version: 0.5.3d
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -25,8 +25,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 oncleared: null, //executes when the mask is cleared
                 repeat: 0, //repetitions of the mask
                 greedy: true, //true: allocated buffer for the mask and repetitions - false: allocate only if needed
-                patch_val: true, //override the jquery.val fn to detect changed in the inputmask by setting val(value)
-                autoUnmask: false, //in combination with patch_val: true => automatically unmask when retrieving the value with $.fn.val
+                autoUnmask: false, //automatically unmask when retrieving the value with $.fn.val or value if the browser supports __lookupGetter__ or getOwnPropertyDescriptor
                 numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
                 clearMaskOnLostFocus: true,
                 insertMode: true, //insert the input or overwrite the input
@@ -67,30 +66,6 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
             var caretposCorrection = null;
 
-            var _val = $.inputmask.val;
-            if (opts.patch_val && $.fn.val.inputmaskpatch != true) {
-                $.fn.val = function() {
-                    if (this.data('inputmask')) {
-                        if (this.data('inputmask')['autoUnmask'] && arguments.length == 0) {
-                            return this.inputmask('unmaskedvalue');
-                        }
-                        else {
-                            var result = _val.apply(this, arguments);
-                            if (arguments.length > 0) {
-                                this.triggerHandler('setvalue.inputmask');
-                            }
-                            return result;
-                        }
-                    }
-                    else {
-                        return _val.apply(this, arguments);
-                    }
-                };
-                $.extend($.fn.val, {
-                    inputmaskpatch: true
-                });
-            }
-
             if (typeof fn == "string") {
                 switch (fn) {
                     case "mask":
@@ -110,26 +85,33 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         opts.definitions = this.data('inputmask')['definitions'];
                         return unmaskedvalue(this);
                         break;
-                    case "setvalue":
-                        setvalue(this, options); //options in this case the value
-                        break;
                     case "remove":
                         var tests, _buffer;
                         return this.each(function() {
-                            var input = $(this);
-                            if (input.data('inputmask')) {
-                                tests = input.data('inputmask')['tests'];
-                                _buffer = input.data('inputmask')['_buffer'];
-                                opts.greedy = input.data('inputmask')['greedy'];
-                                opts.repeat = input.data('inputmask')['repeat'];
-                                opts.definitions = input.data('inputmask')['definitions'];
+                            var $input = $(this), input = this;
+                            if ($input.data('inputmask')) {
+                                tests = $input.data('inputmask')['tests'];
+                                _buffer = $input.data('inputmask')['_buffer'];
+                                opts.greedy = $input.data('inputmask')['greedy'];
+                                opts.repeat = $input.data('inputmask')['repeat'];
+                                opts.definitions = $input.data('inputmask')['definitions'];
                                 //writeout the unmaskedvalue
-                                _val.call(input, unmaskedvalue(input, true));
+                                input._valueSet(unmaskedvalue($input, true));
                                 //clear data
-                                input.removeData('inputmask');
+                                $input.removeData('inputmask');
                                 //unbind all events
-                                input.unbind(".inputmask");
-                                input.removeClass('focus.inputmask');
+                                $input.unbind(".inputmask");
+                                $input.removeClass('focus.inputmask');
+                                //restore the value property
+                                if (document.__lookupGetter__) {
+                                    if (input._valueGet) {
+                                        input.__defineGetter__("value", input._valueGet);
+                                        input.__defineSetter__("value", input._valueSet);
+
+                                        delete input._valueGet;
+                                        delete input._valueSet;
+                                    }
+                                }
                             }
                         });
                         break;
@@ -324,7 +306,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             function prepareBuffer(buffer, position) {
                 while ((buffer.length < position || position < 0) && buffer.length < getMaskLength()) {
                     var j = 0;
-                    if (input.data('inputmask')['isRTL']) {
+                    if ($input.data('inputmask')['isRTL']) {
                         j = _buffer.length - 1;
                         position = position + _buffer.length;
                         while (_buffer[j] !== undefined)
@@ -339,7 +321,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
 
             function writeBuffer(input, buffer, caretPos) {
-                _val.call(input, buffer.join(''));
+                input._valueSet(buffer.join(''));
                 if (caretPos != undefined) {
                     if (android) {
                         setTimeout(function() {
@@ -361,8 +343,8 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
 
             function checkVal(input, buffer, clearInvalid) {
-            	var isRTL = input.data('inputmask')['isRTL'],
-                    inputValue = TruncateInput(_val.call(input), isRTL);
+                var isRTL = $(input).data('inputmask')['isRTL'],
+                    inputValue = TruncateInput(input._valueGet(), isRTL);
                 clearBuffer(buffer, 0, buffer.length);
                 buffer.length = _buffer.length;
                 var lastMatch = -1, checkPosition = -1, maskL = getMaskLength(), ivl = inputValue.length, rtlMatch = ivl == 0 ? maskL : -1;
@@ -405,47 +387,42 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 return rtl ? inputValue.replace(new RegExp("^(" + EscapeRegex(_buffer.join('')) + ")*"), "") : inputValue.replace(new RegExp("(" + EscapeRegex(_buffer.join('')) + ")*$"), "");
             }
 
-			function clearOptionalTail(input, buffer){
-				var tmpBuffer = buffer.slice();
-               	if(input.data('inputmask')['isRTL']) { 
-               		for(var pos = 0; pos <= tmpBuffer.length - 1; pos++) {
-                	 	var testPos = determineTestPosition(pos);
-                     	if(tests[testPos].optionality){
-                        	if(getPlaceHolder(pos) == buffer[pos] || !isMask(pos))
-                          		tmpBuffer.splice(0, 1);
-                        	else break;
-                   		} else break;
-               		}
-               	} else {
-                 	for(var pos = tmpBuffer.length - 1; pos >= 0 ; pos--) {
-                	 	var testPos = determineTestPosition(pos);
-                     	if(tests[testPos].optionality){
-                        	if(getPlaceHolder(pos) == buffer[pos] || !isMask(pos))
-                          	tmpBuffer.pop();
-                        	else break;
-                   		 } else break;
-               		}
-               	}
-               	writeBuffer(input, tmpBuffer);
-			}
-
-            //functionality fn
-            function setvalue(el, value) {
-                _val.call(el, value);
-                el.triggerHandler('setvalue.inputmask');
+            function clearOptionalTail(input, buffer) {
+                var tmpBuffer = buffer.slice();
+                if ($(input).data('inputmask')['isRTL']) {
+                    for (var pos = 0; pos <= tmpBuffer.length - 1; pos++) {
+                        var testPos = determineTestPosition(pos);
+                        if (tests[testPos].optionality) {
+                            if (getPlaceHolder(pos) == buffer[pos] || !isMask(pos))
+                                tmpBuffer.splice(0, 1);
+                            else break;
+                        } else break;
+                    }
+                } else {
+                    for (var pos = tmpBuffer.length - 1; pos >= 0; pos--) {
+                        var testPos = determineTestPosition(pos);
+                        if (tests[testPos].optionality) {
+                            if (getPlaceHolder(pos) == buffer[pos] || !isMask(pos))
+                                tmpBuffer.pop();
+                            else break;
+                        } else break;
+                    }
+                }
+                writeBuffer(input, tmpBuffer);
             }
 
-            function unmaskedvalue(el, skipDatepickerCheck) {
-
-                if (tests && (skipDatepickerCheck === true || !el.hasClass('hasDatepicker'))) {
+            //functionality fn
+            function unmaskedvalue($input, skipDatepickerCheck) {
+                var input = $input[0];
+                if (tests && (skipDatepickerCheck === true || !$input.hasClass('hasDatepicker'))) {
                     var buffer = _buffer.slice();
-                    checkVal(el, buffer);
+                    checkVal(input, buffer);
                     return $.map(buffer, function(element, index) {
                         return isMask(index) && element != getBufferElement(_buffer.slice(), index) ? element : null;
                     }).join('');
                 }
                 else {
-                    return _val.call(el);
+                    return input._valueGet();
                 }
             }
 
@@ -483,10 +460,10 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             };
 
             function mask(el) {
-                var input = $(el);
+                var $input = $(el);
 
                 //store tests & original buffer in the input element - used to get the unmasked value
-                input.data('inputmask', {
+                $input.data('inputmask', {
                     'tests': tests,
                     '_buffer': _buffer,
                     'greedy': opts.greedy,
@@ -496,49 +473,52 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     'isRTL': false
                 });
 
+                patchValueProperty(el);
+
                 //init vars
                 var buffer = _buffer.slice(),
-                undoBuffer = _val.call(input),
+                undoBuffer = el._valueGet(),
                 skipKeyPressEvent = false, //Safari 5.1.x - modal dialog fires keypress twice workaround
-				ignorable = false,
+                ignorable = false,
                 lastPosition = -1,
                 firstMaskPos = seekNext(buffer, -1),
                 isRTL = false;
                 if (el.dir == "rtl" || opts.numericInput) {
                     el.dir = "ltr"
-                    input.css("text-align", "right");
-                    input.removeAttr("dir");
-                    inputData = input.data('inputmask');
+                    $input.css("text-align", "right");
+                    $input.removeAttr("dir");
+                    inputData = $input.data('inputmask');
                     inputData['isRTL'] = true;
-                    input.data('inputmask', inputData);
+                    $input.data('inputmask', inputData);
                     isRTL = true;
                 }
 
                 //unbind all events - to make sure that no other mask will interfere when re-masking
-                input.unbind(".inputmask");
-                input.removeClass('focus.inputmask');
+                $input.unbind(".inputmask");
+                $input.removeClass('focus.inputmask');
                 //bind events
-                if (!input.attr("readonly")) {
-                    input.bind("mouseenter.inputmask", function() {
-                        var input = $(this);
-                        if (!input.hasClass('focus.inputmask')) {
-                        	if(_val.call(input).length == 0) {
-                            	buffer = _buffer.slice();
-                            	writeBuffer(input, buffer);
-                        	} else if (_val.call(input).length < buffer.length)
-                        				writeBuffer(input, buffer);
+                if (!$input.attr("readonly")) {
+                    $input.bind("mouseenter.inputmask", function() {
+                        var $input = $(this), input = this;
+                        if (!$input.hasClass('focus.inputmask')) {
+                            var nptL = input._valueGet().length;
+                            if (nptL == 0) {
+                                buffer = _buffer.slice();
+                                writeBuffer(input, buffer);
+                            } else if (nptL < buffer.length)
+                                writeBuffer(input, buffer);
                         }
                     }).bind("blur.inputmask", function() {
-                        var input = $(this);
-                        input.removeClass('focus.inputmask');
-                        if (_val.call(input) != undoBuffer) {
-                            input.change();
+                        var $input = $(this), input = this, nptValue = input._valueGet();
+                        $input.removeClass('focus.inputmask');
+                        if (nptValue != undoBuffer) {
+                            $input.change();
                         }
                         if (opts.clearMaskOnLostFocus) {
-                         	if(_val.call(input) == _buffer.join(''))
-                            	_val.call(input, '');
-                            else { //clearout optional tail of the mask 
-                            	clearOptionalTail(input, buffer);
+                            if (nptValue == _buffer.join(''))
+                                input._valueSet('');
+                            else { //clearout optional tail of the mask
+                                clearOptionalTail(input, buffer);
                             }
                         }
                         if ((opts.clearIncomplete || opts.onincomplete) && checkVal(input, buffer, true) != getMaskLength()) {
@@ -547,7 +527,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             }
                             if (opts.clearIncomplete) {
                                 if (opts.clearMaskOnLostFocus)
-                                    _val.call(input, '');
+                                    input._valueSet('');
                                 else {
                                     buffer = _buffer.slice();
                                     writeBuffer(input, buffer);
@@ -555,22 +535,22 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             }
                         }
                     }).bind("focus.inputmask", function() {
-                        var input = $(this);
-                        input.addClass('focus.inputmask');
-                        undoBuffer = _val.call(input);
+                        var $input = $(this), input = this;
+                        $input.addClass('focus.inputmask');
+                        undoBuffer = input._valueGet();
                     }).bind("mouseleave.inputmask", function() {
-                        var input = $(this);
+                        var $input = $(this), input = this;
                         if (opts.clearMaskOnLostFocus) {
-                         	if(!input.hasClass('focus.inputmask')) {
-                         		if(_val.call(input) == _buffer.join(''))
-                            	_val.call(input, '');
-                            	else { //clearout optional tail of the mask 
-                            		clearOptionalTail(input, buffer);
-                            	}
+                            if (!$input.hasClass('focus.inputmask')) {
+                                if (input._valueGet() == _buffer.join(''))
+                                    input._valueSet('');
+                                else { //clearout optional tail of the mask
+                                    clearOptionalTail(input, buffer);
+                                }
                             }
                         }
                     }).bind("click.inputmask", function() {
-                        var input = $(this);
+                        var input = this;
                         setTimeout(function() {
                             var selectedCaret = caret(input);
                             if (selectedCaret.begin == selectedCaret.end) {
@@ -583,46 +563,109 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             }
                         }, 0);
                     }).bind('dblclick.inputmask', function() {
-                        var input = $(this);
+                        var input = this;
                         setTimeout(function() {
                             caret(input, 0, lastPosition);
                         }, 0);
                     }).bind("keydown.inputmask", keydownEvent
                 ).bind("keypress.inputmask", keypressEvent
                 ).bind("keyup.inputmask", function(e) {
-                    var input = $(this);
+                    var $input = $(this), input = this;
                     var k = e.keyCode;
-                    if (k == opts.keyCode.TAB && input.hasClass('focus.inputmask') && _val.call(input).length == 0) {
+                    if (k == opts.keyCode.TAB && $input.hasClass('focus.inputmask') && input._valueGet().length == 0) {
                         buffer = _buffer.slice();
                         writeBuffer(input, buffer);
                         if (!isRTL) caret(input, 0);
                     }
                 }).bind(pasteEventName, function() {
-                    var input = $(this);
+                    var input = this;
                     setTimeout(function() {
                         caret(input, checkVal(input, buffer, true));
                     }, 0);
                 }).bind('setvalue.inputmask', function() {
-                    var input = $(this);
+                    var input = this;
                     setTimeout(function() {
-                        undoBuffer = _val.call(input);
+                        undoBuffer = input._valueGet();
                         checkVal(input, buffer, true);
-                        if (_val.call(input) == _buffer.join(''))
-                            _val.call(input, '');
+                        if (input._valueGet() == _buffer.join(''))
+                            input._valueSet('');
                     }, 0);
                 });
                 }
 
                 setTimeout(function() {
-                    lastPosition = checkVal(input, buffer, true);
-                    if (document.activeElement === input[0]) { //position the caret when in focus
-                        input.addClass('focus.inputmask');
-                        caret(input, lastPosition);
-                    } else if (opts.clearMaskOnLostFocus && _val.call(input) == _buffer.join(''))
-                        _val.call(input, '');
+                    lastPosition = checkVal(el, buffer, true);
+                    if (document.activeElement === el) { //position the caret when in focus
+                        $input.addClass('focus.inputmask');
+                        caret(el, lastPosition);
+                    } else if (opts.clearMaskOnLostFocus && el._valueGet() == _buffer.join(''))
+                        el._valueSet('');
                 }, 0);
 
                 //private functions
+                function patchValueProperty(npt) {
+                    var valueProperty;
+                    if (Object.getOwnPropertyDescriptor)
+                        var valueProperty = Object.getOwnPropertyDescriptor(npt, "value");
+                    if (valueProperty) {
+                        if (!npt._valueGet) {
+
+                            npt._valueGet = valueProperty.get;
+                            npt._valueSet = valueProperty.set;
+
+                            Object.defineProperty(npt, "value", {
+                                get: function() {
+                                    var $self = $(this), inputData = $(this).data('inputmask');
+                                    return inputData && inputData['autoUnmask'] ? $self.inputmask('unmaskedvalue') : this._valueGet();
+                                },
+                                set: function(value) {
+                                    this._valueSet(value); $(this).triggerHandler('setvalue.inputmask');
+                                }
+                            });
+                        }
+                    } else if (document.__lookupGetter__) {
+                        if (!npt._valueGet) {
+                            npt._valueGet = npt.__lookupGetter__("value");
+                            npt._valueSet = npt.__lookupSetter__("value");
+
+                            npt.__defineGetter__("value", function() {
+                                var $self = $(this), inputData = $(this).data('inputmask');
+                                return inputData && inputData['autoUnmask'] ? $self.inputmask('unmaskedvalue') : this._valueGet();
+                            });
+                            npt.__defineSetter__("value", function(value) {
+                                this._valueSet(value); $(this).triggerHandler('setvalue.inputmask');
+                            });
+                        }
+                    } else {
+                        if (!npt._valueGet) {
+                            npt._valueGet = function() { return this.value; }
+                            npt._valueSet = function(value) { this.value = value; }
+                        }
+                        if ($.fn.val.inputmaskpatch != true) {
+                            $.fn.val = function() {
+                                var $self = $(this);
+                                if ($self.data('inputmask')) {
+                                    if ($self.data('inputmask')['autoUnmask'] && arguments.length == 0) {
+                                        return $self.inputmask('unmaskedvalue');
+                                    }
+                                    else {
+                                        var result = $.inputmask.val.apply(this, arguments);
+                                        if (arguments.length > 0) {
+                                            this.triggerHandler('setvalue.inputmask');
+                                        }
+                                        return result;
+                                    }
+                                }
+                                else {
+                                    return $.inputmask.val.apply(this, arguments);
+                                }
+                            };
+                            $.extend($.fn.val, {
+                                inputmaskpatch: true
+                            });
+                        }
+                    }
+                }
                 //shift chars to left from start to end and put c at end position if defined
                 function shiftL(start, end, c) {
                     while (!isMask(start) && start - 1 >= 0) start--;
@@ -682,11 +725,8 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     //Safari 5.1.x - modal dialog fires keypress twice workaround
                     skipKeyPressEvent = false;
 
-                    var input = $(this), k = e.keyCode, pos = caret(input);
+                    var input = this, k = e.keyCode, pos = caret(input);
 
-                    //delete selection before proceeding
-                    if (((pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode)) && (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE))
-                        clearBuffer(buffer, pos.begin, pos.end);
 
                     //backspace, delete, and escape get special treatment
                     if (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE || (iphone && k == 127)) {//backspace/delete
@@ -695,17 +735,20 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             buffer = _buffer.slice();
                             writeBuffer(input, buffer);
                             if (!isRTL) caret(input, firstMaskPos);
+                        } else if ((pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode)) { //FIXME not yet complete
+                            clearBuffer(buffer, pos.begin, pos.end);
+                            writeBuffer(input, buffer, beginPos);
                         } else {
                             var beginPos = pos.begin - (k == opts.keyCode.DELETE ? 0 : 1);
-                            if(beginPos >= firstMaskPos) {
-                            	if (isRTL) {
-                                	beginPos = shiftR(firstMaskPos, beginPos, getPlaceHolder(0), true);
-                                	beginPos = seekNext(buffer, beginPos);
-                            	} else beginPos = shiftL(beginPos, maskL);
-                            	writeBuffer(input, buffer, beginPos);
+                            if (beginPos >= firstMaskPos) {
+                                if (isRTL) {
+                                    beginPos = shiftR(firstMaskPos, beginPos, getPlaceHolder(0), true);
+                                    beginPos = seekNext(buffer, beginPos);
+                                } else beginPos = shiftL(beginPos, maskL);
+                                writeBuffer(input, buffer, beginPos);
                             }
                         }
-                        if (opts.oncleared && _val.call(input) == _buffer.join(''))
+                        if (opts.oncleared && input._valueGet() == _buffer.join(''))
                             opts.oncleared.call(input);
 
                         return false;
@@ -721,13 +764,17 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         return false;
                     }
                     else if (k == opts.keyCode.ESCAPE) {//escape
-                        _val.call(input, undoBuffer);
+                        input._valueSet(undoBuffer);
                         caret(input, 0, checkVal(input, buffer));
                         return false;
                     } else if (k == opts.keyCode.INSERT) {//insert
                         opts.insertMode = !opts.insertMode;
                         caret(input, !opts.insertMode && pos.begin == getMaskLength() ? pos.begin - 1 : pos.begin);
                         return false;
+                    } else if (e.ctrlKey && k == 88) {
+                        setTimeout(function() {
+                            caret(input, checkVal(input, buffer, true));
+                        }, 0);
                     }
                     else if (!opts.insertMode) { //overwritemode
                         if (k == opts.keyCode.RIGHT) {//right
@@ -751,7 +798,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     if (skipKeyPressEvent) return false;
                     skipKeyPressEvent = true;
 
-                    var input = $(this);
+                    var input = this;
 
                     e = e || window.event;
                     var k = e.which || e.charCode || e.keyCode;
@@ -766,7 +813,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                                     if (isValid(firstMaskPos, buffer[firstMaskPos], buffer) == false || (opts.greedy === false && buffer.length < maskL)) {
                                         if (buffer[firstMaskPos] != getPlaceHolder(firstMaskPos) && buffer.length < maskL) {
                                             var offset = prepareBuffer(buffer, -1) + 1;
-											p = p + offset;
+                                            p = p + offset;
                                             maskL = buffer.length;
                                         }
                                         shiftL(firstMaskPos, p, c);
