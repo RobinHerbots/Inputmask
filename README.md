@@ -127,7 +127,7 @@ $(document).ready(function(){
 
 ### set a value and apply mask
 
-this can be done with the traditionnal jquery.val function (all browsers) or javascript value property for browsers which implement lookupGetter
+this can be done with the traditionnal jquery.val function (all browsers) or javascript value property for browsers which implement lookupGetter or getOwnPropertyDescriptor
 
 ```javascript
 $(document).ready(function(){
