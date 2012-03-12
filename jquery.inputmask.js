@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.5.3c
+Version: 0.5.3d
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -25,7 +25,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 oncleared: null, //executes when the mask is cleared
                 repeat: 0, //repetitions of the mask
                 greedy: true, //true: allocated buffer for the mask and repetitions - false: allocate only if needed
-                autoUnmask: false, //automatically unmask when retrieving the value with $.fn.val or value if the browser supports __lookupGetter__ or getOwnPropertyDescriptor
+                autoUnmask: false, //automatically unmask when retrieving the value with $.fn.val or value if the browser supports __lookupGetter__
                 numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
                 clearMaskOnLostFocus: true,
                 insertMode: true, //insert the input or overwrite the input
@@ -604,11 +604,14 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
                 //private functions
                 function patchValueProperty(npt) {
-                    if (Object.getOwnPropertyDescriptor) {
+                    var valueProperty;
+                    if (Object.getOwnPropertyDescriptor)
+                        var valueProperty = Object.getOwnPropertyDescriptor(npt, "value");
+                    if (valueProperty) {
                         if (!npt._valueGet) {
-                            var valueProperty = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")
-                            npt._valueGet = function() { return valueProperty.get.call(this); }
-                            npt._valueSet = function(value) { return valueProperty.set.call(this, value); }
+
+                            npt._valueGet = valueProperty.get;
+                            npt._valueSet = valueProperty.set;
 
                             Object.defineProperty(npt, "value", {
                                 get: function() {
@@ -617,9 +620,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                                 },
                                 set: function(value) {
                                     this._valueSet(value); $(this).triggerHandler('setvalue.inputmask');
-                                },
-                                enumerable: true,
-                                configurable: true
+                                }
                             });
                         }
                     } else if (document.__lookupGetter__) {
