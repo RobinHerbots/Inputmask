@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.5.3b
+Version: 0.5.3c
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -604,7 +604,25 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
                 //private functions
                 function patchValueProperty(npt) {
-                    if (document.__lookupGetter__) {
+                    if (Object.getOwnPropertyDescriptor) {
+                        if (!npt._valueGet) {
+                            var valueProperty = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")
+                            npt._valueGet = function() { return valueProperty.get.call(this); }
+                            npt._valueSet = function(value) { return valueProperty.set.call(this, value); }
+
+                            Object.defineProperty(npt, "value", {
+                                get: function() {
+                                    var $self = $(this), inputData = $(this).data('inputmask');
+                                    return inputData && inputData['autoUnmask'] ? $self.inputmask('unmaskedvalue') : this._valueGet();
+                                },
+                                set: function(value) {
+                                    this._valueSet(value); $(this).triggerHandler('setvalue.inputmask');
+                                },
+                                enumerable: true,
+                                configurable: true
+                            });
+                        }
+                    } else if (document.__lookupGetter__) {
                         if (!npt._valueGet) {
                             npt._valueGet = npt.__lookupGetter__("value");
                             npt._valueSet = npt.__lookupSetter__("value");
