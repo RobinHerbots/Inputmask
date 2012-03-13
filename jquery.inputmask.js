@@ -607,7 +607,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     var valueProperty;
                     if (Object.getOwnPropertyDescriptor)
                         var valueProperty = Object.getOwnPropertyDescriptor(npt, "value");
-                    if (valueProperty) {
+                    if (valueProperty && valueProperty.get) {
                         if (!npt._valueGet) {
 
                             npt._valueGet = valueProperty.get;
