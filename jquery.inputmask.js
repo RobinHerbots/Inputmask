@@ -623,7 +623,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                                 }
                             });
                         }
-                    } else if (document.__lookupGetter__) {
+                    } else if (document.__lookupGetter__ && npt.__lookupGetter__("value")) {
                         if (!npt._valueGet) {
                             npt._valueGet = npt.__lookupGetter__("value");
                             npt._valueSet = npt.__lookupSetter__("value");
