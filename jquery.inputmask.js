@@ -238,7 +238,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 }
 
                 if (c) { chrs += c; }
-                return tests[testPos].fn != null ? tests[testPos].fn.test(chrs, buffer) : false;
+                return tests[testPos].fn != null ? tests[testPos].fn.test(chrs, buffer, pos) : false;
             }
 
             function isMask(pos) {

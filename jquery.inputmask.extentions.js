@@ -88,7 +88,8 @@ Optional extentions on the jquery.inputmask base
                         ]
                 }
             },
-            insertMode: false
+            insertMode: false,
+            autoUnmask: false
         },
         'mm/dd/yyyy': {
             mask: "m/d/y",
@@ -137,14 +138,134 @@ Optional extentions on the jquery.inputmask base
                         ]
                     }
                 },
-                insertMode: false
-            },
-            'date': {
-                alias: "dd/mm/yyyy"
+                insertMode: false,
+                autoUnmask: false
             },
             'hh:mm:ss': {
                 mask: "h:s:s",
                 autoUnmask: false
+            },
+            'hh:mm': {
+                mask: "h:s",
+                autoUnmask: false
+            },
+            'date': {
+                alias: "dd/mm/yyyy" // "mm/dd/yyyy"
+            },
+            'datetime': {
+                mask: "d/m/y h:s",
+                placeholder: "dd/mm/yyyy hh:mm",
+                regex: {
+                    month: new RegExp("((0[1-9]|[12][0-9])\/(0[1-9]|1[012]))|(30\/(0[13-9]|1[012]))|(31\/(0[13578]|1[02]))"),
+                    year: new RegExp("(19|20)\\d\\d")
+                },
+                definitions: {
+                    'm': { //month
+                        validator: function(chrs, buffer) {
+                            var dayValue = buffer.join('').substr(0, 3);
+                            return $.inputmask.defaults.aliases['dd/mm/yyyy'].regex.month.test(dayValue + chrs);
+                        },
+                        cardinality: 2,
+                        prevalidator: [{ validator: "[01]", cardinality: 1}]
+                    },
+                    'y': { //year
+                        validator: function(chrs, buffer) {
+                            if ($.inputmask.defaults.aliases['dd/mm/yyyy'].regex.year.test(chrs)) {
+                                var dayMonthValue = buffer.join('').substr(0, 6);
+                                if (dayMonthValue != "29/02/")
+                                    return true;
+                                else {
+                                    var year = parseInt(chrs);  //detect leap year
+                                    if (year % 4 == 0)
+                                        if (year % 100 == 0)
+                                        if (year % 400 == 0)
+                                        return true;
+                                    else return false;
+                                    else return true;
+                                    else return false;
+                                }
+                            } else return false;
+                        },
+                        cardinality: 4,
+                        prevalidator: [
+                        { validator: "[12]", cardinality: 1 },
+                        { validator: "(19|20)", cardinality: 2 },
+                        { validator: "(19|20)\\d", cardinality: 3 }
+                        ]
+                    }
+                },
+                insertMode: false,
+                autoUnmask: false
+            },
+            //number aliases by Dean (datimson)
+            'decimal': {
+                mask: "~",
+                placeholder: "",
+                repeat: 10,
+                greedy: false,
+                regex: {
+                    real: new RegExp("^([\+\-]?[0-9]*[\.]?[0-9]*)$")
+                },
+                definitions: {
+                    '~': { //real number
+                        validator: function(chrs, buffer, pos) {
+                            var myBuffer = buffer.slice();
+                            myBuffer.splice(pos, 0, chrs);
+                            var test = myBuffer.join('');
+                            var isValid = $.inputmask.defaults.aliases['decimal'].regex.real.test(test);
+                            return isValid;
+                        },
+                        cardinality: 1,
+                        prevalidator: null
+                    }
+                },
+                insertMode: true
+            },
+            'non-negative-decimal': {
+                mask: "~",
+                placeholder: "",
+                repeat: 10,
+                greedy: false,
+                regex: {
+                    decimal: new RegExp("^([0-9]*[\.]?[0-9]*)$")
+                },
+                definitions: {
+                    '~': {
+                        validator: function(chrs, buffer, pos) {
+                            var myBuffer = buffer.slice();
+                            myBuffer.splice(pos, 0, chrs);
+                            var test = myBuffer.join('');
+                            var isValid = $.inputmask.defaults.aliases['non-negative-decimal'].regex.decimal.test(test);
+                            return isValid;
+                        },
+                        cardinality: 1,
+                        prevalidator: null
+                    }
+                },
+                insertMode: true
+            },
+            'integer': {
+                mask: "~",
+                placeholder: "",
+                repeat: 10,
+                greedy: false,
+                regex: {
+                    integer: new RegExp("^([\+\-]?[0-9]*)$")
+                },
+                definitions: {
+                    '~': {
+                        validator: function(chrs, buffer, pos) {
+                            var myBuffer = buffer.slice();
+                            myBuffer.splice(pos, 0, chrs);
+                            var test = myBuffer.join('');
+                            var isValid = $.inputmask.defaults.aliases['integer'].regex.integer.test(test);
+                            return isValid;
+                        },
+                        cardinality: 1,
+                        prevalidator: null
+                    }
+                },
+                insertMode: true
             }
         });
     })(jQuery);
