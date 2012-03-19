@@ -196,6 +196,76 @@ Optional extentions on the jquery.inputmask base
                 },
                 insertMode: false,
                 autoUnmask: false
+            },
+            //number aliases by Dean (datimson)
+            'decimal': {
+                mask: "~",
+                placeholder: "",
+                repeat: 10,
+                greedy: false,
+                regex: {
+                    real: new RegExp("^([\+\-]?[0-9]*[\.]?[0-9]*)$")
+                },
+                definitions: {
+                    '~': { //real number
+                        validator: function(chrs, buffer, pos) {
+                            var myBuffer = buffer.slice();
+                            myBuffer.splice(pos, 0, chrs);
+                            var test = myBuffer.join('');
+                            var isValid = $.inputmask.defaults.aliases['decimal'].regex.real.test(test);
+                            return isValid;
+                        },
+                        cardinality: 1,
+                        prevalidator: null
+                    }
+                },
+                insertMode: true
+            },
+            'non-negative-decimal': {
+                mask: "~",
+                placeholder: "",
+                repeat: 10,
+                greedy: false,
+                regex: {
+                    decimal: new RegExp("^([0-9]*[\.]?[0-9]*)$")
+                },
+                definitions: {
+                    '~': {
+                        validator: function(chrs, buffer, pos) {
+                            var myBuffer = buffer.slice();
+                            myBuffer.splice(pos, 0, chrs);
+                            var test = myBuffer.join('');
+                            var isValid = $.inputmask.defaults.aliases['non-negative-decimal'].regex.decimal.test(test);
+                            return isValid;
+                        },
+                        cardinality: 1,
+                        prevalidator: null
+                    }
+                },
+                insertMode: true
+            },
+            'integer': {
+                mask: "~",
+                placeholder: "",
+                repeat: 10,
+                greedy: false,
+                regex: {
+                    integer: new RegExp("^([\+\-]?[0-9]*)$")
+                },
+                definitions: {
+                    '~': {
+                        validator: function(chrs, buffer, pos) {
+                            var myBuffer = buffer.slice();
+                            myBuffer.splice(pos, 0, chrs);
+                            var test = myBuffer.join('');
+                            var isValid = $.inputmask.defaults.aliases['integer'].regex.integer.test(test);
+                            return isValid;
+                        },
+                        cardinality: 1,
+                        prevalidator: null
+                    }
+                },
+                insertMode: true
             }
         });
     })(jQuery);
