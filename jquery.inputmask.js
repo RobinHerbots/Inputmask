@@ -388,27 +388,29 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
 
             function clearOptionalTail(input, buffer) {
-                var tmpBuffer = buffer.slice();
-                if ($(input).data('inputmask')['isRTL']) {
-                    for (var pos = 0; pos <= tmpBuffer.length - 1; pos++) {
-                        var testPos = determineTestPosition(pos);
-                        if (tests[testPos].optionality) {
-                            if (getPlaceHolder(pos) == buffer[pos] || !isMask(pos))
-                                tmpBuffer.splice(0, 1);
-                            else break;
-                        } else break;
+                setTimeout(function() {
+                    var tmpBuffer = buffer.slice();
+                    if ($(input).data('inputmask')['isRTL']) {
+                        for (var pos = 0; pos <= tmpBuffer.length - 1; pos++) {
+                            var testPos = determineTestPosition(pos);
+                            if (tests[testPos].optionality) {
+                                if (getPlaceHolder(pos) == buffer[pos] || !isMask(pos))
+                                    tmpBuffer.splice(0, 1);
+                                else break;
+                            } else break;
+                        }
+                    } else {
+                        for (var pos = tmpBuffer.length - 1; pos >= 0; pos--) {
+                            var testPos = determineTestPosition(pos);
+                            if (tests[testPos].optionality) {
+                                if (getPlaceHolder(pos) == buffer[pos] || !isMask(pos))
+                                    tmpBuffer.pop();
+                                else break;
+                            } else break;
+                        }
                     }
-                } else {
-                    for (var pos = tmpBuffer.length - 1; pos >= 0; pos--) {
-                        var testPos = determineTestPosition(pos);
-                        if (tests[testPos].optionality) {
-                            if (getPlaceHolder(pos) == buffer[pos] || !isMask(pos))
-                                tmpBuffer.pop();
-                            else break;
-                        } else break;
-                    }
-                }
-                writeBuffer(input, tmpBuffer);
+                    writeBuffer(input, tmpBuffer);
+                }, 0);
             }
 
             //functionality fn
@@ -617,7 +619,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             Object.defineProperty(npt, "value", {
                                 get: function() {
                                     var $self = $(this), inputData = $(this).data('inputmask');
-                                    return inputData && inputData['autoUnmask'] ? $self.inputmask('unmaskedvalue') : this._valueGet();
+                                    return inputData && inputData['autoUnmask'] ? $self.inputmask('unmaskedvalue') : this._valueGet() != inputData['_buffer'].join('') ? this._valueGet() : '';
                                 },
                                 set: function(value) {
                                     this._valueSet(value); $(this).triggerHandler('setvalue.inputmask');
@@ -631,7 +633,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
                             npt.__defineGetter__("value", function() {
                                 var $self = $(this), inputData = $(this).data('inputmask');
-                                return inputData && inputData['autoUnmask'] ? $self.inputmask('unmaskedvalue') : this._valueGet();
+                                return inputData && inputData['autoUnmask'] ? $self.inputmask('unmaskedvalue') : this._valueGet() != inputData['_buffer'].join('') ? this._valueGet() : '';
                             });
                             npt.__defineSetter__("value", function(value) {
                                 this._valueSet(value); $(this).triggerHandler('setvalue.inputmask');
@@ -646,15 +648,16 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             $.fn.val = function() {
                                 var $self = $(this);
                                 if ($self.data('inputmask')) {
-                                    if ($self.data('inputmask')['autoUnmask'] && arguments.length == 0) {
-                                        return $self.inputmask('unmaskedvalue');
-                                    }
-                                    else {
-                                        var result = $.inputmask.val.apply(this, arguments);
-                                        if (arguments.length > 0) {
-                                            this.triggerHandler('setvalue.inputmask');
+                                    if (arguments.length == 0) {
+                                        if ($self.data('inputmask')['autoUnmask'])
+                                            return $self.inputmask('unmaskedvalue');
+                                        else {
+                                            var result = $.inputmask.val.apply(this);
+                                            return result != $self.data('inputmask')['_buffer'].join('') ? result : '';
                                         }
-                                        return result;
+                                    } else {
+                                        var result = $.inputmask.val.apply(this, arguments);
+                                        this.triggerHandler('setvalue.inputmask');
                                     }
                                 }
                                 else {
