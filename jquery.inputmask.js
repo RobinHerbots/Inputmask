@@ -514,9 +514,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         var $input = $(this), input = this, nptValue = input._valueGet();
                         $input.removeClass('focus.inputmask');
                         if (nptValue != undoBuffer) {
-                            setTimeout(function() { //move the change event to later, ...
-                                $input.change();
-                            }, 0);
+                            $input.change();
                         }
                         if (opts.clearMaskOnLostFocus) {
                             if (nptValue == _buffer.join(''))
