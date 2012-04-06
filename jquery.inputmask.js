@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.5.4a
+Version: 0.5.5
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -190,7 +190,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 return repeatedMask;
             }
 
-            //test definition => {fn: RegExp/function, cardinality: int, optionality: bool, newBlockMarker: bool, offset: int}
+            //test definition => {fn: RegExp/function, cardinality: int, optionality: bool, newBlockMarker: bool, offset: int, casing: null/upper/lower, def: definitionSymbol}
             function getTestingChain() {
                 var isOptional = false, escaped = false;
                 var newBlockMarker = false; //indicates wheter the begin/ending of a block should be indicated
@@ -214,13 +214,13 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             var prevalidators = maskdef["prevalidator"], prevalidatorsL = prevalidators ? prevalidators.length : 0;
                             for (i = 1; i < maskdef.cardinality; i++) {
                                 var prevalidator = prevalidatorsL >= i ? prevalidators[i - 1] : [], validator = prevalidator["validator"], cardinality = prevalidator["cardinality"];
-                                outElem.push({ fn: validator ? typeof validator == 'string' ? new RegExp(validator) : new function() { this.test = validator; } : new RegExp("."), cardinality: cardinality ? cardinality : 1, optionality: isOptional, newBlockMarker: isOptional == true ? newBlockMarker : false, offset: 0, casing: maskdef["casing"] });
+                                outElem.push({ fn: validator ? typeof validator == 'string' ? new RegExp(validator) : new function() { this.test = validator; } : new RegExp("."), cardinality: cardinality ? cardinality : 1, optionality: isOptional, newBlockMarker: isOptional == true ? newBlockMarker : false, offset: 0, casing: maskdef["casing"], def: element });
                                 if (isOptional == true) //reset newBlockMarker
                                     newBlockMarker = false;
                             }
-                            outElem.push({ fn: maskdef.validator ? typeof maskdef.validator == 'string' ? new RegExp(maskdef.validator) : new function() { this.test = maskdef.validator; } : new RegExp("."), cardinality: maskdef.cardinality, optionality: isOptional, newBlockMarker: newBlockMarker, offset: 0, casing: maskdef["casing"] });
+                            outElem.push({ fn: maskdef.validator ? typeof maskdef.validator == 'string' ? new RegExp(maskdef.validator) : new function() { this.test = maskdef.validator; } : new RegExp("."), cardinality: maskdef.cardinality, optionality: isOptional, newBlockMarker: newBlockMarker, offset: 0, casing: maskdef["casing"], def: element });
                         } else {
-                            outElem.push({ fn: null, cardinality: 0, optionality: isOptional, newBlockMarker: newBlockMarker, offset: 0, casing: null });
+                            outElem.push({ fn: null, cardinality: 0, optionality: isOptional, newBlockMarker: newBlockMarker, offset: 0, casing: null, def: element });
                             escaped = false;
                         }
                         //reset newBlockMarker
@@ -685,7 +685,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             var j = seekNext(buffer, i);
                             var p = getBufferElement(buffer, j);
                             if (p != getPlaceHolder(j)) {
-                                if (j < getMaskLength() && isValid(i, p, buffer) !== false) {
+                                if (j < getMaskLength() && isValid(i, p, buffer) !== false && tests[determineTestPosition(i)].def == tests[determineTestPosition(j)].def) {
                                     setBufferElement(buffer, i, getBufferElement(buffer, j));
                                 } else {
                                     if (isMask(i))
@@ -712,7 +712,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             if (t != getPlaceHolder(i)) {
                                 var j = seekNext(buffer, i);
                                 if (j < getMaskLength()) {
-                                    if (isValid(j, t, buffer) !== false)
+                                    if (isValid(j, t, buffer) !== false && tests[determineTestPosition(i)].def == tests[determineTestPosition(j)].def)
                                         c = t;
                                     else {
                                         if (isMask(j))
