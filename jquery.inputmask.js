@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.5.4
+Version: 0.5.4a
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -303,10 +303,10 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
 
             //needed to handle the non-greedy mask repetitions
-            function prepareBuffer(buffer, position) {
+            function prepareBuffer(buffer, position, isRTL) {
                 while ((buffer.length < position || position < 0) && buffer.length < getMaskLength()) {
                     var j = 0;
-                    if ($input.data('inputmask')['isRTL']) {
+                    if (isRTL) {
                         j = _buffer.length - 1;
                         position = position + _buffer.length;
                         while (_buffer[j] !== undefined)
@@ -344,14 +344,20 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
             function checkVal(input, buffer, clearInvalid) {
                 var isRTL = $(input).data('inputmask')['isRTL'],
-                    inputValue = TruncateInput(input._valueGet(), isRTL);
+                    inputValue = TruncateInput(input._valueGet(), isRTL).split('');
+
+                if (isRTL) { //align inputValue for RTL/numeric input
+                    var neededLength = _buffer.length - 1, _bufferPos = neededLength;
+                    while (inputValue[neededLength] === undefined && _buffer[_bufferPos] !== undefined)
+                        inputValue.unshift(_buffer[_bufferPos--]);
+                }
                 clearBuffer(buffer, 0, buffer.length);
                 buffer.length = _buffer.length;
                 var lastMatch = -1, checkPosition = -1, maskL = getMaskLength(), ivl = inputValue.length, rtlMatch = ivl == 0 ? maskL : -1;
                 for (var i = 0; i < ivl; i++) {
                     for (var pos = checkPosition + 1; pos < maskL; pos++) {
                         if (isMask(pos)) {
-                            var c = inputValue.charAt(i);
+                            var c = inputValue[i];
                             if (isValid(pos, c, buffer) !== false) {
                                 setBufferElement(buffer, pos, c);
                                 lastMatch = checkPosition = pos;
@@ -368,7 +374,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             if (lastMatch == checkPosition) //once outsync the nonmask cannot be the lastmatch
                                 lastMatch = pos;
                             checkPosition = pos;
-                            if (inputValue.charAt(i) == getBufferElement(buffer, pos))
+                            if (inputValue[i] == getBufferElement(buffer, pos))
                                 break;
                         }
                     }
@@ -816,7 +822,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                                 if (isValid(p, c, buffer)) {
                                     if (isValid(firstMaskPos, buffer[firstMaskPos], buffer) == false || (opts.greedy === false && buffer.length < maskL)) {
                                         if (buffer[firstMaskPos] != getPlaceHolder(firstMaskPos) && buffer.length < maskL) {
-                                            var offset = prepareBuffer(buffer, -1) + 1;
+                                            var offset = prepareBuffer(buffer, -1, isRTL) + 1;
                                             p = p + offset;
                                             maskL = buffer.length;
                                         }
@@ -828,7 +834,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             }
                             else {
                                 var p = seekNext(buffer, pos.begin - 1);
-                                prepareBuffer(buffer, p);
+                                prepareBuffer(buffer, p, isRTL);
                                 if (isValid(p, c, buffer)) {
                                     if (opts.insertMode == true) shiftR(p, maskL, c); else setBufferElement(buffer, p, c);
                                     var next = seekNext(buffer, p);
