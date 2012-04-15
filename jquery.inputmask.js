@@ -593,23 +593,20 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     }, 0);
                 }).bind('setvalue.inputmask', function() {
                     var input = this;
-                    setTimeout(function() {
-                        undoBuffer = input._valueGet();
-                        checkVal(input, buffer, true);
-                        if (input._valueGet() == _buffer.join(''))
-                            input._valueSet('');
-                    }, 0);
+                    undoBuffer = input._valueGet();
+                    checkVal(input, buffer, true);
+                    if (input._valueGet() == _buffer.join(''))
+                        input._valueSet('');
                 });
                 }
 
-                setTimeout(function() {
-                    lastPosition = checkVal(el, buffer, true);
-                    if (document.activeElement === el) { //position the caret when in focus
-                        $input.addClass('focus.inputmask');
-                        caret(el, lastPosition);
-                    } else if (opts.clearMaskOnLostFocus && el._valueGet() == _buffer.join(''))
-                        el._valueSet('');
-                }, 0);
+                //apply mask
+                lastPosition = checkVal(el, buffer, true);
+                if (document.activeElement === el) { //position the caret when in focus
+                  $input.addClass('focus.inputmask');
+                  caret(el, lastPosition);
+                } else if (opts.clearMaskOnLostFocus && el._valueGet() == _buffer.join(''))
+                      el._valueSet('');
 
                 //private functions
                 function patchValueProperty(npt) {
