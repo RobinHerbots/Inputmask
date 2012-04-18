@@ -154,6 +154,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 if (aliasDefinition)
                     if (!aliasDefinition.alias) {
                     $.extend(true, opts, aliasDefinition);  //merge alias definition in the options
+                    $.extend(true, opts, options);  //reapply extra given options
                     return true;
                 } else return ResolveAlias(aliasDefinition.alias); //alias is another alias
                 return false;
@@ -238,7 +239,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 }
 
                 if (c) { chrs += c; }
-                return tests[testPos].fn != null ? tests[testPos].fn.test(chrs, buffer, pos) : false;
+                return tests[testPos].fn != null ? tests[testPos].fn.test(chrs, buffer, pos, opts) : false;
             }
 
             function isMask(pos) {
@@ -603,10 +604,10 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 //apply mask
                 lastPosition = checkVal(el, buffer, true);
                 if (document.activeElement === el) { //position the caret when in focus
-                  $input.addClass('focus.inputmask');
-                  caret(el, lastPosition);
+                    $input.addClass('focus.inputmask');
+                    caret(el, lastPosition);
                 } else if (opts.clearMaskOnLostFocus && el._valueGet() == _buffer.join(''))
-                      el._valueSet('');
+                    el._valueSet('');
 
                 //private functions
                 function patchValueProperty(npt) {
