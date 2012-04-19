@@ -55,16 +55,16 @@ Optional extentions on the jquery.inputmask base
             },
             definitions: {
                 'm': { //month
-                    validator: function(chrs, buffer) {
+                    validator: function(chrs, buffer, pos, opts) {
                         var dayValue = buffer.join('').substr(0, 3);
-                        return $.inputmask.defaults.aliases['dd/mm/yyyy'].regex.month.test(dayValue + chrs);
+                        return opts.regex.month.test(dayValue + chrs);
                     },
                     cardinality: 2,
                     prevalidator: [{ validator: "[01]", cardinality: 1}]
                 },
                 'y': { //year
-                    validator: function(chrs, buffer) {
-                        if ($.inputmask.defaults.aliases['dd/mm/yyyy'].regex.year.test(chrs)) {
+                    validator: function(chrs, buffer, pos, opts) {
+                        if (opts.regex.year.test(chrs)) {
                             var dayMonthValue = buffer.join('').substr(0, 6);
                             if (dayMonthValue != "29/02/")
                                 return true;
@@ -101,20 +101,20 @@ Optional extentions on the jquery.inputmask base
             },
             definitions: {
                 'd': { //day
-                    validator: function(chrs, buffer) {
+                    validator: function(chrs, buffer, pos, opts) {
                         var monthValue = buffer.join('').substr(0, 3);
-                        return $.inputmask.defaults.aliases['mm/dd/yyyy'].regex.day.test(monthValue + chrs);
+                        return opts.regex.day.test(monthValue + chrs);
                     },
                     cardinality: 2,
-                    prevalidator: [{ validator: function(chrs, buffer) {
+                    prevalidator: [{ validator: function(chrs, buffer, pos, opts) {
                         var monthValue = buffer.join('').substr(0, 3);
-                        return $.inputmask.defaults.aliases['mm/dd/yyyy'].regex.daypre.test(monthValue + chrs);
+                        return opts.regex.daypre.test(monthValue + chrs);
                     },
                         cardinality: 1}]
                     },
                     'y': { //year
-                        validator: function(chrs, buffer) {
-                            if ($.inputmask.defaults.aliases['mm/dd/yyyy'].regex.year.test(chrs)) {
+                        validator: function(chrs, buffer, pos, opts) {
+                            if (opts.regex.year.test(chrs)) {
                                 var monthDayValue = buffer.join('').substr(0, 6);
                                 if (monthDayValue != "02/29/")
                                     return true;
@@ -161,16 +161,16 @@ Optional extentions on the jquery.inputmask base
                 },
                 definitions: {
                     'm': { //month
-                        validator: function(chrs, buffer) {
+                        validator: function(chrs, buffer, pos, opts) {
                             var dayValue = buffer.join('').substr(0, 3);
-                            return $.inputmask.defaults.aliases['dd/mm/yyyy'].regex.month.test(dayValue + chrs);
+                            return opts.regex.month.test(dayValue + chrs);
                         },
                         cardinality: 2,
                         prevalidator: [{ validator: "[01]", cardinality: 1}]
                     },
                     'y': { //year
-                        validator: function(chrs, buffer) {
-                            if ($.inputmask.defaults.aliases['dd/mm/yyyy'].regex.year.test(chrs)) {
+                        validator: function(chrs, buffer, pos, opts) {
+                            if (opts.regex.year.test(chrs)) {
                                 var dayMonthValue = buffer.join('').substr(0, 6);
                                 if (dayMonthValue != "29/02/")
                                     return true;
@@ -203,16 +203,17 @@ Optional extentions on the jquery.inputmask base
                 placeholder: "",
                 repeat: 10,
                 greedy: false,
+                radixPoint: "\.", // | ","
                 regex: {
-                    real: new RegExp("^([\+\-]?[0-9]*[\.]?[0-9]*)$")
+                    real: function(radixPoint) { return new RegExp("^([\+\-]?[0-9]*[" + radixPoint + "]?[0-9]*)$"); }
                 },
                 definitions: {
                     '~': { //real number
-                        validator: function(chrs, buffer, pos) {
+                        validator: function(chrs, buffer, pos, opts) {
                             var myBuffer = buffer.slice();
                             myBuffer.splice(pos, 0, chrs);
                             var test = myBuffer.join('');
-                            var isValid = $.inputmask.defaults.aliases['decimal'].regex.real.test(test);
+                            var isValid = opts.regex.real(opts.radixPoint).test(test);
                             return isValid;
                         },
                         cardinality: 1,
@@ -226,16 +227,17 @@ Optional extentions on the jquery.inputmask base
                 placeholder: "",
                 repeat: 10,
                 greedy: false,
+                radixPoint: "\.", // | ","
                 regex: {
-                    decimal: new RegExp("^([0-9]*[\.]?[0-9]*)$")
+                    decimal: function(radixPoint) { return new RegExp("^([0-9]+[" + radixPoint + "]?[0-9]*)$"); }
                 },
                 definitions: {
                     '~': {
-                        validator: function(chrs, buffer, pos) {
+                        validator: function(chrs, buffer, pos, opts) {
                             var myBuffer = buffer.slice();
                             myBuffer.splice(pos, 0, chrs);
                             var test = myBuffer.join('');
-                            var isValid = $.inputmask.defaults.aliases['non-negative-decimal'].regex.decimal.test(test);
+                            var isValid = opts.regex.decimal(opts.radixPoint).test(test);
                             return isValid;
                         },
                         cardinality: 1,
@@ -249,16 +251,17 @@ Optional extentions on the jquery.inputmask base
                 placeholder: "",
                 repeat: 10,
                 greedy: false,
+                numericInput: true,
                 regex: {
                     integer: new RegExp("^([\+\-]?[0-9]*)$")
                 },
                 definitions: {
                     '~': {
-                        validator: function(chrs, buffer, pos) {
+                        validator: function(chrs, buffer, pos, opts) {
                             var myBuffer = buffer.slice();
                             myBuffer.splice(pos, 0, chrs);
                             var test = myBuffer.join('');
-                            var isValid = $.inputmask.defaults.aliases['integer'].regex.integer.test(test);
+                            var isValid = opts.regex.integer.test(test);
                             return isValid;
                         },
                         cardinality: 1,
