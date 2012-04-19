@@ -470,6 +470,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
             function mask(el) {
                 var $input = $(el);
+                if (!$input.is(":input")) return;
 
                 //store tests & original buffer in the input element - used to get the unmasked value
                 $input.data('inputmask', {
