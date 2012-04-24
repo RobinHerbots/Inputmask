@@ -50,6 +50,7 @@ Optional extentions on the jquery.inputmask base
             mask: "d/m/y",
             placeholder: "dd/mm/yyyy",
             regex: {
+            	monthpre: new RegExp("[01]"),
                 month: new RegExp("((0[1-9]|[12][0-9])\/(0[1-9]|1[012]))|(30\/(0[13-9]|1[012]))|(31\/(0[13578]|1[02]))"),
                 year: new RegExp("(19|20)\\d\\d"),
                 daypre: new RegExp("[0-3]"),
@@ -80,7 +81,19 @@ Optional extentions on the jquery.inputmask base
                             return opts.regex.month.test(dayValue + chrs);
                         },
                         cardinality: 2,
-                        prevalidator: [{ validator: "[01]", cardinality: 1}]
+                        prevalidator: [{ validator: function(chrs, buffer, pos, strict, opts) {
+                        var isValid = opts.regex.monthpre.test(chrs);
+                        if (!strict && !isValid) {
+	                        var dayValue = buffer.join('').substr(0, 3);
+                            isValid = opts.regex.month.test(dayValue + "0" + chrs);
+                            if (isValid) {
+                                buffer[pos] = "0";
+                                pos++;
+                                return pos;
+                            }
+                        }
+                        return isValid;
+                    }, cardinality: 1}]
                     },
                     'y': { //year
                         validator: function(chrs, buffer, pos, strict, opts) {
@@ -117,6 +130,8 @@ Optional extentions on the jquery.inputmask base
                 regex: {
                     day: new RegExp("((0[1-9]|1[012])\/(0[1-9]|[12][0-9]))|((0[13-9]|1[012])\/30)|((0[13578]|1[02])\/31)"),
                     daypre: new RegExp("((0[13-9]|1[012])\/[0-3])|(02\/[0-2])"),
+                    month: new RegExp("0[1-9]|1[012]"),
+                    monthpre: new RegExp("[01]"),
                     year: new RegExp("(19|20)\\d\\d")
                 },
                 definitions: {
@@ -128,11 +143,38 @@ Optional extentions on the jquery.inputmask base
                         cardinality: 2,
                         prevalidator: [{ validator: function(chrs, buffer, pos, strict, opts) {
                             var monthValue = buffer.join('').substr(0, 3);
-                            return opts.regex.daypre.test(monthValue + chrs);
+                            var isValid = opts.regex.daypre.test(monthValue + chrs);
+                            if (!strict && !isValid) {
+                            	isValid = opts.regex.day.test(monthValue + "0" + chrs);
+                            	if (isValid) {
+                                	buffer[pos] = "0";
+                                	pos++;
+                                	return pos;
+                            	}
+                        	}
+                        	return isValid;
                         },
                             cardinality: 1}]
                         },
-                        'y': { //year
+          			'm': { //month
+            				validator: function(chrs, buffer, pos, strict, opts) {
+                      			return opts.regex.month.test(chrs);
+                    		},
+            				cardinality: 2,
+            				prevalidator: [{ validator: function(chrs, buffer, pos, strict, opts) {
+                        		var isValid = opts.regex.monthpre.test(chrs);
+                        		if (!strict && !isValid) {
+                            		isValid = opts.regex.month.test("0" + chrs);
+                            		if (isValid) {
+                                		buffer[pos] = "0";
+                                		pos++;
+                                		return pos;
+                            		}
+                        		}
+                        		return isValid;
+                    		}, cardinality: 1}]
+        				},
+                    'y': { //year
                             validator: function(chrs, buffer, pos, strict, opts) {
                                 if (opts.regex.year.test(chrs)) {
                                     var monthDayValue = buffer.join('').substr(0, 6);
