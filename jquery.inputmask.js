@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.5.5
+Version: 0.5.6
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -231,7 +231,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 });
             }
 
-            function isValid(pos, c, buffer) {
+            function isValid(pos, c, buffer, strict) { //strict true ~ no correction or autofill
                 if (pos < 0 || pos >= getMaskLength()) return false;
                 var testPos = determineTestPosition(pos), loopend = c ? 1 : 0, chrs = '';
                 for (var i = tests[testPos].cardinality; i > loopend; i--) {
@@ -239,7 +239,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 }
 
                 if (c) { chrs += c; }
-                return tests[testPos].fn != null ? tests[testPos].fn.test(chrs, buffer, pos, opts) : false;
+                return tests[testPos].fn != null ? tests[testPos].fn.test(chrs, buffer, pos, strict, opts) : false;
             }
 
             function isMask(pos) {
@@ -354,12 +354,13 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 }
                 clearBuffer(buffer, 0, buffer.length);
                 buffer.length = _buffer.length;
-                var lastMatch = -1, checkPosition = -1, maskL = getMaskLength(), ivl = inputValue.length, rtlMatch = ivl == 0 ? maskL : -1;
+                var lastMatch = -1, checkPosition = -1, np, maskL = getMaskLength(), ivl = inputValue.length, rtlMatch = ivl == 0 ? maskL : -1;
                 for (var i = 0; i < ivl; i++) {
                     for (var pos = checkPosition + 1; pos < maskL; pos++) {
                         if (isMask(pos)) {
                             var c = inputValue[i];
-                            if (isValid(pos, c, buffer) !== false) {
+                            if ((np = isValid(pos, c, buffer, !clearInvalid)) !== false) {
+                                if (np !== true) pos = np; //set new position from isValid
                                 setBufferElement(buffer, pos, c);
                                 lastMatch = checkPosition = pos;
                             } else {
@@ -567,9 +568,9 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                                 var clickPosition = selectedCaret.begin;
                                 lastPosition = checkVal(input, buffer, false);
                                 if (isRTL)
-                                    caret(input, clickPosition > lastPosition && (isValid(clickPosition, buffer[clickPosition], buffer) || !isMask(clickPosition)) ? clickPosition : lastPosition);
+                                    caret(input, clickPosition > lastPosition && (isValid(clickPosition, buffer[clickPosition], buffer, true) !== false || !isMask(clickPosition)) ? clickPosition : lastPosition);
                                 else
-                                    caret(input, clickPosition < lastPosition && (isValid(clickPosition, buffer[clickPosition], buffer) || !isMask(clickPosition)) ? clickPosition : lastPosition);
+                                    caret(input, clickPosition < lastPosition && (isValid(clickPosition, buffer[clickPosition], buffer, true) !== false || !isMask(clickPosition)) ? clickPosition : lastPosition);
                             }
                         }, 0);
                     }).bind('dblclick.inputmask', function() {
@@ -684,7 +685,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             var j = seekNext(buffer, i);
                             var p = getBufferElement(buffer, j);
                             if (p != getPlaceHolder(j)) {
-                                if (j < getMaskLength() && isValid(i, p, buffer) !== false && tests[determineTestPosition(i)].def == tests[determineTestPosition(j)].def) {
+                                if (j < getMaskLength() && isValid(i, p, buffer, true) !== false && tests[determineTestPosition(i)].def == tests[determineTestPosition(j)].def) {
                                     setBufferElement(buffer, i, getBufferElement(buffer, j));
                                 } else {
                                     if (isMask(i))
@@ -711,7 +712,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             if (t != getPlaceHolder(i)) {
                                 var j = seekNext(buffer, i);
                                 if (j < getMaskLength()) {
-                                    if (isValid(j, t, buffer) !== false && tests[determineTestPosition(i)].def == tests[determineTestPosition(j)].def)
+                                    if (isValid(j, t, buffer, true) !== false && tests[determineTestPosition(i)].def == tests[determineTestPosition(j)].def)
                                         c = t;
                                     else {
                                         if (isMask(j))
@@ -817,9 +818,10 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         if (k) {
                             var pos = caret(input), c = String.fromCharCode(k), maskL = getMaskLength();
                             if (isRTL) {
-                                var p = seekPrevious(buffer, pos.end);
-                                if (isValid(p, c, buffer)) {
-                                    if (isValid(firstMaskPos, buffer[firstMaskPos], buffer) == false || (opts.greedy === false && buffer.length < maskL)) {
+                                var p = seekPrevious(buffer, pos.end), np;
+                                if ((np = isValid(p, c, buffer, false)) !== false) {
+                                    if (np !== true) p = np; //set new position from isValid
+                                    if (isValid(firstMaskPos, buffer[firstMaskPos], buffer, true) == false || (opts.greedy === false && buffer.length < maskL)) {
                                         if (buffer[firstMaskPos] != getPlaceHolder(firstMaskPos) && buffer.length < maskL) {
                                             var offset = prepareBuffer(buffer, -1, isRTL) + 1;
                                             p = p + offset;
@@ -832,9 +834,10 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                                 } else if (android) writeBuffer(input, buffer, pos.begin);
                             }
                             else {
-                                var p = seekNext(buffer, pos.begin - 1);
+                                var p = seekNext(buffer, pos.begin - 1), np;
                                 prepareBuffer(buffer, p, isRTL);
-                                if (isValid(p, c, buffer)) {
+                                if ((np = isValid(p, c, buffer, false)) !== false) {
+                                    if (np !== true) p = np; //set new position from isValid
                                     if (opts.insertMode == true) shiftR(p, maskL, c); else setBufferElement(buffer, p, c);
                                     var next = seekNext(buffer, p);
                                     writeBuffer(input, buffer, next);
