@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.5.7a
+Version: 0.5.7b
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -652,30 +652,25 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         }
                         if ($.fn.val.inputmaskpatch != true) {
                             $.fn.val = function() {
-                                function val(el, args) {
-                                    var $self = $(el);
+                                if (arguments.length == 0) {
+                                    var $self = $(this);
                                     if ($self.data('inputmask')) {
-                                        if (arguments.length == 0) {
-                                            if ($self.data('inputmask')['autoUnmask'])
-                                                return $self.inputmask('unmaskedvalue');
-                                            else {
-                                                var result = $.inputmask.val.apply($self);
-                                                return result != $self.data('inputmask')['_buffer'].join('') ? result : '';
-                                            }
-                                        } else {
-                                            var result = $.inputmask.val.apply($self, args);
-                                            $self.triggerHandler('setvalue.inputmask');
+                                        if ($self.data('inputmask')['autoUnmask'])
+                                            return $self.inputmask('unmaskedvalue');
+                                        else {
+                                            var result = $.inputmask.val.apply($self);
+                                            return result != $self.data('inputmask')['_buffer'].join('') ? result : '';
                                         }
-                                    }
-                                    else {
-                                        return $.inputmask.val.apply($self, args);
-                                    }
+                                    } else return $.inputmask.val.apply($self);
+                                } else {
+                                    var args = arguments;
+                                    return this.each(function() {
+                                        var $self = $(this);
+                                        var result = $.inputmask.val.apply($self, args);
+                                        if ($self.data('inputmask')) $self.triggerHandler('setvalue.inputmask');
+                                        return result;
+                                    });
                                 }
-                                var args = arguments;
-                                if (this.length == 1) return val(this, args);
-                                return this.each(function() {
-                                    return val(this, args);
-                                });
                             };
                             $.extend($.fn.val, {
                                 inputmaskpatch: true
