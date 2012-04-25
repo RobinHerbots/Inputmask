@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.5.7
+Version: 0.5.7a
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -652,9 +652,8 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         }
                         if ($.fn.val.inputmaskpatch != true) {
                             $.fn.val = function() {
-                                var args = arguments;
-                                return this.each(function() {
-                                    var $self = $(this);
+                                function val(el, args) {
+                                    var $self = $(el);
                                     if ($self.data('inputmask')) {
                                         if (arguments.length == 0) {
                                             if ($self.data('inputmask')['autoUnmask'])
@@ -671,6 +670,11 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                                     else {
                                         return $.inputmask.val.apply($self, args);
                                     }
+                                }
+                                var args = arguments;
+                                if (this.length == 1) return val(this, args);
+                                return this.each(function() {
+                                    return val(this, args);
                                 });
                             };
                             $.extend($.fn.val, {
