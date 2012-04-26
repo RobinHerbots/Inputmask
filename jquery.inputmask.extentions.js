@@ -276,7 +276,7 @@ Optional extentions on the jquery.inputmask base
                             greedy: false,
                             radixPoint: "\.", // | ","
                             digits: "*", //numer of digits
-                            groupSeparator: "\.",
+                            groupSeparator: ",", // | "\."
                             groupSize: 3,
                             regex: {
                                 number: function(radixPoint) { return new RegExp("^([\+\-]?[0-9]*[" + radixPoint + "]?[0-9]*)$"); }
