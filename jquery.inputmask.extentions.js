@@ -285,15 +285,17 @@ Optional extentions on the jquery.inputmask base
                             repeat: 10,
                             greedy: false,
                             regex: {
-                                number: function(radixPoint) { return new RegExp("^([\+\-]?[0-9]*[" + radixPoint + "]?[0-9]*)$"); }
+                                number: function(radixPoint, digits) { return new RegExp("^([\+\-]?[0-9]*[" + radixPoint + "]?[0-9]" + digits + ")$"); }
                             },
                             definitions: {
                                 '~': { //real number
                                     validator: function(chrs, buffer, pos, strict, opts) {
-                                        var myBuffer = buffer.slice();
-                                        myBuffer.splice(pos, 0, chrs);
-                                        var test = myBuffer.join('');
-                                        var isValid = opts.regex.number(opts.radixPoint).test(test);
+                                        function digitExpression() { return opts.digits; } //enhance me
+                                        var bufferStr = buffer.slice().splice(pos, 0, chrs).join('');
+                                        var isValid = opts.regex.number(opts.radixPoint, digitExpression()).test(bufferStr);
+                                        if (!strict && !isValid) {
+                                            //todo grouping, radixpoint handling
+                                        }
                                         return isValid;
                                     },
                                     cardinality: 1,
@@ -304,13 +306,13 @@ Optional extentions on the jquery.inputmask base
                         },
                         'non-negative-decimal': {
                             regex: {
-                                number: function(radixPoint) { return new RegExp("^([0-9]+[" + radixPoint + "]?[0-9]*)$"); }
+                                number: function(radixPoint, digits) { return new RegExp("^([0-9]+[" + radixPoint + "]?[0-9]" + digits + ")$"); }
                             },
                             alias: "decimal"
                         },
                         'integer': {
                             regex: {
-                                number: function(radixPoint) { return new RegExp("^([\+\-]?[0-9]*)$"); }
+                                number: function() { return new RegExp("^([\+\-]?[0-9]*)$"); }
                             },
                             alias: "decimal"
                         }
