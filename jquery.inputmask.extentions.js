@@ -3,12 +3,20 @@ Input Mask plugin extentions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.0.3a
+Version: 0.0.3b
 
 Optional extentions on the jquery.inputmask base
 */
 (function($) {
     //extra definitions
+    $.extend($.inputmask.defaults.definitions, {
+        'A': { //auto uppercasing
+            validator: "[A-Za-z]",
+            cardinality: 1,
+            casing: "upper"
+        }
+    });
+    //date & time aliases
     $.extend($.inputmask.defaults.definitions, {
         'h': { //hours
             validator: "[01][0-9]|2[0-3]",
@@ -45,7 +53,6 @@ Optional extentions on the jquery.inputmask base
             casing: "upper"
         }
     });
-    //aliases
     $.extend($.inputmask.defaults.aliases, {
         'dd/mm/yyyy': {
             mask: "d/m/y",
@@ -267,17 +274,21 @@ Optional extentions on the jquery.inputmask base
                             mask: "d/m/y h:s",
                             placeholder: "dd/mm/yyyy hh:mm",
                             alias: "date"
-                        },
-                        //number aliases by Dean (datimson)
+                        }
+                    });
+                    //number aliases by Dean (datimson)
+                    $.extend($.inputmask.defaults, {
+                        radixPoint: "\.", // | ","
+                        digits: "*", //numer of digits
+                        groupSeparator: ",", // | "\."
+                        groupSize: 3
+                    });
+                    $.extend($.inputmask.defaults.aliases, {
                         'decimal': {
                             mask: "~",
                             placeholder: "",
                             repeat: 10,
                             greedy: false,
-                            radixPoint: "\.", // | ","
-                            digits: "*", //numer of digits
-                            groupSeparator: ",", // | "\."
-                            groupSize: 3,
                             regex: {
                                 number: function(radixPoint) { return new RegExp("^([\+\-]?[0-9]*[" + radixPoint + "]?[0-9]*)$"); }
                             },
