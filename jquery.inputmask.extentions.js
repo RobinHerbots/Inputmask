@@ -3,7 +3,7 @@ Input Mask plugin extentions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.0.2
+Version: 0.0.3
 
 Optional extentions on the jquery.inputmask base
 */
@@ -276,7 +276,7 @@ Optional extentions on the jquery.inputmask base
                             greedy: false,
                             radixPoint: "\.", // | ","
                             regex: {
-                                real: function(radixPoint) { return new RegExp("^([\+\-]?[0-9]*[" + radixPoint + "]?[0-9]*)$"); }
+                                number: function(radixPoint) { return new RegExp("^([\+\-]?[0-9]*[" + radixPoint + "]?[0-9]*)$"); }
                             },
                             definitions: {
                                 '~': { //real number
@@ -284,7 +284,7 @@ Optional extentions on the jquery.inputmask base
                                         var myBuffer = buffer.slice();
                                         myBuffer.splice(pos, 0, chrs);
                                         var test = myBuffer.join('');
-                                        var isValid = opts.regex.real(opts.radixPoint).test(test);
+                                        var isValid = opts.regex.number(opts.radixPoint).test(test);
                                         return isValid;
                                     },
                                     cardinality: 1,
@@ -294,52 +294,16 @@ Optional extentions on the jquery.inputmask base
                             insertMode: true
                         },
                         'non-negative-decimal': {
-                            mask: "~",
-                            placeholder: "",
-                            repeat: 10,
-                            greedy: false,
-                            radixPoint: "\.", // | ","
                             regex: {
-                                decimal: function(radixPoint) { return new RegExp("^([0-9]+[" + radixPoint + "]?[0-9]*)$"); }
+                                number: function(radixPoint) { return new RegExp("^([0-9]+[" + radixPoint + "]?[0-9]*)$"); }
                             },
-                            definitions: {
-                                '~': {
-                                    validator: function(chrs, buffer, pos, strict, opts) {
-                                        var myBuffer = buffer.slice();
-                                        myBuffer.splice(pos, 0, chrs);
-                                        var test = myBuffer.join('');
-                                        var isValid = opts.regex.decimal(opts.radixPoint).test(test);
-                                        return isValid;
-                                    },
-                                    cardinality: 1,
-                                    prevalidator: null
-                                }
-                            },
-                            insertMode: true
+                            alias: "decimal"
                         },
                         'integer': {
-                            mask: "~",
-                            placeholder: "",
-                            repeat: 10,
-                            greedy: false,
-                            numericInput: true,
                             regex: {
-                                integer: new RegExp("^([\+\-]?[0-9]*)$")
+                                number: function(radixPoint) { return new RegExp("^([\+\-]?[0-9]*)$"); }
                             },
-                            definitions: {
-                                '~': {
-                                    validator: function(chrs, buffer, pos, strict, opts) {
-                                        var myBuffer = buffer.slice();
-                                        myBuffer.splice(pos, 0, chrs);
-                                        var test = myBuffer.join('');
-                                        var isValid = opts.regex.integer.test(test);
-                                        return isValid;
-                                    },
-                                    cardinality: 1,
-                                    prevalidator: null
-                                }
-                            },
-                            insertMode: true
+                            alias: "decimal"
                         }
                     });
                 })(jQuery);
