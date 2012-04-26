@@ -3,7 +3,7 @@ Input Mask plugin extentions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.0.1
+Version: 0.0.2
 
 Optional extentions on the jquery.inputmask base
 */
@@ -20,17 +20,17 @@ Optional extentions on the jquery.inputmask base
             cardinality: 2,
             prevalidator: [{ validator: "[0-5]", cardinality: 1}]
         },
-        'd': { //day
+        'd': { //basic day
             validator: "0[1-9]|[12][0-9]|3[01]",
             cardinality: 2,
             prevalidator: [{ validator: "[0-3]", cardinality: 1}]
         },
-        'm': { //month
+        'm': { //basic month
             validator: "0[1-9]|1[012]",
             cardinality: 2,
             prevalidator: [{ validator: "[01]", cardinality: 1}]
         },
-        'y': { //year
+        'y': { //basic year
             validator: "(19|20)\\d\\d",
             cardinality: 4,
             prevalidator: [
@@ -266,47 +266,7 @@ Optional extentions on the jquery.inputmask base
                         'datetime': {
                             mask: "d/m/y h:s",
                             placeholder: "dd/mm/yyyy hh:mm",
-                            regex: {
-                                month: new RegExp("((0[1-9]|[12][0-9])\/(0[1-9]|1[012]))|(30\/(0[13-9]|1[012]))|(31\/(0[13578]|1[02]))"),
-                                year: new RegExp("(19|20)\\d\\d")
-                            },
-                            definitions: {
-                                'm': { //month
-                                    validator: function(chrs, buffer, pos, strict, opts) {
-                                        var dayValue = buffer.join('').substr(0, 3);
-                                        return opts.regex.month.test(dayValue + chrs);
-                                    },
-                                    cardinality: 2,
-                                    prevalidator: [{ validator: "[01]", cardinality: 1}]
-                                },
-                                'y': { //year
-                                    validator: function(chrs, buffer, pos, strict, opts) {
-                                        if (opts.regex.year.test(chrs)) {
-                                            var dayMonthValue = buffer.join('').substr(0, 6);
-                                            if (dayMonthValue != "29/02/")
-                                                return true;
-                                            else {
-                                                var year = parseInt(chrs);  //detect leap year
-                                                if (year % 4 == 0)
-                                                    if (year % 100 == 0)
-                                                    if (year % 400 == 0)
-                                                    return true;
-                                                else return false;
-                                                else return true;
-                                                else return false;
-                                            }
-                                        } else return false;
-                                    },
-                                    cardinality: 4,
-                                    prevalidator: [
-                        { validator: "[12]", cardinality: 1 },
-                        { validator: "(19|20)", cardinality: 2 },
-                        { validator: "(19|20)\\d", cardinality: 3 }
-                        ]
-                                }
-                            },
-                            insertMode: false,
-                            autoUnmask: false
+                            alias: "date"
                         },
                         //number aliases by Dean (datimson)
                         'decimal': {
