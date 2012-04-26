@@ -46,11 +46,6 @@ Optional extentions on the jquery.inputmask base
                         { validator: "(19|20)", cardinality: 2 },
                         { validator: "(19|20)\\d", cardinality: 3 }
                         ]
-        },
-        'A': {
-            validator: "[A-Za-z]",
-            cardinality: 1,
-            casing: "upper"
         }
     });
     $.extend($.inputmask.defaults.aliases, {
