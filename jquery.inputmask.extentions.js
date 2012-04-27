@@ -3,7 +3,7 @@ Input Mask plugin extentions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.0.3b
+Version: 0.0.3c
 
 Optional extentions on the jquery.inputmask base
 */
@@ -284,14 +284,19 @@ Optional extentions on the jquery.inputmask base
                             placeholder: "",
                             repeat: 10,
                             greedy: false,
+                            numericInput: true, //true => not working fixme
                             regex: {
                                 number: function(radixPoint, digits) { return new RegExp("^([\+\-]?[0-9]*[" + radixPoint + "]?[0-9]" + digits + ")$"); }
                             },
                             definitions: {
                                 '~': { //real number
                                     validator: function(chrs, buffer, pos, strict, opts) {
-                                        function digitExpression() { return opts.digits; } //enhance me
-                                        var bufferStr = buffer.slice().splice(pos, 0, chrs).join('');
+                                        function digitExpression() {
+                                            return isNaN(opts.digits) ? opts.digits : '{0,' + opts.digits + '}';
+                                        }
+                                        var cbuf = buffer.slice(0, pos + 1);
+                                        cbuf[pos + 1] = chrs;
+                                        var bufferStr = cbuf.join('');
                                         var isValid = opts.regex.number(opts.radixPoint, digitExpression()).test(bufferStr);
                                         if (!strict && !isValid) {
                                             //todo grouping, radixpoint handling
