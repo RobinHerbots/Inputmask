@@ -284,6 +284,7 @@ Optional extentions on the jquery.inputmask base
                             placeholder: "",
                             repeat: 10,
                             greedy: false,
+                            numericInput: false, //true => not working fixme
                             regex: {
                                 number: function(radixPoint, digits) { return new RegExp("^([\+\-]?[0-9]*[" + radixPoint + "]?[0-9]" + digits + ")$"); }
                             },
@@ -291,7 +292,7 @@ Optional extentions on the jquery.inputmask base
                                 '~': { //real number
                                     validator: function(chrs, buffer, pos, strict, opts) {
                                         function digitExpression() {
-                                            return isNaN(opts.digits) ? opts.digits : '{0,' + opts.digits + '}';
+                                            return isNaN(opts.digits) ? opts.digits : (strict ? '{' + opts.digits + '}' : '{0,' + opts.digits + '}');
                                         }
                                         var cbuf = buffer.slice(); cbuf[pos] = chrs;
                                         var bufferStr = cbuf.join('');
