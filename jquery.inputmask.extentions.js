@@ -3,7 +3,7 @@ Input Mask plugin extentions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.0.4
+Version: 0.0.5
 
 Optional extentions on the jquery.inputmask base
 */
@@ -294,21 +294,29 @@ Optional extentions on the jquery.inputmask base
                                         function digitExpression() {
                                             return isNaN(opts.digits) ? opts.digits : '{0,' + opts.digits + '}';
                                         }
-                                        var cbuf = buffer.slice(0, pos + 1);
-                                        cbuf[pos + 1] = chrs;
+                                        var cbuf = buffer.slice();
+                                        cbuf.splice(pos, 0, chrs);
                                         var bufferStr = cbuf.join('');
                                         var isValid = opts.regex.number(opts.radixPoint, digitExpression()).test(bufferStr);
-                                        if (!strict && !isValid) {
-                                            if (bufferStr == opts.radixPoint) {
-                                                isValid = opts.regex.number(opts.radixPoint, digitExpression()).test("0" + bufferStr);
-                                                if (isValid) {
-                                                    buffer[pos] = "0";
-                                                    pos++;
-                                                    return pos;
-                                                } 
+                                        if (!isValid) {
+                                            if (strict) { //shiftL & shiftR use strict only validate from 0 to position
+                                                var cbuf = buffer.slice(0, pos);
+                                                cbuf.splice(pos, 0, chrs);
+                                                var bufferStr = cbuf.join('');
+                                                var isValid = opts.regex.number(opts.radixPoint, digitExpression()).test(bufferStr);
                                             }
-                                            //todo grouping, radixpoint positioning
+                                            else {
+                                                if (bufferStr == opts.radixPoint) {
+                                                    isValid = opts.regex.number(opts.radixPoint, digitExpression()).test("0" + bufferStr);
+                                                    if (isValid) {
+                                                        buffer[pos] = "0";
+                                                        pos++;
+                                                        return pos;
+                                                    }
+                                                }
+                                            }
                                         }
+                                        //todo grouping, radixpoint positioning
                                         return isValid;
                                     },
                                     cardinality: 1,
