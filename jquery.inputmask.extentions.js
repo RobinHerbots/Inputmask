@@ -3,7 +3,7 @@ Input Mask plugin extentions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.0.3c
+Version: 0.0.4
 
 Optional extentions on the jquery.inputmask base
 */
@@ -39,7 +39,7 @@ Optional extentions on the jquery.inputmask base
             prevalidator: [{ validator: "[01]", cardinality: 1}]
         },
         'y': { //basic year
-            validator: "(19|20)\\d\\d",
+            validator: "(19|20)\\d{2}",
             cardinality: 4,
             prevalidator: [
                         { validator: "[12]", cardinality: 1 },
@@ -55,7 +55,7 @@ Optional extentions on the jquery.inputmask base
             regex: {
                 monthpre: new RegExp("[01]"),
                 month: new RegExp("((0[1-9]|[12][0-9])\/(0[1-9]|1[012]))|(30\/(0[13-9]|1[012]))|(31\/(0[13578]|1[02]))"),
-                year: new RegExp("(19|20)\\d\\d"),
+                year: new RegExp("(19|20)\\d{2}"),
                 daypre: new RegExp("[0-3]"),
                 day: new RegExp("0[1-9]|[12][0-9]|3[01]")
             },
@@ -159,7 +159,7 @@ Optional extentions on the jquery.inputmask base
                         daypre: new RegExp("((0[13-9]|1[012])\/[0-3])|(02\/[0-2])"),
                         month: new RegExp("0[1-9]|1[012]"),
                         monthpre: new RegExp("[01]"),
-                        year: new RegExp("(19|20)\\d\\d")
+                        year: new RegExp("(19|20)\\d{2}")
                     },
                     definitions: {
                         'd': { //day
@@ -271,7 +271,7 @@ Optional extentions on the jquery.inputmask base
                             alias: "date"
                         }
                     });
-                    //number aliases by Dean (datimson)
+                    //number aliases 
                     $.extend($.inputmask.defaults, {
                         radixPoint: "\.", // | ","
                         digits: "*", //numer of digits
@@ -284,9 +284,9 @@ Optional extentions on the jquery.inputmask base
                             placeholder: "",
                             repeat: 10,
                             greedy: false,
-                            numericInput: true, //true => not working fixme
+                            numericInput: true,
                             regex: {
-                                number: function(radixPoint, digits) { return new RegExp("^([\+\-]?[0-9]*[" + radixPoint + "]?[0-9]" + digits + ")$"); }
+                                number: function(radixPoint, digits) { return new RegExp("^[\+\-\\d]{1}\\d*[" + radixPoint + "]?\\d" + digits + "$"); }
                             },
                             definitions: {
                                 '~': { //real number
@@ -299,7 +299,15 @@ Optional extentions on the jquery.inputmask base
                                         var bufferStr = cbuf.join('');
                                         var isValid = opts.regex.number(opts.radixPoint, digitExpression()).test(bufferStr);
                                         if (!strict && !isValid) {
-                                            //todo grouping, radixpoint handling
+                                            if (bufferStr == opts.radixPoint) {
+                                                isValid = opts.regex.number(opts.radixPoint, digitExpression()).test("0" + bufferStr);
+                                                if (isValid) {
+                                                    buffer[pos] = "0";
+                                                    pos++;
+                                                    return pos;
+                                                } 
+                                            }
+                                            //todo grouping, radixpoint positioning
                                         }
                                         return isValid;
                                     },
@@ -311,13 +319,13 @@ Optional extentions on the jquery.inputmask base
                         },
                         'non-negative-decimal': {
                             regex: {
-                                number: function(radixPoint, digits) { return new RegExp("^([0-9]+[" + radixPoint + "]?[0-9]" + digits + ")$"); }
+                                number: function(radixPoint, digits) { return new RegExp("^\\d+[" + radixPoint + "]?\\d" + digits + "$"); }
                             },
                             alias: "decimal"
                         },
                         'integer': {
                             regex: {
-                                number: function() { return new RegExp("^([\+\-]?[0-9]*)$"); }
+                                number: function() { return new RegExp("^([\+\-]?\\d*)$"); }
                             },
                             alias: "decimal"
                         }
