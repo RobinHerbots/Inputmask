@@ -3,7 +3,7 @@ Input Mask plugin extentions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.0.5
+Version: 0.0.6
 
 Optional extentions on the jquery.inputmask base
 */
@@ -286,7 +286,7 @@ Optional extentions on the jquery.inputmask base
                             greedy: false,
                             numericInput: true,
                             regex: {
-                                number: function(radixPoint, digits) { return new RegExp("^[\+\-\\d]{1}\\d*[" + radixPoint + "]?\\d" + digits + "$"); }
+                            number: function(radixPoint, digits) { return new RegExp("^[\+\\d\-]{1}\\d*[" + radixPoint + "]?\\d" + digits + "$"); }
                             },
                             definitions: {
                                 '~': { //real number
