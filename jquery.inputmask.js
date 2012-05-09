@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.5.8
+Version: 0.5.9
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -103,15 +103,23 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                                 $input.unbind(".inputmask");
                                 $input.removeClass('focus.inputmask');
                                 //restore the value property
-                                if (document.__lookupGetter__) {
+                                if (Object.getOwnPropertyDescriptor)
+                                    var valueProperty = Object.getOwnPropertyDescriptor(input, "value");
+                                if (valueProperty && valueProperty.get) {
+                                    if (input._valueGet) {
+                                        Object.defineProperty(input, "value", {
+                                            get: input._valueGet,
+                                            set: input._valueSet
+                                        });
+                                    }
+                                } else if (document.__lookupGetter__ && input.__lookupGetter__("value")) {
                                     if (input._valueGet) {
                                         input.__defineGetter__("value", input._valueGet);
                                         input.__defineSetter__("value", input._valueSet);
-
-                                        delete input._valueGet;
-                                        delete input._valueSet;
                                     }
                                 }
+                                delete input._valueGet;
+                                delete input._valueSet;
                             }
                         });
                         break;
