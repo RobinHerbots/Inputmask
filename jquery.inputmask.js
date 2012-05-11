@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.5.9
+Version: 0.6.0
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -765,6 +765,9 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             writeBuffer(input, buffer, beginPos);
                         } else {
                             var beginPos = pos.begin - (k == opts.keyCode.DELETE ? 0 : 1);
+                            if(beginPos < firstMaskPos && k == opts.keyCode.DELETE) {
+                            	beginPos = firstMaskPos;
+                            }
                             if (beginPos >= firstMaskPos) {
                                 if (isRTL) {
                                     beginPos = shiftR(firstMaskPos, beginPos, getPlaceHolder(0), true);
