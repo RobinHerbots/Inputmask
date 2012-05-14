@@ -620,7 +620,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 if (document.activeElement === el) { //position the caret when in focus
                     $input.addClass('focus.inputmask');
                     caret(el, lastPosition);
-                } else if (opts.clearMaskOnLostFocus && el._valueGet() == _buffer.join(''))
+                } else if ((opts.clearMaskOnLostFocus || el.readOnly) && el._valueGet() == _buffer.join(''))
                     el._valueSet('');
 
                 //private functions
