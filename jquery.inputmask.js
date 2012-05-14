@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.6.0
+Version: 0.6.0a
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -520,77 +520,76 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 $input.unbind(".inputmask");
                 $input.removeClass('focus.inputmask');
                 //bind events
-                if (!$input.attr("readonly")) {
-                    $input.bind("mouseenter.inputmask", function() {
-                        var $input = $(this), input = this;
-                        if (!$input.hasClass('focus.inputmask')) {
-                            var nptL = input._valueGet().length;
-                            if (nptL == 0) {
+                $input.bind("mouseenter.inputmask", function() {
+                    var $input = $(this), input = this;
+                    if (!$input.hasClass('focus.inputmask')) {
+                        var nptL = input._valueGet().length;
+                        if (nptL == 0) {
+                            buffer = _buffer.slice();
+                            writeBuffer(input, buffer);
+                        } else if (nptL < buffer.length)
+                            writeBuffer(input, buffer);
+                    }
+                }).bind("blur.inputmask", function() {
+                    var $input = $(this), input = this, nptValue = input._valueGet();
+                    $input.removeClass('focus.inputmask');
+                    if (nptValue != undoBuffer) {
+                        $input.change();
+                    }
+                    if (opts.clearMaskOnLostFocus) {
+                        if (nptValue == _buffer.join(''))
+                            input._valueSet('');
+                        else { //clearout optional tail of the mask
+                            clearOptionalTail(input, buffer);
+                        }
+                    }
+                    if ((opts.clearIncomplete || opts.onincomplete) && checkVal(input, buffer, true) != getMaskLength()) {
+                        if (opts.onincomplete) {
+                            opts.onincomplete.call(input);
+                        }
+                        if (opts.clearIncomplete) {
+                            if (opts.clearMaskOnLostFocus)
+                                input._valueSet('');
+                            else {
                                 buffer = _buffer.slice();
                                 writeBuffer(input, buffer);
-                            } else if (nptL < buffer.length)
-                                writeBuffer(input, buffer);
+                            }
                         }
-                    }).bind("blur.inputmask", function() {
-                        var $input = $(this), input = this, nptValue = input._valueGet();
-                        $input.removeClass('focus.inputmask');
-                        if (nptValue != undoBuffer) {
-                            $input.change();
-                        }
-                        if (opts.clearMaskOnLostFocus) {
-                            if (nptValue == _buffer.join(''))
+                    }
+                }).bind("focus.inputmask", function() {
+                    var $input = $(this), input = this;
+                    $input.addClass('focus.inputmask');
+                    undoBuffer = input._valueGet();
+                }).bind("mouseleave.inputmask", function() {
+                    var $input = $(this), input = this;
+                    if (opts.clearMaskOnLostFocus) {
+                        if (!$input.hasClass('focus.inputmask')) {
+                            if (input._valueGet() == _buffer.join(''))
                                 input._valueSet('');
                             else { //clearout optional tail of the mask
                                 clearOptionalTail(input, buffer);
                             }
                         }
-                        if ((opts.clearIncomplete || opts.onincomplete) && checkVal(input, buffer, true) != getMaskLength()) {
-                            if (opts.onincomplete) {
-                                opts.onincomplete.call(input);
-                            }
-                            if (opts.clearIncomplete) {
-                                if (opts.clearMaskOnLostFocus)
-                                    input._valueSet('');
-                                else {
-                                    buffer = _buffer.slice();
-                                    writeBuffer(input, buffer);
-                                }
-                            }
+                    }
+                }).bind("click.inputmask", function() {
+                    var input = this;
+                    setTimeout(function() {
+                        var selectedCaret = caret(input);
+                        if (selectedCaret.begin == selectedCaret.end) {
+                            var clickPosition = selectedCaret.begin;
+                            lastPosition = checkVal(input, buffer, false);
+                            if (isRTL)
+                                caret(input, clickPosition > lastPosition && (isValid(clickPosition, buffer[clickPosition], buffer, true) !== false || !isMask(clickPosition)) ? clickPosition : lastPosition);
+                            else
+                                caret(input, clickPosition < lastPosition && (isValid(clickPosition, buffer[clickPosition], buffer, true) !== false || !isMask(clickPosition)) ? clickPosition : lastPosition);
                         }
-                    }).bind("focus.inputmask", function() {
-                        var $input = $(this), input = this;
-                        $input.addClass('focus.inputmask');
-                        undoBuffer = input._valueGet();
-                    }).bind("mouseleave.inputmask", function() {
-                        var $input = $(this), input = this;
-                        if (opts.clearMaskOnLostFocus) {
-                            if (!$input.hasClass('focus.inputmask')) {
-                                if (input._valueGet() == _buffer.join(''))
-                                    input._valueSet('');
-                                else { //clearout optional tail of the mask
-                                    clearOptionalTail(input, buffer);
-                                }
-                            }
-                        }
-                    }).bind("click.inputmask", function() {
-                        var input = this;
-                        setTimeout(function() {
-                            var selectedCaret = caret(input);
-                            if (selectedCaret.begin == selectedCaret.end) {
-                                var clickPosition = selectedCaret.begin;
-                                lastPosition = checkVal(input, buffer, false);
-                                if (isRTL)
-                                    caret(input, clickPosition > lastPosition && (isValid(clickPosition, buffer[clickPosition], buffer, true) !== false || !isMask(clickPosition)) ? clickPosition : lastPosition);
-                                else
-                                    caret(input, clickPosition < lastPosition && (isValid(clickPosition, buffer[clickPosition], buffer, true) !== false || !isMask(clickPosition)) ? clickPosition : lastPosition);
-                            }
-                        }, 0);
-                    }).bind('dblclick.inputmask', function() {
-                        var input = this;
-                        setTimeout(function() {
-                            caret(input, 0, lastPosition);
-                        }, 0);
-                    }).bind("keydown.inputmask", keydownEvent
+                    }, 0);
+                }).bind('dblclick.inputmask', function() {
+                    var input = this;
+                    setTimeout(function() {
+                        caret(input, 0, lastPosition);
+                    }, 0);
+                }).bind("keydown.inputmask", keydownEvent
                 ).bind("keypress.inputmask", keypressEvent
                 ).bind("keyup.inputmask", function(e) {
                     var $input = $(this), input = this;
@@ -613,7 +612,6 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     if (input._valueGet() == _buffer.join(''))
                         input._valueSet('');
                 });
-                }
 
                 //apply mask
                 lastPosition = checkVal(el, buffer, true);
@@ -765,8 +763,8 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             writeBuffer(input, buffer, beginPos);
                         } else {
                             var beginPos = pos.begin - (k == opts.keyCode.DELETE ? 0 : 1);
-                            if(beginPos < firstMaskPos && k == opts.keyCode.DELETE) {
-                            	beginPos = firstMaskPos;
+                            if (beginPos < firstMaskPos && k == opts.keyCode.DELETE) {
+                                beginPos = firstMaskPos;
                             }
                             if (beginPos >= firstMaskPos) {
                                 if (isRTL) {
