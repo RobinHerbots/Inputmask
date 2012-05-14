@@ -278,3 +278,7 @@ Just add the dir="rtl" attribute to the input element
 <input id="test" dir="rtl" />
 ```
 
+## Compiling with Google Closure Compiler
+
+First grab the sources from github.  In the root you type ant.
+A new folder dist is created with the minified and optimized js-files

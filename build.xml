@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<project name="jquery.inputmask" default="build" basedir=".">
+
+    <!-- define the path of compressor in this file -->
+    <property file="build.properties" />
+
+    <target name="init">
+        <mkdir dir="${distdir}" />
+    </target>
+
+    <target name="jquery.inputmask" depends="init">
+        <concat destfile="${distdir}/${target}">
+			<fileset file="js/jquery.inputmask.js"/>
+			<fileset file="js/jquery.inputmask.extentions.js"/>
+        </concat>
+    </target>
+
+    <target name="jquery.inputmask.min" depends="jquery.inputmask">
+        <apply executable="java" parallel="false" verbose="true" failonerror="true" dest="${distdir}">
+            <fileset dir="${distdir}">
+                <include name="${target}" />
+            </fileset>
+            <arg line="-jar" />
+            <arg path="${GoogleCompiler}" />
+            <arg value="--warning_level" />
+            <arg value="QUIET" />
+            <arg value="--js_output_file" />
+            <targetfile />
+            <arg value="--js" />
+            <mapper type="glob" from="${target}" to="${target.min}" />
+        </apply>
+      	<echo message="${target.min} built." />
+    </target>
+    
+    <target name="minfiles">
+      <mkdir dir="${distdir}/min" />
+	<apply executable="java" parallel="false" verbose="true" failonerror="true" dest="${distdir}/min">
+	    <fileset dir="${srcdir}">
+                <include name="*.js" />
+            </fileset>
+            <arg line="-jar" />
+            <arg path="${GoogleCompiler}" />
+            <arg value="--warning_level" />
+            <arg value="QUIET" />
+            <arg value="--js_output_file" />
+            <targetfile />
+            <arg value="--js" />
+	    <mapper type="glob" from="*.js" to="*.js" />
+        </apply>      
+    </target>
+    
+    <target name="build" depends="jquery.inputmask, jquery.inputmask.min, minfiles"/>
+
+    <target name="clean">
+        <delete dir="${distdir}" />
+    </target>
+
+    <target name="all" depends="clean,build"/>
+
+</project>
