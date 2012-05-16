@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.6.0a
+Version: 0.6.0b
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -31,6 +31,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 insertMode: true, //insert the input or overwrite the input
                 clearIncomplete: false, //clear the incomplete input on blur
                 aliases: {}, //aliases definitions => see jquery.inputmask.extentions.js
+                onKeyUp: $.noop, //override to implement autocomplete on certain keys for example
                 definitions: {
                     '9': {
                         validator: "[0-9]",
@@ -591,16 +592,8 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     }, 0);
                 }).bind("keydown.inputmask", keydownEvent
                 ).bind("keypress.inputmask", keypressEvent
-                ).bind("keyup.inputmask", function(e) {
-                    var $input = $(this), input = this;
-                    var k = e.keyCode;
-                    if (k == opts.keyCode.TAB && $input.hasClass('focus.inputmask') && input._valueGet().length == 0) {
-                        buffer = _buffer.slice();
-                        writeBuffer(input, buffer);
-                        if (!isRTL) caret(input, 0);
-                        undoBuffer = input._valueGet();
-                    }
-                }).bind(pasteEventName, function() {
+                ).bind("keyup.inputmask", keyupEvent
+                ).bind(pasteEventName, function() {
                     var input = this;
                     setTimeout(function() {
                         caret(input, checkVal(input, buffer, true));
@@ -864,6 +857,18 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             }
                             return false;
                         }
+                    }
+                }
+
+                function keyupEvent(e) {
+                    var $input = $(this), input = this;
+                    var k = e.keyCode;
+                    opts.onKeyUp.call(this, k); //extra stuff todo on keyup
+                    if (k == opts.keyCode.TAB && $input.hasClass('focus.inputmask') && input._valueGet().length == 0) {
+                        buffer = _buffer.slice();
+                        writeBuffer(input, buffer);
+                        if (!isRTL) caret(input, 0);
+                        undoBuffer = input._valueGet();
                     }
                 }
             }
