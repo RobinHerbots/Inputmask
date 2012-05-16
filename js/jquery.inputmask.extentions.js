@@ -286,7 +286,14 @@ Optional extentions on the jquery.inputmask base
                             greedy: false,
                             numericInput: true,
                             regex: {
-                            number: function(radixPoint, digits) { return new RegExp("^[\+\\d\-]{1}\\d*[" + radixPoint + "]?\\d" + digits + "$"); }
+                                number: function(radixPoint, digits) { return new RegExp("^[\+\\d\-]{1}\\d*[" + radixPoint + "]?\\d" + digits + "$"); }
+                            },
+                            onKeyUp: function(e, opts) {
+                                var $input = $(this), input = this;
+                                if (e.keyCode == opts.keyCode.TAB) {
+                                    var nptStr = input._valueGet();
+                                    //do stuff
+                                }
                             },
                             definitions: {
                                 '~': { //real number
