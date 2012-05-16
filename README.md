@@ -284,6 +284,13 @@ Just add the dir="rtl" attribute to the input element
 <input id="test" dir="rtl" />
 ```
 
+### onKeyUp option
+
+Use this to do some extra processing of the input when certain keys are pressed.  
+This can be usefull when implementing an alias, ex. decimal alias, autofill the digits when pressing tab.
+
+see jquery.inputmask.extentions.js for some examples
+
 ## Compiling with Google Closure Compiler
 
 First grab the sources from github.  In the root you type ant.
