@@ -863,7 +863,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 function keyupEvent(e) {
                     var $input = $(this), input = this;
                     var k = e.keyCode;
-                    opts.onKeyUp.call(this, k); //extra stuff todo on keyup
+                    opts.onKeyUp.call(this, e, opts); //extra stuff todo on keyup
                     if (k == opts.keyCode.TAB && $input.hasClass('focus.inputmask') && input._valueGet().length == 0) {
                         buffer = _buffer.slice();
                         writeBuffer(input, buffer);
