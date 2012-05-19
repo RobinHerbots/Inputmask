@@ -3,7 +3,7 @@ Input Mask plugin extentions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.0.6
+Version: 0.0.7
 
 Optional extentions on the jquery.inputmask base
 */
@@ -55,10 +55,22 @@ Optional extentions on the jquery.inputmask base
             regex: {
                 monthpre: new RegExp("[01]"),
                 month: new RegExp("((0[1-9]|[12][0-9])\/(0[1-9]|1[012]))|(30\/(0[13-9]|1[012]))|(31\/(0[13578]|1[02]))"),
+				yearpre1: new RegExp("[12]"),                
                 year: new RegExp("(19|20)\\d{2}"),
                 daypre: new RegExp("[0-3]"),
                 day: new RegExp("0[1-9]|[12][0-9]|3[01]")
             },
+            leapday: "29/02/",
+            onKeyUp: function(e, opts) {
+                                var $input = $(this), input = this;
+                                if (e.keyCode == opts.keyCode.TAB) {
+                                    var nptStr = input._valueGet();
+                                    //do stuff
+                                } else if(e.ctrlKey && e.keyCode == opts.keyCode.RIGHT){
+                                	var today = new Date();
+                                	$input.val(today.getDate().toString() + (today.getMonth()+1).toString() + today.getFullYear().toString());
+                                }
+                            },
             definitions: {
                 'd': { //day
                     validator: function(chrs, buffer, pos, strict, opts) {
@@ -126,7 +138,7 @@ Optional extentions on the jquery.inputmask base
                             validator: function(chrs, buffer, pos, strict, opts) {
                                 if (opts.regex.year.test(chrs)) {
                                     var dayMonthValue = buffer.join('').substr(0, 6);
-                                    if (dayMonthValue != "29/02/")
+                                    if (dayMonthValue != opts.leapday)
                                         return true;
                                     else {
                                         var year = parseInt(chrs);  //detect leap year
@@ -142,7 +154,21 @@ Optional extentions on the jquery.inputmask base
                             },
                             cardinality: 4,
                             prevalidator: [
-                        { validator: "[12]", cardinality: 1 },
+                        { validator: function(chrs, buffer, pos, strict, opts) {
+                        		var isValid = opts.regex.yearpre1.test(chrs);
+                            	if (!strict && !isValid) {
+                                	var yearPrefix = (new Date()).getFullYear().toString().slice(0,2);
+
+                            	    isValid = opts.regex.yearpre1.test(yearPrefix + chrs);
+                        	        if (isValid) {
+                    	                buffer[pos++] = yearPrefix[0];
+                	                    buffer[pos++] = yearPrefix[1];
+            	                        return pos;
+        	                        }
+    	                        }
+	                            return isValid;
+                        	}
+                        	, cardinality: 1 },
                         { validator: "(19|20)", cardinality: 2 },
                         { validator: "(19|20)\\d", cardinality: 3 }
                         ]
@@ -159,8 +185,20 @@ Optional extentions on the jquery.inputmask base
                         daypre: new RegExp("((0[13-9]|1[012])\/[0-3])|(02\/[0-2])"),
                         month: new RegExp("0[1-9]|1[012]"),
                         monthpre: new RegExp("[01]"),
+                        yearpre1: new RegExp("[12]"),                
                         year: new RegExp("(19|20)\\d{2}")
                     },
+                    leapday: "02/29/",
+                    onKeyUp: function(e, opts) {
+                                var $input = $(this), input = this;
+                                if (e.keyCode == opts.keyCode.TAB) {
+                                    var nptStr = input._valueGet();
+                                    //do stuff
+                                } else if(e.ctrlKey && e.keyCode == opts.keyCode.RIGHT){
+                                	var today = new Date();
+                                	$input.val((today.getMonth()+1).toString() + today.getDate().toString() + today.getFullYear().toString());
+                                }
+                            },
                     definitions: {
                         'd': { //day
                             validator: function(chrs, buffer, pos, strict, opts) {
@@ -229,7 +267,7 @@ Optional extentions on the jquery.inputmask base
                                     validator: function(chrs, buffer, pos, strict, opts) {
                                         if (opts.regex.year.test(chrs)) {
                                             var monthDayValue = buffer.join('').substr(0, 6);
-                                            if (monthDayValue != "02/29/")
+                                            if (monthDayValue != opts.leapday)
                                                 return true;
                                             else {
                                                 var year = parseInt(chrs);  //detect leap year
@@ -245,7 +283,21 @@ Optional extentions on the jquery.inputmask base
                                     },
                                     cardinality: 4,
                                     prevalidator: [
-                        { validator: "[12]", cardinality: 1 },
+                        { validator: function(chrs, buffer, pos, strict, opts) {
+                        		var isValid = opts.regex.yearpre1.test(chrs);
+                            	if (!strict && !isValid) {
+                                	var yearPrefix = (new Date()).getFullYear().toString().slice(0,2);
+
+                            	    isValid = opts.regex.yearpre1.test(yearPrefix + chrs);
+                        	        if (isValid) {
+                    	                buffer[pos++] = yearPrefix[0];
+                	                    buffer[pos++] = yearPrefix[1];
+            	                        return pos;
+        	                        }
+    	                        }
+	                            return isValid;
+                        	}                       
+                        , cardinality: 1 },
                         { validator: "(19|20)", cardinality: 2 },
                         { validator: "(19|20)\\d", cardinality: 3 }
                         ]
