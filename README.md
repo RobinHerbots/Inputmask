@@ -46,7 +46,7 @@ Example of some new definitions:
 insertMode: false
 ```
 
-These allow for a finer date validation then 99/99/9999 which also allows 33/33/3333 for example.  
+These allow for a finer date validation then 99/99/9999 which also allows 33/33/3333 for example. 
 In the jquery.inputmask.extentions.js you find a full date input validation which takes days, months & leap years into account.
 
 Also extra features like mask-repetitions (greedy and non-gready) and many other additions are included.  In the examples you will find more about them.
@@ -270,7 +270,16 @@ $(document).ready(function(){
 });
 ```
 
-### rtl input
+### onKeyUp / onKeyDown option
+
+Use this to do some extra processing of the input when certain keys are pressed.
+This can be usefull when implementing an alias, ex. decimal alias, autofill the digits when pressing tab.
+
+see jquery.inputmask.extentions.js for some examples
+
+
+## Markup options
+### RTL input 
 
 Just add the dir="rtl" attribute to the input element
 
@@ -278,7 +287,48 @@ Just add the dir="rtl" attribute to the input element
 <input id="test" dir="rtl" />
 ```
 
+
 ## Compiling with Google Closure Compiler
 
 First grab the sources from github.  In the root you type ant.
 A new folder dist is created with the minified and optimized js-files
+
+# jquery.inputmask extentions
+
+## Alias definitions
+
+### date aliases
+
+```javascript
+$(document).ready(function(){
+   $("#date").inputmask("dd/mm/yyyy");
+   $("#date").inputmask("mm/dd/yyyy");
+   $("#date").inputmask("date"); // alias for dd/mm/yyyy
+});
+```
+
+The date aliases take leapyears into account.  There is also autocompletion on day, month, year.
+For example:
+
+input:	2/2/2012 		result: 02/02/2012
+input:  352012			result: 03/05/2012
+input:  3530			result: 03/05/2030
+input: <ctrl> rightarrow	result: the date from today
+
+### numeric aliases
+
+```javascript
+$(document).ready(function(){
+   $("#numeric").inputmask("decimal");
+   $("#numeric").inputmask("non-negative-decimal");
+   $("#numeric").inputmask("integer"); 
+});
+```
+
+Autocompletion on tab with decimal numbers
+
+```javascript
+$(document).ready(function(){
+   $("#numeric").inputmask("decimal" { digits: 3 });
+});
+```
