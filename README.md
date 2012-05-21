@@ -297,4 +297,36 @@ A new folder dist is created with the minified and optimized js-files
 
 ### date aliases
 
+```javascript
+$(document).ready(function(){
+   $("#date").inputmask("dd/mm/yyyy");
+   $("#date").inputmask("mm/dd/yyyy");
+   $("#date").inputmask("date"); // alias for dd/mm/yyyy
+});
+```
+
+The date aliases take leapyears into account.  There is also autocompletion on day, month, year.
+For example:
+
+input:	2/2/2012 		result: 02/02/2012
+input:  352012			result: 03/05/2012
+input:  3530			result: 03/05/2030
+input: <ctrl> rightarrow	result: the date from today
+
 ### numeric aliases
+
+```javascript
+$(document).ready(function(){
+   $("#numeric").inputmask("decimal");
+   $("#numeric").inputmask("non-negative-decimal");
+   $("#numeric").inputmask("integer"); 
+});
+```
+
+Autocompletion on tab with decimal numbers
+
+```javascript
+$(document).ready(function(){
+   $("#numeric").inputmask("decimal" { digits: 3 });
+});
+```
