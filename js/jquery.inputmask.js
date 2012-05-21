@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.0.0
+Version: 1.0.1
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -410,7 +410,6 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
 
             function clearOptionalTail(input, buffer) {
-                setTimeout(function() {
                     var tmpBuffer = buffer.slice();
                     if ($(input).data('inputmask')['isRTL']) {
                         for (var pos = 0; pos <= tmpBuffer.length - 1; pos++) {
@@ -432,7 +431,6 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         }
                     }
                     writeBuffer(input, tmpBuffer);
-                }, 0);
             }
 
             //functionality fn
@@ -535,9 +533,6 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 }).bind("blur.inputmask", function() {
                     var $input = $(this), input = this, nptValue = input._valueGet();
                     $input.removeClass('focus.inputmask');
-                    if (nptValue != undoBuffer) {
-                        $input.change();
-                    }
                     if (opts.clearMaskOnLostFocus) {
                         if (nptValue == _buffer.join(''))
                             input._valueSet('');
@@ -557,6 +552,9 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                                 writeBuffer(input, buffer);
                             }
                         }
+                    }
+                    if (input._valueGet() != undoBuffer) {
+                        $input.change();
                     }
                 }).bind("focus.inputmask", function() {
                     var $input = $(this), input = this;
