@@ -3,7 +3,7 @@ Input Mask plugin extentions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.0.7
+Version: 0.0.8
 
 Optional extentions on the jquery.inputmask base
 */
@@ -56,6 +56,7 @@ Optional extentions on the jquery.inputmask base
                 monthpre: new RegExp("[01]"),
                 month: new RegExp("((0[1-9]|[12][0-9])\/(0[1-9]|1[012]))|(30\/(0[13-9]|1[012]))|(31\/(0[13578]|1[02]))"),
 				yearpre1: new RegExp("[12]"),                
+				yearpre3: new RegExp("(19|20)\\d"),
                 year: new RegExp("(19|20)\\d{2}"),
                 daypre: new RegExp("[0-3]"),
                 day: new RegExp("0[1-9]|[12][0-9]|3[01]")
@@ -63,10 +64,7 @@ Optional extentions on the jquery.inputmask base
             leapday: "29/02/",
             onKeyUp: function(e, opts) {
                                 var $input = $(this), input = this;
-                                if (e.keyCode == opts.keyCode.TAB) {
-                                    var nptStr = input._valueGet();
-                                    //do stuff
-                                } else if(e.ctrlKey && e.keyCode == opts.keyCode.RIGHT){
+                                if(e.ctrlKey && e.keyCode == opts.keyCode.RIGHT){
                                 	var today = new Date();
                                 	$input.val(today.getDate().toString() + (today.getMonth()+1).toString() + today.getFullYear().toString());
                                 }
@@ -159,7 +157,7 @@ Optional extentions on the jquery.inputmask base
                             	if (!strict && !isValid) {
                                 	var yearPrefix = (new Date()).getFullYear().toString().slice(0,2);
 
-                            	    isValid = opts.regex.yearpre1.test(yearPrefix + chrs);
+                            	    isValid = opts.regex.yearpre3.test(yearPrefix + chrs);
                         	        if (isValid) {
                     	                buffer[pos++] = yearPrefix[0];
                 	                    buffer[pos++] = yearPrefix[1];
@@ -185,16 +183,14 @@ Optional extentions on the jquery.inputmask base
                         daypre: new RegExp("((0[13-9]|1[012])\/[0-3])|(02\/[0-2])"),
                         month: new RegExp("0[1-9]|1[012]"),
                         monthpre: new RegExp("[01]"),
-                        yearpre1: new RegExp("[12]"),                
+                        yearpre1: new RegExp("[12]"),
+                        yearpre3: new RegExp("(19|20)\\d"),                 
                         year: new RegExp("(19|20)\\d{2}")
                     },
                     leapday: "02/29/",
                     onKeyUp: function(e, opts) {
                                 var $input = $(this), input = this;
-                                if (e.keyCode == opts.keyCode.TAB) {
-                                    var nptStr = input._valueGet();
-                                    //do stuff
-                                } else if(e.ctrlKey && e.keyCode == opts.keyCode.RIGHT){
+                                if(e.ctrlKey && e.keyCode == opts.keyCode.RIGHT){
                                 	var today = new Date();
                                 	$input.val((today.getMonth()+1).toString() + today.getDate().toString() + today.getFullYear().toString());
                                 }
@@ -288,7 +284,7 @@ Optional extentions on the jquery.inputmask base
                             	if (!strict && !isValid) {
                                 	var yearPrefix = (new Date()).getFullYear().toString().slice(0,2);
 
-                            	    isValid = opts.regex.yearpre1.test(yearPrefix + chrs);
+                            	    isValid = opts.regex.yearpre3.test(yearPrefix + chrs);
                         	        if (isValid) {
                     	                buffer[pos++] = yearPrefix[0];
                 	                    buffer[pos++] = yearPrefix[1];
@@ -340,11 +336,17 @@ Optional extentions on the jquery.inputmask base
                             regex: {
                                 number: function(radixPoint, digits) { return new RegExp("^[\+\\d\-]{1}\\d*[" + radixPoint + "]?\\d" + digits + "$"); }
                             },
-                            onKeyUp: function(e, opts) {
+                            onKeyDown: function(e, opts) {
                                 var $input = $(this), input = this;
                                 if (e.keyCode == opts.keyCode.TAB) {
                                     var nptStr = input._valueGet();
-                                    //do stuff
+                                    var radixPosition = nptStr.indexOf(opts.radixPoint[opts.radixPoint.length -1]);
+                                    if(radixPosition != -1){
+                                    	for(var i = 1; i < opts.digits; i++) {
+                                    		if(nptStr[radixPosition + i]) nptStr = nptStr + "0";  
+                                    	}
+                                    	$input.val(nptStr);
+                                    }
                                 }
                             },
                             definitions: {

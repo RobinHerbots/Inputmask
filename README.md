@@ -46,7 +46,7 @@ Example of some new definitions:
 insertMode: false
 ```
 
-These allow for a finer date validation then 99/99/9999 which also allows 33/33/3333 for example.  
+These allow for a finer date validation then 99/99/9999 which also allows 33/33/3333 for example. 
 In the jquery.inputmask.extentions.js you find a full date input validation which takes days, months & leap years into account.
 
 Also extra features like mask-repetitions (greedy and non-gready) and many other additions are included.  In the examples you will find more about them.
@@ -215,14 +215,6 @@ While the field has focus and is blank, users will see the full mask `___-___`.
 When the required part of the mask is filled and the field loses focus, the user will see `123`.
 When both the required and optional parts of the mask are filled out and the field loses focus, the user will see `123-abc`.
 
-### oncleared option
-
-```javascript
-$(document).ready(function(){
-    $("#ssn").inputmask("999-99-9999",{placeholder:" ", oncleared: function(){ alert('Set focus somewhere else ;-)');} });
-});
-```
-
 ### aliases option
 
 First you have to create an alias definition (more examples can be found in jquery.inputmask.extentions.js)
@@ -276,6 +268,15 @@ $(document).ready(function(){
 });
 ```
 
+### onKeyUp / onKeyDown option
+
+Use this to do some extra processing of the input when certain keys are pressed.
+This can be usefull when implementing an alias, ex. decimal alias, autofill the digits when pressing tab.
+
+see jquery.inputmask.extentions.js for some examples
+
+
+## Markup options
 ### RTL input 
 
 Just add the dir="rtl" attribute to the input element
@@ -284,14 +285,16 @@ Just add the dir="rtl" attribute to the input element
 <input id="test" dir="rtl" />
 ```
 
-### onKeyUp option
-
-Use this to do some extra processing of the input when certain keys are pressed.  
-This can be usefull when implementing an alias, ex. decimal alias, autofill the digits when pressing tab.
-
-see jquery.inputmask.extentions.js for some examples
 
 ## Compiling with Google Closure Compiler
 
 First grab the sources from github.  In the root you type ant.
 A new folder dist is created with the minified and optimized js-files
+
+# jquery.inputmask extentions
+
+## Alias definitions
+
+### date aliases
+
+### numeric aliases
