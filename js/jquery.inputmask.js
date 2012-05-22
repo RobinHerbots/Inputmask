@@ -533,6 +533,9 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 }).bind("blur.inputmask", function() {
                     var $input = $(this), input = this, nptValue = input._valueGet();
                     $input.removeClass('focus.inputmask');
+                    if (nptValue != undoBuffer) {
+                        $input.change();
+                    }
                     if (opts.clearMaskOnLostFocus) {
                         if (nptValue == _buffer.join(''))
                             input._valueSet('');
@@ -552,9 +555,6 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                                 writeBuffer(input, buffer);
                             }
                         }
-                    }
-                    if (input._valueGet() != undoBuffer) {
-                        $input.change();
                     }
                 }).bind("focus.inputmask", function() {
                     var $input = $(this), input = this;
