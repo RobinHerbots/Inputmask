@@ -2,7 +2,7 @@
 
 jquery.inputmask is a jquery plugin which create an input mask.
 
-Copyright (c) 2010 - 2012 Robin Herbots
+Copyright (c) 2010 - 2012 Robin Herbots   
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
 
 The plugin is based on the maskedinput plugin of Josh Bush (http://digitalbush.com/projects/masked-input-plugin), but has finer control over the 'mask-definitions' and is fully compatible with the ui-datepicker
@@ -319,10 +319,10 @@ $(document).ready(function(){
 The date aliases take leapyears into account.  There is also autocompletion on day, month, year.
 For example:
 
-input:	2/2/2012 		result: 02/02/2012
-input:  352012			result: 03/05/2012
-input:  3530			result: 03/05/2030
-input: <ctrl> rightarrow	result: the date from today
+input:	2/2/2012 		result: 02/02/2012   
+input:  352012			result: 03/05/2012   
+input:  3530			result: 03/05/2030   
+input: <ctrl> rightarrow	result: the date from today   
 
 ### numeric aliases
 
