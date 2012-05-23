@@ -101,6 +101,14 @@ $(document).ready(function(){
 });
 ```
 
+### clearIncomplete - clear the incomplete input on blur
+
+```javascript
+$(document).ready(function(){
+   $("#date").inputmask("d/m/y",{ "clearIncomplete": true } });
+});
+```
+
 ### mask repeat function
 
 ```javascript
