@@ -3,7 +3,7 @@ Input Mask plugin extentions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.0.0
+Version: 1.0.2
 
 Optional extentions on the jquery.inputmask base
 */
@@ -54,7 +54,7 @@ Optional extentions on the jquery.inputmask base
             placeholder: "dd/mm/yyyy",
             regex: {
                 monthpre: new RegExp("[01]"),
-                month: new RegExp("((0[1-9]|[12][0-9])\/(0[1-9]|1[012]))|(30\/(0[13-9]|1[012]))|(31\/(0[13578]|1[02]))"),
+                month: function(separator) { return new RegExp("((0[1-9]|[12][0-9])\\" + separator + "(0[1-9]|1[012]))|(30\\" + separator + "(0[13-9]|1[012]))|(31\\" + separator + "(0[13578]|1[02]))")},
 				yearpre1: new RegExp("[12]"),                
 				yearpre3: new RegExp("(19|20)\\d"),
                 year: new RegExp("(19|20)\\d{2}"),
@@ -62,6 +62,7 @@ Optional extentions on the jquery.inputmask base
                 day: new RegExp("0[1-9]|[12][0-9]|3[01]")
             },
             leapday: "29/02/",
+            separator: '/',
             onKeyUp: function(e, opts) {
                                 var $input = $(this), input = this;
                                 if(e.ctrlKey && e.keyCode == opts.keyCode.RIGHT){
@@ -74,7 +75,7 @@ Optional extentions on the jquery.inputmask base
                     validator: function(chrs, buffer, pos, strict, opts) {
                         var isValid = opts.regex.day.test(chrs);
                         if (!strict && !isValid) {
-                            if (chrs.charAt(1) == '/') {
+                            if (chrs.charAt(1) == opts.separator[opts.separator.length -1]) {
                                 isValid = opts.regex.day.test("0" + chrs.charAt(0));
                                 if (isValid) {
                                     buffer[pos - 1] = "0";
@@ -103,10 +104,10 @@ Optional extentions on the jquery.inputmask base
                     'm': { //month
                         validator: function(chrs, buffer, pos, strict, opts) {
                             var dayValue = buffer.join('').substr(0, 3);
-                            var isValid = opts.regex.month.test(dayValue + chrs);
+                            var isValid = opts.regex.month(opts.separator).test(dayValue + chrs);
                             if (!strict && !isValid) {
-                                if (chrs.charAt(1) == '/') {
-                                    isValid = opts.regex.month.test(dayValue + "0" + chrs.charAt(0));
+                                if (chrs.charAt(1) == opts.separator[opts.separator.length -1]) {
+                                    isValid = opts.regex.month(opts.separator).test(dayValue + "0" + chrs.charAt(0));
                                     if (isValid) {
                                         buffer[pos - 1] = "0";
                                         buffer[pos] = chrs.charAt(0);
@@ -122,7 +123,7 @@ Optional extentions on the jquery.inputmask base
                             var isValid = opts.regex.monthpre.test(chrs);
                             if (!strict && !isValid) {
                                 var dayValue = buffer.join('').substr(0, 3);
-                                isValid = opts.regex.month.test(dayValue + "0" + chrs);
+                                isValid = opts.regex.month(opts.separator).test(dayValue + "0" + chrs);
                                 if (isValid) {
                                     buffer[pos] = "0";
                                     pos++;
@@ -179,8 +180,8 @@ Optional extentions on the jquery.inputmask base
                     mask: "m/d/y",
                     placeholder: "mm/dd/yyyy",
                     regex: {
-                        day: new RegExp("((0[1-9]|1[012])\/(0[1-9]|[12][0-9]))|((0[13-9]|1[012])\/30)|((0[13578]|1[02])\/31)"),
-                        daypre: new RegExp("((0[13-9]|1[012])\/[0-3])|(02\/[0-2])"),
+                        day: function(separator) { return new RegExp("((0[1-9]|1[012])\\" + separator + "(0[1-9]|[12][0-9]))|((0[13-9]|1[012])\\" + separator + "30)|((0[13578]|1[02])\\" + separator + "31)")},
+                        daypre: function(separator) { return new RegExp("((0[13-9]|1[012])\\" + separator + "[0-3])|(02\\" + separator + "[0-2])")},
                         month: new RegExp("0[1-9]|1[012]"),
                         monthpre: new RegExp("[01]"),
                         yearpre1: new RegExp("[12]"),
@@ -188,6 +189,7 @@ Optional extentions on the jquery.inputmask base
                         year: new RegExp("(19|20)\\d{2}")
                     },
                     leapday: "02/29/",
+                    separator: '/',
                     onKeyUp: function(e, opts) {
                                 var $input = $(this), input = this;
                                 if(e.ctrlKey && e.keyCode == opts.keyCode.RIGHT){
@@ -199,10 +201,10 @@ Optional extentions on the jquery.inputmask base
                         'd': { //day
                             validator: function(chrs, buffer, pos, strict, opts) {
                                 var monthValue = buffer.join('').substr(0, 3);
-                                var isValid = opts.regex.day.test(monthValue + chrs);
+                                var isValid = opts.regex.day(opts.separator).test(monthValue + chrs);
                                 if (!strict && !isValid) {
-                                    if (chrs.charAt(1) == '/') {
-                                        isValid = opts.regex.day.test(monthValue + "0" + chrs.charAt(0));
+                                    if (chrs.charAt(1) == opts.separator[opts.separator.length -1]) {
+                                        isValid = opts.regex.day(opts.separator).test(monthValue + "0" + chrs.charAt(0));
                                         if (isValid) {
                                             buffer[pos - 1] = "0";
                                             buffer[pos] = chrs.charAt(0);
@@ -216,9 +218,9 @@ Optional extentions on the jquery.inputmask base
                             cardinality: 2,
                             prevalidator: [{ validator: function(chrs, buffer, pos, strict, opts) {
                                 var monthValue = buffer.join('').substr(0, 3);
-                                var isValid = opts.regex.daypre.test(monthValue + chrs);
+                                var isValid = opts.regex.daypre(opts.separator).test(monthValue + chrs);
                                 if (!strict && !isValid) {
-                                    isValid = opts.regex.day.test(monthValue + "0" + chrs);
+                                    isValid = opts.regex.day(opts.separator).test(monthValue + "0" + chrs);
                                     if (isValid) {
                                         buffer[pos] = "0";
                                         pos++;
@@ -233,7 +235,7 @@ Optional extentions on the jquery.inputmask base
                                 validator: function(chrs, buffer, pos, strict, opts) {
                                     var isValid = opts.regex.month.test(chrs);
                                     if (!strict && !isValid) {
-                                        if (chrs.charAt(1) == '/') {
+                                        if (chrs.charAt(1) == opts.separator[opts.separator.length -1]) {
                                             isValid = opts.regex.month.test("0" + chrs.charAt(0));
                                             if (isValid) {
                                                 buffer[pos - 1] = "0";
@@ -301,6 +303,34 @@ Optional extentions on the jquery.inputmask base
                             },
                             insertMode: false,
                             autoUnmask: false
+                        },
+                        'dd.mm.yyyy': {
+                    		mask: "d.m.y",
+                    		placeholder: "dd.mm.yyyy",
+                    		leapday: "29.02.",
+                    		separator: '\.',
+                         	alias: "dd/mm/yyyy"
+                        },
+                        'dd-mm-yyyy': {
+                    		mask: "d-m-y",
+                    		placeholder: "dd-mm-yyyy",
+                    		leapday: "29-02-",
+                    		separator: '\-',
+                         	alias: "dd/mm/yyyy"
+                        },
+                        'mm.dd.yyyy': {
+                    		mask: "m.d.y",
+                    		placeholder: "mm.dd.yyyy",
+                    		leapday: "02.29.",
+                    		separator: '\.',
+                         	alias: "mm/dd/yyyy"
+                        },
+                        'mm-dd-yyyy': {
+                    		mask: "m-d-y",
+                    		placeholder: "mm-dd-yyyy",
+                    		leapday: "02-29-",
+                    		separator: '\-',
+                         	alias: "mm/dd/yyyy"
                         },
                         'hh:mm:ss': {
                             mask: "h:s:s",
