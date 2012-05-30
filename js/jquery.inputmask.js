@@ -148,7 +148,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 }
             } if (typeof fn == "object") {
                 opts = $.extend(true, {}, $.inputmask.defaults, fn);
-
+		ResolveAlias(opts.alias); //resolve aliases
                 //init buffer
                 var _buffer = getMaskTemplate();
                 var tests = getTestingChain();
