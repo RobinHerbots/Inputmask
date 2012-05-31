@@ -12,6 +12,8 @@
         <concat destfile="${distdir}/${target}">
 			<fileset file="js/jquery.inputmask.js"/>
 			<fileset file="js/jquery.inputmask.extentions.js"/>
+			<fileset file="js/jquery.inputmask.date.extentions.js"/>
+			<fileset file="js/jquery.inputmask.numeric.extentions.js"/>
         </concat>
     </target>
 
