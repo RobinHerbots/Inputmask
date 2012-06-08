@@ -828,7 +828,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             var pos = caret(input), c = String.fromCharCode(k), maskL = getMaskLength();
                             if (isRTL) {
                                 var p = opts.numericInput ? pos.end : seekPrevious(buffer, pos.end), np;
-                                if ((np = isValid(p, c, buffer, false)) !== false) {
+                                if ((np = isValid(p == maskL ? seekPrevious(buffer, p) : p, c, buffer, false)) !== false) {
                                     if (np !== true) p = np; //set new position from isValid
                                     if (isValid(firstMaskPos, buffer[firstMaskPos], buffer, true) == false || (opts.greedy === false && buffer.length < maskL)) {
                                         if (buffer[firstMaskPos] != getPlaceHolder(firstMaskPos) && buffer.length < maskL) {
