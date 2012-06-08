@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.0.1
+Version: 1.0.2
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -363,8 +363,12 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
                 if (isRTL) { //align inputValue for RTL/numeric input
                     var neededLength = _buffer.length - 1, _bufferPos = neededLength;
-                    while (inputValue[neededLength] === undefined && _buffer[_bufferPos] !== undefined)
-                        inputValue.unshift(_buffer[_bufferPos--]);
+                    while (inputValue[neededLength] === undefined && _buffer[_bufferPos] !== undefined) {
+                    	if(tests[determineTestPosition(_bufferPos)].fn != null) {
+                        	inputValue.unshift(_buffer[_bufferPos]);
+                        } else neededLength--;
+                        _bufferPos--;
+                    }
                 }
                 clearBuffer(buffer, 0, buffer.length);
                 buffer.length = _buffer.length;
