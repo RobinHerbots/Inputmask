@@ -45,13 +45,13 @@ Optional extentions on the jquery.inputmask base
             mask: "d/m/y",
             placeholder: "dd/mm/yyyy",
             regex: {
+                daypre: new RegExp("[0-3]"),
+                day: new RegExp("0[1-9]|[12][0-9]|3[01]"),
                 monthpre: new RegExp("[01]"),
                 month: function(separator) { return new RegExp("((0[1-9]|[12][0-9])\\" + separator + "(0[1-9]|1[012]))|(30\\" + separator + "(0[13-9]|1[012]))|(31\\" + separator + "(0[13578]|1[02]))")},
-				yearpre1: new RegExp("[12]"),                
-				yearpre3: new RegExp("(19|20)\\d"),
-                year: new RegExp("(19|20)\\d{2}"),
-                daypre: new RegExp("[0-3]"),
-                day: new RegExp("0[1-9]|[12][0-9]|3[01]")
+		yearpre1: new RegExp("[12]"),                
+		yearpre3: new RegExp("(19|20)\\d"),
+                year: new RegExp("(19|20)\\d{2}")                
             },
             leapday: "29/02/",
             separator: '/',
@@ -174,8 +174,8 @@ Optional extentions on the jquery.inputmask base
                     regex: {
                         day: function(separator) { return new RegExp("((0[1-9]|1[012])\\" + separator + "(0[1-9]|[12][0-9]))|((0[13-9]|1[012])\\" + separator + "30)|((0[13578]|1[02])\\" + separator + "31)")},
                         daypre: function(separator) { return new RegExp("((0[13-9]|1[012])\\" + separator + "[0-3])|(02\\" + separator + "[0-2])")},
-                        month: new RegExp("0[1-9]|1[012]"),
                         monthpre: new RegExp("[01]"),
+                        month: new RegExp("0[1-9]|1[012]"),
                         yearpre1: new RegExp("[12]"),
                         yearpre3: new RegExp("(19|20)\\d"),                 
                         year: new RegExp("(19|20)\\d{2}")
