@@ -3,7 +3,7 @@ Input Mask plugin extentions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.0.3
+Version: 1.0.4
 
 Optional extentions on the jquery.inputmask base
 */
@@ -187,49 +187,128 @@ Optional extentions on the jquery.inputmask base
                         }
                     }
                 },
-                'dd.mm.yyyy': {
-                    mask: "1.2.y",
-                    placeholder: "dd.mm.yyyy",
-                    leapday: "29.02.",
-                    separator: '\.',
-                    alias: "dd/mm/yyyy"
-                },
-                'dd-mm-yyyy': {
-                    mask: "1-2-y",
-                    placeholder: "dd-mm-yyyy",
-                    leapday: "29-02-",
-                    separator: '\-',
-                    alias: "dd/mm/yyyy"
-                },
-                'mm.dd.yyyy': {
-                    mask: "1.2.y",
-                    placeholder: "mm.dd.yyyy",
-                    leapday: "02.29.",
-                    separator: '\.',
-                    alias: "mm/dd/yyyy"
-                },
-                'mm-dd-yyyy': {
-                    mask: "1-2-y",
-                    placeholder: "mm-dd-yyyy",
-                    leapday: "02-29-",
-                    separator: '\-',
-                    alias: "mm/dd/yyyy"
-                },
-                'hh:mm:ss': {
-                    mask: "h:s:s",
-                    autoUnmask: false
-                },
-                'hh:mm': {
-                    mask: "h:s",
-                    autoUnmask: false
-                },
-                'date': {
-                    alias: "dd/mm/yyyy" // "mm/dd/yyyy"
-                },
-                'datetime': {
-                    mask: "1/2/y h:s",
-                    placeholder: "dd/mm/yyyy hh:mm",
-                    alias: "date"
-                }
-            });
-        })(jQuery);
+                'yyyy/mm/dd': {
+                    mask: "y/1/2",
+                    placeholder: "yyyy/mm/dd",
+                    alias: "mm/dd/yyyy",
+                    leapday: "/02/29",
+                    onKeyUp: function(e, opts) {
+                        var $input = $(this), input = this;
+                        if (e.ctrlKey && e.keyCode == opts.keyCode.RIGHT) {
+                            var today = new Date();
+                            $input.val(today.getFullYear().toString() + (today.getMonth() + 1).toString() + today.getDate().toString());
+                        }
+                    },
+                    definitions: {
+                        '2': { //val2 ~ day or month
+                            validator: function(chrs, buffer, pos, strict, opts) {
+                                var frontValue = buffer.join('').substr(5, 3);
+                                var isValid = opts.regex.val2(opts.separator).test(frontValue + chrs);
+                                if (!strict && !isValid) {
+                                    if (chrs.charAt(1) == opts.separator[opts.separator.length - 1]) {
+                                        isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs.charAt(0));
+                                        if (isValid) {
+                                            buffer[pos - 1] = "0";
+                                            buffer[pos] = chrs.charAt(0);
+                                            pos++;
+                                            return pos;
+                                        }
+                                    }
+                                }
+
+                                //check leap yeap
+                                if (isValid) {
+                                    var dayMonthValue = buffer.join('').substr(4, 4) + chrs;
+                                    if (dayMonthValue != opts.leapday)
+                                        return true;
+                                    else {
+                                        var year = parseInt(buffer.join('').substr(0, 4));  //detect leap year
+                                        if (year % 4 == 0)
+                                            if (year % 100 == 0)
+                                            if (year % 400 == 0)
+                                            return true;
+                                        else return false;
+                                        else return true;
+                                        else return false;
+                                    }
+                                }
+
+                                return isValid;
+                            },
+                            cardinality: 2,
+                            prevalidator: [{ validator: function(chrs, buffer, pos, strict, opts) {
+                                var frontValue = buffer.join('').substr(5, 3);
+                                var isValid = opts.regex.val2pre(opts.separator).test(frontValue + chrs);
+                                if (!strict && !isValid) {
+                                    isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs);
+                                    if (isValid) {
+                                        buffer[pos] = "0";
+                                        pos++;
+                                        return pos;
+                                    }
+                                }
+                                return isValid;
+                            }, cardinality: 1}]
+                            }
+                        }
+                    },
+                    'dd.mm.yyyy': {
+                        mask: "1.2.y",
+                        placeholder: "dd.mm.yyyy",
+                        leapday: "29.02.",
+                        separator: '\.',
+                        alias: "dd/mm/yyyy"
+                    },
+                    'dd-mm-yyyy': {
+                        mask: "1-2-y",
+                        placeholder: "dd-mm-yyyy",
+                        leapday: "29-02-",
+                        separator: '\-',
+                        alias: "dd/mm/yyyy"
+                    },
+                    'mm.dd.yyyy': {
+                        mask: "1.2.y",
+                        placeholder: "mm.dd.yyyy",
+                        leapday: "02.29.",
+                        separator: '\.',
+                        alias: "mm/dd/yyyy"
+                    },
+                    'mm-dd-yyyy': {
+                        mask: "1-2-y",
+                        placeholder: "mm-dd-yyyy",
+                        leapday: "02-29-",
+                        separator: '\-',
+                        alias: "mm/dd/yyyy"
+                    },
+                    'yyyy.mm.dd': {
+                        mask: "y.1.2",
+                        placeholder: "yyyy.mm.dd",
+                        leapday: ".02.29",
+                        separator: '\.',
+                        alias: "yyyy/mm/dd"
+                    },
+                    'yyyy-mm-dd': {
+                        mask: "y-1-2",
+                        placeholder: "yyyy-mm-dd",
+                        leapday: "-02-29",
+                        separator: '\-',
+                        alias: "yyyy/mm/dd"
+                    },
+                    'hh:mm:ss': {
+                        mask: "h:s:s",
+                        autoUnmask: false
+                    },
+                    'hh:mm': {
+                        mask: "h:s",
+                        autoUnmask: false
+                    },
+                    'date': {
+                        alias: "dd/mm/yyyy" // "mm/dd/yyyy"
+                    },
+                    'datetime': {
+                        mask: "1/2/y h:s",
+                        placeholder: "dd/mm/yyyy hh:mm",
+                        alias: "date"
+                    }
+                });
+            })(jQuery);
