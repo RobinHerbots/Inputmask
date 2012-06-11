@@ -95,11 +95,11 @@ Optional extentions on the jquery.inputmask base
                     },
                     '2': { //val2 ~ day or month
                         validator: function(chrs, buffer, pos, strict, opts) {
-                            var dayValue = buffer.join('').substr(0, 3);
-                            var isValid = opts.regex.val2(opts.separator).test(dayValue + chrs);
+                            var frontValue = buffer.join('').substr(0, 3);
+                            var isValid = opts.regex.val2(opts.separator).test(frontValue + chrs);
                             if (!strict && !isValid) {
                                 if (chrs.charAt(1) == opts.separator[opts.separator.length - 1]) {
-                                    isValid = opts.regex.val2(opts.separator).test(dayValue + "0" + chrs.charAt(0));
+                                    isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs.charAt(0));
                                     if (isValid) {
                                         buffer[pos - 1] = "0";
                                         buffer[pos] = chrs.charAt(0);
@@ -112,11 +112,10 @@ Optional extentions on the jquery.inputmask base
                         },
                         cardinality: 2,
                         prevalidator: [{ validator: function(chrs, buffer, pos, strict, opts) {
-                            var dayValue = buffer.join('').substr(0, 3);
-                            var isValid = opts.regex.val2pre(opts.separator).test(dayValue + chrs);
+                            var frontValue = buffer.join('').substr(0, 3);
+                            var isValid = opts.regex.val2pre(opts.separator).test(frontValue + chrs);
                             if (!strict && !isValid) {
-                                var dayValue = buffer.join('').substr(0, 3);
-                                isValid = opts.regex.val2(opts.separator).test(dayValue + "0" + chrs);
+                                isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs);
                                 if (isValid) {
                                     buffer[pos] = "0";
                                     pos++;
@@ -160,7 +159,7 @@ Optional extentions on the jquery.inputmask base
                             }
                             return isValid;
                         }
-                        	, cardinality: 1
+                            , cardinality: 1
                         },
                         { validator: "(19|20)", cardinality: 2 },
                         { validator: "(19|20)\\d", cardinality: 3 }
