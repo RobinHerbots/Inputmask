@@ -14,6 +14,7 @@ Optional extentions on the jquery.inputmask base
                         digits: "*", //numer of digits
                         groupSeparator: ",", // | "\."
                         groupSize: 3,
+                        autoGroup: false,
                         definitions: {
                            '9': {
                                   validator: function(chrs, buffer, pos, strict, opts) {
