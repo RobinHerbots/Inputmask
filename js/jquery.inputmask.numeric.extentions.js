@@ -13,7 +13,20 @@ Optional extentions on the jquery.inputmask base
                         radixPoint: "\.", // | ","
                         digits: "*", //numer of digits
                         groupSeparator: ",", // | "\."
-                        groupSize: 3
+                        groupSize: 3,
+                        definitions: {
+                           '9': {
+                                  validator: function(chrs, buffer, pos, strict, opts) {
+                                        var isValid = opts.definitions['9'].regex.test(chrs);
+                                        if(isValid){
+                                          //do some grouping                  
+                                        }
+                                        return isValid;
+                                  },
+                                  cardinality: 1,
+                                  regex:  new RegExp("[0-9]")
+                            }
+                        }
                     });
                     $.extend($.inputmask.defaults.aliases, {
                         'decimal': {
