@@ -383,7 +383,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                                 lastMatch = checkPosition = pos;
                             } else {
                                 SetReTargetPlaceHolder(buffer, pos);
-                                if (isMask(i) && c == getPlaceHolder(i)) {
+                                if (c == getPlaceHolder(pos)) {
                                     checkPosition = pos;
                                     rtlMatch = pos;
                                 }
