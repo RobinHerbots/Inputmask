@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.0.2
+Version: 1.0.3
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -362,13 +362,19 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     inputValue = TruncateInput(input._valueGet(), isRTL).split('');
 
                 if (isRTL) { //align inputValue for RTL/numeric input
-                    var neededLength = _buffer.length - 1, _bufferPos = neededLength;
-                    while (inputValue[neededLength] === undefined && _buffer[_bufferPos] !== undefined) {
-                    	if(tests[determineTestPosition(_bufferPos)].fn != null) {
-                        	inputValue.unshift(_buffer[_bufferPos]);
-                        } else neededLength--;
-                        _bufferPos--;
+                    var maskL = getMaskLength();
+                    var inputValueRev = inputValue.reverse(); inputValueRev.length = maskL;
+
+                    for (var i = 0; i < maskL; i++) {
+                        var targetPosition = determineTestPosition(maskL - (i + 1));
+                        if (tests[targetPosition].fn == null && inputValueRev[i] != getBufferElement(_buffer, targetPosition)) {
+                            inputValueRev.splice(i, 0, getBufferElement(_buffer, targetPosition));
+                            inputValueRev.length = maskL;
+                        } else {
+                            inputValueRev[i] = inputValueRev[i] || getBufferElement(_buffer, targetPosition);
+                        }
                     }
+                    inputValue = inputValueRev.reverse();
                 }
                 clearBuffer(buffer, 0, buffer.length);
                 buffer.length = _buffer.length;
