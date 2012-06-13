@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.0.4
+Version: 1.0.3
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -759,6 +759,14 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 
                     var input = this, k = e.keyCode, pos = caret(input);
 
+                    //set input direction according the position to the radixPoint
+                    if (opts.numericInput) {
+                        var nptStr = input._valueGet();
+                        var radixPosition = nptStr.indexOf(opts.radixPoint[opts.radixPoint.length - 1]);
+                        if (radixPosition != -1) {
+                            isRTL = pos.end <= radixPosition;
+                        }
+                    }
 
                     //backspace, delete, and escape get special treatment
                     if (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE || (iphone && k == 127)) {//backspace/delete
