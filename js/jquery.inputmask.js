@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.0.3
+Version: 1.0.4
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -26,13 +26,20 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 repeat: 0, //repetitions of the mask
                 greedy: true, //true: allocated buffer for the mask and repetitions - false: allocate only if needed
                 autoUnmask: false, //automatically unmask when retrieving the value with $.fn.val or value if the browser supports __lookupGetter__ or getOwnPropertyDescriptor
-                numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
                 clearMaskOnLostFocus: true,
                 insertMode: true, //insert the input or overwrite the input
                 clearIncomplete: false, //clear the incomplete input on blur
                 aliases: {}, //aliases definitions => see jquery.inputmask.extentions.js
                 onKeyUp: $.noop, //override to implement autocomplete on certain keys for example
                 onKeyDown: $.noop, //override to implement autocomplete on certain keys for example
+                //numeric properties
+                numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
+                radixPoint: "\.", // | ","
+                digits: "*", //numer of digits
+                groupSeparator: ",", // | "\."
+                groupSize: 3,
+                autoGroup: false,
+                //numeric properties
                 definitions: {
                     '9': {
                         validator: "[0-9]",
@@ -148,7 +155,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 }
             } if (typeof fn == "object") {
                 opts = $.extend(true, {}, $.inputmask.defaults, fn);
-		ResolveAlias(opts.alias); //resolve aliases
+                ResolveAlias(opts.alias); //resolve aliases
                 //init buffer
                 var _buffer = getMaskTemplate();
                 var tests = getTestingChain();
@@ -420,27 +427,27 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
 
             function clearOptionalTail(input, buffer) {
-                    var tmpBuffer = buffer.slice();
-                    if ($(input).data('inputmask')['isRTL']) {
-                        for (var pos = 0; pos <= tmpBuffer.length - 1; pos++) {
-                            var testPos = determineTestPosition(pos);
-                            if (tests[testPos].optionality) {
-                                if (getPlaceHolder(pos) == buffer[pos] || !isMask(pos))
-                                    tmpBuffer.splice(0, 1);
-                                else break;
-                            } else break;
-                        }
-                    } else {
-                        for (var pos = tmpBuffer.length - 1; pos >= 0; pos--) {
-                            var testPos = determineTestPosition(pos);
-                            if (tests[testPos].optionality) {
-                                if (getPlaceHolder(pos) == buffer[pos] || !isMask(pos))
-                                    tmpBuffer.pop();
-                                else break;
-                            } else break;
-                        }
+                var tmpBuffer = buffer.slice();
+                if ($(input).data('inputmask')['isRTL']) {
+                    for (var pos = 0; pos <= tmpBuffer.length - 1; pos++) {
+                        var testPos = determineTestPosition(pos);
+                        if (tests[testPos].optionality) {
+                            if (getPlaceHolder(pos) == buffer[pos] || !isMask(pos))
+                                tmpBuffer.splice(0, 1);
+                            else break;
+                        } else break;
                     }
-                    writeBuffer(input, tmpBuffer);
+                } else {
+                    for (var pos = tmpBuffer.length - 1; pos >= 0; pos--) {
+                        var testPos = determineTestPosition(pos);
+                        if (tests[testPos].optionality) {
+                            if (getPlaceHolder(pos) == buffer[pos] || !isMask(pos))
+                                tmpBuffer.pop();
+                            else break;
+                        } else break;
+                    }
+                }
+                writeBuffer(input, tmpBuffer);
             }
 
             //functionality fn
@@ -803,6 +810,12 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         setTimeout(function() {
                             caret(input, checkVal(input, buffer, true));
                         }, 0);
+                    } else if (opts.numericInput && e.char == opts.radixPoint[opts.radixPoint.length - 1]) {
+                        var nptStr = input._valueGet();
+                        var radixPosition = nptStr.indexOf(opts.radixPoint[opts.radixPoint.length - 1]);
+                        if (radixPosition != -1) {
+                            caret(input, seekNext(buffer, radixPosition));
+                        }
                     }
                     else if (!opts.insertMode) { //overwritemode
                         if (k == opts.keyCode.RIGHT) {//right
@@ -818,7 +831,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         }
                     }
 
-					opts.onKeyDown.call(this, e, opts); //extra stuff todo on keydown
+                    opts.onKeyDown.call(this, e, opts); //extra stuff todo on keydown
                     ignorable = $.inArray(k, opts.ignorables) != -1;
                 }
 
