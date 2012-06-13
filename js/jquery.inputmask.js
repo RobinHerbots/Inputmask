@@ -415,7 +415,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 if (clearInvalid) {
                     writeBuffer(input, buffer);
                 }
-                return seekNext(buffer, isRTL ? (opts.numericInput ? maskL : rtlMatch) : lastMatch);
+                return isRTL ? (opts.numericInput ? (buffer.indexOf(opts.radixPoint[opts.radixPoint.length - 1]) != -1 ? buffer.indexOf(opts.radixPoint[opts.radixPoint.length - 1]) : seekNext(buffer, maskL)) : seekNext(buffer, rtlMatch)) : seekNext(buffer, lastMatch);
             }
 
             function EscapeRegex(str) {
@@ -813,9 +813,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     } else if (opts.numericInput && e.char == opts.radixPoint[opts.radixPoint.length - 1]) {
                         var nptStr = input._valueGet();
                         var radixPosition = nptStr.indexOf(opts.radixPoint[opts.radixPoint.length - 1]);
-                        if (radixPosition != -1) {
-                            caret(input, seekNext(buffer, radixPosition));
-                        }
+                        caret(input, seekNext(buffer, radixPosition != -1 ? radixPosition : getMaskLength()));
                     }
                     else if (!opts.insertMode) { //overwritemode
                         if (k == opts.keyCode.RIGHT) {//right
@@ -851,7 +849,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             var pos = caret(input), c = String.fromCharCode(k), maskL = getMaskLength();
                             if (isRTL) {
                                 var p = opts.numericInput ? pos.end : seekPrevious(buffer, pos.end), np;
-                                if ((np = isValid(p == maskL ? seekPrevious(buffer, p) : p, c, buffer, false)) !== false) {
+                                if ((np = isValid(p == maskL || getBufferElement(buffer, p) == opts.radixPoint[opts.radixPoint.length - 1] ? seekPrevious(buffer, p) : p, c, buffer, false)) !== false) {
                                     if (np !== true) p = np; //set new position from isValid
                                     if (isValid(firstMaskPos, buffer[firstMaskPos], buffer, true) == false || (opts.greedy === false && buffer.length < maskL)) {
                                         if (buffer[firstMaskPos] != getPlaceHolder(firstMaskPos) && buffer.length < maskL) {
