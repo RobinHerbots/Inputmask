@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.0.5
+Version: 1.0.6
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -364,7 +364,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 setBufferElement(buffer, pos, getBufferElement(_buffer, testPos));
             }
 
-            function checkVal(input, buffer, clearInvalid) {
+            function checkVal(input, buffer, clearInvalid, skipRadixHandling) {
                 var isRTL = $(input).data('inputmask')['isRTL'],
                     inputValue = TruncateInput(input._valueGet(), isRTL).split('');
 
@@ -412,10 +412,13 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         }
                     }
                 }
+                //Truncate buffer when using non-greedy masks
+                buffer = TruncateInput(buffer.join(''), isRTL).split('');
+
                 if (clearInvalid) {
                     writeBuffer(input, buffer);
                 }
-                return isRTL ? (opts.numericInput ? (buffer.indexOf(opts.radixPoint[opts.radixPoint.length - 1]) != -1 ? buffer.indexOf(opts.radixPoint[opts.radixPoint.length - 1]) : seekNext(buffer, maskL)) : seekNext(buffer, rtlMatch)) : seekNext(buffer, lastMatch);
+                return isRTL ? (opts.numericInput ? (buffer.indexOf(opts.radixPoint[opts.radixPoint.length - 1]) != -1 && skipRadixHandling !== true ? buffer.indexOf(opts.radixPoint[opts.radixPoint.length - 1]) : seekNext(buffer, maskL)) : seekNext(buffer, rtlMatch)) : seekNext(buffer, lastMatch);
             }
 
             function EscapeRegex(str) {
@@ -801,7 +804,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         return false;
                     } else if (k == opts.keyCode.END || k == opts.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
                         setTimeout(function() {
-                            var caretPos = checkVal(input, buffer, false);
+                            var caretPos = checkVal(input, buffer, false, true);
                             if (!opts.insertMode && caretPos == getMaskLength() && !e.shiftKey) caretPos--;
                             caret(input, e.shiftKey ? pos.begin : caretPos, caretPos);
                         }, 0);
@@ -907,4 +910,4 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
         };
     }
-})(jQuery);
+})(jQuery); 
