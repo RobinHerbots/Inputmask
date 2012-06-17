@@ -20,6 +20,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 },
                 escapeChar: "\\",
                 mask: null,
+                rtrim: false,
                 oncomplete: null, //executes when the mask is complete
                 onincomplete: null, //executes when the mask is incomplete and focus is lost
                 oncleared: null, //executes when the mask is cleared
@@ -188,7 +189,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     else if ((element != opts.optionalmarker.start && element != opts.optionalmarker.end) || escaped) {
                         var maskdef = opts.definitions[element];
                         if (maskdef && !escaped) {
-                            for (i = 0; i < maskdef.cardinality; i++) {
+                            for (var i = 0; i < maskdef.cardinality; i++) {
                                 outElem.push(getPlaceHolder(outCount + i));
                             }
                         } else {
@@ -230,7 +231,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         var maskdef = opts.definitions[element];
                         if (maskdef && !escaped) {
                             var prevalidators = maskdef["prevalidator"], prevalidatorsL = prevalidators ? prevalidators.length : 0;
-                            for (i = 1; i < maskdef.cardinality; i++) {
+                            for (var i = 1; i < maskdef.cardinality; i++) {
                                 var prevalidator = prevalidatorsL >= i ? prevalidators[i - 1] : [], validator = prevalidator["validator"], cardinality = prevalidator["cardinality"];
                                 outElem.push({ fn: validator ? typeof validator == 'string' ? new RegExp(validator) : new function() { this.test = validator; } : new RegExp("."), cardinality: cardinality ? cardinality : 1, optionality: isOptional, newBlockMarker: isOptional == true ? newBlockMarker : false, offset: 0, casing: maskdef["casing"], def: element });
                                 if (isOptional == true) //reset newBlockMarker
@@ -343,7 +344,11 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
 
             function writeBuffer(input, buffer, caretPos) {
-                input._valueSet(buffer.join(''));
+                if ( opts.rtrim === true ) {
+              	 	input._valueSet(buffer.join('').replace(/\s+$/,""));
+                } else {
+                	input._valueSet(buffer.join(''));
+                }
                 if (caretPos != undefined) {
                     if (android) {
                         setTimeout(function() {
