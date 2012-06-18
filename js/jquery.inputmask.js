@@ -20,6 +20,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 },
                 escapeChar: "\\",
                 mask: null,
+                rtrim: false,
                 oncomplete: null, //executes when the mask is complete
                 onincomplete: null, //executes when the mask is incomplete and focus is lost
                 oncleared: null, //executes when the mask is cleared
@@ -343,7 +344,11 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
 
             function writeBuffer(input, buffer, caretPos) {
-                input._valueSet(buffer.join(''));
+                if ( opts.rtrim === true ) {
+              	 	input._valueSet(buffer.join('').replace(/\s+$/,""));
+                } else {
+                	input._valueSet(buffer.join(''));
+                }
                 if (caretPos != undefined) {
                     if (android) {
                         setTimeout(function() {
