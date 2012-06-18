@@ -20,6 +20,11 @@ Optional extentions on the jquery.inputmask base
             cardinality: 2,
             prevalidator: [{ validator: "[0-5]", cardinality: 1}]
         },
+        't': {
+            validator: "[apAP][mM]",
+            cardinality: 2,
+            prevalidator: [{validator: "[apAP]", cardinality: 1}]
+        },
         'd': { //basic day
             validator: "0[1-9]|[12][0-9]|3[01]",
             cardinality: 2,
@@ -47,8 +52,8 @@ Optional extentions on the jquery.inputmask base
             regex: {
                 val1pre: new RegExp("[0-3]"), //daypre
                 val1: new RegExp("0[1-9]|[12][0-9]|3[01]"), //day
-                val2pre: function(separator) { return new RegExp("((0[1-9]|[12][0-9]|3[01])\\" + separator + "[01])") }, //monthpre
-                val2: function(separator) { return new RegExp("((0[1-9]|[12][0-9])\\" + separator + "(0[1-9]|1[012]))|(30\\" + separator + "(0[13-9]|1[012]))|(31\\" + separator + "(0[13578]|1[02]))") }, //month
+                val2pre: function(separator) { return new RegExp("((0[1-9]|[12][0-9]|3[01])\\" + separator + "[01])"); }, //monthpre
+                val2: function(separator) { return new RegExp("((0[1-9]|[12][0-9])\\" + separator + "(0[1-9]|1[012]))|(30\\" + separator + "(0[13-9]|1[012]))|(31\\" + separator + "(0[13578]|1[02]))"); },//month
                 yearpre1: new RegExp("[12]"),
                 yearpre3: new RegExp("(19|20)\\d"),
                 year: new RegExp("(19|20)\\d{2}")
@@ -132,10 +137,10 @@ Optional extentions on the jquery.inputmask base
                                     if (dayMonthValue != opts.leapday)
                                         return true;
                                     else {
-                                        var year = parseInt(chrs);  //detect leap year
-                                        if (year % 4 == 0)
-                                            if (year % 100 == 0)
-                                            if (year % 400 == 0)
+                                        var year = parseInt(chrs,10);//detect leap year
+                                        if (year % 4 === 0)
+                                            if (year % 100 === 0)
+                                            if (year % 400 === 0)
                                             return true;
                                         else return false;
                                         else return true;
@@ -158,8 +163,8 @@ Optional extentions on the jquery.inputmask base
                                 }
                             }
                             return isValid;
-                        }
-                            , cardinality: 1
+                        },
+                            cardinality: 1
                         },
                         { validator: "(19|20)", cardinality: 2 },
                         { validator: "(19|20)\\d", cardinality: 3 }
@@ -173,8 +178,8 @@ Optional extentions on the jquery.inputmask base
                     placeholder: "mm/dd/yyyy",
                     alias: "dd/mm/yyyy", //reuse functionality of dd/mm/yyyy alias
                     regex: {
-                        val2pre: function(separator) { return new RegExp("((0[13-9]|1[012])\\" + separator + "[0-3])|(02\\" + separator + "[0-2])") }, //daypre
-                        val2: function(separator) { return new RegExp("((0[1-9]|1[012])\\" + separator + "(0[1-9]|[12][0-9]))|((0[13-9]|1[012])\\" + separator + "30)|((0[13578]|1[02])\\" + separator + "31)") }, //day
+                        val2pre: function(separator) { return new RegExp("((0[13-9]|1[012])\\" + separator + "[0-3])|(02\\" + separator + "[0-2])"); }, //daypre
+                        val2: function(separator) { return new RegExp("((0[1-9]|1[012])\\" + separator + "(0[1-9]|[12][0-9]))|((0[13-9]|1[012])\\" + separator + "30)|((0[13578]|1[02])\\" + separator + "31)"); }, //day
                         val1pre: new RegExp("[01]"), //monthpre
                         val1: new RegExp("0[1-9]|1[012]") //month
                     },
@@ -222,10 +227,10 @@ Optional extentions on the jquery.inputmask base
                                     if (dayMonthValue != opts.leapday)
                                         return true;
                                     else {
-                                        var year = parseInt(buffer.join('').substr(0, 4));  //detect leap year
-                                        if (year % 4 == 0)
-                                            if (year % 100 == 0)
-                                            if (year % 400 == 0)
+                                        var year = parseInt(buffer.join('').substr(0, 4),10);  //detect leap year
+                                        if (year % 4 === 0)
+                                            if (year % 100 === 0)
+                                            if (year % 400 === 0)
                                             return true;
                                         else return false;
                                         else return true;
@@ -256,42 +261,42 @@ Optional extentions on the jquery.inputmask base
                         mask: "1.2.y",
                         placeholder: "dd.mm.yyyy",
                         leapday: "29.02.",
-                        separator: '\.',
+                        separator: '.',
                         alias: "dd/mm/yyyy"
                     },
                     'dd-mm-yyyy': {
                         mask: "1-2-y",
                         placeholder: "dd-mm-yyyy",
                         leapday: "29-02-",
-                        separator: '\-',
+                        separator: '-',
                         alias: "dd/mm/yyyy"
                     },
                     'mm.dd.yyyy': {
                         mask: "1.2.y",
                         placeholder: "mm.dd.yyyy",
                         leapday: "02.29.",
-                        separator: '\.',
+                        separator: '.',
                         alias: "mm/dd/yyyy"
                     },
                     'mm-dd-yyyy': {
                         mask: "1-2-y",
                         placeholder: "mm-dd-yyyy",
                         leapday: "02-29-",
-                        separator: '\-',
+                        separator: '-',
                         alias: "mm/dd/yyyy"
                     },
                     'yyyy.mm.dd': {
                         mask: "y.1.2",
                         placeholder: "yyyy.mm.dd",
                         leapday: ".02.29",
-                        separator: '\.',
+                        separator: '.',
                         alias: "yyyy/mm/dd"
                     },
                     'yyyy-mm-dd': {
                         mask: "y-1-2",
                         placeholder: "yyyy-mm-dd",
                         leapday: "-02-29",
-                        separator: '\-',
+                        separator: '-',
                         alias: "yyyy/mm/dd"
                     },
                     'hh:mm:ss': {
@@ -300,6 +305,10 @@ Optional extentions on the jquery.inputmask base
                     },
                     'hh:mm': {
                         mask: "h:s",
+                        autoUnmask: false
+                    },
+                    'h:s t':{
+                        mask: "h:s t",
                         autoUnmask: false
                     },
                     'date': {

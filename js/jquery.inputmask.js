@@ -20,6 +20,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 },
                 escapeChar: "\\",
                 mask: null,
+                rtrim: false,
                 oncomplete: null, //executes when the mask is complete
                 onincomplete: null, //executes when the mask is incomplete and focus is lost
                 oncleared: null, //executes when the mask is cleared
@@ -343,7 +344,11 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
 
             function writeBuffer(input, buffer, caretPos) {
-                input._valueSet(buffer.join(''));
+                if ( opts.rtrim === true ) {
+              	 	input._valueSet(buffer.join('').replace(/\s+$/,""));
+                } else {
+                	input._valueSet(buffer.join(''));
+                }
                 if (caretPos != undefined) {
                     if (android) {
                         setTimeout(function() {
@@ -765,7 +770,13 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     //Safari 5.1.x - modal dialog fires keypress twice workaround
                     skipKeyPressEvent = false;
 
+                    if( $(this).prop('disabled') === true || $(this).prop('readonly') === true ) {
+                        return true;
+                    }
+
                     var input = this, k = e.keyCode, pos = caret(input);
+
+                    
 
                     //set input direction according the position to the radixPoint
                     if (opts.numericInput) {
@@ -865,6 +876,9 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                     if (e.ctrlKey || e.altKey || e.metaKey || ignorable) {//Ignore
                         return true;
                     } else {
+                        if( $(input).prop('disabled') === true || $(input).prop('readonly') === true ) {
+                            return true;
+                        }
                         if (k) {
                             var pos = caret(input), c = String.fromCharCode(k), maskL = getMaskLength();
                             if (isRTL) {
@@ -904,6 +918,10 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 function keyupEvent(e) {
                     var $input = $(this), input = this;
                     var k = e.keyCode;
+                    
+                    if( $input.prop('disabled') === true || $input.prop('readonly') === true ) {
+                        return true;
+                    }
                     opts.onKeyUp.call(this, e, opts); //extra stuff todo on keyup
                     if (k == opts.keyCode.TAB && $input.hasClass('focus.inputmask') && input._valueGet().length == 0) {
                         buffer = _buffer.slice();
