@@ -830,7 +830,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         setTimeout(function() {
                             caret(input, checkVal(input, buffer, true));
                         }, 0);
-                    } else if (opts.numericInput && e.char == opts.radixPoint[opts.radixPoint.length - 1]) {
+                    } else if (opts.numericInput && e['char'] == opts.radixPoint[opts.radixPoint.length - 1]) {
                         var nptStr = input._valueGet();
                         var radixPosition = nptStr.indexOf(opts.radixPoint[opts.radixPoint.length - 1]);
                         caret(input, seekNext(buffer, radixPosition != -1 ? radixPosition : getMaskLength()));
