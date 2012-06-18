@@ -67,8 +67,8 @@ Optional extentions on the jquery.inputmask base
                     $input.val(today.getDate().toString() + (today.getMonth() + 1).toString() + today.getFullYear().toString());
                 }
             },
-            transform : function(buffer, position, element){
-                return element.replace(/[\.\-\:]/gi,'/');
+            transform : function(buffer, position, element, opts){
+                return element.replace(/[\.\-\:]/gi,opts.separator[opts.separator.length - 1]);
             },
             definitions: {
                 '1': { //val1 ~ day or month
@@ -310,8 +310,80 @@ Optional extentions on the jquery.inputmask base
                         mask: "h:s",
                         autoUnmask: false
                     },
-                    'h:s t':{
+                    'h:s t': {
                         mask: "h:s t",
+                        regex: {
+                            hrspre: new RegExp("[0-9]"), //hours pre
+                            hrs: new RegExp("0[1-9]|[12][0-9]"), //hours
+                            ampmpre: new RegExp("[apAP]"),
+                            ampm: new RegExp("[apAP][mM]")
+                        },
+                        separator: ':',
+                        transform : function(buffer, position, element, opts){
+                            return element.replace(/[\.\-\:]/gi,opts.separator[opts.separator.length - 1]);
+                        },
+                        definitions: {
+                            'h': { //val1 ~ hours
+                                validator: function(chrs, buffer, pos, strict, opts) {
+                                    var isValid = opts.regex.hrs.test(chrs);
+                                    if (!strict && !isValid) {
+                                        if (chrs.charAt(1) == opts.separator[opts.separator.length - 1] || "-.:".indexOf(chrs.charAt(1)) != -1 ) {
+                                            isValid = opts.regex.hrs.test("0" + chrs.charAt(0));
+                                            if (isValid) {
+                                                buffer[pos - 1] = "0";
+                                                buffer[pos] = chrs.charAt(0);
+                                                pos++;
+                                                return pos;
+                                            }
+                                        }
+                                    }
+                                    return isValid;
+                                },
+                                cardinality: 2,
+                                prevalidator: [{ validator: function(chrs, buffer, pos, strict, opts) {
+                                    var isValid = opts.regex.hrspre.test(chrs);
+                                    if (!strict && !isValid) {
+                                        isValid = opts.regex.hrs.test("0" + chrs);
+                                        if (isValid) {
+                                            buffer[pos] = "0";
+                                            pos++;
+                                            return pos;
+                                        }
+                                    }
+                                    return isValid;
+                                }, cardinality: 1}]
+                            },
+                            't': { //val1 ~ hours
+                                validator: function(chrs, buffer, pos, strict, opts) {
+                                    var isValid = opts.regex.ampm.test(chrs);
+                                    if (!strict && !isValid) {
+                                        isValid = opts.regex.ampm.test(chrs.charAt(0)+'m');
+                                        if (isValid) {
+                                            buffer[pos - 1] = chrs.charAt(0);
+                                            buffer[pos] = "m";
+                                            pos++;
+                                            return pos;
+                                        }
+                                    }
+                                    return isValid;
+                                },
+                                casing: "lower",
+                                cardinality: 2,
+                                prevalidator: [{ validator: function(chrs, buffer, pos, strict, opts) {
+                                    var isValid = opts.regex.ampmpre.test(chrs);
+                                    if (isValid) {
+                                        isValid = opts.regex.ampm.test(chrs+"m");
+                                        if (isValid) {
+                                            buffer[pos] = chrs;
+                                            buffer[pos+1] = 'm';
+                                            return pos;
+                                        }
+                                    }
+                                    return isValid;
+                                }, cardinality: 1}]
+                            }
+                        },
+                        insertMode: false,
                         autoUnmask: false
                     },
                     'date': {

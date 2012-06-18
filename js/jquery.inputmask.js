@@ -308,7 +308,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 var elem = element;
 
                 if ( test.transform !== null && elem !== null && elem !== '' ) {
-                    elem = test.transform(buffer,position,element);
+                    elem = test.transform(buffer,position,element,opts);
                 }
 
                 switch (test.casing) {
