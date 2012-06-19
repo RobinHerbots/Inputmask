@@ -3,7 +3,7 @@ Input Mask plugin extentions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.0.4
+Version: 1.0.5
 
 Optional extentions on the jquery.inputmask base
 */
@@ -73,7 +73,7 @@ Optional extentions on the jquery.inputmask base
                                     buffer[pos - 1] = "0";
                                     buffer[pos] = chrs.charAt(0);
                                     pos++;
-                                    return pos;
+                                    return { "pos": pos };
                                 }
                             }
                         }
@@ -87,7 +87,7 @@ Optional extentions on the jquery.inputmask base
                             if (isValid) {
                                 buffer[pos] = "0";
                                 pos++;
-                                return pos;
+                                return { "pos": pos };
                             }
                         }
                         return isValid;
@@ -104,7 +104,7 @@ Optional extentions on the jquery.inputmask base
                                         buffer[pos - 1] = "0";
                                         buffer[pos] = chrs.charAt(0);
                                         pos++;
-                                        return pos;
+                                        return { "pos": pos };
                                     }
                                 }
                             }
@@ -119,7 +119,7 @@ Optional extentions on the jquery.inputmask base
                                 if (isValid) {
                                     buffer[pos] = "0";
                                     pos++;
-                                    return pos;
+                                    return { "pos": pos };
                                 }
                             }
                             return isValid;
@@ -154,7 +154,7 @@ Optional extentions on the jquery.inputmask base
                                 if (isValid) {
                                     buffer[pos++] = yearPrefix[0];
                                     buffer[pos++] = yearPrefix[1];
-                                    return pos;
+                                    return { "pos": pos };
                                 }
                             }
                             return isValid;
@@ -211,7 +211,7 @@ Optional extentions on the jquery.inputmask base
                                             buffer[pos - 1] = "0";
                                             buffer[pos] = chrs.charAt(0);
                                             pos++;
-                                            return pos;
+                                            return { "pos": pos };
                                         }
                                     }
                                 }
@@ -244,7 +244,7 @@ Optional extentions on the jquery.inputmask base
                                     if (isValid) {
                                         buffer[pos] = "0";
                                         pos++;
-                                        return pos;
+                                        return { "pos": pos };
                                     }
                                 }
                                 return isValid;
