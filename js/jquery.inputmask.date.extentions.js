@@ -313,8 +313,9 @@ Optional extentions on the jquery.inputmask base
                     'h:s t': {
                         mask: "h:s t",
                         regex: {
-                            hrspre: new RegExp("[0-9]"), //hours pre
-                            hrs: new RegExp("0[1-9]|[12][0-9]"), //hours
+                            hrspre: new RegExp("[012]"), //hours pre
+                            hrs24: new RegExp("2[0-9]|1[3-9]"),
+                            hrs: new RegExp("[01][0-9]|2[0-3]"), //hours
                             ampmpre: new RegExp("[apAP]"),
                             ampm: new RegExp("[apAP][mM]")
                         },
