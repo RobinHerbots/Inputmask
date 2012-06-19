@@ -338,6 +338,40 @@ Optional extentions on the jquery.inputmask base
                                             }
                                         }
                                     }
+
+                                    /*if ( isValid && opts.regex.hrs24.test(chrs) ) {
+
+                                        var tmp = parseInt(chrs,10);
+
+                                        if ( tmp == 24 ) {
+                                            buffer[pos+5] = "a";
+                                            buffer[pos+6] = "m";
+                                        } else {
+                                            buffer[pos+5] = "p";
+                                            buffer[pos+6] = "m";
+                                        }
+
+                                        console.log("time1:"+tmp+":"+buffer);
+
+                                        tmp = tmp - 12;
+
+                                        console.log("time2:"+tmp+":"+buffer);
+
+                                        if ( tmp < 10 ) {
+                                            buffer[pos] = tmp.toString();
+                                            buffer[pos-1] = "0";
+                                        } else {
+                                            buffer[pos] = tmp.toString().charAt(1);
+                                            buffer[pos-1] = tmp.toString().charAt(0);
+                                        }
+
+                                        console.log("time3:"+tmp.toString()+":"+buffer);
+
+                                        return pos;
+                                        
+                                        //
+                                    }*/
+
                                     return isValid;
                                 },
                                 cardinality: 2,
