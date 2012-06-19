@@ -307,17 +307,19 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 var test = tests[determineTestPosition(position)];
                 var elem = element;
 
-                if ( test.transform !== null && elem !== null && elem !== '' ) {
-                    elem = test.transform(buffer,position,element,opts);
-                }
+                if ( test !== undefined ) {
+                    if ( test.transform !== null && elem !== null && elem !== '' ) {
+                        elem = test.transform(buffer,position,element,opts);
+                    }
 
-                switch (test.casing) {
-                    case "upper":
-                        elem = element.toUpperCase();
-                        break;
-                    case "lower":
-                        elem = element.toLowerCase();
-                        break;
+                    switch (test.casing) {
+                        case "upper":
+                            elem = element.toUpperCase();
+                            break;
+                        case "lower":
+                            elem = element.toLowerCase();
+                            break;
+                    }
                 }
 
                 buffer[position] = elem;
