@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.0.7
+Version: 1.0.9
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -256,6 +256,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 }
 
                 if (c) { chrs += c; }
+                //return is false or a json object => { pos: ??, c: ??}
                 return tests[testPos].fn != null ? tests[testPos].fn.test(chrs, buffer, pos, strict, opts) : false;
             }
 
@@ -391,7 +392,10 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         if (isMask(pos)) {
                             var c = inputValue[i];
                             if ((np = isValid(pos, c, buffer, !clearInvalid)) !== false) {
-                                if (np !== true) pos = np; //set new position from isValid
+                                if (np !== true) {
+                                    pos = np.pos || pos; //set new position from isValid
+                                    c = np.c || c; //set new char from isValid
+                                }
                                 setBufferElement(buffer, pos, c);
                                 lastMatch = checkPosition = pos;
                             } else {
@@ -530,6 +534,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 ignorable = false,
                 lastPosition = -1,
                 firstMaskPos = seekNext(buffer, -1),
+                lastMaskPos = seekPrevious(buffer, getMaskLength()),
                 isRTL = false;
                 if (el.dir == "rtl" || opts.numericInput) {
                     el.dir = "ltr"
@@ -870,7 +875,10 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                             if (isRTL) {
                                 var p = opts.numericInput ? pos.end : seekPrevious(buffer, pos.end), np;
                                 if ((np = isValid(p == maskL || getBufferElement(buffer, p) == opts.radixPoint[opts.radixPoint.length - 1] ? seekPrevious(buffer, p) : p, c, buffer, false)) !== false) {
-                                    if (np !== true) p = np; //set new position from isValid
+                                    if (np !== true) {
+                                        p = np.pos || pos; //set new position from isValid
+                                        c = np.c || c; //set new char from isValid
+                                    }
                                     if (isValid(firstMaskPos, buffer[firstMaskPos], buffer, true) == false || (opts.greedy === false && buffer.length < maskL)) {
                                         if (buffer[firstMaskPos] != getPlaceHolder(firstMaskPos) && buffer.length < maskL) {
                                             var offset = prepareBuffer(buffer, -1, isRTL);
@@ -887,8 +895,20 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                                 var p = seekNext(buffer, pos.begin - 1), np;
                                 prepareBuffer(buffer, p, isRTL);
                                 if ((np = isValid(p, c, buffer, false)) !== false) {
-                                    if (np !== true) p = np; //set new position from isValid
-                                    if (opts.insertMode == true) shiftR(p, buffer.length, c); else setBufferElement(buffer, p, c);
+                                    if (np !== true) {
+                                        p = np.pos || p; //set new position from isValid
+                                        c = np.c || c; //set new char from isValid
+                                    }
+                                    if (opts.insertMode == true) {
+                                        var lastUnmaskedPosition = getMaskLength();
+                                        while (getBufferElement(buffer, lastUnmaskedPosition) != getPlaceHolder(lastUnmaskedPosition) && lastUnmaskedPosition >= p) {
+                                            lastUnmaskedPosition = seekPrevious(buffer, lastUnmaskedPosition);
+                                        }
+                                        if (lastUnmaskedPosition >= p)
+                                            shiftR(p, buffer.length, c);
+                                        else return false;
+                                    }
+                                    else setBufferElement(buffer, p, c);
                                     var next = seekNext(buffer, p);
                                     writeBuffer(input, buffer, next);
 
