@@ -20,11 +20,6 @@ Optional extentions on the jquery.inputmask base
             cardinality: 2,
             prevalidator: [{ validator: "[0-5]", cardinality: 1}]
         },
-        't': {
-            validator: "[apAP][mM]",
-            cardinality: 2,
-            prevalidator: [{validator: "[apAP]", cardinality: 1}]
-        },
         'd': { //basic day
             validator: "0[1-9]|[12][0-9]|3[01]",
             cardinality: 2,
@@ -317,7 +312,7 @@ Optional extentions on the jquery.inputmask base
                             hrs24: new RegExp("2[0-9]|1[3-9]"),
                             hrs: new RegExp("[01][0-9]|2[0-3]"), //hours
                             ampmpre: new RegExp("[apAP]"),
-                            ampm: new RegExp("[apAP][mM]")
+                            ampm: new RegExp("^[a|p|A|P][m|M]")
                         },
                         separator: ':',
                         transform : function(buffer, position, element, opts){
@@ -384,7 +379,7 @@ Optional extentions on the jquery.inputmask base
                                 validator: function(chrs, buffer, pos, strict, opts) {
                                     var isValid = opts.regex.ampm.test(chrs);
                                     if (!strict && !isValid) {
-                                        isValid = opts.regex.ampm.test(chrs.charAt(0)+'m');
+                                        isValid = opts.regex.ampm.test(chrs+'m');
                                         if (isValid) {
                                             buffer[pos - 1] = chrs.charAt(0);
                                             buffer[pos] = "m";
