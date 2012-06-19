@@ -902,7 +902,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                                     if (opts.insertMode == true) {
                                         var lastUnmaskedPosition = getMaskLength();
                                         while (getBufferElement(buffer, lastUnmaskedPosition) != getPlaceHolder(lastUnmaskedPosition) && lastUnmaskedPosition >= p) {
-                                            lastUnmaskedPosition = seekPrevious(buffer, lastUnmaskedPosition);
+                                            lastUnmaskedPosition = lastUnmaskedPosition == 0 ? -1 : seekPrevious(buffer, lastUnmaskedPosition);
                                         }
                                         if (lastUnmaskedPosition >= p)
                                             shiftR(p, buffer.length, c);
