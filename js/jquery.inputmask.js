@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.0.7
+Version: 1.0.8
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -530,6 +530,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                 ignorable = false,
                 lastPosition = -1,
                 firstMaskPos = seekNext(buffer, -1),
+                lastMaskPos = seekPrevious(buffer, getMaskLength()),
                 isRTL = false;
                 if (el.dir == "rtl" || opts.numericInput) {
                     el.dir = "ltr"
@@ -888,7 +889,16 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                                 prepareBuffer(buffer, p, isRTL);
                                 if ((np = isValid(p, c, buffer, false)) !== false) {
                                     if (np !== true) p = np; //set new position from isValid
-                                    if (opts.insertMode == true) shiftR(p, buffer.length, c); else setBufferElement(buffer, p, c);
+                                    if (opts.insertMode == true) {
+                                        var lastUnmaskedPosition = getMaskLength();
+                                        while (getBufferElement(buffer, lastUnmaskedPosition) != getPlaceHolder(lastUnmaskedPosition) && lastUnmaskedPosition >= p) {
+                                            lastUnmaskedPosition = seekPrevious(buffer, lastUnmaskedPosition);
+                                        }
+                                        if (lastUnmaskedPosition >= p)
+                                            shiftR(p, buffer.length, c);
+                                        else return false;
+                                    }
+                                    else setBufferElement(buffer, p, c);
                                     var next = seekNext(buffer, p);
                                     writeBuffer(input, buffer, next);
 
@@ -915,4 +925,4 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
         };
     }
-})(jQuery);   
+})(jQuery);  
