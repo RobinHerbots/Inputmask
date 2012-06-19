@@ -339,7 +339,7 @@ Optional extentions on the jquery.inputmask base
                                         }
                                     }
 
-                                    /*if ( isValid && opts.regex.hrs24.test(chrs) ) {
+                                    if ( isValid && opts.regex.hrs24.test(chrs) ) {
 
                                         var tmp = parseInt(chrs,10);
 
@@ -351,11 +351,7 @@ Optional extentions on the jquery.inputmask base
                                             buffer[pos+6] = "m";
                                         }
 
-                                        console.log("time1:"+tmp+":"+buffer);
-
                                         tmp = tmp - 12;
-
-                                        console.log("time2:"+tmp+":"+buffer);
 
                                         if ( tmp < 10 ) {
                                             buffer[pos] = tmp.toString();
@@ -365,12 +361,8 @@ Optional extentions on the jquery.inputmask base
                                             buffer[pos-1] = tmp.toString().charAt(0);
                                         }
 
-                                        console.log("time3:"+tmp.toString()+":"+buffer);
-
-                                        return pos;
-                                        
-                                        //
-                                    }*/
+                                        return -1;
+                                    }
 
                                     return isValid;
                                 },

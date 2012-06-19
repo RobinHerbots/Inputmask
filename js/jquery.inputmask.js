@@ -911,8 +911,10 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                                 p = seekNext(buffer, pos.begin - 1);
                                 prepareBuffer(buffer, p, isRTL);
                                 if ((np = isValid(p, c, buffer, false)) !== false) {
-                                    if (np !== true) p = np; //set new position from isValid
-                                    if (opts.insertMode === true) shiftR(p, buffer.length, c); else setBufferElement(buffer, p, c);
+                                    if (np !== true && np > -1) p = np; //set new position from isValid
+                                    if ( np > -1 ) {
+                                        if (opts.insertMode === true) shiftR(p, buffer.length, c); else setBufferElement(buffer, p, c);
+                                    }
                                     var next = seekNext(buffer, p);
                                     writeBuffer(input, buffer, next);
 
