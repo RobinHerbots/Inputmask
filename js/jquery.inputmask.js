@@ -3,7 +3,7 @@ Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.0.9
+Version: 1.0.10
  
 This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
@@ -439,6 +439,7 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
             }
 
             function clearOptionalTail(input, buffer) {
+            	checkVal(input, buffer, false);
                 var tmpBuffer = buffer.slice();
                 if ($(input).data('inputmask')['isRTL']) {
                     for (var pos = 0; pos <= tmpBuffer.length - 1; pos++) {
