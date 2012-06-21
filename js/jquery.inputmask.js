@@ -46,11 +46,11 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
                         cardinality: 1
                     },
                     'a': {
-                        validator: "[A-Za-z]",
+                        validator: "[A-Za-z\u0410-\u044F\u0401\u0451]",
                         cardinality: 1
                     },
                     '*': {
-                        validator: "[A-Za-z0-9]",
+                        validator: "[A-Za-z\u0410-\u044F\u0401\u04510-9]",
                         cardinality: 1
                     }
                 },
