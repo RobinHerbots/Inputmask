@@ -9,6 +9,8 @@ This plugin is based on the masked input plugin written by Josh Bush (digitalbus
 */
 
 (function($) {
+    Array.prototype.indexOf = Array.prototype.indexOf || function(item, start) { for (var i = start || 0; i < this.length; i++) if (this[i] == item) return i; return -1; }
+ 
     if ($.fn.inputmask == undefined) {
         $.inputmask = {
             //options default
