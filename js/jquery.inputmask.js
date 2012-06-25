@@ -5,7 +5,6 @@ Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
 Version: 1.0.10
  
-This plugin is based on the masked input plugin written by Josh Bush (digitalbush.com)
 */
 
 (function($) {
