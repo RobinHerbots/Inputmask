@@ -1,10 +1,9 @@
-/**@preserve
-Input Mask plugin for jquery
-http://github.com/RobinHerbots/jquery.inputmask
-Copyright (c) 2010 - 2012 Robin Herbots
-Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.0.10
- 
+/**
+* @license Input Mask plugin for jquery
+* http://github.com/RobinHerbots/jquery.inputmask
+* Copyright (c) 2010 - 2012 Robin Herbots
+* Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
+* Version: 1.0.10
 */
 
 (function($) {
