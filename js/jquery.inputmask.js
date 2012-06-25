@@ -1,4 +1,4 @@
-/*
+/**@preserve
 Input Mask plugin for jquery
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
