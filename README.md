@@ -5,7 +5,7 @@ jquery.inputmask is a jquery plugin which create an input mask.
 Copyright (c) 2010 - 2012 Robin Herbots   
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
 
-The plugin is based on the maskedinput plugin of Josh Bush (http://digitalbush.com/projects/masked-input-plugin), but has finer control over the 'mask-definitions' and is fully compatible with the ui-datepicker
+The plugin is based on the idea of the maskedinput plugin of Josh Bush (http://digitalbush.com/projects/masked-input-plugin), but has finer control over the 'mask-definitions' and is fully compatible with the ui-datepicker
 
 A definition can have a cardinality and have multiple prevalidators.
 
