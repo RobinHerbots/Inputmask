@@ -3,12 +3,12 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.0.10
+* Version: 1.0.11
 */
 
 (function($) {
     Array.prototype.indexOf = Array.prototype.indexOf || function(item, start) { for (var i = start || 0; i < this.length; i++) if (this[i] == item) return i; return -1; }
- 
+
     if ($.fn.inputmask == undefined) {
         $.inputmask = {
             //options default
@@ -316,14 +316,14 @@
 
                 buffer[position] = elem;
             }
-            function getBufferElement(buffer, position) {
-                //position = prepareBuffer(buffer, position);
+            function getBufferElement(buffer, position, autoPrepare) {
+                if (autoPrepare) position = prepareBuffer(buffer, position);
                 return buffer[position];
             }
 
             //needed to handle the non-greedy mask repetitions
             function prepareBuffer(buffer, position, isRTL) {
-                var j = 0;
+                var j;
                 if (isRTL) {
                     while (position < 0 && buffer.length < getMaskLength()) {
                         j = _buffer.length - 1;
@@ -333,8 +333,9 @@
                         }
                     }
                 } else {
-                    while (buffer.length < position && buffer.length < getMaskLength()) {
-                        while (_buffer[j] !== undefined) {
+                    while (buffer[position] == undefined && buffer.length < getMaskLength()) {
+                        j = 0;
+                        while (_buffer[j] !== undefined) { //add a new buffer
                             buffer.push(_buffer[j++]);
                         }
                     }
@@ -439,7 +440,7 @@
             }
 
             function clearOptionalTail(input, buffer) {
-            	checkVal(input, buffer, false);
+                checkVal(input, buffer, false);
                 var tmpBuffer = buffer.slice();
                 if ($(input).data('inputmask')['isRTL']) {
                     for (var pos = 0; pos <= tmpBuffer.length - 1; pos++) {
@@ -902,7 +903,8 @@
                                     }
                                     if (opts.insertMode == true) {
                                         var lastUnmaskedPosition = getMaskLength();
-                                        while (getBufferElement(buffer, lastUnmaskedPosition) != getPlaceHolder(lastUnmaskedPosition) && lastUnmaskedPosition >= p) {
+                                        var bfrClone = buffer.slice();
+                                        while (getBufferElement(bfrClone, lastUnmaskedPosition, true) != getPlaceHolder(lastUnmaskedPosition) && lastUnmaskedPosition >= p) {
                                             lastUnmaskedPosition = lastUnmaskedPosition == 0 ? -1 : seekPrevious(buffer, lastUnmaskedPosition);
                                         }
                                         if (lastUnmaskedPosition >= p)
@@ -936,4 +938,4 @@
             }
         };
     }
-})(jQuery);   
+})(jQuery); 
