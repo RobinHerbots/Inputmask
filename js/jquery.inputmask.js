@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.0.12
+* Version: 1.0.13
 */
 
 (function($) {
@@ -652,7 +652,7 @@
                  	var events = $._data(npt).events;
 
 					$.each(events, function(eventType, eventHandlers){
-                         $(npt).bind(eventType, function(event) { 
+                         $(npt).bind(eventType + ".inputmask", function(event) { 
                          							if (this.readOnly || this.disabled) {
                          							  event.stopPropagation(); 
                          							  event.stopImmediatePropagation(); 
