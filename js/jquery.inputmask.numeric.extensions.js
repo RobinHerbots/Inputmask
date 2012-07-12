@@ -1,14 +1,14 @@
 /*
-Input Mask plugin extentions
+Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
 Version: 1.0.4
 
-Optional extentions on the jquery.inputmask base
+Optional extensions on the jquery.inputmask base
 */
             (function($) {
-                //number aliases 
+                //number aliases
                 //$.extend($.inputmask.defaults.definitions, {
                 //    '9': {
                 //        validator: function(chrs, buffer, pos, strict, opts) {
@@ -20,7 +20,7 @@ Optional extentions on the jquery.inputmask base
                 //        },
                 //        cardinality: 1,
                 //        regex: new RegExp("[0-9]")
-                //    }                    
+                //    }
                 //});
                 $.extend($.inputmask.defaults.aliases, {
                     'decimal': {
