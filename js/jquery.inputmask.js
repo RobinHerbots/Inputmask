@@ -29,7 +29,7 @@
                 clearMaskOnLostFocus: true,
                 insertMode: true, //insert the input or overwrite the input
                 clearIncomplete: false, //clear the incomplete input on blur
-                aliases: {}, //aliases definitions => see jquery.inputmask.extentions.js
+                aliases: {}, //aliases definitions => see jquery.inputmask.extensions.js
                 onKeyUp: $.noop, //override to implement autocomplete on certain keys for example
                 onKeyDown: $.noop, //override to implement autocomplete on certain keys for example
                 //numeric properties
@@ -652,11 +652,11 @@
                  	var events = $._data(npt).events;
 
 					$.each(events, function(eventType, eventHandlers){
-                         $(npt).bind(eventType + ".inputmask", function(event) { 
+                         $(npt).bind(eventType + ".inputmask", function(event) {
                          							if (this.readOnly || this.disabled) {
-                         							  event.stopPropagation(); 
-                         							  event.stopImmediatePropagation(); 
-                         							  event.preventDefault();  
+                         							  event.stopPropagation();
+                         							  event.stopImmediatePropagation();
+                         							  event.preventDefault();
                          							  return false;
                          							}
                          						});
@@ -669,7 +669,7 @@
                          eventHandlers[0] = ourHandler;
                     });
 				}
-                               
+
                 function patchValueProperty(npt) {
                     var valueProperty;
                     if (Object.getOwnPropertyDescriptor)
@@ -962,4 +962,4 @@
             }
         };
     }
-})(jQuery); 
+})(jQuery);

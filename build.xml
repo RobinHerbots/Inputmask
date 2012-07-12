@@ -11,9 +11,9 @@
     <target name="jquery.inputmask" depends="init">
         <concat destfile="${distdir}/${target}">
 			<fileset file="js/jquery.inputmask.js"/>
-			<fileset file="js/jquery.inputmask.extentions.js"/>
-			<fileset file="js/jquery.inputmask.date.extentions.js"/>
-			<fileset file="js/jquery.inputmask.numeric.extentions.js"/>
+			<fileset file="js/jquery.inputmask.extensions.js"/>
+			<fileset file="js/jquery.inputmask.date.extensions.js"/>
+			<fileset file="js/jquery.inputmask.numeric.extensions.js"/>
         </concat>
     </target>
 
@@ -33,7 +33,7 @@
         </apply>
       	<echo message="${target.min} built." />
     </target>
-    
+
     <target name="minfiles">
       <mkdir dir="${distdir}/min" />
 	<apply executable="java" parallel="false" verbose="true" failonerror="true" dest="${distdir}/min">
@@ -48,9 +48,9 @@
             <targetfile />
             <arg value="--js" />
 	    <mapper type="glob" from="*.js" to="*.js" />
-        </apply>      
+        </apply>
     </target>
-    
+
     <target name="build" depends="jquery.inputmask, jquery.inputmask.min, minfiles"/>
 
     <target name="clean">
