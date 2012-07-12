@@ -2,7 +2,7 @@
 
 jquery.inputmask is a jquery plugin which create an input mask.
 
-Copyright (c) 2010 - 2012 Robin Herbots   
+Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
 
 The plugin is based on the idea of the maskedinput plugin of Josh Bush (http://digitalbush.com/projects/masked-input-plugin), but has finer control over the 'mask-definitions' and is fully compatible with the ui-datepicker
@@ -49,8 +49,8 @@ Example of some new definitions:
 insertMode: false
 ```
 
-These allow for a finer date validation then 99/99/9999 which also allows 33/33/3333 for example. 
-In the jquery.inputmask.extentions.js you find a full date input validation which takes days, months & leap years into account.
+These allow for a finer date validation then 99/99/9999 which also allows 33/33/3333 for example.
+In the jquery.inputmask.extensions.js you find a full date input validation which takes days, months & leap years into account.
 
 Also extra features like mask-repetitions (greedy and non-gready) and many other additions are included.  In the examples you will find more about them.
 
@@ -62,7 +62,7 @@ Include the js-files:
 ```html
 <script src="jquery.js" type="text/javascript"></script>
 <script src="jquery.inputmask.js" type="text/javascript"></script>
-<script src="jquery.inputmask.extentions.js" type="text/javascript"></script>
+<script src="jquery.inputmask.extensions.js" type="text/javascript"></script>
 ```
 
 Define your masks:
@@ -142,8 +142,8 @@ this can be done with the traditionnal jquery.val function (all browsers) or jav
 
 ```javascript
 $(document).ready(function(){
-   $("#number").val(12345); 
-   
+   $("#number").val(12345);
+
    var number = document.getElementById("number");
    number.value = 12345;
 });
@@ -155,7 +155,7 @@ with the autoUnmaskoption you can change the return of $.fn.val (or value proper
 $(document).ready(function(){
    	$('#<%= tbDate.ClientID%>').inputmask({ "mask": "d/m/y", 'autoUnmask' : true});	//  value: 23/03/1973
 	alert($('#<%= tbDate.ClientID%>').val());	// shows 23031973     (autoUnmask: true)
-	
+
 	var tbDate = document.getElementById("<%= tbDate.ClientID%>");
     alert(tbDate.value);	// shows 23031973     (autoUnmask: true)
 });
@@ -230,7 +230,7 @@ When both the required and optional parts of the mask are filled out and the fie
 
 ### aliases option
 
-First you have to create an alias definition (more examples can be found in jquery.inputmask.extentions.js)
+First you have to create an alias definition (more examples can be found in jquery.inputmask.extensions.js)
 
 ```javascript
 $.extend($.inputmask.defaults.aliases, {
@@ -261,12 +261,12 @@ $(document).ready(function(){
 
 ### auto upper/lower- casing inputmask
 
-see jquery.inputmask.extentions.js for an example how to define "auto"-casing in a definition (definition A)
+see jquery.inputmask.extensions.js for an example how to define "auto"-casing in a definition (definition A)
 casing can be null, "upper" or "lower"
 
 ```javascript
 $(document).ready(function(){
-   $("#test").inputmask("999-AAA");    //   => 123abc ===> 123-ABC 
+   $("#test").inputmask("999-AAA");    //   => 123abc ===> 123-ABC
 });
 ```
 ### getemptymask command
@@ -277,7 +277,7 @@ return the default (empty) mask value
 ```javascript
 $(document).ready(function(){
    $("#test").inputmask("999-AAA");
-   var initialValue = $("#test").inputmask("getemptymask");  // initialValue  => "___-___" 
+   var initialValue = $("#test").inputmask("getemptymask");  // initialValue  => "___-___"
 });
 ```
 
@@ -286,11 +286,11 @@ $(document).ready(function(){
 Use this to do some extra processing of the input when certain keys are pressed.
 This can be usefull when implementing an alias, ex. decimal alias, autofill the digits when pressing tab.
 
-see jquery.inputmask.extentions.js for some examples
+see jquery.inputmask.extensions.js for some examples
 
 
 ## Markup options
-### RTL input 
+### RTL input
 
 Just add the dir="rtl" attribute to the input element
 
@@ -304,7 +304,7 @@ Just add the dir="rtl" attribute to the input element
 First grab the sources from github.  In the root you type ant.
 A new folder dist is created with the minified and optimized js-files
 
-# jquery.inputmask extentions
+# jquery.inputmask extensions
 
 ## Alias definitions
 
@@ -321,10 +321,10 @@ $(document).ready(function(){
 The date aliases take leapyears into account.  There is also autocompletion on day, month, year.
 For example:
 
-input:	2/2/2012 		result: 02/02/2012   
-input:  352012			result: 03/05/2012   
-input:  3530			result: 03/05/2030   
-input: <ctrl> rightarrow	result: the date from today   
+input:	2/2/2012 		result: 02/02/2012
+input:  352012			result: 03/05/2012
+input:  3530			result: 03/05/2030
+input: <ctrl> rightarrow	result: the date from today
 
 ### numeric aliases
 
@@ -332,7 +332,7 @@ input: <ctrl> rightarrow	result: the date from today
 $(document).ready(function(){
    $("#numeric").inputmask("decimal");
    $("#numeric").inputmask("non-negative-decimal");
-   $("#numeric").inputmask("integer"); 
+   $("#numeric").inputmask("integer");
 });
 ```
 
