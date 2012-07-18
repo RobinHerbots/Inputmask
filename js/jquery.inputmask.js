@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.0.14
+* Version: 1.0.15
 */
 
 (function($) {
@@ -665,7 +665,7 @@
                          //!! the bound handlers are executed in the order they where bound
                          //reorder the events
                          var ourHandler = eventHandlers[eventHandlers.length - 1];
-                         for (var i = eventHandlers.length - 1; i > 0; i--) {
+                         for (i = eventHandlers.length - 1; i > 0; i--) {
                              eventHandlers[i] = eventHandlers[i - 1];
                          }
                          eventHandlers[0] = ourHandler;
@@ -805,7 +805,7 @@
                         var nptStr = input._valueGet();
                         var radixPosition = nptStr.indexOf(opts.radixPoint[opts.radixPoint.length - 1]);
                         if (radixPosition != -1) {
-                            isRTL = pos.end <= radixPosition;
+                            isRTL = pos.begin <= radixPosition || pos.end <= radixPosition;
                         }
                     }
 
@@ -815,10 +815,10 @@
                         if (pos.begin == 0 && pos.end == maskL) {
                             buffer = _buffer.slice();
                             writeBuffer(input, buffer);
-                            if (!isRTL) caret(input, firstMaskPos);
-                        } else if ((pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode)) { //FIXME not yet complete
+                          	caret(input, checkVal(input, buffer, false));
+                        } else if ((pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode)) {
                             clearBuffer(buffer, pos.begin, pos.end);
-                            writeBuffer(input, buffer, beginPos);
+                            writeBuffer(input, buffer, isRTL ? checkVal(input, buffer, false) : pos.begin);
                         } else {
                             var beginPos = pos.begin - (k == opts.keyCode.DELETE ? 0 : 1);
                             if (beginPos < firstMaskPos && k == opts.keyCode.DELETE) {
@@ -863,12 +863,7 @@
                         setTimeout(function() {
                             caret(input, checkVal(input, buffer, true));
                         }, 0);
-                    } else if (opts.numericInput && e['char'] == opts.radixPoint[opts.radixPoint.length - 1]) {
-                        var nptStr = input._valueGet();
-                        var radixPosition = nptStr.indexOf(opts.radixPoint[opts.radixPoint.length - 1]);
-                        caret(input, seekNext(buffer, radixPosition != -1 ? radixPosition : getMaskLength()));
-                    }
-                    else if (!opts.insertMode) { //overwritemode
+                    } else if (!opts.insertMode) { //overwritemode
                         if (k == opts.keyCode.RIGHT) {//right
                             var caretPos = pos.begin == pos.end ? pos.end + 1 : pos.end;
                             caretPos = caretPos < getMaskLength() ? caretPos : pos.end;
@@ -895,11 +890,20 @@
 
                     e = e || window.event;
                     var k = e.which || e.charCode || e.keyCode;
+                    
+                    if (opts.numericInput && k == opts.radixPoint.charCodeAt(opts.radixPoint.length - 1)) {
+                        var nptStr = input._valueGet();
+                        var radixPosition = nptStr.indexOf(opts.radixPoint[opts.radixPoint.length - 1]);
+                        caret(input, seekNext(buffer, radixPosition != -1 ? radixPosition : getMaskLength()));
+                    }
+                    
                     if (e.ctrlKey || e.altKey || e.metaKey || ignorable) {//Ignore
                         return true;
                     } else {
                         if (k) {
                             var pos = caret(input), c = String.fromCharCode(k), maskL = getMaskLength();
+                            clearBuffer(buffer, pos.begin, pos.end);
+                            
                             if (isRTL) {
                                 var p = opts.numericInput ? pos.end : seekPrevious(buffer, pos.end), np;
                                 if ((np = isValid(p == maskL || getBufferElement(buffer, p) == opts.radixPoint[opts.radixPoint.length - 1] ? seekPrevious(buffer, p) : p, c, buffer, false)) !== false) {
