@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.0.15
+* Version: 1.0.15a
 */
 
 (function($) {
@@ -665,7 +665,7 @@
                          //!! the bound handlers are executed in the order they where bound
                          //reorder the events
                          var ourHandler = eventHandlers[eventHandlers.length - 1];
-                         for (i = eventHandlers.length - 1; i > 0; i--) {
+                         for (var i = eventHandlers.length - 1; i > 0; i--) {
                              eventHandlers[i] = eventHandlers[i - 1];
                          }
                          eventHandlers[0] = ourHandler;
