@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.0.15a
+* Version: 1.0.16
 */
 
 (function($) {
@@ -577,7 +577,7 @@
                             clearOptionalTail(input, buffer);
                         }
                     }
-                    if ((opts.clearIncomplete || opts.onincomplete) && checkVal(input, buffer, true) != getMaskLength()) {
+                    if ((opts.clearIncomplete || opts.onincomplete) && !IsComplete(input)) {
                         if (opts.onincomplete) {
                             opts.onincomplete.call(input);
                         }
@@ -650,6 +650,18 @@
 				installEventRuler(el);
 
                 //private functions
+                function IsComplete(npt){
+                	var complete = true, nptValue = npt._valueGet(), ml = getMaskLength();
+                	for(var i = 0; i < ml; i++){
+                		if(isMask(i) && nptValue.charAt(i) == getPlaceHolder(i)) { 
+                			complete = false;
+                			break;
+                		}
+                	}
+                	return complete;
+                }
+                
+                
                 function installEventRuler(npt) {
                  	var events = $._data(npt).events;
 
@@ -919,7 +931,7 @@
                                         }
                                         shiftL(firstMaskPos, opts.numericInput ? seekPrevious(buffer, p) : p, c);
                                         writeBuffer(input, buffer, opts.numericInput && p == 0 ? seekNext(buffer, p) : p);
-                                    } else if (opts.oncomplete)
+                                    } else if (opts.oncomplete && IsComplete(input))
                                         opts.oncomplete.call(input);
                                 } else if (android) writeBuffer(input, buffer, pos.begin);
                             }
@@ -945,7 +957,7 @@
                                     var next = seekNext(buffer, p);
                                     writeBuffer(input, buffer, next);
 
-                                    if (opts.oncomplete && next == maskL)
+                                    if (opts.oncomplete && IsComplete(input))
                                         opts.oncomplete.call(input);
                                 } else if (android) writeBuffer(input, buffer, pos.begin);
                             }
