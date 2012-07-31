@@ -84,8 +84,6 @@ Optional extensions on the jquery.inputmask base
                             }
                         }
 
-                        console.log(isValid);
-
                         return isValid;
                     },
                     cardinality: 1,
