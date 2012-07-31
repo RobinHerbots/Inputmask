@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.0.17
+* Version: 1.0.18
 */
 
 (function ($) {
@@ -889,7 +889,7 @@
                         }
                     }
 
-                    opts.onKeyDown.call(this, e, opts); //extra stuff todo on keydown
+                    opts.onKeyDown.call(this, e, opts); //extra stuff to execute on keydown
                     ignorable = $.inArray(k, opts.ignorables) != -1;
                 }
 
@@ -923,17 +923,28 @@
                                         p = np.pos || pos; //set new position from isValid
                                         c = np.c || c; //set new char from isValid
                                     }
-                                    if (isValid(firstMaskPos, buffer[firstMaskPos], buffer, true) == false || (opts.greedy === false && buffer.length < maskL)) {
-                                        if (buffer[firstMaskPos] != getPlaceHolder(firstMaskPos) && buffer.length < maskL) {
-                                            var offset = prepareBuffer(buffer, -1, isRTL);
-                                            if (pos.end != 0) p = p + offset;
-                                            maskL = buffer.length;
+
+                                    var firstUnmaskedPosition = firstMaskPos;
+                                    if (opts.insertMode == true) {
+                                        if (opts.greedy == true) {
+                                            var bfrClone = buffer.slice();
+                                            while (getBufferElement(bfrClone, firstUnmaskedPosition, true) != getPlaceHolder(firstUnmaskedPosition) && firstUnmaskedPosition <= p) {
+                                                firstUnmaskedPosition = seekNext(buffer, firstUnmaskedPosition);
+                                            }
                                         }
-                                        shiftL(firstMaskPos, opts.numericInput ? seekPrevious(buffer, p) : p, c);
-                                        writeBuffer(input, buffer, opts.numericInput && p == 0 ? seekNext(buffer, p) : p);
-                                        if (opts.oncomplete && IsComplete(input))
-                                            opts.oncomplete.call(input);
-                                    }
+
+                                        if (firstUnmaskedPosition <= p) {
+                                            if (buffer[firstMaskPos] != getPlaceHolder(firstMaskPos) && buffer.length < maskL) {
+                                                var offset = prepareBuffer(buffer, -1, isRTL);
+                                                if (pos.end != 0) p = p + offset;
+                                                maskL = buffer.length;
+                                            }
+                                            shiftL(firstUnmaskedPosition, opts.numericInput ? seekPrevious(buffer, p) : p, c);
+                                        } else return false;
+                                    } else setBufferElement(buffer, opts.numericInput ? seekPrevious(buffer, p) : p, c);
+                                    writeBuffer(input, buffer, opts.numericInput && p == 0 ? seekNext(buffer, p) : p);
+                                    if (opts.oncomplete && IsComplete(input))
+                                        opts.oncomplete.call(input);
                                 } else if (android) writeBuffer(input, buffer, pos.begin);
                             }
                             else {
@@ -970,7 +981,7 @@
                 function keyupEvent(e) {
                     var $input = $(this), input = this;
                     var k = e.keyCode;
-                    opts.onKeyUp.call(this, e, opts); //extra stuff todo on keyup
+                    opts.onKeyUp.call(this, e, opts); //extra stuff to execute on keyup
                     if (k == opts.keyCode.TAB && $input.hasClass('focus.inputmask') && input._valueGet().length == 0) {
                         buffer = _buffer.slice();
                         writeBuffer(input, buffer);
