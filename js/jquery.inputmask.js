@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.0.18c
+* Version: 1.0.19
 */
 
 (function ($) {
@@ -32,14 +32,10 @@
                 aliases: {}, //aliases definitions => see jquery.inputmask.extensions.js
                 onKeyUp: $.noop, //override to implement autocomplete on certain keys for example
                 onKeyDown: $.noop, //override to implement autocomplete on certain keys for example
-                //numeric properties
+                //numeric basic properties
                 numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
                 radixPoint: ".", // | ","
-                digits: "*", //numer of digits
-                groupSeparator: ",", // | "."
-                groupSize: 3,
-                autoGroup: false,
-                //numeric properties
+                //numeric basic properties
                 definitions: {
                     '9': {
                         validator: "[0-9]",
