@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.0.18b
+* Version: 1.0.18c
 */
 
 (function ($) {
@@ -34,9 +34,9 @@
                 onKeyDown: $.noop, //override to implement autocomplete on certain keys for example
                 //numeric properties
                 numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
-                radixPoint: "\.", // | ","
+                radixPoint: ".", // | ","
                 digits: "*", //numer of digits
-                groupSeparator: ",", // | "\."
+                groupSeparator: ",", // | "."
                 groupSize: 3,
                 autoGroup: false,
                 //numeric properties
@@ -430,7 +430,7 @@
                 if (clearInvalid) {
                     writeBuffer(input, buffer);
                 }
-                return isRTL ? (opts.numericInput ? (buffer.indexOf(opts.radixPoint[opts.radixPoint.length - 1]) != -1 && skipRadixHandling !== true ? buffer.indexOf(opts.radixPoint[opts.radixPoint.length - 1]) : seekNext(buffer, maskL)) : seekNext(buffer, rtlMatch)) : seekNext(buffer, lastMatch);
+                return isRTL ? (opts.numericInput ? (buffer.indexOf(opts.radixPoint) != -1 && skipRadixHandling !== true ? buffer.indexOf(opts.radixPoint) : seekNext(buffer, maskL)) : seekNext(buffer, rtlMatch)) : seekNext(buffer, lastMatch);
             }
 
             function EscapeRegex(str) {
@@ -815,7 +815,7 @@
                     //set input direction according the position to the radixPoint
                     if (opts.numericInput) {
                         var nptStr = input._valueGet();
-                        var radixPosition = nptStr.indexOf(opts.radixPoint[opts.radixPoint.length - 1]);
+                        var radixPosition = nptStr.indexOf(opts.radixPoint);
                         if (radixPosition != -1) {
                             isRTL = pos.begin <= radixPosition || pos.end <= radixPosition;
                         }
@@ -837,13 +837,13 @@
                                 beginPos = firstMaskPos;
                             }
                             if (beginPos >= firstMaskPos) {
-                                if (opts.numericInput && opts.greedy && k == opts.keyCode.DELETE && buffer[beginPos] == opts.radixPoint[opts.radixPoint.length - 1]) {
+                                if (opts.numericInput && opts.greedy && k == opts.keyCode.DELETE && buffer[beginPos] == opts.radixPoint) {
                                     beginPos = seekNext(buffer, beginPos);
                                     isRTL = false;
                                 }
                                 if (isRTL) {
                                     beginPos = shiftR(firstMaskPos, beginPos, getPlaceHolder(beginPos), true);
-                                    beginPos = (opts.numericInput && opts.greedy && k == opts.keyCode.BACKSPACE && buffer[beginPos + 1] == opts.radixPoint[opts.radixPoint.length - 1]) ? beginPos + 1 : seekNext(buffer, beginPos);
+                                    beginPos = (opts.numericInput && opts.greedy && k == opts.keyCode.BACKSPACE && buffer[beginPos + 1] == opts.radixPoint) ? beginPos + 1 : seekNext(buffer, beginPos);
                                 } else beginPos = shiftL(beginPos, maskL);
                                 writeBuffer(input, buffer, beginPos);
                             }
@@ -905,7 +905,7 @@
 
                     if (opts.numericInput && k == opts.radixPoint.charCodeAt(opts.radixPoint.length - 1)) {
                         var nptStr = input._valueGet();
-                        var radixPosition = nptStr.indexOf(opts.radixPoint[opts.radixPoint.length - 1]);
+                        var radixPosition = nptStr.indexOf(opts.radixPoint);
                         caret(input, seekNext(buffer, radixPosition != -1 ? radixPosition : getMaskLength()));
                     }
 
@@ -918,7 +918,7 @@
 
                             if (isRTL) {
                                 var p = opts.numericInput ? pos.end : seekPrevious(buffer, pos.end), np;
-                                if ((np = isValid(p == maskL || getBufferElement(buffer, p) == opts.radixPoint[opts.radixPoint.length - 1] ? seekPrevious(buffer, p) : p, c, buffer, false)) !== false) {
+                                if ((np = isValid(p == maskL || getBufferElement(buffer, p) == opts.radixPoint ? seekPrevious(buffer, p) : p, c, buffer, false)) !== false) {
                                     if (np !== true) {
                                         p = np.pos || pos; //set new position from isValid
                                         c = np.c || c; //set new char from isValid
