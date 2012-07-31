@@ -3,7 +3,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.0.10.c
+Version: 1.0.10.d
 
 Optional extensions on the jquery.inputmask base
 */
@@ -30,7 +30,9 @@ Optional extensions on the jquery.inputmask base
             greedy: false,
             numericInput: true,
             regex: {
-                number: function (groupSeparator, groupSize, radixPoint, digits) { return new RegExp("^[\+\\d\-]{1}[\\d" + groupSeparator + "]*[" + radixPoint + "]?\\d" + digits + "$"); }
+                number: function (groupSeparator, groupSize, radixPoint, digits) {
+                    return new RegExp("^[\+\\d\-]{1}[\\d" + groupSeparator + "]*[" + radixPoint + "]?\\d" + digits + "$");
+                }
             },
             onKeyDown: function (e, opts) {
                 var $input = $(this), input = this;
@@ -52,10 +54,10 @@ Optional extensions on the jquery.inputmask base
                             return isNaN(opts.digits) ? opts.digits : '{0,' + opts.digits + '}';
                         }
                         function radixPointExpression() {
-                            return opts.radixPoint == '.' ? "\\" + opts.radixPoint : opts.radixPoint;
+                            return opts.radixPoint == '.' ? "\\\\" + opts.radixPoint : opts.radixPoint;
                         }
                         function separatorExpression() {
-                            return opts.groupSeparator == '.' ? "\\" + opts.groupSeparator : opts.groupSeparator;
+                            return opts.groupSeparator == '.' ? "\\\\" + opts.groupSeparator : opts.groupSeparator;
                         }
                         var cbuf = buffer.slice();
                         cbuf.splice(pos, 0, chrs);
@@ -74,7 +76,7 @@ Optional extensions on the jquery.inputmask base
                                     if (isValid) {
                                         buffer[pos] = "0";
                                         pos++;
-                                        isValid = { "pos": pos };
+                                        return { "pos": pos };
                                     }
                                 }
                             }
@@ -82,16 +84,17 @@ Optional extensions on the jquery.inputmask base
                         //grouping
                         if (opts.autoGroup && isValid != false && !strict) {
                             var bufVal = buffer.join('') + chrs;
-                            bufVal = bufVal.replace(new RegExp(separatorExpression(), "g"), '');
+                            bufVal = bufVal.replace(new RegExp("\\" + opts.groupSeparator, "g"), '');
                             var reg = new RegExp('(-?[0-9]+)([0-9]{3})');
                             while (reg.test(bufVal)) {
                                 bufVal = bufVal.replace(reg, '$1' + opts.groupSeparator + '$2');
                             }
+                            console.log(bufVal);
                             for (var i = 0, l = bufVal.length - 1; i < l; i++) {
                                 buffer[i] = bufVal.charAt(i);
                             }
-
-                            return { "pos": buffer.length + 1 };
+                            buffer.length++;
+                            return { "pos": buffer.length };
                         }
 
                         return isValid;
