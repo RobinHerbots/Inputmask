@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.0.18
+* Version: 1.0.18b
 */
 
 (function ($) {
@@ -933,7 +933,7 @@
                                             }
                                         }
 
-                                        if (firstUnmaskedPosition <= p) {
+                                        if (firstUnmaskedPosition <= p && (opts.greedy || buffer.length < maskL)) {
                                             if (buffer[firstMaskPos] != getPlaceHolder(firstMaskPos) && buffer.length < maskL) {
                                                 var offset = prepareBuffer(buffer, -1, isRTL);
                                                 if (pos.end != 0) p = p + offset;
