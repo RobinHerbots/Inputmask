@@ -289,15 +289,22 @@ This can be usefull when implementing an alias, ex. decimal alias, autofill the 
 see jquery.inputmask.extensions.js for some examples
 
 
-## Markup options
-### RTL input
-
-Just add the dir="rtl" attribute to the input element
+## Supported markup options
+### RTL attribute
 
 ```html
 <input id="test" dir="rtl" />
 ```
+### readonly attribute
 
+```html
+<input id="test" readonly="readonly" />
+```
+### disabled attribute
+
+```html
+<input id="test" disabled="disabled" />
+```
 
 ## Compiling with Google Closure Compiler
 
