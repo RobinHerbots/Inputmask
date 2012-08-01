@@ -292,8 +292,6 @@ see jquery.inputmask.extensions.js for some examples
 ## Supported markup options
 ### RTL attribute
 
-Just add the dir="rtl" attribute to the input element
-
 ```html
 <input id="test" dir="rtl" />
 ```
