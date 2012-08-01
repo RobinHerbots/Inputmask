@@ -215,9 +215,10 @@ $(document).ready(function(){
 });
 ```
 
-### Optional Masks
+### Simple Optional Masks
 
 When `clearMaskOnLostFocus: true` is set in the options (default), the mask will always clearout masks marked as optional when not filled in.
+The optional part should always be at the end of the mask!  Full choice of optionality will be implemented in v2 of the plugin.
 
 For example, given:
 
