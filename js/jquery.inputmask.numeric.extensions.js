@@ -3,7 +3,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.0.19
+Version: 1.0.19a
 
 Optional extensions on the jquery.inputmask base
 */
@@ -80,7 +80,6 @@ Optional extensions on the jquery.inputmask base
                             while (reg.test(bufVal)) {
                                 bufVal = bufVal.replace(reg, '$1' + opts.groupSeparator + '$2');
                             }
-                            console.log(bufVal);
                             for (var i = 0, l = bufVal.length - 1; i < l; i++) {
                                 buffer[i] = bufVal.charAt(i);
                             }
