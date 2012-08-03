@@ -3,11 +3,14 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.0.19a
+* Version: 1.0.20
 */
 
 (function ($) {
-    Array.prototype.indexOf = Array.prototype.indexOf || function (item, start) { for (var i = start || 0; i < this.length; i++) if (this[i] == item) return i; return -1; }
+    Array.prototype.indexOf = Array.prototype.indexOf || function (item, start) {
+        for (var i = start || 0; i < this.length; i++) if (this[i] == item) return i;
+        return -1;
+    };
 
     if ($.fn.inputmask == undefined) {
         $.inputmask = {
@@ -109,8 +112,9 @@
                                     $input.unbind(".inputmask");
                                     $input.removeClass('focus.inputmask');
                                     //restore the value property
+                                    var valueProperty;
                                     if (Object.getOwnPropertyDescriptor)
-                                        var valueProperty = Object.getOwnPropertyDescriptor(input, "value");
+                                        valueProperty = Object.getOwnPropertyDescriptor(input, "value");
                                     if (valueProperty && valueProperty.get) {
                                         if (input._valueGet) {
                                             Object.defineProperty(input, "value", {
@@ -136,7 +140,7 @@
                         else return "";
                     default:
                         //check if the fn is an alias
-                        if (!ResolveAlias(fn)) {
+                        if (!resolveAlias(fn)) {
                             //maybe fn is a mask so we try
                             //set mask
                             opts.mask = fn;
@@ -153,7 +157,7 @@
                 }
             } if (typeof fn == "object") {
                 opts = $.extend(true, {}, $.inputmask.defaults, fn);
-                ResolveAlias(opts.alias); //resolve aliases
+                resolveAlias(opts.alias); //resolve aliases
                 //init buffer
                 var _buffer = getMaskTemplate();
                 var tests = getTestingChain();
@@ -164,10 +168,10 @@
             }
 
             //helper functions
-            function ResolveAlias(aliasStr) {
+            function resolveAlias(aliasStr) {
                 var aliasDefinition = opts.aliases[aliasStr];
                 if (aliasDefinition) {
-                    if (aliasDefinition.alias) ResolveAlias(aliasDefinition.alias); //alias is another alias
+                    if (aliasDefinition.alias) resolveAlias(aliasDefinition.alias); //alias is another alias
                     $.extend(true, opts, aliasDefinition);  //merge alias definition in the options
                     $.extend(true, opts, options);  //reapply extra given options
                     return true;
@@ -203,6 +207,7 @@
                 for (var i = 1; i < opts.repeat && opts.greedy; i++) {
                     repeatedMask = repeatedMask.concat(singleMask.slice());
                 }
+
                 return repeatedMask;
             }
 
@@ -276,7 +281,7 @@
             function getMaskLength() {
                 var calculatedLength = _buffer.length;
                 if (!opts.greedy && opts.repeat > 1) {
-                    calculatedLength += (_buffer.length * (opts.repeat - 1))
+                    calculatedLength += (_buffer.length * (opts.repeat - 1));
                 }
                 return calculatedLength;
             }
@@ -359,14 +364,14 @@
                 }
             };
 
-            function SetReTargetPlaceHolder(buffer, pos) {
+            function setReTargetPlaceHolder(buffer, pos) {
                 var testPos = determineTestPosition(pos);
                 setBufferElement(buffer, pos, getBufferElement(_buffer, testPos));
             }
 
             function checkVal(input, buffer, clearInvalid, skipRadixHandling) {
                 var isRTL = $(input).data('inputmask')['isRTL'],
-                    inputValue = TruncateInput(input._valueGet(), isRTL).split('');
+                    inputValue = truncateInput(input._valueGet(), isRTL).split('');
 
                 if (isRTL) { //align inputValue for RTL/numeric input
                     var maskL = getMaskLength();
@@ -398,7 +403,7 @@
                                 setBufferElement(buffer, pos, c);
                                 lastMatch = checkPosition = pos;
                             } else {
-                                SetReTargetPlaceHolder(buffer, pos);
+                                setReTargetPlaceHolder(buffer, pos);
                                 if (c == getPlaceHolder(pos)) {
                                     checkPosition = pos;
                                     rtlMatch = pos;
@@ -406,7 +411,7 @@
                             }
                             break;
                         } else {   //nonmask
-                            SetReTargetPlaceHolder(buffer, pos);
+                            setReTargetPlaceHolder(buffer, pos);
                             if (lastMatch == checkPosition) //once outsync the nonmask cannot be the lastmatch
                                 lastMatch = pos;
                             checkPosition = pos;
@@ -417,7 +422,7 @@
                 }
                 //Truncate buffer when using non-greedy masks
                 if (opts.greedy == false) {
-                    var newBuffer = TruncateInput(buffer.join(''), isRTL).split('');
+                    var newBuffer = truncateInput(buffer.join(''), isRTL).split('');
                     while (buffer.length != newBuffer.length) {  //map changes into the original buffer
                         isRTL ? buffer.shift() : buffer.pop();
                     }
@@ -429,12 +434,12 @@
                 return isRTL ? (opts.numericInput ? (buffer.indexOf(opts.radixPoint) != -1 && skipRadixHandling !== true ? buffer.indexOf(opts.radixPoint) : seekNext(buffer, maskL)) : seekNext(buffer, rtlMatch)) : seekNext(buffer, lastMatch);
             }
 
-            function EscapeRegex(str) {
+            function escapeRegex(str) {
                 var specials = ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\'];
                 return str.replace(new RegExp('(\\' + specials.join('|\\') + ')', 'gim'), '\\$1');
             }
-            function TruncateInput(inputValue, rtl) {
-                return rtl ? inputValue.replace(new RegExp("^(" + EscapeRegex(_buffer.join('')) + ")*"), "") : inputValue.replace(new RegExp("(" + EscapeRegex(_buffer.join('')) + ")*$"), "");
+            function truncateInput(inputValue, rtl) {
+                return rtl ? inputValue.replace(new RegExp("^(" + escapeRegex(_buffer.join('')) + ")*"), "") : inputValue.replace(new RegExp("(" + escapeRegex(_buffer.join('')) + ")*$"), "");
             }
 
             function clearOptionalTail(input, buffer) {
@@ -514,6 +519,15 @@
                 var $input = $(el);
                 if (!$input.is(":input")) return;
 
+                //handle maxlength attribute
+                var maxLength = $input.prop('maxLength');
+                if (getMaskLength() > maxLength) {
+                    if (maxLength < _buffer.length) _buffer.length = maxLength;
+                    if (opts.greedy == false) {
+                        opts.repeat = Math.round(maxLength / _buffer.length);
+                    }
+                }
+
                 //store tests & original buffer in the input element - used to get the unmasked value
                 $input.data('inputmask', {
                     'tests': tests,
@@ -540,7 +554,7 @@
                     el.dir = "ltr"
                     $input.css("text-align", "right");
                     $input.removeAttr("dir");
-                    inputData = $input.data('inputmask');
+                    var inputData = $input.data('inputmask');
                     inputData['isRTL'] = true;
                     $input.data('inputmask', inputData);
                     isRTL = true;
@@ -573,7 +587,7 @@
                             clearOptionalTail(input, buffer);
                         }
                     }
-                    if ((opts.clearIncomplete || opts.onincomplete) && !IsComplete(input)) {
+                    if ((opts.clearIncomplete || opts.onincomplete) && !isComplete(input)) {
                         if (opts.onincomplete) {
                             opts.onincomplete.call(input);
                         }
@@ -646,7 +660,7 @@
                 installEventRuler(el);
 
                 //private functions
-                function IsComplete(npt) {
+                function isComplete(npt) {
                     var complete = true, nptValue = npt._valueGet(), ml = nptValue.length;
                     for (var i = 0; i < ml; i++) {
                         if (isMask(i) && nptValue.charAt(i) == getPlaceHolder(i)) {
@@ -683,7 +697,7 @@
                 function patchValueProperty(npt) {
                     var valueProperty;
                     if (Object.getOwnPropertyDescriptor)
-                        var valueProperty = Object.getOwnPropertyDescriptor(npt, "value");
+                        valueProperty = Object.getOwnPropertyDescriptor(npt, "value");
                     if (valueProperty && valueProperty.get) {
                         if (!npt._valueGet) {
 
@@ -751,26 +765,26 @@
                     while (!isMask(start) && start - 1 >= 0) start--;
                     for (var i = start; i < end && i < getMaskLength(); i++) {
                         if (isMask(i)) {
-                            SetReTargetPlaceHolder(buffer, i);
+                            setReTargetPlaceHolder(buffer, i);
                             var j = seekNext(buffer, i);
                             var p = getBufferElement(buffer, j);
                             if (p != getPlaceHolder(j)) {
                                 if (j < getMaskLength() && isValid(i, p, buffer, true) !== false && tests[determineTestPosition(i)].def == tests[determineTestPosition(j)].def) {
                                     setBufferElement(buffer, i, getBufferElement(buffer, j));
-                                    SetReTargetPlaceHolder(buffer, j); //cleanup next position
+                                    setReTargetPlaceHolder(buffer, j); //cleanup next position
                                 } else {
                                     if (isMask(i))
                                         break;
                                 }
                             } else if (c == undefined) break;
                         } else {
-                            SetReTargetPlaceHolder(buffer, i);
+                            setReTargetPlaceHolder(buffer, i);
                         }
                     }
                     if (c != undefined)
                         setBufferElement(buffer, isRTL ? end : seekPrevious(buffer, end), c);
 
-                    buffer = TruncateInput(buffer.join(''), isRTL).split('');
+                    buffer = truncateInput(buffer.join(''), isRTL).split('');
                     if (buffer.length == 0) buffer = _buffer.slice();
 
                     return start; //return the used start position
@@ -793,10 +807,10 @@
                                 } else break;
                             } else if (full !== true) break;
                         } else
-                            SetReTargetPlaceHolder(buffer, i);
+                            setReTargetPlaceHolder(buffer, i);
                     }
                     var lengthBefore = buffer.length;
-                    buffer = TruncateInput(buffer.join(''), isRTL).split('');
+                    buffer = truncateInput(buffer.join(''), isRTL).split('');
                     if (buffer.length == 0) buffer = _buffer.slice();
 
                     return end - (lengthBefore - buffer.length);  //return new start position
@@ -939,7 +953,7 @@
                                         } else return false;
                                     } else setBufferElement(buffer, opts.numericInput ? seekPrevious(buffer, p) : p, c);
                                     writeBuffer(input, buffer, opts.numericInput && p == 0 ? seekNext(buffer, p) : p);
-                                    if (opts.oncomplete && IsComplete(input))
+                                    if (opts.oncomplete && isComplete(input))
                                         opts.oncomplete.call(input);
                                 } else if (android) writeBuffer(input, buffer, pos.begin);
                             }
@@ -965,7 +979,7 @@
                                     var next = seekNext(buffer, p);
                                     writeBuffer(input, buffer, next);
 
-                                    if (opts.oncomplete && IsComplete(input))
+                                    if (opts.oncomplete && isComplete(input))
                                         opts.oncomplete.call(input);
                                 } else if (android) writeBuffer(input, buffer, pos.begin);
                             }
