@@ -307,6 +307,12 @@ see jquery.inputmask.extensions.js for some examples
 <input id="test" disabled="disabled" />
 ```
 
+### maxlength attribute
+
+```html
+<input id="test" maxlength="4" />
+```
+
 ## Compiling with Google Closure Compiler
 
 First grab the sources from github.  In the root you type ant.
