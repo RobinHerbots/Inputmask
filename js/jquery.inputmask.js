@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.0.20
+* Version: 1.0.20a
 */
 
 (function ($) {
@@ -521,7 +521,7 @@
 
                 //handle maxlength attribute
                 var maxLength = $input.prop('maxLength');
-                if (getMaskLength() > maxLength) {
+                if (getMaskLength() > maxLength && maxLength > -1) { //FF sets no defined max length to -1 
                     if (maxLength < _buffer.length) _buffer.length = maxLength;
                     if (opts.greedy == false) {
                         opts.repeat = Math.round(maxLength / _buffer.length);
