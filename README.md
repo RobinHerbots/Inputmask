@@ -215,9 +215,10 @@ $(document).ready(function(){
 });
 ```
 
-### Optional Masks
+### Simple Optional Masks
 
 When `clearMaskOnLostFocus: true` is set in the options (default), the mask will always clearout masks marked as optional when not filled in.
+The optional part should always be at the end of the mask!  Full choice of optionality will be implemented in v2 of the plugin.
 
 For example, given:
 
@@ -289,15 +290,28 @@ This can be usefull when implementing an alias, ex. decimal alias, autofill the 
 see jquery.inputmask.extensions.js for some examples
 
 
-## Markup options
-### RTL input
-
-Just add the dir="rtl" attribute to the input element
+## Supported markup options
+### RTL attribute
 
 ```html
 <input id="test" dir="rtl" />
 ```
+### readonly attribute
 
+```html
+<input id="test" readonly="readonly" />
+```
+### disabled attribute
+
+```html
+<input id="test" disabled="disabled" />
+```
+
+### maxlength attribute
+
+```html
+<input id="test" maxlength="4" />
+```
 
 ## Compiling with Google Closure Compiler
 
