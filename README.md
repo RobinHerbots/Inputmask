@@ -356,19 +356,19 @@ Define the radixpoint
 
 ```javascript
 $(document).ready(function(){
-   $("#numeric").inputmask("decimal" { radixPoint: "," });
+   $("#numeric").inputmask("decimal", { radixPoint: "," });
 });
 ```
 Define the number of digits after the radixpoint
 
 ```javascript
 $(document).ready(function(){
-   $("#numeric").inputmask("decimal" { digits: 3 });
+   $("#numeric").inputmask("decimal", { digits: 3 });
 });
 ```
 Grouping support through:  autoGroup, groupSeparator, groupSize
 ```javascript
 $(document).ready(function(){
-   $("#numeric").inputmask("decimal" { radixPoint: ",", autoGroup: true, groupSeparator: ".", groupSize: 3 });
+   $("#numeric").inputmask("decimal", { radixPoint: ",", autoGroup: true, groupSeparator: ".", groupSize: 3 });
 });
 ```
