@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.0.20a
+* Version: 1.0.21
 */
 
 (function ($) {
@@ -63,7 +63,6 @@
 
         $.fn.inputmask = function (fn, options) {
             var opts = $.extend(true, {}, $.inputmask.defaults, options);
-            var pasteEventName = $.browser.msie ? 'paste.inputmask' : 'input.inputmask';
 
             var iphone = navigator.userAgent.match(/iphone/i) != null;
             var android = navigator.userAgent.match(/android.*mobile safari.*/i) != null;
@@ -527,6 +526,7 @@
                         opts.repeat = Math.round(maxLength / _buffer.length);
                     }
                 }
+                $input.prop('maxLength', getMaskLength() * 2);
 
                 //store tests & original buffer in the input element - used to get the unmasked value
                 $input.data('inputmask', {
@@ -636,7 +636,7 @@
                 }).bind("keydown.inputmask", keydownEvent
                 ).bind("keypress.inputmask", keypressEvent
                 ).bind("keyup.inputmask", keyupEvent
-                ).bind(pasteEventName, function () {
+                ).bind("paste.inputmask", function () {
                     var input = this;
                     setTimeout(function () {
                         caret(input, checkVal(input, buffer, true));
