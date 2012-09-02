@@ -289,6 +289,21 @@ This can be usefull when implementing an alias, ex. decimal alias, autofill the 
 
 see jquery.inputmask.extensions.js for some examples
 
+### hasMaskedValue
+
+Check wheter the returned value is masked or not; currently only works reliable when using jquery.val fn to retrieve the value 
+
+```javascript
+$(document).ready(function(){
+	function validateMaskedValue(val){}
+	function validateValue(val){}
+
+	var val = $("#test").val();
+    if($("#test").inputmask("hasMaskedValue"))
+	  validateMaskedValue(val); 
+   else validateValue(val); 
+});
+```
 
 ## Supported markup options
 ### RTL attribute
