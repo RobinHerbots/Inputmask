@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.0.22
+* Version: 1.0.22a
 */
 
 (function ($) {
@@ -63,7 +63,7 @@
 
         $.fn.inputmask = function (fn, options) {
             var opts = $.extend(true, {}, $.inputmask.defaults, options);
-            var pasteEvent = isInputEventSupported('paste') ? 'paste' : 'input');
+            var pasteEvent = isInputEventSupported('paste') ? 'paste' : 'input';
 
             var iphone = navigator.userAgent.match(/iphone/i) != null;
             var android = navigator.userAgent.match(/android.*mobile safari.*/i) != null;
