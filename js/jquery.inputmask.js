@@ -63,8 +63,7 @@
 
         $.fn.inputmask = function (fn, options) {
             var opts = $.extend(true, {}, $.inputmask.defaults, options);
-            var pasteEvent = (($.browser.opera || ($.browser.mozilla && parseFloat($.browser.version.substr(0,3)) < 1.9)) ? 'input' : 'paste');
-
+            var pasteEvent = isInputEventSupported('paste') ? 'paste' : 'input');
 
             var iphone = navigator.userAgent.match(/iphone/i) != null;
             var android = navigator.userAgent.match(/android.*mobile safari.*/i) != null;
@@ -171,6 +170,18 @@
             }
 
             //helper functions
+            function isInputEventSupported(eventName) {
+                var el = document.createElement('input'), 
+		  eventName = 'on' + eventName,
+		  isSupported = (eventName in el);
+                if (!isSupported) {
+                  el.setAttribute(eventName, 'return;');
+                  isSupported = typeof el[eventName] == 'function';
+                }
+                el = null;
+                return isSupported;
+            }
+
             function resolveAlias(aliasStr) {
                 var aliasDefinition = opts.aliases[aliasStr];
                 if (aliasDefinition) {
