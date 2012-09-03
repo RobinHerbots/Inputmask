@@ -63,6 +63,8 @@
 
         $.fn.inputmask = function (fn, options) {
             var opts = $.extend(true, {}, $.inputmask.defaults, options);
+            var pasteEvent = (($.browser.opera || ($.browser.mozilla && parseFloat($.browser.version.substr(0,3)) < 1.9)) ? 'input' : 'paste');
+
 
             var iphone = navigator.userAgent.match(/iphone/i) != null;
             var android = navigator.userAgent.match(/android.*mobile safari.*/i) != null;
@@ -638,7 +640,7 @@
                 }).bind("keydown.inputmask", keydownEvent
                 ).bind("keypress.inputmask", keypressEvent
                 ).bind("keyup.inputmask", keyupEvent
-                ).bind("paste.inputmask", function () {
+                ).bind(pasteEvent + ".inputmask", function () {
                     var input = this;
                     setTimeout(function () {
                         caret(input, checkVal(input, buffer, true));
