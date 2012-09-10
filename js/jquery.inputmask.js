@@ -533,6 +533,9 @@
                 var $input = $(el);
                 if (!$input.is(":input")) return;
 
+      		//correct greedy setting if needed
+                opts.greedy = opts.greedy && opts.repeat > 0;
+
                 //handle maxlength attribute
                 var maxLength = $input.prop('maxLength');
                 if (getMaskLength() > maxLength && maxLength > -1) { //FF sets no defined max length to -1 
