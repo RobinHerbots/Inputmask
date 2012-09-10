@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.0.22a
+* Version: 1.0.23
 */
 
 (function ($) {
@@ -171,12 +171,12 @@
 
             //helper functions
             function isInputEventSupported(eventName) {
-                var el = document.createElement('input'), 
+                var el = document.createElement('input'),
 		  eventName = 'on' + eventName,
 		  isSupported = (eventName in el);
                 if (!isSupported) {
-                  el.setAttribute(eventName, 'return;');
-                  isSupported = typeof el[eventName] == 'function';
+                    el.setAttribute(eventName, 'return;');
+                    isSupported = typeof el[eventName] == 'function';
                 }
                 el = null;
                 return isSupported;
@@ -533,6 +533,9 @@
                 var $input = $(el);
                 if (!$input.is(":input")) return;
 
+      		//correct greedy setting if needed
+                opts.greedy = opts.greedy && opts.repeat > 0;
+
                 //handle maxlength attribute
                 var maxLength = $input.prop('maxLength');
                 if (getMaskLength() > maxLength && maxLength > -1) { //FF sets no defined max length to -1 
@@ -651,7 +654,7 @@
                 }).bind("keydown.inputmask", keydownEvent
                 ).bind("keypress.inputmask", keypressEvent
                 ).bind("keyup.inputmask", keyupEvent
-                ).bind(pasteEvent + ".inputmask", function () {
+                ).bind(pasteEvent + ".inputmask, dragdrop.inputmask, drop.inputmask", function () {
                     var input = this;
                     setTimeout(function () {
                         caret(input, checkVal(input, buffer, true));
