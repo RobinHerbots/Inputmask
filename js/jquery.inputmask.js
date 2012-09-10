@@ -534,7 +534,7 @@
                 if (!$input.is(":input")) return;
 
       		//correct greedy setting if needed
-                opts.greedy = opts.greedy && opts.repeat > 0;
+                opts.greedy = opts.greedy ? opts.greedy : opts.repeat == 0;
 
                 //handle maxlength attribute
                 var maxLength = $input.prop('maxLength');
