@@ -322,13 +322,15 @@
 
                 var test = tests[determineTestPosition(position)];
                 var elem = element;
-                switch (test.casing) {
-                    case "upper":
-                        elem = element.toUpperCase();
-                        break;
-                    case "lower":
-                        elem = element.toLowerCase();
-                        break;
+                 if (elem != undefined) {
+                    switch (test.casing) {
+                        case "upper":
+                            elem = element.toUpperCase();
+                            break;
+                        case "lower":
+                            elem = element.toLowerCase();
+                            break;
+                    } 
                 }
 
                 buffer[position] = elem;
