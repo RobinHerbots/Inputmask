@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.0.23
+* Version: 1.0.23a
 */
 
 (function ($) {
@@ -322,13 +322,15 @@
 
                 var test = tests[determineTestPosition(position)];
                 var elem = element;
-                switch (test.casing) {
-                    case "upper":
-                        elem = element.toUpperCase();
-                        break;
-                    case "lower":
-                        elem = element.toLowerCase();
-                        break;
+                 if (elem != undefined) {
+                    switch (test.casing) {
+                        case "upper":
+                            elem = element.toUpperCase();
+                            break;
+                        case "lower":
+                            elem = element.toLowerCase();
+                            break;
+                    } 
                 }
 
                 buffer[position] = elem;
