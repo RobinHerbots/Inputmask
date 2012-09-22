@@ -3,15 +3,10 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.0.23a
+* Version: 1.0.24
 */
 
 (function ($) {
-    Array.prototype.indexOf = Array.prototype.indexOf || function (item, start) {
-        for (var i = start || 0; i < this.length; i++) if (this[i] == item) return i;
-        return -1;
-    };
-
     if ($.fn.inputmask == undefined) {
         $.inputmask = {
             //options default
@@ -322,7 +317,7 @@
 
                 var test = tests[determineTestPosition(position)];
                 var elem = element;
-                 if (elem != undefined) {
+                if (elem != undefined) {
                     switch (test.casing) {
                         case "upper":
                             elem = element.toUpperCase();
@@ -330,7 +325,7 @@
                         case "lower":
                             elem = element.toLowerCase();
                             break;
-                    } 
+                    }
                 }
 
                 buffer[position] = elem;
@@ -447,7 +442,7 @@
                 if (clearInvalid) {
                     writeBuffer(input, buffer);
                 }
-                return isRTL ? (opts.numericInput ? (buffer.indexOf(opts.radixPoint) != -1 && skipRadixHandling !== true ? buffer.indexOf(opts.radixPoint) : seekNext(buffer, maskL)) : seekNext(buffer, rtlMatch)) : seekNext(buffer, lastMatch);
+                return isRTL ? (opts.numericInput ? ($.inArray(opts.radixPoint, buffer) != -1 && skipRadixHandling !== true ? $.inArray(opts.radixPoint, buffer) : seekNext(buffer, maskL)) : seekNext(buffer, rtlMatch)) : seekNext(buffer, lastMatch);
             }
 
             function escapeRegex(str) {
@@ -535,7 +530,7 @@
                 var $input = $(el);
                 if (!$input.is(":input")) return;
 
-      		//correct greedy setting if needed
+                //correct greedy setting if needed
                 opts.greedy = opts.greedy ? opts.greedy : opts.repeat == 0;
 
                 //handle maxlength attribute
@@ -845,7 +840,7 @@
                     //set input direction according the position to the radixPoint
                     if (opts.numericInput) {
                         var nptStr = input._valueGet();
-                        var radixPosition = nptStr.indexOf(opts.radixPoint);
+                        var radixPosition = $.inArray(opts.radixPoint, nptStr);
                         if (radixPosition != -1) {
                             isRTL = pos.begin <= radixPosition || pos.end <= radixPosition;
                         }
@@ -935,7 +930,7 @@
 
                     if (opts.numericInput && k == opts.radixPoint.charCodeAt(opts.radixPoint.length - 1)) {
                         var nptStr = input._valueGet();
-                        var radixPosition = nptStr.indexOf(opts.radixPoint);
+                        var radixPosition = $.inArray(opts.radixPoint, nptStr);
                         caret(input, seekNext(buffer, radixPosition != -1 ? radixPosition : getMaskLength()));
                     }
 
