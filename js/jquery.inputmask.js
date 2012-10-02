@@ -669,8 +669,13 @@
                 if (document.activeElement === el) { //position the caret when in focus
                     $input.addClass('focus.inputmask');
                     caret(el, lastPosition);
-                } else if (opts.clearMaskOnLostFocus && el._valueGet() == _buffer.join(''))
-                    el._valueSet('');
+                } else if (opts.clearMaskOnLostFocus) {
+                    if (el._valueGet() == _buffer.join('')) {
+                        el._valueSet('');  
+                    } else {
+                        clearOptionalTail(el, buffer);  
+                    }
+                }
 
                 installEventRuler(el);
 
