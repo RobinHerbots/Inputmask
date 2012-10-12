@@ -53,6 +53,10 @@ Optional extensions on the jquery.inputmask base
                         var cbuf = buffer.slice();
                         cbuf.splice(pos, 0, chrs);
                         var bufferStr = cbuf.join('');
+                        if (/^0[\d|-]$/.test(bufferStr)) { //handle first char
+                            buffer[0]= "";
+                            return { "pos": 1, "c": "" };
+                        }
                         var isValid = opts.regex.number(separatorExpression(), opts.groupSize, radixPointExpression(), digitExpression()).test(bufferStr);
                         if (!isValid) {
                             if (strict) { //shiftL & shiftR use strict only validate from 0 to position
