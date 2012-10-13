@@ -3,7 +3,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.0.5
+Version: 1.0.6
 
 Optional extensions on the jquery.inputmask base
 */
@@ -71,9 +71,7 @@ Optional extensions on the jquery.inputmask base
                                 isValid = opts.regex.val1.test("0" + chrs.charAt(0));
                                 if (isValid) {
                                     buffer[pos - 1] = "0";
-                                    buffer[pos] = chrs.charAt(0);
-                                    pos++;
-                                    return { "pos": pos };
+                                    return { "pos": pos ,"c": chrs.charAt(0) };
                                 }
                             }
                         }
@@ -102,9 +100,7 @@ Optional extensions on the jquery.inputmask base
                                     isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs.charAt(0));
                                     if (isValid) {
                                         buffer[pos - 1] = "0";
-                                        buffer[pos] = chrs.charAt(0);
-                                        pos++;
-                                        return { "pos": pos };
+                                        return { "pos": pos, "c": chrs.charAt(0) };
                                     }
                                 }
                             }
@@ -209,9 +205,7 @@ Optional extensions on the jquery.inputmask base
                                         isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs.charAt(0));
                                         if (isValid) {
                                             buffer[pos - 1] = "0";
-                                            buffer[pos] = chrs.charAt(0);
-                                            pos++;
-                                            return { "pos": pos };
+                                            return { "pos": pos, "c": chrs.charAt(0) };
                                         }
                                     }
                                 }
