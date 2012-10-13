@@ -667,11 +667,11 @@
                 //apply mask
                 lastPosition = checkVal(el, buffer, true);
 
-   		// Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
-		var activeElement;	
-		try {		    		
-		   activeElement = document.activeElement;
-		} catch(e) {}
+   				// Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
+				var activeElement;	
+				try {		    		
+				   activeElement = document.activeElement;
+				} catch(e) {}
                 if (activeElement === el) { //position the caret when in focus
                     $input.addClass('focus.inputmask');
                     caret(el, lastPosition);
