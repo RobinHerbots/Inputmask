@@ -29,7 +29,7 @@ Optional extensions on the jquery.inputmask base
                 var $input = $(this), input = this;
                 if (e.keyCode == opts.keyCode.TAB) {
                     var nptStr = input._valueGet();
-                    var radixPosition = $.inArray(opts.radixPoint, nptStr);
+                    var radixPosition = nptStr.indexOf(opts.radixPoint);
                     if (radixPosition != -1) {
                         for (var i = 1; i < opts.digits; i++) {
                             if (nptStr[radixPosition + i]) nptStr = nptStr + "0";
