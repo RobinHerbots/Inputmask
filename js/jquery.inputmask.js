@@ -851,7 +851,7 @@
                     //set input direction according the position to the radixPoint
                     if (opts.numericInput) {
                         var nptStr = input._valueGet();
-                        var radixPosition = $.inArray(opts.radixPoint, nptStr);
+                        var radixPosition = nptStr.indexOf(opts.radixPoint);
                         if (radixPosition != -1) {
                             isRTL = pos.begin <= radixPosition || pos.end <= radixPosition;
                         }
@@ -941,7 +941,7 @@
 
                     if (opts.numericInput && k == opts.radixPoint.charCodeAt(opts.radixPoint.length - 1)) {
                         var nptStr = input._valueGet();
-                        var radixPosition = $.inArray(opts.radixPoint, nptStr);
+                        var radixPosition = nptStr.indexOf(opts.radixPoint);
                         caret(input, seekNext(buffer, radixPosition != -1 ? radixPosition : getMaskLength()));
                     }
 
