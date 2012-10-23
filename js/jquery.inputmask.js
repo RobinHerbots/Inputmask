@@ -19,6 +19,7 @@
                 escapeChar: "\\",
                 mask: null,
                 oncomplete: null, //executes when the mask is complete
+                callOncompleteOnBlur: false, //execute oncomplete when focus is lost
                 onincomplete: null, //executes when the mask is incomplete and focus is lost
                 oncleared: null, //executes when the mask is cleared
                 repeat: 0, //repetitions of the mask
@@ -602,6 +603,10 @@
                             clearOptionalTail(input, buffer);
                         }
                     }
+                    if (opts.callOncompleteOnBlur && isComplete(input) && opts.oncomplete)
+                    {
+                       opts.oncomplete.call(input);
+                    }                    
                     if ((opts.clearIncomplete || opts.onincomplete) && !isComplete(input)) {
                         if (opts.onincomplete) {
                             opts.onincomplete.call(input);
