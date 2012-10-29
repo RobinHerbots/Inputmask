@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.0.25
+* Version: 1.0.27
 */
 
 (function ($) {
@@ -18,9 +18,9 @@
                 },
                 escapeChar: "\\",
                 mask: null,
-                oncomplete: null, //executes when the mask is complete
-                onincomplete: null, //executes when the mask is incomplete and focus is lost
-                oncleared: null, //executes when the mask is cleared
+                oncomplete: $.noop, //executes when the mask is complete
+                onincomplete: $.noop, //executes when the mask is incomplete and focus is lost
+                oncleared: $.noop, //executes when the mask is cleared
                 repeat: 0, //repetitions of the mask
                 greedy: true, //true: allocated buffer for the mask and repetitions - false: allocate only if needed
                 autoUnmask: false, //automatically unmask when retrieving the value with $.fn.val or value if the browser supports __lookupGetter__ or getOwnPropertyDescriptor
@@ -30,6 +30,7 @@
                 aliases: {}, //aliases definitions => see jquery.inputmask.extensions.js
                 onKeyUp: $.noop, //override to implement autocomplete on certain keys for example
                 onKeyDown: $.noop, //override to implement autocomplete on certain keys for example
+                showMaskOnHover: true, //show the mask-placeholder when hovering the empty input
                 //numeric basic properties
                 numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
                 radixPoint: ".", // | ","
@@ -581,7 +582,7 @@
                 //bind events
                 $input.bind("mouseenter.inputmask", function () {
                     var $input = $(this), input = this;
-                    if (!$input.hasClass('focus.inputmask')) {
+                    if (!$input.hasClass('focus.inputmask') && opts.showMaskOnHover) {
                         var nptL = input._valueGet().length;
                         if (nptL == 0) {
                             buffer = _buffer.slice();
@@ -602,10 +603,8 @@
                             clearOptionalTail(input, buffer);
                         }
                     }
-                    if ((opts.clearIncomplete || opts.onincomplete) && !isComplete(input)) {
-                        if (opts.onincomplete) {
-                            opts.onincomplete.call(input);
-                        }
+                    if (!isComplete(input)) {
+                        $input.trigger("incomplete");
                         if (opts.clearIncomplete) {
                             if (opts.clearMaskOnLostFocus)
                                 input._valueSet('');
@@ -617,13 +616,21 @@
                     }
                 }).bind("focus.inputmask", function () {
                     var $input = $(this), input = this;
+                    if (!$input.hasClass('focus.inputmask') && !opts.showMaskOnHover) {
+                        var nptL = input._valueGet().length;
+                        if (nptL == 0) {
+                            buffer = _buffer.slice();
+                            writeBuffer(input, buffer);
+                        } else if (nptL < buffer.length)
+                            writeBuffer(input, buffer);
+                    }
                     $input.addClass('focus.inputmask');
                     undoBuffer = input._valueGet();
                 }).bind("mouseleave.inputmask", function () {
                     var $input = $(this), input = this;
                     if (opts.clearMaskOnLostFocus) {
                         if (!$input.hasClass('focus.inputmask')) {
-                            if (input._valueGet() == _buffer.join(''))
+                            if (input._valueGet() == _buffer.join('') || input._valueGet() == '')
                                 input._valueSet('');
                             else { //clearout optional tail of the mask
                                 clearOptionalTail(input, buffer);
@@ -662,24 +669,26 @@
                     checkVal(input, buffer, true);
                     if (input._valueGet() == _buffer.join(''))
                         input._valueSet('');
-                });
+                }).bind('complete.inputmask', opts.oncomplete)
+                .bind('incomplete.inputmask', opts.onincomplete)
+                .bind('cleared.inputmask', opts.oncleared);
 
                 //apply mask
                 lastPosition = checkVal(el, buffer, true);
 
-   				// Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
-				var activeElement;	
-				try {		    		
-				   activeElement = document.activeElement;
-				} catch(e) {}
+                // Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
+                var activeElement;
+                try {
+                    activeElement = document.activeElement;
+                } catch (e) { }
                 if (activeElement === el) { //position the caret when in focus
                     $input.addClass('focus.inputmask');
                     caret(el, lastPosition);
                 } else if (opts.clearMaskOnLostFocus) {
                     if (el._valueGet() == _buffer.join('')) {
-                        el._valueSet('');  
+                        el._valueSet('');
                     } else {
-                        clearOptionalTail(el, buffer);  
+                        clearOptionalTail(el, buffer);
                     }
                 }
 
@@ -884,8 +893,8 @@
                                 writeBuffer(input, buffer, beginPos);
                             }
                         }
-                        if (opts.oncleared && input._valueGet() == _buffer.join(''))
-                            opts.oncleared.call(input);
+                        if (input._valueGet() == _buffer.join(''))
+                            $(input).trigger('cleared');
 
                         return false;
                     } else if (k == opts.keyCode.END || k == opts.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
@@ -934,7 +943,7 @@
                     if (skipKeyPressEvent) return false;
                     skipKeyPressEvent = true;
 
-                    var input = this;
+                    var input = this, $input = $(input);
 
                     e = e || window.event;
                     var k = e.which || e.charCode || e.keyCode;
@@ -949,6 +958,8 @@
                         return true;
                     } else {
                         if (k) {
+                            $input.trigger('input');
+
                             var pos = caret(input), c = String.fromCharCode(k), maskL = getMaskLength();
                             clearBuffer(buffer, pos.begin, pos.end);
 
@@ -979,8 +990,8 @@
                                         } else return false;
                                     } else setBufferElement(buffer, opts.numericInput ? seekPrevious(buffer, p) : p, c);
                                     writeBuffer(input, buffer, opts.numericInput && p == 0 ? seekNext(buffer, p) : p);
-                                    if (opts.oncomplete && isComplete(input))
-                                        opts.oncomplete.call(input);
+                                    if (isComplete(input))
+                                        $input.trigger("complete");
                                 } else if (android) writeBuffer(input, buffer, pos.begin);
                             }
                             else {
@@ -1005,8 +1016,8 @@
                                     var next = seekNext(buffer, p);
                                     writeBuffer(input, buffer, next);
 
-                                    if (opts.oncomplete && isComplete(input))
-                                        opts.oncomplete.call(input);
+                                    if (isComplete(input))
+                                        $input.trigger("complete");
                                 } else if (android) writeBuffer(input, buffer, pos.begin);
                             }
                             return false;
