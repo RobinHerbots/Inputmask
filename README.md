@@ -304,6 +304,15 @@ $(document).ready(function(){
    else validateValue(val); 
 });
 ```
+### showMaskOnHover
+
+Shows the mask when hovering the mouse. (default = true)
+
+```javascript
+$(document).ready(function(){
+    $("#ssn").inputmask("999-99-9999",{ showMaskOnHover: true }); //default
+});
+```
 
 ## Supported markup options
 ### RTL attribute

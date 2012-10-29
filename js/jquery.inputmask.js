@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.0.26
+* Version: 1.0.27
 */
 
 (function ($) {
@@ -30,6 +30,7 @@
                 aliases: {}, //aliases definitions => see jquery.inputmask.extensions.js
                 onKeyUp: $.noop, //override to implement autocomplete on certain keys for example
                 onKeyDown: $.noop, //override to implement autocomplete on certain keys for example
+                showMaskOnHover: true, //show the mask-placeholder when hovering the empty input
                 //numeric basic properties
                 numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
                 radixPoint: ".", // | ","
@@ -581,7 +582,7 @@
                 //bind events
                 $input.bind("mouseenter.inputmask", function () {
                     var $input = $(this), input = this;
-                    if (!$input.hasClass('focus.inputmask')) {
+                    if (!$input.hasClass('focus.inputmask') && opts.showMaskOnHover) {
                         var nptL = input._valueGet().length;
                         if (nptL == 0) {
                             buffer = _buffer.slice();
@@ -615,13 +616,21 @@
                     }
                 }).bind("focus.inputmask", function () {
                     var $input = $(this), input = this;
+                    if (!$input.hasClass('focus.inputmask') && !opts.showMaskOnHover) {
+                        var nptL = input._valueGet().length;
+                        if (nptL == 0) {
+                            buffer = _buffer.slice();
+                            writeBuffer(input, buffer);
+                        } else if (nptL < buffer.length)
+                            writeBuffer(input, buffer);
+                    }
                     $input.addClass('focus.inputmask');
                     undoBuffer = input._valueGet();
                 }).bind("mouseleave.inputmask", function () {
                     var $input = $(this), input = this;
                     if (opts.clearMaskOnLostFocus) {
                         if (!$input.hasClass('focus.inputmask')) {
-                            if (input._valueGet() == _buffer.join(''))
+                            if (input._valueGet() == _buffer.join('') || input._valueGet() == '')
                                 input._valueSet('');
                             else { //clearout optional tail of the mask
                                 clearOptionalTail(input, buffer);
