@@ -47,9 +47,10 @@ Optional extensions on the jquery.inputmask base
             regex: {
                 val1pre: new RegExp("[0-3]"), //daypre
                 val1: new RegExp("0[1-9]|[12][0-9]|3[01]"), //day
-                val2pre: function(separator) { return new RegExp("((0[1-9]|[12][0-9]|3[01])\\" + separator + "[01])") }, //monthpre
-                val2: function(separator) { return new RegExp("((0[1-9]|[12][0-9])\\" + separator + "(0[1-9]|1[012]))|(30\\" + separator + "(0[13-9]|1[012]))|(31\\" + separator + "(0[13578]|1[02]))") }, //month
+                val2pre: function(separator) { return new RegExp("((0[1-9]|[12][0-9]|3[01])\\" + separator + "[01])"); }, //monthpre
+                val2: function(separator) { return new RegExp("((0[1-9]|[12][0-9])\\" + separator + "(0[1-9]|1[012]))|(30\\" + separator + "(0[13-9]|1[012]))|(31\\" + separator + "(0[13578]|1[02]))"); },//month
                 yearpre1: new RegExp("[12]"),
+                yearpre2: new RegExp("(19|20)"),
                 yearpre3: new RegExp("(19|20)\\d"),
                 year: new RegExp("(19|20)\\d{2}")
             },
@@ -62,12 +63,15 @@ Optional extensions on the jquery.inputmask base
                     $input.val(today.getDate().toString() + (today.getMonth() + 1).toString() + today.getFullYear().toString());
                 }
             },
+            transform : function(buffer, position, element, opts){
+                return element.replace(/[\.\-\:]/gi,opts.separator[opts.separator.length - 1]);
+            },
             definitions: {
                 '1': { //val1 ~ day or month
                     validator: function(chrs, buffer, pos, strict, opts) {
                         var isValid = opts.regex.val1.test(chrs);
                         if (!strict && !isValid) {
-                            if (chrs.charAt(1) == opts.separator.charAt(opts.separator.length - 1)) {
+                            if (chrs.charAt(1) == opts.separator[opts.separator.length - 1] || "-./".indexOf(chrs.charAt(1)) != -1 ) {
                                 isValid = opts.regex.val1.test("0" + chrs.charAt(0));
                                 if (isValid) {
                                     buffer[pos - 1] = "0";
@@ -96,7 +100,7 @@ Optional extensions on the jquery.inputmask base
                             var frontValue = buffer.join('').substr(0, 3);
                             var isValid = opts.regex.val2(opts.separator).test(frontValue + chrs);
                             if (!strict && !isValid) {
-                                if (chrs.charAt(1) == opts.separator.charAt(opts.separator.length - 1)) {
+                                if (chrs.charAt(1) == opts.separator[opts.separator.length - 1] || "-./".indexOf(chrs.charAt(1)) != -1 ) {
                                     isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs.charAt(0));
                                     if (isValid) {
                                         buffer[pos - 1] = "0";
@@ -128,10 +132,10 @@ Optional extensions on the jquery.inputmask base
                                     if (dayMonthValue != opts.leapday)
                                         return true;
                                     else {
-                                        var year = parseInt(chrs);  //detect leap year
-                                        if (year % 4 == 0)
-                                            if (year % 100 == 0)
-                                            if (year % 400 == 0)
+                                        var year = parseInt(chrs,10);//detect leap year
+                                        if (year % 4 === 0)
+                                            if (year % 100 === 0)
+                                            if (year % 400 === 0)
                                             return true;
                                         else return false;
                                         else return true;
@@ -154,10 +158,23 @@ Optional extensions on the jquery.inputmask base
                                 }
                             }
                             return isValid;
-                        }
-                            , cardinality: 1
                         },
-                        { validator: "(19|20)", cardinality: 2 },
+                            cardinality: 1
+                        },
+                        { validator: function(chrs, buffer, pos, strict, opts) {
+                            var isValid = opts.regex.yearpre2.test(chrs);
+                            if (!strict && !isValid) {
+                                var yearPrefix = (new Date()).getFullYear().toString().slice(0, 2);
+                                isValid = opts.regex.yearpre3.test(yearPrefix + chrs);
+                                if (isValid) {
+                                    buffer[pos-1] = yearPrefix[0];
+                                    buffer[pos++] = yearPrefix[1];
+                                    buffer[pos++] = chrs[0];
+                                    return { "pos": pos };
+                                }
+                            }
+                            return isValid;
+                        }, cardinality: 2 },
                         { validator: "(19|20)\\d", cardinality: 3 }
                         ]
                         }
@@ -169,8 +186,8 @@ Optional extensions on the jquery.inputmask base
                     placeholder: "mm/dd/yyyy",
                     alias: "dd/mm/yyyy", //reuse functionality of dd/mm/yyyy alias
                     regex: {
-                        val2pre: function(separator) { return new RegExp("((0[13-9]|1[012])\\" + separator + "[0-3])|(02\\" + separator + "[0-2])") }, //daypre
-                        val2: function(separator) { return new RegExp("((0[1-9]|1[012])\\" + separator + "(0[1-9]|[12][0-9]))|((0[13-9]|1[012])\\" + separator + "30)|((0[13578]|1[02])\\" + separator + "31)") }, //day
+                        val2pre: function(separator) { return new RegExp("((0[13-9]|1[012])\\" + separator + "[0-3])|(02\\" + separator + "[0-2])"); }, //daypre
+                        val2: function(separator) { return new RegExp("((0[1-9]|1[012])\\" + separator + "(0[1-9]|[12][0-9]))|((0[13-9]|1[012])\\" + separator + "30)|((0[13578]|1[02])\\" + separator + "31)"); }, //day
                         val1pre: new RegExp("[01]"), //monthpre
                         val1: new RegExp("0[1-9]|1[012]") //month
                     },
@@ -201,7 +218,7 @@ Optional extensions on the jquery.inputmask base
                                 var frontValue = buffer.join('').substr(5, 3);
                                 var isValid = opts.regex.val2(opts.separator).test(frontValue + chrs);
                                 if (!strict && !isValid) {
-                                    if (chrs.charAt(1) == opts.separator.charAt(opts.separator.length - 1)) {
+                                    if (chrs.charAt(1) == opts.separator[opts.separator.length - 1]) {
                                         isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs.charAt(0));
                                         if (isValid) {
                                             buffer[pos - 1] = "0";
@@ -216,10 +233,10 @@ Optional extensions on the jquery.inputmask base
                                     if (dayMonthValue != opts.leapday)
                                         return true;
                                     else {
-                                        var year = parseInt(buffer.join('').substr(0, 4));  //detect leap year
-                                        if (year % 4 == 0)
-                                            if (year % 100 == 0)
-                                            if (year % 400 == 0)
+                                        var year = parseInt(buffer.join('').substr(0, 4),10);  //detect leap year
+                                        if (year % 4 === 0)
+                                            if (year % 100 === 0)
+                                            if (year % 400 === 0)
                                             return true;
                                         else return false;
                                         else return true;
