@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.2.0
+* Version: 1.2.1
 */
 
 (function ($) {
@@ -584,11 +584,11 @@
                     var $input = $(this), input = this;
                     if (!$input.hasClass('focus.inputmask') && opts.showMaskOnHover) {
                         var nptL = input._valueGet().length;
-                        if (nptL == 0) {
-                            buffer = _buffer.slice();
+                        if (nptL < buffer.length) {
+                            if (nptL == 0)
+                                buffer = _buffer.slice();
                             writeBuffer(input, buffer);
-                        } else if (nptL < buffer.length)
-                            writeBuffer(input, buffer);
+                        }
                     }
                 }).bind("blur.inputmask", function () {
                     var $input = $(this), input = this, nptValue = input._valueGet();
@@ -618,11 +618,11 @@
                     var $input = $(this), input = this;
                     if (!$input.hasClass('focus.inputmask') && !opts.showMaskOnHover) {
                         var nptL = input._valueGet().length;
-                        if (nptL == 0) {
-                            buffer = _buffer.slice();
-                            writeBuffer(input, buffer);
-                        } else if (nptL < buffer.length)
-                            writeBuffer(input, buffer);
+                        if (nptL < buffer.length) {
+                            if (nptL == 0)
+                                buffer = _buffer.slice();
+                            caret(input, checkVal(input, buffer, true));
+                        }
                     }
                     $input.addClass('focus.inputmask');
                     undoBuffer = input._valueGet();
