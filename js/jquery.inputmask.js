@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.2.1
+* Version: 1.2.2
 */
 
 (function ($) {
@@ -990,8 +990,10 @@
                                         } else return false;
                                     } else setBufferElement(buffer, opts.numericInput ? seekPrevious(buffer, p) : p, c);
                                     writeBuffer(input, buffer, opts.numericInput && p == 0 ? seekNext(buffer, p) : p);
-                                    if (isComplete(input))
-                                        $input.trigger("complete");
+                                    setTimeout(function () { //timeout needed for IE
+                                        if (isComplete(input))
+                                            $input.trigger("complete");
+                                    }, 0);
                                 } else if (android) writeBuffer(input, buffer, pos.begin);
                             }
                             else {
@@ -1016,8 +1018,10 @@
                                     var next = seekNext(buffer, p);
                                     writeBuffer(input, buffer, next);
 
-                                    if (isComplete(input))
-                                        $input.trigger("complete");
+                                    setTimeout(function () { //timeout needed for IE
+                                        if (isComplete(input))
+                                            $input.trigger("complete");
+                                    }, 0);
                                 } else if (android) writeBuffer(input, buffer, pos.begin);
                             }
                             return false;
