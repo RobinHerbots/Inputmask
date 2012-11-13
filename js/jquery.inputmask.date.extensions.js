@@ -162,7 +162,21 @@ Optional extensions on the jquery.inputmask base
                             var isValid = opts.regex.yearpre2.test(chrs);
                             if (!strict && !isValid) {
                                 var yearPrefix = (new Date()).getFullYear().toString().slice(0, 2);
-                                isValid = opts.regex.year.test(yearPrefix + chrs);
+                                if (opts.regex.year.test(yearPrefix + chrs)) {
+                                    var dayMonthValue = buffer.join('').substr(0, 6);
+                                    if (dayMonthValue != opts.leapday)
+                                        isValid = true;
+                                    else {
+                                        var year = parseInt(chrs,10);//detect leap year
+                                        if (year % 4 === 0)
+                                            if (year % 100 === 0)
+                                            if (year % 400 === 0)
+                                            isValid = true;
+                                        else isValid = false;
+                                        else isValid = true;
+                                        else isValid = false;
+                                    }
+                                } else isValid = false;
                                 if (isValid) {
                                     buffer[pos-1] = yearPrefix[0];
                                     buffer[pos++] = yearPrefix[1];
