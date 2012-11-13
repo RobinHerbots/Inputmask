@@ -162,7 +162,7 @@ Optional extensions on the jquery.inputmask base
                             var isValid = opts.regex.yearpre2.test(chrs);
                             if (!strict && !isValid) {
                                 var yearPrefix = (new Date()).getFullYear().toString().slice(0, 2);
-                                isValid = opts.regex.yearpre3.test(yearPrefix + chrs);
+                                isValid = opts.regex.year.test(yearPrefix + chrs);
                                 if (isValid) {
                                     buffer[pos-1] = yearPrefix[0];
                                     buffer[pos++] = yearPrefix[1];
