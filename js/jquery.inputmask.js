@@ -70,7 +70,7 @@
             }
             var caretposCorrection = null;
 	    var masksets,
-	        activeMaskSetIndex = 0;
+	        activeMasksetIndex = 0;
 
             if (typeof fn == "string") {
                 switch (fn) {
@@ -83,7 +83,7 @@
                         break;
                     case "unmaskedvalue":
 			masksets = this.data('inputmask')['masksets'];
-			activeMaskSetIndex = this.data('inputmask')['activeMaskSetIndex'];
+			activeMasksetIndex = this.data('inputmask')['activeMasksetIndex'];
                         opts.greedy = this.data('inputmask')['greedy'];
                         opts.repeat = this.data('inputmask')['repeat'];
                         opts.definitions = this.data('inputmask')['definitions'];
@@ -95,7 +95,7 @@
                             setTimeout(function () {
                                 if ($input.data('inputmask')) {
                                     masksets = this.data('inputmask')['masksets'];
-				    activeMaskSetIndex = this.data('inputmask')['activeMaskSetIndex'];
+				    activeMasksetIndex = this.data('inputmask')['activeMasksetIndex'];
                                     opts.greedy = $input.data('inputmask')['greedy'];
                                     opts.repeat = $input.data('inputmask')['repeat'];
                                     opts.definitions = $input.data('inputmask')['definitions'];
@@ -132,8 +132,8 @@
                     case "getemptymask": //return the default (empty) mask value, usefull for setting the default value in validation
                         if (this.data('inputmask')) {
  			    masksets = this.data('inputmask')['masksets'];
-			    activeMaskSetIndex = this.data('inputmask')['activeMaskSetIndex'];
-			    return masksets[activeMaskSetIndex]['_buffer'].join('');
+			    activeMasksetIndex = this.data('inputmask')['activeMasksetIndex'];
+			    return masksets[activeMasksetIndex]['_buffer'].join('');
 			}
                         else return "";
                     case "hasMaskedValue": //check wheter the returned value is masked or not; currently only works reliable when using jquery.val fn to retrieve the value 
@@ -556,7 +556,7 @@
                 //store tests & original buffer in the input element - used to get the unmasked value
                 $input.data('inputmask', {
                     'masksets': masksets,
-                    'activeMaskSetIndex': activeMaskSetIndex,
+                    'activeMasksetIndex': activeMasksetIndex,
                     'greedy': opts.greedy,
                     'repeat': opts.repeat,
                     'autoUnmask': opts.autoUnmask,
