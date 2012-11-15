@@ -69,34 +69,33 @@
                 android = version <= 533;
             }
             var caretposCorrection = null;
+	    var masksets,
+	        activeMaskSetIndex = 0;
 
             if (typeof fn == "string") {
                 switch (fn) {
                     case "mask":
-                        //init buffer
-                        var _buffer = getMaskTemplate();
-                        var tests = getTestingChain();
+                        masksets = generateMaskSets();
 
                         return this.each(function () {
                             mask(this);
                         });
                         break;
                     case "unmaskedvalue":
-                        var tests = this.data('inputmask')['tests'];
-                        var _buffer = this.data('inputmask')['_buffer'];
+			masksets = this.data('inputmask')['masksets'];
+			activeMaskSetIndex = this.data('inputmask')['activeMaskSetIndex'];
                         opts.greedy = this.data('inputmask')['greedy'];
                         opts.repeat = this.data('inputmask')['repeat'];
                         opts.definitions = this.data('inputmask')['definitions'];
                         return unmaskedvalue(this);
                         break;
                     case "remove":
-                        var tests, _buffer;
                         return this.each(function () {
                             var $input = $(this), input = this;
                             setTimeout(function () {
                                 if ($input.data('inputmask')) {
-                                    tests = $input.data('inputmask')['tests'];
-                                    _buffer = $input.data('inputmask')['_buffer'];
+                                    masksets = this.data('inputmask')['masksets'];
+				    activeMaskSetIndex = this.data('inputmask')['activeMaskSetIndex'];
                                     opts.greedy = $input.data('inputmask')['greedy'];
                                     opts.repeat = $input.data('inputmask')['repeat'];
                                     opts.definitions = $input.data('inputmask')['definitions'];
@@ -131,8 +130,11 @@
                         });
                         break;
                     case "getemptymask": //return the default (empty) mask value, usefull for setting the default value in validation
-                        if (this.data('inputmask'))
-                            return this.data('inputmask')['_buffer'].join('');
+                        if (this.data('inputmask')) {
+ 			    masksets = this.data('inputmask')['masksets'];
+			    activeMaskSetIndex = this.data('inputmask')['activeMaskSetIndex'];
+			    return masksets[activeMaskSetIndex]['_buffer'].join('');
+			}
                         else return "";
                     case "hasMaskedValue": //check wheter the returned value is masked or not; currently only works reliable when using jquery.val fn to retrieve the value 
                         return this.data('inputmask') ? !this.data('inputmask')['autoUnmask'] : false;
@@ -143,9 +145,7 @@
                             //set mask
                             opts.mask = fn;
                         }
-                        //init buffer
-                        var _buffer = getMaskTemplate();
-                        var tests = getTestingChain();
+                        masksets = generateMaskSets();
 
                         return this.each(function () {
                             mask(this);
@@ -156,9 +156,7 @@
             } if (typeof fn == "object") {
                 opts = $.extend(true, {}, $.inputmask.defaults, fn);
                 resolveAlias(opts.alias); //resolve aliases
-                //init buffer
-                var _buffer = getMaskTemplate();
-                var tests = getTestingChain();
+                masksets = generateMaskSets();
 
                 return this.each(function () {
                     mask(this);
@@ -260,6 +258,15 @@
                     }
                 });
             }
+
+            function generateMaskSets(){  //TODO FIXME generate masksets
+	    	var ms = [];
+		ms.push({ "_buffer": getMaskTemplate(), 
+			  "tests" : getTestingChain(),
+			  "lastValidPosition": 0});
+
+		return ms;
+	    }
 
             function isValid(pos, c, buffer, strict) { //strict true ~ no correction or autofill
                 if (pos < 0 || pos >= getMaskLength()) return false;
@@ -534,6 +541,8 @@
                 //correct greedy setting if needed
                 opts.greedy = opts.greedy ? opts.greedy : opts.repeat == 0;
 
+		
+
                 //handle maxlength attribute
                 var maxLength = $input.prop('maxLength');
                 if (getMaskLength() > maxLength && maxLength > -1) { //FF sets no defined max length to -1 
@@ -546,8 +555,8 @@
 
                 //store tests & original buffer in the input element - used to get the unmasked value
                 $input.data('inputmask', {
-                    'tests': tests,
-                    '_buffer': _buffer,
+                    'masksets': masksets,
+                    'activeMaskSetIndex': activeMaskSetIndex,
                     'greedy': opts.greedy,
                     'repeat': opts.repeat,
                     'autoUnmask': opts.autoUnmask,
