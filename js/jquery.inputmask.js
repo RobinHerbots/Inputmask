@@ -163,11 +163,11 @@
                 });
             }
 
-            //helper functions
+            //helper     functions
             function isInputEventSupported(eventName) {
                 var el = document.createElement('input'),
-		            eventName = 'on' + eventName,
-		            isSupported = (eventName in el);
+		        eventName = 'on' + eventName,
+		        isSupported = (eventName in el);
                 if (!isSupported) {
                     el.setAttribute(eventName, 'return;');
                     isSupported = typeof el[eventName] == 'function';
@@ -1067,6 +1067,8 @@
                     }
                 }
             }
+
+            return this; //return this to expose publics
         };
     }
 })(jQuery);
