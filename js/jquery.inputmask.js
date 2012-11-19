@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.2.2
+* Version: 1.2.3
 */
 
 (function ($) {
@@ -165,11 +165,11 @@
                 });
             }
 
-            //helper functions
+            //helper     functions
             function isInputEventSupported(eventName) {
                 var el = document.createElement('input'),
-		  eventName = 'on' + eventName,
-		  isSupported = (eventName in el);
+		        eventName = 'on' + eventName,
+		        isSupported = (eventName in el);
                 if (!isSupported) {
                     el.setAttribute(eventName, 'return;');
                     isSupported = typeof el[eventName] == 'function';
@@ -1041,6 +1041,8 @@
                     }
                 }
             }
+
+            return this; //return this to expose publics
         };
     }
 })(jQuery);
