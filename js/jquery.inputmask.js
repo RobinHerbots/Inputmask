@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.0.0a
+* Version: 2.0.0b
 */
 
 (function ($) {
@@ -31,6 +31,7 @@
                 onKeyUp: $.noop, //override to implement autocomplete on certain keys for example
                 onKeyDown: $.noop, //override to implement autocomplete on certain keys for example
                 showMaskOnHover: true, //show the mask-placeholder when hovering the empty input
+                onKeyValidation: $.noop, //executes on every key-press with the result of isValid
                 //numeric basic properties
                 numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
                 radixPoint: ".", // | ","
@@ -282,15 +283,21 @@
             }
 
             function isValid(pos, c, buffer, strict) { //strict true ~ no correction or autofill
-                if (pos < 0 || pos >= getMaskLength()) return false;
-                var testPos = determineTestPosition(pos), loopend = c ? 1 : 0, chrs = '';
-                for (var i = getActiveTests()[testPos].cardinality; i > loopend; i--) {
-                    chrs += getBufferElement(buffer, testPos - (i - 1));
-                }
+                var result = false;
+                if (pos >= 0 && pos < getMaskLength()) {
+                    var testPos = determineTestPosition(pos), loopend = c ? 1 : 0, chrs = '';
+                    for (var i = tests[testPos].cardinality; i > loopend; i--) {
+                        chrs += getBufferElement(buffer, testPos - (i - 1));
+                    }
 
-                if (c) { chrs += c; }
-                //return is false or a json object => { pos: ??, c: ??}
-                return getActiveTests()[testPos].fn != null ? getActiveTests()[testPos].fn.test(chrs, buffer, pos, strict, opts) : false;
+                    if (c) {
+                        chrs += c;
+                    }
+                    //return is false or a json object => { pos: ??, c: ??}
+                    result = tests[testPos].fn != null ? tests[testPos].fn.test(chrs, buffer, pos, strict, opts) : false;
+                }
+                setTimeout(opts.onKeyValidation.call(this, result, opts), 0); //extra stuff to execute on keydown
+                return result;
             }
 
             function isMask(pos) {
