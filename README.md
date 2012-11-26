@@ -313,6 +313,18 @@ $(document).ready(function(){
     $("#ssn").inputmask("999-99-9999",{ showMaskOnHover: true }); //default
 });
 ```
+### onKeyValidation
+
+Callback function is executed on every keyvalidation with the result as parameter.
+
+```javascript
+$(document).ready(function(){
+    $("#ssn").inputmask("999-99-9999",
+			{ onKeyValidation: function (result) {
+								console.log(result);
+								} });
+});
+```
 
 ## Supported markup options
 ### RTL attribute
