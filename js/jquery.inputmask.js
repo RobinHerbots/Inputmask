@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.0.0b
+* Version: 2.0.0c
 */
 
 (function ($) {
@@ -95,8 +95,8 @@
                             var $input = $(this), input = this;
                             setTimeout(function () {
                                 if ($input.data('inputmask')) {
-                                    masksets = this.data('inputmask')['masksets'];
-                                    activeMasksetIndex = this.data('inputmask')['activeMasksetIndex'];
+                                    masksets = $input.data('inputmask')['masksets'];
+                                    activeMasksetIndex = $input.data('inputmask')['activeMasksetIndex'];
                                     opts.greedy = $input.data('inputmask')['greedy'];
                                     opts.repeat = $input.data('inputmask')['repeat'];
                                     opts.definitions = $input.data('inputmask')['definitions'];
@@ -283,19 +283,38 @@
             }
 
             function isValid(pos, c, buffer, strict) { //strict true ~ no correction or autofill
-                var result = false;
-                if (pos >= 0 && pos < getMaskLength()) {
-                    var testPos = determineTestPosition(pos), loopend = c ? 1 : 0, chrs = '';
-                    for (var i = tests[testPos].cardinality; i > loopend; i--) {
-                        chrs += getBufferElement(buffer, testPos - (i - 1));
-                    }
+            	var results = [], result = false;
+            	$.each(masksets, function(index, value) {          	
+                	var activeMaskset = this;
+                	if(activeMaskset['lastValidPosition'] >= seekPrevious(buffer, pos)) { //TODO FIX for numerics & RTL
+                		if (pos >= 0 && pos < getMaskLength()) {
+                    		var testPos = determineTestPosition(pos), loopend = c ? 1 : 0, chrs = '';
+                    		for (var i = activeMaskset['tests'][testPos].cardinality; i > loopend; i--) {
+                        		chrs += getBufferElement(buffer, testPos - (i - 1));
+                    		}
 
-                    if (c) {
-                        chrs += c;
-                    }
-                    //return is false or a json object => { pos: ??, c: ??}
-                    result = tests[testPos].fn != null ? tests[testPos].fn.test(chrs, buffer, pos, strict, opts) : false;
-                }
+                    		if (c) {
+                        		chrs += c;
+                    		}
+                    		//return is false or a json object => { pos: ??, c: ??}
+                    		results[index] = activeMaskset['tests'][testPos].fn != null ? activeMaskset['tests'][testPos].fn.test(chrs, buffer, pos, strict, opts) : false;
+							if(results[index] !== false) {
+							 	if (results[index] !== true)
+                               		activeMaskset['lastValidPosition'] = results[index].pos || pos; //set new position from isValid
+                            	else activeMaskset['lastValidPosition'] = pos;
+							}   	
+                		}
+                	}
+                });
+                $.each(masksets, function(index, value) {
+                	var activeMaskset = this;
+                	if(activeMaskset['lastValidPosition'] >= pos) {
+                		activeMasksetIndex = index;
+                		result = results[index];
+                		return false; //break
+                	}
+                });
+                
                 setTimeout(opts.onKeyValidation.call(this, result, opts), 0); //extra stuff to execute on keydown
                 return result;
             }
