@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.0.0c
+* Version: 2.0.0d
 */
 
 (function ($) {
@@ -188,10 +188,10 @@
                 return false;
             }
 
-            function getMaskTemplate() {
+            function getMaskTemplate(mask) {
                 var escaped = false, outCount = 0;
-                if (opts.mask.length == 1 && opts.greedy == false) { opts.placeholder = ""; } //hide placeholder with single non-greedy mask
-                var singleMask = $.map(opts.mask.split(""), function (element, index) {
+                if (mask.length == 1 && opts.greedy == false) { opts.placeholder = ""; } //hide placeholder with single non-greedy mask
+                var singleMask = $.map(mask.split(""), function (element, index) {
                     var outElem = [];
                     if (element == opts.escapeChar) {
                         escaped = true;
@@ -221,11 +221,11 @@
             }
 
             //test definition => {fn: RegExp/function, cardinality: int, optionality: bool, newBlockMarker: bool, offset: int, casing: null/upper/lower, def: definitionSymbol}
-            function getTestingChain() {
+            function getTestingChain(mask) {
                 var isOptional = false, escaped = false;
                 var newBlockMarker = false; //indicates wheter the begin/ending of a block should be indicated
 
-                return $.map(opts.mask.split(""), function (element, index) {
+                return $.map(mask.split(""), function (element, index) {
                     var outElem = [];
 
                     if (element == opts.escapeChar) {
@@ -262,8 +262,8 @@
 
             function generateMaskSets() {  //TODO FIXME generate masksets
                 var ms = [];
-                ms.push({ "_buffer": getMaskTemplate(),
-                    "tests": getTestingChain(),
+                ms.push({ "_buffer": getMaskTemplate(opts.mask),
+                    "tests": getTestingChain(opts.mask),
                     "lastValidPosition": 0
                 });
 
@@ -282,11 +282,11 @@
                 return getActiveMaskSet()['_buffer'];
             }
 
-            function isValid(pos, c, buffer, strict) { //strict true ~ no correction or autofill
+            function isValid(pos, c, buffer, strict, isRTL) { //strict true ~ no correction or autofill
             	var results = [], result = false;
             	$.each(masksets, function(index, value) {          	
                 	var activeMaskset = this;
-                	if(activeMaskset['lastValidPosition'] >= seekPrevious(buffer, pos)) { //TODO FIX for numerics & RTL
+                	if(isRTL ? activeMaskset['lastValidPosition'] <= seekNext(buffer, pos) : activeMaskset['lastValidPosition'] >= seekPrevious(buffer, pos)) {
                 		if (pos >= 0 && pos < getMaskLength()) {
                     		var testPos = determineTestPosition(pos), loopend = c ? 1 : 0, chrs = '';
                     		for (var i = activeMaskset['tests'][testPos].cardinality; i > loopend; i--) {
@@ -308,7 +308,7 @@
                 });
                 $.each(masksets, function(index, value) {
                 	var activeMaskset = this;
-                	if(activeMaskset['lastValidPosition'] >= pos) {
+                	if(isRTL ? activeMaskset['lastValidPosition'] <= pos : activeMaskset['lastValidPosition'] >= pos) {
                 		activeMasksetIndex = index;
                 		result = results[index];
                 		return false; //break
@@ -453,7 +453,7 @@
                     for (var pos = checkPosition + 1; pos < maskL; pos++) {
                         if (isMask(pos)) {
                             var c = inputValue[i];
-                            if ((np = isValid(pos, c, buffer, !clearInvalid)) !== false) {
+                            if ((np = isValid(pos, c, buffer, !clearInvalid, isRTL)) !== false) {
                                 if (np !== true) {
                                     pos = np.pos || pos; //set new position from isValid
                                     c = np.c || c; //set new char from isValid
@@ -693,9 +693,9 @@
                             var clickPosition = selectedCaret.begin;
                             lastPosition = checkVal(input, buffer, false);
                             if (isRTL)
-                                caret(input, clickPosition > lastPosition && (isValid(clickPosition, buffer[clickPosition], buffer, true) !== false || !isMask(clickPosition)) ? clickPosition : lastPosition);
+                                caret(input, clickPosition > lastPosition && (isValid(clickPosition, buffer[clickPosition], buffer, true, isRTL) !== false || !isMask(clickPosition)) ? clickPosition : lastPosition);
                             else
-                                caret(input, clickPosition < lastPosition && (isValid(clickPosition, buffer[clickPosition], buffer, true) !== false || !isMask(clickPosition)) ? clickPosition : lastPosition);
+                                caret(input, clickPosition < lastPosition && (isValid(clickPosition, buffer[clickPosition], buffer, true, isRTL) !== false || !isMask(clickPosition)) ? clickPosition : lastPosition);
                         }
                     }, 0);
                 }).bind('dblclick.inputmask', function () {
@@ -856,7 +856,7 @@
                             var j = seekNext(buffer, i);
                             var p = getBufferElement(buffer, j);
                             if (p != getPlaceHolder(j)) {
-                                if (j < getMaskLength() && isValid(i, p, buffer, true) !== false && getActiveTests()[determineTestPosition(i)].def == getActiveTests()[determineTestPosition(j)].def) {
+                                if (j < getMaskLength() && isValid(i, p, buffer, true, isRTL) !== false && getActiveTests()[determineTestPosition(i)].def == getActiveTests()[determineTestPosition(j)].def) {
                                     setBufferElement(buffer, i, getBufferElement(buffer, j));
                                     setReTargetPlaceHolder(buffer, j); //cleanup next position
                                 } else {
@@ -884,7 +884,7 @@
                             if (t != getPlaceHolder(i)) {
                                 var j = seekNext(buffer, i);
                                 if (j < getMaskLength()) {
-                                    if (isValid(j, t, buffer, true) !== false && getActiveTests()[determineTestPosition(i)].def == getActiveTests()[determineTestPosition(j)].def)
+                                    if (isValid(j, t, buffer, true, isRTL) !== false && getActiveTests()[determineTestPosition(i)].def == getActiveTests()[determineTestPosition(j)].def)
                                         c = t;
                                     else {
                                         if (isMask(j))
@@ -1017,7 +1017,7 @@
 
                             if (isRTL) {
                                 var p = opts.numericInput ? pos.end : seekPrevious(buffer, pos.end), np;
-                                if ((np = isValid(p == maskL || getBufferElement(buffer, p) == opts.radixPoint ? seekPrevious(buffer, p) : p, c, buffer, false)) !== false) {
+                                if ((np = isValid(p == maskL || getBufferElement(buffer, p) == opts.radixPoint ? seekPrevious(buffer, p) : p, c, buffer, false, isRTL)) !== false) {
                                     if (np !== true) {
                                         p = np.pos || pos; //set new position from isValid
                                         c = np.c || c; //set new char from isValid
@@ -1051,7 +1051,7 @@
                             else {
                                 var p = seekNext(buffer, pos.begin - 1), np;
                                 prepareBuffer(buffer, p, isRTL);
-                                if ((np = isValid(p, c, buffer, false)) !== false) {
+                                if ((np = isValid(p, c, buffer, false, isRTL)) !== false) {
                                     if (np !== true) {
                                         p = np.pos || p; //set new position from isValid
                                         c = np.c || c; //set new char from isValid
