@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.0.0d
+* Version: 2.0.0e
 */
 
 (function ($) {
@@ -261,12 +261,42 @@
             }
 
             function generateMaskSets() {  //TODO FIXME generate masksets
-                var ms = [];
-                ms.push({ "_buffer": getMaskTemplate(opts.mask),
-                    "tests": getTestingChain(opts.mask),
-                    "lastValidPosition": 0
-                });
-
+            	var ms = [];
+            	
+            	function generateMask(maskPrefix, maskPart){
+            		var maskParts = maskPart.split(opts.optionalmarker.end, 2);
+					var newMask;
+					
+					
+					var masks = maskParts[0].split(opts.optionalmarker.start);
+					if(masks.length > 1) {
+						newMask = maskPrefix + masks[0] + masks[1] + (maskParts.length > 1 ? maskParts[1] : ""); 
+						ms.push({ "_buffer": getMaskTemplate(newMask),
+                    	  		  "tests": getTestingChain(newMask),
+                    	  		  "lastValidPosition": 0
+                		});
+                		newMask = maskPrefix + masks[0] + (maskParts.length > 1 ? maskParts[1] : ""); 
+						ms.push({ "_buffer": getMaskTemplate(newMask),
+                    	  		  "tests": getTestingChain(newMask),
+                    	  		  "lastValidPosition": 0
+                		});	                	                	
+            			if(maskParts.length > 1 && maskParts[1].length > 0) {
+            				generateMask(maskPrefix + masks[0] + masks[1], maskParts[1]);
+            				generateMask(maskPrefix + masks[0], maskParts[1]);
+            			}
+            		} 
+            		else { 
+            		    newMask = maskPrefix + maskParts; 
+            			ms.push({ "_buffer": getMaskTemplate(newMask),
+                    			  "tests": getTestingChain(newMask),
+                    	  		  "lastValidPosition": 0
+                		});
+            		}
+            		
+            	}
+      
+      			generateMask("", opts.mask);
+                				
                 return ms;
             }
 
@@ -286,6 +316,7 @@
             	var results = [], result = false;
             	$.each(masksets, function(index, value) {          	
                 	var activeMaskset = this;
+                	activeMasksetIndex = index;
                 	if(isRTL ? activeMaskset['lastValidPosition'] <= seekNext(buffer, pos) : activeMaskset['lastValidPosition'] >= seekPrevious(buffer, pos)) {
                 		if (pos >= 0 && pos < getMaskLength()) {
                     		var testPos = determineTestPosition(pos), loopend = c ? 1 : 0, chrs = '';
@@ -298,6 +329,7 @@
                     		}
                     		//return is false or a json object => { pos: ??, c: ??}
                     		results[index] = activeMaskset['tests'][testPos].fn != null ? activeMaskset['tests'][testPos].fn.test(chrs, buffer, pos, strict, opts) : false;
+							//trace(results[index]);
 							if(results[index] !== false) {
 							 	if (results[index] !== true)
                                		activeMaskset['lastValidPosition'] = results[index].pos || pos; //set new position from isValid
@@ -314,6 +346,8 @@
                 		return false; //break
                 	}
                 });
+                
+                //trace(activeMasksetIndex);
                 
                 setTimeout(opts.onKeyValidation.call(this, result, opts), 0); //extra stuff to execute on keydown
                 return result;
