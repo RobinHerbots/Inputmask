@@ -36,7 +36,7 @@ Optional extensions on the jquery.inputmask base
                         }
                         if (nptStr !== $input.val()) {
                         	$input.val(nptStr);
-						}
+                        }
                     }
                 }
             },
