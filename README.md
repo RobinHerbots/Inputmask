@@ -396,3 +396,24 @@ $(document).ready(function(){
    $("#numeric").inputmask("decimal", { radixPoint: ",", autoGroup: true, groupSeparator: ".", groupSize: 3 });
 });
 ```
+
+## .NET Nuget Package Install
+```html
+PM> Install-Package jQuery.InputMask
+```
+
+In App_Start, BundleConfig.cs
+```c#
+bundles.Add(new ScriptBundle("~/bundles/inputmask").Include(
+                        "~/Scripts/jquery.inputmask.js",
+						"~/Scripts/jquery.inputmask.extensions.js",
+						"~/Scripts/jquery.inputmask.date.extensions.js",
+						"~/Scripts/jquery.inputmask.custom.extensions.js",
+						"~/Scripts/jquery.inputmask.numeric.extensions.js"));
+```
+
+In Layout
+```html
+@Scripts.Render("~/bundles/inputmask")
+```
+
