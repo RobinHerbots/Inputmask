@@ -34,7 +34,9 @@ Optional extensions on the jquery.inputmask base
                         for (var i = 1; i < opts.digits; i++) {
                             if (nptStr[radixPosition + i]) nptStr = nptStr + "0";
                         }
-                        $input.val(nptStr);
+                        if (nptStr !== $input.val()) {
+                        	$input.val(nptStr);
+                        }
                     }
                 }
             },

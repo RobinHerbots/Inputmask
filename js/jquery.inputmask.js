@@ -621,8 +621,8 @@
                     if (opts.greedy == false) {
                         opts.repeat = Math.round(maxLength / getActiveBuffer().length);
                     }
+                    $input.prop('maxLength', getMaskLength() * 2);
                 }
-                $input.prop('maxLength', getMaskLength() * 2);
 
                 //store tests & original buffer in the input element - used to get the unmasked value
                 $input.data('inputmask', {
