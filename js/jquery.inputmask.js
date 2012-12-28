@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.0.0f
+* Version: 2.0.0g
 */
 
 (function ($) {
@@ -261,42 +261,42 @@
             }
 
             function generateMaskSets() {  //TODO improve generate masksets
-            	var ms = [];
-            	
-            	function generateMask(maskPrefix, maskPart){
-            		var maskParts = maskPart.split(opts.optionalmarker.end, 2);
-					var newMask;
-					
-					
-					var masks = maskParts[0].split(opts.optionalmarker.start);
-					if(masks.length > 1) {
-						newMask = maskPrefix + masks[0] + masks[1] + (maskParts.length > 1 ? maskParts[1] : ""); 
-						ms.push({ "_buffer": getMaskTemplate(newMask),
-                    	  		  "tests": getTestingChain(newMask),
-                    	  		  "lastValidPosition": 0
-                		});
-                		newMask = maskPrefix + masks[0] + (maskParts.length > 1 ? maskParts[1] : ""); 
-						ms.push({ "_buffer": getMaskTemplate(newMask),
-                    	  		  "tests": getTestingChain(newMask),
-                    	  		  "lastValidPosition": 0
-                		});	                	                	
-            			if(maskParts.length > 1 && maskParts[1].split(opts.optionalmarker.start).length > 1) {
-            				generateMask(maskPrefix + masks[0] + masks[1], maskParts[1]);
-            				generateMask(maskPrefix + masks[0], maskParts[1]);
-            			}
-            		} 
-            		else { 
-            		    newMask = maskPrefix + maskParts; 
-            			ms.push({ "_buffer": getMaskTemplate(newMask),
-                    			  "tests": getTestingChain(newMask),
-                    	  		  "lastValidPosition": 0
-                		});
-            		}
-            		
-            	}
-      
-      			generateMask("", opts.mask);
-                				
+                var ms = [];
+
+                function generateMask(maskPrefix, maskPart) {
+                    var maskParts = maskPart.split(opts.optionalmarker.end, 2);
+                    var newMask;
+
+
+                    var masks = maskParts[0].split(opts.optionalmarker.start);
+                    if (masks.length > 1) {
+                        newMask = maskPrefix + masks[0] + masks[1] + (maskParts.length > 1 ? maskParts[1] : "");
+                        ms.push({ "_buffer": getMaskTemplate(newMask),
+                            "tests": getTestingChain(newMask),
+                            "lastValidPosition": 0
+                        });
+                        newMask = maskPrefix + masks[0] + (maskParts.length > 1 ? maskParts[1] : "");
+                        ms.push({ "_buffer": getMaskTemplate(newMask),
+                            "tests": getTestingChain(newMask),
+                            "lastValidPosition": 0
+                        });
+                        if (maskParts.length > 1 && maskParts[1].split(opts.optionalmarker.start).length > 1) {
+                            generateMask(maskPrefix + masks[0] + masks[1], maskParts[1]);
+                            generateMask(maskPrefix + masks[0], maskParts[1]);
+                        }
+                    }
+                    else {
+                        newMask = maskPrefix + maskParts;
+                        ms.push({ "_buffer": getMaskTemplate(newMask),
+                            "tests": getTestingChain(newMask),
+                            "lastValidPosition": 0
+                        });
+                    }
+
+                }
+
+                generateMask("", opts.mask);
+
                 return ms;
             }
 
@@ -313,40 +313,64 @@
             }
 
             function isValid(pos, c, buffer, strict, isRTL) { //strict true ~ no correction or autofill
-            	var results = [], result = false, currentActiveMasksetIndex = activeMasksetIndex;
-            	$.each(masksets, function(index, value) {          	
-                	var activeMaskset = this;
-                	activeMasksetIndex = index;
-                	if(isRTL ? activeMaskset['lastValidPosition'] <= seekNext(buffer, pos) : activeMaskset['lastValidPosition'] >= seekPrevious(buffer, pos)) {
-                		if (pos >= 0 && pos < getMaskLength()) {
-                    		var testPos = determineTestPosition(pos), loopend = c ? 1 : 0, chrs = '';
-                    		for (var i = activeMaskset['tests'][testPos].cardinality; i > loopend; i--) {
-                        		chrs += getBufferElement(buffer, testPos - (i - 1));
-                    		}
+                var results = [], result = false, currentActiveMasksetIndex = activeMasksetIndex;
+                $.each(masksets, function (index, value) {
+                    var activeMaskset = this;
+                    activeMasksetIndex = index;
 
-                    		if (c) {
-                        		chrs += c;
-                    		}
-                    		//return is false or a json object => { pos: ??, c: ??}
-                    		results[index] = activeMaskset['tests'][testPos].fn != null ? activeMaskset['tests'][testPos].fn.test(chrs, buffer, pos, strict, opts) : false;
-							if(results[index] !== false) {
-							 	if (results[index] !== true)
-                               		activeMaskset['lastValidPosition'] = results[index].pos || pos; //set new position from isValid
-                            	else activeMaskset['lastValidPosition'] = pos;
-							} else activeMaskset['lastValidPosition'] = isRTL ? seekNext(buffer, pos) : seekPrevious(buffer, pos); //autocorrect validposition from backspace etc  	
-                		}
-                	}
+                    var maskPos = pos;
+                    if (currentActiveMasksetIndex != activeMasksetIndex && !isMask(pos)) {
+                        maskPos = isRTL ? seekPrevious(buffer, pos) : seekNext(buffer, pos);
+                    }
+
+                    if (isRTL ? activeMaskset['lastValidPosition'] <= seekNext(buffer, maskPos) : activeMaskset['lastValidPosition'] >= seekPrevious(buffer, maskPos)) {
+                        if (maskPos >= 0 && maskPos < getMaskLength()) {
+                            var testPos = determineTestPosition(maskPos), loopend = c ? 1 : 0, chrs = '';
+                            for (var i = activeMaskset['tests'][testPos].cardinality; i > loopend; i--) {
+                                chrs += getBufferElement(buffer, testPos - (i - 1));
+                            }
+
+                            if (c) {
+                                chrs += c;
+                            }
+                            //return is false or a json object => { pos: ??, c: ??} or true
+                            results[index] = activeMaskset['tests'][testPos].fn != null ? activeMaskset['tests'][testPos].fn.test(chrs, buffer, maskPos, strict, opts) : false;
+                            if (results[index] !== false) {
+                                if (results[index] === true) {
+                                    results[index] = { "pos": maskPos }; //always taks a possible corrected maskposition into account
+                                }
+                                activeMaskset['lastValidPosition'] = results[index].pos || maskPos; //set new position from isValid
+                            } else activeMaskset['lastValidPosition'] = isRTL ? seekNext(buffer, pos) : seekPrevious(buffer, pos); //autocorrect validposition from backspace etc  	
+                        }
+                    }
                 });
                 activeMasksetIndex = currentActiveMasksetIndex; //reset activeMasksetIndex
-                $.each(masksets, function(index, value) {
-                	var activeMaskset = this;
-                	if(isRTL ? activeMaskset['lastValidPosition'] <= pos : activeMaskset['lastValidPosition'] >= pos) {
-                		activeMasksetIndex = index;
-                		result = results[index];
-                		return false; //break
-                	}
+                $.each(masksets, function (index, value) {
+                    var activeMaskset = this;
+                    if (isRTL ? activeMaskset['lastValidPosition'] <= pos : activeMaskset['lastValidPosition'] >= pos) {
+                        activeMasksetIndex = index;
+                        result = results[index];
+                        //reset to correct masktemplate
+                        if (activeMasksetIndex != currentActiveMasksetIndex) {
+                            var abl = getMaskLength(), bufTemplate = getActiveBuffer();
+                            if (isRTL) {
+                                buffer.reverse();
+                                bufTemplate.reverse();
+                            }
+                            buffer.length = pos; //clearout beyond the current
+                            for (var i = pos; i < abl; i++) {
+                                var testPos = determineTestPosition(i);
+                                setBufferElement(buffer, i, getBufferElement(bufTemplate, testPos));
+                            }
+                            if (isRTL) {
+                                buffer.reverse();
+                            }
+                        }
+
+                        return false; //breaks
+                    }
                 });
-                
+
                 setTimeout(opts.onKeyValidation.call(this, result, opts), 0); //extra stuff to execute on keydown
                 return result;
             }
