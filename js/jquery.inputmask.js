@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.0.0g
+* Version: 2.0.1
 */
 
 (function ($) {
@@ -337,19 +337,26 @@
                             results[index] = activeMaskset['tests'][testPos].fn != null ? activeMaskset['tests'][testPos].fn.test(chrs, buffer, maskPos, strict, opts) : false;
                             if (results[index] !== false) {
                                 if (results[index] === true) {
-                                    results[index] = { "pos": maskPos }; //always taks a possible corrected maskposition into account
+                                    results[index] = { "pos": maskPos }; //always take a possible corrected maskposition into account
                                 }
                                 activeMaskset['lastValidPosition'] = results[index].pos || maskPos; //set new position from isValid
                             } else activeMaskset['lastValidPosition'] = isRTL ? seekNext(buffer, pos) : seekPrevious(buffer, pos); //autocorrect validposition from backspace etc  	
                         }
                     }
                 });
+
+                determineActiveMasksetIndex(buffer, pos, currentActiveMasksetIndex, isRTL);
+                result = results[activeMasksetIndex] || result;
+                setTimeout(opts.onKeyValidation.call(this, result, opts), 0); //extra stuff to execute on keydown
+                return result;
+            }
+
+            function determineActiveMasksetIndex(buffer, pos, currentActiveMasksetIndex, isRTL) {
                 activeMasksetIndex = currentActiveMasksetIndex; //reset activeMasksetIndex
                 $.each(masksets, function (index, value) {
                     var activeMaskset = this;
                     if (isRTL ? activeMaskset['lastValidPosition'] <= pos : activeMaskset['lastValidPosition'] >= pos) {
                         activeMasksetIndex = index;
-                        result = results[index];
                         //reset to correct masktemplate
                         if (activeMasksetIndex != currentActiveMasksetIndex) {
                             var abl = getMaskLength(), bufTemplate = getActiveBuffer();
@@ -366,13 +373,9 @@
                                 buffer.reverse();
                             }
                         }
-
                         return false; //breaks
                     }
                 });
-
-                setTimeout(opts.onKeyValidation.call(this, result, opts), 0); //extra stuff to execute on keydown
-                return result;
             }
 
             function isMask(pos) {
@@ -978,11 +981,13 @@
                     if (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE || (iphone && k == 127)) {//backspace/delete
                         var maskL = getMaskLength();
                         if (pos.begin == 0 && pos.end == maskL) {
+                            activeMasksetIndex = 0; //reset activemask
                             buffer = getActiveBuffer().slice();
                             writeBuffer(input, buffer);
                             caret(input, checkVal(input, buffer, false));
                         } else if ((pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode)) {
                             clearBuffer(buffer, pos.begin, pos.end);
+                            determineActiveMasksetIndex(buffer, pos.begin, activeMasksetIndex);
                             writeBuffer(input, buffer, isRTL ? checkVal(input, buffer, false) : pos.begin);
                         } else {
                             var beginPos = pos.begin - (k == opts.keyCode.DELETE ? 0 : 1);
@@ -998,6 +1003,7 @@
                                     beginPos = shiftR(firstMaskPos, beginPos, getPlaceHolder(beginPos), true);
                                     beginPos = (opts.numericInput && opts.greedy && k == opts.keyCode.BACKSPACE && buffer[beginPos + 1] == opts.radixPoint) ? beginPos + 1 : seekNext(buffer, beginPos);
                                 } else beginPos = shiftL(beginPos, maskL);
+                                determineActiveMasksetIndex(buffer, beginPos, activeMasksetIndex);
                                 writeBuffer(input, buffer, beginPos);
                             }
                         }
