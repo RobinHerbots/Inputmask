@@ -3,7 +3,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.2.0
+Version: 1.2.1
 
 Optional extensions on the jquery.inputmask base
 */
@@ -47,8 +47,8 @@ Optional extensions on the jquery.inputmask base
             regex: {
                 val1pre: new RegExp("[0-3]"), //daypre
                 val1: new RegExp("0[1-9]|[12][0-9]|3[01]"), //day
-                val2pre: function(separator) { return new RegExp("((0[1-9]|[12][0-9]|3[01])\\" + separator + "[01])"); }, //monthpre
-                val2: function(separator) { return new RegExp("((0[1-9]|[12][0-9])\\" + separator + "(0[1-9]|1[012]))|(30\\" + separator + "(0[13-9]|1[012]))|(31\\" + separator + "(0[13578]|1[02]))"); },//month
+                val2pre: function(separator) { var escapedSeparator = $.inputmask.escapeRegex.call(this, separator); return new RegExp("((0[1-9]|[12][0-9]|3[01])" + escapedSeparator + "[01])"); }, //monthpre
+                val2: function(separator) { var escapedSeparator = $.inputmask.escapeRegex.call(this, separator); return new RegExp("((0[1-9]|[12][0-9])" + escapedSeparator + "(0[1-9]|1[012]))|(30" + escapedSeparator + "(0[13-9]|1[012]))|(31" + escapedSeparator + "(0[13578]|1[02]))"); },//month
                 yearpre1: new RegExp("[12]"),
                 yearpre2: new RegExp("(19|20)"),
                 yearpre3: new RegExp("(19|20)\\d"),
@@ -68,7 +68,7 @@ Optional extensions on the jquery.inputmask base
                     validator: function(chrs, buffer, pos, strict, opts) {
                         var isValid = opts.regex.val1.test(chrs);
                         if (!strict && !isValid) {
-                            if (chrs.charAt(1) == opts.separator.charAt(opts.separator.length - 1) || "-./".indexOf(chrs.charAt(1)) != -1 ) {
+                            if (chrs.charAt(1) == opts.separator || "-./".indexOf(chrs.charAt(1)) != -1 ) {
                                 isValid = opts.regex.val1.test("0" + chrs.charAt(0));
                                 if (isValid) {
                                     buffer[pos - 1] = "0";
@@ -97,7 +97,7 @@ Optional extensions on the jquery.inputmask base
                             var frontValue = buffer.join('').substr(0, 3);
                             var isValid = opts.regex.val2(opts.separator).test(frontValue + chrs);
                             if (!strict && !isValid) {
-                                if (chrs.charAt(1) == opts.separator.charAt(opts.separator.length - 1) || "-./".indexOf(chrs.charAt(1)) != -1 ) {
+                                if (chrs.charAt(1) == opts.separator || "-./".indexOf(chrs.charAt(1)) != -1 ) {
                                     isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs.charAt(0));
                                     if (isValid) {
                                         buffer[pos - 1] = "0";
@@ -197,8 +197,8 @@ Optional extensions on the jquery.inputmask base
                     placeholder: "mm/dd/yyyy",
                     alias: "dd/mm/yyyy", //reuse functionality of dd/mm/yyyy alias
                     regex: {
-                        val2pre: function(separator) { return new RegExp("((0[13-9]|1[012])\\" + separator + "[0-3])|(02\\" + separator + "[0-2])"); }, //daypre
-                        val2: function(separator) { return new RegExp("((0[1-9]|1[012])\\" + separator + "(0[1-9]|[12][0-9]))|((0[13-9]|1[012])\\" + separator + "30)|((0[13578]|1[02])\\" + separator + "31)"); }, //day
+                        val2pre: function(separator) { var escapedSeparator = $.inputmask.escapeRegex.call(this, separator); return new RegExp("((0[13-9]|1[012])" + escapedSeparator + "[0-3])|(02" + escapedSeparator + "[0-2])"); }, //daypre
+                        val2: function(separator) { var escapedSeparator = $.inputmask.escapeRegex.call(this, separator); return new RegExp("((0[1-9]|1[012])" + escapedSeparator + "(0[1-9]|[12][0-9]))|((0[13-9]|1[012])" + escapedSeparator + "30)|((0[13578]|1[02])" + escapedSeparator + "31)"); }, //day
                         val1pre: new RegExp("[01]"), //monthpre
                         val1: new RegExp("0[1-9]|1[012]") //month
                     },
@@ -229,7 +229,7 @@ Optional extensions on the jquery.inputmask base
                                 var frontValue = buffer.join('').substr(5, 3);
                                 var isValid = opts.regex.val2(opts.separator).test(frontValue + chrs);
                                 if (!strict && !isValid) {
-                                    if (chrs.charAt(1) == opts.separator.charAt(opts.separator.length - 1) || "-./".indexOf(chrs.charAt(1)) != -1 ) {
+                                    if (chrs.charAt(1) == opts.separator || "-./".indexOf(chrs.charAt(1)) != -1 ) {
                                         isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs.charAt(0));
                                         if (isValid) {
                                             buffer[pos - 1] = "0";
@@ -278,42 +278,42 @@ Optional extensions on the jquery.inputmask base
                         mask: "1.2.y",
                         placeholder: "dd.mm.yyyy",
                         leapday: "29.02.",
-                        separator: '\.',
+                        separator: '.',
                         alias: "dd/mm/yyyy"
                     },
                     'dd-mm-yyyy': {
                         mask: "1-2-y",
                         placeholder: "dd-mm-yyyy",
                         leapday: "29-02-",
-                        separator: '\-',
+                        separator: '-',
                         alias: "dd/mm/yyyy"
                     },
                     'mm.dd.yyyy': {
                         mask: "1.2.y",
                         placeholder: "mm.dd.yyyy",
                         leapday: "02.29.",
-                        separator: '\.',
+                        separator: '.',
                         alias: "mm/dd/yyyy"
                     },
                     'mm-dd-yyyy': {
                         mask: "1-2-y",
                         placeholder: "mm-dd-yyyy",
                         leapday: "02-29-",
-                        separator: '\-',
+                        separator: '-',
                         alias: "mm/dd/yyyy"
                     },
                     'yyyy.mm.dd': {
                         mask: "y.1.2",
                         placeholder: "yyyy.mm.dd",
                         leapday: ".02.29",
-                        separator: '\.',
+                        separator: '.',
                         alias: "yyyy/mm/dd"
                     },
                     'yyyy-mm-dd': {
                         mask: "y-1-2",
                         placeholder: "yyyy-mm-dd",
                         leapday: "-02-29",
-                        separator: '\-',
+                        separator: '-',
                         alias: "yyyy/mm/dd"
                     },
                     'hh:mm:ss': {
