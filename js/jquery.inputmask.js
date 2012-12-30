@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.0.1
+* Version: 2.0.2
 */
 
 (function ($) {
@@ -319,7 +319,8 @@
                     activeMasksetIndex = index;
 
                     var maskPos = pos;
-                    if (currentActiveMasksetIndex != activeMasksetIndex && !isMask(pos)) {
+                    if (currentActiveMasksetIndex != activeMasksetIndex && !isMask(pos)) {  
+                    	//TODO optimize when input is nomask but matches another mask - set active mask
                         maskPos = isRTL ? seekPrevious(buffer, pos) : seekNext(buffer, pos);
                     }
 
@@ -769,6 +770,8 @@
                     var input = this;
                     setTimeout(function () {
                         caret(input, checkVal(input, buffer, true));
+                        if (isComplete(input))
+                          $input.trigger("complete");
                     }, 0);
                 }).bind('setvalue.inputmask', function () {
                     var input = this;
@@ -803,13 +806,26 @@
 
                 //private functions
                 function isComplete(npt) {
-                    var complete = true, nptValue = npt._valueGet(), ml = nptValue.length;
-                    for (var i = 0; i < ml; i++) {
-                        if (isMask(i) && nptValue.charAt(i) == getPlaceHolder(i)) {
-                            complete = false;
-                            break;
-                        }
-                    }
+                    var complete = false, nptValue = npt._valueGet(), ml = nptValue.length
+                    	currentActiveMasksetIndex = activeMasksetIndex, highestValidPosition = 0;
+                    $.each(masksets, function(ndx, ms) {
+                    	activeMasksetIndex = ndx;
+                    	var aml = getMaskLength();
+                     	if(ms["lastValidPosition"] >= highestValidPosition && ms["lastValidPosition"] == (aml - 1)) {
+                     	    var msComplete = true;
+                    		for (var i = 0; i < aml; i++) {
+                        		if (isMask(i) && nptValue.charAt(i) == getPlaceHolder(i)) {
+                            		msComplete = false;
+                            		break;
+                        		}
+                    		}
+                    		complete = complete || msComplete;
+                    		if(complete) //break loop
+                    		 	return false;                    	
+                    	}
+                    	highestValidPosition = ms["lastValidPosition"];
+                    });
+                    activeMasksetIndex = currentActiveMasksetIndex; //reset activeMaskset
                     return complete;
                 }
 
