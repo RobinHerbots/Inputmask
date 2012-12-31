@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.2.4
+* Version: 1.2.5
 */
 
 (function ($) {
@@ -55,7 +55,11 @@
                 },
                 ignorables: [8, 9, 13, 16, 17, 18, 20, 27, 33, 34, 35, 36, 37, 38, 39, 40, 46, 91, 93, 108]
             },
-            val: $.fn.val //store the original jquery val function
+            val: $.fn.val, //store the original jquery val function
+            escapeRegex: function(str) {
+                var specials = ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\'];
+                return str.replace(new RegExp('(\\' + specials.join('|\\') + ')', 'gim'), '\\$1');
+            }
         };
 
         $.fn.inputmask = function (fn, options) {
@@ -454,8 +458,7 @@
             }
 
             function escapeRegex(str) {
-                var specials = ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\'];
-                return str.replace(new RegExp('(\\' + specials.join('|\\') + ')', 'gim'), '\\$1');
+                return $.inputmask.escapeRegex.call(this, str);
             }
             function truncateInput(inputValue, rtl) {
                 return rtl ? inputValue.replace(new RegExp("^(" + escapeRegex(_buffer.join('')) + ")*"), "") : inputValue.replace(new RegExp("(" + escapeRegex(_buffer.join('')) + ")*$"), "");
