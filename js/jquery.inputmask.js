@@ -300,7 +300,6 @@
                 }
 
                 generateMask("", opts.mask);
-
                 return ms;
             }
 
@@ -352,7 +351,7 @@
 
                 determineActiveMasksetIndex(buffer, pos, currentActiveMasksetIndex, isRTL);
                 result = results[activeMasksetIndex] || result;
-                setTimeout(opts.onKeyValidation.call(this, result, opts), 0); //extra stuff to execute on keydown
+                setTimeout(function () { opts.onKeyValidation.call(this, result, opts); }, 0); //extra stuff to execute on keydown
                 return result;
             }
 
