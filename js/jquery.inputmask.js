@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.2.5
+* Version: 1.2.6
 */
 
 (function ($) {
@@ -56,7 +56,7 @@
                 ignorables: [8, 9, 13, 16, 17, 18, 20, 27, 33, 34, 35, 36, 37, 38, 39, 40, 46, 91, 93, 108]
             },
             val: $.fn.val, //store the original jquery val function
-            escapeRegex: function(str) {
+            escapeRegex: function (str) {
                 var specials = ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\'];
                 return str.replace(new RegExp('(\\' + specials.join('|\\') + ')', 'gim'), '\\$1');
             }
@@ -280,7 +280,7 @@
                     //return is false or a json object => { pos: ??, c: ??}
                     result = tests[testPos].fn != null ? tests[testPos].fn.test(chrs, buffer, pos, strict, opts) : false;
                 }
-                setTimeout(opts.onKeyValidation.call(this, result, opts), 0); //extra stuff to execute on keydown
+                setTimeout(function () { opts.onKeyValidation.call(this, result, opts); }, 0); //extra stuff to execute on keydown
                 return result;
             }
 
