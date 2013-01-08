@@ -215,10 +215,21 @@ $(document).ready(function(){
 });
 ```
 
-### Simple Optional Masks
+### Optional Masks
 
-When `clearMaskOnLostFocus: true` is set in the options (default), the mask will always clearout masks marked as optional when not filled in.
-The optional part should always be at the end of the mask!  Full choice of optionality will be implemented in v2 of the plugin.
+It is possible to define some parts in the mask as optional.  This is done by using [ ].
+
+Example:
+
+```javascript
+$('#test').inputmask('(99) 9999[9]-9999');
+```
+This mask wil allow input like (99) 99999-9999 or (99) 9999-9999.
+Input => 12123451234      Active mask => (99) 99999-9999
+Input => 121234-1234      Active mask => (99) 9999-9999
+
+
+When `clearMaskOnLostFocus: true` is set in the options (default), the mask will clearout the optional part when it is not filled in and this only in case the optional part is at the end of the mask.
 
 For example, given:
 
