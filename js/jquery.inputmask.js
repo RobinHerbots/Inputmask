@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.0.4
+* Version: 2.0.5
 */
 
 (function ($) {
@@ -266,7 +266,9 @@
 
             function generateMaskSets() {  //TODO improve generate masksets
                 var ms = [];
-
+                function markOptional(maskPart) { //needed for the clearOptionalTail functionality
+                    return opts.optionalmarker.start + maskPart + opts.optionalmarker.end;
+                }
                 function generateMask(maskPrefix, maskPart) {
                     var maskParts = maskPart.split(opts.optionalmarker.end, 2);
                     var newMask;
@@ -274,7 +276,7 @@
 
                     var masks = maskParts[0].split(opts.optionalmarker.start);
                     if (masks.length > 1) {
-                        newMask = maskPrefix + masks[0] + masks[1] + (maskParts.length > 1 ? maskParts[1] : "");
+                        newMask = maskPrefix + masks[0] + markOptional(masks[1]) + (maskParts.length > 1 ? maskParts[1] : "");
                         ms.push({ "_buffer": getMaskTemplate(newMask),
                             "tests": getTestingChain(newMask),
                             "lastValidPosition": 0
@@ -285,7 +287,7 @@
                             "lastValidPosition": 0
                         });
                         if (maskParts.length > 1 && maskParts[1].split(opts.optionalmarker.start).length > 1) {
-                            generateMask(maskPrefix + masks[0] + masks[1], maskParts[1]);
+                            generateMask(maskPrefix + masks[0] + markOptional(masks[1]), maskParts[1]);
                             generateMask(maskPrefix + masks[0], maskParts[1]);
                         }
                     }
