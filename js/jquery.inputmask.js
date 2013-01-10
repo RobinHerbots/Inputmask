@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.2.6
+* Version: 1.2.7
 */
 
 (function ($) {
@@ -606,7 +606,7 @@
                     if (nptValue != undoBuffer) {
                         $input.change();
                     }
-                    if (opts.clearMaskOnLostFocus) {
+                    if (opts.clearMaskOnLostFocus && nptValue != '') {
                         if (nptValue == _buffer.join(''))
                             input._valueSet('');
                         else { //clearout optional tail of the mask
@@ -625,9 +625,9 @@
                         }
                     }
                 }).bind("focus.inputmask", function () {
-                    var $input = $(this), input = this;
-                    if (!$input.hasClass('focus.inputmask') && !opts.showMaskOnHover) {
-                        var nptL = input._valueGet().length;
+                    var $input = $(this), input = this, nptValue = input._valueGet();
+                    if (!$input.hasClass('focus.inputmask') && (!opts.showMaskOnHover || (opts.showMaskOnHover && nptValue == ''))) {
+                        var nptL = nptValue.length;
                         if (nptL < buffer.length) {
                             if (nptL == 0)
                                 buffer = _buffer.slice();
