@@ -713,7 +713,7 @@
                     if (nptValue != undoBuffer) {
                         $input.change();
                     }
-                    if (opts.clearMaskOnLostFocus) {
+					if (opts.clearMaskOnLostFocus && nptValue != '') {
                         if (nptValue == getActiveBuffer().join(''))
                             input._valueSet('');
                         else { //clearout optional tail of the mask
@@ -732,9 +732,9 @@
                         }
                     }
                 }).bind("focus.inputmask", function () {
-                    var $input = $(this), input = this;
-                    if (!$input.hasClass('focus.inputmask') && !opts.showMaskOnHover) {
-                        var nptL = input._valueGet().length;
+                    var $input = $(this), input = this, nptValue = input._valueGet();
+                    if (!$input.hasClass('focus.inputmask') && (!opts.showMaskOnHover || (opts.showMaskOnHover && nptValue == ''))) {
+                        var nptL = nptValue.length;
                         if (nptL < buffer.length) {
                             if (nptL == 0)
                                 buffer = getActiveBuffer().slice();
