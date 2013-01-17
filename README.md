@@ -372,10 +372,10 @@ $(document).ready(function(){
 The date aliases take leapyears into account.  There is also autocompletion on day, month, year.
 For example:
 
->input:	2/2/2012 		result: 02/02/2012
->input:  352012			result: 03/05/2012
->input:  3/530			result: 03/05/2030
->input: <ctrl> rightarrow	result: the date from today
+input:	2/2/2012 		result: 02/02/2012  
+input:  352012			result: 03/05/2012  
+input:  3/530			result: 03/05/2030  
+input:  ctrl rightarrow	        result: the date from today  
 
 ### numeric aliases
 
