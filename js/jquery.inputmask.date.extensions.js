@@ -3,7 +3,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.2.1
+Version: 1.2.2
 
 Optional extensions on the jquery.inputmask base
 */
@@ -48,14 +48,24 @@ Optional extensions on the jquery.inputmask base
                 val1pre: new RegExp("[0-3]"), //daypre
                 val1: new RegExp("0[1-9]|[12][0-9]|3[01]"), //day
                 val2pre: function(separator) { var escapedSeparator = $.inputmask.escapeRegex.call(this, separator); return new RegExp("((0[1-9]|[12][0-9]|3[01])" + escapedSeparator + "[01])"); }, //monthpre
-                val2: function(separator) { var escapedSeparator = $.inputmask.escapeRegex.call(this, separator); return new RegExp("((0[1-9]|[12][0-9])" + escapedSeparator + "(0[1-9]|1[012]))|(30" + escapedSeparator + "(0[13-9]|1[012]))|(31" + escapedSeparator + "(0[13578]|1[02]))"); },//month
-                yearpre1: new RegExp("[12]"),
-                yearpre2: new RegExp("(19|20)"),
-                yearpre3: new RegExp("(19|20)\\d"),
-                year: new RegExp("(19|20)\\d{2}")
+                val2: function(separator) { var escapedSeparator = $.inputmask.escapeRegex.call(this, separator); return new RegExp("((0[1-9]|[12][0-9])" + escapedSeparator + "(0[1-9]|1[012]))|(30" + escapedSeparator + "(0[13-9]|1[012]))|(31" + escapedSeparator + "(0[13578]|1[02]))"); }//month
             },
             leapday: "29/02/",
             separator: '/',
+            yearrange: { minyear: 1900, maxyear: 2099 },
+            isInYearRange: function(chrs, minyear, maxyear){
+            	var enteredyear = parseInt(chrs.concat(minyear.toString().slice(chrs.length)));
+            	var enteredyear2 = parseInt(chrs.concat(maxyear.toString().slice(chrs.length)));
+            	return (enteredyear != NaN ? minyear <= enteredyear && enteredyear <= maxyear : false) ||
+            		   (enteredyear2 != NaN ? minyear <= enteredyear2 && enteredyear2 <= maxyear : false); 
+            },
+            determinebaseyear: function(minyear, maxyear){
+            	var currentyear = (new Date()).getFullYear();
+            	if(minyear > currentyear) return minyear;
+            	if(maxyear < currentyear) return maxyear;
+            	
+            	return currentyear;
+            },
             onKeyUp: function(e, opts) {
                 var $input = $(this), input = this;
                 if (e.ctrlKey && e.keyCode == opts.keyCode.RIGHT) {
@@ -124,7 +134,7 @@ Optional extensions on the jquery.inputmask base
                         },
                         'y': { //year
                             validator: function(chrs, buffer, pos, strict, opts) {
-                                if (opts.regex.year.test(chrs)) {
+                                if (opts.isInYearRange(chrs, opts.yearrange.minyear, opts.yearrange.maxyear)) {
                                     var dayMonthValue = buffer.join('').substr(0, 6);
                                     if (dayMonthValue != opts.leapday)
                                         return true;
@@ -143,11 +153,18 @@ Optional extensions on the jquery.inputmask base
                             cardinality: 4,
                             prevalidator: [
                         { validator: function(chrs, buffer, pos, strict, opts) {
-                            var isValid = opts.regex.yearpre1.test(chrs);
+                            var isValid = opts.isInYearRange(chrs, opts.yearrange.minyear, opts.yearrange.maxyear);
                             if (!strict && !isValid) {
-                                var yearPrefix = (new Date()).getFullYear().toString().slice(0, 2);
+                                var yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear).toString().slice(0, 1);
 
-                                isValid = opts.regex.yearpre3.test(yearPrefix + chrs);
+                                isValid = opts.isInYearRange(yearPrefix + chrs, opts.yearrange.minyear, opts.yearrange.maxyear);
+                                if (isValid) {
+                                    buffer[pos++] = yearPrefix[0];
+                                    return { "pos": pos };
+                                }
+                                yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear).toString().slice(0, 2);
+
+                                isValid = opts.isInYearRange(yearPrefix + chrs, opts.yearrange.minyear, opts.yearrange.maxyear);
                                 if (isValid) {
                                     buffer[pos++] = yearPrefix[0];
                                     buffer[pos++] = yearPrefix[1];
@@ -159,10 +176,18 @@ Optional extensions on the jquery.inputmask base
                             cardinality: 1
                         },
                         { validator: function(chrs, buffer, pos, strict, opts) {
-                            var isValid = opts.regex.yearpre2.test(chrs);
+                            var isValid = opts.isInYearRange(chrs, opts.yearrange.minyear, opts.yearrange.maxyear);
                             if (!strict && !isValid) {
-                                var yearPrefix = (new Date()).getFullYear().toString().slice(0, 2);
-                                if (opts.regex.year.test(yearPrefix + chrs)) {
+                                var yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear).toString().slice(0, 2);
+
+                                isValid = opts.isInYearRange(yearPrefix + chrs[1], opts.yearrange.minyear, opts.yearrange.maxyear);
+                                if (isValid) {
+                                    buffer[pos++] = yearPrefix[1];
+                                    return { "pos": pos };
+                                }
+                            
+                                yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear).toString().slice(0, 2);
+                                if (opts.isInYearRange(yearPrefix + chrs, opts.yearrange.minyear, opts.yearrange.maxyear)) {
                                     var dayMonthValue = buffer.join('').substr(0, 6);
                                     if (dayMonthValue != opts.leapday)
                                         isValid = true;
@@ -186,7 +211,9 @@ Optional extensions on the jquery.inputmask base
                             }
                             return isValid;
                         }, cardinality: 2 },
-                        { validator: "(19|20)\\d", cardinality: 3 }
+                        { validator: function(chrs, buffer, pos, strict, opts) {
+                        	return opts.isInYearRange(chrs, opts.yearrange.minyear, opts.yearrange.maxyear);
+                        }, cardinality: 3 }
                         ]
                         }
                     },
