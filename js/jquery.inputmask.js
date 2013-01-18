@@ -3,12 +3,11 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.0.6
+* Version: 2.0.7
 */
 
 (function ($) {
-    if ($.fn.inputmask == undefined) {
-        $.inputmask = {
+    if ($.fn.inputmask == undefined) {        $.inputmask = {
             //options default
             defaults: {
                 placeholder: "_",
@@ -35,7 +34,7 @@
                 //numeric basic properties
                 numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
                 radixPoint: ".", // | ","
-                //numeric basic properties
+               //numeric basic properties
                 definitions: {
                     '9': {
                         validator: "[0-9]",
@@ -333,9 +332,8 @@
 
                         maskPos = isRTL ? seekPrevious(buffer, pos) : seekNext(buffer, pos);
                     }
-
-                    if (isRTL ? activeMaskset['lastValidPosition'] <= seekNext(buffer, maskPos) : activeMaskset['lastValidPosition'] >= seekPrevious(buffer, maskPos)) {
-                        if (maskPos >= 0 && maskPos < getMaskLength()) {
+					if (isRTL ? activeMaskset['lastValidPosition'] <= opts.numericInput ? getMaskLength() : seekNext(buffer, maskPos) : activeMaskset['lastValidPosition'] >= seekPrevious(buffer, maskPos)) {
+                      if (maskPos >= 0 && maskPos < getMaskLength()) {
                             var testPos = determineTestPosition(maskPos), loopend = c ? 1 : 0, chrs = '';
                             for (var i = activeMaskset['tests'][testPos].cardinality; i > loopend; i--) {
                                 chrs += getBufferElement(buffer, testPos - (i - 1));
@@ -1082,7 +1080,7 @@
                     e = e || window.event;
                     var k = e.which || e.charCode || e.keyCode;
 
-                    if (opts.numericInput && k == opts.radixPoint.charCodeAt(opts.radixPoint.length - 1)) {
+                    if (opts.numericInput && k == opts.radixPoint) {
                         var nptStr = input._valueGet();
                         var radixPosition = nptStr.indexOf(opts.radixPoint);
                         caret(input, seekNext(buffer, radixPosition != -1 ? radixPosition : getMaskLength()));
