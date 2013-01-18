@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.2.8
+* Version: 1.2.8a
 */
 
 (function ($) {
@@ -953,7 +953,7 @@
                     e = e || window.event;
                     var k = e.which || e.charCode || e.keyCode;
 
-                    if (opts.numericInput && k == opts.radixPoint.charCodeAt(opts.radixPoint.length - 1)) {
+                    if (opts.numericInput && k == opts.radixPoint) {
                         var nptStr = input._valueGet();
                         var radixPosition = nptStr.indexOf(opts.radixPoint);
                         caret(input, seekNext(buffer, radixPosition != -1 ? radixPosition : getMaskLength()));
