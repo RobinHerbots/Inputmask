@@ -3,7 +3,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.2.2
+Version: 1.2.3
 
 Optional extensions on the jquery.inputmask base
 */
@@ -343,6 +343,127 @@ Optional extensions on the jquery.inputmask base
                         separator: '-',
                         alias: "yyyy/mm/dd"
                     },
+                    'datetime': {
+        				mask: "1/2/y h:s",
+                        placeholder: "dd/mm/yyyy hh:mm",
+                        alias: "dd/mm/yyyy",
+        				regex: {
+            					hrspre: new RegExp("[012]"), //hours pre
+            					hrs24: new RegExp("2[0-9]|1[3-9]"),
+            					hrs: new RegExp("[01][0-9]|2[0-3]"), //hours
+            					ampmpre: new RegExp("[apAP]"),
+            					ampm: new RegExp("^[a|p|A|P][m|M]")
+        				},
+        				timeseparator: ':',
+        				hourFormat: "24", // or 12
+        				definitions: {
+            				'h': { //hours
+                				validator: function(chrs, buffer, pos, strict, opts) {
+                    			var isValid = opts.regex.hrs.test(chrs);
+                    			if (!strict && !isValid) {
+                        		if (chrs.charAt(1) == opts.timeseparator || "-.:".indexOf(chrs.charAt(1)) != -1 ) {
+                            		isValid = opts.regex.hrs.test("0" + chrs.charAt(0));
+                            	if (isValid) {
+                                	buffer[pos - 1] = "0";
+                                	buffer[pos] = chrs.charAt(0);
+                                	pos++;
+                                	return { "pos": pos };
+                            	}
+                        	}
+                    	}
+
+                    	if ( isValid && opts.hourFormat !== "24" && opts.regex.hrs24.test(chrs) ) {
+
+                        	var tmp = parseInt(chrs,10);
+
+                        	if ( tmp == 24 ) {
+                            	buffer[pos+5] = "a";
+                            	buffer[pos+6] = "m";
+                        	} else {
+                            	buffer[pos+5] = "p";
+                            	buffer[pos+6] = "m";
+                        	}
+
+                        	tmp = tmp - 12;
+
+                        	if ( tmp < 10 ) {
+                            	buffer[pos] = tmp.toString();
+                            	buffer[pos-1] = "0";
+                        	} else {
+                            	buffer[pos] = tmp.toString().charAt(1);
+                            	buffer[pos-1] = tmp.toString().charAt(0);
+                        	}
+
+                        	return { "pos": pos, "c" : buffer[pos] };
+                    	}
+
+                    	return isValid;
+                	},
+                	cardinality: 2,
+                	prevalidator: [{ validator: function(chrs, buffer, pos, strict, opts) {
+                    	var isValid = opts.regex.hrspre.test(chrs);
+                    	if (!strict && !isValid) {
+                        	isValid = opts.regex.hrs.test("0" + chrs);
+                        	if (isValid) {
+                            	buffer[pos] = "0";
+                            	pos++;
+                            	return { "pos": pos };
+                        	}
+                    	}
+                    	return isValid;
+                		}, cardinality: 1}]
+            		},
+            	't': { //am/pm
+                	validator: function(chrs, buffer, pos, strict, opts) {
+                    	var isValid = opts.regex.ampm.test(chrs);
+                    	if (!strict && !isValid) {
+                        	isValid = opts.regex.ampm.test(chrs+'m');
+                        	if (isValid) {
+                            	buffer[pos - 1] = chrs.charAt(0);
+                            	buffer[pos] = "m";
+                            	pos++;
+                            	return pos;
+                        	}
+                    	}
+                    	return isValid;
+                	},
+                	casing: "lower",
+                	cardinality: 2,
+                	prevalidator: [{ validator: function(chrs, buffer, pos, strict, opts) {
+                    	var isValid = opts.regex.ampmpre.test(chrs);
+                    	if (isValid) {
+                        	isValid = opts.regex.ampm.test(chrs+"m");
+                        	if (isValid) {
+                            	buffer[pos] = chrs;
+                            	buffer[pos+1] = 'm';
+                            	return pos;
+                        	}
+                    	}
+                    	return isValid;
+                					}, cardinality: 1}]
+            					}
+        					},
+        				insertMode: false,
+        				autoUnmask: false
+    				},
+    				'datetime12': {
+    					mask: "1/2/y h:s t",
+                        placeholder: "dd/mm/yyyy hh:mm xm",
+                        alias: "datetime",
+        				hourFormat: "12"
+    				}, 
+    				'hh:mm t': {
+    					mask: "h:s t",
+                        placeholder: "hh:mm xm",
+                        alias: "datetime",
+        				hourFormat: "12"
+    				}, 
+    				'h:s t': {
+        				mask: "h:s t",
+        				placeholder: "hh:mm xm",
+        				alias: "datetime",
+        				hourFormat: "12"
+       				 },
                     'hh:mm:ss': {
                         mask: "h:s:s",
                         autoUnmask: false
@@ -353,11 +474,6 @@ Optional extensions on the jquery.inputmask base
                     },
                     'date': {
                         alias: "dd/mm/yyyy" // "mm/dd/yyyy"
-                    },
-                    'datetime': {
-                        mask: "1/2/y h:s",
-                        placeholder: "dd/mm/yyyy hh:mm",
-                        alias: "date"
                     }
                 });
             })(jQuery);

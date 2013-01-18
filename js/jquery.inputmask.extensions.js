@@ -1,9 +1,9 @@
 /*
 Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
-Copyright (c) 2010 - 2012 Robin Herbots
+Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.2.0
+Version: 1.2.2
 
 Optional extensions on the jquery.inputmask base
 */
@@ -14,6 +14,69 @@ Optional extensions on the jquery.inputmask base
             validator: "[A-Za-z]",
             cardinality: 1,
             casing: "upper"
-        }
+        },
+        'url' : {
+        mask: "ir",
+        placeholder: "",
+        separator: "",
+        defaultPrefix: "http://",
+        regex: {
+            urlpre1: new RegExp("[fh]"),
+            urlpre2: new RegExp("(ft|ht)"),
+            urlpre3: new RegExp("(ftp|htt)"),
+            urlpre4: new RegExp("(ftp:|http|ftps)"),
+            urlpre5: new RegExp("(ftp:/|ftps:|http:|https)"),
+            urlpre6: new RegExp("(ftp://|ftps:/|http:/|https:)"),
+            urlpre7: new RegExp("(ftp://|ftps://|http://|https:/)"),
+            urlpre8: new RegExp("(ftp://|ftps://|http://|https://)")
+        },
+        definitions: {
+            'i': {
+                validator: function(chrs, buffer, pos, strict, opts) {
+                    return true;
+                },
+                cardinality: 8,
+                prevalidator: (function(){
+                    var result = [], prefixLimit = 8;
+                    for( var i=0; i < prefixLimit; i++ ) {
+                        result[i] = (function(){
+                            var j = i;
+                            return { validator: function(chrs, buffer, pos, strict, opts) {
+                                if ( opts.regex["urlpre"+(j+1)] ) {
+                                    var tmp = chrs, k;
+                                    if ( ( ( j + 1 ) - chrs.length ) > 0 ) {
+                                        tmp = buffer.join('').substring(0,( ( j + 1 ) - chrs.length )) + "" + tmp;
+                                    }
+                                    var isValid = opts.regex["urlpre"+(j+1)].test(tmp);
+                                    if (!strict && !isValid) {
+                                        pos = pos-j;
+                                        for (k=0;k<opts.defaultPrefix.length;k++){
+                                            buffer[pos] = opts.defaultPrefix[k];pos++;
+                                        }
+                                        for (k=0; k<tmp.length-1;k++) {
+                                            buffer[pos] = tmp[k];pos++;
+                                        }
+                                        return { "pos": pos };
+                                    }
+                                    return isValid;
+                                } else {
+                                    return false;
+                                }
+                            }, cardinality: j};
+                        })();
+                    }
+                    return result;
+                })()
+            },
+            'r': {
+                validator: function(chrs, buffer, pos, strict, opts) {
+                    return true;
+                },
+                cardinality: 2000
+            }
+        },
+        insertMode: false,
+        autoUnmask: false
+    }
     });
 })(jQuery);
