@@ -668,7 +668,7 @@
                 }).bind("keydown.inputmask", keydownEvent
                 ).bind("keypress.inputmask", keypressEvent
                 ).bind("keyup.inputmask", keyupEvent
-                ).bind(pasteEvent + ".inputmask, dragdrop.inputmask, drop.inputmask", function () {
+                ).bind(pasteEvent + ".inputmask dragdrop.inputmask drop.inputmask", function () {
                     var input = this;
                     setTimeout(function () {
                         caret(input, checkVal(input, buffer, true));
