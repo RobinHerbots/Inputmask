@@ -2,7 +2,7 @@
 
 jquery.inputmask is a jquery plugin which create an input mask.
 
-Copyright (c) 2010 - 2012 Robin Herbots
+Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
 
 The plugin is based on the idea of the maskedinput plugin of Josh Bush (http://digitalbush.com/projects/masked-input-plugin), but has finer control over the 'mask-definitions'.
@@ -55,7 +55,7 @@ In the jquery.inputmask.extensions.js you find a full date input validation whic
 Also extra features like mask-repetitions (greedy and non-gready) and many other additions are included.  In the examples you will find more about them.
 
 
-Usage:
+## Usage:
 
 Include the js-files:
 
@@ -75,7 +75,7 @@ $(document).ready(function(){
 });
 ```
 
-## Extra options:
+## Options:
 
 ### change the placeholder
 
@@ -334,6 +334,17 @@ $(document).ready(function(){
 			{ onKeyValidation: function (result) {
 								console.log(result);
 								} });
+});
+```
+### isComplete
+
+Verify wheter the current value is complete or not.
+
+```javascript
+$(document).ready(function(){
+    if($("#ssn").inputmask("isComplete")){
+		//do something
+	}
 });
 ```
 

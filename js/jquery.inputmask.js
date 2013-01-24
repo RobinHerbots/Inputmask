@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.0.7
+* Version: 2.0.7a
 */
 
 (function ($) {
@@ -142,6 +142,13 @@
                         else return "";
                     case "hasMaskedValue": //check wheter the returned value is masked or not; currently only works reliable when using jquery.val fn to retrieve the value 
                         return this.data('inputmask') ? !this.data('inputmask')['autoUnmask'] : false;
+					case "isComplete":
+						masksets = this.data('inputmask')['masksets'];
+                        activeMasksetIndex = this.data('inputmask')['activeMasksetIndex'];
+                        opts.greedy = this.data('inputmask')['greedy'];
+                        opts.repeat = this.data('inputmask')['repeat'];
+                        opts.definitions = this.data('inputmask')['definitions'];
+						return isComplete(this);
                     default:
                         //check if the fn is an alias
                         if (!resolveAlias(fn)) {
@@ -639,6 +646,30 @@
                     return caretpos;
                 }
             };
+			
+	       function isComplete(npt) {
+                    var complete = false, nptValue = npt._valueGet(), ml = nptValue.length
+                    currentActiveMasksetIndex = activeMasksetIndex, highestValidPosition = 0;
+                    $.each(masksets, function (ndx, ms) {
+                        activeMasksetIndex = ndx;
+                        var aml = getMaskLength();
+                        if (ms["lastValidPosition"] >= highestValidPosition && ms["lastValidPosition"] == (aml - 1)) {
+                            var msComplete = true;
+                            for (var i = 0; i < aml; i++) {
+                                if (isMask(i) && nptValue.charAt(i) == getPlaceHolder(i)) {
+                                    msComplete = false;
+                                    break;
+                                }
+                            }
+                            complete = complete || msComplete;
+                            if (complete) //break loop
+                                return false;
+                        }
+                        highestValidPosition = ms["lastValidPosition"];
+                    });
+                    activeMasksetIndex = currentActiveMasksetIndex; //reset activeMaskset
+                    return complete;
+            }
 
             function mask(el) {
                 var $input = $(el);
@@ -812,31 +843,6 @@
                 installEventRuler(el);
 
                 //private functions
-                function isComplete(npt) {
-                    var complete = false, nptValue = npt._valueGet(), ml = nptValue.length
-                    currentActiveMasksetIndex = activeMasksetIndex, highestValidPosition = 0;
-                    $.each(masksets, function (ndx, ms) {
-                        activeMasksetIndex = ndx;
-                        var aml = getMaskLength();
-                        if (ms["lastValidPosition"] >= highestValidPosition && ms["lastValidPosition"] == (aml - 1)) {
-                            var msComplete = true;
-                            for (var i = 0; i < aml; i++) {
-                                if (isMask(i) && nptValue.charAt(i) == getPlaceHolder(i)) {
-                                    msComplete = false;
-                                    break;
-                                }
-                            }
-                            complete = complete || msComplete;
-                            if (complete) //break loop
-                                return false;
-                        }
-                        highestValidPosition = ms["lastValidPosition"];
-                    });
-                    activeMasksetIndex = currentActiveMasksetIndex; //reset activeMaskset
-                    return complete;
-                }
-
-
                 function installEventRuler(npt) {
                     var events = $._data(npt).events;
 
