@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.0.7a
+* Version: 2.0.7b
 */
 
 (function ($) {
@@ -148,7 +148,7 @@
                         opts.greedy = this.data('inputmask')['greedy'];
                         opts.repeat = this.data('inputmask')['repeat'];
                         opts.definitions = this.data('inputmask')['definitions'];
-						return isComplete(this);
+						return isComplete(this[0]);
                     default:
                         //check if the fn is an alias
                         if (!resolveAlias(fn)) {
