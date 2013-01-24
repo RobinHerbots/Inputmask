@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.2.8a
+* Version: 1.2.8b
 */
 
 (function ($) {
@@ -141,6 +141,13 @@
                         else return "";
                     case "hasMaskedValue": //check wheter the returned value is masked or not; currently only works reliable when using jquery.val fn to retrieve the value 
                         return this.data('inputmask') ? !this.data('inputmask')['autoUnmask'] : false;
+					case "isComplete":
+						var tests = this.data('inputmask')['tests'];
+                        var _buffer = this.data('inputmask')['_buffer'];
+                        opts.greedy = this.data('inputmask')['greedy'];
+                        opts.repeat = this.data('inputmask')['repeat'];
+                        opts.definitions = this.data('inputmask')['definitions'];
+						return isComplete(this);
                     default:
                         //check if the fn is an alias
                         if (!resolveAlias(fn)) {
@@ -536,6 +543,17 @@
                     return caretpos;
                 }
             };
+			
+			function isComplete(npt) {
+                var complete = true, nptValue = npt._valueGet(), ml = nptValue.length;
+                for (var i = 0; i < ml; i++) {
+                    if (isMask(i) && nptValue.charAt(i) == getPlaceHolder(i)) {
+                        complete = false;
+                        break;
+                    }
+                }
+                return complete;
+            }
 
             function mask(el) {
                 var $input = $(el);
@@ -705,18 +723,6 @@
                 installEventRuler(el);
 
                 //private functions
-                function isComplete(npt) {
-                    var complete = true, nptValue = npt._valueGet(), ml = nptValue.length;
-                    for (var i = 0; i < ml; i++) {
-                        if (isMask(i) && nptValue.charAt(i) == getPlaceHolder(i)) {
-                            complete = false;
-                            break;
-                        }
-                    }
-                    return complete;
-                }
-
-
                 function installEventRuler(npt) {
                     var events = $._data(npt).events;
 
