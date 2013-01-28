@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>jQuery.InputMask</id>
+        <version>0.0.0</version>
+        <title>jQuery Input Mask</title>
+        <authors>Robin Herbots</authors>
+        <owners>Robin Herbots</owners>
+        <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
+        <projectUrl>https://github.com/RobinHerbots/jquery.inputmask</projectUrl>
+        <requireLicenseAcceptance>true</requireLicenseAcceptance>
+        <description>jquery.inputmask is a jquery plugin which create an input mask.
+
+Copyright (c) 2010 - 2013 Robin Herbots Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
+
+The plugin is based on the idea of the maskedinput plugin of Josh Bush (http://digitalbush.com/projects/masked-input-plugin), but has finer control over the 'mask-definitions'.
+
+A definition can have a cardinality and have multiple prevalidators.</description>
+        <tags>jQuery, plugins</tags>
+    </metadata>
+    <files>
+        <file src="..\js\jquery.inputmask.custom.extensions.js" target="content\Scripts\jquery.inputmask.custom.extensions.js" />
+        <file src="..\js\jquery.inputmask.date.extensions.js" target="content\Scripts\jquery.inputmask.date.extensions.js" />
+        <file src="..\js\jquery.inputmask.extensions.js" target="content\Scripts\jquery.inputmask.extensions.js" />
+        <file src="..\js\jquery.inputmask.numeric.extensions.js" target="content\Scripts\jquery.inputmask.numeric.extensions.js" />
+        <file src="..\js\jquery.inputmask.js" target="content\Scripts\jquery.inputmask.js" />
+    </files>
+</package>
