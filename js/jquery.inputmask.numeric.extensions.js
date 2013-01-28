@@ -22,7 +22,10 @@ Optional extensions on the jquery.inputmask base
             autoGroup: false,
             regex: {
                 number: function (groupSeparator, groupSize, radixPoint, digits) {
-                    return new RegExp("^[\+\\d\-]{1}[\\d" + groupSeparator + "]*[" + radixPoint + "]?\\d" + digits + "$");
+                	var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, groupSeparator);
+                	var escapedRadixPoint = $.inputmask.escapeRegex.call(this, radixPoint);
+                	var digitExpression = isNaN(digits) ? digits : '{0,' + digits + '}'
+                    return new RegExp("^[\+\-]?(\\d{1," + groupSize + "}" + escapedGroupSeparator + ")?((\\d{" + groupSize + "}" + escapedGroupSeparator + ")|\\d)*[" + escapedRadixPoint + "]?\\d" + digitExpression + "$");
                 }
             },
             onKeyDown: function (e, opts) {
@@ -43,15 +46,6 @@ Optional extensions on the jquery.inputmask base
             definitions: {
                 '~': { //real number
                     validator: function (chrs, buffer, pos, strict, opts) {
-                        function digitExpression() {
-                            return isNaN(opts.digits) ? opts.digits : '{0,' + opts.digits + '}';
-                        }
-                        function radixPointExpression() {
-                            return opts.radixPoint == '.' ? "\\\\" + opts.radixPoint : opts.radixPoint;
-                        }
-                        function separatorExpression() {
-                            return opts.groupSeparator == '.' ? "\\\\" + opts.groupSeparator : opts.groupSeparator;
-                        }
                         var cbuf = buffer.slice();
                         cbuf.splice(pos, 0, chrs);
                         var bufferStr = cbuf.join('');
@@ -59,17 +53,17 @@ Optional extensions on the jquery.inputmask base
                             buffer[0]= "";
                             return { "pos": 1, "c": "" };
                         }
-                        var isValid = opts.regex.number(separatorExpression(), opts.groupSize, radixPointExpression(), digitExpression()).test(bufferStr);
+                        var isValid = opts.regex.number(opts.groupSeparator, opts.groupSize, opts.radixPoint, opts.digits).test(bufferStr);
                         if (!isValid) {
                             if (strict) { //shiftL & shiftR use strict only validate from 0 to position
                                 var cbuf = buffer.slice(0, pos);
                                 cbuf.splice(pos, 0, chrs);
                                 var bufferStr = cbuf.join('');
-                                var isValid = opts.regex.number(separatorExpression(), opts.groupSize, radixPointExpression(), digitExpression()).test(bufferStr);
+                                var isValid = opts.regex.number(opts.groupSeparator, opts.groupSize, opts.radixPoint, opts.digits).test(bufferStr);
                             }
                             else {
                                 if (bufferStr == opts.radixPoint) {
-                                    isValid = opts.regex.number(separatorExpression(), opts.groupSize, radixPointExpression(), digitExpression()).test("0" + bufferStr);
+                                    isValid = opts.regex.number(opts.groupSeparator, opts.groupSize, opts.radixPoint, opts.digits).test("0" + bufferStr);
                                     if (isValid) {
                                         buffer[pos] = "0";
                                         pos++;
@@ -82,7 +76,7 @@ Optional extensions on the jquery.inputmask base
                         if (opts.autoGroup && isValid != false && !strict) {
                             var bufVal = buffer.join('') + chrs;
                             bufVal = bufVal.replace(new RegExp("\\" + opts.groupSeparator, "g"), '');
-                            var reg = new RegExp('(-?[0-9]+)([0-9]{' + opts.groupSize + '})');
+                            var reg = new RegExp('(-?\\d+)(\\d{' + opts.groupSize + '})');
                             while (reg.test(bufVal)) {
                                 bufVal = bufVal.replace(reg, '$1' + opts.groupSeparator + '$2');
                             }
@@ -104,7 +98,12 @@ Optional extensions on the jquery.inputmask base
         },
         'non-negative-decimal': {
             regex: {
-                number: function (groupSeparator, groupSize, radixPoint, digits) { return new RegExp("^[\\d]+[" + radixPoint + "]?\\d" + digits + "$"); }
+                 number: function (groupSeparator, groupSize, radixPoint, digits) {
+                	var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, groupSeparator);
+                	var escapedRadixPoint = $.inputmask.escapeRegex.call(this, radixPoint);
+                	var digitExpression = isNaN(digits) ? digits : '{0,' + digits + '}'
+                     return new RegExp("^[\+]?(\\d{1," + groupSize + "}" + escapedGroupSeparator + ")?((\\d{" + groupSize + "}" + escapedGroupSeparator + ")|\\d)*[" + escapedRadixPoint + "]?\\d" + digitExpression + "$");
+                }
             },
             alias: "decimal"
         },

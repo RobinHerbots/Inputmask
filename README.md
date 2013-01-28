@@ -376,11 +376,32 @@ $(document).ready(function(){
 First grab the sources from github.  In the root you type ant.
 A new folder dist is created with the minified and optimized js-files
 
+## .NET Nuget Package Install
+```html
+PM> Install-Package jQuery.InputMask
+```
+
+In App_Start, BundleConfig.cs
+```c#
+bundles.Add(new ScriptBundle("~/bundles/inputmask").Include(
+                        "~/Scripts/jquery.inputmask.js",
+						"~/Scripts/jquery.inputmask.extensions.js",
+						"~/Scripts/jquery.inputmask.date.extensions.js",
+						"~/Scripts/jquery.inputmask.custom.extensions.js",
+						"~/Scripts/jquery.inputmask.numeric.extensions.js"));
+```
+
+In Layout
+```html
+@Scripts.Render("~/bundles/inputmask")
+```
+
+
 # jquery.inputmask extensions
 
 ## Alias definitions
 
-### date aliases
+### date & datetime aliases
 
 ```javascript
 $(document).ready(function(){
@@ -398,6 +419,13 @@ input:	2/2/2012 		result: 02/02/2012
 input:  352012			result: 03/05/2012  
 input:  3/530			result: 03/05/2030  
 input:  ctrl rightarrow	        result: the date from today  
+
+```javascript
+$(document).ready(function(){
+   $("#date").inputmask("datetime"); // 24h
+   $("#date").inputmask("datetime12"); // am/pm
+});
+```
 
 ### numeric aliases
 
