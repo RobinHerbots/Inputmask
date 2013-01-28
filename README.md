@@ -376,7 +376,6 @@ bundles.Add(new ScriptBundle("~/bundles/inputmask").Include(
                         "~/Scripts/jquery.inputmask.js",
 						"~/Scripts/jquery.inputmask.extensions.js",
 						"~/Scripts/jquery.inputmask.date.extensions.js",
-						"~/Scripts/jquery.inputmask.custom.extensions.js",
 						"~/Scripts/jquery.inputmask.numeric.extensions.js"));
 ```
 
