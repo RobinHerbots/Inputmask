@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.0.7b
+* Version: 2.0.7c
 */
 
 (function ($) {
@@ -656,7 +656,8 @@
                         if (ms["lastValidPosition"] >= highestValidPosition && ms["lastValidPosition"] == (aml - 1)) {
                             var msComplete = true;
                             for (var i = 0; i < aml; i++) {
-                                if (isMask(i) && nptValue.charAt(i) == getPlaceHolder(i)) {
+                                var mask = isMask(i);
+                                if ((mask && nptValue.charAt(i) == getPlaceHolder(i)) || (!mask && nptValue.charAt(i) != getActiveBuffer()[i])) {
                                     msComplete = false;
                                     break;
                                 }
