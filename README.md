@@ -224,9 +224,10 @@ Example:
 ```javascript
 $('#test').inputmask('(99) 9999[9]-9999');
 ```
-This mask wil allow input like (99) 99999-9999 or (99) 9999-9999.
-Input => 12123451234      Active mask => (99) 99999-9999
-Input => 121234-1234      Active mask => (99) 9999-9999
+This mask wil allow input like (99) 99999-9999 or (99) 9999-9999.  
+Input => 12123451234      mask => (12) 12345-1234    (trigger complete)  
+Input => 121234-1234      mask => (12) 1234-1234     (trigger complete)  
+Input => 1212341234       mask => (12) 12341-234_    (trigger incomplete)  
 
 
 When `clearMaskOnLostFocus: true` is set in the options (default), the mask will clearout the optional part when it is not filled in and this only in case the optional part is at the end of the mask.
