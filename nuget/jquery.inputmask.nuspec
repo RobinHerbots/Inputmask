@@ -13,9 +13,7 @@
 
 Copyright (c) 2010 - 2013 Robin Herbots Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
 
-The plugin is based on the idea of the maskedinput plugin of Josh Bush (http://digitalbush.com/projects/masked-input-plugin), but has finer control over the 'mask-definitions'.
-
-A definition can have a cardinality and have multiple prevalidators.</description>
+   .</description>
         <tags>jQuery, plugins</tags>
     </metadata>
     <files>
