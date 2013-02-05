@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.0.7c
+* Version: 2.0.8
 */
 
 (function ($) {
@@ -31,6 +31,7 @@
                 onKeyDown: $.noop, //override to implement autocomplete on certain keys for example
                 showMaskOnHover: true, //show the mask-placeholder when hovering the empty input
                 onKeyValidation: $.noop, //executes on every key-press with the result of isValid
+                skipOptionalPartCharacter: " ", //a character which can be used to skip an optional part of a mask
                 //numeric basic properties
                 numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
                 radixPoint: ".", // | ","
@@ -331,7 +332,7 @@
 
                     var maskPos = pos;
                     if (currentActiveMasksetIndex != activeMasksetIndex && !isMask(pos)) {
-                        if (c == activeMaskset['_buffer'][maskPos]) { //match non-mask item
+                        if (c == activeMaskset['_buffer'][maskPos] || c == opts.skipOptionalPartCharacter) { //match non-mask item
                             results[index] = { "refresh": true };  //new command hack only rewrite buffer
                             activeMaskset['lastValidPosition'] = maskPos;
                             return false;

@@ -5,8 +5,6 @@ jquery.inputmask is a jquery plugin which create an input mask.
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
 
-
-
 ## Usage:
 
 Include the js-files:
@@ -181,6 +179,13 @@ Input => 12123451234      mask => (12) 12345-1234    (trigger complete)
 Input => 121234-1234      mask => (12) 1234-1234     (trigger complete)  
 Input => 1212341234       mask => (12) 12341-234_    (trigger incomplete)  
 
+#### skipOptionalPartCharacter
+As an extra there is another configurable character which is used to skip an optional part in the mask.  
+
+```javascript
+skipOptionalPartCharacter: " ",
+```
+Input => 121234 1234      mask => (12) 1234-1234     (trigger complete)  
 
 When `clearMaskOnLostFocus: true` is set in the options (default), the mask will clearout the optional part when it is not filled in and this only in case the optional part is at the end of the mask.
 
