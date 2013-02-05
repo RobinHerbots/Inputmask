@@ -13,13 +13,10 @@
 
 Copyright (c) 2010 - 2013 Robin Herbots Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
 
-The plugin is based on the idea of the maskedinput plugin of Josh Bush (http://digitalbush.com/projects/masked-input-plugin), but has finer control over the 'mask-definitions'.
-
-A definition can have a cardinality and have multiple prevalidators.</description>
+   .</description>
         <tags>jQuery, plugins</tags>
     </metadata>
     <files>
-        <file src="..\js\jquery.inputmask.custom.extensions.js" target="content\Scripts\jquery.inputmask.custom.extensions.js" />
         <file src="..\js\jquery.inputmask.date.extensions.js" target="content\Scripts\jquery.inputmask.date.extensions.js" />
         <file src="..\js\jquery.inputmask.extensions.js" target="content\Scripts\jquery.inputmask.extensions.js" />
         <file src="..\js\jquery.inputmask.numeric.extensions.js" target="content\Scripts\jquery.inputmask.numeric.extensions.js" />
