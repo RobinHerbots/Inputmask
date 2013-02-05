@@ -17,7 +17,6 @@ Copyright (c) 2010 - 2013 Robin Herbots Licensed under the MIT license (http://w
         <tags>jQuery, plugins</tags>
     </metadata>
     <files>
-        <file src="..\js\jquery.inputmask.custom.extensions.js" target="content\Scripts\jquery.inputmask.custom.extensions.js" />
         <file src="..\js\jquery.inputmask.date.extensions.js" target="content\Scripts\jquery.inputmask.date.extensions.js" />
         <file src="..\js\jquery.inputmask.extensions.js" target="content\Scripts\jquery.inputmask.extensions.js" />
         <file src="..\js\jquery.inputmask.numeric.extensions.js" target="content\Scripts\jquery.inputmask.numeric.extensions.js" />
