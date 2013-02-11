@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.0.8
+* Version: 2.0.8a
 */
 
 (function ($) {
@@ -325,6 +325,21 @@
             }
 
             function isValid(pos, c, buffer, strict, isRTL) { //strict true ~ no correction or autofill
+                function _isValid(position, activeMaskset) {
+                    var testPos = determineTestPosition(position), loopend = c ? 1 : 0, chrs = '';
+                    for (var i = activeMaskset['tests'][testPos].cardinality; i > loopend; i--) {
+                        chrs += getBufferElement(buffer, testPos - (i - 1));
+                    }
+
+                    if (c) {
+                        chrs += c;
+                    }
+                    //return is false or a json object => { pos: ??, c: ??} or true
+                    return activeMaskset['tests'][testPos].fn != null ? activeMaskset['tests'][testPos].fn.test(chrs, buffer, position, strict, opts) : false;
+                }
+
+                if (strict) return _isValid(pos, getActiveMaskSet()); //only check validity in current mask when validating strict
+
                 var results = [], result = false, currentActiveMasksetIndex = activeMasksetIndex;
                 $.each(masksets, function (index, value) {
                     var activeMaskset = this;
@@ -342,16 +357,7 @@
                     }
 					if (isRTL ? activeMaskset['lastValidPosition'] <= opts.numericInput ? getMaskLength() : seekNext(buffer, maskPos) : activeMaskset['lastValidPosition'] >= seekPrevious(buffer, maskPos)) {
                       if (maskPos >= 0 && maskPos < getMaskLength()) {
-                            var testPos = determineTestPosition(maskPos), loopend = c ? 1 : 0, chrs = '';
-                            for (var i = activeMaskset['tests'][testPos].cardinality; i > loopend; i--) {
-                                chrs += getBufferElement(buffer, testPos - (i - 1));
-                            }
-
-                            if (c) {
-                                chrs += c;
-                            }
-                            //return is false or a json object => { pos: ??, c: ??} or true
-                            results[index] = activeMaskset['tests'][testPos].fn != null ? activeMaskset['tests'][testPos].fn.test(chrs, buffer, maskPos, strict, opts) : false;
+                            results[index] = _isValid(maskPos, activeMaskset);
                             if (results[index] !== false) {
                                 if (results[index] === true) {
                                     results[index] = { "pos": maskPos }; //always take a possible corrected maskposition into account
@@ -1086,9 +1092,10 @@
                     var input = this, $input = $(input);
 
                     e = e || window.event;
-                    var k = e.which || e.charCode || e.keyCode;
+                    var k = e.which || e.charCode || e.keyCode,
+                        c = String.fromCharCode(k);
 
-                    if (opts.numericInput && k == opts.radixPoint) {
+                    if (opts.numericInput && c == opts.radixPoint) {
                         var nptStr = input._valueGet();
                         var radixPosition = nptStr.indexOf(opts.radixPoint);
                         caret(input, seekNext(buffer, radixPosition != -1 ? radixPosition : getMaskLength()));
@@ -1100,7 +1107,7 @@
                         if (k) {
                             $input.trigger('input');
 
-                            var pos = caret(input), c = String.fromCharCode(k), maskL = getMaskLength();
+                            var pos = caret(input), maskL = getMaskLength();
                             clearBuffer(buffer, pos.begin, pos.end);
 
                             if (isRTL) {
