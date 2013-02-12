@@ -3,7 +3,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.2.0
+Version: 1.3.0
 
 Optional extensions on the jquery.inputmask base
 */
@@ -16,16 +16,16 @@ Optional extensions on the jquery.inputmask base
             repeat: 10,
             greedy: false,
             numericInput: true,
-			digits: "*", //numer of digits
+            digits: "*", //numer of digits
             groupSeparator: ",", // | "."
             groupSize: 3,
             autoGroup: false,
             regex: {
                 number: function (groupSeparator, groupSize, radixPoint, digits) {
-                	var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, groupSeparator);
-                	var escapedRadixPoint = $.inputmask.escapeRegex.call(this, radixPoint);
-                	var digitExpression = isNaN(digits) ? digits : '{0,' + digits + '}'
-                    return new RegExp("^[\+\-]?(\\d{1," + groupSize + "}" + escapedGroupSeparator + ")?((\\d{" + groupSize + "}" + escapedGroupSeparator + ")|\\d)*[" + escapedRadixPoint + "]?\\d" + digitExpression + "$");
+                    var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, groupSeparator);
+                    var escapedRadixPoint = $.inputmask.escapeRegex.call(this, radixPoint);
+                    var digitExpression = isNaN(digits) ? digits : '{0,' + digits + '}';
+                    return new RegExp("^[\+-]?(\\d+|\\d{1," + groupSize + "}((" + escapedGroupSeparator + "\\d{" + groupSize + "})?)+)(" + escapedRadixPoint + "\\d" + digitExpression + ")?$");
                 }
             },
             onKeyDown: function (e, opts) {
@@ -38,7 +38,7 @@ Optional extensions on the jquery.inputmask base
                             if (nptStr[radixPosition + i]) nptStr = nptStr + "0";
                         }
                         if (nptStr !== $input.val()) {
-                        	$input.val(nptStr);
+                            $input.val(nptStr);
                         }
                     }
                 }
@@ -46,28 +46,33 @@ Optional extensions on the jquery.inputmask base
             definitions: {
                 '~': { //real number
                     validator: function (chrs, buffer, pos, strict, opts) {
-                        var cbuf = buffer.slice();
+                        var cbuf = strict ? buffer.slice(0, pos) : buffer.slice();
                         cbuf.splice(pos, 0, chrs);
                         var bufferStr = cbuf.join('');
-                        if (/^0[\d|-]$/.test(bufferStr)) { //handle first char
-                            buffer[0]= "";
-                            return { "pos": 1, "c": "" };
-                        }
+                        if (opts.autoGroup) //strip groupseparator
+                            bufferStr = bufferStr.replace(new RegExp("\\" + opts.groupSeparator, "g"), '');
+
                         var isValid = opts.regex.number(opts.groupSeparator, opts.groupSize, opts.radixPoint, opts.digits).test(bufferStr);
                         if (!isValid) {
-                            if (strict) { //shiftL & shiftR use strict only validate from 0 to position
-                                var cbuf = buffer.slice(0, pos);
-                                cbuf.splice(pos, 0, chrs);
-                                var bufferStr = cbuf.join('');
-                                var isValid = opts.regex.number(opts.groupSeparator, opts.groupSize, opts.radixPoint, opts.digits).test(bufferStr);
-                            }
-                            else {
-                                if (bufferStr == opts.radixPoint) {
-                                    isValid = opts.regex.number(opts.groupSeparator, opts.groupSize, opts.radixPoint, opts.digits).test("0" + bufferStr);
-                                    if (isValid) {
-                                        buffer[pos] = "0";
-                                        pos++;
-                                        return { "pos": pos };
+                            //let's help the regex a bit
+                            bufferStr += "0";
+                            isValid = opts.regex.number(opts.groupSeparator, opts.groupSize, opts.radixPoint, opts.digits).test(bufferStr);
+                            if (!isValid) {
+                                //make a valid group
+                                var lastGroupSeparator = bufferStr.lastIndexOf(opts.groupSeparator);
+                                for (i = bufferStr.length - lastGroupSeparator; i <= 3; i++) {
+                                    bufferStr += "0";
+                                }
+
+                                isValid = opts.regex.number(opts.groupSeparator, opts.groupSize, opts.radixPoint, opts.digits).test(bufferStr);
+                                if (!isValid && !strict) {
+                                    if (chrs == opts.radixPoint) {
+                                        isValid = opts.regex.number(opts.groupSeparator, opts.groupSize, opts.radixPoint, opts.digits).test("0" + bufferStr + "0");
+                                        if (isValid) {
+                                            buffer[pos] = "0";
+                                            pos++;
+                                            return { "pos": pos };
+                                        }
                                     }
                                 }
                             }
@@ -86,7 +91,6 @@ Optional extensions on the jquery.inputmask base
                             buffer.length++;
                             return { "pos": buffer.length };
                         }
-
                         return isValid;
                     },
                     cardinality: 1,
@@ -98,11 +102,11 @@ Optional extensions on the jquery.inputmask base
         },
         'non-negative-decimal': {
             regex: {
-                 number: function (groupSeparator, groupSize, radixPoint, digits) {
-                	var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, groupSeparator);
-                	var escapedRadixPoint = $.inputmask.escapeRegex.call(this, radixPoint);
-                	var digitExpression = isNaN(digits) ? digits : '{0,' + digits + '}'
-                     return new RegExp("^[\+]?(\\d{1," + groupSize + "}" + escapedGroupSeparator + ")?((\\d{" + groupSize + "}" + escapedGroupSeparator + ")|\\d)*[" + escapedRadixPoint + "]?\\d" + digitExpression + "$");
+                number: function (groupSeparator, groupSize, radixPoint, digits) {
+                    var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, groupSeparator);
+                    var escapedRadixPoint = $.inputmask.escapeRegex.call(this, radixPoint);
+                    var digitExpression = isNaN(digits) ? digits : '{0,' + digits + '}'
+                    return new RegExp("^[\+]?(\\d+|\\d{1," + groupSize + "}((" + escapedGroupSeparator + "\\d{" + groupSize + "})?)+)(" + escapedRadixPoint + "\\d" + digitExpression + ")?$");
                 }
             },
             alias: "decimal"
