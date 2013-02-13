@@ -3,7 +3,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.0
+Version: 1.3.1
 
 Optional extensions on the jquery.inputmask base
 */
@@ -46,6 +46,7 @@ Optional extensions on the jquery.inputmask base
             definitions: {
                 '~': { //real number
                     validator: function (chrs, buffer, pos, strict, opts) {
+                        if (chrs == "") return false;
                         var cbuf = strict ? buffer.slice(0, pos) : buffer.slice();
                         cbuf.splice(pos, 0, chrs);
                         var bufferStr = cbuf.join('');
@@ -85,10 +86,10 @@ Optional extensions on the jquery.inputmask base
                             while (reg.test(bufVal)) {
                                 bufVal = bufVal.replace(reg, '$1' + opts.groupSeparator + '$2');
                             }
+                            buffer.length = bufVal.length -1;
                             for (var i = 0, l = bufVal.length - 1; i < l; i++) {
                                 buffer[i] = bufVal.charAt(i);
                             }
-                            buffer.length++;
                             return { "pos": buffer.length };
                         }
                         return isValid;
