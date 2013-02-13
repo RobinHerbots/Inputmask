@@ -3,7 +3,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.1
+Version: 1.3.1a
 
 Optional extensions on the jquery.inputmask base
 */
@@ -50,10 +50,12 @@ Optional extensions on the jquery.inputmask base
                         var cbuf = strict ? buffer.slice(0, pos) : buffer.slice();
                         cbuf.splice(pos, 0, chrs);
                         var bufferStr = cbuf.join('');
+                        console.log("bufferstr '" + bufferStr + "'");
                         if (opts.autoGroup) //strip groupseparator
                             bufferStr = bufferStr.replace(new RegExp("\\" + opts.groupSeparator, "g"), '');
-
+                        console.log("bufferstr '" + bufferStr + "'");
                         var isValid = opts.regex.number(opts.groupSeparator, opts.groupSize, opts.radixPoint, opts.digits).test(bufferStr);
+                        console.log("isValid '" + isValid + "'");
                         if (!isValid) {
                             //let's help the regex a bit
                             bufferStr += "0";
@@ -85,8 +87,8 @@ Optional extensions on the jquery.inputmask base
                             var reg = new RegExp('(-?\\d+)(\\d{' + opts.groupSize + '})');
                             while (reg.test(bufVal)) {
                                 bufVal = bufVal.replace(reg, '$1' + opts.groupSeparator + '$2');
+                                buffer.length = bufVal.length - 1;
                             }
-                            buffer.length = bufVal.length -1;
                             for (var i = 0, l = bufVal.length - 1; i < l; i++) {
                                 buffer[i] = bufVal.charAt(i);
                             }
