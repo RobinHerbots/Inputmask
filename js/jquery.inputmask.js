@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.0.8a
+* Version: 2.0.9
 */
 
 (function ($) {
@@ -1020,7 +1020,8 @@
                         } else if ((pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode)) {
                             clearBuffer(buffer, pos.begin, pos.end);
                             determineActiveMasksetIndex(buffer, pos.begin, activeMasksetIndex);
-                            writeBuffer(input, buffer, isRTL ? checkVal(input, buffer, false) : pos.begin);
+                            writeBuffer(input, buffer);
+                            caret(isRTL ? checkVal(input, buffer, false) : pos.begin);
                         } else {
                             var beginPos = pos.begin - (k == opts.keyCode.DELETE ? 0 : 1);
                             if (beginPos < firstMaskPos && k == opts.keyCode.DELETE) {
