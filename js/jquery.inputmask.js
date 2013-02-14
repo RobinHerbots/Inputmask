@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.2.9
+* Version: 1.3.0
 */
 
 (function ($) {
@@ -50,7 +50,8 @@
                         cardinality: 1
                     }
                 },
-                keyCode: { ALT: 18, BACKSPACE: 8, CAPS_LOCK: 20, COMMA: 188, COMMAND: 91, COMMAND_LEFT: 91, COMMAND_RIGHT: 93, CONTROL: 17, DELETE: 46, DOWN: 40, END: 35, ENTER: 13, ESCAPE: 27, HOME: 36, INSERT: 45, LEFT: 37, MENU: 93, NUMPAD_ADD: 107, NUMPAD_DECIMAL: 110, NUMPAD_DIVIDE: 111, NUMPAD_ENTER: 108,
+                keyCode: {
+                    ALT: 18, BACKSPACE: 8, CAPS_LOCK: 20, COMMA: 188, COMMAND: 91, COMMAND_LEFT: 91, COMMAND_RIGHT: 93, CONTROL: 17, DELETE: 46, DOWN: 40, END: 35, ENTER: 13, ESCAPE: 27, HOME: 36, INSERT: 45, LEFT: 37, MENU: 93, NUMPAD_ADD: 107, NUMPAD_DECIMAL: 110, NUMPAD_DIVIDE: 111, NUMPAD_ENTER: 108,
                     NUMPAD_MULTIPLY: 106, NUMPAD_SUBTRACT: 109, PAGE_DOWN: 34, PAGE_UP: 33, PERIOD: 190, RIGHT: 39, SHIFT: 16, SPACE: 32, TAB: 9, UP: 38, WINDOWS: 91
                 },
                 ignorables: [8, 9, 13, 16, 17, 18, 20, 27, 33, 34, 35, 36, 37, 38, 39, 40, 46, 91, 93, 108]
@@ -141,13 +142,13 @@
                         else return "";
                     case "hasMaskedValue": //check wheter the returned value is masked or not; currently only works reliable when using jquery.val fn to retrieve the value 
                         return this.data('inputmask') ? !this.data('inputmask')['autoUnmask'] : false;
-					case "isComplete":
-						var tests = this.data('inputmask')['tests'];
+                    case "isComplete":
+                        var tests = this.data('inputmask')['tests'];
                         var _buffer = this.data('inputmask')['_buffer'];
                         opts.greedy = this.data('inputmask')['greedy'];
                         opts.repeat = this.data('inputmask')['repeat'];
                         opts.definitions = this.data('inputmask')['definitions'];
-						return isComplete(this[0]);
+                        return isComplete(this[0]);
                     default:
                         //check if the fn is an alias
                         if (!resolveAlias(fn)) {
@@ -177,7 +178,7 @@
                 });
             }
 
-            //helper     functions
+            //helper functions
             function isInputEventSupported(eventName) {
                 var el = document.createElement('input'),
 		        eventName = 'on' + eventName,
@@ -389,7 +390,7 @@
                 }
             };
             function clearBuffer(buffer, start, end) {
-                for (var i = start, maskL = getMaskLength(); i < end && i < maskL; i++) {
+                for (var i = start, maskL = getMaskLength() ; i < end && i < maskL; i++) {
                     setBufferElement(buffer, i, getBufferElement(_buffer.slice(), i));
                 }
             };
@@ -427,8 +428,8 @@
                             var c = inputValue[i];
                             if ((np = isValid(pos, c, buffer, !clearInvalid)) !== false) {
                                 if (np !== true) {
-                                    pos = np.pos || pos; //set new position from isValid
-                                    c = np.c || c; //set new char from isValid
+                                    pos = np.pos != undefined ? np.pos : pos; //set new position from isValid
+                                    c = np.c != undefined ? np.c : c; //set new char from isValid
                                 }
                                 setBufferElement(buffer, pos, c);
                                 lastMatch = checkPosition = pos;
@@ -543,8 +544,8 @@
                     return caretpos;
                 }
             };
-			
-			function isComplete(npt) {
+
+            function isComplete(npt) {
                 var complete = true, nptValue = npt._valueGet(), ml = nptValue.length;
                 for (var i = 0; i < ml; i++) {
                     if (isMask(i) && nptValue.charAt(i) == getPlaceHolder(i)) {
@@ -809,7 +810,7 @@
                 //shift chars to left from start to end and put c at end position if defined
                 function shiftL(start, end, c) {
                     while (!isMask(start) && start - 1 >= 0) start--;
-                    for (var i = start; i < end && i < getMaskLength(); i++) {
+                    for (var i = start; i < end && i < getMaskLength() ; i++) {
                         if (isMask(i)) {
                             setReTargetPlaceHolder(buffer, i);
                             var j = seekNext(buffer, i);
@@ -836,7 +837,7 @@
                     return start; //return the used start position
                 }
                 function shiftR(start, end, c, full) { //full => behave like a push right ~ do not stop on placeholders
-                    for (var i = start; i <= end && i < getMaskLength(); i++) {
+                    for (var i = start; i <= end && i < getMaskLength() ; i++) {
                         if (isMask(i)) {
                             var t = getBufferElement(buffer, i);
                             setBufferElement(buffer, i, c);
@@ -980,8 +981,8 @@
                                 var p = opts.numericInput ? pos.end : seekPrevious(buffer, pos.end), np;
                                 if ((np = isValid(p == maskL || getBufferElement(buffer, p) == opts.radixPoint ? seekPrevious(buffer, p) : p, c, buffer, false)) !== false) {
                                     if (np !== true) {
-                                        p = np.pos || pos; //set new position from isValid
-                                        c = np.c || c; //set new char from isValid
+                                        p = np.pos != undefined ? np.pos : p; //set new position from isValid
+                                        c = np.c != undefined ? np.c : c; //set new char from isValid
                                     }
 
                                     var firstUnmaskedPosition = firstMaskPos;
@@ -1014,8 +1015,8 @@
                                 prepareBuffer(buffer, p, isRTL);
                                 if ((np = isValid(p, c, buffer, false)) !== false) {
                                     if (np !== true) {
-                                        p = np.pos || p; //set new position from isValid
-                                        c = np.c || c; //set new char from isValid
+                                        p = np.pos != undefined ? np.pos : p; //set new position from isValid
+                                        c = np.c != undefined ? np.c : c; //set new char from isValid
                                     }
                                     if (opts.insertMode == true) {
                                         var lastUnmaskedPosition = getMaskLength();
