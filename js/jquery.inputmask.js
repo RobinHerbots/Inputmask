@@ -3,11 +3,12 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.0.9
+* Version: 2.0.9b
 */
 
 (function ($) {
-    if ($.fn.inputmask == undefined) {        $.inputmask = {
+    if ($.fn.inputmask == undefined) {
+        $.inputmask = {
             //options default
             defaults: {
                 placeholder: "_",
@@ -35,7 +36,7 @@
                 //numeric basic properties
                 numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
                 radixPoint: ".", // | ","
-               //numeric basic properties
+                //numeric basic properties
                 definitions: {
                     '9': {
                         validator: "[0-9]",
@@ -50,7 +51,8 @@
                         cardinality: 1
                     }
                 },
-                keyCode: { ALT: 18, BACKSPACE: 8, CAPS_LOCK: 20, COMMA: 188, COMMAND: 91, COMMAND_LEFT: 91, COMMAND_RIGHT: 93, CONTROL: 17, DELETE: 46, DOWN: 40, END: 35, ENTER: 13, ESCAPE: 27, HOME: 36, INSERT: 45, LEFT: 37, MENU: 93, NUMPAD_ADD: 107, NUMPAD_DECIMAL: 110, NUMPAD_DIVIDE: 111, NUMPAD_ENTER: 108,
+                keyCode: {
+                    ALT: 18, BACKSPACE: 8, CAPS_LOCK: 20, COMMA: 188, COMMAND: 91, COMMAND_LEFT: 91, COMMAND_RIGHT: 93, CONTROL: 17, DELETE: 46, DOWN: 40, END: 35, ENTER: 13, ESCAPE: 27, HOME: 36, INSERT: 45, LEFT: 37, MENU: 93, NUMPAD_ADD: 107, NUMPAD_DECIMAL: 110, NUMPAD_DIVIDE: 111, NUMPAD_ENTER: 108,
                     NUMPAD_MULTIPLY: 106, NUMPAD_SUBTRACT: 109, PAGE_DOWN: 34, PAGE_UP: 33, PERIOD: 190, RIGHT: 39, SHIFT: 16, SPACE: 32, TAB: 9, UP: 38, WINDOWS: 91
                 },
                 ignorables: [8, 9, 13, 16, 17, 18, 20, 27, 33, 34, 35, 36, 37, 38, 39, 40, 46, 91, 93, 108]
@@ -143,13 +145,13 @@
                         else return "";
                     case "hasMaskedValue": //check wheter the returned value is masked or not; currently only works reliable when using jquery.val fn to retrieve the value 
                         return this.data('inputmask') ? !this.data('inputmask')['autoUnmask'] : false;
-					case "isComplete":
-						masksets = this.data('inputmask')['masksets'];
+                    case "isComplete":
+                        masksets = this.data('inputmask')['masksets'];
                         activeMasksetIndex = this.data('inputmask')['activeMasksetIndex'];
                         opts.greedy = this.data('inputmask')['greedy'];
                         opts.repeat = this.data('inputmask')['repeat'];
                         opts.definitions = this.data('inputmask')['definitions'];
-						return isComplete(this[0]);
+                        return isComplete(this[0]);
                     default:
                         //check if the fn is an alias
                         if (!resolveAlias(fn)) {
@@ -175,7 +177,7 @@
                 });
             }
 
-            //helper     functions
+            //helper functions
             function isInputEventSupported(eventName) {
                 var el = document.createElement('input'),
 		        eventName = 'on' + eventName,
@@ -284,12 +286,14 @@
                     var masks = maskParts[0].split(opts.optionalmarker.start);
                     if (masks.length > 1) {
                         newMask = maskPrefix + masks[0] + markOptional(masks[1]) + (maskParts.length > 1 ? maskParts[1] : "");
-                        ms.push({ "_buffer": getMaskTemplate(newMask),
+                        ms.push({
+                            "_buffer": getMaskTemplate(newMask),
                             "tests": getTestingChain(newMask),
                             "lastValidPosition": 0
                         });
                         newMask = maskPrefix + masks[0] + (maskParts.length > 1 ? maskParts[1] : "");
-                        ms.push({ "_buffer": getMaskTemplate(newMask),
+                        ms.push({
+                            "_buffer": getMaskTemplate(newMask),
                             "tests": getTestingChain(newMask),
                             "lastValidPosition": 0
                         });
@@ -300,7 +304,8 @@
                     }
                     else {
                         newMask = maskPrefix + maskParts;
-                        ms.push({ "_buffer": getMaskTemplate(newMask),
+                        ms.push({
+                            "_buffer": getMaskTemplate(newMask),
                             "tests": getTestingChain(newMask),
                             "lastValidPosition": 0
                         });
@@ -355,8 +360,8 @@
 
                         maskPos = isRTL ? seekPrevious(buffer, pos) : seekNext(buffer, pos);
                     }
-					if (isRTL ? activeMaskset['lastValidPosition'] <= opts.numericInput ? getMaskLength() : seekNext(buffer, maskPos) : activeMaskset['lastValidPosition'] >= seekPrevious(buffer, maskPos)) {
-                      if (maskPos >= 0 && maskPos < getMaskLength()) {
+                    if (isRTL ? activeMaskset['lastValidPosition'] <= opts.numericInput ? getMaskLength() : seekNext(buffer, maskPos) : activeMaskset['lastValidPosition'] >= seekPrevious(buffer, maskPos)) {
+                        if (maskPos >= 0 && maskPos < getMaskLength()) {
                             results[index] = _isValid(maskPos, activeMaskset);
                             if (results[index] !== false) {
                                 if (results[index] === true) {
@@ -498,7 +503,7 @@
                 }
             };
             function clearBuffer(buffer, start, end) {
-                for (var i = start, maskL = getMaskLength(); i < end && i < maskL; i++) {
+                for (var i = start, maskL = getMaskLength() ; i < end && i < maskL; i++) {
                     setBufferElement(buffer, i, getBufferElement(getActiveBuffer().slice(), i));
                 }
             };
@@ -536,8 +541,8 @@
                             var c = inputValue[i];
                             if ((np = isValid(pos, c, buffer, !clearInvalid, isRTL)) !== false) {
                                 if (np !== true) {
-                                    pos = np.pos || pos; //set new position from isValid
-                                    c = np.c || c; //set new char from isValid
+                                    pos = np.pos != undefined ? np.pos : pos; //set new position from isValid
+                                    c = np.c != undefined ? np.c : c; //set new char from isValid
                                 }
                                 setBufferElement(buffer, pos, c);
                                 lastMatch = checkPosition = pos;
@@ -653,30 +658,30 @@
                     return caretpos;
                 }
             };
-			
-	       function isComplete(npt) {
-                    var complete = false, nptValue = npt._valueGet(), ml = nptValue.length
-                    currentActiveMasksetIndex = activeMasksetIndex, highestValidPosition = 0;
-                    $.each(masksets, function (ndx, ms) {
-                        activeMasksetIndex = ndx;
-                        var aml = getMaskLength();
-                        if (ms["lastValidPosition"] >= highestValidPosition && ms["lastValidPosition"] == (aml - 1)) {
-                            var msComplete = true;
-                            for (var i = 0; i < aml; i++) {
-                                var mask = isMask(i);
-                                if ((mask && nptValue.charAt(i) == getPlaceHolder(i)) || (!mask && nptValue.charAt(i) != getActiveBuffer()[i])) {
-                                    msComplete = false;
-                                    break;
-                                }
+
+            function isComplete(npt) {
+                var complete = false, nptValue = npt._valueGet(), ml = nptValue.length
+                currentActiveMasksetIndex = activeMasksetIndex, highestValidPosition = 0;
+                $.each(masksets, function (ndx, ms) {
+                    activeMasksetIndex = ndx;
+                    var aml = getMaskLength();
+                    if (ms["lastValidPosition"] >= highestValidPosition && ms["lastValidPosition"] == (aml - 1)) {
+                        var msComplete = true;
+                        for (var i = 0; i < aml; i++) {
+                            var mask = isMask(i);
+                            if ((mask && nptValue.charAt(i) == getPlaceHolder(i)) || (!mask && nptValue.charAt(i) != getActiveBuffer()[i])) {
+                                msComplete = false;
+                                break;
                             }
-                            complete = complete || msComplete;
-                            if (complete) //break loop
-                                return false;
                         }
-                        highestValidPosition = ms["lastValidPosition"];
-                    });
-                    activeMasksetIndex = currentActiveMasksetIndex; //reset activeMaskset
-                    return complete;
+                        complete = complete || msComplete;
+                        if (complete) //break loop
+                            return false;
+                    }
+                    highestValidPosition = ms["lastValidPosition"];
+                });
+                activeMasksetIndex = currentActiveMasksetIndex; //reset activeMaskset
+                return complete;
             }
 
             function mask(el) {
@@ -750,7 +755,7 @@
                     if (nptValue != undoBuffer) {
                         $input.change();
                     }
-					if (opts.clearMaskOnLostFocus && nptValue != '') {
+                    if (opts.clearMaskOnLostFocus && nptValue != '') {
                         if (nptValue == getActiveBuffer().join(''))
                             input._valueSet('');
                         else { //clearout optional tail of the mask
@@ -941,7 +946,7 @@
                 //shift chars to left from start to end and put c at end position if defined
                 function shiftL(start, end, c) {
                     while (!isMask(start) && start - 1 >= 0) start--;
-                    for (var i = start; i < end && i < getMaskLength(); i++) {
+                    for (var i = start; i < end && i < getMaskLength() ; i++) {
                         if (isMask(i)) {
                             setReTargetPlaceHolder(buffer, i);
                             var j = seekNext(buffer, i);
@@ -968,7 +973,7 @@
                     return start; //return the used start position
                 }
                 function shiftR(start, end, c, full) { //full => behave like a push right ~ do not stop on placeholders
-                    for (var i = start; i <= end && i < getMaskLength(); i++) {
+                    for (var i = start; i <= end && i < getMaskLength() ; i++) {
                         if (isMask(i)) {
                             var t = getBufferElement(buffer, i);
                             setBufferElement(buffer, i, c);
@@ -1117,8 +1122,8 @@
                                     var refresh = false;
                                     if (np !== true) {
                                         refresh = np["refresh"]; //only rewrite buffer from isValid
-                                        p = np.pos || p; //set new position from isValid
-                                        c = np.c || c; //set new char from isValid
+                                        p = np.pos != undefined ? np.pos : p; //set new position from isValid
+                                        c = np.c != undefined ? np.c : c; //set new char from isValid
                                     }
                                     if (refresh !== true) {
                                         var firstUnmaskedPosition = firstMaskPos;
@@ -1154,8 +1159,8 @@
                                     var refresh = false;
                                     if (np !== true) {
                                         refresh = np["refresh"]; //only rewrite buffer from isValid
-                                        p = np.pos || p; //set new position from isValid
-                                        c = np.c || c; //set new char from isValid
+                                        p = np.pos != undefined ? np.pos : p; //set new position from isValid
+                                        c = np.c != undefined ? np.c : c; //set new char from isValid
                                     }
                                     if (refresh !== true) {
                                         if (opts.insertMode == true) {

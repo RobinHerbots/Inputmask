@@ -3,7 +3,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.1a
+Version: 1.3.2
 
 Optional extensions on the jquery.inputmask base
 */
@@ -79,17 +79,22 @@ Optional extensions on the jquery.inputmask base
                         }
                         //grouping
                         if (opts.autoGroup && isValid != false && !strict) {
-                            var bufVal = buffer.join('') + chrs;
+                            var cbuf = buffer.slice();
+                            cbuf.splice(pos, 0, "?"); //set position indicator
+                            var bufVal = cbuf.join('');
                             bufVal = bufVal.replace(new RegExp("\\" + opts.groupSeparator, "g"), '');
-                            var reg = new RegExp('(-?\\d+)(\\d{' + opts.groupSize + '})');
+                            var reg = new RegExp('(-?[\\d?]+)([\\d?]{' + opts.groupSize + '})');
                             while (reg.test(bufVal)) {
                                 bufVal = bufVal.replace(reg, '$1' + opts.groupSeparator + '$2');
-                                buffer.length = bufVal.length - 1;
                             }
-                            for (var i = 0, l = bufVal.length - 1; i < l; i++) {
+                            buffer.length = bufVal.length; //align the length
+                            for (var i = 0, l = bufVal.length; i < l; i++) {
                                 buffer[i] = bufVal.charAt(i);
                             }
-                            return { "pos": buffer.length };
+                            var newPos = buffer.indexOf("?");
+                            buffer.splice(newPos, 1);
+
+                            return { "pos": newPos };
                         }
                         return isValid;
                     },
