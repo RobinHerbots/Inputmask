@@ -80,11 +80,11 @@ Optional extensions on the jquery.inputmask base
             mask: "i.i.i.i",
             definitions: {
                 'i': {
-                    validator: "[0-255]",
+                    validator: "25[0-5]|2[0-4][0-9]|[01][0-9][0-9]",
                     cardinality: 3,
                     prevalidator: [
                                 { validator: "[0-2]", cardinality: 1 },
-                                { validator: "[0-25]", cardinality: 2 },
+                                { validator: "2[0-5]|[01][0-9]", cardinality: 2 },
                     ]
                 }
             }
