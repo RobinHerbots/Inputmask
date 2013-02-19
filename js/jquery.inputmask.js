@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.3.0
+* Version: 1.3.1
 */
 
 (function ($) {
@@ -53,8 +53,7 @@
                 keyCode: {
                     ALT: 18, BACKSPACE: 8, CAPS_LOCK: 20, COMMA: 188, COMMAND: 91, COMMAND_LEFT: 91, COMMAND_RIGHT: 93, CONTROL: 17, DELETE: 46, DOWN: 40, END: 35, ENTER: 13, ESCAPE: 27, HOME: 36, INSERT: 45, LEFT: 37, MENU: 93, NUMPAD_ADD: 107, NUMPAD_DECIMAL: 110, NUMPAD_DIVIDE: 111, NUMPAD_ENTER: 108,
                     NUMPAD_MULTIPLY: 106, NUMPAD_SUBTRACT: 109, PAGE_DOWN: 34, PAGE_UP: 33, PERIOD: 190, RIGHT: 39, SHIFT: 16, SPACE: 32, TAB: 9, UP: 38, WINDOWS: 91
-                },
-                ignorables: [8, 9, 13, 16, 17, 18, 20, 27, 33, 34, 35, 36, 37, 38, 39, 40, 46, 91, 93, 108]
+                }
             },
             val: $.fn.val, //store the original jquery val function
             escapeRegex: function (str) {
@@ -590,7 +589,6 @@
                 var buffer = _buffer.slice(),
                 undoBuffer = el._valueGet(),
                 skipKeyPressEvent = false, //Safari 5.1.x - modal dialog fires keypress twice workaround
-                ignorable = false,
                 lastPosition = -1,
                 firstMaskPos = seekNext(buffer, -1),
                 lastMaskPos = seekPrevious(buffer, getMaskLength()),
@@ -909,26 +907,22 @@
                         if (input._valueGet() == _buffer.join(''))
                             $(input).trigger('cleared');
 
-                        return false;
+                        e.preventDefault(); //stop default action but allow propagation
                     } else if (k == opts.keyCode.END || k == opts.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
                         setTimeout(function () {
                             var caretPos = checkVal(input, buffer, false, true);
                             if (!opts.insertMode && caretPos == getMaskLength() && !e.shiftKey) caretPos--;
                             caret(input, e.shiftKey ? pos.begin : caretPos, caretPos);
                         }, 0);
-                        return false;
                     } else if (k == opts.keyCode.HOME || k == opts.keyCode.PAGE_UP) {//Home or page_up
                         caret(input, 0, e.shiftKey ? pos.begin : 0);
-                        return false;
                     }
                     else if (k == opts.keyCode.ESCAPE) {//escape
                         input._valueSet(undoBuffer);
                         caret(input, 0, checkVal(input, buffer));
-                        return false;
                     } else if (k == opts.keyCode.INSERT) {//insert
                         opts.insertMode = !opts.insertMode;
                         caret(input, !opts.insertMode && pos.begin == getMaskLength() ? pos.begin - 1 : pos.begin);
-                        return false;
                     } else if (e.ctrlKey && k == 88) {
                         setTimeout(function () {
                             caret(input, checkVal(input, buffer, true));
@@ -938,17 +932,14 @@
                             var caretPos = pos.begin == pos.end ? pos.end + 1 : pos.end;
                             caretPos = caretPos < getMaskLength() ? caretPos : pos.end;
                             caret(input, e.shiftKey ? pos.begin : caretPos, e.shiftKey ? caretPos + 1 : caretPos);
-                            return false;
                         } else if (k == opts.keyCode.LEFT) {//left
                             var caretPos = pos.begin - 1;
                             caretPos = caretPos > 0 ? caretPos : 0;
                             caret(input, caretPos, e.shiftKey ? pos.end : caretPos);
-                            return false;
                         }
                     }
 
                     opts.onKeyDown.call(this, e, opts); //extra stuff to execute on keydown
-                    ignorable = $.inArray(k, opts.ignorables) != -1;
                 }
 
                 function keypressEvent(e) {
@@ -968,13 +959,13 @@
                         caret(input, seekNext(buffer, radixPosition != -1 ? radixPosition : getMaskLength()));
                     }
 
-                    if (e.ctrlKey || e.altKey || e.metaKey || ignorable) {//Ignore
+                    if (e.ctrlKey || e.altKey || e.metaKey) {
                         return true;
                     } else {
                         if (k) {
                             $input.trigger('input');
 
-                            var pos = caret(input), maskL = getMaskLength();
+                            var pos = caret(input), maskL = getMaskLength(), writeOutBuffer = true;
                             clearBuffer(buffer, pos.begin, pos.end);
 
                             if (isRTL) {
@@ -1001,13 +992,15 @@
                                                 maskL = buffer.length;
                                             }
                                             shiftL(firstUnmaskedPosition, opts.numericInput ? seekPrevious(buffer, p) : p, c);
-                                        } else return false;
+                                        } else writeOutBuffer = false;
                                     } else setBufferElement(buffer, opts.numericInput ? seekPrevious(buffer, p) : p, c);
-                                    writeBuffer(input, buffer, opts.numericInput && p == 0 ? seekNext(buffer, p) : p);
-                                    setTimeout(function () { //timeout needed for IE
-                                        if (isComplete(input))
-                                            $input.trigger("complete");
-                                    }, 0);
+                                    if (writeOutBuffer) {
+                                        writeBuffer(input, buffer, opts.numericInput && p == 0 ? seekNext(buffer, p) : p);
+                                        setTimeout(function () { //timeout needed for IE
+                                            if (isComplete(input))
+                                                $input.trigger("complete");
+                                        }, 0);
+                                    }
                                 } else if (android) writeBuffer(input, buffer, pos.begin);
                             }
                             else {
@@ -1026,19 +1019,21 @@
                                         }
                                         if (lastUnmaskedPosition >= p)
                                             shiftR(p, buffer.length, c);
-                                        else return false;
+                                        else writeOutBuffer = false;
                                     }
                                     else setBufferElement(buffer, p, c);
-                                    var next = seekNext(buffer, p);
-                                    writeBuffer(input, buffer, next);
+                                    if (writeOutBuffer) {
+                                        var next = seekNext(buffer, p);
+                                        writeBuffer(input, buffer, next);
 
-                                    setTimeout(function () { //timeout needed for IE
-                                        if (isComplete(input))
-                                            $input.trigger("complete");
-                                    }, 0);
+                                        setTimeout(function () { //timeout needed for IE
+                                            if (isComplete(input))
+                                                $input.trigger("complete");
+                                        }, 0);
+                                    }
                                 } else if (android) writeBuffer(input, buffer, pos.begin);
                             }
-                            return false;
+                            e.preventDefault();
                         }
                     }
                 }
