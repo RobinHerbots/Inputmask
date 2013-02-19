@@ -388,6 +388,7 @@ $(document).ready(function(){
 });
 ```
 
+With the decimal mask the caret will always jump to the integer part, until you type the radixpoint.  
 There is autocompletion on tab with decimal numbers.
 
 Define the radixpoint
@@ -410,3 +411,17 @@ $(document).ready(function(){
    $("#numeric").inputmask("decimal", { radixPoint: ",", autoGroup: true, groupSeparator: ".", groupSize: 3 });
 });
 ```
+
+### other aliases
+
+An ip adress alias for entering valid ip-addresses.
+
+```javascript
+$(document).ready(function(){
+   $(selector).inputmask("ip");
+});
+```
+
+You can find/modify/extend this alias in the jquery.inputmask.extensions.js
+
+
