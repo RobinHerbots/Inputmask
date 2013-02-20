@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.3.1b
+* Version: 1.3.2
 */
 
 (function ($) {
@@ -53,7 +53,8 @@
                 keyCode: {
                     ALT: 18, BACKSPACE: 8, CAPS_LOCK: 20, COMMA: 188, COMMAND: 91, COMMAND_LEFT: 91, COMMAND_RIGHT: 93, CONTROL: 17, DELETE: 46, DOWN: 40, END: 35, ENTER: 13, ESCAPE: 27, HOME: 36, INSERT: 45, LEFT: 37, MENU: 93, NUMPAD_ADD: 107, NUMPAD_DECIMAL: 110, NUMPAD_DIVIDE: 111, NUMPAD_ENTER: 108,
                     NUMPAD_MULTIPLY: 106, NUMPAD_SUBTRACT: 109, PAGE_DOWN: 34, PAGE_UP: 33, PERIOD: 190, RIGHT: 39, SHIFT: 16, SPACE: 32, TAB: 9, UP: 38, WINDOWS: 91
-                }
+                },
+                ignorables: [9, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123] //specify keycodes which should not be considered in the keypress event
             },
             val: $.fn.val, //store the original jquery val function
             escapeRegex: function (str) {
@@ -592,6 +593,7 @@
                 var buffer = _buffer.slice(),
                 undoBuffer = el._valueGet(),
                 skipKeyPressEvent = false, //Safari 5.1.x - modal dialog fires keypress twice workaround
+                ignorable = false,
                 lastPosition = -1,
                 firstMaskPos = seekNext(buffer, -1),
                 lastMaskPos = seekPrevious(buffer, getMaskLength()),
@@ -943,6 +945,7 @@
                     }
 
                     opts.onKeyDown.call(this, e, opts); //extra stuff to execute on keydown
+                    ignorable = $.inArray(k, opts.ignorables) != -1;
                 }
 
                 function keypressEvent(e) {
@@ -962,7 +965,7 @@
                         caret(input, seekNext(buffer, radixPosition != -1 ? radixPosition : getMaskLength()));
                     }
 
-                    if (e.ctrlKey || e.altKey || e.metaKey) {
+                    if (e.ctrlKey || e.altKey || e.metaKey || ignorable) {
                         return true;
                     } else {
                         if (k) {
