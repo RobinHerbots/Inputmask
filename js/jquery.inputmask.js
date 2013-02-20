@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.3.1
+* Version: 1.3.1b
 */
 
 (function ($) {
@@ -59,6 +59,13 @@
             escapeRegex: function (str) {
                 var specials = ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\'];
                 return str.replace(new RegExp('(\\' + specials.join('|\\') + ')', 'gim'), '\\$1');
+            },
+            getMaskLength: function (buffer, greedy, repeat) {
+                var calculatedLength = buffer.length;
+                if (!greedy && repeat > 1) {
+                    calculatedLength += (buffer.length * (repeat - 1));
+                }
+                return calculatedLength;
             }
         };
 
@@ -307,11 +314,7 @@
             }
 
             function getMaskLength() {
-                var calculatedLength = _buffer.length;
-                if (!opts.greedy && opts.repeat > 1) {
-                    calculatedLength += (_buffer.length * (opts.repeat - 1));
-                }
-                return calculatedLength;
+                return $.inputmask.getMaskLength(_buffer, opts.greedy, opts.repeat);
             }
 
             //pos: from position
