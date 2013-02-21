@@ -17,6 +17,7 @@ Highlights:
 - non-greedy masks
 - many features can be enabled/disabled/configured by options
 - supports readonly/disabled/dir="rtl" attributes
+- support data-inputmask attribute
 
 
 ## Usage:
@@ -341,6 +342,20 @@ $(document).ready(function(){
 
 ```html
 <input id="test" maxlength="4" />
+```
+### data-inputmask attribute
+
+You also apply an inputmask by using the data-inputmask attribute.  In the attribute you specify the options wanted for the inputmask.
+This gets parsed with $.parseJSON (for the moment), so be sure to use a welformed json-string without the {}.
+
+```html
+<input data-inputmask="'alias': 'date'" />
+<input data-inputmask="'mask': '9', 'repeat': '10', 'greedy' : 'false'" />
+```
+```javascript
+$(document).ready(function(){
+    $(":input").inputmask();
+});
 ```
 
 ## Compiling with Google Closure Compiler
