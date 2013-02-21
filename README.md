@@ -345,7 +345,7 @@ $(document).ready(function(){
 ```
 ### data-inputmask attribute
 
-You also apply an inputmask by using the data-inputmask attribute.  In the attribute you specify the options wanted for the inputmask.
+You can also apply an inputmask by using the data-inputmask attribute.  In the attribute you specify the options wanted for the inputmask.
 This gets parsed with $.parseJSON (for the moment), so be sure to use a welformed json-string without the {}.
 
 ```html
