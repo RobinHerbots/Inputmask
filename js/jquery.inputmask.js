@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.3.3
+* Version: 1.3.3b
 */
 
 (function ($) {
@@ -87,6 +87,9 @@
             if (typeof fn == "string") {
                 switch (fn) {
                     case "mask":
+                        //resolve possible aliases given by options
+                        resolveAlias(opts.alias, options);
+
                         //init buffer
                         var _buffer = getMaskTemplate();
                         var tests = getTestingChain();
@@ -159,7 +162,7 @@
                         return isComplete(this[0]);
                     default:
                         //check if the fn is an alias
-                        if (!resolveAlias(fn)) {
+                        if (!resolveAlias(fn, options)) {
                             //maybe fn is a mask so we try
                             //set mask
                             opts.mask = fn;
@@ -176,7 +179,7 @@
                 }
             } else if (typeof fn == "object") {
                 opts = $.extend(true, {}, $.inputmask.defaults, fn);
-                resolveAlias(opts.alias); //resolve aliases
+                resolveAlias(opts.alias, fn); //resolve aliases
                 //init buffer
                 var _buffer = getMaskTemplate();
                 var tests = getTestingChain();
@@ -193,6 +196,8 @@
                             attrOptions = attrOptions.replace(new RegExp("'", "g"), '"');
                             var options = $.parseJSON("{" + attrOptions + "}");
                             opts = $.extend(true, {}, $.inputmask.defaults, options);
+                            resolveAlias(opts.alias, options);
+                            opts.alias = undefined;
                             $(this).inputmask(opts);
                         } catch (ex) { } //need a more relax parseJSON
                     }
@@ -212,7 +217,7 @@
                 return isSupported;
             }
 
-            function resolveAlias(aliasStr) {
+            function resolveAlias(aliasStr, options) {
                 var aliasDefinition = opts.aliases[aliasStr];
                 if (aliasDefinition) {
                     if (aliasDefinition.alias) resolveAlias(aliasDefinition.alias); //alias is another alias
