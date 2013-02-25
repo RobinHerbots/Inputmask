@@ -20,9 +20,9 @@ Optional extensions on the jquery.inputmask base
             groupSeparator: ",", // | "."
             groupSize: 3,
             autoGroup: false,
-            postFormat: function (buffer, pos, opts) {
+            postFormat: function (buffer, pos, reformatOnly, opts) {
                 var cbuf = buffer.slice();
-                cbuf.splice(pos, 0, "?"); //set position indicator
+                if (!reformatOnly) cbuf.splice(pos, 0, "?"); //set position indicator
                 var bufVal = cbuf.join('');
                 if (opts.autoGroup || bufVal.indexOf(opts.groupSeparator) != -1) {
                     bufVal = bufVal.replace(new RegExp("\\" + opts.groupSeparator, "g"), '');
@@ -35,8 +35,8 @@ Optional extensions on the jquery.inputmask base
                 for (var i = 0, l = bufVal.length; i < l; i++) {
                     buffer[i] = bufVal.charAt(i);
                 }
-                var newPos = buffer.indexOf("?");
-                buffer.splice(newPos, 1);
+                var newPos = reformatOnly ? pos : buffer.indexOf("?");
+                if (!reformatOnly) buffer.splice(newPos, 1);
 
                 return newPos;
             },
@@ -63,9 +63,8 @@ Optional extensions on the jquery.inputmask base
                     }
                 } else if (e.keyCode == opts.keyCode.DELETE || e.keyCode == opts.keyCode.BACKSPACE) {
                     var nptStr = input._valueGet(),
-                    buffer = nptStr.split(''), c = buffer[0];
-                    opts.postFormat(buffer, 0, opts);
-                    buffer[0] = c;
+                    buffer = nptStr.split('');
+                    var newPos = opts.postFormat(buffer, 0, true, opts);
                     nptStr = buffer.join('');
                     input._valueSet(nptStr);
                 }
@@ -106,7 +105,7 @@ Optional extensions on the jquery.inputmask base
                         }
 
                         if (isValid != false && !strict) {
-                            var newPos = opts.postFormat(buffer, pos, opts);
+                            var newPos = opts.postFormat(buffer, pos, false, opts);
                             return { "pos": newPos };
                         }
                         return isValid;
