@@ -3,7 +3,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.3a
+Version: 1.3.3b
 
 Optional extensions on the jquery.inputmask base
 */
@@ -20,6 +20,26 @@ Optional extensions on the jquery.inputmask base
             groupSeparator: ",", // | "."
             groupSize: 3,
             autoGroup: false,
+            postFormat: function (buffer, pos, reformatOnly, opts) {
+                var cbuf = buffer.slice();
+                if (!reformatOnly) cbuf.splice(pos, 0, "?"); //set position indicator
+                var bufVal = cbuf.join('');
+                if (opts.autoGroup || bufVal.indexOf(opts.groupSeparator) != -1) {
+                    bufVal = bufVal.replace(new RegExp("\\" + opts.groupSeparator, "g"), '');
+                    var reg = new RegExp('(-?[\\d?]+)([\\d?]{' + opts.groupSize + '})');
+                    while (reg.test(bufVal)) {
+                        bufVal = bufVal.replace(reg, '$1' + opts.groupSeparator + '$2');
+                    }
+                }
+                buffer.length = bufVal.length; //align the length
+                for (var i = 0, l = bufVal.length; i < l; i++) {
+                    buffer[i] = bufVal.charAt(i);
+                }
+                var newPos = reformatOnly ? pos : buffer.indexOf("?");
+                if (!reformatOnly) buffer.splice(newPos, 1);
+
+                return newPos;
+            },
             regex: {
                 number: function (groupSeparator, groupSize, radixPoint, digits) {
                     var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, groupSeparator);
@@ -41,6 +61,12 @@ Optional extensions on the jquery.inputmask base
                             $input.val(nptStr);
                         }
                     }
+                } else if (e.keyCode == opts.keyCode.DELETE || e.keyCode == opts.keyCode.BACKSPACE) {
+                    var nptStr = input._valueGet(),
+                    buffer = nptStr.split('');
+                    var newPos = opts.postFormat(buffer, 0, true, opts);
+                    nptStr = buffer.join('');
+                    input._valueSet(nptStr);
                 }
             },
             definitions: {
@@ -77,25 +103,9 @@ Optional extensions on the jquery.inputmask base
                                 }
                             }
                         }
-                        
-                        if (isValid != false && !strict) {
-                            var cbuf = buffer.slice();
-                            cbuf.splice(pos, 0, "?"); //set position indicator
-                            var bufVal = cbuf.join('');
-                            if (opts.autoGroup || bufVal.indexOf(opts.groupSeparator) != -1) {
-                                bufVal = bufVal.replace(new RegExp("\\" + opts.groupSeparator, "g"), '');
-                                var reg = new RegExp('(-?[\\d?]+)([\\d?]{' + opts.groupSize + '})');
-                                while (reg.test(bufVal)) {
-                                    bufVal = bufVal.replace(reg, '$1' + opts.groupSeparator + '$2');
-                                }
-                            }
-                            buffer.length = bufVal.length; //align the length
-                            for (var i = 0, l = bufVal.length; i < l; i++) {
-                                buffer[i] = bufVal.charAt(i);
-                            }
-                            var newPos = buffer.indexOf("?");
-                            buffer.splice(newPos, 1);
 
+                        if (isValid != false && !strict) {
+                            var newPos = opts.postFormat(buffer, pos, false, opts);
                             return { "pos": newPos };
                         }
                         return isValid;
