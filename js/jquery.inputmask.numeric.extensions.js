@@ -3,7 +3,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.3d
+Version: 1.3.3e
 
 Optional extensions on the jquery.inputmask base
 */
@@ -35,7 +35,7 @@ Optional extensions on the jquery.inputmask base
                 for (var i = 0, l = bufVal.length; i < l; i++) {
                     buffer[i] = bufVal.charAt(i);
                 }
-                var newPos = reformatOnly ? pos : buffer.indexOf("?");
+                var newPos = reformatOnly ? pos : $.inArray("?", buffer);
                 if (!reformatOnly) buffer.splice(newPos, 1);
 
                 return newPos;
