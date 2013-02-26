@@ -3,7 +3,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.2.3
+Version: 1.2.3a
 
 Optional extensions on the jquery.inputmask base
 */
@@ -12,6 +12,11 @@ Optional extensions on the jquery.inputmask base
     $.extend($.inputmask.defaults.definitions, {
         'A': { //auto uppercasing
             validator: "[A-Za-z]",
+            cardinality: 1,
+            casing: "upper"
+        },
+        '#': {
+            validator: "[A-Za-z\u0410-\u044F\u0401\u04510-9]",
             cardinality: 1,
             casing: "upper"
         }
