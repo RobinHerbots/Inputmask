@@ -3,7 +3,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.3b
+Version: 1.3.3d
 
 Optional extensions on the jquery.inputmask base
 */
@@ -24,7 +24,7 @@ Optional extensions on the jquery.inputmask base
                 var cbuf = buffer.slice();
                 if (!reformatOnly) cbuf.splice(pos, 0, "?"); //set position indicator
                 var bufVal = cbuf.join('');
-                if (opts.autoGroup || bufVal.indexOf(opts.groupSeparator) != -1) {
+                if (opts.autoGroup || (reformatOnly && bufVal.indexOf(opts.groupSeparator) != -1)) {
                     bufVal = bufVal.replace(new RegExp("\\" + opts.groupSeparator, "g"), '');
                     var reg = new RegExp('(-?[\\d?]+)([\\d?]{' + opts.groupSize + '})');
                     while (reg.test(bufVal)) {
@@ -73,9 +73,15 @@ Optional extensions on the jquery.inputmask base
                 '~': { //real number
                     validator: function (chrs, buffer, pos, strict, opts) {
                         if (chrs == "") return false;
+                        if (pos == 1 && buffer[0] === '0' && new RegExp("[\\d|-]").test(chrs)) { //handle first char
+                            buffer[0] = "";
+                            return { "pos": 0 };
+                        }
+
                         var cbuf = strict ? buffer.slice(0, pos) : buffer.slice();
                         cbuf.splice(pos, 0, chrs);
                         var bufferStr = cbuf.join('');
+
                         if (opts.autoGroup) //strip groupseparator
                             bufferStr = bufferStr.replace(new RegExp("\\" + opts.groupSeparator, "g"), '');
                         var isValid = opts.regex.number(opts.groupSeparator, opts.groupSize, opts.radixPoint, opts.digits).test(bufferStr);
