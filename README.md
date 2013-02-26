@@ -330,7 +330,7 @@ This gets parsed with $.parseJSON (for the moment), so be sure to use a welforme
 
 ```html
 <input data-inputmask="'alias': 'date'" />
-<input data-inputmask="'mask': '9', 'repeat': '10', 'greedy' : 'false'" />
+<input data-inputmask="'mask': '9', 'repeat': 10, 'greedy' : false" />
 ```
 ```javascript
 $(document).ready(function(){
