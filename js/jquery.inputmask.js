@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.1.1a
+* Version: 2.1.1b
 */
 
 (function ($) {
@@ -1133,7 +1133,7 @@
                             clearBuffer(buffer, pos.begin, pos.end);
 
                             if (isRTL) {
-                                var p = opts.numericInput ? pos.end : seekPrevious(buffer, pos.end), np;
+                                var p = seekPrevious(buffer, pos.end), np;
                                 if ((np = isValid(p == maskL || getBufferElement(buffer, p) == opts.radixPoint ? seekPrevious(buffer, p) : p, c, buffer, false, isRTL)) !== false) {
                                     var refresh = false;
                                     if (np !== true) {
@@ -1150,19 +1150,19 @@
                                                     firstUnmaskedPosition = firstUnmaskedPosition == maskL ? (maskL + 1) : seekNext(buffer, firstUnmaskedPosition);
                                                 }
                                             }
-
                                             if (firstUnmaskedPosition <= p && (opts.greedy || buffer.length < maskL)) {
                                                 if (buffer[firstMaskPos] != getPlaceHolder(firstMaskPos) && buffer.length < maskL) {
                                                     var offset = prepareBuffer(buffer, -1, isRTL);
                                                     if (pos.end != 0) p = p + offset;
                                                     maskL = buffer.length;
                                                 }
-                                                shiftL(firstUnmaskedPosition, opts.numericInput ? seekPrevious(buffer, p) : p, c);
+                                                shiftL(firstUnmaskedPosition, p, c);
                                             } else writeOutBuffer = false;
-                                        } else setBufferElement(buffer, opts.numericInput ? seekPrevious(buffer, p) : p, c);
+                                        } else setBufferElement(buffer, p, c);
                                     }
+
                                     if (writeOutBuffer) {
-                                        writeBuffer(input, buffer, opts.numericInput && p == 0 ? seekNext(buffer, p) : p);
+                                        writeBuffer(input, buffer, opts.numericInput ? seekNext(buffer, p) : p);
                                         setTimeout(function () { //timeout needed for IE
                                             if (isComplete(input))
                                                 $input.trigger("complete");
