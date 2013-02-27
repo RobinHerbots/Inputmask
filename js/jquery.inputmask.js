@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.3.3b
+* Version: 1.3.3c
 */
 
 (function ($) {
@@ -994,7 +994,7 @@
                             clearBuffer(buffer, pos.begin, pos.end);
 
                             if (isRTL) {
-                                var p = opts.numericInput ? pos.end : seekPrevious(buffer, pos.end), np;
+                                var p = seekPrevious(buffer, pos.end), np;
                                 if ((np = isValid(p == maskL || getBufferElement(buffer, p) == opts.radixPoint ? seekPrevious(buffer, p) : p, c, buffer, false)) !== false) {
                                     if (np !== true) {
                                         p = np.pos != undefined ? np.pos : p; //set new position from isValid
@@ -1016,11 +1016,11 @@
                                                 if (pos.end != 0) p = p + offset;
                                                 maskL = buffer.length;
                                             }
-                                            shiftL(firstUnmaskedPosition, opts.numericInput ? seekPrevious(buffer, p) : p, c);
+                                            shiftL(firstUnmaskedPosition, p, c);
                                         } else writeOutBuffer = false;
-                                    } else setBufferElement(buffer, opts.numericInput ? seekPrevious(buffer, p) : p, c);
+                                    } else setBufferElement(buffer, p, c);
                                     if (writeOutBuffer) {
-                                        writeBuffer(input, buffer, opts.numericInput && p == 0 ? seekNext(buffer, p) : p);
+                                        writeBuffer(input, buffer, opts.numericInput ? seekNext(buffer, p) : p);
                                         setTimeout(function () { //timeout needed for IE
                                             if (isComplete(input))
                                                 $input.trigger("complete");
