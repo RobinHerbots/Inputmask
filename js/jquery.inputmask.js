@@ -229,9 +229,9 @@
             }
 
             function getMaskTemplate() {
-                var escaped = false, outCount = 0;
-                if (opts.mask.length == 1 && opts.greedy == false) { opts.placeholder = ""; } //hide placeholder with single non-greedy mask
-                var singleMask = $.map(opts.mask.split(""), function (element, index) {
+                var escaped = false, outCount = 0, mask = opts.mask.toString();
+                if (mask.length == 1 && opts.greedy == false) { opts.placeholder = ""; } //hide placeholder with single non-greedy mask
+                var singleMask = $.map(mask.split(""), function (element, index) {
                     var outElem = [];
                     if (element == opts.escapeChar) {
                         escaped = true;
@@ -262,10 +262,10 @@
 
             //test definition => {fn: RegExp/function, cardinality: int, optionality: bool, newBlockMarker: bool, offset: int, casing: null/upper/lower, def: definitionSymbol}
             function getTestingChain() {
-                var isOptional = false, escaped = false;
+                var isOptional = false, escaped = false, mask = opts.mask.toString();
                 var newBlockMarker = false; //indicates wheter the begin/ending of a block should be indicated
 
-                return $.map(opts.mask.split(""), function (element, index) {
+                return $.map(mask.split(""), function (element, index) {
                     var outElem = [];
 
                     if (element == opts.escapeChar) {
