@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.1.1b
+* Version: 2.1.1c
 */
 
 (function ($) {
@@ -339,7 +339,7 @@
 
                 }
 
-                generateMask("", opts.mask);
+                generateMask("", opts.mask.toString());
                 return ms;
             }
 
