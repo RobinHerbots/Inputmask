@@ -2,13 +2,14 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>jQuery.InputMask</id>
-        <version>0.0.0</version>
+        <version>1.3.4</version>
         <title>jQuery Input Mask</title>
         <authors>Robin Herbots</authors>
         <owners>Robin Herbots</owners>
         <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
         <projectUrl>https://github.com/RobinHerbots/jquery.inputmask</projectUrl>
         <requireLicenseAcceptance>true</requireLicenseAcceptance>
+		<summary>jquery.inputmask is a jquery plugin which create an input mask.</summary>
         <description>jquery.inputmask is a jquery plugin which create an input mask.
 
 An inputmask helps the user with the input by ensuring a predefined format. This can be usefull for dates, numerics, phone numbers, ...
@@ -27,9 +28,13 @@ Highlights:
         <tags>jQuery, plugins</tags>
     </metadata>
     <files>
-        <file src="..\js\jquery.inputmask.date.extensions.js" target="content\Scripts\jquery.inputmask.date.extensions.js" />
-        <file src="..\js\jquery.inputmask.extensions.js" target="content\Scripts\jquery.inputmask.extensions.js" />
-        <file src="..\js\jquery.inputmask.numeric.extensions.js" target="content\Scripts\jquery.inputmask.numeric.extensions.js" />
-        <file src="..\js\jquery.inputmask.js" target="content\Scripts\jquery.inputmask.js" />
+        <file src="..\js\jquery.inputmask.date.extensions.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.date.extensions.js" />
+        <file src="..\js\jquery.inputmask.extensions.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.extensions.js" />
+        <file src="..\js\jquery.inputmask.numeric.extensions.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.numeric.extensions.js" />
+        <file src="..\js\jquery.inputmask.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.js" />
+		<file src="..\dist\min\jquery.inputmask.date.extensions.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.date.extensions.min.js" />
+        <file src="..\dist\min\jquery.inputmask.extensions.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.extensions.min.js" />
+        <file src="..\dist\min\jquery.inputmask.numeric.extensions.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.numeric.extensions.min.js" />
+        <file src="..\dist\min\jquery.inputmask.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.min.js" />
     </files>
 </package>

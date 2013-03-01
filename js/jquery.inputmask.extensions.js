@@ -3,7 +3,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.2.3a
+Version: 1.3.4
 
 Optional extensions on the jquery.inputmask base
 */
@@ -89,7 +89,7 @@ Optional extensions on the jquery.inputmask base
                     cardinality: 3,
                     prevalidator: [
                                 { validator: "[0-2]", cardinality: 1 },
-                                { validator: "2[0-5]|[01][0-9]", cardinality: 2 },
+                                { validator: "2[0-5]|[01][0-9]", cardinality: 2 }
                     ]
                 }
             }
