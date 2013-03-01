@@ -8,12 +8,20 @@
         <mkdir dir="${distdir}" />
     </target>
 
-    <target name="jquery.inputmask" depends="init">
+	<target name="updateVersions">
+       <replaceregexp file="nuget/jquery.inputmask.nuspec" match="&lt;version&gt;.*&lt;/version&gt;" replace="&lt;version&gt;${build.major}.${build.minor}.${build.revision}&lt;/version&gt;" />
+	   <replaceregexp file="${srcdir}/jquery.inputmask.js" match="Version:.*" replace="Version: ${build.major}.${build.minor}.${build.revision}"  byline="true"/>
+	   <replaceregexp file="${srcdir}/jquery.inputmask.extensions.js" match="Version:.*" replace="Version: ${build.major}.${build.minor}.${build.revision}"  byline="true"/>
+	   <replaceregexp file="${srcdir}/jquery.inputmask.date.extensions.js" match="Version:.*" replace="Version: ${build.major}.${build.minor}.${build.revision}"  byline="true"/>
+	   <replaceregexp file="${srcdir}/jquery.inputmask.numeric.extensions.js" match="Version:.*" replace="Version: ${build.major}.${build.minor}.${build.revision}"  byline="true"/>
+    </target>
+	
+    <target name="jquery.inputmask" depends="init, updateVersions">
         <concat destfile="${distdir}/${target}">
-			<fileset file="js/jquery.inputmask.js"/>
-			<fileset file="js/jquery.inputmask.extensions.js"/>
-			<fileset file="js/jquery.inputmask.date.extensions.js"/>
-			<fileset file="js/jquery.inputmask.numeric.extensions.js"/>
+			<fileset file="${srcdir}/jquery.inputmask.js"/>
+			<fileset file="${srcdir}/jquery.inputmask.extensions.js"/>
+			<fileset file="${srcdir}/jquery.inputmask.date.extensions.js"/>
+			<fileset file="${srcdir}/jquery.inputmask.numeric.extensions.js"/>
         </concat>
     </target>
 
@@ -51,7 +59,16 @@
         </apply>
     </target>
 
-    <target name="build" depends="jquery.inputmask, jquery.inputmask.min, minfiles"/>
+	 <target name="jquery.inputmask.nuget" depends="jquery.inputmask, jquery.inputmask.min, minfiles">
+        <exec executable="${NugetExe}" failonerror="true" dir="tools" vmlauncher="false" osfamily="windows" >
+			 <arg value="pack"/>
+			 <arg value="..\nuget\${nuspec}" />
+			 <arg value="-OutputDirectory" />
+			 <arg value="..\${distdir}" />
+        </exec>
+    </target>
+	
+    <target name="build" depends="jquery.inputmask, jquery.inputmask.min, minfiles, jquery.inputmask.nuget"/>
 
     <target name="clean">
         <delete dir="${distdir}" />
