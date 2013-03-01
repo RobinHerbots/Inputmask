@@ -28,9 +28,13 @@ Highlights:
         <tags>jQuery, plugins</tags>
     </metadata>
     <files>
-        <file src="..\js\jquery.inputmask.date.extensions.js" target="content\Scripts\jquery.inputmask.date.extensions.js" />
-        <file src="..\js\jquery.inputmask.extensions.js" target="content\Scripts\jquery.inputmask.extensions.js" />
-        <file src="..\js\jquery.inputmask.numeric.extensions.js" target="content\Scripts\jquery.inputmask.numeric.extensions.js" />
-        <file src="..\js\jquery.inputmask.js" target="content\Scripts\jquery.inputmask.js" />
+        <file src="..\js\jquery.inputmask.date.extensions.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.date.extensions.js" />
+        <file src="..\js\jquery.inputmask.extensions.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.extensions.js" />
+        <file src="..\js\jquery.inputmask.numeric.extensions.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.numeric.extensions.js" />
+        <file src="..\js\jquery.inputmask.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.js" />
+		<file src="..\dist\min\jquery.inputmask.date.extensions.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.date.extensions.min.js" />
+        <file src="..\dist\min\jquery.inputmask.extensions.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.extensions.min.js" />
+        <file src="..\dist\min\jquery.inputmask.numeric.extensions.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.numeric.extensions.min.js" />
+        <file src="..\dist\min\jquery.inputmask.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.min.js" />
     </files>
 </package>

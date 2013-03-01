@@ -89,7 +89,7 @@ Optional extensions on the jquery.inputmask base
                     cardinality: 3,
                     prevalidator: [
                                 { validator: "[0-2]", cardinality: 1 },
-                                { validator: "2[0-5]|[01][0-9]", cardinality: 2 },
+                                { validator: "2[0-5]|[01][0-9]", cardinality: 2 }
                     ]
                 }
             }
