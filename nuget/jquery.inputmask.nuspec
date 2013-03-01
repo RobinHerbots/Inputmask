@@ -2,13 +2,14 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>jQuery.InputMask</id>
-        <version>0.0.0</version>
+        <version>2.1.2</version>
         <title>jQuery Input Mask</title>
         <authors>Robin Herbots</authors>
         <owners>Robin Herbots</owners>
         <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
         <projectUrl>https://github.com/RobinHerbots/jquery.inputmask</projectUrl>
         <requireLicenseAcceptance>true</requireLicenseAcceptance>
+		<summary>jquery.inputmask is a jquery plugin which create an input mask.</summary>
         <description>jquery.inputmask is a jquery plugin which create an input mask.
 
 An inputmask helps the user with the input by ensuring a predefined format. This can be usefull for dates, numerics, phone numbers, ...
