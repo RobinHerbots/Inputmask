@@ -15,6 +15,14 @@
 	   <replaceregexp file="${srcdir}/jquery.inputmask.date.extensions.js" match="Version:.*" replace="Version: ${build.major}.${build.minor}.${build.revision}"  byline="true"/>
 	   <replaceregexp file="${srcdir}/jquery.inputmask.numeric.extensions.js" match="Version:.*" replace="Version: ${build.major}.${build.minor}.${build.revision}"  byline="true"/>
     </target>
+
+	<target name="resetVersions">
+       <replaceregexp file="nuget/jquery.inputmask.nuspec" match="&lt;version&gt;.*&lt;/version&gt;" replace="&lt;version&gt;0.0.0&lt;/version&gt;" />
+	   <replaceregexp file="${srcdir}/jquery.inputmask.js" match="Version:.*" replace="Version: 0.0.0}"  byline="true"/>
+	   <replaceregexp file="${srcdir}/jquery.inputmask.extensions.js" match="Version:.*" replace="Version: 0.0.0"  byline="true"/>
+	   <replaceregexp file="${srcdir}/jquery.inputmask.date.extensions.js" match="Version:.*" replace="Version: 0.0.0"  byline="true"/>
+	   <replaceregexp file="${srcdir}/jquery.inputmask.numeric.extensions.js" match="Version:.*" replace="Version: 0.0.0"  byline="true"/>
+    </target>
 	
     <target name="jquery.inputmask" depends="init, updateVersions">
         <concat destfile="${distdir}/${target}">
@@ -68,7 +76,7 @@
         </exec>
     </target>
 	
-    <target name="build" depends="jquery.inputmask, jquery.inputmask.min, minfiles, jquery.inputmask.nuget"/>
+    <target name="build" depends="jquery.inputmask, jquery.inputmask.min, minfiles, jquery.inputmask.nuget, resetVersions"/>
 
     <target name="clean">
         <delete dir="${distdir}" />
