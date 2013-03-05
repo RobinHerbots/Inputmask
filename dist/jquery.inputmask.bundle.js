@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2012 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.3.4
+* Version: 1.3.5
 */
 
 (function ($) {
@@ -34,7 +34,7 @@
                 onKeyValidation: $.noop, //executes on every key-press with the result of isValid
                 //numeric basic properties
                 numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
-                radixPoint: ".", // | ","
+                radixPoint: "", //".", // | ","
                 //numeric basic properties
                 definitions: {
                     '9': {
@@ -484,7 +484,7 @@
                 if (clearInvalid) {
                     writeBuffer(input, buffer);
                 }
-                return isRTL ? (opts.numericInput ? ($.inArray(opts.radixPoint, buffer) != -1 && skipRadixHandling !== true ? $.inArray(opts.radixPoint, buffer) : seekNext(buffer, maskL)) : seekNext(buffer, rtlMatch)) : seekNext(buffer, lastMatch);
+                return isRTL ? (opts.numericInput ? (opts.radixPoint != "" && $.inArray(opts.radixPoint, buffer) != -1 && skipRadixHandling !== true ? $.inArray(opts.radixPoint, buffer) : seekNext(buffer, maskL)) : seekNext(buffer, rtlMatch)) : seekNext(buffer, lastMatch);
             }
 
             function escapeRegex(str) {
@@ -892,7 +892,7 @@
                     var input = this, k = e.keyCode, pos = caret(input);
 
                     //set input direction according the position to the radixPoint
-                    if (opts.numericInput) {
+                    if (opts.numericInput && opts.radixPoint != "") {
                         var nptStr = input._valueGet();
                         var radixPosition = nptStr.indexOf(opts.radixPoint);
                         if (radixPosition != -1) {
@@ -917,9 +917,13 @@
                                 beginPos = firstMaskPos;
                             }
                             if (beginPos >= firstMaskPos) {
+                                console.log('before delete ' + buffer);
                                 if (opts.numericInput && opts.greedy && k == opts.keyCode.DELETE && buffer[beginPos] == opts.radixPoint) {
                                     beginPos = seekNext(buffer, beginPos);
                                     isRTL = false;
+                                } else if (opts.numericInput && opts.greedy && k == opts.keyCode.BACKSPACE && buffer[beginPos] == opts.radixPoint) {
+                                    beginPos--;
+                                    isRTL = true;
                                 }
                                 if (isRTL) {
                                     beginPos = shiftR(firstMaskPos, beginPos, getPlaceHolder(beginPos), true);
@@ -1020,7 +1024,7 @@
                                         } else writeOutBuffer = false;
                                     } else setBufferElement(buffer, p, c);
                                     if (writeOutBuffer) {
-                                        writeBuffer(input, buffer, opts.numericInput ? seekNext(buffer, p) : p);
+                                        writeBuffer(input, buffer, opts.numericInput ? p + 1 : p);
                                         setTimeout(function () { //timeout needed for IE
                                             if (isComplete(input))
                                                 $input.trigger("complete");
@@ -1085,7 +1089,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.4
+Version: 1.3.5
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1182,7 +1186,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.4
+Version: 1.3.5
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1660,7 +1664,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.4
+Version: 1.3.5
 
 Optional extensions on the jquery.inputmask base
 */
