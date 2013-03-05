@@ -1679,6 +1679,7 @@ Optional extensions on the jquery.inputmask base
             numericInput: true,
             digits: "*", //numer of digits
             groupSeparator: ",", // | "."
+			radixPoint: ".",
             groupSize: 3,
             autoGroup: false,
             postFormat: function (buffer, pos, reformatOnly, opts) {
