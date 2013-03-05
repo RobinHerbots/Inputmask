@@ -917,7 +917,6 @@
                                 beginPos = firstMaskPos;
                             }
                             if (beginPos >= firstMaskPos) {
-                                console.log('before delete ' + buffer);
                                 if (opts.numericInput && opts.greedy && k == opts.keyCode.DELETE && buffer[beginPos] == opts.radixPoint) {
                                     beginPos = seekNext(buffer, beginPos);
                                     isRTL = false;
