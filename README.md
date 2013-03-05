@@ -154,6 +154,14 @@ $(document).ready(function(){
 });
 ```
 
+If you define a radixPoint the caret will always jump to the integer part, until you type the radixpoint.  
+
+```javascript
+$(document).ready(function(){
+    $('#test').inputmask('€ 999.999.999,99', { numericInput: true, radixPoint: "," });
+});
+```
+
 ### remove the inputmask
 
 ```javascript
