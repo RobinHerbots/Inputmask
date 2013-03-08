@@ -30,6 +30,7 @@
                 aliases: {}, //aliases definitions => see jquery.inputmask.extensions.js
                 onKeyUp: $.noop, //override to implement autocomplete on certain keys for example
                 onKeyDown: $.noop, //override to implement autocomplete on certain keys for example
+                showMaskOnFocus: true, //show the mask-placeholder when the input has focus
                 showMaskOnHover: true, //show the mask-placeholder when hovering the empty input
                 onKeyValidation: $.noop, //executes on every key-press with the result of isValid
                 skipOptionalPartCharacter: " ", //a character which can be used to skip an optional part of a mask
@@ -800,7 +801,7 @@
                     }
                 }).bind("focus.inputmask", function () {
                     var $input = $(this), input = this, nptValue = input._valueGet();
-                    if (!$input.hasClass('focus.inputmask') && (!opts.showMaskOnHover || (opts.showMaskOnHover && nptValue == ''))) {
+                    if (opts.showMaskOnFocus && !$input.hasClass('focus.inputmask') && (!opts.showMaskOnHover || (opts.showMaskOnHover && nptValue == ''))) {
                         var nptL = nptValue.length;
                         if (nptL < buffer.length) {
                             if (nptL == 0)
