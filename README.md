@@ -39,6 +39,19 @@ $(document).ready(function(){
 });
 ```
 
+or
+
+```html
+<input data-inputmask="'alias': 'date'" />
+<input data-inputmask="'mask': '9', 'repeat': 10, 'greedy' : false" />
+<input data-inputmask="'mask': '99-9999999'" />
+```
+```javascript
+$(document).ready(function(){
+    $(":input").inputmask();
+});
+```
+
 ## Options:
 
 ### change the placeholder
@@ -276,6 +289,18 @@ $(document).ready(function(){
    else validateValue(val); 
 });
 ```
+### showMaskOnFocus
+
+Shows the mask when the input gets focus. (default = true)
+
+```javascript
+$(document).ready(function(){
+    $("#ssn").inputmask("999-99-9999",{ showMaskOnFocus: true }); //default
+});
+```
+
+To make sure no mask is visible on focus also set the showMaskOnHover to false.  Otherwise hovering with the mouse will set the mask and will stay on focus.
+
 ### showMaskOnHover
 
 Shows the mask when hovering the mouse. (default = true)
