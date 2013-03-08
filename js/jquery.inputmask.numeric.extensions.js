@@ -1,7 +1,7 @@
 /*
 Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
-Copyright (c) 2010 - 2012 Robin Herbots
+Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
 Version: 0.0.0
 
@@ -18,7 +18,7 @@ Optional extensions on the jquery.inputmask base
             numericInput: true,
             digits: "*", //numer of digits
             groupSeparator: ",", // | "."
-			radixPoint: ".",
+            radixPoint: ".",
             groupSize: 3,
             autoGroup: false,
             postFormat: function (buffer, pos, reformatOnly, opts) {
@@ -27,10 +27,12 @@ Optional extensions on the jquery.inputmask base
                 var bufVal = cbuf.join('');
                 if (opts.autoGroup || (reformatOnly && bufVal.indexOf(opts.groupSeparator) != -1)) {
                     bufVal = bufVal.replace(new RegExp("\\" + opts.groupSeparator, "g"), '');
-                    var reg = new RegExp('(-?[\\d?]+)([\\d?]{' + opts.groupSize + '})');
+                    
+                    var reg = new RegExp('([-\+]?[\\d\?]+)([\\d\?]{' + opts.groupSize + '})');
                     while (reg.test(bufVal)) {
                         bufVal = bufVal.replace(reg, '$1' + opts.groupSeparator + '$2');
                     }
+                    
                 }
                 buffer.length = bufVal.length; //align the length
                 for (var i = 0, l = bufVal.length; i < l; i++) {
@@ -74,15 +76,15 @@ Optional extensions on the jquery.inputmask base
                 '~': { //real number
                     validator: function (chrs, buffer, pos, strict, opts) {
                         if (chrs == "") return false;
-                        if (pos == 1 && buffer[0] === '0' && new RegExp("[\\d|-]").test(chrs)) { //handle first char
+                        if (pos == 1 && buffer[0] === '0' && new RegExp("[\\d-]").test(chrs)) { //handle first char
                             buffer[0] = "";
                             return { "pos": 0 };
                         }
 
                         var cbuf = strict ? buffer.slice(0, pos) : buffer.slice();
-                        cbuf.splice(pos, 0, chrs);
-                        var bufferStr = cbuf.join('');
 
+                        cbuf.splice(pos + 1, 0, chrs);
+                        var bufferStr = cbuf.join('');
                         if (opts.autoGroup) //strip groupseparator
                             bufferStr = bufferStr.replace(new RegExp("\\" + opts.groupSeparator, "g"), '');
                         var isValid = opts.regex.number(opts.groupSeparator, opts.groupSize, opts.radixPoint, opts.digits).test(bufferStr);
