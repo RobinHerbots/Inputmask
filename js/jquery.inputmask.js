@@ -223,8 +223,8 @@
             }
 
             function getMaskTemplate(mask) {
-                var escaped = false, outCount = 0;
-                if (mask.length == 1 && opts.greedy == false) { opts.placeholder = ""; } //hide placeholder with single non-greedy mask
+                var escaped = false, outCount = 0, greedy = opts.greedy, repeat = opts.repeat;
+                if (mask.length == 1 && greedy == false) { opts.placeholder = ""; } //hide placeholder with single non-greedy mask
                 var singleMask = $.map(mask.split(""), function (element, index) {
                     var outElem = [];
                     if (element == opts.escapeChar) {
@@ -247,11 +247,11 @@
 
                 //allocate repetitions
                 var repeatedMask = singleMask.slice();
-                for (var i = 1; i < opts.repeat && opts.greedy; i++) {
+                for (var i = 1; i < repeat && greedy; i++) {
                     repeatedMask = repeatedMask.concat(singleMask.slice());
                 }
 
-                return { mask: repeatedMask, repeat: opts.repeat, greedy: opts.greedy };
+                return { "mask": repeatedMask, "repeat": repeat, "greedy": greedy };
             }
 
             //test definition => {fn: RegExp/function, cardinality: int, optionality: bool, newBlockMarker: bool, offset: int, casing: null/upper/lower, def: definitionSymbol}
