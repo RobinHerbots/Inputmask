@@ -649,6 +649,9 @@
             }
 
             function caret(input, begin, end) {
+                if (!$(input).is(':visible')) {
+                    return;
+                }
                 var npt = input.jquery && input.length > 0 ? input[0] : input;
                 if (typeof begin == 'number') {
                     end = (typeof end == 'number') ? end : begin;
