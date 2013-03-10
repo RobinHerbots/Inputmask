@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.1.3
+* Version: 2.1.4
 */
 
 (function ($) {
@@ -30,6 +30,7 @@
                 aliases: {}, //aliases definitions => see jquery.inputmask.extensions.js
                 onKeyUp: $.noop, //override to implement autocomplete on certain keys for example
                 onKeyDown: $.noop, //override to implement autocomplete on certain keys for example
+                showMaskOnFocus: true, //show the mask-placeholder when the input has focus
                 showMaskOnHover: true, //show the mask-placeholder when hovering the empty input
                 onKeyValidation: $.noop, //executes on every key-press with the result of isValid
                 skipOptionalPartCharacter: " ", //a character which can be used to skip an optional part of a mask
@@ -101,8 +102,6 @@
                     case "unmaskedvalue":
                         masksets = this.data('inputmask')['masksets'];
                         activeMasksetIndex = this.data('inputmask')['activeMasksetIndex'];
-                        opts.greedy = this.data('inputmask')['greedy'];
-                        opts.repeat = this.data('inputmask')['repeat'];
                         opts.definitions = this.data('inputmask')['definitions'];
                         return unmaskedvalue(this);
                         break;
@@ -113,8 +112,6 @@
                                 if ($input.data('inputmask')) {
                                     masksets = $input.data('inputmask')['masksets'];
                                     activeMasksetIndex = $input.data('inputmask')['activeMasksetIndex'];
-                                    opts.greedy = $input.data('inputmask')['greedy'];
-                                    opts.repeat = $input.data('inputmask')['repeat'];
                                     opts.definitions = $input.data('inputmask')['definitions'];
                                     //writeout the unmaskedvalue
                                     input._valueSet(unmaskedvalue($input, true));
@@ -158,8 +155,6 @@
                     case "isComplete":
                         masksets = this.data('inputmask')['masksets'];
                         activeMasksetIndex = this.data('inputmask')['activeMasksetIndex'];
-                        opts.greedy = this.data('inputmask')['greedy'];
-                        opts.repeat = this.data('inputmask')['repeat'];
                         opts.definitions = this.data('inputmask')['definitions'];
                         return isComplete(this[0]);
                     default:
@@ -228,8 +223,8 @@
             }
 
             function getMaskTemplate(mask) {
-                var escaped = false, outCount = 0;
-                if (mask.length == 1 && opts.greedy == false) { opts.placeholder = ""; } //hide placeholder with single non-greedy mask
+                var escaped = false, outCount = 0, greedy = opts.greedy, repeat = opts.repeat;
+                if (mask.length == 1 && greedy == false) { opts.placeholder = ""; } //hide placeholder with single non-greedy mask
                 var singleMask = $.map(mask.split(""), function (element, index) {
                     var outElem = [];
                     if (element == opts.escapeChar) {
@@ -252,11 +247,11 @@
 
                 //allocate repetitions
                 var repeatedMask = singleMask.slice();
-                for (var i = 1; i < opts.repeat && opts.greedy; i++) {
+                for (var i = 1; i < repeat && greedy; i++) {
                     repeatedMask = repeatedMask.concat(singleMask.slice());
                 }
 
-                return repeatedMask;
+                return { "mask": repeatedMask, "repeat": repeat, "greedy": greedy };
             }
 
             //test definition => {fn: RegExp/function, cardinality: int, optionality: bool, newBlockMarker: bool, offset: int, casing: null/upper/lower, def: definitionSymbol}
@@ -306,22 +301,28 @@
                 }
                 function generateMask(maskPrefix, maskPart) {
                     var maskParts = maskPart.split(opts.optionalmarker.end, 2);
-                    var newMask;
+                    var newMask, maskTemplate;
 
 
                     var masks = maskParts[0].split(opts.optionalmarker.start);
                     if (masks.length > 1) {
                         newMask = maskPrefix + masks[0] + markOptional(masks[1]) + (maskParts.length > 1 ? maskParts[1] : "");
+                        maskTemplate = getMaskTemplate(newMask);
                         ms.push({
-                            "_buffer": getMaskTemplate(newMask),
+                            "_buffer": maskTemplate["mask"],
                             "tests": getTestingChain(newMask),
-                            "lastValidPosition": 0
+                            "lastValidPosition": 0,
+                            "greedy": maskTemplate["greedy"],
+                            "repeat": maskTemplate["repeat"]
                         });
                         newMask = maskPrefix + masks[0] + (maskParts.length > 1 ? maskParts[1] : "");
+                        maskTemplate = getMaskTemplate(newMask);
                         ms.push({
-                            "_buffer": getMaskTemplate(newMask),
+                            "_buffer": maskTemplate["mask"],
                             "tests": getTestingChain(newMask),
-                            "lastValidPosition": 0
+                            "lastValidPosition": 0,
+                            "greedy": maskTemplate["greedy"],
+                            "repeat": maskTemplate["repeat"]
                         });
                         if (maskParts.length > 1 && maskParts[1].split(opts.optionalmarker.start).length > 1) {
                             generateMask(maskPrefix + masks[0] + markOptional(masks[1]), maskParts[1]);
@@ -330,10 +331,13 @@
                     }
                     else {
                         newMask = maskPrefix + maskParts;
+                        maskTemplate = getMaskTemplate(newMask);
                         ms.push({
-                            "_buffer": getMaskTemplate(newMask),
+                            "_buffer": maskTemplate["mask"],
                             "tests": getTestingChain(newMask),
-                            "lastValidPosition": 0
+                            "lastValidPosition": 0,
+                            "greedy": maskTemplate["greedy"],
+                            "repeat": maskTemplate["repeat"]
                         });
                     }
 
@@ -343,6 +347,7 @@
                 return ms;
             }
 
+			//maskset helperfunctions
             function getActiveMaskSet() {
                 return masksets[activeMasksetIndex];
             }
@@ -447,7 +452,7 @@
             }
 
             function getMaskLength() {
-                return $.inputmask.getMaskLength(getActiveBuffer(), opts.greedy, opts.repeat);
+                return $.inputmask.getMaskLength(getActiveBuffer(), getActiveMaskSet()['greedy'], getActiveMaskSet()['repeat']);
             }
 
             //pos: from position
@@ -587,7 +592,7 @@
                     }
                 }
                 //Truncate buffer when using non-greedy masks
-                if (opts.greedy == false) {
+                if (getActiveMaskSet()['greedy'] == false) {
                     var newBuffer = truncateInput(buffer.join(''), isRTL).split('');
                     while (buffer.length != newBuffer.length) {  //map changes into the original buffer
                         isRTL ? buffer.shift() : buffer.pop();
@@ -649,6 +654,9 @@
             }
 
             function caret(input, begin, end) {
+                if (!$(input).is(':visible')) {
+                    return;
+                }
                 var npt = input.jquery && input.length > 0 ? input[0] : input;
                 if (typeof begin == 'number') {
                     end = (typeof end == 'number') ? end : begin;
@@ -711,7 +719,7 @@
                 if (!$input.is(":input")) return;
 
                 //correct greedy setting if needed
-                opts.greedy = opts.greedy ? opts.greedy : opts.repeat == 0;
+                getActiveMaskSet()['greedy'] = getActiveMaskSet()['greedy'] ? getActiveMaskSet()['greedy'] : getActiveMaskSet()['repeat'] == 0;
 
 
 
@@ -719,8 +727,8 @@
                 var maxLength = $input.prop('maxLength');
                 if (getMaskLength() > maxLength && maxLength > -1) { //FF sets no defined max length to -1 
                     if (maxLength < getActiveBuffer().length) getActiveBuffer().length = maxLength;
-                    if (opts.greedy == false) {
-                        opts.repeat = Math.round(maxLength / getActiveBuffer().length);
+                    if (getActiveMaskSet()['greedy'] == false) {
+                        getActiveMaskSet()['repeat'] = Math.round(maxLength / getActiveBuffer().length);
                     }
                     $input.prop('maxLength', getMaskLength() * 2);
                 }
@@ -729,8 +737,6 @@
                 $input.data('inputmask', {
                     'masksets': masksets,
                     'activeMasksetIndex': activeMasksetIndex,
-                    'greedy': opts.greedy,
-                    'repeat': opts.repeat,
                     'autoUnmask': opts.autoUnmask,
                     'definitions': opts.definitions,
                     'isRTL': false
@@ -797,7 +803,7 @@
                     }
                 }).bind("focus.inputmask", function () {
                     var $input = $(this), input = this, nptValue = input._valueGet();
-                    if (!$input.hasClass('focus.inputmask') && (!opts.showMaskOnHover || (opts.showMaskOnHover && nptValue == ''))) {
+                    if (opts.showMaskOnFocus && !$input.hasClass('focus.inputmask') && (!opts.showMaskOnHover || (opts.showMaskOnHover && nptValue == ''))) {
                         var nptL = nptValue.length;
                         if (nptL < buffer.length) {
                             if (nptL == 0)
@@ -1055,16 +1061,16 @@
                                 beginPos = firstMaskPos;
                             }
                             if (beginPos >= firstMaskPos) {
-                                if (opts.numericInput && opts.greedy && k == opts.keyCode.DELETE && buffer[beginPos] == opts.radixPoint) {
+                                if (opts.numericInput && getActiveMaskSet()['greedy'] && k == opts.keyCode.DELETE && buffer[beginPos] == opts.radixPoint) {
                                     beginPos = seekNext(buffer, beginPos);
                                     isRTL = false;
-                                } else if (opts.numericInput && opts.greedy && k == opts.keyCode.BACKSPACE && buffer[beginPos] == opts.radixPoint) {
+                                } else if (opts.numericInput && getActiveMaskSet()['greedy'] && k == opts.keyCode.BACKSPACE && buffer[beginPos] == opts.radixPoint) {
                                     beginPos--;
                                     isRTL = true;
                                 }
                                 if (isRTL) {
                                     beginPos = shiftR(firstMaskPos, beginPos, getPlaceHolder(beginPos), true);
-                                    beginPos = (opts.numericInput && opts.greedy && k == opts.keyCode.BACKSPACE && buffer[beginPos + 1] == opts.radixPoint) ? beginPos + 1 : seekNext(buffer, beginPos);
+                                    beginPos = (opts.numericInput && getActiveMaskSet()['greedy'] && k == opts.keyCode.BACKSPACE && buffer[beginPos + 1] == opts.radixPoint) ? beginPos + 1 : seekNext(buffer, beginPos);
                                 } else beginPos = shiftL(beginPos, maskL);
                                 determineActiveMasksetIndex(buffer, beginPos, activeMasksetIndex);
                                 writeBuffer(input, buffer, beginPos);
@@ -1147,13 +1153,13 @@
                                     if (refresh !== true) {
                                         var firstUnmaskedPosition = firstMaskPos;
                                         if (opts.insertMode == true) {
-                                            if (opts.greedy == true) {
+                                            if (getActiveMaskSet()['greedy'] == true) {
                                                 var bfrClone = buffer.slice();
                                                 while (getBufferElement(bfrClone, firstUnmaskedPosition, true) != getPlaceHolder(firstUnmaskedPosition) && firstUnmaskedPosition <= p) {
                                                     firstUnmaskedPosition = firstUnmaskedPosition == maskL ? (maskL + 1) : seekNext(buffer, firstUnmaskedPosition);
                                                 }
                                             }
-                                            if (firstUnmaskedPosition <= p && (opts.greedy || buffer.length < maskL)) {
+                                            if (firstUnmaskedPosition <= p && (getActiveMaskSet()['greedy'] || buffer.length < maskL)) {
                                                 if (buffer[firstMaskPos] != getPlaceHolder(firstMaskPos) && buffer.length < maskL) {
                                                     var offset = prepareBuffer(buffer, -1, isRTL);
                                                     if (pos.end != 0) p = p + offset;
@@ -1233,7 +1239,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.1.3
+Version: 2.1.4
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1330,7 +1336,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.1.3
+Version: 2.1.4
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1806,9 +1812,9 @@ Optional extensions on the jquery.inputmask base
             })(jQuery);/*
 Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
-Copyright (c) 2010 - 2012 Robin Herbots
+Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.1.3
+Version: 2.1.4
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1823,7 +1829,7 @@ Optional extensions on the jquery.inputmask base
             numericInput: true,
             digits: "*", //numer of digits
             groupSeparator: ",", // | "."
-			radixPoint: ".",
+            radixPoint: ".",
             groupSize: 3,
             autoGroup: false,
             postFormat: function (buffer, pos, reformatOnly, opts) {
@@ -1832,10 +1838,12 @@ Optional extensions on the jquery.inputmask base
                 var bufVal = cbuf.join('');
                 if (opts.autoGroup || (reformatOnly && bufVal.indexOf(opts.groupSeparator) != -1)) {
                     bufVal = bufVal.replace(new RegExp("\\" + opts.groupSeparator, "g"), '');
-                    var reg = new RegExp('(-?[\\d?]+)([\\d?]{' + opts.groupSize + '})');
+                    
+                    var reg = new RegExp('([-\+]?[\\d\?]+)([\\d\?]{' + opts.groupSize + '})');
                     while (reg.test(bufVal)) {
                         bufVal = bufVal.replace(reg, '$1' + opts.groupSeparator + '$2');
                     }
+                    
                 }
                 buffer.length = bufVal.length; //align the length
                 for (var i = 0, l = bufVal.length; i < l; i++) {
@@ -1879,15 +1887,15 @@ Optional extensions on the jquery.inputmask base
                 '~': { //real number
                     validator: function (chrs, buffer, pos, strict, opts) {
                         if (chrs == "") return false;
-                        if (pos == 1 && buffer[0] === '0' && new RegExp("[\\d|-]").test(chrs)) { //handle first char
+                        if (pos == 1 && buffer[0] === '0' && new RegExp("[\\d-]").test(chrs)) { //handle first char
                             buffer[0] = "";
                             return { "pos": 0 };
                         }
 
                         var cbuf = strict ? buffer.slice(0, pos) : buffer.slice();
-                        cbuf.splice(pos, 0, chrs);
-                        var bufferStr = cbuf.join('');
 
+                        cbuf.splice(pos + 1, 0, chrs);
+                        var bufferStr = cbuf.join('');
                         if (opts.autoGroup) //strip groupseparator
                             bufferStr = bufferStr.replace(new RegExp("\\" + opts.groupSeparator, "g"), '');
                         var isValid = opts.regex.number(opts.groupSeparator, opts.groupSize, opts.radixPoint, opts.digits).test(bufferStr);
