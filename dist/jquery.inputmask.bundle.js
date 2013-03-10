@@ -1,9 +1,9 @@
 /**
 * @license Input Mask plugin for jquery
 * http://github.com/RobinHerbots/jquery.inputmask
-* Copyright (c) 2010 - 2012 Robin Herbots
+* Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.3.5
+* Version: 1.3.6
 */
 
 (function ($) {
@@ -30,6 +30,7 @@
                 aliases: {}, //aliases definitions => see jquery.inputmask.extensions.js
                 onKeyUp: $.noop, //override to implement autocomplete on certain keys for example
                 onKeyDown: $.noop, //override to implement autocomplete on certain keys for example
+                showMaskOnFocus: true, //show the mask-placeholder when the input has focus
                 showMaskOnHover: true, //show the mask-placeholder when hovering the empty input
                 onKeyValidation: $.noop, //executes on every key-press with the result of isValid
                 //numeric basic properties
@@ -535,6 +536,9 @@
             }
 
             function caret(input, begin, end) {
+				if (!$(input).is(':visible')) {
+                    return;
+                }
                 var npt = input.jquery && input.length > 0 ? input[0] : input;
                 if (typeof begin == 'number') {
                     end = (typeof end == 'number') ? end : begin;
@@ -667,7 +671,7 @@
                     }
                 }).bind("focus.inputmask", function () {
                     var $input = $(this), input = this, nptValue = input._valueGet();
-                    if (!$input.hasClass('focus.inputmask') && (!opts.showMaskOnHover || (opts.showMaskOnHover && nptValue == ''))) {
+                    if (opts.showMaskOnFocus && !$input.hasClass('focus.inputmask') && (!opts.showMaskOnHover || (opts.showMaskOnHover && nptValue == ''))) {
                         var nptL = nptValue.length;
                         if (nptL < buffer.length) {
                             if (nptL == 0)
@@ -1088,7 +1092,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.5
+Version: 1.3.6
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1185,7 +1189,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.5
+Version: 1.3.6
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1661,9 +1665,9 @@ Optional extensions on the jquery.inputmask base
             })(jQuery);/*
 Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
-Copyright (c) 2010 - 2012 Robin Herbots
+Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.5
+Version: 1.3.6
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1678,7 +1682,7 @@ Optional extensions on the jquery.inputmask base
             numericInput: true,
             digits: "*", //numer of digits
             groupSeparator: ",", // | "."
-			radixPoint: ".",
+            radixPoint: ".",
             groupSize: 3,
             autoGroup: false,
             postFormat: function (buffer, pos, reformatOnly, opts) {
@@ -1687,10 +1691,12 @@ Optional extensions on the jquery.inputmask base
                 var bufVal = cbuf.join('');
                 if (opts.autoGroup || (reformatOnly && bufVal.indexOf(opts.groupSeparator) != -1)) {
                     bufVal = bufVal.replace(new RegExp("\\" + opts.groupSeparator, "g"), '');
-                    var reg = new RegExp('(-?[\\d?]+)([\\d?]{' + opts.groupSize + '})');
+                    
+                    var reg = new RegExp('([-\+]?[\\d\?]+)([\\d\?]{' + opts.groupSize + '})');
                     while (reg.test(bufVal)) {
                         bufVal = bufVal.replace(reg, '$1' + opts.groupSeparator + '$2');
                     }
+                    
                 }
                 buffer.length = bufVal.length; //align the length
                 for (var i = 0, l = bufVal.length; i < l; i++) {
@@ -1734,15 +1740,15 @@ Optional extensions on the jquery.inputmask base
                 '~': { //real number
                     validator: function (chrs, buffer, pos, strict, opts) {
                         if (chrs == "") return false;
-                        if (pos == 1 && buffer[0] === '0' && new RegExp("[\\d|-]").test(chrs)) { //handle first char
+                        if (pos == 1 && buffer[0] === '0' && new RegExp("[\\d-]").test(chrs)) { //handle first char
                             buffer[0] = "";
                             return { "pos": 0 };
                         }
 
                         var cbuf = strict ? buffer.slice(0, pos) : buffer.slice();
-                        cbuf.splice(pos, 0, chrs);
-                        var bufferStr = cbuf.join('');
 
+                        cbuf.splice(pos + 1, 0, chrs);
+                        var bufferStr = cbuf.join('');
                         if (opts.autoGroup) //strip groupseparator
                             bufferStr = bufferStr.replace(new RegExp("\\" + opts.groupSeparator, "g"), '');
                         var isValid = opts.regex.number(opts.groupSeparator, opts.groupSize, opts.radixPoint, opts.digits).test(bufferStr);
