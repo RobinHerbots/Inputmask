@@ -37,7 +37,6 @@ Optional extensions on the jquery.inputmask base
                 for (var i = 0, l = bufVal.length; i < l; i++) {
                     buffer[i] = bufVal.charAt(i);
                 }
-                console.log(buffer);
                 var newPos = reformatOnly ? pos : $.inArray("?", buffer);
                 if (!reformatOnly) buffer.splice(newPos, 1);
 
@@ -51,7 +50,7 @@ Optional extensions on the jquery.inputmask base
                     return new RegExp("^[\+-]?(\\d+|\\d{1," + groupSize + "}((" + escapedGroupSeparator + "\\d{" + groupSize + "})?)+)(" + escapedRadixPoint + "\\d" + digitExpression + ")?$");
                 }
             },
-            onKeyDown: function (e, opts) {
+            onKeyDown: function (e, buffer, opts) {
                 var $input = $(this), input = this;
                 if (e.keyCode == opts.keyCode.TAB) {
                     var nptStr = input._valueGet();
@@ -65,11 +64,8 @@ Optional extensions on the jquery.inputmask base
                         }
                     }
                 } else if (e.keyCode == opts.keyCode.DELETE || e.keyCode == opts.keyCode.BACKSPACE) {
-                    var nptStr = input._valueGet(),
-                    buffer = nptStr.split('');
-                    var newPos = opts.postFormat(buffer, 0, true, opts);
-                    nptStr = buffer.join('');
-                    input._valueSet(nptStr);
+                    opts.postFormat(buffer, 0, true, opts);
+                    input._valueSet(buffer.join(''));
                 }
             },
             definitions: {
