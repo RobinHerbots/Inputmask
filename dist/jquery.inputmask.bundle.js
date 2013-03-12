@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.1.4
+* Version: 2.1.5
 */
 
 (function ($) {
@@ -347,7 +347,7 @@
                 return ms;
             }
 
-			//maskset helperfunctions
+            //maskset helperfunctions
             function getActiveMaskSet() {
                 return masksets[activeMasksetIndex];
             }
@@ -1221,7 +1221,7 @@
                     var $input = $(this), input = this;
                     var k = e.keyCode;
                     opts.onKeyUp.call(this, e, opts); //extra stuff to execute on keyup
-                    if (k == opts.keyCode.TAB && $input.hasClass('focus.inputmask') && input._valueGet().length == 0) {
+                    if (k == opts.keyCode.TAB && $input.hasClass('focus.inputmask') && input._valueGet().length == 0 && opts.showMaskOnFocus) {
                         buffer = getActiveBuffer().slice();
                         writeBuffer(input, buffer);
                         if (!isRTL) caret(input, 0);
@@ -1239,7 +1239,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.1.4
+Version: 2.1.5
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1336,7 +1336,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.1.4
+Version: 2.1.5
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1814,7 +1814,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.1.4
+Version: 2.1.5
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1838,17 +1838,17 @@ Optional extensions on the jquery.inputmask base
                 var bufVal = cbuf.join('');
                 if (opts.autoGroup || (reformatOnly && bufVal.indexOf(opts.groupSeparator) != -1)) {
                     bufVal = bufVal.replace(new RegExp("\\" + opts.groupSeparator, "g"), '');
-                    
                     var reg = new RegExp('([-\+]?[\\d\?]+)([\\d\?]{' + opts.groupSize + '})');
                     while (reg.test(bufVal)) {
                         bufVal = bufVal.replace(reg, '$1' + opts.groupSeparator + '$2');
+                        bufVal = bufVal.replace(opts.groupSeparator + opts.groupSeparator, opts.groupSeparator);
                     }
-                    
                 }
                 buffer.length = bufVal.length; //align the length
                 for (var i = 0, l = bufVal.length; i < l; i++) {
                     buffer[i] = bufVal.charAt(i);
                 }
+                console.log(buffer);
                 var newPos = reformatOnly ? pos : $.inArray("?", buffer);
                 if (!reformatOnly) buffer.splice(newPos, 1);
 
@@ -1925,7 +1925,7 @@ Optional extensions on the jquery.inputmask base
                         }
 
                         if (isValid != false && !strict) {
-                            var newPos = opts.postFormat(buffer, pos, false, opts);
+                            var newPos = opts.postFormat(buffer, pos + 1, false, opts);
                             return { "pos": newPos };
                         }
                         return isValid;

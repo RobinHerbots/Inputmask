@@ -347,7 +347,7 @@
                 return ms;
             }
 
-			//maskset helperfunctions
+            //maskset helperfunctions
             function getActiveMaskSet() {
                 return masksets[activeMasksetIndex];
             }
@@ -1221,7 +1221,7 @@
                     var $input = $(this), input = this;
                     var k = e.keyCode;
                     opts.onKeyUp.call(this, e, opts); //extra stuff to execute on keyup
-                    if (k == opts.keyCode.TAB && $input.hasClass('focus.inputmask') && input._valueGet().length == 0) {
+                    if (k == opts.keyCode.TAB && $input.hasClass('focus.inputmask') && input._valueGet().length == 0 && opts.showMaskOnFocus) {
                         buffer = getActiveBuffer().slice();
                         writeBuffer(input, buffer);
                         if (!isRTL) caret(input, 0);
