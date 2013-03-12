@@ -27,12 +27,11 @@ Optional extensions on the jquery.inputmask base
                 var bufVal = cbuf.join('');
                 if (opts.autoGroup || (reformatOnly && bufVal.indexOf(opts.groupSeparator) != -1)) {
                     bufVal = bufVal.replace(new RegExp("\\" + opts.groupSeparator, "g"), '');
-                    
                     var reg = new RegExp('([-\+]?[\\d\?]+)([\\d\?]{' + opts.groupSize + '})');
                     while (reg.test(bufVal)) {
                         bufVal = bufVal.replace(reg, '$1' + opts.groupSeparator + '$2');
+                        bufVal = bufVal.replace(opts.groupSeparator + opts.groupSeparator, opts.groupSeparator);
                     }
-                    
                 }
                 buffer.length = bufVal.length; //align the length
                 for (var i = 0, l = bufVal.length; i < l; i++) {
@@ -51,7 +50,7 @@ Optional extensions on the jquery.inputmask base
                     return new RegExp("^[\+-]?(\\d+|\\d{1," + groupSize + "}((" + escapedGroupSeparator + "\\d{" + groupSize + "})?)+)(" + escapedRadixPoint + "\\d" + digitExpression + ")?$");
                 }
             },
-            onKeyDown: function (e, opts) {
+            onKeyDown: function (e, buffer, opts) {
                 var $input = $(this), input = this;
                 if (e.keyCode == opts.keyCode.TAB) {
                     var nptStr = input._valueGet();
@@ -65,11 +64,8 @@ Optional extensions on the jquery.inputmask base
                         }
                     }
                 } else if (e.keyCode == opts.keyCode.DELETE || e.keyCode == opts.keyCode.BACKSPACE) {
-                    var nptStr = input._valueGet(),
-                    buffer = nptStr.split('');
-                    var newPos = opts.postFormat(buffer, 0, true, opts);
-                    nptStr = buffer.join('');
-                    input._valueSet(nptStr);
+                    opts.postFormat(buffer, 0, true, opts);
+                    input._valueSet(buffer.join(''));
                 }
             },
             definitions: {
@@ -114,7 +110,7 @@ Optional extensions on the jquery.inputmask base
                         }
 
                         if (isValid != false && !strict) {
-                            var newPos = opts.postFormat(buffer, pos, false, opts);
+                            var newPos = opts.postFormat(buffer, pos + 1, false, opts);
                             return { "pos": newPos };
                         }
                         return isValid;

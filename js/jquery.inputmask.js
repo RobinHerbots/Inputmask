@@ -536,7 +536,7 @@
             }
 
             function caret(input, begin, end) {
-				if (!$(input).is(':visible')) {
+                if (!$(input).is(':visible')) {
                     return;
                 }
                 var npt = input.jquery && input.length > 0 ? input[0] : input;
@@ -970,7 +970,7 @@
                         }
                     }
 
-                    opts.onKeyDown.call(this, e, opts); //extra stuff to execute on keydown
+                    opts.onKeyDown.call(this, e, buffer, opts); //extra stuff to execute on keydown
                     ignorable = $.inArray(k, opts.ignorables) != -1;
                 }
 
@@ -1073,7 +1073,7 @@
                 function keyupEvent(e) {
                     var $input = $(this), input = this;
                     var k = e.keyCode;
-                    opts.onKeyUp.call(this, e, opts); //extra stuff to execute on keyup
+                    opts.onKeyUp.call(this, e, buffer, opts); //extra stuff to execute on keyup
                     if (k == opts.keyCode.TAB && $input.hasClass('focus.inputmask') && input._valueGet().length == 0 && opts.showMaskOnFocus) {
                         buffer = _buffer.slice();
                         writeBuffer(input, buffer);
