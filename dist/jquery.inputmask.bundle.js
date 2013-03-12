@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.3.6
+* Version: 1.3.7
 */
 
 (function ($) {
@@ -1074,7 +1074,7 @@
                     var $input = $(this), input = this;
                     var k = e.keyCode;
                     opts.onKeyUp.call(this, e, opts); //extra stuff to execute on keyup
-                    if (k == opts.keyCode.TAB && $input.hasClass('focus.inputmask') && input._valueGet().length == 0) {
+                    if (k == opts.keyCode.TAB && $input.hasClass('focus.inputmask') && input._valueGet().length == 0 && opts.showMaskOnFocus) {
                         buffer = _buffer.slice();
                         writeBuffer(input, buffer);
                         if (!isRTL) caret(input, 0);
@@ -1092,7 +1092,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.6
+Version: 1.3.7
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1189,7 +1189,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.6
+Version: 1.3.7
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1667,7 +1667,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.6
+Version: 1.3.7
 
 Optional extensions on the jquery.inputmask base
 */
