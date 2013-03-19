@@ -21,17 +21,34 @@ Optional extensions on the jquery.inputmask base
             radixPoint: ".",
             groupSize: 3,
             autoGroup: false,
+            getMaskLength: function (buffer, greedy, repeat, currentBuffer, opts) { //custom getMaskLength to take the groupSeparator into account
+                var calculatedLength = buffer.length;
+
+                if (!greedy && repeat > 1) {
+                    calculatedLength += (buffer.length * (repeat - 1));
+                }
+
+                var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
+                var escapedRadixPoint = $.inputmask.escapeRegex.call(this, opts.radixPoint);
+                var currentBufferStr = currentBuffer.join(''), strippedBufferStr = currentBufferStr.replace(new RegExp(escapedGroupSeparator, "g"), "").replace(new RegExp(escapedRadixPoint), ""),
+                groupOffset = currentBufferStr.length - strippedBufferStr.length;
+                return calculatedLength + groupOffset;
+            },
             postFormat: function (buffer, pos, reformatOnly, opts) {
                 var cbuf = buffer.slice();
                 if (!reformatOnly) cbuf.splice(pos, 0, "?"); //set position indicator
                 var bufVal = cbuf.join('');
                 if (opts.autoGroup || (reformatOnly && bufVal.indexOf(opts.groupSeparator) != -1)) {
                     bufVal = bufVal.replace(new RegExp("\\" + opts.groupSeparator, "g"), '');
+                    var radixSplit = bufVal.split(opts.radixPoint);
+                    bufVal = radixSplit[0];
                     var reg = new RegExp('([-\+]?[\\d\?]+)([\\d\?]{' + opts.groupSize + '})');
                     while (reg.test(bufVal)) {
                         bufVal = bufVal.replace(reg, '$1' + opts.groupSeparator + '$2');
                         bufVal = bufVal.replace(opts.groupSeparator + opts.groupSeparator, opts.groupSeparator);
                     }
+                    if (radixSplit.length > 1)
+                        bufVal += opts.radixPoint + radixSplit[1];
                 }
                 buffer.length = bufVal.length; //align the length
                 for (var i = 0, l = bufVal.length; i < l; i++) {
@@ -81,7 +98,7 @@ Optional extensions on the jquery.inputmask base
 
                         cbuf.splice(pos + 1, 0, chrs);
                         var bufferStr = cbuf.join('');
-                        if (opts.autoGroup) //strip groupseparator
+                        if (opts.autoGroup && !strict) //strip groupseparator
                             bufferStr = bufferStr.replace(new RegExp("\\" + opts.groupSeparator, "g"), '');
                         var isValid = opts.regex.number(opts.groupSeparator, opts.groupSize, opts.radixPoint, opts.digits).test(bufferStr);
                         if (!isValid) {
@@ -109,7 +126,7 @@ Optional extensions on the jquery.inputmask base
                             }
                         }
 
-                        if (isValid != false && !strict) {
+                        if (isValid != false && !strict && chrs != opts.radixPoint) {
                             var newPos = opts.postFormat(buffer, pos + 1, false, opts);
                             return { "pos": newPos };
                         }

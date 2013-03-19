@@ -25,7 +25,7 @@ Highlights:
 - many features can be enabled/disabled/configured by options
 - supports readonly/disabled/dir="rtl" attributes
 </description>
-        <tags>jQuery, plugins</tags>
+        <tags>jQuery, plugins, input, form, inputmask, mask</tags>
     </metadata>
     <files>
         <file src="..\js\jquery.inputmask.date.extensions.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.date.extensions.js" />
