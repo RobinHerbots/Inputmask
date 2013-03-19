@@ -927,7 +927,7 @@
                                     beginPos = firstMaskPos;
                                 if (beginPos < maskL) {
                                     if (opts.numericInput && opts.radixPoint != "" && buffer[beginPos] == opts.radixPoint) {
-                                        beginPos = seekNext(buffer, beginPos);
+                                        beginPos = (buffer.length - 1 == beginPos) /* radixPoint is latest? delete it */ ? beginPos : seekNext(buffer, beginPos);
                                         beginPos = shiftL(beginPos, maskL);
                                     } else {
                                         if (isRTL) {
@@ -943,7 +943,7 @@
                                 if (beginPos > firstMaskPos) {
                                     beginPos -= 1;
                                     if (opts.numericInput && opts.radixPoint != "" && buffer[beginPos] == opts.radixPoint) {
-                                        beginPos = shiftR(firstMaskPos, beginPos - 1, getPlaceHolder(beginPos), true);
+                                        beginPos = shiftR(firstMaskPos, (buffer.length - 1 == beginPos) /* radixPoint is latest? delete it */ ? beginPos : beginPos - 1, getPlaceHolder(beginPos), true);
                                         beginPos++;
                                     } else {
                                         if (isRTL) {
