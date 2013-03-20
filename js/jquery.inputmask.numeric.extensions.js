@@ -152,7 +152,10 @@ Optional extensions on the jquery.inputmask base
         },
         'integer': {
             regex: {
-                number: function (groupSeparator, groupSize) { return new RegExp("^([\+\-]?\\d*)$"); }
+                number: function (groupSeparator, groupSize) {
+                    var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, groupSeparator);
+                    return new RegExp("^[\+-]?(\\d+|\\d{1," + groupSize + "}((" + escapedGroupSeparator + "\\d{" + groupSize + "})?)+)$");
+                }
             },
             alias: "decimal"
         }
