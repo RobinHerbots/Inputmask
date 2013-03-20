@@ -40,7 +40,7 @@ Optional extensions on the jquery.inputmask base
                 var bufVal = cbuf.join('');
                 if (opts.autoGroup || (reformatOnly && bufVal.indexOf(opts.groupSeparator) != -1)) {
                     bufVal = bufVal.replace(new RegExp("\\" + opts.groupSeparator, "g"), '');
-                    radixSplit = bufVal.split(opts.radixPoint);
+                    var radixSplit = bufVal.split(opts.radixPoint);
                     bufVal = radixSplit[0];
                     var reg = new RegExp('([-\+]?[\\d\?]+)([\\d\?]{' + opts.groupSize + '})');
                     while (reg.test(bufVal)) {

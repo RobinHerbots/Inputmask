@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.3.8
+* Version: 1.3.9
 */
 
 (function ($) {
@@ -527,7 +527,7 @@
                     var buffer = _buffer.slice();
                     checkVal(input, buffer);
                     return $.map(buffer, function (element, index) {
-                        return isMask(index) && element != getBufferElement(_buffer.slice(), index) ? element : null;
+                        return isMask(index) && isValid(index, element, buffer, true) ? element : null;
                     }).join('');
                 }
                 else {
@@ -1115,7 +1115,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.8
+Version: 1.3.9
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1212,7 +1212,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.8
+Version: 1.3.9
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1705,7 +1705,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.8
+Version: 1.3.9
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1742,7 +1742,7 @@ Optional extensions on the jquery.inputmask base
                 var bufVal = cbuf.join('');
                 if (opts.autoGroup || (reformatOnly && bufVal.indexOf(opts.groupSeparator) != -1)) {
                     bufVal = bufVal.replace(new RegExp("\\" + opts.groupSeparator, "g"), '');
-                    radixSplit = bufVal.split(opts.radixPoint);
+                    var radixSplit = bufVal.split(opts.radixPoint);
                     bufVal = radixSplit[0];
                     var reg = new RegExp('([-\+]?[\\d\?]+)([\\d\?]{' + opts.groupSize + '})');
                     while (reg.test(bufVal)) {
