@@ -646,7 +646,7 @@
                     var buffer = getActiveBuffer().slice();
                     checkVal(input, buffer);
                     return $.map(buffer, function (element, index) {
-                        return isMask(index) && element != getBufferElement(getActiveBuffer().slice(), index) ? element : null;
+                        return isMask(index) && isValid(index, element, buffer, true) ? element : null;
                     }).join('');
                 }
                 else {

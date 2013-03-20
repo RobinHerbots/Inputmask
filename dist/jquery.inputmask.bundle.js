@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.1.7
+* Version: 2.1.8
 */
 
 (function ($) {
@@ -646,7 +646,7 @@
                     var buffer = getActiveBuffer().slice();
                     checkVal(input, buffer);
                     return $.map(buffer, function (element, index) {
-                        return isMask(index) && element != getBufferElement(getActiveBuffer().slice(), index) ? element : null;
+                        return isMask(index) && isValid(index, element, buffer, true) ? element : null;
                     }).join('');
                 }
                 else {
@@ -1264,7 +1264,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.1.7
+Version: 2.1.8
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1361,7 +1361,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.1.7
+Version: 2.1.8
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1854,7 +1854,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.1.7
+Version: 2.1.8
 
 Optional extensions on the jquery.inputmask base
 */
