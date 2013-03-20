@@ -27,7 +27,7 @@ Optional extensions on the jquery.inputmask base
                 if (!greedy && repeat > 1) {
                     calculatedLength += (buffer.length * (repeat - 1));
                 }
-                
+
                 var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
                 var escapedRadixPoint = $.inputmask.escapeRegex.call(this, opts.radixPoint);
                 var currentBufferStr = currentBuffer.join(''), strippedBufferStr = currentBufferStr.replace(new RegExp(escapedGroupSeparator, "g"), "").replace(new RegExp(escapedRadixPoint), ""),
@@ -152,7 +152,10 @@ Optional extensions on the jquery.inputmask base
         },
         'integer': {
             regex: {
-                number: function (groupSeparator, groupSize) { return new RegExp("^([\+\-]?\\d*)$"); }
+                number: function (groupSeparator, groupSize) {
+                    var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, groupSeparator);
+                    return new RegExp("^[\+-]?(\\d+|\\d{1," + groupSize + "}((" + escapedGroupSeparator + "\\d{" + groupSize + "})?)+)$");
+                }
             },
             alias: "decimal"
         }
