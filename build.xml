@@ -14,7 +14,7 @@
 	   <replaceregexp file="${srcdir}/jquery.inputmask.extensions.js" match="Version:.*" replace="Version: ${build.major}.${build.minor}.${build.revision}"  byline="true"/>
 	   <replaceregexp file="${srcdir}/jquery.inputmask.date.extensions.js" match="Version:.*" replace="Version: ${build.major}.${build.minor}.${build.revision}"  byline="true"/>
 	   <replaceregexp file="${srcdir}/jquery.inputmask.numeric.extensions.js" match="Version:.*" replace="Version: ${build.major}.${build.minor}.${build.revision}"  byline="true"/>
-	   <replaceregexp file="./jquery.inputmask.jquery.json" match="&quot;version&quot;:.*" replace="&quot;version&quot;: &quot;${build.major}.${build.minor}.${build.revision}&quot;"  byline="true"/>
+	   <replaceregexp file="./jquery.inputmask.jquery.json" match="&quot;version&quot;:.*" replace="&quot;version&quot;: &quot;${build.major}.${build.minor}.${build.revision}&quot;,"  byline="true"/>
 	</target>
 
 	<target name="resetVersions">

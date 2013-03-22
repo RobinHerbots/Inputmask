@@ -79,11 +79,11 @@
 
             var iphone = navigator.userAgent.match(/iphone/i) != null;
             var android = navigator.userAgent.match(/android.*mobile safari.*/i) != null;
-            if (android) {
-                var browser = navigator.userAgent.match(/mobile safari.*/i);
-                var version = parseInt(new RegExp(/[0-9]+/).exec(browser));
-                android = version <= 533;
-            }
+            //if (android) {
+            //    var browser = navigator.userAgent.match(/mobile safari.*/i);
+            //    var version = parseInt(new RegExp(/[0-9]+/).exec(browser));
+            //    android = version <= 533;
+            //}
             var caretposCorrection = null;
             var masksets,
 	        activeMasksetIndex = 0;
