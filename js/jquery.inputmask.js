@@ -535,12 +535,12 @@
                 }
             }
 
-            function caret(input, begin, end) {
-                if (!$(input).is(':visible')) {
-                    return;
-                }
+            function caret(input, begin, end) {       
                 var npt = input.jquery && input.length > 0 ? input[0] : input;
                 if (typeof begin == 'number') {
+                  	if (!$(input).is(':visible')) {
+                    	return;
+                	}
                     end = (typeof end == 'number') ? end : begin;
                     if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
                     if (npt.setSelectionRange) {
@@ -555,6 +555,9 @@
                     npt.focus();
                     if (android && end != npt.selectionEnd) caretposCorrection = { begin: begin, end: end };
                 } else {
+                	if (!$(input).is(':visible')) {
+                    	return { begin: 0, end: 0 };
+                	}
                     var caretpos = android ? caretposCorrection : null, caretposCorrection = null;
                     if (caretpos == null) {
                         if (npt.setSelectionRange) {
