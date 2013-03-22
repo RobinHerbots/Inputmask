@@ -833,7 +833,7 @@
                     var input = this;
                     setTimeout(function () {
                         var selectedCaret = caret(input);
-                        if (selectedCaret.begin == selectedCaret.end) {
+                        if (selectedCaret && selectedCaret.begin == selectedCaret.end) {
                             var clickPosition = selectedCaret.begin;
                             lastPosition = checkVal(input, buffer, false);
                             determineInputDirection(input, selectedCaret);
