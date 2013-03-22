@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.3.11
+* Version: 1.3.12
 */
 
 (function ($) {
@@ -77,12 +77,14 @@
             var pasteEvent = isInputEventSupported('paste') ? 'paste' : 'input';
 
             var iphone = navigator.userAgent.match(/iphone/i) != null;
-            var android = navigator.userAgent.match(/android.*mobile safari.*/i) != null;
-            //if (android) {
-            //    var browser = navigator.userAgent.match(/mobile safari.*/i);
-            //    var version = parseInt(new RegExp(/[0-9]+/).exec(browser));
-            //    android = version <= 533;
-            //}
+            var android = navigator.userAgent.match(/android.*safari.*/i) != null,
+	    	android534;
+            if (android) {
+                var browser = navigator.userAgent.match(/safari.*/i);
+                var version = parseInt(new RegExp(/[0-9]+/).exec(browser));
+                android = (version <= 533);
+                android534 = (533 < version <= 534);
+            }
             var caretposCorrection = null;
 
             if (typeof fn == "string") {
@@ -544,7 +546,14 @@
                     end = (typeof end == 'number') ? end : begin;
                     if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
                     if (npt.setSelectionRange) {
-                        npt.setSelectionRange(begin, end);
+                        if (end == begin) {
+                       		npt.focus();
+                        	npt.setSelectionRange(begin, end);
+                    	} else {
+                        	npt.select();
+                        	npt.selectionStart = begin;
+                        	npt.selectionEnd = android534 ? begin : end;
+                    	}
                     } else if (npt.createTextRange) {
                         var range = npt.createTextRange();
                         range.collapse(true);
@@ -1118,7 +1127,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.11
+Version: 1.3.12
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1215,7 +1224,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.11
+Version: 1.3.12
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1708,7 +1717,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.11
+Version: 1.3.12
 
 Optional extensions on the jquery.inputmask base
 */
