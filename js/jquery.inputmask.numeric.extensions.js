@@ -70,15 +70,14 @@ Optional extensions on the jquery.inputmask base
             onKeyDown: function (e, buffer, opts) {
                 var $input = $(this), input = this;
                 if (e.keyCode == opts.keyCode.TAB) {
-                    var nptStr = input._valueGet();
-                    var radixPosition = nptStr.indexOf(opts.radixPoint);
+                    var radixPosition = $.inArray(opts.radixPoint, buffer);
                     if (radixPosition != -1) {
-                        for (var i = 1; i < opts.digits; i++) {
-                            if (nptStr[radixPosition + i]) nptStr = nptStr + "0";
+                        var masksets = $input.data('inputmask')['masksets'];
+                        var activeMasksetIndex = $input.data('inputmask')['activeMasksetIndex'];
+                        for (var i = 1; i <= opts.digits && i < opts.getMaskLength(masksets[activeMasksetIndex]["_buffer"], masksets[activeMasksetIndex]["greedy"], masksets[activeMasksetIndex]["repeat"], buffer, opts) ; i++) {
+                            if (buffer[radixPosition + i] == undefined) buffer[radixPosition + i] = "0";
                         }
-                        if (nptStr !== $input.val()) {
-                            $input.val(nptStr);
-                        }
+                        input._valueSet(buffer.join(''));
                     }
                 } else if (e.keyCode == opts.keyCode.DELETE || e.keyCode == opts.keyCode.BACKSPACE) {
                     opts.postFormat(buffer, 0, true, opts);
