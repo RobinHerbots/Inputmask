@@ -22,12 +22,13 @@ Highlights:
 
 ## Usage:
 
-Include the js-files:
+Include the js-files which you can find in the dist-folder. You have the bundled file which contains the main plugin code and also all extensions. (date, numerics, other) or if you prefer to only include some parts, use the separate js-files in the dist/min folder.
+
+The minimum to include is the jquery.inputmask.js
 
 ```html
 <script src="jquery.js" type="text/javascript"></script>
-<script src="jquery.inputmask.js" type="text/javascript"></script>
-<script src="jquery.inputmask.extensions.js" type="text/javascript"></script>
+<script src="dist/jquery.inputmask.bundle.min.js" type="text/javascript"></script>
 ```
 
 Define your masks:
