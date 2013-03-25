@@ -28,7 +28,7 @@ The minimum to include is the jquery.inputmask.js
 
 ```html
 <script src="jquery.js" type="text/javascript"></script>
-<script src="dist/jquery.inputmask.bundle.min.js" type="text/javascript"></script>
+<script src="jquery.inputmask.js" type="text/javascript"></script>
 ```
 
 Define your masks:
