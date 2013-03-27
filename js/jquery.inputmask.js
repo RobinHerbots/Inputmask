@@ -930,8 +930,7 @@
                             caret(input, checkVal(input, buffer, false));
                         } else if ((pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode)) { //partial selection
                             clearBuffer(buffer, pos.begin, pos.end);
-                            writeBuffer(input, buffer);
-                            caret(isRTL ? checkVal(input, buffer, false) : pos.begin);
+                            writeBuffer(input, buffer, isRTL ? checkVal(input, buffer, false) : pos.begin);
                         } else { //handle delete
                             var beginPos = pos.begin;
                             if (k == opts.keyCode.DELETE) {
