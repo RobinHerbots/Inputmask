@@ -1072,7 +1072,7 @@
                             clearBuffer(buffer, pos.begin, pos.end);
                             determineActiveMasksetIndex(buffer, pos.begin, activeMasksetIndex);
                             writeBuffer(input, buffer);
-                            caret(isRTL ? checkVal(input, buffer, false) : pos.begin);
+                            caret(input, isRTL ? checkVal(input, buffer, false) : pos.begin);
                         } else { //handle delete
                             var beginPos = pos.begin;
                             if (k == opts.keyCode.DELETE) {
