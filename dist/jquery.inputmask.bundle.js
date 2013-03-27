@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.1.12
+* Version: 2.1.13
 */
 
 (function ($) {
@@ -1071,8 +1071,7 @@
                         } else if ((pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode)) { //partial selection
                             clearBuffer(buffer, pos.begin, pos.end);
                             determineActiveMasksetIndex(buffer, pos.begin, activeMasksetIndex);
-                            writeBuffer(input, buffer);
-                            caret(isRTL ? checkVal(input, buffer, false) : pos.begin);
+                            writeBuffer(input, buffer, isRTL ? checkVal(input, buffer, false) : pos.begin);
                         } else { //handle delete
                             var beginPos = pos.begin;
                             if (k == opts.keyCode.DELETE) {
@@ -1276,7 +1275,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.1.12
+Version: 2.1.13
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1373,7 +1372,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.1.12
+Version: 2.1.13
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1866,7 +1865,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.1.12
+Version: 2.1.13
 
 Optional extensions on the jquery.inputmask base
 */
