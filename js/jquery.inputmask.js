@@ -79,13 +79,12 @@
             var iphone = navigator.userAgent.match(/iphone/i) != null;
             var android = navigator.userAgent.match(/android.*safari.*/i) != null,
 	    	android534;
-            if (android) {
-                var browser = navigator.userAgent.match(/safari.*/i);
-                var version = parseInt(new RegExp(/[0-9]+/).exec(browser));
-                android = (version <= 533);
-                android534 = (533 < version <= 534);
-            }
-            var caretposCorrection = null;
+            //if (android) {
+            //    var browser = navigator.userAgent.match(/safari.*/i);
+            //    var version = parseInt(new RegExp(/[0-9]+/).exec(browser));
+            //    android = (version <= 533);
+            //    android534 = (533 < version) && (version <= 534);
+            //}
 
             if (typeof fn == "string") {
                 switch (fn) {
@@ -406,12 +405,7 @@
             function writeBuffer(input, buffer, caretPos) {
                 input._valueSet(buffer.join(''));
                 if (caretPos != undefined) {
-                    if (android) {
-                        setTimeout(function () {
-                            caret(input, caretPos);
-                        }, 100);
-                    }
-                    else caret(input, caretPos);
+                    caret(input, caretPos);
                 }
             };
             function clearBuffer(buffer, start, end) {
@@ -537,23 +531,24 @@
                 }
             }
 
-            function caret(input, begin, end) {       
+            function caret(input, begin, end) {
                 var npt = input.jquery && input.length > 0 ? input[0] : input;
                 if (typeof begin == 'number') {
-                  	if (!$(input).is(':visible')) {
-                    	return;
-                	}
+                    if (!$(input).is(':visible')) {
+                        return;
+                    }
                     end = (typeof end == 'number') ? end : begin;
                     if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
                     if (npt.setSelectionRange) {
-                        if (end == begin) {
-                       		npt.focus();
-                        	npt.setSelectionRange(begin, end);
-                    	} else {
-                        	npt.select();
-                        	npt.selectionStart = begin;
-                        	npt.selectionEnd = android534 ? begin : end;
-                    	}
+                        if (android)
+                            setTimeout(function () {
+                                npt.selectionStart = begin;
+                                npt.selectionEnd = end;
+                            }, 0);
+                        else {
+                            npt.selectionStart = begin;
+                            npt.selectionEnd = end;
+                        }
                     } else if (npt.createTextRange) {
                         var range = npt.createTextRange();
                         range.collapse(true);
@@ -561,25 +556,19 @@
                         range.moveStart('character', begin);
                         range.select();
                     }
-                    npt.focus();
-                    if (android && end != npt.selectionEnd) caretposCorrection = { begin: begin, end: end };
                 } else {
-                	if (!$(input).is(':visible')) {
-                    	return { begin: 0, end: 0 };
-                	}
-                    var caretpos = android ? caretposCorrection : null, caretposCorrection = null;
-                    if (caretpos == null) {
-                        if (npt.setSelectionRange) {
-                            begin = npt.selectionStart;
-                            end = npt.selectionEnd;
-                        } else if (document.selection && document.selection.createRange) {
-                            var range = document.selection.createRange();
-                            begin = 0 - range.duplicate().moveStart('character', -100000);
-                            end = begin + range.text.length;
-                        }
-                        caretpos = { begin: begin, end: end };
+                    if (!$(input).is(':visible')) {
+                        return { begin: 0, end: 0 };
                     }
-                    return caretpos;
+                    if (npt.setSelectionRange) {
+                        begin = npt.selectionStart;
+                        end = npt.selectionEnd;
+                    } else if (document.selection && document.selection.createRange) {
+                        var range = document.selection.createRange();
+                        begin = 0 - range.duplicate().moveStart('character', -100000);
+                        end = begin + range.text.length;
+                    }
+                    return { begin: begin, end: end };
                 }
             };
 
@@ -1067,7 +1056,7 @@
                                                 $input.trigger("complete");
                                         }, 0);
                                     }
-                                } else if (android) writeBuffer(input, buffer, pos.begin);
+                                }
                             }
                             else {
                                 var p = seekNext(buffer, pos.begin - 1), np;
@@ -1097,7 +1086,7 @@
                                                 $input.trigger("complete");
                                         }, 0);
                                     }
-                                } else if (android) writeBuffer(input, buffer, pos.begin);
+                                }
                             }
                             e.preventDefault();
                         }
