@@ -1090,7 +1090,6 @@
                                 }
                             }
                             if(android) {
-                    			console.log("restore " + caretSavePoint.begin + ' ' + caretSavePoint.end);
                    		 		caret(input, caretSavePoint.begin, caretSavePoint.end);
                   			}
                             e.preventDefault();
