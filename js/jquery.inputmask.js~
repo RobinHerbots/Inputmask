@@ -86,9 +86,12 @@
             //    android = (version <= 533);
             //    android534 = (533 < version) && (version <= 534);
             //}
+<<<<<<< HEAD
 
             var masksets,
 	        activeMasksetIndex = 0;
+=======
+>>>>>>> 1.x
             if (typeof fn == "string") {
                 switch (fn) {
                     case "mask":
@@ -1239,7 +1242,8 @@
                                 }
                             }
                             if(android) {
-                   		caret(input, caretSavePoint.begin, caretSavePoint.end);
+                    			console.log("restore " + caretSavePoint.begin + ' ' + caretSavePoint.end);
+                   		 		caret(input, caretSavePoint.begin, caretSavePoint.end);
                   			}
                             e.preventDefault();
                         }
