@@ -79,13 +79,13 @@
 
             var iphone = navigator.userAgent.match(/iphone/i) != null;
             var android = navigator.userAgent.match(/android.*safari.*/i) != null,
-	    	android534;
-            //if (android) {
-            //    var browser = navigator.userAgent.match(/safari.*/i);
-            //    var version = parseInt(new RegExp(/[0-9]+/).exec(browser));
-            //    android = (version <= 533);
-            //    android534 = (533 < version) && (version <= 534);
-            //}
+	    	android533;
+            if (android) {
+                var browser = navigator.userAgent.match(/safari.*/i);
+                var version = parseInt(new RegExp(/[0-9]+/).exec(browser));
+                android533 = (version <= 533);
+                //android534 = (533 < version) && (version <= 534);
+            }
 
             var masksets,
 	        activeMasksetIndex = 0;
@@ -683,7 +683,7 @@
                         return { "begin": 0, "end": 0 };
                     }
                     if (npt.setSelectionRange) {
-                        begin = npt.selectionStart;
+                        begin = android533 ? npt.selectionEnd : npt.selectionStart;
                         end = npt.selectionEnd;
                     } else if (document.selection && document.selection.createRange) {
                         range = document.selection.createRange();
