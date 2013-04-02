@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.3.16
+* Version: 1.3.17
 */
 
 (function ($) {
@@ -78,13 +78,13 @@
 
             var iphone = navigator.userAgent.match(/iphone/i) != null;
             var android = navigator.userAgent.match(/android.*safari.*/i) != null,
-	    	android534;
-            //if (android) {
-            //    var browser = navigator.userAgent.match(/safari.*/i);
-            //    var version = parseInt(new RegExp(/[0-9]+/).exec(browser));
-            //    android = (version <= 533);
-            //    android534 = (533 < version) && (version <= 534);
-            //}
+	    	android533;
+            if (android) {
+                var browser = navigator.userAgent.match(/safari.*/i);
+                var version = parseInt(new RegExp(/[0-9]+/).exec(browser));
+                android533 = (version <= 533);
+                //android534 = (533 < version) && (version <= 534);
+            }
             if (typeof fn == "string") {
                 switch (fn) {
                     case "mask":
@@ -563,7 +563,7 @@
                         return { "begin": 0, "end": 0 };
                     }
                     if (npt.setSelectionRange) {
-                        begin = npt.selectionStart;
+                        begin = android533 ? npt.selectionEnd : npt.selectionStart;
                         end = npt.selectionEnd;
                     } else if (document.selection && document.selection.createRange) {
                         var range = document.selection.createRange();
@@ -1090,7 +1090,6 @@
                                 }
                             }
                             if(android) {
-                    			console.log("restore " + caretSavePoint.begin + ' ' + caretSavePoint.end);
                    		 		caret(input, caretSavePoint.begin, caretSavePoint.end);
                   			}
                             e.preventDefault();
@@ -1120,7 +1119,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.16
+Version: 1.3.17
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1217,7 +1216,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.16
+Version: 1.3.17
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1710,7 +1709,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.16
+Version: 1.3.17
 
 Optional extensions on the jquery.inputmask base
 */
