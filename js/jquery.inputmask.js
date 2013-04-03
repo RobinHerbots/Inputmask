@@ -563,7 +563,7 @@
                         return { "begin": 0, "end": 0 };
                     }
                     if (npt.setSelectionRange) {
-                        begin = android533 ? npt.selectionEnd : npt.selectionStart;
+                        begin = npt.selectionStart;
                         end = npt.selectionEnd;
                     } else if (document.selection && document.selection.createRange) {
                         var range = document.selection.createRange();
@@ -922,7 +922,7 @@
                             clearBuffer(buffer, pos.begin, pos.end);
                             writeBuffer(input, buffer, isRTL ? checkVal(input, buffer, false) : pos.begin);
                         } else { //handle delete
-                            var beginPos = pos.begin;
+                            var beginPos = android533 ? pos.end : pos.begin;
                             if (k == opts.keyCode.DELETE) {
                                 if (beginPos < firstMaskPos)
                                     beginPos = firstMaskPos;
