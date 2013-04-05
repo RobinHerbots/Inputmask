@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.3.17
+* Version: 1.3.18
 */
 
 (function ($) {
@@ -563,7 +563,7 @@
                         return { "begin": 0, "end": 0 };
                     }
                     if (npt.setSelectionRange) {
-                        begin = android533 ? npt.selectionEnd : npt.selectionStart;
+                        begin = npt.selectionStart;
                         end = npt.selectionEnd;
                     } else if (document.selection && document.selection.createRange) {
                         var range = document.selection.createRange();
@@ -922,7 +922,7 @@
                             clearBuffer(buffer, pos.begin, pos.end);
                             writeBuffer(input, buffer, isRTL ? checkVal(input, buffer, false) : pos.begin);
                         } else { //handle delete
-                            var beginPos = pos.begin;
+                            var beginPos = android533 ? pos.end : pos.begin;
                             if (k == opts.keyCode.DELETE) {
                                 if (beginPos < firstMaskPos)
                                     beginPos = firstMaskPos;
@@ -968,7 +968,7 @@
                             if (!opts.insertMode && caretPos == getMaskLength(buffer) && !e.shiftKey) caretPos--;
                             caret(input, e.shiftKey ? pos.begin : caretPos, caretPos);
                         }, 0);
-                    } else if (k == opts.keyCode.HOME || k == opts.keyCode.PAGE_UP) {//Home or page_up
+                    } else if ((k == opts.keyCode.HOME && !e.shiftKey) || k == opts.keyCode.PAGE_UP) {//Home or page_up
                         caret(input, 0, e.shiftKey ? pos.begin : 0);
                     }
                     else if (k == opts.keyCode.ESCAPE) {//escape
@@ -1119,7 +1119,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.17
+Version: 1.3.18
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1216,7 +1216,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.17
+Version: 1.3.18
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1709,7 +1709,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.17
+Version: 1.3.18
 
 Optional extensions on the jquery.inputmask base
 */
