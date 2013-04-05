@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 1.3.18
+* Version: 1.3.19
 */
 
 (function ($) {
@@ -1014,7 +1014,7 @@
                         caret(input, seekNext(buffer, radixPosition != -1 ? radixPosition : getMaskLength(buffer)));
                     }
 
-                    if (e.ctrlKey || e.altKey || e.metaKey || ignorable) {
+                    if (e.metaKey || ignorable) {
                         return true;
                     } else {
                         if (k) {
@@ -1119,7 +1119,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.18
+Version: 1.3.19
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1216,7 +1216,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.18
+Version: 1.3.19
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1709,7 +1709,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 1.3.18
+Version: 1.3.19
 
 Optional extensions on the jquery.inputmask base
 */

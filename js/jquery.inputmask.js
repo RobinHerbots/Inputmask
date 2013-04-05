@@ -1014,7 +1014,7 @@
                         caret(input, seekNext(buffer, radixPosition != -1 ? radixPosition : getMaskLength(buffer)));
                     }
 
-                    if (e.ctrlKey || e.altKey || e.metaKey || ignorable) {
+                    if (e.metaKey || ignorable) {
                         return true;
                     } else {
                         if (k) {
