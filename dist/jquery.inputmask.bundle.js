@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.1.20
+* Version: 2.1.21
 */
 
 (function ($) {
@@ -1268,7 +1268,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.1.20
+Version: 2.1.21
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1365,7 +1365,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.1.20
+Version: 2.1.21
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1548,7 +1548,7 @@ Optional extensions on the jquery.inputmask base
                         if (!strict && !isValid) {
                             var yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear).toString().slice(0, 2);
 
-                            isValid = opts.isInYearRange(yearPrefix + chrs[1], opts.yearrange.minyear, opts.yearrange.maxyear);
+                            isValid = opts.isInYearRange(chrs[0] + yearPrefix[1] + chrs[1], opts.yearrange.minyear, opts.yearrange.maxyear);
                             if (isValid) {
                                 buffer[pos++] = yearPrefix[1];
                                 return { "pos": pos };
@@ -1858,7 +1858,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.1.20
+Version: 2.1.21
 
 Optional extensions on the jquery.inputmask base
 */
