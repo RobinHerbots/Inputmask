@@ -312,7 +312,7 @@
                         ms.push({
                             "_buffer": maskTemplate["mask"],
                             "tests": getTestingChain(newMask),
-                            "lastValidPosition": 0,
+                            "lastValidPosition": undefined,
                             "greedy": maskTemplate["greedy"],
                             "repeat": maskTemplate["repeat"]
                         });
@@ -321,7 +321,7 @@
                         ms.push({
                             "_buffer": maskTemplate["mask"],
                             "tests": getTestingChain(newMask),
-                            "lastValidPosition": 0,
+                            "lastValidPosition": undefined,
                             "greedy": maskTemplate["greedy"],
                             "repeat": maskTemplate["repeat"]
                         });
@@ -336,15 +336,18 @@
                         ms.push({
                             "_buffer": maskTemplate["mask"],
                             "tests": getTestingChain(newMask),
-                            "lastValidPosition": 0,
+                            "lastValidPosition": undefined,
                             "greedy": maskTemplate["greedy"],
                             "repeat": maskTemplate["repeat"]
                         });
                     }
 
                 }
-
-                generateMask("", opts.mask.toString());
+                if ($.isArray(opts.mask)) {
+                    $.each(opts.mask, function (ndx, lmnt) {
+                        generateMask("", lmnt.toString());
+                    });
+                } else generateMask("", opts.mask.toString());
                 return ms;
             }
 
@@ -393,7 +396,7 @@
 
                         maskPos = isRTL ? seekPrevious(buffer, pos) : seekNext(buffer, pos);
                     }
-                    if ((isRTL || opts.numericInput) ? activeMaskset['lastValidPosition'] <= opts.numericInput ? getMaskLength(buffer) : seekNext(buffer, maskPos) : activeMaskset['lastValidPosition'] >= seekPrevious(buffer, maskPos)) {
+                    if (activeMaskset['lastValidPosition'] == undefined || (isRTL || opts.numericInput) ? activeMaskset['lastValidPosition'] <= opts.numericInput ? getMaskLength(buffer) : seekNext(buffer, maskPos) : activeMaskset['lastValidPosition'] >= seekPrevious(buffer, maskPos)) {
                         if (maskPos >= 0 && maskPos < getMaskLength(buffer)) {
                             results[index] = _isValid(maskPos, activeMaskset);
                             if (results[index] !== false) {
@@ -401,7 +404,7 @@
                                     results[index] = { "pos": maskPos }; //always take a possible corrected maskposition into account
                                 }
                                 activeMaskset['lastValidPosition'] = results[index].pos || maskPos; //set new position from isValid
-                            } else activeMaskset['lastValidPosition'] = isRTL ? seekNext(buffer, pos) : seekPrevious(buffer, pos); //autocorrect validposition from backspace etc  	
+                            } else activeMaskset['lastValidPosition'] = isRTL ? pos == getMaskLength(buffer) ? undefined : seekNext(buffer, pos) : pos == 0 ? undefined : seekPrevious(buffer, pos); //autocorrect validposition from backspace etc  	
                         }
                     }
                 });
@@ -415,7 +418,7 @@
             function determineActiveMasksetIndex(buffer, pos, currentActiveMasksetIndex, isRTL) {
                 $.each(masksets, function (index, value) {
                     var activeMaskset = this;
-                    if ((isRTL || opts.numericInput) ? activeMaskset['lastValidPosition'] <= pos : activeMaskset['lastValidPosition'] >= pos) {
+                    if (activeMaskset['lastValidPosition'] && (isRTL || opts.numericInput) ? activeMaskset['lastValidPosition'] <= pos : activeMaskset['lastValidPosition'] >= pos) {
                         activeMasksetIndex = index;
                         //reset to correct masktemplate
                         if (activeMasksetIndex != currentActiveMasksetIndex) {
@@ -649,8 +652,8 @@
                     return input._valueGet();
                 }
             }
-		
-	    	var caretSavePoint;
+
+            var caretSavePoint;
             function caret(input, begin, end) {
                 var npt = input.jquery && input.length > 0 ? input[0] : input, rabge;
                 if (typeof begin == 'number') {
@@ -665,8 +668,8 @@
                                 npt.selectionStart = begin;
                                 npt.selectionEnd = android ? begin : end;
                             }, 10);
-			    			caretSavePoint = { "begin": begin, "end": end };	
-						}
+                            caretSavePoint = { "begin": begin, "end": end };
+                        }
                         else {
                             npt.selectionStart = begin;
                             npt.selectionEnd = end;
@@ -699,7 +702,7 @@
                 $.each(masksets, function (ndx, ms) {
                     activeMasksetIndex = ndx;
                     var aml = getMaskLength(buffer);
-                    if (ms["lastValidPosition"] >= highestValidPosition && ms["lastValidPosition"] == (aml - 1)) {
+                    if (ms["lastValidPosition"] && ms["lastValidPosition"] >= highestValidPosition && ms["lastValidPosition"] == (aml - 1)) {
                         var msComplete = true;
                         for (var i = 0; i < aml; i++) {
                             var mask = isMask(i);
@@ -1238,9 +1241,9 @@
                                     }
                                 }
                             }
-                            if(android) {
-                   		caret(input, caretSavePoint.begin, caretSavePoint.end);
-                  			}
+                            if (android) {
+                                caret(input, caretSavePoint.begin, caretSavePoint.end);
+                            }
                             e.preventDefault();
                         }
                     }
