@@ -186,7 +186,7 @@ Optional extensions on the jquery.inputmask base
                         if (!strict && !isValid) {
                             var yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear).toString().slice(0, 2);
 
-                            isValid = opts.isInYearRange(yearPrefix + chrs[1], opts.yearrange.minyear, opts.yearrange.maxyear);
+                            isValid = opts.isInYearRange(chrs[0] + yearPrefix[1] + chrs[1], opts.yearrange.minyear, opts.yearrange.maxyear);
                             if (isValid) {
                                 buffer[pos++] = yearPrefix[1];
                                 return { "pos": pos };
