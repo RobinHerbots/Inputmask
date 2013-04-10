@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.2.0
+* Version: 2.2.1
 */
 
 (function ($) {
@@ -37,6 +37,7 @@
                 //numeric basic properties
                 numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
                 radixPoint: "", //".", // | ","
+                rightAlignNumerics: true, //align numerics to the right
                 //numeric basic properties
                 definitions: {
                     '9': {
@@ -762,8 +763,9 @@
                 lastMaskPos = seekPrevious(buffer, getMaskLength(buffer)),
                 isRTL = false;
                 if (el.dir == "rtl" || opts.numericInput) {
-                    el.dir = "ltr"
-                    $input.css("text-align", "right");
+                    if (el.dir == "rtl" || (opts.numericInput && opts.rightAlignNumerics))
+                        $input.css("text-align", "right");
+                    el.dir = "ltr";
                     $input.removeAttr("dir");
                     var inputData = $input.data('inputmask');
                     inputData['isRTL'] = true;
@@ -1271,7 +1273,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.0
+Version: 2.2.1
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1368,7 +1370,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.0
+Version: 2.2.1
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1861,7 +1863,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.0
+Version: 2.2.1
 
 Optional extensions on the jquery.inputmask base
 */

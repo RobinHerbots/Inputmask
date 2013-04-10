@@ -37,6 +37,7 @@
                 //numeric basic properties
                 numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
                 radixPoint: "", //".", // | ","
+                rightAlignNumerics: true, //align numerics to the right
                 //numeric basic properties
                 definitions: {
                     '9': {
@@ -762,8 +763,9 @@
                 lastMaskPos = seekPrevious(buffer, getMaskLength(buffer)),
                 isRTL = false;
                 if (el.dir == "rtl" || opts.numericInput) {
-                    el.dir = "ltr"
-                    $input.css("text-align", "right");
+                    if (el.dir == "rtl" || (opts.numericInput && opts.rightAlignNumerics))
+                        $input.css("text-align", "right");
+                    el.dir = "ltr";
                     $input.removeAttr("dir");
                     var inputData = $input.data('inputmask');
                     inputData['isRTL'] = true;

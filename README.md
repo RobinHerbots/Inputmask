@@ -165,7 +165,7 @@ $.extend($.inputmask.defaults, {
 
 ```javascript
 $(document).ready(function(){
-    $('#test').inputmask('€ 999.999.999,99', { numericInput: true });    //123456  =>  € ___.__1.234,56
+    $(selector).inputmask('€ 999.999.999,99', { numericInput: true });    //123456  =>  € ___.__1.234,56
 });
 ```
 
@@ -173,15 +173,26 @@ If you define a radixPoint the caret will always jump to the integer part, until
 
 ```javascript
 $(document).ready(function(){
-    $('#test').inputmask('€ 999.999.999,99', { numericInput: true, radixPoint: "," });
+    $(selector).inputmask('€ 999.999.999,99', { numericInput: true, radixPoint: "," });
 });
 ```
+
+#### align the numerics to the right
+
+By setting the rightAlignNumerics you can specify to right align a numeric inputmask.  Default is true.  
+
+```javascript
+$(document).ready(function(){
+    $(selector).inputmask('decimal', { rightAlignNumerics: false });  //disables the right alignment of the decimal input
+});
+```
+
 
 ### remove the inputmask
 
 ```javascript
 $(document).ready(function(){
-    $('#test').inputmask('remove');
+    $('selector').inputmask('remove');
 });
 ```
 
