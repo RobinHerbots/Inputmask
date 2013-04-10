@@ -25,6 +25,7 @@ Highlights:
 - many features can be enabled/disabled/configured by options
 - supports readonly/disabled/dir="rtl" attributes
 - support data-inputmask attribute
+- multi-mask support
 </description>
         <tags>jQuery, plugins, input, form, inputmask, mask</tags>
     </metadata>

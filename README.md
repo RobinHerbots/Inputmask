@@ -17,7 +17,8 @@ Highlights:
 - non-greedy masks
 - many features can be enabled/disabled/configured by options
 - supports readonly/disabled/dir="rtl" attributes
-- support data-inputmask attribute
+- support data-inputmask attribute  
+- multi-mask support  
 
 
 ## Usage:
@@ -234,6 +235,15 @@ $('#test').inputmask('999[-AAA]');
 While the field has focus and is blank, users will see the full mask `___-___`.
 When the required part of the mask is filled and the field loses focus, the user will see `123`.
 When both the required and optional parts of the mask are filled out and the field loses focus, the user will see `123-ABC`.
+
+### Multiple masks
+
+You can define multiple mask for your input.  Depending on the input the masking will switch between the defined masks.  
+This can be usefull when the masks are too different to solve it with optional parts.
+
+```javascript
+  $(selector).inputmask({ mask: ["999.999", "aa-aa-aa"]});
+```
 
 ### aliases option
 
