@@ -628,10 +628,11 @@
                 }
                 //Truncate buffer when using non-greedy masks
                 if (getActiveMaskSet()['greedy'] == false) {
-                    var newBuffer = truncateInput(buffer.join(''), isRTL).split('');
-                    while (buffer.length != newBuffer.length) {  //map changes into the original buffer
-                        isRTL ? buffer.shift() : buffer.pop();
+                    var newBuffer = truncateInput(buffer.join(''), isRTL).split(''), nbL = newBuffer.length;
+                    for (var ndx = 0; ndx < nbL; ndx++) { //map changes into the original buffer
+                        buffer[ndx] = newBuffer[ndx];
                     }
+                    buffer.length = newBuffer.length;
                 }
 
                 if (clearInvalid) {
