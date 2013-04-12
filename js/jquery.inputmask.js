@@ -36,6 +36,7 @@
                 //numeric basic properties
                 numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
                 radixPoint: "", //".", // | ","
+                rightAlignNumerics: true, //align numerics to the right
                 //numeric basic properties
                 definitions: {
                     '9': {
@@ -285,11 +286,11 @@
                             var prevalidators = maskdef["prevalidator"], prevalidatorsL = prevalidators ? prevalidators.length : 0;
                             for (var i = 1; i < maskdef.cardinality; i++) {
                                 var prevalidator = prevalidatorsL >= i ? prevalidators[i - 1] : [], validator = prevalidator["validator"], cardinality = prevalidator["cardinality"];
-                                outElem.push({ fn: validator ? typeof validator == 'string' ? new RegExp(validator) : new function () { this.test = validator; } : new RegExp("."), cardinality: cardinality ? cardinality : 1, optionality: isOptional, newBlockMarker: isOptional == true ? newBlockMarker : false, offset: 0, casing: maskdef["casing"], def: element });
+                                outElem.push({ fn: validator ? typeof validator == 'string' ? new RegExp(validator) : new function () { this.test = validator; } : new RegExp("."), cardinality: cardinality ? cardinality : 1, optionality: isOptional, newBlockMarker: isOptional == true ? newBlockMarker : false, offset: 0, casing: maskdef["casing"], def: maskdef["definitionSymbol"] | element });
                                 if (isOptional == true) //reset newBlockMarker
                                     newBlockMarker = false;
                             }
-                            outElem.push({ fn: maskdef.validator ? typeof maskdef.validator == 'string' ? new RegExp(maskdef.validator) : new function () { this.test = maskdef.validator; } : new RegExp("."), cardinality: maskdef.cardinality, optionality: isOptional, newBlockMarker: newBlockMarker, offset: 0, casing: maskdef["casing"], def: element });
+                            outElem.push({ fn: maskdef.validator ? typeof maskdef.validator == 'string' ? new RegExp(maskdef.validator) : new function () { this.test = maskdef.validator; } : new RegExp("."), cardinality: maskdef.cardinality, optionality: isOptional, newBlockMarker: newBlockMarker, offset: 0, casing: maskdef["casing"], def: maskdef["definitionSymbol"] | element });
                         } else {
                             outElem.push({ fn: null, cardinality: 0, optionality: isOptional, newBlockMarker: newBlockMarker, offset: 0, casing: null, def: element });
                             escaped = false;
@@ -471,10 +472,11 @@
                 }
                 //Truncate buffer when using non-greedy masks
                 if (opts.greedy == false) {
-                    var newBuffer = truncateInput(buffer.join(''), isRTL).split('');
-                    while (buffer.length != newBuffer.length) {  //map changes into the original buffer
-                        isRTL ? buffer.shift() : buffer.pop();
+                    var newBuffer = truncateInput(buffer.join(''), isRTL).split(''), nbL = newBuffer.length;
+                    for (var ndx = 0; ndx < nbL; ndx++) { //map changes into the original buffer
+                        buffer[ndx] = newBuffer[ndx];
                     }
+                    buffer.length = newBuffer.length;
                 }
 
                 if (clearInvalid) {
@@ -529,8 +531,8 @@
                     return input._valueGet();
                 }
             }
-		
-	    	var caretSavePoint;
+
+            var caretSavePoint;
             function caret(input, begin, end) {
                 var npt = input.jquery && input.length > 0 ? input[0] : input;
                 if (typeof begin == 'number') {
@@ -545,8 +547,8 @@
                                 npt.selectionStart = begin;
                                 npt.selectionEnd = android ? begin : end;
                             }, 10);
-			    			caretSavePoint = { "begin": begin, "end": end };	
-						}
+                            caretSavePoint = { "begin": begin, "end": end };
+                        }
                         else {
                             npt.selectionStart = begin;
                             npt.selectionEnd = end;
@@ -626,8 +628,9 @@
                 lastMaskPos = seekPrevious(buffer, getMaskLength(buffer)),
                 isRTL = false;
                 if (el.dir == "rtl" || opts.numericInput) {
-                    el.dir = "ltr"
-                    $input.css("text-align", "right");
+                    if (el.dir == "rtl" || (opts.numericInput && opts.rightAlignNumerics))
+                        $input.css("text-align", "right");
+                    el.dir = "ltr";
                     $input.removeAttr("dir");
                     var inputData = $input.data('inputmask');
                     inputData['isRTL'] = true;
@@ -1089,9 +1092,9 @@
                                     }
                                 }
                             }
-                            if(android) {
-                   		 		caret(input, caretSavePoint.begin, caretSavePoint.end);
-                  			}
+                            if (android) {
+                                caret(input, caretSavePoint.begin, caretSavePoint.end);
+                            }
                             e.preventDefault();
                         }
                     }

@@ -141,13 +141,67 @@ $(document).ready(function(){
 
 ### add custom definitions
 
+You can define your own definitions to use in your mask.  
+Start by choosing a masksymbol. 
+
+##### validator
+Next define your validator.  The validator can be a regular expression or a function.
+
+##### cardinality
+Cardinality specifies how many characters are represented and validated for the definition.
+
+##### prevalidator
+ The prevalidator option is 
+used to validate the characters before the definition cardinality is reached. (see 'j' example)
+
+##### definitionSymbol
+When you insert or delete characters, they are only shifted when the definition type is the same.  This behavior can be overridden
+by giving a definitionSymbol. (see example x, y, z, which can be used for ip-address masking, the validation is different, but it is allowed to shift the characteres between the definitions)
+
 ```javascript
 $.extend($.inputmask.defaults.definitions, {
-    'f': {
+    'f': {  //masksymbol
         "validator": "[0-9\(\)\.\+/ ]",
         "cardinality": 1,
         'prevalidator': null
-    }
+    },
+	'g': {
+        "validator": function (chrs, buffer, pos, strict, opts) { 
+			//do some logic and return true, false, or { "pos": new position, "c": character to place }
+		}		
+        "cardinality": 1,
+        'prevalidator': null
+    },
+	'j': { //basic year
+            validator: "(19|20)\\d{2}",
+            cardinality: 4,
+            prevalidator: [
+                        { validator: "[12]", cardinality: 1 },
+                        { validator: "(19|20)", cardinality: 2 },
+                        { validator: "(19|20)\\d", cardinality: 3 }
+            ]
+     }, 
+	 'x': {
+        validator: "[0-2]",
+        cardinality: 1,
+        definitionSymbol: "i" //this allows shifting values from other definitions, with the same masksymbol or definitionSymbol
+     },
+     'y': {
+        validator: function (chrs, buffer, pos, strict, opts) {
+                        var valExp2 = new RegExp("2[0-5]|[01][0-9]");
+                        return valExp2.test(buffer[pos - 1] + chrs);
+                    },
+        cardinality: 1,
+        definitionSymbol: "i"
+     },
+     'z': {
+        validator: function (chrs, buffer, pos, strict, opts) {
+                       var valExp3 = new RegExp("25[0-5]|2[0-4][0-9]|[01][0-9][0-9]");
+                        return valExp3.test(buffer[pos - 2] + buffer[pos - 1] + chrs);
+        },
+        cardinality: 1,
+        definitionSymbol: "i"
+      }
 });
 ```
 
@@ -172,6 +226,16 @@ If you define a radixPoint the caret will always jump to the integer part, until
 ```javascript
 $(document).ready(function(){
     $('#test').inputmask('€ 999.999.999,99', { numericInput: true, radixPoint: "," });
+});
+```
+
+#### align the numerics to the right
+
+By setting the rightAlignNumerics you can specify to right align a numeric inputmask.  Default is true.  
+
+```javascript
+$(document).ready(function(){
+    $(selector).inputmask('decimal', { rightAlignNumerics: false });  //disables the right alignment of the decimal input
 });
 ```
 
