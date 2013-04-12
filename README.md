@@ -154,7 +154,7 @@ Cardinality specifies how many characters are represented and validated for the 
 
 ##### prevalidator
  The prevalidator option is 
-used to validates the characters before the definition cardinality is reached. (see 'j' example)
+used to validate the characters before the definition cardinality is reached. (see 'j' example)
 
 ##### definitionSymbol
 When you insert or delete characters, they are only shifted when the definition type is the same.  This behavior can be overridden
