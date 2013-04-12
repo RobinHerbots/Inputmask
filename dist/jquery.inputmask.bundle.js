@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.2.1
+* Version: 2.2.2
 */
 
 (function ($) {
@@ -280,11 +280,11 @@
                             var prevalidators = maskdef["prevalidator"], prevalidatorsL = prevalidators ? prevalidators.length : 0;
                             for (var i = 1; i < maskdef.cardinality; i++) {
                                 var prevalidator = prevalidatorsL >= i ? prevalidators[i - 1] : [], validator = prevalidator["validator"], cardinality = prevalidator["cardinality"];
-                                outElem.push({ fn: validator ? typeof validator == 'string' ? new RegExp(validator) : new function () { this.test = validator; } : new RegExp("."), cardinality: cardinality ? cardinality : 1, optionality: isOptional, newBlockMarker: isOptional == true ? newBlockMarker : false, offset: 0, casing: maskdef["casing"], def: element });
+                                outElem.push({ fn: validator ? typeof validator == 'string' ? new RegExp(validator) : new function () { this.test = validator; } : new RegExp("."), cardinality: cardinality ? cardinality : 1, optionality: isOptional, newBlockMarker: isOptional == true ? newBlockMarker : false, offset: 0, casing: maskdef["casing"], def: maskdef["definitionSymbol"] | element });
                                 if (isOptional == true) //reset newBlockMarker
                                     newBlockMarker = false;
                             }
-                            outElem.push({ fn: maskdef.validator ? typeof maskdef.validator == 'string' ? new RegExp(maskdef.validator) : new function () { this.test = maskdef.validator; } : new RegExp("."), cardinality: maskdef.cardinality, optionality: isOptional, newBlockMarker: newBlockMarker, offset: 0, casing: maskdef["casing"], def: element });
+                            outElem.push({ fn: maskdef.validator ? typeof maskdef.validator == 'string' ? new RegExp(maskdef.validator) : new function () { this.test = maskdef.validator; } : new RegExp("."), cardinality: maskdef.cardinality, optionality: isOptional, newBlockMarker: newBlockMarker, offset: 0, casing: maskdef["casing"], def: maskdef["definitionSymbol"] | element });
                         } else {
                             outElem.push({ fn: null, cardinality: 0, optionality: isOptional, newBlockMarker: newBlockMarker, offset: 0, casing: null, def: element });
                             escaped = false;
@@ -296,21 +296,52 @@
                 });
             }
 
-            function generateMaskSets() {  //TODO improve generate masksets
+            function generateMaskSets() {
                 var ms = [];
                 function markOptional(maskPart) { //needed for the clearOptionalTail functionality
                     return opts.optionalmarker.start + maskPart + opts.optionalmarker.end;
                 }
+                function splitFirstOptionalEndPart(maskPart) {
+                    var optionalStartMarkers = 0, optionalEndMarkers = 0, mpl = maskPart.length;
+                    for (i = 0; i < mpl; i++) {
+                        if (maskPart.charAt(i) == opts.optionalmarker.start) {
+                            optionalStartMarkers++;
+                        }
+                        if (maskPart.charAt(i) == opts.optionalmarker.end) {
+                            optionalEndMarkers++;
+                        }
+                        if (optionalStartMarkers > 0 && optionalStartMarkers == optionalEndMarkers)
+                            break;
+                    }
+                    var maskParts = [maskPart.substring(0, i)];
+                    if (i < mpl) {
+                        maskParts.push(maskPart.substring(i + 1, mpl));
+                    }
+                    return maskParts;
+                }
+                function splitFirstOptionalStartPart(maskPart) {
+                    var mpl = maskPart.length;
+                    for (i = 0; i < mpl; i++) {
+                        if (maskPart.charAt(i) == opts.optionalmarker.start) {
+                           break;
+                        }
+                    }
+                    var maskParts = [maskPart.substring(0, i)];
+                    if (i < mpl) {
+                        maskParts.push(maskPart.substring(i + 1, mpl));
+                    }
+                    return maskParts;
+                }
                 function generateMask(maskPrefix, maskPart) {
-                    var maskParts = maskPart.split(opts.optionalmarker.end, 2);
+                    var maskParts = splitFirstOptionalEndPart(maskPart);
                     var newMask, maskTemplate;
 
-
-                    var masks = maskParts[0].split(opts.optionalmarker.start);
+                    var masks = splitFirstOptionalStartPart(maskParts[0]);
                     if (masks.length > 1) {
                         newMask = maskPrefix + masks[0] + markOptional(masks[1]) + (maskParts.length > 1 ? maskParts[1] : "");
                         maskTemplate = getMaskTemplate(newMask);
                         ms.push({
+                            "mask": newMask,
                             "_buffer": maskTemplate["mask"],
                             "tests": getTestingChain(newMask),
                             "lastValidPosition": undefined,
@@ -320,6 +351,7 @@
                         newMask = maskPrefix + masks[0] + (maskParts.length > 1 ? maskParts[1] : "");
                         maskTemplate = getMaskTemplate(newMask);
                         ms.push({
+                            "mask": newMask,
                             "_buffer": maskTemplate["mask"],
                             "tests": getTestingChain(newMask),
                             "lastValidPosition": undefined,
@@ -335,6 +367,7 @@
                         newMask = maskPrefix + maskParts;
                         maskTemplate = getMaskTemplate(newMask);
                         ms.push({
+                            "mask" : newMask,
                             "_buffer": maskTemplate["mask"],
                             "tests": getTestingChain(newMask),
                             "lastValidPosition": undefined,
@@ -349,6 +382,7 @@
                         generateMask("", lmnt.toString());
                     });
                 } else generateMask("", opts.mask.toString());
+
                 return ms;
             }
 
@@ -594,10 +628,11 @@
                 }
                 //Truncate buffer when using non-greedy masks
                 if (getActiveMaskSet()['greedy'] == false) {
-                    var newBuffer = truncateInput(buffer.join(''), isRTL).split('');
-                    while (buffer.length != newBuffer.length) {  //map changes into the original buffer
-                        isRTL ? buffer.shift() : buffer.pop();
+                    var newBuffer = truncateInput(buffer.join(''), isRTL).split(''), nbL = newBuffer.length;
+                    for (var ndx = 0; ndx < nbL; ndx++) { //map changes into the original buffer
+                        buffer[ndx] = newBuffer[ndx];
                     }
+                    buffer.length = newBuffer.length;
                 }
 
                 if (clearInvalid) {
@@ -1273,7 +1308,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.1
+Version: 2.2.2
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1370,7 +1405,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.1
+Version: 2.2.2
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1863,7 +1898,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.1
+Version: 2.2.2
 
 Optional extensions on the jquery.inputmask base
 */
