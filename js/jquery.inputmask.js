@@ -298,6 +298,7 @@
 
             function generateMaskSets() {
                 var ms = [];
+                var genmasks = []; //used to keep track of the masks that where processed, to avoid duplicates
                 function markOptional(maskPart) { //needed for the clearOptionalTail functionality
                     return opts.optionalmarker.start + maskPart + opts.optionalmarker.end;
                 }
@@ -323,7 +324,7 @@
                     var mpl = maskPart.length;
                     for (i = 0; i < mpl; i++) {
                         if (maskPart.charAt(i) == opts.optionalmarker.start) {
-                           break;
+                            break;
                         }
                     }
                     var maskParts = [maskPart.substring(0, i)];
@@ -339,41 +340,53 @@
                     var masks = splitFirstOptionalStartPart(maskParts[0]);
                     if (masks.length > 1) {
                         newMask = maskPrefix + masks[0] + markOptional(masks[1]) + (maskParts.length > 1 ? maskParts[1] : "");
-                        maskTemplate = getMaskTemplate(newMask);
-                        ms.push({
-                            "mask": newMask,
-                            "_buffer": maskTemplate["mask"],
-                            "tests": getTestingChain(newMask),
-                            "lastValidPosition": undefined,
-                            "greedy": maskTemplate["greedy"],
-                            "repeat": maskTemplate["repeat"]
-                        });
+                        if (genmasks.indexOf(newMask) == -1) {
+                            genmasks.push(newMask);
+                            maskTemplate = getMaskTemplate(newMask);
+                            ms.push({
+                                "mask": newMask,
+                                "_buffer": maskTemplate["mask"],
+                                "tests": getTestingChain(newMask),
+                                "lastValidPosition": undefined,
+                                "greedy": maskTemplate["greedy"],
+                                "repeat": maskTemplate["repeat"]
+                            });
+                        }
                         newMask = maskPrefix + masks[0] + (maskParts.length > 1 ? maskParts[1] : "");
-                        maskTemplate = getMaskTemplate(newMask);
-                        ms.push({
-                            "mask": newMask,
-                            "_buffer": maskTemplate["mask"],
-                            "tests": getTestingChain(newMask),
-                            "lastValidPosition": undefined,
-                            "greedy": maskTemplate["greedy"],
-                            "repeat": maskTemplate["repeat"]
-                        });
-                        if (maskParts.length > 1 && maskParts[1].split(opts.optionalmarker.start).length > 1) {
+                        if (genmasks.indexOf(newMask) == -1) {
+                            genmasks.push(newMask);
+                            maskTemplate = getMaskTemplate(newMask);
+                            ms.push({
+                                "mask": newMask,
+                                "_buffer": maskTemplate["mask"],
+                                "tests": getTestingChain(newMask),
+                                "lastValidPosition": undefined,
+                                "greedy": maskTemplate["greedy"],
+                                "repeat": maskTemplate["repeat"]
+                            });
+                        }
+                        if (splitFirstOptionalStartPart(masks[1]).length > 1) { //optional contains another optional
+                            generateMask(maskPrefix + masks[0], masks[1] + maskParts[1]);
+                        }
+                        if (maskParts.length > 1 && splitFirstOptionalStartPart(maskParts[1]).length > 1) {
                             generateMask(maskPrefix + masks[0] + markOptional(masks[1]), maskParts[1]);
                             generateMask(maskPrefix + masks[0], maskParts[1]);
                         }
                     }
                     else {
                         newMask = maskPrefix + maskParts;
-                        maskTemplate = getMaskTemplate(newMask);
-                        ms.push({
-                            "mask" : newMask,
-                            "_buffer": maskTemplate["mask"],
-                            "tests": getTestingChain(newMask),
-                            "lastValidPosition": undefined,
-                            "greedy": maskTemplate["greedy"],
-                            "repeat": maskTemplate["repeat"]
-                        });
+                        if (genmasks.indexOf(newMask) == -1) {
+                            genmasks.push(newMask);
+                            maskTemplate = getMaskTemplate(newMask);
+                            ms.push({
+                                "mask": newMask,
+                                "_buffer": maskTemplate["mask"],
+                                "tests": getTestingChain(newMask),
+                                "lastValidPosition": undefined,
+                                "greedy": maskTemplate["greedy"],
+                                "repeat": maskTemplate["repeat"]
+                            });
+                        }
                     }
 
                 }
