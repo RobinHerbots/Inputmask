@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.2.2
+* Version: 2.2.3
 */
 
 (function ($) {
@@ -34,6 +34,7 @@
                 showMaskOnHover: true, //show the mask-placeholder when hovering the empty input
                 onKeyValidation: $.noop, //executes on every key-press with the result of isValid
                 skipOptionalPartCharacter: " ", //a character which can be used to skip an optional part of a mask
+                showTooltip: false, //show the activemask as tooltip
                 //numeric basic properties
                 numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
                 radixPoint: "", //".", // | ","
@@ -104,7 +105,7 @@
                     case "unmaskedvalue":
                         masksets = this.data('inputmask')['masksets'];
                         activeMasksetIndex = this.data('inputmask')['activeMasksetIndex'];
-                        opts.definitions = this.data('inputmask')['definitions'];
+                        opts = this.data('inputmask')['opts'];
                         return unmaskedvalue(this);
                         break;
                     case "remove":
@@ -114,7 +115,7 @@
                                 if ($input.data('inputmask')) {
                                     masksets = $input.data('inputmask')['masksets'];
                                     activeMasksetIndex = $input.data('inputmask')['activeMasksetIndex'];
-                                    opts.definitions = $input.data('inputmask')['definitions'];
+                                    opts = $input.data('inputmask')['opts'];
                                     //writeout the unmaskedvalue
                                     input._valueSet(unmaskedvalue($input, true));
                                     //clear data
@@ -153,11 +154,11 @@
                         }
                         else return "";
                     case "hasMaskedValue": //check wheter the returned value is masked or not; currently only works reliable when using jquery.val fn to retrieve the value 
-                        return this.data('inputmask') ? !this.data('inputmask')['autoUnmask'] : false;
+                        return this.data('inputmask') ? !this.data('inputmask')['opts'].autoUnmask : false;
                     case "isComplete":
                         masksets = this.data('inputmask')['masksets'];
                         activeMasksetIndex = this.data('inputmask')['activeMasksetIndex'];
-                        opts.definitions = this.data('inputmask')['definitions'];
+                        opts = this.data('inputmask')['opts'];
                         return isComplete(this[0].split(''));
                     default:
                         //check if the fn is an alias
@@ -298,6 +299,7 @@
 
             function generateMaskSets() {
                 var ms = [];
+                var genmasks = []; //used to keep track of the masks that where processed, to avoid duplicates
                 function markOptional(maskPart) { //needed for the clearOptionalTail functionality
                     return opts.optionalmarker.start + maskPart + opts.optionalmarker.end;
                 }
@@ -323,7 +325,7 @@
                     var mpl = maskPart.length;
                     for (i = 0; i < mpl; i++) {
                         if (maskPart.charAt(i) == opts.optionalmarker.start) {
-                           break;
+                            break;
                         }
                     }
                     var maskParts = [maskPart.substring(0, i)];
@@ -339,41 +341,53 @@
                     var masks = splitFirstOptionalStartPart(maskParts[0]);
                     if (masks.length > 1) {
                         newMask = maskPrefix + masks[0] + markOptional(masks[1]) + (maskParts.length > 1 ? maskParts[1] : "");
-                        maskTemplate = getMaskTemplate(newMask);
-                        ms.push({
-                            "mask": newMask,
-                            "_buffer": maskTemplate["mask"],
-                            "tests": getTestingChain(newMask),
-                            "lastValidPosition": undefined,
-                            "greedy": maskTemplate["greedy"],
-                            "repeat": maskTemplate["repeat"]
-                        });
+                        if (genmasks.indexOf(newMask) == -1) {
+                            genmasks.push(newMask);
+                            maskTemplate = getMaskTemplate(newMask);
+                            ms.push({
+                                "mask": newMask,
+                                "_buffer": maskTemplate["mask"],
+                                "tests": getTestingChain(newMask),
+                                "lastValidPosition": undefined,
+                                "greedy": maskTemplate["greedy"],
+                                "repeat": maskTemplate["repeat"]
+                            });
+                        }
                         newMask = maskPrefix + masks[0] + (maskParts.length > 1 ? maskParts[1] : "");
-                        maskTemplate = getMaskTemplate(newMask);
-                        ms.push({
-                            "mask": newMask,
-                            "_buffer": maskTemplate["mask"],
-                            "tests": getTestingChain(newMask),
-                            "lastValidPosition": undefined,
-                            "greedy": maskTemplate["greedy"],
-                            "repeat": maskTemplate["repeat"]
-                        });
-                        if (maskParts.length > 1 && maskParts[1].split(opts.optionalmarker.start).length > 1) {
+                        if (genmasks.indexOf(newMask) == -1) {
+                            genmasks.push(newMask);
+                            maskTemplate = getMaskTemplate(newMask);
+                            ms.push({
+                                "mask": newMask,
+                                "_buffer": maskTemplate["mask"],
+                                "tests": getTestingChain(newMask),
+                                "lastValidPosition": undefined,
+                                "greedy": maskTemplate["greedy"],
+                                "repeat": maskTemplate["repeat"]
+                            });
+                        }
+                        if (splitFirstOptionalStartPart(masks[1]).length > 1) { //optional contains another optional
+                            generateMask(maskPrefix + masks[0], masks[1] + maskParts[1]);
+                        }
+                        if (maskParts.length > 1 && splitFirstOptionalStartPart(maskParts[1]).length > 1) {
                             generateMask(maskPrefix + masks[0] + markOptional(masks[1]), maskParts[1]);
                             generateMask(maskPrefix + masks[0], maskParts[1]);
                         }
                     }
                     else {
                         newMask = maskPrefix + maskParts;
-                        maskTemplate = getMaskTemplate(newMask);
-                        ms.push({
-                            "mask" : newMask,
-                            "_buffer": maskTemplate["mask"],
-                            "tests": getTestingChain(newMask),
-                            "lastValidPosition": undefined,
-                            "greedy": maskTemplate["greedy"],
-                            "repeat": maskTemplate["repeat"]
-                        });
+                        if (genmasks.indexOf(newMask) == -1) {
+                            genmasks.push(newMask);
+                            maskTemplate = getMaskTemplate(newMask);
+                            ms.push({
+                                "mask": newMask,
+                                "_buffer": maskTemplate["mask"],
+                                "tests": getTestingChain(newMask),
+                                "lastValidPosition": undefined,
+                                "greedy": maskTemplate["greedy"],
+                                "repeat": maskTemplate["repeat"]
+                            });
+                        }
                     }
 
                 }
@@ -431,7 +445,7 @@
 
                         maskPos = isRTL ? seekPrevious(buffer, pos) : seekNext(buffer, pos);
                     }
-                    if (activeMaskset['lastValidPosition'] == undefined || (isRTL || opts.numericInput) ? activeMaskset['lastValidPosition'] <= opts.numericInput ? getMaskLength(buffer) : seekNext(buffer, maskPos) : activeMaskset['lastValidPosition'] >= seekPrevious(buffer, maskPos)) {
+                    if ((activeMaskset['lastValidPosition'] == undefined && maskPos == isRTL ? seekPrevious(buffer, getMaskLength(buffer)) : seekNext(buffer, -1)) || (isRTL || opts.numericInput) ? activeMaskset['lastValidPosition'] <= opts.numericInput ? getMaskLength(buffer) : seekNext(buffer, maskPos) : activeMaskset['lastValidPosition'] >= seekPrevious(buffer, maskPos)) {
                         if (maskPos >= 0 && maskPos < getMaskLength(buffer)) {
                             results[index] = _isValid(maskPos, activeMaskset);
                             if (results[index] !== false) {
@@ -471,6 +485,7 @@
                                 buffer.reverse();
                             }
                         }
+
                         return false; //breaks
                     }
                 });
@@ -761,6 +776,11 @@
                 var $input = $(el);
                 if (!$input.is(":input")) return;
 
+                //show tooltip
+                if (opts.showTooltip) {
+                    $input.prop("title", getActiveMaskSet()["mask"]);
+                }
+
                 var buffer = getActiveBuffer().slice();
 
                 //correct greedy setting if needed
@@ -780,8 +800,7 @@
                 $input.data('inputmask', {
                     'masksets': masksets,
                     'activeMasksetIndex': activeMasksetIndex,
-                    'autoUnmask': opts.autoUnmask,
-                    'definitions': opts.definitions,
+                    'opts': opts,
                     'isRTL': false
                 });
 
@@ -1144,6 +1163,10 @@
                         if (input._valueGet() == getActiveBuffer().join(''))
                             $(input).trigger('cleared');
 
+                        if (opts.showTooltip) { //update tooltip
+                            $input.prop("title", getActiveMaskSet()["mask"]);
+                        }
+                        
                         e.preventDefault(); //stop default action but allow propagation
                     } else if (k == opts.keyCode.END || k == opts.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
                         setTimeout(function () {
@@ -1281,6 +1304,9 @@
                             if (android) {
                                 caret(input, caretSavePoint.begin, caretSavePoint.end);
                             }
+                            if (opts.showTooltip) { //update tooltip
+                                $input.prop("title", getActiveMaskSet()["mask"]);
+                            }
                             e.preventDefault();
                         }
                     }
@@ -1308,7 +1334,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.2
+Version: 2.2.3
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1405,7 +1431,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.2
+Version: 2.2.3
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1898,7 +1924,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.2
+Version: 2.2.3
 
 Optional extensions on the jquery.inputmask base
 */
