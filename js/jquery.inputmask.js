@@ -807,14 +807,10 @@
                 patchValueProperty(el);
 
                 //init vars
-                var buffer = getActiveBuffer().slice(),
-                undoBuffer = el._valueGet(),
-
+                var undoBuffer = el._valueGet(),
                 skipKeyPressEvent = false, //Safari 5.1.x - modal dialog fires keypress twice workaround
                 ignorable = false,
                 lastPosition = -1,
-                firstMaskPos = seekNext(buffer, -1),
-                lastMaskPos = seekPrevious(buffer, getMaskLength(buffer)),
                 isRTL = false;
                 if (el.dir == "rtl" || opts.numericInput) {
                     if (el.dir == "rtl" || (opts.numericInput && opts.rightAlignNumerics))
@@ -1111,7 +1107,8 @@
 
                     //backspace, delete, and escape get special treatment
                     if (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE || (iphone && k == 127)) {//backspace/delete
-                        var maskL = getMaskLength(buffer);
+                        var maskL = getMaskLength(buffer),
+                            firstMaskPos = seekNext(buffer, -1);
                         if (pos.begin == 0 && pos.end == maskL) { //remove full selection
                             activeMasksetIndex = 0; //reset activemask
                             buffer = getActiveBuffer().slice();
@@ -1157,6 +1154,10 @@
                                     }
                                     determineActiveMasksetIndex(buffer, beginPos, activeMasksetIndex);
                                     writeBuffer(input, buffer, beginPos);
+                                } else if (activeMasksetIndex > 0) { //retry other masks
+                                    beginPos = shiftL(beginPos - 1, maskL);
+                                    activeMasksetIndex = 0; //reset
+                                    writeBuffer(input, getActiveBuffer(), beginPos);
                                 }
                             }
                         }
@@ -1166,7 +1167,7 @@
                         if (opts.showTooltip) { //update tooltip
                             $input.prop("title", getActiveMaskSet()["mask"]);
                         }
-                        
+
                         e.preventDefault(); //stop default action but allow propagation
                     } else if (k == opts.keyCode.END || k == opts.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
                         setTimeout(function () {
