@@ -341,7 +341,7 @@
                     var masks = splitFirstOptionalStartPart(maskParts[0]);
                     if (masks.length > 1) {
                         newMask = maskPrefix + masks[0] + markOptional(masks[1]) + (maskParts.length > 1 ? maskParts[1] : "");
-                        if (genmasks.indexOf(newMask) == -1) {
+                        if ($.inArray(newMask, genmasks) == -1) {
                             genmasks.push(newMask);
                             maskTemplate = getMaskTemplate(newMask);
                             ms.push({
@@ -354,7 +354,7 @@
                             });
                         }
                         newMask = maskPrefix + masks[0] + (maskParts.length > 1 ? maskParts[1] : "");
-                        if (genmasks.indexOf(newMask) == -1) {
+                        if ($.inArray(newMask, genmasks) == -1) {
                             genmasks.push(newMask);
                             maskTemplate = getMaskTemplate(newMask);
                             ms.push({
@@ -376,7 +376,7 @@
                     }
                     else {
                         newMask = maskPrefix + maskParts;
-                        if (genmasks.indexOf(newMask) == -1) {
+                        if ($.inArray(newMask, genmasks) == -1) {
                             genmasks.push(newMask);
                             maskTemplate = getMaskTemplate(newMask);
                             ms.push({
@@ -1155,9 +1155,10 @@
                                     determineActiveMasksetIndex(buffer, beginPos, activeMasksetIndex);
                                     writeBuffer(input, buffer, beginPos);
                                 } else if (activeMasksetIndex > 0) { //retry other masks
-                                    beginPos = shiftL(beginPos - 1, maskL);
                                     activeMasksetIndex = 0; //reset
-                                    writeBuffer(input, getActiveBuffer(), beginPos);
+                                    clearBuffer(buffer, 0, firstMaskPos);
+                                    firstMaskPos = seekNext(buffer, -1);
+                                    writeBuffer(input, getActiveBuffer(), isRTL ? maskL : firstMaskPos);
                                 }
                             }
                         }
