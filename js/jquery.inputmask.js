@@ -159,7 +159,7 @@
                         masksets = this.data('inputmask')['masksets'];
                         activeMasksetIndex = this.data('inputmask')['activeMasksetIndex'];
                         opts = this.data('inputmask')['opts'];
-                        return isComplete(this[0].split(''));
+                        return isComplete(this[0]._valueGet().split(''));
                     default:
                         //check if the fn is an alias
                         if (!resolveAlias(fn, options)) {
@@ -1241,7 +1241,7 @@
                                     }
                                     if (refresh !== true) {
                                         maskL = getMaskLength(buffer); //update masklength to include possible groupSeparator offset
-                                        var firstUnmaskedPosition = firstMaskPos;
+                                        var firstMaskPos = seekNext(buffer, -1), firstUnmaskedPosition = firstMaskPos;
                                         if (opts.insertMode == true) {
                                             if (getActiveMaskSet()['greedy'] == true) {
                                                 var bfrClone = buffer.slice();
