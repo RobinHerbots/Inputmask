@@ -35,7 +35,7 @@ Optional extensions on the jquery.inputmask base
                 return calculatedLength + groupOffset;
             },
             postFormat: function (buffer, pos, reformatOnly, opts) {
-                if (opts.groupSeparator == "") return pos;
+                if (opts.groupSeparator == "") return pos -1;
                 var cbuf = buffer.slice();
                 if (!reformatOnly) cbuf.splice(pos, 0, "?"); //set position indicator
                 var bufVal = cbuf.join('');
