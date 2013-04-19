@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.2.7
+* Version: 2.2.8
 */
 
 (function ($) {
@@ -1342,7 +1342,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.7
+Version: 2.2.8
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1439,7 +1439,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.7
+Version: 2.2.8
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1932,7 +1932,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.7
+Version: 2.2.8
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1946,7 +1946,7 @@ Optional extensions on the jquery.inputmask base
             greedy: false,
             numericInput: true,
             digits: "*", //numer of digits
-            groupSeparator: ",", // | "."
+            groupSeparator: "",//",", // | "."
             radixPoint: ".",
             groupSize: 3,
             autoGroup: false,
@@ -1964,11 +1964,13 @@ Optional extensions on the jquery.inputmask base
                 return calculatedLength + groupOffset;
             },
             postFormat: function (buffer, pos, reformatOnly, opts) {
+                if (opts.groupSeparator == "") return pos;
                 var cbuf = buffer.slice();
                 if (!reformatOnly) cbuf.splice(pos, 0, "?"); //set position indicator
                 var bufVal = cbuf.join('');
                 if (opts.autoGroup || (reformatOnly && bufVal.indexOf(opts.groupSeparator) != -1)) {
-                    bufVal = bufVal.replace(new RegExp("\\" + opts.groupSeparator, "g"), '');
+                    var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
+                    bufVal = bufVal.replace(new RegExp(escapedGroupSeparator, "g"), '');
                     var radixSplit = bufVal.split(opts.radixPoint);
                     bufVal = radixSplit[0];
                     var reg = new RegExp('([-\+]?[\\d\?]+)([\\d\?]{' + opts.groupSize + '})');
@@ -2026,8 +2028,10 @@ Optional extensions on the jquery.inputmask base
 
                         cbuf.splice(pos + 1, 0, chrs);
                         var bufferStr = cbuf.join('');
-                        if (opts.autoGroup && !strict) //strip groupseparator
-                            bufferStr = bufferStr.replace(new RegExp("\\" + opts.groupSeparator, "g"), '');
+                        if (opts.autoGroup && !strict) { //strip groupseparator
+                            var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
+                            bufferStr = bufferStr.replace(new RegExp(escapedGroupSeparator, "g"), '');
+                        }
                         var isValid = opts.regex.number(opts.groupSeparator, opts.groupSize, opts.radixPoint, opts.digits).test(bufferStr);
                         if (!isValid) {
                             //let's help the regex a bit
@@ -2086,6 +2090,15 @@ Optional extensions on the jquery.inputmask base
                 }
             },
             alias: "decimal"
+        },
+        'non-negative-integer': {
+            regex: {
+                number: function (groupSeparator, groupSize) {
+                    var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, groupSeparator);
+                    return new RegExp("^[\+]?(\\d+|\\d{1," + groupSize + "}((" + escapedGroupSeparator + "\\d{" + groupSize + "})?)+)$");
+                }
+            },
+            alias: "integer"
         }
     });
 })(jQuery);
