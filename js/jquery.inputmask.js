@@ -445,7 +445,13 @@
 
                         maskPos = isRTL ? seekPrevious(buffer, pos) : seekNext(buffer, pos);
                     }
-                    if ((activeMaskset['lastValidPosition'] == undefined && maskPos == isRTL ? seekPrevious(buffer, getMaskLength(buffer)) : seekNext(buffer, -1)) || (isRTL || opts.numericInput) ? activeMaskset['lastValidPosition'] <= opts.numericInput ? getMaskLength(buffer) : seekNext(buffer, maskPos) : activeMaskset['lastValidPosition'] >= seekPrevious(buffer, maskPos)) {
+                    if ((activeMaskset['lastValidPosition'] == undefined
+                            && maskPos == (isRTL ? seekPrevious(buffer, getMaskLength(buffer)) : seekNext(buffer, -1))
+                        )
+                        || (isRTL || opts.numericInput)
+                            ? activeMaskset['lastValidPosition'] <= opts.numericInput ? getMaskLength(buffer) : seekNext(buffer, maskPos)
+                            : activeMaskset['lastValidPosition'] >= seekPrevious(buffer, maskPos)
+                    ) {
                         if (maskPos >= 0 && maskPos < getMaskLength(buffer)) {
                             results[index] = _isValid(maskPos, activeMaskset);
                             if (results[index] !== false) {
