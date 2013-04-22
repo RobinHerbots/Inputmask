@@ -476,22 +476,7 @@
                     if (activeMaskset['lastValidPosition'] && (isRTL || opts.numericInput) ? activeMaskset['lastValidPosition'] <= pos : activeMaskset['lastValidPosition'] >= pos) {
                         activeMasksetIndex = index;
                         //reset to correct masktemplate
-                        if (activeMasksetIndex != currentActiveMasksetIndex) {
-                            var abl = getMaskLength(buffer), bufTemplate = getActiveBuffer();
-                            if (isRTL || opts.numericInput) {
-                                buffer.reverse();
-                                bufTemplate.reverse();
-                            }
-                            buffer.length = pos; //clearout beyond the current
-                            for (var i = pos; i < abl; i++) {
-                                var testPos = determineTestPosition(i);
-                                setBufferElement(buffer, i, getBufferElement(bufTemplate, testPos));
-                            }
-                            if (isRTL) {
-                                buffer.reverse();
-                            }
-                        }
-
+                        checkVal(undefined, buffer, false, false, buffer.join(''), isRTL);
                         return false; //breaks
                     }
                 });
@@ -596,9 +581,10 @@
                 setBufferElement(buffer, pos, getBufferElement(getActiveBuffer(), testPos));
             }
 
-            function checkVal(input, buffer, clearInvalid, skipRadixHandling) {
-                var isRTL = $(input).data('inputmask')['isRTL'],
-                    inputValue = truncateInput(input._valueGet(), isRTL).split('');
+            //inputData can be used to override the value used to check
+            function checkVal(input, buffer, clearInvalid, skipRadixHandling, inputData, rtl) {
+                var isRTL = rtl != undefined ? rtl : $(input).data('inputmask')['isRTL'],
+                    inputValue = truncateInput(inputData != undefined ? inputData : input._valueGet(), isRTL).split('');
 
                 var maskL = getMaskLength(buffer);
                 if (isRTL) { //align inputValue for RTL/numeric input
@@ -712,7 +698,7 @@
 
             var caretSavePoint;
             function caret(input, begin, end) {
-                var npt = input.jquery && input.length > 0 ? input[0] : input, rabge;
+                var npt = input.jquery && input.length > 0 ? input[0] : input, range;
                 if (typeof begin == 'number') {
                     if (!$(input).is(':visible')) {
                         return;
@@ -1122,7 +1108,7 @@
                             caret(input, checkVal(input, buffer, false));
                         } else if ((pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode)) { //partial selection
                             clearBuffer(buffer, pos.begin, pos.end);
-                            determineActiveMasksetIndex(buffer, pos.begin, activeMasksetIndex);
+                            determineActiveMasksetIndex(buffer, pos.begin, activeMasksetIndex, isRTL);
                             writeBuffer(input, buffer);
                             caret(input, isRTL ? checkVal(input, buffer, false) : pos.begin);
                         } else { //handle delete
@@ -1142,7 +1128,7 @@
                                             beginPos = shiftL(beginPos, maskL);
                                         }
                                     }
-                                    determineActiveMasksetIndex(buffer, beginPos, activeMasksetIndex);
+                                    determineActiveMasksetIndex(buffer, beginPos, activeMasksetIndex, isRTL);
                                     writeBuffer(input, buffer, beginPos);
                                 }
                             } else if (k == opts.keyCode.BACKSPACE) { //handle backspace
@@ -1159,7 +1145,7 @@
                                             beginPos = shiftL(beginPos, maskL);
                                         }
                                     }
-                                    determineActiveMasksetIndex(buffer, beginPos, activeMasksetIndex);
+                                    determineActiveMasksetIndex(buffer, beginPos, activeMasksetIndex, isRTL);
                                     writeBuffer(input, buffer, beginPos);
                                 } else if (activeMasksetIndex > 0) { //retry other masks
                                     activeMasksetIndex = 0; //reset
