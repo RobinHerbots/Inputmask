@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.2.12
+* Version: 2.2.13
 */
 
 (function ($) {
@@ -959,10 +959,11 @@
                         $.each(eventHandlers, function (ndx, eventHandler) {
                             if (eventHandler.namespace == "inputmask") {
                                 var handler = eventHandler.handler;
-                                eventHandler.handler = function () {
+                                eventHandler.handler = function (e) {
                                     if (this.readOnly || this.disabled)
-                                        return false;
-                                    return handler.apply(this, arguments);
+                                        e.preventDefault;
+                                    else
+                                        return handler.apply(this, arguments);
                                 };
                             }
                         });
@@ -1347,7 +1348,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.12
+Version: 2.2.13
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1444,7 +1445,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.12
+Version: 2.2.13
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1937,7 +1938,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.12
+Version: 2.2.13
 
 Optional extensions on the jquery.inputmask base
 */

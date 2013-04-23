@@ -959,10 +959,11 @@
                         $.each(eventHandlers, function (ndx, eventHandler) {
                             if (eventHandler.namespace == "inputmask") {
                                 var handler = eventHandler.handler;
-                                eventHandler.handler = function () {
+                                eventHandler.handler = function (e) {
                                     if (this.readOnly || this.disabled)
-                                        return false;
-                                    return handler.apply(this, arguments);
+                                        e.preventDefault;
+                                    else
+                                        return handler.apply(this, arguments);
                                 };
                             }
                         });
