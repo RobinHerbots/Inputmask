@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.2.9
+* Version: 2.2.10
 */
 
 (function ($) {
@@ -428,7 +428,20 @@
                     return activeMaskset['tests'][testPos].fn != null ? activeMaskset['tests'][testPos].fn.test(chrs, buffer, position, strict, opts) : false;
                 }
 
-                if (strict) return _isValid(pos, getActiveMaskSet()); //only check validity in current mask when validating strict
+                if (strict) {
+                    var rslt = _isValid(pos, getActiveMaskSet()); //only check validity in current mask when validating strict
+
+                    if (rslt !== false) {
+                        if (rslt === true) {
+                            rslt = { "pos": pos }; //always take a possible corrected maskposition into account
+                        }
+                        var activeMaskset = getActiveMaskSet();
+                        var newValidPosition = rslt.pos || pos;
+                        if (activeMaskset['lastValidPosition'] == undefined || activeMaskset['lastValidPosition'] < newValidPosition)
+                            activeMaskset['lastValidPosition'] = newValidPosition; //set new position from isValid
+                    }
+                    return rslt;
+                }
 
                 var results = [], result = false, currentActiveMasksetIndex = activeMasksetIndex;
                 $.each(masksets, function (index, value) {
@@ -458,7 +471,9 @@
                                 if (results[index] === true) {
                                     results[index] = { "pos": maskPos }; //always take a possible corrected maskposition into account
                                 }
-                                activeMaskset['lastValidPosition'] = results[index].pos || maskPos; //set new position from isValid
+                                var newValidPosition = results[index].pos || maskPos;
+                                if (activeMaskset['lastValidPosition'] == undefined || activeMaskset['lastValidPosition'] < newValidPosition)
+                                    activeMaskset['lastValidPosition'] = newValidPosition; //set new position from isValid
                             } else activeMaskset['lastValidPosition'] = isRTL ? pos == getMaskLength(buffer) ? undefined : seekNext(buffer, pos) : pos == 0 ? undefined : seekPrevious(buffer, pos); //autocorrect validposition from backspace etc  	
                         }
                     }
@@ -1329,7 +1344,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.9
+Version: 2.2.10
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1426,7 +1441,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.9
+Version: 2.2.10
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1919,7 +1934,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.9
+Version: 2.2.10
 
 Optional extensions on the jquery.inputmask base
 */
