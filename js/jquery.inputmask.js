@@ -533,8 +533,8 @@
                 return position;
             }
 
-            function setBufferElement(buffer, position, element) {
-                //position = prepareBuffer(buffer, position);
+            function setBufferElement(buffer, position, element, autoPrepare, isRTL) {
+                if (autoPrepare) position = prepareBuffer(buffer, position, isRTL);
 
                 var test = getActiveTests()[determineTestPosition(position)];
                 var elem = element;
@@ -628,7 +628,7 @@
                                     pos = np.pos != undefined ? np.pos : pos; //set new position from isValid
                                     c = np.c != undefined ? np.c : c; //set new char from isValid
                                 }
-                                setBufferElement(buffer, pos, c);
+                                setBufferElement(buffer, pos, c, true, isRTL);
                                 lastMatch = checkPosition = pos;
                             } else {
                                 setReTargetPlaceHolder(buffer, pos);
@@ -649,7 +649,7 @@
                     }
                 }
                 //Truncate buffer when using non-greedy masks
-                if (getActiveMaskSet()['greedy'] == false) {
+                if (getActiveMaskSet()['greedy'] == false && buffer.length > getActiveBuffer().length) {
                     var newBuffer = truncateInput(buffer.join(''), isRTL).split(''), nbL = newBuffer.length;
                     for (var ndx = 0; ndx < nbL; ndx++) { //map changes into the original buffer
                         buffer[ndx] = newBuffer[ndx];
@@ -763,8 +763,8 @@
                     if (ms["lastValidPosition"] && ms["lastValidPosition"] >= highestValidPosition && ms["lastValidPosition"] == aml) {
                         var msComplete = true;
                         for (var i = 0; i <= aml; i++) {
-                            var mask = isMask(i);
-                            if ((mask && (buffer[i] == undefined || buffer[i] == getPlaceHolder(i))) || (!mask && buffer[i] != getActiveBuffer()[i])) {
+                            var mask = isMask(i), testPos = determineTestPosition(i);
+                            if ((mask && (buffer[i] == undefined || buffer[i] == getPlaceHolder(i))) || (!mask && buffer[i] != getActiveBuffer()[testPos])) {
                                 msComplete = false;
                                 break;
                             }
@@ -1059,7 +1059,7 @@
                             var p = getBufferElement(buffer, j);
                             if (p != getPlaceHolder(j)) {
                                 if (j < getMaskLength(buffer) && isValid(i, p, buffer, true, isRTL) !== false && getActiveTests()[determineTestPosition(i)].def == getActiveTests()[determineTestPosition(j)].def) {
-                                    setBufferElement(buffer, i, getBufferElement(buffer, j));
+                                    setBufferElement(buffer, i, getBufferElement(buffer, j), true, isRTL);
                                     setReTargetPlaceHolder(buffer, j); //cleanup next position
                                 } else {
                                     if (isMask(i))
@@ -1082,7 +1082,7 @@
                     for (var i = start; i <= end && i < getMaskLength(buffer) ; i++) {
                         if (isMask(i)) {
                             var t = getBufferElement(buffer, i);
-                            setBufferElement(buffer, i, c);
+                            setBufferElement(buffer, i, c, true, isRTL);
                             if (t != getPlaceHolder(i)) {
                                 var j = seekNext(buffer, i);
                                 if (j < getMaskLength(buffer)) {
@@ -1270,7 +1270,7 @@
                                                 }
                                                 shiftL(firstUnmaskedPosition, p, c);
                                             } else writeOutBuffer = false;
-                                        } else setBufferElement(buffer, p, c);
+                                        } else setBufferElement(buffer, p, c, true, isRTL);
                                     }
 
                                     if (writeOutBuffer) {
@@ -1284,7 +1284,6 @@
                             }
                             else {
                                 var p = seekNext(buffer, pos.begin - 1), np;
-                                prepareBuffer(buffer, p, isRTL);
                                 if ((np = isValid(p, c, buffer, false, isRTL)) !== false) {
                                     var refresh = false;
                                     if (np !== true) {
@@ -1302,7 +1301,7 @@
                                             if (lastUnmaskedPosition >= p)
                                                 shiftR(p, buffer.length, c);
                                             else writeOutBuffer = false;
-                                        } else setBufferElement(buffer, p, c);
+                                        } else setBufferElement(buffer, p, c, true, isRTL);
                                     }
                                     if (writeOutBuffer) {
                                         var next = seekNext(buffer, p);
