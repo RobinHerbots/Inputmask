@@ -14,6 +14,7 @@
 	   <replaceregexp file="${srcdir}/jquery.inputmask.extensions.js" match="Version:.*" replace="Version: ${build.major}.${build.minor}.${build.revision}"  byline="true"/>
 	   <replaceregexp file="${srcdir}/jquery.inputmask.date.extensions.js" match="Version:.*" replace="Version: ${build.major}.${build.minor}.${build.revision}"  byline="true"/>
 	   <replaceregexp file="${srcdir}/jquery.inputmask.numeric.extensions.js" match="Version:.*" replace="Version: ${build.major}.${build.minor}.${build.revision}"  byline="true"/>
+	   <replaceregexp file="${srcdir}/jquery.inputmask.regex.extensions.js" match="Version:.*" replace="Version: ${build.major}.${build.minor}.${build.revision}"  byline="true"/>
 	   <replaceregexp file="./jquery.inputmask.jquery.json" match="&quot;version&quot;:.*" replace="&quot;version&quot;: &quot;${build.major}.${build.minor}.${build.revision}&quot;,"  byline="true"/>
 	</target>
 
@@ -23,6 +24,7 @@
 	   <replaceregexp file="${srcdir}/jquery.inputmask.extensions.js" match="Version:.*" replace="Version: 0.0.0"  byline="true"/>
 	   <replaceregexp file="${srcdir}/jquery.inputmask.date.extensions.js" match="Version:.*" replace="Version: 0.0.0"  byline="true"/>
 	   <replaceregexp file="${srcdir}/jquery.inputmask.numeric.extensions.js" match="Version:.*" replace="Version: 0.0.0"  byline="true"/>
+	   <replaceregexp file="${srcdir}/jquery.inputmask.regex.extensions.js" match="Version:.*" replace="Version: 0.0.0"  byline="true"/>
     </target>
 	
     <target name="jquery.inputmask" depends="init, updateVersions">
@@ -31,6 +33,7 @@
 			<fileset file="${srcdir}/jquery.inputmask.extensions.js"/>
 			<fileset file="${srcdir}/jquery.inputmask.date.extensions.js"/>
 			<fileset file="${srcdir}/jquery.inputmask.numeric.extensions.js"/>
+			<fileset file="${srcdir}/jquery.inputmask.regex.extensions.js"/>
         </concat>
     </target>
 

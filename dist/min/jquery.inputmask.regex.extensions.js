@@ -1,1 +1,1 @@
-(function(){})(jQuery);
+(function(b){b.extend(b.inputmask.defaults.aliases,{Regex:{mask:"r",greedy:!1,repeat:10,regex:null,regexSplit:null,definitions:{r:{validator:function(f,c,d,e,a){null==a.regexSplit&&(a.regexSplit=[],a.regex.indexOf("*")!=a.regex.length-1&&(a.regex+="{1}"),a.regexSplit.push(a.regex));var b=c.slice(),c="",e=!1;b.splice(d,0,f);f=b.join("");for(d=0;d<a.regexSplit.length&&!(c+=a.regexSplit[d],e=RegExp("^"+c+"$").test(f),console.log(f+" "+e),e);d++);return e},cardinality:1}}}})})(jQuery);
