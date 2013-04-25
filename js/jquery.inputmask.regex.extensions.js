@@ -9,36 +9,45 @@ Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
 */
 (function ($) {
-     $.extend($.inputmask.defaults.aliases, { // $(selector).inputmask("Regex", { regex: "a regex expression"}
+    $.extend($.inputmask.defaults.aliases, { // $(selector).inputmask("Regex", { regex: "[0-9]*"}
         'Regex': {
-			mask: "r",
-			greedy: false,
-			repeat: 10, //needs to be computed
-			regex: null,
-			regexSplit: null,
+            mask: "r",
+            greedy: false,
+            repeat: 10, //needs to be computed
+            regex: null,
+            regexSplit: null,
             definitions: {
                 'r': {
                     validator: function (chrs, buffer, pos, strict, opts) {
-						function analyseRegex() {
-							//implement me
-						}
-						if(opts.regexSplit == null){
-							opts.regexSplit = analyseRegex();
-						}
-						
-						var cbuffer =  buffer.splice(pos + 1, 0, chrs),
-							regexPart, isValid = false;
-						for(var i = 0; i < regexSplit.length; i++) {
-							regexPart += opts.regexSplit[i];
-							var exp = new RegExp(regexPart);
-							isValid = exp.test(cbuffer);
-							if(isValid) break;
-						}
-						
-						return isValid;
-				    }
-				}
-			}
-		}
-	});
+
+                        function analyseRegex() {  //ENHANCE ME
+                            opts.regexSplit = [];
+                            if (opts.regex.indexOf("*") != (opts.regex.length - 1)) {
+                                opts.regex += "{1}";
+                            }
+                            opts.regexSplit.push(opts.regex);
+                        }
+
+                        if (opts.regexSplit == null) {
+                            analyseRegex();
+                        }
+
+                        var cbuffer = buffer.slice(), regexPart = "", isValid = false;
+                        cbuffer.splice(pos, 0, chrs);
+                        var bufferStr = cbuffer.join('');
+                        for (var i = 0; i < opts.regexSplit.length; i++) {
+                            regexPart += opts.regexSplit[i];
+                            var exp = new RegExp("^" + regexPart + "$");
+                            isValid = exp.test(bufferStr);
+                            console.log(bufferStr + ' ' + isValid);
+                            if (isValid) break;
+                        }
+
+                        return isValid;
+                    },
+                    cardinality: 1
+                }
+            }
+        }
+    });
 })(jQuery);
