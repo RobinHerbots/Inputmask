@@ -21,11 +21,14 @@ Allows for using regular expressions as a mask
                     validator: function (chrs, buffer, pos, strict, opts) {
 
                         function analyseRegex() {  //ENHANCE ME
-                            opts.regexSplit = [];
-                            if (opts.regex.indexOf("*") != (opts.regex.length - 1)) {
-                                opts.regex += "{1}";
-                            }
-                            opts.regexSplit.push(opts.regex);
+                            var regexSplitRegex = "\\[.*?\]\\*";
+
+                            opts.regexSplit = opts.regex.match(new RegExp(regexSplitRegex, "g"));
+
+                            //if (opts.regex.indexOf("*") != (opts.regex.length - 1)) {
+                            //    opts.regex += "{1}";
+                            //}
+                            //opts.regexSplit.push(opts.regex);
                         }
 
                         if (opts.regexSplit == null) {
@@ -39,7 +42,7 @@ Allows for using regular expressions as a mask
                             regexPart += opts.regexSplit[i];
                             var exp = new RegExp("^" + regexPart + "$");
                             isValid = exp.test(bufferStr);
-                            console.log(bufferStr + ' ' + isValid);
+                            console.log(bufferStr + ' ' + isValid + ' ' + regexPart);
                             if (isValid) break;
                         }
 
