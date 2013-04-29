@@ -760,7 +760,7 @@
                 $.each(masksets, function (ndx, ms) {
                     activeMasksetIndex = ndx;
                     var aml = seekPrevious(buffer, getMaskLength(buffer));
-                    if (ms["lastValidPosition"] && ms["lastValidPosition"] >= highestValidPosition && ms["lastValidPosition"] == aml) {
+                    if (ms["lastValidPosition"] != undefined && ms["lastValidPosition"] >= highestValidPosition && ms["lastValidPosition"] == aml) {
                         var msComplete = true;
                         for (var i = 0; i <= aml; i++) {
                             var mask = isMask(i), testPos = determineTestPosition(i);
