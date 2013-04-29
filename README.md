@@ -489,10 +489,10 @@ PM> Install-Package jQuery.InputMask
 In App_Start, BundleConfig.cs
 ```c#
 bundles.Add(new ScriptBundle("~/bundles/inputmask").Include(
-                        "~/Scripts/jquery.inputmask/jquery.inputmask.js",
-						"~/Scripts/jquery.inputmask/jquery.inputmask.extensions.js",
-						"~/Scripts/jquery.inputmask/jquery.inputmask.date.extensions.js",
-						"~/Scripts/jquery.inputmask/jquery.inputmask.numeric.extensions.js"));
+                        "~/Scripts/jquery.inputmask/jquery.inputmask-{version}.js",
+						"~/Scripts/jquery.inputmask/jquery.inputmask.extensions-{version}.js",
+						"~/Scripts/jquery.inputmask/jquery.inputmask.date.extensions-{version}.js",
+						"~/Scripts/jquery.inputmask/jquery.inputmask.numeric.extensions-{version}.js"));
 ```
 
 In Layout
