@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.2.17
+* Version: 2.2.18
 */
 
 (function ($) {
@@ -413,7 +413,7 @@
                 return getActiveMaskSet()['_buffer'];
             }
 
-            function isValid(pos, c, buffer, strict, isRTL) { //strict true ~ no correction or autofill
+            function isValid(pos, c, buffer, strict, isRTL, checkVal) { //strict true ~ no correction or autofill
                 function _isValid(position, activeMaskset) {
                     var testPos = determineTestPosition(position), loopend = c ? 1 : 0, chrs = '';
                     for (var i = activeMaskset['tests'][testPos].cardinality; i > loopend; i--) {
@@ -428,7 +428,7 @@
                     return activeMaskset['tests'][testPos].fn != null ? activeMaskset['tests'][testPos].fn.test(chrs, buffer, position, strict, opts) : false;
                 }
 
-                if (strict) {
+                if (strict || checkVal) {
                     var rslt = _isValid(pos, getActiveMaskSet()); //only check validity in current mask when validating strict
 
                     if (rslt !== false) {
@@ -479,19 +479,21 @@
                     }
                 });
                 activeMasksetIndex = currentActiveMasksetIndex; //reset activeMasksetIndex
-                determineActiveMasksetIndex(buffer, pos, currentActiveMasksetIndex, isRTL);
+                determineActiveMasksetIndex(buffer, pos, currentActiveMasksetIndex, isRTL, c);
                 result = results[activeMasksetIndex] || result;
                 setTimeout(function () { opts.onKeyValidation.call(this, result, opts); }, 0); //extra stuff to execute on keydown
                 return result;
             }
 
-            function determineActiveMasksetIndex(buffer, pos, currentActiveMasksetIndex, isRTL) {
+            function determineActiveMasksetIndex(buffer, pos, currentActiveMasksetIndex, isRTL, c) {
                 $.each(masksets, function (index, value) {
                     var activeMaskset = this;
-                    if (activeMaskset['lastValidPosition'] && (isRTL || opts.numericInput) ? activeMaskset['lastValidPosition'] <= pos : activeMaskset['lastValidPosition'] >= pos) {
+                    if (activeMaskset['lastValidPosition'] != undefined
+                        //&& index != currentActiveMasksetIndex
+                        && ((isRTL || opts.numericInput) ? activeMaskset['lastValidPosition'] <= pos : activeMaskset['lastValidPosition'] >= pos)) {
                         activeMasksetIndex = index;
                         //reset to correct masktemplate
-                        checkVal(undefined, buffer, false, false, buffer.join(''), isRTL);
+                        checkVal(undefined, buffer, false, true, false, buffer.join(''), isRTL);
                         return false; //breaks
                     }
                 });
@@ -597,9 +599,11 @@
             }
 
             //inputData can be used to override the value used to check
-            function checkVal(input, buffer, clearInvalid, skipRadixHandling, inputData, rtl) {
+            function checkVal(input, buffer, writeOut, strict, skipRadixHandling, inputData, rtl) {
                 var isRTL = rtl != undefined ? rtl : $(input).data('inputmask')['isRTL'],
                     inputValue = truncateInput(inputData != undefined ? inputData : input._valueGet(), isRTL).split('');
+
+                strict = strict != undefined ? strict : true;
 
                 var maskL = getMaskLength(buffer);
                 if (isRTL) { //align inputValue for RTL/numeric input
@@ -623,7 +627,7 @@
                     for (var pos = checkPosition + 1; pos < maskL; pos++) {
                         if (isMask(pos)) {
                             var c = inputValue[i];
-                            if ((np = isValid(pos, c, buffer, !clearInvalid, isRTL)) !== false) {
+                            if ((np = isValid(pos, c, buffer, strict, isRTL, true)) !== false) {
                                 if (np !== true) {
                                     pos = np.pos != undefined ? np.pos : pos; //set new position from isValid
                                     c = np.c != undefined ? np.c : c; //set new char from isValid
@@ -657,7 +661,7 @@
                     buffer.length = newBuffer.length;
                 }
 
-                if (clearInvalid) {
+                if (writeOut) {
                     writeBuffer(input, buffer);
                 }
                 return isRTL ? (opts.numericInput ? (opts.radixPoint != "" && $.inArray(opts.radixPoint, buffer) != -1 && skipRadixHandling !== true ? $.inArray(opts.radixPoint, buffer) : seekNext(buffer, maskL)) : seekNext(buffer, rtlMatch)) : seekNext(buffer, lastMatch);
@@ -701,7 +705,7 @@
                 var input = $input[0];
                 if (getActiveTests() && (skipDatepickerCheck === true || !$input.hasClass('hasDatepicker'))) {
                     var buffer = getActiveBuffer().slice();
-                    checkVal(input, buffer);
+                    checkVal(input, buffer, false);
                     return $.map(buffer, function (element, index) {
                         return isMask(index) && isValid(index, element, buffer, true) ? element : null;
                     }).join('');
@@ -916,14 +920,14 @@
                 ).bind(pasteEvent + ".inputmask dragdrop.inputmask drop.inputmask", function () {
                     var input = this;
                     setTimeout(function () {
-                        caret(input, checkVal(input, buffer, true));
+                        caret(input, checkVal(input, buffer, true, false));
                         if (isComplete(buffer))
                             $input.trigger("complete");
                     }, 0);
                 }).bind('setvalue.inputmask', function () {
                     var input = this;
                     undoBuffer = input._valueGet();
-                    checkVal(input, buffer, true);
+                    checkVal(input, buffer, true, false);
                     if (input._valueGet() == getActiveBuffer().join(''))
                         input._valueSet('');
                 }).bind('complete.inputmask', opts.oncomplete)
@@ -1185,7 +1189,7 @@
                         e.preventDefault(); //stop default action but allow propagation
                     } else if (k == opts.keyCode.END || k == opts.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
                         setTimeout(function () {
-                            var caretPos = checkVal(input, buffer, false, true);
+                            var caretPos = checkVal(input, buffer, false);
                             if (!opts.insertMode && caretPos == getMaskLength(buffer) && !e.shiftKey) caretPos--;
                             caret(input, e.shiftKey ? pos.begin : caretPos, caretPos);
                         }, 0);
@@ -1194,7 +1198,7 @@
                     }
                     else if (k == opts.keyCode.ESCAPE) {//escape
                         input._valueSet(undoBuffer);
-                        caret(input, 0, checkVal(input, buffer));
+                        caret(input, 0, checkVal(input, buffer, false));
                     } else if (k == opts.keyCode.INSERT) {//insert
                         opts.insertMode = !opts.insertMode;
                         caret(input, !opts.insertMode && pos.begin == getMaskLength(buffer) ? pos.begin - 1 : pos.begin);
@@ -1235,14 +1239,14 @@
                         caret(input, seekNext(buffer, radixPosition != -1 ? radixPosition : getMaskLength(buffer)));
                     }
 
-                    if (e.metaKey || ignorable) {
+                    if (e.ctrlKey || e.metaKey || ignorable) {
                         return true;
                     } else {
                         if (k) {
                             //$input.trigger('input');
 
                             var pos = caret(input), maskL = getMaskLength(buffer), writeOutBuffer = true;
-                            clearBuffer(buffer, pos.begin, pos.end);
+                            if ((pos.end - pos.begin) > 1) clearBuffer(buffer, pos.begin, pos.end);
 
                             if (isRTL) {
                                 var p = seekPrevious(buffer, pos.end), np;
@@ -1348,7 +1352,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.17
+Version: 2.2.18
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1445,7 +1449,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.17
+Version: 2.2.18
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1938,7 +1942,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.17
+Version: 2.2.18
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2113,7 +2117,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.17
+Version: 2.2.18
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2131,11 +2135,14 @@ Allows for using regular expressions as a mask
                     validator: function (chrs, buffer, pos, strict, opts) {
 
                         function analyseRegex() {  //ENHANCE ME
-                            opts.regexSplit = [];
-                            if (opts.regex.indexOf("*") != (opts.regex.length - 1)) {
-                                opts.regex += "{1}";
-                            }
-                            opts.regexSplit.push(opts.regex);
+                            var regexSplitRegex = "\\[.*?\]\\*";
+
+                            opts.regexSplit = opts.regex.match(new RegExp(regexSplitRegex, "g"));
+
+                            //if (opts.regex.indexOf("*") != (opts.regex.length - 1)) {
+                            //    opts.regex += "{1}";
+                            //}
+                            //opts.regexSplit.push(opts.regex);
                         }
 
                         if (opts.regexSplit == null) {
@@ -2149,7 +2156,7 @@ Allows for using regular expressions as a mask
                             regexPart += opts.regexSplit[i];
                             var exp = new RegExp("^" + regexPart + "$");
                             isValid = exp.test(bufferStr);
-                            console.log(bufferStr + ' ' + isValid);
+                            console.log(bufferStr + ' ' + isValid + ' ' + regexPart);
                             if (isValid) break;
                         }
 
