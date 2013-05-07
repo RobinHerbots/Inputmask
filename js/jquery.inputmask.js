@@ -491,20 +491,20 @@
                 return results; //return results of the multiple mask validations
             }
 
-            function determineActiveMasksetIndex(pos, isRTL) {
-                var currentMasksetIndex = activeMasksetIndex, lastValidPositionsAllUndefined = true;
+            function determineActiveMasksetIndex(isRTL) {
+                var currentMasksetIndex = activeMasksetIndex,
+                    highestValid = { "activeMasksetIndex": 0, "lastValidPosition": -1 };
                 $.each(masksets, function (index, value) {
                     var activeMaskset = this;
                     if (activeMaskset['lastValidPosition'] != undefined) {
-                        lastValidPositionsAllUndefined = false;
-                        if ((isRTL || opts.numericInput) ? activeMaskset['lastValidPosition'] <= pos : activeMaskset['lastValidPosition'] >= pos) {
-                            activeMasksetIndex = index;
-                            return false; //breaks
+                        if ((isRTL || opts.numericInput) ? (activeMaskset['lastValidPosition'] < highestValid['lastValidPosition']) : (activeMaskset['lastValidPosition'] > highestValid['lastValidPosition'])) {
+                            console.log("setindex " + index);
+                            highestValid["activeMasksetIndex"] = index;
+                            highestValid["lastValidPosition"] = activeMaskset['lastValidPosition'];
                         }
                     }
                 });
-                if (lastValidPositionsAllUndefined)
-                    activeMasksetIndex = 0;
+                activeMasksetIndex = highestValid["activeMasksetIndex"];
                 if (currentMasksetIndex != activeMasksetIndex)
                     getActiveMaskSet()["writeOutBuffer"] = true;
             }
@@ -1143,7 +1143,7 @@
                                 clearBuffer(getActiveBuffer(), pos.begin, pos.end);
                                 getActiveMaskSet()["p"] = isRTL ? checkVal(input, false) : pos.begin;
                                 if (getActiveMaskSet()['lastValidPosition'] < pos.end)
-                                    getActiveMaskSet()["lastValidPosition"] = seekPrevious(beginPos);
+                                    getActiveMaskSet()["lastValidPosition"] = beginPos - 1;
                                 if (getActiveMaskSet()['lastValidPosition'] <= firstMaskPos)
                                     getActiveMaskSet()["lastValidPosition"] = undefined;
                             });
@@ -1169,7 +1169,7 @@
                                             }
                                         }
                                         if (getActiveMaskSet()['lastValidPosition'] == beginPos)
-                                            getActiveMaskSet()["lastValidPosition"] = seekPrevious(beginPos);
+                                            getActiveMaskSet()["lastValidPosition"] = beginPos - 1;
                                         if (getActiveMaskSet()['lastValidPosition'] <= firstMaskPos)
                                             getActiveMaskSet()["lastValidPosition"] = undefined;
                                         getActiveMaskSet()["writeOutBuffer"] = true;
@@ -1190,7 +1190,7 @@
                                             }
                                         }
                                         if (getActiveMaskSet()['lastValidPosition'] == beginPos)
-                                            getActiveMaskSet()["lastValidPosition"] = seekPrevious(beginPos);
+                                            getActiveMaskSet()["lastValidPosition"] = beginPos - 1;
                                         if (getActiveMaskSet()['lastValidPosition'] <= firstMaskPos)
                                             getActiveMaskSet()["lastValidPosition"] = undefined;
                                         getActiveMaskSet()["writeOutBuffer"] = true;
@@ -1210,7 +1210,7 @@
 
                         }
 
-                        determineActiveMasksetIndex(beginPos, isRTL);
+                        determineActiveMasksetIndex(isRTL);
                         writeBuffer(input, getActiveBuffer(), getActiveMaskSet()["p"]);
                         if (input._valueGet() == getActiveBufferTemplate().join(''))
                             $(input).trigger('cleared');
@@ -1243,7 +1243,7 @@
                                 getActiveMaskSet()["p"] = isRTL ? checkVal(input, false) : pos.begin;
                                 getActiveMaskSet()["lastValidPosition"] = undefined;
                             });
-                            determineActiveMasksetIndex(pos.begin, isRTL);
+                            determineActiveMasksetIndex(isRTL);
                             writeBuffer(input, getActiveBuffer(), getActiveMaskSet()["p"]);
                         }, 0);
                     } else if (!opts.insertMode) { //overwritemode
@@ -1324,7 +1324,7 @@
                                     }
                                 });
 
-                                determineActiveMasksetIndex(pos.begin, isRTL);
+                                determineActiveMasksetIndex(isRTL);
                                 $.each(results, function (ndx, rslt) {
                                     if (rslt["activeMasksetIndex"] == activeMasksetIndex) {
                                         result = rslt;
@@ -1372,7 +1372,7 @@
                                     }
                                 });
 
-                                determineActiveMasksetIndex(pos.begin, isRTL);
+                                determineActiveMasksetIndex(isRTL);
                                 $.each(results, function (ndx, rslt) {
                                     if (rslt["activeMasksetIndex"] == activeMasksetIndex) {
                                         result = rslt;
