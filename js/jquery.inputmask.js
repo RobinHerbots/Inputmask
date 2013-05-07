@@ -498,7 +498,6 @@
                     var activeMaskset = this;
                     if (activeMaskset['lastValidPosition'] != undefined) {
                         if ((isRTL || opts.numericInput) ? (activeMaskset['lastValidPosition'] < highestValid['lastValidPosition']) : (activeMaskset['lastValidPosition'] > highestValid['lastValidPosition'])) {
-                            console.log("setindex " + index);
                             highestValid["activeMasksetIndex"] = index;
                             highestValid["lastValidPosition"] = activeMaskset['lastValidPosition'];
                         }
