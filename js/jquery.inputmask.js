@@ -436,16 +436,7 @@
                 }
 
                 if (strict || singleMask) {
-                    var rslt = _isValid(pos, getActiveMaskSet()); //only check validity in current mask when validating strict
-
-                    if (rslt !== false) {
-                        if (rslt === true) {
-                            rslt = { "pos": pos }; //always take a possible corrected maskposition into account
-                        }
-                        var activeMaskset = getActiveMaskSet();
-                        activeMaskset['lastValidPosition'] = rslt.pos || pos;
-                    }
-                    return rslt;
+                    return _isValid(pos, getActiveMaskSet()); //only check validity in current mask when validating strict
                 }
 
                 var results = [], result = false, currentActiveMasksetIndex = activeMasksetIndex;
