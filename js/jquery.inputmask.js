@@ -420,7 +420,7 @@
                 return getActiveMaskSet()['buffer'];
             }
 
-            function isValid(pos, c, strict, isRTL, singleMask) { //strict true ~ no correction or autofill
+            function isValid(pos, c, strict, isRTL) { //strict true ~ no correction or autofill
                 function _isValid(position, activeMaskset) {
                     var testPos = determineTestPosition(position), loopend = c ? 1 : 0, chrs = '', buffer = activeMaskset["buffer"];
                     for (var i = activeMaskset['tests'][testPos].cardinality; i > loopend; i--) {
@@ -435,7 +435,7 @@
                     return activeMaskset['tests'][testPos].fn != null ? activeMaskset['tests'][testPos].fn.test(chrs, buffer, position, strict, opts) : false;
                 }
 
-                if (strict || singleMask) {
+                if (strict) {
                     return _isValid(pos, getActiveMaskSet()); //only check validity in current mask when validating strict
                 }
 
@@ -1096,11 +1096,17 @@
                                                 beginPos = shiftL(beginPos, maskL);
                                             }
                                         }
-
-                                        if (isRTL ? getActiveMaskSet()['lastValidPosition'] > firstMaskPos : getActiveMaskSet()['lastValidPosition'] < firstMaskPos)
-                                            getActiveMaskSet()["lastValidPosition"] = undefined;
-                                        getActiveMaskSet()["writeOutBuffer"] = true;
-                                        getActiveMaskSet()["p"] = beginPos;
+                                        if (getActiveMaskSet()['lastValidPosition'] != undefined && getActiveMaskSet()['lastValidPosition'] != -1) {
+                                            if (getActiveBuffer()[getActiveMaskSet()['lastValidPosition']] == getActiveBufferTemplate()[getActiveMaskSet()['lastValidPosition']])
+                                                getActiveMaskSet()["lastValidPosition"] = isRTL ? seekNext(getActiveMaskSet()["lastValidPosition"]) : seekPrevious(getActiveMaskSet()["lastValidPosition"]);
+                                            if (isRTL ? getActiveMaskSet()['lastValidPosition'] > firstMaskPos : getActiveMaskSet()['lastValidPosition'] < firstMaskPos) {
+                                                getActiveMaskSet()["lastValidPosition"] = undefined;
+                                                getActiveMaskSet()["p"] = firstMaskPos;
+                                            } else {
+                                                getActiveMaskSet()["writeOutBuffer"] = true;
+                                                getActiveMaskSet()["p"] = beginPos;
+                                            }
+                                        }
                                     }
                                 } else if (k == opts.keyCode.BACKSPACE) { //handle backspace
                                     if (isRTL ? beginPos < firstMaskPos : beginPos > firstMaskPos) {
@@ -1116,13 +1122,17 @@
                                                 beginPos = shiftL(beginPos, maskL);
                                             }
                                         }
-
-                                        if (getActiveMaskSet()["lastValidPosition"] == beginPos)
-                                            getActiveMaskSet()["lastValidPosition"] = isRTL ? seekNext(beginPos) : seekPrevious(beginPos);
-                                        if (isRTL ? getActiveMaskSet()['lastValidPosition'] > firstMaskPos : getActiveMaskSet()['lastValidPosition'] < firstMaskPos)
-                                            getActiveMaskSet()["lastValidPosition"] = undefined;
-                                        getActiveMaskSet()["writeOutBuffer"] = true;
-                                        getActiveMaskSet()["p"] = beginPos;
+                                        if (getActiveMaskSet()['lastValidPosition'] != undefined && getActiveMaskSet()['lastValidPosition'] != -1) {
+                                            if (getActiveBuffer()[getActiveMaskSet()['lastValidPosition']] == getActiveBufferTemplate()[getActiveMaskSet()['lastValidPosition']])
+                                                getActiveMaskSet()["lastValidPosition"] = isRTL ? seekNext(getActiveMaskSet()["lastValidPosition"]) : seekPrevious(getActiveMaskSet()["lastValidPosition"]);
+                                            if (isRTL ? getActiveMaskSet()['lastValidPosition'] > firstMaskPos : getActiveMaskSet()['lastValidPosition'] < firstMaskPos) {
+                                                getActiveMaskSet()["lastValidPosition"] = undefined;
+                                                getActiveMaskSet()["p"] = firstMaskPos;
+                                            } else {
+                                                getActiveMaskSet()["writeOutBuffer"] = true;
+                                                getActiveMaskSet()["p"] = beginPos;
+                                            }
+                                        }
                                     } else if (activeMasksetIndex > 0) { //retry other masks
                                         getActiveMaskSet()["lastValidPosition"] = undefined;
                                         getActiveMaskSet()["writeOutBuffer"] = true;
@@ -1130,7 +1140,7 @@
                                         //init first 
                                         activeMasksetIndex = 0;
                                         getActiveMaskSet()["buffer"] = getActiveBufferTemplate().slice();
-                                        getActiveMaskSet()["p"] = isRTL ? checkVal(input, false) : seekNext(-1);
+                                        getActiveMaskSet()["p"] = isRTL ? seekPrevious(getMaskLength() + 1) : seekNext(-1);
                                         getActiveMaskSet()["lastValidPosition"] = undefined;
                                     }
                                 }
@@ -1150,7 +1160,7 @@
                         e.preventDefault(); //stop default action but allow propagation
                     } else if (k == opts.keyCode.END || k == opts.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
                         setTimeout(function () {
-                            var caretPos = checkVal(input, false);  //TODO FIXME
+                            var caretPos = isRTL ? getActiveMaskSet()["lastValidPosition"] : seekNext(getActiveMaskSet()["lastValidPosition"]);
                             if (!opts.insertMode && caretPos == getMaskLength() && !e.shiftKey) caretPos--;
                             caret(input, e.shiftKey ? pos.begin : caretPos, caretPos);
                         }, 0);
