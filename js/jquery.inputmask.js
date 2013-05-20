@@ -436,7 +436,11 @@
                 }
 
                 if (strict) {
-                    return _isValid(pos, getActiveMaskSet()); //only check validity in current mask when validating strict
+                    var result = _isValid(pos, getActiveMaskSet()); //only check validity in current mask when validating strict
+                    if (result === true) {
+                        result = { "pos": pos }; //always take a possible corrected maskposition into account
+                    }
+                    return result;
                 }
 
                 var results = [], result = false, currentActiveMasksetIndex = activeMasksetIndex;
@@ -482,7 +486,7 @@
 
             function determineActiveMasksetIndex(isRTL) {
                 var currentMasksetIndex = activeMasksetIndex,
-                    highestValid = { "activeMasksetIndex": 0, "lastValidPosition": -1 };
+                    highestValid = { "activeMasksetIndex": 0, "lastValidPosition": isRTL ? getMaskLength() + 1 : -1 };
                 $.each(masksets, function (index, value) {
                     var activeMaskset = this;
                     if (activeMaskset['lastValidPosition'] != undefined) {
@@ -608,8 +612,10 @@
                 activeMasksetIndex = 0;
                 writeBuffer(input, getActiveBuffer(), getActiveMaskSet()["p"]);
                 $.each(isRTL ? inputValue.reverse() : inputValue, function (ndx, charCode) {
-                    $(input).trigger("keypress", charCode.charCodeAt(0), writeOut, strict);
+                    $(input).trigger("keypress", [true, charCode.charCodeAt(0), writeOut, strict]);
                 });
+                if (strict)
+                    getActiveMaskSet()["lastValidPosition"] = getActiveMaskSet()["p"];
             }
 
             function escapeRegex(str) {
@@ -845,6 +851,7 @@
                             var clickPosition = selectedCaret.begin,
                                 lvp = getActiveMaskSet()["lastValidPosition"],
                                 lastPosition;
+
                             determineInputDirection(input, selectedCaret);
                             if (isRTL) {
                                 lastPosition = seekPrevious((lvp == undefined ? getMaskLength() : lvp) + 1);
@@ -1074,6 +1081,10 @@
                         var beginPos = pos.begin;
                         if ((pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode)) { //partial selection
                             clearBuffer(getActiveBuffer(), pos.begin, pos.end);
+                            var chl = pos.end - pos.begin, ml = getMaskLength();
+                            for (var i = 0; i < chl; i++) {
+                                isRTL ? shiftR(0, pos.end, getPlaceHolder(pos.end), true) : shiftL(pos.begin, ml);
+                            }
                             checkVal(input, false, true, getActiveBuffer());
                         } else {
                             $.each(masksets, function (ndx, ms) {
@@ -1193,7 +1204,7 @@
                     ignorable = $.inArray(k, opts.ignorables) != -1;
                 }
 
-                function keypressEvent(e, k, writeOut, strict) {
+                function keypressEvent(e, checkval, k, writeOut, strict) {
                     //Safari 5.1.x - modal dialog fires keypress twice workaround
                     if (k == undefined && skipKeyPressEvent) return false;
                     skipKeyPressEvent = true;
@@ -1210,16 +1221,17 @@
                         caret(input, seekNext(radixPosition != -1 ? radixPosition : getMaskLength()));
                     }
 
-                    if (e.ctrlKey || e.metaKey || ignorable) {
+                    if ((e.ctrlKey || e.metaKey || ignorable) && checkval !== true) {
                         return true;
                     } else {
                         if (k) {
                             //TODO FIND A SOLUTION TO CLEAR OUT THE SELECTION
                             //clearBuffer(buffer, pos.begin, pos.end);
-                            var pos = caret(input), results, result;
+                            var pos = checkval ? { begin: getActiveMaskSet()["p"], end: getActiveMaskSet()["p"] } : caret(input), results, result;
                             if (isRTL) {
                                 var p = seekPrevious(pos.end);
                                 results = isValid(p == getMaskLength() || getBufferElement(getActiveBuffer(), p) == opts.radixPoint ? seekPrevious(p) : p, c, strict, isRTL);
+                                if (strict === true) results = [{ "activeMasksetIndex": activeMasksetIndex, "result": results }];
                                 $.each(results, function (index, result) {
                                     activeMasksetIndex = result["activeMasksetIndex"];
                                     getActiveMaskSet()["writeOutBuffer"] = true;
@@ -1278,6 +1290,7 @@
                             } else {
                                 var p = seekNext(pos.begin - 1);
                                 results = isValid(p, c, strict, isRTL);
+                                if (strict === true) results = [{ "activeMasksetIndex": activeMasksetIndex, "result": results }];
                                 $.each(results, function (index, result) {
                                     activeMasksetIndex = result["activeMasksetIndex"];
                                     getActiveMaskSet()["writeOutBuffer"] = true;
