@@ -1058,7 +1058,10 @@
                                         else c = t;
                                     }
                                 } else break;
-                            } else if (full !== true) break;
+                            } else {
+                                c = t;
+                                if (full !== true) break;
+                            }
                         } else
                             setReTargetPlaceHolder(buffer, i);
                     }
