@@ -615,7 +615,7 @@
                     $(input).trigger("keypress", [true, charCode.charCodeAt(0), writeOut, strict]);
                 });
                 if (strict)
-                    getActiveMaskSet()["lastValidPosition"] = getActiveMaskSet()["p"];
+                    getActiveMaskSet()["lastValidPosition"] = isRTL ? seekNext(getActiveMaskSet()["p"]) : seekPrevious(getActiveMaskSet()["p"]);
             }
 
             function escapeRegex(str) {
