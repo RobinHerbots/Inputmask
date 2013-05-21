@@ -1028,7 +1028,7 @@
                                     if (isMask(i))
                                         break;
                                 }
-                            } else if (c == undefined) break;
+                            } //else if (c == undefined) break;
                         } else {
                             setReTargetPlaceHolder(buffer, i);
                         }
@@ -1078,6 +1078,7 @@
 
                     //backspace, delete, and escape get special treatment
                     if (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE || (iphone && k == 127)) {//backspace/delete
+                        e.preventDefault(); //stop default action but allow propagation
                         var beginPos = pos.begin;
                         if ((pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode)) { //partial selection
                             clearBuffer(getActiveBuffer(), pos.begin, pos.end);
@@ -1109,7 +1110,7 @@
                                         }
                                         if (getActiveMaskSet()['lastValidPosition'] != undefined && getActiveMaskSet()['lastValidPosition'] != -1) {
                                             if (getActiveBuffer()[getActiveMaskSet()['lastValidPosition']] == getActiveBufferTemplate()[getActiveMaskSet()['lastValidPosition']])
-                                                getActiveMaskSet()["lastValidPosition"] = isRTL ? seekNext(getActiveMaskSet()["lastValidPosition"]) : seekPrevious(getActiveMaskSet()["lastValidPosition"]);
+                                                getActiveMaskSet()["lastValidPosition"] = isRTL ? seekNext(getActiveMaskSet()["lastValidPosition"]) : (getActiveMaskSet()["lastValidPosition"] == 0 ? -1 : seekPrevious(getActiveMaskSet()["lastValidPosition"]));
                                             if (isRTL ? getActiveMaskSet()['lastValidPosition'] > firstMaskPos : getActiveMaskSet()['lastValidPosition'] < firstMaskPos) {
                                                 getActiveMaskSet()["lastValidPosition"] = undefined;
                                                 getActiveMaskSet()["p"] = firstMaskPos;
@@ -1135,7 +1136,7 @@
                                         }
                                         if (getActiveMaskSet()['lastValidPosition'] != undefined && getActiveMaskSet()['lastValidPosition'] != -1) {
                                             if (getActiveBuffer()[getActiveMaskSet()['lastValidPosition']] == getActiveBufferTemplate()[getActiveMaskSet()['lastValidPosition']])
-                                                getActiveMaskSet()["lastValidPosition"] = isRTL ? seekNext(getActiveMaskSet()["lastValidPosition"]) : seekPrevious(getActiveMaskSet()["lastValidPosition"]);
+                                                getActiveMaskSet()["lastValidPosition"] = isRTL ? seekNext(getActiveMaskSet()["lastValidPosition"]) : (getActiveMaskSet()["lastValidPosition"] == 0 ? -1 : seekPrevious(getActiveMaskSet()["lastValidPosition"]));
                                             if (isRTL ? getActiveMaskSet()['lastValidPosition'] > firstMaskPos : getActiveMaskSet()['lastValidPosition'] < firstMaskPos) {
                                                 getActiveMaskSet()["lastValidPosition"] = undefined;
                                                 getActiveMaskSet()["p"] = firstMaskPos;
@@ -1167,8 +1168,6 @@
                         if (opts.showTooltip) { //update tooltip
                             $input.prop("title", getActiveMaskSet()["mask"]);
                         }
-
-                        e.preventDefault(); //stop default action but allow propagation
                     } else if (k == opts.keyCode.END || k == opts.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
                         setTimeout(function () {
                             var caretPos = isRTL ? getActiveMaskSet()["lastValidPosition"] : seekNext(getActiveMaskSet()["lastValidPosition"]);
@@ -1185,9 +1184,19 @@
                         opts.insertMode = !opts.insertMode;
                         caret(input, !opts.insertMode && pos.begin == getMaskLength() ? pos.begin - 1 : pos.begin);
                     } else if (e.ctrlKey && k == 88) {
-                        setTimeout(function () {
-                            checkVal(input, true, true);
-                        }, 0);
+                        e.preventDefault();
+                        clearBuffer(getActiveBuffer(), pos.begin, pos.end);
+                        var chl = pos.end - pos.begin, ml = getMaskLength();
+                        for (var i = 0; i < chl; i++) {
+                            isRTL ? shiftR(0, pos.end, getPlaceHolder(pos.end), true) : shiftL(pos.begin, ml);
+                        }
+                        checkVal(input, true, true, getActiveBuffer());
+                        if (input._valueGet() == getActiveBufferTemplate().join(''))
+                            $(input).trigger('cleared');
+
+                        if (opts.showTooltip) { //update tooltip
+                            $input.prop("title", getActiveMaskSet()["mask"]);
+                        }
                     } else if (!opts.insertMode) { //overwritemode
                         if (k == opts.keyCode.RIGHT) {//right
                             var caretPos = pos.begin == pos.end ? pos.end + 1 : pos.end;
@@ -1227,7 +1236,14 @@
                         if (k) {
                             //TODO FIND A SOLUTION TO CLEAR OUT THE SELECTION
                             //clearBuffer(buffer, pos.begin, pos.end);
-                            var pos = checkval ? { begin: getActiveMaskSet()["p"], end: getActiveMaskSet()["p"] } : caret(input), results, result;
+
+                            var pos, results, result;
+                            if (checkval) {
+                                var pcaret = getActiveMaskSet()["p"];
+                                pos = { begin: pcaret, end: pcaret };
+                            } else {
+                                pos = caret(input);
+                            }
                             if (isRTL) {
                                 var p = seekPrevious(pos.end);
                                 results = isValid(p == getMaskLength() || getBufferElement(getActiveBuffer(), p) == opts.radixPoint ? seekPrevious(p) : p, c, strict, isRTL);
@@ -1314,7 +1330,7 @@
                                                 else getActiveMaskSet()["writeOutBuffer"] = false;
                                             } else setBufferElement(buffer, p, c, true, isRTL);
                                         }
-                                        getActiveMaskSet()["p"] = p;
+                                        getActiveMaskSet()["p"] = seekNext(p);
                                     }
                                 });
 
@@ -1329,8 +1345,8 @@
                                     if (result != undefined) {
                                         setTimeout(function () { opts.onKeyValidation.call(this, result["result"], opts); }, 0);
                                         if (getActiveMaskSet()["writeOutBuffer"] && result["result"] !== false) {
-                                            var p = getActiveMaskSet()["p"], next = seekNext(p), buffer = getActiveBuffer();
-                                            writeBuffer(input, buffer, next);
+                                            var p = getActiveMaskSet()["p"], buffer = getActiveBuffer();
+                                            writeBuffer(input, buffer, p);
 
                                             setTimeout(function () { //timeout needed for IE
                                                 if (isComplete(buffer))
