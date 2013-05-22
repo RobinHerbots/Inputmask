@@ -485,11 +485,9 @@
             }
 
             function determineActiveMasksetIndex(isRTL) {
-                console.log("determineActiveMasksetIndex " + getActiveBuffer().join(''));
                 var currentMasksetIndex = activeMasksetIndex,
                     highestValid = { "activeMasksetIndex": 0, "lastValidPosition": isRTL ? getMaskLength() + 1 : -1 };
                 $.each(masksets, function (index, value) {
-                    console.log("determineActiveMasksetIndex " + index + " " + this["buffer"].join('') + " lv " + this['lastValidPosition']);
                     var activeMaskset = this;
                     if (activeMaskset['lastValidPosition'] != undefined) {
                         if ((isRTL || opts.numericInput) ? (activeMaskset['lastValidPosition'] < highestValid['lastValidPosition']) : (activeMaskset['lastValidPosition'] > highestValid['lastValidPosition'])) {
@@ -606,8 +604,6 @@
                 var isRTL = $(input).data('inputmask')['isRTL'],
                     inputValue = nptvl != undefined ? nptvl.slice() : truncateInput(input._valueGet(), isRTL).split('');
 
-                console.log(inputValue.join(''));
-
                 $.each(masksets, function (ndx, ms) {
                     ms["buffer"] = ms["_buffer"].slice();
                     ms["lastValidPosition"] = undefined;
@@ -619,7 +615,8 @@
                 if (isRTL)
                     inputValue = inputValue.reverse();
                 $.each(inputValue, function (ndx, charCode) {
-                    $(input).trigger("keypress", [true, charCode.charCodeAt(0), writeOut, strict]);
+                    if (!strict || isMask(ndx))
+                        $(input).trigger("keypress", [true, charCode.charCodeAt(0), writeOut, strict]);
                 });
                 if (strict)
                     getActiveMaskSet()["lastValidPosition"] = isRTL ? seekNext(getActiveMaskSet()["p"]) : seekPrevious(getActiveMaskSet()["p"]);
@@ -1090,7 +1087,14 @@
                     if (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE || (iphone && k == 127)) {//backspace/delete
                         e.preventDefault(); //stop default action but allow propagation
                         var beginPos = pos.begin;
-                        if ((pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode)) { //partial selection
+                        if (pos.begin == 0 && pos.end == getMaskLength()) {
+                            clearBuffer(getActiveBuffer(), pos.begin, pos.end);
+                            $.each(masksets, function (ndx, ms) {
+                                ms["buffer"] = ms["_buffer"].slice();
+                                ms["lastValidPosition"] = undefined;
+                                ms["p"] = isRTL ? getMaskLength() : 0;
+                            });
+                        } else if ((pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode)) { //partial selection
                             clearBuffer(getActiveBuffer(), pos.begin, pos.end);
                             var chl = pos.end - pos.begin, ml = getMaskLength();
                             for (var i = 0; i < chl; i++) {
@@ -1233,8 +1237,6 @@
                     e = e || window.event;
                     var k = k || e.which || e.charCode || e.keyCode,
                         c = String.fromCharCode(k);
-
-                    console.log(c);
 
                     if (opts.numericInput && c == opts.radixPoint) {
                         var nptStr = input._valueGet();
