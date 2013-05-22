@@ -614,8 +614,10 @@
 
                 if (isRTL)
                     inputValue = inputValue.reverse();
+
+                var ml = getMaskLength() - 1;
                 $.each(inputValue, function (ndx, charCode) {
-                    if (!strict || isMask(ndx))
+                    if (!strict || isMask(isRTL ? ml - ndx : ndx))
                         $(input).trigger("keypress", [true, charCode.charCodeAt(0), writeOut, strict]);
                 });
                 if (strict)
@@ -1084,7 +1086,7 @@
                     determineInputDirection(input, pos);
 
                     //backspace, delete, and escape get special treatment
-                    if (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE || (iphone && k == 127)) {//backspace/delete
+                    if (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE || (iphone && k == 127) || (e.ctrlKey && k == 88)) {//backspace/delete
                         e.preventDefault(); //stop default action but allow propagation
                         var beginPos = pos.begin;
                         if (pos.begin == 0 && pos.end == getMaskLength()) {
@@ -1096,9 +1098,10 @@
                             });
                         } else if ((pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode)) { //partial selection
                             clearBuffer(getActiveBuffer(), pos.begin, pos.end);
-                            var chl = pos.end - pos.begin, ml = getMaskLength();
-                            for (var i = 0; i < chl; i++) {
-                                isRTL ? shiftR(0, pos.end, getPlaceHolder(pos.end), true) : shiftL(pos.begin, ml);
+                            var ml = getMaskLength();
+                            for (var i = pos.begin; i < pos.end; i++) {
+                                if (isMask(i))
+                                    isRTL ? shiftR(0, pos.end - 1, getPlaceHolder(pos.end), true) : shiftL(pos.begin, ml);
                             }
                             checkVal(input, false, true, getActiveBuffer());
                         } else {
@@ -1197,20 +1200,6 @@
                     } else if (k == opts.keyCode.INSERT) {//insert
                         opts.insertMode = !opts.insertMode;
                         caret(input, !opts.insertMode && pos.begin == getMaskLength() ? pos.begin - 1 : pos.begin);
-                    } else if (e.ctrlKey && k == 88) {
-                        e.preventDefault();
-                        clearBuffer(getActiveBuffer(), pos.begin, pos.end);
-                        var chl = pos.end - pos.begin, ml = getMaskLength();
-                        for (var i = 0; i < chl; i++) {
-                            isRTL ? shiftR(0, pos.end, getPlaceHolder(pos.end), true) : shiftL(pos.begin, ml);
-                        }
-                        checkVal(input, true, true, getActiveBuffer());
-                        if (input._valueGet() == getActiveBufferTemplate().join(''))
-                            $(input).trigger('cleared');
-
-                        if (opts.showTooltip) { //update tooltip
-                            $input.prop("title", getActiveMaskSet()["mask"]);
-                        }
                     } else if (!opts.insertMode) { //overwritemode
                         if (k == opts.keyCode.RIGHT) {//right
                             var caretPos = pos.begin == pos.end ? pos.end + 1 : pos.end;
