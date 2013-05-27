@@ -674,7 +674,6 @@
 
             var caretSavePoint;
             function caret(input, begin, end) {
-                console.log("caret " + begin + " " + end);
                 var npt = input.jquery && input.length > 0 ? input[0] : input, range;
                 if (typeof begin == 'number') {
                     if (!$(input).is(':visible')) {
@@ -1273,15 +1272,17 @@
                             $.each(masksets, function (ndx, lmnt) {
                                 activeMasksetIndex = ndx;
                                 getActiveMaskSet()["undoBuffer"] = getActiveBuffer().join('');
-                                var posend = pos.end < getMaskLength() ? pos.end : getMaskLength();
-                                clearBuffer(getActiveBuffer(), pos.begin, posend);
-                                var ml = getMaskLength();
-                                if (opts.greedy == false) {
-                                    isRTL ? shiftR(0, posend - 1, getPlaceHolder(posend), true) : shiftL(pos.begin, ml);
-                                } else {
-                                    for (var i = pos.begin; i < posend; i++) {
-                                        if (isMask(i))
-                                            isRTL ? shiftR(0, posend - 1, getPlaceHolder(posend), true) : shiftL(pos.begin, ml);
+                                if ((pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode)) {
+                                    var posend = pos.end < getMaskLength() ? pos.end : getMaskLength();
+                                    clearBuffer(getActiveBuffer(), pos.begin, posend);
+                                    var ml = getMaskLength();
+                                    if (opts.greedy == false) {
+                                        isRTL ? shiftR(0, posend - 1, getPlaceHolder(posend), true) : shiftL(pos.begin, ml);
+                                    } else {
+                                        for (var i = pos.begin; i < posend; i++) {
+                                            if (isMask(i))
+                                                isRTL ? shiftR(0, posend - 1, getPlaceHolder(posend), true) : shiftL(pos.begin, ml);
+                                        }
                                     }
                                 }
                             });
