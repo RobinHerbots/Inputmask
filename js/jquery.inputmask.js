@@ -611,7 +611,7 @@
                     ms["p"] = isRTL ? getMaskLength() : 0;
                 });
                 if (strict !== true) activeMasksetIndex = 0;
-                writeBuffer(input, getActiveBuffer(), getActiveMaskSet()["p"]);
+                caret(input, getActiveMaskSet()["p"]);
 
                 if (isRTL && !opts.numericInput)
                     inputValue = inputValue.reverse();
@@ -619,7 +619,8 @@
                 var ml = getMaskLength();
                 $.each(inputValue, function (ndx, charCode) {
                     if (!strict || isMask(isRTL ? (opts.numericInput ? seekPrevious(ml) : ml - ndx - 1) : ndx)) {
-                        $(input).trigger("keypress", [true, charCode.charCodeAt(0), writeOut, strict]);
+                        var index = isRTL ? (opts.numericInput ? ml : ml - ndx - 1) : ndx;
+                        $(input).trigger("keypress", [true, charCode.charCodeAt(0), writeOut, strict, index]);
                     }
                 });
                 if (strict)
@@ -662,7 +663,7 @@
             function unmaskedvalue($input, skipDatepickerCheck) {
                 var input = $input[0];
                 if (getActiveTests() && (skipDatepickerCheck === true || !$input.hasClass('hasDatepicker'))) {
-                    checkVal(input, false); //TODO FIXME CHECK THIS PLEASE
+                    checkVal(input, false, true);
                     return $.map(getActiveBuffer(), function (element, index) {
                         return isMask(index) && isValid(index, element, true) ? element : null;
                     }).join('');
@@ -863,7 +864,7 @@
                             determineInputDirection(input, selectedCaret);
                             if (isRTL) {
                                 if (opts.numericInput) {
-                                    lastPosition = opts.skipRadixDance === false && opts.radixPoint != "" && $.inArray(opts.radixPoint, buffer) != -1 ? $.inArray(opts.radixPoint, buffer) : seekNext(lvp == undefined ? getMaskLength() : lvp + 1);
+                                    lastPosition = opts.skipRadixDance === false && opts.radixPoint != "" && $.inArray(opts.radixPoint, buffer) != -1 ? $.inArray(opts.radixPoint, buffer) : getMaskLength();
                                 } else {
                                     lastPosition = seekPrevious((lvp == undefined ? getMaskLength() : lvp) + 1);
                                 }
@@ -889,7 +890,7 @@
                 ).bind(pasteEvent + ".inputmask dragdrop.inputmask drop.inputmask", function () {
                     var input = this, buffer = getActiveBuffer();
                     setTimeout(function () {
-                        caret(input, checkVal(input, true, true));
+                        caret(input, checkVal(input, true, false));
                         if (isComplete(buffer))
                             $input.trigger("complete");
                     }, 0);
@@ -1222,15 +1223,17 @@
                     } else if (k == opts.keyCode.INSERT) {//insert
                         opts.insertMode = !opts.insertMode;
                         caret(input, !opts.insertMode && pos.begin == getMaskLength() ? pos.begin - 1 : pos.begin);
-                    } else if (!e.shiftKey) {
-                        if (k == opts.keyCode.RIGHT) {//right
-                            var caretPos = pos.begin == pos.end ? pos.end + 1 : pos.end;
-                            caretPos = caretPos < getMaskLength() ? caretPos : pos.end;
-                            caret(input, e.shiftKey ? pos.begin : caretPos, e.shiftKey ? caretPos + 1 : caretPos);
-                        } else if (k == opts.keyCode.LEFT) {//left
-                            var caretPos = pos.begin - 1;
-                            caretPos = caretPos > 0 ? caretPos : 0;
-                            caret(input, caretPos, e.shiftKey ? pos.end : caretPos);
+                    } else if (opts.insertMode == false && !e.shiftKey) {
+                        if (k == opts.keyCode.RIGHT) {
+                            setTimeout(function () {
+                                var caretPos = caret(input);
+                                caret(input, caretPos.begin);
+                            }, 0);
+                        } else if (k == opts.keyCode.LEFT) {
+                            setTimeout(function () {
+                                var caretPos = caret(input);
+                                caret(input, caretPos.begin - 1);
+                            }, 0);
                         }
                     }
 
@@ -1238,7 +1241,7 @@
                     ignorable = $.inArray(k, opts.ignorables) != -1;
                 }
 
-                function keypressEvent(e, checkval, k, writeOut, strict) {
+                function keypressEvent(e, checkval, k, writeOut, strict, ndx) {
                     //Safari 5.1.x - modal dialog fires keypress twice workaround
                     if (k == undefined && skipKeyPressEvent) return false;
                     skipKeyPressEvent = true;
@@ -1261,7 +1264,7 @@
                         if (k) {
                             var pos, results, result;
                             if (checkval) {
-                                var pcaret = getActiveMaskSet()["p"];
+                                var pcaret = strict ? ndx : getActiveMaskSet()["p"];
                                 pos = { begin: pcaret, end: pcaret };
                             } else {
                                 pos = caret(input);
@@ -1323,7 +1326,7 @@
                                                 } else getActiveMaskSet()["writeOutBuffer"] = false;
                                             } else setBufferElement(buffer, p, c, true, isRTL);
                                         }
-                                        getActiveMaskSet()["p"] = opts.numericInput ? p + 1 : p;
+                                        getActiveMaskSet()["p"] = p;
                                     }
                                 });
 
@@ -1339,7 +1342,7 @@
                                         setTimeout(function () { opts.onKeyValidation.call(this, result["result"], opts); }, 0);
                                         if (getActiveMaskSet()["writeOutBuffer"] && result["result"] !== false) {
                                             var buffer = getActiveBuffer();
-                                            writeBuffer(input, buffer, getActiveMaskSet()["p"]);
+                                            writeBuffer(input, buffer, opts.numericInput ? seekNext(getActiveMaskSet()["p"]) : getActiveMaskSet()["p"]);
                                             setTimeout(function () { //timeout needed for IE
                                                 if (isComplete(buffer))
                                                     $input.trigger("complete");
