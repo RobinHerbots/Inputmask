@@ -223,6 +223,8 @@ $(document).ready(function(){
 });
 ```
 
+#### skipRadixDance
+
 If you define a radixPoint the caret will always jump to the integer part, until you type the radixpoint.  
 
 ```javascript
@@ -230,6 +232,8 @@ $(document).ready(function(){
     $(selector).inputmask('€ 999.999.999,99', { numericInput: true, radixPoint: "," });
 });
 ```
+
+This behavior can be skipped by setting the skipRadixDance to true.
 
 #### align the numerics to the right
 
@@ -541,8 +545,10 @@ $(document).ready(function(){
 });
 ```
 
+RadixDance
+
 With the decimal mask the caret will always jump to the integer part, until you type the radixpoint.  
-There is autocompletion on tab with decimal numbers.
+There is autocompletion on tab with decimal numbers.  You can disable this behaviour by setting the skipRadixDance to true.
 
 Define the radixpoint
 
