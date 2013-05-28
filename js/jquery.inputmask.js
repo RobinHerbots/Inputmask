@@ -1316,7 +1316,7 @@
                                                         firstUnmaskedPosition = firstUnmaskedPosition == maskL ? (maskL + 1) : seekNext(firstUnmaskedPosition);
                                                     }
                                                 }
-                                                if (firstUnmaskedPosition <= p && (getActiveMaskSet()['greedy'] || buffer.length < maskL)) {
+                                                if (firstUnmaskedPosition <= p && (getActiveMaskSet()['greedy'] || (buffer.length < maskL || getBufferElement(buffer, p) == getPlaceHolder(p)))) {
                                                     if (buffer[firstMaskPos] != getPlaceHolder(firstMaskPos) && buffer.length < maskL) {
                                                         var offset = prepareBuffer(buffer, -1, isRTL);
                                                         if (pos.end != 0) p = p + offset;
