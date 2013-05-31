@@ -29,7 +29,7 @@
             <menu>
                 <mi><a href="index.html">Main</a></mi>
                 <mi><a href="https://github.com/RobinHerbots/jquery.inputmask/wiki">Wiki</a></mi>
-                <mi>Demo</mi>
+                <mi id="demolnk">Demo</mi>
             </menu>
         </header>
         <section>
@@ -80,6 +80,24 @@ $ git checkout gh-pages
         </footer>
     </div>
     <script src="javascripts/scale.fix.js"></script>
-
+	<script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+	<script src="javascripts/jquery.catcher.js"></script>
+	 <script language="javascript">
+		 $.extend($.catcher.defaults, {
+                "onError": function (e) {
+                    alert("There was an error on the page: \n\n" + e.message);
+                }
+         });
+        var defaultScope = new function () {
+			this.ready = function(){
+				$("#demolnk").click(function() {
+					alert('open demopage');
+				});
+			};
+		};
+		$(document).ready(function(){
+			$.catcher.wrap(defaultScope).ready();
+		});
+	</script>
 </body>
 </html>
