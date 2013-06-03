@@ -540,7 +540,7 @@ $(document).ready(function(){
 ```javascript
 $(document).ready(function(){
    $("#numeric").inputmask("decimal");
-   $("#numeric").inputmask("non-negative-decimal");
+   $("#numeric").inputmask("decimal", { allowMinus: false });
    $("#numeric").inputmask("integer");
 });
 ```
@@ -568,6 +568,14 @@ Grouping support through:  autoGroup, groupSeparator, groupSize
 ```javascript
 $(document).ready(function(){
    $("#numeric").inputmask("decimal", { radixPoint: ",", autoGroup: true, groupSeparator: ".", groupSize: 3 });
+});
+```
+
+Allow minus and/or plus symbol
+```javascript
+$(document).ready(function(){
+   $("#numeric").inputmask("decimal", { allowMinus: false });
+   $("#numeric").inputmask("integer", { allowMinus: false, allowPlus: true });
 });
 ```
 
