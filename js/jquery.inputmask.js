@@ -611,19 +611,19 @@
                     ms["p"] = isRTL ? getMaskLength() : 0;
                 });
                 if (strict !== true) activeMasksetIndex = 0;
-                caret(input, getActiveMaskSet()["p"]);
+                //caret(input, getActiveMaskSet()["p"]);
 
                 if (isRTL && !opts.numericInput)
                     inputValue = inputValue.reverse();
 
                 var ml = getMaskLength();
                 $.each(inputValue, function (ndx, charCode) {
-                    if (!strict || isMask(isRTL ? (opts.numericInput ? seekPrevious(ml) : ml - ndx - 1) : ndx)) {
+                    if (strict !== true || isMask(isRTL ? (opts.numericInput ? seekPrevious(ml) : ml - ndx - 1) : ndx)) {
                         var index = isRTL ? (opts.numericInput ? ml : ml - ndx - 1) : ndx;
                         $(input).trigger("keypress", [true, charCode.charCodeAt(0), writeOut, strict, index]);
                     }
                 });
-                if (strict)
+                if (strict === true)
                     getActiveMaskSet()["lastValidPosition"] = isRTL ? seekNext(getActiveMaskSet()["p"]) : seekPrevious(getActiveMaskSet()["p"]);
             }
 
@@ -1348,7 +1348,7 @@
                                         setTimeout(function () { opts.onKeyValidation.call(this, result["result"], opts); }, 0);
                                         if (getActiveMaskSet()["writeOutBuffer"] && result["result"] !== false) {
                                             var buffer = getActiveBuffer();
-                                            writeBuffer(input, buffer, opts.numericInput ? seekNext(getActiveMaskSet()["p"]) : getActiveMaskSet()["p"]);
+                                            writeBuffer(input, buffer, checkval ? undefined : (opts.numericInput ? seekNext(getActiveMaskSet()["p"]) : getActiveMaskSet()["p"]));
                                             setTimeout(function () { //timeout needed for IE
                                                 if (isComplete(buffer))
                                                     $input.trigger("complete");
@@ -1401,7 +1401,7 @@
                                         setTimeout(function () { opts.onKeyValidation.call(this, result["result"], opts); }, 0);
                                         if (getActiveMaskSet()["writeOutBuffer"] && result["result"] !== false) {
                                             var p = getActiveMaskSet()["p"], buffer = getActiveBuffer();
-                                            writeBuffer(input, buffer, p);
+                                            writeBuffer(input, buffer, checkval ? undefined : p);
 
                                             setTimeout(function () { //timeout needed for IE
                                                 if (isComplete(buffer))
@@ -1413,7 +1413,7 @@
                                     }
                                 }
                             }
-                            if (android) {
+                            if (android && checkval !== true) {
                                 caret(input, caretSavePoint.begin, caretSavePoint.end);
                             }
                             if (opts.showTooltip) { //update tooltip
