@@ -794,13 +794,10 @@
                 $input.removeClass('focus.inputmask');
                 //bind events
                 $input.bind("mouseenter.inputmask", function () {
-                    var $input = $(this), input = this, buffer = getActiveBuffer();
+                    var $input = $(this), input = this;
                     if (!$input.hasClass('focus.inputmask') && opts.showMaskOnHover) {
-                        var nptL = input._valueGet().length;
-                        if (nptL < buffer.length) {
-                            if (nptL == 0)
-                                buffer = getActiveBufferTemplate().slice();
-                            writeBuffer(input, buffer);
+                        if (input._valueGet() != getActiveBuffer().join('')) {
+                            writeBuffer(input, getActiveBuffer());
                         }
                     }
                 }).bind("blur.inputmask", function () {
@@ -836,13 +833,8 @@
                 }).bind("focus.inputmask", function () {
                     var $input = $(this), input = this, nptValue = input._valueGet();
                     if (opts.showMaskOnFocus && !$input.hasClass('focus.inputmask') && (!opts.showMaskOnHover || (opts.showMaskOnHover && nptValue == ''))) {
-                        var nptL = nptValue.length;
-                        if (nptL < getActiveBuffer().length) {
-                            if (nptL == 0) {
-                                getActiveMaskSet()["buffer"] = getActiveBufferTemplate().slice();
-                                getActiveMaskSet()["p"] = isRTL ? seekPrevious(getMaskLength()) : seekNext(-1);
-                            }
-                            caret(input, getActiveMaskSet()["p"]);
+                        if (input._valueGet() != getActiveBuffer().join('')) {
+                            writeBuffer(input, getActiveBuffer(), getActiveMaskSet()["p"]);
                         }
                     }
                     $input.addClass('focus.inputmask');

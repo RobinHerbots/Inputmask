@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.2.24
+* Version: 2.2.25
 */
 
 (function ($) {
@@ -794,13 +794,10 @@
                 $input.removeClass('focus.inputmask');
                 //bind events
                 $input.bind("mouseenter.inputmask", function () {
-                    var $input = $(this), input = this, buffer = getActiveBuffer();
+                    var $input = $(this), input = this;
                     if (!$input.hasClass('focus.inputmask') && opts.showMaskOnHover) {
-                        var nptL = input._valueGet().length;
-                        if (nptL < buffer.length) {
-                            if (nptL == 0)
-                                buffer = getActiveBufferTemplate().slice();
-                            writeBuffer(input, buffer);
+                        if (input._valueGet() != getActiveBuffer().join('')) {
+                            writeBuffer(input, getActiveBuffer());
                         }
                     }
                 }).bind("blur.inputmask", function () {
@@ -836,13 +833,8 @@
                 }).bind("focus.inputmask", function () {
                     var $input = $(this), input = this, nptValue = input._valueGet();
                     if (opts.showMaskOnFocus && !$input.hasClass('focus.inputmask') && (!opts.showMaskOnHover || (opts.showMaskOnHover && nptValue == ''))) {
-                        var nptL = nptValue.length;
-                        if (nptL < getActiveBuffer().length) {
-                            if (nptL == 0) {
-                                getActiveMaskSet()["buffer"] = getActiveBufferTemplate().slice();
-                                getActiveMaskSet()["p"] = isRTL ? seekPrevious(getMaskLength()) : seekNext(-1);
-                            }
-                            caret(input, getActiveMaskSet()["p"]);
+                        if (input._valueGet() != getActiveBuffer().join('')) {
+                            writeBuffer(input, getActiveBuffer(), getActiveMaskSet()["p"]);
                         }
                     }
                     $input.addClass('focus.inputmask');
@@ -1445,7 +1437,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.24
+Version: 2.2.25
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1542,7 +1534,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.24
+Version: 2.2.25
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2035,7 +2027,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.24
+Version: 2.2.25
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2210,7 +2202,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.24
+Version: 2.2.25
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
