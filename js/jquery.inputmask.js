@@ -819,12 +819,12 @@
                     if (!isComplete(buffer)) {
                         $input.trigger("incomplete");
                         if (opts.clearIncomplete) {
-                         	$.each(masksets, function (ndx, ms) {
-                    			ms["buffer"] = ms["_buffer"].slice();
-                    			ms["lastValidPosition"] = undefined;
-                    			ms["p"] = isRTL ? getMaskLength() : 0;
-                			});
-                			activeMasksetIndex = 0;
+                            $.each(masksets, function (ndx, ms) {
+                                ms["buffer"] = ms["_buffer"].slice();
+                                ms["lastValidPosition"] = undefined;
+                                ms["p"] = isRTL ? getMaskLength() : 0;
+                            });
+                            activeMasksetIndex = 0;
                             if (opts.clearMaskOnLostFocus)
                                 input._valueSet('');
                             else {
