@@ -498,8 +498,14 @@
                     }
                 });
                 activeMasksetIndex = highestValid["activeMasksetIndex"];
-                if (currentMasksetIndex != activeMasksetIndex)
+                if (currentMasksetIndex != activeMasksetIndex) {
+                    if (isRTL) {
+                        clearBuffer(getActiveBuffer(), 0, seekPrevious(highestValid["lastValidPosition"]));
+                    } else {
+                        clearBuffer(getActiveBuffer(), seekNext(highestValid["lastValidPosition"]), getMaskLength());
+                    }
                     getActiveMaskSet()["writeOutBuffer"] = true;
+                }
             }
 
             function isMask(pos) {
@@ -1025,7 +1031,7 @@
                 //shift chars to left from start to end and put c at end position if defined
                 function shiftL(start, end, c) {
                     var buffer = getActiveBuffer();
-                    while (!isMask(start) && start - 1 >= 0) start--;
+                    while (!isMask(start) && start - 1 >= 0) start--; //jumping over nonmask position
                     for (var i = start; i < end && i < getMaskLength() ; i++) {
                         if (isMask(i)) {
                             setReTargetPlaceHolder(buffer, i);
