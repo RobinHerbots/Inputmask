@@ -895,7 +895,7 @@
                 }).bind('setvalue.inputmask', function () {
                     var input = this;
                     getActiveMaskSet()["undoBuffer"] = input._valueGet();
-                    checkVal(input, true, true);
+                    checkVal(input, true);
                     if (input._valueGet() == getActiveBufferTemplate().join(''))
                         input._valueSet('');
                 }).bind('complete.inputmask', opts.oncomplete)

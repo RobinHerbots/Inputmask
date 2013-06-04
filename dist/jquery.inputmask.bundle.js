@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.2.26
+* Version: 2.2.27
 */
 
 (function ($) {
@@ -895,7 +895,7 @@
                 }).bind('setvalue.inputmask', function () {
                     var input = this;
                     getActiveMaskSet()["undoBuffer"] = input._valueGet();
-                    checkVal(input, true, true);
+                    checkVal(input, true);
                     if (input._valueGet() == getActiveBufferTemplate().join(''))
                         input._valueSet('');
                 }).bind('complete.inputmask', opts.oncomplete)
@@ -1437,7 +1437,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.26
+Version: 2.2.27
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1534,7 +1534,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.26
+Version: 2.2.27
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2027,7 +2027,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.26
+Version: 2.2.27
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2186,7 +2186,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.26
+Version: 2.2.27
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
