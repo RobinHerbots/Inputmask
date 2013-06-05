@@ -421,6 +421,7 @@
             }
 
             function isValid(pos, c, strict, isRTL) { //strict true ~ no correction or autofill
+                strict = strict === true; //always set a value to strict to prevent possible strange behavior in the extensions 
                 function _isValid(position, activeMaskset) {
                     var testPos = determineTestPosition(position), loopend = c ? 1 : 0, chrs = '', buffer = activeMaskset["buffer"];
                     for (var i = activeMaskset['tests'][testPos].cardinality; i > loopend; i--) {
@@ -909,7 +910,7 @@
                 .bind('cleared.inputmask', opts.oncleared);
 
                 //apply mask
-                checkVal(el, true);
+                checkVal(el, true, false);
                 // Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
                 var activeElement;
                 try {
@@ -1297,7 +1298,7 @@
 
                             if (isRTL) {
                                 var p = seekPrevious(pos.end);
-                                results = isValid(p == getMaskLength() || getBufferElement(getActiveBuffer(), p) == opts.radixPoint ? seekPrevious(p) : p, c, strict, isRTL);
+                                results = isValid(p, c, strict, isRTL);
                                 if (strict === true) results = [{ "activeMasksetIndex": activeMasksetIndex, "result": results }];
                                 $.each(results, function (index, result) {
                                     activeMasksetIndex = result["activeMasksetIndex"];

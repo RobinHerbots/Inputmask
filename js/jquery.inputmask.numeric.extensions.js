@@ -37,9 +37,12 @@ Optional extensions on the jquery.inputmask base
                 return calculatedLength + groupOffset;
             },
             postFormat: function (buffer, pos, reformatOnly, opts) {
-                if (opts.groupSeparator == "") return pos - 1;
-                var cbuf = buffer.slice();
-                if (!reformatOnly) cbuf.splice(pos, 0, "?"); //set position indicator
+                if (opts.groupSeparator == "") return pos;
+                var cbuf = buffer.slice(),
+                    radixPos = $.inArray(opts.radixPoint, buffer);
+                if (!reformatOnly) {
+                    cbuf.splice(pos == 0 || pos <= radixPos || opts.skipRadixDance ? pos + 1 : pos, 0, "?"); //set position indicator
+                }
                 var bufVal = cbuf.join('');
                 if (opts.autoGroup || (reformatOnly && bufVal.indexOf(opts.groupSeparator) != -1)) {
                     var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
@@ -58,10 +61,10 @@ Optional extensions on the jquery.inputmask base
                 for (var i = 0, l = bufVal.length; i < l; i++) {
                     buffer[i] = bufVal.charAt(i);
                 }
-                var newPos = reformatOnly ? pos : $.inArray("?", buffer);
+                var newPos = $.inArray("?", buffer);
                 if (!reformatOnly) buffer.splice(newPos, 1);
 
-                return newPos;
+                return reformatOnly ? pos : newPos <= radixPos || (opts.skipRadixDance && newPos != 0) ? newPos - 1 : newPos;
             },
             regex: {
                 number: function (groupSeparator, groupSize, radixPoint, digits, allowPlus, allowMinus) {
@@ -133,7 +136,7 @@ Optional extensions on the jquery.inputmask base
                         }
 
                         if (isValid != false && !strict && chrs != opts.radixPoint) {
-                            var newPos = opts.postFormat(buffer, pos + 1, false, opts);
+                            var newPos = opts.postFormat(buffer, pos, false, opts);
                             return { "pos": newPos };
                         }
                         return isValid;
