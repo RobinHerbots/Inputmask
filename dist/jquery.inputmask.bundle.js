@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.2.32
+* Version: 2.2.33
 */
 
 (function ($) {
@@ -102,6 +102,7 @@
                             maskScope($.extend(true, {}, masksets), 0).mask(this);
                         });
                     case "unmaskedvalue":
+                        var $input = $(this), input = this;
                         masksets = $input.data('inputmask')['masksets'];
                         activeMasksetIndex = $input.data('inputmask')['activeMasksetIndex'];
                         opts = $input.data('inputmask')['opts'];
@@ -678,8 +679,10 @@
                 }
 
                 //functionality fn
-
                 this.unmaskedvalue = function ($input, skipDatepickerCheck) {
+                    return unmaskedvalue($input, skipDatepickerCheck);
+                };
+                function unmaskedvalue($input, skipDatepickerCheck) {
                     var input = $input[0];
                     if (getActiveTests() && (skipDatepickerCheck === true || !$input.hasClass('hasDatepicker'))) {
                         checkVal(input, false, true);
@@ -689,7 +692,7 @@
                     } else {
                         return input._valueGet();
                     }
-                };
+                }
 
                 var caretSavePoint;
 
@@ -733,11 +736,12 @@
                         }
                         return { "begin": begin, "end": end };
                     }
-                }
-
-                ;
+                };
 
                 this.isComplete = function (buffer) {
+                    return isComplete(buffer);
+                };
+                function isComplete(buffer) {
                     var complete = false, highestValidPosition = 0, currentActiveMasksetIndex = activeMasksetIndex;
                     $.each(masksets, function (ndx, ms) {
                         activeMasksetIndex = ndx;
@@ -759,7 +763,7 @@
                     });
                     activeMasksetIndex = currentActiveMasksetIndex; //reset activeMaskset
                     return complete;
-                };
+                }
                 this.mask = function (el) {
                     var $input = $(el);
                     if (!$input.is(":input")) return;
@@ -1463,7 +1467,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.32
+Version: 2.2.33
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1560,7 +1564,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.32
+Version: 2.2.33
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2053,7 +2057,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.32
+Version: 2.2.33
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2215,7 +2219,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.32
+Version: 2.2.33
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
