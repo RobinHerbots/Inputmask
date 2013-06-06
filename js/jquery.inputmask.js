@@ -627,7 +627,6 @@
                 $.each(inputValue, function (ndx, charCode) {
                     if (strict !== true || isMask(isRTL ? (opts.numericInput ? seekPrevious(ml) : ml - ndx - 1) : ndx)) {
                         var index = isRTL ? (opts.numericInput ? ml : ml - ndx - 1) : ndx;
-                        console.log("charcaode " + charCode.charCodeAt(0) + " writeOut " + writeOut + " strict " + strict + " index " + index);
                         $(input).trigger("keypress", [true, charCode.charCodeAt(0), writeOut, strict, index]);
                     }
                 });
@@ -1299,7 +1298,6 @@
 
                             if (isRTL) {
                                 var p = seekPrevious(pos.end);
-                                console.log("isrtl " + c + " pos " + p + " buffer " + JSON.stringify(getActiveBuffer()));
                                 results = isValid(p, c, strict, isRTL);
                                 if (strict === true) results = [{ "activeMasksetIndex": activeMasksetIndex, "result": results }];
                                 $.each(results, function (index, result) {
@@ -1334,7 +1332,6 @@
                                             } else setBufferElement(buffer, p, c, true, isRTL);
                                         }
                                         getActiveMaskSet()["p"] = p;
-                                        console.log("newpos " + p);
                                     }
                                 });
 
