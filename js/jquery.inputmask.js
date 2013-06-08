@@ -637,8 +637,9 @@
 
                     var ml = getMaskLength();
                     $.each(inputValue, function (ndx, charCode) {
-                        if (strict !== true || isMask(isRTL ? (opts.numericInput ? seekPrevious(ml) : ml - ndx - 1) : ndx)) {
-                            var index = isRTL ? (opts.numericInput ? ml : ml - ndx - 1) : ndx;
+                        var index = isRTL ? (opts.numericInput ? ml : ml - ndx - 1) : ndx;
+                        if (isMask(isRTL ? (opts.numericInput ? seekPrevious(ml) : ml - ndx - 1) : ndx)
+                        || (strict !== true && charCode != getBufferElement(getActiveBufferTemplate(), index, true))) {
                             $(input).trigger("keypress", [true, charCode.charCodeAt(0), writeOut, strict, index]);
                         }
                     });
