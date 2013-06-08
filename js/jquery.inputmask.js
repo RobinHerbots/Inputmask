@@ -1299,7 +1299,7 @@
                                 }
 
                                 //clear possible selection
-                                var initialIndex = activeMasksetIndex;
+                                var initialIndex = activeMasksetIndex, selectionCleared = false;
                                 $.each(masksets, function (ndx, lmnt) {
                                     activeMasksetIndex = ndx;
                                     getActiveMaskSet()["undoBuffer"] = getActiveBuffer().join('');
@@ -1315,12 +1315,13 @@
                                                     isRTL ? shiftR(0, posend - 1, getPlaceHolder(posend), true) : shiftL(pos.begin, ml);
                                             }
                                         }
+                                        selectionCleared = true;
                                     }
                                 });
                                 activeMasksetIndex = initialIndex; //restore index
 
                                 if (isRTL) {
-                                    var p = seekPrevious(pos.end);
+                                    var p = seekPrevious(selectionCleared ? pos.begin : pos.end);
                                     results = isValid(p, c, strict, isRTL);
                                     if (strict === true) results = [{ "activeMasksetIndex": activeMasksetIndex, "result": results }];
                                     $.each(results, function (index, result) {
