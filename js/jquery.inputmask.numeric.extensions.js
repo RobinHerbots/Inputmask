@@ -103,7 +103,7 @@ Optional extensions on the jquery.inputmask base
 
                         var cbuf = strict ? buffer.slice(0, pos) : buffer.slice();
 
-                        cbuf.splice(pos + 1, 0, chrs);
+                        cbuf.splice(pos == 0 ? pos : pos + 1, 0, chrs);
                         var bufferStr = cbuf.join('');
                         if (opts.autoGroup && !strict) { //strip groupseparator
                             var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);

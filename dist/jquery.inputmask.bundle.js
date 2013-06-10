@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.2.35
+* Version: 2.2.36
 */
 
 (function ($) {
@@ -1280,12 +1280,6 @@
                         var k = k || e.which || e.charCode || e.keyCode,
                             c = String.fromCharCode(k);
 
-                        if (opts.numericInput && c == opts.radixPoint) {
-                            var nptStr = input._valueGet();
-                            var radixPosition = nptStr.indexOf(opts.radixPoint);
-                            caret(input, seekNext(radixPosition != -1 ? radixPosition : getMaskLength()));
-                        }
-
                         if ((e.ctrlKey || e.metaKey || ignorable) && checkval !== true) {
                             return true;
                         } else {
@@ -1348,7 +1342,7 @@
                                                     if (firstUnmaskedPosition <= p && (getActiveMaskSet()['greedy'] || (buffer.length < maskL || getBufferElement(buffer, p) == getPlaceHolder(p)))) {
                                                         if (buffer[firstMaskPos] != getPlaceHolder(firstMaskPos) && buffer.length < maskL) {
                                                             var offset = prepareBuffer(buffer, -1, isRTL);
-                                                            if (pos.end != 0) p = p + offset;
+                                                            if ((selectionCleared ? pos.begin : pos.end) != 0) p = p + offset;
                                                             maskL = buffer.length;
                                                         }
                                                         shiftL(firstUnmaskedPosition, p, c);
@@ -1447,7 +1441,7 @@
                         }
                     }
 
-                    function keyupEvent(e) { //TODO have a relook of the keyup behavior
+                    function keyupEvent(e) { 
                         var $input = $(this), input = this, k = e.keyCode, buffer = getActiveBuffer();
                         opts.onKeyUp.call(this, e, buffer, opts); //extra stuff to execute on keyup
                         if (k == opts.keyCode.TAB && $input.hasClass('focus.inputmask') && input._valueGet().length == 0 && opts.showMaskOnFocus) {
@@ -1469,7 +1463,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.35
+Version: 2.2.36
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1566,7 +1560,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.35
+Version: 2.2.36
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2059,7 +2053,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.35
+Version: 2.2.36
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2159,7 +2153,7 @@ Optional extensions on the jquery.inputmask base
 
                         var cbuf = strict ? buffer.slice(0, pos) : buffer.slice();
 
-                        cbuf.splice(pos + 1, 0, chrs);
+                        cbuf.splice(pos == 0 ? pos : pos + 1, 0, chrs);
                         var bufferStr = cbuf.join('');
                         if (opts.autoGroup && !strict) { //strip groupseparator
                             var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
@@ -2221,7 +2215,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.35
+Version: 2.2.36
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask

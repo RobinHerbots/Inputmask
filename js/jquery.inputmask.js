@@ -1280,12 +1280,6 @@
                         var k = k || e.which || e.charCode || e.keyCode,
                             c = String.fromCharCode(k);
 
-                        if (opts.numericInput && c == opts.radixPoint) {
-                            var nptStr = input._valueGet();
-                            var radixPosition = nptStr.indexOf(opts.radixPoint);
-                            caret(input, seekNext(radixPosition != -1 ? radixPosition : getMaskLength()));
-                        }
-
                         if ((e.ctrlKey || e.metaKey || ignorable) && checkval !== true) {
                             return true;
                         } else {
@@ -1348,7 +1342,7 @@
                                                     if (firstUnmaskedPosition <= p && (getActiveMaskSet()['greedy'] || (buffer.length < maskL || getBufferElement(buffer, p) == getPlaceHolder(p)))) {
                                                         if (buffer[firstMaskPos] != getPlaceHolder(firstMaskPos) && buffer.length < maskL) {
                                                             var offset = prepareBuffer(buffer, -1, isRTL);
-                                                            if (pos.end != 0) p = p + offset;
+                                                            if ((selectionCleared ? pos.begin : pos.end) != 0) p = p + offset;
                                                             maskL = buffer.length;
                                                         }
                                                         shiftL(firstUnmaskedPosition, p, c);
@@ -1447,7 +1441,7 @@
                         }
                     }
 
-                    function keyupEvent(e) { //TODO have a relook of the keyup behavior
+                    function keyupEvent(e) { 
                         var $input = $(this), input = this, k = e.keyCode, buffer = getActiveBuffer();
                         opts.onKeyUp.call(this, e, buffer, opts); //extra stuff to execute on keyup
                         if (k == opts.keyCode.TAB && $input.hasClass('focus.inputmask') && input._valueGet().length == 0 && opts.showMaskOnFocus) {

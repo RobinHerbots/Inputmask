@@ -564,6 +564,8 @@ $(document).ready(function(){
    $("#numeric").inputmask("decimal", { digits: 3 });
 });
 ```
+When TAB out of the input the digits autocomplate with 0 if the digits option is given a valid number.
+
 Grouping support through:  autoGroup, groupSeparator, groupSize
 ```javascript
 $(document).ready(function(){
