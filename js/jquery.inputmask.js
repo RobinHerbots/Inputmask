@@ -910,11 +910,12 @@
                     ).bind("keypress.inputmask", keypressEvent
                     ).bind("keyup.inputmask", keyupEvent
                     ).bind(pasteEvent + ".inputmask dragdrop.inputmask drop.inputmask", function () {
-                        var input = this, buffer = getActiveBuffer();
+                        var input = this, $input = $(input);
                         setTimeout(function () {
-                            caret(input, checkVal(input, true, false));
-                            if (isComplete(buffer))
+                            checkVal(input, true, false);
+                            if (isComplete(getActiveBuffer()))
                                 $input.trigger("complete");
+                            $input.click();    
                         }, 0);
                     }).bind('setvalue.inputmask', function () {
                         var input = this;
