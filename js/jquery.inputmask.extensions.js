@@ -76,6 +76,10 @@ Optional extensions on the jquery.inputmask base
                         }
                         return result;
                     })()
+                },
+                "r": {
+                    validator: ".",
+                    cardinality: 50
                 }
             },
             insertMode: false,
