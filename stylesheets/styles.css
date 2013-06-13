@@ -189,6 +189,14 @@ footer {
     bottom: 50px;
 }
 
+legend {
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+.borderless {
+	border-style: none;
+}
 
 .detailForm {
     margin: 0 0 0 0;
@@ -196,30 +204,26 @@ footer {
     width: auto;
 }
 
-   .detailForm > ul {
+   .detailForm > div {
         float: left;
         margin-right: 20px;
     }
 
-        .detailForm > ul > li > span, .detailForm > ul > li > label {
+        .detailForm > div > span, .detailForm > div > label {
             display: inline-block;
             white-space: normal;
             word-wrap: break-word;
             padding-right: 5px;
         }
-
-		.detailForm > ul > li  {
-			list-style: none;
-		}
 		
-        .detailForm > ul > li > * {
+        .detailForm > div > * {
             vertical-align: middle;
         }
 
-        .detailform > ul > li > input[type="text"] {
+        .detailform > div > input[type="text"] {
             width: 200px;
         }
 
-        .detailForm > ul > li > label, .detailForm > ul > li > span{
+        .detailForm > div > label, .detailForm > div > span {
             width: 150px;
         }
