@@ -188,3 +188,38 @@ hr {
 footer {
     bottom: 50px;
 }
+
+
+.detailForm {
+    margin: 0 0 0 0;
+    padding: 10px;
+    width: auto;
+}
+
+   .detailForm > ul {
+        float: left;
+        margin-right: 20px;
+    }
+
+        .detailForm > ul > li > span, .detailForm > ul > li > label {
+            display: inline-block;
+            white-space: normal;
+            word-wrap: break-word;
+            padding-right: 5px;
+        }
+
+		.detailForm > ul > li  {
+			list-style: none;
+		}
+		
+        .detailForm > ul > li > * {
+            vertical-align: middle;
+        }
+
+        .detailform > ul > li > input[type="text"] {
+            width: 200px;
+        }
+
+        .detailForm > ul > li > label, .detailForm > ul > li > span{
+            width: 150px;
+        }
