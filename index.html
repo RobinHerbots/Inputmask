@@ -51,7 +51,7 @@
                 <li>multi-mask support</li>
             </ul>
 
-          <!--  <pre><code>$ cd your_repo_root/repo_name
+            <!--  <pre><code>$ cd your_repo_root/repo_name
 $ git fetch origin
 $ git checkout gh-pages
 </code></pre>
@@ -80,28 +80,61 @@ $ git checkout gh-pages
         </footer>
     </div>
     <script src="javascripts/scale.fix.js"></script>
-	<script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
-	<script src="javascripts/jquery.catcher.js"></script>
-	<script src="javascripts/jquery.inputmask.bundle.min.js"></script>
-	 <script language="javascript">
-		 $.extend($.catcher.defaults, {
-                "onError": function (e) {
-                    alert("There was an error on the page: \n\n" + e.message);
-                }
-         });
+    <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+    <script src="javascripts/jquery.catcher.js"></script>
+    <script src="javascripts/jquery.inputmask.bundle.min.js"></script>
+    <script language="javascript">
+        $.extend($.catcher.defaults, {
+            "onError": function (e) {
+                alert("There was an error on the page: \n\n" + e.message);
+            }
+        });
         var defaultScope = new function () {
-			this.ready = function(){
-				$("#demolnk").click(function() {
-					$.get('demo.html', function(data) {
-  						$('section').html(data);
-  						$(":input").inputmask();
-					});
-				});
-			};
-		};
-		$(document).ready(function(){
-			$.catcher.wrap(defaultScope).ready();
-		});
-	</script>
+            this.ready = function () {
+                $("#demolnk").click(function () {
+                    $.get('demo.html', function (data) {
+                        $('section').html(data);
+                        $(":input").inputmask({
+                            oncomplete: function () {
+                                var eventIdenticators = $(this).find(".eventIndicator > span");
+                                $.each(eventIdenticators, function (ndx, lmnt) {
+                                    var $lmnt = $(lmnt);
+                                    if ($lmnt.hasClass("complete")) {
+                                        $lmnt.addClass("fired");
+                                    } else {
+                                        $lmnt.removeClass("fired");
+                                    }
+                                });
+                            },
+                            onincomplete: function () {
+                                var eventIdenticators = $(this).find(".eventIndicator > span");
+                                $.each(eventIdenticators, function (ndx, lmnt) {
+                                    var $lmnt = $(lmnt);
+                                    if ($lmnt.hasClass("incomplete")) {
+                                        $lmnt.addClass("fired");
+                                    } else {
+                                        $lmnt.removeClass("fired");
+                                    }
+                                });
+                            }, oncleared: function () {
+                                var eventIdenticators = $(this).find(".eventIndicator > span");
+                                $.each(eventIdenticators, function (ndx, lmnt) {
+                                    var $lmnt = $(lmnt);
+                                    if ($lmnt.hasClass("cleared")) {
+                                        $lmnt.addClass("fired");
+                                    } else {
+                                        $lmnt.removeClass("fired");
+                                    }
+                                });
+                            }
+                        });
+                    });
+                });
+            };
+        };
+        $(document).ready(function () {
+            $.catcher.wrap(defaultScope).ready();
+        });
+    </script>
 </body>
 </html>

@@ -32,15 +32,15 @@ h3, h4, h5, h6 {
     color: #494949;
 }
 
-a , mi {
+a, mi {
     color: #39c;
     font-weight: 400;
     text-decoration: none;
 }
 
-mi:hover {
-	cursor: pointer;
-}
+    mi:hover {
+        cursor: pointer;
+    }
 
     a small {
         font-size: 11px;
@@ -51,7 +51,7 @@ mi:hover {
 
 .wrapper {
     max-width: 860px;
-	min-width: 270px;
+    min-width: 270px;
     margin: 0 auto;
 }
 
@@ -190,12 +190,12 @@ footer {
 }
 
 legend {
-	padding-left: 5px;
-	padding-right: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 .borderless {
-	border-style: none;
+    border-style: none;
 }
 
 .detailForm {
@@ -204,7 +204,7 @@ legend {
     width: auto;
 }
 
-   .detailForm > div {
+    .detailForm > div {
         float: left;
         margin-right: 20px;
     }
@@ -215,7 +215,7 @@ legend {
             word-wrap: break-word;
             padding-right: 5px;
         }
-		
+
         .detailForm > div > * {
             vertical-align: middle;
         }
@@ -226,4 +226,25 @@ legend {
 
         .detailForm > div > label, .detailForm > div > span {
             width: 150px;
+        }
+
+.comment {
+    margin: 0 5px 0 5px;
+    width: 300px;
+}
+
+.eventIndicator {
+    display: inline-block;
+}
+
+    .eventIndicator > span {
+        margin: 0 5px 0 5px;
+        padding: 2px 7px 2px 7px;
+        background-color: #C0C0C0;
+        color: whitesmoke;
+        border-radius: 5px;
+    }
+
+        .eventIndicator > span.fired {
+            background-color: #F58220;
         }

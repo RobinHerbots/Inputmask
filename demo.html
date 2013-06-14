@@ -1,12 +1,23 @@
+<link rel="stylesheet" href="stylesheets/styles.css">
 <fieldset class="detailForm borderless">
-<div>
-<span>Date:</span>
-<input data-inputmask="'alias': 'date'" />
-<span>dd/mm/yyyy</span>
-<br/>
-<span>Date:</span>
-<input data-inputmask="'alias': 'mm/dd/yyyy'" />
-<span>mm/dd/yyyy</span>
-<br/>
-</div>
+    <div>
+        <span>Date:</span>
+        <input data-inputmask="'alias': 'date'" />
+        <span class="comment">dd/mm/yyyy</span>
+        <div class="eventIndicator">
+            <span class="complete">Complete</span>
+            <span class="incomplete">Incomplete</span>
+            <span class="cleared">Cleared</span>
+        </div>
+        <br />
+        <span>Date:</span>
+        <input data-inputmask="'alias': 'mm/dd/yyyy'" />
+        <span class="comment">mm/dd/yyyy</span>
+        <div class="eventIndicator">
+            <span class="complete">Complete</span>
+            <span class="incomplete">Incomplete</span>
+            <span class="cleared">Cleared</span>
+        </div>
+        <br />
+    </div>
 </fieldset>
