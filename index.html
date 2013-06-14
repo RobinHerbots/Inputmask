@@ -27,7 +27,7 @@
             </ul>
 
             <menu>
-                <mi><a href="index.html">Main</a></mi>
+                <mi class="fired"><a href="index.html">Main</a></mi>
                 <mi><a href="https://github.com/RobinHerbots/jquery.inputmask/wiki">Wiki</a></mi>
                 <mi id="demolnk">Demo</mi>
             </menu>
@@ -91,8 +91,8 @@ $ git checkout gh-pages
         });
         var defaultScope = new function () {
             this.ready = function () {
-				$("#demolnk").addClass("fired");
                 $("#demolnk").click(function () {
+                	$("#demolnk").addClass("fired");
                     $.get('demo.html', function (data) {
                         $('section').html(data);
                         $(":input").inputmask(undefined,{
