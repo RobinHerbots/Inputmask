@@ -91,6 +91,7 @@ $ git checkout gh-pages
         });
         var defaultScope = new function () {
             this.ready = function () {
+				$("#demolnk").addClass("fired");
                 $("#demolnk").click(function () {
                     $.get('demo.html', function (data) {
                         $('section').html(data);
