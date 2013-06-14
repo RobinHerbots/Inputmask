@@ -94,7 +94,7 @@ $ git checkout gh-pages
                 $("#demolnk").click(function () {
                     $.get('demo.html', function (data) {
                         $('section').html(data);
-                        $(":input").inputmask({
+                        $(":input").inputmask(undefined,{
                             oncomplete: function () {
                                 var eventIdenticators = $(this).find(".eventIndicator > span");
                                 $.each(eventIdenticators, function (ndx, lmnt) {
