@@ -211,7 +211,7 @@ $.extend($.inputmask.defaults.definitions, {
 
 ```javascript
 $.extend($.inputmask.defaults, {
-    'autounmask': true
+    'autoUnmask': true
 });
 ```
 
