@@ -254,7 +254,7 @@ legend {
     }
 
         .fired {
-            background-color: #F58220;
-            color: white;
+            background-color: #F58220 !important;
+            color: white !important;
             font-weight: bold;
         }
