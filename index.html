@@ -96,7 +96,7 @@ $ git checkout gh-pages
                         $('section').html(data);
                         $(":input").inputmask(undefined,{
                             oncomplete: function () {
-                                var eventIdenticators = $(this).find(".eventIndicator > span");
+                                var eventIdenticators = $(this).siblings(".eventIndicator").first().children("span");
                                 $.each(eventIdenticators, function (ndx, lmnt) {
                                     var $lmnt = $(lmnt);
                                     if ($lmnt.hasClass("complete")) {
@@ -107,7 +107,7 @@ $ git checkout gh-pages
                                 });
                             },
                             onincomplete: function () {
-                                var eventIdenticators = $(this).find(".eventIndicator > span");
+                                var eventIdenticators = $(this).siblings(".eventIndicator").first().children("span");
                                 $.each(eventIdenticators, function (ndx, lmnt) {
                                     var $lmnt = $(lmnt);
                                     if ($lmnt.hasClass("incomplete")) {
@@ -117,7 +117,7 @@ $ git checkout gh-pages
                                     }
                                 });
                             }, oncleared: function () {
-                                var eventIdenticators = $(this).find(".eventIndicator > span");
+                                var eventIdenticators = $(this).siblings(".eventIndicator").first().children("span");
                                 $.each(eventIdenticators, function (ndx, lmnt) {
                                     var $lmnt = $(lmnt);
                                     if ($lmnt.hasClass("cleared")) {
