@@ -169,6 +169,10 @@ menu {
        padding: 2px 5px 2px 5px;
 	   font-weight: bold;
     }
+    
+    menu mi > * {
+	   font-weight: bold;
+    }
 
 section {
     padding-bottom: 50px;
