@@ -248,6 +248,6 @@ legend {
         border-radius: 5px;
     }
 
-        .eventIndicator > span.fired {
+        .fired {
             background-color: #F58220;
         }
