@@ -50,7 +50,7 @@ a, mi {
     }
 
 .wrapper {
-    max-width: 860px;
+    max-width: 960px;
     min-width: 270px;
     margin: 0 auto;
 }
@@ -230,7 +230,10 @@ legend {
 
 .comment {
     margin: 0 5px 0 5px;
-    min-width: 300px;
+	width: auto;
+}
+.comment > * {
+	white-space: nowrap;
 }
 
 .eventIndicator {
