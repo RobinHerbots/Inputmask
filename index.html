@@ -128,6 +128,18 @@ $ git checkout gh-pages
                                         $lmnt.removeClass("fired");
                                     }
                                 });
+                            }, onKeyValidation: function (result, opts) {
+                                var eventIdenticators = $(this).next().next(".eventIndicator").children("span");
+                                $.each(eventIdenticators, function (ndx, lmnt) {
+                                    var $lmnt = $(lmnt);
+                                    if ($lmnt.hasClass("keyvalidation")) {
+                                    	if(result !== false){
+                                        	$lmnt.addClass("fired");
+                                    	} else {
+                                        	$lmnt.removeClass("fired");
+                                    	}
+                                    }
+                                });
                             }
                         });
                     });
