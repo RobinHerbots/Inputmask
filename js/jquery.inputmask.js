@@ -455,7 +455,7 @@
                         var maskPos = pos;
                         if (currentActiveMasksetIndex != activeMasksetIndex && !isMask(pos)) {
                             if (c == activeMaskset['_buffer'][maskPos] || c == opts.skipOptionalPartCharacter) { //match non-mask item
-                                results.push({ "activeMasksetIndex": index, "result": { "refresh": true } }); //new command hack only rewrite buffer
+                                results.push({ "activeMasksetIndex": index, "result": { "refresh": true, c: activeMaskset['_buffer'][maskPos] } }); //new command hack only rewrite buffer
                                 activeMaskset['lastValidPosition'] = maskPos;
                                 return false;
                             } else activeMaskset['lastValidPosition'] = isRTL ? getMaskLength() + 1 : -1; //mark mask as validated and invalid
@@ -917,7 +917,7 @@
                             checkVal(input, true, false);
                             if (isComplete(getActiveBuffer()))
                                 $input.trigger("complete");
-                            $input.click();    
+                            $input.click();
                         }, 0);
                     }).bind('setvalue.inputmask', function () {
                         var input = this;
@@ -1444,7 +1444,7 @@
                         }
                     }
 
-                    function keyupEvent(e) { 
+                    function keyupEvent(e) {
                         var $input = $(this), input = this, k = e.keyCode, buffer = getActiveBuffer();
                         opts.onKeyUp.call(this, e, buffer, opts); //extra stuff to execute on keyup
                         if (k == opts.keyCode.TAB && $input.hasClass('focus.inputmask') && input._valueGet().length == 0 && opts.showMaskOnFocus) {
