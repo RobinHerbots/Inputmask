@@ -1,6 +1,6 @@
 {
     "name": "jquery.inputmask",
-    "version": "2.2.41",
+    "version": "2.2.42",
     "main": "./js/jquery.inputmask.js",
     "dependencies": {
         "jquery": ">=1.5"

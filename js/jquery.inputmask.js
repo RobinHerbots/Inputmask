@@ -1365,7 +1365,8 @@
                                             }
                                         });
                                         if (result != undefined) {
-                                            setTimeout(function () { opts.onKeyValidation.call(this, result["result"], opts); }, 0);
+                                        	var self = this;
+                                            setTimeout(function () { opts.onKeyValidation.call(self, result["result"], opts); }, 0);
                                             if (getActiveMaskSet()["writeOutBuffer"] && result["result"] !== false) {
                                                 var buffer = getActiveBuffer();
                                                 writeBuffer(input, buffer, checkval ? undefined : (opts.numericInput ? seekNext(getActiveMaskSet()["p"]) : getActiveMaskSet()["p"]));
@@ -1418,7 +1419,8 @@
                                             }
                                         });
                                         if (result != undefined) {
-                                            setTimeout(function () { opts.onKeyValidation.call(this, result["result"], opts); }, 0);
+                                        	var self = this;
+                                            setTimeout(function () { opts.onKeyValidation.call(self, result["result"], opts); }, 0);
                                             if (getActiveMaskSet()["writeOutBuffer"] && result["result"] !== false) {
                                                 var p = getActiveMaskSet()["p"], buffer = getActiveBuffer();
                                                 writeBuffer(input, buffer, checkval ? undefined : p);
