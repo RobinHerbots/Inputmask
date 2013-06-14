@@ -191,9 +191,10 @@
                     if (attrOptions && attrOptions != "") {
                         try {
                             attrOptions = attrOptions.replace(new RegExp("'", "g"), '"');
-                            var options = $.parseJSON("{" + attrOptions + "}");
+                            var dataoptions = $.parseJSON("{" + attrOptions + "}");
                             opts = $.extend(true, {}, $.inputmask.defaults, options);
-                            resolveAlias(opts.alias, options);
+                            $.extend(true, opts, dataoptions);
+                            resolveAlias(opts.alias, dataoptions);
                             opts.alias = undefined;
                             $(this).inputmask(opts);
                         } catch (ex) { } //need a more relax parseJSON
