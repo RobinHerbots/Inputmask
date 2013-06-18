@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.2.42
+* Version: 2.2.43
 */
 
 (function ($) {
@@ -1468,7 +1468,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.42
+Version: 2.2.43
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1569,7 +1569,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.42
+Version: 2.2.43
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2062,7 +2062,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.42
+Version: 2.2.43
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2162,7 +2162,7 @@ Optional extensions on the jquery.inputmask base
 
                         var cbuf = strict ? buffer.slice(0, pos) : buffer.slice();
 
-                        cbuf.splice(pos == 0 ? pos : pos + 1, 0, chrs);
+                        cbuf.splice((pos == 0 && buffer.length == 0) ? pos : pos + 1, 0, chrs);
                         var bufferStr = cbuf.join('');
                         if (opts.autoGroup && !strict) { //strip groupseparator
                             var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
@@ -2224,7 +2224,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.42
+Version: 2.2.43
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
