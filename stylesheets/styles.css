@@ -166,7 +166,12 @@ menu {
 }
 
     menu mi {
-        padding: 5px;
+       padding: 2px 5px 2px 5px;
+	   font-weight: bold;
+    }
+    
+    menu mi > * {
+	   font-weight: bold;
     }
 
 section {
@@ -248,6 +253,8 @@ legend {
         border-radius: 5px;
     }
 
-        .eventIndicator > span.fired {
-            background-color: #F58220;
+        .fired {
+            background-color: #F58220 !important;
+            color: white !important;
+            font-weight: bold !important;
         }

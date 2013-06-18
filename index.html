@@ -27,7 +27,7 @@
             </ul>
 
             <menu>
-                <mi><a href="index.html">Main</a></mi>
+                <mi id="main" class="fired"><a href="index.html">Main</a></mi>
                 <mi><a href="https://github.com/RobinHerbots/jquery.inputmask/wiki">Wiki</a></mi>
                 <mi id="demolnk">Demo</mi>
             </menu>
@@ -91,8 +91,9 @@ $ git checkout gh-pages
         });
         var defaultScope = new function () {
             this.ready = function () {
-				$("#demolnk").addClass("fired");
                 $("#demolnk").click(function () {
+                 	$("#main").removeClass("fired");
+                	$("#demolnk").addClass("fired");
                     $.get('demo.html', function (data) {
                         $('section').html(data);
                         $(":input").inputmask(undefined,{
@@ -125,6 +126,18 @@ $ git checkout gh-pages
                                         $lmnt.addClass("fired");
                                     } else {
                                         $lmnt.removeClass("fired");
+                                    }
+                                });
+                            }, onKeyValidation: function (result, opts) {
+                                var eventIdenticators = $(this).next().next(".eventIndicator").children("span");
+                                $.each(eventIdenticators, function (ndx, lmnt) {
+                                    var $lmnt = $(lmnt);
+                                    if ($lmnt.hasClass("keyvalidation")) {
+                                    	if(result !== false){
+                                        	$lmnt.addClass("fired");
+                                    	} else {
+                                        	$lmnt.removeClass("fired");
+                                    	}
                                     }
                                 });
                             }
