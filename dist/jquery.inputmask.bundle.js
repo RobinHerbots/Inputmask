@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.2.46
+* Version: 2.2.47
 */
 
 (function ($) {
@@ -1283,7 +1283,7 @@
                         var k = k || e.which || e.charCode || e.keyCode,
                             c = String.fromCharCode(k);
 
-                        if (opts.numericInput && c == opts.radixPoint) {
+                        if (opts.numericInput && c == opts.radixPoint && checkval !== true) {
                             var nptStr = input._valueGet();
                             var radixPosition = nptStr.indexOf(opts.radixPoint);
                             caret(input, seekNext(radixPosition != -1 ? radixPosition : getMaskLength()));
@@ -1474,7 +1474,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.46
+Version: 2.2.47
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1575,7 +1575,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.46
+Version: 2.2.47
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2068,7 +2068,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.46
+Version: 2.2.47
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2161,7 +2161,7 @@ Optional extensions on the jquery.inputmask base
                 '~': { //real number
                     validator: function (chrs, buffer, pos, strict, opts) {
                         if (chrs == "") return false;
-                        if (pos <= 1 && buffer[0] === '0' && new RegExp("[\\d-]").test(chrs)) { //handle first char
+                        if (!strict && pos <= 1 && buffer[0] === '0' && new RegExp("[\\d-]").test(chrs)) { //handle first char
                             buffer[0] = "";
                             return { "pos": 0 };
                         }
@@ -2230,7 +2230,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.46
+Version: 2.2.47
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask

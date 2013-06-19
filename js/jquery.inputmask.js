@@ -1283,7 +1283,7 @@
                         var k = k || e.which || e.charCode || e.keyCode,
                             c = String.fromCharCode(k);
 
-                        if (opts.numericInput && c == opts.radixPoint) {
+                        if (opts.numericInput && c == opts.radixPoint && checkval !== true) {
                             var nptStr = input._valueGet();
                             var radixPosition = nptStr.indexOf(opts.radixPoint);
                             caret(input, seekNext(radixPosition != -1 ? radixPosition : getMaskLength()));
