@@ -104,22 +104,22 @@
                         });
                     case "unmaskedvalue":
                         var $input = $(this), input = this;
-                        masksets = $input.data('inputmask')['masksets'];
-                        activeMasksetIndex = $input.data('inputmask')['activeMasksetIndex'];
-                        opts = $input.data('inputmask')['opts'];
+                        masksets = $input.data('_inputmask')['masksets'];
+                        activeMasksetIndex = $input.data('_inputmask')['activeMasksetIndex'];
+                        opts = $input.data('_inputmask')['opts'];
                         return maskScope(masksets, activeMasksetIndex).unmaskedvalue(this);
                     case "remove":
                         return this.each(function () {
                             var $input = $(this), input = this;
                             setTimeout(function () {
-                                if ($input.data('inputmask')) {
-                                    masksets = $input.data('inputmask')['masksets'];
-                                    activeMasksetIndex = $input.data('inputmask')['activeMasksetIndex'];
-                                    opts = $input.data('inputmask')['opts'];
+                                if ($input.data('_inputmask')) {
+                                    masksets = $input.data('_inputmask')['masksets'];
+                                    activeMasksetIndex = $input.data('_inputmask')['activeMasksetIndex'];
+                                    opts = $input.data('_inputmask')['opts'];
                                     //writeout the unmaskedvalue
                                     input._valueSet(maskScope(masksets, activeMasksetIndex).unmaskedvalue($input, true));
                                     //clear data
-                                    $input.removeData('inputmask');
+                                    $input.removedata('_inputmask');
                                     //unbind all events
                                     $input.unbind(".inputmask");
                                     $input.removeClass('focus.inputmask');
@@ -147,18 +147,18 @@
                         });
                         break;
                     case "getemptymask": //return the default (empty) mask value, usefull for setting the default value in validation
-                        if (this.data('inputmask')) {
-                            masksets = this.data('inputmask')['masksets'];
-                            activeMasksetIndex = this.data('inputmask')['activeMasksetIndex'];
+                        if (this.data('_inputmask')) {
+                            masksets = this.data('_inputmask')['masksets'];
+                            activeMasksetIndex = this.data('_inputmask')['activeMasksetIndex'];
                             return masksets[activeMasksetIndex]['_buffer'].join('');
                         }
                         else return "";
                     case "hasMaskedValue": //check wheter the returned value is masked or not; currently only works reliable when using jquery.val fn to retrieve the value 
-                        return this.data('inputmask') ? !this.data('inputmask')['opts'].autoUnmask : false;
+                        return this.data('_inputmask') ? !this.data('_inputmask')['opts'].autoUnmask : false;
                     case "isComplete":
-                        masksets = this.data('inputmask')['masksets'];
-                        activeMasksetIndex = this.data('inputmask')['activeMasksetIndex'];
-                        opts = this.data('inputmask')['opts'];
+                        masksets = this.data('_inputmask')['masksets'];
+                        activeMasksetIndex = this.data('_inputmask')['activeMasksetIndex'];
+                        opts = this.data('_inputmask')['opts'];
                         return maskScope(masksets, activeMasksetIndex).isComplete(this[0]._valueGet().split(''));
                     default:
                         //check if the fn is an alias
@@ -623,7 +623,7 @@
                 }
 
                 function checkVal(input, writeOut, strict, nptvl) {
-                    var isRTL = $(input).data('inputmask')['isRTL'],
+                    var isRTL = $(input).data('_inputmask')['isRTL'],
                         inputValue = nptvl != undefined ? nptvl.slice() : truncateInput(input._valueGet(), isRTL).split('');
 
                     $.each(masksets, function (ndx, ms) {
@@ -659,7 +659,7 @@
 
                 function clearOptionalTail(input) {
                     var buffer = getActiveBuffer(), tmpBuffer = buffer.slice(), testPos, pos;
-                    if ($(input).data('inputmask')['isRTL']) {
+                    if ($(input).data('_inputmask')['isRTL']) {
                         for (var pos = 0; pos <= tmpBuffer.length - 1; pos++) {
                             var testPos = determineTestPosition(pos);
                             if (getActiveTests()[testPos].optionality) {
@@ -772,7 +772,7 @@
                     if (!$input.is(":input")) return;
 
                     //store tests & original buffer in the input element - used to get the unmasked value
-                    $input.data('inputmask', {
+                    $input.data('_inputmask', {
                         'masksets': masksets,
                         'activeMasksetIndex': activeMasksetIndex,
                         'opts': opts,
@@ -809,9 +809,9 @@
                             $input.css("text-align", "right");
                         el.dir = "ltr";
                         $input.removeAttr("dir");
-                        var inputData = $input.data('inputmask');
+                        var inputData = $input.data('_inputmask');
                         inputData['isRTL'] = true;
-                        $input.data('inputmask', inputData);
+                        $input.data('_inputmask', inputData);
                         isRTL = true;
                     }
 
@@ -982,7 +982,7 @@
 
                                 Object.defineProperty(npt, "value", {
                                     get: function () {
-                                        var $self = $(this), inputData = $(this).data('inputmask'), masksets = inputData['masksets'],
+                                        var $self = $(this), inputData = $(this).data('_inputmask'), masksets = inputData['masksets'],
                                             activeMasksetIndex = inputData['activeMasksetIndex'];
                                         return inputData && inputData['opts'].autoUnmask ? $self.inputmask('unmaskedvalue') : this._valueGet() != masksets[activeMasksetIndex]['_buffer'].join('') ? this._valueGet() : '';
                                     },
@@ -998,7 +998,7 @@
                                 npt._valueSet = npt.__lookupSetter__("value");
 
                                 npt.__defineGetter__("value", function () {
-                                    var $self = $(this), inputData = $(this).data('inputmask'), masksets = inputData['masksets'],
+                                    var $self = $(this), inputData = $(this).data('_inputmask'), masksets = inputData['masksets'],
                                         activeMasksetIndex = inputData['activeMasksetIndex'];
                                     return inputData && inputData['opts'].autoUnmask ? $self.inputmask('unmaskedvalue') : this._valueGet() != masksets[activeMasksetIndex]['_buffer'].join('') ? this._valueGet() : '';
                                 });
@@ -1016,12 +1016,12 @@
                                 $.fn.val = function () {
                                     if (arguments.length == 0) {
                                         var $self = $(this);
-                                        if ($self.data('inputmask')) {
-                                            if ($self.data('inputmask')['opts'].autoUnmask)
+                                        if ($self.data('_inputmask')) {
+                                            if ($self.data('_inputmask')['opts'].autoUnmask)
                                                 return $self.inputmask('unmaskedvalue');
                                             else {
                                                 var result = $.inputmask.val.apply($self);
-                                                var inputData = $(this).data('inputmask'), masksets = inputData['masksets'],
+                                                var inputData = $(this).data('_inputmask'), masksets = inputData['masksets'],
                                                     activeMasksetIndex = inputData['activeMasksetIndex'];
                                                 return result != masksets[activeMasksetIndex]['_buffer'].join('') ? result : '';
                                             }
@@ -1031,7 +1031,7 @@
                                         return this.each(function () {
                                             var $self = $(this);
                                             var result = $.inputmask.val.apply($self, args);
-                                            if ($self.data('inputmask')) $self.triggerHandler('setvalue.inputmask');
+                                            if ($self.data('_inputmask')) $self.triggerHandler('setvalue.inputmask');
                                             return result;
                                         });
                                     }
