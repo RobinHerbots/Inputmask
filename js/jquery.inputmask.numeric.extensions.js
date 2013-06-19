@@ -80,8 +80,8 @@ Optional extensions on the jquery.inputmask base
                 if (e.keyCode == opts.keyCode.TAB) {
                     var radixPosition = $.inArray(opts.radixPoint, buffer);
                     if (radixPosition != -1) {
-                        var masksets = $input.data('inputmask')['masksets'];
-                        var activeMasksetIndex = $input.data('inputmask')['activeMasksetIndex'];
+                        var masksets = $input.data('_inputmask')['masksets'];
+                        var activeMasksetIndex = $input.data('_inputmask')['activeMasksetIndex'];
                         for (var i = 1; i <= opts.digits && i < opts.getMaskLength(masksets[activeMasksetIndex]["_buffer"], masksets[activeMasksetIndex]["greedy"], masksets[activeMasksetIndex]["repeat"], buffer, opts) ; i++) {
                             if (buffer[radixPosition + i] == undefined) buffer[radixPosition + i] = "0";
                         }
