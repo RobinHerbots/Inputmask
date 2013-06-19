@@ -96,7 +96,7 @@ Optional extensions on the jquery.inputmask base
                 '~': { //real number
                     validator: function (chrs, buffer, pos, strict, opts) {
                         if (chrs == "") return false;
-                        if (pos <= 1 && buffer[0] === '0' && new RegExp("[\\d-]").test(chrs)) { //handle first char
+                        if (!strict && pos <= 1 && buffer[0] === '0' && new RegExp("[\\d-]").test(chrs)) { //handle first char
                             buffer[0] = "";
                             return { "pos": 0 };
                         }
