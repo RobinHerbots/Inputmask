@@ -81,6 +81,12 @@
 			 <arg value="-OutputDirectory" />
 			 <arg value="..\${distdir}" />
         </exec>
+        <exec executable="EnableNuGetPackageRestore=true mono --runtime=v4.0.30319 ${NugetExe}" failonerror="true" dir="tools" vmlauncher="false" osfamily="unix" >
+			 <arg value="pack"/>
+			 <arg value="../nuget/${nuspec}" />
+			 <arg value="-OutputDirectory" />
+			 <arg value="../${distdir}" />
+        </exec>
     </target>
 	
     <target name="build" depends="jquery.inputmask, jquery.inputmask.min, minfiles, jquery.inputmask.nuget, resetVersions"/>
