@@ -362,7 +362,6 @@ Optional extensions on the jquery.inputmask base
                 hrspre: new RegExp("[012]"), //hours pre
                 hrs24: new RegExp("2[0-9]|1[3-9]"),
                 hrs: new RegExp("[01][0-9]|2[0-3]"), //hours
-                ampmpre: new RegExp("[apAP]"),
                 ampm: new RegExp("^[a|p|A|P][m|M]")
             },
             timeseparator: ':',
@@ -428,53 +427,29 @@ Optional extensions on the jquery.inputmask base
                 },
                 't': { //am/pm
                     validator: function (chrs, buffer, pos, strict, opts) {
-                        var isValid = opts.regex.ampm.test(chrs);
-                        if (!strict && !isValid) {
-                            isValid = opts.regex.ampm.test(chrs + 'm');
-                            if (isValid) {
-                                buffer[pos - 1] = chrs.charAt(0);
-                                buffer[pos] = "m";
-                                pos++;
-                                return pos;
-                            }
-                        }
-                        return isValid;
+                        return opts.regex.ampm.test(chrs + "m");
                     },
                     casing: "lower",
-                    cardinality: 2,
-                    prevalidator: [{
-                        validator: function (chrs, buffer, pos, strict, opts) {
-                            var isValid = opts.regex.ampmpre.test(chrs);
-                            if (isValid) {
-                                isValid = opts.regex.ampm.test(chrs + "m");
-                                if (isValid) {
-                                    buffer[pos] = chrs;
-                                    buffer[pos + 1] = 'm';
-                                    return pos;
-                                }
-                            }
-                            return isValid;
-                        }, cardinality: 1
-                    }]
+                    cardinality: 1
                 }
             },
             insertMode: false,
             autoUnmask: false
         },
         'datetime12': {
-            mask: "1/2/y h:s t",
+            mask: "1/2/y h:s t\\m",
             placeholder: "dd/mm/yyyy hh:mm xm",
             alias: "datetime",
             hourFormat: "12"
         },
         'hh:mm t': {
-            mask: "h:s t",
+            mask: "h:s t\\m",
             placeholder: "hh:mm xm",
             alias: "datetime",
             hourFormat: "12"
         },
         'h:s t': {
-            mask: "h:s t",
+            mask: "h:s t\\m",
             placeholder: "hh:mm xm",
             alias: "datetime",
             hourFormat: "12"
