@@ -81,7 +81,7 @@
 			 <arg value="-OutputDirectory" />
 			 <arg value="..\${distdir}" />
         </exec>
-        <exec executable="EnableNuGetPackageRestore=true mono --runtime=v4.0.30319 ${NugetExe}" failonerror="true" dir="tools" vmlauncher="false" osfamily="unix" >
+        <exec executable="EnableNuGetPackageRestore=true mono --runtime=v4.0.30319 ${NugetExe}" failonerror="false" dir="tools" vmlauncher="false" osfamily="unix" >
 			 <arg value="pack"/>
 			 <arg value="../nuget/${nuspec}" />
 			 <arg value="-OutputDirectory" />
