@@ -1570,7 +1570,8 @@ Optional extensions on the jquery.inputmask base
             }
         }
     });
-})(jQuery);/*
+})(jQuery);
+/*
 Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
@@ -2038,7 +2039,8 @@ Optional extensions on the jquery.inputmask base
             alias: "dd/mm/yyyy" // "mm/dd/yyyy"
         }
     });
-})(jQuery);/*
+})(jQuery);
+/*
 Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
