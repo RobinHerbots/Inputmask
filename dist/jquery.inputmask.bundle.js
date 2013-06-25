@@ -82,14 +82,14 @@
                 iphone = navigator.userAgent.match(new RegExp("iphone", "i")) !== null,
                 android = navigator.userAgent.match(new RegExp("android.*safari.*", "i")) !== null,
                 pasteEvent = isInputEventSupported('paste') && !msie10 ? 'paste' : 'input',
-                android533,
+                android53x,
                 masksets,
                 activeMasksetIndex = 0;
 
             if (android) {
                 var browser = navigator.userAgent.match(/safari.*/i),
                     version = parseInt(new RegExp(/[0-9]+/).exec(browser));
-                android533 = (version <= 533);
+                android53x = (version <= 537);
                 //android534 = (533 < version) && (version <= 534);
             }
             if (typeof fn === "string") {
@@ -698,8 +698,6 @@
                     }
                 }
 
-                var caretSavePoint;
-
                 function caret(input, begin, end) {
                     var npt = input.jquery && input.length > 0 ? input[0] : input, range;
                     if (typeof begin == 'number') {
@@ -709,16 +707,9 @@
                         end = (typeof end == 'number') ? end : begin;
                         if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
                         if (npt.setSelectionRange) {
-                            if (android) {
-                                setTimeout(function () {
-                                    npt.selectionStart = begin;
-                                    npt.selectionEnd = android ? begin : end;
-                                }, 10);
-                                caretSavePoint = { "begin": begin, "end": end };
-                            } else {
-                                npt.selectionStart = begin;
-                                npt.selectionEnd = end;
-                            }
+                            npt.selectionStart = begin;
+                            npt.selectionEnd = android ? begin : end;
+
                         } else if (npt.createTextRange) {
                             range = npt.createTextRange();
                             range.collapse(true);
@@ -1163,7 +1154,7 @@
                             } else {
                                 $.each(masksets, function (ndx, ms) {
                                     activeMasksetIndex = ndx;
-                                    beginPos = android533 ? pos.end : pos.begin;
+                                    beginPos = android53x ? pos.end : pos.begin;
                                     var buffer = getActiveBuffer(), firstMaskPos = isRTL ? seekPrevious(getMaskLength() + 1) : seekNext(-1),
                                         maskL = getMaskLength();
                                     if (k == opts.keyCode.DELETE) { //handle delete
@@ -1450,9 +1441,6 @@
                                             }
                                         }
                                     }
-                                }
-                                if (android && checkval !== true) {
-                                    caret(input, caretSavePoint.begin, caretSavePoint.end);
                                 }
                                 if (opts.showTooltip) { //update tooltip
                                     $input.prop("title", getActiveMaskSet()["mask"]);
