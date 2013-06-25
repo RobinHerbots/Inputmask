@@ -1251,7 +1251,7 @@
                         } else if (k == opts.keyCode.ESCAPE) { //escape
                             input._valueSet(getActiveMaskSet()["undoBuffer"]);
                             checkVal(input, true, true);
-                        } else if (k == opts.keyCode.INSERT) { //insert
+                        } else if (k == opts.keyCode.INSERT && !(e.shiftKey || e.ctrlKey)) { //insert
                             opts.insertMode = !opts.insertMode;
                             caret(input, !opts.insertMode && pos.begin == getMaskLength() ? pos.begin - 1 : pos.begin);
                         } else if (opts.insertMode == false && !e.shiftKey) {
