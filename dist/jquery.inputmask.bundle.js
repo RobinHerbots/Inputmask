@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.2.49
+* Version: 2.2.50
 */
 
 (function ($) {
@@ -478,7 +478,7 @@
                                         (isRTL ? (opts.greedy ? activeMaskset['lastValidPosition'] > newValidPosition : newValidPosition == getActiveBuffer().length - 1)
                                             : activeMaskset['lastValidPosition'] < newValidPosition))
                                         activeMaskset['lastValidPosition'] = newValidPosition; //set new position from isValid
-                                } else activeMaskset['lastValidPosition'] = isRTL ? pos == getMaskLength() ? undefined : seekNext(pos) : pos == 0 ? undefined : seekPrevious(pos); //autocorrect validposition from backspace etc  	
+                                }
                                 results.push({ "activeMasksetIndex": index, "result": result });
                             }
                         }
@@ -639,14 +639,15 @@
 
                     var ml = getMaskLength();
                     $.each(inputValue, function (ndx, charCode) {
-                        var index = isRTL ? (opts.numericInput ? ml : ml - ndx - 1) : ndx;
-                        if (isMask(isRTL ? (opts.numericInput ? seekPrevious(ml) : ml - ndx - 1) : ndx)
-                        || (strict !== true && charCode != getBufferElement(getActiveBufferTemplate(), index, true))) {
+                        var index = isRTL ? (opts.numericInput ? ml : ml - ndx) : ndx;
+                        if (isMask(isRTL ? index - 1 : index)
+                        || (strict !== true && charCode != getBufferElement(getActiveBufferTemplate(), isRTL ? index - 1 : index, true))) {
                             $(input).trigger("keypress", [true, charCode.charCodeAt(0), writeOut, strict, index]);
                         }
                     });
-                    if (strict === true)
+                    if (strict === true) {
                         getActiveMaskSet()["lastValidPosition"] = isRTL ? seekNext(getActiveMaskSet()["p"]) : seekPrevious(getActiveMaskSet()["p"]);
+                    }
                 }
 
                 function escapeRegex(str) {
@@ -1273,6 +1274,28 @@
                     }
 
                     function keypressEvent(e, checkval, k, writeOut, strict, ndx) {
+                        function clearSelection(pbegin, pend) {
+                            var posend = pend < getMaskLength() ? pend : getMaskLength();
+                            clearBuffer(getActiveBuffer(), pbegin, posend);
+                            var ml = getMaskLength();
+                            if (opts.greedy == false) {
+                                isRTL ? shiftR(0, posend - 1, getPlaceHolder(posend), true) : shiftL(pbegin, ml);
+                            } else {
+                                for (var i = pbegin; i < posend; i++) {
+                                    if (isMask(i))
+                                        isRTL ? shiftR(0, posend - 1, getPlaceHolder(posend - 1), true) : shiftL(pbegin, ml);
+                                }
+                            }
+                            if (getActiveMaskSet()["lastValidPosition"] > pbegin && getActiveMaskSet()["lastValidPosition"] < posend) {
+                                getActiveMaskSet()["lastValidPosition"] = isRTL ? posend : pbegin;
+                            } else {
+                                checkVal(input, false, true, getActiveBuffer());
+                                if (!opts.insertMode) { //preserve some space
+                                    isRTL ? shiftL(0, posend) : shiftR(pbegin, ml, getPlaceHolder(pbegin), true);
+                                    getActiveMaskSet()["lastValidPosition"] = isRTL ? seekPrevious(getActiveMaskSet()["lastValidPosition"]) : seekNext(getActiveMaskSet()["lastValidPosition"]);
+                                }
+                            }
+                        }
                         //Safari 5.1.x - modal dialog fires keypress twice workaround
                         if (k == undefined && skipKeyPressEvent) return false;
                         skipKeyPressEvent = true;
@@ -1301,30 +1324,11 @@
                                     pos = caret(input);
                                 }
 
-                                //clear possible selection
-                                var initialIndex = activeMasksetIndex, selectionCleared = false;
-                                $.each(masksets, function (ndx, lmnt) {
-                                    activeMasksetIndex = ndx;
-                                    getActiveMaskSet()["undoBuffer"] = getActiveBuffer().join('');
-                                    if ((pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode)) {
-                                        var posend = pos.end < getMaskLength() ? pos.end : getMaskLength();
-                                        clearBuffer(getActiveBuffer(), pos.begin, posend);
-                                        var ml = getMaskLength();
-                                        if (opts.greedy == false) {
-                                            isRTL ? shiftR(0, posend - 1, getPlaceHolder(posend), true) : shiftL(pos.begin, ml);
-                                        } else {
-                                            for (var i = pos.begin; i < posend; i++) {
-                                                if (isMask(i))
-                                                    isRTL ? shiftR(0, posend - 1, getPlaceHolder(posend), true) : shiftL(pos.begin, ml);
-                                            }
-                                        }
-                                        selectionCleared = true;
-                                    }
-                                });
-                                activeMasksetIndex = initialIndex; //restore index
+                                //should we clear a possible selection??
+                                var isSelection = (pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode);
 
                                 if (isRTL) {
-                                    var p = seekPrevious(selectionCleared ? pos.begin : pos.end);
+                                    var p = seekPrevious(pos.end);
                                     results = isValid(p, c, strict, isRTL);
                                     if (strict === true) results = [{ "activeMasksetIndex": activeMasksetIndex, "result": results }];
                                     $.each(results, function (index, result) {
@@ -1332,6 +1336,9 @@
                                         getActiveMaskSet()["writeOutBuffer"] = true;
                                         var np = result["result"];
                                         if (np !== false) {
+                                            if (isSelection) {
+                                                clearSelection(pos.begin, pos.end);
+                                            }
                                             var refresh = false, buffer = getActiveBuffer();
                                             if (np !== true) {
                                                 refresh = np["refresh"]; //only rewrite buffer from isValid
@@ -1351,7 +1358,7 @@
                                                     if (firstUnmaskedPosition <= p && (getActiveMaskSet()['greedy'] || (buffer.length < maskL || getBufferElement(buffer, p) == getPlaceHolder(p)))) {
                                                         if (buffer[firstMaskPos] != getPlaceHolder(firstMaskPos) && buffer.length < maskL) {
                                                             var offset = prepareBuffer(buffer, -1, isRTL);
-                                                            if ((selectionCleared ? pos.begin : pos.end) != 0) p = p + offset;
+                                                            if ((clearSelection ? pos.begin : pos.end) != 0) p = p + offset;
                                                             maskL = buffer.length;
                                                         }
                                                         shiftL(firstUnmaskedPosition, p, c);
@@ -1371,7 +1378,7 @@
                                             }
                                         });
                                         if (result != undefined) {
-                                        	var self = this;
+                                            var self = this;
                                             setTimeout(function () { opts.onKeyValidation.call(self, result["result"], opts); }, 0);
                                             if (getActiveMaskSet()["writeOutBuffer"] && result["result"] !== false) {
                                                 var buffer = getActiveBuffer();
@@ -1394,6 +1401,9 @@
                                         getActiveMaskSet()["writeOutBuffer"] = true;
                                         var np = result["result"];
                                         if (np !== false) {
+                                            if (isSelection) {
+                                                clearSelection(pos.begin, pos.end);
+                                            }
                                             var refresh = false, buffer = getActiveBuffer();
                                             if (np !== true) {
                                                 refresh = np["refresh"]; //only rewrite buffer from isValid
@@ -1425,7 +1435,7 @@
                                             }
                                         });
                                         if (result != undefined) {
-                                        	var self = this;
+                                            var self = this;
                                             setTimeout(function () { opts.onKeyValidation.call(self, result["result"], opts); }, 0);
                                             if (getActiveMaskSet()["writeOutBuffer"] && result["result"] !== false) {
                                                 var p = getActiveMaskSet()["p"], buffer = getActiveBuffer();
@@ -1474,7 +1484,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.49
+Version: 2.2.50
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1576,7 +1586,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.49
+Version: 2.2.50
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2045,7 +2055,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.49
+Version: 2.2.50
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2207,7 +2217,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.49
+Version: 2.2.50
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
