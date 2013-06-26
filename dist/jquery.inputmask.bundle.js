@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.2.52
+* Version: 2.2.53
 */
 
 (function ($) {
@@ -1265,28 +1265,6 @@
                     }
 
                     function keypressEvent(e, checkval, k, writeOut, strict, ndx) {
-                        function clearSelection(pbegin, pend) {
-                            var posend = pend < getMaskLength() ? pend : getMaskLength();
-                            clearBuffer(getActiveBuffer(), pbegin, posend);
-                            var ml = getMaskLength();
-                            if (opts.greedy == false) {
-                                isRTL ? shiftR(0, posend - 1, getPlaceHolder(posend), true) : shiftL(pbegin, ml);
-                            } else {
-                                for (var i = pbegin; i < posend; i++) {
-                                    if (isMask(i))
-                                        isRTL ? shiftR(0, posend - 1, getPlaceHolder(posend - 1), true) : shiftL(pbegin, ml);
-                                }
-                            }
-                            if (getActiveMaskSet()["lastValidPosition"] > pbegin && getActiveMaskSet()["lastValidPosition"] < posend) {
-                                getActiveMaskSet()["lastValidPosition"] = isRTL ? posend : pbegin;
-                            } else {
-                                checkVal(input, false, true, getActiveBuffer());
-                                if (!opts.insertMode) { //preserve some space
-                                    isRTL ? shiftL(0, posend) : shiftR(pbegin, ml, getPlaceHolder(pbegin), true);
-                                    getActiveMaskSet()["lastValidPosition"] = isRTL ? seekPrevious(getActiveMaskSet()["lastValidPosition"]) : seekNext(getActiveMaskSet()["lastValidPosition"]);
-                                }
-                            }
-                        }
                         //Safari 5.1.x - modal dialog fires keypress twice workaround
                         if (k == undefined && skipKeyPressEvent) return false;
                         skipKeyPressEvent = true;
@@ -1316,7 +1294,42 @@
                                 }
 
                                 //should we clear a possible selection??
-                                var isSelection = (pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode);
+                                var isSelection = (pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode),
+                                    initialIndex = activeMasksetIndex, redetermineLVP = false;
+                                $.each(masksets, function (ndx, lmnt) {
+                                    activeMasksetIndex = ndx;
+                                    getActiveMaskSet()["undoBuffer"] = getActiveBuffer().join(''); //init undobuffer for recovery when not valid
+                                    if (isSelection) {
+                                        var posend = pos.end < getMaskLength() ? pos.end : getMaskLength();
+                                        clearBuffer(getActiveBuffer(), pos.begin, posend);
+                                        var ml = getMaskLength();
+                                        if (opts.greedy == false) {
+                                            isRTL ? shiftR(0, posend - 1, getPlaceHolder(posend), true) : shiftL(pos.begin, ml);
+                                        } else {
+                                            for (var i = pos.begin; i < posend; i++) {
+                                                if (isMask(i))
+                                                    isRTL ? shiftR(0, posend - 1, getPlaceHolder(posend - 1), true) : shiftL(pos.begin, ml);
+                                            }
+                                        }
+                                        if (getActiveMaskSet()["lastValidPosition"] > pos.begin && getActiveMaskSet()["lastValidPosition"] < posend) {
+                                            getActiveMaskSet()["lastValidPosition"] = isRTL ? posend : pos.begin;
+                                        } else {
+                                            redetermineLVP = true;
+                                        }
+                                    }
+                                });
+                                if (redetermineLVP === true) {
+                                    activeMasksetIndex = initialIndex;
+                                    checkVal(input, false, true, getActiveBuffer());
+                                    if (!opts.insertMode) { //preserve some space
+                                        $.each(masksets, function(ndx, lmnt) {
+                                            activeMasksetIndex = ndx;
+                                            isRTL ? shiftL(0, posend) : shiftR(pos.begin, ml, getPlaceHolder(pos.begin), true);
+                                            getActiveMaskSet()["lastValidPosition"] = isRTL ? seekPrevious(getActiveMaskSet()["lastValidPosition"]) : seekNext(getActiveMaskSet()["lastValidPosition"]);
+                                        });
+                                    }
+                                }
+                                activeMasksetIndex = initialIndex; //restore index
 
                                 if (isRTL) {
                                     var p = seekPrevious(pos.end);
@@ -1327,9 +1340,6 @@
                                         getActiveMaskSet()["writeOutBuffer"] = true;
                                         var np = result["result"];
                                         if (np !== false) {
-                                            if (isSelection) {
-                                                clearSelection(pos.begin, pos.end);
-                                            }
                                             var refresh = false, buffer = getActiveBuffer();
                                             if (np !== true) {
                                                 refresh = np["refresh"]; //only rewrite buffer from isValid
@@ -1359,30 +1369,6 @@
                                             getActiveMaskSet()["p"] = p;
                                         }
                                     });
-
-                                    if (strict !== true) determineActiveMasksetIndex(isRTL);
-                                    if (writeOut !== false) {
-                                        $.each(results, function (ndx, rslt) {
-                                            if (rslt["activeMasksetIndex"] == activeMasksetIndex) {
-                                                result = rslt;
-                                                return false;
-                                            }
-                                        });
-                                        if (result != undefined) {
-                                            var self = this;
-                                            setTimeout(function () { opts.onKeyValidation.call(self, result["result"], opts); }, 0);
-                                            if (getActiveMaskSet()["writeOutBuffer"] && result["result"] !== false) {
-                                                var buffer = getActiveBuffer();
-                                                writeBuffer(input, buffer, checkval ? undefined : (opts.numericInput ? seekNext(getActiveMaskSet()["p"]) : getActiveMaskSet()["p"]));
-                                                setTimeout(function () { //timeout needed for IE
-                                                    if (isComplete(buffer))
-                                                        $input.trigger("complete");
-                                                }, 0);
-                                            } else {
-                                                getActiveMaskSet()["buffer"] = getActiveMaskSet()["undoBuffer"].split('');
-                                            }
-                                        }
-                                    }
                                 } else {
                                     var p = seekNext(pos.begin - 1);
                                     results = isValid(p, c, strict, isRTL);
@@ -1392,9 +1378,6 @@
                                         getActiveMaskSet()["writeOutBuffer"] = true;
                                         var np = result["result"];
                                         if (np !== false) {
-                                            if (isSelection) {
-                                                clearSelection(pos.begin, pos.end);
-                                            }
                                             var refresh = false, buffer = getActiveBuffer();
                                             if (np !== true) {
                                                 refresh = np["refresh"]; //only rewrite buffer from isValid
@@ -1416,32 +1399,32 @@
                                             getActiveMaskSet()["p"] = seekNext(p);
                                         }
                                     });
+                                }
 
-                                    if (strict !== true) determineActiveMasksetIndex(isRTL);
-                                    if (writeOut !== false) {
-                                        $.each(results, function (ndx, rslt) {
-                                            if (rslt["activeMasksetIndex"] == activeMasksetIndex) {
-                                                result = rslt;
-                                                return false;
-                                            }
-                                        });
-                                        if (result != undefined) {
-                                            var self = this;
-                                            setTimeout(function () { opts.onKeyValidation.call(self, result["result"], opts); }, 0);
-                                            if (getActiveMaskSet()["writeOutBuffer"] && result["result"] !== false) {
-                                                var p = getActiveMaskSet()["p"], buffer = getActiveBuffer();
-                                                writeBuffer(input, buffer, checkval ? undefined : p);
-
-                                                setTimeout(function () { //timeout needed for IE
-                                                    if (isComplete(buffer))
-                                                        $input.trigger("complete");
-                                                }, 0);
-                                            } else {
-                                                getActiveMaskSet()["buffer"] = getActiveMaskSet()["undoBuffer"].split('');
-                                            }
+                                if (strict !== true) determineActiveMasksetIndex(isRTL);
+                                if (writeOut !== false) {
+                                    $.each(results, function (ndx, rslt) {
+                                        if (rslt["activeMasksetIndex"] == activeMasksetIndex) {
+                                            result = rslt;
+                                            return false;
+                                        }
+                                    });
+                                    if (result != undefined) {
+                                        var self = this;
+                                        setTimeout(function () { opts.onKeyValidation.call(self, result["result"], opts); }, 0);
+                                        if (getActiveMaskSet()["writeOutBuffer"] && result["result"] !== false) {
+                                            var buffer = getActiveBuffer();
+                                            writeBuffer(input, buffer, checkval ? undefined : (opts.numericInput ? seekNext(getActiveMaskSet()["p"]) : getActiveMaskSet()["p"]));
+                                            setTimeout(function () { //timeout needed for IE
+                                                if (isComplete(buffer))
+                                                    $input.trigger("complete");
+                                            }, 0);
+                                        } else {
+                                            getActiveMaskSet()["buffer"] = getActiveMaskSet()["undoBuffer"].split('');
                                         }
                                     }
                                 }
+
                                 if (opts.showTooltip) { //update tooltip
                                     $input.prop("title", getActiveMaskSet()["mask"]);
                                 }
@@ -1472,7 +1455,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.52
+Version: 2.2.53
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1574,7 +1557,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.52
+Version: 2.2.53
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2043,7 +2026,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.52
+Version: 2.2.53
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2205,7 +2188,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.52
+Version: 2.2.53
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
