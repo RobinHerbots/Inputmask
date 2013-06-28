@@ -1359,7 +1359,7 @@
                                                     if (firstUnmaskedPosition <= p && (getActiveMaskSet()['greedy'] || (buffer.length < maskL || getBufferElement(buffer, p) == getPlaceHolder(p)))) {
                                                         if (buffer[firstMaskPos] != getPlaceHolder(firstMaskPos) && buffer.length < maskL) {
                                                             var offset = prepareBuffer(buffer, -1, isRTL);
-                                                            if ((clearSelection ? pos.begin : pos.end) != 0) p = p + offset;
+                                                            if ((isSelection ? pos.begin : pos.end) != 0) p = p + offset;
                                                             maskL = buffer.length;
                                                         }
                                                         shiftL(firstUnmaskedPosition, p, c);
@@ -1401,6 +1401,7 @@
                                     });
                                 }
 
+                                console.log(getActiveMaskSet()["p"]);
                                 if (strict !== true) determineActiveMasksetIndex(isRTL);
                                 if (writeOut !== false) {
                                     $.each(results, function (ndx, rslt) {
