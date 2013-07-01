@@ -104,11 +104,13 @@
                         });
                     case "unmaskedvalue":
                         var $input = $(this), input = this;
-                        masksets = $input.data('_inputmask')['masksets'];
-                        activeMasksetIndex = $input.data('_inputmask')['activeMasksetIndex'];
-                        opts = $input.data('_inputmask')['opts'];
-                        return maskScope(masksets, activeMasksetIndex).unmaskedvalue(this);
-                    case "remove":
+                        if ($input.data('_inputmask')) {
+                            masksets = $input.data('_inputmask')['masksets'];
+                            activeMasksetIndex = $input.data('_inputmask')['activeMasksetIndex'];
+                            opts = $input.data('_inputmask')['opts'];
+                            return maskScope(masksets, activeMasksetIndex).unmaskedvalue($input);
+                        } else return $input.val();
+                case "remove":
                         return this.each(function () {
                             var $input = $(this), input = this;
                             setTimeout(function () {
@@ -119,7 +121,7 @@
                                     //writeout the unmaskedvalue
                                     input._valueSet(maskScope(masksets, activeMasksetIndex).unmaskedvalue($input, true));
                                     //clear data
-                                    $input.removedata('_inputmask');
+                                    $input.removeData('_inputmask');
                                     //unbind all events
                                     $input.unbind(".inputmask");
                                     $input.removeClass('focus.inputmask');
@@ -642,7 +644,7 @@
                         var index = isRTL ? (opts.numericInput ? ml : ml - ndx) : ndx;
                         if (isMask(isRTL ? index - 1 : index)
                         || (strict !== true && charCode != getBufferElement(getActiveBufferTemplate(), isRTL ? index - 1 : index, true))) {
-                            $(input).trigger("keypress", [true, charCode.charCodeAt(0), writeOut, strict, index]);
+                            $(input).trigger("keypress", [true, charCode.charCodeAt(0), writeOut, strict, index, isRTL]);
                         }
                     });
                     if (strict === true) {
@@ -687,14 +689,13 @@
                     return unmaskedvalue($input, skipDatepickerCheck);
                 };
                 function unmaskedvalue($input, skipDatepickerCheck) {
-                    var input = $input[0];
                     if (getActiveTests() && (skipDatepickerCheck === true || !$input.hasClass('hasDatepicker'))) {
-                        checkVal(input, false, true);
+                        //checkVal(input, false, true);
                         return $.map(getActiveBuffer(), function (element, index) {
                             return isMask(index) && isValid(index, element, true) ? element : null;
                         }).join('');
                     } else {
-                        return input._valueGet();
+                        return $input[0]._valueGet();
                     }
                 }
 
@@ -1087,7 +1088,7 @@
                         var buffer = getActiveBuffer();
                         for (var i = start; i <= end && i < getMaskLength() ; i++) {
                             if (isMask(i)) {
-                                var t = getBufferElement(buffer, i);
+                                var t = getBufferElement(buffer, i, true);
                                 setBufferElement(buffer, i, c, true, isRTL);
                                 if (t != getPlaceHolder(i)) {
                                     var j = seekNext(i);
@@ -1264,7 +1265,9 @@
                         ignorable = $.inArray(k, opts.ignorables) != -1;
                     }
 
-                    function keypressEvent(e, checkval, k, writeOut, strict, ndx) {
+                    function keypressEvent(e, checkval, k, writeOut, strict, ndx, rtl) {
+                        isRTL = rtl == undefined ? isRTL : rtl;
+
                         //Safari 5.1.x - modal dialog fires keypress twice workaround
                         if (k == undefined && skipKeyPressEvent) return false;
                         skipKeyPressEvent = true;
@@ -1322,7 +1325,7 @@
                                     activeMasksetIndex = initialIndex;
                                     checkVal(input, false, true, getActiveBuffer());
                                     if (!opts.insertMode) { //preserve some space
-                                        $.each(masksets, function(ndx, lmnt) {
+                                        $.each(masksets, function (ndx, lmnt) {
                                             activeMasksetIndex = ndx;
                                             isRTL ? shiftL(0, posend) : shiftR(pos.begin, ml, getPlaceHolder(pos.begin), true);
                                             getActiveMaskSet()["lastValidPosition"] = isRTL ? seekPrevious(getActiveMaskSet()["lastValidPosition"]) : seekNext(getActiveMaskSet()["lastValidPosition"]);
@@ -1401,7 +1404,6 @@
                                     });
                                 }
 
-                                console.log(getActiveMaskSet()["p"]);
                                 if (strict !== true) determineActiveMasksetIndex(isRTL);
                                 if (writeOut !== false) {
                                     $.each(results, function (ndx, rslt) {

@@ -139,6 +139,7 @@ Optional extensions on the jquery.inputmask base
                             var newPos = opts.postFormat(buffer, pos, false, opts);
                             return { "pos": newPos };
                         }
+
                         return isValid;
                     },
                     cardinality: 1,
