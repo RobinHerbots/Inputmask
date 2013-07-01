@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.2.55
+* Version: 2.2.56
 */
 
 (function ($) {
@@ -812,6 +812,11 @@
                     $input.unbind(".inputmask");
                     $input.removeClass('focus.inputmask');
                     //bind events
+                    $input.closest('form').bind("submit", function() { //trigger change on submit if any
+                        if ($input[0]._valueGet() != getActiveMaskSet()["undoBuffer"]) {
+                            $input.change();
+                        }
+                    });
                     $input.bind("mouseenter.inputmask", function () {
                         var $input = $(this), input = this;
                         if (!$input.hasClass('focus.inputmask') && opts.showMaskOnHover) {
@@ -1458,7 +1463,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.55
+Version: 2.2.56
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1560,7 +1565,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.55
+Version: 2.2.56
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2029,7 +2034,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.55
+Version: 2.2.56
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2192,7 +2197,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.55
+Version: 2.2.56
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask

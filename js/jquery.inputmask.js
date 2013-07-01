@@ -812,6 +812,11 @@
                     $input.unbind(".inputmask");
                     $input.removeClass('focus.inputmask');
                     //bind events
+                    $input.closest('form').bind("submit", function() { //trigger change on submit if any
+                        if ($input[0]._valueGet() != getActiveMaskSet()["undoBuffer"]) {
+                            $input.change();
+                        }
+                    });
                     $input.bind("mouseenter.inputmask", function () {
                         var $input = $(this), input = this;
                         if (!$input.hasClass('focus.inputmask') && opts.showMaskOnHover) {
