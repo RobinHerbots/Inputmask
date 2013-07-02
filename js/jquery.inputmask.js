@@ -634,7 +634,7 @@
                         ms["p"] = isRTL ? getMaskLength() : 0;
                     });
                     if (strict !== true) activeMasksetIndex = 0;
-                    //caret(input, getActiveMaskSet()["p"]);
+                    if (writeOut) input._valueSet(""); //initial clear
 
                     if (isRTL && !opts.numericInput)
                         inputValue = inputValue.reverse();
@@ -642,8 +642,10 @@
                     var ml = getMaskLength();
                     $.each(inputValue, function (ndx, charCode) {
                         var index = isRTL ? (opts.numericInput ? ml : ml - ndx) : ndx;
-                        if ((strict && isMask(isRTL ? index - 1 : index))
-                        || $.inArray(charCode, getActiveBufferTemplate().slice(getActiveMaskSet()["lastValidPosition"] + 1, getActiveMaskSet()["p"])) == -1) {
+                        if ((strict && isMask(isRTL ? index - 1 : index)) ||
+                            (charCode != getBufferElement(getActiveBufferTemplate(), isRTL ? index - 1 : index, true) &&
+                             $.inArray(charCode, getActiveBufferTemplate().slice(getActiveMaskSet()["lastValidPosition"] + 1, getActiveMaskSet()["p"])) == -1)
+                            ) {
                             $(input).trigger("keypress", [true, charCode.charCodeAt(0), writeOut, strict, index, isRTL]);
                         }
                     });
