@@ -1333,7 +1333,7 @@
                                         if (!opts.insertMode) { //preserve some space
                                             $.each(masksets, function (ndx, lmnt) {
                                                 activeMasksetIndex = ndx;
-                                                isRTL ? shiftL(0, posend) : shiftR(pos.begin, ml, getPlaceHolder(pos.begin), true);
+                                                isRTL ? shiftL(0, posend) : shiftR(pos.begin, getMaskLength(), getPlaceHolder(pos.begin), true);
                                                 getActiveMaskSet()["lastValidPosition"] = isRTL ? seekPrevious(getActiveMaskSet()["lastValidPosition"]) : seekNext(getActiveMaskSet()["lastValidPosition"]);
                                             });
                                         }
