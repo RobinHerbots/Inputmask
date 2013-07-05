@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.2.61
+* Version: 2.2.63
 */
 
 (function ($) {
@@ -1429,7 +1429,7 @@
                                                 if (isComplete(buffer))
                                                     $input.trigger("complete");
                                             }, 0);
-                                        } else {
+                                        } else if (isSelection) {
                                             getActiveMaskSet()["buffer"] = getActiveMaskSet()["undoBuffer"].split('');
                                         }
                                     }
@@ -1465,7 +1465,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.61
+Version: 2.2.63
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1567,7 +1567,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.61
+Version: 2.2.63
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2036,7 +2036,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.61
+Version: 2.2.63
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2100,12 +2100,12 @@ Optional extensions on the jquery.inputmask base
                 return reformatOnly ? pos : newPos <= radixPos || (opts.skipRadixDance && newPos != 0) ? newPos - 1 : newPos;
             },
             regex: {
-                number: function (groupSeparator, groupSize, radixPoint, digits, allowPlus, allowMinus) {
-                    var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, groupSeparator);
-                    var escapedRadixPoint = $.inputmask.escapeRegex.call(this, radixPoint);
-                    var digitExpression = isNaN(digits) ? digits : '{0,' + digits + '}';
-                    var signedExpression = "[" + (allowPlus ? "\+" : "") + (allowMinus ? "-" : "") + "]?";
-                    return new RegExp("^" + signedExpression + "(\\d+|\\d{1," + groupSize + "}((" + escapedGroupSeparator + "\\d{" + groupSize + "})?)+)(" + escapedRadixPoint + "\\d" + digitExpression + ")?$");
+                number: function (opts) {
+                    var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
+                    var escapedRadixPoint = $.inputmask.escapeRegex.call(this, opts.radixPoint);
+                    var digitExpression = isNaN(opts.digits) ? opts.digits : '{0,' + opts.digits + '}';
+                    var signedExpression = "[" + (opts.allowPlus ? "\+" : "") + (opts.allowMinus ? "-" : "") + "]?";
+                    return new RegExp("^" + signedExpression + "(\\d+|\\d{1," + opts.groupSize + "}((" + escapedGroupSeparator + "\\d{" + opts.groupSize + "})?)+)(" + escapedRadixPoint + "\\d" + digitExpression + ")?$");
                 }
             },
             onKeyDown: function (e, buffer, opts) {
@@ -2142,11 +2142,11 @@ Optional extensions on the jquery.inputmask base
                             var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
                             bufferStr = bufferStr.replace(new RegExp(escapedGroupSeparator, "g"), '');
                         }
-                        var isValid = opts.regex.number(opts.groupSeparator, opts.groupSize, opts.radixPoint, opts.digits, opts.allowPlus, opts.allowMinus).test(bufferStr);
+                        var isValid = opts.regex.number(opts).test(bufferStr);
                         if (!isValid) {
                             //let's help the regex a bit
                             bufferStr += "0";
-                            isValid = opts.regex.number(opts.groupSeparator, opts.groupSize, opts.radixPoint, opts.digits, opts.allowPlus, opts.allowMinus).test(bufferStr);
+                            isValid = opts.regex.number(opts).test(bufferStr);
                             if (!isValid) {
                                 //make a valid group
                                 var lastGroupSeparator = bufferStr.lastIndexOf(opts.groupSeparator);
@@ -2154,10 +2154,10 @@ Optional extensions on the jquery.inputmask base
                                     bufferStr += "0";
                                 }
 
-                                isValid = opts.regex.number(opts.groupSeparator, opts.groupSize, opts.radixPoint, opts.digits, opts.allowPlus, opts.allowMinus).test(bufferStr);
+                                isValid = opts.regex.number(opts).test(bufferStr);
                                 if (!isValid && !strict) {
                                     if (chrs == opts.radixPoint) {
-                                        isValid = opts.regex.number(opts.groupSeparator, opts.groupSize, opts.radixPoint, opts.digits, opts.allowPlus, opts.allowMinus).test("0" + bufferStr + "0");
+                                        isValid = opts.regex.number(opts).test("0" + bufferStr + "0");
                                         if (isValid) {
                                             buffer[pos] = "0";
                                             pos++;
@@ -2184,10 +2184,10 @@ Optional extensions on the jquery.inputmask base
         },
         'integer': {
             regex: {
-                number: function (groupSeparator, groupSize, radixPoint, digits, allowPlus, allowMinus) {
-                    var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, groupSeparator);
-                    var signedExpression = "[" + (allowPlus ? "\+" : "") + (allowMinus ? "-" : "") + "]?";
-                    return new RegExp("^" + signedExpression + "(\\d+|\\d{1," + groupSize + "}((" + escapedGroupSeparator + "\\d{" + groupSize + "})?)+)$");
+                number: function (opts) {
+                    var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
+                    var signedExpression = "[" + (opts.allowPlus ? "\+" : "") + (opts.allowMinus ? "-" : "") + "]?";
+                    return new RegExp("^" + signedExpression + "(\\d+|\\d{1," + opts.groupSize + "}((" + escapedGroupSeparator + "\\d{" + opts.groupSize + "})?)+)$");
                 }
             },
             alias: "decimal"
@@ -2199,7 +2199,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.61
+Version: 2.2.63
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
