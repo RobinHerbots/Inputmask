@@ -1429,7 +1429,7 @@
                                                 if (isComplete(buffer))
                                                     $input.trigger("complete");
                                             }, 0);
-                                        } else {
+                                        } else if (isSelection) {
                                             getActiveMaskSet()["buffer"] = getActiveMaskSet()["undoBuffer"].split('');
                                         }
                                     }
