@@ -13,7 +13,7 @@ Optional extensions on the jquery.inputmask base
         'decimal': {
             mask: "~",
             placeholder: "",
-            repeat: 10,
+            repeat: "*",
             greedy: false,
             numericInput: true,
             digits: "*", //numer of digits
@@ -26,9 +26,13 @@ Optional extensions on the jquery.inputmask base
             getMaskLength: function (buffer, greedy, repeat, currentBuffer, opts) { //custom getMaskLength to take the groupSeparator into account
                 var calculatedLength = buffer.length;
 
-                if (!greedy && repeat > 1) {
-                    calculatedLength += (buffer.length * (repeat - 1));
-                }
+                if (!greedy) { 
+                     	if(repeat == "*") {
+                     		calculatedLength = currentBuffer.length + 1;
+                     	} else if(repeat > 1) {
+                        	calculatedLength += (buffer.length * (repeat - 1));
+                    	}
+                    }
 
                 var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
                 var escapedRadixPoint = $.inputmask.escapeRegex.call(this, opts.radixPoint);

@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.2.63
+* Version: 2.2.64
 */
 
 (function ($) {
@@ -21,7 +21,7 @@
                 oncomplete: $.noop, //executes when the mask is complete
                 onincomplete: $.noop, //executes when the mask is incomplete and focus is lost
                 oncleared: $.noop, //executes when the mask is cleared
-                repeat: 0, //repetitions of the mask
+                repeat: "*", //repetitions of the mask: * ~ forever, otherwise specify an integer
                 greedy: true, //true: allocated buffer for the mask and repetitions - false: allocate only if needed
                 autoUnmask: false, //automatically unmask when retrieving the value with $.fn.val or value if the browser supports __lookupGetter__ or getOwnPropertyDescriptor
                 clearMaskOnLostFocus: true,
@@ -63,8 +63,12 @@
                 ignorables: [9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123],
                 getMaskLength: function (buffer, greedy, repeat, currentBuffer, opts) {
                     var calculatedLength = buffer.length;
-                    if (!greedy && repeat > 1) {
-                        calculatedLength += (buffer.length * (repeat - 1));
+                    if (!greedy) { 
+                     	if(repeat == "*") {
+                     		calculatedLength = currentBuffer.length + 1;
+                     	} else if(repeat > 1) {
+                        	calculatedLength += (buffer.length * (repeat - 1));
+                    	}
                     }
                     return calculatedLength;
                 }
@@ -228,6 +232,7 @@
             }
             function getMaskTemplate(mask) {
                 var escaped = false, outCount = 0, greedy = opts.greedy, repeat = opts.repeat;
+                if(repeat == "*") greedy = false;
                 if (mask.length == 1 && greedy == false) { opts.placeholder = ""; } //hide placeholder with single non-greedy mask
                 var singleMask = $.map(mask.split(""), function (element, index) {
                     var outElem = [];
@@ -1465,7 +1470,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.63
+Version: 2.2.64
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1567,7 +1572,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.63
+Version: 2.2.64
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2036,7 +2041,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.63
+Version: 2.2.64
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2046,7 +2051,7 @@ Optional extensions on the jquery.inputmask base
         'decimal': {
             mask: "~",
             placeholder: "",
-            repeat: 10,
+            repeat: "*",
             greedy: false,
             numericInput: true,
             digits: "*", //numer of digits
@@ -2059,9 +2064,13 @@ Optional extensions on the jquery.inputmask base
             getMaskLength: function (buffer, greedy, repeat, currentBuffer, opts) { //custom getMaskLength to take the groupSeparator into account
                 var calculatedLength = buffer.length;
 
-                if (!greedy && repeat > 1) {
-                    calculatedLength += (buffer.length * (repeat - 1));
-                }
+                if (!greedy) { 
+                     	if(repeat == "*") {
+                     		calculatedLength = currentBuffer.length + 1;
+                     	} else if(repeat > 1) {
+                        	calculatedLength += (buffer.length * (repeat - 1));
+                    	}
+                    }
 
                 var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
                 var escapedRadixPoint = $.inputmask.escapeRegex.call(this, opts.radixPoint);
@@ -2199,7 +2208,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.63
+Version: 2.2.64
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask

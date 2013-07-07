@@ -108,6 +108,8 @@ $(document).ready(function(){
 });
 ```
 
+With the non-greedy option set to false, you can specify * as repeat.  This makes an endless repeat.
+
 ### get the unmaskedvalue
 
 ```javascript
