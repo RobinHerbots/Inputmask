@@ -13,7 +13,7 @@ Allows for using regular expressions as a mask
         'Regex': {
             mask: "r",
             greedy: false,
-            repeat: 10, //needs to be computed
+            repeat: "*",
             regex: null,
             regexSplit: null,
             definitions: {
