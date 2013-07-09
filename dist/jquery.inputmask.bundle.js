@@ -21,7 +21,7 @@
                 oncomplete: $.noop, //executes when the mask is complete
                 onincomplete: $.noop, //executes when the mask is incomplete and focus is lost
                 oncleared: $.noop, //executes when the mask is cleared
-                repeat: "*", //repetitions of the mask: * ~ forever, otherwise specify an integer
+                repeat: 0, //repetitions of the mask: * ~ forever, otherwise specify an integer
                 greedy: true, //true: allocated buffer for the mask and repetitions - false: allocate only if needed
                 autoUnmask: false, //automatically unmask when retrieving the value with $.fn.val or value if the browser supports __lookupGetter__ or getOwnPropertyDescriptor
                 clearMaskOnLostFocus: true,
@@ -2218,7 +2218,7 @@ Allows for using regular expressions as a mask
         'Regex': {
             mask: "r",
             greedy: false,
-            repeat: 10, //needs to be computed
+            repeat: "*",
             regex: null,
             regexSplit: null,
             definitions: {
