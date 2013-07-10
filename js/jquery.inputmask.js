@@ -63,12 +63,12 @@
                 ignorables: [9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123],
                 getMaskLength: function (buffer, greedy, repeat, currentBuffer, opts) {
                     var calculatedLength = buffer.length;
-                    if (!greedy) { 
-                     	if(repeat == "*") {
-                     		calculatedLength = currentBuffer.length + 1;
-                     	} else if(repeat > 1) {
-                        	calculatedLength += (buffer.length * (repeat - 1));
-                    	}
+                    if (!greedy) {
+                        if (repeat == "*") {
+                            calculatedLength = currentBuffer.length + 1;
+                        } else if (repeat > 1) {
+                            calculatedLength += (buffer.length * (repeat - 1));
+                        }
                     }
                     return calculatedLength;
                 }
@@ -232,7 +232,7 @@
             }
             function getMaskTemplate(mask) {
                 var escaped = false, outCount = 0, greedy = opts.greedy, repeat = opts.repeat;
-                if(repeat == "*") greedy = false;
+                if (repeat == "*") greedy = false;
                 if (mask.length == 1 && greedy == false) { opts.placeholder = ""; } //hide placeholder with single non-greedy mask
                 var singleMask = $.map(mask.split(""), function (element, index) {
                     var outElem = [];
@@ -1309,9 +1309,9 @@
                                 }
 
                                 //should we clear a possible selection??
-                                var isSelection = (pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode);
+                                var isSelection = (pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode), redetermineLVP = false;
                                 if (isSelection) {
-                                    var initialIndex = activeMasksetIndex, redetermineLVP = false;
+                                    var initialIndex = activeMasksetIndex;
                                     $.each(masksets, function (ndx, lmnt) {
                                         activeMasksetIndex = ndx;
                                         getActiveMaskSet()["undoBuffer"] = getActiveBuffer().join(''); //init undobuffer for recovery when not valid
@@ -1327,7 +1327,7 @@
                                             }
                                         }
                                         if (getActiveMaskSet()["lastValidPosition"] > pos.begin && getActiveMaskSet()["lastValidPosition"] < posend) {
-                                            getActiveMaskSet()["lastValidPosition"] = isRTL ? posend : pos.begin;
+                                            getActiveMaskSet()["lastValidPosition"] = isRTL ? seekNext(posend) : seekPrevious(pos.begin);
                                         } else {
                                             redetermineLVP = true;
                                         }
@@ -1378,6 +1378,9 @@
                                                             maskL = buffer.length;
                                                         }
                                                         shiftL(firstUnmaskedPosition, p, c);
+                                                        if (redetermineLVP && getActiveMaskSet()["lastValidPosition"] <= p) {
+                                                            getActiveMaskSet()["lastValidPosition"] = seekPrevious(getActiveMaskSet()["lastValidPosition"]);
+                                                        }
                                                     } else getActiveMaskSet()["writeOutBuffer"] = false;
                                                 } else setBufferElement(buffer, p, c, true, isRTL);
                                             }
@@ -1406,9 +1409,12 @@
                                                     while (getBufferElement(bfrClone, lastUnmaskedPosition, true) != getPlaceHolder(lastUnmaskedPosition) && lastUnmaskedPosition >= p) {
                                                         lastUnmaskedPosition = lastUnmaskedPosition == 0 ? -1 : seekPrevious(lastUnmaskedPosition);
                                                     }
-                                                    if (lastUnmaskedPosition >= p)
+                                                    if (lastUnmaskedPosition >= p) {
                                                         shiftR(p, buffer.length, c);
-                                                    else getActiveMaskSet()["writeOutBuffer"] = false;
+                                                        if (redetermineLVP && getActiveMaskSet()["lastValidPosition"] >= p) {
+                                                            getActiveMaskSet()["lastValidPosition"] = seekNext(getActiveMaskSet()["lastValidPosition"]);
+                                                        }
+                                                    } else getActiveMaskSet()["writeOutBuffer"] = false;
                                                 } else setBufferElement(buffer, p, c, true, isRTL);
                                             }
                                             getActiveMaskSet()["p"] = seekNext(p);
