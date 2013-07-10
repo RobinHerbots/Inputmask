@@ -10,10 +10,10 @@ Optional extensions on the jquery.inputmask base
 (function ($) {
     //extra definitions
     $.extend($.inputmask.defaults.definitions, {
-        'A': { //auto uppercasing
+        'A': { 
             validator: "[A-Za-z]",
             cardinality: 1,
-            casing: "upper"
+            casing: "upper" //auto uppercasing
         },
         '#': {
             validator: "[A-Za-z\u0410-\u044F\u0401\u04510-9]",
