@@ -349,8 +349,24 @@ $(document).ready(function(){
 
 ### auto upper/lower- casing inputmask
 
-see jquery.inputmask.extensions.js for an example how to define "auto"-casing in a definition (definition A)
-casing can be null, "upper" or "lower"
+You can define whitin a definition to automatically lowercase or uppercase the entry in an input by giving the casing.  
+Casing can be null, "upper" or "lower"
+```javascript
+    $.extend($.inputmask.defaults.definitions, {
+        'A': { 
+            validator: "[A-Za-z]",
+            cardinality: 1,
+            casing: "upper" //auto uppercasing
+        },
+        '#': {
+            validator: "[A-Za-z\u0410-\u044F\u0401\u04510-9]",
+            cardinality: 1,
+            casing: "upper"
+        }
+    });`
+```
+
+Include jquery.inputmask.extensions.js for using the A and # definitions.
 
 ```javascript
 $(document).ready(function(){
