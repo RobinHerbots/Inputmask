@@ -1,3 +1,5 @@
+module("Initial value setting");
+
 test( "inputmask(\"999:99\", { placeholder: \"0\"}) value=\"007:20\"", function() {
   $('body').append('<input type="text" id="testmask" value="007:20" />');
   $("#testmask").inputmask("999:99", { placeholder: "0"});
@@ -27,6 +29,21 @@ test( "inputmask(\"\\D\\E***\") ~ value=\"DE001\"", function() {
   $('body').append('<input type="text" id="testmask" value="DE001" />');
   $("#testmask").inputmask("\\D\\E***");
   equal( $("#testmask").val(), "DE001", "Result " + $("#testmask").val());
+  
+  $("#testmask").remove();
+});
+
+module("Simple masking");
+
+test( "inputmask(\"999.999.999\")", function() {
+  $('body').append('<input type="text" id="testmask" />');
+  $("#testmask").inputmask("999.999.999");
+  
+  $("#testmask")[0].focus();
+  
+  //need keystrokes
+  
+  equal( $("#testmask").val(), "123.___.___", "Result " + $("#testmask").val());
   
   $("#testmask").remove();
 });
