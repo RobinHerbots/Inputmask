@@ -870,6 +870,7 @@
                         }
                         $input.addClass('focus.inputmask');
                         getActiveMaskSet()["undoBuffer"] = input._valueGet();
+                        $input.click();
                     }).bind("mouseleave.inputmask", function () {
                         var $input = $(this), input = this;
                         if (opts.clearMaskOnLostFocus) {
