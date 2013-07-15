@@ -1379,8 +1379,10 @@
                                                             maskL = buffer.length;
                                                         }
                                                         shiftL(firstUnmaskedPosition, p, c);
-                                                        if (redetermineLVP && getActiveMaskSet()["lastValidPosition"] <= p) {
-                                                            getActiveMaskSet()["lastValidPosition"] = seekPrevious(getActiveMaskSet()["lastValidPosition"]);
+                                                        //shift the lvp if needed
+                                                        var lvp = getActiveMaskSet()["lastValidPosition"], plvp = seekPrevious(lvp);
+                                                        if (lvp <= p && (getBufferElement(getActiveBuffer(), plvp) != getPlaceHolder(plvp))) {
+                                                            getActiveMaskSet()["lastValidPosition"] = plvp;
                                                         }
                                                     } else getActiveMaskSet()["writeOutBuffer"] = false;
                                                 } else setBufferElement(buffer, p, c, true, isRTL);
@@ -1412,8 +1414,10 @@
                                                     }
                                                     if (lastUnmaskedPosition >= p) {
                                                         shiftR(p, buffer.length, c);
-                                                        if (redetermineLVP && getActiveMaskSet()["lastValidPosition"] >= p) {
-                                                            getActiveMaskSet()["lastValidPosition"] = seekNext(getActiveMaskSet()["lastValidPosition"]);
+                                                        //shift the lvp if needed
+                                                        var lvp = getActiveMaskSet()["lastValidPosition"], nlvp = seekNext(lvp);
+                                                        if (lvp >= p && (getBufferElement(getActiveBuffer(), nlvp) != getPlaceHolder(nlvp))) {
+                                                            getActiveMaskSet()["lastValidPosition"] = nlvp;
                                                         }
                                                     } else getActiveMaskSet()["writeOutBuffer"] = false;
                                                 } else setBufferElement(buffer, p, c, true, isRTL);

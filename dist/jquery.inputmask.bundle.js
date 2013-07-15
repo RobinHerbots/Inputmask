@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.2.67
+* Version: 2.2.68
 */
 
 (function ($) {
@@ -1379,8 +1379,10 @@
                                                             maskL = buffer.length;
                                                         }
                                                         shiftL(firstUnmaskedPosition, p, c);
-                                                        if (redetermineLVP && getActiveMaskSet()["lastValidPosition"] <= p) {
-                                                            getActiveMaskSet()["lastValidPosition"] = seekPrevious(getActiveMaskSet()["lastValidPosition"]);
+                                                        //shift the lvp if needed
+                                                        var lvp = getActiveMaskSet()["lastValidPosition"], plvp = seekPrevious(lvp);
+                                                        if (lvp <= p && (getBufferElement(getActiveBuffer(), plvp) != getPlaceHolder(plvp))) {
+                                                            getActiveMaskSet()["lastValidPosition"] = plvp;
                                                         }
                                                     } else getActiveMaskSet()["writeOutBuffer"] = false;
                                                 } else setBufferElement(buffer, p, c, true, isRTL);
@@ -1412,8 +1414,10 @@
                                                     }
                                                     if (lastUnmaskedPosition >= p) {
                                                         shiftR(p, buffer.length, c);
-                                                        if (redetermineLVP && getActiveMaskSet()["lastValidPosition"] >= p) {
-                                                            getActiveMaskSet()["lastValidPosition"] = seekNext(getActiveMaskSet()["lastValidPosition"]);
+                                                        //shift the lvp if needed
+                                                        var lvp = getActiveMaskSet()["lastValidPosition"], nlvp = seekNext(lvp);
+                                                        if (lvp >= p && (getBufferElement(getActiveBuffer(), nlvp) != getPlaceHolder(nlvp))) {
+                                                            getActiveMaskSet()["lastValidPosition"] = nlvp;
                                                         }
                                                     } else getActiveMaskSet()["writeOutBuffer"] = false;
                                                 } else setBufferElement(buffer, p, c, true, isRTL);
@@ -1477,7 +1481,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.67
+Version: 2.2.68
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1579,7 +1583,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.67
+Version: 2.2.68
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2048,7 +2052,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.67
+Version: 2.2.68
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2215,7 +2219,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.67
+Version: 2.2.68
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
