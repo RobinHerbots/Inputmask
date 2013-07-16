@@ -952,6 +952,8 @@
                         } else {
                             clearOptionalTail(el);
                         }
+                    } else {
+                        writeBuffer(el, getActiveBuffer());
                     }
 
                     installEventRuler(el);

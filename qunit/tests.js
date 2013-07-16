@@ -1,3 +1,34 @@
+module("Simple masking");
+
+test( "inputmask(\"99-99-99\", { clearMaskOnLostFocus: false}", function() {
+  $('body').append('<input type="text" id="testmask" />');
+  $("#testmask").inputmask("99-99-99", { clearMaskOnLostFocus: false});
+  
+  equal(document.getElementById("testmask").value, "__-__-__", "Result " + document.getElementById("testmask").value);
+  
+  $("#testmask").remove();
+});
+
+asyncTest( "inputmask(\"999.999.999\")", 1, function() {
+	window.robot.onload(function(){
+		$('body').append('<input type="text" id="testmask" />');
+		$("#testmask").inputmask("999.999.999");
+  
+		$("#testmask")[0].focus();
+  
+		window.robot.type(97, true, $.noop);
+		window.robot.type(98, true, $.noop);
+		window.robot.type(99, true, $.noop);
+  
+		equal( $("#testmask").val(), "123.___.___", "Result " + $("#testmask").val());
+  
+		$("#testmask").remove();
+		start();
+  });
+});
+
+
+
 module("Initial value setting");
 
 test( "inputmask(\"999:99\", { placeholder: \"0\"}) value=\"007:20\"", function() {
@@ -33,17 +64,3 @@ test( "inputmask(\"\\D\\E***\") ~ value=\"DE001\"", function() {
   $("#testmask").remove();
 });
 
-module("Simple masking");
-
-test( "inputmask(\"999.999.999\")", function() {
-  $('body').append('<input type="text" id="testmask" />');
-  $("#testmask").inputmask("999.999.999");
-  
-  $("#testmask")[0].focus();
-  
-  //need keystrokes
-  
-  equal( $("#testmask").val(), "123.___.___", "Result " + $("#testmask").val());
-  
-  $("#testmask").remove();
-});
