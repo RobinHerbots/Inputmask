@@ -1,3 +1,13 @@
+$.fn.SendKey = function(keyCode){
+	var keydown = $.Event( "keydown" ),
+		keypress = $.Event( "keypress" );
+		
+		keydown.keyCode = keyCode;
+		keypress.keyCode = keyCode;
+		$(this).trigger( keydown ).trigger( keypress );
+}
+
+
 module("Simple masking");
 
 test( "inputmask(\"99-99-99\", { clearMaskOnLostFocus: false}", function() {
@@ -9,22 +19,21 @@ test( "inputmask(\"99-99-99\", { clearMaskOnLostFocus: false}", function() {
   $("#testmask").remove();
 });
 
-asyncTest( "inputmask(\"999.999.999\")", 1, function() {
-	window.robot.onload(function(){
+test( "inputmask(\"999.999.999\")", function() {
 		$('body').append('<input type="text" id="testmask" />');
 		$("#testmask").inputmask("999.999.999");
   
 		$("#testmask")[0].focus();
   
-		window.robot.type(97, true, $.noop);
-		window.robot.type(98, true, $.noop);
-		window.robot.type(99, true, $.noop);
-  
+		var event;
+			     
+		$("#testmask").SendKey( 49 );
+		$("#testmask").SendKey( 50 );
+		$("#testmask").SendKey( 51 );
+				
 		equal( $("#testmask").val(), "123.___.___", "Result " + $("#testmask").val());
   
 		$("#testmask").remove();
-		start();
-  });
 });
 
 
