@@ -36,6 +36,27 @@ test( "inputmask(\"999.999.999\")", function() {
 		$("#testmask").remove();
 });
 
+asyncTest( "inputmask(\"999.999.999\", { oncomplete: ... })", 1,function() {
+		$('body').append('<input type="text" id="testmask" />');
+		$("#testmask").inputmask("999.999.999", {
+			oncomplete: function(){ 
+							equal( $("#testmask").val(), "123.456.789", "Result " + $("#testmask").val());
+							start();
+							$("#testmask").remove();
+						}
+		});
+  
+		$("#testmask")[0].focus();			     
+		$("#testmask").SendKey( 49 );
+		$("#testmask").SendKey( 50 );
+		$("#testmask").SendKey( 51 );
+		$("#testmask").SendKey( 52 );
+		$("#testmask").SendKey( 53 );
+		$("#testmask").SendKey( 54 );
+		$("#testmask").SendKey( 55 );
+		$("#testmask").SendKey( 56 );
+		$("#testmask").SendKey( 57 );		
+});
 
 
 module("Initial value setting");
@@ -73,3 +94,20 @@ test( "inputmask(\"\\D\\E***\") ~ value=\"DE001\"", function() {
   $("#testmask").remove();
 });
 
+test( "inputmask(\"decimal\") ~ value=\"123.45\"", function() {
+  $('body').append('<input type="text" id="testmask" value="123.45" />');
+  $("#testmask").inputmask("decimal");
+  equal( $("#testmask").val(), "123.45", "Result " + $("#testmask").val());
+  
+  $("#testmask").remove();
+});
+
+module("Set value with fn.val");
+test( "inputmask(\"decimal\") ~ value=\"123.45\"", function() {
+  $('body').append('<input type="text" id="testmask" />');
+  $("#testmask").inputmask("decimal");
+  $("#testmask").val("123.45");
+  equal( $("#testmask").val(), "123.45", "Result " + $("#testmask").val());
+  
+  $("#testmask").remove();
+});

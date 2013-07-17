@@ -1418,7 +1418,7 @@
                                                         shiftR(p, buffer.length, c);
                                                         //shift the lvp if needed
                                                         var lvp = getActiveMaskSet()["lastValidPosition"], nlvp = seekNext(lvp);
-                                                        if (lvp >= p && (getBufferElement(getActiveBuffer(), nlvp) != getPlaceHolder(nlvp))) {
+                                                        if (nlvp != getMaskLength() && lvp >= p && (getBufferElement(getActiveBuffer(), nlvp) != getPlaceHolder(nlvp))) {
                                                             getActiveMaskSet()["lastValidPosition"] = nlvp;
                                                         }
                                                     } else getActiveMaskSet()["writeOutBuffer"] = false;
