@@ -87,6 +87,27 @@ asyncTest("inputmask(\"9-AAA.999\") - change event", 1, function () {
     $("#testmask").blur();
 });
 
+asyncTest("inputmask(\"9-AAA.999\", { onincomplete: ... })", 1, function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("9-AAA.999", {
+        onincomplete: function () {
+            equal($("#testmask").val(), "1-ABC.12_", "Result " + $("#testmask").val());
+            start();
+            $("#testmask").remove();
+        }
+    });
+
+    $("#testmask")[0].focus();
+    $("#testmask").SendKey(49);
+    $("#testmask").SendKey(65);
+    $("#testmask").SendKey(66);
+    $("#testmask").SendKey(67);
+    $("#testmask").SendKey(49);
+    $("#testmask").SendKey(50);
+
+    $("#testmask").blur();
+});
+
 
 module("Initial value setting");
 
