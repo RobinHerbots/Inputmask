@@ -1,3 +1,8 @@
+var keyCodes = {
+    ALT: 18, BACKSPACE: 8, CAPS_LOCK: 20, COMMA: 188, COMMAND: 91, COMMAND_LEFT: 91, COMMAND_RIGHT: 93, CONTROL: 17, DELETE: 46, DOWN: 40, END: 35, ENTER: 13, ESCAPE: 27, HOME: 36, INSERT: 45, LEFT: 37, MENU: 93, NUMPAD_ADD: 107, NUMPAD_DECIMAL: 110, NUMPAD_DIVIDE: 111, NUMPAD_ENTER: 108,
+    NUMPAD_MULTIPLY: 106, NUMPAD_SUBTRACT: 109, PAGE_DOWN: 34, PAGE_UP: 33, PERIOD: 190, RIGHT: 39, SHIFT: 16, SPACE: 32, TAB: 9, UP: 38, WINDOWS: 91
+}
+
 $.fn.SendKey = function (keyCode) {
     function caret(input, begin, end) {
         var npt = input.jquery && input.length > 0 ? input[0] : input, range;
@@ -34,12 +39,12 @@ $.fn.SendKey = function (keyCode) {
     };
 
     switch (keyCode) {
-        case 37: {
+        case keyCodes.LEFT: {
             var pos = caret(this);
             caret(this, pos.begin - 1);
             break;
         }
-        case 38: {
+        case keyCodes.RIGHT: {
             var pos = caret(this);
             caret(this, pos.begin + 1);
             break;
@@ -176,11 +181,36 @@ test("inputmask(\"999.999.999\") - delete 2nd with backspace, continue the mask"
     $("#testmask").SendKey(49);
     $("#testmask").SendKey(50);
     $("#testmask").SendKey(51);
-    $("#testmask").SendKey(37);
-    $("#testmask").SendKey(37);
-    $("#testmask").SendKey(8);
+    $("#testmask").SendKey(keyCodes.LEFT);
+    $("#testmask").SendKey(keyCodes.LEFT);
+    $("#testmask").SendKey(keyCodes.BACKSPACE);
     $("#testmask").SendKey(52);
-    $("#testmask").SendKey(38);
+    $("#testmask").SendKey(keyCodes.RIGHT);
+    $("#testmask").SendKey(53);
+    $("#testmask").SendKey(54);
+
+    equal($("#testmask").val(), "143.56_.___", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"999.999.999\") - delete 2nd with delete, continue the mask", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("999.999.999");
+
+    $("#testmask")[0].focus();
+
+    var event;
+
+    $("#testmask").SendKey(49);
+    $("#testmask").SendKey(50);
+    $("#testmask").SendKey(51);
+    $("#testmask").SendKey(keyCodes.LEFT);
+    $("#testmask").SendKey(keyCodes.LEFT);
+    $("#testmask").SendKey(keyCodes.LEFT);
+    $("#testmask").SendKey(keyCodes.DELETE);
+    $("#testmask").SendKey(52);
+    $("#testmask").SendKey(keyCodes.RIGHT);
     $("#testmask").SendKey(53);
     $("#testmask").SendKey(54);
 
