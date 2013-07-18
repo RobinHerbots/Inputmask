@@ -820,7 +820,7 @@
                     $input.removeClass('focus.inputmask');
                     //bind events
                     $input.closest('form').bind("submit", function () { //trigger change on submit if any
-                        if ($input[0]._valueGet() != getActiveMaskSet()["undoBuffer"]) {
+                        if ($input[0]._valueGet && $input[0]._valueGet() != getActiveMaskSet()["undoBuffer"]) {
                             $input.change();
                         }
                     });
