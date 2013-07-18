@@ -51,8 +51,8 @@ $.fn.SendKey = function (keyCode) {
         }
         default: {
             var keydown = $.Event("keydown"),
-                keypress = $.Event("keypress");
-            keyup = $.Event("keyup");
+                keypress = $.Event("keypress"),
+                keyup = $.Event("keyup");
 
             keydown.keyCode = keyCode;
             $(this).trigger(keydown)
@@ -219,6 +219,52 @@ test("inputmask(\"999.999.999\") - delete 2nd with delete, continue the mask", f
     $("#testmask").remove();
 });
 
+test("RTL inputmask(\"999.999.999\") - delete 2nd with backspace, continue the mask", function () {
+    $('body').append('<input type="text" id="testmask" dir="rtl" />');
+    $("#testmask").inputmask("999.999.999");
+
+    $("#testmask")[0].focus();
+
+    var event;
+
+    $("#testmask").SendKey(49);
+    $("#testmask").SendKey(50);
+    $("#testmask").SendKey(51);
+    $("#testmask").SendKey(keyCodes.RIGHT);
+    $("#testmask").SendKey(keyCodes.RIGHT);
+    $("#testmask").SendKey(keyCodes.BACKSPACE);
+    $("#testmask").SendKey(52);
+    $("#testmask").SendKey(keyCodes.LEFT);
+    $("#testmask").SendKey(53);
+    $("#testmask").SendKey(54);
+
+    equal($("#testmask").val(), "___._65.341", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("RTL inputmask(\"999.999.999\") - delete 2nd with delete, continue the mask", function () {
+    $('body').append('<input type="text" id="testmask" dir="rtl" />');
+    $("#testmask").inputmask("999.999.999");
+
+    $("#testmask")[0].focus();
+
+    var event;
+
+    $("#testmask").SendKey(49);
+    $("#testmask").SendKey(50);
+    $("#testmask").SendKey(51);
+    $("#testmask").SendKey(keyCodes.RIGHT);
+    $("#testmask").SendKey(keyCodes.DELETE);
+    $("#testmask").SendKey(52);
+    $("#testmask").SendKey(keyCodes.LEFT);
+    $("#testmask").SendKey(53);
+    $("#testmask").SendKey(54);
+
+    equal($("#testmask").val(), "___._65.341", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
 
 module("Initial value setting");
 
