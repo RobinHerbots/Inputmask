@@ -646,10 +646,16 @@
 
                     var ml = getMaskLength();
                     $.each(inputValue, function (ndx, charCode) {
-                        var index = isRTL ? (opts.numericInput ? ml : ml - ndx) : ndx;
+                        var index = isRTL ? (opts.numericInput ? ml : ml - ndx) : ndx,
+                            lvp = getActiveMaskSet()["lastValidPosition"],
+                            pos = getActiveMaskSet()["p"];
+
+                        pos = lvp == undefined ? index : pos;
+                        lvp = lvp == undefined ? -1 : lvp;
+
                         if ((strict && isMask(isRTL ? index - 1 : index)) ||
                             ((charCode != getBufferElement(getActiveBufferTemplate().slice(), isRTL ? index - 1 : index, true) || isMask(isRTL ? index - 1 : index)) &&
-                             $.inArray(charCode, getActiveBufferTemplate().slice(getActiveMaskSet()["lastValidPosition"] + 1, getActiveMaskSet()["p"])) == -1)
+                             $.inArray(charCode, getActiveBufferTemplate().slice(lvp + 1, pos)) == -1)
                             ) {
                             $(input).trigger("keypress", [true, charCode.charCodeAt(0), writeOut, strict, index, isRTL]);
                         }

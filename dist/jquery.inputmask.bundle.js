@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.2.72
+* Version: 2.2.73
 */
 
 (function ($) {
@@ -646,10 +646,16 @@
 
                     var ml = getMaskLength();
                     $.each(inputValue, function (ndx, charCode) {
-                        var index = isRTL ? (opts.numericInput ? ml : ml - ndx) : ndx;
+                        var index = isRTL ? (opts.numericInput ? ml : ml - ndx) : ndx,
+                            lvp = getActiveMaskSet()["lastValidPosition"],
+                            pos = getActiveMaskSet()["p"];
+
+                        pos = lvp == undefined ? index : pos;
+                        lvp = lvp == undefined ? -1 : lvp;
+
                         if ((strict && isMask(isRTL ? index - 1 : index)) ||
                             ((charCode != getBufferElement(getActiveBufferTemplate().slice(), isRTL ? index - 1 : index, true) || isMask(isRTL ? index - 1 : index)) &&
-                             $.inArray(charCode, getActiveBufferTemplate().slice(getActiveMaskSet()["lastValidPosition"] + 1, getActiveMaskSet()["p"])) == -1)
+                             $.inArray(charCode, getActiveBufferTemplate().slice(lvp + 1, pos)) == -1)
                             ) {
                             $(input).trigger("keypress", [true, charCode.charCodeAt(0), writeOut, strict, index, isRTL]);
                         }
@@ -1483,7 +1489,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.72
+Version: 2.2.73
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1585,7 +1591,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.72
+Version: 2.2.73
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2054,7 +2060,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.72
+Version: 2.2.73
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2221,7 +2227,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.2.72
+Version: 2.2.73
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
