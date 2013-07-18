@@ -1,16 +1,64 @@
 $.fn.SendKey = function (keyCode) {
-    var keydown = $.Event("keydown"),
-		keypress = $.Event("keypress");
-    keyup = $.Event("keyup");
+    function caret(input, begin, end) {
+        var npt = input.jquery && input.length > 0 ? input[0] : input, range;
+        if (typeof begin == 'number') {
+            if (!$(input).is(':visible')) {
+                return;
+            }
+            end = (typeof end == 'number') ? end : begin;
+            if (npt.setSelectionRange) {
+                npt.selectionStart = begin;
+                npt.selectionEnd = end;
 
-    keydown.keyCode = keyCode;
-    $(this).trigger(keydown)
-    if (!keydown.isDefaultPrevented()) {
-        keypress.keyCode = keyCode;
-        $(this).trigger(keypress);
-        if (!keypress.isDefaultPrevented()) {
-            keyup.keyCode = keyCode;
-            $(this).trigger(keryup);
+            } else if (npt.createTextRange) {
+                range = npt.createTextRange();
+                range.collapse(true);
+                range.moveEnd('character', end);
+                range.moveStart('character', begin);
+                range.select();
+            }
+        } else {
+            if (!$(input).is(':visible')) {
+                return { "begin": 0, "end": 0 };
+            }
+            if (npt.setSelectionRange) {
+                begin = npt.selectionStart;
+                end = npt.selectionEnd;
+            } else if (document.selection && document.selection.createRange) {
+                range = document.selection.createRange();
+                begin = 0 - range.duplicate().moveStart('character', -100000);
+                end = begin + range.text.length;
+            }
+            return { "begin": begin, "end": end };
+        }
+    };
+
+    switch (keyCode) {
+        case 37: {
+            var pos = caret(this);
+            caret(this, pos.begin - 1);
+            break;
+        }
+        case 38: {
+            var pos = caret(this);
+            caret(this, pos.begin + 1);
+            break;
+        }
+        default: {
+            var keydown = $.Event("keydown"),
+                keypress = $.Event("keypress");
+            keyup = $.Event("keyup");
+
+            keydown.keyCode = keyCode;
+            $(this).trigger(keydown)
+            if (!keydown.isDefaultPrevented()) {
+                keypress.keyCode = keyCode;
+                $(this).trigger(keypress);
+                if (!keypress.isDefaultPrevented()) {
+                    keyup.keyCode = keyCode;
+                    $(this).trigger(keyup);
+                }
+            }
         }
     }
 }
@@ -115,6 +163,30 @@ asyncTest("inputmask(\"9-AAA.999\", { onincomplete: ... })", 1, function () {
     $("#testmask").SendKey(50);
 
     $("#testmask").blur();
+});
+
+test("inputmask(\"999.999.999\") - delete 2nd with backspace, continue the mask", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("999.999.999");
+
+    $("#testmask")[0].focus();
+
+    var event;
+
+    $("#testmask").SendKey(49);
+    $("#testmask").SendKey(50);
+    $("#testmask").SendKey(51);
+    $("#testmask").SendKey(37);
+    $("#testmask").SendKey(37);
+    $("#testmask").SendKey(8);
+    $("#testmask").SendKey(52);
+    $("#testmask").SendKey(38);
+    $("#testmask").SendKey(53);
+    $("#testmask").SendKey(54);
+
+    equal($("#testmask").val(), "143.56_.___", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
 });
 
 
