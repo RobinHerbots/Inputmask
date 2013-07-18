@@ -27,6 +27,15 @@ test("inputmask(\"99-99-99\", { clearMaskOnLostFocus: false}", function () {
     $("#testmask").remove();
 });
 
+test("inputmask(\"99-99-99\", { clearMaskOnLostFocus: true}", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("99-99-99", { clearMaskOnLostFocus: true });
+
+    equal(document.getElementById("testmask").value, "", "Result " + document.getElementById("testmask").value);
+
+    $("#testmask").remove();
+});
+
 test("inputmask(\"999.999.999\")", function () {
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("999.999.999");
