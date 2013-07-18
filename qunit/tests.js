@@ -318,3 +318,12 @@ test("inputmask(\"decimal\") ~ value=\"123.45\"", function () {
 
     $("#testmask").remove();
 });
+
+test("inputmask(\"+7 (999) 999-99-99\") ~ value=\"+7 (+79114041112___) ___-__-__\"", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("+7 (999) 999-99-99");
+    $("#testmask").val("+7 (+79114041112___) ___-__-__");
+    equal($("#testmask").val(), "+7 (911) 404-11-12", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
