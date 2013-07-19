@@ -334,7 +334,7 @@ test("inputmask(\"+7 (999) 999-99-99\") ~ value=\"+7 (+79114041112___) ___-__-__
     $("#testmask").remove();
 });
 
-module("Optional masks");
+module("Optional & multi masks");
 test("inputmask(\"(99) 9999[9]-99999\") - input 121234-12345", function () {
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("(99) 9999[9]-99999");
@@ -382,6 +382,58 @@ test("inputmask(\"(99) 9999[9]-99999\") - input 121234512345", function () {
 	$("#testmask").SendKey("5");
 	
     equal($("#testmask").val(), "(12) 12345-12345", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+test("inputmask({ mask: [\"999.999.999-99\", \"99.999.999/9999-99\"]}) - input 12312312312", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: ["999.999.999-99", "99.999.999/9999-99"] });
+
+    $("#testmask")[0].focus();
+
+    var event;
+
+    $("#testmask").SendKey("1");
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("3");
+    $("#testmask").SendKey("1");
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("3");
+    $("#testmask").SendKey("1");
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("3");
+    $("#testmask").SendKey("1");
+    $("#testmask").SendKey("2");
+	
+    equal($("#testmask").val(), "123.123.123-12", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+test("inputmask({ mask: [\"999.999.999-99\", \"99.999.999/9999-99\"]}) - input 12.123123123412", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: ["999.999.999-99", "99.999.999/9999-99"] });
+
+    $("#testmask")[0].focus();
+
+    var event;
+
+    $("#testmask").SendKey("1");
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey(".");
+    $("#testmask").SendKey("1");
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("3");
+    $("#testmask").SendKey("1");
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("3");
+    $("#testmask").SendKey("1");
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("3");
+    $("#testmask").SendKey("4");
+    $("#testmask").SendKey("1");
+    $("#testmask").SendKey("2");
+
+    equal($("#testmask").val(), "12.123.123/1234-12", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });
