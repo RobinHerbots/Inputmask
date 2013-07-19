@@ -233,16 +233,16 @@ test("RTL inputmask(\"999.999.999\") - delete 2nd with backspace, continue the m
 
     var event;
 
-    $("#testmask").SendKey(49);
-    $("#testmask").SendKey(50);
-    $("#testmask").SendKey(51);
+    $("#testmask").SendKey("1");
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("3");
     $("#testmask").SendKey(keyCodes.RIGHT);
     $("#testmask").SendKey(keyCodes.RIGHT);
     $("#testmask").SendKey(keyCodes.BACKSPACE);
-    $("#testmask").SendKey(52);
+    $("#testmask").SendKey("4");
     $("#testmask").SendKey(keyCodes.LEFT);
-    $("#testmask").SendKey(53);
-    $("#testmask").SendKey(54);
+    $("#testmask").SendKey("5");
+    $("#testmask").SendKey("6");
 
     equal($("#testmask").val(), "___._65.341", "Result " + $("#testmask").val());
 
@@ -257,15 +257,15 @@ test("RTL inputmask(\"999.999.999\") - delete 2nd with delete, continue the mask
 
     var event;
 
-    $("#testmask").SendKey(49);
-    $("#testmask").SendKey(50);
-    $("#testmask").SendKey(51);
+    $("#testmask").SendKey("1");
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("3");
     $("#testmask").SendKey(keyCodes.RIGHT);
     $("#testmask").SendKey(keyCodes.DELETE);
-    $("#testmask").SendKey(52);
+    $("#testmask").SendKey("4");
     $("#testmask").SendKey(keyCodes.LEFT);
-    $("#testmask").SendKey(53);
-    $("#testmask").SendKey(54);
+    $("#testmask").SendKey("5");
+    $("#testmask").SendKey("6");
 
     equal($("#testmask").val(), "___._65.341", "Result " + $("#testmask").val());
 
