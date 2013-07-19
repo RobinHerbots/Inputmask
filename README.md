@@ -55,6 +55,15 @@ $(document).ready(function(){
 });
 ```
 
+#### Default masking definitions
+
+  - 9 : numeric
+  - a : alfabetic
+  - * : alfanumeric 
+
+There are more definitions defined within the extensions.  
+You can find info within the js-files or by further exploring the options.
+
 ## Options:
 
 ### change the placeholder
