@@ -4,6 +4,12 @@ var keyCodes = {
 }
 
 $.fn.SendKey = function (keyCode) {
+	var sendDummyKeydown = false;
+    if ( Object.prototype.toString.call(keyCode) == '[object String]') {
+	  keyCode = keyCode.charCodeAt(0);
+	  sendDummyKeydown = true;
+	}
+
     function caret(input, begin, end) {
         var npt = input.jquery && input.length > 0 ? input[0] : input, range;
         if (typeof begin == 'number') {
@@ -54,8 +60,8 @@ $.fn.SendKey = function (keyCode) {
                 keypress = $.Event("keypress"),
                 keyup = $.Event("keyup");
 
-            keydown.keyCode = keyCode;
-            $(this).trigger(keydown)
+			if(!sendDummyKeydown) keydown.keyCode = keyCode;
+			$(this).trigger(keydown);
             if (!keydown.isDefaultPrevented()) {
                 keypress.keyCode = keyCode;
                 $(this).trigger(keypress);
@@ -324,6 +330,58 @@ test("inputmask(\"+7 (999) 999-99-99\") ~ value=\"+7 (+79114041112___) ___-__-__
     $("#testmask").inputmask("+7 (999) 999-99-99");
     $("#testmask").val("+7 (+79114041112___) ___-__-__");
     equal($("#testmask").val(), "+7 (911) 404-11-12", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+module("Optional masks");
+test("inputmask(\"(99) 9999[9]-99999\") - input 121234-12345", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("(99) 9999[9]-99999");
+
+    $("#testmask")[0].focus();
+
+    var event;
+
+    $("#testmask").SendKey("1");
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("1");
+	$("#testmask").SendKey("2");
+	$("#testmask").SendKey("3");
+	$("#testmask").SendKey("4");
+	$("#testmask").SendKey("-");
+    $("#testmask").SendKey("1");
+	$("#testmask").SendKey("2");
+	$("#testmask").SendKey("3");
+	$("#testmask").SendKey("4");
+	$("#testmask").SendKey("5");
+	
+    equal($("#testmask").val(), "(12) 1234-12345", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+test("inputmask(\"(99) 9999[9]-99999\") - input 121234512345", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("(99) 9999[9]-99999");
+
+    $("#testmask")[0].focus();
+
+    var event;
+
+    $("#testmask").SendKey("1");
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("1");
+	$("#testmask").SendKey("2");
+	$("#testmask").SendKey("3");
+	$("#testmask").SendKey("4");
+	$("#testmask").SendKey("5");
+    $("#testmask").SendKey("1");
+	$("#testmask").SendKey("2");
+	$("#testmask").SendKey("3");
+	$("#testmask").SendKey("4");
+	$("#testmask").SendKey("5");
+	
+    equal($("#testmask").val(), "(12) 12345-12345", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });
