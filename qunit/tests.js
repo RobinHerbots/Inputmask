@@ -3,12 +3,12 @@ var keyCodes = {
     NUMPAD_MULTIPLY: 106, NUMPAD_SUBTRACT: 109, PAGE_DOWN: 34, PAGE_UP: 33, PERIOD: 190, RIGHT: 39, SHIFT: 16, SPACE: 32, TAB: 9, UP: 38, WINDOWS: 91
 }
 
-$.fn.SendKey = function (keyCode) {
-	var sendDummyKeydown = false;
-    if ( Object.prototype.toString.call(keyCode) == '[object String]') {
-	  keyCode = keyCode.charCodeAt(0);
-	  sendDummyKeydown = true;
-	}
+$.fn.SendKey = function (keyCode, modifier) {
+    var sendDummyKeydown = false;
+    if (Object.prototype.toString.call(keyCode) == '[object String]') {
+        keyCode = keyCode.charCodeAt(0);
+        sendDummyKeydown = true;
+    }
 
     function caret(input, begin, end) {
         var npt = input.jquery && input.length > 0 ? input[0] : input, range;
@@ -46,34 +46,51 @@ $.fn.SendKey = function (keyCode) {
 
     switch (keyCode) {
         case keyCodes.LEFT: {
-            var pos = caret(this);
-            caret(this, pos.begin - 1);
-            break;
+            if (modifier == undefined) {
+                var pos = caret(this);
+                caret(this, pos.begin - 1);
+                break;
+            }
         }
         case keyCodes.RIGHT: {
-            var pos = caret(this);
-            caret(this, pos.begin + 1);
-            break;
+            if (modifier == undefined) {
+                var pos = caret(this);
+                caret(this, pos.begin + 1);
+                break;
+            }
         }
         default: {
             var keydown = $.Event("keydown"),
                 keypress = $.Event("keypress"),
                 keyup = $.Event("keyup");
 
-			if(!sendDummyKeydown) keydown.keyCode = keyCode;
-			$(this).trigger(keydown);
+            if (!sendDummyKeydown) {
+                keydown.keyCode = keyCode;
+                if (modifier == keyCodes.CONTROL)
+                    keydown.ctrlKey = true;
+            }
+            $(this).trigger(keydown);
             if (!keydown.isDefaultPrevented()) {
                 keypress.keyCode = keyCode;
+                if (modifier == keyCodes.CONTROL)
+                    keypress.ctrlKey = true;
                 $(this).trigger(keypress);
                 if (!keypress.isDefaultPrevented()) {
                     keyup.keyCode = keyCode;
+                    if (modifier == keyCodes.CONTROL)
+                        keyup.ctrlKey = true;
                     $(this).trigger(keyup);
                 }
             }
         }
     }
 }
-
+$.fn.Type = function (inputStr) {
+    var $input = $(this);
+    $.each(inputStr.split(''), function (ndx, lmnt) {
+        $input.SendKey(lmnt);
+    });
+}
 
 module("Simple masking");
 
@@ -346,16 +363,16 @@ test("inputmask(\"(99) 9999[9]-99999\") - input 121234-12345", function () {
     $("#testmask").SendKey("1");
     $("#testmask").SendKey("2");
     $("#testmask").SendKey("1");
-	$("#testmask").SendKey("2");
-	$("#testmask").SendKey("3");
-	$("#testmask").SendKey("4");
-	$("#testmask").SendKey("-");
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("3");
+    $("#testmask").SendKey("4");
+    $("#testmask").SendKey("-");
     $("#testmask").SendKey("1");
-	$("#testmask").SendKey("2");
-	$("#testmask").SendKey("3");
-	$("#testmask").SendKey("4");
-	$("#testmask").SendKey("5");
-	
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("3");
+    $("#testmask").SendKey("4");
+    $("#testmask").SendKey("5");
+
     equal($("#testmask").val(), "(12) 1234-12345", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
@@ -371,16 +388,16 @@ test("inputmask(\"(99) 9999[9]-99999\") - input 121234512345", function () {
     $("#testmask").SendKey("1");
     $("#testmask").SendKey("2");
     $("#testmask").SendKey("1");
-	$("#testmask").SendKey("2");
-	$("#testmask").SendKey("3");
-	$("#testmask").SendKey("4");
-	$("#testmask").SendKey("5");
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("3");
+    $("#testmask").SendKey("4");
+    $("#testmask").SendKey("5");
     $("#testmask").SendKey("1");
-	$("#testmask").SendKey("2");
-	$("#testmask").SendKey("3");
-	$("#testmask").SendKey("4");
-	$("#testmask").SendKey("5");
-	
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("3");
+    $("#testmask").SendKey("4");
+    $("#testmask").SendKey("5");
+
     equal($("#testmask").val(), "(12) 12345-12345", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
@@ -404,7 +421,7 @@ test("inputmask({ mask: [\"999.999.999-99\", \"99.999.999/9999-99\"]}) - input 1
     $("#testmask").SendKey("3");
     $("#testmask").SendKey("1");
     $("#testmask").SendKey("2");
-	
+
     equal($("#testmask").val(), "123.123.123-12", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
@@ -434,6 +451,242 @@ test("inputmask({ mask: [\"999.999.999-99\", \"99.999.999/9999-99\"]}) - input 1
     $("#testmask").SendKey("2");
 
     equal($("#testmask").val(), "12.123.123/1234-12", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+module("Date.Extensions");
+test("inputmask(\"dd/mm/yyyy\") - input 2331973", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("dd/mm/yyyy");
+
+    $("#testmask")[0].focus();
+
+    var event;
+
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("3");
+    $("#testmask").SendKey("3");
+    $("#testmask").SendKey("1");
+    $("#testmask").SendKey("9");
+    $("#testmask").SendKey("7");
+    $("#testmask").SendKey("3");
+
+    equal($("#testmask").val(), "23/03/1973", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+test("inputmask(\"mm/dd/yyyy\") - input 3231973", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("mm/dd/yyyy");
+
+    $("#testmask")[0].focus();
+
+    var event;
+
+    $("#testmask").SendKey("3");
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("3");
+    $("#testmask").SendKey("1");
+    $("#testmask").SendKey("9");
+    $("#testmask").SendKey("7");
+    $("#testmask").SendKey("3");
+
+    equal($("#testmask").val(), "03/23/1973", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"dd/mm/yyyy\") - input 29022012", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("dd/mm/yyyy");
+
+    $("#testmask")[0].focus();
+
+    var event;
+
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("9");
+    $("#testmask").SendKey("0");
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("0");
+    $("#testmask").SendKey("1");
+    $("#testmask").SendKey("2");
+
+    equal($("#testmask").val(), "29/02/2012", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"dd/mm/yyyy\") - input 29022013", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("dd/mm/yyyy");
+
+    $("#testmask")[0].focus();
+
+    var event;
+
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("9");
+    $("#testmask").SendKey("0");
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("0");
+    $("#testmask").SendKey("1");
+    $("#testmask").SendKey("3");
+
+    equal($("#testmask").val(), "29/02/201y", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"mm/dd/yyyy\") - input 02292012", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("mm/dd/yyyy");
+
+    $("#testmask")[0].focus();
+
+    var event;
+
+    $("#testmask").SendKey("0");
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("9");
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("0");
+    $("#testmask").SendKey("1");
+    $("#testmask").SendKey("2");
+
+    equal($("#testmask").val(), "02/29/2012", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"mm/dd/yyyy\") - input 02292013", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("mm/dd/yyyy");
+
+    $("#testmask")[0].focus();
+
+    var event;
+
+    $("#testmask").SendKey("0");
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("9");
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("0");
+    $("#testmask").SendKey("1");
+    $("#testmask").SendKey("3");
+
+    equal($("#testmask").val(), "02/29/201y", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"dd/mm/yyyy\") - input CTRL RIGHT", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("dd/mm/yyyy");
+
+    $("#testmask")[0].focus();
+
+    var event;
+
+    $("#testmask").SendKey(keyCodes.RIGHT, keyCodes.CONTROL);
+
+    ok($("#testmask").val() != "dd/mm/yyyy", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"dd/mm/yyyy\") - input 2331973 BACKSPACE x4 2013", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("dd/mm/yyyy");
+
+    $("#testmask")[0].focus();
+
+    var event;
+
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("3");
+    $("#testmask").SendKey("3");
+    $("#testmask").SendKey("1");
+    $("#testmask").SendKey("9");
+    $("#testmask").SendKey("7");
+    $("#testmask").SendKey("3");
+    $("#testmask").SendKey(keyCodes.BACKSPACE);
+    $("#testmask").SendKey(keyCodes.BACKSPACE);
+    $("#testmask").SendKey(keyCodes.BACKSPACE);
+    $("#testmask").SendKey(keyCodes.BACKSPACE);
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("0");
+    $("#testmask").SendKey("1");
+    $("#testmask").SendKey("3");
+
+    equal($("#testmask").val(), "23/03/2013", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+module("Numeric.Extensions");
+test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - input 12345.123", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("decimal", { autoGroup: true, groupSeparator: "," });
+
+    $("#testmask")[0].focus();
+
+    var event;
+
+    $("#testmask").SendKey("1");
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("3");
+    $("#testmask").SendKey("4");
+    $("#testmask").SendKey("5");
+    $("#testmask").SendKey(".");
+    $("#testmask").SendKey("1");
+    $("#testmask").SendKey("2");
+    $("#testmask").SendKey("3");
+
+    equal($("#testmask").val(), "12,345.123", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - input 12345.123 click del del del", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("decimal", { autoGroup: true, groupSeparator: "," });
+
+    $("#testmask")[0].focus();
+
+    var event;
+
+    $("#testmask").Type("12345.123");
+    $("#testmask").click();
+    $("#testmask").SendKey(keyCodes.DELETE);
+    $("#testmask").SendKey(keyCodes.DELETE);
+    $("#testmask").SendKey(keyCodes.DELETE);
+
+    equal($("#testmask").val(), "12,345", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - input 12345.123 click del del del .789", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("decimal", { autoGroup: true, groupSeparator: "," });
+
+    $("#testmask")[0].focus();
+
+    var event;
+
+    $("#testmask").Type("12345.123");
+    $("#testmask").click();
+    $("#testmask").SendKey(keyCodes.DELETE);
+    $("#testmask").SendKey(keyCodes.DELETE);
+    $("#testmask").SendKey(keyCodes.DELETE);
+    $("#testmask").Type(".789");
+
+    equal($("#testmask").val(), "12,345.789", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });
