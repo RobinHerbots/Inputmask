@@ -896,7 +896,6 @@
                                 var clickPosition = selectedCaret.begin,
                                     lvp = getActiveMaskSet()["lastValidPosition"],
                                     lastPosition;
-
                                 determineInputDirection(input, selectedCaret);
                                 if (isRTL) {
                                     if (opts.numericInput) {
@@ -1248,7 +1247,6 @@
 
                             determineActiveMasksetIndex(isRTL);
                             writeBuffer(input, getActiveBuffer(), getActiveMaskSet()["p"]);
-                            $(input).click(); //dirty fix should be fixed later
                             if (input._valueGet() == getActiveBufferTemplate().join(''))
                                 $(input).trigger('cleared');
 
@@ -1282,8 +1280,9 @@
                                 }, 0);
                             }
                         }
-
+                        var caretPos = caret(input);
                         opts.onKeyDown.call(this, e, getActiveBuffer(), opts); //extra stuff to execute on keydown
+                        caret(input, caretPos.begin, caretPos.end);
                         ignorable = $.inArray(k, opts.ignorables) != -1;
                     }
 
@@ -1470,7 +1469,9 @@
 
                     function keyupEvent(e) {
                         var $input = $(this), input = this, k = e.keyCode, buffer = getActiveBuffer();
+                        var caretPos = caret(input);
                         opts.onKeyUp.call(this, e, buffer, opts); //extra stuff to execute on keyup
+                        caret(input, caretPos.begin, caretPos.end);
                         if (k == opts.keyCode.TAB && $input.hasClass('focus.inputmask') && input._valueGet().length == 0 && opts.showMaskOnFocus) {
                             buffer = getActiveBufferTemplate().slice();
                             writeBuffer(input, buffer);
