@@ -473,6 +473,47 @@ test("inputmask({ mask: [\"999.999.999-99\", \"99.999.999/9999-99\"]}) - input 1
     $("#testmask").remove();
 });
 
+test("inputmask({ mask: [\"99999\", \"99999-9999\"]]}) - input 12345", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: ["99999", "99999-9999"] });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("12345");
+    equal($("#testmask").val(), "12345", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+test("inputmask({ mask: [\"99999\", \"99999-9999\"]]}) - input 12345-1234", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: ["99999", "99999-9999"] });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("12345-1234");
+    equal($("#testmask").val(), "12345-1234", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+test("inputmask({ mask: [\"99999\", \"99999-9999\"]]}) - input 123451234", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: ["99999", "99999-9999"] });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123451234");
+    equal($("#testmask").val(), "12345-1234", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+test("inputmask({ mask: [\"99999\", \"99999-9999\"]]}) - input 1234512", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: ["99999", "99999-9999"] });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("1234512");
+    equal($("#testmask").val(), "12345-12__", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
 module("Date.Extensions");
 test("inputmask(\"dd/mm/yyyy\") - input 2331973", function () {
     $('body').append('<input type="text" id="testmask" />');
