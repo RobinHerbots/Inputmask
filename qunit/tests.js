@@ -289,6 +289,24 @@ test("RTL inputmask(\"999.999.999\") - delete 2nd with delete, continue the mask
     $("#testmask").remove();
 });
 
+test("inputmask(\"*****\")", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("*****");
+
+    $("#testmask")[0].focus();
+
+    var event;
+
+    $("#testmask").Type("abe");
+    $("#testmask").SendKey(keyCodes.LEFT);
+    $("#testmask").Type("cd");
+
+    equal($("#testmask").val(), "abcde", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+
 module("Initial value setting");
 
 test("inputmask(\"999:99\", { placeholder: \"0\"}) value=\"007:20\"", function () {
@@ -662,6 +680,7 @@ test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - inp
     var event;
 
     $("#testmask").Type("12345.123");
+    $("#testmask")[0].focus();
     $("#testmask").click();
     $("#testmask").SendKey(keyCodes.DELETE);
     $("#testmask").SendKey(keyCodes.DELETE);
@@ -674,6 +693,45 @@ test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - inp
 test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - input 12345.123 click del del del .789", function () {
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("decimal", { autoGroup: true, groupSeparator: "," });
+
+    $("#testmask")[0].focus();
+
+    var event;
+
+    $("#testmask").Type("12345.123");
+    $("#testmask").click();
+    $("#testmask").SendKey(keyCodes.DELETE);
+    $("#testmask").SendKey(keyCodes.DELETE);
+    $("#testmask").SendKey(keyCodes.DELETE);
+    $("#testmask").Type(".789");
+
+    equal($("#testmask").val(), "12,345.789", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"decimal\", { autoGroup: false, groupSeparator: \",\" }\") - input 12345.123 click del del del", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("decimal", { autoGroup: false, groupSeparator: "," });
+
+    $("#testmask")[0].focus();
+
+    var event;
+
+    $("#testmask").Type("12345.123");
+    $("#testmask")[0].focus();
+    $("#testmask").click();
+    $("#testmask").SendKey(keyCodes.DELETE);
+    $("#testmask").SendKey(keyCodes.DELETE);
+    $("#testmask").SendKey(keyCodes.DELETE);
+
+    equal($("#testmask").val(), "12,345", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+test("inputmask(\"decimal\", { autoGroup: false, groupSeparator: \",\" }\") - input 12345.123 click del del del .789", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("decimal", { autoGroup: false, groupSeparator: "," });
 
     $("#testmask")[0].focus();
 

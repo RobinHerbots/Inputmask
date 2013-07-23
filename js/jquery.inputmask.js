@@ -1248,6 +1248,7 @@
 
                             determineActiveMasksetIndex(isRTL);
                             writeBuffer(input, getActiveBuffer(), getActiveMaskSet()["p"]);
+                            $(input).click(); //dirty fix should be fixed later
                             if (input._valueGet() == getActiveBufferTemplate().join(''))
                                 $(input).trigger('cleared');
 
@@ -1448,7 +1449,7 @@
                                         setTimeout(function () { opts.onKeyValidation.call(self, result["result"], opts); }, 0);
                                         if (getActiveMaskSet()["writeOutBuffer"] && result["result"] !== false) {
                                             var buffer = getActiveBuffer();
-                                            writeBuffer(input, buffer, checkval ? undefined : (opts.numericInput ? seekNext(getActiveMaskSet()["p"]) : getActiveMaskSet()["p"]));
+                                            writeBuffer(input, buffer, checkval ? undefined : ((opts.numericInput && isRTL) ? seekNext(getActiveMaskSet()["p"]) : getActiveMaskSet()["p"]));
                                             setTimeout(function () { //timeout needed for IE
                                                 if (isComplete(buffer))
                                                     $input.trigger("complete");
