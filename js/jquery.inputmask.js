@@ -465,8 +465,12 @@
                                 results.push({ "activeMasksetIndex": index, "result": { "refresh": true, c: activeMaskset['_buffer'][maskPos] } }); //new command hack only rewrite buffer
                                 activeMaskset['lastValidPosition'] = maskPos;
                                 return false;
-                            } else activeMaskset['lastValidPosition'] = isRTL ? getMaskLength() + 1 : -1; //mark mask as validated and invalid
-                            //maskPos = isRTL ? seekPrevious(pos) : seekNext(pos);
+                            } else {
+                                if (masksets[currentActiveMasksetIndex]["lastValidPosition"] >= maskPos)
+                                    activeMaskset['lastValidPosition'] = isRTL ? getMaskLength() + 1 : -1; //mark mask as validated and invalid
+                                else maskPos = isRTL ? seekPrevious(pos) : seekNext(pos);
+                            }
+
                         }
                         if ((activeMaskset['lastValidPosition'] == undefined
                                 && maskPos == (isRTL ? seekPrevious(getMaskLength()) : seekNext(-1))

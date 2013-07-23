@@ -514,6 +514,28 @@ test("inputmask({ mask: [\"99999\", \"99999-9999\"]]}) - input 1234512", functio
     $("#testmask").remove();
 });
 
+test("inputmask({ mask: [\"99999\", \"99999-9999\"]]}) - input 1234561234", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: ["99999", "99999-9999", "999999-9999" ] });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("1234561234");
+    equal($("#testmask").val(), "123456-1234", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+test("inputmask({ mask: [\"99999\", \"99999-9999\"]]}) - input 123456", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: ["99999", "99999-9999", "999999-9999"] });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123456");
+    equal($("#testmask").val(), "12345-6___", "Result " + $("#testmask").val());
+    //this is correct as see sequence of the masks || currently "99999-9999", "999999-9999" are valid and thus showing "99999-9999"
+
+    $("#testmask").remove();
+});
+
 module("Date.Extensions");
 test("inputmask(\"dd/mm/yyyy\") - input 2331973", function () {
     $('body').append('<input type="text" id="testmask" />');
