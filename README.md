@@ -55,6 +55,15 @@ $(document).ready(function(){
 });
 ```
 
+#### Default masking definitions
+
+  - 9 : numeric
+  - a : alfabetic
+  - * : alfanumeric 
+
+There are more definitions defined within the extensions.  
+You can find info within the js-files or by further exploring the options.
+
 ## Options:
 
 ### change the placeholder
@@ -307,6 +316,16 @@ While the field has focus and is blank, users will see the full mask `___-___`.
 When the required part of the mask is filled and the field loses focus, the user will see `123`.
 When both the required and optional parts of the mask are filled out and the field loses focus, the user will see `123-ABC`.
 
+#### Optional masks with greedy false
+
+When defining an optional mask together with the greedy: false option, the inputmask will show the smallest possible mask as input first.
+
+```javascript
+$(selector).inputmask({ mask: "99999[-9999]", greedy: false });
+```
+
+The initial mask shown will be "_____" instead of "_____-____". 
+
 ### Multiple masks
 
 You can define multiple mask for your input.  Depending on the input the masking will switch between the defined masks.  
@@ -349,8 +368,24 @@ $(document).ready(function(){
 
 ### auto upper/lower- casing inputmask
 
-see jquery.inputmask.extensions.js for an example how to define "auto"-casing in a definition (definition A)
-casing can be null, "upper" or "lower"
+You can define whitin a definition to automatically lowercase or uppercase the entry in an input by giving the casing.  
+Casing can be null, "upper" or "lower"
+```javascript
+    $.extend($.inputmask.defaults.definitions, {
+        'A': { 
+            validator: "[A-Za-z]",
+            cardinality: 1,
+            casing: "upper" //auto uppercasing
+        },
+        '#': {
+            validator: "[A-Za-z\u0410-\u044F\u0401\u04510-9]",
+            cardinality: 1,
+            casing: "upper"
+        }
+    });`
+```
+
+Include jquery.inputmask.extensions.js for using the A and # definitions.
 
 ```javascript
 $(document).ready(function(){

@@ -21,7 +21,7 @@
                 oncomplete: $.noop, //executes when the mask is complete
                 onincomplete: $.noop, //executes when the mask is incomplete and focus is lost
                 oncleared: $.noop, //executes when the mask is cleared
-                repeat: "*", //repetitions of the mask: * ~ forever, otherwise specify an integer
+                repeat: 0, //repetitions of the mask: * ~ forever, otherwise specify an integer
                 greedy: true, //true: allocated buffer for the mask and repetitions - false: allocate only if needed
                 autoUnmask: false, //automatically unmask when retrieving the value with $.fn.val or value if the browser supports __lookupGetter__ or getOwnPropertyDescriptor
                 clearMaskOnLostFocus: true,
@@ -63,12 +63,12 @@
                 ignorables: [9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123],
                 getMaskLength: function (buffer, greedy, repeat, currentBuffer, opts) {
                     var calculatedLength = buffer.length;
-                    if (!greedy) { 
-                     	if(repeat == "*") {
-                     		calculatedLength = currentBuffer.length + 1;
-                     	} else if(repeat > 1) {
-                        	calculatedLength += (buffer.length * (repeat - 1));
-                    	}
+                    if (!greedy) {
+                        if (repeat == "*") {
+                            calculatedLength = currentBuffer.length + 1;
+                        } else if (repeat > 1) {
+                            calculatedLength += (buffer.length * (repeat - 1));
+                        }
                     }
                     return calculatedLength;
                 }
@@ -232,7 +232,7 @@
             }
             function getMaskTemplate(mask) {
                 var escaped = false, outCount = 0, greedy = opts.greedy, repeat = opts.repeat;
-                if(repeat == "*") greedy = false;
+                if (repeat == "*") greedy = false;
                 if (mask.length == 1 && greedy == false) { opts.placeholder = ""; } //hide placeholder with single non-greedy mask
                 var singleMask = $.map(mask.split(""), function (element, index) {
                     var outElem = [];
@@ -404,7 +404,7 @@
                     });
                 } else generateMask("", opts.mask.toString());
 
-                return ms;
+                return opts.greedy ? ms : ms.sort(function (a, b) { return a["mask"].length - b["mask"].length; });
             }
             function getPlaceHolder(pos) {
                 return opts.placeholder.charAt(pos % opts.placeholder.length);
@@ -465,8 +465,12 @@
                                 results.push({ "activeMasksetIndex": index, "result": { "refresh": true, c: activeMaskset['_buffer'][maskPos] } }); //new command hack only rewrite buffer
                                 activeMaskset['lastValidPosition'] = maskPos;
                                 return false;
-                            } else activeMaskset['lastValidPosition'] = isRTL ? getMaskLength() + 1 : -1; //mark mask as validated and invalid
-                            //maskPos = isRTL ? seekPrevious(pos) : seekNext(pos);
+                            } else {
+                                if (masksets[currentActiveMasksetIndex]["lastValidPosition"] >= maskPos)
+                                    activeMaskset['lastValidPosition'] = isRTL ? getMaskLength() + 1 : -1; //mark mask as validated and invalid
+                                else maskPos = isRTL ? seekPrevious(pos) : seekNext(pos);
+                            }
+
                         }
                         if ((activeMaskset['lastValidPosition'] == undefined
                                 && maskPos == (isRTL ? seekPrevious(getMaskLength()) : seekNext(-1))
@@ -646,10 +650,16 @@
 
                     var ml = getMaskLength();
                     $.each(inputValue, function (ndx, charCode) {
-                        var index = isRTL ? (opts.numericInput ? ml : ml - ndx) : ndx;
+                        var index = isRTL ? (opts.numericInput ? ml : ml - ndx) : ndx,
+                            lvp = getActiveMaskSet()["lastValidPosition"],
+                            pos = getActiveMaskSet()["p"];
+
+                        pos = lvp == undefined ? index : pos;
+                        lvp = lvp == undefined ? -1 : lvp;
+
                         if ((strict && isMask(isRTL ? index - 1 : index)) ||
-                            (charCode != getBufferElement(getActiveBufferTemplate().slice(), isRTL ? index - 1 : index, true) &&
-                             $.inArray(charCode, getActiveBufferTemplate().slice(getActiveMaskSet()["lastValidPosition"] + 1, getActiveMaskSet()["p"])) == -1)
+                            ((charCode != getBufferElement(getActiveBufferTemplate().slice(), isRTL ? index - 1 : index, true) || isMask(isRTL ? index - 1 : index)) &&
+                             $.inArray(charCode, getActiveBufferTemplate().slice(lvp + 1, pos)) == -1)
                             ) {
                             $(input).trigger("keypress", [true, charCode.charCodeAt(0), writeOut, strict, index, isRTL]);
                         }
@@ -820,7 +830,7 @@
                     $input.removeClass('focus.inputmask');
                     //bind events
                     $input.closest('form').bind("submit", function () { //trigger change on submit if any
-                        if ($input[0]._valueGet() != getActiveMaskSet()["undoBuffer"]) {
+                        if ($input[0]._valueGet && $input[0]._valueGet() != getActiveMaskSet()["undoBuffer"]) {
                             $input.change();
                         }
                     });
@@ -870,6 +880,7 @@
                         }
                         $input.addClass('focus.inputmask');
                         getActiveMaskSet()["undoBuffer"] = input._valueGet();
+                        $input.click();
                     }).bind("mouseleave.inputmask", function () {
                         var $input = $(this), input = this;
                         if (opts.clearMaskOnLostFocus) {
@@ -889,7 +900,6 @@
                                 var clickPosition = selectedCaret.begin,
                                     lvp = getActiveMaskSet()["lastValidPosition"],
                                     lastPosition;
-
                                 determineInputDirection(input, selectedCaret);
                                 if (isRTL) {
                                     if (opts.numericInput) {
@@ -951,6 +961,8 @@
                         } else {
                             clearOptionalTail(el);
                         }
+                    } else {
+                        writeBuffer(el, getActiveBuffer());
                     }
 
                     installEventRuler(el);
@@ -1272,8 +1284,9 @@
                                 }, 0);
                             }
                         }
-
+                        var caretPos = caret(input);
                         opts.onKeyDown.call(this, e, getActiveBuffer(), opts); //extra stuff to execute on keydown
+                        caret(input, caretPos.begin, caretPos.end);
                         ignorable = $.inArray(k, opts.ignorables) != -1;
                     }
 
@@ -1309,9 +1322,9 @@
                                 }
 
                                 //should we clear a possible selection??
-                                var isSelection = (pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode);
+                                var isSelection = (pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode), redetermineLVP = false;
                                 if (isSelection) {
-                                    var initialIndex = activeMasksetIndex, redetermineLVP = false;
+                                    var initialIndex = activeMasksetIndex;
                                     $.each(masksets, function (ndx, lmnt) {
                                         activeMasksetIndex = ndx;
                                         getActiveMaskSet()["undoBuffer"] = getActiveBuffer().join(''); //init undobuffer for recovery when not valid
@@ -1327,7 +1340,7 @@
                                             }
                                         }
                                         if (getActiveMaskSet()["lastValidPosition"] > pos.begin && getActiveMaskSet()["lastValidPosition"] < posend) {
-                                            getActiveMaskSet()["lastValidPosition"] = isRTL ? posend : pos.begin;
+                                            getActiveMaskSet()["lastValidPosition"] = isRTL ? seekNext(posend) : seekPrevious(pos.begin);
                                         } else {
                                             redetermineLVP = true;
                                         }
@@ -1378,6 +1391,11 @@
                                                             maskL = buffer.length;
                                                         }
                                                         shiftL(firstUnmaskedPosition, p, c);
+                                                        //shift the lvp if needed
+                                                        var lvp = getActiveMaskSet()["lastValidPosition"], plvp = seekPrevious(lvp);
+                                                        if (lvp <= p && (getBufferElement(getActiveBuffer(), plvp) != getPlaceHolder(plvp))) {
+                                                            getActiveMaskSet()["lastValidPosition"] = plvp;
+                                                        }
                                                     } else getActiveMaskSet()["writeOutBuffer"] = false;
                                                 } else setBufferElement(buffer, p, c, true, isRTL);
                                             }
@@ -1406,9 +1424,14 @@
                                                     while (getBufferElement(bfrClone, lastUnmaskedPosition, true) != getPlaceHolder(lastUnmaskedPosition) && lastUnmaskedPosition >= p) {
                                                         lastUnmaskedPosition = lastUnmaskedPosition == 0 ? -1 : seekPrevious(lastUnmaskedPosition);
                                                     }
-                                                    if (lastUnmaskedPosition >= p)
+                                                    if (lastUnmaskedPosition >= p) {
                                                         shiftR(p, buffer.length, c);
-                                                    else getActiveMaskSet()["writeOutBuffer"] = false;
+                                                        //shift the lvp if needed
+                                                        var lvp = getActiveMaskSet()["lastValidPosition"], nlvp = seekNext(lvp);
+                                                        if (nlvp != getMaskLength() && lvp >= p && (getBufferElement(getActiveBuffer(), nlvp) != getPlaceHolder(nlvp))) {
+                                                            getActiveMaskSet()["lastValidPosition"] = nlvp;
+                                                        }
+                                                    } else getActiveMaskSet()["writeOutBuffer"] = false;
                                                 } else setBufferElement(buffer, p, c, true, isRTL);
                                             }
                                             getActiveMaskSet()["p"] = seekNext(p);
@@ -1429,7 +1452,7 @@
                                         setTimeout(function () { opts.onKeyValidation.call(self, result["result"], opts); }, 0);
                                         if (getActiveMaskSet()["writeOutBuffer"] && result["result"] !== false) {
                                             var buffer = getActiveBuffer();
-                                            writeBuffer(input, buffer, checkval ? undefined : (opts.numericInput ? seekNext(getActiveMaskSet()["p"]) : getActiveMaskSet()["p"]));
+                                            writeBuffer(input, buffer, checkval ? undefined : ((opts.numericInput && isRTL) ? seekNext(getActiveMaskSet()["p"]) : getActiveMaskSet()["p"]));
                                             setTimeout(function () { //timeout needed for IE
                                                 if (isComplete(buffer))
                                                     $input.trigger("complete");
@@ -1450,7 +1473,9 @@
 
                     function keyupEvent(e) {
                         var $input = $(this), input = this, k = e.keyCode, buffer = getActiveBuffer();
+                        var caretPos = caret(input);
                         opts.onKeyUp.call(this, e, buffer, opts); //extra stuff to execute on keyup
+                        caret(input, caretPos.begin, caretPos.end);
                         if (k == opts.keyCode.TAB && $input.hasClass('focus.inputmask') && input._valueGet().length == 0 && opts.showMaskOnFocus) {
                             buffer = getActiveBufferTemplate().slice();
                             writeBuffer(input, buffer);
