@@ -404,7 +404,7 @@
                     });
                 } else generateMask("", opts.mask.toString());
 
-                return ms;
+                return opts.greedy ? ms : ms.sort(function (a, b) { return a["mask"].length - b["mask"].length; });
             }
             function getPlaceHolder(pos) {
                 return opts.placeholder.charAt(pos % opts.placeholder.length);

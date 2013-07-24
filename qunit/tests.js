@@ -514,7 +514,7 @@ test("inputmask({ mask: [\"99999\", \"99999-9999\"]]}) - input 1234512", functio
     $("#testmask").remove();
 });
 
-test("inputmask({ mask: [\"99999\", \"99999-9999\"]]}) - input 1234561234", function () {
+test("inputmask({ mask: [\"99999\", \"99999-9999\", \"999999-9999\"]]}) - input 1234561234", function () {
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask({ mask: ["99999", "99999-9999", "999999-9999" ] });
 
@@ -524,14 +524,69 @@ test("inputmask({ mask: [\"99999\", \"99999-9999\"]]}) - input 1234561234", func
 
     $("#testmask").remove();
 });
-test("inputmask({ mask: [\"99999\", \"99999-9999\"]]}) - input 123456", function () {
+test("inputmask({ mask: [\"99999\", \"99999-9999\", \"999999-9999\"]]}) - input 123456", function () {
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask({ mask: ["99999", "99999-9999", "999999-9999"] });
 
     $("#testmask")[0].focus();
     $("#testmask").Type("123456");
     equal($("#testmask").val(), "12345-6___", "Result " + $("#testmask").val());
-    //this is correct as see sequence of the masks || currently "99999-9999", "999999-9999" are valid and thus showing "99999-9999"
+    //this is correct as the sequence of the masks || currently "99999-9999", "999999-9999" are valid and thus showing "99999-9999"
+
+    $("#testmask").remove();
+});
+
+test("inputmask({ mask: \"99999[-9999]\", greedy: true }) - input 123", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: "99999[-9999]", greedy: true });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123");
+    equal($("#testmask").val(), "123__-____", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask({ mask: \"99999[-9999]\", greedy: false }) - input 123", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: "99999[-9999]", greedy: false });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123");
+    equal($("#testmask").val(), "123__", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask({ mask: \"99999[-9999]\", greedy: false }) - input 12345", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: "99999[-9999]", greedy: false });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("12345");
+    equal($("#testmask").val(), "12345", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask({ mask: \"99999[-9999]\", greedy: false }) - input 123456", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: "99999[-9999]", greedy: false });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123456");
+    equal($("#testmask").val(), "12345-6___", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask({ mask: \"99999[-9999]\", greedy: false }) - input 123456789", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: "99999[-9999]", greedy: false });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123456789");
+    equal($("#testmask").val(), "12345-6789", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });
