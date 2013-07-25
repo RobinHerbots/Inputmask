@@ -684,6 +684,20 @@ test("inputmask(\"dd/mm/yyyy\") - input 2331973 BACKSPACE x4 2013", function () 
 
     $("#testmask").remove();
 });
+test("inputmask(\"hh:mm\") - add remove add", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $('#testmask').inputmask('hh:mm', { clearIncomplete: true });
+    $('#testmask').inputmask('remove');
+    $('#testmask').inputmask('hh:mm', { clearIncomplete: true });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("abcdef");
+    $("#testmask").Type("23:50");
+   
+    equal($("#testmask").val(), "23:50", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
 
 module("Numeric.Extensions");
 test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - input 12345.123", function () {
