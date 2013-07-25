@@ -8,6 +8,8 @@ Version: 0.0.0
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
 */
+
+/* EXPERIMENTAL */
 (function ($) {
     $.extend($.inputmask.defaults.aliases, { // $(selector).inputmask("Regex", { regex: "[0-9]*"}
         'Regex': {
