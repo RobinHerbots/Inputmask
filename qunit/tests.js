@@ -369,7 +369,7 @@ test("inputmask({ mask: [\"999.999.999-99\", \"99.999.999/9999-99\"]}) - input 1
 
     $("#testmask")[0].focus();
     $("#testmask").Type("12312312312");
-    
+
     equal($("#testmask").val(), "123.123.123-12", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
@@ -380,7 +380,7 @@ test("inputmask({ mask: [\"999.999.999-99\", \"99.999.999/9999-99\"]}) - input 1
 
     $("#testmask")[0].focus();
     $("#testmask").Type("12.123123123412");
- 
+
     equal($("#testmask").val(), "12.123.123/1234-12", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
@@ -761,6 +761,42 @@ test("inputmask(\"decimal\", { autoGroup: false, groupSeparator: \",\" }\") - in
     $("#testmask").Type(".789");
 
     equal($("#testmask").val(), "12345.789", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("inputmask(\"decimal\") - maxlength 10", function () {
+    $('body').append('<input type="text" id="testmask" maxlength="10" />');
+    $("#testmask").inputmask("decimal");
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").Type("123456789012345");
+
+    equal($("#testmask").val(), "1234567890", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("inputmask(\"decimal, { repeat: 15 }\") - maxlength 10", function () {
+    $('body').append('<input type="text" id="testmask" maxlength="10" />');
+    $("#testmask").inputmask("decimal", { repeat: 15 });
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").Type("123456789012345");
+
+    equal($("#testmask").val(), "1234567890", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("inputmask(\"decimal, { repeat: 5 }\") - maxlength 10", function () {
+    $('body').append('<input type="text" id="testmask" maxlength="10" />');
+    $("#testmask").inputmask("decimal", { repeat: 5 });
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").Type("123456789012345");
+
+    equal($("#testmask").val(), "12345", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
 

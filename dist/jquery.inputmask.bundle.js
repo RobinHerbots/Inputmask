@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.3.4
+* Version: 2.3.5
 */
 
 (function ($) {
@@ -798,13 +798,23 @@
                     getActiveMaskSet()['greedy'] = getActiveMaskSet()['greedy'] ? getActiveMaskSet()['greedy'] : getActiveMaskSet()['repeat'] == 0;
 
                     //handle maxlength attribute
-                    var maxLength = $input.prop('maxLength');
-                    if (getMaskLength() > maxLength && maxLength > -1) { //FF sets no defined max length to -1 
-                        if (maxLength < getActiveBufferTemplate().length) getActiveBufferTemplate().length = maxLength;
-                        if (getActiveMaskSet()['greedy'] == false) {
-                            getActiveMaskSet()['repeat'] = Math.round(maxLength / getActiveBufferTemplate().length);
+                    if ($input.attr("maxLength") != null) //only when the attribute is set
+                    {
+                        var maxLength = $input.prop('maxLength');
+                        if (maxLength > -1) { //handle *-repeat
+                            $.each(masksets, function (ndx, ms) {
+                                if (ms["repeat"] == "*") {
+                                    ms["repeat"] = maxLength;
+                                }
+                            });
                         }
-                        $input.prop('maxLength', getMaskLength() * 2);
+                        if (getMaskLength() > maxLength && maxLength > -1) { //FF sets no defined max length to -1 
+                            if (maxLength < getActiveBufferTemplate().length) getActiveBufferTemplate().length = maxLength;
+                            if (getActiveMaskSet()['greedy'] == false) {
+                                getActiveMaskSet()['repeat'] = Math.round(maxLength / getActiveBufferTemplate().length);
+                            }
+                            $input.prop('maxLength', getMaskLength() * 2);
+                        }
                     }
 
                     patchValueProperty(el);
@@ -1495,7 +1505,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.4
+Version: 2.3.5
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1597,7 +1607,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.4
+Version: 2.3.5
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2066,7 +2076,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.4
+Version: 2.3.5
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2233,7 +2243,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.4
+Version: 2.3.5
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
