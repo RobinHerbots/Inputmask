@@ -2,47 +2,45 @@ var keyCodes = {
     ALT: 18, BACKSPACE: 8, CAPS_LOCK: 20, COMMA: 188, COMMAND: 91, COMMAND_LEFT: 91, COMMAND_RIGHT: 93, CONTROL: 17, DELETE: 46, DOWN: 40, END: 35, ENTER: 13, ESCAPE: 27, HOME: 36, INSERT: 45, LEFT: 37, MENU: 93, NUMPAD_ADD: 107, NUMPAD_DECIMAL: 110, NUMPAD_DIVIDE: 111, NUMPAD_ENTER: 108,
     NUMPAD_MULTIPLY: 106, NUMPAD_SUBTRACT: 109, PAGE_DOWN: 34, PAGE_UP: 33, PERIOD: 190, RIGHT: 39, SHIFT: 16, SPACE: 32, TAB: 9, UP: 38, WINDOWS: 91
 }
+function caret(input, begin, end) {
+    var npt = input.jquery && input.length > 0 ? input[0] : input, range;
+    if (typeof begin == 'number') {
+        if (!$(input).is(':visible')) {
+            return;
+        }
+        end = (typeof end == 'number') ? end : begin;
+        if (npt.setSelectionRange) {
+            npt.selectionStart = begin;
+            npt.selectionEnd = end;
 
+        } else if (npt.createTextRange) {
+            range = npt.createTextRange();
+            range.collapse(true);
+            range.moveEnd('character', end);
+            range.moveStart('character', begin);
+            range.select();
+        }
+    } else {
+        if (!$(input).is(':visible')) {
+            return { "begin": 0, "end": 0 };
+        }
+        if (npt.setSelectionRange) {
+            begin = npt.selectionStart;
+            end = npt.selectionEnd;
+        } else if (document.selection && document.selection.createRange) {
+            range = document.selection.createRange();
+            begin = 0 - range.duplicate().moveStart('character', -100000);
+            end = begin + range.text.length;
+        }
+        return { "begin": begin, "end": end };
+    }
+};
 $.fn.SendKey = function (keyCode, modifier) {
     var sendDummyKeydown = false;
     if (Object.prototype.toString.call(keyCode) == '[object String]') {
         keyCode = keyCode.charCodeAt(0);
         sendDummyKeydown = true;
     }
-
-    function caret(input, begin, end) {
-        var npt = input.jquery && input.length > 0 ? input[0] : input, range;
-        if (typeof begin == 'number') {
-            if (!$(input).is(':visible')) {
-                return;
-            }
-            end = (typeof end == 'number') ? end : begin;
-            if (npt.setSelectionRange) {
-                npt.selectionStart = begin;
-                npt.selectionEnd = end;
-
-            } else if (npt.createTextRange) {
-                range = npt.createTextRange();
-                range.collapse(true);
-                range.moveEnd('character', end);
-                range.moveStart('character', begin);
-                range.select();
-            }
-        } else {
-            if (!$(input).is(':visible')) {
-                return { "begin": 0, "end": 0 };
-            }
-            if (npt.setSelectionRange) {
-                begin = npt.selectionStart;
-                end = npt.selectionEnd;
-            } else if (document.selection && document.selection.createRange) {
-                range = document.selection.createRange();
-                begin = 0 - range.duplicate().moveStart('character', -100000);
-                end = begin + range.text.length;
-            }
-            return { "begin": begin, "end": end };
-        }
-    };
 
     switch (keyCode) {
         case keyCodes.LEFT: {
@@ -253,6 +251,33 @@ test("inputmask(\"*****\")", function () {
     $("#testmask").remove();
 });
 
+module("Non-greedy masks");
+test("inputmask(\"*\", { greedy: false, repeat: \"*\" }) - replace cd with 1", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("*", { greedy: false, repeat: "*" });
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").Type("abcdef");
+    caret($("#testmask"), 2, 4);
+    $("#testmask").SendKey("1");
+    equal($("#testmask").val(), "ab1ef", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"*\", { greedy: false, repeat: \"*\" }) - type abcdef", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("*", { greedy: false, repeat: "*" });
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").Type("abcdef");
+
+    equal($("#testmask").val(), "abcdef", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
 
 module("Initial value setting");
 
@@ -369,7 +394,7 @@ test("inputmask({ mask: [\"999.999.999-99\", \"99.999.999/9999-99\"]}) - input 1
 
     $("#testmask")[0].focus();
     $("#testmask").Type("12312312312");
-    
+
     equal($("#testmask").val(), "123.123.123-12", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
@@ -380,7 +405,7 @@ test("inputmask({ mask: [\"999.999.999-99\", \"99.999.999/9999-99\"]}) - input 1
 
     $("#testmask")[0].focus();
     $("#testmask").Type("12.123123123412");
- 
+
     equal($("#testmask").val(), "12.123.123/1234-12", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
@@ -659,6 +684,20 @@ test("inputmask(\"dd/mm/yyyy\") - input 2331973 BACKSPACE x4 2013", function () 
 
     $("#testmask").remove();
 });
+test("inputmask(\"hh:mm\") - add remove add", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $('#testmask').inputmask('hh:mm', { clearIncomplete: true });
+    $('#testmask').inputmask('remove');
+    $('#testmask').inputmask('hh:mm', { clearIncomplete: true });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("abcdef");
+    $("#testmask").Type("23:50");
+   
+    equal($("#testmask").val(), "23:50", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
 
 module("Numeric.Extensions");
 test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - input 12345.123", function () {
@@ -761,6 +800,96 @@ test("inputmask(\"decimal\", { autoGroup: false, groupSeparator: \",\" }\") - in
     $("#testmask").Type(".789");
 
     equal($("#testmask").val(), "12345.789", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("inputmask(\"decimal\") - maxlength 10", function () {
+    $('body').append('<input type="text" id="testmask" maxlength="10" />');
+    $("#testmask").inputmask("decimal");
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").Type("123456789012345");
+
+    equal($("#testmask").val(), "1234567890", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("inputmask(\"decimal, { repeat: 15 }\") - maxlength 10", function () {
+    $('body').append('<input type="text" id="testmask" maxlength="10" />');
+    $("#testmask").inputmask("decimal", { repeat: 15 });
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").Type("123456789012345");
+
+    equal($("#testmask").val(), "1234567890", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("inputmask(\"decimal, { repeat: 5 }\") - maxlength 10", function () {
+    $('body').append('<input type="text" id="testmask" maxlength="10" />');
+    $("#testmask").inputmask("decimal", { repeat: 5 });
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").Type("123456789012345");
+
+    equal($("#testmask").val(), "12345", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("inputmask(\"decimal\")", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("decimal");
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").Type("1234567890");
+    caret($("#testmask"), 0, 10);
+    $("#testmask").Type("12345");
+
+    equal($("#testmask").val(), "12345", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("inputmask(\"decimal\") - value=\"1234567890\"", function () {
+    $('body').append('<input type="text" id="testmask" value="1234567890" />');
+    $("#testmask").inputmask("decimal");
+
+    $("#testmask")[0].focus();
+
+    caret($("#testmask"), 0, 10);
+    $("#testmask").Type("12345");
+
+    equal($("#testmask").val(), "12345", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("inputmask(\"decimal\")", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("decimal");
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").Type("1234567890");
+    caret($("#testmask"), 3, 5);
+    $("#testmask").SendKey("0");
+
+    equal($("#testmask").val(), "123067890", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("inputmask(\"decimal\") - value=\"1234567890\"", function () {
+    $('body').append('<input type="text" id="testmask" value="1234567890" />');
+    $("#testmask").inputmask("decimal");
+
+    $("#testmask")[0].focus();
+
+    caret($("#testmask"), 3, 5);
+    $("#testmask").SendKey("0");
+
+    equal($("#testmask").val(), "123067890", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
 
