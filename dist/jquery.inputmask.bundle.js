@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.3.7
+* Version: 2.3.8
 */
 
 (function ($) {
@@ -1506,7 +1506,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.7
+Version: 2.3.8
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1608,7 +1608,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.7
+Version: 2.3.8
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1664,10 +1664,18 @@ Optional extensions on the jquery.inputmask base
                 return (enteredyear != NaN ? minyear <= enteredyear && enteredyear <= maxyear : false) ||
             		   (enteredyear2 != NaN ? minyear <= enteredyear2 && enteredyear2 <= maxyear : false);
             },
-            determinebaseyear: function (minyear, maxyear) {
+            determinebaseyear: function (minyear, maxyear, hint) {
                 var currentyear = (new Date()).getFullYear();
                 if (minyear > currentyear) return minyear;
-                if (maxyear < currentyear) return maxyear;
+                if (maxyear < currentyear) {
+                    var maxYearPrefix = maxyear.toString().slice(0, 2);
+                    var maxYearPostfix = maxyear.toString().slice(2, 4);
+                    while (maxyear < maxYearPrefix + hint) {
+                        maxYearPrefix--;
+                    }
+                    var maxxYear = maxYearPrefix + maxYearPostfix;
+                    return minyear > maxxYear ? minyear : maxxYear;
+                }
 
                 return currentyear;
             },
@@ -1765,14 +1773,14 @@ Optional extensions on the jquery.inputmask base
                     validator: function (chrs, buffer, pos, strict, opts) {
                         var isValid = opts.isInYearRange(chrs, opts.yearrange.minyear, opts.yearrange.maxyear);
                         if (!strict && !isValid) {
-                            var yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear).toString().slice(0, 1);
+                            var yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear, chrs + "0").toString().slice(0, 1);
 
                             isValid = opts.isInYearRange(yearPrefix + chrs, opts.yearrange.minyear, opts.yearrange.maxyear);
                             if (isValid) {
                                 buffer[pos++] = yearPrefix[0];
                                 return { "pos": pos };
                             }
-                            yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear).toString().slice(0, 2);
+                            yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear, chrs + "0").toString().slice(0, 2);
 
                             isValid = opts.isInYearRange(yearPrefix + chrs, opts.yearrange.minyear, opts.yearrange.maxyear);
                             if (isValid) {
@@ -1789,7 +1797,7 @@ Optional extensions on the jquery.inputmask base
                     validator: function (chrs, buffer, pos, strict, opts) {
                         var isValid = opts.isInYearRange(chrs, opts.yearrange.minyear, opts.yearrange.maxyear);
                         if (!strict && !isValid) {
-                            var yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear).toString().slice(0, 2);
+                            var yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear, chrs).toString().slice(0, 2);
 
                             isValid = opts.isInYearRange(chrs[0] + yearPrefix[1] + chrs[1], opts.yearrange.minyear, opts.yearrange.maxyear);
                             if (isValid) {
@@ -1797,7 +1805,7 @@ Optional extensions on the jquery.inputmask base
                                 return { "pos": pos };
                             }
 
-                            yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear).toString().slice(0, 2);
+                            yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear, chrs).toString().slice(0, 2);
                             if (opts.isInYearRange(yearPrefix + chrs, opts.yearrange.minyear, opts.yearrange.maxyear)) {
                                 var dayMonthValue = buffer.join('').substr(0, 6);
                                 if (dayMonthValue != opts.leapday)
@@ -2077,7 +2085,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.7
+Version: 2.3.8
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2244,7 +2252,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.7
+Version: 2.3.8
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask

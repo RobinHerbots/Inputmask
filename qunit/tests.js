@@ -684,6 +684,31 @@ test("inputmask(\"dd/mm/yyyy\") - input 2331973 BACKSPACE x4 2013", function () 
 
     $("#testmask").remove();
 });
+
+test("inputmask(\"dd/mm/yyyy\") - input 23373 ", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("dd/mm/yyyy");
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").Type("23373");
+    equal($("#testmask").val(), "23/03/2073", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"dd/mm/yyyy\", { yearrange: { minyear: 1900, maxyear: 2000 } }) - input 23373 ", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("dd/mm/yyyy", { yearrange: { minyear: 1900, maxyear: 2000 } });
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").Type("23373");
+    equal($("#testmask").val(), "23/03/1973", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
 test("inputmask(\"hh:mm\") - add remove add", function () {
     $('body').append('<input type="text" id="testmask" />');
     $('#testmask').inputmask('hh:mm', { clearIncomplete: true });
@@ -945,6 +970,56 @@ test("inputmask(\"999-aaa-999\")", function () {
     $("#testmask").Type("123abc12");
 
     equal($("#testmask").val(), "_21-cba-321", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+module("Regex masks")
+
+test("inputmask(\"Regex\", { regex: \"[0-9]*\"});", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("Regex", { regex: "[0-9]*"});
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123abc45");
+
+    equal($("#testmask").val(), "12345", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+test("inputmask(\"Regex\", { regex: \"[A-Za-z\u0410-\u044F\u0401\u04510-9]*\"});", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("Regex", { regex: "[A-Za-z\u0410-\u044F\u0401\u04510-9]*"});
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123abc45");
+
+    equal($("#testmask").val(), "123abc45", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"Regex\", { regex: \"[A-Za-z\u0410-\u044F\u0401\u0451]+[A-Za-z\u0410-\u044F\u0401\u04510-9]*\"});", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("Regex", { regex: "[A-Za-z\u0410-\u044F\u0401\u0451]+[A-Za-z\u0410-\u044F\u0401\u04510-9]*"});
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123abc45");
+
+    equal($("#testmask").val(), "abc45", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+
+test("inputmask(\"Regex\", { regex: \"[A-Za-z\u0410-\u044F\u0401\u0451]{1}[A-Za-z\u0410-\u044F\u0401\u04510-9]*\"});", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("Regex", { regex: "[A-Za-z\u0410-\u044F\u0401\u0451]{1}[A-Za-z\u0410-\u044F\u0401\u04510-9]*"});
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123abc45");
+
+    equal($("#testmask").val(), "abc45", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });
