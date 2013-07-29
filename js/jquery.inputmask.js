@@ -145,8 +145,14 @@
                                         input.__defineSetter__("value", input._valueSet);
                                     }
                                 }
-                                delete input._valueGet;
-                                delete input._valueSet;
+                                try { //try catch needed for IE7 as it does not supports deleting fns
+                                    delete input._valueGet;
+                                    delete input._valueSet;
+                                } catch (e) {
+                                    input._valueGet = undefined;
+                                    input._valueSet = undefined;
+
+                                }
                             }
                         });
                         break;
