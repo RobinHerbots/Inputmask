@@ -19,6 +19,7 @@ Highlights:
 - supports readonly/disabled/dir="rtl" attributes
 - support data-inputmask attribute  
 - multi-mask support  
+- regex-mask support
 
 
 ## Usage:
