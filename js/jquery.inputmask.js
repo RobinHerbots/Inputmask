@@ -1326,7 +1326,7 @@
                             caret(input, seekNext(radixPosition != -1 ? radixPosition : getMaskLength()));
                         }
 
-                        if ((e.ctrlKey || e.metaKey || ignorable) && checkval !== true) {
+                        if ((!(e.ctrlKey && e.altKey) && (e.ctrlKey || e.metaKey || ignorable)) && checkval !== true) {
                             return true;
                         } else {
                             if (k) {

@@ -1059,3 +1059,15 @@ test("inputmask(\"Regex\", { regex: \"[-]?(([1-8][0-9])|[1-9]0?)\"});", function
 
     $("#testmask").remove();
 });
+
+test("inputmask(\"Regex\", { regex: \"[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}\" - regex simple email", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("Regex", { regex: "[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}"});
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("some.body@mail.com");
+
+    equal($("#testmask").val(), "some.body@mail.com", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
