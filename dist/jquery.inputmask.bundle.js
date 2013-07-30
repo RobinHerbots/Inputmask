@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.3.4
+* Version: 2.3.11
 */
 
 (function ($) {
@@ -117,39 +117,43 @@
                     case "remove":
                         return this.each(function () {
                             var $input = $(this), input = this;
-                            setTimeout(function () {
-                                if ($input.data('_inputmask')) {
-                                    masksets = $input.data('_inputmask')['masksets'];
-                                    activeMasksetIndex = $input.data('_inputmask')['activeMasksetIndex'];
-                                    opts = $input.data('_inputmask')['opts'];
-                                    //writeout the unmaskedvalue
-                                    input._valueSet(maskScope(masksets, activeMasksetIndex).unmaskedvalue($input, true));
-                                    //clear data
-                                    $input.removeData('_inputmask');
-                                    //unbind all events
-                                    $input.unbind(".inputmask");
-                                    $input.removeClass('focus.inputmask');
-                                    //restore the value property
-                                    var valueProperty;
-                                    if (Object.getOwnPropertyDescriptor)
-                                        valueProperty = Object.getOwnPropertyDescriptor(input, "value");
-                                    if (valueProperty && valueProperty.get) {
-                                        if (input._valueGet) {
-                                            Object.defineProperty(input, "value", {
-                                                get: input._valueGet,
-                                                set: input._valueSet
-                                            });
-                                        }
-                                    } else if (document.__lookupGetter__ && input.__lookupGetter__("value")) {
-                                        if (input._valueGet) {
-                                            input.__defineGetter__("value", input._valueGet);
-                                            input.__defineSetter__("value", input._valueSet);
-                                        }
+                            if ($input.data('_inputmask')) {
+                                masksets = $input.data('_inputmask')['masksets'];
+                                activeMasksetIndex = $input.data('_inputmask')['activeMasksetIndex'];
+                                opts = $input.data('_inputmask')['opts'];
+                                //writeout the unmaskedvalue
+                                input._valueSet(maskScope(masksets, activeMasksetIndex).unmaskedvalue($input, true));
+                                //clear data
+                                $input.removeData('_inputmask');
+                                //unbind all events
+                                $input.unbind(".inputmask");
+                                $input.removeClass('focus.inputmask');
+                                //restore the value property
+                                var valueProperty;
+                                if (Object.getOwnPropertyDescriptor)
+                                    valueProperty = Object.getOwnPropertyDescriptor(input, "value");
+                                if (valueProperty && valueProperty.get) {
+                                    if (input._valueGet) {
+                                        Object.defineProperty(input, "value", {
+                                            get: input._valueGet,
+                                            set: input._valueSet
+                                        });
                                     }
+                                } else if (document.__lookupGetter__ && input.__lookupGetter__("value")) {
+                                    if (input._valueGet) {
+                                        input.__defineGetter__("value", input._valueGet);
+                                        input.__defineSetter__("value", input._valueSet);
+                                    }
+                                }
+                                try { //try catch needed for IE7 as it does not supports deleting fns
                                     delete input._valueGet;
                                     delete input._valueSet;
+                                } catch (e) {
+                                    input._valueGet = undefined;
+                                    input._valueSet = undefined;
+
                                 }
-                            }, 0);
+                            }
                         });
                         break;
                     case "getemptymask": //return the default (empty) mask value, usefull for setting the default value in validation
@@ -486,9 +490,12 @@
                                     }
                                     var newValidPosition = result.pos || maskPos;
                                     if (activeMaskset['lastValidPosition'] == undefined ||
-                                        (isRTL ? (opts.greedy ? activeMaskset['lastValidPosition'] > newValidPosition : newValidPosition == getActiveBuffer().length - 1)
-                                            : activeMaskset['lastValidPosition'] < newValidPosition))
-                                        activeMaskset['lastValidPosition'] = newValidPosition; //set new position from isValid
+                                        (isRTL ?
+                                            (opts.greedy ?
+                                                activeMaskset['lastValidPosition'] > newValidPosition :
+                                                newValidPosition == getActiveBuffer().length - 1) :
+                                             activeMaskset['lastValidPosition'] < newValidPosition))
+                                        activeMaskset['lastValidPosition'] = opts.numericInput ? 0 : newValidPosition; //set new position from isValid
                                 }
                                 results.push({ "activeMasksetIndex": index, "result": result });
                             }
@@ -640,7 +647,7 @@
                     $.each(masksets, function (ndx, ms) {
                         ms["buffer"] = ms["_buffer"].slice();
                         ms["lastValidPosition"] = undefined;
-                        ms["p"] = isRTL ? getMaskLength() : 0;
+                        ms["p"] = (isRTL && ms["greedy"] == true) ? getMaskLength() : -1;
                     });
                     if (strict !== true) activeMasksetIndex = 0;
                     if (writeOut) input._valueSet(""); //initial clear
@@ -650,7 +657,7 @@
 
                     var ml = getMaskLength();
                     $.each(inputValue, function (ndx, charCode) {
-                        var index = isRTL ? (opts.numericInput ? ml : ml - ndx) : ndx,
+                        var index = (isRTL && getActiveMaskSet()["greedy"] == true) ? (opts.numericInput ? ml : ml - ndx) : ndx,
                             lvp = getActiveMaskSet()["lastValidPosition"],
                             pos = getActiveMaskSet()["p"];
 
@@ -665,7 +672,7 @@
                         }
                     });
                     if (strict === true) {
-                        getActiveMaskSet()["lastValidPosition"] = isRTL ? seekNext(getActiveMaskSet()["p"]) : seekPrevious(getActiveMaskSet()["p"]);
+                        getActiveMaskSet()["lastValidPosition"] = isRTL ? (opts.numericInput ? 0 : seekNext(getActiveMaskSet()["p"])) : seekPrevious(getActiveMaskSet()["p"]);
                     }
                 }
 
@@ -798,13 +805,23 @@
                     getActiveMaskSet()['greedy'] = getActiveMaskSet()['greedy'] ? getActiveMaskSet()['greedy'] : getActiveMaskSet()['repeat'] == 0;
 
                     //handle maxlength attribute
-                    var maxLength = $input.prop('maxLength');
-                    if (getMaskLength() > maxLength && maxLength > -1) { //FF sets no defined max length to -1 
-                        if (maxLength < getActiveBufferTemplate().length) getActiveBufferTemplate().length = maxLength;
-                        if (getActiveMaskSet()['greedy'] == false) {
-                            getActiveMaskSet()['repeat'] = Math.round(maxLength / getActiveBufferTemplate().length);
+                    if ($input.attr("maxLength") != null) //only when the attribute is set
+                    {
+                        var maxLength = $input.prop('maxLength');
+                        if (maxLength > -1) { //handle *-repeat
+                            $.each(masksets, function (ndx, ms) {
+                                if (ms["repeat"] == "*") {
+                                    ms["repeat"] = maxLength;
+                                }
+                            });
                         }
-                        $input.prop('maxLength', getMaskLength() * 2);
+                        if (getMaskLength() > maxLength && maxLength > -1) { //FF sets no defined max length to -1 
+                            if (maxLength < getActiveBufferTemplate().length) getActiveBufferTemplate().length = maxLength;
+                            if (getActiveMaskSet()['greedy'] == false) {
+                                getActiveMaskSet()['repeat'] = Math.round(maxLength / getActiveBufferTemplate().length);
+                            }
+                            $input.prop('maxLength', getMaskLength() * 2);
+                        }
                     }
 
                     patchValueProperty(el);
@@ -1309,7 +1326,7 @@
                             caret(input, seekNext(radixPosition != -1 ? radixPosition : getMaskLength()));
                         }
 
-                        if ((e.ctrlKey || e.metaKey || ignorable) && checkval !== true) {
+                        if ((!(e.ctrlKey && e.altKey) && (e.ctrlKey || e.metaKey || ignorable)) && checkval !== true) {
                             return true;
                         } else {
                             if (k) {
@@ -1329,6 +1346,11 @@
                                         activeMasksetIndex = ndx;
                                         getActiveMaskSet()["undoBuffer"] = getActiveBuffer().join(''); //init undobuffer for recovery when not valid
                                         var posend = pos.end < getMaskLength() ? pos.end : getMaskLength();
+                                        if (getActiveMaskSet()["lastValidPosition"] > pos.begin && getActiveMaskSet()["lastValidPosition"] < posend) {
+                                            getActiveMaskSet()["lastValidPosition"] = isRTL ? seekNext(posend) : seekPrevious(pos.begin);
+                                        } else {
+                                            redetermineLVP = true;
+                                        }
                                         clearBuffer(getActiveBuffer(), pos.begin, posend);
                                         var ml = getMaskLength();
                                         if (opts.greedy == false) {
@@ -1338,11 +1360,6 @@
                                                 if (isMask(i))
                                                     isRTL ? shiftR(0, posend - 1, getPlaceHolder(posend - 1), true) : shiftL(pos.begin, ml);
                                             }
-                                        }
-                                        if (getActiveMaskSet()["lastValidPosition"] > pos.begin && getActiveMaskSet()["lastValidPosition"] < posend) {
-                                            getActiveMaskSet()["lastValidPosition"] = isRTL ? seekNext(posend) : seekPrevious(pos.begin);
-                                        } else {
-                                            redetermineLVP = true;
                                         }
                                     });
                                     if (redetermineLVP === true) {
@@ -1360,7 +1377,7 @@
                                 }
 
                                 if (isRTL) {
-                                    var p = seekPrevious(pos.end);
+                                    var p = seekPrevious(isSelection ? pos.begin : pos.end);
                                     results = isValid(p, c, strict, isRTL);
                                     if (strict === true) results = [{ "activeMasksetIndex": activeMasksetIndex, "result": results }];
                                     $.each(results, function (index, result) {
@@ -1495,7 +1512,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.4
+Version: 2.3.11
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1597,7 +1614,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.4
+Version: 2.3.11
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1653,10 +1670,18 @@ Optional extensions on the jquery.inputmask base
                 return (enteredyear != NaN ? minyear <= enteredyear && enteredyear <= maxyear : false) ||
             		   (enteredyear2 != NaN ? minyear <= enteredyear2 && enteredyear2 <= maxyear : false);
             },
-            determinebaseyear: function (minyear, maxyear) {
+            determinebaseyear: function (minyear, maxyear, hint) {
                 var currentyear = (new Date()).getFullYear();
                 if (minyear > currentyear) return minyear;
-                if (maxyear < currentyear) return maxyear;
+                if (maxyear < currentyear) {
+                    var maxYearPrefix = maxyear.toString().slice(0, 2);
+                    var maxYearPostfix = maxyear.toString().slice(2, 4);
+                    while (maxyear < maxYearPrefix + hint) {
+                        maxYearPrefix--;
+                    }
+                    var maxxYear = maxYearPrefix + maxYearPostfix;
+                    return minyear > maxxYear ? minyear : maxxYear;
+                }
 
                 return currentyear;
             },
@@ -1754,14 +1779,14 @@ Optional extensions on the jquery.inputmask base
                     validator: function (chrs, buffer, pos, strict, opts) {
                         var isValid = opts.isInYearRange(chrs, opts.yearrange.minyear, opts.yearrange.maxyear);
                         if (!strict && !isValid) {
-                            var yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear).toString().slice(0, 1);
+                            var yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear, chrs + "0").toString().slice(0, 1);
 
                             isValid = opts.isInYearRange(yearPrefix + chrs, opts.yearrange.minyear, opts.yearrange.maxyear);
                             if (isValid) {
                                 buffer[pos++] = yearPrefix[0];
                                 return { "pos": pos };
                             }
-                            yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear).toString().slice(0, 2);
+                            yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear, chrs + "0").toString().slice(0, 2);
 
                             isValid = opts.isInYearRange(yearPrefix + chrs, opts.yearrange.minyear, opts.yearrange.maxyear);
                             if (isValid) {
@@ -1778,7 +1803,7 @@ Optional extensions on the jquery.inputmask base
                     validator: function (chrs, buffer, pos, strict, opts) {
                         var isValid = opts.isInYearRange(chrs, opts.yearrange.minyear, opts.yearrange.maxyear);
                         if (!strict && !isValid) {
-                            var yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear).toString().slice(0, 2);
+                            var yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear, chrs).toString().slice(0, 2);
 
                             isValid = opts.isInYearRange(chrs[0] + yearPrefix[1] + chrs[1], opts.yearrange.minyear, opts.yearrange.maxyear);
                             if (isValid) {
@@ -1786,7 +1811,7 @@ Optional extensions on the jquery.inputmask base
                                 return { "pos": pos };
                             }
 
-                            yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear).toString().slice(0, 2);
+                            yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear, chrs).toString().slice(0, 2);
                             if (opts.isInYearRange(yearPrefix + chrs, opts.yearrange.minyear, opts.yearrange.maxyear)) {
                                 var dayMonthValue = buffer.join('').substr(0, 6);
                                 if (dayMonthValue != opts.leapday)
@@ -2066,7 +2091,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.4
+Version: 2.3.11
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2233,7 +2258,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.4
+Version: 2.3.11
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2245,34 +2270,117 @@ Allows for using regular expressions as a mask
             greedy: false,
             repeat: "*",
             regex: null,
-            regexSplit: null,
+            regexTokens: null,
+            tokenizer: /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?[:=!]?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g,
             definitions: {
                 'r': {
                     validator: function (chrs, buffer, pos, strict, opts) {
 
-                        function analyseRegex() {  //ENHANCE ME
-                            var regexSplitRegex = "\\[.*?\]\\*";
+                        function analyseRegex() {
+                            var currentToken = {
+                                "quantifier": undefined,
+                                "matches": [],
+                                "isGroup": false
+                            }, match, m, opengroups = [];
 
-                            opts.regexSplit = opts.regex.match(new RegExp(regexSplitRegex, "g"));
+                            opts.regexTokens = [];
 
-                            //if (opts.regex.indexOf("*") != (opts.regex.length - 1)) {
-                            //    opts.regex += "{1}";
-                            //}
-                            //opts.regexSplit.push(opts.regex);
+                            // The tokenizer regex does most of the tokenization grunt work
+                            while (match = opts.tokenizer.exec(opts.regex)) {
+                                m = match[0];
+                                switch (m.charAt(0)) {
+                                    // Character class
+                                    case "[":
+                                        // Escape or backreference
+                                    case "\\":
+                                        if (currentToken["isGroup"] !== true) {
+                                            currentToken = {
+                                                "matches": [],
+                                                "isGroup": false
+                                            };
+                                            opts.regexTokens.push(currentToken);
+                                        }
+                                        if (opengroups.length > 0) {
+                                            opengroups[opengroups.length - 1]["matches"].push(m);
+                                        } else {
+                                            currentToken["matches"].push(m);
+                                        }
+                                        break;
+                                        // Group opening
+                                    case "(":
+                                        currentToken = {
+                                            "matches": [],
+                                            "isGroup": true
+                                        };
+                                        opengroups.push(currentToken);
+                                        break;
+                                        // Group closing
+                                    case ")":
+                                        var groupToken = opengroups.pop();
+                                        if (opengroups.length > 0) {
+                                            opengroups[opengroups.length - 1]["matches"].push(groupToken);
+                                        } else {
+                                            currentToken = groupToken;
+                                            opts.regexTokens.push(currentToken);
+                                        }
+                                        break;
+                                        // Not a character class, group opening/closing, escape sequence, or backreference
+                                    default:
+                                        // Quantifier 
+                                        // Vertical bar (alternator) 
+                                        // ^ or $ anchor
+                                        // Dot (.)
+                                        // Literal character sequence
+                                        if (opengroups.length > 0) {
+                                            opengroups[opengroups.length - 1]["matches"].push(m);
+                                        } else {
+                                            currentToken["matches"].push(m);
+                                        }
+                                }
+                            }
+                        };
+
+                        function validateRegexToken(token, fromGroup) {
+                            var isvalid = false;
+                            if (fromGroup) {
+                                regexPart += "(";
+                                openGroupCount++;
+                            }
+                            for (var mndx = 0; mndx < token["matches"].length; mndx++) {
+                                var matchToken = token["matches"][mndx];
+                                if (matchToken["isGroup"] == true) {
+                                    isvalid = validateRegexToken(matchToken, true);
+                                } else {
+                                    regexPart += matchToken;
+                                    var testExp = regexPart;
+                                    for (var j = 0; j < openGroupCount; j++) {
+                                        testExp += ")";
+                                    }
+                                    var exp = new RegExp("^" + testExp + "$");
+                                    isvalid = exp.test(bufferStr);
+                                }
+                                if (isvalid) break;
+                            }
+
+                            if (fromGroup) {
+                                regexPart += ")";
+                                openGroupCount--;
+                            }
+
+                            return isvalid;
                         }
 
-                        if (opts.regexSplit == null) {
+
+                        if (opts.regexTokens == null) {
                             analyseRegex();
                         }
 
-                        var cbuffer = buffer.slice(), regexPart = "", isValid = false;
+                        var cbuffer = buffer.slice(), regexPart = "", isValid = false, openGroupCount = 0;
                         cbuffer.splice(pos, 0, chrs);
                         var bufferStr = cbuffer.join('');
-                        for (var i = 0; i < opts.regexSplit.length; i++) {
-                            regexPart += opts.regexSplit[i];
-                            var exp = new RegExp("^" + regexPart + "$");
-                            isValid = exp.test(bufferStr);
-                            console.log(bufferStr + ' ' + isValid + ' ' + regexPart);
+                        for (var i = 0; i < opts.regexTokens.length; i++) {
+                            var regexToken = opts.regexTokens[i];
+                            isValid = validateRegexToken(regexToken, regexPart, regexToken["isGroup"]);
                             if (isValid) break;
                         }
 

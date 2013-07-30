@@ -117,39 +117,43 @@
                     case "remove":
                         return this.each(function () {
                             var $input = $(this), input = this;
-                            setTimeout(function () {
-                                if ($input.data('_inputmask')) {
-                                    masksets = $input.data('_inputmask')['masksets'];
-                                    activeMasksetIndex = $input.data('_inputmask')['activeMasksetIndex'];
-                                    opts = $input.data('_inputmask')['opts'];
-                                    //writeout the unmaskedvalue
-                                    input._valueSet(maskScope(masksets, activeMasksetIndex).unmaskedvalue($input, true));
-                                    //clear data
-                                    $input.removeData('_inputmask');
-                                    //unbind all events
-                                    $input.unbind(".inputmask");
-                                    $input.removeClass('focus.inputmask');
-                                    //restore the value property
-                                    var valueProperty;
-                                    if (Object.getOwnPropertyDescriptor)
-                                        valueProperty = Object.getOwnPropertyDescriptor(input, "value");
-                                    if (valueProperty && valueProperty.get) {
-                                        if (input._valueGet) {
-                                            Object.defineProperty(input, "value", {
-                                                get: input._valueGet,
-                                                set: input._valueSet
-                                            });
-                                        }
-                                    } else if (document.__lookupGetter__ && input.__lookupGetter__("value")) {
-                                        if (input._valueGet) {
-                                            input.__defineGetter__("value", input._valueGet);
-                                            input.__defineSetter__("value", input._valueSet);
-                                        }
+                            if ($input.data('_inputmask')) {
+                                masksets = $input.data('_inputmask')['masksets'];
+                                activeMasksetIndex = $input.data('_inputmask')['activeMasksetIndex'];
+                                opts = $input.data('_inputmask')['opts'];
+                                //writeout the unmaskedvalue
+                                input._valueSet(maskScope(masksets, activeMasksetIndex).unmaskedvalue($input, true));
+                                //clear data
+                                $input.removeData('_inputmask');
+                                //unbind all events
+                                $input.unbind(".inputmask");
+                                $input.removeClass('focus.inputmask');
+                                //restore the value property
+                                var valueProperty;
+                                if (Object.getOwnPropertyDescriptor)
+                                    valueProperty = Object.getOwnPropertyDescriptor(input, "value");
+                                if (valueProperty && valueProperty.get) {
+                                    if (input._valueGet) {
+                                        Object.defineProperty(input, "value", {
+                                            get: input._valueGet,
+                                            set: input._valueSet
+                                        });
                                     }
+                                } else if (document.__lookupGetter__ && input.__lookupGetter__("value")) {
+                                    if (input._valueGet) {
+                                        input.__defineGetter__("value", input._valueGet);
+                                        input.__defineSetter__("value", input._valueSet);
+                                    }
+                                }
+                                try { //try catch needed for IE7 as it does not supports deleting fns
                                     delete input._valueGet;
                                     delete input._valueSet;
+                                } catch (e) {
+                                    input._valueGet = undefined;
+                                    input._valueSet = undefined;
+
                                 }
-                            }, 0);
+                            }
                         });
                         break;
                     case "getemptymask": //return the default (empty) mask value, usefull for setting the default value in validation
@@ -486,9 +490,12 @@
                                     }
                                     var newValidPosition = result.pos || maskPos;
                                     if (activeMaskset['lastValidPosition'] == undefined ||
-                                        (isRTL ? (opts.greedy ? activeMaskset['lastValidPosition'] > newValidPosition : newValidPosition == getActiveBuffer().length - 1)
-                                            : activeMaskset['lastValidPosition'] < newValidPosition))
-                                        activeMaskset['lastValidPosition'] = newValidPosition; //set new position from isValid
+                                        (isRTL ?
+                                            (opts.greedy ?
+                                                activeMaskset['lastValidPosition'] > newValidPosition :
+                                                newValidPosition == getActiveBuffer().length - 1) :
+                                             activeMaskset['lastValidPosition'] < newValidPosition))
+                                        activeMaskset['lastValidPosition'] = opts.numericInput ? 0 : newValidPosition; //set new position from isValid
                                 }
                                 results.push({ "activeMasksetIndex": index, "result": result });
                             }
@@ -640,7 +647,7 @@
                     $.each(masksets, function (ndx, ms) {
                         ms["buffer"] = ms["_buffer"].slice();
                         ms["lastValidPosition"] = undefined;
-                        ms["p"] = isRTL ? getMaskLength() : 0;
+                        ms["p"] = (isRTL && ms["greedy"] == true) ? getMaskLength() : -1;
                     });
                     if (strict !== true) activeMasksetIndex = 0;
                     if (writeOut) input._valueSet(""); //initial clear
@@ -650,7 +657,7 @@
 
                     var ml = getMaskLength();
                     $.each(inputValue, function (ndx, charCode) {
-                        var index = isRTL ? (opts.numericInput ? ml : ml - ndx) : ndx,
+                        var index = (isRTL && getActiveMaskSet()["greedy"] == true) ? (opts.numericInput ? ml : ml - ndx) : ndx,
                             lvp = getActiveMaskSet()["lastValidPosition"],
                             pos = getActiveMaskSet()["p"];
 
@@ -665,7 +672,7 @@
                         }
                     });
                     if (strict === true) {
-                        getActiveMaskSet()["lastValidPosition"] = isRTL ? seekNext(getActiveMaskSet()["p"]) : seekPrevious(getActiveMaskSet()["p"]);
+                        getActiveMaskSet()["lastValidPosition"] = isRTL ? (opts.numericInput ? 0 : seekNext(getActiveMaskSet()["p"])) : seekPrevious(getActiveMaskSet()["p"]);
                     }
                 }
 
@@ -798,13 +805,23 @@
                     getActiveMaskSet()['greedy'] = getActiveMaskSet()['greedy'] ? getActiveMaskSet()['greedy'] : getActiveMaskSet()['repeat'] == 0;
 
                     //handle maxlength attribute
-                    var maxLength = $input.prop('maxLength');
-                    if (getMaskLength() > maxLength && maxLength > -1) { //FF sets no defined max length to -1 
-                        if (maxLength < getActiveBufferTemplate().length) getActiveBufferTemplate().length = maxLength;
-                        if (getActiveMaskSet()['greedy'] == false) {
-                            getActiveMaskSet()['repeat'] = Math.round(maxLength / getActiveBufferTemplate().length);
+                    if ($input.attr("maxLength") != null) //only when the attribute is set
+                    {
+                        var maxLength = $input.prop('maxLength');
+                        if (maxLength > -1) { //handle *-repeat
+                            $.each(masksets, function (ndx, ms) {
+                                if (ms["repeat"] == "*") {
+                                    ms["repeat"] = maxLength;
+                                }
+                            });
                         }
-                        $input.prop('maxLength', getMaskLength() * 2);
+                        if (getMaskLength() > maxLength && maxLength > -1) { //FF sets no defined max length to -1 
+                            if (maxLength < getActiveBufferTemplate().length) getActiveBufferTemplate().length = maxLength;
+                            if (getActiveMaskSet()['greedy'] == false) {
+                                getActiveMaskSet()['repeat'] = Math.round(maxLength / getActiveBufferTemplate().length);
+                            }
+                            $input.prop('maxLength', getMaskLength() * 2);
+                        }
                     }
 
                     patchValueProperty(el);
@@ -1309,7 +1326,7 @@
                             caret(input, seekNext(radixPosition != -1 ? radixPosition : getMaskLength()));
                         }
 
-                        if ((e.ctrlKey || e.metaKey || ignorable) && checkval !== true) {
+                        if ((!(e.ctrlKey && e.altKey) && (e.ctrlKey || e.metaKey || ignorable)) && checkval !== true) {
                             return true;
                         } else {
                             if (k) {
@@ -1329,6 +1346,11 @@
                                         activeMasksetIndex = ndx;
                                         getActiveMaskSet()["undoBuffer"] = getActiveBuffer().join(''); //init undobuffer for recovery when not valid
                                         var posend = pos.end < getMaskLength() ? pos.end : getMaskLength();
+                                        if (getActiveMaskSet()["lastValidPosition"] > pos.begin && getActiveMaskSet()["lastValidPosition"] < posend) {
+                                            getActiveMaskSet()["lastValidPosition"] = isRTL ? seekNext(posend) : seekPrevious(pos.begin);
+                                        } else {
+                                            redetermineLVP = true;
+                                        }
                                         clearBuffer(getActiveBuffer(), pos.begin, posend);
                                         var ml = getMaskLength();
                                         if (opts.greedy == false) {
@@ -1338,11 +1360,6 @@
                                                 if (isMask(i))
                                                     isRTL ? shiftR(0, posend - 1, getPlaceHolder(posend - 1), true) : shiftL(pos.begin, ml);
                                             }
-                                        }
-                                        if (getActiveMaskSet()["lastValidPosition"] > pos.begin && getActiveMaskSet()["lastValidPosition"] < posend) {
-                                            getActiveMaskSet()["lastValidPosition"] = isRTL ? seekNext(posend) : seekPrevious(pos.begin);
-                                        } else {
-                                            redetermineLVP = true;
                                         }
                                     });
                                     if (redetermineLVP === true) {
@@ -1360,7 +1377,7 @@
                                 }
 
                                 if (isRTL) {
-                                    var p = seekPrevious(pos.end);
+                                    var p = seekPrevious(isSelection ? pos.begin : pos.end);
                                     results = isValid(p, c, strict, isRTL);
                                     if (strict === true) results = [{ "activeMasksetIndex": activeMasksetIndex, "result": results }];
                                     $.each(results, function (index, result) {
