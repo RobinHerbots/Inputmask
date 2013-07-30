@@ -619,7 +619,7 @@ $(document).ready(function(){
 ## Regex extensions
 
 With the regex extension you can use any regular expression as a mask.  Currently this does only input restriction.  
-The is no further masking visualization.
+There is no further masking visualization.
 
 Example simple email regex:
 ```javascript
