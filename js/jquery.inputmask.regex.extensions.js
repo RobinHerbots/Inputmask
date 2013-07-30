@@ -97,7 +97,7 @@ Allows for using regular expressions as a mask
                                     isvalid = validateRegexToken(matchToken, true);
                                 } else {
                                     regexPart += matchToken;
-                                    var testExp = regexPart;
+                                    var testExp = regexPart.replace(/\|$/, "");
                                     for (var j = 0; j < openGroupCount; j++) {
                                         testExp += ")";
                                     }
