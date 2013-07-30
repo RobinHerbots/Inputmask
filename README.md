@@ -544,9 +544,7 @@ In Layout
 
 # jquery.inputmask extensions
 
-## Alias definitions
-
-### date & datetime aliases
+## date & datetime extensions
 
 ```javascript
 $(document).ready(function(){
@@ -572,7 +570,7 @@ $(document).ready(function(){
 });
 ```
 
-### numeric aliases
+## numeric extensions
 
 ```javascript
 $(document).ready(function(){
@@ -618,7 +616,19 @@ $(document).ready(function(){
 });
 ```
 
-### other aliases
+## Regex extensions
+
+With the regex extension you can use any regular expression as a mask.  Currently this does only input restriction.  
+The is no further masking visualization.
+
+Example simple email regex:
+```javascript
+$(document).ready(function(){
+   $("#numeric").inputmask('Regex', { regex: "[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}" });
+});
+```
+
+## other extensions
 
 An ip adress alias for entering valid ip-addresses.
 
