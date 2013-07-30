@@ -1023,3 +1023,39 @@ test("inputmask(\"Regex\", { regex: \"[A-Za-z\u0410-\u044F\u0401\u0451]{1}[A-Za-
 
     $("#testmask").remove();
 });
+
+test("inputmask(\"Regex\", { regex: \"[-]?(([1-8][0-9])|[1-9]0?)\"});", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("Regex", { regex: "[-]?(([1-8][0-9])|[1-9]0?)"});
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("90");
+
+    equal($("#testmask").val(), "90", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"Regex\", { regex: \"[-]?(([1-8][0-9])|[1-9]0?)\"});", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("Regex", { regex: "[-]?(([1-8][0-9])|[1-9]0?)"});
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("0");
+
+    equal($("#testmask").val(), "", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"Regex\", { regex: \"[-]?(([1-8][0-9])|[1-9]0?)\"});", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("Regex", { regex: "[-]?(([1-8][0-9])|[1-9]0?)"});
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("-78");
+
+    equal($("#testmask").val(), "-78", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});

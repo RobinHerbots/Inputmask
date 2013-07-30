@@ -8,8 +8,6 @@ Version: 0.0.0
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
 */
-
-/* EXPERIMENTAL */
 (function ($) {
     $.extend($.inputmask.defaults.aliases, { // $(selector).inputmask("Regex", { regex: "[0-9]*"}
         'Regex': {
@@ -17,34 +15,117 @@ Allows for using regular expressions as a mask
             greedy: false,
             repeat: "*",
             regex: null,
-            regexSplit: null,
+            regexTokens: null,
+            tokenizer: /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?[:=!]?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g,
             definitions: {
                 'r': {
                     validator: function (chrs, buffer, pos, strict, opts) {
 
-                        function analyseRegex() {  //ENHANCE ME
-                            var regexSplitRegex = "\\[.*?\]\\*";
+                        function analyseRegex() {
+                            var currentToken = {
+                                "quantifier": undefined,
+                                "matches": [],
+                                "isGroup": false
+                            }, match, m, opengroups = [];
 
-                            opts.regexSplit = opts.regex.match(new RegExp(regexSplitRegex, "g"));
+                            opts.regexTokens = [];
 
-                            //if (opts.regex.indexOf("*") != (opts.regex.length - 1)) {
-                            //    opts.regex += "{1}";
-                            //}
-                            //opts.regexSplit.push(opts.regex);
+                            // The tokenizer regex does most of the tokenization grunt work
+                            while (match = opts.tokenizer.exec(opts.regex)) {
+                                m = match[0];
+                                switch (m.charAt(0)) {
+                                    // Character class
+                                    case "[":
+                                        // Escape or backreference
+                                    case "\\":
+                                        if (currentToken["isGroup"] !== true) {
+                                            currentToken = {
+                                                "matches": [],
+                                                "isGroup": false
+                                            };
+                                            opts.regexTokens.push(currentToken);
+                                        }
+                                        if (opengroups.length > 0) {
+                                            opengroups[opengroups.length - 1]["matches"].push(m);
+                                        } else {
+                                            currentToken["matches"].push(m);
+                                        }
+                                        break;
+                                        // Group opening
+                                    case "(":
+                                        currentToken = {
+                                            "matches": [],
+                                            "isGroup": true
+                                        };
+                                        opengroups.push(currentToken);
+                                        break;
+                                        // Group closing
+                                    case ")":
+                                        var groupToken = opengroups.pop();
+                                        if (opengroups.length > 0) {
+                                            opengroups[opengroups.length - 1]["matches"].push(groupToken);
+                                        } else {
+                                            currentToken = groupToken;
+                                            opts.regexTokens.push(currentToken);
+                                        }
+                                        break;
+                                        // Not a character class, group opening/closing, escape sequence, or backreference
+                                    default:
+                                        // Quantifier 
+                                        // Vertical bar (alternator) 
+                                        // ^ or $ anchor
+                                        // Dot (.)
+                                        // Literal character sequence
+                                        if (opengroups.length > 0) {
+                                            opengroups[opengroups.length - 1]["matches"].push(m);
+                                        } else {
+                                            currentToken["matches"].push(m);
+                                        }
+                                }
+                            }
+                        };
+
+                        function validateRegexToken(token, fromGroup) {
+                            var isvalid = false;
+                            if (fromGroup) {
+                                regexPart += "(";
+                                openGroupCount++;
+                            }
+                            for (var mndx = 0; mndx < token["matches"].length; mndx++) {
+                                var matchToken = token["matches"][mndx];
+                                if (matchToken["isGroup"] == true) {
+                                    isvalid = validateRegexToken(matchToken, true);
+                                } else {
+                                    regexPart += matchToken;
+                                    var testExp = regexPart;
+                                    for (var j = 0; j < openGroupCount; j++) {
+                                        testExp += ")";
+                                    }
+                                    var exp = new RegExp("^" + testExp + "$");
+                                    isvalid = exp.test(bufferStr);
+                                }
+                                if (isvalid) break;
+                            }
+
+                            if (fromGroup) {
+                                regexPart += ")";
+                                openGroupCount--;
+                            }
+
+                            return isvalid;
                         }
 
-                        if (opts.regexSplit == null) {
+
+                        if (opts.regexTokens == null) {
                             analyseRegex();
                         }
 
-                        var cbuffer = buffer.slice(), regexPart = "", isValid = false;
+                        var cbuffer = buffer.slice(), regexPart = "", isValid = false, openGroupCount = 0;
                         cbuffer.splice(pos, 0, chrs);
                         var bufferStr = cbuffer.join('');
-                        for (var i = 0; i < opts.regexSplit.length; i++) {
-                            regexPart += opts.regexSplit[i];
-                            var exp = new RegExp("^" + regexPart + "$");
-                            isValid = exp.test(bufferStr);
-                            console.log(bufferStr + ' ' + isValid + ' ' + regexPart);
+                        for (var i = 0; i < opts.regexTokens.length; i++) {
+                            var regexToken = opts.regexTokens[i];
+                            isValid = validateRegexToken(regexToken, regexPart, regexToken["isGroup"]);
                             if (isValid) break;
                         }
 
