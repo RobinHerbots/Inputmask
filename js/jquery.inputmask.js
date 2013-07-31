@@ -850,6 +850,12 @@
                         if ($input[0]._valueGet && $input[0]._valueGet() != getActiveMaskSet()["undoBuffer"]) {
                             $input.change();
                         }
+                    }).bind('reset', function () {
+                        $.each(masksets, function (ndx, ms) {
+                            ms["buffer"] = ms["_buffer"].slice();
+                            ms["lastValidPosition"] = undefined;
+                            ms["p"] = -1;
+                        });
                     });
                     $input.bind("mouseenter.inputmask", function () {
                         var $input = $(this), input = this;
