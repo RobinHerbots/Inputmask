@@ -1470,10 +1470,12 @@
                                         if (getActiveMaskSet()["writeOutBuffer"] && result["result"] !== false) {
                                             var buffer = getActiveBuffer();
                                             writeBuffer(input, buffer, checkval ? undefined : ((opts.numericInput && isRTL) ? seekNext(getActiveMaskSet()["p"]) : getActiveMaskSet()["p"]));
-                                            setTimeout(function () { //timeout needed for IE
-                                                if (isComplete(buffer))
-                                                    $input.trigger("complete");
-                                            }, 0);
+                                            if (checkval !== true) {
+                                                setTimeout(function() { //timeout needed for IE
+                                                    if (isComplete(buffer))
+                                                        $input.trigger("complete");
+                                                }, 0);
+                                            }
                                         } else if (isSelection) {
                                             getActiveMaskSet()["buffer"] = getActiveMaskSet()["undoBuffer"].split('');
                                         }
