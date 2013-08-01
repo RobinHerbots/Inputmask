@@ -16,14 +16,16 @@ Allows for using regular expressions as a mask
             repeat: "*",
             regex: null,
             regexTokens: null,
+            //Thx to https://github.com/slevithan/regex-colorizer for the tokenizer regex
             tokenizer: /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?[:=!]?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g,
+            quantifierFilter: /[0-9]+[^,]/,
             definitions: {
                 'r': {
                     validator: function (chrs, buffer, pos, strict, opts) {
 
                         function analyseRegex() {
                             var currentToken = {
-                                "quantifier": undefined,
+                                "isQuantifier": false,
                                 "matches": [],
                                 "isGroup": false
                             }, match, m, opengroups = [];
@@ -34,12 +36,11 @@ Allows for using regular expressions as a mask
                             while (match = opts.tokenizer.exec(opts.regex)) {
                                 m = match[0];
                                 switch (m.charAt(0)) {
-                                    // Character class
-                                    case "[":
-                                        // Escape or backreference
-                                    case "\\":
+                                    case "[": // Character class
+                                    case "\\":  // Escape or backreference
                                         if (currentToken["isGroup"] !== true) {
                                             currentToken = {
+                                                "isQuantifier": false,
                                                 "matches": [],
                                                 "isGroup": false
                                             };
@@ -51,16 +52,15 @@ Allows for using regular expressions as a mask
                                             currentToken["matches"].push(m);
                                         }
                                         break;
-                                        // Group opening
-                                    case "(":
+                                    case "(": // Group opening
                                         currentToken = {
+                                            "isQuantifier": false,
                                             "matches": [],
                                             "isGroup": true
                                         };
                                         opengroups.push(currentToken);
                                         break;
-                                        // Group closing
-                                    case ")":
+                                    case ")": // Group closing
                                         var groupToken = opengroups.pop();
                                         if (opengroups.length > 0) {
                                             opengroups[opengroups.length - 1]["matches"].push(groupToken);
@@ -69,9 +69,19 @@ Allows for using regular expressions as a mask
                                             opts.regexTokens.push(currentToken);
                                         }
                                         break;
-                                        // Not a character class, group opening/closing, escape sequence, or backreference
+                                    case "{": //Quantifier
+                                        var quantifier = {
+                                            "isQuantifier": true,
+                                            "matches": [m],
+                                            "isGroup": false
+                                        };
+                                        if (opengroups.length > 0) {
+                                            opengroups[opengroups.length - 1]["matches"].push(quantifier);
+                                        } else {
+                                            currentToken["matches"].push(quantifier);
+                                        }
+                                        break;
                                     default:
-                                        // Quantifier 
                                         // Vertical bar (alternator) 
                                         // ^ or $ anchor
                                         // Dot (.)
@@ -95,9 +105,20 @@ Allows for using regular expressions as a mask
                                 var matchToken = token["matches"][mndx];
                                 if (matchToken["isGroup"] == true) {
                                     isvalid = validateRegexToken(matchToken, true);
-                                } else {
+                                } else if (matchToken["isQuantifier"] == true) {
+                                    matchToken = matchToken["matches"][0];
+                                    var quantifierMax = opts.quantifierFilter.exec(matchToken)[0].replace("}", "");
+                                    var testExp = regexPart + "{1," + quantifierMax + "}"; //relax quantifier validation
+                                    for (var j = 0; j < openGroupCount; j++) {
+                                        testExp += ")";
+                                    }
+                                    var exp = new RegExp("^" + testExp + "$");
+                                    isvalid = exp.test(bufferStr);
                                     regexPart += matchToken;
-                                    var testExp = regexPart;
+                                }
+                                else {
+                                    regexPart += matchToken;
+                                    var testExp = regexPart.replace(/\|$/, "");
                                     for (var j = 0; j < openGroupCount; j++) {
                                         testExp += ")";
                                     }
