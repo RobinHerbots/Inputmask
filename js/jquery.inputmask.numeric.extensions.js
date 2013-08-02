@@ -15,7 +15,8 @@ Optional extensions on the jquery.inputmask base
             placeholder: "",
             repeat: "*",
             greedy: false,
-            numericInput: true,
+            numericInput: false,
+            isNumeric: true,
             digits: "*", //numer of digits
             groupSeparator: "",//",", // | "."
             radixPoint: ".",
@@ -26,13 +27,13 @@ Optional extensions on the jquery.inputmask base
             getMaskLength: function (buffer, greedy, repeat, currentBuffer, opts) { //custom getMaskLength to take the groupSeparator into account
                 var calculatedLength = buffer.length;
 
-                if (!greedy) { 
-                     	if(repeat == "*") {
-                     		calculatedLength = currentBuffer.length + 1;
-                     	} else if(repeat > 1) {
-                        	calculatedLength += (buffer.length * (repeat - 1));
-                    	}
+                if (!greedy) {
+                    if (repeat == "*") {
+                        calculatedLength = currentBuffer.length + 1;
+                    } else if (repeat > 1) {
+                        calculatedLength += (buffer.length * (repeat - 1));
                     }
+                }
 
                 var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
                 var escapedRadixPoint = $.inputmask.escapeRegex.call(this, opts.radixPoint);
@@ -45,7 +46,7 @@ Optional extensions on the jquery.inputmask base
                 var cbuf = buffer.slice(),
                     radixPos = $.inArray(opts.radixPoint, buffer);
                 if (!reformatOnly) {
-                    cbuf.splice(pos == 0 || pos <= radixPos || opts.skipRadixDance ? pos + 1 : pos, 0, "?"); //set position indicator
+                    cbuf.splice(pos, 0, "?"); //set position indicator
                 }
                 var bufVal = cbuf.join('');
                 if (opts.autoGroup || (reformatOnly && bufVal.indexOf(opts.groupSeparator) != -1)) {
@@ -68,7 +69,7 @@ Optional extensions on the jquery.inputmask base
                 var newPos = $.inArray("?", buffer);
                 if (!reformatOnly) buffer.splice(newPos, 1);
 
-                return reformatOnly ? pos : newPos <= radixPos || (opts.skipRadixDance && newPos != 0) ? newPos - 1 : newPos;
+                return reformatOnly ? pos : newPos;
             },
             regex: {
                 number: function (opts) {
@@ -107,8 +108,9 @@ Optional extensions on the jquery.inputmask base
 
                         var cbuf = strict ? buffer.slice(0, pos) : buffer.slice();
 
-                        cbuf.splice((pos == 0 && buffer.length == 0) ? pos : pos + 1, 0, chrs);
+                        cbuf.splice(pos, 0, chrs);
                         var bufferStr = cbuf.join('');
+
                         if (opts.autoGroup && !strict) { //strip groupseparator
                             var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
                             bufferStr = bufferStr.replace(new RegExp(escapedGroupSeparator, "g"), '');

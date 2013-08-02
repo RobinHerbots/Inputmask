@@ -35,8 +35,9 @@
                 onKeyValidation: $.noop, //executes on every key-press with the result of isValid. Params: result, opts
                 skipOptionalPartCharacter: " ", //a character which can be used to skip an optional part of a mask
                 showTooltip: false, //show the activemask as tooltip
-                //numeric basic properties
                 numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
+                //numeric basic properties
+                isNumeric: false, //enable numeric features
                 radixPoint: "", //".", // | ","
                 skipRadixDance: false, //disable radixpoint caret positioning
                 rightAlignNumerics: true, //align numerics to the right
@@ -415,6 +416,7 @@
             }
 
             function maskScope(masksets, activeMasksetIndex) {
+                var isRTL = false;
                 //maskset helperfunctions
 
                 function getActiveMaskSet() {
@@ -433,7 +435,7 @@
                     return getActiveMaskSet()['buffer'];
                 }
 
-                function isValid(pos, c, strict, isRTL) { //strict true ~ no correction or autofill
+                function isValid(pos, c, strict) { //strict true ~ no correction or autofill
                     strict = strict === true; //always set a value to strict to prevent possible strange behavior in the extensions 
 
                     function _isValid(position, activeMaskset) {
@@ -460,42 +462,35 @@
 
                     var results = [], result = false, currentActiveMasksetIndex = activeMasksetIndex;
                     $.each(masksets, function (index, value) {
-                        var activeMaskset = this;
                         activeMasksetIndex = index;
 
                         var maskPos = pos;
                         if (currentActiveMasksetIndex != activeMasksetIndex && !isMask(pos)) {
-                            if (c == activeMaskset['_buffer'][maskPos] || c == opts.skipOptionalPartCharacter) { //match non-mask item
-                                results.push({ "activeMasksetIndex": index, "result": { "refresh": true, c: activeMaskset['_buffer'][maskPos] } }); //new command hack only rewrite buffer
-                                activeMaskset['lastValidPosition'] = maskPos;
+                            if (c == getActiveBufferTemplate()[maskPos] || c == opts.skipOptionalPartCharacter) { //match non-mask item
+                                results.push({ "activeMasksetIndex": index, "result": { "refresh": true, c: getActiveBufferTemplate()[maskPos] } }); //new command hack only rewrite buffer
+                                getActiveMaskSet()['lastValidPosition'] = maskPos;
                                 return false;
                             } else {
                                 if (masksets[currentActiveMasksetIndex]["lastValidPosition"] >= maskPos)
-                                    activeMaskset['lastValidPosition'] = isRTL ? getMaskLength() + 1 : -1; //mark mask as validated and invalid
-                                else maskPos = isRTL ? seekPrevious(pos) : seekNext(pos);
+                                    getActiveMaskSet()['lastValidPosition'] = -1; //mark mask as validated and invalid
+                                else maskPos = seekNext(pos);
                             }
 
                         }
-                        if ((activeMaskset['lastValidPosition'] == undefined
-                                && maskPos == (isRTL ? seekPrevious(getMaskLength()) : seekNext(-1))
+                        if ((getActiveMaskSet()['lastValidPosition'] == undefined
+                                && maskPos == seekNext(-1)
                         )
-                            || (isRTL || opts.numericInput)
-                            ? activeMaskset['lastValidPosition'] <= opts.numericInput ? getMaskLength() : seekNext(maskPos)
-                            : activeMaskset['lastValidPosition'] >= seekPrevious(maskPos)) {
+                            || getActiveMaskSet()['lastValidPosition'] >= seekPrevious(maskPos)) {
                             if (maskPos >= 0 && maskPos < getMaskLength()) {
-                                result = _isValid(maskPos, activeMaskset);
+                                result = _isValid(maskPos, getActiveMaskSet());
                                 if (result !== false) {
                                     if (result === true) {
                                         result = { "pos": maskPos }; //always take a possible corrected maskposition into account
                                     }
                                     var newValidPosition = result.pos || maskPos;
-                                    if (activeMaskset['lastValidPosition'] == undefined ||
-                                        (isRTL ?
-                                            (opts.greedy ?
-                                                activeMaskset['lastValidPosition'] > newValidPosition :
-                                                newValidPosition == getActiveBuffer().length - 1) :
-                                             activeMaskset['lastValidPosition'] < newValidPosition))
-                                        activeMaskset['lastValidPosition'] = opts.numericInput ? 0 : newValidPosition; //set new position from isValid
+                                    if (getActiveMaskSet()['lastValidPosition'] == undefined ||
+                                        getActiveMaskSet()['lastValidPosition'] < newValidPosition)
+                                        getActiveMaskSet()['lastValidPosition'] = newValidPosition; //set new position from isValid
                                 }
                                 results.push({ "activeMasksetIndex": index, "result": result });
                             }
@@ -506,13 +501,13 @@
                     return results; //return results of the multiple mask validations
                 }
 
-                function determineActiveMasksetIndex(isRTL) {
+                function determineActiveMasksetIndex() {
                     var currentMasksetIndex = activeMasksetIndex,
-                        highestValid = { "activeMasksetIndex": 0, "lastValidPosition": isRTL ? getMaskLength() + 1 : -1 };
+                        highestValid = { "activeMasksetIndex": 0, "lastValidPosition": -1 };
                     $.each(masksets, function (index, value) {
                         var activeMaskset = this;
                         if (activeMaskset['lastValidPosition'] != undefined) {
-                            if ((isRTL || opts.numericInput) ? (activeMaskset['lastValidPosition'] < highestValid['lastValidPosition']) : (activeMaskset['lastValidPosition'] > highestValid['lastValidPosition'])) {
+                            if (activeMaskset['lastValidPosition'] > highestValid['lastValidPosition']) {
                                 highestValid["activeMasksetIndex"] = index;
                                 highestValid["lastValidPosition"] = activeMaskset['lastValidPosition'];
                             }
@@ -520,11 +515,7 @@
                     });
                     activeMasksetIndex = highestValid["activeMasksetIndex"];
                     if (currentMasksetIndex != activeMasksetIndex) {
-                        if (isRTL) {
-                            clearBuffer(getActiveBuffer(), 0, seekPrevious(highestValid["lastValidPosition"]));
-                        } else {
-                            clearBuffer(getActiveBuffer(), seekNext(highestValid["lastValidPosition"]), getMaskLength());
-                        }
+                        clearBuffer(getActiveBuffer(), seekNext(highestValid["lastValidPosition"]), getMaskLength());
                         getActiveMaskSet()["writeOutBuffer"] = true;
                     }
                 }
@@ -570,8 +561,8 @@
                     return position;
                 }
 
-                function setBufferElement(buffer, position, element, autoPrepare, isRTL) {
-                    if (autoPrepare) position = prepareBuffer(buffer, position, isRTL);
+                function setBufferElement(buffer, position, element, autoPrepare) {
+                    if (autoPrepare) position = prepareBuffer(buffer, position);
 
                     var test = getActiveTests()[determineTestPosition(position)];
                     var elem = element;
@@ -596,22 +587,12 @@
 
                 //needed to handle the non-greedy mask repetitions
 
-                function prepareBuffer(buffer, position, isRTL) {
+                function prepareBuffer(buffer, position) {
                     var j;
-                    if (isRTL) {
-                        while (position < 0 && buffer.length < getMaskLength()) {
-                            j = getActiveBufferTemplate().length - 1;
-                            position = getActiveBufferTemplate().length;
-                            while (getActiveBufferTemplate()[j] !== undefined) {
-                                buffer.unshift(getActiveBufferTemplate()[j--]);
-                            }
-                        }
-                    } else {
-                        while (buffer[position] == undefined && buffer.length < getMaskLength()) {
-                            j = 0;
-                            while (getActiveBufferTemplate()[j] !== undefined) { //add a new buffer
-                                buffer.push(getActiveBufferTemplate()[j++]);
-                            }
+                    while (buffer[position] == undefined && buffer.length < getMaskLength()) {
+                        j = 0;
+                        while (getActiveBufferTemplate()[j] !== undefined) { //add a new buffer
+                            buffer.push(getActiveBufferTemplate()[j++]);
                         }
                     }
 
@@ -641,38 +622,34 @@
                 }
 
                 function checkVal(input, writeOut, strict, nptvl) {
-                    var isRTL = $(input).data('_inputmask')['isRTL'],
-                        inputValue = nptvl != undefined ? nptvl.slice() : truncateInput(input._valueGet(), isRTL).split('');
+                    var inputValue = nptvl != undefined ? nptvl.slice() : truncateInput(input._valueGet()).split('');
 
                     $.each(masksets, function (ndx, ms) {
                         ms["buffer"] = ms["_buffer"].slice();
                         ms["lastValidPosition"] = undefined;
-                        ms["p"] = (isRTL && ms["greedy"] == true) ? getMaskLength() : -1;
+                        ms["p"] = 0;
                     });
                     if (strict !== true) activeMasksetIndex = 0;
                     if (writeOut) input._valueSet(""); //initial clear
 
-                    if (isRTL && !opts.numericInput)
-                        inputValue = inputValue.reverse();
-
                     var ml = getMaskLength();
                     $.each(inputValue, function (ndx, charCode) {
-                        var index = (isRTL && getActiveMaskSet()["greedy"] == true) ? (opts.numericInput ? ml : ml - ndx) : ndx,
+                        var index = ndx,
                             lvp = getActiveMaskSet()["lastValidPosition"],
                             pos = getActiveMaskSet()["p"];
 
                         pos = lvp == undefined ? index : pos;
                         lvp = lvp == undefined ? -1 : lvp;
 
-                        if ((strict && isMask(isRTL ? index - 1 : index)) ||
-                            ((charCode != getBufferElement(getActiveBufferTemplate().slice(), isRTL ? index - 1 : index, true) || isMask(isRTL ? index - 1 : index)) &&
+                        if ((strict && isMask(index)) ||
+                            ((charCode != getBufferElement(getActiveBufferTemplate().slice(), index, true) || isMask(index)) &&
                              $.inArray(charCode, getActiveBufferTemplate().slice(lvp + 1, pos)) == -1)
                             ) {
-                            $(input).trigger("keypress", [true, charCode.charCodeAt(0), writeOut, strict, index, isRTL]);
+                            $(input).trigger("keypress", [true, charCode.charCodeAt(0), writeOut, strict, index]);
                         }
                     });
                     if (strict === true) {
-                        getActiveMaskSet()["lastValidPosition"] = isRTL ? (opts.numericInput ? 0 : seekNext(getActiveMaskSet()["p"])) : seekPrevious(getActiveMaskSet()["p"]);
+                        getActiveMaskSet()["lastValidPosition"] = seekPrevious(getActiveMaskSet()["p"]);
                     }
                 }
 
@@ -680,36 +657,26 @@
                     return $.inputmask.escapeRegex.call(this, str);
                 }
 
-                function truncateInput(inputValue, rtl) {
-                    return rtl ? inputValue.replace(new RegExp("^(" + escapeRegex(getActiveBufferTemplate().join('')) + ")*"), "") : inputValue.replace(new RegExp("(" + escapeRegex(getActiveBufferTemplate().join('')) + ")*$"), "");
+                function truncateInput(inputValue) {
+                    return inputValue.replace(new RegExp("(" + escapeRegex(getActiveBufferTemplate().join('')) + ")*$"), "");
                 }
 
                 function clearOptionalTail(input) {
                     var buffer = getActiveBuffer(), tmpBuffer = buffer.slice(), testPos, pos;
-                    if ($(input).data('_inputmask')['isRTL']) {
-                        for (var pos = 0; pos <= tmpBuffer.length - 1; pos++) {
-                            var testPos = determineTestPosition(pos);
-                            if (getActiveTests()[testPos].optionality) {
-                                if (!isMask(pos) || !isValid(pos, buffer[pos], true))
-                                    tmpBuffer.splice(0, 1);
-                                else break;
-                            } else break;
-                        }
-                    } else {
-                        for (var pos = tmpBuffer.length - 1; pos >= 0; pos--) {
-                            var testPos = determineTestPosition(pos);
-                            if (getActiveTests()[testPos].optionality) {
-                                if (!isMask(pos) || !isValid(pos, buffer[pos], true))
-                                    tmpBuffer.pop();
-                                else break;
-                            } else break;
-                        }
+                    for (var pos = tmpBuffer.length - 1; pos >= 0; pos--) {
+                        var testPos = determineTestPosition(pos);
+                        if (getActiveTests()[testPos].optionality) {
+                            if (!isMask(pos) || !isValid(pos, buffer[pos], true))
+                                tmpBuffer.pop();
+                            else break;
+                        } else break;
                     }
                     writeBuffer(input, tmpBuffer);
                 }
 
                 //functionality fn
                 this.unmaskedvalue = function ($input, skipDatepickerCheck) {
+                    isRTL = $input.data('_inputmask')['isRTL'];
                     return unmaskedvalue($input, skipDatepickerCheck);
                 };
                 function unmaskedvalue($input, skipDatepickerCheck) {
@@ -724,8 +691,17 @@
                 }
 
                 function caret(input, begin, end) {
+                    function TranslatePosition(pos) {
+                        if (isRTL && typeof pos == 'number') {
+                            var bffrLght = getActiveBuffer().length;
+                            pos = bffrLght - pos;
+                        }
+                        return pos;
+                    }
+
                     var npt = input.jquery && input.length > 0 ? input[0] : input, range;
                     if (typeof begin == 'number') {
+                        begin = TranslatePosition(begin); end = TranslatePosition(end);
                         if (!$(input).is(':visible')) {
                             return;
                         }
@@ -754,6 +730,7 @@
                             begin = 0 - range.duplicate().moveStart('character', -100000);
                             end = begin + range.text.length;
                         }
+                        begin = TranslatePosition(begin); end = TranslatePosition(end);
                         return { "begin": begin, "end": end };
                     }
                 };
@@ -829,11 +806,11 @@
                     //init vars
                     getActiveMaskSet()["undoBuffer"] = el._valueGet();
                     var skipKeyPressEvent = false, //Safari 5.1.x - modal dialog fires keypress twice workaround
-                        ignorable = false,
-                        isRTL = false;
+                        ignorable = false;
+                    if (el.dir == "rtl" || (opts.numericInput && opts.rightAlignNumerics) || (opts.isNumeric && opts.rightAlignNumerics))
+                        $input.css("text-align", "right");
+
                     if (el.dir == "rtl" || opts.numericInput) {
-                        if (el.dir == "rtl" || (opts.numericInput && opts.rightAlignNumerics))
-                            $input.css("text-align", "right");
                         el.dir = "ltr";
                         $input.removeAttr("dir");
                         var inputData = $input.data('_inputmask');
@@ -883,7 +860,7 @@
                                 $.each(masksets, function (ndx, ms) {
                                     ms["buffer"] = ms["_buffer"].slice();
                                     ms["lastValidPosition"] = undefined;
-                                    ms["p"] = isRTL ? getMaskLength() : 0;
+                                    ms["p"] = 0;
                                 });
                                 activeMasksetIndex = 0;
                                 if (opts.clearMaskOnLostFocus)
@@ -923,27 +900,19 @@
                                 var clickPosition = selectedCaret.begin,
                                     lvp = getActiveMaskSet()["lastValidPosition"],
                                     lastPosition;
-                                determineInputDirection(input, selectedCaret);
-                                if (isRTL) {
-                                    if (opts.numericInput) {
-                                        lastPosition = opts.skipRadixDance === false && opts.radixPoint != "" && $.inArray(opts.radixPoint, buffer) != -1 ? $.inArray(opts.radixPoint, buffer) : getMaskLength();
-                                    } else {
-                                        lastPosition = seekPrevious((lvp == undefined ? getMaskLength() : lvp) + 1);
-                                    }
-                                    caret(input, clickPosition > lastPosition && (isValid(clickPosition, buffer[clickPosition], true, isRTL) !== false || !isMask(clickPosition)) ? clickPosition : lastPosition);
+                                if (opts.isNumeric) {
+                                    lastPosition = opts.skipRadixDance === false && opts.radixPoint != "" && $.inArray(opts.radixPoint, buffer) != -1 ? $.inArray(opts.radixPoint, buffer) : getMaskLength();
                                 } else {
                                     lastPosition = seekNext(lvp == undefined ? -1 : lvp);
-                                    caret(input, clickPosition < lastPosition && (isValid(clickPosition, buffer[clickPosition], true, isRTL) !== false || !isMask(clickPosition)) ? clickPosition : lastPosition);
                                 }
+                                caret(input, clickPosition < lastPosition && (isValid(clickPosition, buffer[clickPosition], true) !== false || !isMask(clickPosition)) ? clickPosition : lastPosition);
                             }
                         }, 0);
                     }).bind('dblclick.inputmask', function () {
                         var input = this;
                         if (getActiveMaskSet()["lastValidPosition"] != undefined) {
                             setTimeout(function () {
-                                isRTL ?
-                                    caret(input, seekPrevious(getActiveMaskSet()["lastValidPosition"]), getMaskLength()) :
-                                    caret(input, 0, seekNext(getActiveMaskSet()["lastValidPosition"]));
+                                caret(input, 0, seekNext(getActiveMaskSet()["lastValidPosition"]));
                             }, 0);
                         }
                     }).bind("keydown.inputmask", keydownEvent
@@ -1016,9 +985,14 @@
                             valueProperty = Object.getOwnPropertyDescriptor(npt, "value");
                         if (valueProperty && valueProperty.get) {
                             if (!npt._valueGet) {
-
-                                npt._valueGet = valueProperty.get;
-                                npt._valueSet = valueProperty.set;
+                                var valueGet = valueProperty.get;
+                                var valueSet = valueProperty.set;
+                                npt._valueGet = function () {
+                                    return isRTL ? valueGet.call(this).split('').reverse().join('') : valueGet.call(this);
+                                };
+                                npt._valueSet = function (value) {
+                                    valueSet.call(this, isRTL ? value.split('').reverse().join('') : value);
+                                };
 
                                 Object.defineProperty(npt, "value", {
                                     get: function () {
@@ -1034,8 +1008,14 @@
                             }
                         } else if (document.__lookupGetter__ && npt.__lookupGetter__("value")) {
                             if (!npt._valueGet) {
-                                npt._valueGet = npt.__lookupGetter__("value");
-                                npt._valueSet = npt.__lookupSetter__("value");
+                                var valueGet = npt.__lookupGetter__("value");
+                                var valueSet = npt.__lookupSetter__("value");
+                                npt._valueGet = function () {
+                                    return isRTL ? valueGet.call(this).split('').reverse().join('') : valueGetvalueGet.call(this);
+                                };
+                                npt._valueSet = function (value) {
+                                    valueSet.call(this, isRTL ? value.split('').reverse().join('') : value);
+                                };
 
                                 npt.__defineGetter__("value", function () {
                                     var $self = $(this), inputData = $(this).data('_inputmask'), masksets = inputData['masksets'],
@@ -1049,8 +1029,8 @@
                             }
                         } else {
                             if (!npt._valueGet) {
-                                npt._valueGet = function () { return this.value; };
-                                npt._valueSet = function (value) { this.value = value; };
+                                npt._valueGet = function () { return isRTL ? this.value.split('').reverse().join('') : this.value; };
+                                npt._valueSet = function (value) { this.value = isRTL ? value.split('').reverse().join('') : value; };
                             }
                             if ($.fn.val.inputmaskpatch != true) {
                                 $.fn.val = function () {
@@ -1083,17 +1063,7 @@
                         }
                     }
 
-                    function determineInputDirection(input, pos) {
-                        //set input direction according the position to the radixPoint
-                        if (opts.numericInput && opts.radixPoint != "" && opts.skipRadixDance === false) {
-                            var nptStr = input._valueGet();
-                            var radixPosition = nptStr.indexOf(opts.radixPoint);
-                            isRTL = pos.begin <= radixPosition || pos.end <= radixPosition || radixPosition == -1;
-                        }
-                    }
-
                     //shift chars to left from start to end and put c at end position if defined
-
                     function shiftL(start, end, c) {
                         var buffer = getActiveBuffer();
                         while (!isMask(start) && start - 1 >= 0) start--; //jumping over nonmask position
@@ -1103,8 +1073,8 @@
                                 var j = seekNext(i);
                                 var p = getBufferElement(buffer, j);
                                 if (p != getPlaceHolder(j)) {
-                                    if (j < getMaskLength() && isValid(i, p, true, isRTL) !== false && getActiveTests()[determineTestPosition(i)].def == getActiveTests()[determineTestPosition(j)].def) {
-                                        setBufferElement(buffer, i, getBufferElement(buffer, j), true, isRTL);
+                                    if (j < getMaskLength() && isValid(i, p, true) !== false && getActiveTests()[determineTestPosition(i)].def == getActiveTests()[determineTestPosition(j)].def) {
+                                        setBufferElement(buffer, i, getBufferElement(buffer, j), true);
                                         if (j < end) {
                                             setReTargetPlaceHolder(buffer, j); //cleanup next position
                                         }
@@ -1118,10 +1088,10 @@
                             }
                         }
                         if (c != undefined)
-                            setBufferElement(buffer, isRTL ? end : seekPrevious(end), c);
+                            setBufferElement(buffer, seekPrevious(end), c);
 
                         if (getActiveMaskSet()["greedy"] == false) {
-                            var trbuffer = truncateInput(buffer.join(''), isRTL).split('');
+                            var trbuffer = truncateInput(buffer.join('')).split('');
                             buffer.length = trbuffer.length;
                             for (var i = 0, bl = buffer.length; i < bl; i++) {
                                 buffer[i] = trbuffer[i];
@@ -1136,11 +1106,11 @@
                         for (var i = start; i <= end && i < getMaskLength() ; i++) {
                             if (isMask(i)) {
                                 var t = getBufferElement(buffer, i, true);
-                                setBufferElement(buffer, i, c, true, isRTL);
+                                setBufferElement(buffer, i, c, true);
                                 if (t != getPlaceHolder(i)) {
                                     var j = seekNext(i);
                                     if (j < getMaskLength()) {
-                                        if (isValid(j, t, true, isRTL) !== false && getActiveTests()[determineTestPosition(i)].def == getActiveTests()[determineTestPosition(j)].def)
+                                        if (isValid(j, t, true) !== false && getActiveTests()[determineTestPosition(i)].def == getActiveTests()[determineTestPosition(j)].def)
                                             c = t;
                                         else {
                                             if (isMask(j))
@@ -1157,7 +1127,7 @@
                         }
                         var lengthBefore = buffer.length;
                         if (getActiveMaskSet()["greedy"] == false) {
-                            var trbuffer = truncateInput(buffer.join(''), isRTL).split('');
+                            var trbuffer = truncateInput(buffer.join('')).split('');
                             buffer.length = trbuffer.length;
                             for (var i = 0, bl = buffer.length; i < bl; i++) {
                                 buffer[i] = trbuffer[i];
@@ -1172,30 +1142,40 @@
                     function keydownEvent(e) {
                         //Safari 5.1.x - modal dialog fires keypress twice workaround
                         skipKeyPressEvent = false;
-
                         var input = this, k = e.keyCode, pos = caret(input);
-                        determineInputDirection(input, pos);
 
                         //backspace, delete, and escape get special treatment
                         if (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE || (iphone && k == 127) || (e.ctrlKey && k == 88)) { //backspace/delete
                             e.preventDefault(); //stop default action but allow propagation
+
+                            if (opts.numericInput || isRTL) {
+                                switch (k) {
+                                    case opts.keyCode.BACKSPACE:
+                                        k = opts.keyCode.DELETE;
+                                        break;
+                                    case opts.keyCode.DELETE:
+                                        k = opts.keyCode.BACKSPACE;
+                                        break;
+                                }
+                            }
+
                             var beginPos = pos.begin;
                             if (pos.begin == 0 && pos.end == getMaskLength()) {
                                 clearBuffer(getActiveBuffer(), pos.begin, pos.end);
                                 $.each(masksets, function (ndx, ms) {
                                     ms["buffer"] = ms["_buffer"].slice();
                                     ms["lastValidPosition"] = undefined;
-                                    ms["p"] = isRTL ? getMaskLength() : 0;
+                                    ms["p"] = 0;
                                 });
                             } else if ((pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode)) { //partial selection
                                 clearBuffer(getActiveBuffer(), pos.begin, pos.end);
                                 var ml = getMaskLength();
                                 if (opts.greedy == false) {
-                                    isRTL ? shiftR(0, pos.end - 1, getPlaceHolder(pos.end), true) : shiftL(pos.begin, ml);
+                                    shiftL(pos.begin, ml);
                                 } else {
                                     for (var i = pos.begin; i < pos.end; i++) {
                                         if (isMask(i))
-                                            isRTL ? shiftR(0, pos.end - 1, getPlaceHolder(pos.end), true) : shiftL(pos.begin, ml);
+                                            shiftL(pos.begin, ml);
                                     }
                                 }
                                 checkVal(input, false, true, getActiveBuffer());
@@ -1203,27 +1183,22 @@
                                 $.each(masksets, function (ndx, ms) {
                                     activeMasksetIndex = ndx;
                                     beginPos = android53x ? pos.end : pos.begin;
-                                    var buffer = getActiveBuffer(), firstMaskPos = isRTL ? seekPrevious(getMaskLength() + 1) : seekNext(-1),
+                                    var buffer = getActiveBuffer(), firstMaskPos = seekNext(-1),
                                         maskL = getMaskLength();
                                     if (k == opts.keyCode.DELETE) { //handle delete
-                                        if (isRTL ? beginPos > firstMaskPos : beginPos < firstMaskPos)
+                                        if (beginPos < firstMaskPos)
                                             beginPos = firstMaskPos;
                                         if (beginPos < maskL) {
-                                            if (opts.numericInput && opts.radixPoint != "" && buffer[beginPos] == opts.radixPoint) {
+                                            if (opts.isNumeric && opts.radixPoint != "" && buffer[beginPos] == opts.radixPoint) {
                                                 beginPos = (buffer.length - 1 == beginPos) /* radixPoint is latest? delete it */ ? beginPos : seekNext(beginPos);
                                                 beginPos = shiftL(beginPos, maskL);
                                             } else {
-                                                if (isRTL) {
-                                                    beginPos = shiftR(0, beginPos, getPlaceHolder(beginPos), true);
-                                                    beginPos = seekNext(beginPos);
-                                                } else {
-                                                    beginPos = shiftL(beginPos, maskL);
-                                                }
+                                                beginPos = shiftL(beginPos, maskL);
                                             }
                                             if (getActiveMaskSet()['lastValidPosition'] != undefined) {
                                                 if (getActiveMaskSet()['lastValidPosition'] != -1 && getActiveBuffer()[getActiveMaskSet()['lastValidPosition']] == getActiveBufferTemplate()[getActiveMaskSet()['lastValidPosition']])
-                                                    getActiveMaskSet()["lastValidPosition"] = isRTL ? seekNext(getActiveMaskSet()["lastValidPosition"]) : (getActiveMaskSet()["lastValidPosition"] == 0 ? -1 : seekPrevious(getActiveMaskSet()["lastValidPosition"]));
-                                                if (isRTL ? getActiveMaskSet()['lastValidPosition'] > firstMaskPos : getActiveMaskSet()['lastValidPosition'] < firstMaskPos) {
+                                                    getActiveMaskSet()["lastValidPosition"] = getActiveMaskSet()["lastValidPosition"] == 0 ? -1 : seekPrevious(getActiveMaskSet()["lastValidPosition"]);
+                                                if (getActiveMaskSet()['lastValidPosition'] < firstMaskPos) {
                                                     getActiveMaskSet()["lastValidPosition"] = undefined;
                                                     getActiveMaskSet()["p"] = firstMaskPos;
                                                 } else {
@@ -1233,23 +1208,18 @@
                                             }
                                         }
                                     } else if (k == opts.keyCode.BACKSPACE) { //handle backspace
-                                        if (isRTL ? beginPos <= firstMaskPos : beginPos > firstMaskPos) {
+                                        if (beginPos > firstMaskPos) {
                                             beginPos -= 1;
-                                            if (opts.numericInput && opts.radixPoint != "" && buffer[beginPos] == opts.radixPoint) {
+                                            if (opts.isNumeric && opts.radixPoint != "" && buffer[beginPos] == opts.radixPoint) {
                                                 beginPos = shiftR(0, (buffer.length - 1 == beginPos) /* radixPoint is latest? delete it */ ? beginPos : beginPos - 1, getPlaceHolder(beginPos), true);
                                                 beginPos++;
                                             } else {
-                                                if (isRTL) {
-                                                    beginPos = shiftR(0, beginPos, getPlaceHolder(beginPos), true);
-                                                    beginPos = buffer[beginPos + 1] == opts.radixPoint ? beginPos + 1 : seekNext(beginPos);
-                                                } else {
-                                                    beginPos = shiftL(beginPos, maskL);
-                                                }
+                                                beginPos = shiftL(beginPos, maskL);
                                             }
                                             if (getActiveMaskSet()['lastValidPosition'] != undefined) {
                                                 if (getActiveMaskSet()['lastValidPosition'] != -1 && getActiveBuffer()[getActiveMaskSet()['lastValidPosition']] == getActiveBufferTemplate()[getActiveMaskSet()['lastValidPosition']])
-                                                    getActiveMaskSet()["lastValidPosition"] = isRTL ? seekNext(getActiveMaskSet()["lastValidPosition"]) : (getActiveMaskSet()["lastValidPosition"] == 0 ? -1 : seekPrevious(getActiveMaskSet()["lastValidPosition"]));
-                                                if (isRTL ? getActiveMaskSet()['lastValidPosition'] > firstMaskPos : getActiveMaskSet()['lastValidPosition'] < firstMaskPos) {
+                                                    getActiveMaskSet()["lastValidPosition"] = getActiveMaskSet()["lastValidPosition"] == 0 ? -1 : seekPrevious(getActiveMaskSet()["lastValidPosition"]);
+                                                if (getActiveMaskSet()['lastValidPosition'] < firstMaskPos) {
                                                     getActiveMaskSet()["lastValidPosition"] = undefined;
                                                     getActiveMaskSet()["p"] = firstMaskPos;
                                                 } else {
@@ -1264,7 +1234,7 @@
                                             //init first 
                                             activeMasksetIndex = 0;
                                             getActiveMaskSet()["buffer"] = getActiveBufferTemplate().slice();
-                                            getActiveMaskSet()["p"] = isRTL ? seekPrevious(getMaskLength() + 1) : seekNext(-1);
+                                            getActiveMaskSet()["p"] = seekNext(-1);
                                             getActiveMaskSet()["lastValidPosition"] = undefined;
                                         }
                                     }
@@ -1272,7 +1242,7 @@
 
                             }
 
-                            determineActiveMasksetIndex(isRTL);
+                            determineActiveMasksetIndex();
                             writeBuffer(input, getActiveBuffer(), getActiveMaskSet()["p"]);
                             if (input._valueGet() == getActiveBufferTemplate().join(''))
                                 $(input).trigger('cleared');
@@ -1282,7 +1252,7 @@
                             }
                         } else if (k == opts.keyCode.END || k == opts.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
                             setTimeout(function () {
-                                var caretPos = isRTL ? getActiveMaskSet()["lastValidPosition"] : seekNext(getActiveMaskSet()["lastValidPosition"]);
+                                var caretPos = seekNext(getActiveMaskSet()["lastValidPosition"]);
                                 if (!opts.insertMode && caretPos == getMaskLength() && !e.shiftKey) caretPos--;
                                 caret(input, e.shiftKey ? pos.begin : caretPos, caretPos);
                             }, 0);
@@ -1313,9 +1283,7 @@
                         ignorable = $.inArray(k, opts.ignorables) != -1;
                     }
 
-                    function keypressEvent(e, checkval, k, writeOut, strict, ndx, rtl) {
-                        isRTL = rtl == undefined ? isRTL : rtl;
-
+                    function keypressEvent(e, checkval, k, writeOut, strict, ndx) {
                         //Safari 5.1.x - modal dialog fires keypress twice workaround
                         if (k == undefined && skipKeyPressEvent) return false;
                         skipKeyPressEvent = true;
@@ -1326,10 +1294,10 @@
                         var k = k || e.which || e.charCode || e.keyCode,
                             c = String.fromCharCode(k);
 
-                        if (opts.numericInput && c == opts.radixPoint && checkval !== true) {
+                        if (opts.isNumeric && c == opts.radixPoint && checkval !== true) {
                             var nptStr = input._valueGet();
                             var radixPosition = nptStr.indexOf(opts.radixPoint);
-                            caret(input, seekNext(radixPosition != -1 ? radixPosition : getMaskLength()));
+                            caret(input, radixPosition != -1 ? radixPosition : getMaskLength());
                         }
 
                         if ((!(e.ctrlKey && e.altKey) && (e.ctrlKey || e.metaKey || ignorable)) && checkval !== true) {
@@ -1338,7 +1306,7 @@
                             if (k) {
                                 var pos, results, result;
                                 if (checkval) {
-                                    var pcaret = strict ? ndx : (opts.numericInput ? seekNext(getActiveMaskSet()["p"]) : getActiveMaskSet()["p"]);
+                                    var pcaret = strict ? ndx : getActiveMaskSet()["p"];
                                     pos = { begin: pcaret, end: pcaret };
                                 } else {
                                     pos = caret(input);
@@ -1353,18 +1321,18 @@
                                         getActiveMaskSet()["undoBuffer"] = getActiveBuffer().join(''); //init undobuffer for recovery when not valid
                                         var posend = pos.end < getMaskLength() ? pos.end : getMaskLength();
                                         if (getActiveMaskSet()["lastValidPosition"] > pos.begin && getActiveMaskSet()["lastValidPosition"] < posend) {
-                                            getActiveMaskSet()["lastValidPosition"] = isRTL ? seekNext(posend) : seekPrevious(pos.begin);
+                                            getActiveMaskSet()["lastValidPosition"] = seekPrevious(pos.begin);
                                         } else {
                                             redetermineLVP = true;
                                         }
                                         clearBuffer(getActiveBuffer(), pos.begin, posend);
                                         var ml = getMaskLength();
                                         if (opts.greedy == false) {
-                                            isRTL ? shiftR(0, posend - 1, getPlaceHolder(posend), true) : shiftL(pos.begin, ml);
+                                            shiftL(pos.begin, ml);
                                         } else {
                                             for (var i = pos.begin; i < posend; i++) {
                                                 if (isMask(i))
-                                                    isRTL ? shiftR(0, posend - 1, getPlaceHolder(posend - 1), true) : shiftL(pos.begin, ml);
+                                                    shiftL(pos.begin, ml);
                                             }
                                         }
                                     });
@@ -1374,95 +1342,50 @@
                                         if (!opts.insertMode) { //preserve some space
                                             $.each(masksets, function (ndx, lmnt) {
                                                 activeMasksetIndex = ndx;
-                                                isRTL ? shiftL(0, posend) : shiftR(pos.begin, getMaskLength(), getPlaceHolder(pos.begin), true);
-                                                getActiveMaskSet()["lastValidPosition"] = isRTL ? seekPrevious(getActiveMaskSet()["lastValidPosition"]) : seekNext(getActiveMaskSet()["lastValidPosition"]);
+                                                shiftR(pos.begin, getMaskLength(), getPlaceHolder(pos.begin), true);
+                                                getActiveMaskSet()["lastValidPosition"] = seekNext(getActiveMaskSet()["lastValidPosition"]);
                                             });
                                         }
                                     }
                                     activeMasksetIndex = initialIndex; //restore index
                                 }
 
-                                if (isRTL) {
-                                    var p = seekPrevious(isSelection ? pos.begin : pos.end);
-                                    results = isValid(p, c, strict, isRTL);
-                                    if (strict === true) results = [{ "activeMasksetIndex": activeMasksetIndex, "result": results }];
-                                    $.each(results, function (index, result) {
-                                        activeMasksetIndex = result["activeMasksetIndex"];
-                                        getActiveMaskSet()["writeOutBuffer"] = true;
-                                        var np = result["result"];
-                                        if (np !== false) {
-                                            var refresh = false, buffer = getActiveBuffer();
-                                            if (np !== true) {
-                                                refresh = np["refresh"]; //only rewrite buffer from isValid
-                                                p = np.pos != undefined ? np.pos : p; //set new position from isValid
-                                                c = np.c != undefined ? np.c : c; //set new char from isValid
-                                            }
-                                            if (refresh !== true) {
-                                                var maskL = getMaskLength(); //update masklength to include possible groupSeparator offset
-                                                var firstMaskPos = seekNext(-1), firstUnmaskedPosition = firstMaskPos;
-                                                if (opts.insertMode == true) {
-                                                    if (getActiveMaskSet()['greedy'] == true) {
-                                                        var bfrClone = buffer.slice();
-                                                        while (getBufferElement(bfrClone, firstUnmaskedPosition, true) != getPlaceHolder(firstUnmaskedPosition) && firstUnmaskedPosition <= p) {
-                                                            firstUnmaskedPosition = firstUnmaskedPosition == maskL ? (maskL + 1) : seekNext(firstUnmaskedPosition);
-                                                        }
-                                                    }
-                                                    if (firstUnmaskedPosition <= p && (getActiveMaskSet()['greedy'] || (buffer.length < maskL || getBufferElement(buffer, p) == getPlaceHolder(p)))) {
-                                                        if (buffer[firstMaskPos] != getPlaceHolder(firstMaskPos) && buffer.length < maskL) {
-                                                            var offset = prepareBuffer(buffer, -1, isRTL);
-                                                            if ((isSelection ? pos.begin : pos.end) != 0) p = p + offset;
-                                                            maskL = buffer.length;
-                                                        }
-                                                        shiftL(firstUnmaskedPosition, p, c);
-                                                        //shift the lvp if needed
-                                                        var lvp = getActiveMaskSet()["lastValidPosition"], plvp = seekPrevious(lvp);
-                                                        if (lvp <= p && (getBufferElement(getActiveBuffer(), plvp) != getPlaceHolder(plvp))) {
-                                                            getActiveMaskSet()["lastValidPosition"] = plvp;
-                                                        }
-                                                    } else getActiveMaskSet()["writeOutBuffer"] = false;
-                                                } else setBufferElement(buffer, p, c, true, isRTL);
-                                            }
-                                            getActiveMaskSet()["p"] = p;
+                                var p = opts.numericInput ? seekPrevious(pos.begin) : seekNext(pos.begin - 1);
+                                results = isValid(p, c, strict);
+                                if (strict === true) results = [{ "activeMasksetIndex": activeMasksetIndex, "result": results }];
+                                $.each(results, function (index, result) {
+                                    activeMasksetIndex = result["activeMasksetIndex"];
+                                    getActiveMaskSet()["writeOutBuffer"] = true;
+                                    var np = result["result"];
+                                    if (np !== false) {
+                                        var refresh = false, buffer = getActiveBuffer();
+                                        if (np !== true) {
+                                            refresh = np["refresh"]; //only rewrite buffer from isValid
+                                            p = np.pos != undefined ? np.pos : p; //set new position from isValid
+                                            c = np.c != undefined ? np.c : c; //set new char from isValid
                                         }
-                                    });
-                                } else {
-                                    var p = seekNext(pos.begin - 1);
-                                    results = isValid(p, c, strict, isRTL);
-                                    if (strict === true) results = [{ "activeMasksetIndex": activeMasksetIndex, "result": results }];
-                                    $.each(results, function (index, result) {
-                                        activeMasksetIndex = result["activeMasksetIndex"];
-                                        getActiveMaskSet()["writeOutBuffer"] = true;
-                                        var np = result["result"];
-                                        if (np !== false) {
-                                            var refresh = false, buffer = getActiveBuffer();
-                                            if (np !== true) {
-                                                refresh = np["refresh"]; //only rewrite buffer from isValid
-                                                p = np.pos != undefined ? np.pos : p; //set new position from isValid
-                                                c = np.c != undefined ? np.c : c; //set new char from isValid
-                                            }
-                                            if (refresh !== true) {
-                                                if (opts.insertMode == true) {
-                                                    var lastUnmaskedPosition = getMaskLength();
-                                                    var bfrClone = buffer.slice();
-                                                    while (getBufferElement(bfrClone, lastUnmaskedPosition, true) != getPlaceHolder(lastUnmaskedPosition) && lastUnmaskedPosition >= p) {
-                                                        lastUnmaskedPosition = lastUnmaskedPosition == 0 ? -1 : seekPrevious(lastUnmaskedPosition);
+                                        if (refresh !== true) {
+                                            if (opts.insertMode == true) {
+                                                var lastUnmaskedPosition = getMaskLength();
+                                                var bfrClone = buffer.slice();
+                                                while (getBufferElement(bfrClone, lastUnmaskedPosition, true) != getPlaceHolder(lastUnmaskedPosition) && lastUnmaskedPosition >= p) {
+                                                    lastUnmaskedPosition = lastUnmaskedPosition == 0 ? -1 : seekPrevious(lastUnmaskedPosition);
+                                                }
+                                                if (lastUnmaskedPosition >= p) {
+                                                    shiftR(p, buffer.length, c);
+                                                    //shift the lvp if needed
+                                                    var lvp = getActiveMaskSet()["lastValidPosition"], nlvp = seekNext(lvp);
+                                                    if (nlvp != getMaskLength() && lvp >= p && (getBufferElement(getActiveBuffer(), nlvp) != getPlaceHolder(nlvp))) {
+                                                        getActiveMaskSet()["lastValidPosition"] = nlvp;
                                                     }
-                                                    if (lastUnmaskedPosition >= p) {
-                                                        shiftR(p, buffer.length, c);
-                                                        //shift the lvp if needed
-                                                        var lvp = getActiveMaskSet()["lastValidPosition"], nlvp = seekNext(lvp);
-                                                        if (nlvp != getMaskLength() && lvp >= p && (getBufferElement(getActiveBuffer(), nlvp) != getPlaceHolder(nlvp))) {
-                                                            getActiveMaskSet()["lastValidPosition"] = nlvp;
-                                                        }
-                                                    } else getActiveMaskSet()["writeOutBuffer"] = false;
-                                                } else setBufferElement(buffer, p, c, true, isRTL);
-                                            }
-                                            getActiveMaskSet()["p"] = seekNext(p);
+                                                } else getActiveMaskSet()["writeOutBuffer"] = false;
+                                            } else setBufferElement(buffer, p, c, true);
                                         }
-                                    });
-                                }
+                                        getActiveMaskSet()["p"] = seekNext(p);
+                                    }
+                                });
 
-                                if (strict !== true) determineActiveMasksetIndex(isRTL);
+                                if (strict !== true) determineActiveMasksetIndex();
                                 if (writeOut !== false) {
                                     $.each(results, function (ndx, rslt) {
                                         if (rslt["activeMasksetIndex"] == activeMasksetIndex) {
@@ -1475,9 +1398,9 @@
                                         setTimeout(function () { opts.onKeyValidation.call(self, result["result"], opts); }, 0);
                                         if (getActiveMaskSet()["writeOutBuffer"] && result["result"] !== false) {
                                             var buffer = getActiveBuffer();
-                                            writeBuffer(input, buffer, checkval ? undefined : ((opts.numericInput && isRTL) ? seekNext(getActiveMaskSet()["p"]) : getActiveMaskSet()["p"]));
+                                            writeBuffer(input, buffer, checkval ? undefined : (opts.numericInput ? seekPrevious(getActiveMaskSet()["p"]) : getActiveMaskSet()["p"]));
                                             if (checkval !== true) {
-                                                setTimeout(function() { //timeout needed for IE
+                                                setTimeout(function () { //timeout needed for IE
                                                     if (isComplete(buffer))
                                                         $input.trigger("complete");
                                                 }, 0);
@@ -1504,7 +1427,7 @@
                         if (k == opts.keyCode.TAB && $input.hasClass('focus.inputmask') && input._valueGet().length == 0 && opts.showMaskOnFocus) {
                             buffer = getActiveBufferTemplate().slice();
                             writeBuffer(input, buffer);
-                            if (!isRTL) caret(input, 0);
+                            caret(input, 0);
                             getActiveMaskSet()["undoBuffer"] = input._valueGet();
                         }
                     }
