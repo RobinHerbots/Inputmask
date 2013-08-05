@@ -507,6 +507,17 @@ test("inputmask({ mask: \"99999[-9999]\", greedy: false }) - input 123456789", f
     $("#testmask").remove();
 });
 
+test("inputmask({ mask: [\"99999\", \"99999-9999\", \"999999-9999\"]]}) - input 123456", function () {
+    $('body').append('<input type="text" id="testmask" dir="rtl" />');
+    $("#testmask").inputmask({ mask: ["99999", "99999-9999", "999999-9999"] });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123456");
+    equal($("#testmask").val(), "___6-54321", "Result " + $("#testmask").val());
+    
+    $("#testmask").remove();
+});
+
 module("Date.Extensions");
 test("inputmask(\"dd/mm/yyyy\") - input 2331973", function () {
     $('body').append('<input type="text" id="testmask" />');
