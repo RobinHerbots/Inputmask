@@ -1294,12 +1294,6 @@
                         var k = k || e.which || e.charCode || e.keyCode,
                             c = String.fromCharCode(k);
 
-                        if (opts.isNumeric && c == opts.radixPoint && checkval !== true) {
-                            var nptStr = input._valueGet();
-                            var radixPosition = nptStr.indexOf(opts.radixPoint);
-                            caret(input, radixPosition != -1 ? radixPosition : getMaskLength());
-                        }
-
                         if ((!(e.ctrlKey && e.altKey) && (e.ctrlKey || e.metaKey || ignorable)) && checkval !== true) {
                             return true;
                         } else {
@@ -1311,7 +1305,7 @@
                                 } else {
                                     pos = caret(input);
                                 }
-
+                                
                                 //should we clear a possible selection??
                                 var isSelection = (pos.end - pos.begin) > 1 || ((pos.end - pos.begin) == 1 && opts.insertMode), redetermineLVP = false;
                                 if (isSelection) {
@@ -1348,6 +1342,16 @@
                                         }
                                     }
                                     activeMasksetIndex = initialIndex; //restore index
+                                }
+
+                                if (opts.isNumeric && c == opts.radixPoint && checkval !== true) {
+                                    var nptStr = getActiveBuffer().join('');
+                                    var radixPosition = nptStr.indexOf(opts.radixPoint);
+                                    if (radixPosition != -1) {
+                                        pos.begin = pos.begin == radixPosition ? seekNext(radixPosition) : radixPosition;
+                                        pos.end = pos.begin;
+                                        caret(input, pos.begin);
+                                    }
                                 }
 
                                 var p = opts.numericInput ? seekPrevious(pos.begin) : seekNext(pos.begin - 1);

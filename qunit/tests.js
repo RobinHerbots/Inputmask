@@ -341,25 +341,22 @@ test("inputmask(\"+7 (999) 999-99-99\") ~ value=\"+7 (+79114041112___) ___-__-__
     $("#testmask").remove();
 });
 
+test("inputmask(\"9\") ~ value=\"1\"", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("9");
+    $("#testmask").val("1");
+    equal($("#testmask").val(), "1", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
 module("Optional & multi masks");
 test("inputmask(\"(99) 9999[9]-99999\") - input 121234-12345", function () {
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("(99) 9999[9]-99999");
 
     $("#testmask")[0].focus();
-
-    $("#testmask").SendKey("1");
-    $("#testmask").SendKey("2");
-    $("#testmask").SendKey("1");
-    $("#testmask").SendKey("2");
-    $("#testmask").SendKey("3");
-    $("#testmask").SendKey("4");
-    $("#testmask").SendKey("-");
-    $("#testmask").SendKey("1");
-    $("#testmask").SendKey("2");
-    $("#testmask").SendKey("3");
-    $("#testmask").SendKey("4");
-    $("#testmask").SendKey("5");
+    $("#testmask").Type("121234-12345");
 
     equal($("#testmask").val(), "(12) 1234-12345", "Result " + $("#testmask").val());
 
@@ -370,19 +367,7 @@ test("inputmask(\"(99) 9999[9]-99999\") - input 121234512345", function () {
     $("#testmask").inputmask("(99) 9999[9]-99999");
 
     $("#testmask")[0].focus();
-
-    $("#testmask").SendKey("1");
-    $("#testmask").SendKey("2");
-    $("#testmask").SendKey("1");
-    $("#testmask").SendKey("2");
-    $("#testmask").SendKey("3");
-    $("#testmask").SendKey("4");
-    $("#testmask").SendKey("5");
-    $("#testmask").SendKey("1");
-    $("#testmask").SendKey("2");
-    $("#testmask").SendKey("3");
-    $("#testmask").SendKey("4");
-    $("#testmask").SendKey("5");
+    $("#testmask").Type("121234512345");
 
     equal($("#testmask").val(), "(12) 12345-12345", "Result " + $("#testmask").val());
 
@@ -757,7 +742,6 @@ test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - inp
     $("#testmask").SendKey(keyCodes.LEFT);
     $("#testmask").SendKey(keyCodes.LEFT);
     $("#testmask").SendKey(keyCodes.LEFT);
-    $("#testmask").SendKey(keyCodes.LEFT);
     $("#testmask").SendKey(keyCodes.DELETE);
     $("#testmask").SendKey(keyCodes.DELETE);
     $("#testmask").SendKey(keyCodes.DELETE);
@@ -781,12 +765,26 @@ test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - inp
     $("#testmask").SendKey(keyCodes.DELETE);
     $("#testmask").SendKey(keyCodes.DELETE);
     $("#testmask").SendKey(keyCodes.DELETE);
+    $("#testmask").SendKey(keyCodes.DELETE);
+    $("#testmask").Type("789");
+
+    equal($("#testmask").val(), "12,345.789", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - input 12345.123 + replace .123 => .789", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("decimal", { autoGroup: true, groupSeparator: "," });
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").Type("12345.123");
+    //$("#testmask").click();
+    caret($("#testmask"), 6, 10);
     $("#testmask").Type(".789");
 
     equal($("#testmask").val(), "12,345.789", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
-
 test("inputmask(\"decimal\", { autoGroup: false, groupSeparator: \",\" }\") - input 12345.123 + remove .123", function () {
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("decimal", { autoGroup: false, groupSeparator: "," });
@@ -799,6 +797,7 @@ test("inputmask(\"decimal\", { autoGroup: false, groupSeparator: \",\" }\") - in
     $("#testmask").SendKey(keyCodes.LEFT);
     $("#testmask").SendKey(keyCodes.LEFT);
     $("#testmask").SendKey(keyCodes.LEFT);
+    $("#testmask").SendKey(keyCodes.DELETE);
     $("#testmask").SendKey(keyCodes.DELETE);
     $("#testmask").SendKey(keyCodes.DELETE);
     $("#testmask").SendKey(keyCodes.DELETE);
@@ -822,7 +821,7 @@ test("inputmask(\"decimal\", { autoGroup: false, groupSeparator: \",\" }\") - in
     $("#testmask").SendKey(keyCodes.DELETE);
     $("#testmask").SendKey(keyCodes.DELETE);
     $("#testmask").SendKey(keyCodes.DELETE);
-    $("#testmask").Type(".789");
+    $("#testmask").Type("789");
 
     equal($("#testmask").val(), "12345.789", "Result " + $("#testmask").val());
     $("#testmask").remove();
@@ -930,6 +929,7 @@ test("inputmask(\"999.999.999\") - delete 2nd with backspace, continue the mask"
     $("#testmask").SendKey("3");
     $("#testmask").SendKey(keyCodes.RIGHT);
     $("#testmask").SendKey(keyCodes.RIGHT);
+    $("#testmask").SendKey(keyCodes.RIGHT);
     $("#testmask").SendKey(keyCodes.BACKSPACE);
     $("#testmask").SendKey("4");
     $("#testmask").SendKey(keyCodes.LEFT);
@@ -950,6 +950,7 @@ test("inputmask(\"999.999.999\") - delete 2nd with delete, continue the mask", f
     $("#testmask").SendKey("1");
     $("#testmask").SendKey("2");
     $("#testmask").SendKey("3");
+    $("#testmask").SendKey(keyCodes.RIGHT);
     $("#testmask").SendKey(keyCodes.RIGHT);
     $("#testmask").SendKey(keyCodes.DELETE);
     $("#testmask").SendKey("4");
