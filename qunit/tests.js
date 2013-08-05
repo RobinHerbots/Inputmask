@@ -1122,3 +1122,16 @@ test("inputmask(\"Regex\", { regex: \"(([2-9][0-9])-([0-9]{3}-[0-9]{3}))|((1|30|
 
     $("#testmask").remove();
 });
+
+module("Dynamic Masks");
+test("inputmask(\"*{1,20}@*{1,20}.*{2,6}[.*{2}]\" - email mask", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("*{1,20}@*{1,20}.*{2,6}[.*{2}]")
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("some.body@mail.com");
+
+    equal($("#testmask").val(), "some.body@mail.com", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
