@@ -83,7 +83,7 @@
 
         $.fn.inputmask = function (fn, options) {
             var opts = $.extend(true, {}, $.inputmask.defaults, options),
-                msie10 = navigator.userAgent.match(new RegExp("msie 10", "i")) !== null,
+                msie10 = /*@cc_on!@*/false,
                 iphone = navigator.userAgent.match(new RegExp("iphone", "i")) !== null,
                 android = navigator.userAgent.match(new RegExp("android.*safari.*", "i")) !== null,
                 pasteEvent = isInputEventSupported('paste') && !msie10 ? 'paste' : 'input',
