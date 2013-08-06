@@ -1031,7 +1031,7 @@
                                 var valueGet = npt.__lookupGetter__("value");
                                 var valueSet = npt.__lookupSetter__("value");
                                 npt._valueGet = function () {
-                                    return isRTL ? valueGet.call(this).split('').reverse().join('') : valueGetvalueGet.call(this);
+                                    return isRTL ? valueGet.call(this).split('').reverse().join('') : valueGet.call(this);
                                 };
                                 npt._valueSet = function (value) {
                                     valueSet.call(this, isRTL ? value.split('').reverse().join('') : value);
