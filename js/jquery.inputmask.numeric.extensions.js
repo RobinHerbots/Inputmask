@@ -111,10 +111,10 @@ Optional extensions on the jquery.inputmask base
                         cbuf.splice(pos, 0, chrs);
                         var bufferStr = cbuf.join('');
 
-                        if (opts.autoGroup && !strict) { //strip groupseparator
-                            var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
-                            bufferStr = bufferStr.replace(new RegExp(escapedGroupSeparator, "g"), '');
-                        }
+                        //strip groupseparator
+                        var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
+                        bufferStr = bufferStr.replace(new RegExp(escapedGroupSeparator, "g"), '');
+                        
                         var isValid = opts.regex.number(opts).test(bufferStr);
                         if (!isValid) {
                             //let's help the regex a bit
