@@ -696,9 +696,9 @@
                     }
                 }
 
-                function caret(input, begin, end, notranslate) {
+                function caret(input, begin, end) {
                     function TranslatePosition(pos) {
-                        if (notranslate !== true && isRTL && typeof pos == 'number') {
+                        if (isRTL && typeof pos == 'number') {
                             var bffrLght = getActiveBuffer().length;
                             pos = bffrLght - pos;
                         }
