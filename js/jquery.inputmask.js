@@ -12,10 +12,9 @@
             //options default
             defaults: {
                 placeholder: "_",
-                optionalmarker: {
-                    start: "[",
-                    end: "]"
-                },
+                optionalmarker: { start: "[", end: "]" },
+                quantifiermarker: { start: "{", end: "}" },
+                groupmarker: { start: "(", end: ")" },
                 escapeChar: "\\",
                 mask: null,
                 oncomplete: $.noop, //executes when the mask is complete
@@ -311,7 +310,8 @@
                 var genmasks = []; //used to keep track of the masks that where processed, to avoid duplicates
                 var maskTokens = [];
                 function analyseMask(mask) { //just an idea - not in use for the moment
-                    var tokenizer = /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?[:=!]?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g;
+                    var tokenizer = /(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[]()|\\]+|./g;
+                    //var tokenizer = /\[\^?]?(?:[^\\\]]+ | \\[\S\s]?)*]? | \\(?:0(?:[0-3][0-7]{0,2} | [4-7][0-7]?)? | [1-9][0-9]* | x[0-9A-Fa-f]{2} | u[0-9A-Fa-f]{4} | c[A-Za-z] | [\S\s]?) | \((?:\?[:=!]?)? | (?:[?*+] | \{[0-9]+(?:,[0-9]*)?\})\?? | [^.?*+^${[() | \\]+ | ./g;
                     function maskToken() {
                         this.matches = [];
                         this.isGroup = false;
@@ -319,61 +319,66 @@
                         this.isQuantifier = false;
                     };
                     var currentToken = new maskToken(),
-                        match, m, opengroups = [], openoptionals = [];
+                        match, m, openenings = [];
 
                     maskTokens = [];
 
-                    // The tokenizer regex does most of the tokenization grunt work
                     while (match = tokenizer.exec(mask)) {
                         m = match[0];
                         switch (m.charAt(0)) {
-                            case "[": // optional opening
-                                if (currentToken["isGroup"] !== true) {
-                                    currentToken = new maskToken();
-                                    maskTokens.push(currentToken);
-                                }
-                                if (opengroups.length > 0) {
-                                    opengroups[opengroups.length - 1]["matches"].push(m);
+                            case opts.optionalmarker.end:
+                                // optional closing
+                            case opts.groupmarker.end:
+                                // Group closing
+                                var openingToken = openenings.pop();
+                                if (openenings.length > 0) {
+                                    openenings[openenings.length - 1]["matches"].push(openingToken);
                                 } else {
-                                    currentToken.matches.push(m);
+                                    currentToken = new maskToken();
+                                    maskTokens.push(openingToken);
                                 }
                                 break;
-                            case "(": // Group opening
+                            case opts.optionalmarker.start:
+                                // optional opening
+                                if (currentToken.matches.length > 0)
+                                    maskTokens.push(currentToken);
+                                currentToken = new maskToken();
+                                currentToken.isOptional = true;
+                                openenings.push(currentToken);
+                                break;
+                            case opts.groupmarker.start:
+                                // Group opening
+                                if (currentToken.matches.length > 0)
+                                    maskTokens.push(currentToken);
                                 currentToken = new maskToken();
                                 currentToken.isGroup = true;
-                                opengroups.push(currentToken);
+                                openenings.push(currentToken);
                                 break;
-                            case ")": // Group closing
-                                var groupToken = opengroups.pop();
-                                if (opengroups.length > 0) {
-                                    opengroups[opengroups.length - 1]["matches"].push(groupToken);
-                                } else {
-                                    currentToken = groupToken;
-                                    maskTokens.push(currentToken);
-                                }
-                                break;
-                            case "{": //Quantifier
+                            case opts.quantifiermarker.start:
+                                //Quantifier
                                 var quantifier = new maskToken();
                                 quantifier.isQuantifier = true;
                                 quantifier.matches.push(m);
-                                if (opengroups.length > 0) {
-                                    opengroups[opengroups.length - 1]["matches"].push(quantifier);
+                                if (openenings.length > 0) {
+                                    openenings[openenings.length - 1]["matches"].push(quantifier);
                                 } else {
                                     currentToken.matches.push(quantifier);
+                                    maskTokens.push(currentToken);
+                                    currentToken = new maskToken();
                                 }
                                 break;
                             default:
-                                // Vertical bar (alternator) 
-                                // ^ or $ anchor
-                                // Dot (.)
-                                // Literal character sequence
-                                if (opengroups.length > 0) {
-                                    opengroups[opengroups.length - 1]["matches"].push(m);
+                                if (openenings.length > 0) {
+                                    openenings[openenings.length - 1]["matches"].push(m);
                                 } else {
                                     currentToken.matches.push(m);
                                 }
                         }
                     }
+                    if (currentToken.matches.length > 0)
+                        maskTokens.push(currentToken);
+
+                    return maskTokens;
                 }
 
                 function markOptional(maskPart) { //needed for the clearOptionalTail functionality
