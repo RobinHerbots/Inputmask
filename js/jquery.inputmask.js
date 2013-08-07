@@ -319,19 +319,18 @@
                         this.isQuantifier = false;
                     };
                     var currentToken = new maskToken(),
-                        match, m, opengroups = [];
+                        match, m, opengroups = [], openoptionals = [];
 
                     maskTokens = [];
 
                     // The tokenizer regex does most of the tokenization grunt work
-                    while (match = tokenizer.exec(opts.regex)) {
+                    while (match = tokenizer.exec(mask)) {
                         m = match[0];
                         switch (m.charAt(0)) {
-                            case "[": // Character class
-                            case "\\":  // Escape or backreference
+                            case "[": // optional opening
                                 if (currentToken["isGroup"] !== true) {
                                     currentToken = new maskToken();
-                                    opts.regexTokens.push(currentToken);
+                                    maskTokens.push(currentToken);
                                 }
                                 if (opengroups.length > 0) {
                                     opengroups[opengroups.length - 1]["matches"].push(m);
@@ -350,7 +349,7 @@
                                     opengroups[opengroups.length - 1]["matches"].push(groupToken);
                                 } else {
                                     currentToken = groupToken;
-                                    opts.regexTokens.push(currentToken);
+                                    maskTokens.push(currentToken);
                                 }
                                 break;
                             case "{": //Quantifier
@@ -476,6 +475,8 @@
                         generateMask("", lmnt.toString());
                     });
                 } else generateMask("", opts.mask.toString());
+
+                //analyseMask(opts.mask);
 
                 return opts.greedy ? ms : ms.sort(function (a, b) { return a["mask"].length - b["mask"].length; });
             }
