@@ -22,13 +22,13 @@ Allows for using regular expressions as a mask
             definitions: {
                 'r': {
                     validator: function (chrs, buffer, pos, strict, opts) {
-
+                        function regexToken() {
+                            this.matches = [];
+                            this.isGroup = false;
+                            this.isQuantifier = false;
+                        }
                         function analyseRegex() {
-                            var currentToken = {
-                                "isQuantifier": false,
-                                "matches": [],
-                                "isGroup": false
-                            }, match, m, opengroups = [];
+                            var currentToken = new regexToken(), match, m, opengroups = [];
 
                             opts.regexTokens = [];
 
@@ -39,25 +39,18 @@ Allows for using regular expressions as a mask
                                     case "[": // Character class
                                     case "\\":  // Escape or backreference
                                         if (currentToken["isGroup"] !== true) {
-                                            currentToken = {
-                                                "isQuantifier": false,
-                                                "matches": [],
-                                                "isGroup": false
-                                            };
+                                            currentToken = new regexToken();
                                             opts.regexTokens.push(currentToken);
                                         }
                                         if (opengroups.length > 0) {
                                             opengroups[opengroups.length - 1]["matches"].push(m);
                                         } else {
-                                            currentToken["matches"].push(m);
+                                            currentToken.matches.push(m);
                                         }
                                         break;
                                     case "(": // Group opening
-                                        currentToken = {
-                                            "isQuantifier": false,
-                                            "matches": [],
-                                            "isGroup": true
-                                        };
+                                        currentToken = new regexToken();
+                                        currentToken.isGroup = true;
                                         opengroups.push(currentToken);
                                         break;
                                     case ")": // Group closing
@@ -70,15 +63,13 @@ Allows for using regular expressions as a mask
                                         }
                                         break;
                                     case "{": //Quantifier
-                                        var quantifier = {
-                                            "isQuantifier": true,
-                                            "matches": [m],
-                                            "isGroup": false
-                                        };
+                                        var quantifier = new regexToken();
+                                        quantifier.isQuantifier = true;
+                                        quantifier.matches.push(m);
                                         if (opengroups.length > 0) {
                                             opengroups[opengroups.length - 1]["matches"].push(quantifier);
                                         } else {
-                                            currentToken["matches"].push(quantifier);
+                                            currentToken.matches.push(quantifier);
                                         }
                                         break;
                                     default:
@@ -89,7 +80,7 @@ Allows for using regular expressions as a mask
                                         if (opengroups.length > 0) {
                                             opengroups[opengroups.length - 1]["matches"].push(m);
                                         } else {
-                                            currentToken["matches"].push(m);
+                                            currentToken.matches.push(m);
                                         }
                                 }
                             }

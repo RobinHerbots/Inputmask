@@ -309,6 +309,74 @@
             function generateMaskSets() {
                 var ms = [];
                 var genmasks = []; //used to keep track of the masks that where processed, to avoid duplicates
+                var maskTokens = [];
+                function analyseMask(mask) { //just an idea - not in use for the moment
+                    var tokenizer = /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?[:=!]?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g;
+                    function maskToken() {
+                        this.matches = [];
+                        this.isGroup = false;
+                        this.isOptional = false;
+                        this.isQuantifier = false;
+                    };
+                    var currentToken = new maskToken(),
+                        match, m, opengroups = [];
+
+                    maskTokens = [];
+
+                    // The tokenizer regex does most of the tokenization grunt work
+                    while (match = tokenizer.exec(opts.regex)) {
+                        m = match[0];
+                        switch (m.charAt(0)) {
+                            case "[": // Character class
+                            case "\\":  // Escape or backreference
+                                if (currentToken["isGroup"] !== true) {
+                                    currentToken = new maskToken();
+                                    opts.regexTokens.push(currentToken);
+                                }
+                                if (opengroups.length > 0) {
+                                    opengroups[opengroups.length - 1]["matches"].push(m);
+                                } else {
+                                    currentToken.matches.push(m);
+                                }
+                                break;
+                            case "(": // Group opening
+                                currentToken = new maskToken();
+                                currentToken.isGroup = true;
+                                opengroups.push(currentToken);
+                                break;
+                            case ")": // Group closing
+                                var groupToken = opengroups.pop();
+                                if (opengroups.length > 0) {
+                                    opengroups[opengroups.length - 1]["matches"].push(groupToken);
+                                } else {
+                                    currentToken = groupToken;
+                                    opts.regexTokens.push(currentToken);
+                                }
+                                break;
+                            case "{": //Quantifier
+                                var quantifier = new maskToken();
+                                quantifier.isQuantifier = true;
+                                quantifier.matches.push(m);
+                                if (opengroups.length > 0) {
+                                    opengroups[opengroups.length - 1]["matches"].push(quantifier);
+                                } else {
+                                    currentToken.matches.push(quantifier);
+                                }
+                                break;
+                            default:
+                                // Vertical bar (alternator) 
+                                // ^ or $ anchor
+                                // Dot (.)
+                                // Literal character sequence
+                                if (opengroups.length > 0) {
+                                    opengroups[opengroups.length - 1]["matches"].push(m);
+                                } else {
+                                    currentToken.matches.push(m);
+                                }
+                        }
+                    }
+                }
+
                 function markOptional(maskPart) { //needed for the clearOptionalTail functionality
                     return opts.optionalmarker.start + maskPart + opts.optionalmarker.end;
                 }
