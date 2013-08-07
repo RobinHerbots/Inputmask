@@ -151,13 +151,13 @@ asyncTest("inputmask(\"9-AAA.999\") - change event", 1, function () {
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("9-AAA.999").change(function () {
         ok(true, "Change triggered");
-            $("#testmask").remove();
-            start();
+        $("#testmask").remove();
+        start();
     });
 
     $("#testmask")[0].focus();
     $("#testmask").Type("1abc12");
-    
+
     $("#testmask").blur();
 });
 
@@ -268,6 +268,42 @@ test("inputmask(\"*\", { greedy: false, repeat: \"*\" }) - type abcdef", functio
     $("#testmask").Type("abcdef");
 
     equal($("#testmask").val(), "abcdef", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+module("greedy masks");
+test("inputmask(\"*\", { greedy: true, repeat: 10, clearMaskOnLostFocus: false  })", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("*", { greedy: true, repeat: 10, clearMaskOnLostFocus: false });
+
+    $("#testmask")[0].focus();
+    equal($("#testmask")[0]._valueGet(), "__________", "Result " + $("#testmask")[0]._valueGet());
+
+    $("#testmask").remove();
+});
+test("inputmask(\"*\", { greedy: true, repeat: 10 }) - type 12345678901234567890", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("*", { greedy: true, repeat: 10 });
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").Type("12345678901234567890");
+
+    equal($("#testmask").val(), "1234567890", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"9,99\", { greedy: true, repeat: 5 }) - type 12345678901234567890", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("9,99", { greedy: true, repeat: 5 });
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").Type("12345678901234567890");
+
+    equal($("#testmask").val(), "1,234,567,890,123,45", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });
@@ -514,7 +550,7 @@ test("inputmask({ mask: [\"99999\", \"99999-9999\", \"999999-9999\"]]}) - input 
     $("#testmask")[0].focus();
     $("#testmask").Type("123456");
     equal($("#testmask").val(), "___6-54321", "Result " + $("#testmask").val());
-    
+
     $("#testmask").remove();
 });
 
@@ -707,7 +743,7 @@ test("inputmask(\"hh:mm\") - add remove add", function () {
     $("#testmask")[0].focus();
     $("#testmask").Type("abcdef");
     $("#testmask").Type("23:50");
-   
+
     equal($("#testmask").val(), "23:50", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
@@ -979,11 +1015,93 @@ test("inputmask(\"999-aaa-999\")", function () {
     $("#testmask").remove();
 });
 
+test("inputmask(\"999-999-999\") - replace selection", function () {
+    $('body').append('<input type="text" id="testmask" dir="rtl" />');
+    $("#testmask").inputmask("999-999-999");
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123456789");
+    caret($("#testmask"), 4, 7);
+    $("#testmask").Type("5");
+
+    equal($("#testmask").val(), "__9-875-321", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"999-999-999\") - replace selection with backspace", function () {
+    $('body').append('<input type="text" id="testmask" dir="rtl" />');
+    $("#testmask").inputmask("999-999-999");
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123456789");
+    caret($("#testmask"), 4, 7);
+    $("#testmask").SendKey(keyCodes.BACKSPACE);
+    $("#testmask").Type("5");
+
+    equal($("#testmask").val(), "__5-987-321", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"999-999-999\") - replace selection - with delete", function () {
+    $('body').append('<input type="text" id="testmask" dir="rtl" />');
+    $("#testmask").inputmask("999-999-999");
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123456789");
+    caret($("#testmask"), 4, 7);
+    $("#testmask").SendKey(keyCodes.DELETE);
+    $("#testmask").Type("5");
+
+    equal($("#testmask").val(), "__5-987-321", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+module("Numeric Input");
+test("inputmask({ mask: \"9\", numericInput: true, repeat: 10, greedy: true }); - 1234567890", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: "9", numericInput: true, repeat: 10, greedy: true });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("1234567890");
+
+    equal($("#testmask").val(), "1234567890", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+test("inputmask({ mask: \"9\", numericInput: true, repeat: 10, greedy: true }); - replace selection", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: "9", numericInput: true, repeat: 10, greedy: true });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("1234567890");
+    caret($("#testmask"), 3, 6);
+    $("#testmask").Type("5");
+
+    equal($("#testmask").val(), "__12357890", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask({ mask: \"99-99-99\", numericInput: true }); - 1234567890", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: "99-99-99", numericInput: true });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("1234567890");
+
+    equal($("#testmask").val(), "12-34-56", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
 module("Regex masks")
 
 test("inputmask(\"Regex\", { regex: \"[0-9]*\"});", function () {
     $('body').append('<input type="text" id="testmask" />');
-    $("#testmask").inputmask("Regex", { regex: "[0-9]*"});
+    $("#testmask").inputmask("Regex", { regex: "[0-9]*" });
 
     $("#testmask")[0].focus();
     $("#testmask").Type("123abc45");
@@ -994,7 +1112,7 @@ test("inputmask(\"Regex\", { regex: \"[0-9]*\"});", function () {
 });
 test("inputmask(\"Regex\", { regex: \"[A-Za-z\u0410-\u044F\u0401\u04510-9]*\"});", function () {
     $('body').append('<input type="text" id="testmask" />');
-    $("#testmask").inputmask("Regex", { regex: "[A-Za-z\u0410-\u044F\u0401\u04510-9]*"});
+    $("#testmask").inputmask("Regex", { regex: "[A-Za-z\u0410-\u044F\u0401\u04510-9]*" });
 
     $("#testmask")[0].focus();
     $("#testmask").Type("123abc45");
@@ -1006,7 +1124,7 @@ test("inputmask(\"Regex\", { regex: \"[A-Za-z\u0410-\u044F\u0401\u04510-9]*\"});
 
 test("inputmask(\"Regex\", { regex: \"[A-Za-z\u0410-\u044F\u0401\u0451]+[A-Za-z\u0410-\u044F\u0401\u04510-9]*\"});", function () {
     $('body').append('<input type="text" id="testmask" />');
-    $("#testmask").inputmask("Regex", { regex: "[A-Za-z\u0410-\u044F\u0401\u0451]+[A-Za-z\u0410-\u044F\u0401\u04510-9]*"});
+    $("#testmask").inputmask("Regex", { regex: "[A-Za-z\u0410-\u044F\u0401\u0451]+[A-Za-z\u0410-\u044F\u0401\u04510-9]*" });
 
     $("#testmask")[0].focus();
     $("#testmask").Type("123abc45");
@@ -1019,7 +1137,7 @@ test("inputmask(\"Regex\", { regex: \"[A-Za-z\u0410-\u044F\u0401\u0451]+[A-Za-z\
 
 test("inputmask(\"Regex\", { regex: \"[A-Za-z\u0410-\u044F\u0401\u0451]{1}[A-Za-z\u0410-\u044F\u0401\u04510-9]*\"});", function () {
     $('body').append('<input type="text" id="testmask" />');
-    $("#testmask").inputmask("Regex", { regex: "[A-Za-z\u0410-\u044F\u0401\u0451]{1}[A-Za-z\u0410-\u044F\u0401\u04510-9]*"});
+    $("#testmask").inputmask("Regex", { regex: "[A-Za-z\u0410-\u044F\u0401\u0451]{1}[A-Za-z\u0410-\u044F\u0401\u04510-9]*" });
 
     $("#testmask")[0].focus();
     $("#testmask").Type("123abc45");
@@ -1031,7 +1149,7 @@ test("inputmask(\"Regex\", { regex: \"[A-Za-z\u0410-\u044F\u0401\u0451]{1}[A-Za-
 
 test("inputmask(\"Regex\", { regex: \"[-]?(([1-8][0-9])|[1-9]0?)\"});", function () {
     $('body').append('<input type="text" id="testmask" />');
-    $("#testmask").inputmask("Regex", { regex: "[-]?(([1-8][0-9])|[1-9]0?)"});
+    $("#testmask").inputmask("Regex", { regex: "[-]?(([1-8][0-9])|[1-9]0?)" });
 
     $("#testmask")[0].focus();
     $("#testmask").Type("90");
@@ -1043,7 +1161,7 @@ test("inputmask(\"Regex\", { regex: \"[-]?(([1-8][0-9])|[1-9]0?)\"});", function
 
 test("inputmask(\"Regex\", { regex: \"[-]?(([1-8][0-9])|[1-9]0?)\"});", function () {
     $('body').append('<input type="text" id="testmask" />');
-    $("#testmask").inputmask("Regex", { regex: "[-]?(([1-8][0-9])|[1-9]0?)"});
+    $("#testmask").inputmask("Regex", { regex: "[-]?(([1-8][0-9])|[1-9]0?)" });
 
     $("#testmask")[0].focus();
     $("#testmask").Type("0");
@@ -1055,7 +1173,7 @@ test("inputmask(\"Regex\", { regex: \"[-]?(([1-8][0-9])|[1-9]0?)\"});", function
 
 test("inputmask(\"Regex\", { regex: \"[-]?(([1-8][0-9])|[1-9]0?)\"});", function () {
     $('body').append('<input type="text" id="testmask" />');
-    $("#testmask").inputmask("Regex", { regex: "[-]?(([1-8][0-9])|[1-9]0?)"});
+    $("#testmask").inputmask("Regex", { regex: "[-]?(([1-8][0-9])|[1-9]0?)" });
 
     $("#testmask")[0].focus();
     $("#testmask").Type("-78");
@@ -1067,7 +1185,7 @@ test("inputmask(\"Regex\", { regex: \"[-]?(([1-8][0-9])|[1-9]0?)\"});", function
 
 test("inputmask(\"Regex\", { regex: \"[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}\" - regex simple email", function () {
     $('body').append('<input type="text" id="testmask" />');
-    $("#testmask").inputmask("Regex", { regex: "[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}"});
+    $("#testmask").inputmask("Regex", { regex: "[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}" });
 
     $("#testmask")[0].focus();
     $("#testmask").Type("some.body@mail.com");
@@ -1077,7 +1195,7 @@ test("inputmask(\"Regex\", { regex: \"[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{
     $("#testmask").remove();
 });
 
-test("inputmask(\"Regex\", { regex: \"(([2-9][0-9])-([0-9]{3}-[0-9]{3}))|((1|30|20|70)-([0-9]{3}-[0-9]{4}))\" - mrpanacs regex", function () {
+test("inputmask(\"Regex\", { regex: \"(([2-9][0-9])-([0-9]{3}-[0-9]{3}))|((1|30|20|70)-([0-9]{3}-[0-9]{4}))\" - mrpanacs regex 1-123-4562", function () {
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("Regex", { regex: "(([2-9][0-9])-([0-9]{3}-[0-9]{3}))|((1|30|20|70)-([0-9]{3}-[0-9]{4}))" });
 
@@ -1088,7 +1206,7 @@ test("inputmask(\"Regex\", { regex: \"(([2-9][0-9])-([0-9]{3}-[0-9]{3}))|((1|30|
 
     $("#testmask").remove();
 });
-test("inputmask(\"Regex\", { regex: \"(([2-9][0-9])-([0-9]{3}-[0-9]{3}))|((1|30|20|70)-([0-9]{3}-[0-9]{4}))\" - mrpanacs regex", function () {
+test("inputmask(\"Regex\", { regex: \"(([2-9][0-9])-([0-9]{3}-[0-9]{3}))|((1|30|20|70)-([0-9]{3}-[0-9]{4}))\" - mrpanacs regex 20-222-2222", function () {
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("Regex", { regex: "(([2-9][0-9])-([0-9]{3}-[0-9]{3}))|((1|30|20|70)-([0-9]{3}-[0-9]{4}))" });
 
@@ -1099,7 +1217,7 @@ test("inputmask(\"Regex\", { regex: \"(([2-9][0-9])-([0-9]{3}-[0-9]{3}))|((1|30|
 
     $("#testmask").remove();
 });
-test("inputmask(\"Regex\", { regex: \"(([2-9][0-9])-([0-9]{3}-[0-9]{3}))|((1|30|20|70)-([0-9]{3}-[0-9]{4}))\" - mrpanacs regex", function () {
+test("inputmask(\"Regex\", { regex: \"(([2-9][0-9])-([0-9]{3}-[0-9]{3}))|((1|30|20|70)-([0-9]{3}-[0-9]{4}))\" - mrpanacs regex 22-222-234", function () {
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("Regex", { regex: "(([2-9][0-9])-([0-9]{3}-[0-9]{3}))|((1|30|20|70)-([0-9]{3}-[0-9]{4}))" });
 
@@ -1111,7 +1229,7 @@ test("inputmask(\"Regex\", { regex: \"(([2-9][0-9])-([0-9]{3}-[0-9]{3}))|((1|30|
     $("#testmask").remove();
 });
 
-test("inputmask(\"Regex\", { regex: \"(([2-9][0-9])-([0-9]{3}-[0-9]{3}))|((1|30|20|70)-([0-9]{3}-[0-9]{4}))\" - mrpanacs regex", function () {
+test("inputmask(\"Regex\", { regex: \"(([2-9][0-9])-([0-9]{3}-[0-9]{3}))|((1|30|20|70)-([0-9]{3}-[0-9]{4}))\" - mrpanacs regex 70-12-34", function () {
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("Regex", { regex: "(([2-9][0-9])-([0-9]{3}-[0-9]{3}))|((1|30|20|70)-([0-9]{3}-[0-9]{4}))" });
 
