@@ -89,6 +89,7 @@ Allows for using regular expressions as a mask
                         function validateRegexToken(token, fromGroup) {
                             var isvalid = false;
                             if (fromGroup) {
+                                console.log("isfromgroup");
                                 regexPart += "(";
                                 openGroupCount++;
                             }
@@ -103,7 +104,7 @@ Allows for using regular expressions as a mask
                                     for (var j = 0; j < openGroupCount; j++) {
                                         testExp += ")";
                                     }
-                                    var exp = new RegExp("^" + testExp + "$");
+                                    var exp = new RegExp("^(" + testExp + ")$");
                                     isvalid = exp.test(bufferStr);
                                     regexPart += matchToken;
                                 }
@@ -113,8 +114,9 @@ Allows for using regular expressions as a mask
                                     for (var j = 0; j < openGroupCount; j++) {
                                         testExp += ")";
                                     }
-                                    var exp = new RegExp("^" + testExp + "$");
+                                    var exp = new RegExp("^(" + testExp + ")$");
                                     isvalid = exp.test(bufferStr);
+                                    console.log(bufferStr + " " + exp + " " + isvalid);
                                 }
                                 if (isvalid) break;
                             }
@@ -137,7 +139,7 @@ Allows for using regular expressions as a mask
                         var bufferStr = cbuffer.join('');
                         for (var i = 0; i < opts.regexTokens.length; i++) {
                             var regexToken = opts.regexTokens[i];
-                            isValid = validateRegexToken(regexToken, regexPart, regexToken["isGroup"]);
+                            isValid = validateRegexToken(regexToken, regexToken["isGroup"]);
                             if (isValid) break;
                         }
 
