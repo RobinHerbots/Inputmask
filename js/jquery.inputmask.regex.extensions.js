@@ -58,7 +58,8 @@ Allows for using regular expressions as a mask
                                         if (opengroups.length > 0) {
                                             opengroups[opengroups.length - 1]["matches"].push(groupToken);
                                         } else {
-                                            currentToken = groupToken;
+                                            opts.regexTokens.push(groupToken);
+                                            currentToken = new regexToken();
                                             opts.regexTokens.push(currentToken);
                                         }
                                         break;
@@ -89,7 +90,6 @@ Allows for using regular expressions as a mask
                         function validateRegexToken(token, fromGroup) {
                             var isvalid = false;
                             if (fromGroup) {
-                                console.log("isfromgroup");
                                 regexPart += "(";
                                 openGroupCount++;
                             }
@@ -116,7 +116,7 @@ Allows for using regular expressions as a mask
                                     }
                                     var exp = new RegExp("^(" + testExp + ")$");
                                     isvalid = exp.test(bufferStr);
-                                    console.log(bufferStr + " " + exp + " " + isvalid);
+                                    //console.log(bufferStr + " " + exp + " " + isvalid);
                                 }
                                 if (isvalid) break;
                             }
