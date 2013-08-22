@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.3.17
+* Version: 2.3.18
 */
 
 (function ($) {
@@ -12,10 +12,9 @@
             //options default
             defaults: {
                 placeholder: "_",
-                optionalmarker: {
-                    start: "[",
-                    end: "]"
-                },
+                optionalmarker: { start: "[", end: "]" },
+                quantifiermarker: { start: "{", end: "}" },
+                groupmarker: { start: "(", end: ")" },
                 escapeChar: "\\",
                 mask: null,
                 oncomplete: $.noop, //executes when the mask is complete
@@ -309,6 +308,79 @@
             function generateMaskSets() {
                 var ms = [];
                 var genmasks = []; //used to keep track of the masks that where processed, to avoid duplicates
+                var maskTokens = [];
+                function analyseMask(mask) { //just an idea - not in use for the moment
+                    var tokenizer = /(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[]()|\\]+|./g;
+                    //var tokenizer = /\[\^?]?(?:[^\\\]]+ | \\[\S\s]?)*]? | \\(?:0(?:[0-3][0-7]{0,2} | [4-7][0-7]?)? | [1-9][0-9]* | x[0-9A-Fa-f]{2} | u[0-9A-Fa-f]{4} | c[A-Za-z] | [\S\s]?) | \((?:\?[:=!]?)? | (?:[?*+] | \{[0-9]+(?:,[0-9]*)?\})\?? | [^.?*+^${[() | \\]+ | ./g;
+                    function maskToken() {
+                        this.matches = [];
+                        this.isGroup = false;
+                        this.isOptional = false;
+                        this.isQuantifier = false;
+                    };
+                    var currentToken = new maskToken(),
+                        match, m, openenings = [];
+
+                    maskTokens = [];
+
+                    while (match = tokenizer.exec(mask)) {
+                        m = match[0];
+                        switch (m.charAt(0)) {
+                            case opts.optionalmarker.end:
+                                // optional closing
+                            case opts.groupmarker.end:
+                                // Group closing
+                                var openingToken = openenings.pop();
+                                if (openenings.length > 0) {
+                                    openenings[openenings.length - 1]["matches"].push(openingToken);
+                                } else {
+                                    currentToken = new maskToken();
+                                    maskTokens.push(openingToken);
+                                }
+                                break;
+                            case opts.optionalmarker.start:
+                                // optional opening
+                                if (currentToken.matches.length > 0)
+                                    maskTokens.push(currentToken);
+                                currentToken = new maskToken();
+                                currentToken.isOptional = true;
+                                openenings.push(currentToken);
+                                break;
+                            case opts.groupmarker.start:
+                                // Group opening
+                                if (currentToken.matches.length > 0)
+                                    maskTokens.push(currentToken);
+                                currentToken = new maskToken();
+                                currentToken.isGroup = true;
+                                openenings.push(currentToken);
+                                break;
+                            case opts.quantifiermarker.start:
+                                //Quantifier
+                                var quantifier = new maskToken();
+                                quantifier.isQuantifier = true;
+                                quantifier.matches.push(m);
+                                if (openenings.length > 0) {
+                                    openenings[openenings.length - 1]["matches"].push(quantifier);
+                                } else {
+                                    currentToken.matches.push(quantifier);
+                                    maskTokens.push(currentToken);
+                                    currentToken = new maskToken();
+                                }
+                                break;
+                            default:
+                                if (openenings.length > 0) {
+                                    openenings[openenings.length - 1]["matches"].push(m);
+                                } else {
+                                    currentToken.matches.push(m);
+                                }
+                        }
+                    }
+                    if (currentToken.matches.length > 0)
+                        maskTokens.push(currentToken);
+
+                    return maskTokens;
+                }
+
                 function markOptional(maskPart) { //needed for the clearOptionalTail functionality
                     return opts.optionalmarker.start + maskPart + opts.optionalmarker.end;
                 }
@@ -408,6 +480,8 @@
                         generateMask("", lmnt.toString());
                     });
                 } else generateMask("", opts.mask.toString());
+
+                //analyseMask(opts.mask);
 
                 return opts.greedy ? ms : ms.sort(function (a, b) { return a["mask"].length - b["mask"].length; });
             }
@@ -696,9 +770,9 @@
                     }
                 }
 
-                function caret(input, begin, end, notranslate) {
+                function caret(input, begin, end) {
                     function TranslatePosition(pos) {
-                        if (notranslate !== true && isRTL && typeof pos == 'number') {
+                        if (isRTL && typeof pos == 'number') {
                             var bffrLght = getActiveBuffer().length;
                             pos = bffrLght - pos;
                         }
@@ -1485,7 +1559,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.17
+Version: 2.3.18
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1587,7 +1661,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.17
+Version: 2.3.18
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2064,7 +2138,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.17
+Version: 2.3.18
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2220,7 +2294,7 @@ Optional extensions on the jquery.inputmask base
             regex: {
                 number: function (opts) {
                     var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
-                    var signedExpression = "[" + (opts.allowPlus ? "\+" : "") + (opts.allowMinus ? "-" : "") + "]?";
+                    var signedExpression = opts.allowPlus || opts.allowMinus ? "[" + (opts.allowPlus ? "\+" : "") + (opts.allowMinus ? "-" : "") + "]?" : "";
                     return new RegExp("^" + signedExpression + "(\\d+|\\d{1," + opts.groupSize + "}((" + escapedGroupSeparator + "\\d{" + opts.groupSize + "})?)+)$");
                 }
             },
@@ -2233,7 +2307,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.17
+Version: 2.3.18
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2252,13 +2326,13 @@ Allows for using regular expressions as a mask
             definitions: {
                 'r': {
                     validator: function (chrs, buffer, pos, strict, opts) {
-
+                        function regexToken() {
+                            this.matches = [];
+                            this.isGroup = false;
+                            this.isQuantifier = false;
+                        }
                         function analyseRegex() {
-                            var currentToken = {
-                                "isQuantifier": false,
-                                "matches": [],
-                                "isGroup": false
-                            }, match, m, opengroups = [];
+                            var currentToken = new regexToken(), match, m, opengroups = [];
 
                             opts.regexTokens = [];
 
@@ -2269,25 +2343,18 @@ Allows for using regular expressions as a mask
                                     case "[": // Character class
                                     case "\\":  // Escape or backreference
                                         if (currentToken["isGroup"] !== true) {
-                                            currentToken = {
-                                                "isQuantifier": false,
-                                                "matches": [],
-                                                "isGroup": false
-                                            };
+                                            currentToken = new regexToken();
                                             opts.regexTokens.push(currentToken);
                                         }
                                         if (opengroups.length > 0) {
                                             opengroups[opengroups.length - 1]["matches"].push(m);
                                         } else {
-                                            currentToken["matches"].push(m);
+                                            currentToken.matches.push(m);
                                         }
                                         break;
                                     case "(": // Group opening
-                                        currentToken = {
-                                            "isQuantifier": false,
-                                            "matches": [],
-                                            "isGroup": true
-                                        };
+                                        currentToken = new regexToken();
+                                        currentToken.isGroup = true;
                                         opengroups.push(currentToken);
                                         break;
                                     case ")": // Group closing
@@ -2295,20 +2362,19 @@ Allows for using regular expressions as a mask
                                         if (opengroups.length > 0) {
                                             opengroups[opengroups.length - 1]["matches"].push(groupToken);
                                         } else {
-                                            currentToken = groupToken;
+                                            opts.regexTokens.push(groupToken);
+                                            currentToken = new regexToken();
                                             opts.regexTokens.push(currentToken);
                                         }
                                         break;
                                     case "{": //Quantifier
-                                        var quantifier = {
-                                            "isQuantifier": true,
-                                            "matches": [m],
-                                            "isGroup": false
-                                        };
+                                        var quantifier = new regexToken();
+                                        quantifier.isQuantifier = true;
+                                        quantifier.matches.push(m);
                                         if (opengroups.length > 0) {
                                             opengroups[opengroups.length - 1]["matches"].push(quantifier);
                                         } else {
-                                            currentToken["matches"].push(quantifier);
+                                            currentToken.matches.push(quantifier);
                                         }
                                         break;
                                     default:
@@ -2319,7 +2385,7 @@ Allows for using regular expressions as a mask
                                         if (opengroups.length > 0) {
                                             opengroups[opengroups.length - 1]["matches"].push(m);
                                         } else {
-                                            currentToken["matches"].push(m);
+                                            currentToken.matches.push(m);
                                         }
                                 }
                             }
@@ -2342,7 +2408,7 @@ Allows for using regular expressions as a mask
                                     for (var j = 0; j < openGroupCount; j++) {
                                         testExp += ")";
                                     }
-                                    var exp = new RegExp("^" + testExp + "$");
+                                    var exp = new RegExp("^(" + testExp + ")$");
                                     isvalid = exp.test(bufferStr);
                                     regexPart += matchToken;
                                 }
@@ -2352,8 +2418,9 @@ Allows for using regular expressions as a mask
                                     for (var j = 0; j < openGroupCount; j++) {
                                         testExp += ")";
                                     }
-                                    var exp = new RegExp("^" + testExp + "$");
+                                    var exp = new RegExp("^(" + testExp + ")$");
                                     isvalid = exp.test(bufferStr);
+                                    //console.log(bufferStr + " " + exp + " " + isvalid);
                                 }
                                 if (isvalid) break;
                             }
@@ -2376,7 +2443,7 @@ Allows for using regular expressions as a mask
                         var bufferStr = cbuffer.join('');
                         for (var i = 0; i < opts.regexTokens.length; i++) {
                             var regexToken = opts.regexTokens[i];
-                            isValid = validateRegexToken(regexToken, regexPart, regexToken["isGroup"]);
+                            isValid = validateRegexToken(regexToken, regexToken["isGroup"]);
                             if (isValid) break;
                         }
 
