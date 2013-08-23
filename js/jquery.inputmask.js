@@ -335,13 +335,13 @@
                                 if (openenings.length > 0) {
                                     openenings[openenings.length - 1]["matches"].push(openingToken);
                                 } else {
-                                    currentToken = new maskToken();
                                     maskTokens.push(openingToken);
+                                    currentToken = new maskToken();
                                 }
                                 break;
                             case opts.optionalmarker.start:
                                 // optional opening
-                                if (currentToken.matches.length > 0)
+                                if (!currentToken.isGroup && currentToken.matches.length > 0)
                                     maskTokens.push(currentToken);
                                 currentToken = new maskToken();
                                 currentToken.isOptional = true;
@@ -349,7 +349,7 @@
                                 break;
                             case opts.groupmarker.start:
                                 // Group opening
-                                if (currentToken.matches.length > 0)
+                                if (!currentToken.isGroup && currentToken.matches.length > 0)
                                     maskTokens.push(currentToken);
                                 currentToken = new maskToken();
                                 currentToken.isGroup = true;
@@ -364,8 +364,6 @@
                                     openenings[openenings.length - 1]["matches"].push(quantifier);
                                 } else {
                                     currentToken.matches.push(quantifier);
-                                    maskTokens.push(currentToken);
-                                    currentToken = new maskToken();
                                 }
                                 break;
                             default:
@@ -376,6 +374,7 @@
                                 }
                         }
                     }
+
                     if (currentToken.matches.length > 0)
                         maskTokens.push(currentToken);
 

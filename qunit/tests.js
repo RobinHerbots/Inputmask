@@ -1267,6 +1267,42 @@ test("inputmask(\"Regex\", { regex: \"(([2-9][0-9])-([0-9]{3}-[0-9]{3}))|((1|30|
     $("#testmask").remove();
 });
 
+test("inputmask(\"Regex\", { regex: \"([0-9]|[1][0-9]|[2][0-3]?)(\\.(5|25|75))?\" - arame regex 12", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("Regex", { regex: "([0-9]|[1][0-9]|[2][0-3]?)(\\.(5|25|75))?" });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("12");
+
+    equal($("#testmask").val(), "12", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"Regex\", { regex: \"([0-9]|[1][0-9]|[2][0-3]?)(\\.(5|25|75))?\" - arame regex 12.5", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("Regex", { regex: "([0-9]|[1][0-9]|[2][0-3]?)(\\.(5|25|75))?" });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("12.5");
+
+    equal($("#testmask").val(), "12.5", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"Regex\", { regex: \"([0-9]|[1][0-9]|[2][0-3]?)(\\.(5|25|75))?\" - arame regex 12.75", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("Regex", { regex: "([0-9]|[1][0-9]|[2][0-3]?)(\\.(5|25|75))?" });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("12.75");
+
+    equal($("#testmask").val(), "12.75", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
 module("Dynamic Masks");
 test("inputmask(\"*{1,20}@*{1,20}.*{2,6}[.*{2}]\" - email mask", function () {
     $('body').append('<input type="text" id="testmask" />');

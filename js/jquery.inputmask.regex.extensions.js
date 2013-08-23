@@ -38,10 +38,6 @@ Allows for using regular expressions as a mask
                                 switch (m.charAt(0)) {
                                     case "[": // Character class
                                     case "\\":  // Escape or backreference
-                                        if (currentToken["isGroup"] !== true) {
-                                            currentToken = new regexToken();
-                                            opts.regexTokens.push(currentToken);
-                                        }
                                         if (opengroups.length > 0) {
                                             opengroups[opengroups.length - 1]["matches"].push(m);
                                         } else {
@@ -49,6 +45,8 @@ Allows for using regular expressions as a mask
                                         }
                                         break;
                                     case "(": // Group opening
+                                        if (!currentToken.isGroup && currentToken.matches.length > 0)
+                                            opts.regexTokens.push(currentToken);
                                         currentToken = new regexToken();
                                         currentToken.isGroup = true;
                                         opengroups.push(currentToken);
@@ -60,7 +58,6 @@ Allows for using regular expressions as a mask
                                         } else {
                                             opts.regexTokens.push(groupToken);
                                             currentToken = new regexToken();
-                                            opts.regexTokens.push(currentToken);
                                         }
                                         break;
                                     case "{": //Quantifier
@@ -85,6 +82,9 @@ Allows for using regular expressions as a mask
                                         }
                                 }
                             }
+
+                            if (currentToken.matches.length > 0)
+                                opts.regexTokens.push(currentToken);
                         };
 
                         function validateRegexToken(token, fromGroup) {
