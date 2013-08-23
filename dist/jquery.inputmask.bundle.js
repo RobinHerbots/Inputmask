@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.3.18
+* Version: 2.3.19
 */
 
 (function ($) {
@@ -237,6 +237,7 @@
             function getMaskTemplate(mask) {
                 var escaped = false, outCount = 0, greedy = opts.greedy, repeat = opts.repeat;
                 if (repeat == "*") greedy = false;
+                if (greedy == true && opts.placeholder == "") opts.placeholder = " ";
                 if (mask.length == 1 && greedy == false) { opts.placeholder = ""; } //hide placeholder with single non-greedy mask
                 var singleMask = $.map(mask.split(""), function (element, index) {
                     var outElem = [];
@@ -1559,7 +1560,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.18
+Version: 2.3.19
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1661,7 +1662,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.18
+Version: 2.3.19
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2138,7 +2139,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.18
+Version: 2.3.19
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2307,7 +2308,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.18
+Version: 2.3.19
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask

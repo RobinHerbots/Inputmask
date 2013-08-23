@@ -237,6 +237,7 @@
             function getMaskTemplate(mask) {
                 var escaped = false, outCount = 0, greedy = opts.greedy, repeat = opts.repeat;
                 if (repeat == "*") greedy = false;
+                if (greedy == true && opts.placeholder == "") opts.placeholder = " ";
                 if (mask.length == 1 && greedy == false) { opts.placeholder = ""; } //hide placeholder with single non-greedy mask
                 var singleMask = $.map(mask.split(""), function (element, index) {
                     var outElem = [];

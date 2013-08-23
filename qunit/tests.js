@@ -308,6 +308,19 @@ test("inputmask(\"9,99\", { greedy: true, repeat: 5 }) - type 123456789012345678
     $("#testmask").remove();
 });
 
+test("inputmask({ mask: \"9\", repeat: 10, placeholder: \"\", numericInput: true }) - greedy true with empty placeholder - type 12345", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ "mask": "9", repeat: 10, placeholder: "", numericInput: true });
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").Type("12345");
+
+    equal($("#testmask").val(), "     12345", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
 module("Initial value setting");
 
 test("inputmask(\"999:99\", { placeholder: \"0\"}) value=\"007:20\"", function () {
