@@ -541,7 +541,7 @@
                             activeMasksetIndex = index;
 
                             var maskPos = pos;
-                            if (currentActiveMasksetIndex != activeMasksetIndex && !isMask(pos)) {
+                            if (currentActiveMasksetIndex != activeMasksetIndex && !isMask(maskPos) && getActiveMaskSet()["lastValidPosition"] == seekPrevious(maskPos)) {
                                 if (c == getActiveBufferTemplate()[maskPos] || c == opts.skipOptionalPartCharacter) { //match non-mask item
                                     results.push({ "activeMasksetIndex": index, "result": { "refresh": true, c: getActiveBufferTemplate()[maskPos] } }); //new command hack only rewrite buffer
                                     getActiveMaskSet()['lastValidPosition'] = maskPos;
