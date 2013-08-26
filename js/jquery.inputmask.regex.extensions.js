@@ -26,6 +26,7 @@ Allows for using regular expressions as a mask
                             this.matches = [];
                             this.isGroup = false;
                             this.isQuantifier = false;
+                            this.isLiteral = false;
                         }
                         function analyseRegex() {
                             var currentToken = new regexToken(), match, m, opengroups = [];
@@ -75,10 +76,13 @@ Allows for using regular expressions as a mask
                                         // ^ or $ anchor
                                         // Dot (.)
                                         // Literal character sequence
+                                        var literal = new regexToken();
+                                        literal.isLiteral = true;
+                                        literal.matches.push(m);
                                         if (opengroups.length > 0) {
-                                            opengroups[opengroups.length - 1]["matches"].push(m);
+                                            opengroups[opengroups.length - 1]["matches"].push(literal);
                                         } else {
-                                            currentToken.matches.push(m);
+                                            currentToken.matches.push(literal);
                                         }
                                 }
                             }
@@ -107,8 +111,21 @@ Allows for using regular expressions as a mask
                                     var exp = new RegExp("^(" + testExp + ")$");
                                     isvalid = exp.test(bufferStr);
                                     regexPart += matchToken;
-                                }
-                                else {
+                                } else if (matchToken["isLiteral"] == true) {
+                                    matchToken = matchToken["matches"][0];
+                                    var testExp = regexPart, openGroupCloser = "";
+                                    for (var j = 0; j < openGroupCount; j++) {
+                                        openGroupCloser += ")";
+                                    }
+                                    for (var k = 0; k < matchToken.length; k++) { //relax literal validation
+                                        testExp = (testExp + matchToken[k]).replace(/\|$/, "");
+                                        var exp = new RegExp("^(" + testExp + openGroupCloser + ")$");
+                                        isvalid = exp.test(bufferStr);
+                                        if (isvalid) break;
+                                    }
+                                    regexPart += matchToken;
+                                    console.log(bufferStr + " " + exp + " " + isvalid);
+                                } else {
                                     regexPart += matchToken;
                                     var testExp = regexPart.replace(/\|$/, "");
                                     for (var j = 0; j < openGroupCount; j++) {
@@ -116,7 +133,7 @@ Allows for using regular expressions as a mask
                                     }
                                     var exp = new RegExp("^(" + testExp + ")$");
                                     isvalid = exp.test(bufferStr);
-                                    //console.log(bufferStr + " " + exp + " " + isvalid);
+                                    console.log(bufferStr + " " + exp + " " + isvalid);
                                 }
                                 if (isvalid) break;
                             }
