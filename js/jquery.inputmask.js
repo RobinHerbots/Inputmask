@@ -85,7 +85,7 @@
                 msie10 = /*@cc_on!@*/false,
                 iphone = navigator.userAgent.match(new RegExp("iphone", "i")) !== null,
                 android = navigator.userAgent.match(new RegExp("android.*safari.*", "i")) !== null,
-                pasteEvent = isInputEventSupported('paste') && !msie10 ? 'paste' : 'input',
+                pasteEvent = isInputEventSupported('paste') && !msie10 ? 'paste' : isInputEventSupported('input') ? 'input' : "propertychange",
                 android53x,
                 masksets,
                 activeMasksetIndex = 0;
@@ -1012,8 +1012,13 @@
                     }).bind("keydown.inputmask", keydownEvent
                     ).bind("keypress.inputmask", keypressEvent
                     ).bind("keyup.inputmask", keyupEvent
-                    ).bind(pasteEvent + ".inputmask dragdrop.inputmask drop.inputmask", function () {
+                    ).bind(pasteEvent + ".inputmask dragdrop.inputmask drop.inputmask", function (e) {
                         var input = this, $input = $(input);
+
+                        //paste event for IE8 and lower I guess ;-)
+                        if (e.type == "propertychange" && input._valueGet().length <= getMaskLength()) {
+                            return true;
+                        }
                         setTimeout(function () {
                             checkVal(input, true, false);
                             if (isComplete(getActiveBuffer()))
