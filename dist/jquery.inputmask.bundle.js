@@ -2428,7 +2428,7 @@ Allows for using regular expressions as a mask
                                         if (isvalid) break;
                                     }
                                     regexPart += matchToken;
-                                    console.log(bufferStr + " " + exp + " " + isvalid);
+                                    //console.log(bufferStr + " " + exp + " " + isvalid);
                                 } else {
                                     regexPart += matchToken;
                                     var testExp = regexPart.replace(/\|$/, "");
@@ -2437,7 +2437,7 @@ Allows for using regular expressions as a mask
                                     }
                                     var exp = new RegExp("^(" + testExp + ")$");
                                     isvalid = exp.test(bufferStr);
-                                    console.log(bufferStr + " " + exp + " " + isvalid);
+                                    //console.log(bufferStr + " " + exp + " " + isvalid);
                                 }
                                 if (isvalid) break;
                             }
