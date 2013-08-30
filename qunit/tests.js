@@ -1279,7 +1279,7 @@ test("inputmask(\"Regex\", { regex: \"([0-9]|[1][0-9]|[2][0-3]?)(\\.(5|25|75))?\
     $("#testmask").remove();
 });
 
-test("inputmask(\"Regex\", { regex: \"([0-9]|[1][0-9]|[2][0-3]?)(\\.(5|25|75))?\" - arame regex 12.5", function () {
+test("inputmask(\"Regex\", { regex: \"([0-9]|[1][0-9]|[2][0-3]?)(\\.(5|25|75))?\" } - arame regex 12.5", function () {
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("Regex", { regex: "([0-9]|[1][0-9]|[2][0-3]?)(\\.(5|25|75))?" });
 
@@ -1291,7 +1291,7 @@ test("inputmask(\"Regex\", { regex: \"([0-9]|[1][0-9]|[2][0-3]?)(\\.(5|25|75))?\
     $("#testmask").remove();
 });
 
-test("inputmask(\"Regex\", { regex: \"([0-9]|[1][0-9]|[2][0-3]?)(\\.(5|25|75))?\" - arame regex 12.75", function () {
+test("inputmask(\"Regex\", { regex: \"([0-9]|[1][0-9]|[2][0-3]?)(\\.(5|25|75))?\" } - arame regex 12.75", function () {
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("Regex", { regex: "([0-9]|[1][0-9]|[2][0-3]?)(\\.(5|25|75))?" });
 
@@ -1299,6 +1299,42 @@ test("inputmask(\"Regex\", { regex: \"([0-9]|[1][0-9]|[2][0-3]?)(\\.(5|25|75))?\
     $("#testmask").Type("12.75");
 
     equal($("#testmask").val(), "12.75", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask('Regex', { regex: \"(abc)+(def)\" }); - Flyarbonkers regex abcdef", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('Regex', { regex: "(abc)+(def)" });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("abcdef");
+
+    equal($("#testmask").val(), "abcdef", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask('Regex', { regex: \"(abc)+(def)\" }); - Flyarbonkers regex 123a4b5c6d7e8f", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('Regex', { regex: "(abc)+(def)" });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123a4b5c6d7e8f");
+
+    equal($("#testmask").val(), "abcdef", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask('Regex', { regex: \"(abc)+(def)\" }); - Flyarbonkers regex abcabcdef", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('Regex', { regex: "(abc)+(def)" });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("abcabcdef");
+
+    equal($("#testmask").val(), "abcabcdef", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });
