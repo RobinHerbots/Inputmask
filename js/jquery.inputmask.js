@@ -235,6 +235,9 @@
                 return false;
             }
             function getMaskTemplate(mask) {
+                if(opts.numericInput) {
+            		mask = mask.split('').reverse().join('');
+            	}
                 var escaped = false, outCount = 0, greedy = opts.greedy, repeat = opts.repeat;
                 if (repeat == "*") greedy = false;
                 if (greedy == true && opts.placeholder == "") opts.placeholder = " ";
@@ -269,6 +272,9 @@
             }
             //test definition => {fn: RegExp/function, cardinality: int, optionality: bool, newBlockMarker: bool, offset: int, casing: null/upper/lower, def: definitionSymbol}
             function getTestingChain(mask) {
+            	if(opts.numericInput) {
+            		mask = mask.split('').reverse().join('');
+            	}
                 var isOptional = false, escaped = false;
                 var newBlockMarker = false; //indicates wheter the begin/ending of a block should be indicated
 
