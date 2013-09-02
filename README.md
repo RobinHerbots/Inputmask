@@ -336,6 +336,26 @@ This can be usefull when the masks are too different to solve it with optional p
   $(selector).inputmask({ mask: ["999.999", "aa-aa-aa"]});
 ```
 
+#### inputmask-multi format
+
+You can also pass an array for masking with the a format alike the format used in inputmask-multi
+
+```javascript
+var phones = [
+            { "mask": "+247-####", "cc": "AC", "name_en": "Ascension", "desc_en": "", "name_ru": "Остров Вознесения", "desc_ru": "" },
+            { "mask": "+376-###-###", "cc": "AD", "name_en": "Andorra", "desc_en": "", "name_ru": "Андорра", "desc_ru": "" },
+            { "mask": "+971-5#-###-####", "cc": "AE", "name_en": "United Arab Emirates", "desc_en": "mobile", "name_ru": "Объединенные Арабские Эмираты", "desc_ru": "мобильные" },
+          ...
+]
+$(selector).inputmask({ mask: phones, definitions: { '#': { validator: "[0-9]", cardinality: 1}} }); //in case of inputmask-multi you need to specify the validator for #
+```
+
+The metadata of the actual mask provided in the mask definitions can be obtained by calling
+
+```javascript
+$(selector).inputmask("getmetadata");
+```
+
 ### aliases option
 
 First you have to create an alias definition (more examples can be found in jquery.inputmask.extensions.js)
