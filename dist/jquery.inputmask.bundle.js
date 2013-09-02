@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.3.25
+* Version: 2.3.26
 */
 
 (function ($) {
@@ -1043,6 +1043,7 @@
 
                     //apply mask
                     checkVal(el, true, false);
+                    getActiveMaskSet()["undoBuffer"] = getActiveBuffer().join('');  //init undobuffer
                     // Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
                     var activeElement;
                     try {
@@ -1571,7 +1572,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.25
+Version: 2.3.26
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1673,7 +1674,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.25
+Version: 2.3.26
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2150,7 +2151,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.25
+Version: 2.3.26
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2319,7 +2320,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.25
+Version: 2.3.26
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
