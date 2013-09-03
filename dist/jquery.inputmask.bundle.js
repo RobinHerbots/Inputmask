@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.3.29
+* Version: 2.3.30
 */
 
 (function ($) {
@@ -73,7 +73,6 @@
                     return calculatedLength;
                 }
             },
-            val: $.fn.val, //store the original jquery val function
             escapeRegex: function (str) {
                 var specials = ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\'];
                 return str.replace(new RegExp('(\\' + specials.join('|\\') + ')', 'gim'), '\\$1');
@@ -1151,32 +1150,33 @@
                                 npt._valueGet = function () { return isRTL ? this.value.split('').reverse().join('') : this.value; };
                                 npt._valueSet = function (value) { this.value = isRTL ? value.split('').reverse().join('') : value; };
                             }
-                            if ($.fn.val.inputmaskpatch != true) {
-                                $.fn.val = function () {
-                                    if (arguments.length == 0) {
-                                        var $self = $(this);
-                                        if ($self.data('_inputmask')) {
-                                            if ($self.data('_inputmask')['opts'].autoUnmask)
-                                                return $self.inputmask('unmaskedvalue');
-                                            else {
-                                                var result = $.inputmask.val.apply($self);
-                                                var inputData = $(this).data('_inputmask'), masksets = inputData['masksets'],
-                                                    activeMasksetIndex = inputData['activeMasksetIndex'];
-                                                return result != masksets[activeMasksetIndex]['_buffer'].join('') ? result : '';
-                                            }
-                                        } else return $.inputmask.val.apply($self);
-                                    } else {
-                                        var args = arguments;
-                                        return this.each(function () {
-                                            var $self = $(this);
-                                            var result = $.inputmask.val.apply($self, args);
-                                            if ($self.data('_inputmask')) $self.triggerHandler('setvalue.inputmask');
+                            if ($.valHooks.text == undefined || $.valHooks.text.inputmaskpatch != true) {
+                                var valueGet = $.valHooks.text ? $.valHooks.text.get : function () { return this.value; };
+                                var valueSet = $.valHooks.text ? $.valHooks.text.set : function (value) { return this.value = value; };
+
+                                jQuery.extend($.valHooks, {
+                                    text: {
+                                        get: function (elem) {
+                                            var $elem = $(elem);
+                                            if ($elem.data('_inputmask')) {
+                                                if ($elem.data('_inputmask')['opts'].autoUnmask)
+                                                    return $elem.inputmask('unmaskedvalue');
+                                                else {
+                                                    var result = valueGet.call(elem),
+                                                        inputData = $elem.data('_inputmask'), masksets = inputData['masksets'],
+                                                        activeMasksetIndex = inputData['activeMasksetIndex'];
+                                                    return result != masksets[activeMasksetIndex]['_buffer'].join('') ? result : '';
+                                                }
+                                            } else return valueGet.call(elem);
+                                        },
+                                        set: function (elem, value) {
+                                            var $elem = $(elem);
+                                            var result = valueSet.call(elem, value);
+                                            if ($elem.data('_inputmask')) $elem.triggerHandler('setvalue.inputmask');
                                             return result;
-                                        });
+                                        },
+                                        inputmaskpatch: true
                                     }
-                                };
-                                $.extend($.fn.val, {
-                                    inputmaskpatch: true
                                 });
                             }
                         }
@@ -1585,7 +1585,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.29
+Version: 2.3.30
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1687,7 +1687,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.29
+Version: 2.3.30
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2164,7 +2164,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.29
+Version: 2.3.30
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2333,7 +2333,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.29
+Version: 2.3.30
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
