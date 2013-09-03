@@ -95,8 +95,8 @@ module("Simple masking");
 test("inputmask(\"99-99-99\", { clearMaskOnLostFocus: false}", function () {
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("99-99-99", { clearMaskOnLostFocus: false });
-
-    equal(document.getElementById("testmask").value, "__-__-__", "Result " + document.getElementById("testmask").value);
+	
+    equal(document.getElementById("testmask")._valueGet(), "__-__-__", "Result " + document.getElementById("testmask")._valueGet());
 
     $("#testmask").remove();
 });
@@ -556,7 +556,7 @@ test("inputmask({ mask: \"99999[-9999]\", greedy: false }) - input 123456789", f
     $("#testmask").remove();
 });
 
-test("inputmask({ mask: [\"99999\", \"99999-9999\", \"999999-9999\"]]}) - input 123456", function () {
+test("inputmask({ mask: [\"99999\", \"99999-9999\", \"999999-9999\"]]}) - input 123456 (rtl)", function () {
     $('body').append('<input type="text" id="testmask" dir="rtl" />');
     $("#testmask").inputmask({ mask: ["99999", "99999-9999", "999999-9999"] });
 
@@ -1119,6 +1119,31 @@ test("inputmask({ mask: \"99-99-99\", numericInput: true }); - 1234567890", func
     $("#testmask").Type("1234567890");
 
     equal($("#testmask").val(), "12-34-56", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask({ mask: \"€ 999.999.999,99\", numericInput: true }); - 123", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('€ 999.999.999,99', { numericInput: true });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123");
+
+    equal($("#testmask").val(), "€ ___.___.__1,23", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask({ mask: \"€ 999.999.999,99\", numericInput: true }); - 123 position before 456", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('€ 999.999.999,99', { numericInput: true });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123");
+	caret($("#testmask"), 12);
+	$("#testmask").Type("456");
+    equal($("#testmask").val(), "€ ___.__4.561,23", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });
