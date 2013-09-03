@@ -1425,7 +1425,6 @@
                         if ((!(e.ctrlKey && e.altKey) && (e.ctrlKey || e.metaKey || ignorable)) && checkval !== true) {
                             return true;
                         } else {
-                            console.log("oh my gosh");
                             if (k) {
                                 var pos, results, result;
                                 if (checkval) {
