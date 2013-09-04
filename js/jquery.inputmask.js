@@ -1177,7 +1177,7 @@
                                         },
                                         set: function (elem, value) {
                                             var $elem = $(elem);
-                                            var result = valueSet.call(elem, value);
+                                            var result = valueSet.call(elem, arguments);
                                             if ($elem.data('_inputmask')) $elem.triggerHandler('setvalue.inputmask');
                                             return result;
                                         },
