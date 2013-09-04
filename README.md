@@ -356,6 +356,15 @@ The metadata of the actual mask provided in the mask definitions can be obtained
 $(selector).inputmask("getmetadata");
 ```
 
+## Preprocessing mask
+
+You can define the mask as a function which can allow to preprocess the resulting mask.  Example sorting for of multiple masks or retrieving mask definitions from dynamically through ajax.
+The preprocessing fn should return a valid mask definition.
+
+```javascript
+  $(selector).inputmask({ mask: function () { /* do stuff */ return ["[1-]AAA-999", "[1-]999-AAA"]; }});
+```
+
 ### aliases option
 
 First you have to create an alias definition (more examples can be found in jquery.inputmask.extensions.js)
