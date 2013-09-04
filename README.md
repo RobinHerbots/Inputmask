@@ -358,7 +358,7 @@ $(selector).inputmask("getmetadata");
 
 ### Preprocessing mask
 
-You can define the mask as a function which can allow to preprocess the resulting mask.  Example sorting for of multiple masks or retrieving mask definitions from dynamically through ajax.
+You can define the mask as a function which can allow to preprocess the resulting mask.  Example sorting for multiple masks or retrieving mask definitions from dynamically through ajax.
 The preprocessing fn should return a valid mask definition.
 
 ```javascript
