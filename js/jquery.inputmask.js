@@ -1157,8 +1157,8 @@
                                 npt._valueSet = function (value) { this.value = isRTL ? value.split('').reverse().join('') : value; };
                             }
                             if ($.valHooks.text == undefined || $.valHooks.text.inputmaskpatch != true) {
-                                var valueGet = $.valHooks.text ? $.valHooks.text.get : function () { return this.value; };
-                                var valueSet = $.valHooks.text ? $.valHooks.text.set : function (value) { return this.value = value; };
+                                var valueGet = $.valHooks.text && $.valHooks.text.get ? $.valHooks.text.get : function () { return this.value; };
+                                var valueSet = $.valHooks.text && $.valHooks.text.set ? $.valHooks.text.set : function (value) { return this.value = value; };
 
                                 jQuery.extend($.valHooks, {
                                     text: {
