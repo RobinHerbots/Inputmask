@@ -490,6 +490,10 @@
                     }
 
                 }
+                
+                if($.isFunction(opts.mask)) { //allow mask to be a preprocessing fn - should return a valid mask
+                    opts.mask = opts.mask.call(this);
+                }
                 if ($.isArray(opts.mask)) {
                     $.each(opts.mask, function (ndx, msk) {
                         if (msk["mask"] != undefined) {
