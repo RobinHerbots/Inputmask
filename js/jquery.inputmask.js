@@ -919,6 +919,8 @@
                     getActiveMaskSet()["undoBuffer"] = el._valueGet();
                     var skipKeyPressEvent = false, //Safari 5.1.x - modal dialog fires keypress twice workaround
                         ignorable = false;
+
+                    if (opts.numericInput) opts.isNumeric = opts.numericInput;
                     if (el.dir == "rtl" || (opts.numericInput && opts.rightAlignNumerics) || (opts.isNumeric && opts.rightAlignNumerics))
                         $input.css("text-align", "right");
 

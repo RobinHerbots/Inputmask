@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.3.32
+* Version: 2.3.33
 */
 
 (function ($) {
@@ -919,6 +919,8 @@
                     getActiveMaskSet()["undoBuffer"] = el._valueGet();
                     var skipKeyPressEvent = false, //Safari 5.1.x - modal dialog fires keypress twice workaround
                         ignorable = false;
+
+                    if (opts.numericInput) opts.isNumeric = opts.numericInput;
                     if (el.dir == "rtl" || (opts.numericInput && opts.rightAlignNumerics) || (opts.isNumeric && opts.rightAlignNumerics))
                         $input.css("text-align", "right");
 
@@ -1588,7 +1590,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.32
+Version: 2.3.33
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1690,7 +1692,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.32
+Version: 2.3.33
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2167,7 +2169,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.32
+Version: 2.3.33
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2336,7 +2338,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.32
+Version: 2.3.33
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask

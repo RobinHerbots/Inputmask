@@ -1148,9 +1148,9 @@ test("inputmask({ mask: \"€ 999.999.999,99\", numericInput: true }); - 123 pos
     $("#testmask").remove();
 });
 
-test("inputmask({ mask: \"€ 999.999.999,99\", { numericInput: true, isNumeric: true, radixPoint: \",\" }); - 123", function () {
+test("inputmask({ mask: \"€ 999.999.999,99\", { numericInput: true, radixPoint: \",\" }); - 123", function () {
     $('body').append('<input type="text" id="testmask" />');
-    $("#testmask").inputmask('€ 999.999.999,99', { numericInput: true, isNumeric: true, radixPoint: "," });
+    $("#testmask").inputmask('€ 999.999.999,99', { numericInput: true, radixPoint: "," });
 
     $("#testmask").click();
     $("#testmask").Type("123");
@@ -1159,9 +1159,9 @@ test("inputmask({ mask: \"€ 999.999.999,99\", { numericInput: true, isNumeric:
     $("#testmask").remove();
 });
 
-test("inputmask({ mask: \"€ 999.999.999,99\", { numericInput: true, isNumeric: true, radixPoint: \",\" }); - 123,45", function () {
+test("inputmask({ mask: \"€ 999.999.999,99\", { numericInput: true, radixPoint: \",\" }); - 123,45", function () {
     $('body').append('<input type="text" id="testmask" />');
-    $("#testmask").inputmask('€ 999.999.999,99', { numericInput: true, isNumeric: true, radixPoint: "," });
+    $("#testmask").inputmask('€ 999.999.999,99', { numericInput: true, radixPoint: "," });
 
     $("#testmask").click();
     $("#testmask").Type("123,45");
