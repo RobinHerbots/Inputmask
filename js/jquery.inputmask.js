@@ -1013,7 +1013,7 @@
                                     lvp = getActiveMaskSet()["lastValidPosition"],
                                     lastPosition;
                                 if (opts.isNumeric) {
-                                    lastPosition = opts.skipRadixDance === false && opts.radixPoint != "" && $.inArray(opts.radixPoint, buffer) != -1 ? $.inArray(opts.radixPoint, buffer) : getMaskLength();
+                                    lastPosition = opts.skipRadixDance === false && opts.radixPoint != "" && $.inArray(opts.radixPoint, buffer) != -1 ? (opts.numericInput ? seekNext($.inArray(opts.radixPoint, buffer)) : $.inArray(opts.radixPoint, buffer)) : getMaskLength();
                                 } else {
                                     lastPosition = seekNext(lvp == undefined ? -1 : lvp);
                                 }

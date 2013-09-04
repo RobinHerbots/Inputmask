@@ -1148,6 +1148,28 @@ test("inputmask({ mask: \"€ 999.999.999,99\", numericInput: true }); - 123 pos
     $("#testmask").remove();
 });
 
+test("inputmask({ mask: \"€ 999.999.999,99\", { numericInput: true, isNumeric: true, radixPoint: \",\" }); - 123", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('€ 999.999.999,99', { numericInput: true, isNumeric: true, radixPoint: "," });
+
+    $("#testmask").click();
+    $("#testmask").Type("123");
+    equal($("#testmask").val(), "€ ___.___.123,__", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask({ mask: \"€ 999.999.999,99\", { numericInput: true, isNumeric: true, radixPoint: \",\" }); - 123,45", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('€ 999.999.999,99', { numericInput: true, isNumeric: true, radixPoint: "," });
+
+    $("#testmask").click();
+    $("#testmask").Type("123,45");
+    equal($("#testmask").val(), "€ ___.___.123,45", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
 module("Regex masks")
 
 test("inputmask(\"Regex\", { regex: \"[0-9]*\"});", function () {
