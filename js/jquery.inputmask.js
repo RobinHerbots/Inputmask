@@ -512,7 +512,9 @@
             }
 
             function maskScope(masksets, activeMasksetIndex) {
-                var isRTL = false;
+                var isRTL = false,
+                    valueOnFocus = getActiveBuffer().join('');
+                
                 //maskset helperfunctions
 
                 function getActiveMaskSet() {
@@ -916,7 +918,6 @@
                     patchValueProperty(el);
 
                     //init vars
-                    getActiveMaskSet()["undoBuffer"] = el._valueGet();
                     var skipKeyPressEvent = false, //Safari 5.1.x - modal dialog fires keypress twice workaround
                         ignorable = false;
 
@@ -938,7 +939,7 @@
                     $input.removeClass('focus.inputmask');
                     //bind events
                     $input.closest('form').bind("submit", function () { //trigger change on submit if any
-                        if ($input[0]._valueGet && $input[0]._valueGet() != getActiveMaskSet()["undoBuffer"]) {
+                        if (valueOnFocus != getActiveBuffer().join('')) {
                             $input.change();
                         }
                     }).bind('reset', function () {
@@ -960,7 +961,7 @@
                     }).bind("blur.inputmask", function () {
                         var $input = $(this), input = this, nptValue = input._valueGet(), buffer = getActiveBuffer();
                         $input.removeClass('focus.inputmask');
-                        if (nptValue != getActiveMaskSet()["undoBuffer"]) {
+                        if (valueOnFocus != getActiveBuffer().join('')) {
                             $input.change();
                         }
                         if (opts.clearMaskOnLostFocus && nptValue != '') {
@@ -997,7 +998,7 @@
                             }
                         }
                         $input.addClass('focus.inputmask');
-                        getActiveMaskSet()["undoBuffer"] = input._valueGet();
+                        valueOnFocus = getActiveBuffer().join('');
                         $input.click();
                     }).bind("mouseleave.inputmask", function () {
                         var $input = $(this), input = this;
@@ -1051,8 +1052,8 @@
                         }, 0);
                     }).bind('setvalue.inputmask', function () {
                         var input = this;
-                        getActiveMaskSet()["undoBuffer"] = input._valueGet();
                         checkVal(input, true);
+                        valueOnFocus = getActiveBuffer().join('');
                         if (input._valueGet() == getActiveBufferTemplate().join(''))
                             input._valueSet('');
                     }).bind('complete.inputmask', opts.oncomplete)
@@ -1061,7 +1062,6 @@
 
                     //apply mask
                     checkVal(el, true, false);
-                    getActiveMaskSet()["undoBuffer"] = getActiveBuffer().join('');  //init undobuffer
                     // Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
                     var activeElement;
                     try {
@@ -1393,8 +1393,7 @@
                         } else if ((k == opts.keyCode.HOME && !e.shiftKey) || k == opts.keyCode.PAGE_UP) { //Home or page_up
                             caret(input, 0, e.shiftKey ? pos.begin : 0);
                         } else if (k == opts.keyCode.ESCAPE) { //escape
-                            input._valueSet(getActiveMaskSet()["undoBuffer"]);
-                            checkVal(input, true, true);
+                            checkVal(input, true, true, valueOnFocus);
                         } else if (k == opts.keyCode.INSERT && !(e.shiftKey || e.ctrlKey)) { //insert
                             opts.insertMode = !opts.insertMode;
                             caret(input, !opts.insertMode && pos.begin == getMaskLength() ? pos.begin - 1 : pos.begin);
@@ -1575,7 +1574,7 @@
                             buffer = getActiveBufferTemplate().slice();
                             writeBuffer(input, buffer);
                             caret(input, 0);
-                            getActiveMaskSet()["undoBuffer"] = input._valueGet();
+                            valueOnFocus = getActiveBuffer().join('');
                         }
                     }
                 };
