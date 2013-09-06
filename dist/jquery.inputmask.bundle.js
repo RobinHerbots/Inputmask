@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.3.35
+* Version: 2.3.36
 */
 
 (function ($) {
@@ -490,9 +490,9 @@
                     }
 
                 }
-                
-                if($.isFunction(opts.mask)) { //allow mask to be a preprocessing fn - should return a valid mask
-                    opts.mask = opts.mask.call(this);
+
+                if ($.isFunction(opts.mask)) { //allow mask to be a preprocessing fn - should return a valid mask
+                    opts.mask = opts.mask.call(this, opts);
                 }
                 if ($.isArray(opts.mask)) {
                     $.each(opts.mask, function (ndx, msk) {
@@ -514,7 +514,7 @@
             function maskScope(masksets, activeMasksetIndex) {
                 var isRTL = false,
                     valueOnFocus = getActiveBuffer().join('');
-                
+
                 //maskset helperfunctions
 
                 function getActiveMaskSet() {
@@ -536,7 +536,7 @@
                 function isValid(pos, c, strict) { //strict true ~ no correction or autofill
                     strict = strict === true; //always set a value to strict to prevent possible strange behavior in the extensions 
 
-                    function _isValid(position, activeMaskset) {
+                    function _isValid(position, activeMaskset, c, strict) {
                         var testPos = determineTestPosition(position), loopend = c ? 1 : 0, chrs = '', buffer = activeMaskset["buffer"];
                         for (var i = activeMaskset['tests'][testPos].cardinality; i > loopend; i--) {
                             chrs += getBufferElement(buffer, testPos - (i - 1));
@@ -547,42 +547,85 @@
                         }
 
                         //return is false or a json object => { pos: ??, c: ??} or true
-                        return activeMaskset['tests'][testPos].fn != null ? activeMaskset['tests'][testPos].fn.test(chrs, buffer, position, strict, opts) : false;
+                        return activeMaskset['tests'][testPos].fn != null ?
+                            activeMaskset['tests'][testPos].fn.test(chrs, buffer, position, strict, opts)
+                            : (c == getBufferElement(getActiveBufferTemplate(), position, true) || c == opts.skipOptionalPartCharacter) ?
+                                { "refresh": true, c: getBufferElement(getActiveBufferTemplate(), position, true), pos: position }
+                                : false;
+                    }
+
+                    function PostProcessResults(maskForwards, results) {
+                        var hasValidActual = false;
+                        $.each(results, function (ndx, rslt) {
+                            hasValidActual = $.inArray(rslt["activeMasksetIndex"], maskForwards) == -1 && rslt["result"] !== false;
+                            if (hasValidActual) return false;
+                        });
+                        if (hasValidActual) { //maskforwards
+                            results = $.map(results, function (rslt, ndx) {
+                                if ($.inArray(rslt["activeMasksetIndex"], maskForwards) == -1) {
+                                    return rslt;
+                                } else {
+                                    masksets[rslt["activeMasksetIndex"]]["lastValidPosition"] = actualLVP;
+                                }
+                            });
+                        }
+                        return results;
                     }
 
                     if (strict) {
-                        var result = _isValid(pos, getActiveMaskSet()); //only check validity in current mask when validating strict
+                        var result = _isValid(pos, getActiveMaskSet(), c, strict); //only check validity in current mask when validating strict
                         if (result === true) {
                             result = { "pos": pos }; //always take a possible corrected maskposition into account
                         }
                         return result;
                     }
 
-                    var results = [], result = false, currentActiveMasksetIndex = activeMasksetIndex;
+                    var results = [], result = false, currentActiveMasksetIndex = activeMasksetIndex,
+                        actualBuffer = getActiveBuffer().slice(), actualLVP = getActiveMaskSet()["lastValidPosition"],
+                        actualPrevious = seekPrevious(pos),
+                        maskForwards = [];
                     $.each(masksets, function (index, value) {
                         if (typeof (value) == "object") {
                             activeMasksetIndex = index;
 
                             var maskPos = pos;
-                            if (currentActiveMasksetIndex != activeMasksetIndex && !isMask(maskPos) && getActiveMaskSet()["lastValidPosition"] == seekPrevious(maskPos)) {
-                                if (c == getActiveBufferTemplate()[maskPos] || c == opts.skipOptionalPartCharacter) { //match non-mask item
-                                    results.push({ "activeMasksetIndex": index, "result": { "refresh": true, c: getActiveBufferTemplate()[maskPos] } }); //new command hack only rewrite buffer
-                                    getActiveMaskSet()['lastValidPosition'] = maskPos;
-                                    return false;
-                                } else {
-                                    if (masksets[currentActiveMasksetIndex]["lastValidPosition"] >= maskPos)
-                                        getActiveMaskSet()['lastValidPosition'] = -1; //mark mask as validated and invalid
-                                    else maskPos = seekNext(pos);
+                            if (currentActiveMasksetIndex != activeMasksetIndex) {
+                                var lvp = getActiveMaskSet()['lastValidPosition'],
+                                    rsltValid;
+                                if (lvp == actualLVP && maskPos - (actualLVP == undefined ? -1 : actualLVP) > 1) {
+                                    for (var i = lvp == undefined ? 0 : lvp; i < maskPos; i++) {
+                                        rsltValid = _isValid(i, getActiveMaskSet(), actualBuffer[i], true);
+                                        if (rsltValid === false) {
+                                            break;
+                                        } else {
+                                            setBufferElement(getActiveBuffer(), i, actualBuffer[i], true);
+                                            if (rsltValid === true) {
+                                                rsltValid = { "pos": i }; //always take a possible corrected maskposition into account
+                                            }
+                                            var newValidPosition = rsltValid.pos || i;
+                                            if (getActiveMaskSet()['lastValidPosition'] == undefined ||
+                                                getActiveMaskSet()['lastValidPosition'] < newValidPosition)
+                                                getActiveMaskSet()['lastValidPosition'] = newValidPosition; //set new position from isValid
+                                        }
+                                    }
                                 }
 
+                                if (!isMask(maskPos) && getActiveMaskSet()["lastValidPosition"] == actualPrevious) {
+                                    if (!_isValid(maskPos, getActiveMaskSet(), c, strict)) {
+                                        if (masksets[currentActiveMasksetIndex]["lastValidPosition"] < maskPos) {
+                                            maskPos = seekNext(pos);
+                                            maskForwards.push(activeMasksetIndex);
+                                        }
+                                    }
+                                }
                             }
                             if ((getActiveMaskSet()['lastValidPosition'] == undefined
-                                    && maskPos == seekNext(-1)
-                            )
-                                || getActiveMaskSet()['lastValidPosition'] >= seekPrevious(maskPos)) {
+                                    && maskPos == seekNext(-1))
+                                || getActiveMaskSet()['lastValidPosition'] >= (actualLVP == undefined ? masksets[currentActiveMasksetIndex]["lastValidPosition"] - 1 : actualLVP)) {
                                 if (maskPos >= 0 && maskPos < getMaskLength()) {
-                                    result = _isValid(maskPos, getActiveMaskSet());
+                                    result = _isValid(maskPos, getActiveMaskSet(), c, strict);
                                     if (result !== false) {
+                                        //console.log("ndx " + activeMasksetIndex + " validate " + getActiveBuffer().join('') + " lv " + getActiveMaskSet()['lastValidPosition']);
                                         if (result === true) {
                                             result = { "pos": maskPos }; //always take a possible corrected maskposition into account
                                         }
@@ -598,7 +641,7 @@
                     });
                     activeMasksetIndex = currentActiveMasksetIndex; //reset activeMasksetIndex
 
-                    return results; //return results of the multiple mask validations
+                    return PostProcessResults(maskForwards, results); //return results of the multiple mask validations
                 }
 
                 function determineActiveMasksetIndex() {
@@ -1589,7 +1632,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.35
+Version: 2.3.36
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1691,7 +1734,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.35
+Version: 2.3.36
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2168,7 +2211,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.35
+Version: 2.3.36
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2337,7 +2380,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.35
+Version: 2.3.36
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2507,7 +2550,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.35
+Version: 2.3.36
 
 Phone extension based on inputmask-multi - DO NOT USE YET!!  in TEST
 */
