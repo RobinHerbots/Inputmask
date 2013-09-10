@@ -658,7 +658,8 @@
                             }
                         }
                     });
-                    activeMasksetIndex = highestValid["activeMasksetIndex"];
+
+                    activeMasksetIndex = highestValid["lastValidPosition"] != -1 && masksets[currentMasksetIndex]["lastValidPosition"] == highestValid["lastValidPosition"] ? currentMasksetIndex : highestValid["activeMasksetIndex"];
                     if (currentMasksetIndex != activeMasksetIndex) {
                         clearBuffer(getActiveBuffer(), seekNext(highestValid["lastValidPosition"]), getMaskLength());
                         getActiveMaskSet()["writeOutBuffer"] = true;
@@ -1309,19 +1310,6 @@
                     ;
 
                     function keydownEvent(e) {
-                        function determineLVP(firstMaskPos, beginPos) {
-                            if (getActiveMaskSet()['lastValidPosition'] != undefined) {
-                                if (getActiveMaskSet()['lastValidPosition'] != -1 && getActiveBuffer()[getActiveMaskSet()['lastValidPosition']] == getActiveBufferTemplate()[getActiveMaskSet()['lastValidPosition']])
-                                    getActiveMaskSet()["lastValidPosition"] = getActiveMaskSet()["lastValidPosition"] == 0 ? -1 : seekPrevious(getActiveMaskSet()["lastValidPosition"]);
-                                if (getActiveMaskSet()['lastValidPosition'] < firstMaskPos) {
-                                    getActiveMaskSet()["lastValidPosition"] = undefined;
-                                    getActiveMaskSet()["p"] = firstMaskPos;
-                                } else {
-                                    getActiveMaskSet()["writeOutBuffer"] = true;
-                                    getActiveMaskSet()["p"] = beginPos;
-                                }
-                            }
-                        }
                         //Safari 5.1.x - modal dialog fires keypress twice workaround
                         skipKeyPressEvent = false;
                         var input = this, k = e.keyCode, pos = caret(input);
@@ -1387,7 +1375,17 @@
                                             } else {
                                                 beginPos = shiftL(beginPos, maskL);
                                             }
-                                            determineLVP(firstMaskPos, beginPos);
+                                            if (getActiveMaskSet()['lastValidPosition'] != undefined) {
+                                                if (getActiveMaskSet()['lastValidPosition'] != -1 && getActiveBuffer()[getActiveMaskSet()['lastValidPosition']] == getActiveBufferTemplate()[getActiveMaskSet()['lastValidPosition']])
+                                                    getActiveMaskSet()["lastValidPosition"] = getActiveMaskSet()["lastValidPosition"] == 0 ? -1 : seekPrevious(getActiveMaskSet()["lastValidPosition"]);
+                                                if (getActiveMaskSet()['lastValidPosition'] < firstMaskPos) {
+                                                    getActiveMaskSet()["lastValidPosition"] = undefined;
+                                                    getActiveMaskSet()["p"] = firstMaskPos;
+                                                } else {
+                                                    getActiveMaskSet()["writeOutBuffer"] = true;
+                                                    getActiveMaskSet()["p"] = beginPos;
+                                                }
+                                            }
                                         }
                                     }
                                 });
@@ -1458,14 +1456,14 @@
                                 }
 
                                 //should we clear a possible selection??
-                                var isSlctn = isSelection(pos.begin, pos.end), redetermineLVP = false;
+                                var isSlctn = isSelection(pos.begin, pos.end), redetermineLVP = false,
+                                    initialIndex = activeMasksetIndex;
                                 if (isSlctn) {
                                     if (isRTL) {
                                         var pend = pos.end;
                                         pos.end = pos.begin;
                                         pos.begin = pend;
                                     }
-                                    var initialIndex = activeMasksetIndex;
                                     $.each(masksets, function (ndx, lmnt) {
                                         if (typeof (lmnt) == "object") {
                                             activeMasksetIndex = ndx;
@@ -1549,7 +1547,10 @@
                                     }
                                 });
 
-                                if (strict !== true) determineActiveMasksetIndex();
+                                if (strict !== true) {
+                                    activeMasksetIndex = initialIndex;
+                                    determineActiveMasksetIndex();
+                                }
                                 if (writeOut !== false) {
                                     $.each(results, function (ndx, rslt) {
                                         if (rslt["activeMasksetIndex"] == activeMasksetIndex) {
