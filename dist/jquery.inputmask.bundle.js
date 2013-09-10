@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.3.36
+* Version: 2.3.37
 */
 
 (function ($) {
@@ -1105,6 +1105,7 @@
 
                     //apply mask
                     checkVal(el, true, false);
+                    valueOnFocus = getActiveBuffer().join('');
                     // Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
                     var activeElement;
                     try {
@@ -1308,6 +1309,19 @@
                     ;
 
                     function keydownEvent(e) {
+                        function determineLVP(firstMaskPos, beginPos) {
+                            if (getActiveMaskSet()['lastValidPosition'] != undefined) {
+                                if (getActiveMaskSet()['lastValidPosition'] != -1 && getActiveBuffer()[getActiveMaskSet()['lastValidPosition']] == getActiveBufferTemplate()[getActiveMaskSet()['lastValidPosition']])
+                                    getActiveMaskSet()["lastValidPosition"] = getActiveMaskSet()["lastValidPosition"] == 0 ? -1 : seekPrevious(getActiveMaskSet()["lastValidPosition"]);
+                                if (getActiveMaskSet()['lastValidPosition'] < firstMaskPos) {
+                                    getActiveMaskSet()["lastValidPosition"] = undefined;
+                                    getActiveMaskSet()["p"] = firstMaskPos;
+                                } else {
+                                    getActiveMaskSet()["writeOutBuffer"] = true;
+                                    getActiveMaskSet()["p"] = beginPos;
+                                }
+                            }
+                        }
                         //Safari 5.1.x - modal dialog fires keypress twice workaround
                         skipKeyPressEvent = false;
                         var input = this, k = e.keyCode, pos = caret(input);
@@ -1361,58 +1375,19 @@
                                         var beginPos = android53x ? pos.end : pos.begin;
                                         var buffer = getActiveBuffer(), firstMaskPos = seekNext(-1),
                                             maskL = getMaskLength();
-                                        if (k == opts.keyCode.DELETE) { //handle delete
-                                            if (beginPos < firstMaskPos)
-                                                beginPos = firstMaskPos;
-                                            if (beginPos < maskL) {
-                                                if (opts.isNumeric && opts.radixPoint != "" && buffer[beginPos] == opts.radixPoint) {
-                                                    beginPos = (buffer.length - 1 == beginPos) /* radixPoint is latest? delete it */ ? beginPos : seekNext(beginPos);
-                                                    beginPos = shiftL(beginPos, maskL);
-                                                } else {
-                                                    beginPos = shiftL(beginPos, maskL);
-                                                }
-                                                if (getActiveMaskSet()['lastValidPosition'] != undefined) {
-                                                    if (getActiveMaskSet()['lastValidPosition'] != -1 && getActiveBuffer()[getActiveMaskSet()['lastValidPosition']] == getActiveBufferTemplate()[getActiveMaskSet()['lastValidPosition']])
-                                                        getActiveMaskSet()["lastValidPosition"] = getActiveMaskSet()["lastValidPosition"] == 0 ? -1 : seekPrevious(getActiveMaskSet()["lastValidPosition"]);
-                                                    if (getActiveMaskSet()['lastValidPosition'] < firstMaskPos) {
-                                                        getActiveMaskSet()["lastValidPosition"] = undefined;
-                                                        getActiveMaskSet()["p"] = firstMaskPos;
-                                                    } else {
-                                                        getActiveMaskSet()["writeOutBuffer"] = true;
-                                                        getActiveMaskSet()["p"] = beginPos;
-                                                    }
-                                                }
+                                        if (k == opts.keyCode.BACKSPACE) {
+                                            beginPos--;
+                                        }
+                                        if (beginPos < firstMaskPos)
+                                            beginPos = firstMaskPos;
+                                        if (beginPos < maskL) {
+                                            if (opts.isNumeric && opts.radixPoint != "" && buffer[beginPos] == opts.radixPoint) {
+                                                beginPos = (buffer.length - 1 == beginPos) /* radixPoint is latest? delete it */ ? beginPos : seekNext(beginPos);
+                                                beginPos = shiftL(beginPos, maskL);
+                                            } else {
+                                                beginPos = shiftL(beginPos, maskL);
                                             }
-                                        } else if (k == opts.keyCode.BACKSPACE) { //handle backspace
-                                            if (beginPos > firstMaskPos) {
-                                                beginPos -= 1;
-                                                if (opts.isNumeric && opts.radixPoint != "" && buffer[beginPos] == opts.radixPoint) {
-                                                    beginPos = shiftR(0, (buffer.length - 1 == beginPos) /* radixPoint is latest? delete it */ ? beginPos : beginPos - 1, getPlaceHolder(beginPos), true);
-                                                    beginPos++;
-                                                } else {
-                                                    beginPos = shiftL(beginPos, maskL);
-                                                }
-                                                if (getActiveMaskSet()['lastValidPosition'] != undefined) {
-                                                    if (getActiveMaskSet()['lastValidPosition'] != -1 && getActiveBuffer()[getActiveMaskSet()['lastValidPosition']] == getActiveBufferTemplate()[getActiveMaskSet()['lastValidPosition']])
-                                                        getActiveMaskSet()["lastValidPosition"] = getActiveMaskSet()["lastValidPosition"] == 0 ? -1 : seekPrevious(getActiveMaskSet()["lastValidPosition"]);
-                                                    if (getActiveMaskSet()['lastValidPosition'] < firstMaskPos) {
-                                                        getActiveMaskSet()["lastValidPosition"] = undefined;
-                                                        getActiveMaskSet()["p"] = firstMaskPos;
-                                                    } else {
-                                                        getActiveMaskSet()["writeOutBuffer"] = true;
-                                                        getActiveMaskSet()["p"] = beginPos;
-                                                    }
-                                                }
-                                            } else if (activeMasksetIndex > 0) { //retry other masks
-                                                getActiveMaskSet()["lastValidPosition"] = undefined;
-                                                getActiveMaskSet()["writeOutBuffer"] = true;
-                                                getActiveMaskSet()["p"] = firstMaskPos;
-                                                //init first 
-                                                activeMasksetIndex = 0;
-                                                getActiveMaskSet()["buffer"] = getActiveBufferTemplate().slice();
-                                                getActiveMaskSet()["p"] = seekNext(-1);
-                                                getActiveMaskSet()["lastValidPosition"] = undefined;
-                                            }
+                                            determineLVP(firstMaskPos, beginPos);
                                         }
                                     }
                                 });
@@ -1632,7 +1607,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.36
+Version: 2.3.37
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1734,7 +1709,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.36
+Version: 2.3.37
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2211,7 +2186,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.36
+Version: 2.3.37
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2380,7 +2355,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.36
+Version: 2.3.37
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2550,7 +2525,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.36
+Version: 2.3.37
 
 Phone extension based on inputmask-multi - DO NOT USE YET!!  in TEST
 */
@@ -2558,55 +2533,6 @@ $.extend($.inputmask.defaults.aliases, {
     'phone': {
         url: "phone-codes.json",
         mask: function (opts) {
-            function masksSort(maskList, defs, match, key) {
-                maskList.sort(function (a, b) {
-                    var ia = 0, ib = 0;
-                    for (; (ia < a[key].length && ib < b[key].length) ;) {
-                        var cha = a[key].charAt(ia);
-                        var chb = b[key].charAt(ib);
-                        if (!match.test(cha)) {
-                            ia++;
-                            continue;
-                        }
-                        if (!match.test(chb)) {
-                            ib++;
-                            continue;
-                        }
-                        if ($.inArray(cha, defs) != -1 && $.inArray(chb, defs) == -1) {
-                            return 1;
-                        }
-                        if ($.inArray(cha, defs) == -1 && $.inArray(chb, defs) != -1) {
-                            return -1;
-                        }
-                        if ($.inArray(cha, defs) == -1 && $.inArray(chb, defs) == -1) {
-                            if (cha != chb) {
-                                return cha < chb ? -1 : 1;
-                            }
-                        }
-                        ia++;
-                        ib++;
-                    }
-                    for (; (ia < a[key].length || ib < b[key].length) ;) {
-                        if (ia < a[key].length && !match.test(a[key].charAt(ia))) {
-                            ia++;
-                            continue;
-                        }
-                        if (ib < b[key].length && !match.test(b[key].charAt(ib))) {
-                            ib++;
-                            continue;
-                        }
-                        if (ia < a[key].length) {
-                            return 1;
-                        }
-                        if (ib < b[key].length) {
-                            return -1;
-                        }
-                    }
-                    return 0;
-                });
-                return maskList;
-            }
-
             var maskList = [];
             $.ajax({
                 url: opts.url,
@@ -2617,7 +2543,7 @@ $.extend($.inputmask.defaults.aliases, {
                 }
             });
 
-            return masksSort(maskList, ['#'], /[0-9]|#/, "mask");
+            return maskList;
         }
     }
 });

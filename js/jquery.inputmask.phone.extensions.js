@@ -11,55 +11,6 @@ $.extend($.inputmask.defaults.aliases, {
     'phone': {
         url: "phone-codes.json",
         mask: function (opts) {
-            function masksSort(maskList, defs, match, key) {
-                maskList.sort(function (a, b) {
-                    var ia = 0, ib = 0;
-                    for (; (ia < a[key].length && ib < b[key].length) ;) {
-                        var cha = a[key].charAt(ia);
-                        var chb = b[key].charAt(ib);
-                        if (!match.test(cha)) {
-                            ia++;
-                            continue;
-                        }
-                        if (!match.test(chb)) {
-                            ib++;
-                            continue;
-                        }
-                        if ($.inArray(cha, defs) != -1 && $.inArray(chb, defs) == -1) {
-                            return 1;
-                        }
-                        if ($.inArray(cha, defs) == -1 && $.inArray(chb, defs) != -1) {
-                            return -1;
-                        }
-                        if ($.inArray(cha, defs) == -1 && $.inArray(chb, defs) == -1) {
-                            if (cha != chb) {
-                                return cha < chb ? -1 : 1;
-                            }
-                        }
-                        ia++;
-                        ib++;
-                    }
-                    for (; (ia < a[key].length || ib < b[key].length) ;) {
-                        if (ia < a[key].length && !match.test(a[key].charAt(ia))) {
-                            ia++;
-                            continue;
-                        }
-                        if (ib < b[key].length && !match.test(b[key].charAt(ib))) {
-                            ib++;
-                            continue;
-                        }
-                        if (ia < a[key].length) {
-                            return 1;
-                        }
-                        if (ib < b[key].length) {
-                            return -1;
-                        }
-                    }
-                    return 0;
-                });
-                return maskList;
-            }
-
             var maskList = [];
             $.ajax({
                 url: opts.url,
@@ -70,7 +21,7 @@ $.extend($.inputmask.defaults.aliases, {
                 }
             });
 
-            return masksSort(maskList, ['#'], /[0-9]|#/, "mask");
+            return maskList;
         }
     }
 });
