@@ -495,9 +495,8 @@ test("inputmask({ mask: [\"99999\", \"99999-9999\", \"999999-9999\"]]}) - input 
 
     $("#testmask")[0].focus();
     $("#testmask").Type("123456");
-    equal($("#testmask").val(), "12345-6___", "Result " + $("#testmask").val());
-    //this is correct as the sequence of the masks || currently "99999-9999", "999999-9999" are valid and thus showing "99999-9999"
-
+    equal($("#testmask").val(), "123456-____", "Result " + $("#testmask").val());
+    
     $("#testmask").remove();
 });
 
@@ -562,7 +561,7 @@ test("inputmask({ mask: [\"99999\", \"99999-9999\", \"999999-9999\"]]}) - input 
 
     $("#testmask")[0].focus();
     $("#testmask").Type("123456");
-    equal($("#testmask").val(), "___6-54321", "Result " + $("#testmask").val());
+    equal($("#testmask").val(), "____-654321", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });
@@ -1166,6 +1165,18 @@ test("inputmask({ mask: \"€ 999.999.999,99\", { numericInput: true, radixPoint
     $("#testmask").click();
     $("#testmask").Type("123,45");
     equal($("#testmask").val(), "€ ___.___.123,45", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask({ mask: \"9999 t\", { numericInput: true }); - 123", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('9999 t', { numericInput: true });
+
+    $("#testmask").focus();
+    $("#testmask").click();
+    $("#testmask").Type("123");
+    equal($("#testmask").val(), "_123 t", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });

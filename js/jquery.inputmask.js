@@ -513,7 +513,8 @@
 
             function maskScope(masksets, activeMasksetIndex) {
                 var isRTL = false,
-                    valueOnFocus = getActiveBuffer().join('');
+                    valueOnFocus = getActiveBuffer().join(''),
+                    newFocus = false;
 
                 //maskset helperfunctions
 
@@ -838,15 +839,14 @@
                     }
                 }
 
-                function caret(input, begin, end) {
-                    function TranslatePosition(pos) {
-                        if (isRTL && typeof pos == 'number') {
-                            var bffrLght = getActiveBuffer().length;
-                            pos = bffrLght - pos;
-                        }
-                        return pos;
+                function TranslatePosition(pos) {
+                    if (isRTL && typeof pos == 'number') {
+                        var bffrLght = getActiveBuffer().length;
+                        pos = bffrLght - pos;
                     }
-
+                    return pos;
+                }
+                function caret(input, begin, end) {
                     var npt = input.jquery && input.length > 0 ? input[0] : input, range;
                     if (typeof begin == 'number') {
                         begin = TranslatePosition(begin); end = TranslatePosition(end);
@@ -1043,7 +1043,7 @@
                         }
                         $input.addClass('focus.inputmask');
                         valueOnFocus = getActiveBuffer().join('');
-                        $input.click();
+                        newFocus = true;
                     }).bind("mouseleave.inputmask", function () {
                         var $input = $(this), input = this;
                         if (opts.clearMaskOnLostFocus) {
@@ -1060,15 +1060,18 @@
                         setTimeout(function () {
                             var selectedCaret = caret(input), buffer = getActiveBuffer();
                             if (selectedCaret.begin == selectedCaret.end) {
-                                var clickPosition = selectedCaret.begin,
+                                var clickPosition = opts.isRTL ? TranslatePosition(selectedCaret.begin) : selectedCaret.begin,
                                     lvp = getActiveMaskSet()["lastValidPosition"],
                                     lastPosition;
                                 if (opts.isNumeric) {
-                                    lastPosition = opts.skipRadixDance === false && opts.radixPoint != "" && $.inArray(opts.radixPoint, buffer) != -1 ? (opts.numericInput ? seekNext($.inArray(opts.radixPoint, buffer)) : $.inArray(opts.radixPoint, buffer)) : getMaskLength();
+                                    lastPosition = opts.skipRadixDance === false && opts.radixPoint != "" && $.inArray(opts.radixPoint, buffer) != -1 ?
+                                        (opts.numericInput ? seekNext($.inArray(opts.radixPoint, buffer)) : $.inArray(opts.radixPoint, buffer)) :
+                                        seekNext(lvp == undefined ? -1 : lvp);
                                 } else {
                                     lastPosition = seekNext(lvp == undefined ? -1 : lvp);
                                 }
-                                caret(input, clickPosition < lastPosition && (isValid(clickPosition, buffer[clickPosition], true) !== false || !isMask(clickPosition)) ? clickPosition : lastPosition);
+                                caret(input, !newFocus && clickPosition < lastPosition && (isValid(clickPosition, buffer[clickPosition], true) !== false || !isMask(clickPosition)) ? clickPosition : lastPosition);
+                                newFocus = false;
                             }
                         }, 0);
                     }).bind('dblclick.inputmask', function () {

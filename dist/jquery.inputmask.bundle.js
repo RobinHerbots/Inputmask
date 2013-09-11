@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.3.37
+* Version: 2.3.38
 */
 
 (function ($) {
@@ -513,7 +513,8 @@
 
             function maskScope(masksets, activeMasksetIndex) {
                 var isRTL = false,
-                    valueOnFocus = getActiveBuffer().join('');
+                    valueOnFocus = getActiveBuffer().join(''),
+                    newFocus = false;
 
                 //maskset helperfunctions
 
@@ -658,7 +659,8 @@
                             }
                         }
                     });
-                    activeMasksetIndex = highestValid["activeMasksetIndex"];
+
+                    activeMasksetIndex = highestValid["lastValidPosition"] != -1 && masksets[currentMasksetIndex]["lastValidPosition"] == highestValid["lastValidPosition"] ? currentMasksetIndex : highestValid["activeMasksetIndex"];
                     if (currentMasksetIndex != activeMasksetIndex) {
                         clearBuffer(getActiveBuffer(), seekNext(highestValid["lastValidPosition"]), getMaskLength());
                         getActiveMaskSet()["writeOutBuffer"] = true;
@@ -837,15 +839,14 @@
                     }
                 }
 
-                function caret(input, begin, end) {
-                    function TranslatePosition(pos) {
-                        if (isRTL && typeof pos == 'number') {
-                            var bffrLght = getActiveBuffer().length;
-                            pos = bffrLght - pos;
-                        }
-                        return pos;
+                function TranslatePosition(pos) {
+                    if (isRTL && typeof pos == 'number') {
+                        var bffrLght = getActiveBuffer().length;
+                        pos = bffrLght - pos;
                     }
-
+                    return pos;
+                }
+                function caret(input, begin, end) {
                     var npt = input.jquery && input.length > 0 ? input[0] : input, range;
                     if (typeof begin == 'number') {
                         begin = TranslatePosition(begin); end = TranslatePosition(end);
@@ -1042,7 +1043,7 @@
                         }
                         $input.addClass('focus.inputmask');
                         valueOnFocus = getActiveBuffer().join('');
-                        $input.click();
+                        newFocus = true;
                     }).bind("mouseleave.inputmask", function () {
                         var $input = $(this), input = this;
                         if (opts.clearMaskOnLostFocus) {
@@ -1059,15 +1060,18 @@
                         setTimeout(function () {
                             var selectedCaret = caret(input), buffer = getActiveBuffer();
                             if (selectedCaret.begin == selectedCaret.end) {
-                                var clickPosition = selectedCaret.begin,
+                                var clickPosition = opts.isRTL ? TranslatePosition(selectedCaret.begin) : selectedCaret.begin,
                                     lvp = getActiveMaskSet()["lastValidPosition"],
                                     lastPosition;
                                 if (opts.isNumeric) {
-                                    lastPosition = opts.skipRadixDance === false && opts.radixPoint != "" && $.inArray(opts.radixPoint, buffer) != -1 ? (opts.numericInput ? seekNext($.inArray(opts.radixPoint, buffer)) : $.inArray(opts.radixPoint, buffer)) : getMaskLength();
+                                    lastPosition = opts.skipRadixDance === false && opts.radixPoint != "" && $.inArray(opts.radixPoint, buffer) != -1 ?
+                                        (opts.numericInput ? seekNext($.inArray(opts.radixPoint, buffer)) : $.inArray(opts.radixPoint, buffer)) :
+                                        seekNext(lvp == undefined ? -1 : lvp);
                                 } else {
                                     lastPosition = seekNext(lvp == undefined ? -1 : lvp);
                                 }
-                                caret(input, clickPosition < lastPosition && (isValid(clickPosition, buffer[clickPosition], true) !== false || !isMask(clickPosition)) ? clickPosition : lastPosition);
+                                caret(input, !newFocus && clickPosition < lastPosition && (isValid(clickPosition, buffer[clickPosition], true) !== false || !isMask(clickPosition)) ? clickPosition : lastPosition);
+                                newFocus = false;
                             }
                         }, 0);
                     }).bind('dblclick.inputmask', function () {
@@ -1309,19 +1313,6 @@
                     ;
 
                     function keydownEvent(e) {
-                        function determineLVP(firstMaskPos, beginPos) {
-                            if (getActiveMaskSet()['lastValidPosition'] != undefined) {
-                                if (getActiveMaskSet()['lastValidPosition'] != -1 && getActiveBuffer()[getActiveMaskSet()['lastValidPosition']] == getActiveBufferTemplate()[getActiveMaskSet()['lastValidPosition']])
-                                    getActiveMaskSet()["lastValidPosition"] = getActiveMaskSet()["lastValidPosition"] == 0 ? -1 : seekPrevious(getActiveMaskSet()["lastValidPosition"]);
-                                if (getActiveMaskSet()['lastValidPosition'] < firstMaskPos) {
-                                    getActiveMaskSet()["lastValidPosition"] = undefined;
-                                    getActiveMaskSet()["p"] = firstMaskPos;
-                                } else {
-                                    getActiveMaskSet()["writeOutBuffer"] = true;
-                                    getActiveMaskSet()["p"] = beginPos;
-                                }
-                            }
-                        }
                         //Safari 5.1.x - modal dialog fires keypress twice workaround
                         skipKeyPressEvent = false;
                         var input = this, k = e.keyCode, pos = caret(input);
@@ -1387,7 +1378,17 @@
                                             } else {
                                                 beginPos = shiftL(beginPos, maskL);
                                             }
-                                            determineLVP(firstMaskPos, beginPos);
+                                            if (getActiveMaskSet()['lastValidPosition'] != undefined) {
+                                                if (getActiveMaskSet()['lastValidPosition'] != -1 && getActiveBuffer()[getActiveMaskSet()['lastValidPosition']] == getActiveBufferTemplate()[getActiveMaskSet()['lastValidPosition']])
+                                                    getActiveMaskSet()["lastValidPosition"] = getActiveMaskSet()["lastValidPosition"] == 0 ? -1 : seekPrevious(getActiveMaskSet()["lastValidPosition"]);
+                                                if (getActiveMaskSet()['lastValidPosition'] < firstMaskPos) {
+                                                    getActiveMaskSet()["lastValidPosition"] = undefined;
+                                                    getActiveMaskSet()["p"] = firstMaskPos;
+                                                } else {
+                                                    getActiveMaskSet()["writeOutBuffer"] = true;
+                                                    getActiveMaskSet()["p"] = beginPos;
+                                                }
+                                            }
                                         }
                                     }
                                 });
@@ -1458,14 +1459,14 @@
                                 }
 
                                 //should we clear a possible selection??
-                                var isSlctn = isSelection(pos.begin, pos.end), redetermineLVP = false;
+                                var isSlctn = isSelection(pos.begin, pos.end), redetermineLVP = false,
+                                    initialIndex = activeMasksetIndex;
                                 if (isSlctn) {
                                     if (isRTL) {
                                         var pend = pos.end;
                                         pos.end = pos.begin;
                                         pos.begin = pend;
                                     }
-                                    var initialIndex = activeMasksetIndex;
                                     $.each(masksets, function (ndx, lmnt) {
                                         if (typeof (lmnt) == "object") {
                                             activeMasksetIndex = ndx;
@@ -1549,7 +1550,10 @@
                                     }
                                 });
 
-                                if (strict !== true) determineActiveMasksetIndex();
+                                if (strict !== true) {
+                                    activeMasksetIndex = initialIndex;
+                                    determineActiveMasksetIndex();
+                                }
                                 if (writeOut !== false) {
                                     $.each(results, function (ndx, rslt) {
                                         if (rslt["activeMasksetIndex"] == activeMasksetIndex) {
@@ -1607,7 +1611,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.37
+Version: 2.3.38
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1709,7 +1713,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.37
+Version: 2.3.38
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2186,7 +2190,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.37
+Version: 2.3.38
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2355,7 +2359,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.37
+Version: 2.3.38
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2525,7 +2529,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.37
+Version: 2.3.38
 
 Phone extension based on inputmask-multi - DO NOT USE YET!!  in TEST
 */
