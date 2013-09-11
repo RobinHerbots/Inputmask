@@ -594,6 +594,7 @@
                                 var lvp = getActiveMaskSet()['lastValidPosition'],
                                     rsltValid;
                                 if (lvp == actualLVP && maskPos - (actualLVP == undefined ? -1 : actualLVP) > 1) {
+                                    getActiveMaskSet()['lastValidPosition'] = lvp || -1;
                                     for (var i = lvp == undefined ? 0 : lvp; i < maskPos; i++) {
                                         rsltValid = _isValid(i, getActiveMaskSet(), actualBuffer[i], true);
                                         if (rsltValid === false) {
