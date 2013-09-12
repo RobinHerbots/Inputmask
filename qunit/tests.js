@@ -244,6 +244,21 @@ test("inputmask(\"*****\")", function () {
     $("#testmask").remove();
 });
 
+test("inputmask(\"d/m/y\")", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("d/m/y");
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").Type("23031973");
+    caret($("#testmask"), 5);
+    $("#testmask").SendKey(keyCodes.BACKSPACE);
+
+    equal($("#testmask").val(), "23/0_/1973", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
 module("Non-greedy masks");
 test("inputmask(\"*\", { greedy: false, repeat: \"*\" }) - replace cd with 1", function () {
     $('body').append('<input type="text" id="testmask" />');
