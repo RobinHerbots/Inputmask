@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.3.39
+* Version: 2.3.40
 */
 
 (function ($) {
@@ -513,11 +513,9 @@
 
             function maskScope(masksets, activeMasksetIndex) {
                 var isRTL = false,
-                    valueOnFocus = getActiveBuffer().join(''),
-                    newFocus = false;
+                    valueOnFocus = getActiveBuffer().join('');
 
                 //maskset helperfunctions
-
                 function getActiveMaskSet() {
                     return masksets[activeMasksetIndex];
                 }
@@ -1044,7 +1042,6 @@
                         }
                         $input.addClass('focus.inputmask');
                         valueOnFocus = getActiveBuffer().join('');
-                        newFocus = true;
                     }).bind("mouseleave.inputmask", function () {
                         var $input = $(this), input = this;
                         if (opts.clearMaskOnLostFocus) {
@@ -1071,8 +1068,12 @@
                                 } else {
                                     lastPosition = seekNext(lvp == undefined ? -1 : lvp);
                                 }
-                                caret(input, !newFocus && clickPosition < lastPosition && (isValid(clickPosition, buffer[clickPosition], true) !== false || !isMask(clickPosition)) ? clickPosition : lastPosition);
-                                newFocus = false;
+                                if (clickPosition < lastPosition && isValid(clickPosition, buffer[clickPosition], true) !== false) {
+                                    if (isMask(clickPosition))
+                                        caret(input, clickPosition);
+                                    else caret(input, seekNext(clickPosition));
+                                } else
+                                    caret(input, lastPosition);
                             }
                         }, 0);
                     }).bind('dblclick.inputmask', function () {
@@ -1612,7 +1613,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.39
+Version: 2.3.40
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1714,7 +1715,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.39
+Version: 2.3.40
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2191,7 +2192,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.39
+Version: 2.3.40
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2360,7 +2361,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.39
+Version: 2.3.40
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2530,7 +2531,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.39
+Version: 2.3.40
 
 Phone extension based on inputmask-multi - DO NOT USE YET!!  in TEST
 */

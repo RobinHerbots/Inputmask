@@ -513,11 +513,9 @@
 
             function maskScope(masksets, activeMasksetIndex) {
                 var isRTL = false,
-                    valueOnFocus = getActiveBuffer().join(''),
-                    newFocus = false;
+                    valueOnFocus = getActiveBuffer().join('');
 
                 //maskset helperfunctions
-
                 function getActiveMaskSet() {
                     return masksets[activeMasksetIndex];
                 }
@@ -1044,7 +1042,6 @@
                         }
                         $input.addClass('focus.inputmask');
                         valueOnFocus = getActiveBuffer().join('');
-                        newFocus = true;
                     }).bind("mouseleave.inputmask", function () {
                         var $input = $(this), input = this;
                         if (opts.clearMaskOnLostFocus) {
@@ -1071,8 +1068,12 @@
                                 } else {
                                     lastPosition = seekNext(lvp == undefined ? -1 : lvp);
                                 }
-                                caret(input, !newFocus && clickPosition < lastPosition && (isValid(clickPosition, buffer[clickPosition], true) !== false || !isMask(clickPosition)) ? clickPosition : lastPosition);
-                                newFocus = false;
+                                if (clickPosition < lastPosition && isValid(clickPosition, buffer[clickPosition], true) !== false) {
+                                    if (isMask(clickPosition))
+                                        caret(input, clickPosition);
+                                    else caret(input, seekNext(clickPosition));
+                                } else
+                                    caret(input, lastPosition);
                             }
                         }, 0);
                     }).bind('dblclick.inputmask', function () {
