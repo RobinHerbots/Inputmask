@@ -616,7 +616,7 @@
                                 if (maskPos >= 0 && maskPos < getMaskLength()) {
                                     result = _isValid(maskPos, getActiveMaskSet(), c, strict);
                                     if (result !== false) {
-                                        console.log("pos " + pos + " ndx " + activeMasksetIndex + " validate " + getActiveBuffer().join('') + " lv " + getActiveMaskSet()['lastValidPosition']);
+                                        //console.log("pos " + pos + " ndx " + activeMasksetIndex + " validate " + getActiveBuffer().join('') + " lv " + getActiveMaskSet()['lastValidPosition']);
                                         if (result === true) {
                                             result = { "pos": maskPos }; //always take a possible corrected maskposition into account
                                         }
@@ -779,7 +779,7 @@
                             ((charCode != getBufferElement(getActiveBufferTemplate().slice(), index, true) || isMask(index)) &&
                              $.inArray(charCode, getActiveBufferTemplate().slice(lvp + 1, pos)) == -1)
                             ) {
-                            console.log("trigger on " + index + " " + charCode);
+                            //console.log("trigger on " + index + " " + charCode);
                             $(input).trigger("_keypress", [true, charCode.charCodeAt(0), writeOut, strict, index]);
                         }
                     });
