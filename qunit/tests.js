@@ -95,7 +95,7 @@ module("Simple masking");
 test("inputmask(\"99-99-99\", { clearMaskOnLostFocus: false}", function () {
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("99-99-99", { clearMaskOnLostFocus: false });
-	
+
     equal(document.getElementById("testmask")._valueGet(), "__-__-__", "Result " + document.getElementById("testmask")._valueGet());
 
     $("#testmask").remove();
@@ -511,7 +511,7 @@ test("inputmask({ mask: [\"99999\", \"99999-9999\", \"999999-9999\"]]}) - input 
     $("#testmask")[0].focus();
     $("#testmask").Type("123456");
     equal($("#testmask").val(), "123456-____", "Result " + $("#testmask").val());
-    
+
     $("#testmask").remove();
 });
 
@@ -1155,8 +1155,8 @@ test("inputmask({ mask: \"€ 999.999.999,99\", numericInput: true }); - 123 pos
 
     $("#testmask")[0].focus();
     $("#testmask").Type("123");
-	caret($("#testmask"), 12);
-	$("#testmask").Type("456");
+    caret($("#testmask"), 12);
+    $("#testmask").Type("456");
     equal($("#testmask").val(), "€ ___.__4.561,23", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
@@ -1184,7 +1184,7 @@ test("inputmask({ mask: \"€ 999.999.999,99\", { numericInput: true, radixPoint
     $("#testmask").remove();
 });
 
-test("inputmask({ mask: \"9999 t\", { numericInput: true }); - 123", function () {
+test("inputmask({ mask: \"9999 t\", { numericInput: true }); - 123 - Joe Rosa", function () {
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask('9999 t', { numericInput: true });
 
@@ -1192,6 +1192,18 @@ test("inputmask({ mask: \"9999 t\", { numericInput: true }); - 123", function ()
     $("#testmask").click();
     $("#testmask").Type("123");
     equal($("#testmask").val(), "_123 t", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask({ mask: \"9999 t\", { numericInput: true, autoUnmask: true }); - 70  - Joe Rosa", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('9999 t', { numericInput: true, autoUnmask: true });
+
+    $("#testmask").focus();
+    $("#testmask").click();
+    $("#testmask").Type("70");
+    equal($("#testmask").val(), "70", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });

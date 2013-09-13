@@ -1,6 +1,6 @@
 {
     "name": "jquery.inputmask",
-    "version": "2.3.40",
+    "version": "2.3.41",
     "main": "./dist/jquery.inputmask.bundle.js",
     "dependencies": {
         "jquery": ">=1.5"
