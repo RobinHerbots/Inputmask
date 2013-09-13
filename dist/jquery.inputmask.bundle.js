@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.3.42
+* Version: 2.3.43
 */
 
 (function ($) {
@@ -1439,7 +1439,7 @@
                         } else {
                             if (k) {
                                 //special treat the decimal separator
-                                if (k == 46 && e.shiftKey == false && opts.radixPoint == ",") k = 44;
+                                if (checkval !== true && k == 46 && e.shiftKey == false && opts.radixPoint == ",") k = 44;
 
                                 var pos, results, result, c = String.fromCharCode(k);
                                 if (checkval) {
@@ -1602,7 +1602,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.42
+Version: 2.3.43
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1704,7 +1704,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.42
+Version: 2.3.43
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2181,7 +2181,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.42
+Version: 2.3.43
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2350,7 +2350,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.42
+Version: 2.3.43
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2520,7 +2520,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.42
+Version: 2.3.43
 
 Phone extension based on inputmask-multi - DO NOT USE YET!!  in TEST
 */

@@ -1439,7 +1439,7 @@
                         } else {
                             if (k) {
                                 //special treat the decimal separator
-                                if (k == 46 && e.shiftKey == false && opts.radixPoint == ",") k = 44;
+                                if (checkval !== true && k == 46 && e.shiftKey == false && opts.radixPoint == ",") k = 44;
 
                                 var pos, results, result, c = String.fromCharCode(k);
                                 if (checkval) {
