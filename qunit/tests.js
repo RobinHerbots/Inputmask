@@ -1208,6 +1208,15 @@ test("inputmask({ mask: \"9999 t\", { numericInput: true, autoUnmask: true }); -
     $("#testmask").remove();
 });
 
+test("inputmask({ mask: \"['$9.99', '$99.99', '$999.99', '$9,999.99', '$99,999.99', '$999,999.99', '$9,999,999.99', '$99,999,999.99', '$999,999,999.99'], 'placeholder': ' ', 'numericInput': true, 'rightAlignNumerics': false\" value=\"$100000.00\"", function () {
+    $('body').append("<input type=\"text\" id=\"testmask\" data-inputmask=\"'mask': ['$9.99', '$99.99', '$999.99', '$9,999.99', '$99,999.99', '$999,999.99', '$9,999,999.99', '$99,999,999.99', '$999,999,999.99'], 'placeholder': ' ', 'numericInput': true, 'rightAlignNumerics': false\" value=\"$100000.00\"/>");
+    $("#testmask").inputmask();
+
+    equal($("#testmask").val(), "$100,000.00", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
 module("Regex masks")
 
 test("inputmask(\"Regex\", { regex: \"[0-9]*\"});", function () {

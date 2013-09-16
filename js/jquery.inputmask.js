@@ -626,7 +626,7 @@
                                     results.push({ "activeMasksetIndex": index, "result": result });
                                 }
                             }
-                            //console.log("pos " + pos + " ndx " + activeMasksetIndex + " validate " + getActiveBuffer().join('') + " lv " + getActiveMaskSet()['lastValidPosition']);
+                            console.log("pos " + pos + " ndx " + activeMasksetIndex + " validate " + getActiveBuffer().join('') + " lv " + getActiveMaskSet()['lastValidPosition']);
                         }
                     });
                     activeMasksetIndex = currentActiveMasksetIndex; //reset activeMasksetIndex
@@ -1530,7 +1530,7 @@
                                                     shiftR(p, buffer.length, c);
                                                     //shift the lvp if needed
                                                     var lvp = getActiveMaskSet()["lastValidPosition"], nlvp = seekNext(lvp);
-                                                    if (nlvp != getMaskLength() && lvp >= p && (getBufferElement(getActiveBuffer(), nlvp) != getPlaceHolder(nlvp))) {
+                                                    if (nlvp != getMaskLength() && lvp >= p && (getBufferElement(getActiveBuffer(), nlvp, true) != getPlaceHolder(nlvp))) {
                                                         getActiveMaskSet()["lastValidPosition"] = nlvp;
                                                     }
                                                 } else getActiveMaskSet()["writeOutBuffer"] = false;
