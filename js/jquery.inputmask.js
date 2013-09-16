@@ -626,7 +626,7 @@
                                     results.push({ "activeMasksetIndex": index, "result": result });
                                 }
                             }
-                            console.log("pos " + pos + " ndx " + activeMasksetIndex + " validate " + getActiveBuffer().join('') + " lv " + getActiveMaskSet()['lastValidPosition']);
+                            //console.log("pos " + pos + " ndx " + activeMasksetIndex + " validate " + getActiveBuffer().join('') + " lv " + getActiveMaskSet()['lastValidPosition']);
                         }
                     });
                     activeMasksetIndex = currentActiveMasksetIndex; //reset activeMasksetIndex
