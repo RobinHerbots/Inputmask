@@ -1079,7 +1079,7 @@ test("inputmask(\"999-999-999\") - replace selection with backspace", function (
     $("#testmask").SendKey(keyCodes.BACKSPACE);
     $("#testmask").Type("5");
 
-    equal($("#testmask").val(), "__5-987-321", "Result " + $("#testmask").val());
+    equal($("#testmask").val(), "__9-875-321", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });
@@ -1094,7 +1094,7 @@ test("inputmask(\"999-999-999\") - replace selection - with delete", function ()
     $("#testmask").SendKey(keyCodes.DELETE);
     $("#testmask").Type("5");
 
-    equal($("#testmask").val(), "__5-987-321", "Result " + $("#testmask").val());
+    equal($("#testmask").val(), "__9-875-321", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });
@@ -1162,26 +1162,32 @@ test("inputmask({ mask: \"€ 999.999.999,99\", numericInput: true }); - 123 pos
     $("#testmask").remove();
 });
 
-test("inputmask({ mask: \"€ 999.999.999,99\", { numericInput: true, radixPoint: \",\" }); - 123", function () {
+asyncTest("inputmask({ mask: \"€ 999.999.999,99\", { numericInput: true, radixPoint: \",\" }); - 123", function () {
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask('€ 999.999.999,99', { numericInput: true, radixPoint: "," });
 
     $("#testmask").click();
-    $("#testmask").Type("123");
-    equal($("#testmask").val(), "€ ___.___.123,__", "Result " + $("#testmask").val());
-
-    $("#testmask").remove();
+    setTimeout(function () {
+        $("#testmask").Type("123");
+        
+        equal($("#testmask").val(), "€ ___.___.123,__", "Result " + $("#testmask").val());
+        start();
+        $("#testmask").remove();
+    }, 0);
 });
 
-test("inputmask({ mask: \"€ 999.999.999,99\", { numericInput: true, radixPoint: \",\" }); - 123,45", function () {
+asyncTest("inputmask({ mask: \"€ 999.999.999,99\", { numericInput: true, radixPoint: \",\" }); - 123,45", function () {
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask('€ 999.999.999,99', { numericInput: true, radixPoint: "," });
 
     $("#testmask").click();
-    $("#testmask").Type("123,45");
-    equal($("#testmask").val(), "€ ___.___.123,45", "Result " + $("#testmask").val());
-
-    $("#testmask").remove();
+    setTimeout(function () {
+        $("#testmask").Type("123,45");
+        
+        equal($("#testmask").val(), "€ ___.___.123,45", "Result " + $("#testmask").val());
+        start();
+        $("#testmask").remove();
+    }, 0);
 });
 
 test("inputmask({ mask: \"9999 t\", { numericInput: true }); - 123 - Joe Rosa", function () {

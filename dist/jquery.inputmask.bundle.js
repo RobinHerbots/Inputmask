@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.3.46
+* Version: 2.3.47
 */
 
 (function ($) {
@@ -548,8 +548,8 @@
                         //return is false or a json object => { pos: ??, c: ??} or true
                         return activeMaskset['tests'][testPos].fn != null ?
                             activeMaskset['tests'][testPos].fn.test(chrs, buffer, position, strict, opts)
-                            : (c == getBufferElement(getActiveBufferTemplate(), position, true) || c == opts.skipOptionalPartCharacter) ?
-                                { "refresh": true, c: getBufferElement(getActiveBufferTemplate(), position, true), pos: position }
+                            : (c == getBufferElement(activeMaskset['_buffer'], position, true) || c == opts.skipOptionalPartCharacter) ?
+                                { "refresh": true, c: getBufferElement(activeMaskset['_buffer'], position, true), pos: position }
                                 : false;
                     }
 
@@ -560,7 +560,7 @@
                             if (hasValidActual) return false;
                         });
                         if (hasValidActual) { //strip maskforwards
-                            results = $.map(results, function(rslt, ndx) {
+                            results = $.map(results, function (rslt, ndx) {
                                 if ($.inArray(rslt["activeMasksetIndex"], maskForwards) == -1) {
                                     return rslt;
                                 } else {
@@ -568,17 +568,36 @@
                                 }
                             });
                         } else { //keep maskforwards with the least forward
-                            var lowestPos = -1;
-                            $.each(results, function(ndx, rslt) {
-                                if ($.inArray(rslt["activeMasksetIndex"], maskForwards) != -1 && (lowestPos == -1 || lowestPos > rslt["result"]["pos"])) {
+                            var lowestPos = -1, lowestIndex = -1;
+                            $.each(results, function (ndx, rslt) {
+                                if ($.inArray(rslt["activeMasksetIndex"], maskForwards) != -1 && rslt["result"] !== false & (lowestPos == -1 || lowestPos > rslt["result"]["pos"])) {
                                     lowestPos = rslt["result"]["pos"];
+                                    lowestIndex = rslt["activeMasksetIndex"];
                                 }
                             });
                             results = $.map(results, function (rslt, ndx) {
-                                if ($.inArray(rslt["activeMasksetIndex"], maskForwards) == -1 || rslt["result"]["pos"] == lowestPos) {
-                                    return rslt;
-                                } else {
-                                    masksets[rslt["activeMasksetIndex"]]["lastValidPosition"] = actualLVP;
+                                if ($.inArray(rslt["activeMasksetIndex"], maskForwards) != -1) {
+                                    if (rslt["result"]["pos"] == lowestPos) {
+                                        return rslt;
+                                    } else if (rslt["result"] !== false) {
+                                        for (var i = pos; i < lowestPos; i++) {
+                                            rsltValid = _isValid(i, masksets[rslt["activeMasksetIndex"]], masksets[lowestIndex]["buffer"][i], true);
+                                            if (rsltValid === false) {
+                                                break;
+                                            } else {
+                                                setBufferElement(masksets[rslt["activeMasksetIndex"]]["buffer"], i, masksets[lowestIndex]["buffer"][i], true);
+                                                masksets[rslt["activeMasksetIndex"]]["lastValidPosition"] = i;
+                                            }
+                                        }
+                                        //also check check for the lowestpos with the new input
+                                        rsltValid = _isValid(lowestPos, masksets[rslt["activeMasksetIndex"]], c, true);
+                                        if (rsltValid !== false) {
+                                            setBufferElement(masksets[rslt["activeMasksetIndex"]]["buffer"], lowestPos, c, true);
+                                            masksets[rslt["activeMasksetIndex"]]["lastValidPosition"] = lowestPos;
+                                        }
+                                        //console.log("ndx " + rslt["activeMasksetIndex"] + " validate " + masksets[rslt["activeMasksetIndex"]]["buffer"].join('') + " lv " + masksets[rslt["activeMasksetIndex"]]['lastValidPosition']);
+                                        return rslt;
+                                    }
                                 }
                             });
                         }
@@ -624,9 +643,10 @@
                             if (!isMask(maskPos) && !_isValid(maskPos, getActiveMaskSet(), c, strict)) {
                                 maskPos = seekNext(pos);
                                 maskForwards.push(activeMasksetIndex);
+                                //console.log('maskforwards ' + activeMasksetIndex);
                             }
 
-                            if (getActiveMaskSet()['lastValidPosition'] >= actualLVP) {
+                            if (getActiveMaskSet()['lastValidPosition'] >= actualLVP || activeMasksetIndex == currentActiveMasksetIndex) {
                                 if (maskPos >= 0 && maskPos < getMaskLength()) {
                                     result = _isValid(maskPos, getActiveMaskSet(), c, strict);
                                     if (result !== false) {
@@ -660,10 +680,10 @@
                                 highestValid["next"] = seekNext(getActiveMaskSet()['lastValidPosition']);
                             } else if (getActiveMaskSet()['lastValidPosition'] == highestValid['lastValidPosition'] &&
                                    (highestValid['next'] == -1 || highestValid['next'] > seekNext(getActiveMaskSet()['lastValidPosition']))) {
-                                    highestValid["activeMasksetIndex"] = index;
-                                    highestValid["lastValidPosition"] = getActiveMaskSet()['lastValidPosition'];
-                                    highestValid["next"] = seekNext(getActiveMaskSet()['lastValidPosition']);
-                                }
+                                highestValid["activeMasksetIndex"] = index;
+                                highestValid["lastValidPosition"] = getActiveMaskSet()['lastValidPosition'];
+                                highestValid["next"] = seekNext(getActiveMaskSet()['lastValidPosition']);
+                            }
                         }
                     });
 
@@ -782,7 +802,6 @@
                         if (typeof (ms) == "object") {
                             ms["buffer"] = ms["_buffer"].slice();
                             ms["lastValidPosition"] = -1;
-                            ms["p"] = 0;
                         }
                     });
                     if (strict !== true) activeMasksetIndex = 0;
@@ -791,9 +810,7 @@
                     $.each(inputValue, function (ndx, charCode) {
                         var index = ndx,
                             lvp = getActiveMaskSet()["lastValidPosition"],
-                            pos = getActiveMaskSet()["p"];
-
-                        pos = lvp == -1 ? index : pos;
+                            pos = lvp == -1 ? index : seekNext(lvp);
 
                         if ((strict && isMask(index)) ||
                             ((charCode != getBufferElement(getActiveBufferTemplate().slice(), index, true) || isMask(index)) &&
@@ -802,6 +819,7 @@
                             $(input).trigger("_keypress", [true, charCode.charCodeAt(0), writeOut, strict, index]);
                         }
                     });
+
                     if (strict === true) {
                         getActiveMaskSet()["lastValidPosition"] = seekPrevious(getActiveMaskSet()["p"]);
                     }
@@ -997,7 +1015,6 @@
                             if (typeof (ms) == "object") {
                                 ms["buffer"] = ms["_buffer"].slice();
                                 ms["lastValidPosition"] = -1;
-                                ms["p"] = -1;
                             }
                         });
                     });
@@ -1028,7 +1045,6 @@
                                     if (typeof (ms) == "object") {
                                         ms["buffer"] = ms["_buffer"].slice();
                                         ms["lastValidPosition"] = -1;
-                                        ms["p"] = 0;
                                     }
                                 });
                                 activeMasksetIndex = 0;
@@ -1044,7 +1060,7 @@
                         var $input = $(this), input = this, nptValue = input._valueGet();
                         if (opts.showMaskOnFocus && !$input.hasClass('focus.inputmask') && (!opts.showMaskOnHover || (opts.showMaskOnHover && nptValue == ''))) {
                             if (input._valueGet() != getActiveBuffer().join('')) {
-                                writeBuffer(input, getActiveBuffer(), getActiveMaskSet()["p"]);
+                                writeBuffer(input, getActiveBuffer(), seekNext(getActiveMaskSet()["lastValidPosition"]));
                             }
                         }
                         $input.addClass('focus.inputmask');
@@ -1126,7 +1142,7 @@
                     }
                     if (activeElement === el) { //position the caret when in focus
                         $input.addClass('focus.inputmask');
-                        caret(el, getActiveMaskSet()["p"]);
+                        caret(el, seekNext(getActiveMaskSet()["lastValidPosition"]));
                     } else if (opts.clearMaskOnLostFocus) {
                         if (getActiveBuffer().join('') == getActiveBufferTemplate().join('')) {
                             el._valueSet('');
@@ -1354,7 +1370,6 @@
                                         if (typeof (ms) == "object") {
                                             ms["buffer"] = ms["_buffer"].slice();
                                             ms["lastValidPosition"] = -1;
-                                            ms["p"] = 0;
                                         }
                                     });
                                 } else { //partial selection
@@ -1367,7 +1382,15 @@
                                                 shiftL(pos.begin, ml);
                                         }
                                     }
+                                    var firstMaskPos = seekNext(-1);
                                     checkVal(input, false, true, getActiveBuffer());
+                                    if (getActiveMaskSet()['lastValidPosition'] < firstMaskPos) {
+                                        getActiveMaskSet()["lastValidPosition"] = -1;
+                                        getActiveMaskSet()["p"] = firstMaskPos;
+                                    } else {
+                                        getActiveMaskSet()["writeOutBuffer"] = true;
+                                        getActiveMaskSet()["p"] = pos.begin;
+                                    }
                                 }
                             } else {
                                 $.each(masksets, function (ndx, ms) {
@@ -1388,6 +1411,7 @@
                                             } else {
                                                 beginPos = shiftL(beginPos, maskL);
                                             }
+
                                             if (getActiveMaskSet()['lastValidPosition'] != -1 && getActiveBuffer()[getActiveMaskSet()['lastValidPosition']] == getActiveBufferTemplate()[getActiveMaskSet()['lastValidPosition']])
                                                 getActiveMaskSet()["lastValidPosition"] = getActiveMaskSet()["lastValidPosition"] == 0 ? -1 : seekPrevious(getActiveMaskSet()["lastValidPosition"]);
                                             if (getActiveMaskSet()['lastValidPosition'] < firstMaskPos) {
@@ -1437,9 +1461,9 @@
                                 }, 0);
                             }
                         }
-                        var caretPos = caret(input);
+                        var currentCaret = caret(input);
                         opts.onKeyDown.call(this, e, getActiveBuffer(), opts); //extra stuff to execute on keydown
-                        caret(input, caretPos.begin, caretPos.end);
+                        caret(input, currentCaret.begin, currentCaret.end);
                         ignorable = $.inArray(k, opts.ignorables) != -1;
                     }
 
@@ -1515,19 +1539,22 @@
                                     activeMasksetIndex = initialIndex; //restore index
                                 }
 
-                                if (opts.isNumeric && c == opts.radixPoint && checkval !== true) {
-                                    var nptStr = getActiveBuffer().join('');
-                                    var radixPosition = nptStr.indexOf(opts.radixPoint);
-                                    if (radixPosition != -1) {
-                                        pos.begin = pos.begin == radixPosition ? seekNext(radixPosition) : radixPosition;
+                                var radixPosition = getActiveBuffer().join('').indexOf(opts.radixPoint);
+                                if (opts.isNumeric && checkval !== true && radixPosition != -1) {
+                                    if (pos.begin <= radixPosition) {
+                                        pos.begin = seekPrevious(pos.begin);
                                         pos.end = pos.begin;
-                                        caret(input, pos.begin);
+                                    } else if (c == opts.radixPoint) {
+                                        pos.begin = radixPosition;
+                                        pos.end = pos.begin;
                                     }
                                 }
+
 
                                 var p = pos.begin;
                                 results = isValid(p, c, strict);
                                 if (strict === true) results = [{ "activeMasksetIndex": activeMasksetIndex, "result": results }];
+                                var minimalForwardPosition = -1;
                                 $.each(results, function (index, result) {
                                     activeMasksetIndex = result["activeMasksetIndex"];
                                     getActiveMaskSet()["writeOutBuffer"] = true;
@@ -1555,8 +1582,17 @@
                                                     }
                                                 } else getActiveMaskSet()["writeOutBuffer"] = false;
                                             } else setBufferElement(buffer, p, c, true);
+                                            if (minimalForwardPosition == -1 || minimalForwardPosition > seekNext(p)) {
+                                                minimalForwardPosition = seekNext(p);
+                                            }
+                                        } else {
+                                            var nextPos = p < getMaskLength() ? p + 1 : p;
+                                            if (minimalForwardPosition == -1 || minimalForwardPosition > nextPos) {
+                                                minimalForwardPosition = nextPos;
+                                            }
                                         }
-                                        getActiveMaskSet()["p"] = seekNext(p);
+                                        getActiveMaskSet()["p"] = minimalForwardPosition; //needed for checkval strict 
+                                        //console.log(getActiveBuffer().join("") + " " + minimalForwardPosition);
                                     }
                                 });
 
@@ -1576,7 +1612,21 @@
                                         setTimeout(function () { opts.onKeyValidation.call(self, result["result"], opts); }, 0);
                                         if (getActiveMaskSet()["writeOutBuffer"] && result["result"] !== false) {
                                             var buffer = getActiveBuffer();
-                                            writeBuffer(input, buffer, checkval ? undefined : (opts.numericInput ? seekPrevious(getActiveMaskSet()["p"]) : getActiveMaskSet()["p"]));
+
+                                            var newCaretPosition;
+                                            if (checkval) {
+                                                newCaretPosition = undefined;
+                                            } else if (opts.numericInput) {
+                                                if (p > radixPosition) {
+                                                    newCaretPosition = seekPrevious(minimalForwardPosition);
+                                                } else if (c == opts.radixPoint) {
+                                                    newCaretPosition = minimalForwardPosition - 1;
+                                                } else newCaretPosition = seekPrevious(minimalForwardPosition - 1);
+                                            } else {
+                                                newCaretPosition = minimalForwardPosition;
+                                            }
+
+                                            writeBuffer(input, buffer, newCaretPosition);
                                             if (checkval !== true) {
                                                 setTimeout(function () { //timeout needed for IE
                                                     if (isComplete(buffer))
@@ -1599,9 +1649,9 @@
 
                     function keyupEvent(e) {
                         var $input = $(this), input = this, k = e.keyCode, buffer = getActiveBuffer();
-                        var caretPos = caret(input);
+                        var currentCaret = caret(input);
                         opts.onKeyUp.call(this, e, buffer, opts); //extra stuff to execute on keyup
-                        caret(input, caretPos.begin, caretPos.end);
+                        caret(input, currentCaret.begin, currentCaret.end);
                         if (k == opts.keyCode.TAB && $input.hasClass('focus.inputmask') && input._valueGet().length == 0 && opts.showMaskOnFocus) {
                             buffer = getActiveBufferTemplate().slice();
                             writeBuffer(input, buffer);
@@ -1621,7 +1671,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.46
+Version: 2.3.47
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1723,7 +1773,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.46
+Version: 2.3.47
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2200,7 +2250,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.46
+Version: 2.3.47
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2369,7 +2419,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.46
+Version: 2.3.47
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2539,9 +2589,9 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.46
+Version: 2.3.47
 
-Phone extension based on inputmask-multi - DO NOT USE YET!!  in TEST
+Phone extension based on https://github.com/andr-04/inputmask-multi - DO NOT USE YET!!  in TEST
 */
 $.extend($.inputmask.defaults.aliases, {
     'phone': {

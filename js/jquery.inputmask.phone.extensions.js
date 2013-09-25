@@ -5,7 +5,7 @@ Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
 Version: 0.0.0
 
-Phone extension based on inputmask-multi - DO NOT USE YET!!  in TEST
+Phone extension based on https://github.com/andr-04/inputmask-multi - DO NOT USE YET!!  in TEST
 */
 $.extend($.inputmask.defaults.aliases, {
     'phone': {

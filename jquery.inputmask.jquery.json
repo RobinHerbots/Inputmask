@@ -8,7 +8,7 @@
 		"inputmask",
 		"mask"
     ],
-    "version": "2.3.46",
+    "version": "2.3.47",
     "author": {
         "name": "Robin Herbots",
         "url": "http://github.com/RobinHerbots/jquery.inputmask"
