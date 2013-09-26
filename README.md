@@ -21,6 +21,7 @@ Highlights:
 - multi-mask support  
 - regex-mask support
 
+Demo page see http://robinherbots.github.io/jquery.inputmask
 
 ## Usage:
 
