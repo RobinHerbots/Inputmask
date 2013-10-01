@@ -1,1 +1,1 @@
-$.extend($.inputmask.defaults.aliases,{phone:{url:"phone-codes/phone-codes.json",mask:function(a){a.definitions={p:{validator:function(){return!1},cardinality:1},"#":{validator:"[0-9]",cardinality:1}};var b=[];$.ajax({url:a.url,async:!1,dataType:"json",success:function(a){b=a}});b.splice(0,0,"+p(ppp)ppp-pppp");return b}}});
+$.extend($.g.e.d,{phone:{url:"phone-codes/phone-codes.json",h:function(a){a.f={p:{b:function(){return!1},a:1},"#":{b:"[0-9]",a:1}};var b=[];$.c({url:a.url,async:!1,dataType:"json",i:function(a){b=a}});b.splice(0,0,"+p(ppp)ppp-pppp");return b}}});
