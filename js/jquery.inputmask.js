@@ -513,7 +513,8 @@
 
             function maskScope(masksets, activeMasksetIndex) {
                 var isRTL = false,
-                    valueOnFocus = getActiveBuffer().join('');
+                    valueOnFocus = getActiveBuffer().join(''),
+                    $el;
 
                 //maskset helperfunctions
                 function getActiveMaskSet() {
@@ -623,27 +624,33 @@
                             var maskPos = pos;
                             var lvp = getActiveMaskSet()['lastValidPosition'],
                                 rsltValid;
-                            if (lvp == actualLVP && (maskPos - actualLVP) > 1) {
-                                for (var i = lvp == -1 ? 0 : lvp; i < maskPos; i++) {
-                                    rsltValid = _isValid(i, getActiveMaskSet(), actualBuffer[i], true);
-                                    if (rsltValid === false) {
-                                        break;
-                                    } else {
-                                        setBufferElement(getActiveBuffer(), i, actualBuffer[i], true);
-                                        if (rsltValid === true) {
-                                            rsltValid = { "pos": i }; //always take a possible corrected maskposition into account
+                            if (lvp == actualLVP) {
+                                if ((maskPos - actualLVP) > 1) {
+                                    for (var i = lvp == -1 ? 0 : lvp; i < maskPos; i++) {
+                                        rsltValid = _isValid(i, getActiveMaskSet(), actualBuffer[i], true);
+                                        if (rsltValid === false) {
+                                            break;
+                                        } else {
+                                            setBufferElement(getActiveBuffer(), i, actualBuffer[i], true);
+                                            if (rsltValid === true) {
+                                                rsltValid = { "pos": i }; //always take a possible corrected maskposition into account
+                                            }
+                                            var newValidPosition = rsltValid.pos || i;
+                                            if (getActiveMaskSet()['lastValidPosition'] < newValidPosition)
+                                                getActiveMaskSet()['lastValidPosition'] = newValidPosition; //set new position from isValid
                                         }
-                                        var newValidPosition = rsltValid.pos || i;
-                                        if (getActiveMaskSet()['lastValidPosition'] < newValidPosition)
-                                            getActiveMaskSet()['lastValidPosition'] = newValidPosition; //set new position from isValid
                                     }
                                 }
-                            }
-
-                            if (!isMask(maskPos) && !_isValid(maskPos, getActiveMaskSet(), c, strict)) {
-                                maskPos = seekNext(pos);
-                                maskForwards.push(activeMasksetIndex);
-                                //console.log('maskforwards ' + activeMasksetIndex);
+                                //does the input match on a further position?
+                                if (!isMask(maskPos) && !_isValid(maskPos, getActiveMaskSet(), c, strict)) {
+                                    var maxForward = seekNext(maskPos) - maskPos;
+                                    for (var fw = 0; fw < maxForward; fw++) {
+                                        if (_isValid(++maskPos, getActiveMaskSet(), c, strict) !== false)
+                                            break;
+                                    }
+                                    maskForwards.push(activeMasksetIndex);
+                                    //console.log('maskforward ' + activeMasksetIndex + " pos " + pos + " maskPos " + maskPos);
+                                }
                             }
 
                             if (getActiveMaskSet()['lastValidPosition'] >= actualLVP || activeMasksetIndex == currentActiveMasksetIndex) {
@@ -692,6 +699,7 @@
                         clearBuffer(getActiveBuffer(), seekNext(highestValid["lastValidPosition"]), getMaskLength());
                         getActiveMaskSet()["writeOutBuffer"] = true;
                     }
+                    $el.data('_inputmask')['activeMasksetIndex'] = activeMasksetIndex; //store the activeMasksetIndex
                 }
 
                 function isMask(pos) {
@@ -942,11 +950,11 @@
                 }
 
                 this.mask = function (el) {
-                    var $input = $(el);
-                    if (!$input.is(":input")) return;
+                    $el = $(el);
+                    if (!$el.is(":input")) return;
 
                     //store tests & original buffer in the input element - used to get the unmasked value
-                    $input.data('_inputmask', {
+                    $el.data('_inputmask', {
                         'masksets': masksets,
                         'activeMasksetIndex': activeMasksetIndex,
                         'opts': opts,
@@ -955,16 +963,16 @@
 
                     //show tooltip
                     if (opts.showTooltip) {
-                        $input.prop("title", getActiveMaskSet()["mask"]);
+                        $el.prop("title", getActiveMaskSet()["mask"]);
                     }
 
                     //correct greedy setting if needed
                     getActiveMaskSet()['greedy'] = getActiveMaskSet()['greedy'] ? getActiveMaskSet()['greedy'] : getActiveMaskSet()['repeat'] == 0;
 
                     //handle maxlength attribute
-                    if ($input.attr("maxLength") != null) //only when the attribute is set
+                    if ($el.attr("maxLength") != null) //only when the attribute is set
                     {
-                        var maxLength = $input.prop('maxLength');
+                        var maxLength = $el.prop('maxLength');
                         if (maxLength > -1) { //handle *-repeat
                             $.each(masksets, function (ndx, ms) {
                                 if (typeof (ms) == "object") {
@@ -979,7 +987,7 @@
                             if (getActiveMaskSet()['greedy'] == false) {
                                 getActiveMaskSet()['repeat'] = Math.round(maxLength / getActiveBufferTemplate().length);
                             }
-                            $input.prop('maxLength', getMaskLength() * 2);
+                            $el.prop('maxLength', getMaskLength() * 2);
                         }
                     }
 
@@ -991,24 +999,24 @@
 
                     if (opts.numericInput) opts.isNumeric = opts.numericInput;
                     if (el.dir == "rtl" || (opts.numericInput && opts.rightAlignNumerics) || (opts.isNumeric && opts.rightAlignNumerics))
-                        $input.css("text-align", "right");
+                        $el.css("text-align", "right");
 
                     if (el.dir == "rtl" || opts.numericInput) {
                         el.dir = "ltr";
-                        $input.removeAttr("dir");
-                        var inputData = $input.data('_inputmask');
+                        $el.removeAttr("dir");
+                        var inputData = $el.data('_inputmask');
                         inputData['isRTL'] = true;
-                        $input.data('_inputmask', inputData);
+                        $el.data('_inputmask', inputData);
                         isRTL = true;
                     }
 
                     //unbind all events - to make sure that no other mask will interfere when re-masking
-                    $input.unbind(".inputmask");
-                    $input.removeClass('focus.inputmask');
+                    $el.unbind(".inputmask");
+                    $el.removeClass('focus.inputmask');
                     //bind events
-                    $input.closest('form').bind("submit", function () { //trigger change on submit if any
+                    $el.closest('form').bind("submit", function () { //trigger change on submit if any
                         if (valueOnFocus != getActiveBuffer().join('')) {
-                            $input.change();
+                            $el.change();
                         }
                     }).bind('reset', function () {
                         $.each(masksets, function (ndx, ms) {
@@ -1018,7 +1026,7 @@
                             }
                         });
                     });
-                    $input.bind("mouseenter.inputmask", function () {
+                    $el.bind("mouseenter.inputmask", function () {
                         var $input = $(this), input = this;
                         if (!$input.hasClass('focus.inputmask') && opts.showMaskOnHover) {
                             if (input._valueGet() != getActiveBuffer().join('')) {
@@ -1141,7 +1149,7 @@
                     } catch (e) {
                     }
                     if (activeElement === el) { //position the caret when in focus
-                        $input.addClass('focus.inputmask');
+                        $el.addClass('focus.inputmask');
                         caret(el, seekNext(getActiveMaskSet()["lastValidPosition"]));
                     } else if (opts.clearMaskOnLostFocus) {
                         if (getActiveBuffer().join('') == getActiveBufferTemplate().join('')) {
@@ -1341,7 +1349,7 @@
                     function keydownEvent(e) {
                         //Safari 5.1.x - modal dialog fires keypress twice workaround
                         skipKeyPressEvent = false;
-                        var input = this, k = e.keyCode, pos = caret(input);
+                        var input = this, $input = $(input), k = e.keyCode, pos = caret(input);
 
                         //backspace, delete, and escape get special treatment
                         if (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE || (iphone && k == 127) || (e.ctrlKey && k == 88)) { //backspace/delete
@@ -1430,7 +1438,7 @@
                             determineActiveMasksetIndex();
                             writeBuffer(input, getActiveBuffer(), getActiveMaskSet()["p"]);
                             if (input._valueGet() == getActiveBufferTemplate().join(''))
-                                $(input).trigger('cleared');
+                               $input.trigger('cleared');
 
                             if (opts.showTooltip) { //update tooltip
                                 $input.prop("title", getActiveMaskSet()["mask"]);

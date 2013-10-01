@@ -5,11 +5,21 @@ Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
 Version: 0.0.0
 
-Phone extension based on https://github.com/andr-04/inputmask-multi - DO NOT USE YET!!  in TEST
+Phone extension based on https://github.com/andr-04/inputmask-multi
+When using this extension make sure you specify the correct url to get the masks
+
+ $(selector).inputmask("phone", {
+                url: "Scripts/jquery.inputmask/phone-codes/phone-codes.json", 
+                onKeyValidation: function () { //show some metadata in the console
+                    console.log($(this).inputmask("getmetadata")["name_en"]);
+                } 
+  });
+
+
 */
 $.extend($.inputmask.defaults.aliases, {
     'phone': {
-        url: "phone-codes.json",
+        url: "phone-codes/phone-codes.json",
         mask: function (opts) {
             opts.definitions = {
                 'p': {
