@@ -51,7 +51,7 @@
             <arg line="-jar" />
             <arg path="${GoogleCompiler}" />
 			<arg value="--compilation_level" />
-			<arg value="ADVANCED_OPTIMIZATIONS" />
+			<arg value="SIMPLE_OPTIMIZATIONS" />
             <arg value="--warning_level" />
             <arg value="QUIET" />
             <arg value="--js_output_file" />
@@ -71,7 +71,7 @@
             <arg line="-jar" />
             <arg path="${GoogleCompiler}" />
 			<arg value="--compilation_level" />
-			<arg value="ADVANCED_OPTIMIZATIONS" />
+			<arg value="SIMPLE_OPTIMIZATIONS" />
             <arg value="--warning_level" />
             <arg value="QUIET" />
             <arg value="--js_output_file" />
