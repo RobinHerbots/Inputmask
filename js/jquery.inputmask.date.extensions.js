@@ -472,6 +472,13 @@ Optional extensions on the jquery.inputmask base
         },
         'date': {
             alias: "dd/mm/yyyy" // "mm/dd/yyyy"
+        },
+        'mm/yyyy': {
+            mask: "1/y",
+            placeholder: "mm/yyyy",
+            leapday: "donotuse",
+            separator: '/',
+            alias: "mm/dd/yyyy"
         }
     });
 })(jQuery);

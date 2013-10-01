@@ -3,7 +3,7 @@
  http://github.com/RobinHerbots/jquery.inputmask
  Copyright (c) 2010 - 2013 Robin Herbots
  Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
- Version: 2.3.49
+ Version: 2.3.50
 */
 (function(b){void 0===b.j.g&&(b.g={r:{placeholder:"_",f:{start:"[",end:"]"},Ua:{start:"{",end:"}"},Ia:{start:"(",end:")"},v:"\\",e:null,oncomplete:b.o,Sa:b.o,Ra:b.o,repeat:0,w:!0,p:!1,L:!0,Q:!0,Ea:!1,J:{},Pa:b.o,Oa:b.o,Ya:!0,Za:!0,Qa:b.o,U:" ",T:!1,l:!1,B:!1,Va:"",$a:!1,G:!0,u:{9:{m:"[0-9]",h:1},a:{m:"[A-Za-z\u0410-\u044f\u0401\u0451]",h:1},"*":{m:"[A-Za-z\u0410-\u044f\u0401\u04510-9]",h:1}},keyCode:{W:18,X:8,Y:20,Z:188,$:91,aa:91,ba:93,ca:17,da:46,ea:40,fa:35,ga:13,ha:27,ia:36,ja:45,ka:37,la:93,
 ma:107,na:110,oa:111,pa:108,qa:106,ra:109,sa:34,ta:33,ua:190,va:39,wa:16,xa:32,ya:9,za:38,Aa:91},Ka:[8,9,13,19,27,33,34,35,36,37,38,39,40,45,46,93,112,113,114,115,116,117,118,119,120,121,122,123],N:function(b,D,E,C){var t=b.length;D||("*"==E?t=C.length+1:1<E&&(t+=b.length*(E-1)));return t}},M:function(b){return b.replace(RegExp("(\\/|\\.|\\*|\\+|\\?|\\||\\(|\\)|\\[|\\]|\\{|\\}|\\\\)","gim"),"\\$1")}},b.j.g=function(v,D){function E(b){var c=document.createElement("input");b="on"+b;var d=b in c;d||
