@@ -810,6 +810,7 @@
                         if (typeof (ms) == "object") {
                             ms["buffer"] = ms["_buffer"].slice();
                             ms["lastValidPosition"] = -1;
+                            ms["p"] = -1;
                         }
                     });
                     if (strict !== true) activeMasksetIndex = 0;
