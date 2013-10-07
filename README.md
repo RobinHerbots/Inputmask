@@ -659,6 +659,18 @@ $(document).ready(function(){
 });
 ```
 
+## phone extensions
+Uses the phone mask definitions from https://github.com/andr-04/inputmask-multi
+
+```javascript
+ $(selector).inputmask("phone", {
+                url: "Scripts/jquery.inputmask/phone-codes/phone-codes.json", 
+                onKeyValidation: function () { //show some metadata in the console
+                    console.log($(this).inputmask("getmetadata")["name_en"]);
+                } 
+  });
+```
+
 ## other extensions
 
 An ip adress alias for entering valid ip-addresses.
