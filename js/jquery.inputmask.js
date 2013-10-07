@@ -829,7 +829,7 @@
                         }
                     });
 
-                    if (strict === true) {
+                    if (strict === true && getActiveMaskSet()["p"] != -1) {
                         getActiveMaskSet()["lastValidPosition"] = seekPrevious(getActiveMaskSet()["p"]);
                     }
                 }
@@ -1439,7 +1439,7 @@
                             determineActiveMasksetIndex();
                             writeBuffer(input, getActiveBuffer(), getActiveMaskSet()["p"]);
                             if (input._valueGet() == getActiveBufferTemplate().join(''))
-                               $input.trigger('cleared');
+                                $input.trigger('cleared');
 
                             if (opts.showTooltip) { //update tooltip
                                 $input.prop("title", getActiveMaskSet()["mask"]);

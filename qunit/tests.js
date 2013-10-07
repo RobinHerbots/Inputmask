@@ -628,6 +628,18 @@ test("inputmask(\"9[9][9] 999[9] 9999\") - input 123123 space 1234 - vipink70", 
     $("#testmask").remove();
 });
 
+test("inputmask({ mask: ['9 AAA-AAA', 'A 999-999'] }) ", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: ['9 AAA-AAA', 'A 999-999'] });
+
+    $("#testmask").Type("1abc");
+    caret($("#testmask"), 0, 9);
+    $("#testmask").Type("a123");
+    equal($("#testmask").val(), "A 123-___", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
 module("Date.Extensions");
 test("inputmask(\"dd/mm/yyyy\") - input 2331973", function () {
     $('body').append('<input type="text" id="testmask" />');
