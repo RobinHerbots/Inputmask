@@ -379,6 +379,22 @@ test("inputmask(\"decimal\") ~ value=\"123.45\"", function () {
     $("#testmask").remove();
 });
 
+test("inputmask(\"decimal\") ~ value=\"123.45\" - disabled input", function () {
+    $('body').append('<input type="text" id="testmask" value="123.45" disabled="disabled" />');
+    $("#testmask").inputmask("decimal");
+    equal($("#testmask").val(), "123.45", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"mm/yyyy\") ~ value=\"031973\" - disabled input", function () {
+    $('body').append('<input type="text" id="testmask" value="031973" disabled="disabled" />');
+    $("#testmask").inputmask("mm/yyyy");
+    equal($("#testmask").val(), "03/1973", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
 module("Set value with fn.val");
 test("inputmask(\"decimal\") ~ value=\"123.45\"", function () {
     $('body').append('<input type="text" id="testmask" />');
