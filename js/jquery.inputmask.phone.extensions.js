@@ -5,7 +5,7 @@ Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
 Version: 0.0.0
 
-Phone extension based on https://github.com/andr-04/inputmask-multi
+Phone extension.
 When using this extension make sure you specify the correct url to get the masks
 
  $(selector).inputmask("phone", {
