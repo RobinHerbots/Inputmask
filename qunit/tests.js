@@ -423,6 +423,24 @@ test("inputmask(\"9\") ~ value=\"1\"", function () {
     $("#testmask").remove();
 });
 
+test("inputmask(\"decimal\") ~ .val(\"123.45\") - disabled input", function () {
+    $('body').append('<input type="text" id="testmask" disabled="disabled" />');
+    $("#testmask").inputmask("decimal");
+    $("#testmask").val("123.45");
+    equal($("#testmask").val(), "123.45", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"mm/yyyy\") ~ .val(\"031973\") - disabled input", function () {
+    $('body').append('<input type="text" id="testmask" disabled="disabled" />');
+    $("#testmask").inputmask("mm/yyyy");
+    $("#testmask").val("031973");
+    equal($("#testmask").val(), "03/1973", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
 module("Optional & multi masks");
 test("inputmask(\"(99) 9999[9]-99999\") - input 121234-12345", function () {
     $('body').append('<input type="text" id="testmask" />');
