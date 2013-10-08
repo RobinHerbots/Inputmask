@@ -1077,7 +1077,7 @@
                     }).bind("mouseleave.inputmask", function () {
                         var $input = $(this), input = this;
                         if (opts.clearMaskOnLostFocus) {
-                            if (!$input.hasClass('focus.inputmask')) {
+                            if (!$input.hasClass('focus.inputmask') && input._valueGet() != $input.attr("placeholder")) {
                                 if (input._valueGet() == getActiveBufferTemplate().join('') || input._valueGet() == '')
                                     input._valueSet('');
                                 else { //clearout optional tail of the mask
