@@ -1662,11 +1662,16 @@
                         var currentCaret = caret(input);
                         opts.onKeyUp.call(this, e, buffer, opts); //extra stuff to execute on keyup
                         caret(input, currentCaret.begin, currentCaret.end);
-                        if (k == opts.keyCode.TAB && $input.hasClass('focus.inputmask') && input._valueGet().length == 0 && opts.showMaskOnFocus) {
-                            buffer = getActiveBufferTemplate().slice();
-                            writeBuffer(input, buffer);
-                            caret(input, 0);
-                            valueOnFocus = getActiveBuffer().join('');
+                        if (k == opts.keyCode.TAB && opts.showMaskOnFocus) {
+                            if ($input.hasClass('focus.inputmask') && input._valueGet().length == 0) {
+                                buffer = getActiveBufferTemplate().slice();
+                                writeBuffer(input, buffer);
+                                caret(input, 0);
+                                valueOnFocus = getActiveBuffer().join('');
+                            } else {
+                                writeBuffer(input, buffer);
+                                caret(input, 0, getMaskLength());
+                            }
                         }
                     }
                 };
