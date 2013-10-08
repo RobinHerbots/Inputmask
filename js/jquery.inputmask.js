@@ -1551,7 +1551,7 @@
 
                                 var radixPosition = getActiveBuffer().join('').indexOf(opts.radixPoint);
                                 if (opts.isNumeric && checkval !== true && radixPosition != -1) {
-                                    if (pos.begin <= radixPosition) {
+                                    if (opts.greedy && pos.begin <= radixPosition) {
                                         pos.begin = seekPrevious(pos.begin);
                                         pos.end = pos.begin;
                                     } else if (c == opts.radixPoint) {
