@@ -1053,6 +1053,18 @@ test("inputmask(\"decimal\") - value=\"1234567890\"", function () {
     $("#testmask").remove();
 });
 
+test("inputmask(\"decimal\") - value=\"123.1\" tab out", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("decimal", { digits: 3 });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123.1");
+    $("#testmask").SendKey(keyCodes.TAB);
+
+    equal($("#testmask").val(), "123.100", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
 module("Direction RTL");
 test("inputmask(\"999.999.999\") - delete 2nd with backspace, continue the mask", function () {
     $('body').append('<input type="text" id="testmask" dir="rtl" />');
@@ -1225,7 +1237,7 @@ asyncTest("inputmask({ mask: \"€ 999.999.999,99\", { numericInput: true, radix
     $("#testmask").click();
     setTimeout(function () {
         $("#testmask").Type("123");
-        
+
         equal($("#testmask").val(), "€ ___.___.123,__", "Result " + $("#testmask").val());
         start();
         $("#testmask").remove();
@@ -1239,7 +1251,7 @@ asyncTest("inputmask({ mask: \"€ 999.999.999,99\", { numericInput: true, radix
     $("#testmask").click();
     setTimeout(function () {
         $("#testmask").Type("123,45");
-        
+
         equal($("#testmask").val(), "€ ___.___.123,45", "Result " + $("#testmask").val());
         start();
         $("#testmask").remove();

@@ -1454,6 +1454,7 @@
                             caret(input, 0, e.shiftKey ? pos.begin : 0);
                         } else if (k == opts.keyCode.ESCAPE) { //escape
                             checkVal(input, true, true, valueOnFocus);
+                            $input.click();
                         } else if (k == opts.keyCode.INSERT && !(e.shiftKey || e.ctrlKey)) { //insert
                             opts.insertMode = !opts.insertMode;
                             caret(input, !opts.insertMode && pos.begin == getMaskLength() ? pos.begin - 1 : pos.begin);

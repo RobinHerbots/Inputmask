@@ -88,7 +88,7 @@ Optional extensions on the jquery.inputmask base
                         var masksets = $input.data('_inputmask')['masksets'];
                         var activeMasksetIndex = $input.data('_inputmask')['activeMasksetIndex'];
                         for (var i = 1; i <= opts.digits && i < opts.getMaskLength(masksets[activeMasksetIndex]["_buffer"], masksets[activeMasksetIndex]["greedy"], masksets[activeMasksetIndex]["repeat"], buffer, opts) ; i++) {
-                            if (buffer[radixPosition + i] == undefined) buffer[radixPosition + i] = "0";
+                            if (buffer[radixPosition + i] == undefined || buffer[radixPosition + i] == "") buffer[radixPosition + i] = "0";
                         }
                         input._valueSet(buffer.join(''));
                     }
@@ -114,7 +114,7 @@ Optional extensions on the jquery.inputmask base
                         //strip groupseparator
                         var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
                         bufferStr = bufferStr.replace(new RegExp(escapedGroupSeparator, "g"), '');
-                        
+
                         var isValid = opts.regex.number(opts).test(bufferStr);
                         if (!isValid) {
                             //let's help the regex a bit
