@@ -17,13 +17,20 @@ Optional extensions on the jquery.inputmask base
             greedy: false,
             numericInput: false,
             isNumeric: true,
-            digits: "*", //numer of digits
+            digits: "*", //number of fractionalDigits
             groupSeparator: "",//",", // | "."
             radixPoint: ".",
             groupSize: 3,
             autoGroup: false,
             allowPlus: true,
             allowMinus: true,
+            //todo
+            integerDigits: "*", //number of integerDigits
+            defaultValue: "",
+            prefix: "",
+            suffix: "",
+            
+            //todo
             getMaskLength: function (buffer, greedy, repeat, currentBuffer, opts) { //custom getMaskLength to take the groupSeparator into account
                 var calculatedLength = buffer.length;
 
