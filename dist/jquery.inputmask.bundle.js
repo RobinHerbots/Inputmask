@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.3.58
+* Version: 2.3.59
 */
 
 (function ($) {
@@ -1686,7 +1686,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.58
+Version: 2.3.59
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1788,7 +1788,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.58
+Version: 2.3.59
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2272,7 +2272,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.58
+Version: 2.3.59
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2448,7 +2448,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.58
+Version: 2.3.59
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2618,7 +2618,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.58
+Version: 2.3.59
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
@@ -2632,34 +2632,34 @@ When using this extension make sure you specify the correct url to get the masks
 
 
 */
-$.extend($.inputmask.defaults.aliases, {
-    'phone': {
-        url: "phone-codes/phone-codes.json",
-        mask: function (opts) {
-            opts.definitions = {
-                'p': {
-                    validator: function () { return false; },
-                    cardinality: 1
-                },
-                '#': {
-                    validator: "[0-9]",
-                    cardinality: 1
-                }
-            };
-            var maskList = [];
-            $.ajax({
-                url: opts.url,
-                async: false,
-                dataType: 'json',
-                success: function (response) {
-                    maskList = response;
-                }
-            });
-
-            maskList.splice(0, 0, "+p(ppp)ppp-pppp");
-            return maskList;
+(function ($) {
+    $.extend($.inputmask.defaults.aliases, {
+        'phone': {
+            url: "phone-codes/phone-codes.json",
+            mask: function (opts) {
+                opts.definitions = {
+                    'p': {
+                        validator: function () { return false; },
+                        cardinality: 1
+                    },
+                    '#': {
+                        validator: "[0-9]",
+                        cardinality: 1
+                    }
+                };
+                var maskList = [];
+                $.ajax({
+                    url: opts.url,
+                    async: false,
+                    dataType: 'json',
+                    success: function (response) {
+                        maskList = response;
+                    }
+                });
+    
+                maskList.splice(0, 0, "+p(ppp)ppp-pppp");
+                return maskList;
+            }
         }
-    }
-});
-
-
+    });
+})(jQuery);
