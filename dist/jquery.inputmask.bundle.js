@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.3.57
+* Version: 2.3.58
 */
 
 (function ($) {
@@ -1686,7 +1686,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.57
+Version: 2.3.58
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1788,7 +1788,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.57
+Version: 2.3.58
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2272,7 +2272,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.57
+Version: 2.3.58
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2286,13 +2286,20 @@ Optional extensions on the jquery.inputmask base
             greedy: false,
             numericInput: false,
             isNumeric: true,
-            digits: "*", //numer of digits
+            digits: "*", //number of fractionalDigits
             groupSeparator: "",//",", // | "."
             radixPoint: ".",
             groupSize: 3,
             autoGroup: false,
             allowPlus: true,
             allowMinus: true,
+            //todo
+            integerDigits: "*", //number of integerDigits
+            defaultValue: "",
+            prefix: "",
+            suffix: "",
+            
+            //todo
             getMaskLength: function (buffer, greedy, repeat, currentBuffer, opts) { //custom getMaskLength to take the groupSeparator into account
                 var calculatedLength = buffer.length;
 
@@ -2441,7 +2448,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.57
+Version: 2.3.58
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2606,12 +2613,12 @@ Allows for using regular expressions as a mask
         }
     });
 })(jQuery);
-﻿/*
+/*
 Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.57
+Version: 2.3.58
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
