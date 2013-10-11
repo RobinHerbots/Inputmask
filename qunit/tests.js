@@ -151,8 +151,8 @@ asyncTest("inputmask(\"9-AAA.999\") - change event", 1, function () {
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("9-AAA.999").change(function () {
         ok(true, "Change triggered");
-        $("#testmask").remove();
         start();
+        $("#testmask").remove();
     });
 
     $("#testmask")[0].focus();
