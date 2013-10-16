@@ -1507,6 +1507,29 @@ test("inputmask('Regex', { regex: \"(abc)+(def)\" }); - Flyarbonkers regex abcab
     $("#testmask").remove();
 });
 
+module("Phone masks")
+asyncTest("inputmask(\"phone\") - value=\"+32(473)890-428\"", 1, function () {
+    $('body').append('<input type="text" id="testmask" value="+32(473)890-428" />');
+    $("#testmask").inputmask("phone", { "url": "../js/phone-codes/phone-codes.json" });
+
+    setTimeout(function () {
+        equal($("#testmask").val(), "+32(473)890-428", "Result " + $("#testmask").val());
+        start();
+        $("#testmask").remove();
+    }, 0);
+});
+
+asyncTest("inputmask(\"phone\") - value=\"32473890428\"", 1, function () {
+    $('body').append('<input type="text" id="testmask" value="32473890428" />');
+    $("#testmask").inputmask("phone", { "url": "../js/phone-codes/phone-codes.json" });
+
+    setTimeout(function () {
+        equal($("#testmask").val(), "+32(473)890-428", "Result " + $("#testmask").val());
+        start();
+        $("#testmask").remove();
+    }, 0);
+});
+
 module("Dynamic Masks");
 test("inputmask(\"*{1,20}@*{1,20}.*{2,6}[.*{2}]\" - email mask", function () {
     $('body').append('<input type="text" id="testmask" />');

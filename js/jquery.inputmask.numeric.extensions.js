@@ -102,6 +102,7 @@ Optional extensions on the jquery.inputmask base
                 } else if (e.keyCode == opts.keyCode.DELETE || e.keyCode == opts.keyCode.BACKSPACE) {
                     opts.postFormat(buffer, 0, true, opts);
                     input._valueSet(buffer.join(''));
+                    return true;
                 }
             },
             definitions: {
