@@ -23,6 +23,9 @@ Highlights:
 
 Demo page see http://robinherbots.github.io/jquery.inputmask
 
+[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZNR3EB6JTMMSS)
+
+
 ## Usage:
 
 Include the js-files which you can find in the dist-folder. You have the bundled file which contains the main plugin code and also all extensions. (date, numerics, other) or if you prefer to only include some parts, use the separate js-files in the dist/min folder.
