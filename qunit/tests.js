@@ -1510,7 +1510,7 @@ test("inputmask('Regex', { regex: \"(abc)+(def)\" }); - Flyarbonkers regex abcab
 module("Phone masks")
 asyncTest("inputmask(\"phone\") - value=\"+32(473)890-428\"", 1, function () {
     $('body').append('<input type="text" id="testmask" value="+32(473)890-428" />');
-    $("#testmask").inputmask("phone", { "url": "../js/phone-codes/phone-codes.json" });
+    $("#testmask").inputmask("phone", { "url": "http://rawgithub.com/RobinHerbots/jquery.inputmask/2.x/js/phone-codes/phone-codes.json" });
 
     setTimeout(function () {
         equal($("#testmask").val(), "+32(473)890-428", "Result " + $("#testmask").val());
@@ -1521,7 +1521,7 @@ asyncTest("inputmask(\"phone\") - value=\"+32(473)890-428\"", 1, function () {
 
 asyncTest("inputmask(\"phone\") - value=\"32473890428\"", 1, function () {
     $('body').append('<input type="text" id="testmask" value="32473890428" />');
-    $("#testmask").inputmask("phone", { "url": "../js/phone-codes/phone-codes.json" });
+    $("#testmask").inputmask("phone", { "url": "http://rawgithub.com/RobinHerbots/jquery.inputmask/2.x/js/phone-codes/phone-codes.json" });
 
     setTimeout(function () {
         equal($("#testmask").val(), "+32(473)890-428", "Result " + $("#testmask").val());
