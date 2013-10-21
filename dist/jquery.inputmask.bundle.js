@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.3.61
+* Version: 2.3.62
 */
 
 (function ($) {
@@ -1267,9 +1267,9 @@
                     }
 
                     //shift chars to left from start to end and put c at end position if defined
-                    function shiftL(start, end, c, nomaskJumps) {
+                    function shiftL(start, end, c, maskJumps) {
                         var buffer = getActiveBuffer();
-                        if (nomaskJumps !== false) //jumping over nonmask position
+                        if (maskJumps !== false) //jumping over nonmask position
                             while (!isMask(start) && start - 1 >= 0) start--;
                         for (var i = start; i < end && i < getMaskLength() ; i++) {
                             if (isMask(i)) {
@@ -1339,9 +1339,66 @@
                             if (buffer.length == 0) getActiveMaskSet()["buffer"] = getActiveBufferTemplate().slice();
                         }
                         return end - (lengthBefore - buffer.length); //return new start position
-                    }
+                    };
 
-                    ;
+
+                    function HandleRemove(input, k, pos) {
+                        if (opts.numericInput || isRTL) {
+                            switch (k) {
+                                case opts.keyCode.BACKSPACE:
+                                    k = opts.keyCode.DELETE;
+                                    break;
+                                case opts.keyCode.DELETE:
+                                    k = opts.keyCode.BACKSPACE;
+                                    break;
+                            }
+                            if (isRTL) {
+                                var pend = pos.end;
+                                pos.end = pos.begin;
+                                pos.begin = pend;
+                            }
+                        }
+
+                        var isSelection = true;
+                        if (pos.begin == pos.end) {
+                            var posBegin = k == opts.keyCode.BACKSPACE ? pos.begin - 1 : pos.begin;
+                            if (opts.isNumeric && opts.radixPoint != "" && getActiveBuffer()[posBegin] == opts.radixPoint) {
+                                pos.begin = (getActiveBuffer().length - 1 == posBegin) /* radixPoint is latest? delete it */ ? pos.begin : k == opts.keyCode.BACKSPACE ? posBegin : seekNext(posBegin);
+                                pos.end = pos.begin;
+                            }
+                            isSelection = false;
+                            if (k == opts.keyCode.BACKSPACE)
+                                pos.begin--;
+                            else if (k == opts.keyCode.DELETE)
+                                pos.end++;
+                        } else if (pos.end - pos.begin == 1 && !opts.insertMode) {
+                            isSelection = false;
+                            if (k == opts.keyCode.BACKSPACE)
+                                pos.begin--;
+                        }
+
+                        clearBuffer(getActiveBuffer(), pos.begin, pos.end);
+
+                        var ml = getMaskLength();
+                        if (opts.greedy == false) {
+                            shiftL(pos.begin, ml, undefined, !isRTL && (k == opts.keyCode.BACKSPACE && !isSelection));
+                        } else {
+                            var newpos = pos.begin;
+                            for (var i = pos.begin; i < pos.end; i++) { //seeknext to skip placeholders at start in selection
+                                if (isMask(i) || !isSelection)
+                                    newpos = shiftL(pos.begin, ml, undefined, !isRTL && (k == opts.keyCode.BACKSPACE && !isSelection));
+                            }
+                            if (!isSelection) pos.begin = newpos;
+                        }
+                        var firstMaskPos = seekNext(-1);
+                        checkVal(input, false, true, getActiveBuffer());
+                        if (getActiveMaskSet()['lastValidPosition'] < firstMaskPos) {
+                            getActiveMaskSet()["lastValidPosition"] = -1;
+                            getActiveMaskSet()["p"] = firstMaskPos;
+                        } else {
+                            getActiveMaskSet()["p"] = pos.begin;
+                        }
+                    }
 
                     function keydownEvent(e) {
                         //Safari 5.1.x - modal dialog fires keypress twice workaround
@@ -1351,61 +1408,7 @@
                         //backspace, delete, and escape get special treatment
                         if (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE || (iphone && k == 127) || (e.ctrlKey && k == 88)) { //backspace/delete
                             e.preventDefault(); //stop default action but allow propagation
-
-                            if (opts.numericInput || isRTL) {
-                                switch (k) {
-                                    case opts.keyCode.BACKSPACE:
-                                        k = opts.keyCode.DELETE;
-                                        break;
-                                    case opts.keyCode.DELETE:
-                                        k = opts.keyCode.BACKSPACE;
-                                        break;
-                                }
-                                if (isRTL) {
-                                    var pend = pos.end;
-                                    pos.end = pos.begin;
-                                    pos.begin = pend;
-                                }
-                            }
-
-                            var isSelection = true;
-                            if (pos.begin == pos.end) {
-                                var posBegin = k == opts.keyCode.BACKSPACE ? pos.begin - 1 : pos.begin;
-                                if (opts.isNumeric && opts.radixPoint != "" && getActiveBuffer()[posBegin] == opts.radixPoint) {
-                                    pos.begin = (getActiveBuffer().length - 1 == posBegin) /* radixPoint is latest? delete it */ ? pos.begin : k == opts.keyCode.BACKSPACE ? posBegin : seekNext(posBegin);
-                                    pos.end = pos.begin;
-                                }
-                                isSelection = false;
-                                if (k == opts.keyCode.BACKSPACE)
-                                    pos.begin--;
-                                else if (k == opts.keyCode.DELETE)
-                                    pos.end++;
-                            } else if (pos.end - pos.begin == 1 && !opts.insertMode) {
-                                isSelection = false;
-                                if (k == opts.keyCode.BACKSPACE)
-                                    pos.begin--;
-                            }
-
-                            clearBuffer(getActiveBuffer(), pos.begin, pos.end);
-
-                            var ml = getMaskLength();
-                            if (opts.greedy == false) {
-                                shiftL(pos.begin, ml);
-                            } else {
-                                var newpos = pos.begin;
-                                for (var i = isSelection ? seekNext(pos.begin - 1) : pos.begin; i < pos.end; i++) { //seeknext to skip placeholders at start in selection
-                                    newpos = shiftL(pos.begin, ml, undefined, !isRTL && k == opts.keyCode.DELETE);
-                                }
-                                if (!isSelection) pos.begin = newpos;
-                            }
-                            var firstMaskPos = seekNext(-1);
-                            checkVal(input, false, true, getActiveBuffer());
-                            if (getActiveMaskSet()['lastValidPosition'] < firstMaskPos) {
-                                getActiveMaskSet()["lastValidPosition"] = -1;
-                                getActiveMaskSet()["p"] = firstMaskPos;
-                            } else {
-                                getActiveMaskSet()["p"] = pos.begin;
-                            }
+                            HandleRemove(input, k, pos);
                             determineActiveMasksetIndex();
                             writeBuffer(input, getActiveBuffer(), getActiveMaskSet()["p"]);
                             if (input._valueGet() == getActiveBufferTemplate().join(''))
@@ -1478,45 +1481,16 @@
                                 var isSlctn = isSelection(pos.begin, pos.end), redetermineLVP = false,
                                     initialIndex = activeMasksetIndex;
                                 if (isSlctn) {
-                                    if (isRTL) {
-                                        var pend = pos.end;
-                                        pos.end = pos.begin;
-                                        pos.begin = pend;
-                                    }
-                                    $.each(masksets, function (ndx, lmnt) {
-                                        if (typeof (lmnt) == "object") {
-                                            activeMasksetIndex = ndx;
-                                            getActiveMaskSet()["undoBuffer"] = getActiveBuffer().join(''); //init undobuffer for recovery when not valid
-                                            var posend = pos.end < getMaskLength() ? pos.end : getMaskLength();
-                                            if (getActiveMaskSet()["lastValidPosition"] > pos.begin && getActiveMaskSet()["lastValidPosition"] < posend) {
-                                                getActiveMaskSet()["lastValidPosition"] = seekPrevious(pos.begin);
-                                            } else {
-                                                redetermineLVP = true;
+                                    activeMasksetIndex = initialIndex;
+                                    HandleRemove(input, opts.keyCode.DELETE, pos);
+                                    if (!opts.insertMode) { //preserve some space
+                                        $.each(masksets, function (ndx, lmnt) {
+                                            if (typeof (lmnt) == "object") {
+                                                activeMasksetIndex = ndx;
+                                                shiftR(pos.begin, getMaskLength(), getPlaceHolder(pos.begin), true);
+                                                getActiveMaskSet()["lastValidPosition"] = seekNext(getActiveMaskSet()["lastValidPosition"]);
                                             }
-                                            clearBuffer(getActiveBuffer(), pos.begin, posend);
-                                            var ml = getMaskLength();
-                                            if (opts.greedy == false) {
-                                                shiftL(pos.begin, ml);
-                                            } else {
-                                                for (var i = pos.begin; i < posend; i++) {
-                                                    if (isMask(i))
-                                                        shiftL(pos.begin, ml);
-                                                }
-                                            }
-                                        }
-                                    });
-                                    if (redetermineLVP === true) {
-                                        activeMasksetIndex = initialIndex;
-                                        checkVal(input, false, true, getActiveBuffer());
-                                        if (!opts.insertMode) { //preserve some space
-                                            $.each(masksets, function (ndx, lmnt) {
-                                                if (typeof (lmnt) == "object") {
-                                                    activeMasksetIndex = ndx;
-                                                    shiftR(pos.begin, getMaskLength(), getPlaceHolder(pos.begin), true);
-                                                    getActiveMaskSet()["lastValidPosition"] = seekNext(getActiveMaskSet()["lastValidPosition"]);
-                                                }
-                                            });
-                                        }
+                                        });
                                     }
                                     activeMasksetIndex = initialIndex; //restore index
                                 }
@@ -1656,7 +1630,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.61
+Version: 2.3.62
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1758,7 +1732,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.61
+Version: 2.3.62
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2242,7 +2216,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.61
+Version: 2.3.62
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2419,7 +2393,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.61
+Version: 2.3.62
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2589,7 +2563,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.61
+Version: 2.3.62
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
