@@ -116,10 +116,7 @@ test("inputmask(\"999.999.999\")", function () {
 
     $("#testmask")[0].focus();
 
-    $("#testmask").SendKey(49);
-    $("#testmask").SendKey(50);
-    $("#testmask").SendKey(51);
-
+    $("#testmask").Type("123");
     equal($("#testmask").val(), "123.___.___", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
@@ -136,15 +133,7 @@ asyncTest("inputmask(\"999.999.999\", { oncomplete: ... })", 1, function () {
     });
 
     $("#testmask")[0].focus();
-    $("#testmask").SendKey(49);
-    $("#testmask").SendKey(50);
-    $("#testmask").SendKey(51);
-    $("#testmask").SendKey(52);
-    $("#testmask").SendKey(53);
-    $("#testmask").SendKey(54);
-    $("#testmask").SendKey(55);
-    $("#testmask").SendKey(56);
-    $("#testmask").SendKey(57);
+    $("#testmask").Type("123456789");
 });
 
 asyncTest("inputmask(\"9-AAA.999\") - change event", 1, function () {
@@ -172,13 +161,7 @@ asyncTest("inputmask(\"9-AAA.999\", { onincomplete: ... })", 1, function () {
     });
 
     $("#testmask")[0].focus();
-    $("#testmask").SendKey(49);
-    $("#testmask").SendKey(65);
-    $("#testmask").SendKey(66);
-    $("#testmask").SendKey(67);
-    $("#testmask").SendKey(49);
-    $("#testmask").SendKey(50);
-
+    $("#testmask").Type("1abc12");
     $("#testmask").blur();
 });
 
@@ -188,16 +171,13 @@ test("inputmask(\"999.999.999\") - delete 2nd with backspace, continue the mask"
 
     $("#testmask")[0].focus();
 
-    $("#testmask").SendKey(49);
-    $("#testmask").SendKey(50);
-    $("#testmask").SendKey(51);
+    $("#testmask").Type("123");
     $("#testmask").SendKey(keyCodes.LEFT);
     $("#testmask").SendKey(keyCodes.LEFT);
     $("#testmask").SendKey(keyCodes.BACKSPACE);
-    $("#testmask").SendKey(52);
+    $("#testmask").Type("4");
     $("#testmask").SendKey(keyCodes.RIGHT);
-    $("#testmask").SendKey(53);
-    $("#testmask").SendKey(54);
+    $("#testmask").Type("56");
 
     equal($("#testmask").val(), "143.56_.___", "Result " + $("#testmask").val());
 
@@ -227,7 +207,50 @@ test("inputmask(\"999.999.999\") - delete 2nd with delete, continue the mask", f
     $("#testmask").remove();
 });
 
+test("inputmask(\"999.999.999\") - delete selection start with nomask", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("999.999.999");
 
+    $("#testmask")[0].focus();
+
+    $("#testmask").Type("123456789");
+    caret($("#testmask"), 3, 7);
+    $("#testmask").SendKey(keyCodes.DELETE);
+
+    equal($("#testmask").val(), "123.789.___", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"999.999.999\") - backspace selection start with nomask", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("999.999.999");
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").Type("123456789");
+    caret($("#testmask"), 3, 7);
+    $("#testmask").SendKey(keyCodes.DELETE);
+
+    equal($("#testmask").val(), "123.789.___", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"999.999.999\") - overtype selection start with nomask", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("999.999.999");
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").Type("123456789");
+    caret($("#testmask"), 3, 7);
+    $("#testmask").Type("1");
+
+    equal($("#testmask").val(), "123.178.9__", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
 
 test("inputmask(\"*****\")", function () {
     $('body').append('<input type="text" id="testmask" />');
@@ -1525,6 +1548,46 @@ asyncTest("inputmask(\"phone\") - value=\"32473890428\"", 1, function () {
 
     setTimeout(function () {
         equal($("#testmask").val(), "+32(473)890-428", "Result " + $("#testmask").val());
+        start();
+        $("#testmask").remove();
+    }, 0);
+});
+
+asyncTest("inputmask(\"phone\") - Brazil new", 1, function () {
+    $('body').append('<input type="text" id="testmask" value="5512123451234" />');
+    $("#testmask").inputmask("phone", { "url": "http://rawgithub.com/RobinHerbots/jquery.inputmask/2.x/js/phone-codes/phone-codes.json" });
+
+    setTimeout(function () {
+        equal($("#testmask").val(), "+55-12-12345-1234", "Result " + $("#testmask").val());
+        start();
+        $("#testmask").remove();
+    }, 0);
+});
+
+asyncTest("inputmask(\"phone\") - Brazil old", 1, function () {
+    $('body').append('<input type="text" id="testmask" value="55121234-1234" />');
+    $("#testmask").inputmask("phone", { "url": "http://rawgithub.com/RobinHerbots/jquery.inputmask/2.x/js/phone-codes/phone-codes.json" });
+
+    setTimeout(function () {
+        equal($("#testmask").val(), "+55-12-1234-1234", "Result " + $("#testmask").val());
+        start();
+        $("#testmask").remove();
+    }, 0);
+});
+
+asyncTest("inputmask(\"phone\") - Brazil switch", 1, function () {
+    $('body').append('<input type="text" id="testmask" value="55121234-1234" />');
+    $("#testmask").inputmask("phone", { "url": "http://rawgithub.com/RobinHerbots/jquery.inputmask/2.x/js/phone-codes/phone-codes.json" });
+
+    setTimeout(function () {
+        
+        $("#testmask").SendKey(keyCodes.BACKSPACE);
+        $("#testmask").SendKey(keyCodes.BACKSPACE);
+        $("#testmask").SendKey(keyCodes.BACKSPACE);
+        $("#testmask").SendKey(keyCodes.BACKSPACE);
+        $("#testmask").SendKey(keyCodes.BACKSPACE);
+        $("#testmask").Type("51234");
+        equal($("#testmask").val(), "+55-12-12345-1234", "Result " + $("#testmask").val());
         start();
         $("#testmask").remove();
     }, 0);
