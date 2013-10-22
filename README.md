@@ -5,7 +5,7 @@ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.p
 
 jquery.inputmask is a jquery plugin which create an input mask.
 
-An inputmask helps the user with the input by ensuring a predefined format. This can be usefull for dates, numerics, phone numbers, ...
+An inputmask helps the user with the input by ensuring a predefined format. This can be useful for dates, numerics, phone numbers, ...
 
 Highlights:
 - easy to use
