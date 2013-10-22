@@ -24,6 +24,6 @@
     "docs": "http://github.com/RobinHerbots/jquery.inputmask",
     "download": "http://github.com/RobinHerbots/jquery.inputmask",
     "dependencies": {
-        "jquery": ">=1.5"
+        "jquery": ">=1.7"
     }
 }

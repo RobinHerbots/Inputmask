@@ -3,6 +3,6 @@
     "version": "2.3.62",
     "main": "./dist/jquery.inputmask.bundle.js",
     "dependencies": {
-        "jquery": ">=1.5"
+        "jquery": ">=1.7"
     }
 }
