@@ -790,9 +790,13 @@
 
                 ;
 
-                function clearBuffer(buffer, start, end) {
+                function clearBuffer(buffer, start, end, stripNomasks) {
                     for (var i = start, maskL = getMaskLength() ; i < end && i < maskL; i++) {
-                        setBufferElement(buffer, i, getBufferElement(getActiveBufferTemplate().slice(), i, true));
+                        if (stripNomasks === true) {
+                            if (!isMask(i))
+                                setBufferElement(buffer, i, "");
+                        } else
+                            setBufferElement(buffer, i, getBufferElement(getActiveBufferTemplate().slice(), i, true));
                     }
                 }
 
@@ -1391,7 +1395,8 @@
                             if (!isSelection) pos.begin = newpos;
                         }
                         var firstMaskPos = seekNext(-1);
-                        checkVal(input, false, true, getActiveBuffer());
+                        clearBuffer(getActiveBuffer(), pos.begin, pos.end, true);
+                        checkVal(input, false, false, getActiveBuffer());
                         if (getActiveMaskSet()['lastValidPosition'] < firstMaskPos) {
                             getActiveMaskSet()["lastValidPosition"] = -1;
                             getActiveMaskSet()["p"] = firstMaskPos;

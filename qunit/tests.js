@@ -1585,8 +1585,8 @@ asyncTest("inputmask(\"phone\") - Brazil switch", 1, function () {
         $("#testmask").SendKey(keyCodes.BACKSPACE);
         $("#testmask").SendKey(keyCodes.BACKSPACE);
         $("#testmask").SendKey(keyCodes.BACKSPACE);
-        $("#testmask").SendKey(keyCodes.BACKSPACE);
-        $("#testmask").Type("51234");
+		$("#testmask").SendKey(keyCodes.BACKSPACE);
+        $("#testmask").Type("451234");
         equal($("#testmask").val(), "+55-12-12345-1234", "Result " + $("#testmask").val());
         start();
         $("#testmask").remove();
