@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.3.63
+* Version: 2.3.64
 */
 
 (function ($) {
@@ -246,7 +246,7 @@
                 }
                 var escaped = false, outCount = 0, greedy = opts.greedy, repeat = opts.repeat;
                 if (repeat == "*") greedy = false;
-                if (greedy == true && opts.placeholder == "") opts.placeholder = " ";
+                //if (greedy == true && opts.placeholder == "") opts.placeholder = " ";
                 if (mask.length == 1 && greedy == false) { opts.placeholder = ""; } //hide placeholder with single non-greedy mask
                 var singleMask = $.map(mask.split(""), function (element, index) {
                     var outElem = [];
@@ -663,8 +663,8 @@
                                         var newValidPosition = result.pos || maskPos;
                                         if (getActiveMaskSet()['lastValidPosition'] < newValidPosition)
                                             getActiveMaskSet()['lastValidPosition'] = newValidPosition; //set new position from isValid
-                                        //console.log("pos " + pos + " ndx " + activeMasksetIndex + " validate " + getActiveBuffer().join('') + " lv " + getActiveMaskSet()['lastValidPosition']);
                                     }
+                                    //console.log("pos " + pos + " ndx " + activeMasksetIndex + " validate " + getActiveBuffer().join('') + " lv " + getActiveMaskSet()['lastValidPosition']);
                                     results.push({ "activeMasksetIndex": index, "result": result });
                                 }
                             }
@@ -748,7 +748,7 @@
 
                     var test = getActiveTests()[determineTestPosition(position)];
                     var elem = element;
-                    if (elem != undefined) {
+                    if (elem != undefined && test != undefined) {
                         switch (test.casing) {
                             case "upper":
                                 elem = element.toUpperCase();
@@ -824,8 +824,10 @@
                         var lvp = getActiveMaskSet()["lastValidPosition"],
                         pos = lvp == -1 ? ndx : seekNext(lvp);
 
-                        if ($.isArray(opts.mask) || $.inArray(charCode, getActiveBufferTemplate().slice(lvp + 1, pos)) == -1)
+                        if ($.isArray(opts.mask) || $.inArray(charCode, getActiveBufferTemplate().slice(lvp + 1, pos)) == -1) {
+                            //console.log("trigger " + charCode);
                             $(input).trigger("_keypress", [true, charCode.charCodeAt(0), writeOut, strict, ndx]);
+                        }
                     });
 
                     if (strict === true && getActiveMaskSet()["p"] != -1) {
@@ -872,7 +874,7 @@
                 }
 
                 function TranslatePosition(pos) {
-                    if (isRTL && typeof pos == 'number') {
+                    if (isRTL && typeof pos == 'number' && (!opts.greedy || opts.placeholder != "")) {
                         var bffrLght = getActiveBuffer().length;
                         pos = bffrLght - pos;
                     }
@@ -1396,7 +1398,7 @@
                         }
                         var firstMaskPos = seekNext(-1);
                         clearBuffer(getActiveBuffer(), pos.begin, pos.end, true);
-                        checkVal(input, false, false, getActiveBuffer());
+                        checkVal(input, false, masksets[1] == undefined, getActiveBuffer());
                         if (getActiveMaskSet()['lastValidPosition'] < firstMaskPos) {
                             getActiveMaskSet()["lastValidPosition"] = -1;
                             getActiveMaskSet()["p"] = firstMaskPos;
@@ -1635,7 +1637,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.63
+Version: 2.3.64
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1737,7 +1739,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.63
+Version: 2.3.64
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2221,7 +2223,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.63
+Version: 2.3.64
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2398,7 +2400,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.63
+Version: 2.3.64
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2568,7 +2570,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.63
+Version: 2.3.64
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks

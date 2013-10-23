@@ -354,7 +354,7 @@ test("inputmask({ mask: \"9\", repeat: 10, placeholder: \"\", numericInput: true
 
     $("#testmask").Type("12345");
 
-    equal($("#testmask").val(), "     12345", "Result " + $("#testmask").val());
+    equal($("#testmask").val(), "12345", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });
