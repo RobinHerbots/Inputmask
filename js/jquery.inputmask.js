@@ -503,7 +503,7 @@
                     });
                 } else generateMask("", opts.mask.toString());
 
-                //analyseMask(opts.mask);
+                analyseMask(opts.mask);
 
                 return opts.greedy ? ms : ms.sort(function (a, b) { return a["mask"].length - b["mask"].length; });
             }
@@ -888,6 +888,7 @@
                             return;
                         }
                         end = (typeof end == 'number') ? end : begin;
+                        npt.scrollLeft = npt.scrollWidth;
                         if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
                         if (npt.setSelectionRange) {
                             npt.selectionStart = begin;
