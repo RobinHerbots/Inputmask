@@ -1022,12 +1022,9 @@
                             $el.change();
                         }
                     }).bind('reset', function () {
-                        $.each(masksets, function (ndx, ms) {
-                            if (typeof (ms) == "object") {
-                                ms["buffer"] = ms["_buffer"].slice();
-                                ms["lastValidPosition"] = -1;
-                            }
-                        });
+                        setTimeout(function() {
+                            $el.trigger("setvalue");
+                        }, 0);
                     });
                     $el.bind("mouseenter.inputmask", function () {
                         var $input = $(this), input = this;
