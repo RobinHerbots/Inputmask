@@ -1022,7 +1022,7 @@
                             $el.change();
                         }
                     }).bind('reset', function () {
-                        setTimeout(function() {
+                        setTimeout(function () {
                             $el.trigger("setvalue");
                         }, 0);
                     });
@@ -1487,6 +1487,12 @@
                                     initialIndex = activeMasksetIndex;
                                 if (isSlctn) {
                                     activeMasksetIndex = initialIndex;
+                                    $.each(masksets, function (ndx, lmnt) { //init undobuffer for recovery when not valid
+                                        if (typeof (lmnt) == "object") {
+                                            activeMasksetIndex = ndx;
+                                            getActiveMaskSet()["undoBuffer"] = getActiveBuffer().join(''); 
+                                        }
+                                    });
                                     HandleRemove(input, opts.keyCode.DELETE, pos);
                                     if (!opts.insertMode) { //preserve some space
                                         $.each(masksets, function (ndx, lmnt) {
