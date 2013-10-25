@@ -282,6 +282,21 @@ test("inputmask(\"d/m/y\")", function () {
     $("#testmask").remove();
 });
 
+test("inputmask(\"(999)999-9999\") - ruslanfedoseenko mask", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("(999)999-9999");
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").val("9999999999");
+    caret($("#testmask"), 4, 5);
+    $("#testmask").Type("7");
+
+    equal($("#testmask").val(), "(999)999-9999", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
 module("Non-greedy masks");
 test("inputmask(\"*\", { greedy: false, repeat: \"*\" }) - replace cd with 1", function () {
     $('body').append('<input type="text" id="testmask" />');
