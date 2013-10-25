@@ -10,7 +10,7 @@ Optional extensions on the jquery.inputmask base
 (function ($) {
     //extra definitions
     $.extend($.inputmask.defaults.definitions, {
-        'A': { 
+        'A': {
             validator: "[A-Za-z]",
             cardinality: 1,
             casing: "upper" //auto uppercasing
@@ -85,16 +85,36 @@ Optional extensions on the jquery.inputmask base
             insertMode: false,
             autoUnmask: false
         },
-        "ip": {
-            mask: "i.i.i.i",
+        "ip": { //ip-adress mask
+            mask: ["[[x]y]z.[[x]y]z.[[x]y]z.x[yz]", "[[x]y]z.[[x]y]z.[[x]y]z.[[x]y][z]"],
             definitions: {
-                'i': {
-                    validator: "25[0-5]|2[0-4][0-9]|[01][0-9][0-9]",
-                    cardinality: 3,
-                    prevalidator: [
-                                { validator: "[0-2]", cardinality: 1 },
-                                { validator: "2[0-5]|[01][0-9]", cardinality: 2 }
-                    ]
+                'x': {
+                    validator: "[012]",
+                    cardinality: 1,
+                    definitionSymbol: "i"
+                },
+                'y': {
+                    validator: function (chrs, buffer, pos, strict, opts) {
+                        if (pos - 1 > -1 && buffer[pos - 1] != ".")
+                            chrs = buffer[pos - 1] + chrs;
+                        else chrs = "0" + chrs;
+                        return new RegExp("2[0-5]|[01][0-9]").test(chrs);
+                    },
+                    cardinality: 1,
+                    definitionSymbol: "i"
+                },
+                'z': {
+                    validator: function (chrs, buffer, pos, strict, opts) {
+                        if (pos - 1 > -1 && buffer[pos - 1] != ".") {
+                            chrs = buffer[pos - 1] + chrs;
+                            if (pos - 2 > -1 && buffer[pos - 2] != ".") {
+                                chrs = buffer[pos - 2] + chrs;
+                            } else chrs = "0" + chrs;
+                        } else chrs = "00" + chrs;
+                        return new RegExp("25[0-5]|2[0-4][0-9]|[01][0-9][0-9]").test(chrs);
+                    },
+                    cardinality: 1,
+                    definitionSymbol: "i"
                 }
             }
         }
