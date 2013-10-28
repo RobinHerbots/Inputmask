@@ -686,4 +686,7 @@ $(document).ready(function(){
 
 You can find/modify/extend this alias in the jquery.inputmask.extensions.js
 
+##External links
 
+https://github.com/andr-04/inputmask-multi  
+https://github.com/greengerong/green.inputmask4angular
