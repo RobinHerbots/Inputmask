@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.3.68
+* Version: 2.3.69
 */
 
 (function ($) {
@@ -247,7 +247,7 @@
                 var escaped = false, outCount = 0, greedy = opts.greedy, repeat = opts.repeat;
                 if (repeat == "*") greedy = false;
                 //if (greedy == true && opts.placeholder == "") opts.placeholder = " ";
-                if (mask.length == 1 && greedy == false) { opts.placeholder = ""; } //hide placeholder with single non-greedy mask
+                if (mask.length == 1 && greedy == false && repeat != 0) { opts.placeholder = ""; } //hide placeholder with single non-greedy mask
                 var singleMask = $.map(mask.split(""), function (element, index) {
                     var outElem = [];
                     if (element == opts.escapeChar) {
@@ -1411,8 +1411,9 @@
                         var input = this, $input = $(input), k = e.keyCode, pos = caret(input);
 
                         //backspace, delete, and escape get special treatment
-                        if (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE || (iphone && k == 127) || (e.ctrlKey && k == 88)) { //backspace/delete
+                        if (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE || (iphone && k == 127) || e.ctrlKey && k == 88) { //backspace/delete
                             e.preventDefault(); //stop default action but allow propagation
+                            if (k == 88) valueOnFocus = getActiveBuffer().join('');
                             HandleRemove(input, k, pos);
                             determineActiveMasksetIndex();
                             writeBuffer(input, getActiveBuffer(), getActiveMaskSet()["p"]);
@@ -1422,7 +1423,8 @@
                             if (opts.showTooltip) { //update tooltip
                                 $input.prop("title", getActiveMaskSet()["mask"]);
                             }
-                        } else if (k == opts.keyCode.END || k == opts.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
+                        }
+                        else if (k == opts.keyCode.END || k == opts.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
                             setTimeout(function () {
                                 var caretPos = seekNext(getActiveMaskSet()["lastValidPosition"]);
                                 if (!opts.insertMode && caretPos == getMaskLength() && !e.shiftKey) caretPos--;
@@ -1430,8 +1432,8 @@
                             }, 0);
                         } else if ((k == opts.keyCode.HOME && !e.shiftKey) || k == opts.keyCode.PAGE_UP) { //Home or page_up
                             caret(input, 0, e.shiftKey ? pos.begin : 0);
-                        } else if (k == opts.keyCode.ESCAPE) { //escape
-                            checkVal(input, true, true, valueOnFocus);
+                        } else if (k == opts.keyCode.ESCAPE || (k == 90 && e.ctrlKey)) { //escape && undo
+                            checkVal(input, true, false, valueOnFocus);
                             $input.click();
                         } else if (k == opts.keyCode.INSERT && !(e.shiftKey || e.ctrlKey)) { //insert
                             opts.insertMode = !opts.insertMode;
@@ -1490,7 +1492,7 @@
                                     $.each(masksets, function (ndx, lmnt) { //init undobuffer for recovery when not valid
                                         if (typeof (lmnt) == "object") {
                                             activeMasksetIndex = ndx;
-                                            getActiveMaskSet()["undoBuffer"] = getActiveBuffer().join(''); 
+                                            getActiveMaskSet()["undoBuffer"] = getActiveBuffer().join('');
                                         }
                                     });
                                     HandleRemove(input, opts.keyCode.DELETE, pos);
@@ -1641,7 +1643,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.68
+Version: 2.3.69
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1763,7 +1765,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.68
+Version: 2.3.69
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2247,7 +2249,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.68
+Version: 2.3.69
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2424,7 +2426,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.68
+Version: 2.3.69
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2594,7 +2596,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.3.68
+Version: 2.3.69
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
