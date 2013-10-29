@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.4.0
+* Version: 2.4.1
 */
 
 (function ($) {
@@ -101,6 +101,7 @@
                         //resolve possible aliases given by options
                         resolveAlias(opts.alias, options);
                         masksets = generateMaskSets();
+                        if (masksets.length == 0) { return this; }
 
                         return this.each(function () {
                             maskScope($.extend(true, {}, masksets), 0).mask(this);
@@ -184,7 +185,7 @@
                             opts.mask = fn;
                         }
                         masksets = generateMaskSets();
-
+                        if (masksets.length == 0) { return this; }
                         return this.each(function () {
                             maskScope($.extend(true, {}, masksets), activeMasksetIndex).mask(this);
                         });
@@ -196,7 +197,7 @@
 
                 resolveAlias(opts.alias, fn); //resolve aliases
                 masksets = generateMaskSets();
-
+                if (masksets.length == 0) { return this; }
                 return this.each(function () {
                     maskScope($.extend(true, {}, masksets), activeMasksetIndex).mask(this);
                 });
@@ -434,7 +435,7 @@
                     var masks = splitFirstOptionalStartPart(maskParts[0]);
                     if (masks.length > 1) {
                         newMask = maskPrefix + masks[0] + markOptional(masks[1]) + (maskParts.length > 1 ? maskParts[1] : "");
-                        if ($.inArray(newMask, genmasks) == -1) {
+                        if ($.inArray(newMask, genmasks) == -1 && newMask != "") {
                             genmasks.push(newMask);
                             maskTemplate = getMaskTemplate(newMask);
                             ms.push({
@@ -449,7 +450,7 @@
                             });
                         }
                         newMask = maskPrefix + masks[0] + (maskParts.length > 1 ? maskParts[1] : "");
-                        if ($.inArray(newMask, genmasks) == -1) {
+                        if ($.inArray(newMask, genmasks) == -1 && newMask != "") {
                             genmasks.push(newMask);
                             maskTemplate = getMaskTemplate(newMask);
                             ms.push({
@@ -473,7 +474,7 @@
                     }
                     else {
                         newMask = maskPrefix + maskParts;
-                        if ($.inArray(newMask, genmasks) == -1) {
+                        if ($.inArray(newMask, genmasks) == -1 && newMask != "") {
                             genmasks.push(newMask);
                             maskTemplate = getMaskTemplate(newMask);
                             ms.push({
@@ -584,6 +585,7 @@
                                         for (var i = pos; i < lowestPos; i++) {
                                             rsltValid = _isValid(i, masksets[rslt["activeMasksetIndex"]], masksets[lowestIndex]["buffer"][i], true);
                                             if (rsltValid === false) {
+                                                masksets[rslt["activeMasksetIndex"]]["lastValidPosition"] = lowestPos - 1;
                                                 break;
                                             } else {
                                                 setBufferElement(masksets[rslt["activeMasksetIndex"]]["buffer"], i, masksets[lowestIndex]["buffer"][i], true);
@@ -1396,7 +1398,7 @@
                         }
                         var firstMaskPos = seekNext(-1);
                         clearBuffer(getActiveBuffer(), pos.begin, pos.end, true);
-                        checkVal(input, false, masksets[1] == undefined, getActiveBuffer());
+                        checkVal(input, false, masksets[1] == undefined || firstMaskPos >= pos.end, getActiveBuffer());
                         if (getActiveMaskSet()['lastValidPosition'] < firstMaskPos) {
                             getActiveMaskSet()["lastValidPosition"] = -1;
                             getActiveMaskSet()["p"] = firstMaskPos;
@@ -1643,7 +1645,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.0
+Version: 2.4.1
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1765,7 +1767,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.0
+Version: 2.4.1
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2249,7 +2251,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.0
+Version: 2.4.1
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2426,7 +2428,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.0
+Version: 2.4.1
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2596,7 +2598,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.0
+Version: 2.4.1
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
