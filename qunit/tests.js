@@ -297,6 +297,17 @@ test("inputmask(\"(999)999-9999\") - ruslanfedoseenko mask", function () {
     $("#testmask").remove();
 });
 
+test("inputmask(\"\") - empty mask - andywolk", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("");
+
+    $("#testmask")[0].focus();
+    $("#testmask").val("123");
+    equal($("#testmask").val(), "123", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
 module("Non-greedy masks");
 test("inputmask(\"*\", { greedy: false, repeat: \"*\" }) - replace cd with 1", function () {
     $('body').append('<input type="text" id="testmask" />');
