@@ -14,20 +14,20 @@ Version: 0.0.0
 	{ "mask": "+32(50)##-##-##", "cc": "BE", "cd": "Belgium", "city": "Brugge (Bruges)" },
 	{ "mask": "+32(2)###-##-##", "cc": "BE", "cd": "Belgium", "city": "Brussel/Bruxelles (Brussels)" },
 	{ "mask": "+32(71)##-##-##", "cc": "BE", "cd": "Belgium", "city": "Charleroi" },
-Chimay	+32    60
-Ciney	+32    83
-Dendermonde	+32    52
-Diest	+32    13
-Dinant	+32    82
-Durbuy	+32    86
-Genk	+32    89
-Gent (Gand) "Ghent"	+32    9
-Hasselt	+32    11
-Herentals	+32    14
-Huy (Hoei)	+32    85
-La Louvière	+32    64
-Leuven (Louvain)	+32    16
-Libramont	+32    61
+	{ "mask": "+32(60)##-##-##", "cc": "BE", "cd": "Belgium", "city": "Chimay" },
+	{ "mask": "+32(83)##-##-##", "cc": "BE", "cd": "Belgium", "city": "Ciney" },
+	{ "mask": "+32(52)##-##-##", "cc": "BE", "cd": "Belgium", "city": "Dendermonde" },
+	{ "mask": "+32(13)##-##-##", "cc": "BE", "cd": "Belgium", "city": "Diest" },
+	{ "mask": "+32(82)##-##-##", "cc": "BE", "cd": "Belgium", "city": "Dinant" },
+	{ "mask": "+32(86)##-##-##", "cc": "BE", "cd": "Belgium", "city": "Durbuy" },
+	{ "mask": "+32(89)##-##-##", "cc": "BE", "cd": "Belgium", "city": "Genk" },
+	{ "mask": "+32(9)###-##-##", "cc": "BE", "cd": "Belgium", "city": "Gent (Gand)" },
+	{ "mask": "+32(11)##-##-##", "cc": "BE", "cd": "Belgium", "city": "Hasselt" },
+	{ "mask": "+32(14)##-##-##", "cc": "BE", "cd": "Belgium", "city": "Herentals" },
+	{ "mask": "+32(85)##-##-##", "cc": "BE", "cd": "Belgium", "city": "Huy (Hoei)" },
+	{ "mask": "+32(64)##-##-##", "cc": "BE", "cd": "Belgium", "city": "La Louvière" },
+	{ "mask": "+32(16)##-##-##", "cc": "BE", "cd": "Belgium", "city": "Leuven (Louvain)" },
+	{ "mask": "+32(61)##-##-##", "cc": "BE", "cd": "Belgium", "city": "Libramont" },
 Liège (Luik)	+32    4
 Mechelen (Malines)	+32    15
 Mobile Phones - Base	+32    485
