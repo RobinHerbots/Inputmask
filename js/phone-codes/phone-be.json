@@ -1,0 +1,59 @@
+/*
+Input Mask plugin - Belgian phone codes
+http://github.com/RobinHerbots/jquery.inputmask
+Copyright (c) 2010 - 2012 Robin Herbots
+Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
+Version: 0.0.0
+*/
+
+[
+	{ "mask": "+32(53)##-##-##", "cc": "BE", "cd": "Belgium", "city": "Aalst (Alost)" },
+	{ "mask": "+32(3)###-##-##", "cc": "BE", "cd": "Belgium", "city": "Antwerpen (Anvers)" },
+	{ "mask": "+32(63)##-##-##", "cc": "BE", "cd": "Belgium", "city": "Arlon" },
+	{ "mask": "+32(67)##-##-##", "cc": "BE", "cd": "Belgium", "city": "Ath" },
+	{ "mask": "+32(50)##-##-##", "cc": "BE", "cd": "Belgium", "city": "Brugge (Bruges)" },
+	{ "mask": "+32(2)###-##-##", "cc": "BE", "cd": "Belgium", "city": "Brussel/Bruxelles (Brussels)" },
+	{ "mask": "+32(71)##-##-##", "cc": "BE", "cd": "Belgium", "city": "Charleroi" },
+Chimay	+32    60
+Ciney	+32    83
+Dendermonde	+32    52
+Diest	+32    13
+Dinant	+32    82
+Durbuy	+32    86
+Genk	+32    89
+Gent (Gand) "Ghent"	+32    9
+Hasselt	+32    11
+Herentals	+32    14
+Huy (Hoei)	+32    85
+La Louvière	+32    64
+Leuven (Louvain)	+32    16
+Libramont	+32    61
+Liège (Luik)	+32    4
+Mechelen (Malines)	+32    15
+Mobile Phones - Base	+32    485
+486
+Mobile Phones - Mobistar	+32    495
+496
+49
+Mobile Phones - Proximus	+32    472
+473
+47
+Mons (Bergen)	+32    65
+Namur (Namen)	+32    81
+Nieuwpoort (Nieuport)	+32    58
+Ninove	+32    54
+Nivelles (Nijvel)	+32    67
+Oostende (Ostende) "Ostend"	+32    59
+Roeselare (Roulers)	+32    51
+Ronse	+32    55
+Stavelot	+32    80
+Tongeren (Tongres)	+32    12
+Tounai	+32    69
+Turnhout	+32    14
+Verviers	+32    87
+Veurne	+32    58
+Wareme	+32    19
+Wavre (Waver)	+32    10
+Zeebrugge	+32    50
+
+]
