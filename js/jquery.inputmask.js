@@ -1241,8 +1241,8 @@
                                 npt._valueSet = function (value) { this.value = isRTL ? value.split('').reverse().join('') : value; };
                             }
                             if ($.valHooks.text == undefined || $.valHooks.text.inputmaskpatch != true) {
-                                var valueGet = $.valHooks.text && $.valHooks.text.get ? $.valHooks.text.get : function () { return this.value; };
-                                var valueSet = $.valHooks.text && $.valHooks.text.set ? $.valHooks.text.set : function (value) { return this.value = value; };
+                                var valueGet = $.valHooks.text && $.valHooks.text.get ? $.valHooks.text.get : function (elem) { return elem.value; };
+                                var valueSet = $.valHooks.text && $.valHooks.text.set ? $.valHooks.text.set : function (elem, value) { elem.value = value; return elem; };
 
                                 jQuery.extend($.valHooks, {
                                     text: {
@@ -1252,16 +1252,16 @@
                                                 if ($elem.data('_inputmask')['opts'].autoUnmask)
                                                     return $elem.inputmask('unmaskedvalue');
                                                 else {
-                                                    var result = valueGet.call(elem),
+                                                    var result = valueGet(elem),
                                                         inputData = $elem.data('_inputmask'), masksets = inputData['masksets'],
                                                         activeMasksetIndex = inputData['activeMasksetIndex'];
                                                     return result != masksets[activeMasksetIndex]['_buffer'].join('') ? result : '';
                                                 }
-                                            } else return valueGet.call(elem);
+                                            } else return valueGet(elem);
                                         },
                                         set: function (elem, value) {
                                             var $elem = $(elem);
-                                            var result = valueSet.call(elem, value);
+                                            var result = valueSet(elem, value);
                                             if ($elem.data('_inputmask')) $elem.triggerHandler('setvalue.inputmask');
                                             return result;
                                         },
