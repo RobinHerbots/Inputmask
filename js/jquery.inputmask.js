@@ -325,7 +325,6 @@
                 var maskTokens = [];
                 function analyseMask(mask) { //just an idea - not in use for the moment
                     var tokenizer = /(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[]()|\\]+|./g;
-                    //var tokenizer = /\[\^?]?(?:[^\\\]]+ | \\[\S\s]?)*]? | \\(?:0(?:[0-3][0-7]{0,2} | [4-7][0-7]?)? | [1-9][0-9]* | x[0-9A-Fa-f]{2} | u[0-9A-Fa-f]{4} | c[A-Za-z] | [\S\s]?) | \((?:\?[:=!]?)? | (?:[?*+] | \{[0-9]+(?:,[0-9]*)?\})\?? | [^.?*+^${[() | \\]+ | ./g;
                     function maskToken() {
                         this.matches = [];
                         this.isGroup = false;
@@ -349,7 +348,7 @@
                                     openenings[openenings.length - 1]["matches"].push(openingToken);
                                 } else {
                                     maskTokens.push(openingToken);
-                                    currentToken = new maskToken();
+                                    currentToken = openingToken; //new maskToken();
                                 }
                                 break;
                             case opts.optionalmarker.start:
@@ -383,6 +382,8 @@
                                 if (openenings.length > 0) {
                                     openenings[openenings.length - 1]["matches"].push(m);
                                 } else {
+                                    if (currentToken.isGroup || currentToken.isOptional)
+                                        currentToken = new maskToken();
                                     currentToken.matches.push(m);
                                 }
                         }
