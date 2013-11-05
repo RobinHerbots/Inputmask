@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.4.2
+* Version: 2.4.3
 */
 
 (function ($) {
@@ -325,7 +325,6 @@
                 var maskTokens = [];
                 function analyseMask(mask) { //just an idea - not in use for the moment
                     var tokenizer = /(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[]()|\\]+|./g;
-                    //var tokenizer = /\[\^?]?(?:[^\\\]]+ | \\[\S\s]?)*]? | \\(?:0(?:[0-3][0-7]{0,2} | [4-7][0-7]?)? | [1-9][0-9]* | x[0-9A-Fa-f]{2} | u[0-9A-Fa-f]{4} | c[A-Za-z] | [\S\s]?) | \((?:\?[:=!]?)? | (?:[?*+] | \{[0-9]+(?:,[0-9]*)?\})\?? | [^.?*+^${[() | \\]+ | ./g;
                     function maskToken() {
                         this.matches = [];
                         this.isGroup = false;
@@ -349,7 +348,7 @@
                                     openenings[openenings.length - 1]["matches"].push(openingToken);
                                 } else {
                                     maskTokens.push(openingToken);
-                                    currentToken = new maskToken();
+                                    currentToken = openingToken; //new maskToken();
                                 }
                                 break;
                             case opts.optionalmarker.start:
@@ -383,6 +382,8 @@
                                 if (openenings.length > 0) {
                                     openenings[openenings.length - 1]["matches"].push(m);
                                 } else {
+                                    if (currentToken.isGroup || currentToken.isOptional)
+                                        currentToken = new maskToken();
                                     currentToken.matches.push(m);
                                 }
                         }
@@ -1435,7 +1436,7 @@
                         } else if ((k == opts.keyCode.HOME && !e.shiftKey) || k == opts.keyCode.PAGE_UP) { //Home or page_up
                             caret(input, 0, e.shiftKey ? pos.begin : 0);
                         } else if (k == opts.keyCode.ESCAPE || (k == 90 && e.ctrlKey)) { //escape && undo
-                            checkVal(input, true, false, valueOnFocus);
+                            checkVal(input, true, false, valueOnFocus.split(''));
                             $input.click();
                         } else if (k == opts.keyCode.INSERT && !(e.shiftKey || e.ctrlKey)) { //insert
                             opts.insertMode = !opts.insertMode;
@@ -1645,7 +1646,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.2
+Version: 2.4.3
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1767,7 +1768,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.2
+Version: 2.4.3
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2251,7 +2252,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.2
+Version: 2.4.3
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2428,7 +2429,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.2
+Version: 2.4.3
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2598,7 +2599,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.2
+Version: 2.4.3
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
