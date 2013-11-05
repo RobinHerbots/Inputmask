@@ -1436,7 +1436,7 @@
                         } else if ((k == opts.keyCode.HOME && !e.shiftKey) || k == opts.keyCode.PAGE_UP) { //Home or page_up
                             caret(input, 0, e.shiftKey ? pos.begin : 0);
                         } else if (k == opts.keyCode.ESCAPE || (k == 90 && e.ctrlKey)) { //escape && undo
-                            checkVal(input, true, false, valueOnFocus);
+                            checkVal(input, true, false, valueOnFocus.split(''));
                             $input.click();
                         } else if (k == opts.keyCode.INSERT && !(e.shiftKey || e.ctrlKey)) { //insert
                             opts.insertMode = !opts.insertMode;
