@@ -84,6 +84,7 @@
                 msie10 = navigator.userAgent.match(new RegExp("msie 10", "i")) !== null,
                 iphone = navigator.userAgent.match(new RegExp("iphone", "i")) !== null,
                 android = navigator.userAgent.match(new RegExp("android.*safari.*", "i")) !== null,
+                androidchrome = navigator.userAgent.match(new RegExp("android.*chrome.*", "i")) !== null,
                 pasteEvent = isInputEventSupported('paste') && !msie10 ? 'paste' : isInputEventSupported('input') ? 'input' : "propertychange",
                 masksets,
                 activeMasksetIndex = 0;
@@ -1110,7 +1111,7 @@
                             caret(input, 0, seekNext(getActiveMaskSet()["lastValidPosition"]));
                         }, 0);
                     }).bind("keydown.inputmask", keydownEvent
-                    ).bind("keypress.inputmask", keypressEvent
+                    ).bind(androidchrome ? "input.inputmask" : "keypress.inputmask", keypressEvent
                     ).bind("keyup.inputmask", keyupEvent
                     ).bind(pasteEvent + ".inputmask dragdrop.inputmask drop.inputmask", function (e) {
                         var input = this, $input = $(input);
