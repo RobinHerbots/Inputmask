@@ -85,16 +85,9 @@
                 iphone = navigator.userAgent.match(new RegExp("iphone", "i")) !== null,
                 android = navigator.userAgent.match(new RegExp("android.*safari.*", "i")) !== null,
                 pasteEvent = isInputEventSupported('paste') && !msie10 ? 'paste' : isInputEventSupported('input') ? 'input' : "propertychange",
-                android53x,
                 masksets,
                 activeMasksetIndex = 0;
 
-            if (android) {
-                var browser = navigator.userAgent.match(/safari.*/i),
-                    version = parseInt(new RegExp(/[0-9]+/).exec(browser));
-                android53x = (version <= 537);
-                //android534 = (533 < version) && (version <= 534);
-            }
             if (typeof fn === "string") {
                 switch (fn) {
                     case "mask":
@@ -924,7 +917,8 @@
                 this.isComplete = function (buffer) {
                     return isComplete(buffer);
                 };
-                function isComplete(buffer) {
+                function isComplete(buffer) { //return true / false / undefined (repeat *)
+                    if (opts.repeat == "*") return undefined;
                     var complete = false, highestValidPosition = 0, currentActiveMasksetIndex = activeMasksetIndex;
                     $.each(masksets, function (ndx, ms) {
                         if (typeof (ms) == "object") {
@@ -1049,7 +1043,7 @@
                                 clearOptionalTail(input);
                             }
                         }
-                        if (!isComplete(buffer)) {
+                        if (isComplete(buffer) === false) {
                             $input.trigger("incomplete");
                             if (opts.clearIncomplete) {
                                 $.each(masksets, function (ndx, ms) {
@@ -1127,7 +1121,7 @@
                         }
                         setTimeout(function () {
                             checkVal(input, true, false);
-                            if (isComplete(getActiveBuffer()))
+                            if (isComplete(getActiveBuffer()) === true)
                                 $input.trigger("complete");
                             $input.click();
                         }, 0);
@@ -1601,7 +1595,7 @@
                                             writeBuffer(input, buffer, newCaretPosition);
                                             if (checkval !== true) {
                                                 setTimeout(function () { //timeout needed for IE
-                                                    if (isComplete(buffer))
+                                                    if (isComplete(buffer) === true)
                                                         $input.trigger("complete");
                                                 }, 0);
                                             }
