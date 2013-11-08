@@ -1110,10 +1110,7 @@
                         setTimeout(function () {
                             caret(input, 0, seekNext(getActiveMaskSet()["lastValidPosition"]));
                         }, 0);
-                    }).bind("keydown.inputmask", keydownEvent
-                    ).bind(androidchrome ? "input.inputmask" : "keypress.inputmask", keypressEvent
-                    ).bind("keyup.inputmask", keyupEvent
-                    ).bind(pasteEvent + ".inputmask dragdrop.inputmask drop.inputmask", function (e) {
+                    }).bind(pasteEvent + ".inputmask dragdrop.inputmask drop.inputmask", function (e) {
                         var input = this, $input = $(input);
 
                         //paste event for IE8 and lower I guess ;-)
@@ -1133,10 +1130,26 @@
                         if (input._valueGet() == getActiveBufferTemplate().join(''))
                             input._valueSet('');
                     }).bind("_keypress.inputmask", keypressEvent //will be skipped be the eventruler
-                    ).bind('complete.inputmask', opts.oncomplete)
-                        .bind('incomplete.inputmask', opts.onincomplete)
-                        .bind('cleared.inputmask', opts.oncleared);
+                    ).bind('complete.inputmask', opts.oncomplete
+                    ).bind('incomplete.inputmask', opts.onincomplete
+                    ).bind('cleared.inputmask', opts.oncleared
+                    ).bind("keydown.inputmask", keydownEvent
+                    ).bind("keyup.inputmask", keyupEvent);
 
+                    if (androidchrome) {
+                        $el.bind("input.inputmask", function(e) {
+                            var input = this, $input = $(input);
+                            setTimeout(function() {
+                                checkVal(input, true, false);
+                                if (isComplete(getActiveBuffer()) === true)
+                                    $input.trigger("complete");
+                                $input.click();
+                            }, 0);
+                        });
+                    } else {
+                        $el.bind("keypress.inputmask", keypressEvent);
+                    }
+                    
                     //apply mask
                     checkVal(el, true, false);
                     valueOnFocus = getActiveBuffer().join('');
