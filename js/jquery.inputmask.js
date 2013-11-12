@@ -1140,11 +1140,12 @@
                             var input = this, $input = $(input);
 
                             setTimeout(function () {
-                                checkVal(input, true, false);
+                                checkVal(input, false, false);
+                                writeBuffer(input, getActiveBuffer());
                                 if (isComplete(getActiveBuffer()) === true)
                                     $input.trigger("complete");
                                 $input.click();
-                            }, 0);
+                            }, 100);
                         });
                     } else {
                         $el.bind("keydown.inputmask", keydownEvent
