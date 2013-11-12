@@ -1133,13 +1133,13 @@
                     ).bind('complete.inputmask', opts.oncomplete
                     ).bind('incomplete.inputmask', opts.onincomplete
                     ).bind('cleared.inputmask', opts.oncleared
-                    ).bind("keydown.inputmask", keydownEvent
                     ).bind("keyup.inputmask", keyupEvent);
 
                     if (androidchrome) {
-                        $el.bind("input.inputmask", function(e) {
+                        $el.bind("input.inputmask", function (e) {
                             var input = this, $input = $(input);
-                            setTimeout(function() {
+
+                            setTimeout(function () {
                                 checkVal(input, true, false);
                                 if (isComplete(getActiveBuffer()) === true)
                                     $input.trigger("complete");
@@ -1147,9 +1147,10 @@
                             }, 0);
                         });
                     } else {
-                        $el.bind("keypress.inputmask", keypressEvent);
+                        $el.bind("keydown.inputmask", keypressEvent
+                        ).bind("keypress.inputmask", keydownEvent);
                     }
-                    
+
                     //apply mask
                     checkVal(el, true, false);
                     valueOnFocus = getActiveBuffer().join('');
@@ -1629,6 +1630,11 @@
 
                     function keyupEvent(e) {
                         var $input = $(this), input = this, k = e.keyCode, buffer = getActiveBuffer();
+
+                        if (androidchrome && k == opts.keyCode.BACKSPACE) {
+                            keydownEvent.call(this, e);
+                        }
+
                         opts.onKeyUp.call(this, e, buffer, opts); //extra stuff to execute on keyup
                         if (k == opts.keyCode.TAB && opts.showMaskOnFocus) {
                             if ($input.hasClass('focus.inputmask') && input._valueGet().length == 0) {
