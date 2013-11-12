@@ -1147,8 +1147,8 @@
                             }, 0);
                         });
                     } else {
-                        $el.bind("keydown.inputmask", keypressEvent
-                        ).bind("keypress.inputmask", keydownEvent);
+                        $el.bind("keydown.inputmask", keydownEvent
+                        ).bind("keypress.inputmask", keypressEvent);
                     }
 
                     //apply mask

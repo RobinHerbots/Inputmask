@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.4.3
+* Version: 2.4.4
 */
 
 (function ($) {
@@ -84,17 +84,11 @@
                 msie10 = navigator.userAgent.match(new RegExp("msie 10", "i")) !== null,
                 iphone = navigator.userAgent.match(new RegExp("iphone", "i")) !== null,
                 android = navigator.userAgent.match(new RegExp("android.*safari.*", "i")) !== null,
+                androidchrome = navigator.userAgent.match(new RegExp("android.*chrome.*", "i")) !== null,
                 pasteEvent = isInputEventSupported('paste') && !msie10 ? 'paste' : isInputEventSupported('input') ? 'input' : "propertychange",
-                android53x,
                 masksets,
                 activeMasksetIndex = 0;
 
-            if (android) {
-                var browser = navigator.userAgent.match(/safari.*/i),
-                    version = parseInt(new RegExp(/[0-9]+/).exec(browser));
-                android53x = (version <= 537);
-                //android534 = (533 < version) && (version <= 534);
-            }
             if (typeof fn === "string") {
                 switch (fn) {
                     case "mask":
@@ -924,7 +918,8 @@
                 this.isComplete = function (buffer) {
                     return isComplete(buffer);
                 };
-                function isComplete(buffer) {
+                function isComplete(buffer) { //return true / false / undefined (repeat *)
+                    if (opts.repeat == "*") return undefined;
                     var complete = false, highestValidPosition = 0, currentActiveMasksetIndex = activeMasksetIndex;
                     $.each(masksets, function (ndx, ms) {
                         if (typeof (ms) == "object") {
@@ -1049,7 +1044,7 @@
                                 clearOptionalTail(input);
                             }
                         }
-                        if (!isComplete(buffer)) {
+                        if (isComplete(buffer) === false) {
                             $input.trigger("incomplete");
                             if (opts.clearIncomplete) {
                                 $.each(masksets, function (ndx, ms) {
@@ -1115,10 +1110,7 @@
                         setTimeout(function () {
                             caret(input, 0, seekNext(getActiveMaskSet()["lastValidPosition"]));
                         }, 0);
-                    }).bind("keydown.inputmask", keydownEvent
-                    ).bind("keypress.inputmask", keypressEvent
-                    ).bind("keyup.inputmask", keyupEvent
-                    ).bind(pasteEvent + ".inputmask dragdrop.inputmask drop.inputmask", function (e) {
+                    }).bind(pasteEvent + ".inputmask dragdrop.inputmask drop.inputmask", function (e) {
                         var input = this, $input = $(input);
 
                         //paste event for IE8 and lower I guess ;-)
@@ -1127,7 +1119,7 @@
                         }
                         setTimeout(function () {
                             checkVal(input, true, false);
-                            if (isComplete(getActiveBuffer()))
+                            if (isComplete(getActiveBuffer()) === true)
                                 $input.trigger("complete");
                             $input.click();
                         }, 0);
@@ -1138,9 +1130,26 @@
                         if (input._valueGet() == getActiveBufferTemplate().join(''))
                             input._valueSet('');
                     }).bind("_keypress.inputmask", keypressEvent //will be skipped be the eventruler
-                    ).bind('complete.inputmask', opts.oncomplete)
-                        .bind('incomplete.inputmask', opts.onincomplete)
-                        .bind('cleared.inputmask', opts.oncleared);
+                    ).bind('complete.inputmask', opts.oncomplete
+                    ).bind('incomplete.inputmask', opts.onincomplete
+                    ).bind('cleared.inputmask', opts.oncleared
+                    ).bind("keyup.inputmask", keyupEvent);
+
+                    if (androidchrome) {
+                        $el.bind("input.inputmask", function (e) {
+                            var input = this, $input = $(input);
+
+                            setTimeout(function () {
+                                checkVal(input, true, false);
+                                if (isComplete(getActiveBuffer()) === true)
+                                    $input.trigger("complete");
+                                $input.click();
+                            }, 0);
+                        });
+                    } else {
+                        $el.bind("keydown.inputmask", keydownEvent
+                        ).bind("keypress.inputmask", keypressEvent);
+                    }
 
                     //apply mask
                     checkVal(el, true, false);
@@ -1601,7 +1610,7 @@
                                             writeBuffer(input, buffer, newCaretPosition);
                                             if (checkval !== true) {
                                                 setTimeout(function () { //timeout needed for IE
-                                                    if (isComplete(buffer))
+                                                    if (isComplete(buffer) === true)
                                                         $input.trigger("complete");
                                                 }, 0);
                                             }
@@ -1621,6 +1630,11 @@
 
                     function keyupEvent(e) {
                         var $input = $(this), input = this, k = e.keyCode, buffer = getActiveBuffer();
+
+                        if (androidchrome && k == opts.keyCode.BACKSPACE) {
+                            keydownEvent.call(this, e);
+                        }
+
                         opts.onKeyUp.call(this, e, buffer, opts); //extra stuff to execute on keyup
                         if (k == opts.keyCode.TAB && opts.showMaskOnFocus) {
                             if ($input.hasClass('focus.inputmask') && input._valueGet().length == 0) {
@@ -1646,7 +1660,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.3
+Version: 2.4.4
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1768,7 +1782,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.3
+Version: 2.4.4
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2252,7 +2266,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.3
+Version: 2.4.4
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2429,7 +2443,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.3
+Version: 2.4.4
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2599,7 +2613,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.3
+Version: 2.4.4
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
