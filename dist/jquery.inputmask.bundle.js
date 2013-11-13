@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.4.4
+* Version: 2.4.5
 */
 
 (function ($) {
@@ -510,7 +510,7 @@
             function maskScope(masksets, activeMasksetIndex) {
                 var isRTL = false,
                     valueOnFocus = getActiveBuffer().join(''),
-                    $el;
+                    $el, chromeValueOnInput;
 
                 //maskset helperfunctions
                 function getActiveMaskSet() {
@@ -1139,12 +1139,12 @@
                         $el.bind("input.inputmask", function (e) {
                             var input = this, $input = $(input);
 
-                            setTimeout(function () {
-                                checkVal(input, true, false);
-                                if (isComplete(getActiveBuffer()) === true)
-                                    $input.trigger("complete");
-                                $input.click();
-                            }, 0);
+                            chromeValueOnInput = getActiveBuffer().join('');
+                            checkVal(input, false, false);
+                            writeBuffer(input, getActiveBuffer());
+                            if (isComplete(getActiveBuffer()) === true)
+                                $input.trigger("complete");
+                            $input.click();
                         });
                     } else {
                         $el.bind("keydown.inputmask", keydownEvent
@@ -1632,7 +1632,8 @@
                         var $input = $(this), input = this, k = e.keyCode, buffer = getActiveBuffer();
 
                         if (androidchrome && k == opts.keyCode.BACKSPACE) {
-                            keydownEvent.call(this, e);
+                            if (chromeValueOnInput == input._valueGet())
+                                keydownEvent.call(this, e);
                         }
 
                         opts.onKeyUp.call(this, e, buffer, opts); //extra stuff to execute on keyup
@@ -1660,7 +1661,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.4
+Version: 2.4.5
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1782,7 +1783,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.4
+Version: 2.4.5
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2266,7 +2267,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.4
+Version: 2.4.5
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2443,7 +2444,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.4
+Version: 2.4.5
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2613,7 +2614,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.4
+Version: 2.4.5
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
