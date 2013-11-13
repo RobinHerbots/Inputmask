@@ -510,7 +510,7 @@
             function maskScope(masksets, activeMasksetIndex) {
                 var isRTL = false,
                     valueOnFocus = getActiveBuffer().join(''),
-                    $el;
+                    $el, chromeValueOnInput;
 
                 //maskset helperfunctions
                 function getActiveMaskSet() {
@@ -1139,13 +1139,14 @@
                         $el.bind("input.inputmask", function (e) {
                             var input = this, $input = $(input);
 
+							chromeValueOnInput = getActiveBuffer().join('');
                             setTimeout(function () {
                                 checkVal(input, false, false);
                                 writeBuffer(input, getActiveBuffer());
                                 if (isComplete(getActiveBuffer()) === true)
                                     $input.trigger("complete");
                                 $input.click();
-                            }, 100);
+                            }, 0);
                         });
                     } else {
                         $el.bind("keydown.inputmask", keydownEvent
@@ -1633,7 +1634,8 @@
                         var $input = $(this), input = this, k = e.keyCode, buffer = getActiveBuffer();
 
                         if (androidchrome && k == opts.keyCode.BACKSPACE) {
-                            keydownEvent.call(this, e);
+                        	if(chromeValueOnInput == input._valueGet())
+                           		keydownEvent.call(this, e);
                         }
 
                         opts.onKeyUp.call(this, e, buffer, opts); //extra stuff to execute on keyup
