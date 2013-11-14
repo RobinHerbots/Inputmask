@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.4.5
+* Version: 2.4.6
 */
 
 (function ($) {
@@ -804,7 +804,7 @@
                     setBufferElement(buffer, pos, getBufferElement(getActiveBufferTemplate(), testPos));
                 }
 
-                function checkVal(input, writeOut, strict, nptvl) {
+                function checkVal(input, writeOut, strict, nptvl, intelliCheck) {
                     var inputValue = nptvl != undefined ? nptvl.slice() : truncateInput(input._valueGet()).split('');
 
                     $.each(masksets, function (ndx, ms) {
@@ -818,12 +818,14 @@
                     if (writeOut) input._valueSet(""); //initial clear
                     var ml = getMaskLength();
                     $.each(inputValue, function (ndx, charCode) {
-                        var lvp = getActiveMaskSet()["lastValidPosition"],
-                        pos = lvp == -1 ? ndx : seekNext(lvp);
-
-                        if ($.isArray(opts.mask) || $.inArray(charCode, getActiveBufferTemplate().slice(lvp + 1, pos)) == -1) {
-                            //console.log("trigger " + charCode);
-                            $(input).trigger("_keypress", [true, charCode.charCodeAt(0), writeOut, strict, ndx]);
+                        if(intelliCheck === true) { 
+                        	var p = getActiveMaskSet()["p"], lvp = p == -1 ? p : seekPrevious(p),
+                        	pos = lvp == -1 ? ndx : seekNext(lvp);
+                            if ($.inArray(charCode, getActiveBufferTemplate().slice(lvp + 1, pos)) == -1) {
+                            	$(input).trigger("_keypress", [true, charCode.charCodeAt(0), writeOut, strict, ndx]);
+                        	}
+                        } else {
+                          	$(input).trigger("_keypress", [true, charCode.charCodeAt(0), writeOut, strict, ndx]);
                         }
                     });
 
@@ -1118,7 +1120,7 @@
                             return true;
                         }
                         setTimeout(function () {
-                            checkVal(input, true, false);
+                            checkVal(input, true, false, undefined, true);
                             if (isComplete(getActiveBuffer()) === true)
                                 $input.trigger("complete");
                             $input.click();
@@ -1661,7 +1663,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.5
+Version: 2.4.6
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1783,7 +1785,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.5
+Version: 2.4.6
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2267,7 +2269,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.5
+Version: 2.4.6
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2444,7 +2446,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.5
+Version: 2.4.6
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2614,7 +2616,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.5
+Version: 2.4.6
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks

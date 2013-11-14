@@ -482,9 +482,17 @@ test("inputmask(\"6703 9999 9999 9999 9\") ~ type \"6703670367036\" + backspace 
     $("#testmask").remove();
 });
 
+module("Set value with fn.val");
+test("inputmask(\"decimal\") ~ value=\"123.45\"", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("decimal");
+    $("#testmask").val("123.45");
+    equal($("#testmask").val(), "123.45", "Result " + $("#testmask").val());
 
-module("Paste value");
-asyncTest("inputmask(\"+7 (999) 999-99-99\") ~ paste \"+7 (+79114041112___) ___-__-__\"", function () {
+    $("#testmask").remove();
+});
+
+asyncTest("inputmask(\"+7 (999) 999-99-99\") ~ value=\"+7 (+79114041112___) ___-__-__\"", function () {
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("+7 (999) 999-99-99");
     $("#testmask").paste("+7 (+79114041112___) ___-__-__");
@@ -495,16 +503,6 @@ asyncTest("inputmask(\"+7 (999) 999-99-99\") ~ paste \"+7 (+79114041112___) ___-
 	$("#testmask").remove();
     }, 0);
 
-});
-
-module("Set value with fn.val");
-test("inputmask(\"decimal\") ~ value=\"123.45\"", function () {
-    $('body').append('<input type="text" id="testmask" />');
-    $("#testmask").inputmask("decimal");
-    $("#testmask").val("123.45");
-    equal($("#testmask").val(), "123.45", "Result " + $("#testmask").val());
-
-    $("#testmask").remove();
 });
 
 test("inputmask(\"9\") ~ value=\"1\"", function () {
