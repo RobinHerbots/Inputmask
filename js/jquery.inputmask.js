@@ -985,7 +985,7 @@
                                 }
                             });
                         }
-                        if (getMaskLength() > maxLength && maxLength > -1) { //FF sets no defined max length to -1 
+                        if (getMaskLength() >= maxLength && maxLength > -1) { //FF sets no defined max length to -1 
                             if (maxLength < getActiveBufferTemplate().length) getActiveBufferTemplate().length = maxLength;
                             if (getActiveMaskSet()['greedy'] == false) {
                                 getActiveMaskSet()['repeat'] = Math.round(maxLength / getActiveBufferTemplate().length);
