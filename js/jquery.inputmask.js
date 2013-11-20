@@ -317,7 +317,7 @@
                 var ms = [];
                 var genmasks = []; //used to keep track of the masks that where processed, to avoid duplicates
                 var maskTokens = [];
-                function analyseMask(mask) { //just an idea - not in use for the moment
+                function analyseMask(mask) { //TODO HANDLE ESCAPES
                     var tokenizer = /(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[]()|\\]+|./g;
                     function maskToken() {
                         this.matches = [];
@@ -325,6 +325,19 @@
                         this.isOptional = false;
                         this.isQuantifier = false;
                     };
+                    function InsertTestDefinition(mtoken, element) {
+                        var maskdef = opts.definitions[element], escaped = false, isOptional = mtoken.isOptional;
+                        if (maskdef && !escaped) {
+                            var prevalidators = maskdef["prevalidator"], prevalidatorsL = prevalidators ? prevalidators.length : 0;
+                            for (var i = 1; i < maskdef.cardinality; i++) {
+                                var prevalidator = prevalidatorsL >= i ? prevalidators[i - 1] : [], validator = prevalidator["validator"], cardinality = prevalidator["cardinality"];
+                                mtoken.matches.push({ fn: validator ? typeof validator == 'string' ? new RegExp(validator) : new function () { this.test = validator; } : new RegExp("."), cardinality: cardinality ? cardinality : 1, optionality: isOptional, casing: maskdef["casing"], def: maskdef["definitionSymbol"] || element });
+                            }
+                            mtoken.matches.push({ fn: maskdef.validator ? typeof maskdef.validator == 'string' ? new RegExp(maskdef.validator) : new function () { this.test = maskdef.validator; } : new RegExp("."), cardinality: maskdef.cardinality, optionality: isOptional, casing: maskdef["casing"], def: maskdef["definitionSymbol"] || element });
+                        } else {
+                            mtoken.matches.push({ fn: null, cardinality: 0, optionality: isOptional, casing: null, def: element });
+                        }
+                    }
                     var currentToken = new maskToken(),
                         match, m, openenings = [];
 
@@ -372,13 +385,16 @@
                                     currentToken.matches.push(quantifier);
                                 }
                                 break;
+                            case opts.escapeChar:
+                                alert("fixme");
+                                break;
                             default:
                                 if (openenings.length > 0) {
-                                    openenings[openenings.length - 1]["matches"].push(m);
+                                    InsertTestDefinition(openenings[openenings.length - 1], m);
                                 } else {
                                     if (currentToken.isGroup || currentToken.isOptional)
                                         currentToken = new maskToken();
-                                    currentToken.matches.push(m);
+                                    InsertTestDefinition(currentToken, m);
                                 }
                         }
                     }
@@ -522,8 +538,18 @@
                 }
 
                 function getActiveTests(pos) {
-                    if (pos != undefined) {
-                        var testPos = pos % getActiveMaskSet()['tests'].length;
+                    if (pos != undefined) { //enhance me for optionals and dynamic
+                        var maskTokens = getActiveMaskSet()["maskToken"], testPos = -1;
+                        for (var mtndx = 0; mtndx < maskTokens.length; mtndx++) {
+                            var mToken = maskTokens[mtndx];
+                            for (var tndx = 0; tndx < mToken.matches.length; tndx++) {
+                                testPos++;
+                                if (testPos == pos) {
+                                    return mToken.matches[tndx];
+                                }
+                            }
+                        }
+                        testPos = pos % getActiveMaskSet()['tests'].length;
                         return getActiveMaskSet()['tests'][testPos];
                     }
                     return getActiveMaskSet()['tests'];
@@ -934,7 +960,7 @@
                             if (ms["lastValidPosition"] >= highestValidPosition && ms["lastValidPosition"] == aml) {
                                 var msComplete = true;
                                 for (var i = 0; i <= aml; i++) {
-                                    var mask = isMask(i), testPos = determineTestPosition(i);
+                                    var mask = isMask(i);
                                     if ((mask && (buffer[i] == undefined || buffer[i] == getPlaceholder(i))) || (!mask && buffer[i] != getPlaceholder(i))) {
                                         msComplete = false;
                                         break;
