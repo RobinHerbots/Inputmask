@@ -324,6 +324,7 @@
                         this.isGroup = false;
                         this.isOptional = false;
                         this.isQuantifier = false;
+                        this.mask; //TODO contains the matches in placeholder form ~ to speedup the placeholder generation
                     };
                     function InsertTestDefinition(mtoken, element) {
                         var maskdef = opts.definitions[element], escaped = false, isOptional = mtoken.isOptional;
@@ -493,6 +494,10 @@
                             ms.push({
                                 "mask": newMask,
                                 "maskToken": analyseMask(newMask),
+                                //should contain for each validated position a ref to the masktoken in the form of indexes.  ex. 1,2,8 ~ maskTokens[1].matches[2].matches[8]
+                                //the buffer can be build upon these validPositions array
+                                //further validation start as from this index
+                                "validPositions": [],
                                 "_buffer": maskTemplate["mask"],
                                 "buffer": maskTemplate["mask"].slice(),
                                 "tests": getTestingChain(newMask),
@@ -537,6 +542,7 @@
                     return masksets[activeMasksetIndex];
                 }
 
+                //TODO should return all possible tests for a position { "test": ..., "mtndx": masktoken index also see above 1.2.8 example }
                 function getActiveTests(pos) {
                     if (pos != undefined) { //enhance me for optionals and dynamic
                         var maskTokens = getActiveMaskSet()["maskToken"], testPos = -1;
