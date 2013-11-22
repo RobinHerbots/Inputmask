@@ -87,131 +87,7 @@
                 androidchrome = navigator.userAgent.match(new RegExp("android.*chrome.*", "i")) !== null,
                 pasteEvent = isInputEventSupported('paste') && !msie10 ? 'paste' : isInputEventSupported('input') ? 'input' : "propertychange",
                 masksets,
-                activeMasksetIndex = 0;
-
-            if (typeof fn === "string") {
-                switch (fn) {
-                    case "mask":
-                        //resolve possible aliases given by options
-                        resolveAlias(opts.alias, options);
-                        masksets = generateMaskSets();
-                        if (masksets.length == 0) { return this; }
-
-                        return this.each(function () {
-                            maskScope($.extend(true, {}, masksets), 0).mask(this);
-                        });
-                    case "unmaskedvalue":
-                        var $input = $(this), input = this;
-                        if ($input.data('_inputmask')) {
-                            masksets = $input.data('_inputmask')['masksets'];
-                            activeMasksetIndex = $input.data('_inputmask')['activeMasksetIndex'];
-                            opts = $input.data('_inputmask')['opts'];
-                            return maskScope(masksets, activeMasksetIndex).unmaskedvalue($input);
-                        } else return $input.val();
-                    case "remove":
-                        return this.each(function () {
-                            var $input = $(this), input = this;
-                            if ($input.data('_inputmask')) {
-                                masksets = $input.data('_inputmask')['masksets'];
-                                activeMasksetIndex = $input.data('_inputmask')['activeMasksetIndex'];
-                                opts = $input.data('_inputmask')['opts'];
-                                //writeout the unmaskedvalue
-                                input._valueSet(maskScope(masksets, activeMasksetIndex).unmaskedvalue($input, true));
-                                //clear data
-                                $input.removeData('_inputmask');
-                                //unbind all events
-                                $input.unbind(".inputmask");
-                                $input.removeClass('focus.inputmask');
-                                //restore the value property
-                                var valueProperty;
-                                if (Object.getOwnPropertyDescriptor)
-                                    valueProperty = Object.getOwnPropertyDescriptor(input, "value");
-                                if (valueProperty && valueProperty.get) {
-                                    if (input._valueGet) {
-                                        Object.defineProperty(input, "value", {
-                                            get: input._valueGet,
-                                            set: input._valueSet
-                                        });
-                                    }
-                                } else if (document.__lookupGetter__ && input.__lookupGetter__("value")) {
-                                    if (input._valueGet) {
-                                        input.__defineGetter__("value", input._valueGet);
-                                        input.__defineSetter__("value", input._valueSet);
-                                    }
-                                }
-                                try { //try catch needed for IE7 as it does not supports deleting fns
-                                    delete input._valueGet;
-                                    delete input._valueSet;
-                                } catch (e) {
-                                    input._valueGet = undefined;
-                                    input._valueSet = undefined;
-
-                                }
-                            }
-                        });
-                        break;
-                    case "getemptymask": //return the default (empty) mask value, usefull for setting the default value in validation
-                        if (this.data('_inputmask')) {
-                            masksets = this.data('_inputmask')['masksets'];
-                            activeMasksetIndex = this.data('_inputmask')['activeMasksetIndex'];
-                            return masksets[activeMasksetIndex]['_buffer'].join('');
-                        }
-                        else return "";
-                    case "hasMaskedValue": //check wheter the returned value is masked or not; currently only works reliable when using jquery.val fn to retrieve the value 
-                        return this.data('_inputmask') ? !this.data('_inputmask')['opts'].autoUnmask : false;
-                    case "isComplete":
-                        masksets = this.data('_inputmask')['masksets'];
-                        activeMasksetIndex = this.data('_inputmask')['activeMasksetIndex'];
-                        opts = this.data('_inputmask')['opts'];
-                        return maskScope(masksets, activeMasksetIndex).isComplete(this[0]._valueGet().split(''));
-                    case "getmetadata": //return mask metadata if exists
-                        if (this.data('_inputmask')) {
-                            masksets = this.data('_inputmask')['masksets'];
-                            activeMasksetIndex = this.data('_inputmask')['activeMasksetIndex'];
-                            return masksets[activeMasksetIndex]['metadata'];
-                        }
-                        else return undefined;
-                    default:
-                        //check if the fn is an alias
-                        if (!resolveAlias(fn, options)) {
-                            //maybe fn is a mask so we try
-                            //set mask
-                            opts.mask = fn;
-                        }
-                        masksets = generateMaskSets();
-                        if (masksets.length == 0) { return this; }
-                        return this.each(function () {
-                            maskScope($.extend(true, {}, masksets), activeMasksetIndex).mask(this);
-                        });
-
-                        break;
-                }
-            } else if (typeof fn == "object") {
-                opts = $.extend(true, {}, $.inputmask.defaults, fn);
-
-                resolveAlias(opts.alias, fn); //resolve aliases
-                masksets = generateMaskSets();
-                if (masksets.length == 0) { return this; }
-                return this.each(function () {
-                    maskScope($.extend(true, {}, masksets), activeMasksetIndex).mask(this);
-                });
-            } else if (fn == undefined) {
-                //look for data-inputmask atribute - the attribute should only contain optipns
-                return this.each(function () {
-                    var attrOptions = $(this).attr("data-inputmask");
-                    if (attrOptions && attrOptions != "") {
-                        try {
-                            attrOptions = attrOptions.replace(new RegExp("'", "g"), '"');
-                            var dataoptions = $.parseJSON("{" + attrOptions + "}");
-                            $.extend(true, dataoptions, options);
-                            opts = $.extend(true, {}, $.inputmask.defaults, dataoptions);
-                            resolveAlias(opts.alias, dataoptions);
-                            opts.alias = undefined;
-                            $(this).inputmask(opts);
-                        } catch (ex) { } //need a more relax parseJSON
-                    }
-                });
-            }
+                activeMasksetIndex = 0;          
 
             //helper functions
             function isInputEventSupported(eventName) {
@@ -317,8 +193,9 @@
                 var ms = [];
                 var genmasks = []; //used to keep track of the masks that where processed, to avoid duplicates
                 var maskTokens = [];
-                function analyseMask(mask) { //TODO HANDLE ESCAPES
-                    var tokenizer = /(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[]()|\\]+|./g;
+                function analyseMask(mask) {
+                    var tokenizer = /(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[]()|\\]+|./g,
+                        escaped = false;
                     function maskToken() {
                         this.matches = [];
                         this.isGroup = false;
@@ -327,16 +204,17 @@
                         this.mask; //TODO contains the matches in placeholder form ~ to speedup the placeholder generation
                     };
                     function InsertTestDefinition(mtoken, element) {
-                        var maskdef = opts.definitions[element], escaped = false, isOptional = mtoken.isOptional;
+                        var maskdef = opts.definitions[element];
                         if (maskdef && !escaped) {
                             var prevalidators = maskdef["prevalidator"], prevalidatorsL = prevalidators ? prevalidators.length : 0;
                             for (var i = 1; i < maskdef.cardinality; i++) {
                                 var prevalidator = prevalidatorsL >= i ? prevalidators[i - 1] : [], validator = prevalidator["validator"], cardinality = prevalidator["cardinality"];
-                                mtoken.matches.push({ fn: validator ? typeof validator == 'string' ? new RegExp(validator) : new function () { this.test = validator; } : new RegExp("."), cardinality: cardinality ? cardinality : 1, optionality: isOptional, casing: maskdef["casing"], def: maskdef["definitionSymbol"] || element });
+                                mtoken.matches.push({ fn: validator ? typeof validator == 'string' ? new RegExp(validator) : new function () { this.test = validator; } : new RegExp("."), cardinality: cardinality ? cardinality : 1, optionality: mtoken.isOptional, casing: maskdef["casing"], def: maskdef["definitionSymbol"] || element });
                             }
-                            mtoken.matches.push({ fn: maskdef.validator ? typeof maskdef.validator == 'string' ? new RegExp(maskdef.validator) : new function () { this.test = maskdef.validator; } : new RegExp("."), cardinality: maskdef.cardinality, optionality: isOptional, casing: maskdef["casing"], def: maskdef["definitionSymbol"] || element });
+                            mtoken.matches.push({ fn: maskdef.validator ? typeof maskdef.validator == 'string' ? new RegExp(maskdef.validator) : new function () { this.test = maskdef.validator; } : new RegExp("."), cardinality: maskdef.cardinality, optionality: mtoken.isOptional, casing: maskdef["casing"], def: maskdef["definitionSymbol"] || element });
                         } else {
-                            mtoken.matches.push({ fn: null, cardinality: 0, optionality: isOptional, casing: null, def: element });
+                            mtoken.matches.push({ fn: null, cardinality: 0, optionality: mtoken.isOptional, casing: null, def: element });
+                            escaped = false;
                         }
                     }
                     var currentToken = new maskToken(),
@@ -387,7 +265,7 @@
                                 }
                                 break;
                             case opts.escapeChar:
-                                alert("fixme");
+                                escaped = true;
                                 break;
                             default:
                                 if (openenings.length > 0) {
@@ -546,14 +424,21 @@
                 function getActiveTests(pos) {
                     if (pos != undefined) { //enhance me for optionals and dynamic
                         var maskTokens = getActiveMaskSet()["maskToken"], testPos = -1;
-                        for (var mtndx = 0; mtndx < maskTokens.length; mtndx++) {
-                            var mToken = maskTokens[mtndx];
+                        function ResolveTestFromToken(maskToken) {
                             for (var tndx = 0; tndx < mToken.matches.length; tndx++) {
                                 testPos++;
                                 if (testPos == pos) {
-                                    return mToken.matches[tndx];
+                                    var match = mToken.matches[tndx];
+                                    console.log(typeof match + " " + JSON.stringify(match));
+                                    if (Object.prototype.toString.apply(t)  == "maskToken") {
+                                        alert('fuck');
+                                    } else return match;
                                 }
                             }
+                        }
+                        for (var mtndx = 0; mtndx < maskTokens.length; mtndx++) {
+                            var mToken = maskTokens[mtndx];
+                            return ResolveTestFromToken(mToken);
                         }
                         testPos = pos % getActiveMaskSet()['tests'].length;
                         return getActiveMaskSet()['tests'][testPos];
@@ -1690,6 +1575,130 @@
                 };
                 return this;
             };
+            
+            if (typeof fn === "string") {
+                switch (fn) {
+                    case "mask":
+                        //resolve possible aliases given by options
+                        resolveAlias(opts.alias, options);
+                        masksets = generateMaskSets();
+                        if (masksets.length == 0) { return this; }
+
+                        return this.each(function () {
+                            maskScope($.extend(true, {}, masksets), 0).mask(this);
+                        });
+                    case "unmaskedvalue":
+                        var $input = $(this), input = this;
+                        if ($input.data('_inputmask')) {
+                            masksets = $input.data('_inputmask')['masksets'];
+                            activeMasksetIndex = $input.data('_inputmask')['activeMasksetIndex'];
+                            opts = $input.data('_inputmask')['opts'];
+                            return maskScope(masksets, activeMasksetIndex).unmaskedvalue($input);
+                        } else return $input.val();
+                    case "remove":
+                        return this.each(function () {
+                            var $input = $(this), input = this;
+                            if ($input.data('_inputmask')) {
+                                masksets = $input.data('_inputmask')['masksets'];
+                                activeMasksetIndex = $input.data('_inputmask')['activeMasksetIndex'];
+                                opts = $input.data('_inputmask')['opts'];
+                                //writeout the unmaskedvalue
+                                input._valueSet(maskScope(masksets, activeMasksetIndex).unmaskedvalue($input, true));
+                                //clear data
+                                $input.removeData('_inputmask');
+                                //unbind all events
+                                $input.unbind(".inputmask");
+                                $input.removeClass('focus.inputmask');
+                                //restore the value property
+                                var valueProperty;
+                                if (Object.getOwnPropertyDescriptor)
+                                    valueProperty = Object.getOwnPropertyDescriptor(input, "value");
+                                if (valueProperty && valueProperty.get) {
+                                    if (input._valueGet) {
+                                        Object.defineProperty(input, "value", {
+                                            get: input._valueGet,
+                                            set: input._valueSet
+                                        });
+                                    }
+                                } else if (document.__lookupGetter__ && input.__lookupGetter__("value")) {
+                                    if (input._valueGet) {
+                                        input.__defineGetter__("value", input._valueGet);
+                                        input.__defineSetter__("value", input._valueSet);
+                                    }
+                                }
+                                try { //try catch needed for IE7 as it does not supports deleting fns
+                                    delete input._valueGet;
+                                    delete input._valueSet;
+                                } catch (e) {
+                                    input._valueGet = undefined;
+                                    input._valueSet = undefined;
+
+                                }
+                            }
+                        });
+                        break;
+                    case "getemptymask": //return the default (empty) mask value, usefull for setting the default value in validation
+                        if (this.data('_inputmask')) {
+                            masksets = this.data('_inputmask')['masksets'];
+                            activeMasksetIndex = this.data('_inputmask')['activeMasksetIndex'];
+                            return masksets[activeMasksetIndex]['_buffer'].join('');
+                        }
+                        else return "";
+                    case "hasMaskedValue": //check wheter the returned value is masked or not; currently only works reliable when using jquery.val fn to retrieve the value 
+                        return this.data('_inputmask') ? !this.data('_inputmask')['opts'].autoUnmask : false;
+                    case "isComplete":
+                        masksets = this.data('_inputmask')['masksets'];
+                        activeMasksetIndex = this.data('_inputmask')['activeMasksetIndex'];
+                        opts = this.data('_inputmask')['opts'];
+                        return maskScope(masksets, activeMasksetIndex).isComplete(this[0]._valueGet().split(''));
+                    case "getmetadata": //return mask metadata if exists
+                        if (this.data('_inputmask')) {
+                            masksets = this.data('_inputmask')['masksets'];
+                            activeMasksetIndex = this.data('_inputmask')['activeMasksetIndex'];
+                            return masksets[activeMasksetIndex]['metadata'];
+                        }
+                        else return undefined;
+                    default:
+                        //check if the fn is an alias
+                        if (!resolveAlias(fn, options)) {
+                            //maybe fn is a mask so we try
+                            //set mask
+                            opts.mask = fn;
+                        }
+                        masksets = generateMaskSets();
+                        if (masksets.length == 0) { return this; }
+                        return this.each(function () {
+                            maskScope($.extend(true, {}, masksets), activeMasksetIndex).mask(this);
+                        });
+
+                        break;
+                }
+            } else if (typeof fn == "object") {
+                opts = $.extend(true, {}, $.inputmask.defaults, fn);
+
+                resolveAlias(opts.alias, fn); //resolve aliases
+                masksets = generateMaskSets();
+                if (masksets.length == 0) { return this; }
+                return this.each(function () {
+                    maskScope($.extend(true, {}, masksets), activeMasksetIndex).mask(this);
+                });
+            } else if (fn == undefined) {
+                //look for data-inputmask atribute - the attribute should only contain optipns
+                return this.each(function () {
+                    var attrOptions = $(this).attr("data-inputmask");
+                    if (attrOptions && attrOptions != "") {
+                        try {
+                            attrOptions = attrOptions.replace(new RegExp("'", "g"), '"');
+                            var dataoptions = $.parseJSON("{" + attrOptions + "}");
+                            $.extend(true, dataoptions, options);
+                            opts = $.extend(true, {}, $.inputmask.defaults, dataoptions);
+                            resolveAlias(opts.alias, dataoptions);
+                            opts.alias = undefined;
+                            $(this).inputmask(opts);
+                        } catch (ex) { } //need a more relax parseJSON
+                    }
+                });
+            }
             return this;
         };
     }
