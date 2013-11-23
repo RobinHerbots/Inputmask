@@ -1177,7 +1177,7 @@
                                 var valueGet = $.valHooks.text && $.valHooks.text.get ? $.valHooks.text.get : function (elem) { return elem.value; };
                                 var valueSet = $.valHooks.text && $.valHooks.text.set ? $.valHooks.text.set : function (elem, value) { elem.value = value; return elem; };
 
-                                jQuery.extend($.valHooks, {
+                                $.extend($.valHooks, {
                                     text: {
                                         get: function (elem) {
                                             var $elem = $(elem);
