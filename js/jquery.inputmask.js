@@ -87,7 +87,7 @@
                 androidchrome = navigator.userAgent.match(new RegExp("android.*chrome.*", "i")) !== null,
                 pasteEvent = isInputEventSupported('paste') && !msie10 ? 'paste' : isInputEventSupported('input') ? 'input' : "propertychange",
                 masksets,
-                activeMasksetIndex = 0;          
+                activeMasksetIndex = 0;
 
             //helper functions
             function isInputEventSupported(eventName) {
@@ -203,17 +203,18 @@
                         this.isQuantifier = false;
                         this.mask; //TODO contains the matches in placeholder form ~ to speedup the placeholder generation
                     };
-                    function InsertTestDefinition(mtoken, element) {
+                    function InsertTestDefinition(mtoken, element, position) {
                         var maskdef = opts.definitions[element];
+                        position = position != undefined ? position : mtoken.matches.length;
                         if (maskdef && !escaped) {
                             var prevalidators = maskdef["prevalidator"], prevalidatorsL = prevalidators ? prevalidators.length : 0;
                             for (var i = 1; i < maskdef.cardinality; i++) {
                                 var prevalidator = prevalidatorsL >= i ? prevalidators[i - 1] : [], validator = prevalidator["validator"], cardinality = prevalidator["cardinality"];
-                                mtoken.matches.push({ fn: validator ? typeof validator == 'string' ? new RegExp(validator) : new function () { this.test = validator; } : new RegExp("."), cardinality: cardinality ? cardinality : 1, optionality: mtoken.isOptional, casing: maskdef["casing"], def: maskdef["definitionSymbol"] || element });
+                                mtoken.matches.splice(position++, 0, { fn: validator ? typeof validator == 'string' ? new RegExp(validator) : new function () { this.test = validator; } : new RegExp("."), cardinality: cardinality ? cardinality : 1, optionality: mtoken.isOptional, casing: maskdef["casing"], def: maskdef["definitionSymbol"] || element });
                             }
-                            mtoken.matches.push({ fn: maskdef.validator ? typeof maskdef.validator == 'string' ? new RegExp(maskdef.validator) : new function () { this.test = maskdef.validator; } : new RegExp("."), cardinality: maskdef.cardinality, optionality: mtoken.isOptional, casing: maskdef["casing"], def: maskdef["definitionSymbol"] || element });
+                            mtoken.matches.splice(position++, 0, { fn: maskdef.validator ? typeof maskdef.validator == 'string' ? new RegExp(maskdef.validator) : new function () { this.test = maskdef.validator; } : new RegExp("."), cardinality: maskdef.cardinality, optionality: mtoken.isOptional, casing: maskdef["casing"], def: maskdef["definitionSymbol"] || element });
                         } else {
-                            mtoken.matches.push({ fn: null, cardinality: 0, optionality: mtoken.isOptional, casing: null, def: element });
+                            mtoken.matches.splice(position++, 0, { fn: null, cardinality: 0, optionality: mtoken.isOptional, casing: null, def: element });
                             escaped = false;
                         }
                     }
@@ -271,8 +272,14 @@
                                 if (openenings.length > 0) {
                                     InsertTestDefinition(openenings[openenings.length - 1], m);
                                 } else {
-                                    if (currentToken.isGroup || currentToken.isOptional)
+                                    if (currentToken.isGroup) { //this is not a group but a normal mask => convert
+                                        currentToken.isGroup = false;
+                                        InsertTestDefinition(currentToken, opts.groupmarker.start, 0);
+                                        InsertTestDefinition(currentToken, opts.groupmarker.end);
+                                        maskTokens.pop();
+                                    } else if (currentToken.isOptional) {
                                         currentToken = new maskToken();
+                                    }
                                     InsertTestDefinition(currentToken, m);
                                 }
                         }
@@ -420,25 +427,35 @@
                     return masksets[activeMasksetIndex];
                 }
 
-                //TODO should return all possible tests for a position { "test": ..., "mtndx": masktoken index also see above 1.2.8 example }
+                //TODO should return all possible tests for a position { "test": ..., "locator": masktoken index also see above 1.2.8 example }
                 function getActiveTests(pos) {
+                    console.log("testing pos " + pos);
                     if (pos != undefined) { //enhance me for optionals and dynamic
-                        var maskTokens = getActiveMaskSet()["maskToken"], testPos = -1;
-                        function ResolveTestFromToken(maskToken) {
-                            for (var tndx = 0; tndx < mToken.matches.length; tndx++) {
-                                testPos++;
-                                if (testPos == pos) {
-                                    var match = mToken.matches[tndx];
-                                    console.log(typeof match + " " + JSON.stringify(match));
-                                    if (Object.prototype.toString.apply(t)  == "maskToken") {
-                                        alert('fuck');
-                                    } else return match;
-                                }
+                        var maskTokens = getActiveMaskSet()["maskToken"], testPos = 0, testLocator;
+
+                        function ResolveTestFromToken(maskToken, ndxInitializer) { //ndxInitilizer contains a set of indexes to speedup searches in the mtokens
+                            for (var tndx = 0; tndx < maskToken.matches.length; tndx++) {
+                                var match = maskToken.matches[tndx];
+                                if (testPos == pos && match.matches == undefined) {
+                                    testLocator.push(tndx);
+                                    console.log(">>> " + JSON.stringify(match));
+                                    return match;
+                                } else if (match.matches != undefined) {
+                                    testLocator.push(tndx);
+                                    match = ResolveTestFromToken(match, ndxInitializer);
+                                    if (match) return match;
+                                } else testPos++;
                             }
                         }
+
                         for (var mtndx = 0; mtndx < maskTokens.length; mtndx++) {
+                            testLocator = [mtndx];
                             var mToken = maskTokens[mtndx];
-                            return ResolveTestFromToken(mToken);
+                            var match = ResolveTestFromToken(mToken);
+                            if (testPos == pos) {
+                                console.log(JSON.stringify(testLocator) + " - " + JSON.stringify(match));
+                                return match;
+                            }
                         }
                         testPos = pos % getActiveMaskSet()['tests'].length;
                         return getActiveMaskSet()['tests'][testPos];
@@ -1575,7 +1592,7 @@
                 };
                 return this;
             };
-            
+
             if (typeof fn === "string") {
                 switch (fn) {
                     case "mask":
