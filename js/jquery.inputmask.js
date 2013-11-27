@@ -196,11 +196,11 @@
                 function analyseMask(mask) {
                     var tokenizer = /(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[]()|\\]+|./g,
                         escaped = false;
-                    function maskToken() {
+                    function maskToken(isGroup, isOptional, isQuantifier) {
                         this.matches = [];
-                        this.isGroup = false;
-                        this.isOptional = false;
-                        this.isQuantifier = false;
+                        this.isGroup = isGroup || false;
+                        this.isOptional = isOptional || false;
+                        this.isQuantifier = isQuantifier || false;
                         this.mask; //TODO contains the matches in placeholder form ~ to speedup the placeholder generation
                     };
                     function InsertTestDefinition(mtoken, element, position) {
@@ -242,22 +242,19 @@
                                 // optional opening
                                 if (!currentToken.isGroup && currentToken.matches.length > 0)
                                     maskTokens.push(currentToken);
-                                currentToken = new maskToken();
-                                currentToken.isOptional = true;
+                                currentToken = new maskToken(false, true);
                                 openenings.push(currentToken);
                                 break;
                             case opts.groupmarker.start:
                                 // Group opening
                                 if (!currentToken.isGroup && currentToken.matches.length > 0)
                                     maskTokens.push(currentToken);
-                                currentToken = new maskToken();
-                                currentToken.isGroup = true;
+                                currentToken = new maskToken(true);
                                 openenings.push(currentToken);
                                 break;
                             case opts.quantifiermarker.start:
                                 //Quantifier
-                                var quantifier = new maskToken();
-                                quantifier.isQuantifier = true;
+                                var quantifier = new maskToken(false, false, true);
                                 quantifier.matches.push(m);
                                 if (openenings.length > 0) {
                                     openenings[openenings.length - 1]["matches"].push(quantifier);
@@ -288,6 +285,23 @@
                     if (currentToken.matches.length > 0)
                         maskTokens.push(currentToken);
 
+                    if (opts.repeat > 0 || opts.repeat == "*" || opts.repeat == "+") {
+                        var groupToken = new maskToken(true),
+                        quantifierToken = new maskToken(false, false, true);
+                        var qntfr = opts.repeat == "*" ? qntfr = "0,*" : (opts.repeat == "+" ? qntfr = "1,*" : (opts.greedy ? opts.repeat : "1," + opts.repeat));
+                        quantifierToken.matches.push(opts.quantifiermarker.start + qntfr + opts.quantifiermarker.end);
+                        if (maskTokens.length > 1) {
+                            groupToken.matches = maskTokens;
+                            groupToken.matches.push(quantifierToken);
+                            maskTokens = [groupToken];
+                        } else {
+                            maskTokens[0].matches.push(quantifierToken);
+
+                        }
+                    }
+
+
+                    console.log(JSON.stringify(maskTokens));
                     return maskTokens;
                 }
 
