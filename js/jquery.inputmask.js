@@ -300,7 +300,6 @@
                         }
                     }
 
-
                     console.log(JSON.stringify(maskTokens));
                     return maskTokens;
                 }
@@ -448,29 +447,51 @@
                         var maskTokens = getActiveMaskSet()["maskToken"], testPos = 0, testLocator;
 
                         function ResolveTestFromToken(maskToken, ndxInitializer) { //ndxInitilizer contains a set of indexes to speedup searches in the mtokens
-                            for (var tndx = 0; tndx < maskToken.matches.length; tndx++) {
-                                var match = maskToken.matches[tndx];
+                            function handleMatch(match) {
                                 if (testPos == pos && match.matches == undefined) {
-                                    testLocator.push(tndx);
                                     console.log(">>> " + JSON.stringify(match));
                                     return match;
                                 } else if (match.matches != undefined) {
-                                    testLocator.push(tndx);
-                                    match = ResolveTestFromToken(match, ndxInitializer);
-                                    if (match) return match;
+                                    //do stuff
+                                    if (match.isGroup) {
+                                        console.log('isGroup');
+                                    } else if (match.isOptional) {
+                                        console.log('isOptional');
+                                    } else if (match.isQuantifier) {
+                                        console.log('isQuantifier ' + JSON.stringify(maskToken));
+                                        for (var qndx = 0; qndx < 10; qndx++) {
+                                            match = handleMatch(maskToken.matches[tndx - 1]);
+                                            if (match) {
+                                                console.log("quantifier match ;-)");
+                                                return match;
+                                            } else testPos++;
+                                        }
+                                    } else {
+                                        match = ResolveTestFromToken(match, ndxInitializer);
+                                        if (match) return match;
+                                    }
                                 } else testPos++;
+                            }
+
+                            for (var tndx = 0; tndx < maskToken.matches.length; tndx++) {
+                                var match = handleMatch(maskToken.matches[tndx]);
+                                if (testPos == pos) {
+                                    testLocator.push(tndx);
+                                    return match;
+                                } 
                             }
                         }
 
                         for (var mtndx = 0; mtndx < maskTokens.length; mtndx++) {
                             testLocator = [mtndx];
-                            var mToken = maskTokens[mtndx];
-                            var match = ResolveTestFromToken(mToken);
+                            var match = ResolveTestFromToken(maskTokens[mtndx]);
                             if (testPos == pos) {
                                 console.log(JSON.stringify(testLocator) + " - " + JSON.stringify(match));
                                 return match;
                             }
                         }
+
+                        console.log("damn - test not found " + pos);
                         testPos = pos % getActiveMaskSet()['tests'].length;
                         return getActiveMaskSet()['tests'][testPos];
                     }
