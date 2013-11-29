@@ -354,6 +354,7 @@
                                 "_buffer": maskTemplate["mask"],
                                 "buffer": maskTemplate["mask"].slice(),
                                 "tests": getTestingChain(newMask),
+                                "tests2": {},
                                 "lastValidPosition": -1,
                                 "greedy": maskTemplate["greedy"],
                                 "repeat": maskTemplate["repeat"],
@@ -370,6 +371,7 @@
                                 "_buffer": maskTemplate["mask"],
                                 "buffer": maskTemplate["mask"].slice(),
                                 "tests": getTestingChain(newMask),
+                                "tests2": {},
                                 "lastValidPosition": -1,
                                 "greedy": maskTemplate["greedy"],
                                 "repeat": maskTemplate["repeat"],
@@ -399,6 +401,7 @@
                                 "_buffer": maskTemplate["mask"],
                                 "buffer": maskTemplate["mask"].slice(),
                                 "tests": getTestingChain(newMask),
+                                "tests2": {},
                                 "lastValidPosition": -1,
                                 "greedy": maskTemplate["greedy"],
                                 "repeat": maskTemplate["repeat"],
@@ -475,25 +478,28 @@
 
                             for (var tndx = 0; tndx < maskToken.matches.length; tndx++) {
                                 var match = handleMatch(maskToken.matches[tndx]);
-                                if (testPos == pos) {
+                                if (match && testPos == pos) {
                                     testLocator.push(tndx);
                                     return match;
                                 } 
                             }
                         }
 
+						if(getActiveMaskSet()['tests2'][pos]){ //just a test
+							console.log("tests2 cache hit");
+							return getActiveMaskSet()['tests2'][pos];
+						}
                         for (var mtndx = 0; mtndx < maskTokens.length; mtndx++) {
                             testLocator = [mtndx];
                             var match = ResolveTestFromToken(maskTokens[mtndx]);
-                            if (testPos == pos) {
+                            if (match && testPos == pos) {
                                 console.log(JSON.stringify(testLocator) + " - " + JSON.stringify(match));
+                                getActiveMaskSet()['tests2'][pos] = match;
                                 return match;
                             }
                         }
 
-                        console.log("damn - test not found " + pos);
-                        testPos = pos % getActiveMaskSet()['tests'].length;
-                        return getActiveMaskSet()['tests'][testPos];
+                    	return { fn: null, cardinality: 0, optionality: true, casing: null, def: "" };
                     }
                     return getActiveMaskSet()['tests'];
                 }
