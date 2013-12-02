@@ -202,6 +202,7 @@
                         this.isOptional = isOptional || false;
                         this.isQuantifier = isQuantifier || false;
                         this.mask; //TODO contains the matches in placeholder form ~ to speedup the placeholder generation
+                        this.quantifier = { min: 1, max: 1 };
                     };
                     function InsertTestDefinition(mtoken, element, position) {
                         var maskdef = opts.definitions[element];
@@ -255,7 +256,16 @@
                             case opts.quantifiermarker.start:
                                 //Quantifier
                                 var quantifier = new maskToken(false, false, true);
-                                quantifier.matches.push(m);
+
+                                if (m == "*") quantifier.quantifier = { min: 0, max: "*" };
+                                else if (m == "*") quantifier.quantifier = { min: 1, max: "+" };
+                                else {
+                                    m = m.replace(/[{}]/g, "");
+                                    var mq = m.split(",");
+                                    if (mq.length == 1) quantifier.quantifier = { min: mq[0], max: mq[0] };
+                                    else quantifier.quantifier = { min: mq[0], max: mq[1] };
+                                }
+
                                 if (openenings.length > 0) {
                                     openenings[openenings.length - 1]["matches"].push(quantifier);
                                 } else {
@@ -288,8 +298,7 @@
                     if (opts.repeat > 0 || opts.repeat == "*" || opts.repeat == "+") {
                         var groupToken = new maskToken(true),
                         quantifierToken = new maskToken(false, false, true);
-                        var qntfr = opts.repeat == "*" ? qntfr = "0,*" : (opts.repeat == "+" ? qntfr = "1,*" : (opts.greedy ? opts.repeat : "1," + opts.repeat));
-                        quantifierToken.matches.push(opts.quantifiermarker.start + qntfr + opts.quantifiermarker.end);
+                        quantifierToken.quantifier = opts.repeat == "*" ? { min: 0, max: "*" } : (opts.repeat == "+" ? { min: 1, max: "+" } : { min: opts.greedy ? opts.repeat : 1, max: opts.repeat });
                         if (maskTokens.length > 1) {
                             groupToken.matches = maskTokens;
                             groupToken.matches.push(quantifierToken);
@@ -462,17 +471,20 @@
                                         console.log('isOptional');
                                     } else if (match.isQuantifier) {
                                         console.log('isQuantifier ' + JSON.stringify(maskToken));
-                                        for (var qndx = 0; qndx < 10; qndx++) {
+                                        var qt = match;
+                                        for (var qndx = qt.quantifier.min; qndx < qt.quantifier.max; qndx++) {
                                             match = handleMatch(maskToken.matches[tndx - 1]);
                                             if (match) {
-                                                console.log("quantifier match ;-)");
+                                                console.log("quantifier match ;-) " + JSON.stringify(match) + " - " + testPos);
                                                 return match;
-                                            } else testPos++;
+                                            }
+                                            console.log("quantifier nomatch ;-) " + JSON.stringify(match) + " - " + testPos);
                                         }
                                     } else {
                                         match = ResolveTestFromToken(match, ndxInitializer);
                                         if (match) return match;
                                     }
+                                  //  testPos++;
                                 } else testPos++;
                             }
 
@@ -481,14 +493,14 @@
                                 if (match && testPos == pos) {
                                     testLocator.push(tndx);
                                     return match;
-                                } 
+                                }
                             }
                         }
 
-						if(getActiveMaskSet()['tests2'][pos]){ //just a test
-							console.log("tests2 cache hit");
-							return getActiveMaskSet()['tests2'][pos];
-						}
+                        if (getActiveMaskSet()['tests2'][pos]) { //just a test
+                            console.log("tests2 cache hit");
+                            return getActiveMaskSet()['tests2'][pos];
+                        }
                         for (var mtndx = 0; mtndx < maskTokens.length; mtndx++) {
                             testLocator = [mtndx];
                             var match = ResolveTestFromToken(maskTokens[mtndx]);
@@ -499,7 +511,7 @@
                             }
                         }
 
-                    	return { fn: null, cardinality: 0, optionality: true, casing: null, def: "" };
+                        return { fn: null, cardinality: 0, optionality: true, casing: null, def: "" };
                     }
                     return getActiveMaskSet()['tests'];
                 }
