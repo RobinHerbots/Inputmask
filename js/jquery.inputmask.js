@@ -818,14 +818,14 @@
                     if (writeOut) input._valueSet(""); //initial clear
                     var ml = getMaskLength();
                     $.each(inputValue, function (ndx, charCode) {
-                        if(intelliCheck === true) { 
-                        	var p = getActiveMaskSet()["p"], lvp = p == -1 ? p : seekPrevious(p),
+                        if (intelliCheck === true) {
+                            var p = getActiveMaskSet()["p"], lvp = p == -1 ? p : seekPrevious(p),
                         	pos = lvp == -1 ? ndx : seekNext(lvp);
                             if ($.inArray(charCode, getActiveBufferTemplate().slice(lvp + 1, pos)) == -1) {
-                            	$(input).trigger("_keypress", [true, charCode.charCodeAt(0), writeOut, strict, ndx]);
-                        	}
+                                $(input).trigger("_keypress", [true, charCode.charCodeAt(0), writeOut, strict, ndx]);
+                            }
                         } else {
-                          	$(input).trigger("_keypress", [true, charCode.charCodeAt(0), writeOut, strict, ndx]);
+                            $(input).trigger("_keypress", [true, charCode.charCodeAt(0), writeOut, strict, ndx]);
                         }
                     });
 
@@ -1647,7 +1647,7 @@
                                 valueOnFocus = getActiveBuffer().join('');
                             } else {
                                 writeBuffer(input, buffer);
-                                caret(input, 0, getMaskLength());
+                                caret(input, TranslatePosition(0), TranslatePosition(getMaskLength()));
                             }
                         }
                     }
