@@ -1626,7 +1626,11 @@
                                 valueOnFocus = getActiveBuffer().join('');
                             } else {
                                 writeBuffer(input, buffer);
-                                caret(input, 0, getMaskLength());
+                                if (buffer.join('') == getActiveBufferTemplate().join('') && $.inArray(opts.radixPoint, buffer) != -1) {
+                                    caret(input, TranslatePosition(0));
+                                    $input.click();
+                                } else
+                                    caret(input, TranslatePosition(0), TranslatePosition(getMaskLength()));
                             }
                         }
                     }
