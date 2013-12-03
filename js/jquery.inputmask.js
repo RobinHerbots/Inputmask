@@ -1296,15 +1296,12 @@
                                 var p = getBufferElement(buffer, j);
                                 if (p != getPlaceHolder(j)) {
                                     if (j < getMaskLength() && isValid(i, p, true) !== false && getActiveTests()[determineTestPosition(i)].def == getActiveTests()[determineTestPosition(j)].def) {
-                                        setBufferElement(buffer, i, getBufferElement(buffer, j), true);
-                                        if (j < end) {
-                                            setReTargetPlaceHolder(buffer, j); //cleanup next position
-                                        }
+                                        setBufferElement(buffer, i, p, true);
                                     } else {
                                         if (isMask(i))
                                             break;
                                     }
-                                } //else if (c == undefined) break;
+                                }
                             } else {
                                 setReTargetPlaceHolder(buffer, i);
                             }
@@ -1323,30 +1320,25 @@
                         return start; //return the used start position
                     }
 
-                    function shiftR(start, end, c, full) { //full => behave like a push right ~ do not stop on placeholders
+                    function shiftR(start, end, c) {
                         var buffer = getActiveBuffer();
-                        for (var i = start; i <= end && i < getMaskLength() ; i++) {
-                            if (isMask(i)) {
-                                var t = getBufferElement(buffer, i, true);
-                                setBufferElement(buffer, i, c, true);
-                                if (t != getPlaceHolder(i)) {
-                                    var j = seekNext(i);
-                                    if (j < getMaskLength()) {
-                                        if (isValid(j, t, true) !== false && getActiveTests()[determineTestPosition(i)].def == getActiveTests()[determineTestPosition(j)].def)
-                                            c = t;
-                                        else {
-                                            if (isMask(j))
-                                                break;
-                                            else c = t;
-                                        }
-                                    } else break;
-                                } else {
-                                    c = t;
-                                    if (full !== true) break;
-                                }
-                            } else
-                                setReTargetPlaceHolder(buffer, i);
+                        if (getBufferElement(buffer, start, true) != getPlaceHolder(start)) {
+                            for (var i = seekPrevious(end); i > start && i >= 0; i--) {
+                                if (isMask(i)) {
+                                    var j = seekPrevious(i);
+                                    var t = getBufferElement(buffer, j);
+                                    if (t != getPlaceHolder(j)) {
+                                        if (isValid(j, t, true) !== false && getActiveTests()[determineTestPosition(i)].def == getActiveTests()[determineTestPosition(j)].def) {
+                                            setBufferElement(buffer, i, t, true);
+                                            setReTargetPlaceHolder(buffer, j);
+                                        } else break;
+                                    }
+                                } else
+                                    setReTargetPlaceHolder(buffer, i);
+                            }
                         }
+                        if (c != undefined && getBufferElement(buffer, start) == getPlaceHolder(start))
+                            setBufferElement(buffer, start, c);
                         var lengthBefore = buffer.length;
                         if (getActiveMaskSet()["greedy"] == false) {
                             var trbuffer = truncateInput(buffer.join('')).split('');
@@ -1514,7 +1506,7 @@
                                         $.each(masksets, function (ndx, lmnt) {
                                             if (typeof (lmnt) == "object") {
                                                 activeMasksetIndex = ndx;
-                                                shiftR(pos.begin, getMaskLength(), getPlaceHolder(pos.begin), true);
+                                                shiftR(pos.begin, getMaskLength());
                                                 getActiveMaskSet()["lastValidPosition"] = seekNext(getActiveMaskSet()["lastValidPosition"]);
                                             }
                                         });
@@ -1557,7 +1549,7 @@
                                                     lastUnmaskedPosition = lastUnmaskedPosition == 0 ? -1 : seekPrevious(lastUnmaskedPosition);
                                                 }
                                                 if (lastUnmaskedPosition >= p) {
-                                                    shiftR(p, buffer.length, c);
+                                                    shiftR(p, getMaskLength(), c);
                                                     //shift the lvp if needed
                                                     var lvp = getActiveMaskSet()["lastValidPosition"], nlvp = seekNext(lvp);
                                                     if (nlvp != getMaskLength() && lvp >= p && (getBufferElement(getActiveBuffer(), nlvp, true) != getPlaceHolder(nlvp))) {
