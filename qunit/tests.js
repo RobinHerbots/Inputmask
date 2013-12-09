@@ -938,6 +938,17 @@ test("inputmask(\"mm/yyyy\") - input 31973", function () {
     $("#testmask").remove();
 });
 
+test("inputmask(\"mm/dd/yyyy\") - select some input 1 - Guamaso", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("mm/dd/yyyy");
+
+    $("#testmask")[0].focus();
+	caret($("#testmask")[0], 0, 5);
+    $("#testmask").Type("1");
+    equal($("#testmask").val(), "1m/dd/yyyy", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
 module("Numeric.Extensions");
 test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - input 12345.123", function () {
     $('body').append('<input type="text" id="testmask" />');
