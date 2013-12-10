@@ -1,7 +1,7 @@
 #jquery.inputmask
 
 Copyright (c) 2010 - 2013 Robin Herbots
-Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
+Licensed under the MIT license (https://github.com/RobinHerbots/jquery.inputmask/blob/2.x/LICENSE)
 
 jquery.inputmask is a jquery plugin which create an input mask.
 
