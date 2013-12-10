@@ -29,6 +29,7 @@
                 aliases: {}, //aliases definitions => see jquery.inputmask.extensions.js
                 onKeyUp: $.noop, //override to implement autocomplete on certain keys for example
                 onKeyDown: $.noop, //override to implement autocomplete on certain keys for example
+                onUnMask: undefined, //executes after unmasking to allow postprocessing of the unmaskedvalue.  args => maskedValue, unmaskedValue
                 showMaskOnFocus: true, //show the mask-placeholder when the input has focus
                 showMaskOnHover: true, //show the mask-placeholder when hovering the empty input
                 onKeyValidation: $.noop, //executes on every key-press with the result of isValid. Params: result, opts
@@ -861,7 +862,8 @@
                         var umValue = $.map(getActiveBuffer(), function (element, index) {
                             return isMask(index) && isValid(index, element, true) ? element : null;
                         });
-                        return (isRTL ? umValue.reverse() : umValue).join('');
+                        var unmaskedValue = (isRTL ? umValue.reverse() : umValue).join('');
+                        return opts.onUnMask != undefined ? opts.onUnMask.call(this, getActiveBuffer().join(''), unmaskedValue) : unmaskedValue;
                     } else {
                         return $input[0]._valueGet();
                     }

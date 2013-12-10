@@ -132,6 +132,18 @@ $(document).ready(function(){
 });
 ```
 
+### onUnMask
+Executes after unmasking to allow post-processing of the unmaskedvalue.  The arguments to the function are maskedValue, unmaskedValue.
+
+```javascript
+$(document).ready(function(){
+   $("#number").inputmask("decimal", { onUnMask: function(maskedValue, unmaskedValue) {
+		//do something with the value
+		return unmaskedValue;
+   }});
+});
+```
+
 ### set a value and apply mask
 
 this can be done with the traditionnal jquery.val function (all browsers) or javascript value property for browsers which implement lookupGetter or getOwnPropertyDescriptor
