@@ -194,6 +194,10 @@
                 var genmasks = []; //used to keep track of the masks that where processed, to avoid duplicates
                 var maskTokens = [];
                 function analyseMask(mask) {
+                    if (opts.numericInput) {
+                        mask = mask.split('').reverse().join('');
+                    }
+
                     var tokenizer = /(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[]()|\\]+|./g,
                         escaped = false;
                     function maskToken(isGroup, isOptional, isQuantifier) {
@@ -1316,22 +1320,22 @@
 
                     function shiftR(start, end, c) {
                         var buffer = getActiveBuffer();
-                        if (getBufferElement(buffer, start, true) != getPlaceHolder(start)) {
+                        if (getBufferElement(buffer, start, true) != getPlaceholder(start)) {
                             for (var i = seekPrevious(end); i > start && i >= 0; i--) {
                                 if (isMask(i)) {
                                     var j = seekPrevious(i);
                                     var t = getBufferElement(buffer, j);
-                                    if (t != getPlaceHolder(j)) {
+                                    if (t != getPlaceholder(j)) {
                                         if (isValid(j, t, true) !== false && getActiveTests()[determineTestPosition(i)].def == getActiveTests()[determineTestPosition(j)].def) {
                                             setBufferElement(buffer, i, t, true);
-                                            setPlaceholder(buffer, j);
+                                            setPlaceholder(j);
                                         } else break;
                                     }
                                 } else
-                                    setPlaceholder(buffer, i);
+                                    setPlaceholder(i);
                             }
                         }
-                        if (c != undefined && getBufferElement(buffer, start) == getPlaceHolder(start))
+                        if (c != undefined && getBufferElement(buffer, start) == getPlaceholder(start))
                             setBufferElement(buffer, start, c);
                         var lengthBefore = buffer.length;
                         if (getActiveMaskSet()["greedy"] == false) {
