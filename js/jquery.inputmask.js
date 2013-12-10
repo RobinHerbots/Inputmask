@@ -262,14 +262,10 @@
                                 //Quantifier
                                 var quantifier = new maskToken(false, false, true);
 
-                                if (m == "*") quantifier.quantifier = { min: 0, max: "*" };
-                                else if (m == "*") quantifier.quantifier = { min: 1, max: "+" };
-                                else {
-                                    m = m.replace(/[{}]/g, "");
-                                    var mq = m.split(",");
-                                    if (mq.length == 1) quantifier.quantifier = { min: mq[0], max: mq[0] };
-                                    else quantifier.quantifier = { min: mq[0], max: mq[1] };
-                                }
+                                m = m.replace(/[{}]/g, "");
+                                var mq = m.split(",");
+                                if (mq.length == 1) quantifier.quantifier = { min: mq[0], max: mq[0] };
+                                else quantifier.quantifier = { min: mq[0], max: mq[1] };
 
                                 if (openenings.length > 0) {
                                     openenings[openenings.length - 1]["matches"].push(quantifier);
@@ -301,20 +297,22 @@
                         maskTokens.push(currentToken);
 
                     if (opts.repeat > 0 || opts.repeat == "*" || opts.repeat == "+") {
+                        var groupedMaskToken = new maskToken(false, false, false);
                         var groupToken = new maskToken(true),
                         quantifierToken = new maskToken(false, false, true);
-                        quantifierToken.quantifier = opts.repeat == "*" ? { min: 0, max: "*" } : (opts.repeat == "+" ? { min: 1, max: "+" } : { min: opts.greedy ? opts.repeat : 1, max: opts.repeat });
+                        quantifierToken.quantifier = opts.repeat == "*" ? { min: 0, max: "*" } : (opts.repeat == "+" ? { min: 1, max: "*" } : { min: opts.greedy ? opts.repeat : 1, max: opts.repeat });
                         if (maskTokens.length > 1) {
                             groupToken.matches = maskTokens;
-                            groupToken.matches.push(quantifierToken);
-                            maskTokens = [groupToken];
+                            groupedMaskToken.matches.push(groupToken);
+                            groupedMaskToken.matches.push(quantifierToken);
                         } else {
-                            maskTokens[0].matches.push(quantifierToken);
-
+                            groupToken.matches = maskTokens[0].matches;
+                            groupedMaskToken.matches.push(groupToken);
+                            groupedMaskToken.matches.push(quantifierToken);
                         }
+                        maskTokens = [groupedMaskToken];
                     }
 
-                    console.log(JSON.stringify(maskTokens));
                     return maskTokens;
                 }
 
@@ -459,37 +457,34 @@
 
                 //TODO should return all possible tests for a position { "test": ..., "locator": masktoken index also see above 1.2.8 example }
                 function getActiveTests(pos) {
-                    console.log("testing pos " + pos);
                     if (pos != undefined) { //enhance me for optionals and dynamic
                         var maskTokens = getActiveMaskSet()["maskToken"], testPos = 0, testLocator;
 
                         function ResolveTestFromToken(maskToken, ndxInitializer) { //ndxInitilizer contains a set of indexes to speedup searches in the mtokens
                             function handleMatch(match) {
                                 if (testPos == pos && match.matches == undefined) {
-                                    console.log(">>> " + JSON.stringify(match));
                                     return match;
                                 } else if (match.matches != undefined) {
                                     //do stuff
                                     if (match.isGroup) {
-                                        console.log('isGroup');
+                                        match = ResolveTestFromToken(match, ndxInitializer);
+                                        if (match) return match;
                                     } else if (match.isOptional) {
-                                        console.log('isOptional');
+                                        match = ResolveTestFromToken(match, ndxInitializer);
+                                        if (match) return match;
                                     } else if (match.isQuantifier) {
-                                        console.log('isQuantifier ' + JSON.stringify(maskToken));
                                         var qt = match;
-                                        for (var qndx = qt.quantifier.min; qndx < qt.quantifier.max; qndx++) {
+                                        for (var qndx = 0; qndx < isNaN(qt.quantifier.max) ? qndx + 1 : qt.quantifier.max; qndx++) {
                                             match = handleMatch(maskToken.matches[tndx - 1]);
                                             if (match) {
-                                                console.log("quantifier match ;-) " + JSON.stringify(match) + " - " + testPos);
                                                 return match;
                                             }
-                                            console.log("quantifier nomatch ;-) " + JSON.stringify(match) + " - " + testPos);
                                         }
                                     } else {
                                         match = ResolveTestFromToken(match, ndxInitializer);
                                         if (match) return match;
                                     }
-                                  //  testPos++;
+                                    //  testPos++;
                                 } else testPos++;
                             }
 
@@ -503,14 +498,13 @@
                         }
 
                         if (getActiveMaskSet()['tests2'][pos]) { //just a test
-                            console.log("tests2 cache hit");
+                            //console.log("tests2 cache hit " + JSON.stringify(getActiveMaskSet()['tests2'][pos]));
                             return getActiveMaskSet()['tests2'][pos];
                         }
                         for (var mtndx = 0; mtndx < maskTokens.length; mtndx++) {
                             testLocator = [mtndx];
                             var match = ResolveTestFromToken(maskTokens[mtndx]);
                             if (match && testPos == pos) {
-                                console.log(JSON.stringify(testLocator) + " - " + JSON.stringify(match));
                                 getActiveMaskSet()['tests2'][pos] = match;
                                 return match;
                             }
@@ -857,7 +851,7 @@
                     return unmaskedvalue($input, skipDatepickerCheck);
                 };
                 function unmaskedvalue($input, skipDatepickerCheck) {
-                    if (getActiveTests() && (skipDatepickerCheck === true || !$input.hasClass('hasDatepicker'))) {
+                    if ($input.data('_inputmask') && (skipDatepickerCheck === true || !$input.hasClass('hasDatepicker'))) {
                         //checkVal(input, false, true);
                         var umValue = $.map(getActiveBuffer(), function (element, index) {
                             return isMask(index) && isValid(index, element, true) ? element : null;
@@ -1323,12 +1317,12 @@
                     function shiftR(start, end, c) {
                         var buffer = getActiveBuffer();
                         if (getBufferElement(buffer, start, true) != getPlaceholder(start)) {
-                            for (var i = seekPrevious(end); i > start && i >= 0; i--) {
+                            for (var i = seekPrevious(end) ; i > start && i >= 0; i--) {
                                 if (isMask(i)) {
                                     var j = seekPrevious(i);
                                     var t = getBufferElement(buffer, j);
                                     if (t != getPlaceholder(j)) {
-                                        if (isValid(j, t, true) !== false && getActiveTests()[determineTestPosition(i)].def == getActiveTests()[determineTestPosition(j)].def) {
+                                        if (isValid(j, t, true) !== false && getActiveTests(i).def == getActiveTests(j).def) {
                                             setBufferElement(buffer, i, t, true);
                                             setPlaceholder(j);
                                         } else break;
