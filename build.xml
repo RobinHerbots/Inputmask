@@ -97,6 +97,8 @@
 			 <arg value="${NugetExe}"/>
 			 <arg value="pack"/>
 			 <arg value="../nuget/${nuspeclinux}"/>
+			 <arg value="-BasePath"/>
+			 <arg value="../"/>
  			 <arg value="-OutputDirectory"/>
 			 <arg value="../${distdir}"/>
         </exec>
