@@ -428,7 +428,7 @@ Casing can be null, "upper" or "lower"
             cardinality: 1,
             casing: "upper"
         }
-    });`
+    });
 ```
 
 Include jquery.inputmask.extensions.js for using the A and # definitions.
