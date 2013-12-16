@@ -1,9 +1,9 @@
 #jquery.inputmask
 
 Copyright (c) 2010 - 2013 Robin Herbots
-Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
+Licensed under the MIT license (http://opensource.org/licenses/mit-license.php)
 
-jquery.inputmask is a jquery plugin which create an input mask.
+jquery.inputmask is a jQuery plugin which create an input mask.
 
 An inputmask helps the user with the input by ensuring a predefined format. This can be useful for dates, numerics, phone numbers, ...
 
@@ -28,7 +28,7 @@ Demo page see http://robinherbots.github.io/jquery.inputmask
 
 ## Usage:
 
-Include the js-files which you can find in the dist-folder. You have the bundled file which contains the main plugin code and also all extensions. (date, numerics, other) or if you prefer to only include some parts, use the separate js-files in the dist/min folder.
+Include the js-files which you can find in the dist-folder. You have the bundled file which contains the main plugin code and also all extensions (date, numerics, other) or if you prefer to only include some parts, use the separate js-files in the dist/min folder.
 
 The minimum to include is the jquery.inputmask.js
 
@@ -63,7 +63,7 @@ $(document).ready(function(){
 #### Default masking definitions
 
   - 9 : numeric
-  - a : alphabetic
+  - a : alphabetical
   - * : alphanumeric 
 
 There are more definitions defined within the extensions.  
@@ -146,7 +146,7 @@ $(document).ready(function(){
 
 ### set a value and apply mask
 
-this can be done with the traditionnal jquery.val function (all browsers) or javascript value property for browsers which implement lookupGetter or getOwnPropertyDescriptor
+this can be done with the traditional jquery.val function (all browsers) or JavaScript value property for browsers which implement lookupGetter or getOwnPropertyDescriptor
 
 ```javascript
 $(document).ready(function(){
@@ -157,7 +157,7 @@ $(document).ready(function(){
 });
 ```
 
-with the autoUnmaskoption you can change the return of $.fn.val (or value property)  to unmaskedvalue or the maskedvalue
+with the autoUnmaskoption you can change the return of $.fn.val (or value property) to unmaskedvalue or the maskedvalue
 
 ```javascript
 $(document).ready(function(){
@@ -181,12 +181,12 @@ Next define your validator.  The validator can be a regular expression or a func
 Cardinality specifies how many characters are represented and validated for the definition.
 
 ##### prevalidator
- The prevalidator option is 
+The prevalidator option is 
 used to validate the characters before the definition cardinality is reached. (see 'j' example)
 
 ##### definitionSymbol
 When you insert or delete characters, they are only shifted when the definition type is the same.  This behavior can be overridden
-by giving a definitionSymbol. (see example x, y, z, which can be used for ip-address masking, the validation is different, but it is allowed to shift the characteres between the definitions)
+by giving a definitionSymbol. (see example x, y, z, which can be used for ip-address masking, the validation is different, but it is allowed to shift the characters between the definitions)
 
 ```javascript
 $.extend($.inputmask.defaults.definitions, {
@@ -322,7 +322,7 @@ skipOptionalPartCharacter: " ",
 ```
 Input => 121234 1234      mask => (12) 1234-1234     (trigger complete)  
 
-When `clearMaskOnLostFocus: true` is set in the options (default), the mask will clearout the optional part when it is not filled in and this only in case the optional part is at the end of the mask.
+When `clearMaskOnLostFocus: true` is set in the options (default), the mask will clear out the optional part when it is not filled in and this only in case the optional part is at the end of the mask.
 
 For example, given:
 
@@ -346,7 +346,7 @@ The initial mask shown will be "_____" instead of "_____-____".
 ### Multiple masks
 
 You can define multiple mask for your input.  Depending on the input the masking will switch between the defined masks.  
-This can be usefull when the masks are too different to solve it with optional parts.
+This can be useful when the masks are too different to solve it with optional parts.
 
 ```javascript
   $(selector).inputmask({ mask: ["999.999", "aa-aa-aa"]});
@@ -354,7 +354,7 @@ This can be usefull when the masks are too different to solve it with optional p
 
 #### inputmask-multi format
 
-You can also pass an array for masking with the a format alike the format used in inputmask-multi
+You can also pass an array for masking with the a format like the format used in inputmask-multi
 
 ```javascript
 var phones = [
@@ -414,7 +414,7 @@ $(document).ready(function(){
 
 ### auto upper/lower- casing inputmask
 
-You can define whitin a definition to automatically lowercase or uppercase the entry in an input by giving the casing.  
+You can define within a definition to automatically lowercase or uppercase the entry in an input by giving the casing.  
 Casing can be null, "upper" or "lower"
 ```javascript
     $.extend($.inputmask.defaults.definitions, {
@@ -428,7 +428,7 @@ Casing can be null, "upper" or "lower"
             cardinality: 1,
             casing: "upper"
         }
-    });`
+    });
 ```
 
 Include jquery.inputmask.extensions.js for using the A and # definitions.
@@ -459,7 +459,7 @@ see jquery.inputmask.extensions.js for some examples
 
 ### hasMaskedValue
 
-Check wheter the returned value is masked or not; currently only works reliable when using jquery.val fn to retrieve the value 
+Check whether the returned value is masked or not; currently only works reliably when using jquery.val fn to retrieve the value 
 
 ```javascript
 $(document).ready(function(){
@@ -507,7 +507,7 @@ $(document).ready(function(){
 ```
 ### isComplete
 
-Verify wheter the current value is complete or not.
+Verify whether the current value is complete or not.
 
 ```javascript
 $(document).ready(function(){
@@ -551,7 +551,7 @@ Show the current mask definition as a tooltip.
 ### data-inputmask attribute
 
 You can also apply an inputmask by using the data-inputmask attribute.  In the attribute you specify the options wanted for the inputmask.
-This gets parsed with $.parseJSON (for the moment), so be sure to use a welformed json-string without the {}.
+This gets parsed with $.parseJSON (for the moment), so be sure to use a well-formed json-string without the {}.
 
 ```html
 <input data-inputmask="'alias': 'date'" />
@@ -565,7 +565,7 @@ $(document).ready(function(){
 
 ## Compiling with Google Closure Compiler
 
-First grab the sources from github.  In the root you type ant.
+First grab the sources from GitHub.  In the root you type ant.
 A new folder dist is created with the minified and optimized js-files
 
 ## .NET Nuget Package Install
@@ -601,7 +601,7 @@ $(document).ready(function(){
 });
 ```
 
-The date aliases take leapyears into account.  There is also autocompletion on day, month, year.
+The date aliases take leap years into account.  There is also autocompletion on day, month, year.
 For example:
 
 input:	2/2/2012 		result: 02/02/2012  
@@ -688,7 +688,7 @@ Uses the phone mask definitions from https://github.com/andr-04/inputmask-multi
 
 ## other extensions
 
-An ip adress alias for entering valid ip-addresses.
+An ip address alias for entering valid ip-addresses.
 
 ```javascript
 $(document).ready(function(){

@@ -11,6 +11,8 @@
 	<target name="updateVersions">
        <replaceregexp file="nuget/jquery.inputmask.nuspec" match="&lt;version&gt;.*&lt;/version&gt;" replace="&lt;version&gt;${build.major}.${build.minor}.${build.revision}&lt;/version&gt;" />
        <replaceregexp file="nuget/jquery.inputmask.nuspec" match="-0.0.0" replace="-${build.major}.${build.minor}.${build.revision}"  byline="true"/>
+       <replaceregexp file="nuget/jquery.inputmask.linux.nuspec" match="&lt;version&gt;.*&lt;/version&gt;" replace="&lt;version&gt;${build.major}.${build.minor}.${build.revision}&lt;/version&gt;" />
+	<replaceregexp file="nuget/jquery.inputmask.linux.nuspec" match="-0.0.0" replace="-${build.major}.${build.minor}.${build.revision}"  byline="true"/>
 	   <replaceregexp file="${srcdir}/jquery.inputmask.js" match="Version:.*" replace="Version: ${build.major}.${build.minor}.${build.revision}"  byline="true"/>
 	   <replaceregexp file="${srcdir}/jquery.inputmask.extensions.js" match="Version:.*" replace="Version: ${build.major}.${build.minor}.${build.revision}"  byline="true"/>
 	   <replaceregexp file="${srcdir}/jquery.inputmask.date.extensions.js" match="Version:.*" replace="Version: ${build.major}.${build.minor}.${build.revision}"  byline="true"/>
@@ -24,6 +26,8 @@
 	<target name="resetVersions">
        <replaceregexp file="nuget/jquery.inputmask.nuspec" match="&lt;version&gt;.*&lt;/version&gt;" replace="&lt;version&gt;0.0.0&lt;/version&gt;" />
 	   <replaceregexp file="nuget/jquery.inputmask.nuspec" replace="-0.0.0" match="-${build.major}.${build.minor}.${build.revision}"  byline="true"/>
+	<replaceregexp file="nuget/jquery.inputmask.linux.nuspec" match="&lt;version&gt;.*&lt;/version&gt;" replace="&lt;version&gt;0.0.0&lt;/version&gt;" />
+	   <replaceregexp file="nuget/jquery.inputmask.linux.nuspec" replace="-0.0.0" match="-${build.major}.${build.minor}.${build.revision}"  byline="true"/>
 	   <replaceregexp file="${srcdir}/jquery.inputmask.js" match="Version:.*" replace="Version: 0.0.0"  byline="true"/>
 	   <replaceregexp file="${srcdir}/jquery.inputmask.extensions.js" match="Version:.*" replace="Version: 0.0.0"  byline="true"/>
 	   <replaceregexp file="${srcdir}/jquery.inputmask.date.extensions.js" match="Version:.*" replace="Version: 0.0.0"  byline="true"/>
@@ -88,11 +92,15 @@
 			 <arg value="-OutputDirectory" />
 			 <arg value="..\${distdir}" />
         </exec>
-        <exec executable="EnableNuGetPackageRestore=true mono --runtime=v4.0.30319 ${NugetExe}" failonerror="false" dir="tools" vmlauncher="false" osfamily="unix" >
+        <exec executable="mono" failonerror="false" dir="tools" vmlauncher="false" osfamily="unix" >
+			 <arg value="--runtime=v4.0.30319"/>
+			 <arg value="${NugetExe}"/>
 			 <arg value="pack"/>
-			 <arg value="../nuget/${nuspec}" />
-			 <arg value="-OutputDirectory" />
-			 <arg value="../${distdir}" />
+			 <arg value="../nuget/${nuspeclinux}"/>
+			 <arg value="-BasePath"/>
+			 <arg value="../"/>
+ 			 <arg value="-OutputDirectory"/>
+			 <arg value="../${distdir}"/>
         </exec>
     </target>
 	

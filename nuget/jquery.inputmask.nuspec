@@ -6,7 +6,7 @@
         <title>jQuery Input Mask</title>
         <authors>Robin Herbots</authors>
         <owners>Robin Herbots</owners>
-        <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
+        <licenseUrl>http://opensource.org/licenses/mit-license.php</licenseUrl>
         <projectUrl>https://github.com/RobinHerbots/jquery.inputmask</projectUrl>
         <requireLicenseAcceptance>true</requireLicenseAcceptance>
 		<summary>jquery.inputmask is a jquery plugin which create an input mask.</summary>
