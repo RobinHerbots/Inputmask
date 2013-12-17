@@ -416,41 +416,39 @@
                 function getActiveTests(pos) {
                     var maskTokens = getActiveMaskSet()["maskToken"], testPos = 0, ndxInitializer = [0], testLocator;
 
-                    function ResolveTestFromToken(maskToken, ndxInitializer) { //ndxInitilizer contains a set of indexes to speedup searches in the mtokens
-                        function handleMatch(match) {
+                    function ResolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) { //ndxInitilizer contains a set of indexes to speedup searches in the mtokens
+                        function handleMatch(match, loopNdx, quantifierRecurse) {
                             if (testPos == pos && match.matches == undefined) {
+                                testLocator = testLocator.concat(loopNdx);
                                 return match;
                             } else if (match.matches != undefined) {
                                 //do stuff
-                                if (match.isGroup) {
-                                    match = ResolveTestFromToken(match, ndxInitializer);
+                                if (match.isGroup && quantifierRecurse !== true) { //when a group pass along to the quantifier
+                                    match = handleMatch(maskToken.matches[tndx + 1], loopNdx);
                                     if (match) return match;
                                 } else if (match.isOptional) {
-                                    match = ResolveTestFromToken(match, ndxInitializer);
+                                    match = ResolveTestFromToken(match, ndxInitializer, loopNdx, quantifierRecurse);
                                     if (match) return match;
                                 } else if (match.isQuantifier) {
                                     var qt = match;
                                     for (var qndx = ndxInitializer.length > 0 ? ndxInitializer.shift() : 0; qndx < isNaN(qt.quantifier.max) ? qndx + 1 : qt.quantifier.max; qndx++) {
-                                        console.log("thirthloops " + mtndx);
-                                        match = handleMatch(maskToken.matches[tndx - 1]);
+                                        match = handleMatch(maskToken.matches[maskToken.matches.indexOf(qt) - 1], [qndx].concat(loopNdx), true);
                                         if (match) {
-                                            alert("should post ndxer");
                                             return match;
                                         }
                                     }
                                 } else {
-                                    match = ResolveTestFromToken(match, ndxInitializer);
-                                    if (match) return match;
+                                    match = ResolveTestFromToken(match, ndxInitializer, loopNdx, quantifierRecurse);
+                                    if (match)
+                                        return match;
                                 }
                                 //  testPos++;
                             } else testPos++;
                         }
 
                         for (var tndx = ndxInitializer.length > 0 ? ndxInitializer.shift() : 0; tndx < maskToken.matches.length; tndx++) {
-                            console.log("secondloops " + tndx);
-                            var match = handleMatch(maskToken.matches[tndx]);
+                            var match = handleMatch(maskToken.matches[tndx], [tndx].concat(loopNdx));
                             if (match && testPos == pos) {
-                                testLocator.push(tndx);
                                 return match;
                             }
                         }
@@ -465,12 +463,12 @@
                         ndxInitializer = getActiveMaskSet()['tests'][pos - 1]["location"].slice();
                     }
                     for (var mtndx = ndxInitializer.shift() ; mtndx < maskTokens.length; mtndx++) {
-                        console.log("firstloops " + mtndx);
-                        testLocator = [mtndx];
-                        var match = ResolveTestFromToken(maskTokens[mtndx], ndxInitializer);
+                        testLocator = [];
+                        var match = ResolveTestFromToken(maskTokens[mtndx], ndxInitializer, []);
                         if (match && testPos == pos) {
-                            getActiveMaskSet()['tests'][pos] = { "match": match, "location": testLocator };
-                            console.log(testLocator);
+                            testLocator.push(mtndx);
+                            getActiveMaskSet()['tests'][pos] = { "match": match, "location": testLocator.reverse() };
+                            console.log(pos + " - " + testLocator);
                             return match;
                         }
                     }
