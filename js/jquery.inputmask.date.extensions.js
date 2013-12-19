@@ -115,6 +115,7 @@ Optional extensions on the jquery.inputmask base
                 '2': { //val2 ~ day or month
                     validator: function (chrs, buffer, pos, strict, opts) {
                         var frontValue = buffer.join('').substr(0, 3);
+                        if (frontValue.indexOf(opts.placeholder[0]) != -1) frontValue = "01" + opts.separator;
                         var isValid = opts.regex.val2(opts.separator).test(frontValue + chrs);
                         if (!strict && !isValid) {
                             if (chrs.charAt(1) == opts.separator || "-./".indexOf(chrs.charAt(1)) != -1) {
@@ -131,6 +132,7 @@ Optional extensions on the jquery.inputmask base
                     prevalidator: [{
                         validator: function (chrs, buffer, pos, strict, opts) {
                             var frontValue = buffer.join('').substr(0, 3);
+                            if (frontValue.indexOf(opts.placeholder[0]) != -1) frontValue = "01" + opts.separator;
                             var isValid = opts.regex.val2pre(opts.separator).test(frontValue + chrs);
                             if (!strict && !isValid) {
                                 isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs);
@@ -271,6 +273,7 @@ Optional extensions on the jquery.inputmask base
                 '2': { //val2 ~ day or month
                     validator: function (chrs, buffer, pos, strict, opts) {
                         var frontValue = buffer.join('').substr(5, 3);
+                        if (frontValue.indexOf(opts.placeholder[5]) != -1) frontValue = "01" + opts.separator;
                         var isValid = opts.regex.val2(opts.separator).test(frontValue + chrs);
                         if (!strict && !isValid) {
                             if (chrs.charAt(1) == opts.separator || "-./".indexOf(chrs.charAt(1)) != -1) {
@@ -305,6 +308,7 @@ Optional extensions on the jquery.inputmask base
                     prevalidator: [{
                         validator: function (chrs, buffer, pos, strict, opts) {
                             var frontValue = buffer.join('').substr(5, 3);
+                            if (frontValue.indexOf(opts.placeholder[5]) != -1) frontValue = "01" + opts.separator;
                             var isValid = opts.regex.val2pre(opts.separator).test(frontValue + chrs);
                             if (!strict && !isValid) {
                                 isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs);
