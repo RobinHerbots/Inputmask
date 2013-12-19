@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.4.10
+* Version: 2.4.11
 */
 
 (function ($) {
@@ -1661,7 +1661,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.10
+Version: 2.4.11
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1783,7 +1783,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.10
+Version: 2.4.11
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2271,7 +2271,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.10
+Version: 2.4.11
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2448,7 +2448,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.10
+Version: 2.4.11
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2618,7 +2618,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.10
+Version: 2.4.11
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
