@@ -1000,6 +1000,7 @@
 
                     //init vars
                     var skipKeyPressEvent = false, //Safari 5.1.x - modal dialog fires keypress twice workaround
+                        skipInputEvent = false, //skip when triggered from within inputmask
                         ignorable = false;
 
                     if (opts.numericInput) opts.isNumeric = opts.numericInput;
@@ -1115,6 +1116,10 @@
                             caret(input, 0, seekNext(getActiveMaskSet()["lastValidPosition"]));
                         }, 0);
                     }).bind(pasteEvent + ".inputmask dragdrop.inputmask drop.inputmask", function (e) {
+                        if (skipInputEvent === true) {
+                            skipInputEvent = false;
+                            return true;
+                        }
                         var input = this, $input = $(input);
 
                         //paste event for IE8 and lower I guess ;-)
@@ -1141,6 +1146,10 @@
 
                     if (androidchrome) {
                         $el.bind("input.inputmask", function (e) {
+                            if (skipInputEvent === true) {
+                                skipInputEvent = false;
+                                return true;
+                            }
                             var input = this, $input = $(input);
 
                             chromeValueOnInput = getActiveBuffer().join('');
@@ -1608,6 +1617,8 @@
                                                 setTimeout(function () { //timeout needed for IE
                                                     if (isComplete(buffer) === true)
                                                         $input.trigger("complete");
+                                                    skipInputEvent = true;
+                                                    $input.trigger("input");
                                                 }, 0);
                                             }
                                         } else if (isSlctn) {
