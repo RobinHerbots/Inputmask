@@ -20,18 +20,18 @@
                 <p>jQuery Input Mask plugin</p>
             </span>
             <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-				<input type="hidden" name="cmd" value="_s-xclick">
-				<input type="hidden" name="hosted_button_id" value="ZNR3EB6JTMMSS">
-				<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-				<img alt="" border="0" src="https://www.paypalobjects.com/nl_NL/i/scr/pixel.gif" width="1" height="1">
-				</form>
+                <input type="hidden" name="cmd" value="_s-xclick">
+                <input type="hidden" name="hosted_button_id" value="ZNR3EB6JTMMSS">
+                <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+                <img alt="" border="0" src="https://www.paypalobjects.com/nl_NL/i/scr/pixel.gif" width="1" height="1">
+            </form>
             <ul>
                 <li><a href="https://github.com/RobinHerbots/jquery.inputmask/zipball/master">Download <strong>ZIP File</strong></a></li>
                 <li><a href="https://github.com/RobinHerbots/jquery.inputmask/tarball/master">Download <strong>TAR Ball</strong></a></li>
                 <li><a href="https://github.com/RobinHerbots/jquery.inputmask">View On <strong>GitHub</strong></a></li>
                 <p style="clear: both; margin: 0;"></p>
             </ul>
-			
+
             <menu>
                 <mi id="main" class="fired"><a href="index.html">Main</a></mi>
                 <mi><a href="https://github.com/RobinHerbots/jquery.inputmask/wiki">Wiki</a></mi>
@@ -98,11 +98,11 @@ $ git checkout gh-pages
         var defaultScope = new function () {
             this.ready = function () {
                 $("#demolnk").click(function () {
-                 	$("#main").removeClass("fired");
-                	$("#demolnk").addClass("fired");
+                    $("#main").removeClass("fired");
+                    $("#demolnk").addClass("fired");
                     $.get('demo.html', function (data) {
                         $('section').html(data);
-                        $(":input").inputmask(undefined,{
+                        $(":input").inputmask(undefined, {
                             oncomplete: function () {
                                 var eventIdenticators = $(this).next().next(".eventIndicator").children("span");
                                 $.each(eventIdenticators, function (ndx, lmnt) {
@@ -136,20 +136,31 @@ $ git checkout gh-pages
                                 });
                             }, onKeyValidation: function (result, opts) {
                                 var eventIdenticators = $(this).next().next(".eventIndicator").children("span");
-                                if(this.id == "phone") {
-				  $(this).next().text($(this).inputmask("getmetadata")["name_en"]);
-				}
+                                if (this.id == "phone") {
+                                    $(this).next().text($(this).inputmask("getmetadata")["name_en"]);
+                                }
                                 $.each(eventIdenticators, function (ndx, lmnt) {
                                     var $lmnt = $(lmnt);
                                     if ($lmnt.hasClass("keyvalidation")) {
-                                    	if(result !== false){
-                                        	$lmnt.addClass("fired");
-                                    	} else {
-                                        	$lmnt.removeClass("fired");
-                                    	}
+                                        if (result !== false) {
+                                            $lmnt.addClass("fired");
+                                        } else {
+                                            $lmnt.removeClass("fired");
+                                        }
                                     }
                                 });
                             }
+                        }).on("input", function () {
+                            var eventIdenticators = $(this).next().next(".eventIndicator").children("span");
+                            $.each(eventIdenticators, function (ndx, lmnt) {
+                                var $lmnt = $(lmnt);
+                                if ($lmnt.hasClass("input")) {
+                                    $lmnt.addClass("fired");
+                                    setTimeout(function () {
+                                        $lmnt.removeClass("fired");
+                                    }, 100);
+                                }
+                            });
                         });
                     });
                 });
