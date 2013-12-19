@@ -949,6 +949,20 @@ test("inputmask(\"mm/dd/yyyy\") - select some input 1 - Guamaso", function () {
     $("#testmask").remove();
 });
 
+test("inputmask(\"dd/mm/yyyy\") - input 2331973 - remove 23", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("dd/mm/yyyy");
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("23031973");
+	caret($("#testmask"), 0,2);
+	$("#testmask").SendKey(keyCodes.DELETE);
+   
+    equal($("#testmask").val(), "dd/03/1973", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
 module("Numeric.Extensions");
 test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - input 12345.123", function () {
     $('body').append('<input type="text" id="testmask" />');

@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.4.8
+* Version: 2.4.9
 */
 
 (function ($) {
@@ -1661,7 +1661,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.8
+Version: 2.4.9
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1743,7 +1743,7 @@ Optional extensions on the jquery.inputmask base
             insertMode: false,
             autoUnmask: false
         },
-        "ip": { //ip-adress mask
+        "ip": { //ip-address mask
             mask: ["[[x]y]z.[[x]y]z.[[x]y]z.x[yz]", "[[x]y]z.[[x]y]z.[[x]y]z.[[x]y][z]"],
             definitions: {
                 'x': {
@@ -1783,7 +1783,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.8
+Version: 2.4.9
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1895,6 +1895,7 @@ Optional extensions on the jquery.inputmask base
                 '2': { //val2 ~ day or month
                     validator: function (chrs, buffer, pos, strict, opts) {
                         var frontValue = buffer.join('').substr(0, 3);
+                        if (frontValue.indexOf(opts.placeholder[0]) != -1) frontValue = "01" + opts.separator;
                         var isValid = opts.regex.val2(opts.separator).test(frontValue + chrs);
                         if (!strict && !isValid) {
                             if (chrs.charAt(1) == opts.separator || "-./".indexOf(chrs.charAt(1)) != -1) {
@@ -1911,6 +1912,7 @@ Optional extensions on the jquery.inputmask base
                     prevalidator: [{
                         validator: function (chrs, buffer, pos, strict, opts) {
                             var frontValue = buffer.join('').substr(0, 3);
+                            if (frontValue.indexOf(opts.placeholder[0]) != -1) frontValue = "01" + opts.separator;
                             var isValid = opts.regex.val2pre(opts.separator).test(frontValue + chrs);
                             if (!strict && !isValid) {
                                 isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs);
@@ -2051,6 +2053,7 @@ Optional extensions on the jquery.inputmask base
                 '2': { //val2 ~ day or month
                     validator: function (chrs, buffer, pos, strict, opts) {
                         var frontValue = buffer.join('').substr(5, 3);
+                        if (frontValue.indexOf(opts.placeholder[5]) != -1) frontValue = "01" + opts.separator;
                         var isValid = opts.regex.val2(opts.separator).test(frontValue + chrs);
                         if (!strict && !isValid) {
                             if (chrs.charAt(1) == opts.separator || "-./".indexOf(chrs.charAt(1)) != -1) {
@@ -2085,6 +2088,7 @@ Optional extensions on the jquery.inputmask base
                     prevalidator: [{
                         validator: function (chrs, buffer, pos, strict, opts) {
                             var frontValue = buffer.join('').substr(5, 3);
+                            if (frontValue.indexOf(opts.placeholder[5]) != -1) frontValue = "01" + opts.separator;
                             var isValid = opts.regex.val2pre(opts.separator).test(frontValue + chrs);
                             if (!strict && !isValid) {
                                 isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs);
@@ -2267,7 +2271,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.8
+Version: 2.4.9
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2444,7 +2448,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.8
+Version: 2.4.9
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2614,7 +2618,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.8
+Version: 2.4.9
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
