@@ -1183,6 +1183,19 @@ test("inputmask(\"decimal\") - value=\"123.1\" tab out", function () {
     $("#testmask").remove();
 });
 
+test("inputmask(\"decimal\") - value=\"123.45\" Replace last integer", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("decimal", { digits: 2 });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123.45");
+	caret( $("#testmask"), 2,3);
+	$("#testmask").SendKey("7");
+
+    equal($("#testmask").val(), "127.45", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
 module("Direction RTL");
 test("inputmask(\"999.999.999\") - delete 2nd with backspace, continue the mask", function () {
     $('body').append('<input type="text" id="testmask" dir="rtl" />');

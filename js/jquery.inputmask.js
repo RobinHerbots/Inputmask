@@ -1325,7 +1325,7 @@
                     function shiftR(start, end, c) {
                         var buffer = getActiveBuffer();
                         if (getBufferElement(buffer, start, true) != getPlaceHolder(start)) {
-                            for (var i = seekPrevious(end); i > start && i >= 0; i--) {
+                            for (var i = seekPrevious(end) ; i > start && i >= 0; i--) {
                                 if (isMask(i)) {
                                     var j = seekPrevious(i);
                                     var t = getBufferElement(buffer, j);
@@ -1333,7 +1333,7 @@
                                         if (isValid(j, t, true) !== false && getActiveTests()[determineTestPosition(i)].def == getActiveTests()[determineTestPosition(j)].def) {
                                             setBufferElement(buffer, i, t, true);
                                             setReTargetPlaceHolder(buffer, j);
-                                        } else break;
+                                        } //else break;
                                     }
                                 } else
                                     setReTargetPlaceHolder(buffer, i);
