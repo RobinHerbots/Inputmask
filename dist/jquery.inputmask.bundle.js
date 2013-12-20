@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.4.11
+* Version: 2.4.12
 */
 
 (function ($) {
@@ -1672,7 +1672,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.11
+Version: 2.4.12
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1794,7 +1794,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.11
+Version: 2.4.12
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2282,7 +2282,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.11
+Version: 2.4.12
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2388,7 +2388,7 @@ Optional extensions on the jquery.inputmask base
                 '~': { //real number
                     validator: function (chrs, buffer, pos, strict, opts) {
                         if (chrs == "") return false;
-                        if (!strict && pos <= 1 && buffer[0] === '0' && new RegExp("[\\d-]").test(chrs) && buffer.length == 1) { //handle first char
+                        if (!strict && pos <= 1 && buffer[0] === '0' && new RegExp("[\\d-]").test(chrs) && buffer.join('').length == 1) { //handle first char
                             buffer[0] = "";
                             return { "pos": 0 };
                         }
@@ -2459,7 +2459,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.11
+Version: 2.4.12
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2629,7 +2629,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.11
+Version: 2.4.12
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
