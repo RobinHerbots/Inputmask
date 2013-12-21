@@ -1126,7 +1126,9 @@
                         if (e.type == "propertychange" && input._valueGet().length <= getMaskLength()) {
                             return true;
                         }
+						
                         setTimeout(function () {
+							$input.trigger("preprocessafterpaste");
                             checkVal(input, true, false, undefined, true);
                             if (isComplete(getActiveBuffer()) === true)
                                 $input.trigger("complete");
@@ -1142,7 +1144,8 @@
                     ).bind('complete.inputmask', opts.oncomplete
                     ).bind('incomplete.inputmask', opts.onincomplete
                     ).bind('cleared.inputmask', opts.oncleared
-                    ).bind("keyup.inputmask", keyupEvent);
+                    ).bind("keyup.inputmask", keyupEvent
+					).bind("preprocessafterpaste.inputmask", opts.preprocessAfterPaste);
 
                     if (androidchrome) {
                         $el.bind("input.inputmask", function (e) {
