@@ -206,14 +206,14 @@
                                 break;
                             case opts.optionalmarker.start:
                                 // optional opening
-                                if (!currentToken.isGroup && currentToken.matches.length > 0)
+                                if (!currentToken.isGroup && !currentToken.isOptional && currentToken.matches.length > 0)
                                     maskTokens.push(currentToken);
                                 currentToken = new maskToken(false, true);
                                 openenings.push(currentToken);
                                 break;
                             case opts.groupmarker.start:
                                 // Group opening
-                                if (!currentToken.isGroup && currentToken.matches.length > 0)
+                                if (!currentToken.isGroup && !currentToken.isOptional && currentToken.matches.length > 0)
                                     maskTokens.push(currentToken);
                                 currentToken = new maskToken(true);
                                 openenings.push(currentToken);
@@ -231,6 +231,7 @@
                                     openenings[openenings.length - 1]["matches"].push(quantifier);
                                 } else {
                                     currentToken.matches.push(quantifier);
+                                    currentToken = new maskToken();
                                 }
                                 break;
                             case opts.escapeChar:
@@ -432,6 +433,7 @@
                                 } else if (match.isQuantifier) {
                                     var qt = match;
                                     for (var qndx = ndxInitializer.length > 0 ? ndxInitializer.shift() : 0; qndx < isNaN(qt.quantifier.max) ? qndx + 1 : qt.quantifier.max; qndx++) {
+                                        //console.log("qt loop for " + pos);
                                         match = handleMatch(maskToken.matches[maskToken.matches.indexOf(qt) - 1], [qndx].concat(loopNdx), true);
                                         if (match) {
                                             return match;
@@ -454,21 +456,21 @@
                         }
                     }
 
-                    //if (getActiveMaskSet()['tests'][pos]) { //just a test
-                    //    return getActiveMaskSet()['tests'][pos]["match"];
-                    //}
-
+                    if (getActiveMaskSet()['tests'][pos]) {
+                        //console.log("hit from cache " + pos);
+                        return getActiveMaskSet()['tests'][pos]["match"];
+                    }
                     if (getActiveMaskSet()['tests'][pos - 1]) {
                         testPos = pos - 1;
-                        ndxInitializer = getActiveMaskSet()['tests'][pos - 1]["location"].slice();
+                        ndxInitializer = getActiveMaskSet()['tests'][pos - 1]["locator"].slice();
                     }
                     for (var mtndx = ndxInitializer.shift() ; mtndx < maskTokens.length; mtndx++) {
                         testLocator = [];
                         var match = ResolveTestFromToken(maskTokens[mtndx], ndxInitializer, []);
                         if (match && testPos == pos) {
                             testLocator.push(mtndx);
-                            getActiveMaskSet()['tests'][pos] = { "match": match, "location": testLocator.reverse() };
-                            console.log(pos + " - " + testLocator);
+                            getActiveMaskSet()['tests'][pos] = { "match": match, "locator": testLocator.reverse() };
+                            //console.log(pos + " - " + testLocator);
                             return match;
                         }
                     }
