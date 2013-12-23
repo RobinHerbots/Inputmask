@@ -353,7 +353,6 @@
             }
 
             //TODO should return all possible tests for a position { "test": ..., "locator": masktoken index also see above 1.2.8 example }
-
             function getActiveTests(pos) {
                 var maskTokens = getActiveMaskSet()["maskToken"], testPos = 0, ndxInitializer = [0], testLocator;
 
@@ -485,9 +484,6 @@
                                             getActiveMaskSet()["lastValidPosition"] = i;
 
                                         }
-                                        var newValidPosition = rsltValid.pos || i;
-                                        if (getActiveMaskSet()['lastValidPosition'] < newValidPosition)
-                                            getActiveMaskSet()['lastValidPosition'] = newValidPosition; //set new position from isValid
                                     }
                                     //also check check for the lowestpos with the new input
                                     rsltValid = _isValid(lowestPos, c, true);
@@ -498,8 +494,6 @@
                                     //console.log("ndx " + rslt["activeMasksetIndex"] + " validate " + masksets[rslt["activeMasksetIndex"]]["buffer"].join('') + " lv " + masksets[rslt["activeMasksetIndex"]]['lastValidPosition']);
                                     return rslt;
                                 }
-                                maskForwards.push(activeMasksetIndex);
-                                //console.log('maskforward ' + activeMasksetIndex + " pos " + pos + " maskPos " + maskPos);
                             }
                         });
                     }
@@ -541,8 +535,6 @@
                                             getActiveMaskSet()['lastValidPosition'] = newValidPosition; //set new position from isValid
                                     }
                                 }
-                                //console.log("pos " + pos + " ndx " + activeMasksetIndex + " validate " + getActiveBuffer().join('') + " lv " + getActiveMaskSet()['lastValidPosition']);
-                                results.push({ "activeMasksetIndex": index, "result": result });
                             }
                             //does the input match on a further position?
                             if (!isMask(maskPos) && !_isValid(maskPos, c, strict)) {
@@ -652,8 +644,6 @@
                             elem = element.toLowerCase();
                             break;
                     }
-                    ;
-                    return position;
                 }
 
                 buffer[position] = elem;
@@ -674,7 +664,7 @@
                         buffer.push(getActiveBufferTemplate()[j++]);
                     }
                 }
-                ;
+
                 return position;
             }
 
@@ -724,7 +714,7 @@
                 $.each(inputValue, function (ndx, charCode) {
                     if (intelliCheck === true) {
                         var p = getActiveMaskSet()["p"], lvp = p == -1 ? p : seekPrevious(p),
-                            pos = lvp == -1 ? ndx : seekNext(lvp);
+                        pos = lvp == -1 ? ndx : seekNext(lvp);
                         if ($.inArray(charCode, getActiveBufferTemplate().slice(lvp + 1, pos)) == -1) {
                             $(input).trigger("_keypress", [true, charCode.charCodeAt(0), writeOut, strict, ndx]);
                         }
@@ -1175,10 +1165,7 @@
                         }
                         if ($.valHooks.text == undefined || $.valHooks.text.inputmaskpatch != true) {
                             var valueGet = $.valHooks.text && $.valHooks.text.get ? $.valHooks.text.get : function (elem) { return elem.value; };
-                            var valueSet = $.valHooks.text && $.valHooks.text.set ? $.valHooks.text.set : function (elem, value) {
-                                elem.value = value;
-                                return elem;
-                            };
+                            var valueSet = $.valHooks.text && $.valHooks.text.set ? $.valHooks.text.set : function (elem, value) { elem.value = value; return elem; };
 
                             $.extend($.valHooks, {
                                 text: {
@@ -1580,7 +1567,7 @@
                 }
             };
             return this;
-        }
+        };
 
         $.inputmask = {
             //options default
@@ -1632,38 +1619,8 @@
                     }
                 },
                 keyCode: {
-                    ALT: 18,
-                    BACKSPACE: 8,
-                    CAPS_LOCK: 20,
-                    COMMA: 188,
-                    COMMAND: 91,
-                    COMMAND_LEFT: 91,
-                    COMMAND_RIGHT: 93,
-                    CONTROL: 17,
-                    DELETE: 46,
-                    DOWN: 40,
-                    END: 35,
-                    ENTER: 13,
-                    ESCAPE: 27,
-                    HOME: 36,
-                    INSERT: 45,
-                    LEFT: 37,
-                    MENU: 93,
-                    NUMPAD_ADD: 107,
-                    NUMPAD_DECIMAL: 110,
-                    NUMPAD_DIVIDE: 111,
-                    NUMPAD_ENTER: 108,
-                    NUMPAD_MULTIPLY: 106,
-                    NUMPAD_SUBTRACT: 109,
-                    PAGE_DOWN: 34,
-                    PAGE_UP: 33,
-                    PERIOD: 190,
-                    RIGHT: 39,
-                    SHIFT: 16,
-                    SPACE: 32,
-                    TAB: 9,
-                    UP: 38,
-                    WINDOWS: 91
+                    ALT: 18, BACKSPACE: 8, CAPS_LOCK: 20, COMMA: 188, COMMAND: 91, COMMAND_LEFT: 91, COMMAND_RIGHT: 93, CONTROL: 17, DELETE: 46, DOWN: 40, END: 35, ENTER: 13, ESCAPE: 27, HOME: 36, INSERT: 45, LEFT: 37, MENU: 93, NUMPAD_ADD: 107, NUMPAD_DECIMAL: 110, NUMPAD_DIVIDE: 111, NUMPAD_ENTER: 108,
+                    NUMPAD_MULTIPLY: 106, NUMPAD_SUBTRACT: 109, PAGE_DOWN: 34, PAGE_UP: 33, PERIOD: 190, RIGHT: 39, SHIFT: 16, SPACE: 32, TAB: 9, UP: 38, WINDOWS: 91
                 },
                 //specify keycodes which should not be considered in the keypress event, otherwise the preventDefault will stop their default behavior especially in FF
                 ignorables: [8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123],
