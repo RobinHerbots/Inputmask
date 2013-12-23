@@ -497,6 +497,25 @@ asyncTest("inputmask(\"+7 (999) 999-99-99\") ~ paste \"+7 (+79114041112___) ___-
 
 });
 
+asyncTest("inputmask(\"+7 (999) 999-99-99\") ~ paste \"0079114041112\" - monoblaine", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("+7 (999) 999-99-99", {
+		onBeforePaste : function(pastedValue) {
+			//just simplistic for the test ;-)
+			var strippedValue = pastedValue.substr(2);
+			return strippedValue;
+		}
+	});
+    $("#testmask").paste("0079114041112");
+    
+    setTimeout(function () {
+	equal($("#testmask").val(), "+7 (911) 404-11-12", "Result " + $("#testmask").val());
+	start();
+	$("#testmask").remove();
+    }, 0);
+
+});
+
 module("Set value with fn.val");
 test("inputmask(\"decimal\") ~ value=\"123.45\"", function () {
     $('body').append('<input type="text" id="testmask" />');

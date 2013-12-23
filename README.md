@@ -457,6 +457,22 @@ This can be usefull when implementing an alias, ex. decimal alias, autofill the 
 
 see jquery.inputmask.extensions.js for some examples
 
+### onBeforePaste
+
+This callback allows for preprocessing the pasted value before actually handling the value for masking.  This can be usefull for stripping away some characters before processing.
+
+```javascript
+$(document).ready(function(){
+   $("#test").inputmask("99.", {
+                repeat: 4,
+                onBeforePaste: function (pastedValue) {
+                    //do somehing with the value
+                    return pastedValue;
+                }
+            });
+});
+```
+
 ### hasMaskedValue
 
 Check whether the returned value is masked or not; currently only works reliably when using jquery.val fn to retrieve the value 
