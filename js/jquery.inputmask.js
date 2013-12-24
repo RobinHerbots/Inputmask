@@ -357,7 +357,6 @@
                 var maskTokens = getActiveMaskSet()["maskToken"], testPos = 0, ndxInitializer = [0], testLocator;
 
                 function ResolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) { //ndxInitilizer contains a set of indexes to speedup searches in the mtokens
-
                     function handleMatch(match, loopNdx, quantifierRecurse) {
                         if (testPos == pos && match.matches == undefined) {
                             testLocator = testLocator.concat(loopNdx);
@@ -400,9 +399,13 @@
                     //console.log("hit from cache " + pos);
                     return getActiveMaskSet()['tests'][pos]["match"];
                 }
-                if (getActiveMaskSet()['tests'][pos - 1]) {
-                    testPos = pos - 1;
-                    ndxInitializer = getActiveMaskSet()['tests'][pos - 1]["locator"].slice();
+                var previousPos = pos - 1, test;
+                while ((test = getActiveMaskSet()['tests'][previousPos]) == undefined && previousPos > -1) {
+                    previousPos--;
+                }
+                if (test != undefined) {
+                    testPos = previousPos;
+                    ndxInitializer = test["locator"].slice();
                 }
                 for (var mtndx = ndxInitializer.shift() ; mtndx < maskTokens.length; mtndx++) {
                     testLocator = [];
