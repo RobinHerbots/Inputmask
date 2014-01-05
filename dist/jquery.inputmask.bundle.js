@@ -3,13 +3,11 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.4.13
+* Version: 2.4.14
 */
 
 (function ($) {
     if ($.fn.inputmask === undefined) {
-        var opts = {};
-
         //helper functions    
         function isInputEventSupported(eventName) {
             var el = document.createElement('input'),
@@ -22,17 +20,23 @@
             el = null;
             return isSupported;
         }
-        function resolveAlias(aliasStr, options) {
+         
+        function resolveAlias(aliasStr, options, opts) {
             var aliasDefinition = opts.aliases[aliasStr];
             if (aliasDefinition) {
-                if (aliasDefinition.alias) resolveAlias(aliasDefinition.alias); //alias is another alias
+                if (aliasDefinition.alias) resolveAlias(aliasDefinition.alias, undefined, opts); //alias is another alias
                 $.extend(true, opts, aliasDefinition);  //merge alias definition in the options
                 $.extend(true, opts, options);  //reapply extra given options
                 return true;
             }
             return false;
         }
-        function getMaskTemplate(mask) {
+       
+      
+        function generateMaskSets(opts) {
+            var ms = [];
+            var genmasks = []; //used to keep track of the masks that where processed, to avoid duplicates
+ function getMaskTemplate(mask) {
             if (opts.numericInput) {
                 mask = mask.split('').reverse().join('');
             }
@@ -49,7 +53,7 @@
                     var maskdef = opts.definitions[element];
                     if (maskdef && !escaped) {
                         for (var i = 0; i < maskdef.cardinality; i++) {
-                            outElem.push(getPlaceHolder(outCount + i));
+                            outElem.push(opts.placeholder.charAt((outCount + i) % opts.placeholder.length));
                         }
                     } else {
                         outElem.push(element);
@@ -68,7 +72,7 @@
 
             return { "mask": repeatedMask, "repeat": repeat, "greedy": greedy };
         }
-        //test definition => {fn: RegExp/function, cardinality: int, optionality: bool, newBlockMarker: bool, offset: int, casing: null/upper/lower, def: definitionSymbol}
+			  //test definition => {fn: RegExp/function, cardinality: int, optionality: bool, newBlockMarker: bool, offset: int, casing: null/upper/lower, def: definitionSymbol}
         function getTestingChain(mask) {
             if (opts.numericInput) {
                 mask = mask.split('').reverse().join('');
@@ -110,10 +114,6 @@
                 }
             });
         }
-        function generateMaskSets() {
-            var ms = [];
-            var genmasks = []; //used to keep track of the masks that where processed, to avoid duplicates
-
             function markOptional(maskPart) { //needed for the clearOptionalTail functionality
                 return opts.optionalmarker.start + maskPart + opts.optionalmarker.end;
             }
@@ -226,17 +226,15 @@
 
             return opts.greedy ? ms : ms.sort(function (a, b) { return a["mask"].length - b["mask"].length; });
         }
-        function getPlaceHolder(pos) {
-            return opts.placeholder.charAt(pos % opts.placeholder.length);
-        }
-
-
+       
+         
         var msie10 = navigator.userAgent.match(new RegExp("msie 10", "i")) !== null,
             iphone = navigator.userAgent.match(new RegExp("iphone", "i")) !== null,
             android = navigator.userAgent.match(new RegExp("android.*safari.*", "i")) !== null,
             androidchrome = navigator.userAgent.match(new RegExp("android.*chrome.*", "i")) !== null,
-            pasteEvent = isInputEventSupported('paste') && !msie10 ? 'paste' : isInputEventSupported('input') ? 'input' : "propertychange";
-
+            pasteEvent = isInputEventSupported('paste') && !msie10 ? 'paste' : isInputEventSupported('input') ? 'input' : "propertychange";   
+    
+    
         //masking scope
         function maskScope(masksets, activeMasksetIndex, opts) {
             var isRTL = false,
@@ -534,6 +532,9 @@
                 var testPos = determineTestPosition(pos);
                 setBufferElement(buffer, pos, getBufferElement(getActiveBufferTemplate(), testPos));
             }
+            function getPlaceHolder(pos) {
+               return opts.placeholder.charAt(pos % opts.placeholder.length);
+            }  
 
             function checkVal(input, writeOut, strict, nptvl, intelliCheck) {
                 var inputValue = nptvl != undefined ? nptvl.slice() : truncateInput(input._valueGet()).split('');
@@ -1472,16 +1473,16 @@
         };
 
         $.fn.inputmask = function (fn, options) {
-            opts = $.extend(true, {}, $.inputmask.defaults, options);
-            var masksets,
+            var opts = $.extend(true, {}, $.inputmask.defaults, options), 
+            	masksets,
                 activeMasksetIndex = 0;
 
             if (typeof fn === "string") {
                 switch (fn) {
                     case "mask":
                         //resolve possible aliases given by options
-                        resolveAlias(opts.alias, options);
-                        masksets = generateMaskSets();
+                        resolveAlias(opts.alias, options, opts);
+                        masksets = generateMaskSets(opts);
                         if (masksets.length == 0) { return this; }
 
                         return this.each(function () {
@@ -1560,12 +1561,12 @@
                         else return undefined;
                     default:
                         //check if the fn is an alias
-                        if (!resolveAlias(fn, options)) {
+                        if (!resolveAlias(fn, options, opts)) {
                             //maybe fn is a mask so we try
                             //set mask
                             opts.mask = fn;
                         }
-                        masksets = generateMaskSets();
+                        masksets = generateMaskSets(opts);
                         if (masksets.length == 0) { return this; }
                         return this.each(function () {
                             maskScope($.extend(true, {}, masksets), activeMasksetIndex, opts).mask(this);
@@ -1576,8 +1577,8 @@
             } else if (typeof fn == "object") {
                 opts = $.extend(true, {}, $.inputmask.defaults, fn);
 
-                resolveAlias(opts.alias, fn); //resolve aliases
-                masksets = generateMaskSets();
+                resolveAlias(opts.alias, fn, opts); //resolve aliases
+                masksets = generateMaskSets(opts);
                 if (masksets.length == 0) { return this; }
                 return this.each(function () {
                     maskScope($.extend(true, {}, masksets), activeMasksetIndex, opts).mask(this);
@@ -1592,7 +1593,7 @@
                             var dataoptions = $.parseJSON("{" + attrOptions + "}");
                             $.extend(true, dataoptions, options);
                             opts = $.extend(true, {}, $.inputmask.defaults, dataoptions);
-                            resolveAlias(opts.alias, dataoptions);
+                            resolveAlias(opts.alias, dataoptions, opts);
                             opts.alias = undefined;
                             $(this).inputmask(opts);
                         } catch (ex) { } //need a more relax parseJSON
@@ -1607,7 +1608,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.13
+Version: 2.4.14
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1729,7 +1730,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.13
+Version: 2.4.14
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2217,7 +2218,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.13
+Version: 2.4.14
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2394,7 +2395,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.13
+Version: 2.4.14
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2564,7 +2565,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.13
+Version: 2.4.14
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
