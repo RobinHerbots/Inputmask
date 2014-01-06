@@ -131,7 +131,7 @@ Optional extensions on the jquery.inputmask base
                             if (!isValid) {
                                 //make a valid group
                                 var lastGroupSeparator = bufferStr.lastIndexOf(opts.groupSeparator);
-                                for (i = bufferStr.length - lastGroupSeparator; i <= 3; i++) {
+                                for (var i = bufferStr.length - lastGroupSeparator; i <= 3; i++) {
                                     bufferStr += "0";
                                 }
 

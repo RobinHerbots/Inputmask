@@ -34,7 +34,6 @@
             var ms = [];
             var genmasks = []; //used to keep track of the masks that where processed, to avoid duplicates
             var maskTokens = [];
-
             function getMaskTemplate(mask) {
                 if (opts.numericInput) {
                     mask = mask.split('').reverse().join('');
@@ -202,7 +201,7 @@
             }
             function splitFirstOptionalEndPart(maskPart) {
                 var optionalStartMarkers = 0, optionalEndMarkers = 0, mpl = maskPart.length;
-                for (i = 0; i < mpl; i++) {
+                for (var i = 0; i < mpl; i++) {
                     if (maskPart.charAt(i) == opts.optionalmarker.start) {
                         optionalStartMarkers++;
                     }
@@ -220,7 +219,7 @@
             }
             function splitFirstOptionalStartPart(maskPart) {
                 var mpl = maskPart.length;
-                for (i = 0; i < mpl; i++) {
+                for (var i = 0; i < mpl; i++) {
                     if (maskPart.charAt(i) == opts.optionalmarker.start) {
                         break;
                     }
@@ -449,7 +448,7 @@
                             }
                         });
                     } else { //keep maskforwards with the least forward
-                        var lowestPos = -1, lowestIndex = -1;
+                        var lowestPos = -1, lowestIndex = -1, rsltValid;
                         $.each(results, function (ndx, rslt) {
                             if ($.inArray(rslt["activeMasksetIndex"], maskForwards) != -1 && rslt["result"] !== false & (lowestPos == -1 || lowestPos > rslt["result"]["pos"])) {
                                 lowestPos = rslt["result"]["pos"];
@@ -602,7 +601,6 @@
                 var position = pos;
                 while (++position < maskL && !isMask(position)) {
                 }
-                ;
                 return position;
             }
 
@@ -663,8 +661,6 @@
                 }
             }
 
-            ;
-
             function clearBuffer(buffer, start, end, stripNomasks) {
                 for (var i = start, maskL = getMaskLength() ; i < end && i < maskL; i++) {
                     if (stripNomasks === true) {
@@ -675,8 +671,6 @@
                 }
             }
 
-            ;
-
             function setPlaceholder(pos) {
                 setBufferElement(getActiveBuffer(), pos, getPlaceholder(pos));
             }
@@ -684,9 +678,6 @@
             function getPlaceholder(pos) {
                 var test = getActiveTests(pos);
                 return test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length);
-            }
-            function getPlaceHolder(pos) {
-                return opts.placeholder.charAt(pos % opts.placeholder.length);
             }
 
             function checkVal(input, writeOut, strict, nptvl, intelliCheck) {
@@ -705,7 +696,7 @@
                 $.each(inputValue, function (ndx, charCode) {
                     if (intelliCheck === true) {
                         var p = getActiveMaskSet()["p"], lvp = p == -1 ? p : seekPrevious(p),
-                        pos = lvp == -1 ? ndx : seekNext(lvp);
+                            pos = lvp == -1 ? ndx : seekNext(lvp);
                         if ($.inArray(charCode, getActiveBufferTemplate().slice(lvp + 1, pos)) == -1) {
                             $(input).trigger("_keypress", [true, charCode.charCodeAt(0), writeOut, strict, ndx]);
                         }
@@ -738,12 +729,6 @@
                 }
                 writeBuffer(input, tmpBuffer);
             }
-
-            //functionality fn
-            this.unmaskedvalue = function ($input, skipDatepickerCheck) {
-                isRTL = $input.data('_inputmask')['isRTL'];
-                return unmaskedvalue($input, skipDatepickerCheck);
-            };
 
             function unmaskedvalue($input, skipDatepickerCheck) {
                 if ($input.data('_inputmask') && (skipDatepickerCheck === true || !$input.hasClass('hasDatepicker'))) {
@@ -805,13 +790,6 @@
                     return { "begin": begin, "end": end };
                 }
             }
-
-            ;
-
-            this.isComplete = function (buffer) {
-                return isComplete(buffer);
-            };
-
             function isComplete(buffer) { //return true / false / undefined (repeat *)
                 if (opts.repeat == "*") return undefined;
                 var complete = false, highestValidPosition = 0, currentActiveMasksetIndex = activeMasksetIndex;
@@ -844,7 +822,7 @@
                     (end - begin) > 1 || ((end - begin) == 1 && opts.insertMode);
             }
 
-            this.mask = function (el) {
+            function mask(el) {
                 $el = $(el);
                 if (!$el.is(":input")) return;
 
@@ -1156,7 +1134,10 @@
                         }
                         if ($.valHooks.text == undefined || $.valHooks.text.inputmaskpatch != true) {
                             var valueGet = $.valHooks.text && $.valHooks.text.get ? $.valHooks.text.get : function (elem) { return elem.value; };
-                            var valueSet = $.valHooks.text && $.valHooks.text.set ? $.valHooks.text.set : function (elem, value) { elem.value = value; return elem; };
+                            var valueSet = $.valHooks.text && $.valHooks.text.set ? $.valHooks.text.set : function (elem, value) {
+                                elem.value = value;
+                                return elem;
+                            };
 
                             $.extend($.valHooks, {
                                 text: {
@@ -1556,8 +1537,20 @@
                         }
                     }
                 }
+            }
+
+            return {
+                isComplete: function (buffer) {
+                    return isComplete(buffer);
+                },
+                unmaskedvalue: function ($input, skipDatepickerCheck) {
+                    isRTL = $input.data('_inputmask')['isRTL'];
+                    return unmaskedvalue($input, skipDatepickerCheck);
+                },
+                mask: function (el) {
+                    mask(el);
+                }
             };
-            return this;
         };
 
         $.inputmask = {
