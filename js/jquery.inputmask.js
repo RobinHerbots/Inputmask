@@ -8,8 +8,6 @@
 
 (function ($) {
     if ($.fn.inputmask === undefined) {
-        var opts = {};
-
         //helper functions
         function isInputEventSupported(eventName) {
             var el = document.createElement('input'),
@@ -22,61 +20,58 @@
             el = null;
             return isSupported;
         }
-
-        function resolveAlias(aliasStr, options) {
+        function resolveAlias(aliasStr, options, opts) {
             var aliasDefinition = opts.aliases[aliasStr];
             if (aliasDefinition) {
-                if (aliasDefinition.alias) resolveAlias(aliasDefinition.alias); //alias is another alias
-                $.extend(true, opts, aliasDefinition); //merge alias definition in the options
-                $.extend(true, opts, options); //reapply extra given options
+                if (aliasDefinition.alias) resolveAlias(aliasDefinition.alias, undefined, opts); //alias is another alias
+                $.extend(true, opts, aliasDefinition);  //merge alias definition in the options
+                $.extend(true, opts, options);  //reapply extra given options
                 return true;
             }
             return false;
         }
-
-        function getMaskTemplate(mask) {
-            if (opts.numericInput) {
-                mask = mask.split('').reverse().join('');
-            }
-            var escaped = false, outCount = 0, greedy = opts.greedy, repeat = opts.repeat;
-            if (repeat == "*") greedy = false;
-            //if (greedy == true && opts.placeholder == "") opts.placeholder = " ";
-            if (mask.length == 1 && greedy == false && repeat != 0) {
-                opts.placeholder = "";
-            } //hide placeholder with single non-greedy mask
-            var singleMask = $.map(mask.split(""), function (element, index) {
-                var outElem = [];
-                if (element == opts.escapeChar) {
-                    escaped = true;
-                } else if ((element != opts.optionalmarker.start && element != opts.optionalmarker.end) || escaped) {
-                    var maskdef = opts.definitions[element];
-                    if (maskdef && !escaped) {
-                        for (var i = 0; i < maskdef.cardinality; i++) {
-                            outElem.push(ggetPlaceholder(outCount + i));
-                        }
-                    } else {
-                        outElem.push(element);
-                        escaped = false;
-                    }
-                    outCount += outElem.length;
-                    return outElem;
-                }
-            });
-
-            //allocate repetitions
-            var repeatedMask = singleMask.slice();
-            for (var i = 1; i < repeat && greedy; i++) {
-                repeatedMask = repeatedMask.concat(singleMask.slice());
-            }
-
-            return { "mask": repeatedMask, "repeat": repeat, "greedy": greedy };
-        }
-
-        function generateMaskSets() {
+        function generateMaskSets(opts) {
             var ms = [];
             var genmasks = []; //used to keep track of the masks that where processed, to avoid duplicates
             var maskTokens = [];
 
+            function getMaskTemplate(mask) {
+                if (opts.numericInput) {
+                    mask = mask.split('').reverse().join('');
+                }
+                var escaped = false, outCount = 0, greedy = opts.greedy, repeat = opts.repeat;
+                if (repeat == "*") greedy = false;
+                //if (greedy == true && opts.placeholder == "") opts.placeholder = " ";
+                if (mask.length == 1 && greedy == false && repeat != 0) {
+                    opts.placeholder = "";
+                } //hide placeholder with single non-greedy mask
+                var singleMask = $.map(mask.split(""), function (element, index) {
+                    var outElem = [];
+                    if (element == opts.escapeChar) {
+                        escaped = true;
+                    } else if ((element != opts.optionalmarker.start && element != opts.optionalmarker.end) || escaped) {
+                        var maskdef = opts.definitions[element];
+                        if (maskdef && !escaped) {
+                            for (var i = 0; i < maskdef.cardinality; i++) {
+                                outElem.push(opts.placeholder.charAt((outCount + i) % opts.placeholder.length));
+                            }
+                        } else {
+                            outElem.push(element);
+                            escaped = false;
+                        }
+                        outCount += outElem.length;
+                        return outElem;
+                    }
+                });
+
+                //allocate repetitions
+                var repeatedMask = singleMask.slice();
+                for (var i = 1; i < repeat && greedy; i++) {
+                    repeatedMask = repeatedMask.concat(singleMask.slice());
+                }
+
+                return { "mask": repeatedMask, "repeat": repeat, "greedy": greedy };
+            }
             function analyseMask(mask) {
                 if (opts.numericInput) {
                     mask = mask.split('').reverse().join('');
@@ -202,11 +197,9 @@
 
                 return maskTokens;
             }
-
             function markOptional(maskPart) { //needed for the clearOptionalTail functionality
                 return opts.optionalmarker.start + maskPart + opts.optionalmarker.end;
             }
-
             function splitFirstOptionalEndPart(maskPart) {
                 var optionalStartMarkers = 0, optionalEndMarkers = 0, mpl = maskPart.length;
                 for (i = 0; i < mpl; i++) {
@@ -225,7 +218,6 @@
                 }
                 return maskParts;
             }
-
             function splitFirstOptionalStartPart(maskPart) {
                 var mpl = maskPart.length;
                 for (i = 0; i < mpl; i++) {
@@ -239,7 +231,6 @@
                 }
                 return maskParts;
             }
-
             function generateMask(maskPrefix, maskPart, metadata) {
                 var maskParts = splitFirstOptionalEndPart(maskPart);
                 var newMask, maskTemplate;
@@ -328,11 +319,6 @@
             return opts.greedy ? ms : ms.sort(function (a, b) { return a["mask"].length - b["mask"].length; });
         }
 
-        function ggetPlaceholder(pos) { //need tobe removed
-            return opts.placeholder.charAt(pos % opts.placeholder.length);
-        }
-
-
         var msie10 = navigator.userAgent.match(new RegExp("msie 10", "i")) !== null,
             iphone = navigator.userAgent.match(new RegExp("iphone", "i")) !== null,
             android = navigator.userAgent.match(new RegExp("android.*safari.*", "i")) !== null,
@@ -340,7 +326,6 @@
             pasteEvent = isInputEventSupported('paste') && !msie10 ? 'paste' : isInputEventSupported('input') ? 'input' : "propertychange";
 
         //masking scope
-
         function maskScope(masksets, activeMasksetIndex, opts) {
             var isRTL = false,
                 valueOnFocus = getActiveBuffer().join(''),
@@ -699,6 +684,9 @@
             function getPlaceholder(pos) {
                 var test = getActiveTests(pos);
                 return test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length);
+            }
+            function getPlaceHolder(pos) {
+                return opts.placeholder.charAt(pos % opts.placeholder.length);
             }
 
             function checkVal(input, writeOut, strict, nptvl, intelliCheck) {
@@ -1647,21 +1635,19 @@
 
             }
         };
-
         $.fn.inputmask = function (fn, options) {
-            opts = $.extend(true, {}, $.inputmask.defaults, options);
-            var masksets,
+            var opts = $.extend(true, {}, $.inputmask.defaults, options),
+            	masksets,
                 activeMasksetIndex = 0;
 
             if (typeof fn === "string") {
                 switch (fn) {
                     case "mask":
                         //resolve possible aliases given by options
-                        resolveAlias(opts.alias, options);
-                        masksets = generateMaskSets();
-                        if (masksets.length == 0) {
-                            return this;
-                        }
+                        resolveAlias(opts.alias, options, opts);
+                        masksets = generateMaskSets(opts);
+                        if (masksets.length == 0) { return this; }
+
 
                         return this.each(function () {
                             maskScope($.extend(true, {}, masksets), 0, opts).mask(this);
@@ -1740,15 +1726,14 @@
                         } else return undefined;
                     default:
                         //check if the fn is an alias
-                        if (!resolveAlias(fn, options)) {
+                        if (!resolveAlias(fn, options, opts)) {
                             //maybe fn is a mask so we try
                             //set mask
                             opts.mask = fn;
                         }
-                        masksets = generateMaskSets();
-                        if (masksets.length == 0) {
-                            return this;
-                        }
+
+                        masksets = generateMaskSets(opts);
+                        if (masksets.length == 0) { return this; }
                         return this.each(function () {
                             maskScope($.extend(true, {}, masksets), activeMasksetIndex, opts).mask(this);
                         });
@@ -1758,11 +1743,9 @@
             } else if (typeof fn == "object") {
                 opts = $.extend(true, {}, $.inputmask.defaults, fn);
 
-                resolveAlias(opts.alias, fn); //resolve aliases
-                masksets = generateMaskSets();
-                if (masksets.length == 0) {
-                    return this;
-                }
+                resolveAlias(opts.alias, fn, opts); //resolve aliases
+                masksets = generateMaskSets(opts);
+                if (masksets.length == 0) { return this; }
                 return this.each(function () {
                     maskScope($.extend(true, {}, masksets), activeMasksetIndex, opts).mask(this);
                 });
@@ -1776,7 +1759,7 @@
                             var dataoptions = $.parseJSON("{" + attrOptions + "}");
                             $.extend(true, dataoptions, options);
                             opts = $.extend(true, {}, $.inputmask.defaults, dataoptions);
-                            resolveAlias(opts.alias, dataoptions);
+                            resolveAlias(opts.alias, dataoptions, opts);
                             opts.alias = undefined;
                             $(this).inputmask(opts);
                         } catch (ex) {

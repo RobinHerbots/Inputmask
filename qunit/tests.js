@@ -1215,6 +1215,25 @@ test("inputmask(\"decimal\") - value=\"123.45\" Replace last integer", function 
     $("#testmask").remove();
 });
 
+test("inputmask - Multiple inputs masked, Integer mask doesn't allow typing - #402 - albatrocity", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $('body').append('<input type="text" id="testmask2" />');
+    $("#testmask").inputmask("integer", {
+        autoGroup: true,
+        groupSeparator: ",",
+        groupSize: 3
+    });
+    $("#testmask2").inputmask("(999)-999-9999");
+
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("12345");
+	
+    equal($("#testmask").val(), "12,345", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+    $("#testmask2").remove();
+});
+
 module("Direction RTL");
 test("inputmask(\"999.999.999\") - delete 2nd with backspace, continue the mask", function () {
     $('body').append('<input type="text" id="testmask" dir="rtl" />');
