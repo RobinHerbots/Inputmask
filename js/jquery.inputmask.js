@@ -34,43 +34,6 @@
             var ms = [];
             var genmasks = []; //used to keep track of the masks that where processed, to avoid duplicates
             var maskTokens = [];
-            function getMaskTemplate(mask) {
-                if (opts.numericInput) {
-                    mask = mask.split('').reverse().join('');
-                }
-                var escaped = false, outCount = 0, greedy = opts.greedy, repeat = opts.repeat;
-                if (repeat == "*") greedy = false;
-                //if (greedy == true && opts.placeholder == "") opts.placeholder = " ";
-                if (mask.length == 1 && greedy == false && repeat != 0) {
-                    opts.placeholder = "";
-                } //hide placeholder with single non-greedy mask
-                var singleMask = $.map(mask.split(""), function (element, index) {
-                    var outElem = [];
-                    if (element == opts.escapeChar) {
-                        escaped = true;
-                    } else if ((element != opts.optionalmarker.start && element != opts.optionalmarker.end) || escaped) {
-                        var maskdef = opts.definitions[element];
-                        if (maskdef && !escaped) {
-                            for (var i = 0; i < maskdef.cardinality; i++) {
-                                outElem.push(opts.placeholder.charAt((outCount + i) % opts.placeholder.length));
-                            }
-                        } else {
-                            outElem.push(element);
-                            escaped = false;
-                        }
-                        outCount += outElem.length;
-                        return outElem;
-                    }
-                });
-
-                //allocate repetitions
-                var repeatedMask = singleMask.slice();
-                for (var i = 1; i < repeat && greedy; i++) {
-                    repeatedMask = repeatedMask.concat(singleMask.slice());
-                }
-
-                return { "mask": repeatedMask, "repeat": repeat, "greedy": greedy };
-            }
             function analyseMask(mask) {
                 if (opts.numericInput) {
                     mask = mask.split('').reverse().join('');
@@ -232,39 +195,37 @@
             }
             function generateMask(maskPrefix, maskPart, metadata) {
                 var maskParts = splitFirstOptionalEndPart(maskPart);
-                var newMask, maskTemplate;
+                var newMask;
 
                 var masks = splitFirstOptionalStartPart(maskParts[0]);
                 if (masks.length > 1) {
                     newMask = maskPrefix + masks[0] + markOptional(masks[1]) + (maskParts.length > 1 ? maskParts[1] : "");
                     if ($.inArray(newMask, genmasks) == -1 && newMask != "") {
                         genmasks.push(newMask);
-                        maskTemplate = getMaskTemplate(newMask);
                         ms.push({
                             "mask": newMask,
                             "maskToken": analyseMask(newMask),
-                            "_buffer": maskTemplate["mask"],
-                            "buffer": maskTemplate["mask"].slice(),
+                            "_buffer": undefined,
+                            "buffer": undefined,
                             "tests": {},
                             "lastValidPosition": -1,
-                            "greedy": maskTemplate["greedy"],
-                            "repeat": maskTemplate["repeat"],
+                            "greedy": undefined,
+                            "repeat": undefined,
                             "metadata": metadata
                         });
                     }
                     newMask = maskPrefix + masks[0] + (maskParts.length > 1 ? maskParts[1] : "");
                     if ($.inArray(newMask, genmasks) == -1 && newMask != "") {
                         genmasks.push(newMask);
-                        maskTemplate = getMaskTemplate(newMask);
                         ms.push({
                             "mask": newMask,
                             "maskToken": analyseMask(newMask),
-                            "_buffer": maskTemplate["mask"],
-                            "buffer": maskTemplate["mask"].slice(),
+                            "_buffer": undefined,
+                            "buffer": undefined,
                             "tests": {},
                             "lastValidPosition": -1,
-                            "greedy": maskTemplate["greedy"],
-                            "repeat": maskTemplate["repeat"],
+                            "greedy": undefined,
+                            "repeat": undefined,
                             "metadata": metadata
                         });
                     }
@@ -279,7 +240,6 @@
                     newMask = maskPrefix + maskParts;
                     if ($.inArray(newMask, genmasks) == -1 && newMask != "") {
                         genmasks.push(newMask);
-                        maskTemplate = getMaskTemplate(newMask);
                         ms.push({
                             "mask": newMask,
                             "maskToken": analyseMask(newMask),
@@ -287,18 +247,20 @@
                             //the buffer can be build upon these validPositions array
                             //further validation start as from this index
                             "validPositions": [],
-                            "_buffer": maskTemplate["mask"],
-                            "buffer": maskTemplate["mask"].slice(),
+                            "_buffer": undefined,
+                            "buffer": undefined,
                             "tests": {},
                             "lastValidPosition": -1,
-                            "greedy": maskTemplate["greedy"],
-                            "repeat": maskTemplate["repeat"],
+                            "greedy": undefined,
+                            "repeat": undefined,
                             "metadata": metadata
                         });
                     }
                 }
 
             }
+
+            if (opts.repeat == "*") opts.greedy = false;
 
             if ($.isFunction(opts.mask)) { //allow mask to be a preprocessing fn - should return a valid mask
                 opts.mask = opts.mask.call(this, opts);
@@ -312,6 +274,10 @@
                     }
                 });
             } else {
+                if (opts.mask.length == 1 && opts.greedy == false && opts.repeat != 0) {
+                    opts.placeholder = "";
+                } //hide placeholder with single non-greedy mask
+
                 generateMask("", opts.mask.toString());
             }
 
@@ -331,7 +297,19 @@
                 $el, chromeValueOnInput;
 
             //maskset helperfunctions
+            function getMaskTemplate() {
+                var maskTemplate = [];
 
+                var pos = 0, test;
+
+                do {
+                    test = getActiveTests(pos);
+                    maskTemplate.push(test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length));
+                    pos++;
+                } while (test["fn"] != null || (test["fn"] == null && test["def"] != "") && opts.repeat != "*"); //fixme
+
+                return { "mask": maskTemplate, "repeat": opts.repeat, "greedy": opts.greedy };
+            }
             function getActiveMaskSet() {
                 return masksets[activeMasksetIndex];
             }
@@ -353,10 +331,10 @@
                             } else if (match.isOptional) {
                                 match = ResolveTestFromToken(match, ndxInitializer, loopNdx, quantifierRecurse);
                                 if (match) return match;
-                            } else if (match.isQuantifier) {
+                            } else if (match.isQuantifier && quantifierRecurse !== true) {
                                 var qt = match;
-                                for (var qndx = ndxInitializer.length > 0 ? ndxInitializer.shift() : 0; qndx < isNaN(qt.quantifier.max) ? qndx + 1 : qt.quantifier.max; qndx++) {
-                                    //console.log("qt loop for " + pos);
+                                for (var qndx = (ndxInitializer.length > 0 && quantifierRecurse !== true) ? ndxInitializer.shift() : 0; qndx < (isNaN(qt.quantifier.max) ? qndx + 1 : qt.quantifier.max) ; qndx++) {
+                                    console.log(qndx + " loop for " + pos);
                                     match = handleMatch(maskToken.matches[maskToken.matches.indexOf(qt) - 1], [qndx].concat(loopNdx), true);
                                     if (match) {
                                         return match;
@@ -371,10 +349,12 @@
                         } else testPos++;
                     }
 
-                    for (var tndx = ndxInitializer.length > 0 ? ndxInitializer.shift() : 0; tndx < maskToken.matches.length; tndx++) {
-                        var match = handleMatch(maskToken.matches[tndx], [tndx].concat(loopNdx));
-                        if (match && testPos == pos) {
-                            return match;
+                    for (var tndx = (ndxInitializer.length > 0 && quantifierRecurse !== true ? ndxInitializer.shift() : 0) ; tndx < maskToken.matches.length ; tndx++) {
+                        if (maskToken.matches[tndx]["isQuantifier"] !== true) {
+                            var match = handleMatch(maskToken.matches[tndx], [tndx].concat(loopNdx), quantifierRecurse);
+                            if (match && testPos == pos) {
+                                return match;
+                            }
                         }
                     }
                 }
@@ -397,7 +377,7 @@
                     if (match && testPos == pos) {
                         testLocator.push(mtndx);
                         getActiveMaskSet()['tests'][pos] = { "match": match, "locator": testLocator.reverse() };
-                        //console.log(pos + " - " + testLocator);
+                        console.log(pos + " - " + testLocator);
                         return match;
                     }
                 }
@@ -406,10 +386,20 @@
             }
 
             function getActiveBufferTemplate() {
+                if (getActiveMaskSet()['_buffer'] == undefined) {
+                    //generate template
+                    var maskTemplate = getMaskTemplate();
+                    getActiveMaskSet()["_buffer"] = maskTemplate["mask"];
+                    getActiveMaskSet()["greedy"] = maskTemplate["greedy"];
+                    getActiveMaskSet()["repeat"] = maskTemplate["repeat"];
+                }
                 return getActiveMaskSet()['_buffer'];
             }
 
             function getActiveBuffer() {
+                if (getActiveMaskSet()['buffer'] == undefined) {
+                    getActiveMaskSet()['buffer'] = getActiveBufferTemplate().slice();
+                }
                 return getActiveMaskSet()['buffer'];
             }
 
