@@ -1,3 +1,6 @@
+#Branch 1.x is no longer maintained!
+
+
 #jquery.inputmask
 
 Copyright (c) 2010 - 2013 Robin Herbots
