@@ -20,7 +20,7 @@
 	   <replaceregexp file="${srcdir}/jquery.inputmask.regex.extensions.js" match="Version:.*" replace="Version: ${build.major}.${build.minor}.${build.revision}"  byline="true"/>
 	   <replaceregexp file="${srcdir}/jquery.inputmask.phone.extensions.js" match="Version:.*" replace="Version: ${build.major}.${build.minor}.${build.revision}"  byline="true"/>
 	   <replaceregexp file="./jquery.inputmask.jquery.json" match="&quot;version&quot;:.*" replace="&quot;version&quot;: &quot;${build.major}.${build.minor}.${build.revision}&quot;,"  byline="true"/>
-	   <replaceregexp file="./component.json" match="&quot;version&quot;:.*" replace="&quot;version&quot;: &quot;${build.major}.${build.minor}.${build.revision}&quot;,"  byline="true"/>
+	   <replaceregexp file="./bower.json" match="&quot;version&quot;:.*" replace="&quot;version&quot;: &quot;${build.major}.${build.minor}.${build.revision}&quot;,"  byline="true"/>
 	</target>
 
 	<target name="resetVersions">
