@@ -2,7 +2,7 @@
 
 #jquery.inputmask
 
-Copyright (c) 2010 - 2013 Robin Herbots
+Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://opensource.org/licenses/mit-license.php)
 
 jquery.inputmask is a jQuery plugin which create an input mask.
@@ -612,10 +612,10 @@ In Layout
 
 ```javascript
 $(document).ready(function(){
-   $("#date").inputmask("dd/mm/yyyy");
-   $("#date").inputmask("mm/dd/yyyy");
-   $("#date").inputmask("date"); // alias for dd/mm/yyyy
-   $("#date").inputmask("date", {yearrange: { minyear: 1900, maxyear: 2099 }}); //specify year range
+   $(selector).inputmask("dd/mm/yyyy");
+   $(selector).inputmask("mm/dd/yyyy");
+   $(selector).inputmask("date"); // alias for dd/mm/yyyy
+   $(selector).inputmask("date", {yearrange: { minyear: 1900, maxyear: 2099 }}); //specify year range
 });
 ```
 
@@ -629,8 +629,8 @@ input:  ctrl rightarrow	        result: the date from today
 
 ```javascript
 $(document).ready(function(){
-   $("#date").inputmask("datetime"); // 24h
-   $("#date").inputmask("datetime12"); // am/pm
+   $(selector).inputmask("datetime"); // 24h
+   $(selector).inputmask("datetime12"); // am/pm
 });
 ```
 
@@ -638,9 +638,9 @@ $(document).ready(function(){
 
 ```javascript
 $(document).ready(function(){
-   $("#numeric").inputmask("decimal");
-   $("#numeric").inputmask("decimal", { allowMinus: false });
-   $("#numeric").inputmask("integer");
+   $(selector).inputmask("decimal");
+   $(selector).inputmask("decimal", { allowMinus: false });
+   $(selector).inputmask("integer");
 });
 ```
 
@@ -653,14 +653,14 @@ Define the radixpoint
 
 ```javascript
 $(document).ready(function(){
-   $("#numeric").inputmask("decimal", { radixPoint: "," });
+   $(selector).inputmask("decimal", { radixPoint: "," });
 });
 ```
 Define the number of digits after the radixpoint
 
 ```javascript
 $(document).ready(function(){
-   $("#numeric").inputmask("decimal", { digits: 3 });
+   $(selector).inputmask("decimal", { digits: 3 });
 });
 ```
 When TAB out of the input the digits autocomplate with 0 if the digits option is given a valid number.
@@ -668,15 +668,15 @@ When TAB out of the input the digits autocomplate with 0 if the digits option is
 Grouping support through:  autoGroup, groupSeparator, groupSize
 ```javascript
 $(document).ready(function(){
-   $("#numeric").inputmask("decimal", { radixPoint: ",", autoGroup: true, groupSeparator: ".", groupSize: 3 });
+   $(selector).inputmask("decimal", { radixPoint: ",", autoGroup: true, groupSeparator: ".", groupSize: 3 });
 });
 ```
 
 Allow minus and/or plus symbol
 ```javascript
 $(document).ready(function(){
-   $("#numeric").inputmask("decimal", { allowMinus: false });
-   $("#numeric").inputmask("integer", { allowMinus: false, allowPlus: true });
+   $(selector).inputmask("decimal", { allowMinus: false });
+   $(selector).inputmask("integer", { allowMinus: false, allowPlus: true });
 });
 ```
 
@@ -688,7 +688,7 @@ There is no further masking visualization.
 Example simple email regex:
 ```javascript
 $(document).ready(function(){
-   $("#numeric").inputmask('Regex', { regex: "[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}" });
+   $(selector).inputmask('Regex', { regex: "[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}" });
 });
 ```
 
