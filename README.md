@@ -1,3 +1,5 @@
+#DO NOT USE - experimental
+
 #jquery.inputmask
 
 Copyright (c) 2010 - 2013 Robin Herbots
