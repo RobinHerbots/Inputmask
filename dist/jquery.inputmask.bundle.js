@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2013 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.4.15
+* Version: 2.4.16
 */
 
 (function ($) {
@@ -1616,7 +1616,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.15
+Version: 2.4.16
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1738,7 +1738,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2012 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.15
+Version: 2.4.16
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2226,7 +2226,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.15
+Version: 2.4.16
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2252,7 +2252,7 @@ Optional extensions on the jquery.inputmask base
             defaultValue: "",
             prefix: "",
             suffix: "",
-            
+
             //todo
             getMaskLength: function (buffer, greedy, repeat, currentBuffer, opts) { //custom getMaskLength to take the groupSeparator into account
                 var calculatedLength = buffer.length;
@@ -2306,7 +2306,7 @@ Optional extensions on the jquery.inputmask base
                     var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
                     var escapedRadixPoint = $.inputmask.escapeRegex.call(this, opts.radixPoint);
                     var digitExpression = isNaN(opts.digits) ? opts.digits : '{0,' + opts.digits + '}';
-                    var signedExpression = "[" + (opts.allowPlus ? "\+" : "") + (opts.allowMinus ? "-" : "") + "]?";
+                    var signedExpression = opts.allowPlus || opts.allowMinus ? "[" + (opts.allowPlus ? "\+" : "") + (opts.allowMinus ? "-" : "") + "]?" : "";
                     return new RegExp("^" + signedExpression + "(\\d+|\\d{1," + opts.groupSize + "}((" + escapedGroupSeparator + "\\d{" + opts.groupSize + "})?)+)(" + escapedRadixPoint + "\\d" + digitExpression + ")?$");
                 }
             },
@@ -2403,7 +2403,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.15
+Version: 2.4.16
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2573,7 +2573,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.15
+Version: 2.4.16
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
