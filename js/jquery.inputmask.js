@@ -232,7 +232,7 @@
             iphone = navigator.userAgent.match(new RegExp("iphone", "i")) !== null,
             android = navigator.userAgent.match(new RegExp("android.*safari.*", "i")) !== null,
             androidchrome = navigator.userAgent.match(new RegExp("android.*chrome.*", "i")) !== null,
-            pasteEvent = isInputEventSupported('paste') && !msie10 ? 'paste' : isInputEventSupported('input') ? 'input' : "propertychange";
+            pasteEvent = isInputEventSupported('paste') ? 'paste' : isInputEventSupported('input') ? 'input' : "propertychange";
 
 
         //masking scope
@@ -814,7 +814,7 @@
                     setTimeout(function () {
                         var selectedCaret = caret(input), buffer = getActiveBuffer();
                         if (selectedCaret.begin == selectedCaret.end) {
-                            var clickPosition = opts.isRTL ? TranslatePosition(selectedCaret.begin) : selectedCaret.begin,
+                            var clickPosition = isRTL ? TranslatePosition(selectedCaret.begin) : selectedCaret.begin,
                                 lvp = getActiveMaskSet()["lastValidPosition"],
                                 lastPosition;
                             if (opts.isNumeric) {
@@ -868,24 +868,14 @@
                 ).bind("keyup.inputmask", keyupEvent);
 
                 if (androidchrome) {
-                    $el.bind("input.inputmask", function (e) {
-                        if (skipInputEvent === true) {
-                            skipInputEvent = false;
-                            return true;
-                        }
-                        var input = this, $input = $(input);
-
-                        chromeValueOnInput = getActiveBuffer().join('');
-                        checkVal(input, false, false);
-                        writeBuffer(input, getActiveBuffer());
-                        if (isComplete(getActiveBuffer()) === true)
-                            $input.trigger("complete");
-                        $input.click();
-                    });
+                    $el.bind("input.inputmask", inputEvent);
                 } else {
                     $el.bind("keydown.inputmask", keydownEvent
                     ).bind("keypress.inputmask", keypressEvent);
                 }
+
+                if (msie10)
+                    $el.bind("input.inputmask", inputEvent);
 
                 //apply mask
                 checkVal(el, true, false);
@@ -1387,6 +1377,21 @@
                                 caret(input, TranslatePosition(0), TranslatePosition(getMaskLength()));
                         }
                     }
+                }
+
+                function inputEvent(e) {
+                    if (skipInputEvent === true) {
+                        skipInputEvent = false;
+                        return true;
+                    }
+                    var input = this, $input = $(input);
+
+                    chromeValueOnInput = getActiveBuffer().join('');
+                    checkVal(input, false, false);
+                    writeBuffer(input, getActiveBuffer());
+                    if (isComplete(getActiveBuffer()) === true)
+                        $input.trigger("complete");
+                    $input.click();
                 }
             }
 

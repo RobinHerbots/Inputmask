@@ -151,9 +151,10 @@ asyncTest("inputmask(\"9-AAA.999\") - change event", 1, function () {
     });
 
     $("#testmask")[0].focus();
-    $("#testmask").Type("1abc12");
-
-    $("#testmask").blur();
+    setTimeout(function () {
+        $("#testmask").Type("1abc12");
+        $("#testmask").blur();
+    }, 0);
 });
 
 asyncTest("inputmask(\"9-AAA.999\", { onincomplete: ... })", 1, function () {
@@ -454,7 +455,6 @@ test("inputmask(\"6703 9999 9999 9999 9\") ~ value=\"6703 1234 5678 9012 3\" - F
     $('body').append('<input type="text" id="testmask" value="6703 1234 5678 9012 3" />');
     $("#testmask").inputmask("6703 9999 9999 9999 9");
     equal($("#testmask").val(), "6703 1234 5678 9012 3", "Result " + $("#testmask").val());
-
     $("#testmask").remove();
 });
 
@@ -463,23 +463,25 @@ test("inputmask(\"6703 9999 9999 9999 9\") ~ type \"6703 1234 5678 9012 3\" + ba
     $("#testmask").inputmask("6703 9999 9999 9999 9");
     $("#testmask")[0].focus();
     $("#testmask").Type("1234567890123");
-    $("#testmask").SendKey(keyCodes.BACKSPACE);	
+    $("#testmask").SendKey(keyCodes.BACKSPACE);
 
     equal($("#testmask").val(), "6703 1234 5678 9012 _", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });
 
-test("inputmask(\"6703 9999 9999 9999 9\") ~ type \"6703670367036\" + backspace - FransVdb", function () {
+asyncTest("inputmask(\"6703 9999 9999 9999 9\") ~ type \"6703670367036\" + backspace - FransVdb", function () {
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("6703 9999 9999 9999 9");
     $("#testmask")[0].focus();
-    $("#testmask").Type("6703670367036");
-    $("#testmask").SendKey(keyCodes.BACKSPACE);	
-
-    equal($("#testmask").val(), "6703 6703 6703 6703 _", "Result " + $("#testmask").val());
-
-    $("#testmask").remove();
+    $("#testmask").click();
+    setTimeout(function () {
+        $("#testmask").Type("6703670367036");
+        $("#testmask").SendKey(keyCodes.BACKSPACE);
+        equal($("#testmask").val(), "6703 6703 6703 6703 _", "Result " + $("#testmask").val());
+        start();
+        $("#testmask").remove();
+    }, 0);
 });
 
 
@@ -488,11 +490,11 @@ asyncTest("inputmask(\"+7 (999) 999-99-99\") ~ paste \"+7 (+79114041112___) ___-
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("+7 (999) 999-99-99");
     $("#testmask").paste("+7 (+79114041112___) ___-__-__");
-    
+
     setTimeout(function () {
-	equal($("#testmask").val(), "+7 (911) 404-11-12", "Result " + $("#testmask").val());
-	start();
-	$("#testmask").remove();
+        equal($("#testmask").val(), "+7 (911) 404-11-12", "Result " + $("#testmask").val());
+        start();
+        $("#testmask").remove();
     }, 0);
 
 });
@@ -500,18 +502,18 @@ asyncTest("inputmask(\"+7 (999) 999-99-99\") ~ paste \"+7 (+79114041112___) ___-
 asyncTest("inputmask(\"+7 (999) 999-99-99\") ~ paste \"0079114041112\" - monoblaine", function () {
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("+7 (999) 999-99-99", {
-		onBeforePaste : function(pastedValue) {
-			//just simplistic for the test ;-)
-			var strippedValue = pastedValue.substr(2);
-			return strippedValue;
-		}
-	});
+        onBeforePaste: function (pastedValue) {
+            //just simplistic for the test ;-)
+            var strippedValue = pastedValue.substr(2);
+            return strippedValue;
+        }
+    });
     $("#testmask").paste("0079114041112");
-    
+
     setTimeout(function () {
-	equal($("#testmask").val(), "+7 (911) 404-11-12", "Result " + $("#testmask").val());
-	start();
-	$("#testmask").remove();
+        equal($("#testmask").val(), "+7 (911) 404-11-12", "Result " + $("#testmask").val());
+        start();
+        $("#testmask").remove();
     }, 0);
 
 });
@@ -962,7 +964,7 @@ test("inputmask(\"mm/dd/yyyy\") - select some input 1 - Guamaso", function () {
     $("#testmask").inputmask("mm/dd/yyyy");
 
     $("#testmask")[0].focus();
-	caret($("#testmask")[0], 0, 5);
+    caret($("#testmask")[0], 0, 5);
     $("#testmask").Type("1");
     equal($("#testmask").val(), "1m/dd/yyyy", "Result " + $("#testmask").val());
     $("#testmask").remove();
@@ -974,10 +976,22 @@ test("inputmask(\"dd/mm/yyyy\") - input 2331973 - remove 23", function () {
 
     $("#testmask")[0].focus();
     $("#testmask").Type("23031973");
-	caret($("#testmask"), 0,2);
-	$("#testmask").SendKey(keyCodes.DELETE);
-   
+    caret($("#testmask"), 0, 2);
+    $("#testmask").SendKey(keyCodes.DELETE);
+
     equal($("#testmask").val(), "dd/03/1973", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"dd/mm/yyyy\") - input 01011000 - Skiv22", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("dd/mm/yyyy", { yearrange: { minyear: 1000, maxyear: 2099 } });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("01011000");
+
+    equal($("#testmask").val(), "01/01/1000", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });
@@ -1208,8 +1222,8 @@ test("inputmask(\"decimal\") - value=\"123.45\" Replace last integer", function 
 
     $("#testmask")[0].focus();
     $("#testmask").Type("123.45");
-	caret( $("#testmask"), 2,3);
-	$("#testmask").SendKey("7");
+    caret($("#testmask"), 2, 3);
+    $("#testmask").SendKey("7");
 
     equal($("#testmask").val(), "127.45", "Result " + $("#testmask").val());
     $("#testmask").remove();
@@ -1228,7 +1242,7 @@ test("inputmask - Multiple inputs masked, Integer mask doesn't allow typing - #4
 
     $("#testmask")[0].focus();
     $("#testmask").Type("12345");
-	
+
     equal($("#testmask").val(), "12,345", "Result " + $("#testmask").val());
     $("#testmask").remove();
     $("#testmask2").remove();
@@ -1403,6 +1417,7 @@ asyncTest("inputmask({ mask: \"€ 999.999.999,99\", { numericInput: true, radix
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask('€ 999.999.999,99', { numericInput: true, radixPoint: "," });
 
+    $("#testmask")[0].focus();
     $("#testmask").click();
     setTimeout(function () {
         $("#testmask").Type("123");
@@ -1417,6 +1432,7 @@ asyncTest("inputmask({ mask: \"€ 999.999.999,99\", { numericInput: true, radix
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask('€ 999.999.999,99', { numericInput: true, radixPoint: "," });
 
+    $("#testmask")[0].focus();
     $("#testmask").click();
     setTimeout(function () {
         $("#testmask").Type("123,45");
@@ -1726,12 +1742,13 @@ asyncTest("inputmask(\"phone\") - Brazil switch", 1, function () {
     $("#testmask").inputmask("phone", { "url": "http://rawgithub.com/RobinHerbots/jquery.inputmask/2.x/js/phone-codes/phone-codes.json" });
 
     setTimeout(function () {
-        
+        $("#testmask")[0].focus();
+        caret($("#testmask"), $("#testmask")[0].value.length); //for FF
         $("#testmask").SendKey(keyCodes.BACKSPACE);
         $("#testmask").SendKey(keyCodes.BACKSPACE);
         $("#testmask").SendKey(keyCodes.BACKSPACE);
         $("#testmask").SendKey(keyCodes.BACKSPACE);
-		$("#testmask").SendKey(keyCodes.BACKSPACE);
+        $("#testmask").SendKey(keyCodes.BACKSPACE);
         $("#testmask").Type("451234");
         equal($("#testmask").val(), "+55-12-12345-1234", "Result " + $("#testmask").val());
         start();
