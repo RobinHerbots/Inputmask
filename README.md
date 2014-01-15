@@ -582,12 +582,11 @@ $(document).ready(function(){
 
 ## Value formatting
 
-Instead of masking an input element it also possible to use the inputmask for formatting given values.
+Instead of masking an input element it is also possible to use the inputmask for formatting given values.
 Think of formatting values to show in jqGrid or on other elements then inputs.
 
 ```javascript
 var formattedDate = $.inputmask.format("2331973", { alias: "dd/mm/yyyy"});
-//do something
 ```
 
 ## Compiling with Google Closure Compiler
