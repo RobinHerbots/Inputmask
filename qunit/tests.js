@@ -1819,6 +1819,10 @@ test("$.inputmask.format(\"2331973\", { alias: \"date\"})", function () {
     equal(formattedValue, "23/03/1973", "Result " + formattedValue);
 });
 
+test("$.inputmask.format(\"016501030020001DE1015170\", { mask: \"99 999 999 999 9999 \\D\\E*** 9999\"})", function () {
+    var formattedValue =$.inputmask.format("016501030020001DE1015170", { mask: "99 999 999 999 9999 \\D\\E*** 9999"});
+    equal(formattedValue, "01 650 103 002 0001 DE101 5170", "Result " + formattedValue);
+});
 
 module("Dynamic Masks");
 test("inputmask(\"*{1,20}@*{1,20}.*{2,6}[.*{2}]\" - email mask", function () {
