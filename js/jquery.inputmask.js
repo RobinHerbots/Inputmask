@@ -951,7 +951,6 @@
                 }
                 if (c != undefined)
                     setBufferElement(buffer, seekPrevious(end), c);
-
                 if (getActiveMaskSet()["greedy"] == false) {
                     var trbuffer = truncateInput(buffer.join('')).split('');
                     buffer.length = trbuffer.length;
@@ -1162,8 +1161,6 @@
                                 pos.end = pos.begin;
                             }
                         }
-
-
                         var p = pos.begin;
                         results = isValid(p, c, strict);
                         if (strict === true) results = [{ "activeMasksetIndex": activeMasksetIndex, "result": results }];
@@ -1346,7 +1343,6 @@
                     }
 
                     patchValueProperty(el);
-
 
                     if (opts.numericInput) opts.isNumeric = opts.numericInput;
                     if (el.dir == "rtl" || (opts.numericInput && opts.rightAlignNumerics) || (opts.isNumeric && opts.rightAlignNumerics))
@@ -1634,7 +1630,7 @@
         };
         $.fn.inputmask = function (fn, options) {
             var opts = $.extend(true, {}, $.inputmask.defaults, options),
-            	masksets,
+                masksets,
                 activeMasksetIndex = 0;
 
             if (typeof fn === "string") {
