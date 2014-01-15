@@ -27,6 +27,7 @@ Highlights:
 - support data-inputmask attribute
 - multi-mask support
 - regex-mask support
+- value formatting without input element
 </description>
         <tags>jQuery, plugins, input, form, inputmask, mask</tags>
     </metadata>

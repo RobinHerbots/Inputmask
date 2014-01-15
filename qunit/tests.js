@@ -1813,6 +1813,13 @@ test("inputmask(\"ip\" - 192.168.1.100", function () {
     $("#testmask2").remove();
 });
 
+module("Value formatting");
+test("$.inputmask.format(\"2331973\", { alias: \"date\"})", function () {
+    var formattedValue =$.inputmask.format("2331973", { alias: "date"});
+    equal(formattedValue, "23/03/1973", "Result " + formattedValue);
+});
+
+
 module("Dynamic Masks");
 test("inputmask(\"*{1,20}@*{1,20}.*{2,6}[.*{2}]\" - email mask", function () {
     $('body').append('<input type="text" id="testmask" />');

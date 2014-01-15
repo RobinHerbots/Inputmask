@@ -1,6 +1,6 @@
 {
     "name": "jquery.inputmask",
-    "version": "2.4.17",
+    "version": "2.4.18",
     "main": "./dist/jquery.inputmask.bundle.js",
 	"description": "jquery.inputmask is a jquery plugin which create an input mask.
 
@@ -18,7 +18,8 @@ Highlights:
 - supports readonly/disabled/dir="rtl" attributes
 - support data-inputmask attribute
 - multi-mask support
-- regex-mask support",
+- regex-mask support
+- value formatting without input element",
 	"license": "http://opensource.org/licenses/mit-license.php",
     "dependencies": {
         "jquery": ">=1.7"
