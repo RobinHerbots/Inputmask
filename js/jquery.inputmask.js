@@ -294,7 +294,10 @@
         function maskScope(masksets, activeMasksetIndex, opts) {
             var isRTL = false,
                 valueOnFocus = getActiveBuffer().join(''),
-                $el, chromeValueOnInput;
+                $el, chromeValueOnInput,
+                skipKeyPressEvent = false, //Safari 5.1.x - modal dialog fires keypress twice workaround
+                skipInputEvent = false, //skip when triggered from within inputmask
+                ignorable = false;
 
             //maskset helperfunctions
             function getMaskTemplate() {
@@ -812,6 +815,478 @@
                     (end - begin) > 1 || ((end - begin) == 1 && opts.insertMode);
             }
 
+            function installEventRuler(npt) {
+                var events = $._data(npt).events;
+
+                $.each(events, function (eventType, eventHandlers) {
+                    $.each(eventHandlers, function (ndx, eventHandler) {
+                        if (eventHandler.namespace == "inputmask") {
+                            if (eventHandler.type != "setvalue" && eventHandler.type != "_keypress") {
+                                var handler = eventHandler.handler;
+                                eventHandler.handler = function (e) {
+                                    if (this.readOnly || this.disabled)
+                                        e.preventDefault;
+                                    else
+                                        return handler.apply(this, arguments);
+                                };
+                            }
+                        }
+                    });
+                });
+            }
+
+            function patchValueProperty(npt) {
+                var valueProperty;
+                if (Object.getOwnPropertyDescriptor)
+                    valueProperty = Object.getOwnPropertyDescriptor(npt, "value");
+                if (valueProperty && valueProperty.get) {
+                    if (!npt._valueGet) {
+                        var valueGet = valueProperty.get;
+                        var valueSet = valueProperty.set;
+                        npt._valueGet = function () {
+                            return isRTL ? valueGet.call(this).split('').reverse().join('') : valueGet.call(this);
+                        };
+                        npt._valueSet = function (value) {
+                            valueSet.call(this, isRTL ? value.split('').reverse().join('') : value);
+                        };
+
+                        Object.defineProperty(npt, "value", {
+                            get: function () {
+                                var $self = $(this), inputData = $(this).data('_inputmask'), masksets = inputData['masksets'],
+                                    activeMasksetIndex = inputData['activeMasksetIndex'];
+                                return inputData && inputData['opts'].autoUnmask ? $self.inputmask('unmaskedvalue') : valueGet.call(this) != masksets[activeMasksetIndex]['_buffer'].join('') ? valueGet.call(this) : '';
+                            },
+                            set: function (value) {
+                                valueSet.call(this, value);
+                                $(this).triggerHandler('setvalue.inputmask');
+                            }
+                        });
+                    }
+                } else if (document.__lookupGetter__ && npt.__lookupGetter__("value")) {
+                    if (!npt._valueGet) {
+                        var valueGet = npt.__lookupGetter__("value");
+                        var valueSet = npt.__lookupSetter__("value");
+                        npt._valueGet = function () {
+                            return isRTL ? valueGet.call(this).split('').reverse().join('') : valueGet.call(this);
+                        };
+                        npt._valueSet = function (value) {
+                            valueSet.call(this, isRTL ? value.split('').reverse().join('') : value);
+                        };
+
+                        npt.__defineGetter__("value", function () {
+                            var $self = $(this), inputData = $(this).data('_inputmask'), masksets = inputData['masksets'],
+                                activeMasksetIndex = inputData['activeMasksetIndex'];
+                            return inputData && inputData['opts'].autoUnmask ? $self.inputmask('unmaskedvalue') : valueGet.call(this) != masksets[activeMasksetIndex]['_buffer'].join('') ? valueGet.call(this) : '';
+                        });
+                        npt.__defineSetter__("value", function (value) {
+                            valueSet.call(this, value);
+                            $(this).triggerHandler('setvalue.inputmask');
+                        });
+                    }
+                } else {
+                    if (!npt._valueGet) {
+                        npt._valueGet = function () { return isRTL ? this.value.split('').reverse().join('') : this.value; };
+                        npt._valueSet = function (value) { this.value = isRTL ? value.split('').reverse().join('') : value; };
+                    }
+                    if ($.valHooks.text == undefined || $.valHooks.text.inputmaskpatch != true) {
+                        var valueGet = $.valHooks.text && $.valHooks.text.get ? $.valHooks.text.get : function (elem) { return elem.value; };
+                        var valueSet = $.valHooks.text && $.valHooks.text.set ? $.valHooks.text.set : function (elem, value) {
+                            elem.value = value;
+                            return elem;
+                        };
+
+                        $.extend($.valHooks, {
+                            text: {
+                                get: function (elem) {
+                                    var $elem = $(elem);
+                                    if ($elem.data('_inputmask')) {
+                                        if ($elem.data('_inputmask')['opts'].autoUnmask)
+                                            return $elem.inputmask('unmaskedvalue');
+                                        else {
+                                            var result = valueGet(elem),
+                                                inputData = $elem.data('_inputmask'), masksets = inputData['masksets'],
+                                                activeMasksetIndex = inputData['activeMasksetIndex'];
+                                            return result != masksets[activeMasksetIndex]['_buffer'].join('') ? result : '';
+                                        }
+                                    } else return valueGet(elem);
+                                },
+                                set: function (elem, value) {
+                                    var $elem = $(elem);
+                                    var result = valueSet(elem, value);
+                                    if ($elem.data('_inputmask')) $elem.triggerHandler('setvalue.inputmask');
+                                    return result;
+                                },
+                                inputmaskpatch: true
+                            }
+                        });
+                    }
+                }
+            }
+
+            //shift chars to left from start to end and put c at end position if defined
+            function shiftL(start, end, c, maskJumps) {
+                var buffer = getActiveBuffer();
+                if (maskJumps !== false) //jumping over nonmask position
+                    while (!isMask(start) && start - 1 >= 0) start--;
+                for (var i = start; i < end && i < getMaskLength() ; i++) {
+                    if (isMask(i)) {
+                        setPlaceholder(i);
+                        var j = seekNext(i);
+                        var p = getBufferElement(buffer, j);
+                        if (p != getPlaceholder(j)) {
+                            if (j < getMaskLength() && isValid(i, p, true) !== false && getActiveTests(i).def == getActiveTests(j).def) {
+                                setBufferElement(buffer, i, p, true);
+                                if (j < end) {
+                                    setPlaceholder(j); //cleanup next position
+                                }
+                            } else {
+                                if (isMask(i))
+                                    break;
+                            }
+                        }
+                    } else {
+                        setPlaceholder(i);
+                    }
+                }
+                if (c != undefined)
+                    setBufferElement(buffer, seekPrevious(end), c);
+
+                if (getActiveMaskSet()["greedy"] == false) {
+                    var trbuffer = truncateInput(buffer.join('')).split('');
+                    buffer.length = trbuffer.length;
+                    for (var i = 0, bl = buffer.length; i < bl; i++) {
+                        buffer[i] = trbuffer[i];
+                    }
+                    if (buffer.length == 0) getActiveMaskSet()["buffer"] = getActiveBufferTemplate().slice();
+                }
+                return start; //return the used start position
+            }
+
+            function shiftR(start, end, c) {
+                var buffer = getActiveBuffer();
+                if (getBufferElement(buffer, start, true) != getPlaceholder(start)) {
+                    for (var i = seekPrevious(end) ; i > start && i >= 0; i--) {
+                        if (isMask(i)) {
+                            var j = seekPrevious(i);
+                            var t = getBufferElement(buffer, j);
+                            if (t != getPlaceholder(j)) {
+                                if (isValid(j, t, true) !== false && getActiveTests(i).def == getActiveTests(j).def) {
+                                    setBufferElement(buffer, i, t, true);
+                                    setPlaceholder(j);
+                                } //else break;
+                            }
+                        } else
+                            setPlaceholder(i);
+                    }
+                }
+                if (c != undefined && getBufferElement(buffer, start) == getPlaceholder(start))
+                    setBufferElement(buffer, start, c);
+                var lengthBefore = buffer.length;
+                if (getActiveMaskSet()["greedy"] == false) {
+                    var trbuffer = truncateInput(buffer.join('')).split('');
+                    buffer.length = trbuffer.length;
+                    for (var i = 0, bl = buffer.length; i < bl; i++) {
+                        buffer[i] = trbuffer[i];
+                    }
+                    if (buffer.length == 0) getActiveMaskSet()["buffer"] = getActiveBufferTemplate().slice();
+                }
+                return end - (lengthBefore - buffer.length); //return new start position
+            }
+            function HandleRemove(input, k, pos) {
+                if (opts.numericInput || isRTL) {
+                    switch (k) {
+                        case opts.keyCode.BACKSPACE:
+                            k = opts.keyCode.DELETE;
+                            break;
+                        case opts.keyCode.DELETE:
+                            k = opts.keyCode.BACKSPACE;
+                            break;
+                    }
+                    if (isRTL) {
+                        var pend = pos.end;
+                        pos.end = pos.begin;
+                        pos.begin = pend;
+                    }
+                }
+
+                var isSelection = true;
+                if (pos.begin == pos.end) {
+                    var posBegin = k == opts.keyCode.BACKSPACE ? pos.begin - 1 : pos.begin;
+                    if (opts.isNumeric && opts.radixPoint != "" && getActiveBuffer()[posBegin] == opts.radixPoint) {
+                        pos.begin = (getActiveBuffer().length - 1 == posBegin) /* radixPoint is latest? delete it */ ? pos.begin : k == opts.keyCode.BACKSPACE ? posBegin : seekNext(posBegin);
+                        pos.end = pos.begin;
+                    }
+                    isSelection = false;
+                    if (k == opts.keyCode.BACKSPACE)
+                        pos.begin--;
+                    else if (k == opts.keyCode.DELETE)
+                        pos.end++;
+                } else if (pos.end - pos.begin == 1 && !opts.insertMode) {
+                    isSelection = false;
+                    if (k == opts.keyCode.BACKSPACE)
+                        pos.begin--;
+                }
+
+                clearBuffer(getActiveBuffer(), pos.begin, pos.end);
+
+                var ml = getMaskLength();
+                if (opts.greedy == false) {
+                    shiftL(pos.begin, ml, undefined, !isRTL && (k == opts.keyCode.BACKSPACE && !isSelection));
+                } else {
+                    var newpos = pos.begin;
+                    for (var i = pos.begin; i < pos.end; i++) { //seeknext to skip placeholders at start in selection
+                        if (isMask(i) || !isSelection)
+                            newpos = shiftL(pos.begin, ml, undefined, !isRTL && (k == opts.keyCode.BACKSPACE && !isSelection));
+                    }
+                    if (!isSelection) pos.begin = newpos;
+                }
+                var firstMaskPos = seekNext(-1);
+                clearBuffer(getActiveBuffer(), pos.begin, pos.end, true);
+                checkVal(input, false, masksets[1] == undefined || firstMaskPos >= pos.end, getActiveBuffer());
+                if (getActiveMaskSet()['lastValidPosition'] < firstMaskPos) {
+                    getActiveMaskSet()["lastValidPosition"] = -1;
+                    getActiveMaskSet()["p"] = firstMaskPos;
+                } else {
+                    getActiveMaskSet()["p"] = pos.begin;
+                }
+            }
+
+            function keydownEvent(e) {
+                //Safari 5.1.x - modal dialog fires keypress twice workaround
+                skipKeyPressEvent = false;
+                var input = this, $input = $(input), k = e.keyCode, pos = caret(input);
+
+                //backspace, delete, and escape get special treatment
+                if (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE || (iphone && k == 127) || e.ctrlKey && k == 88) { //backspace/delete
+                    e.preventDefault(); //stop default action but allow propagation
+                    if (k == 88) valueOnFocus = getActiveBuffer().join('');
+                    HandleRemove(input, k, pos);
+                    determineActiveMasksetIndex();
+                    writeBuffer(input, getActiveBuffer(), getActiveMaskSet()["p"]);
+                    if (input._valueGet() == getActiveBufferTemplate().join(''))
+                        $input.trigger('cleared');
+
+                    if (opts.showTooltip) { //update tooltip
+                        $input.prop("title", getActiveMaskSet()["mask"]);
+                    }
+                } else if (k == opts.keyCode.END || k == opts.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
+                    setTimeout(function () {
+                        var caretPos = seekNext(getActiveMaskSet()["lastValidPosition"]);
+                        if (!opts.insertMode && caretPos == getMaskLength() && !e.shiftKey) caretPos--;
+                        caret(input, e.shiftKey ? pos.begin : caretPos, caretPos);
+                    }, 0);
+                } else if ((k == opts.keyCode.HOME && !e.shiftKey) || k == opts.keyCode.PAGE_UP) { //Home or page_up
+                    caret(input, 0, e.shiftKey ? pos.begin : 0);
+                } else if (k == opts.keyCode.ESCAPE || (k == 90 && e.ctrlKey)) { //escape && undo
+                    checkVal(input, true, false, valueOnFocus.split(''));
+                    $input.click();
+                } else if (k == opts.keyCode.INSERT && !(e.shiftKey || e.ctrlKey)) { //insert
+                    opts.insertMode = !opts.insertMode;
+                    caret(input, !opts.insertMode && pos.begin == getMaskLength() ? pos.begin - 1 : pos.begin);
+                } else if (opts.insertMode == false && !e.shiftKey) {
+                    if (k == opts.keyCode.RIGHT) {
+                        setTimeout(function () {
+                            var caretPos = caret(input);
+                            caret(input, caretPos.begin);
+                        }, 0);
+                    } else if (k == opts.keyCode.LEFT) {
+                        setTimeout(function () {
+                            var caretPos = caret(input);
+                            caret(input, caretPos.begin - 1);
+                        }, 0);
+                    }
+                }
+
+                var currentCaretPos = caret(input);
+                if (opts.onKeyDown.call(this, e, getActiveBuffer(), opts) === true) //extra stuff to execute on keydown
+                    caret(input, currentCaretPos.begin, currentCaretPos.end);
+                ignorable = $.inArray(k, opts.ignorables) != -1;
+            }
+            function keypressEvent(e, checkval, k, writeOut, strict, ndx) {
+                //Safari 5.1.x - modal dialog fires keypress twice workaround
+                if (k == undefined && skipKeyPressEvent) return false;
+                skipKeyPressEvent = true;
+
+                var input = this, $input = $(input);
+
+                e = e || window.event;
+                var k = k || e.which || e.charCode || e.keyCode;
+
+                if ((!(e.ctrlKey && e.altKey) && (e.ctrlKey || e.metaKey || ignorable)) && checkval !== true) {
+                    return true;
+                } else {
+                    if (k) {
+                        //special treat the decimal separator
+                        if (checkval !== true && k == 46 && e.shiftKey == false && opts.radixPoint == ",") k = 44;
+
+                        var pos, results, result, c = String.fromCharCode(k);
+                        if (checkval) {
+                            var pcaret = strict ? ndx : getActiveMaskSet()["lastValidPosition"] + 1;
+                            pos = { begin: pcaret, end: pcaret };
+                        } else {
+                            pos = caret(input);
+                        }
+
+                        //should we clear a possible selection??
+                        var isSlctn = isSelection(pos.begin, pos.end), redetermineLVP = false,
+                            initialIndex = activeMasksetIndex;
+                        if (isSlctn) {
+                            activeMasksetIndex = initialIndex;
+                            $.each(masksets, function (ndx, lmnt) { //init undobuffer for recovery when not valid
+                                if (typeof (lmnt) == "object") {
+                                    activeMasksetIndex = ndx;
+                                    getActiveMaskSet()["undoBuffer"] = getActiveBuffer().join('');
+                                }
+                            });
+                            HandleRemove(input, opts.keyCode.DELETE, pos);
+                            if (!opts.insertMode) { //preserve some space
+                                $.each(masksets, function (ndx, lmnt) {
+                                    if (typeof (lmnt) == "object") {
+                                        activeMasksetIndex = ndx;
+                                        shiftR(pos.begin, getMaskLength());
+                                        getActiveMaskSet()["lastValidPosition"] = seekNext(getActiveMaskSet()["lastValidPosition"]);
+                                    }
+                                });
+                            }
+                            activeMasksetIndex = initialIndex; //restore index
+                        }
+
+                        var radixPosition = getActiveBuffer().join('').indexOf(opts.radixPoint);
+                        if (opts.isNumeric && checkval !== true && radixPosition != -1) {
+                            if (opts.greedy && pos.begin <= radixPosition) {
+                                pos.begin = seekPrevious(pos.begin);
+                                pos.end = pos.begin;
+                            } else if (c == opts.radixPoint) {
+                                pos.begin = radixPosition;
+                                pos.end = pos.begin;
+                            }
+                        }
+
+
+                        var p = pos.begin;
+                        results = isValid(p, c, strict);
+                        if (strict === true) results = [{ "activeMasksetIndex": activeMasksetIndex, "result": results }];
+                        var minimalForwardPosition = -1;
+                        $.each(results, function (index, result) {
+                            activeMasksetIndex = result["activeMasksetIndex"];
+                            getActiveMaskSet()["writeOutBuffer"] = true;
+                            var np = result["result"];
+                            if (np !== false) {
+                                var refresh = false, buffer = getActiveBuffer();
+                                if (np !== true) {
+                                    refresh = np["refresh"]; //only rewrite buffer from isValid
+                                    p = np.pos != undefined ? np.pos : p; //set new position from isValid
+                                    c = np.c != undefined ? np.c : c; //set new char from isValid
+                                }
+                                if (refresh !== true) {
+                                    if (opts.insertMode == true) {
+                                        var lastUnmaskedPosition = getMaskLength();
+                                        var bfrClone = buffer.slice();
+                                        while (getBufferElement(bfrClone, lastUnmaskedPosition, true) != getPlaceholder(lastUnmaskedPosition) && lastUnmaskedPosition >= p) {
+                                            lastUnmaskedPosition = lastUnmaskedPosition == 0 ? -1 : seekPrevious(lastUnmaskedPosition);
+                                        }
+                                        if (lastUnmaskedPosition >= p) {
+                                            shiftR(p, getMaskLength(), c);
+                                            //shift the lvp if needed
+                                            var lvp = getActiveMaskSet()["lastValidPosition"], nlvp = seekNext(lvp);
+                                            if (nlvp != getMaskLength() && lvp >= p && (getBufferElement(getActiveBuffer(), nlvp, true) != getPlaceholder(nlvp))) {
+                                                getActiveMaskSet()["lastValidPosition"] = nlvp;
+                                            }
+                                        } else getActiveMaskSet()["writeOutBuffer"] = false;
+                                    } else setBufferElement(buffer, p, c, true);
+                                    if (minimalForwardPosition == -1 || minimalForwardPosition > seekNext(p)) {
+                                        minimalForwardPosition = seekNext(p);
+                                    }
+                                } else if (!strict) {
+                                    var nextPos = p < getMaskLength() ? p + 1 : p;
+                                    if (minimalForwardPosition == -1 || minimalForwardPosition > nextPos) {
+                                        minimalForwardPosition = nextPos;
+                                    }
+                                }
+                                if (minimalForwardPosition > getActiveMaskSet()["p"])
+                                    getActiveMaskSet()["p"] = minimalForwardPosition; //needed for checkval strict 
+                            }
+                        });
+
+                        if (strict !== true) {
+                            activeMasksetIndex = initialIndex;
+                            determineActiveMasksetIndex();
+                        }
+                        if (writeOut !== false) {
+                            $.each(results, function (ndx, rslt) {
+                                if (rslt["activeMasksetIndex"] == activeMasksetIndex) {
+                                    result = rslt;
+                                    return false;
+                                }
+                            });
+                            if (result != undefined) {
+                                var self = this;
+                                setTimeout(function () { opts.onKeyValidation.call(self, result["result"], opts); }, 0);
+                                if (getActiveMaskSet()["writeOutBuffer"] && result["result"] !== false) {
+                                    var buffer = getActiveBuffer();
+
+                                    var newCaretPosition;
+                                    if (checkval) {
+                                        newCaretPosition = undefined;
+                                    } else if (opts.numericInput) {
+                                        if (p > radixPosition) {
+                                            newCaretPosition = seekPrevious(minimalForwardPosition);
+                                        } else if (c == opts.radixPoint) {
+                                            newCaretPosition = minimalForwardPosition - 1;
+                                        } else newCaretPosition = seekPrevious(minimalForwardPosition - 1);
+                                    } else {
+                                        newCaretPosition = minimalForwardPosition;
+                                    }
+
+                                    writeBuffer(input, buffer, newCaretPosition);
+                                    if (checkval !== true) {
+                                        setTimeout(function () { //timeout needed for IE
+                                            if (isComplete(buffer) === true)
+                                                $input.trigger("complete");
+                                            skipInputEvent = true;
+                                            $input.trigger("input");
+                                        }, 0);
+                                    }
+                                } else if (isSlctn) {
+                                    getActiveMaskSet()["buffer"] = getActiveMaskSet()["undoBuffer"].split('');
+                                }
+                            }
+                        }
+
+                        if (opts.showTooltip) { //update tooltip
+                            $input.prop("title", getActiveMaskSet()["mask"]);
+                        }
+                        e.preventDefault();
+                    }
+                }
+            }
+
+            function keyupEvent(e) {
+                var $input = $(this), input = this, k = e.keyCode, buffer = getActiveBuffer();
+
+                if (androidchrome && k == opts.keyCode.BACKSPACE) {
+                    if (chromeValueOnInput == input._valueGet())
+                        keydownEvent.call(this, e);
+                }
+
+                opts.onKeyUp.call(this, e, buffer, opts); //extra stuff to execute on keyup
+                if (k == opts.keyCode.TAB && opts.showMaskOnFocus) {
+                    if ($input.hasClass('focus.inputmask') && input._valueGet().length == 0) {
+                        buffer = getActiveBufferTemplate().slice();
+                        writeBuffer(input, buffer);
+                        caret(input, 0);
+                        valueOnFocus = getActiveBuffer().join('');
+                    } else {
+                        writeBuffer(input, buffer);
+                        if (buffer.join('') == getActiveBufferTemplate().join('') && $.inArray(opts.radixPoint, buffer) != -1) {
+                            caret(input, TranslatePosition(0));
+                            $input.click();
+                        } else
+                            caret(input, TranslatePosition(0), TranslatePosition(getMaskLength()));
+                    }
+                }
+            }
+
             function mask(el) {
                 $el = $(el);
                 if (!$el.is(":input")) return;
@@ -856,10 +1331,6 @@
 
                 patchValueProperty(el);
 
-                //init vars
-                var skipKeyPressEvent = false, //Safari 5.1.x - modal dialog fires keypress twice workaround
-                    skipInputEvent = false, //skip when triggered from within inputmask
-                    ignorable = false;
 
                 if (opts.numericInput) opts.isNumeric = opts.numericInput;
                 if (el.dir == "rtl" || (opts.numericInput && opts.rightAlignNumerics) || (opts.isNumeric && opts.rightAlignNumerics))
@@ -1047,486 +1518,6 @@
 
                 installEventRuler(el);
 
-                //private functions
-
-                function installEventRuler(npt) {
-                    var events = $._data(npt).events;
-
-                    $.each(events, function (eventType, eventHandlers) {
-                        $.each(eventHandlers, function (ndx, eventHandler) {
-                            if (eventHandler.namespace == "inputmask") {
-                                if (eventHandler.type != "setvalue" && eventHandler.type != "_keypress") {
-                                    var handler = eventHandler.handler;
-                                    eventHandler.handler = function (e) {
-                                        if (this.readOnly || this.disabled)
-                                            e.preventDefault;
-                                        else
-                                            return handler.apply(this, arguments);
-                                    };
-                                }
-                            }
-                        });
-                    });
-                }
-
-                function patchValueProperty(npt) {
-                    var valueProperty;
-                    if (Object.getOwnPropertyDescriptor)
-                        valueProperty = Object.getOwnPropertyDescriptor(npt, "value");
-                    if (valueProperty && valueProperty.get) {
-                        if (!npt._valueGet) {
-                            var valueGet = valueProperty.get;
-                            var valueSet = valueProperty.set;
-                            npt._valueGet = function () {
-                                return isRTL ? valueGet.call(this).split('').reverse().join('') : valueGet.call(this);
-                            };
-                            npt._valueSet = function (value) {
-                                valueSet.call(this, isRTL ? value.split('').reverse().join('') : value);
-                            };
-
-                            Object.defineProperty(npt, "value", {
-                                get: function () {
-                                    var $self = $(this), inputData = $(this).data('_inputmask'), masksets = inputData['masksets'],
-                                        activeMasksetIndex = inputData['activeMasksetIndex'];
-                                    return inputData && inputData['opts'].autoUnmask ? $self.inputmask('unmaskedvalue') : valueGet.call(this) != masksets[activeMasksetIndex]['_buffer'].join('') ? valueGet.call(this) : '';
-                                },
-                                set: function (value) {
-                                    valueSet.call(this, value);
-                                    $(this).triggerHandler('setvalue.inputmask');
-                                }
-                            });
-                        }
-                    } else if (document.__lookupGetter__ && npt.__lookupGetter__("value")) {
-                        if (!npt._valueGet) {
-                            var valueGet = npt.__lookupGetter__("value");
-                            var valueSet = npt.__lookupSetter__("value");
-                            npt._valueGet = function () {
-                                return isRTL ? valueGet.call(this).split('').reverse().join('') : valueGet.call(this);
-                            };
-                            npt._valueSet = function (value) {
-                                valueSet.call(this, isRTL ? value.split('').reverse().join('') : value);
-                            };
-
-                            npt.__defineGetter__("value", function () {
-                                var $self = $(this), inputData = $(this).data('_inputmask'), masksets = inputData['masksets'],
-                                    activeMasksetIndex = inputData['activeMasksetIndex'];
-                                return inputData && inputData['opts'].autoUnmask ? $self.inputmask('unmaskedvalue') : valueGet.call(this) != masksets[activeMasksetIndex]['_buffer'].join('') ? valueGet.call(this) : '';
-                            });
-                            npt.__defineSetter__("value", function (value) {
-                                valueSet.call(this, value);
-                                $(this).triggerHandler('setvalue.inputmask');
-                            });
-                        }
-                    } else {
-                        if (!npt._valueGet) {
-                            npt._valueGet = function () { return isRTL ? this.value.split('').reverse().join('') : this.value; };
-                            npt._valueSet = function (value) { this.value = isRTL ? value.split('').reverse().join('') : value; };
-                        }
-                        if ($.valHooks.text == undefined || $.valHooks.text.inputmaskpatch != true) {
-                            var valueGet = $.valHooks.text && $.valHooks.text.get ? $.valHooks.text.get : function (elem) { return elem.value; };
-                            var valueSet = $.valHooks.text && $.valHooks.text.set ? $.valHooks.text.set : function (elem, value) {
-                                elem.value = value;
-                                return elem;
-                            };
-
-                            $.extend($.valHooks, {
-                                text: {
-                                    get: function (elem) {
-                                        var $elem = $(elem);
-                                        if ($elem.data('_inputmask')) {
-                                            if ($elem.data('_inputmask')['opts'].autoUnmask)
-                                                return $elem.inputmask('unmaskedvalue');
-                                            else {
-                                                var result = valueGet(elem),
-                                                    inputData = $elem.data('_inputmask'), masksets = inputData['masksets'],
-                                                    activeMasksetIndex = inputData['activeMasksetIndex'];
-                                                return result != masksets[activeMasksetIndex]['_buffer'].join('') ? result : '';
-                                            }
-                                        } else return valueGet(elem);
-                                    },
-                                    set: function (elem, value) {
-                                        var $elem = $(elem);
-                                        var result = valueSet(elem, value);
-                                        if ($elem.data('_inputmask')) $elem.triggerHandler('setvalue.inputmask');
-                                        return result;
-                                    },
-                                    inputmaskpatch: true
-                                }
-                            });
-                        }
-                    }
-                }
-
-                //shift chars to left from start to end and put c at end position if defined
-
-                function shiftL(start, end, c, maskJumps) {
-                    var buffer = getActiveBuffer();
-                    if (maskJumps !== false) //jumping over nonmask position
-                        while (!isMask(start) && start - 1 >= 0) start--;
-                    for (var i = start; i < end && i < getMaskLength() ; i++) {
-                        if (isMask(i)) {
-                            setPlaceholder(i);
-                            var j = seekNext(i);
-                            var p = getBufferElement(buffer, j);
-                            if (p != getPlaceholder(j)) {
-                                if (j < getMaskLength() && isValid(i, p, true) !== false && getActiveTests(i).def == getActiveTests(j).def) {
-                                    setBufferElement(buffer, i, p, true);
-                                    if (j < end) {
-                                        setPlaceholder(j); //cleanup next position
-                                    }
-                                } else {
-                                    if (isMask(i))
-                                        break;
-                                }
-                            }
-                        } else {
-                            setPlaceholder(i);
-                        }
-                    }
-                    if (c != undefined)
-                        setBufferElement(buffer, seekPrevious(end), c);
-
-                    if (getActiveMaskSet()["greedy"] == false) {
-                        var trbuffer = truncateInput(buffer.join('')).split('');
-                        buffer.length = trbuffer.length;
-                        for (var i = 0, bl = buffer.length; i < bl; i++) {
-                            buffer[i] = trbuffer[i];
-                        }
-                        if (buffer.length == 0) getActiveMaskSet()["buffer"] = getActiveBufferTemplate().slice();
-                    }
-                    return start; //return the used start position
-                }
-
-                function shiftR(start, end, c) {
-                    var buffer = getActiveBuffer();
-                    if (getBufferElement(buffer, start, true) != getPlaceholder(start)) {
-                        for (var i = seekPrevious(end) ; i > start && i >= 0; i--) {
-                            if (isMask(i)) {
-                                var j = seekPrevious(i);
-                                var t = getBufferElement(buffer, j);
-                                if (t != getPlaceholder(j)) {
-                                    if (isValid(j, t, true) !== false && getActiveTests(i).def == getActiveTests(j).def) {
-                                        setBufferElement(buffer, i, t, true);
-                                        setPlaceholder(j);
-                                    } //else break;
-                                }
-                            } else
-                                setPlaceholder(i);
-                        }
-                    }
-                    if (c != undefined && getBufferElement(buffer, start) == getPlaceholder(start))
-                        setBufferElement(buffer, start, c);
-                    var lengthBefore = buffer.length;
-                    if (getActiveMaskSet()["greedy"] == false) {
-                        var trbuffer = truncateInput(buffer.join('')).split('');
-                        buffer.length = trbuffer.length;
-                        for (var i = 0, bl = buffer.length; i < bl; i++) {
-                            buffer[i] = trbuffer[i];
-                        }
-                        if (buffer.length == 0) getActiveMaskSet()["buffer"] = getActiveBufferTemplate().slice();
-                    }
-                    return end - (lengthBefore - buffer.length); //return new start position
-                }
-
-                ;
-
-
-                function HandleRemove(input, k, pos) {
-                    if (opts.numericInput || isRTL) {
-                        switch (k) {
-                            case opts.keyCode.BACKSPACE:
-                                k = opts.keyCode.DELETE;
-                                break;
-                            case opts.keyCode.DELETE:
-                                k = opts.keyCode.BACKSPACE;
-                                break;
-                        }
-                        if (isRTL) {
-                            var pend = pos.end;
-                            pos.end = pos.begin;
-                            pos.begin = pend;
-                        }
-                    }
-
-                    var isSelection = true;
-                    if (pos.begin == pos.end) {
-                        var posBegin = k == opts.keyCode.BACKSPACE ? pos.begin - 1 : pos.begin;
-                        if (opts.isNumeric && opts.radixPoint != "" && getActiveBuffer()[posBegin] == opts.radixPoint) {
-                            pos.begin = (getActiveBuffer().length - 1 == posBegin) /* radixPoint is latest? delete it */ ? pos.begin : k == opts.keyCode.BACKSPACE ? posBegin : seekNext(posBegin);
-                            pos.end = pos.begin;
-                        }
-                        isSelection = false;
-                        if (k == opts.keyCode.BACKSPACE)
-                            pos.begin--;
-                        else if (k == opts.keyCode.DELETE)
-                            pos.end++;
-                    } else if (pos.end - pos.begin == 1 && !opts.insertMode) {
-                        isSelection = false;
-                        if (k == opts.keyCode.BACKSPACE)
-                            pos.begin--;
-                    }
-
-                    clearBuffer(getActiveBuffer(), pos.begin, pos.end);
-
-                    var ml = getMaskLength();
-                    if (opts.greedy == false) {
-                        shiftL(pos.begin, ml, undefined, !isRTL && (k == opts.keyCode.BACKSPACE && !isSelection));
-                    } else {
-                        var newpos = pos.begin;
-                        for (var i = pos.begin; i < pos.end; i++) { //seeknext to skip placeholders at start in selection
-                            if (isMask(i) || !isSelection)
-                                newpos = shiftL(pos.begin, ml, undefined, !isRTL && (k == opts.keyCode.BACKSPACE && !isSelection));
-                        }
-                        if (!isSelection) pos.begin = newpos;
-                    }
-                    var firstMaskPos = seekNext(-1);
-                    clearBuffer(getActiveBuffer(), pos.begin, pos.end, true);
-                    checkVal(input, false, masksets[1] == undefined || firstMaskPos >= pos.end, getActiveBuffer());
-                    if (getActiveMaskSet()['lastValidPosition'] < firstMaskPos) {
-                        getActiveMaskSet()["lastValidPosition"] = -1;
-                        getActiveMaskSet()["p"] = firstMaskPos;
-                    } else {
-                        getActiveMaskSet()["p"] = pos.begin;
-                    }
-                }
-
-                function keydownEvent(e) {
-                    //Safari 5.1.x - modal dialog fires keypress twice workaround
-                    skipKeyPressEvent = false;
-                    var input = this, $input = $(input), k = e.keyCode, pos = caret(input);
-
-                    //backspace, delete, and escape get special treatment
-                    if (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE || (iphone && k == 127) || e.ctrlKey && k == 88) { //backspace/delete
-                        e.preventDefault(); //stop default action but allow propagation
-                        if (k == 88) valueOnFocus = getActiveBuffer().join('');
-                        HandleRemove(input, k, pos);
-                        determineActiveMasksetIndex();
-                        writeBuffer(input, getActiveBuffer(), getActiveMaskSet()["p"]);
-                        if (input._valueGet() == getActiveBufferTemplate().join(''))
-                            $input.trigger('cleared');
-
-                        if (opts.showTooltip) { //update tooltip
-                            $input.prop("title", getActiveMaskSet()["mask"]);
-                        }
-                    } else if (k == opts.keyCode.END || k == opts.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
-                        setTimeout(function () {
-                            var caretPos = seekNext(getActiveMaskSet()["lastValidPosition"]);
-                            if (!opts.insertMode && caretPos == getMaskLength() && !e.shiftKey) caretPos--;
-                            caret(input, e.shiftKey ? pos.begin : caretPos, caretPos);
-                        }, 0);
-                    } else if ((k == opts.keyCode.HOME && !e.shiftKey) || k == opts.keyCode.PAGE_UP) { //Home or page_up
-                        caret(input, 0, e.shiftKey ? pos.begin : 0);
-                    } else if (k == opts.keyCode.ESCAPE || (k == 90 && e.ctrlKey)) { //escape && undo
-                        checkVal(input, true, false, valueOnFocus.split(''));
-                        $input.click();
-                    } else if (k == opts.keyCode.INSERT && !(e.shiftKey || e.ctrlKey)) { //insert
-                        opts.insertMode = !opts.insertMode;
-                        caret(input, !opts.insertMode && pos.begin == getMaskLength() ? pos.begin - 1 : pos.begin);
-                    } else if (opts.insertMode == false && !e.shiftKey) {
-                        if (k == opts.keyCode.RIGHT) {
-                            setTimeout(function () {
-                                var caretPos = caret(input);
-                                caret(input, caretPos.begin);
-                            }, 0);
-                        } else if (k == opts.keyCode.LEFT) {
-                            setTimeout(function () {
-                                var caretPos = caret(input);
-                                caret(input, caretPos.begin - 1);
-                            }, 0);
-                        }
-                    }
-
-                    var currentCaretPos = caret(input);
-                    if (opts.onKeyDown.call(this, e, getActiveBuffer(), opts) === true) //extra stuff to execute on keydown
-                        caret(input, currentCaretPos.begin, currentCaretPos.end);
-                    ignorable = $.inArray(k, opts.ignorables) != -1;
-                }
-
-
-                function keypressEvent(e, checkval, k, writeOut, strict, ndx) {
-                    //Safari 5.1.x - modal dialog fires keypress twice workaround
-                    if (k == undefined && skipKeyPressEvent) return false;
-                    skipKeyPressEvent = true;
-
-                    var input = this, $input = $(input);
-
-                    e = e || window.event;
-                    var k = k || e.which || e.charCode || e.keyCode;
-
-                    if ((!(e.ctrlKey && e.altKey) && (e.ctrlKey || e.metaKey || ignorable)) && checkval !== true) {
-                        return true;
-                    } else {
-                        if (k) {
-                            //special treat the decimal separator
-                            if (checkval !== true && k == 46 && e.shiftKey == false && opts.radixPoint == ",") k = 44;
-
-                            var pos, results, result, c = String.fromCharCode(k);
-                            if (checkval) {
-                                var pcaret = strict ? ndx : getActiveMaskSet()["lastValidPosition"] + 1;
-                                pos = { begin: pcaret, end: pcaret };
-                            } else {
-                                pos = caret(input);
-                            }
-
-                            //should we clear a possible selection??
-                            var isSlctn = isSelection(pos.begin, pos.end), redetermineLVP = false,
-                                initialIndex = activeMasksetIndex;
-                            if (isSlctn) {
-                                activeMasksetIndex = initialIndex;
-                                $.each(masksets, function (ndx, lmnt) { //init undobuffer for recovery when not valid
-                                    if (typeof (lmnt) == "object") {
-                                        activeMasksetIndex = ndx;
-                                        getActiveMaskSet()["undoBuffer"] = getActiveBuffer().join('');
-                                    }
-                                });
-                                HandleRemove(input, opts.keyCode.DELETE, pos);
-                                if (!opts.insertMode) { //preserve some space
-                                    $.each(masksets, function (ndx, lmnt) {
-                                        if (typeof (lmnt) == "object") {
-                                            activeMasksetIndex = ndx;
-                                            shiftR(pos.begin, getMaskLength());
-                                            getActiveMaskSet()["lastValidPosition"] = seekNext(getActiveMaskSet()["lastValidPosition"]);
-                                        }
-                                    });
-                                }
-                                activeMasksetIndex = initialIndex; //restore index
-                            }
-
-                            var radixPosition = getActiveBuffer().join('').indexOf(opts.radixPoint);
-                            if (opts.isNumeric && checkval !== true && radixPosition != -1) {
-                                if (opts.greedy && pos.begin <= radixPosition) {
-                                    pos.begin = seekPrevious(pos.begin);
-                                    pos.end = pos.begin;
-                                } else if (c == opts.radixPoint) {
-                                    pos.begin = radixPosition;
-                                    pos.end = pos.begin;
-                                }
-                            }
-
-
-                            var p = pos.begin;
-                            results = isValid(p, c, strict);
-                            if (strict === true) results = [{ "activeMasksetIndex": activeMasksetIndex, "result": results }];
-                            var minimalForwardPosition = -1;
-                            $.each(results, function (index, result) {
-                                activeMasksetIndex = result["activeMasksetIndex"];
-                                getActiveMaskSet()["writeOutBuffer"] = true;
-                                var np = result["result"];
-                                if (np !== false) {
-                                    var refresh = false, buffer = getActiveBuffer();
-                                    if (np !== true) {
-                                        refresh = np["refresh"]; //only rewrite buffer from isValid
-                                        p = np.pos != undefined ? np.pos : p; //set new position from isValid
-                                        c = np.c != undefined ? np.c : c; //set new char from isValid
-                                    }
-                                    if (refresh !== true) {
-                                        if (opts.insertMode == true) {
-                                            var lastUnmaskedPosition = getMaskLength();
-                                            var bfrClone = buffer.slice();
-                                            while (getBufferElement(bfrClone, lastUnmaskedPosition, true) != getPlaceholder(lastUnmaskedPosition) && lastUnmaskedPosition >= p) {
-                                                lastUnmaskedPosition = lastUnmaskedPosition == 0 ? -1 : seekPrevious(lastUnmaskedPosition);
-                                            }
-                                            if (lastUnmaskedPosition >= p) {
-                                                shiftR(p, getMaskLength(), c);
-                                                //shift the lvp if needed
-                                                var lvp = getActiveMaskSet()["lastValidPosition"], nlvp = seekNext(lvp);
-                                                if (nlvp != getMaskLength() && lvp >= p && (getBufferElement(getActiveBuffer(), nlvp, true) != getPlaceholder(nlvp))) {
-                                                    getActiveMaskSet()["lastValidPosition"] = nlvp;
-                                                }
-                                            } else getActiveMaskSet()["writeOutBuffer"] = false;
-                                        } else setBufferElement(buffer, p, c, true);
-                                        if (minimalForwardPosition == -1 || minimalForwardPosition > seekNext(p)) {
-                                            minimalForwardPosition = seekNext(p);
-                                        }
-                                    } else if (!strict) {
-                                        var nextPos = p < getMaskLength() ? p + 1 : p;
-                                        if (minimalForwardPosition == -1 || minimalForwardPosition > nextPos) {
-                                            minimalForwardPosition = nextPos;
-                                        }
-                                    }
-                                    if (minimalForwardPosition > getActiveMaskSet()["p"])
-                                        getActiveMaskSet()["p"] = minimalForwardPosition; //needed for checkval strict 
-                                }
-                            });
-
-                            if (strict !== true) {
-                                activeMasksetIndex = initialIndex;
-                                determineActiveMasksetIndex();
-                            }
-                            if (writeOut !== false) {
-                                $.each(results, function (ndx, rslt) {
-                                    if (rslt["activeMasksetIndex"] == activeMasksetIndex) {
-                                        result = rslt;
-                                        return false;
-                                    }
-                                });
-                                if (result != undefined) {
-                                    var self = this;
-                                    setTimeout(function () { opts.onKeyValidation.call(self, result["result"], opts); }, 0);
-                                    if (getActiveMaskSet()["writeOutBuffer"] && result["result"] !== false) {
-                                        var buffer = getActiveBuffer();
-
-                                        var newCaretPosition;
-                                        if (checkval) {
-                                            newCaretPosition = undefined;
-                                        } else if (opts.numericInput) {
-                                            if (p > radixPosition) {
-                                                newCaretPosition = seekPrevious(minimalForwardPosition);
-                                            } else if (c == opts.radixPoint) {
-                                                newCaretPosition = minimalForwardPosition - 1;
-                                            } else newCaretPosition = seekPrevious(minimalForwardPosition - 1);
-                                        } else {
-                                            newCaretPosition = minimalForwardPosition;
-                                        }
-
-                                        writeBuffer(input, buffer, newCaretPosition);
-                                        if (checkval !== true) {
-                                            setTimeout(function () { //timeout needed for IE
-                                                if (isComplete(buffer) === true)
-                                                    $input.trigger("complete");
-                                                skipInputEvent = true;
-                                                $input.trigger("input");
-                                            }, 0);
-                                        }
-                                    } else if (isSlctn) {
-                                        getActiveMaskSet()["buffer"] = getActiveMaskSet()["undoBuffer"].split('');
-                                    }
-                                }
-                            }
-
-                            if (opts.showTooltip) { //update tooltip
-                                $input.prop("title", getActiveMaskSet()["mask"]);
-                            }
-                            e.preventDefault();
-                        }
-                    }
-                }
-
-                function keyupEvent(e) {
-                    var $input = $(this), input = this, k = e.keyCode, buffer = getActiveBuffer();
-
-                    if (androidchrome && k == opts.keyCode.BACKSPACE) {
-                        if (chromeValueOnInput == input._valueGet())
-                            keydownEvent.call(this, e);
-                    }
-
-                    opts.onKeyUp.call(this, e, buffer, opts); //extra stuff to execute on keyup
-                    if (k == opts.keyCode.TAB && opts.showMaskOnFocus) {
-                        if ($input.hasClass('focus.inputmask') && input._valueGet().length == 0) {
-                            buffer = getActiveBufferTemplate().slice();
-                            writeBuffer(input, buffer);
-                            caret(input, 0);
-                            valueOnFocus = getActiveBuffer().join('');
-                        } else {
-                            writeBuffer(input, buffer);
-                            if (buffer.join('') == getActiveBufferTemplate().join('') && $.inArray(opts.radixPoint, buffer) != -1) {
-                                caret(input, TranslatePosition(0));
-                                $input.click();
-                            } else
-                                caret(input, TranslatePosition(0), TranslatePosition(getMaskLength()));
-                        }
-                    }
-                }
             }
 
             return {
