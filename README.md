@@ -593,7 +593,7 @@ var formattedDate = $.inputmask.format("2331973", { alias: "dd/mm/yyyy"});
 
 ## Value validating
 
-Validate a given input against the mask.
+Validate a given value against the mask.
 
 ```javascript
 var isValid = $.inputmask.isValid("2331973", { alias: "dd/mm/yyyy"});
