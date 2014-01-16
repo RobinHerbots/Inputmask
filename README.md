@@ -591,6 +591,14 @@ Think of formatting values to show in jqGrid or on other elements then inputs.
 var formattedDate = $.inputmask.format("2331973", { alias: "dd/mm/yyyy"});
 ```
 
+## Value validating
+
+Validate the input a given input against the mask.
+
+```javascript
+var isValid = $.inputmask.isValid("2331973", { alias: "dd/mm/yyyy"});
+```
+
 ## Compiling with Google Closure Compiler
 
 First grab the sources from GitHub.  In the root you type ant.

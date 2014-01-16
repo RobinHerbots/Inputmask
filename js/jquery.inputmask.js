@@ -114,6 +114,7 @@
                                 openenings[openenings.length - 1]["matches"].push(quantifier);
                             } else {
                                 currentToken.matches.push(quantifier);
+                                maskTokens.push(currentToken);
                                 currentToken = new maskToken();
                             }
                             break;
@@ -1545,8 +1546,23 @@
                             isRTL = true;
                         }
 
-                        checkVal($el, false, false, actionObj["value"].split(''), true);
+                        checkVal($el, false, false, actionObj["value"].split(''));
                         return getActiveBuffer().join('');
+                    case "isValid":
+                        $el = $({});
+                        $el.data('_inputmask', {
+                            'masksets': masksets,
+                            'activeMasksetIndex': activeMasksetIndex,
+                            'opts': opts,
+                            'isRTL': opts.numericInput
+                        });
+                        if (opts.numericInput) {
+                            opts.isNumeric = opts.numericInput;
+                            isRTL = true;
+                        }
+
+                        checkVal($el, false, true, actionObj["value"].split(''));
+                        return isComplete(getActiveBuffer());
                 }
             }
         };
@@ -1626,6 +1642,11 @@
                 var opts = $.extend(true, {}, $.inputmask.defaults, options);
                 resolveAlias(opts.alias, options, opts);
                 return maskScope(generateMaskSets(opts), 0, opts, { "action": "format", "value": value });
+            },
+            isValid: function (value, options) {
+                var opts = $.extend(true, {}, $.inputmask.defaults, options);
+                resolveAlias(opts.alias, options, opts);
+                return maskScope(generateMaskSets(opts), 0, opts, { "action": "isValid", "value": value });
             }
         };
         $.fn.inputmask = function (fn, options) {
