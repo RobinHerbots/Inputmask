@@ -1124,7 +1124,7 @@
                             $input.prop("title", getActiveMaskSet()["mask"]);
                         }
 
-                        if (e) e.preventDefault();
+                        if (e) e.preventDefault ? e.preventDefault() : e.returnValue = false;
                     }
                 }
             }
