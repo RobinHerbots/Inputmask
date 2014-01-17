@@ -111,11 +111,24 @@
                             else quantifier.quantifier = { min: mq[0], max: mq[1] };
 
                             if (openenings.length > 0) {
-                                openenings[openenings.length - 1]["matches"].push(quantifier);
+                                var matches = openenings[openenings.length - 1]["matches"];
+                                var match = matches.pop();
+                                if (!match["isGroup"]) {
+                                    var groupToken = new maskToken(true);
+                                    groupToken.matches.push(match);
+                                    match = groupToken;
+                                }
+                                matches.push(match);
+                                matches.push(quantifier);
                             } else {
+                                var match = currentToken.matches.pop();
+                                if (!match["isGroup"]) {
+                                    var groupToken = new maskToken(true);
+                                    groupToken.matches.push(match);
+                                    match = groupToken;
+                                }
+                                currentToken.matches.push(match);
                                 currentToken.matches.push(quantifier);
-                                maskTokens.push(currentToken);
-                                currentToken = new maskToken();
                             }
                             break;
                         case opts.escapeChar:
@@ -329,7 +342,6 @@
                             testLocator = testLocator.concat(loopNdx);
                             return match;
                         } else if (match.matches != undefined) {
-                            //do stuff
                             if (match.isGroup && quantifierRecurse !== true) { //when a group pass along to the quantifier
                                 match = handleMatch(maskToken.matches[tndx + 1], loopNdx);
                                 if (match) return match;
@@ -350,11 +362,10 @@
                                 if (match)
                                     return match;
                             }
-                            //  testPos++;
                         } else testPos++;
                     }
 
-                    for (var tndx = (ndxInitializer.length > 0 && quantifierRecurse !== true ? ndxInitializer.shift() : 0) ; tndx < maskToken.matches.length ; tndx++) {
+                    for (var tndx = (ndxInitializer.length > 0 ? ndxInitializer.shift() : 0) ; tndx < maskToken.matches.length ; tndx++) {
                         if (maskToken.matches[tndx]["isQuantifier"] !== true) {
                             var match = handleMatch(maskToken.matches[tndx], [tndx].concat(loopNdx), quantifierRecurse);
                             if (match && testPos == pos) {

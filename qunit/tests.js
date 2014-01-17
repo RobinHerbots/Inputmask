@@ -1815,27 +1815,49 @@ test("inputmask(\"ip\" - 192.168.1.100", function () {
 
 module("Value formatting");
 test("$.inputmask.format(\"2331973\", { alias: \"date\"})", function () {
-    var formattedValue =$.inputmask.format("2331973", { alias: "date"});
+    var formattedValue = $.inputmask.format("2331973", { alias: "date" });
     equal(formattedValue, "23/03/1973", "Result " + formattedValue);
 });
 
 test("$.inputmask.format(\"016501030020001DE1015170\", { mask: \"99 999 999 999 9999 \\D\\E*** 9999\"})", function () {
-    var formattedValue =$.inputmask.format("016501030020001DE1015170", { mask: "99 999 999 999 9999 \\D\\E*** 9999"});
+    var formattedValue = $.inputmask.format("016501030020001DE1015170", { mask: "99 999 999 999 9999 \\D\\E*** 9999" });
     equal(formattedValue, "01 650 103 002 0001 DE101 5170", "Result " + formattedValue);
 });
 
 module("Value Validating");
 test("$.inputmask.isValid(\"23/03/1973\", { alias: \"date\"})", function () {
-    var formattedValue =$.inputmask.isValid("23/03/1973", { alias: "date"});
+    var formattedValue = $.inputmask.isValid("23/03/1973", { alias: "date" });
     equal(formattedValue, true, "Result " + formattedValue);
 });
 
 test("$.inputmask.isValid(\"01 650 103 002 0001 DE101 5170\", { mask: \"99 999 999 999 9999 \\D\\E*** 9999\"})", function () {
-    var formattedValue =$.inputmask.isValid("01 650 103 002 0001 DE101 5170", { mask: "99 999 999 999 9999 \\D\\E*** 9999"});
+    var formattedValue = $.inputmask.isValid("01 650 103 002 0001 DE101 5170", { mask: "99 999 999 999 9999 \\D\\E*** 9999" });
     equal(formattedValue, true, "Result " + formattedValue);
 });
 
 module("Dynamic Masks");
+test("inputmask(\"9-a{3}9{3}\" - simple dynamic mask", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("9-a{3}9{3}")
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("1abc123");
+
+    equal($("#testmask").val(), "1-abc123", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+test("inputmask(\"9-a{1,3}9{1,3}\" - simple dynamic mask", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("9-a{3}9{3}")
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("1a1");
+
+    equal($("#testmask").val(), "1-a1", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
 test("inputmask(\"*{1,20}@*{1,20}.*{2,6}[.*{2}]\" - email mask", function () {
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("*{1,20}@*{1,20}.*{2,6}[.*{2}]")
