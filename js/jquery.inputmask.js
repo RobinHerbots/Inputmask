@@ -1267,7 +1267,8 @@
                             $input.prop("title", getActiveMaskSet()["mask"]);
                         }
 
-                        if (e) e.preventDefault();
+                        //needed for IE8 and below
+                        if (e) e.preventDefault ? e.preventDefault() : e.returnValue = false;
                     }
                 }
             }
