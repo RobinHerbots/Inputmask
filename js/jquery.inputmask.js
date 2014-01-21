@@ -214,6 +214,7 @@
                             "_buffer": undefined,
                             "buffer": undefined,
                             "tests": {},
+                            "validPositions": {},
                             "lastValidPosition": -1,
                             "greedy": undefined,
                             "repeat": undefined,
@@ -229,6 +230,7 @@
                             "_buffer": undefined,
                             "buffer": undefined,
                             "tests": {},
+                            "validPositions": {},
                             "lastValidPosition": -1,
                             "greedy": undefined,
                             "repeat": undefined,
@@ -252,7 +254,7 @@
                             //should contain for each validated position a ref to the masktoken in the form of indexes.  ex. 1,2,8 ~ maskTokens[1].matches[2].matches[8]
                             //the buffer can be build upon these validPositions array
                             //further validation start as from this index
-                            "validPositions": [],
+                            "validPositions": {},
                             "_buffer": undefined,
                             "buffer": undefined,
                             "tests": {},
@@ -312,8 +314,8 @@
 
                 var pos = 0, test;
                 do {
-                    console.log("template " + pos);
-                    test = getActiveTests(pos);
+                    test = getActiveTest(pos);
+                    console.log("template " + pos + "  " + JSON.stringify(test));
                     maskTemplate.push(test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length));
                     pos++;
                 } while (test["fn"] != null || (test["fn"] == null && test["def"] != "") && opts.repeat != "*"); //fixme
@@ -322,6 +324,14 @@
             }
             function getActiveMaskSet() {
                 return masksets[activeMasksetIndex];
+            }
+
+            function getActiveTest(pos) {
+                if (getActiveMaskSet()['validPositions'][pos]) {
+                    console.log("get test from validpositions " + JSON.stringify(getActiveMaskSet()['validPositions'][pos]));
+                    return getActiveMaskSet()['validPositions'][pos]["match"];
+                }
+                return getActiveTests(pos)[0]["match"];
             }
 
             function getActiveTests(pos) {
@@ -375,16 +385,25 @@
                     }
                 }
 
-                if (getActiveMaskSet()['tests'][pos]) {
-                    return getActiveMaskSet()['tests'][pos][0]["match"]; //TODO FIXME
+                if (getActiveMaskSet()['tests'][pos] && !getActiveMaskSet()['validPositions'][pos]) {
+                    return getActiveMaskSet()['tests'][pos];
                 }
                 var previousPos = pos - 1, test;
-                while ((test = getActiveMaskSet()['tests'][previousPos]) == undefined && previousPos > -1) {
+                while ((test = getActiveMaskSet()['validPositions'][previousPos]) == undefined && previousPos > -1) {
                     previousPos--;
                 }
                 if (test != undefined) {
                     testPos = previousPos;
-                    ndxInitializer = test[0]["locator"].slice();
+                    ndxInitializer = test["locator"].slice();
+                } else {
+                    previousPos = pos - 1;
+                    while ((test = getActiveMaskSet()['tests'][previousPos]) == undefined && previousPos > -1) {
+                        previousPos--;
+                    }
+                    if (test != undefined) {
+                        testPos = previousPos;
+                        ndxInitializer = test[opts.greedy ? 0 : (test.length - 1)]["locator"].slice();
+                    }
                 }
                 for (var mtndx = ndxInitializer.shift() ; mtndx < maskTokens.length; mtndx++) {
                     var match = ResolveTestFromToken(maskTokens[mtndx], ndxInitializer, [mtndx]);
@@ -398,7 +417,7 @@
                 console.log(pos + " - " + JSON.stringify(matches));
                 getActiveMaskSet()['tests'][pos] = matches;
 
-                return matches[0]["match"]; //TODO FIXME
+                return matches;
             }
 
             function getActiveBufferTemplate() {
@@ -423,20 +442,31 @@
                 strict = strict === true; //always set a value to strict to prevent possible strange behavior in the extensions 
 
                 function _isValid(position, c, strict) {
-                    var loopend = c ? 1 : 0, chrs = '', buffer = getActiveBuffer();
-                    for (var i = getActiveTests(position).cardinality; i > loopend; i--) {
-                        chrs += getBufferElement(buffer, position - (i - 1), true);
-                    }
-                    if (c) {
-                        chrs += c;
-                    }
+                    var rslt = false;
+                    $.each(getActiveTests(position), function (ndx, tst) {
+                        var test = tst["match"];
+                        var loopend = c ? 1 : 0, chrs = '', buffer = getActiveBuffer();
+                        for (var i = test.cardinality; i > loopend; i--) {
+                            chrs += getBufferElement(buffer, position - (i - 1), true);
+                        }
+                        if (c) {
+                            chrs += c;
+                        }
 
-                    //return is false or a json object => { pos: ??, c: ??} or true
-                    return getActiveTests(position).fn != null ?
-                        getActiveTests(position).fn.test(chrs, buffer, position, strict, opts)
-                        : (c == getPlaceholder(position) || c == opts.skipOptionalPartCharacter) ?
-                            { "refresh": true, c: getPlaceholder(position), pos: position }
-                            : false;
+                        //return is false or a json object => { pos: ??, c: ??} or true
+                        rslt = test.fn != null ?
+                            test.fn.test(chrs, buffer, position, strict, opts)
+                            : (c == getPlaceholder(position) || c == opts.skipOptionalPartCharacter) ?
+                                { "refresh": true, c: getPlaceholder(position), pos: position }
+                                : false;
+
+                        if (rslt !== false) {
+                            getActiveMaskSet()["validPositions"][position] = $.extend({}, tst, { "input": c });
+                            return false;
+                        }
+                    });
+
+                    return rslt;
                 }
 
                 function PostProcessResults(maskForwards, results) {
@@ -591,7 +621,7 @@
             }
 
             function isMask(pos) {
-                var test = getActiveTests(pos);
+                var test = getActiveTest(pos);
                 return test != undefined ? test.fn : false;
             }
 
@@ -625,7 +655,7 @@
             function setBufferElement(buffer, position, element, autoPrepare) {
                 if (autoPrepare) position = prepareBuffer(buffer, position);
 
-                var test = getActiveTests(position);
+                var test = getActiveTest(position);
                 var elem = element;
                 if (elem != undefined && test != undefined) {
                     switch (test.casing) {
@@ -682,7 +712,7 @@
             }
 
             function getPlaceholder(pos) {
-                var test = getActiveTests(pos);
+                var test = getActiveTest(pos);
                 return test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length);
             }
 
@@ -727,7 +757,7 @@
             function clearOptionalTail(input) {
                 var buffer = getActiveBuffer(), tmpBuffer = buffer.slice(), testPos, pos;
                 for (var pos = tmpBuffer.length - 1; pos >= 0; pos--) {
-                    if (getActiveTests(pos).optionality) {
+                    if (getActiveTest(pos).optionality) {
                         if (!isMask(pos) || !isValid(pos, buffer[pos], true))
                             tmpBuffer.pop();
                         else break;
@@ -947,7 +977,7 @@
                         var j = seekNext(i);
                         var p = getBufferElement(buffer, j);
                         if (p != getPlaceholder(j)) {
-                            if (j < getMaskLength() && isValid(i, p, true) !== false && getActiveTests(i).def == getActiveTests(j).def) {
+                            if (j < getMaskLength() && isValid(i, p, true) !== false && getActiveTest(i).def == getActiveTest(j).def) {
                                 setBufferElement(buffer, i, p, true);
                                 if (j < end) {
                                     setPlaceholder(j); //cleanup next position
@@ -982,7 +1012,7 @@
                             var j = seekPrevious(i);
                             var t = getBufferElement(buffer, j);
                             if (t != getPlaceholder(j)) {
-                                if (isValid(j, t, true) !== false && getActiveTests(i).def == getActiveTests(j).def) {
+                                if (isValid(j, t, true) !== false && getActiveTest(i).def == getActiveTest(j).def) {
                                     setBufferElement(buffer, i, t, true);
                                     setPlaceholder(j);
                                 } //else break;
