@@ -47,7 +47,6 @@
                     this.isGroup = isGroup || false;
                     this.isOptional = isOptional || false;
                     this.isQuantifier = isQuantifier || false;
-                    this.mask; //TODO contains the matches in placeholder form ~ to speedup the placeholder generation
                     this.quantifier = { min: 1, max: 1 };
                 };
                 //test definition => {fn: RegExp/function, cardinality: int, optionality: bool, newBlockMarker: bool, offset: int, casing: null/upper/lower, def: definitionSymbol}
@@ -83,23 +82,16 @@
                             if (openenings.length > 0) {
                                 openenings[openenings.length - 1]["matches"].push(openingToken);
                             } else {
-                                maskTokens.push(openingToken);
-                                currentToken = openingToken; //new maskToken();
+                                currentToken.matches.push(openingToken);
                             }
                             break;
                         case opts.optionalmarker.start:
                             // optional opening
-                            if (!currentToken.isGroup && !currentToken.isOptional && currentToken.matches.length > 0)
-                                maskTokens.push(currentToken);
-                            currentToken = new maskToken(false, true);
-                            openenings.push(currentToken);
+                            openenings.push(new maskToken(false, true));
                             break;
                         case opts.groupmarker.start:
                             // Group opening
-                            if (!currentToken.isGroup && !currentToken.isOptional && currentToken.matches.length > 0)
-                                maskTokens.push(currentToken);
-                            currentToken = new maskToken(true);
-                            openenings.push(currentToken);
+                            openenings.push(new maskToken(true));
                             break;
                         case opts.quantifiermarker.start:
                             //Quantifier
@@ -138,13 +130,13 @@
                             if (openenings.length > 0) {
                                 InsertTestDefinition(openenings[openenings.length - 1], m);
                             } else {
-                                if (currentToken.isGroup) { //this is not a group but a normal mask => convert
-                                    currentToken.isGroup = false;
-                                    InsertTestDefinition(currentToken, opts.groupmarker.start, 0);
-                                    InsertTestDefinition(currentToken, opts.groupmarker.end);
-                                    maskTokens.pop();
-                                } else if (currentToken.isOptional) {
-                                    currentToken = new maskToken();
+                                if (currentToken.matches.length > 0) {
+                                    var lastMatch = currentToken.matches[currentToken.matches.length - 1];
+                                    if (lastMatch["isGroup"]) { //this is not a group but a normal mask => convert
+                                        lastMatch.isGroup = false;
+                                        InsertTestDefinition(lastMatch, opts.groupmarker.start, 0);
+                                        InsertTestDefinition(lastMatch, opts.groupmarker.end);
+                                    }
                                 }
                                 InsertTestDefinition(currentToken, m);
                             }
@@ -319,8 +311,8 @@
                 var maskTemplate = [];
 
                 var pos = 0, test;
-
                 do {
+                    console.log("template " + pos);
                     test = getActiveTests(pos);
                     maskTemplate.push(test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length));
                     pos++;
@@ -332,40 +324,48 @@
                 return masksets[activeMasksetIndex];
             }
 
-            //TODO should return all possible tests for a position { "test": ..., "locator": masktoken index also see above 1.2.8 example }
             function getActiveTests(pos) {
-                var maskTokens = getActiveMaskSet()["maskToken"], testPos = 0, ndxInitializer = [0], testLocator;
+                var maskTokens = getActiveMaskSet()["maskToken"], testPos = 0, ndxInitializer = [0], matches = [];
 
                 function ResolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) { //ndxInitilizer contains a set of indexes to speedup searches in the mtokens
+
                     function handleMatch(match, loopNdx, quantifierRecurse) {
+                        var currentPos = testPos;
                         if (testPos == pos && match.matches == undefined) {
-                            testLocator = testLocator.concat(loopNdx);
-                            return match;
+                            matches.push({ "match": match, "locator": loopNdx.reverse() });
+                            return true;
                         } else if (match.matches != undefined) {
                             if (match.isGroup && quantifierRecurse !== true) { //when a group pass along to the quantifier
                                 match = handleMatch(maskToken.matches[tndx + 1], loopNdx);
-                                if (match) return match;
+                                if (match) return true;
                             } else if (match.isOptional) {
                                 match = ResolveTestFromToken(match, ndxInitializer, loopNdx, quantifierRecurse);
-                                if (match) return match;
+                                if (match) {
+                                    //search for next possible match
+                                    testPos = currentPos;
+                                }
                             } else if (match.isQuantifier && quantifierRecurse !== true) {
                                 var qt = match;
                                 for (var qndx = (ndxInitializer.length > 0 && quantifierRecurse !== true) ? ndxInitializer.shift() : 0; qndx < (isNaN(qt.quantifier.max) ? qndx + 1 : qt.quantifier.max) ; qndx++) {
-                                    console.log(qndx + " loop for " + pos);
+
                                     match = handleMatch(maskToken.matches[maskToken.matches.indexOf(qt) - 1], [qndx].concat(loopNdx), true);
                                     if (match) {
-                                        return match;
+                                        if (qndx >= qt.quantifier.min) { //search for next possible match
+                                            testPos = currentPos;
+                                        } else {
+                                            return true;
+                                        }
                                     }
                                 }
                             } else {
                                 match = ResolveTestFromToken(match, ndxInitializer, loopNdx, quantifierRecurse);
                                 if (match)
-                                    return match;
+                                    return true;
                             }
                         } else testPos++;
                     }
 
-                    for (var tndx = (ndxInitializer.length > 0 ? ndxInitializer.shift() : 0) ; tndx < maskToken.matches.length ; tndx++) {
+                    for (var tndx = (ndxInitializer.length > 0 ? ndxInitializer.shift() : 0) ; tndx < maskToken.matches.length; tndx++) {
                         if (maskToken.matches[tndx]["isQuantifier"] !== true) {
                             var match = handleMatch(maskToken.matches[tndx], [tndx].concat(loopNdx), quantifierRecurse);
                             if (match && testPos == pos) {
@@ -376,8 +376,7 @@
                 }
 
                 if (getActiveMaskSet()['tests'][pos]) {
-                    //console.log("hit from cache " + pos);
-                    return getActiveMaskSet()['tests'][pos]["match"];
+                    return getActiveMaskSet()['tests'][pos][0]["match"]; //TODO FIXME
                 }
                 var previousPos = pos - 1, test;
                 while ((test = getActiveMaskSet()['tests'][previousPos]) == undefined && previousPos > -1) {
@@ -385,20 +384,21 @@
                 }
                 if (test != undefined) {
                     testPos = previousPos;
-                    ndxInitializer = test["locator"].slice();
+                    ndxInitializer = test[0]["locator"].slice();
                 }
                 for (var mtndx = ndxInitializer.shift() ; mtndx < maskTokens.length; mtndx++) {
-                    testLocator = [];
-                    var match = ResolveTestFromToken(maskTokens[mtndx], ndxInitializer, []);
+                    var match = ResolveTestFromToken(maskTokens[mtndx], ndxInitializer, [mtndx]);
                     if (match && testPos == pos) {
-                        testLocator.push(mtndx);
-                        getActiveMaskSet()['tests'][pos] = { "match": match, "locator": testLocator.reverse() };
-                        console.log(pos + " - " + testLocator);
-                        return match;
+                        break;
                     }
                 }
+                if (matches.length == 0)
+                    matches.push({ "match": { fn: null, cardinality: 0, optionality: true, casing: null, def: "" }, "locator": [] });
 
-                return { fn: null, cardinality: 0, optionality: true, casing: null, def: "" };
+                console.log(pos + " - " + JSON.stringify(matches));
+                getActiveMaskSet()['tests'][pos] = matches;
+
+                return matches[0]["match"]; //TODO FIXME
             }
 
             function getActiveBufferTemplate() {
@@ -691,7 +691,7 @@
 
                 $.each(masksets, function (ndx, ms) {
                     if (typeof (ms) == "object") {
-                        ms["buffer"] = ms["_buffer"].slice();
+                        ms["buffer"] = undefined;
                         ms["lastValidPosition"] = -1;
                         ms["p"] = -1;
                     }
@@ -1408,7 +1408,7 @@
                             if (opts.clearIncomplete) {
                                 $.each(masksets, function (ndx, ms) {
                                     if (typeof (ms) == "object") {
-                                        ms["buffer"] = ms["_buffer"].slice();
+                                        ms["buffer"] = undefined;
                                         ms["lastValidPosition"] = -1;
                                     }
                                 });
