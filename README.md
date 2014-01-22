@@ -596,7 +596,7 @@ var formattedDate = $.inputmask.format("2331973", { alias: "dd/mm/yyyy"});
 Validate a given value against the mask.
 
 ```javascript
-var isValid = $.inputmask.isValid("2331973", { alias: "dd/mm/yyyy"});
+var isValid = $.inputmask.isValid("23/03/1973", { alias: "dd/mm/yyyy"});
 ```
 
 ## Compiling with Google Closure Compiler
