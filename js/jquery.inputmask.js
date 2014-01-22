@@ -309,14 +309,21 @@
                 ignorable = false;
 
             //maskset helperfunctions
-            function getMaskTemplate() {
-                var maskTemplate = [];
-
-                var pos = 0, test;
+            function getMaskTemplate(includeInput) {
+                var maskTemplate = [], ndxIntlzr, pos = 0, test;
                 do {
-                    test = getActiveTest(pos);
-                    console.log("template " + pos + "  " + JSON.stringify(test));
-                    maskTemplate.push(test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length));
+                    if (includeInput === true && getActiveMaskSet()['validPositions'][pos]) {
+                        var validPos = getActiveMaskSet()['validPositions'][pos];
+                        test = validPos["match"];
+                        ndxIntlzr = validPos["locator"].slice();
+                        maskTemplate.push(validPos["input"]);
+                    } else {
+                        var testPos = getActiveTests(pos, false, ndxIntlzr, pos - 1);
+                        testPos = testPos[opts.greedy ? 0 : (testPos.length - 1)];
+                        test = testPos["match"];
+                        ndxIntlzr = testPos["locator"].slice();
+                        maskTemplate.push(test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length));
+                    }
                     pos++;
                 } while (test["fn"] != null || (test["fn"] == null && test["def"] != "") && opts.repeat != "*"); //fixme
 
@@ -334,8 +341,8 @@
                 return getActiveTests(pos)[0]["match"];
             }
 
-            function getActiveTests(pos) {
-                var maskTokens = getActiveMaskSet()["maskToken"], testPos = 0, ndxInitializer = [0], matches = [];
+            function getActiveTests(pos, disableCache, ndxIntlzr, tstPs) {
+                var maskTokens = getActiveMaskSet()["maskToken"], testPos = ndxIntlzr ? tstPs : 0, ndxInitializer = ndxIntlzr || [0], matches = [];
 
                 function ResolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) { //ndxInitilizer contains a set of indexes to speedup searches in the mtokens
 
@@ -385,24 +392,27 @@
                     }
                 }
 
-                if (getActiveMaskSet()['tests'][pos] && !getActiveMaskSet()['validPositions'][pos]) {
+                if (disableCache !== true && getActiveMaskSet()['tests'][pos] && !getActiveMaskSet()['validPositions'][pos]) {
+                    console.log("hitting cache for " + pos + " - " + JSON.stringify(getActiveMaskSet()['tests'][pos]));
                     return getActiveMaskSet()['tests'][pos];
                 }
-                var previousPos = pos - 1, test;
-                while ((test = getActiveMaskSet()['validPositions'][previousPos]) == undefined && previousPos > -1) {
-                    previousPos--;
-                }
-                if (test != undefined) {
-                    testPos = previousPos;
-                    ndxInitializer = test["locator"].slice();
-                } else {
-                    previousPos = pos - 1;
-                    while ((test = getActiveMaskSet()['tests'][previousPos]) == undefined && previousPos > -1) {
+                if (ndxIntlzr == undefined) {
+                    var previousPos = pos - 1, test;
+                    while ((test = getActiveMaskSet()['validPositions'][previousPos]) == undefined && previousPos > -1) {
                         previousPos--;
                     }
                     if (test != undefined) {
                         testPos = previousPos;
-                        ndxInitializer = test[opts.greedy ? 0 : (test.length - 1)]["locator"].slice();
+                        ndxInitializer = test["locator"].slice();
+                    } else {
+                        previousPos = pos - 1;
+                        while ((test = getActiveMaskSet()['tests'][previousPos]) == undefined && previousPos > -1) {
+                            previousPos--;
+                        }
+                        if (test != undefined) {
+                            testPos = previousPos;
+                            ndxInitializer = test[0]["locator"].slice();
+                        }
                     }
                 }
                 for (var mtndx = ndxInitializer.shift() ; mtndx < maskTokens.length; mtndx++) {
@@ -433,7 +443,7 @@
 
             function getActiveBuffer() {
                 if (getActiveMaskSet()['buffer'] == undefined) {
-                    getActiveMaskSet()['buffer'] = getActiveBufferTemplate().slice();
+                    getActiveMaskSet()['buffer'] = getMaskTemplate(true)["mask"];
                 }
                 return getActiveMaskSet()['buffer'];
             }
@@ -443,7 +453,7 @@
 
                 function _isValid(position, c, strict) {
                     var rslt = false;
-                    $.each(getActiveTests(position), function (ndx, tst) {
+                    $.each(getActiveTests(position, !strict), function (ndx, tst) {
                         var test = tst["match"];
                         var loopend = c ? 1 : 0, chrs = '', buffer = getActiveBuffer();
                         for (var i = test.cardinality; i > loopend; i--) {
@@ -707,7 +717,7 @@
                 }
             }
 
-            function setPlaceholder(pos) {
+            function setPlaceholder(pos) { //TOFO FIXME SIMPLIFY ME
                 setBufferElement(getActiveBuffer(), pos, getPlaceholder(pos));
             }
 
@@ -722,6 +732,8 @@
                 $.each(masksets, function (ndx, ms) {
                     if (typeof (ms) == "object") {
                         ms["buffer"] = undefined;
+                        ms["_buffer"] = undefined;
+                        ms["validPositions"] = {};
                         ms["lastValidPosition"] = -1;
                         ms["p"] = -1;
                     }
