@@ -337,8 +337,21 @@ test("inputmask(\"*\", { greedy: false, repeat: \"*\" }) - type abcdef", functio
     $("#testmask")[0].focus();
 
     $("#testmask").Type("abcdef");
-
+	
     equal($("#testmask").val(), "abcdef", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"A.\", { repeat: \"*\" }) - type abc - joostburg", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("A.", { repeat: "*" });
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").Type("abc");
+
+    equal($("#testmask").val(), "A.B.C.", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });

@@ -1192,7 +1192,7 @@
                         }
 
                         //should we clear a possible selection??
-                        var isSlctn = isSelection(pos.begin, pos.end), redetermineLVP = false,
+                        var isSlctn = isSelection(pos.begin, pos.end),
                             initialIndex = activeMasksetIndex;
                         if (isSlctn) {
                             activeMasksetIndex = initialIndex;
@@ -1251,7 +1251,7 @@
                                             shiftR(p, getMaskLength(), c);
                                             //shift the lvp if needed
                                             var lvp = getActiveMaskSet()["lastValidPosition"], nlvp = seekNext(lvp);
-                                            if (nlvp != getMaskLength() && lvp >= p && (getBufferElement(getActiveBuffer(), nlvp, true) != getPlaceholder(nlvp))) {
+                                            if (nlvp != getMaskLength() && lvp >= p && (getBufferElement(getActiveBuffer().slice(), nlvp, true) != getPlaceholder(nlvp))) {
                                                 getActiveMaskSet()["lastValidPosition"] = nlvp;
                                             }
                                         } else getActiveMaskSet()["writeOutBuffer"] = false;
