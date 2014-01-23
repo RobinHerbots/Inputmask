@@ -276,8 +276,8 @@
                     //return is false or a json object => { pos: ??, c: ??} or true
                     return activeMaskset['tests'][testPos].fn != null ?
                         activeMaskset['tests'][testPos].fn.test(chrs, buffer, position, strict, opts)
-                        : (c == getBufferElement(activeMaskset['_buffer'], position, true) || c == opts.skipOptionalPartCharacter) ?
-                            { "refresh": true, c: getBufferElement(activeMaskset['_buffer'], position, true), pos: position }
+                        : (c == getBufferElement(activeMaskset['_buffer'].slice(), position, true) || c == opts.skipOptionalPartCharacter) ?
+                            { "refresh": true, c: getBufferElement(activeMaskset['_buffer'].slice(), position, true), pos: position }
                             : false;
                 }
 
@@ -995,7 +995,7 @@
                         }
 
                         //should we clear a possible selection??
-                        var isSlctn = isSelection(pos.begin, pos.end), redetermineLVP = false,
+                        var isSlctn = isSelection(pos.begin, pos.end),
                             initialIndex = activeMasksetIndex;
                         if (isSlctn) {
                             activeMasksetIndex = initialIndex;
@@ -1056,7 +1056,7 @@
                                             shiftR(p, getMaskLength(), c);
                                             //shift the lvp if needed
                                             var lvp = getActiveMaskSet()["lastValidPosition"], nlvp = seekNext(lvp);
-                                            if (nlvp != getMaskLength() && lvp >= p && (getBufferElement(getActiveBuffer(), nlvp, true) != getPlaceHolder(nlvp))) {
+                                            if (nlvp != getMaskLength() && lvp >= p && (getBufferElement(getActiveBuffer().slice(), nlvp, true) != getPlaceHolder(nlvp))) {
                                                 getActiveMaskSet()["lastValidPosition"] = nlvp;
                                             }
                                         } else getActiveMaskSet()["writeOutBuffer"] = false;
