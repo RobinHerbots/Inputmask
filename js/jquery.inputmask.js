@@ -471,7 +471,17 @@
                                 : false;
 
                         if (rslt !== false) {
-                            getActiveMaskSet()["validPositions"][position] = $.extend({}, tst, { "input": c });
+                            var elem = c;
+                            switch (test.casing) {
+                                case "upper":
+                                    elem = elem.toUpperCase();
+                                    break;
+                                case "lower":
+                                    elem = elem.toLowerCase();
+                                    break;
+                            }
+
+                            getActiveMaskSet()["validPositions"][position] = $.extend({}, tst, { "input": elem });
                             return false;
                         }
                     });
