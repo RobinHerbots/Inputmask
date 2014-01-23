@@ -2,24 +2,7 @@
     "name": "jquery.inputmask",
     "version": "2.4.18",
     "main": "./dist/jquery.inputmask.bundle.js",
-	"description": "jquery.inputmask is a jquery plugin which create an input mask.
-
-An inputmask helps the user with the input by ensuring a predefined format. This can be useful for dates, numerics, phone numbers, ...
-
-Highlights:
-- easy to use
-- optional parts anywere in the mask
-- possibility to define aliases which hide complexity
-- date / datetime masks
-- numeric masks
-- lots of callbacks
-- non-greedy masks
-- many features can be enabled/disabled/configured by options
-- supports readonly/disabled/dir="rtl" attributes
-- support data-inputmask attribute
-- multi-mask support
-- regex-mask support
-- value formatting without input element",
+	"description": "jquery.inputmask is a jquery plugin which create an input mask.",
 	"license": "http://opensource.org/licenses/mit-license.php",
     "dependencies": {
         "jquery": ">=1.7"
