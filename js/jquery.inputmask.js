@@ -325,7 +325,7 @@
                         maskTemplate.push(test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length));
                     }
                     pos++;
-                } while (test["fn"] != null || (test["fn"] == null && test["def"] != "") && opts.repeat != "*"); //fixme
+                } while (test["fn"] != null || (test["fn"] == null && test["def"] != ""));
 
                 return { "mask": maskTemplate, "repeat": opts.repeat, "greedy": opts.greedy };
             }
@@ -364,10 +364,13 @@
                             } else if (match.isQuantifier && quantifierRecurse !== true) {
                                 var qt = match;
                                 for (var qndx = (ndxInitializer.length > 0 && quantifierRecurse !== true) ? ndxInitializer.shift() : 0; qndx < (isNaN(qt.quantifier.max) ? qndx + 1 : qt.quantifier.max) ; qndx++) {
-
                                     match = handleMatch(maskToken.matches[maskToken.matches.indexOf(qt) - 1], [qndx].concat(loopNdx), true);
                                     if (match) {
                                         if (qndx >= qt.quantifier.min) { //search for next possible match
+                                            if (isNaN(qt.quantifier.max) && qndx > qt.quantifier.min) {
+                                                matches.push({ "match": { fn: null, cardinality: 0, optionality: true, casing: null, def: "" }, "locator": [] });
+                                                return true;
+                                            }
                                             testPos = currentPos;
                                         } else {
                                             return true;
@@ -443,7 +446,7 @@
 
             function getActiveBuffer() {
                 if (getActiveMaskSet()['buffer'] == undefined) {
-                    getActiveMaskSet()['buffer'] = getMaskTemplate(true)["mask"];
+                    getActiveMaskSet()['buffer'] = getMaskTemplate(/*true*/)["mask"];
                 }
                 return getActiveMaskSet()['buffer'];
             }

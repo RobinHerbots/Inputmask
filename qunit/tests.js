@@ -168,8 +168,10 @@ asyncTest("inputmask(\"9-AAA.999\", { onincomplete: ... })", 1, function () {
     });
 
     $("#testmask")[0].focus();
-    $("#testmask").Type("1abc12");
-    $("#testmask").blur();
+	setTimeout(function () {
+		$("#testmask").Type("1abc12");
+		$("#testmask").blur();
+	}, 0);
 });
 
 test("inputmask(\"999.999.999\") - delete 2nd with backspace, continue the mask", function () {
