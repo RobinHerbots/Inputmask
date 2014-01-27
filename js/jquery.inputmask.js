@@ -1182,8 +1182,7 @@
                 var caretPos = caret(input),
                     currentValue = input._valueGet();
                 if (currentValue.charAt(caretPos.begin) != getActiveBuffer()[caretPos.begin] && !isMask(caretPos.begin)) {
-                    alert('yihaaa ' + currentValue + " " + getActiveBuffer().join('') + " " + caretPos.begin);
-                    e.which = opts.keyCode.BACKSPACE;
+                    e.keyCode = opts.keyCode.BACKSPACE;
                     $input.trigger("keydown", e);
                 } else {
                     checkVal(input, false, false);
