@@ -929,10 +929,12 @@
 
                 //backspace, delete, and escape get special treatment
                 if (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE || (iphone && k == 127) || e.ctrlKey && k == 88) { //backspace/delete
+                    alert("hello keydown");
                     e.preventDefault(); //stop default action but allow propagation
                     if (k == 88) valueOnFocus = getActiveBuffer().join('');
                     HandleRemove(input, k, pos);
                     determineActiveMasksetIndex();
+                    alert(getActiveBuffer().join(''));
                     writeBuffer(input, getActiveBuffer(), getActiveMaskSet()["p"]);
                     if (input._valueGet() == getActiveBufferTemplate().join(''))
                         $input.trigger('cleared');
@@ -1183,7 +1185,7 @@
                     currentValue = input._valueGet();
                 if (currentValue.charAt(caretPos.begin) != getActiveBuffer()[caretPos.begin] && !isMask(caretPos.begin)) {
                     e.keyCode = opts.keyCode.BACKSPACE;
-                    $input.trigger("keydown", e);
+                    keydownEvent.call(this, e);
                 } else {
                     checkVal(input, false, false);
                     writeBuffer(input, getActiveBuffer());
