@@ -1371,13 +1371,11 @@
                     ).bind('cleared.inputmask', opts.oncleared
                     ).bind("keyup.inputmask", keyupEvent);
 
-                    if (androidchrome) {
-                        //do stuff
-                    } else {
-                        $el.bind("keydown.inputmask", keydownEvent
-                        ).bind("keypress.inputmask", keypressEvent
-                        ).bind("keyup.inputmask", keyupEvent);
-                    }
+                    $el.bind("keydown.inputmask", keydownEvent
+                         ).bind("keypress.inputmask", keypressEvent
+                         ).bind("keyup.inputmask", keyupEvent);
+
+
                     if (androidchrome32)
                         $el.bind("input.inputmask", chromeInputEvent);
                     if (msie10)
