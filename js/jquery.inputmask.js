@@ -1183,9 +1183,7 @@
                     currentValue = input._valueGet();
                 if (currentValue.charAt(caretPos.begin) != getActiveBuffer()[caretPos.begin] && !isMask(caretPos.begin)) {
                     e.keyCode = opts.keyCode.BACKSPACE;
-                    setTimeout(function() {
-                        keydownEvent.call(input, e);
-                    }, 0);
+                    keydownEvent.call(input, e);
                 } else {
                     checkVal(input, false, false);
                     writeBuffer(input, getActiveBuffer());
@@ -1193,6 +1191,8 @@
                         $input.trigger("complete");
                     $input.click();
                 }
+                
+                e.preventDefault()
             }
 
             function mask(el) {
