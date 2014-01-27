@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.4.20
+* Version: 2.4.21
 */
 
 (function ($) {
@@ -228,15 +228,21 @@
             iphone = navigator.userAgent.match(new RegExp("iphone", "i")) !== null,
             android = navigator.userAgent.match(new RegExp("android.*safari.*", "i")) !== null,
             androidchrome = navigator.userAgent.match(new RegExp("android.*chrome.*", "i")) !== null,
-            pasteEvent = isInputEventSupported('paste') ? 'paste' : isInputEventSupported('input') ? 'input' : "propertychange";
+            pasteEvent = isInputEventSupported('paste') ? 'paste' : isInputEventSupported('input') ? 'input' : "propertychange",
+            androidchrome32 = false;
 
+        if (androidchrome) {
+            var browser = navigator.userAgent.match(new RegExp("chrome.*", "i")),
+                version = parseInt(new RegExp(/[0-9]+/).exec(browser));
+            androidchrome32 = (version == 32);
+        }
 
         //masking scope
         //actionObj definition see below
         function maskScope(masksets, activeMasksetIndex, opts, actionObj) {
             var isRTL = false,
                 valueOnFocus = getActiveBuffer().join(''),
-                $el, chromeValueOnInput,
+                $el,
                 skipKeyPressEvent = false, //Safari 5.1.x - modal dialog fires keypress twice workaround
                 skipInputEvent = false, //skip when triggered from within inputmask
                 ignorable = false;
@@ -1133,11 +1139,6 @@
             function keyupEvent(e) {
                 var $input = $(this), input = this, k = e.keyCode, buffer = getActiveBuffer();
 
-                if (androidchrome && k == opts.keyCode.BACKSPACE) {
-                    if (chromeValueOnInput == input._valueGet())
-                        keydownEvent.call(this, e);
-                }
-
                 opts.onKeyUp.call(this, e, buffer, opts); //extra stuff to execute on keyup
                 if (k == opts.keyCode.TAB && opts.showMaskOnFocus) {
                     if ($input.hasClass('focus.inputmask') && input._valueGet().length == 0) {
@@ -1163,12 +1164,35 @@
                 }
                 var input = this, $input = $(input);
 
-                chromeValueOnInput = getActiveBuffer().join('');
                 checkVal(input, false, false);
                 writeBuffer(input, getActiveBuffer());
                 if (isComplete(getActiveBuffer()) === true)
                     $input.trigger("complete");
                 $input.click();
+            }
+
+            function chromeInputEvent(e) {
+                if (skipInputEvent === true) {
+                    skipInputEvent = false;
+                    return true;
+                }
+                var input = this, $input = $(input);
+
+                //backspace in chrome32 only fires input event - detect & treat
+                var caretPos = caret(input),
+                    currentValue = input._valueGet();
+                if (currentValue.charAt(caretPos.begin) != getActiveBuffer()[caretPos.begin] && !isMask(caretPos.begin)) {
+                    e.keyCode = opts.keyCode.BACKSPACE;
+                    keydownEvent.call(input, e);
+                } else {
+                    checkVal(input, false, false);
+                    writeBuffer(input, getActiveBuffer());
+                    if (isComplete(getActiveBuffer()) === true)
+                        $input.trigger("complete");
+                    $input.click();
+                }
+                
+                e.preventDefault()
             }
 
             function mask(el) {
@@ -1355,13 +1379,12 @@
                     ).bind('cleared.inputmask', opts.oncleared
                     ).bind("keyup.inputmask", keyupEvent);
 
-                    if (androidchrome) {
-                        $el.bind("input.inputmask", inputEvent);
-                    } else {
-                        $el.bind("keydown.inputmask", keydownEvent
-                        ).bind("keypress.inputmask", keypressEvent);
-                    }
+                    $el.bind("keydown.inputmask", keydownEvent
+                         ).bind("keypress.inputmask", keypressEvent
+                         ).bind("keyup.inputmask", keyupEvent);
 
+                    if (androidchrome32)
+                        $el.bind("input.inputmask", chromeInputEvent);
                     if (msie10)
                         $el.bind("input.inputmask", inputEvent);
 
@@ -1635,7 +1658,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.20
+Version: 2.4.21
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1757,7 +1780,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.20
+Version: 2.4.21
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2245,7 +2268,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.20
+Version: 2.4.21
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2422,7 +2445,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.20
+Version: 2.4.21
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2592,7 +2615,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.20
+Version: 2.4.21
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
