@@ -418,7 +418,7 @@ test("inputmask(\"999:99\", { placeholder: \"0\"}) value=\"007:20\"", function (
     $("#testmask").remove();
 });
 
-test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"01 650 103 002 0001 DE101 5170\"", function () {
+test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"01 650 103 002 0001 DE101 5170\" - wuSam", function () {
     $('body').append('<input type="text" id="testmask" value="01 650 103 002 0001 DE101 5170" />');
     $("#testmask").inputmask("99 999 999 999 9999 \\D\\E*** 9999");
     equal($("#testmask").val(), "01 650 103 002 0001 DE101 5170", "Result " + $("#testmask").val());
@@ -426,7 +426,7 @@ test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"01 650 103 002
     $("#testmask").remove();
 });
 
-test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"016501030020001DE1015170\"", function () {
+test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"016501030020001DE1015170\" - wuSam", function () {
     $('body').append('<input type="text" id="testmask" value="016501030020001DE1015170" />');
     $("#testmask").inputmask("99 999 999 999 9999 \\D\\E*** 9999");
     equal($("#testmask").val(), "01 650 103 002 0001 DE101 5170", "Result " + $("#testmask").val());
@@ -434,7 +434,17 @@ test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"01650103002000
     $("#testmask").remove();
 });
 
-test("inputmask(\"\\D\\E***\") ~ value=\"DE001\"", function () {
+test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"016501030020001DE1015170\" replace 2 with 3 - wuSam", function () {
+    $('body').append('<input type="text" id="testmask" value="016501030020001DE1015170" />');
+    $("#testmask").inputmask("99 999 999 999 9999 \\D\\E*** 9999");
+    caret($("#testmask"), 13, 14);
+	$("#testmask").Type("3");
+	equal($("#testmask").val(), "01 650 103 003 0001 DE101 5170", "Result " + $("#testmask").val());
+	
+    $("#testmask").remove();
+});
+
+test("inputmask(\"\\D\\E***\") ~ value=\"DE001\" - wuSam", function () {
     $('body').append('<input type="text" id="testmask" value="DE001" />');
     $("#testmask").inputmask("\\D\\E***");
     equal($("#testmask").val(), "DE001", "Result " + $("#testmask").val());
