@@ -1178,11 +1178,11 @@
                 }
                 var input = this, $input = $(input);
 
+				setTimeout(function(){
                 //backspace in chrome32 only fires input event - detect & treat
                 var caretPos = caret(input),
                     currentValue = input._valueGet();
                 if (currentValue.charAt(caretPos.begin) != getActiveBuffer()[caretPos.begin] && !isMask(caretPos.begin)) {
-                    caret(input, seekNext(caretPos.begin));
                     e.keyCode = opts.keyCode.BACKSPACE;
                     keydownEvent.call(input, e);
                 } else {
@@ -1192,7 +1192,7 @@
                         $input.trigger("complete");
                     $input.click();
                 }
-                
+                },0);
                 e.preventDefault()
             }
 
