@@ -1182,7 +1182,8 @@
                 var caretPos = caret(input),
                     currentValue = input._valueGet();
                 if (currentValue.charAt(caretPos.begin) != getActiveBuffer()[caretPos.begin] && !isMask(caretPos.begin)) {
-                    //e.keyCode = opts.keyCode.BACKSPACE;
+                    caret(input, seekNext(caretPos.begin));
+                    e.keyCode = opts.keyCode.BACKSPACE;
                     keydownEvent.call(input, e);
                 } else {
                     checkVal(input, false, false);
