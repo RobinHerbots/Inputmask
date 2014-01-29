@@ -1171,28 +1171,28 @@
                 $input.click();
             }
 
-            function chromeInputEvent(e) {
+            function chrome32InputEvent(e) {
                 if (skipInputEvent === true) {
                     skipInputEvent = false;
                     return true;
                 }
                 var input = this, $input = $(input);
 
-				setTimeout(function(){
                 //backspace in chrome32 only fires input event - detect & treat
                 var caretPos = caret(input),
                     currentValue = input._valueGet();
-                if (currentValue.charAt(caretPos.begin) != getActiveBuffer()[caretPos.begin] && !isMask(caretPos.begin)) {
-                    e.keyCode = opts.keyCode.BACKSPACE;
-                    keydownEvent.call(input, e);
-                } else {
+                if (currentValue.charAt(caretPos.begin) != getActiveBuffer()[caretPos.begin] 
+              	  	&& currentValue.charAt(caretPos.begin + 1) != getActiveBuffer()[caretPos.begin] 
+                	&& !isMask(caretPos.begin)) {
+                    	e.keyCode = opts.keyCode.BACKSPACE;
+                    	keydownEvent.call(input, e);
+                } else { //nonnumerics don't fire keypress 
                     checkVal(input, false, false);
                     writeBuffer(input, getActiveBuffer());
                     if (isComplete(getActiveBuffer()) === true)
                         $input.trigger("complete");
                     $input.click();
                 }
-                },0);
                 e.preventDefault()
             }
 
@@ -1384,8 +1384,9 @@
                          ).bind("keypress.inputmask", keypressEvent
                          ).bind("keyup.inputmask", keyupEvent);
 
-                    if (androidchrome32)
-                        $el.bind("input.inputmask", chromeInputEvent);
+                    if (androidchrome32) {
+                        $el.bind("input.inputmask", chrome32InputEvent);
+                    }    
                     if (msie10)
                         $el.bind("input.inputmask", inputEvent);
 
