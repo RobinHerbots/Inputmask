@@ -229,12 +229,14 @@
             android = navigator.userAgent.match(new RegExp("android.*safari.*", "i")) !== null,
             androidchrome = navigator.userAgent.match(new RegExp("android.*chrome.*", "i")) !== null,
             pasteEvent = isInputEventSupported('paste') ? 'paste' : isInputEventSupported('input') ? 'input' : "propertychange",
-            androidchrome32 = false;
+            androidchrome32 = false, androidchrome18 = false, androidchrome29 = false;
 
         if (androidchrome) {
             var browser = navigator.userAgent.match(new RegExp("chrome.*", "i")),
                 version = parseInt(new RegExp(/[0-9]+/).exec(browser));
             androidchrome32 = (version == 32);
+            androidchrome18 = (version == 18);
+            androidchrome29 = (version == 29);
         }
 
         //masking scope
@@ -1384,7 +1386,7 @@
                          ).bind("keypress.inputmask", keypressEvent
                          ).bind("keyup.inputmask", keyupEvent);
 
-                    if (androidchrome32) {
+                    if (androidchrome32 || androidchrome18 || androidchrome29) {
                         $el.bind("input.inputmask", chrome32InputEvent);
                     }    
                     if (msie1x)
