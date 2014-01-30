@@ -224,7 +224,7 @@
             return opts.greedy ? ms : ms.sort(function (a, b) { return a["mask"].length - b["mask"].length; });
         }
 
-        var msie10 = navigator.userAgent.match(new RegExp("msie 10", "i")) !== null,
+        var msie1x = new Function("/*@cc_on return @_jscript_version; @*/")() >= 10, //conditional compilation from mickeysoft trick
             iphone = navigator.userAgent.match(new RegExp("iphone", "i")) !== null,
             android = navigator.userAgent.match(new RegExp("android.*safari.*", "i")) !== null,
             androidchrome = navigator.userAgent.match(new RegExp("android.*chrome.*", "i")) !== null,
@@ -1387,7 +1387,7 @@
                     if (androidchrome32) {
                         $el.bind("input.inputmask", chrome32InputEvent);
                     }    
-                    if (msie10)
+                    if (msie1x)
                         $el.bind("input.inputmask", inputEvent);
 
                     //apply mask
