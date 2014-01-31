@@ -292,17 +292,21 @@
             return opts.greedy ? ms : ms.sort(function (a, b) { return a["mask"].length - b["mask"].length; });
         }
 
-        var msie10 = navigator.userAgent.match(new RegExp("msie 10", "i")) !== null,
+        var msie1x = typeof ScriptEngineMajorVersion === "function"
+                        ? ScriptEngineMajorVersion() //IE11 detection
+                        : new Function("/*@cc_on return @_jscript_version; @*/")() >= 10, //conditional compilation from mickeysoft trick
             iphone = navigator.userAgent.match(new RegExp("iphone", "i")) !== null,
             android = navigator.userAgent.match(new RegExp("android.*safari.*", "i")) !== null,
             androidchrome = navigator.userAgent.match(new RegExp("android.*chrome.*", "i")) !== null,
             pasteEvent = isInputEventSupported('paste') ? 'paste' : isInputEventSupported('input') ? 'input' : "propertychange",
-            androidchrome32 = false;
+            androidchrome32 = false, androidchrome18 = false, androidchrome29 = false;
 
         if (androidchrome) {
             var browser = navigator.userAgent.match(new RegExp("chrome.*", "i")),
                 version = parseInt(new RegExp(/[0-9]+/).exec(browser));
             androidchrome32 = (version == 32);
+            androidchrome18 = (version == 18);
+            androidchrome29 = (version == 29);
         }
 
         //masking scope
@@ -1370,7 +1374,7 @@
                 $input.click();
             }
 
-            function chromeInputEvent(e) {
+            function chrome32InputEvent(e) {
                 if (skipInputEvent === true) {
                     skipInputEvent = false;
                     return true;
@@ -1380,17 +1384,18 @@
                 //backspace in chrome32 only fires input event - detect & treat
                 var caretPos = caret(input),
                     currentValue = input._valueGet();
-                if (currentValue.charAt(caretPos.begin) != getActiveBuffer()[caretPos.begin] && !isMask(caretPos.begin)) {
-                    e.keyCode = opts.keyCode.BACKSPACE;
-                    keydownEvent.call(input, e);
-                } else {
+                if (currentValue.charAt(caretPos.begin) != getActiveBuffer()[caretPos.begin] 
+              	  	&& currentValue.charAt(caretPos.begin + 1) != getActiveBuffer()[caretPos.begin] 
+                	&& !isMask(caretPos.begin)) {
+                    	e.keyCode = opts.keyCode.BACKSPACE;
+                    	keydownEvent.call(input, e);
+                } else { //nonnumerics don't fire keypress 
                     checkVal(input, false, false);
                     writeBuffer(input, getActiveBuffer());
                     if (isComplete(getActiveBuffer()) === true)
                         $input.trigger("complete");
                     $input.click();
                 }
-                
                 e.preventDefault()
             }
 
@@ -1582,9 +1587,10 @@
                          ).bind("keypress.inputmask", keypressEvent
                          ).bind("keyup.inputmask", keyupEvent);
 
-                    if (androidchrome32)
-                        $el.bind("input.inputmask", chromeInputEvent);
-                    if (msie10)
+                    if (androidchrome32 || androidchrome18 || androidchrome29) {
+                        $el.bind("input.inputmask", chrome32InputEvent);
+                    }    
+                    if (msie1x)
                         $el.bind("input.inputmask", inputEvent);
 
                     //apply mask
