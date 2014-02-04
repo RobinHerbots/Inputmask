@@ -224,17 +224,21 @@
             return opts.greedy ? ms : ms.sort(function (a, b) { return a["mask"].length - b["mask"].length; });
         }
 
-        var msie1x = new Function("/*@cc_on return @_jscript_version; @*/")() >= 10, //conditional compilation from mickeysoft trick
+        var msie1x = typeof ScriptEngineMajorVersion === "function"
+                        ? ScriptEngineMajorVersion() //IE11 detection
+                        : new Function("/*@cc_on return @_jscript_version; @*/")() >= 10, //conditional compilation from mickeysoft trick
             iphone = navigator.userAgent.match(new RegExp("iphone", "i")) !== null,
             android = navigator.userAgent.match(new RegExp("android.*safari.*", "i")) !== null,
             androidchrome = navigator.userAgent.match(new RegExp("android.*chrome.*", "i")) !== null,
             pasteEvent = isInputEventSupported('paste') ? 'paste' : isInputEventSupported('input') ? 'input' : "propertychange",
-            androidchrome32 = false;
+            androidchrome32 = false, androidchrome18 = false, androidchrome29 = false;
 
         if (androidchrome) {
             var browser = navigator.userAgent.match(new RegExp("chrome.*", "i")),
                 version = parseInt(new RegExp(/[0-9]+/).exec(browser));
             androidchrome32 = (version == 32);
+            androidchrome18 = (version == 18);
+            androidchrome29 = (version == 29);
         }
 
         //masking scope
@@ -1384,7 +1388,7 @@
                          ).bind("keypress.inputmask", keypressEvent
                          ).bind("keyup.inputmask", keyupEvent);
 
-                    if (androidchrome32) {
+                    if (androidchrome32 || androidchrome18 || androidchrome29) {
                         $el.bind("input.inputmask", chrome32InputEvent);
                     }    
                     if (msie1x)
