@@ -268,7 +268,7 @@
 
             }
 
-            if (opts.repeat == "*") opts.greedy = false;
+            if (opts.repeat == "*" || opts.repeat == "+") opts.greedy = false;
 
             if ($.isFunction(opts.mask)) { //allow mask to be a preprocessing fn - should return a valid mask
                 opts.mask = opts.mask.call(this, opts);
@@ -380,12 +380,14 @@
                                     if (match) {
                                         //get latest match
                                         var latestMatch = matches[matches.length - 1]["match"];
-                                        if (qndx >= qt.quantifier.min && (tokenGroup.matches.indexOf(latestMatch) == (tokenGroup.matches.length -1))) { //search for next possible match
-                                            if (isNaN(qt.quantifier.max) && qndx > qt.quantifier.min) {
+                                        var isFirstMatch = (tokenGroup.matches.indexOf(latestMatch) == 0);
+                                        if (isFirstMatch) { //search for next possible match
+                                            if ((isNaN(qt.quantifier.max) || opts.greedy === false) && qndx >= qt.quantifier.min) {
                                                 matches.push({ "match": { fn: null, cardinality: 0, optionality: true, casing: null, def: "" }, "locator": [] });
                                                 return true;
-                                            }
-                                            testPos = currentPos;
+                                            } else if (qndx == qt.quantifier.max - 1)
+                                                testPos = currentPos;
+                                            else return true;
                                         } else {
                                             return true;
                                         }
@@ -1725,7 +1727,7 @@
                 getMaskLength: function (buffer, greedy, repeat, currentBuffer, opts) {
                     var calculatedLength = buffer.length;
                     if (!greedy) {
-                        if (repeat == "*") {
+                        if (repeat == "*" || repeat == "+") {
                             calculatedLength = currentBuffer.length + 1;
                         } else if (repeat > 1) {
                             calculatedLength += (buffer.length * (repeat - 1));
