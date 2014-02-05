@@ -1707,11 +1707,13 @@
                 definitions: {
                     '9': {
                         validator: "[0-9]",
-                        cardinality: 1
+                        cardinality: 1,
+                        definitionSymbol: "*"
                     },
                     'a': {
                         validator: "[A-Za-z\u0410-\u044F\u0401\u0451]",
-                        cardinality: 1
+                        cardinality: 1,
+                        definitionSymbol: "*"
                     },
                     '*': {
                         validator: "[A-Za-z\u0410-\u044F\u0401\u04510-9]",
