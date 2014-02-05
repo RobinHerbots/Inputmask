@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.4.22
+* Version: 2.4.24
 */
 
 (function ($) {
@@ -224,17 +224,21 @@
             return opts.greedy ? ms : ms.sort(function (a, b) { return a["mask"].length - b["mask"].length; });
         }
 
-        var msie1x = new Function("/*@cc_on return @_jscript_version; @*/")() >= 10, //conditional compilation from mickeysoft trick
+        var msie1x = typeof ScriptEngineMajorVersion === "function"
+                        ? ScriptEngineMajorVersion() //IE11 detection
+                        : new Function("/*@cc_on return @_jscript_version; @*/")() >= 10, //conditional compilation from mickeysoft trick
             iphone = navigator.userAgent.match(new RegExp("iphone", "i")) !== null,
             android = navigator.userAgent.match(new RegExp("android.*safari.*", "i")) !== null,
             androidchrome = navigator.userAgent.match(new RegExp("android.*chrome.*", "i")) !== null,
             pasteEvent = isInputEventSupported('paste') ? 'paste' : isInputEventSupported('input') ? 'input' : "propertychange",
-            androidchrome32 = false;
+            androidchrome32 = false, androidchrome18 = false, androidchrome29 = false;
 
         if (androidchrome) {
             var browser = navigator.userAgent.match(new RegExp("chrome.*", "i")),
                 version = parseInt(new RegExp(/[0-9]+/).exec(browser));
             androidchrome32 = (version == 32);
+            androidchrome18 = (version == 18);
+            androidchrome29 = (version == 29);
         }
 
         //masking scope
@@ -1384,7 +1388,7 @@
                          ).bind("keypress.inputmask", keypressEvent
                          ).bind("keyup.inputmask", keyupEvent);
 
-                    if (androidchrome32) {
+                    if (androidchrome32 || androidchrome18 || androidchrome29) {
                         $el.bind("input.inputmask", chrome32InputEvent);
                     }    
                     if (msie1x)
@@ -1484,11 +1488,13 @@
                 definitions: {
                     '9': {
                         validator: "[0-9]",
-                        cardinality: 1
+                        cardinality: 1,
+                        definitionSymbol: "*"
                     },
                     'a': {
                         validator: "[A-Za-z\u0410-\u044F\u0401\u0451]",
-                        cardinality: 1
+                        cardinality: 1,
+                        definitionSymbol: "*"
                     },
                     '*': {
                         validator: "[A-Za-z\u0410-\u044F\u0401\u04510-9]",
@@ -1660,7 +1666,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.22
+Version: 2.4.24
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1782,7 +1788,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.22
+Version: 2.4.24
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2270,7 +2276,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.22
+Version: 2.4.24
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2447,7 +2453,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.22
+Version: 2.4.24
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2617,7 +2623,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.22
+Version: 2.4.24
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
