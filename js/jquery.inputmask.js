@@ -709,6 +709,38 @@
             }
 
             function patchValueProperty(npt) {
+                function PatchValhook(type) {
+                    if ($.valHooks[type] == undefined || $.valHooks[type].inputmaskpatch != true) {
+                        var valueGet = $.valHooks[type] && $.valHooks[type].get ? $.valHooks[type].get : function (elem) { return elem.value; };
+                        var valueSet = $.valHooks[type] && $.valHooks[type].set ? $.valHooks[type].set : function (elem, value) {
+                            elem.value = value;
+                            return elem;
+                        };
+
+                        $.valHooks[type] = {
+                            get: function (elem) {
+                                var $elem = $(elem);
+                                if ($elem.data('_inputmask')) {
+                                    if ($elem.data('_inputmask')['opts'].autoUnmask)
+                                        return $elem.inputmask('unmaskedvalue');
+                                    else {
+                                        var result = valueGet(elem),
+                                            inputData = $elem.data('_inputmask'), masksets = inputData['masksets'],
+                                            activeMasksetIndex = inputData['activeMasksetIndex'];
+                                        return result != masksets[activeMasksetIndex]['_buffer'].join('') ? result : '';
+                                    }
+                                } else return valueGet(elem);
+                            },
+                            set: function (elem, value) {
+                                var $elem = $(elem);
+                                var result = valueSet(elem, value);
+                                if ($elem.data('_inputmask')) $elem.triggerHandler('setvalue.inputmask');
+                                return result;
+                            },
+                            inputmaskpatch: true
+                        };
+                    }
+                }
                 var valueProperty;
                 if (Object.getOwnPropertyDescriptor)
                     valueProperty = Object.getOwnPropertyDescriptor(npt, "value");
@@ -761,43 +793,11 @@
                         npt._valueGet = function () { return isRTL ? this.value.split('').reverse().join('') : this.value; };
                         npt._valueSet = function (value) { this.value = isRTL ? value.split('').reverse().join('') : value; };
                     }
-                    if ($.valHooks.text == undefined || $.valHooks.text.inputmaskpatch != true) {
-                        var valueGet = $.valHooks.text && $.valHooks.text.get ? $.valHooks.text.get : function (elem) { return elem.value; };
-                        var valueSet = $.valHooks.text && $.valHooks.text.set ? $.valHooks.text.set : function (elem, value) {
-                            elem.value = value;
-                            return elem;
-                        };
-
-                        jQuery.extend($.valHooks, {
-                            text: {
-                                get: function (elem) {
-                                    var $elem = $(elem);
-                                    if ($elem.data('_inputmask')) {
-                                        if ($elem.data('_inputmask')['opts'].autoUnmask)
-                                            return $elem.inputmask('unmaskedvalue');
-                                        else {
-                                            var result = valueGet(elem),
-                                                inputData = $elem.data('_inputmask'), masksets = inputData['masksets'],
-                                                activeMasksetIndex = inputData['activeMasksetIndex'];
-                                            return result != masksets[activeMasksetIndex]['_buffer'].join('') ? result : '';
-                                        }
-                                    } else return valueGet(elem);
-                                },
-                                set: function (elem, value) {
-                                    var $elem = $(elem);
-                                    var result = valueSet(elem, value);
-                                    if ($elem.data('_inputmask')) $elem.triggerHandler('setvalue.inputmask');
-                                    return result;
-                                },
-                                inputmaskpatch: true
-                            }
-                        });
-                    }
+                    PatchValhook(npt.type);
                 }
             }
 
             //shift chars to left from start to end and put c at end position if defined
-
             function shiftL(start, end, c, maskJumps) {
                 var buffer = getActiveBuffer();
                 if (maskJumps !== false) //jumping over nonmask position
@@ -1185,11 +1185,11 @@
                 //backspace in chrome32 only fires input event - detect & treat
                 var caretPos = caret(input),
                     currentValue = input._valueGet();
-                if (currentValue.charAt(caretPos.begin) != getActiveBuffer()[caretPos.begin] 
-              	  	&& currentValue.charAt(caretPos.begin + 1) != getActiveBuffer()[caretPos.begin] 
-                	&& !isMask(caretPos.begin)) {
-                    	e.keyCode = opts.keyCode.BACKSPACE;
-                    	keydownEvent.call(input, e);
+                if (currentValue.charAt(caretPos.begin) != getActiveBuffer()[caretPos.begin]
+                    && currentValue.charAt(caretPos.begin + 1) != getActiveBuffer()[caretPos.begin]
+                    && !isMask(caretPos.begin)) {
+                    e.keyCode = opts.keyCode.BACKSPACE;
+                    keydownEvent.call(input, e);
                 } else { //nonnumerics don't fire keypress 
                     checkVal(input, false, false);
                     writeBuffer(input, getActiveBuffer());
@@ -1390,7 +1390,7 @@
 
                     if (androidchrome32 || androidchrome18 || androidchrome29) {
                         $el.bind("input.inputmask", chrome32InputEvent);
-                    }    
+                    }
                     if (msie1x)
                         $el.bind("input.inputmask", inputEvent);
 
