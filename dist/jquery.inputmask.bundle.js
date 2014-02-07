@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.4.25
+* Version: 2.4.26
 */
 
 (function ($) {
@@ -1446,6 +1446,21 @@
 
                         checkVal($el, false, false, actionObj["value"].split(''), true);
                         return getActiveBuffer().join('');
+                    case "isValid":
+                        $el = $({});
+                        $el.data('_inputmask', {
+                            'masksets': masksets,
+                            'activeMasksetIndex': activeMasksetIndex,
+                            'opts': opts,
+                            'isRTL': opts.numericInput
+                        });
+                        if (opts.numericInput) {
+                            opts.isNumeric = opts.numericInput;
+                            isRTL = true;
+                        }
+
+                        checkVal($el, false, true, actionObj["value"].split(''));
+                        return isComplete(getActiveBuffer());
                 }
             }
         };
@@ -1527,6 +1542,11 @@
                 var opts = $.extend(true, {}, $.inputmask.defaults, options);
                 resolveAlias(opts.alias, options, opts);
                 return maskScope(generateMaskSets(opts), 0, opts, { "action": "format", "value": value });
+            },
+            isValid: function (value, options) {
+                var opts = $.extend(true, {}, $.inputmask.defaults, options);
+                resolveAlias(opts.alias, options, opts);
+                return maskScope(generateMaskSets(opts), 0, opts, { "action": "isValid", "value": value });
             }
         };
 
@@ -1666,7 +1686,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.25
+Version: 2.4.26
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1788,7 +1808,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.25
+Version: 2.4.26
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2276,7 +2296,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.25
+Version: 2.4.26
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2453,7 +2473,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.25
+Version: 2.4.26
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2623,7 +2643,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.25
+Version: 2.4.26
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
