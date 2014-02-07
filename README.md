@@ -22,7 +22,7 @@ Highlights:
 - support data-inputmask attribute  
 - multi-mask support  
 - regex-mask support
-- value formatting without input element
+- value formatting / validating without input element
 
 Demo page see http://robinherbots.github.io/jquery.inputmask
 

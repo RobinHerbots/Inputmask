@@ -482,6 +482,15 @@ test("inputmask(\"mm/yyyy\") ~ .val(\"031973\") - disabled input", function () {
     $("#testmask").remove();
 });
 
+test("inputmask({ \"mask\": \"(999) 999-9999\" }) ~ .val(\"8144419449\") - type=\"tel\" - bodrick", function () {
+    $('body').append('<input type="tel" id="testmask" disabled="disabled" />');
+    $("#testmask").inputmask({ "mask": "(999) 999-9999" });
+    $("#testmask").val("8144419449");
+    equal($("#testmask").val(), "(814) 441-9449", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
 module("Optional & multi masks");
 test("inputmask(\"(99) 9999[9]-99999\") - input 121234-12345", function () {
     $('body').append('<input type="text" id="testmask" />');
