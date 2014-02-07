@@ -1175,7 +1175,7 @@
                 $input.click();
             }
 
-            function chrome32InputEvent(e) {
+            function chromeInputEvent(e) {
                 if (skipInputEvent === true) {
                     skipInputEvent = false;
                     return true;
@@ -1185,6 +1185,9 @@
                 //backspace in chrome32 only fires input event - detect & treat
                 var caretPos = caret(input),
                     currentValue = input._valueGet();
+
+                console.log(currentValue);
+
                 if (currentValue.charAt(caretPos.begin) != getActiveBuffer()[caretPos.begin] 
               	  	&& currentValue.charAt(caretPos.begin + 1) != getActiveBuffer()[caretPos.begin] 
                 	&& !isMask(caretPos.begin)) {
@@ -1389,7 +1392,7 @@
                          ).bind("keyup.inputmask", keyupEvent);
 
                     if (androidchrome32 || androidchrome18 || androidchrome29) {
-                        $el.bind("input.inputmask", chrome32InputEvent);
+                        $el.bind("input.inputmask", chromeInputEvent);
                     }    
                     if (msie1x)
                         $el.bind("input.inputmask", inputEvent);
