@@ -1785,7 +1785,18 @@ test("inputmask(\"9-a{3}9{3}\" - simple dynamic mask", function () {
 });
 test("inputmask(\"9-a{1,3}9{1,3}\" - simple dynamic mask", function () {
     $('body').append('<input type="text" id="testmask" />');
-    $("#testmask").inputmask("9-a{3}9{3}")
+    $("#testmask").inputmask("9-a{1,3}9{1,3}")
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("1a1");
+
+    equal($("#testmask").val(), "1-a1", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+test("inputmask(\"9-a{1,3}9{1,3}\" - simple dynamic mask - greedy false", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("9-a{1,3}9{1,3}", { greedy: false })
 
     $("#testmask")[0].focus();
     $("#testmask").Type("1a1");
