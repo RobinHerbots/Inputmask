@@ -1392,7 +1392,7 @@
                         $el.bind("input.inputmask", inputEvent);
 
                     //apply mask
-                    var initialValue = opts.onBeforeMask != undefined ? opts.onBeforeMask.call(this, input._valueGet()) : input._valueGet();
+                    var initialValue = opts.onBeforeMask != undefined ? opts.onBeforeMask.call(this, el._valueGet()) : el._valueGet();
                     checkVal(el, true, false, initialValue.split(''));
                     valueOnFocus = getActiveBuffer().join('');
                     // Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
