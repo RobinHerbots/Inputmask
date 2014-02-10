@@ -476,6 +476,22 @@ $(document).ready(function(){
 });
 ```
 
+### onBeforeMask
+
+This callback allows for preprocessing the initial value before actually handling the value for masking.  This can be usefull for stripping away some characters before processing.
+
+```javascript
+$(document).ready(function(){
+   $("#test").inputmask("99.", {
+                repeat: 4,
+                onBeforeMask: function (initialValue) {
+                    //do somehing with the value
+                    return initialValue;
+                }
+            });
+});
+```
+
 ### hasMaskedValue
 
 Check whether the returned value is masked or not; currently only works reliably when using jquery.val fn to retrieve the value 
