@@ -230,16 +230,13 @@
             iphone = navigator.userAgent.match(new RegExp("iphone", "i")) !== null,
             android = navigator.userAgent.match(new RegExp("android.*safari.*", "i")) !== null,
             androidchrome = navigator.userAgent.match(new RegExp("android.*chrome.*", "i")) !== null,
-            pasteEvent = isInputEventSupported('paste') ? 'paste' : isInputEventSupported('input') ? 'input' : "propertychange",
-            androidchrome32 = false, androidchrome18 = false, androidchrome29 = false;
+            pasteEvent = isInputEventSupported('paste') ? 'paste' : isInputEventSupported('input') ? 'input' : "propertychange";
 
-        if (androidchrome) {
-            var browser = navigator.userAgent.match(new RegExp("chrome.*", "i")),
-                version = parseInt(new RegExp(/[0-9]+/).exec(browser));
-            androidchrome32 = (version == 32);
-            androidchrome18 = (version == 18);
-            androidchrome29 = (version == 29);
-        }
+        //if (androidchrome) {
+        //    var browser = navigator.userAgent.match(new RegExp("chrome.*", "i")),
+        //        version = parseInt(new RegExp(/[0-9]+/).exec(browser));
+        //    androidchrome32 = (version == 32);
+        //}
 
         //masking scope
         //actionObj definition see below
@@ -1175,7 +1172,7 @@
                 $input.click();
             }
 
-            function chrome32InputEvent(e) {
+            function chromeInputEvent(e) {
                 if (skipInputEvent === true) {
                     skipInputEvent = false;
                     return true;
@@ -1388,14 +1385,15 @@
                          ).bind("keypress.inputmask", keypressEvent
                          ).bind("keyup.inputmask", keyupEvent);
 
-                    if (androidchrome32 || androidchrome18 || androidchrome29) {
-                        $el.bind("input.inputmask", chrome32InputEvent);
+                    if (androidchrome) {
+                        $el.bind("input.inputmask", chromeInputEvent);
                     }
                     if (msie1x)
                         $el.bind("input.inputmask", inputEvent);
 
                     //apply mask
-                    checkVal(el, true, false);
+                    var initialValue = opts.onBeforeMask != undefined ? opts.onBeforeMask.call(this, input._valueGet()) : input._valueGet();
+                    checkVal(el, true, false, initialValue.split(''));
                     valueOnFocus = getActiveBuffer().join('');
                     // Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
                     var activeElement;
@@ -1486,6 +1484,7 @@
                 aliases: {}, //aliases definitions => see jquery.inputmask.extensions.js
                 onKeyUp: $.noop, //override to implement autocomplete on certain keys for example
                 onKeyDown: $.noop, //override to implement autocomplete on certain keys for example
+                onBeforeMask: undefined, //executes before masking the initial value to allow preprocessing of the initial value.  args => initialValue => return processedValue
                 onBeforePaste: undefined, //executes before masking the pasted value to allow preprocessing of the pasted value.  args => pastedValue => return processedValue
                 onUnMask: undefined, //executes after unmasking to allow postprocessing of the unmaskedvalue.  args => maskedValue, unmaskedValue
                 showMaskOnFocus: true, //show the mask-placeholder when the input has focus
