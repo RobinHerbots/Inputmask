@@ -22,7 +22,7 @@ Highlights:
 - support data-inputmask attribute  
 - multi-mask support  
 - regex-mask support
-- value formatting without input element
+- value formatting / validating without input element
 
 Demo page see http://robinherbots.github.io/jquery.inputmask
 
@@ -476,6 +476,22 @@ $(document).ready(function(){
 });
 ```
 
+### onBeforeMask
+
+This callback allows for preprocessing the initial value before actually handling the value for masking.  This can be usefull for stripping away some characters before processing.
+
+```javascript
+$(document).ready(function(){
+   $("#test").inputmask("99.", {
+                repeat: 4,
+                onBeforeMask: function (initialValue) {
+                    //do somehing with the value
+                    return initialValue;
+                }
+            });
+});
+```
+
 ### hasMaskedValue
 
 Check whether the returned value is masked or not; currently only works reliably when using jquery.val fn to retrieve the value 
@@ -589,6 +605,14 @@ Think of formatting values to show in jqGrid or on other elements then inputs.
 
 ```javascript
 var formattedDate = $.inputmask.format("2331973", { alias: "dd/mm/yyyy"});
+```
+
+## Value validating
+
+Validate a given value against the mask.
+
+```javascript
+var isValid = $.inputmask.isValid("23/03/1973", { alias: "dd/mm/yyyy"});
 ```
 
 ## Compiling with Google Closure Compiler

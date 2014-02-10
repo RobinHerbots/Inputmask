@@ -480,6 +480,15 @@ test("inputmask(\"mm/yyyy\") ~ .val(\"031973\") - disabled input", function () {
     $("#testmask").remove();
 });
 
+test("inputmask({ \"mask\": \"(999) 999-9999\" }) ~ .val(\"8144419449\") - type=\"tel\" - bodrick", function () {
+    $('body').append('<input type="tel" id="testmask" disabled="disabled" />');
+    $("#testmask").inputmask({ "mask": "(999) 999-9999" });
+    $("#testmask").val("8144419449");
+    equal($("#testmask").val(), "(814) 441-9449", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
 module("Optional & multi masks");
 test("inputmask(\"(99) 9999[9]-99999\") - input 121234-12345", function () {
     $('body').append('<input type="text" id="testmask" />');
@@ -1747,6 +1756,17 @@ test("$.inputmask.format(\"2331973\", { alias: \"date\"})", function () {
 test("$.inputmask.format(\"016501030020001DE1015170\", { mask: \"99 999 999 999 9999 \\D\\E*** 9999\"})", function () {
     var formattedValue =$.inputmask.format("016501030020001DE1015170", { mask: "99 999 999 999 9999 \\D\\E*** 9999"});
     equal(formattedValue, "01 650 103 002 0001 DE101 5170", "Result " + formattedValue);
+});
+
+module("Value Validating");
+test("$.inputmask.isValid(\"23/03/1973\", { alias: \"date\"})", function () {
+    var formattedValue = $.inputmask.isValid("23/03/1973", { alias: "date" });
+    equal(formattedValue, true, "Result " + formattedValue);
+});
+
+test("$.inputmask.isValid(\"01 650 103 002 0001 DE101 5170\", { mask: \"99 999 999 999 9999 \\D\\E*** 9999\"})", function () {
+    var formattedValue = $.inputmask.isValid("01 650 103 002 0001 DE101 5170", { mask: "99 999 999 999 9999 \\D\\E*** 9999" });
+    equal(formattedValue, true, "Result " + formattedValue);
 });
 
 module("Dynamic Masks");
