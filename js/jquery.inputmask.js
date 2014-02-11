@@ -230,6 +230,7 @@
             iphone = navigator.userAgent.match(new RegExp("iphone", "i")) !== null,
             android = navigator.userAgent.match(new RegExp("android.*safari.*", "i")) !== null,
             androidchrome = navigator.userAgent.match(new RegExp("android.*chrome.*", "i")) !== null,
+            androidfirefox = navigator.userAgent.match(new RegExp("android.*firefox.*", "i")) !== null,
             PasteEventType = isInputEventSupported('paste') ? 'paste' : isInputEventSupported('input') ? 'input' : "propertychange";
 
         //if (androidchrome) {
@@ -1185,7 +1186,7 @@
                 }, 0);
             }
 
-            function chromeInputEvent(e) {
+            function mobileInputEvent(e) {
                 if (skipInputEvent === true) {
                     skipInputEvent = false;
                     return true;
@@ -1383,8 +1384,12 @@
                          ).bind("keypress.inputmask", keypressEvent
                          ).bind("keyup.inputmask", keyupEvent);
 
-                    if (androidchrome) {
-                        $el.bind("input.inputmask", chromeInputEvent);
+                    if (android) {
+                        if (androidchrome || androidfirefox) {
+                            $el.bind("input.inputmask", mobileInputEvent);
+                        } else {
+                            $el.bind("input.inputmask", pasteEvent);
+                        }
                     }
                     if (msie1x)
                         $el.bind("input.inputmask", pasteEvent);
