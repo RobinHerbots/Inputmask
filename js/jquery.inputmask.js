@@ -1384,12 +1384,16 @@
                          ).bind("keypress.inputmask", keypressEvent
                          ).bind("keyup.inputmask", keyupEvent);
 
+
                     if (android) {
-                        if (androidchrome || androidfirefox) {
+                        if (androidchrome) {
                             $el.bind("input.inputmask", mobileInputEvent);
                         } else {
                             $el.bind("input.inputmask", pasteEvent);
                         }
+                    }
+                    if (androidfirefox) {
+                        $el.bind("input.inputmask", mobileInputEvent);
                     }
                     if (msie1x)
                         $el.bind("input.inputmask", pasteEvent);
