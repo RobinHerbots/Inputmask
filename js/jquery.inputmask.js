@@ -1177,7 +1177,8 @@
                 setTimeout(function () {
                     var pasteValue = opts.onBeforePaste != undefined ? opts.onBeforePaste.call(this, input._valueGet()) : input._valueGet();
                     console.log("paste " + pasteValue);
-                    checkVal(input, true, false, pasteValue.split(''), true);
+                    checkVal(input, false, false, pasteValue.split(''), true);
+                    writeBuffer(input, getActiveBuffer());
                     if (isComplete(getActiveBuffer()) === true)
                         $input.trigger("complete");
                     $input.click();
