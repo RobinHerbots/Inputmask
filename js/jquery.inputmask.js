@@ -832,7 +832,7 @@
                 if (typeof begin == 'number') {
                     begin = TranslatePosition(begin);
                     end = TranslatePosition(end);
-                    if (!$(input).is(':visible')) {
+                    if (!$(npt).is(':visible')) {
                         return;
                     }
                     end = (typeof end == 'number') ? end : begin;
@@ -1366,12 +1366,12 @@
             }
 
             function pasteEvent(e) {
-                if (skipInputEvent === true) {
+                if (skipInputEvent === true && e.type == "input") {
                     skipInputEvent = false;
                     return true;
                 }
-                var input = this, $input = $(input);
 
+                var input = this, $input = $(input);
                 //paste event for IE8 and lower I guess ;-)
                 if (e.type == "propertychange" && input._valueGet().length <= getMaskLength()) {
                     return true;
@@ -1582,7 +1582,6 @@
                          ).bind("keypress.inputmask", keypressEvent
                          ).bind("keyup.inputmask", keyupEvent);
 
-
                     if (android) {
                         if (androidchrome) {
                             $el.bind("input.inputmask", mobileInputEvent);
@@ -1596,6 +1595,7 @@
                         }
                         $el.bind("input.inputmask", mobileInputEvent);
                     }
+
                     if (msie1x)
                         $el.bind("input.inputmask", pasteEvent);
 
