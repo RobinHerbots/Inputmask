@@ -562,6 +562,7 @@
                         }
                     } else {
                         keypressEvent.call(input, undefined, true, charCode.charCodeAt(0), writeOut, strict, ndx);
+                        strict = strict || (ndx > 0 && ndx > getActiveMaskSet()["p"]);
                     }
                 });
 
@@ -929,8 +930,6 @@
                 skipKeyPressEvent = false;
                 var input = this, $input = $(input), k = e.keyCode, pos = caret(input);
 
-                console.log("keydown " + k);
-
                 //backspace, delete, and escape get special treatment
                 if (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE || (iphone && k == 127) || e.ctrlKey && k == 88) { //backspace/delete
                     e.preventDefault(); //stop default action but allow propagation
@@ -988,7 +987,6 @@
 
                 e = e || window.event;
                 var k = checkval ? k : (e.which || e.charCode || e.keyCode);
-                if (!checkval) console.log("keypress " + k);
 
                 if (checkval !== true && (!(e.ctrlKey && e.altKey) && (e.ctrlKey || e.metaKey || ignorable))) {
                     return true;
@@ -1009,13 +1007,13 @@
                         var isSlctn = isSelection(pos.begin, pos.end),
                             initialIndex = activeMasksetIndex;
                         if (isSlctn) {
-                            activeMasksetIndex = initialIndex;
                             $.each(masksets, function (ndx, lmnt) { //init undobuffer for recovery when not valid
                                 if (typeof (lmnt) == "object") {
                                     activeMasksetIndex = ndx;
                                     getActiveMaskSet()["undoBuffer"] = getActiveBuffer().join('');
                                 }
                             });
+                            activeMasksetIndex = initialIndex; //restore index
                             HandleRemove(input, opts.keyCode.DELETE, pos);
                             if (!opts.insertMode) { //preserve some space
                                 $.each(masksets, function (ndx, lmnt) {
@@ -1144,8 +1142,6 @@
             function keyupEvent(e) {
                 var $input = $(this), input = this, k = e.keyCode, buffer = getActiveBuffer();
 
-                console.log("keyup " + k);
-
                 opts.onKeyUp.call(this, e, buffer, opts); //extra stuff to execute on keyup
                 if (k == opts.keyCode.TAB && opts.showMaskOnFocus) {
                     if ($input.hasClass('focus.inputmask') && input._valueGet().length == 0) {
@@ -1177,7 +1173,6 @@
                 }
                 setTimeout(function () {
                     var pasteValue = opts.onBeforePaste != undefined ? opts.onBeforePaste.call(this, input._valueGet()) : input._valueGet();
-                    console.log("paste " + pasteValue);
                     checkVal(input, false, false, pasteValue.split(''), true);
                     writeBuffer(input, getActiveBuffer());
                     if (isComplete(getActiveBuffer()) === true)
@@ -1196,8 +1191,6 @@
                 //backspace in chrome32 only fires input event - detect & treat
                 var caretPos = caret(input),
                     currentValue = input._valueGet();
-
-                console.log("input " + currentValue);
 
                 if (currentValue.charAt(caretPos.begin) != getActiveBuffer()[caretPos.begin]
                     && currentValue.charAt(caretPos.begin + 1) != getActiveBuffer()[caretPos.begin]
@@ -1388,11 +1381,14 @@
                     if (android) {
                         if (androidchrome) {
                             $el.bind("input.inputmask", mobileInputEvent);
-                        } else {
+                        } else if (PasteEventType != "input") {
                             $el.bind("input.inputmask", pasteEvent);
                         }
                     }
                     if (androidfirefox) {
+                        if (PasteEventType == "input") {
+                            $el.unbind(PasteEventType + ".inputmask");
+                        }
                         $el.bind("input.inputmask", mobileInputEvent);
                     }
                     if (msie1x)
