@@ -1192,19 +1192,17 @@
                 var caretPos = caret(input),
                     currentValue = input._valueGet();
 
-                if (currentValue.charAt(caretPos.begin) != getActiveBuffer()[caretPos.begin]
+                if ((getActiveBuffer().length - currentValue.length) == 1 && currentValue.charAt(caretPos.begin) != getActiveBuffer()[caretPos.begin]
                     && currentValue.charAt(caretPos.begin + 1) != getActiveBuffer()[caretPos.begin]
                     && !isMask(caretPos.begin)) {
                     e.keyCode = opts.keyCode.BACKSPACE;
                     keydownEvent.call(input, e);
                 } else { //nonnumerics don't fire keypress 
                     checkVal(input, false, false);
-                    writeBuffer(input, getActiveBuffer());
+                    writeBuffer(input, getActiveBuffer(), seekNext(caretPos.begin - 1));
                     if (isComplete(getActiveBuffer()) === true)
                         $input.trigger("complete");
-                    $input.click();
                 }
-                e.preventDefault();
             }
 
             function mask(el) {
@@ -1362,8 +1360,8 @@
                         setTimeout(function () {
                             caret(input, 0, seekNext(getActiveMaskSet()["lastValidPosition"]));
                         }, 0);
-                    }).bind(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", pasteEvent
-                    ).bind('setvalue.inputmask', function () {
+                        //}).bind(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", pasteEvent
+                    }).bind('setvalue.inputmask', function () {
                         var input = this;
                         checkVal(input, true);
                         valueOnFocus = getActiveBuffer().join('');
