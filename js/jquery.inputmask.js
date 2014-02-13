@@ -1199,9 +1199,12 @@
                     keydownEvent.call(input, e);
                 } else { //nonnumerics don't fire keypress 
                     checkVal(input, false, false);
-                    writeBuffer(input, getActiveBuffer(), seekNext(caretPos.begin - 1));
-                    if (isComplete(getActiveBuffer()) === true)
-                        $input.trigger("complete");
+                    writeBuffer(input, getActiveBuffer());
+                    setTimeout(function () {
+                        caret(input, seekNext(caretPos.begin - 1));
+                        if (isComplete(getActiveBuffer()) === true)
+                            $input.trigger("complete");
+                    }, 0);
                 }
             }
 
