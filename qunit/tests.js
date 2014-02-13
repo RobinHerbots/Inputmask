@@ -1793,3 +1793,47 @@ test("inputmask(\"*{1,20}@*{1,20}.*{2,6}[.*{2}]\" - email mask", function () {
 
     $("#testmask").remove();
 });
+
+module("Regression Tests");
+test("Input matches completed mask output", function(){
+    $('body').append("<input id='testmask' type='text' />");
+    var input = $('#testmask');
+    input.inputmask("9999-9999");
+
+    input.focus();
+
+    input.Type("1");
+    input.Type("2");
+    input.Type("3");
+    input.Type("4");
+    // -
+    input.Type("5");
+    input.Type("6");
+    input.Type("7");
+    input.Type("8");
+
+    equal(input.val(), "1234-5678", "Result " + input.val());
+    input.remove();
+});
+
+test("Full mask deletes properly", function(){
+    $('body').append("<input id='testmask' type='text' />");
+    var input = $('#testmask');
+    input.inputmask("9999-9999");
+
+    input.focus();
+
+    input.Type("12345678");
+
+    input.SendKey(keyCodes.BACKSPACE);
+    input.SendKey(keyCodes.BACKSPACE);
+    input.SendKey(keyCodes.BACKSPACE);
+    input.SendKey(keyCodes.BACKSPACE);
+    input.SendKey(keyCodes.BACKSPACE);
+    input.SendKey(keyCodes.BACKSPACE);
+    input.SendKey(keyCodes.BACKSPACE);
+    input.SendKey(keyCodes.BACKSPACE);
+
+    equal(input.val(), "", "Result " + input.val());
+    input.remove();
+});
