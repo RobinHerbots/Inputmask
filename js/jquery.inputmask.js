@@ -1363,8 +1363,8 @@
                         setTimeout(function () {
                             caret(input, 0, seekNext(getActiveMaskSet()["lastValidPosition"]));
                         }, 0);
-                        //}).bind(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", pasteEvent
-                    }).bind('setvalue.inputmask', function () {
+                    }).bind(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", pasteEvent
+                    ).bind('setvalue.inputmask', function () {
                         var input = this;
                         checkVal(input, true);
                         valueOnFocus = getActiveBuffer().join('');
