@@ -1206,6 +1206,7 @@
                             $input.trigger("complete");
                     }, 0);
                 }
+                e.preventDefault();
             }
 
             function mask(el) {
