@@ -1397,19 +1397,20 @@
                 var caretPos = caret(input),
                     currentValue = input._valueGet();
 
-                if (currentValue.charAt(caretPos.begin) != getActiveBuffer()[caretPos.begin]
-              	  	&& currentValue.charAt(caretPos.begin + 1) != getActiveBuffer()[caretPos.begin]
-                	&& !isMask(caretPos.begin)) {
+                if ((getActiveBuffer().length - currentValue.length) == 1 && currentValue.charAt(caretPos.begin) != getActiveBuffer()[caretPos.begin]
+                    && currentValue.charAt(caretPos.begin + 1) != getActiveBuffer()[caretPos.begin]
+                    && !isMask(caretPos.begin)) {
                     e.keyCode = opts.keyCode.BACKSPACE;
                     keydownEvent.call(input, e);
                 } else { //nonnumerics don't fire keypress 
                     checkVal(input, false, false);
                     writeBuffer(input, getActiveBuffer());
-                    if (isComplete(getActiveBuffer()) === true)
-                        $input.trigger("complete");
-                    $input.click();
+                    setTimeout(function () {
+                        caret(input, seekNext(caretPos.begin - 1));
+                        if (isComplete(getActiveBuffer()) === true)
+                            $input.trigger("complete");
+                    }, 0);
                 }
-                e.preventDefault();
             }
 
             function mask(el) {
