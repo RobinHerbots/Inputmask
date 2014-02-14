@@ -1182,6 +1182,15 @@
             }
 
             function mobileInputEvent(e) {
+                function SetMobileCaret(npt, pos) {
+                    caret(npt, pos);
+                    var caretPos = caret(npt);
+                    if (caretPos.begin != pos) {
+                        setTimeout(function () {
+                            SetMobileCaret(npt, pos);
+                        }, 500);
+                    }
+                }
                 if (skipInputEvent === true) {
                     skipInputEvent = false;
                     return true;
@@ -1197,14 +1206,13 @@
                     && !isMask(caretPos.begin)) {
                     e.keyCode = opts.keyCode.BACKSPACE;
                     keydownEvent.call(input, e);
+                    SetMobileCaret(input, seekPrevious(caretPos.begin));
                 } else { //nonnumerics don't fire keypress 
                     checkVal(input, false, false);
                     writeBuffer(input, getActiveBuffer());
-                    setTimeout(function () {
-                        caret(input, seekNext(caretPos.begin - 1));
-                        if (isComplete(getActiveBuffer()) === true)
-                            $input.trigger("complete");
-                    }, 0);
+                    if (isComplete(getActiveBuffer()) === true)
+                        $input.trigger("complete");
+                    SetMobileCaret(input, seekNext(caretPos.begin - 1));
                 }
                 e.preventDefault();
             }
@@ -1375,9 +1383,11 @@
                     ).bind('incomplete.inputmask', opts.onincomplete
                     ).bind('cleared.inputmask', opts.oncleared);
 
-                    $el.bind("keydown.inputmask", keydownEvent
-                         ).bind("keypress.inputmask", keypressEvent
-                         ).bind("keyup.inputmask", keyupEvent);
+                    //$el.bind("keydown.inputmask", keydownEvent
+                    //     ).bind("keypress.inputmask", keypressEvent
+                    //     ).bind("keyup.inputmask", keyupEvent);
+
+                    $el.bind("input.inputmask", mobileInputEvent);
 
                     if (android) {
                         if (androidchrome) {
