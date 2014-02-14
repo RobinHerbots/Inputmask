@@ -1119,7 +1119,7 @@
                                         setTimeout(function () { //timeout needed for IE
                                             if (isComplete(buffer) === true)
                                                 $input.trigger("complete");
-                                            skipInputEvent = true;
+                                            skipInputEvent = false;
                                             $input.trigger("input");
                                         }, 0);
                                     }
