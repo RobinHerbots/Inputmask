@@ -1383,17 +1383,15 @@
                     ).bind('incomplete.inputmask', opts.onincomplete
                     ).bind('cleared.inputmask', opts.oncleared);
 
-                    //$el.bind("keydown.inputmask", keydownEvent
-                    //     ).bind("keypress.inputmask", keypressEvent
-                    //     ).bind("keyup.inputmask", keyupEvent);
-
-                    $el.bind("input.inputmask", mobileInputEvent);
+                    $el.bind("keydown.inputmask", keydownEvent
+                         ).bind("keypress.inputmask", keypressEvent
+                         ).bind("keyup.inputmask", keyupEvent);
 
                     if (android) {
                         if (androidchrome) {
                             $el.bind("input.inputmask", mobileInputEvent);
                         } else if (PasteEventType != "input") {
-                            $el.bind("input.inputmask", pasteEvent);
+                            $el.bind("input.inputmask", mobileInputEvent);
                         }
                     }
                     if (androidfirefox) {
