@@ -1120,7 +1120,6 @@
                                             if (isComplete(buffer) === true)
                                                 $input.trigger("complete");
                                             skipInputEvent = true;
-                                            console.log("set skipinput to true");
                                             $input.trigger("input");
                                         }, 0);
                                     }
@@ -1185,8 +1184,7 @@
             function mobileInputEvent(e) {
                 if (skipInputEvent === true) {
                     skipInputEvent = false;
-                    console.log("should skip");
-                    //return true;
+                    return true;
                 }
                 var input = this, $input = $(input);
 
@@ -1194,19 +1192,23 @@
                 var caretPos = caret(input),
                     currentValue = input._valueGet();
 
-				setTimeout(function(){
                 if ((getActiveBuffer().length - currentValue.length) == 1 && currentValue.charAt(caretPos.begin) != getActiveBuffer()[caretPos.begin]
                     && currentValue.charAt(caretPos.begin + 1) != getActiveBuffer()[caretPos.begin]
                     && !isMask(caretPos.begin)) {
                     e.keyCode = opts.keyCode.BACKSPACE;
                     keydownEvent.call(input, e);
+                    setTimeout(function(){    
+                    	caret(input, seekPrevious(caretPos.begin));    
+                    },10);
                 } else { //nonnumerics don't fire keypress 
                     checkVal(input, false, false);
-                    writeBuffer(input, getActiveBuffer(), seekNext(caretPos.begin - 1));
+                    writeBuffer(input, getActiveBuffer());
                     if (isComplete(getActiveBuffer()) === true)
                         $input.trigger("complete");
+                    setTimeout(function(){    
+                    	caret(input, seekNext(caretPos.begin - 1));    
+                    },10);
                 }
-                },0);
                 e.preventDefault();
             }
 
@@ -1388,6 +1390,9 @@
                         }
                     }
                     if (androidfirefox) {
+                        $el.unbind("keydown.inputmask", keydownEvent
+                         	).unbind("keypress.inputmask", keypressEvent
+                         	).unbind("keyup.inputmask", keyupEvent);
                         if (PasteEventType == "input") {
                             $el.unbind(PasteEventType + ".inputmask");
                         }
