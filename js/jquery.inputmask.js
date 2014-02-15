@@ -1120,6 +1120,7 @@
                                             if (isComplete(buffer) === true)
                                                 $input.trigger("complete");
                                             skipInputEvent = true;
+                                            console.log("set skipinput to true");
                                             $input.trigger("input");
                                         }, 0);
                                     }
@@ -1182,18 +1183,10 @@
             }
 
             function mobileInputEvent(e) {
-                function SetMobileCaret(npt, pos) {
-                    caret(npt, pos);
-                    var caretPos = caret(npt);
-                    if (caretPos.begin != pos) {
-                        setTimeout(function () {
-                            SetMobileCaret(npt, pos);
-                        }, 500);
-                    }
-                }
                 if (skipInputEvent === true) {
                     skipInputEvent = false;
-                    return true;
+                    console.log("should skip");
+                    //return true;
                 }
                 var input = this, $input = $(input);
 
@@ -1206,13 +1199,11 @@
                     && !isMask(caretPos.begin)) {
                     e.keyCode = opts.keyCode.BACKSPACE;
                     keydownEvent.call(input, e);
-                    SetMobileCaret(input, seekPrevious(caretPos.begin));
                 } else { //nonnumerics don't fire keypress 
                     checkVal(input, false, false);
-                    writeBuffer(input, getActiveBuffer());
+                    writeBuffer(input, getActiveBuffer(), seekNext(caretPos.begin - 1));
                     if (isComplete(getActiveBuffer()) === true)
                         $input.trigger("complete");
-                    SetMobileCaret(input, seekNext(caretPos.begin - 1));
                 }
                 e.preventDefault();
             }
