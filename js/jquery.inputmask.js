@@ -1182,10 +1182,6 @@
             }
 
             function mobileInputEvent(e) {
-                if (skipInputEvent === true) {
-                    skipInputEvent = false;
-                    return true;
-                }
                 var input = this, $input = $(input);
 
                 //backspace in chrome32 only fires input event - detect & treat
@@ -1197,17 +1193,12 @@
                     && !isMask(caretPos.begin)) {
                     e.keyCode = opts.keyCode.BACKSPACE;
                     keydownEvent.call(input, e);
-                    setTimeout(function(){    
-                    	caret(input, seekPrevious(caretPos.begin));    
-                    },10);
                 } else { //nonnumerics don't fire keypress 
                     checkVal(input, false, false);
                     writeBuffer(input, getActiveBuffer());
                     if (isComplete(getActiveBuffer()) === true)
                         $input.trigger("complete");
-                    setTimeout(function(){    
-                    	caret(input, seekNext(caretPos.begin - 1));    
-                    },10);
+                    $input.click();
                 }
                 e.preventDefault();
             }
@@ -1382,14 +1373,7 @@
                          ).bind("keypress.inputmask", keypressEvent
                          ).bind("keyup.inputmask", keyupEvent);
 
-                    if (android) {
-                        if (androidchrome) {
-                            $el.bind("input.inputmask", mobileInputEvent);
-                        } else if (PasteEventType != "input") {
-                            $el.bind("input.inputmask", mobileInputEvent);
-                        }
-                    }
-                    if (androidfirefox) {
+                    if (android || androidfirefox || androidchrome) {
                         $el.unbind("keydown.inputmask", keydownEvent
                          	).unbind("keypress.inputmask", keypressEvent
                          	).unbind("keyup.inputmask", keyupEvent);
