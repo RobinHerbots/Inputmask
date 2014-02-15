@@ -1194,6 +1194,7 @@
                 var caretPos = caret(input),
                     currentValue = input._valueGet();
 
+				setTimeout(function(){
                 if ((getActiveBuffer().length - currentValue.length) == 1 && currentValue.charAt(caretPos.begin) != getActiveBuffer()[caretPos.begin]
                     && currentValue.charAt(caretPos.begin + 1) != getActiveBuffer()[caretPos.begin]
                     && !isMask(caretPos.begin)) {
@@ -1205,6 +1206,7 @@
                     if (isComplete(getActiveBuffer()) === true)
                         $input.trigger("complete");
                 }
+                },0);
                 e.preventDefault();
             }
 
