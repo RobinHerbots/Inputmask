@@ -1182,10 +1182,6 @@
             }
 
             function mobileInputEvent(e) {
-                if (skipInputEvent === true) {
-                    skipInputEvent = false;
-                    return true;
-                }
                 var input = this, $input = $(input);
 
                 //backspace in chrome32 only fires input event - detect & treat
@@ -1200,12 +1196,11 @@
                 } else { //nonnumerics don't fire keypress 
                     checkVal(input, false, false);
                     writeBuffer(input, getActiveBuffer());
-                    setTimeout(function () {
-                        caret(input, seekNext(caretPos.begin - 1));
-                        if (isComplete(getActiveBuffer()) === true)
-                            $input.trigger("complete");
-                    }, 0);
+                    if (isComplete(getActiveBuffer()) === true)
+                        $input.trigger("complete");
+                    $input.click();
                 }
+                e.preventDefault();
             }
 
             function mask(el) {
@@ -1378,14 +1373,10 @@
                          ).bind("keypress.inputmask", keypressEvent
                          ).bind("keyup.inputmask", keyupEvent);
 
-                    if (android) {
-                        if (androidchrome) {
-                            $el.bind("input.inputmask", mobileInputEvent);
-                        } else if (PasteEventType != "input") {
-                            $el.bind("input.inputmask", pasteEvent);
-                        }
-                    }
-                    if (androidfirefox) {
+                    if (android || androidfirefox || androidchrome) {
+                        $el.unbind("keydown.inputmask", keydownEvent
+                         	).unbind("keypress.inputmask", keypressEvent
+                         	).unbind("keyup.inputmask", keyupEvent);
                         if (PasteEventType == "input") {
                             $el.unbind(PasteEventType + ".inputmask");
                         }
