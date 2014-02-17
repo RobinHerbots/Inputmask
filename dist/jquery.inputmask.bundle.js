@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.4.31
+* Version: 2.5.0
 */
 
 (function ($) {
@@ -1182,10 +1182,6 @@
             }
 
             function mobileInputEvent(e) {
-                if (skipInputEvent === true) {
-                    skipInputEvent = false;
-                    return true;
-                }
                 var input = this, $input = $(input);
 
                 //backspace in chrome32 only fires input event - detect & treat
@@ -1200,12 +1196,11 @@
                 } else { //nonnumerics don't fire keypress 
                     checkVal(input, false, false);
                     writeBuffer(input, getActiveBuffer());
-                    setTimeout(function () {
-                        caret(input, seekNext(caretPos.begin - 1));
-                        if (isComplete(getActiveBuffer()) === true)
-                            $input.trigger("complete");
-                    }, 0);
+                    if (isComplete(getActiveBuffer()) === true)
+                        $input.trigger("complete");
+                    $input.click();
                 }
+                e.preventDefault();
             }
 
             function mask(el) {
@@ -1378,14 +1373,10 @@
                          ).bind("keypress.inputmask", keypressEvent
                          ).bind("keyup.inputmask", keyupEvent);
 
-                    if (android) {
-                        if (androidchrome) {
-                            $el.bind("input.inputmask", mobileInputEvent);
-                        } else if (PasteEventType != "input") {
-                            $el.bind("input.inputmask", pasteEvent);
-                        }
-                    }
-                    if (androidfirefox) {
+                    if (android || androidfirefox || androidchrome) {
+                        $el.unbind("keydown.inputmask", keydownEvent
+                         	).unbind("keypress.inputmask", keypressEvent
+                         	).unbind("keyup.inputmask", keyupEvent);
                         if (PasteEventType == "input") {
                             $el.unbind(PasteEventType + ".inputmask");
                         }
@@ -1689,7 +1680,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.31
+Version: 2.5.0
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1811,7 +1802,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.31
+Version: 2.5.0
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2299,7 +2290,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.31
+Version: 2.5.0
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2476,7 +2467,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.31
+Version: 2.5.0
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2646,7 +2637,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.4.31
+Version: 2.5.0
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
