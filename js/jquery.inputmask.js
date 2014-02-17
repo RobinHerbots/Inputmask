@@ -808,12 +808,11 @@
 
             function unmaskedvalue($input, skipDatepickerCheck) {
                 if ($input.data('_inputmask') && (skipDatepickerCheck === true || !$input.hasClass('hasDatepicker'))) {
-                    //checkVal(input, false, true);
                     var umValue = $.map(getActiveBuffer(), function (element, index) {
                         return isMask(index) && isValid(index, element, true) ? element : null;
                     });
                     var unmaskedValue = (isRTL ? umValue.reverse() : umValue).join('');
-                    return opts.onUnMask != undefined ? opts.onUnMask.call(this, getActiveBuffer().join(''), unmaskedValue) : unmaskedValue;
+                    return opts.onUnMask != undefined ? opts.onUnMask.call($input, getActiveBuffer().join(''), unmaskedValue, opts) : unmaskedValue;
                 } else {
                     return $input[0]._valueGet();
                 }
@@ -1377,7 +1376,7 @@
                     return true;
                 }
                 setTimeout(function () {
-                    var pasteValue = opts.onBeforePaste != undefined ? opts.onBeforePaste.call(this, input._valueGet()) : input._valueGet();
+                    var pasteValue = opts.onBeforePaste != undefined ? opts.onBeforePaste.call(input, input._valueGet(), opts) : input._valueGet();
                     checkVal(input, false, false, pasteValue.split(''), true);
                     writeBuffer(input, getActiveBuffer());
                     if (isComplete(getActiveBuffer()) === true)
@@ -1387,10 +1386,6 @@
             }
 
             function mobileInputEvent(e) {
-                if (skipInputEvent === true) {
-                    skipInputEvent = false;
-                    return true;
-                }
                 var input = this, $input = $(input);
 
                 //backspace in chrome32 only fires input event - detect & treat
@@ -1405,12 +1400,11 @@
                 } else { //nonnumerics don't fire keypress 
                     checkVal(input, false, false);
                     writeBuffer(input, getActiveBuffer());
-                    setTimeout(function () {
-                        caret(input, seekNext(caretPos.begin - 1));
-                        if (isComplete(getActiveBuffer()) === true)
-                            $input.trigger("complete");
-                    }, 0);
+                    if (isComplete(getActiveBuffer()) === true)
+                        $input.trigger("complete");
+                    $input.click();
                 }
+                e.preventDefault();
             }
 
             function mask(el) {
@@ -1583,14 +1577,12 @@
                          ).bind("keypress.inputmask", keypressEvent
                          ).bind("keyup.inputmask", keyupEvent);
 
-                    if (android) {
-                        if (androidchrome) {
-                            $el.bind("input.inputmask", mobileInputEvent);
-                        } else if (PasteEventType != "input") {
-                            $el.bind("input.inputmask", pasteEvent);
-                        }
-                    }
-                    if (androidfirefox) {
+                    // as the other inputevents aren't reliable for the moment we only base on the input event
+                    // needs follow-up
+                    if (android || androidfirefox || androidchrome) {
+                        $el.unbind("keydown.inputmask", keydownEvent
+                         	).unbind("keypress.inputmask", keypressEvent
+                         	).unbind("keyup.inputmask", keyupEvent);
                         if (PasteEventType == "input") {
                             $el.unbind(PasteEventType + ".inputmask");
                         }
@@ -1601,7 +1593,7 @@
                         $el.bind("input.inputmask", pasteEvent);
 
                     //apply mask
-                    var initialValue = opts.onBeforeMask != undefined ? opts.onBeforeMask.call(this, el._valueGet()) : el._valueGet();
+                    var initialValue = opts.onBeforeMask != undefined ? opts.onBeforeMask.call(el, el._valueGet(), opts) : el._valueGet();
                     checkVal(el, true, false, initialValue.split(''));
                     valueOnFocus = getActiveBuffer().join('');
                     // Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
@@ -1693,9 +1685,9 @@
                 aliases: {}, //aliases definitions => see jquery.inputmask.extensions.js
                 onKeyUp: $.noop, //override to implement autocomplete on certain keys for example
                 onKeyDown: $.noop, //override to implement autocomplete on certain keys for example
-                onBeforeMask: undefined, //executes before masking the initial value to allow preprocessing of the initial value.  args => initialValue => return processedValue
-                onBeforePaste: undefined, //executes before masking the pasted value to allow preprocessing of the pasted value.  args => pastedValue => return processedValue
-                onUnMask: undefined, //executes after unmasking to allow postprocessing of the unmaskedvalue.  args => maskedValue, unmaskedValue
+                onBeforeMask: undefined, //executes before masking the initial value to allow preprocessing of the initial value.  args => initialValue, opts => return processedValue
+                onBeforePaste: undefined, //executes before masking the pasted value to allow preprocessing of the pasted value.  args => pastedValue, opts => return processedValue
+                onUnMask: undefined, //executes after unmasking to allow postprocessing of the unmaskedvalue.  args => maskedValue, unmaskedValue, opts
                 showMaskOnFocus: true, //show the mask-placeholder when the input has focus
                 showMaskOnHover: true, //show the mask-placeholder when hovering the empty input
                 onKeyValidation: $.noop, //executes on every key-press with the result of isValid. Params: result, opts
