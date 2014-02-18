@@ -335,7 +335,7 @@
                     }
                     pos++;
                 } while (test["fn"] != null || (test["fn"] == null && test["def"] != ""));
-
+                maskTemplate.pop(); //drop the last one which is empty
                 return { "mask": maskTemplate, "repeat": opts.repeat, "greedy": opts.greedy };
             }
             function getActiveMaskSet() {
