@@ -915,7 +915,7 @@
                 }
                 var firstMaskPos = seekNext(-1);
                 clearBuffer(getActiveBuffer(), pos.begin, pos.end, true);
-                checkVal(input, false, masksets[1] == undefined || firstMaskPos >= pos.end, getActiveBuffer());
+                checkVal(input, false, false, getActiveBuffer());
                 if (getActiveMaskSet()['lastValidPosition'] < firstMaskPos) {
                     getActiveMaskSet()["lastValidPosition"] = -1;
                     getActiveMaskSet()["p"] = firstMaskPos;
