@@ -98,9 +98,8 @@
                             var quantifier = new maskToken(false, false, true);
 
                             m = m.replace(/[{}]/g, "");
-                            var mq = m.split(",");
-                            if (mq.length == 1) quantifier.quantifier = { min: mq[0], max: mq[0] };
-                            else quantifier.quantifier = { min: mq[0], max: mq[1] };
+                            var mq = m.split(","), mq0 = isNaN(mq[0]) ? mq[0] : parseInt(mq[0]), mq1 = mq.length == 1 ? mq0 : (isNaN(mq[1]) ? mq[1] : parseInt(mq[1]));
+                            quantifier.quantifier = { min: mq0, max: mq1 };
 
                             if (openenings.length > 0) {
                                 var matches = openenings[openenings.length - 1]["matches"];
@@ -163,6 +162,8 @@
                     maskTokens = [groupedMaskToken];
                 }
 
+
+                console.log(JSON.stringify(maskTokens));
                 return maskTokens;
             }
             function markOptional(maskPart) { //needed for the clearOptionalTail functionality
@@ -418,7 +419,7 @@
                     while ((test = getActiveMaskSet()['validPositions'][previousPos]) == undefined && previousPos > -1) {
                         previousPos--;
                     }
-                    if (test != undefined) {
+                    if (test != undefined && previousPos > -1) {
                         testPos = previousPos;
                         ndxInitializer = test["locator"].slice();
                     } else {
@@ -426,7 +427,7 @@
                         while ((test = getActiveMaskSet()['tests'][previousPos]) == undefined && previousPos > -1) {
                             previousPos--;
                         }
-                        if (test != undefined) {
+                        if (test != undefined && previousPos > -1) {
                             testPos = previousPos;
                             ndxInitializer = test[0]["locator"].slice();
                         }
