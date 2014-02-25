@@ -1510,14 +1510,26 @@ test("inputmask(\"Regex\", { regex: \"[-]?(([1-8][0-9])|[1-9]0?)\"});", function
     $("#testmask").remove();
 });
 
-test("inputmask(\"Regex\", { regex: \"[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}\" - regex simple email", function () {
+test("inputmask(\"Regex\", { regex: \"[a-za-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\" - simple regex email", function () {
     $('body').append('<input type="text" id="testmask" />');
-    $("#testmask").inputmask("Regex", { regex: "[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}" });
+    $("#testmask").inputmask("Regex", { regex: "[a-za-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?" });
 
     $("#testmask")[0].focus();
     $("#testmask").Type("some.body@mail.com");
 
     equal($("#testmask").val(), "some.body@mail.com", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"Regex\", { regex: \"[a-za-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\" - complexer regex email", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("Regex", { regex: "[a-za-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?" });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("denise.van.de.cruys@mail.com");
+
+    equal($("#testmask").val(), "denise.van.de.cruys@mail.com", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });
@@ -1636,6 +1648,18 @@ test("inputmask('Regex', { regex: \"(abc)+(def)\" }); - Flyarbonkers regex abcab
     $("#testmask").Type("abcabcdef");
 
     equal($("#testmask").val(), "abcabcdef", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask('Regex', { regex: \"(abc){2,4}(def)\" }); - Flyarbonkers regex abdefcafebcaefbfcabcdef", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('Regex', { regex: "(abc){2,4}(def)" });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("abdefcafebcaefbfcabcdef");
+
+    equal($("#testmask").val(), "abcabcabcabcdef", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });
