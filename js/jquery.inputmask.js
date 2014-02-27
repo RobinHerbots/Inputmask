@@ -216,7 +216,6 @@
                             "buffer": undefined,
                             "tests": {},
                             "validPositions": {},
-                            "lastValidPosition": -1,
                             "greedy": undefined,
                             "repeat": undefined,
                             "metadata": metadata
@@ -232,7 +231,6 @@
                             "buffer": undefined,
                             "tests": {},
                             "validPositions": {},
-                            "lastValidPosition": -1,
                             "greedy": undefined,
                             "repeat": undefined,
                             "metadata": metadata
@@ -259,7 +257,6 @@
                             "_buffer": undefined,
                             "buffer": undefined,
                             "tests": {},
-                            "lastValidPosition": -1,
                             "greedy": undefined,
                             "repeat": undefined,
                             "metadata": metadata
@@ -319,7 +316,8 @@
                 ignorable = false;
 
             //maskset helperfunctions
-            function getMaskTemplate(includeInput) {
+            function getMaskTemplate(includeInput, minimalPos) {
+                minimalPos = minimalPos || 0;
                 var maskTemplate = [], ndxIntlzr, pos = 0, test;
                 do {
                     if (includeInput === true && getActiveMaskSet()['validPositions'][pos]) {
@@ -335,12 +333,28 @@
                         maskTemplate.push(test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length));
                     }
                     pos++;
-                } while (test["fn"] != null || (test["fn"] == null && test["def"] != ""));
+                } while (test["fn"] != null || (test["fn"] == null && test["def"] != "") || minimalPos > pos);
                 maskTemplate.pop(); //drop the last one which is empty
                 return { "mask": maskTemplate, "repeat": opts.repeat, "greedy": opts.greedy };
             }
             function getActiveMaskSet() {
                 return masksets[activeMasksetIndex];
+            }
+
+            function getLastValidPosition(maskset, closestTo) { //TODO implement closest to
+                maskset = maskset || getActiveMaskSet();
+                var lastValidPosition = -1;
+                for (var posNdx in maskset["validPositions"]) {
+                    if (posNdx > lastValidPosition) lastValidPosition = posNdx;
+                }
+                return lastValidPosition;
+            }
+
+            function setLastValidPosition(pos, maskset) {
+                maskset = maskset || getActiveMaskSet();
+                for (var posNdx in maskset["validPositions"]) {
+                    if (posNdx > pos) maskset["validPositions"][posNdx] = undefined;
+                }
             }
 
             function getActiveTest(pos) {
@@ -500,7 +514,7 @@
                             }
 
                             getActiveMaskSet()["validPositions"][position] = $.extend({}, tst, { "input": elem });
-                            return false;
+                            return false; //break from $.each
                         }
                     });
 
@@ -518,7 +532,7 @@
                             if ($.inArray(rslt["activeMasksetIndex"], maskForwards) == -1) {
                                 return rslt;
                             } else {
-                                masksets[rslt["activeMasksetIndex"]]["lastValidPosition"] = actualLVP;
+                                setLastValidPosition(actualLVP, masksets[rslt["activeMasksetIndex"]]);
                             }
                         });
                     } else { //keep maskforwards with the least forward
@@ -538,19 +552,18 @@
                                     for (var i = pos; i < lowestPos; i++) {
                                         rsltValid = _isValid(i, masksets[lowestIndex]["buffer"][i], true);
                                         if (rsltValid === false) {
-                                            getActiveMaskSet()["lastValidPosition"] = lowestPos - 1;
+                                            setLastValidPosition(lowestPos - 1);
                                             break;
                                         } else {
                                             setBufferElement(getActiveBuffer(), i, masksets[lowestIndex]["buffer"][i], true);
-                                            getActiveMaskSet()["lastValidPosition"] = i;
-
+                                            setLastValidPosition(i);
                                         }
                                     }
                                     //also check check for the lowestpos with the new input
                                     rsltValid = _isValid(lowestPos, c, true);
                                     if (rsltValid !== false) {
                                         setBufferElement(getActiveBuffer(), lowestPos, c, true);
-                                        getActiveMaskSet()["lastValidPosition"] = lowestPos;
+                                        setLastValidPosition(lowestPos);
                                     }
                                     //console.log("ndx " + rslt["activeMasksetIndex"] + " validate " + masksets[rslt["activeMasksetIndex"]]["buffer"].join('') + " lv " + masksets[rslt["activeMasksetIndex"]]['lastValidPosition']);
                                     return rslt;
@@ -570,7 +583,7 @@
                 }
 
                 var results = [], result = false, currentActiveMasksetIndex = activeMasksetIndex,
-                    actualBuffer = getActiveBuffer().slice(), actualLVP = getActiveMaskSet()["lastValidPosition"],
+                    actualBuffer = getActiveBuffer().slice(), actualLVP = getLastValidPosition(),
                     actualPrevious = seekPrevious(pos),
                     maskForwards = [];
                 $.each(masksets, function (index, value) {
@@ -578,7 +591,7 @@
                         activeMasksetIndex = index;
 
                         var maskPos = pos;
-                        var lvp = getActiveMaskSet()['lastValidPosition'],
+                        var lvp = getLastValidPosition(),
                             rsltValid;
                         if (lvp == actualLVP) {
                             if ((maskPos - actualLVP) > 1) {
@@ -637,20 +650,20 @@
                 $.each(masksets, function (index, value) {
                     if (typeof (value) == "object") {
                         activeMasksetIndex = index;
-                        if (getActiveMaskSet()['lastValidPosition'] > highestValid['lastValidPosition']) {
+                        if (getLastValidPosition() > highestValid['lastValidPosition']) {
                             highestValid["activeMasksetIndex"] = index;
-                            highestValid["lastValidPosition"] = getActiveMaskSet()['lastValidPosition'];
-                            highestValid["next"] = seekNext(getActiveMaskSet()['lastValidPosition']);
-                        } else if (getActiveMaskSet()['lastValidPosition'] == highestValid['lastValidPosition'] &&
-                            (highestValid['next'] == -1 || highestValid['next'] > seekNext(getActiveMaskSet()['lastValidPosition']))) {
+                            highestValid["lastValidPosition"] = getLastValidPosition();
+                            highestValid["next"] = seekNext(getLastValidPosition());
+                        } else if (getLastValidPosition() == highestValid['lastValidPosition'] &&
+                            (highestValid['next'] == -1 || highestValid['next'] > seekNext(getLastValidPosition()))) {
                             highestValid["activeMasksetIndex"] = index;
-                            highestValid["lastValidPosition"] = getActiveMaskSet()['lastValidPosition'];
-                            highestValid["next"] = seekNext(getActiveMaskSet()['lastValidPosition']);
+                            highestValid["lastValidPosition"] = getLastValidPosition();
+                            highestValid["next"] = seekNext(getLastValidPosition());
                         }
                     }
                 });
 
-                activeMasksetIndex = highestValid["lastValidPosition"] != -1 && masksets[currentMasksetIndex]["lastValidPosition"] == highestValid["lastValidPosition"] ? currentMasksetIndex : highestValid["activeMasksetIndex"];
+                activeMasksetIndex = highestValid["lastValidPosition"] != -1 && getLastValidPosition(masksets[currentMasksetIndex]) == highestValid["lastValidPosition"] ? currentMasksetIndex : highestValid["activeMasksetIndex"];
                 if (currentMasksetIndex != activeMasksetIndex) {
                     clearBuffer(getActiveBuffer(), seekNext(highestValid["lastValidPosition"]), getMaskLength());
                     getActiveMaskSet()["writeOutBuffer"] = true;
@@ -717,6 +730,8 @@
             //needed to handle the non-greedy mask repetitions
 
             function prepareBuffer(buffer, position) {
+                //todo create extra buffer by 
+                //getActiveMaskSet()["buffer"] = getMaskTemplate(true, position);
                 var j;
                 while (buffer[position] == undefined && buffer.length < getMaskLength()) {
                     j = 0;
@@ -762,7 +777,6 @@
                         ms["buffer"] = undefined;
                         ms["_buffer"] = undefined;
                         ms["validPositions"] = {};
-                        ms["lastValidPosition"] = -1;
                         ms["p"] = -1;
                     }
                 });
@@ -781,10 +795,6 @@
                         strict = strict || (ndx > 0 && ndx > getActiveMaskSet()["p"]);
                     }
                 });
-
-                if (strict === true && getActiveMaskSet()["p"] != -1) {
-                    getActiveMaskSet()["lastValidPosition"] = seekPrevious(getActiveMaskSet()["p"]);
-                }
             }
 
             function escapeRegex(str) {
@@ -873,7 +883,7 @@
                     if (typeof (ms) == "object") {
                         activeMasksetIndex = ndx;
                         var aml = seekPrevious(getMaskLength());
-                        if (ms["lastValidPosition"] >= highestValidPosition && ms["lastValidPosition"] == aml) {
+                        if (getLastValidPosition() >= highestValidPosition && getLastValidPosition() == aml) {
                             var msComplete = true;
                             for (var i = 0; i <= aml; i++) {
                                 var mask = isMask(i);
@@ -886,7 +896,7 @@
                             if (complete) //break loop
                                 return false;
                         }
-                        highestValidPosition = ms["lastValidPosition"];
+                        highestValidPosition = getLastValidPosition();
                     }
                 });
                 activeMasksetIndex = currentActiveMasksetIndex; //reset activeMaskset
@@ -1046,6 +1056,7 @@
             }
 
             function shiftR(start, end, c) {
+                //todo FIXME validpositions
                 var buffer = getActiveBuffer();
                 if (getBufferElement(buffer, start, true) != getPlaceholder(start)) {
                     for (var i = seekPrevious(end) ; i > start && i >= 0; i--) {
@@ -1126,8 +1137,7 @@
                 var firstMaskPos = seekNext(-1);
                 clearBuffer(getActiveBuffer(), pos.begin, pos.end, true);
                 checkVal(input, false, false, getActiveBuffer());
-                if (getActiveMaskSet()['lastValidPosition'] < firstMaskPos) {
-                    getActiveMaskSet()["lastValidPosition"] = -1;
+                if (getLastValidPosition() < firstMaskPos) {
                     getActiveMaskSet()["p"] = firstMaskPos;
                 } else {
                     getActiveMaskSet()["p"] = pos.begin;
@@ -1154,7 +1164,7 @@
                     }
                 } else if (k == opts.keyCode.END || k == opts.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
                     setTimeout(function () {
-                        var caretPos = seekNext(getActiveMaskSet()["lastValidPosition"]);
+                        var caretPos = seekNext(getLastValidPosition());
                         if (!opts.insertMode && caretPos == getMaskLength() && !e.shiftKey) caretPos--;
                         caret(input, e.shiftKey ? pos.begin : caretPos, caretPos);
                     }, 0);
@@ -1204,7 +1214,7 @@
 
                         var pos, results, result, c = String.fromCharCode(k);
                         if (checkval) {
-                            var pcaret = strict ? ndx : getActiveMaskSet()["lastValidPosition"] + 1;
+                            var pcaret = strict ? ndx : getLastValidPosition() + 1;
                             pos = { begin: pcaret, end: pcaret };
                         } else {
                             pos = caret(input);
@@ -1227,7 +1237,6 @@
                                     if (typeof (lmnt) == "object") {
                                         activeMasksetIndex = ndx;
                                         shiftR(pos.begin, getMaskLength());
-                                        getActiveMaskSet()["lastValidPosition"] = seekNext(getActiveMaskSet()["lastValidPosition"]);
                                     }
                                 });
                             }
@@ -1261,18 +1270,14 @@
                                 }
                                 if (refresh !== true) {
                                     if (opts.insertMode == true) {
-                                        var lastUnmaskedPosition = getMaskLength();
-                                        var bfrClone = buffer.slice();
-                                        while (getBufferElement(bfrClone, lastUnmaskedPosition, true) != getPlaceholder(lastUnmaskedPosition) && lastUnmaskedPosition >= p) {
-                                            lastUnmaskedPosition = lastUnmaskedPosition == 0 ? -1 : seekPrevious(lastUnmaskedPosition);
-                                        }
-                                        if (lastUnmaskedPosition >= p) {
-                                            shiftR(p, getMaskLength(), c);
-                                            //shift the lvp if needed
-                                            var lvp = getActiveMaskSet()["lastValidPosition"], nlvp = seekNext(lvp);
-                                            if (nlvp != getMaskLength() && lvp >= p && (getBufferElement(getActiveBuffer().slice(), nlvp, true) != getPlaceholder(nlvp))) {
-                                                getActiveMaskSet()["lastValidPosition"] = nlvp;
+                                        var freePos = p;
+                                        if (getBufferElement(buffer, p) != getPlaceholder(p)) {
+                                            while (getActiveMaskSet()["validPositions"][freePos]) {
+                                                freePos = seekNext(freePos);
                                             }
+                                        }
+                                        if (freePos < getMaskLength()) {
+                                            shiftR(p, getMaskLength(), c);
                                         } else getActiveMaskSet()["writeOutBuffer"] = false;
                                     } else setBufferElement(buffer, p, c, true);
                                     if (minimalForwardPosition == -1 || minimalForwardPosition > seekNext(p)) {
@@ -1503,7 +1508,7 @@
                                 $.each(masksets, function (ndx, ms) {
                                     if (typeof (ms) == "object") {
                                         ms["buffer"] = undefined;
-                                        ms["lastValidPosition"] = -1;
+                                        ms["validPositions"] = {};
                                     }
                                 });
                                 activeMasksetIndex = 0;
@@ -1519,7 +1524,7 @@
                         var $input = $(this), input = this, nptValue = input._valueGet();
                         if (opts.showMaskOnFocus && !$input.hasClass('focus.inputmask') && (!opts.showMaskOnHover || (opts.showMaskOnHover && nptValue == ''))) {
                             if (input._valueGet() != getActiveBuffer().join('')) {
-                                writeBuffer(input, getActiveBuffer(), seekNext(getActiveMaskSet()["lastValidPosition"]));
+                                writeBuffer(input, getActiveBuffer(), seekNext(getLastValidPosition()));
                             }
                         }
                         $input.addClass('focus.inputmask');
@@ -1541,7 +1546,7 @@
                             var selectedCaret = caret(input), buffer = getActiveBuffer();
                             if (selectedCaret.begin == selectedCaret.end) {
                                 var clickPosition = isRTL ? TranslatePosition(selectedCaret.begin) : selectedCaret.begin,
-                                lvp = getActiveMaskSet()["lastValidPosition"],
+                                lvp = getLastValidPosition(undefined, clickPosition),
                                 lastPosition;
                                 if (opts.isNumeric) {
                                     lastPosition = opts.skipRadixDance === false && opts.radixPoint != "" && $.inArray(opts.radixPoint, buffer) != -1 ?
@@ -1561,7 +1566,7 @@
                     }).bind('dblclick.inputmask', function () {
                         var input = this;
                         setTimeout(function () {
-                            caret(input, 0, seekNext(getActiveMaskSet()["lastValidPosition"]));
+                            caret(input, 0, seekNext(getLastValidPosition()));
                         }, 0);
                     }).bind(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", pasteEvent
                     ).bind('setvalue.inputmask', function () {
@@ -1605,7 +1610,7 @@
                     }
                     if (activeElement === el) { //position the caret when in focus
                         $el.addClass('focus.inputmask');
-                        caret(el, seekNext(getActiveMaskSet()["lastValidPosition"]));
+                        caret(el, seekNext(getLastValidPosition()));
                     } else if (opts.clearMaskOnLostFocus) {
                         if (getActiveBuffer().join('') == getActiveBufferTemplate().join('')) {
                             el._valueSet('');
