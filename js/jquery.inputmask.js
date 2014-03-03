@@ -1125,6 +1125,8 @@
                                 } else if (isSlctn) {
                                     getActiveMaskSet()["buffer"] = getActiveMaskSet()["undoBuffer"].split('');
                                 }
+                            } else if (isSlctn) {
+                                getActiveMaskSet()["buffer"] = getActiveMaskSet()["undoBuffer"].split('');
                             }
                         }
 

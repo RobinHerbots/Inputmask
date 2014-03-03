@@ -1125,6 +1125,8 @@
                                 } else if (isSlctn) {
                                     getActiveMaskSet()["buffer"] = getActiveMaskSet()["undoBuffer"].split('');
                                 }
+                            } else if (isSlctn) {
+                                getActiveMaskSet()["buffer"] = getActiveMaskSet()["undoBuffer"].split('');
                             }
                         }
 
@@ -2552,8 +2554,6 @@ Allows for using regular expressions as a mask
 
                             if (currentToken.matches.length > 0)
                                 opts.regexTokens.push(currentToken);
-
-                            console.log(JSON.stringify(opts.regexTokens));
                         };
 
                         function validateRegexToken(token, fromGroup) {
