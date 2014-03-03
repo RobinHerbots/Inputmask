@@ -1188,19 +1188,28 @@
                 //backspace in chrome32 only fires input event - detect & treat
                 var caretPos = caret(input),
                     currentValue = input._valueGet();
-
+                //correct caretposition for chrome
+                if (caretPos.begin > currentValue.length) {
+                    caret(input, currentValue.length);
+                    caretPos = caret(input);
+                }
                 if ((getActiveBuffer().length - currentValue.length) == 1 && currentValue.charAt(caretPos.begin) != getActiveBuffer()[caretPos.begin]
                     && currentValue.charAt(caretPos.begin + 1) != getActiveBuffer()[caretPos.begin]
                     && !isMask(caretPos.begin)) {
                     e.keyCode = opts.keyCode.BACKSPACE;
                     keydownEvent.call(input, e);
                 } else { //nonnumerics don't fire keypress 
-                    checkVal(input, false, false);
+                    currentValue = currentValue.replace(new RegExp("(" + escapeRegex(getActiveBufferTemplate().join('')) + ")*"), "");
+                    checkVal(input, false, false, currentValue.split(''));
                     writeBuffer(input, getActiveBuffer());
                     if (isComplete(getActiveBuffer()) === true)
                         $input.trigger("complete");
                     $input.click();
                 }
+                setTimeout(function () {
+                    writeBuffer(input, getActiveBuffer());
+                    $input.click();
+                }, 0);
                 e.preventDefault();
             }
 
