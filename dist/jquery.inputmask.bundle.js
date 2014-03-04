@@ -1206,10 +1206,6 @@
                         $input.trigger("complete");
                     $input.click();
                 }
-                setTimeout(function () {
-                    writeBuffer(input, getActiveBuffer());
-                    $input.click();
-                }, 0);
                 e.preventDefault();
             }
 
