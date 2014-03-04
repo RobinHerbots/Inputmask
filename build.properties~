@@ -1,0 +1,15 @@
+# Path for the Google Compiler jar file. By default in the same directory as this properties file.
+GoogleCompiler = tools/compiler.jar
+NugetExe = NuGet.exe
+
+srcdir = js
+distdir = dist
+
+build.major = 2
+build.minor = 4
+build.revision = 20
+
+target = jquery.inputmask.bundle.js
+target.min = jquery.inputmask.bundle.min.js
+nuspec = jquery.inputmask.nuspec
+nuspeclinux = jquery.inputmask.linux.nuspec
