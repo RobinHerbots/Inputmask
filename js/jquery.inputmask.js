@@ -1184,15 +1184,12 @@
 
             function mobileInputEvent(e) {
                 var input = this, $input = $(input);
-				input.focus();
 
                 //backspace in chrome32 only fires input event - detect & treat
                 var caretPos = caret(input),
                     currentValue = input._valueGet();
                     
-                console.log(currentValue);
                 currentValue = currentValue.replace(new RegExp("(" + escapeRegex(getActiveBufferTemplate().join('')) + ")*"), "");
-                console.log(currentValue);    
                 //correct caretposition for chrome
                 if (caretPos.begin > currentValue.length) {
                     caret(input, currentValue.length);
