@@ -1177,6 +1177,23 @@ test("inputmask(\"decimal\") - value=\"123.45\" Replace last integer", function 
     $("#testmask").remove();
 });
 
+test("inputmask(\"decimal\", { digits: 2 }) - value=\"123\" - RomeroMsk", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("decimal", { digits: 2 });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123");
+    caret($("#testmask"), 0, 3);
+    $("#testmask").SendKey(",,..");
+	$("#testmask").SendKey(keyCodes.RIGHT);
+	$("#testmask").SendKey(keyCodes.RIGHT); //needed in test
+	$("#testmask").SendKey(keyCodes.RIGHT); //needed in test
+	$("#testmask").Type("45");
+
+    equal($("#testmask").val(), "12345", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
 test("inputmask - Multiple inputs masked, Integer mask doesn't allow typing - #402 - albatrocity", function () {
     $('body').append('<input type="text" id="testmask" />');
     $('body').append('<input type="text" id="testmask2" />');

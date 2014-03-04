@@ -1336,6 +1336,8 @@
                                 } else if (isSlctn) {
                                     getActiveMaskSet()["buffer"] = getActiveMaskSet()["undoBuffer"].split('');
                                 }
+                            } else if (isSlctn) {
+                                getActiveMaskSet()["buffer"] = getActiveMaskSet()["undoBuffer"].split('');
                             }
                         }
 
@@ -1391,20 +1393,27 @@
                 }, 0);
             }
 
+            //not used - attempt to support android 
             function mobileInputEvent(e) {
                 var input = this, $input = $(input);
 
                 //backspace in chrome32 only fires input event - detect & treat
                 var caretPos = caret(input),
                     currentValue = input._valueGet();
-
+                    
+                currentValue = currentValue.replace(new RegExp("(" + escapeRegex(getActiveBufferTemplate().join('')) + ")*"), "");
+                //correct caretposition for chrome
+                if (caretPos.begin > currentValue.length) {
+                    caret(input, currentValue.length);
+                    caretPos = caret(input);
+                }
                 if ((getActiveBuffer().length - currentValue.length) == 1 && currentValue.charAt(caretPos.begin) != getActiveBuffer()[caretPos.begin]
                     && currentValue.charAt(caretPos.begin + 1) != getActiveBuffer()[caretPos.begin]
                     && !isMask(caretPos.begin)) {
                     e.keyCode = opts.keyCode.BACKSPACE;
                     keydownEvent.call(input, e);
                 } else { //nonnumerics don't fire keypress 
-                    checkVal(input, false, false);
+                    checkVal(input, false, false, currentValue.split(''));
                     writeBuffer(input, getActiveBuffer());
                     if (isComplete(getActiveBuffer()) === true)
                         $input.trigger("complete");
@@ -1586,6 +1595,11 @@
                     // as the other inputevents aren't reliable for the moment we only base on the input event
                     // needs follow-up
                     if (android || androidfirefox || androidchrome) {
+                        $el.attr("autocomplete","off")
+                        .attr("autocorrect","off")
+                        .attr("autocapitalize","off")
+                        .attr("spellcheck",false);
+                    /*
                         $el.unbind("keydown.inputmask", keydownEvent
                          	).unbind("keypress.inputmask", keypressEvent
                          	).unbind("keyup.inputmask", keyupEvent);
@@ -1593,6 +1607,7 @@
                             $el.unbind(PasteEventType + ".inputmask");
                         }
                         $el.bind("input.inputmask", mobileInputEvent);
+                    */
                     }
 
                     if (msie1x)
