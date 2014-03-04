@@ -1182,6 +1182,7 @@
                 }, 0);
             }
 
+            //not used - attempt to support android 
             function mobileInputEvent(e) {
                 var input = this, $input = $(input);
 
@@ -1387,7 +1388,7 @@
                         .attr("autocorrect","off")
                         .attr("autocapitalize","off")
                         .attr("spellcheck",false);
-                    
+                    /*
                         $el.unbind("keydown.inputmask", keydownEvent
                          	).unbind("keypress.inputmask", keypressEvent
                          	).unbind("keyup.inputmask", keyupEvent);
@@ -1395,6 +1396,7 @@
                             $el.unbind(PasteEventType + ".inputmask");
                         }
                         $el.bind("input.inputmask", mobileInputEvent);
+                    */
                     }
 
                     if (msie1x)
