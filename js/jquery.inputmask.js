@@ -1182,17 +1182,15 @@
                 }, 0);
             }
 
+            //not used - attempt to support android 
             function mobileInputEvent(e) {
                 var input = this, $input = $(input);
-				input.focus();
 
                 //backspace in chrome32 only fires input event - detect & treat
                 var caretPos = caret(input),
                     currentValue = input._valueGet();
                     
-                console.log(currentValue);
                 currentValue = currentValue.replace(new RegExp("(" + escapeRegex(getActiveBufferTemplate().join('')) + ")*"), "");
-                console.log(currentValue);    
                 //correct caretposition for chrome
                 if (caretPos.begin > currentValue.length) {
                     caret(input, currentValue.length);
@@ -1390,7 +1388,7 @@
                         .attr("autocorrect","off")
                         .attr("autocapitalize","off")
                         .attr("spellcheck",false);
-                    
+                    /*
                         $el.unbind("keydown.inputmask", keydownEvent
                          	).unbind("keypress.inputmask", keypressEvent
                          	).unbind("keyup.inputmask", keyupEvent);
@@ -1398,6 +1396,7 @@
                             $el.unbind(PasteEventType + ".inputmask");
                         }
                         $el.bind("input.inputmask", mobileInputEvent);
+                    */
                     }
 
                     if (msie1x)
