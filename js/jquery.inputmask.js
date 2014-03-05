@@ -625,7 +625,7 @@
                     if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
                     if (npt.setSelectionRange) {
                         npt.selectionStart = begin;
-                        npt.selectionEnd = android ? begin : end;
+                        npt.selectionEnd = end;
 
                     } else if (npt.createTextRange) {
                         range = npt.createTextRange();
