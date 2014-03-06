@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.5.0
+* Version: 2.5.1
 */
 
 (function ($) {
@@ -227,10 +227,12 @@
         var msie1x = typeof ScriptEngineMajorVersion === "function"
                         ? ScriptEngineMajorVersion() //IE11 detection
                         : new Function("/*@cc_on return @_jscript_version; @*/")() >= 10, //conditional compilation from mickeysoft trick
-            iphone = navigator.userAgent.match(new RegExp("iphone", "i")) !== null,
-            android = navigator.userAgent.match(new RegExp("android.*safari.*", "i")) !== null,
-            androidchrome = navigator.userAgent.match(new RegExp("android.*chrome.*", "i")) !== null,
-            androidfirefox = navigator.userAgent.match(new RegExp("android.*firefox.*", "i")) !== null,
+                        ua = navigator.userAgent,
+            iphone = ua.match(new RegExp("iphone", "i")) !== null,
+            android = ua.match(new RegExp("android.*safari.*", "i")) !== null,
+            androidchrome = ua.match(new RegExp("android.*chrome.*", "i")) !== null,
+            androidfirefox = ua.match(new RegExp("android.*firefox.*", "i")) !== null,
+            kindle = /Kindle/i.test(ua) || /Silk/i.test(ua) || /KFTT/i.test(ua) || /KFOT/i.test(ua) || /KFJWA/i.test(ua) || /KFJWI/i.test(ua) || /KFSOWI/i.test(ua) || /KFTHWA/i.test(ua) || /KFTHWI/i.test(ua) || /KFAPWA/i.test(ua) || /KFAPWI/i.test(ua),
             PasteEventType = isInputEventSupported('paste') ? 'paste' : isInputEventSupported('input') ? 'input' : "propertychange";
 
         //if (androidchrome) {
@@ -625,7 +627,7 @@
                     if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
                     if (npt.setSelectionRange) {
                         npt.selectionStart = begin;
-                        npt.selectionEnd = android ? begin : end;
+                        npt.selectionEnd = end;
 
                     } else if (npt.createTextRange) {
                         range = npt.createTextRange();
@@ -1182,17 +1184,15 @@
                 }, 0);
             }
 
+            //not used - attempt to support android 
             function mobileInputEvent(e) {
                 var input = this, $input = $(input);
-				input.focus();
 
                 //backspace in chrome32 only fires input event - detect & treat
                 var caretPos = caret(input),
                     currentValue = input._valueGet();
-                    
-                console.log(currentValue);
+
                 currentValue = currentValue.replace(new RegExp("(" + escapeRegex(getActiveBufferTemplate().join('')) + ")*"), "");
-                console.log(currentValue);    
                 //correct caretposition for chrome
                 if (caretPos.begin > currentValue.length) {
                     caret(input, currentValue.length);
@@ -1385,19 +1385,21 @@
 
                     // as the other inputevents aren't reliable for the moment we only base on the input event
                     // needs follow-up
-                    if (android || androidfirefox || androidchrome) {
-                        $el.attr("autocomplete","off")
-                        .attr("autocorrect","off")
-                        .attr("autocapitalize","off")
-                        .attr("spellcheck",false);
-                    
-                        $el.unbind("keydown.inputmask", keydownEvent
-                         	).unbind("keypress.inputmask", keypressEvent
-                         	).unbind("keyup.inputmask", keyupEvent);
-                        if (PasteEventType == "input") {
-                            $el.unbind(PasteEventType + ".inputmask");
+                    if (android || androidfirefox || androidchrome || kindle) {
+                        $el.attr("autocomplete", "off")
+                        .attr("autocorrect", "off")
+                        .attr("autocapitalize", "off")
+                        .attr("spellcheck", false);
+
+                        if (androidfirefox || kindle) {
+                            $el.unbind("keydown.inputmask", keydownEvent
+                                ).unbind("keypress.inputmask", keypressEvent
+                                ).unbind("keyup.inputmask", keyupEvent);
+                            if (PasteEventType == "input") {
+                                $el.unbind(PasteEventType + ".inputmask");
+                            }
+                            $el.bind("input.inputmask", mobileInputEvent);
                         }
-                        $el.bind("input.inputmask", mobileInputEvent);
                     }
 
                     if (msie1x)
@@ -1697,7 +1699,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.5.0
+Version: 2.5.1
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1819,7 +1821,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.5.0
+Version: 2.5.1
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2307,7 +2309,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.5.0
+Version: 2.5.1
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2426,6 +2428,7 @@ Optional extensions on the jquery.inputmask base
                         //strip groupseparator
                         var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
                         bufferStr = bufferStr.replace(new RegExp(escapedGroupSeparator, "g"), '');
+                        if (!strict && bufferStr == "") return false;
 
                         var isValid = opts.regex.number(opts).test(bufferStr);
                         if (!isValid) {
@@ -2484,7 +2487,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.5.0
+Version: 2.5.1
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2668,7 +2671,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.5.0
+Version: 2.5.1
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks

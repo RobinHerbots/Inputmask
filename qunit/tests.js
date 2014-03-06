@@ -1211,6 +1211,48 @@ test("inputmask - Multiple inputs masked, Integer mask doesn't allow typing - #4
     $("#testmask2").remove();
 });
 
+test("decimal alias with groupseparator delete - YoussefTaghlabi", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("decimal", { 
+                radixPoint: ".", 
+                groupSeparator: ",",
+                groupSize: 3,
+                digits: 2,
+                autoGroup: true,
+                allowPlus: false,
+                allowMinus: true
+            });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("1234567");
+    caret($("#testmask"), 0);   
+	$("#testmask").SendKey(keyCodes.DELETE);
+
+    equal($("#testmask").val(), "234,567", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("decimal alias with groupseparator backspace - YoussefTaghlabi", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("decimal", { 
+                radixPoint: ".", 
+                groupSeparator: ",",
+                groupSize: 3,
+                digits: 2,
+                autoGroup: true,
+                allowPlus: false,
+                allowMinus: true
+            });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("1234567");
+    caret($("#testmask"), 1);   
+	$("#testmask").SendKey(keyCodes.BACKSPACE);
+
+    equal($("#testmask").val(), "234,567", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
 module("Direction RTL");
 test("inputmask(\"999.999.999\") - delete 2nd with backspace, continue the mask", function () {
     $('body').append('<input type="text" id="testmask" dir="rtl" />');
