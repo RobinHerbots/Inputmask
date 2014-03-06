@@ -293,10 +293,12 @@
         var msie1x = typeof ScriptEngineMajorVersion === "function"
                         ? ScriptEngineMajorVersion() //IE11 detection
                         : new Function("/*@cc_on return @_jscript_version; @*/")() >= 10, //conditional compilation from mickeysoft trick
-            iphone = navigator.userAgent.match(new RegExp("iphone", "i")) !== null,
-            android = navigator.userAgent.match(new RegExp("android.*safari.*", "i")) !== null,
-            androidchrome = navigator.userAgent.match(new RegExp("android.*chrome.*", "i")) !== null,
-            androidfirefox = navigator.userAgent.match(new RegExp("android.*firefox.*", "i")) !== null,
+                        ua = navigator.userAgent,
+            iphone = ua.match(new RegExp("iphone", "i")) !== null,
+            android = ua.match(new RegExp("android.*safari.*", "i")) !== null,
+            androidchrome = ua.match(new RegExp("android.*chrome.*", "i")) !== null,
+            androidfirefox = ua.match(new RegExp("android.*firefox.*", "i")) !== null,
+            kindle = /Kindle/i.test(ua) || /Silk/i.test(ua) || /KFTT/i.test(ua) || /KFOT/i.test(ua) || /KFJWA/i.test(ua) || /KFJWI/i.test(ua) || /KFSOWI/i.test(ua) || /KFTHWA/i.test(ua) || /KFTHWI/i.test(ua) || /KFAPWA/i.test(ua) || /KFAPWI/i.test(ua),
             PasteEventType = isInputEventSupported('paste') ? 'paste' : isInputEventSupported('input') ? 'input' : "propertychange";
 
         //if (androidchrome) {
@@ -850,7 +852,7 @@
                     if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
                     if (npt.setSelectionRange) {
                         npt.selectionStart = begin;
-                        npt.selectionEnd = android ? begin : end;
+                        npt.selectionEnd = end;
 
                     } else if (npt.createTextRange) {
                         range = npt.createTextRange();
@@ -1336,6 +1338,8 @@
                                 } else if (isSlctn) {
                                     getActiveMaskSet()["buffer"] = getActiveMaskSet()["undoBuffer"].split('');
                                 }
+                            } else if (isSlctn) {
+                                getActiveMaskSet()["buffer"] = getActiveMaskSet()["undoBuffer"].split('');
                             }
                         }
 
@@ -1391,6 +1395,7 @@
                 }, 0);
             }
 
+            //not used - attempt to support android 
             function mobileInputEvent(e) {
                 var input = this, $input = $(input);
 
@@ -1398,13 +1403,19 @@
                 var caretPos = caret(input),
                     currentValue = input._valueGet();
 
+                currentValue = currentValue.replace(new RegExp("(" + escapeRegex(getActiveBufferTemplate().join('')) + ")*"), "");
+                //correct caretposition for chrome
+                if (caretPos.begin > currentValue.length) {
+                    caret(input, currentValue.length);
+                    caretPos = caret(input);
+                }
                 if ((getActiveBuffer().length - currentValue.length) == 1 && currentValue.charAt(caretPos.begin) != getActiveBuffer()[caretPos.begin]
                     && currentValue.charAt(caretPos.begin + 1) != getActiveBuffer()[caretPos.begin]
                     && !isMask(caretPos.begin)) {
                     e.keyCode = opts.keyCode.BACKSPACE;
                     keydownEvent.call(input, e);
                 } else { //nonnumerics don't fire keypress 
-                    checkVal(input, false, false);
+                    checkVal(input, false, false, currentValue.split(''));
                     writeBuffer(input, getActiveBuffer());
                     if (isComplete(getActiveBuffer()) === true)
                         $input.trigger("complete");
@@ -1585,14 +1596,21 @@
 
                     // as the other inputevents aren't reliable for the moment we only base on the input event
                     // needs follow-up
-                    if (android || androidfirefox || androidchrome) {
-                        $el.unbind("keydown.inputmask", keydownEvent
-                         	).unbind("keypress.inputmask", keypressEvent
-                         	).unbind("keyup.inputmask", keyupEvent);
-                        if (PasteEventType == "input") {
-                            $el.unbind(PasteEventType + ".inputmask");
+                    if (android || androidfirefox || androidchrome || kindle) {
+                        $el.attr("autocomplete", "off")
+                        .attr("autocorrect", "off")
+                        .attr("autocapitalize", "off")
+                        .attr("spellcheck", false);
+
+                        if (androidfirefox || kindle) {
+                            $el.unbind("keydown.inputmask", keydownEvent
+                                ).unbind("keypress.inputmask", keypressEvent
+                                ).unbind("keyup.inputmask", keyupEvent);
+                            if (PasteEventType == "input") {
+                                $el.unbind(PasteEventType + ".inputmask");
+                            }
+                            $el.bind("input.inputmask", mobileInputEvent);
                         }
-                        $el.bind("input.inputmask", mobileInputEvent);
                     }
 
                     if (msie1x)
