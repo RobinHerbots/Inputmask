@@ -1126,7 +1126,7 @@
                 clearBuffer(getActiveBuffer(), pos.begin, pos.end);
 
                 var ml = getMaskLength();
-                if (opts.greedy == false) {
+                if (opts.greedy == false && (isNaN(opts.repeat) || opts.repeat > 0)) {
                     shiftL(pos.begin, ml, undefined, !isRTL && (k == opts.keyCode.BACKSPACE && !isSelection));
                 } else {
                     var newpos = pos.begin;
