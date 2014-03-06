@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.5.2
+* Version: 2.5.3
 */
 
 (function ($) {
@@ -841,7 +841,7 @@
                             var j = seekPrevious(i);
                             var t = getBufferElement(buffer, j);
                             if (t != getPlaceHolder(j)) {
-                                if (isValid(j, t, true) !== false && getActiveTests()[determineTestPosition(i)].def == getActiveTests()[determineTestPosition(j)].def) {
+                                if (isValid(i, t, true) !== false && getActiveTests()[determineTestPosition(i)].def == getActiveTests()[determineTestPosition(j)].def) {
                                     setBufferElement(buffer, i, t, true);
                                     setReTargetPlaceHolder(buffer, j);
                                 } //else break;
@@ -1699,7 +1699,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.5.2
+Version: 2.5.3
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1821,7 +1821,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.5.2
+Version: 2.5.3
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2309,7 +2309,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.5.2
+Version: 2.5.3
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2414,6 +2414,7 @@ Optional extensions on the jquery.inputmask base
             definitions: {
                 '~': { //real number
                     validator: function (chrs, buffer, pos, strict, opts) {
+                        var iopts = $.extend({}, opts, { digits: strict ? "*" : opts.digits });
                         if (chrs == "") return false;
                         if (!strict && pos <= 1 && buffer[0] === '0' && new RegExp("[\\d-]").test(chrs) && buffer.join('').length == 1) { //handle first char
                             buffer[0] = "";
@@ -2428,13 +2429,17 @@ Optional extensions on the jquery.inputmask base
                         //strip groupseparator
                         var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
                         bufferStr = bufferStr.replace(new RegExp(escapedGroupSeparator, "g"), '');
+                        if (strict && bufferStr.lastIndexOf(opts.radixPoint) == bufferStr.length - 1) {
+                            var escapedRadixPoint = $.inputmask.escapeRegex.call(this, opts.radixPoint);
+                            bufferStr = bufferStr.replace(new RegExp(escapedRadixPoint, "g"), '');
+                        }
                         if (!strict && bufferStr == "") return false;
 
-                        var isValid = opts.regex.number(opts).test(bufferStr);
+                        var isValid = opts.regex.number(iopts).test(bufferStr);
                         if (!isValid) {
                             //let's help the regex a bit
                             bufferStr += "0";
-                            isValid = opts.regex.number(opts).test(bufferStr);
+                            isValid = opts.regex.number(iopts).test(bufferStr);
                             if (!isValid) {
                                 //make a valid group
                                 var lastGroupSeparator = bufferStr.lastIndexOf(opts.groupSeparator);
@@ -2442,10 +2447,10 @@ Optional extensions on the jquery.inputmask base
                                     bufferStr += "0";
                                 }
 
-                                isValid = opts.regex.number(opts).test(bufferStr);
+                                isValid = opts.regex.number(iopts).test(bufferStr);
                                 if (!isValid && !strict) {
                                     if (chrs == opts.radixPoint) {
-                                        isValid = opts.regex.number(opts).test("0" + bufferStr + "0");
+                                        isValid = opts.regex.number(iopts).test("0" + bufferStr + "0");
                                         if (isValid) {
                                             buffer[pos] = "0";
                                             pos++;
@@ -2487,7 +2492,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.5.2
+Version: 2.5.3
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2671,7 +2676,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.5.2
+Version: 2.5.3
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks

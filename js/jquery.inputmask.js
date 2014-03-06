@@ -841,7 +841,7 @@
                             var j = seekPrevious(i);
                             var t = getBufferElement(buffer, j);
                             if (t != getPlaceHolder(j)) {
-                                if (isValid(j, t, true) !== false && getActiveTests()[determineTestPosition(i)].def == getActiveTests()[determineTestPosition(j)].def) {
+                                if (isValid(i, t, true) !== false && getActiveTests()[determineTestPosition(i)].def == getActiveTests()[determineTestPosition(j)].def) {
                                     setBufferElement(buffer, i, t, true);
                                     setReTargetPlaceHolder(buffer, j);
                                 } //else break;
