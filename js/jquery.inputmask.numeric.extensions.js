@@ -108,6 +108,7 @@ Optional extensions on the jquery.inputmask base
             definitions: {
                 '~': { //real number
                     validator: function (chrs, buffer, pos, strict, opts) {
+                        var iopts = $.extend({}, opts, { digits: strict ? "*" : opts.digits });
                         if (chrs == "") return false;
                         if (!strict && pos <= 1 && buffer[0] === '0' && new RegExp("[\\d-]").test(chrs) && buffer.join('').length == 1) { //handle first char
                             buffer[0] = "";
@@ -122,13 +123,17 @@ Optional extensions on the jquery.inputmask base
                         //strip groupseparator
                         var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
                         bufferStr = bufferStr.replace(new RegExp(escapedGroupSeparator, "g"), '');
+                        if (strict && bufferStr.lastIndexOf(opts.radixPoint) == bufferStr.length - 1) {
+                            var escapedRadixPoint = $.inputmask.escapeRegex.call(this, opts.radixPoint);
+                            bufferStr = bufferStr.replace(new RegExp(escapedRadixPoint, "g"), '');
+                        }
                         if (!strict && bufferStr == "") return false;
 
-                        var isValid = opts.regex.number(opts).test(bufferStr);
+                        var isValid = opts.regex.number(iopts).test(bufferStr);
                         if (!isValid) {
                             //let's help the regex a bit
                             bufferStr += "0";
-                            isValid = opts.regex.number(opts).test(bufferStr);
+                            isValid = opts.regex.number(iopts).test(bufferStr);
                             if (!isValid) {
                                 //make a valid group
                                 var lastGroupSeparator = bufferStr.lastIndexOf(opts.groupSeparator);
@@ -136,10 +141,10 @@ Optional extensions on the jquery.inputmask base
                                     bufferStr += "0";
                                 }
 
-                                isValid = opts.regex.number(opts).test(bufferStr);
+                                isValid = opts.regex.number(iopts).test(bufferStr);
                                 if (!isValid && !strict) {
                                     if (chrs == opts.radixPoint) {
-                                        isValid = opts.regex.number(opts).test("0" + bufferStr + "0");
+                                        isValid = opts.regex.number(iopts).test("0" + bufferStr + "0");
                                         if (isValid) {
                                             buffer[pos] = "0";
                                             pos++;
