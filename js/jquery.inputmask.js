@@ -1058,7 +1058,6 @@
             }
 
             function shiftR(start, end, c) {
-                //todo FIXME validpositions
                 var buffer = getActiveBuffer();
                 if (getBufferElement(buffer, start, true) != getPlaceholder(start)) {
                     for (var i = seekPrevious(end) ; i > start && i >= 0; i--) {
@@ -1066,7 +1065,7 @@
                             var j = seekPrevious(i);
                             var t = getBufferElement(buffer, j);
                             if (t != getPlaceholder(j)) {
-                                if (isValid(j, t, true) !== false && getActiveTest(i).def == getActiveTest(j).def) {
+                                if (isValid(i, t, true) !== false && getActiveTest(i).def == getActiveTest(j).def) {
                                     setBufferElement(buffer, i, t, true);
                                     setPlaceholder(j);
                                 } //else break;
