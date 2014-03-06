@@ -344,6 +344,37 @@ test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"01650103002000
     $("#testmask").remove();
 });
 
+test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"016501030020001DE1015170\" replace 002 with 003 - wuSam", function () {
+    $('body').append('<input type="text" id="testmask" value="016501030020001DE1015170" />');
+    $("#testmask").inputmask("99 999 999 999 9999 \\D\\E*** 9999");
+    caret($("#testmask"), 11, 14);
+	$("#testmask").Type("003");
+	equal($("#testmask").val(), "01 650 103 003 0001 DE101 5170", "Result " + $("#testmask").val());
+	
+    $("#testmask").remove();
+});
+
+test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"016501030020001DE1015170\" replace 02 with 01 - wuSam", function () {
+    $('body').append('<input type="text" id="testmask" value="016501030020001DE1015170" />');
+    $("#testmask").inputmask("99 999 999 999 9999 \\D\\E*** 9999");
+    caret($("#testmask"), 12, 14);
+	$("#testmask").Type("01");
+	equal($("#testmask").val(), "01 650 103 001 0001 DE101 5170", "Result " + $("#testmask").val());
+	
+    $("#testmask").remove();
+});
+
+test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\", { greedy: false }) ~ value=\"016501030020001DE1015170\" replace 02 with 01 - wuSam", function () {
+    $('body').append('<input type="text" id="testmask" value="016501030020001DE1015170" />');
+    $("#testmask").inputmask("99 999 999 999 9999 \\D\\E*** 9999", { greedy:false });
+    caret($("#testmask"), 12, 14);
+	$("#testmask").Type("01");
+	equal($("#testmask").val(), "01 650 103 001 0001 DE101 5170", "Result " + $("#testmask").val());
+	
+    $("#testmask").remove();
+});
+
+
 test("inputmask(\"\\D\\E***\") ~ value=\"DE001\" - wuSam", function () {
     $('body').append('<input type="text" id="testmask" value="DE001" />');
     $("#testmask").inputmask("\\D\\E***");
