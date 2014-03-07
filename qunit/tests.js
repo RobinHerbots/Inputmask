@@ -1286,6 +1286,46 @@ test("decimal alias with groupseparator backspace - YoussefTaghlabi", function (
     $("#testmask").remove();
 });
 
+test("decimal alias with plus or minus & autogroup - YoussefTaghlabi", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("decimal", { 
+                radixPoint: ".", 
+                groupSeparator: ",",
+                groupSize: 3,
+                digits: 2,
+                autoGroup: true,
+                allowPlus: true,
+                allowMinus: true
+            });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("-123456");
+    
+    equal($("#testmask").val(), "-123,456", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("decimal alias with plus or minus & autogroup - YoussefTaghlabi", function () {
+    $('body').append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("decimal", { 
+                radixPoint: ".", 
+                groupSeparator: ",",
+                groupSize: 3,
+                digits: 2,
+                autoGroup: true,
+                allowPlus: true,
+                allowMinus: true
+            });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123456");
+	caret($("#testmask"), 0);
+	$("#testmask").SendKey("-");
+    
+    equal($("#testmask").val(), "-123,456", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
 module("Direction RTL");
 test("inputmask(\"999.999.999\") - delete 2nd with backspace, continue the mask", function () {
     $('body').append('<input type="text" id="testmask" dir="rtl" />');
