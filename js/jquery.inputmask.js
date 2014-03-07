@@ -335,7 +335,7 @@
                         maskTemplate.push(test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length));
                     }
                     pos++;
-                } while (test["fn"] != null || (test["fn"] == null && test["def"] != "") || minimalPos > pos);
+                } while (test["fn"] != null || (test["fn"] == null && test["def"] != "") || minimalPos >= pos);
                 maskTemplate.pop(); //drop the last one which is empty
                 return { "mask": maskTemplate, "repeat": opts.repeat, "greedy": opts.greedy };
             }
@@ -347,7 +347,8 @@
                 maskset = maskset || getActiveMaskSet();
                 var lastValidPosition = -1;
                 for (var posNdx in maskset["validPositions"]) {
-                    if (posNdx > lastValidPosition) lastValidPosition = posNdx;
+                    var psNdx = parseInt(posNdx);
+                    if (psNdx > lastValidPosition) lastValidPosition = psNdx;
                 }
                 return lastValidPosition;
             }
@@ -467,7 +468,7 @@
             function getActiveBufferTemplate() {
                 if (getActiveMaskSet()['_buffer'] == undefined) {
                     //generate template
-                    var maskTemplate = getMaskTemplate();
+                    var maskTemplate = getMaskTemplate(false, 1);
                     getActiveMaskSet()["_buffer"] = maskTemplate["mask"];
                     getActiveMaskSet()["greedy"] = maskTemplate["greedy"];
                     getActiveMaskSet()["repeat"] = maskTemplate["repeat"];
@@ -679,7 +680,19 @@
             }
 
             function getMaskLength() {
-                return opts.getMaskLength(getActiveBufferTemplate(), getActiveMaskSet()['greedy'], getActiveMaskSet()['repeat'], getActiveBuffer(), opts);
+                if (opts.getMaskLength)
+                    return opts.getMaskLength(getActiveBufferTemplate(), getActiveMaskSet()['greedy'], getActiveMaskSet()['repeat'], getActiveBuffer(), opts);
+
+                var buffer = getActiveBufferTemplate(), greedy = getActiveMaskSet()['greedy'], repeat = getActiveMaskSet()['repeat'], currentBuffer = getActiveBuffer();
+                var calculatedLength = buffer.length;
+                if (!greedy) {
+                    if (repeat == "*" || repeat == "+") {
+                        calculatedLength = currentBuffer.length + 1;
+                    } else if (repeat > 1) {
+                        calculatedLength += (buffer.length * (repeat - 1));
+                    }
+                }
+                return calculatedLength;
             }
 
             //pos: from position
@@ -730,16 +743,14 @@
             }
 
             //needed to handle the non-greedy mask repetitions
-
-            function prepareBuffer(buffer, position) {
-                //todo create extra buffer by 
-                //getActiveMaskSet()["buffer"] = getMaskTemplate(true, position);
-                var j;
-                while (buffer[position] == undefined && buffer.length < getMaskLength()) {
-                    j = 0;
-                    while (getActiveBufferTemplate()[j] !== undefined) { //add a new buffer
-                        buffer.push(getActiveBufferTemplate()[j++]);
+            function prepareBuffer(buffer, position) { //TODO DROP BUFFER PASSING
+                if (buffer.length <= position) {
+                    trbuffer = getMaskTemplate(true, position).mask;
+                    buffer.length = trbuffer.length;
+                    for (var i = 0, bl = buffer.length; i < bl; i++) {
+                        buffer[i] = trbuffer[i];
                     }
+                    buffer[position] = getPlaceholder(position);
                 }
 
                 return position;
@@ -762,7 +773,7 @@
                 }
             }
 
-            function setPlaceholder(pos) { //TOFO FIXME SIMPLIFY ME
+            function setPlaceholder(pos) {
                 setBufferElement(getActiveBuffer(), pos, getPlaceholder(pos));
             }
 
@@ -1745,17 +1756,7 @@
                 },
                 //specify keycodes which should not be considered in the keypress event, otherwise the preventDefault will stop their default behavior especially in FF
                 ignorables: [8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123],
-                getMaskLength: function (buffer, greedy, repeat, currentBuffer, opts) {
-                    var calculatedLength = buffer.length;
-                    if (!greedy) {
-                        if (repeat == "*" || repeat == "+") {
-                            calculatedLength = currentBuffer.length + 1;
-                        } else if (repeat > 1) {
-                            calculatedLength += (buffer.length * (repeat - 1));
-                        }
-                    }
-                    return calculatedLength;
-                }
+                getMaskLength: undefined
             },
             escapeRegex: function (str) {
                 var specials = ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\'];
