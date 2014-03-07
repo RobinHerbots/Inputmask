@@ -3,7 +3,7 @@
  http://github.com/RobinHerbots/jquery.inputmask
  Copyright (c) 2010 - 2014 Robin Herbots
  Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
- Version: 2.5.3
+ Version: 2.5.4
 */
 (function(d){if(void 0===d.fn.inputmask){var Q=function(d){var h=document.createElement("input");d="on"+d;var a=d in h;a||(h.setAttribute(d,"return;"),a="function"==typeof h[d]);return a},E=function(e,h,a){return(e=a.aliases[e])?(e.alias&&E(e.alias,void 0,a),d.extend(!0,a,e),d.extend(!0,a,h),!0):!1},D=function(e){function h(a){e.numericInput&&(a=a.split("").reverse().join(""));var g=!1,h=0,n=e.greedy,p=e.repeat;"*"==p&&(n=!1);1==a.length&&!1==n&&0!=p&&(e.placeholder="");a=d.map(a.split(""),function(a,
 d){var k=[];if(a==e.escapeChar)g=!0;else if(a!=e.optionalmarker.start&&a!=e.optionalmarker.end||g){var p=e.definitions[a];if(p&&!g)for(var r=0;r<p.cardinality;r++)k.push(e.placeholder.charAt((h+r)%e.placeholder.length));else k.push(a),g=!1;h+=k.length;return k}});for(var s=a.slice(),r=1;r<p&&n;r++)s=s.concat(a.slice());return{mask:s,repeat:p,greedy:n}}function a(a){e.numericInput&&(a=a.split("").reverse().join(""));var g=!1,h=!1,p=!1;return d.map(a.split(""),function(a,d){var k=[];if(a==e.escapeChar)h=
