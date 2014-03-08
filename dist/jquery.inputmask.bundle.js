@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.5.4
+* Version: 2.5.5
 */
 
 (function ($) {
@@ -452,7 +452,19 @@
             }
 
             function getMaskLength() {
-                return opts.getMaskLength(getActiveBufferTemplate(), getActiveMaskSet()['greedy'], getActiveMaskSet()['repeat'], getActiveBuffer(), opts);
+				var buffer=getActiveBufferTemplate(), greedy=getActiveMaskSet()['greedy'], repeat=getActiveMaskSet()['repeat'], currentBuffer=getActiveBuffer();
+
+		if($.isFunction(opts.getMaskLength)) return opts.getMaskLength(buffer, greedy, repeat, currentBuffer, opts);
+
+		    var calculatedLength = buffer.length;
+                    if (!greedy) {
+                        if (repeat == "*") {
+                            calculatedLength = currentBuffer.length + 1;
+                        } else if (repeat > 1) {
+                            calculatedLength += (buffer.length * (repeat - 1));
+                        }
+                    }
+                    return calculatedLength;
             }
 
             //pos: from position
@@ -600,7 +612,7 @@
                         return isMask(index) && isValid(index, element, true) ? element : null;
                     });
                     var unmaskedValue = (isRTL ? umValue.reverse() : umValue).join('');
-                    return opts.onUnMask != undefined ? opts.onUnMask.call($input, getActiveBuffer().join(''), unmaskedValue, opts) : unmaskedValue;
+                    return $.isFunction(opts.onUnMask) ? opts.onUnMask.call($input, getActiveBuffer().join(''), unmaskedValue, opts) : unmaskedValue;
                 } else {
                     return $input[0]._valueGet();
                 }
@@ -655,6 +667,7 @@
             }
 
             function isComplete(buffer) { //return true / false / undefined (repeat *)
+		if($.isFunction(opts.isComplete)) return opts.isComplete.call($el, buffer, opts);
                 if (opts.repeat == "*") return undefined;
                 var complete = false, highestValidPosition = 0, currentActiveMasksetIndex = activeMasksetIndex;
                 $.each(masksets, function (ndx, ms) {
@@ -1175,7 +1188,7 @@
                     return true;
                 }
                 setTimeout(function () {
-                    var pasteValue = opts.onBeforePaste != undefined ? opts.onBeforePaste.call(input, input._valueGet(), opts) : input._valueGet();
+                    var pasteValue = $.isFunction(opts.onBeforePaste) ? opts.onBeforePaste.call(input, input._valueGet(), opts) : input._valueGet();
                     checkVal(input, false, false, pasteValue.split(''), true);
                     writeBuffer(input, getActiveBuffer());
                     if (isComplete(getActiveBuffer()) === true)
@@ -1406,7 +1419,7 @@
                         $el.bind("input.inputmask", pasteEvent);
 
                     //apply mask
-                    var initialValue = opts.onBeforeMask != undefined ? opts.onBeforeMask.call(el, el._valueGet(), opts) : el._valueGet();
+                    var initialValue = $.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call(el, el._valueGet(), opts) : el._valueGet();
                     checkVal(el, true, false, initialValue.split(''));
                     valueOnFocus = getActiveBuffer().join('');
                     // Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
@@ -1535,17 +1548,8 @@
                 },
                 //specify keycodes which should not be considered in the keypress event, otherwise the preventDefault will stop their default behavior especially in FF
                 ignorables: [8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123],
-                getMaskLength: function (buffer, greedy, repeat, currentBuffer, opts) {
-                    var calculatedLength = buffer.length;
-                    if (!greedy) {
-                        if (repeat == "*") {
-                            calculatedLength = currentBuffer.length + 1;
-                        } else if (repeat > 1) {
-                            calculatedLength += (buffer.length * (repeat - 1));
-                        }
-                    }
-                    return calculatedLength;
-                }
+                getMaskLength: undefined, //override for getMaskLength - args => buffer, greedy, repeat, currentBuffer, opts - return length
+		isComplete: undefined //override for isComplete - args => buffer, opts - return true || false
             },
             escapeRegex: function (str) {
                 var specials = ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\'];
@@ -1699,7 +1703,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.5.4
+Version: 2.5.5
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1821,7 +1825,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.5.4
+Version: 2.5.5
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2309,7 +2313,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.5.4
+Version: 2.5.5
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2492,7 +2496,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.5.4
+Version: 2.5.5
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2676,7 +2680,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.5.4
+Version: 2.5.5
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
