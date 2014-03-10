@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.5.5
+* Version: 2.5.6
 */
 
 (function ($) {
@@ -1703,7 +1703,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.5.5
+Version: 2.5.6
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1825,7 +1825,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.5.5
+Version: 2.5.6
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2313,7 +2313,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.5.5
+Version: 2.5.6
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2496,7 +2496,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.5.5
+Version: 2.5.6
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2512,6 +2512,9 @@ Allows for using regular expressions as a mask
             //Thx to https://github.com/slevithan/regex-colorizer for the tokenizer regex
             tokenizer: /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?[:=!]?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g,
             quantifierFilter: /[0-9]+[^,]/,
+            isComplete: function(buffer, opts){
+            	return new RegExp(opts.regex).test(buffer.join(''));
+            },
             definitions: {
                 'r': {
                     validator: function (chrs, buffer, pos, strict, opts) {
@@ -2680,7 +2683,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.5.5
+Version: 2.5.6
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks

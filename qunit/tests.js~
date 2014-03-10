@@ -1565,20 +1565,6 @@ test("inputmask(\"Regex\", { regex: \"[0-9]*\"});", function () {
 
     $("#testmask").remove();
 });
-
-asyncTest("inputmask(\"Regex\", { regex: \"[0-9]*\"}); ~ isComplete", function () {
-    $('body').append('<input type="text" id="testmask" />');
-    $("#testmask").inputmask("Regex", { regex: "[0-9]*",  oncomplete: function () {
-            equal($("#testmask").val(), "1", "Result " + $("#testmask").val());
-            start();
-            $("#testmask").remove();
-         }
-	});
-
-    $("#testmask")[0].focus();
-    $("#testmask").SendKey("1");
-});
-
 test("inputmask(\"Regex\", { regex: \"[A-Za-z\u0410-\u044F\u0401\u04510-9]*\"});", function () {
     $('body').append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("Regex", { regex: "[A-Za-z\u0410-\u044F\u0401\u04510-9]*" });
