@@ -560,6 +560,30 @@ Show the current mask definition as a tooltip.
   $(selector).inputmask({ mask: ["999-999-9999 [x99999]", "+099 99 99 9999[9]-9999"], showTooltip: true });
 ```
 
+## Function overrides
+### isComplete
+With this call-in you can override the default implementation of the isComplete function.  
+
+```javascript
+$("selector).inputmask("Regex", { 
+	regex: "[0-9]*", 
+	isComplete: function(buffer, opts) {
+		return new RegExp(opts.regex).test(buffer.join(''));
+	}
+});
+```
+
+### getMaskLength
+With this call-in you can override the default implementation of the getMaskLength function.  
+```javascript
+$("selector).inputmask({ 
+	alias: "decimal", 
+	getMaskLength: function(buffer, greedy, repeat, currentBuffer, opts) {
+		var calculatedLength = 10; //do some calculation		
+		return calculatedLength;
+	}
+});
+```
 
 ## Supported markup options
 ### RTL attribute
