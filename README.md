@@ -573,18 +573,6 @@ $("selector).inputmask("Regex", {
 });
 ```
 
-### getMaskLength
-With this call-in you can override the default implementation of the getMaskLength function.  
-```javascript
-$("selector).inputmask({ 
-	alias: "decimal", 
-	getMaskLength: function(buffer, greedy, repeat, currentBuffer, opts) {
-		var calculatedLength = 10; //do some calculation		
-		return calculatedLength;
-	}
-});
-```
-
 ## Supported markup options
 ### RTL attribute
 

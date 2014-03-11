@@ -329,7 +329,7 @@
                         maskTemplate.push(validPos["input"]);
                     } else {
                         var testPos = getActiveTests(pos, false, ndxIntlzr, pos - 1);
-                        testPos = testPos[opts.greedy ? 0 : (testPos.length - 1)];
+                        testPos = testPos[opts.greedy || minimalPos > pos ? 0 : (testPos.length - 1)];
                         test = testPos["match"];
                         ndxIntlzr = testPos["locator"].slice();
                         maskTemplate.push(test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length));
@@ -478,7 +478,7 @@
 
             function getActiveBuffer() {
                 if (getActiveMaskSet()['buffer'] == undefined) {
-                    getActiveMaskSet()['buffer'] = getMaskTemplate(/*true*/)["mask"];
+                    getActiveMaskSet()['buffer'] = getMaskTemplate(true)["mask"];
                 }
                 return getActiveMaskSet()['buffer'];
             }
@@ -679,20 +679,12 @@
                 return test != undefined ? test.fn : false;
             }
 
-            function getMaskLength() {
-				var buffer=getActiveBufferTemplate(), greedy=getActiveMaskSet()['greedy'], repeat=getActiveMaskSet()['repeat'], currentBuffer=getActiveBuffer();
-
-		if($.isFunction(opts.getMaskLength)) return opts.getMaskLength(buffer, greedy, repeat, currentBuffer, opts);
-
-		    var calculatedLength = buffer.length;
-                    if (!greedy) {
-                        if (repeat == "*") {
-                            calculatedLength = currentBuffer.length + 1;
-                        } else if (repeat > 1) {
-                            calculatedLength += (buffer.length * (repeat - 1));
-                        }
-                    }
-                    return calculatedLength;
+            function getMaskLength() {	    	
+            	if (!getActiveMaskSet()['greedy']) {
+            		var lvp = getLastValidPosition() + 2;
+            		return getMaskTemplate(false, lvp)["mask"].length;
+                }
+                return getActiveBuffer().length;
             }
 
             //pos: from position
@@ -1757,8 +1749,7 @@
                 },
                 //specify keycodes which should not be considered in the keypress event, otherwise the preventDefault will stop their default behavior especially in FF
                 ignorables: [8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123],
-                getMaskLength: undefined, //override for getMaskLength - args => buffer, greedy, repeat, currentBuffer, opts - return length
-		isComplete: undefined //override for isComplete - args => buffer, opts - return true || false
+				isComplete: undefined //override for isComplete - args => buffer, opts - return true || false
             },
             escapeRegex: function (str) {
                 var specials = ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\'];

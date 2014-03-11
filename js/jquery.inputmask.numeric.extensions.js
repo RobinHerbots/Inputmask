@@ -29,25 +29,6 @@ Optional extensions on the jquery.inputmask base
             defaultValue: "",
             prefix: "",
             suffix: "",
-
-            //todo
-            getMaskLength: function (buffer, greedy, repeat, currentBuffer, opts) { //custom getMaskLength to take the groupSeparator into account
-                var calculatedLength = buffer.length;
-
-                if (!greedy) {
-                    if (repeat == "*") {
-                        calculatedLength = currentBuffer.length + 1;
-                    } else if (repeat > 1) {
-                        calculatedLength += (buffer.length * (repeat - 1));
-                    }
-                }
-
-                var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
-                var escapedRadixPoint = $.inputmask.escapeRegex.call(this, opts.radixPoint);
-                var currentBufferStr = currentBuffer.join(''), strippedBufferStr = currentBufferStr.replace(new RegExp(escapedGroupSeparator, "g"), "").replace(new RegExp(escapedRadixPoint), ""),
-                groupOffset = currentBufferStr.length - strippedBufferStr.length;
-                return calculatedLength + groupOffset;
-            },
             postFormat: function (buffer, pos, reformatOnly, opts) {
                 if (opts.groupSeparator == "") return pos;
                 var cbuf = buffer.slice(),
