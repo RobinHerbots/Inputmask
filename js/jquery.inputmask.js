@@ -390,7 +390,7 @@
                                 }
                             } else if (match.isQuantifier && quantifierRecurse !== true) {
                                 var qt = match;
-                                for (var qndx = (ndxInitializer.length > 0 && quantifierRecurse !== true) ? ndxInitializer.shift() : 0; qndx < (isNaN(qt.quantifier.max) ? qndx + 1 : qt.quantifier.max) ; qndx++) {
+                                for (var qndx = (ndxInitializer.length > 0 && quantifierRecurse !== true) ? ndxInitializer.shift() : 0; (qndx < (isNaN(qt.quantifier.max) ? qndx + 1 : qt.quantifier.max)) && testPos <= pos; qndx++) {
                                     var tokenGroup = maskToken.matches[maskToken.matches.indexOf(qt) - 1];
                                     match = handleMatch(tokenGroup, [qndx].concat(loopNdx), true);
                                     if (match) {
@@ -422,6 +422,8 @@
                             var match = handleMatch(maskToken.matches[tndx], [tndx].concat(loopNdx), quantifierRecurse);
                             if (match && testPos == pos) {
                                 return match;
+                            } else if(testPos > pos) {
+                            	break;
                             }
                         }
                     }
@@ -452,7 +454,7 @@
                 }
                 for (var mtndx = ndxInitializer.shift() ; mtndx < maskTokens.length; mtndx++) {
                     var match = ResolveTestFromToken(maskTokens[mtndx], ndxInitializer, [mtndx]);
-                    if (match && testPos == pos) {
+                    if ((match && testPos == pos) || testPos > pos) {
                         break;
                     }
                 }
