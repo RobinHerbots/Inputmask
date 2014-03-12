@@ -570,7 +570,6 @@
                                         setBufferElement(getActiveBuffer(), lowestPos, c, true);
                                         setLastValidPosition(lowestPos);
                                     }
-                                    //console.log("ndx " + rslt["activeMasksetIndex"] + " validate " + masksets[rslt["activeMasksetIndex"]]["buffer"].join('') + " lv " + masksets[rslt["activeMasksetIndex"]]['lastValidPosition']);
                                     return rslt;
                                 }
                             }
@@ -608,10 +607,7 @@
                                         setBufferElement(getActiveBuffer(), i, actualBuffer[i], true);
                                         if (rsltValid === true) {
                                             rsltValid = { "pos": i }; //always take a possible corrected maskposition into account
-                                        }
-                                        var newValidPosition = rsltValid.pos || i;
-                                        if (getActiveMaskSet()['lastValidPosition'] < newValidPosition)
-                                            getActiveMaskSet()['lastValidPosition'] = newValidPosition; //set new position from isValid
+                                        }          
                                     }
                                 }
                             }
@@ -627,18 +623,14 @@
                             }
                         }
 
-                        if (getActiveMaskSet()['lastValidPosition'] >= actualLVP || activeMasksetIndex == currentActiveMasksetIndex) {
+                        if (getLastValidPosition() >= actualLVP || activeMasksetIndex == currentActiveMasksetIndex) {
                             if (maskPos >= 0 && maskPos < getMaskLength()) {
                                 result = _isValid(maskPos, c, strict);
                                 if (result !== false) {
                                     if (result === true) {
                                         result = { "pos": maskPos }; //always take a possible corrected maskposition into account
                                     }
-                                    var newValidPosition = result.pos || maskPos;
-                                    if (getActiveMaskSet()['lastValidPosition'] < newValidPosition)
-                                        getActiveMaskSet()['lastValidPosition'] = newValidPosition; //set new position from isValid
                                 }
-                                //console.log("pos " + pos + " ndx " + activeMasksetIndex + " validate " + getActiveBuffer().join('') + " lv " + getActiveMaskSet()['lastValidPosition']);
                                 results.push({ "activeMasksetIndex": index, "result": result });
                             }
                         }
