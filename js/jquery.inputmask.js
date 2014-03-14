@@ -163,7 +163,7 @@
                 }
 
 
-                console.log(JSON.stringify(maskTokens));
+                //console.log(JSON.stringify(maskTokens));
                 return maskTokens;
             }
             function markOptional(maskPart) { //needed for the clearOptionalTail functionality
@@ -733,7 +733,7 @@
             //needed to handle the non-greedy mask repetitions
             function prepareBuffer(buffer, position) { //TODO DROP BUFFER PASSING + optimize me
                 if (buffer.length <= position) {
-                    trbuffer = getMaskTemplate(true, position).mask;
+                    var trbuffer = getMaskTemplate(true, position).mask;
                     buffer.length = trbuffer.length;
                     for (var i = 0, bl = buffer.length; i < bl; i++) {
                         if (buffer[i] == undefined)
