@@ -671,6 +671,7 @@
             }
 
             function getMaskLength() {
+				var maxLength = $el.prop('maxLength'), maskLength;
                 if (!getActiveMaskSet()['greedy']) {
                     var lvp = getLastValidPosition() + 1,
                         test = getActiveTest(lvp);
@@ -678,9 +679,11 @@
                         var tests = getActiveTests(++lvp);
                         test = tests[tests.length - 1];
                     }
-                    return getMaskTemplate(false, lvp)["mask"].length;
-                }
-                return getActiveBuffer().length;
+                    maskLength = getMaskTemplate(false, lvp)["mask"].length;
+                } else
+					maskLength = getActiveBuffer().length;
+					
+				return maskLength < maxLength && maxLength > -1 /* FF sets no defined max length to -1 */ ? maskLength : maxLength;
             }
 
             //pos: from position
@@ -1444,28 +1447,6 @@
 
                     //correct greedy setting if needed
                     getActiveMaskSet()['greedy'] = getActiveMaskSet()['greedy'] ? getActiveMaskSet()['greedy'] : getActiveMaskSet()['repeat'] == 0;
-
-                    //handle maxlength attribute
-                    if ($el.attr("maxLength") != null) //only when the attribute is set
-                    {
-                        var maxLength = $el.prop('maxLength');
-                        if (maxLength > -1) { //handle *-repeat
-                            $.each(masksets, function (ndx, ms) {
-                                if (typeof (ms) == "object") {
-                                    if (ms["repeat"] == "*") {
-                                        ms["repeat"] = maxLength;
-                                    }
-                                }
-                            });
-                        }
-                        if (getMaskLength() >= maxLength && maxLength > -1) { //FF sets no defined max length to -1 
-                            if (maxLength < getActiveBufferTemplate().length) getActiveBufferTemplate().length = maxLength;
-                            if (getActiveMaskSet()['greedy'] == false) {
-                                getActiveMaskSet()['repeat'] = Math.round(maxLength / getActiveBufferTemplate().length);
-                            }
-                            $el.prop('maxLength', getMaskLength() * 2);
-                        }
-                    }
 
                     patchValueProperty(el);
 
