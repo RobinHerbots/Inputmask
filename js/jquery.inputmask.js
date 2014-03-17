@@ -216,8 +216,6 @@
                             "buffer": undefined,
                             "tests": {},
                             "validPositions": {},
-                            "greedy": undefined,
-                            "repeat": undefined,
                             "metadata": metadata
                         });
                     }
@@ -231,8 +229,6 @@
                             "buffer": undefined,
                             "tests": {},
                             "validPositions": {},
-                            "greedy": undefined,
-                            "repeat": undefined,
                             "metadata": metadata
                         });
                     }
@@ -257,8 +253,6 @@
                             "_buffer": undefined,
                             "buffer": undefined,
                             "tests": {},
-                            "greedy": undefined,
-                            "repeat": undefined,
                             "metadata": metadata
                         });
                     }
@@ -337,7 +331,7 @@
                     pos++;
                 } while (test["fn"] != null || (test["fn"] == null && test["def"] != "") || minimalPos >= pos);
                 maskTemplate.pop(); //drop the last one which is empty
-                return { "mask": maskTemplate, "repeat": opts.repeat, "greedy": opts.greedy };
+                return maskTemplate;
             }
             function getActiveMaskSet() {
                 return masksets[activeMasksetIndex];
@@ -467,17 +461,14 @@
             function getActiveBufferTemplate() {
                 if (getActiveMaskSet()['_buffer'] == undefined) {
                     //generate template
-                    var maskTemplate = getMaskTemplate(false, 1);
-                    getActiveMaskSet()["_buffer"] = maskTemplate["mask"];
-                    getActiveMaskSet()["greedy"] = maskTemplate["greedy"];
-                    getActiveMaskSet()["repeat"] = maskTemplate["repeat"];
+                    getActiveMaskSet()["_buffer"] = getMaskTemplate(false, 1);
                 }
                 return getActiveMaskSet()['_buffer'];
             }
 
             function getActiveBuffer() {
                 if (getActiveMaskSet()['buffer'] == undefined) {
-                    getActiveMaskSet()['buffer'] = getMaskTemplate(true)["mask"];
+                    getActiveMaskSet()['buffer'] = getMaskTemplate(true);
                 }
                 return getActiveMaskSet()['buffer'];
             }
@@ -515,7 +506,12 @@
                                     break;
                             }
 
-                            getActiveMaskSet()["validPositions"][position] = $.extend({}, tst, { "input": elem });
+                            var validatedPos = position;
+                            if (rslt !== true && rslt["pos"] != position) {
+                                validatedPos = rslt["pos"];
+                                tst = getActiveTests(validatedPos, !strict)[0]; //possible mismatch TODO
+                            }
+                            getActiveMaskSet()["validPositions"][validatedPos] = $.extend({}, tst, { "input": elem });
                             return false; //break from $.each
                         }
                     });
@@ -671,19 +667,19 @@
             }
 
             function getMaskLength() {
-				var maxLength = $el.prop('maxLength'), maskLength;
-                if (!getActiveMaskSet()['greedy']) {
+                var maxLength = $el.prop('maxLength'), maskLength;
+                if (opts.greedy == false) {
                     var lvp = getLastValidPosition() + 1,
                         test = getActiveTest(lvp);
                     while (test.fn != null && test.def != "") {
                         var tests = getActiveTests(++lvp);
                         test = tests[tests.length - 1];
                     }
-                    maskLength = getMaskTemplate(false, lvp)["mask"].length;
+                    maskLength = getMaskTemplate(false, lvp).length;
                 } else
-					maskLength = getActiveBuffer().length;
-					
-				return maskLength < maxLength && maxLength > -1 /* FF sets no defined max length to -1 */ ? maskLength : maxLength;
+                    maskLength = getActiveBuffer().length;
+
+                return maxLength == undefined || (maskLength < maxLength && maxLength > -1) /* FF sets no defined max length to -1 */ ? maskLength : maxLength;
             }
 
             //pos: from position
@@ -736,7 +732,7 @@
             //needed to handle the non-greedy mask repetitions
             function prepareBuffer(buffer, position) { //TODO DROP BUFFER PASSING + optimize me
                 if (buffer.length <= position) {
-                    var trbuffer = getMaskTemplate(true, position).mask;
+                    var trbuffer = getMaskTemplate(true, position);
                     buffer.length = trbuffer.length;
                     for (var i = 0, bl = buffer.length; i < bl; i++) {
                         if (buffer[i] == undefined)
@@ -787,7 +783,6 @@
                 });
                 if (strict !== true) activeMasksetIndex = 0;
                 if (writeOut) input._valueSet(""); //initial clear
-                var ml = getMaskLength();
                 $.each(inputValue, function (ndx, charCode) {
                     if (intelliCheck === true) {
                         var p = getActiveMaskSet()["p"], lvp = p == -1 ? p : seekPrevious(p),
@@ -1052,7 +1047,7 @@
                 }
                 if (c != undefined)
                     setBufferElement(buffer, seekPrevious(end), c);
-                if (getActiveMaskSet()["greedy"] == false) {
+                if (opts.greedy == false) {
                     var trbuffer = truncateInput(buffer.join('')).split('');
                     buffer.length = trbuffer.length;
                     for (var i = 0, bl = buffer.length; i < bl; i++) {
@@ -1083,7 +1078,7 @@
                 if (c != undefined && getBufferElement(buffer, start) == getPlaceholder(start))
                     setBufferElement(buffer, start, c);
                 var lengthBefore = buffer.length;
-                if (getActiveMaskSet()["greedy"] == false) {
+                if (opts.greedy == false) {
                     var trbuffer = truncateInput(buffer.join('')).split('');
                     buffer.length = trbuffer.length;
                     for (var i = 0, bl = buffer.length; i < bl; i++) {
@@ -1446,7 +1441,7 @@
                     }
 
                     //correct greedy setting if needed
-                    getActiveMaskSet()['greedy'] = getActiveMaskSet()['greedy'] ? getActiveMaskSet()['greedy'] : getActiveMaskSet()['repeat'] == 0;
+                    opts.greedy = opts.greedy ? opts.greedy : opts.repeat == 0;
 
                     patchValueProperty(el);
 
@@ -1650,7 +1645,7 @@
                             isRTL = true;
                         }
 
-                        checkVal($el, false, false, actionObj["value"].split(''));
+                        checkVal($el, false, false, actionObj["value"].split(''), true);
                         return getActiveBuffer().join('');
                     case "isValid":
                         $el = $({});
