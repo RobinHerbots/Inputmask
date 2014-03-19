@@ -163,7 +163,7 @@
                 }
 
 
-                //console.log(JSON.stringify(maskTokens));
+                console.log(JSON.stringify(maskTokens));
                 return maskTokens;
             }
             function markOptional(maskPart) { //needed for the clearOptionalTail functionality
@@ -362,7 +362,7 @@
             }
 
             function getActiveTests(pos, disableCache, ndxIntlzr, tstPs) {
-                var maskTokens = getActiveMaskSet()["maskToken"], testPos = ndxIntlzr ? tstPs : 0, ndxInitializer = ndxIntlzr || [0], matches = [];
+                var maskTokens = getActiveMaskSet()["maskToken"], testPos = ndxIntlzr ? tstPs : 0, ndxInitializer = ndxIntlzr || [0], matches = [], insertStop = false;
 
                 function ResolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) { //ndxInitilizer contains a set of indexes to speedup searches in the mtokens
 
@@ -391,12 +391,11 @@
                                         var latestMatch = matches[matches.length - 1]["match"];
                                         var isFirstMatch = (tokenGroup.matches.indexOf(latestMatch) == 0);
                                         if (isFirstMatch) { //search for next possible match
-                                            if ((isNaN(qt.quantifier.max) || opts.greedy === false) && qndx >= qt.quantifier.min) {
-                                                matches.push({ "match": { fn: null, cardinality: 0, optionality: true, casing: null, def: "" }, "locator": [] });
-                                                return true;
-                                            } else if (qndx == qt.quantifier.max - 1)
-                                                testPos = currentPos;
-                                            else return true;
+                                            if (qndx > qt.quantifier.min - 1) {
+                                                insertStop = true;
+                                                testPos = pos; //match the position after the group
+                                                break; //stop quantifierloop
+                                            } else return true;
                                         } else {
                                             return true;
                                         }
@@ -450,11 +449,11 @@
                         break;
                     }
                 }
-                if (matches.length == 0)
+                if (matches.length == 0 || insertStop)
                     matches.push({ "match": { fn: null, cardinality: 0, optionality: true, casing: null, def: "" }, "locator": [] });
 
                 getActiveMaskSet()['tests'][pos] = matches;
-
+                console.log(pos + " - " + JSON.stringify(matches));
                 return matches;
             }
 
