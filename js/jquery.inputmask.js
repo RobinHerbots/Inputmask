@@ -436,8 +436,13 @@
                 var maskPos = pos;
                 var result = _isValid(maskPos, c, strict);
                 if (!strict && result === false && !isMask(maskPos)) { //does the input match on a further position?
-                    maskPos = seekNext(maskPos);
-                    result = _isValid(maskPos, c, strict);
+                    for (var nPos = maskPos + 1, snPos = seekNext(maskPos) ; nPos <= snPos; nPos++) {
+                        result = _isValid(nPos, c, strict);
+                        if (result !== false) {
+                            maskPos = nPos;
+                            break;
+                        }
+                    }
                 }
 
                 if (result === true) result = { "pos": maskPos };
