@@ -20,7 +20,7 @@ Highlights:
 - many features can be enabled/disabled/configured by options
 - supports readonly/disabled/dir="rtl" attributes
 - support data-inputmask attribute  
-- multi-mask support  
+<del>- multi-mask support</del>
 - regex-mask support
 - value formatting / validating without input element
 
@@ -346,6 +346,7 @@ $(selector).inputmask({ mask: "99999[-9999]", greedy: false });
 
 The initial mask shown will be "_____" instead of "_____-____". 
 
+<del>
 ### Multiple masks
 
 You can define multiple mask for your input.  Depending on the input the masking will switch between the defined masks.  
@@ -368,7 +369,7 @@ var phones = [
 ]
 $(selector).inputmask({ mask: phones, definitions: { '#': { validator: "[0-9]", cardinality: 1}} }); //in case of inputmask-multi you need to specify the validator for #
 ```
-
+</del>
 The metadata of the actual mask provided in the mask definitions can be obtained by calling
 
 ```javascript
@@ -738,6 +739,7 @@ $(document).ready(function(){
 });
 ```
 
+<del>
 ## phone extensions
 Uses the phone mask definitions from https://github.com/andr-04/inputmask-multi
 
@@ -749,6 +751,7 @@ Uses the phone mask definitions from https://github.com/andr-04/inputmask-multi
                 } 
   });
 ```
+</del>
 
 ## other extensions
 
