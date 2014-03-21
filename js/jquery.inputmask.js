@@ -33,12 +33,8 @@
         function generateMaskSet(opts) {
             var ms;
             function analyseMask(mask) {
-                if (opts.numericInput) {
-                    mask = mask.split('').reverse().join('');
-                }
-
-                var tokenizer = /(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[]()|\\]+|./g,
-                    escaped = false;
+                var tokenizer = /(?:[?*+]|\{[0-9]+(?:,[0-9\+\*]*)?\})\??|[^.?*+^${[]()|\\]+|./g,
+                     escaped = false;
 
                 function maskToken(isGroup, isOptional, isQuantifier) {
                     this.matches = [];
@@ -96,7 +92,7 @@
                             m = m.replace(/[{}]/g, "");
                             var mq = m.split(","), mq0 = isNaN(mq[0]) ? mq[0] : parseInt(mq[0]), mq1 = mq.length == 1 ? mq0 : (isNaN(mq[1]) ? mq[1] : parseInt(mq[1]));
                             quantifier.quantifier = { min: mq0, max: mq1 };
-
+                            if (mq1 == "*" || mq1 == "+") opts.greedy = false;
                             if (openenings.length > 0) {
                                 var matches = openenings[openenings.length - 1]["matches"];
                                 var match = matches.pop();
@@ -141,39 +137,35 @@
                 if (currentToken.matches.length > 0)
                     maskTokens.push(currentToken);
 
-                if (opts.repeat > 0 || opts.repeat == "*" || opts.repeat == "+") {
-                    var groupedMaskToken = new maskToken(false, false, false);
-                    var groupToken = new maskToken(true),
-                        quantifierToken = new maskToken(false, false, true);
-                    quantifierToken.quantifier = opts.repeat == "*" ? { min: 0, max: "*" } : (opts.repeat == "+" ? { min: 1, max: "*" } : { min: opts.greedy ? opts.repeat : 1, max: opts.repeat });
-                    if (maskTokens.length > 1) {
-                        groupToken.matches = maskTokens;
-                        groupedMaskToken.matches.push(groupToken);
-                        groupedMaskToken.matches.push(quantifierToken);
-                    } else {
-                        groupToken.matches = maskTokens[0].matches;
-                        groupedMaskToken.matches.push(groupToken);
-                        groupedMaskToken.matches.push(quantifierToken);
-                    }
-                    maskTokens = [groupedMaskToken];
-                }
-
                 console.log(JSON.stringify(maskTokens));
                 return maskTokens;
             }
             function generateMask(mask, metadata) {
-                return mask == undefined || mask == "" ? undefined : {
-                    "mask": mask,
-                    "maskToken": analyseMask(mask),
-                    "validPositions": {},
-                    "_buffer": undefined,
-                    "buffer": undefined,
-                    "tests": {},
-                    "metadata": metadata
-                };
+                if (opts.numericInput) {  //TODO FIXME for dynamic masks
+                    mask = mask.split('').reverse().join('');
+                }
+                if (mask == undefined || mask == "")
+                    return undefined;
+                else {
+                    if (opts.repeat > 0 || opts.repeat == "*" || opts.repeat == "+") {
+                        var repeatStart = opts.repeat == "*" ? 0 : (opts.repeat == "+" ? 1 : opts.repeat);
+                        mask = opts.groupmarker.start + mask + opts.groupmarker.end + opts.quantifiermarker.start + repeatStart + "," + opts.repeat + opts.quantifiermarker.end;
+                    }
+                    if ($.inputmask.masksCache[mask] == undefined) {
+                        $.inputmask.masksCache[mask] = {
+                            "mask": mask,
+                            "maskToken": analyseMask(mask),
+                            "validPositions": {},
+                            "_buffer": undefined,
+                            "buffer": undefined,
+                            "tests": {},
+                            "metadata": metadata
+                        };
+                    }
+                    return $.extend(true, {}, $.inputmask.masksCache[mask]);
+                }
             }
 
-            if (opts.repeat == "*" || opts.repeat == "+") opts.greedy = false;
             if ($.isFunction(opts.mask)) { //allow mask to be a preprocessing fn - should return a valid mask
                 opts.mask = opts.mask.call(this, opts);
             }
@@ -266,12 +258,6 @@
                     if (psNdx > lastValidPosition) lastValidPosition = psNdx;
                 }
                 return lastValidPosition;
-            }
-            function setLastValidPosition(pos, maskset) {
-                maskset = maskset || getMaskSet();
-                for (var posNdx in maskset["validPositions"]) {
-                    if (posNdx > pos) maskset["validPositions"][posNdx] = undefined;
-                }
             }
             function getTest(pos) {
                 if (getMaskSet()['validPositions'][pos]) {
@@ -760,7 +746,6 @@
                     PatchValhook(npt.type);
                 }
             }
-
             //shift chars to left from start to end and put c at end position if defined
             function shiftL(start, end, c, maskJumps) {
                 var buffer = getBuffer();
@@ -1053,7 +1038,6 @@
                     }
                 }
             }
-
             function keyupEvent(e) {
                 var $input = $(this), input = this, k = e.keyCode, buffer = getBuffer();
 
@@ -1074,7 +1058,6 @@
                     }
                 }
             }
-
             function pasteEvent(e) {
                 if (skipInputEvent === true && e.type == "input") {
                     skipInputEvent = false;
@@ -1095,8 +1078,6 @@
                     $input.click();
                 }, 0);
             }
-
-            //not used - attempt to support android 
             function mobileInputEvent(e) {
                 var input = this, $input = $(input);
 
@@ -1124,7 +1105,6 @@
                 }
                 e.preventDefault();
             }
-
             function mask(el) {
                 $el = $(el);
                 if ($el.is(":input")) {
@@ -1139,9 +1119,6 @@
                     if (opts.showTooltip) {
                         $el.prop("title", getMaskSet()["mask"]);
                     }
-
-                    //correct greedy setting if needed
-                    opts.greedy = opts.greedy ? opts.greedy : opts.repeat == 0;
 
                     patchValueProperty(el);
 
@@ -1418,6 +1395,7 @@
                 ignorables: [8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123],
                 isComplete: undefined //override for isComplete - args => buffer, opts - return true || false
             },
+            masksCache: {},
             escapeRegex: function (str) {
                 var specials = ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\'];
                 return str.replace(new RegExp('(\\' + specials.join('|\\') + ')', 'gim'), '\\$1');
