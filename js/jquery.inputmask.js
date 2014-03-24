@@ -366,7 +366,7 @@
                         break;
                     }
                 }
-                if (matches.length == 0 || insertStop)
+                if (matches.length == 0 || (insertStop && matches.length < 2))
                     matches.push({ "match": { fn: null, cardinality: 0, optionality: true, casing: null, def: "" }, "locator": [] });
 
                 getMaskSet()['tests'][pos] = matches;
