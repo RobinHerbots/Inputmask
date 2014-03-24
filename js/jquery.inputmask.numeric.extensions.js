@@ -80,15 +80,12 @@ Optional extensions on the jquery.inputmask base
             },
             regex: {
                 number: function (opts) {
-                    //unused var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
                     var escapedRadixPoint = $.inputmask.escapeRegex.call(this, opts.radixPoint);
                     var digitExpression = isNaN(opts.digits) ? opts.digits : '{0,' + opts.digits + '}';
                     var integerExpression = isNaN(opts.integerDigits) ? opts.integerDigits : '{1,' + opts.integerDigits + '}';
                     var signedExpression = opts.allowPlus || opts.allowMinus ? "[" + (opts.allowPlus ? "\+" : "") + (opts.allowMinus ? "-" : "") + "]?" : "";                   
 
-                    //regex is never used to validate with group separators. Just validate lengths.
                     var currentRegExp = "^" + signedExpression + "\\d" + integerExpression + "(" + escapedRadixPoint + "\\d" + digitExpression + ")?$";
-
                     return new RegExp(currentRegExp);
 
                 }

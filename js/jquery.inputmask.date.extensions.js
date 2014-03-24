@@ -56,8 +56,8 @@ Optional extensions on the jquery.inputmask base
             isInYearRange: function (chrs, minyear, maxyear) {
                 var enteredyear = parseInt(chrs.concat(minyear.toString().slice(chrs.length)));
                 var enteredyear2 = parseInt(chrs.concat(maxyear.toString().slice(chrs.length)));
-                return (enteredyear != NaN ? minyear <= enteredyear && enteredyear <= maxyear : false) ||
-            		   (enteredyear2 != NaN ? minyear <= enteredyear2 && enteredyear2 <= maxyear : false);
+                return (!isNaN(enteredyear) ? minyear <= enteredyear && enteredyear <= maxyear : false) ||
+            		   (!isNaN(enteredyear2) ? minyear <= enteredyear2 && enteredyear2 <= maxyear : false);
             },
             determinebaseyear: function (minyear, maxyear, hint) {
                 var currentyear = (new Date()).getFullYear();
