@@ -216,10 +216,12 @@
                 $el,
                 skipKeyPressEvent = false, //Safari 5.1.x - modal dialog fires keypress twice workaround
                 skipInputEvent = false, //skip when triggered from within inputmask
-                ignorable = false;
+                ignorable = false,
+                maxLength;
+
 
             //maskset helperfunctions
-            function getMaskTemplate(baseOnInput, minimalPos) {
+            function getMaskTemplate(baseOnInput, minimalPos, includeInput) {
                 minimalPos = minimalPos || 0;
                 var maskTemplate = [], ndxIntlzr, pos = 0, test;
                 do {
@@ -227,7 +229,7 @@
                         var validPos = getMaskSet()['validPositions'][pos];
                         test = validPos["match"];
                         ndxIntlzr = validPos["locator"].slice();
-                        maskTemplate.push(test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length));
+                        maskTemplate.push(test["fn"] == null ? test["def"] : (includeInput === true ? validPos["input"] : opts.placeholder.charAt(pos % opts.placeholder.length)));
                     } else {
                         var testPos = getTests(pos, false, ndxIntlzr, pos - 1);
                         testPos = testPos[opts.greedy || minimalPos > pos ? 0 : (testPos.length - 1)];
@@ -236,7 +238,7 @@
                         maskTemplate.push(test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length));
                     }
                     pos++;
-                } while (test["fn"] != null || (test["fn"] == null && test["def"] != "") || minimalPos >= pos);
+                } while ((maxLength == undefined || (pos - 1 < maxLength && maxLength > -1)) && test["fn"] != null || (test["fn"] == null && test["def"] != "") || minimalPos >= pos);
                 maskTemplate.pop(); //drop the last one which is empty
                 return maskTemplate;
             }
@@ -248,6 +250,7 @@
                 maskset["buffer"] = undefined;
                 maskset["_buffer"] = undefined;
                 maskset["validPositions"] = {};
+                maskset["tests"] = {};
                 maskset["p"] = -1;
             }
             function getLastValidPosition(maskset, closestTo) { //TODO implement closest to
@@ -258,6 +261,16 @@
                     if (psNdx > lastValidPosition) lastValidPosition = psNdx;
                 }
                 return lastValidPosition;
+            }
+            function setValidPosition(pos, validTest, strict) {
+                if (opts.insertMode && getMaskSet()["validPositions"][pos] != undefined) {
+                    var currentValid = getMaskSet()["validPositions"][pos];
+                    getMaskSet()["validPositions"][pos] = validTest;
+                    //reposition & revalidate others
+
+                    isValid(pos + 1, currentValid["input"], strict);
+                } else
+                    getMaskSet()["validPositions"][pos] = validTest;
             }
             function getTest(pos) {
                 if (getMaskSet()['validPositions'][pos]) {
@@ -369,7 +382,7 @@
             }
             function getBuffer() {
                 if (getMaskSet()['buffer'] == undefined) {
-                    getMaskSet()['buffer'] = getMaskTemplate(true);
+                    getMaskSet()['buffer'] = getMaskTemplate(true, 0, true);
                 }
                 return getMaskSet()['buffer'];
             }
@@ -391,8 +404,8 @@
                         //return is false or a json object => { pos: ??, c: ??} or true
                         rslt = test.fn != null ?
                             test.fn.test(chrs, buffer, position, strict, opts)
-                            : (c == getPlaceholder(position) || c == opts.skipOptionalPartCharacter) ?
-                                { "refresh": true, c: getPlaceholder(position), pos: position }
+                            : (c == test["def"] || c == opts.skipOptionalPartCharacter) ?
+                                { "refresh": ndx == 0, c: test["def"], pos: position }
                                 : false;
 
                         if (rslt !== false) {
@@ -407,11 +420,19 @@
                             }
 
                             var validatedPos = position;
-                            if (rslt !== true && rslt["pos"] != position) {
+                            if (rslt !== true && rslt["pos"] != position) { //their is an position offset
+                                setValidPosition(position, $.extend({}, tst, { "input": buffer[position] }), strict);
                                 validatedPos = rslt["pos"];
+                                for (var op = position + 1; op < validatedPos; op++) {
+                                    setValidPosition(op, $.extend({}, getTests(op, !strict)[0], { "input": buffer[op] }), strict);
+                                }
                                 tst = getTests(validatedPos, !strict)[0]; //possible mismatch TODO
                             }
-                            getMaskSet()["validPositions"][validatedPos] = $.extend({}, tst, { "input": elem });
+                            if (ndx != 0) {
+                                getMaskSet()["buffer"] = undefined;
+                                getMaskSet()["tests"] = {}; //clear the tests cache
+                            }
+                            setValidPosition(validatedPos, $.extend({}, tst, { "input": elem }), strict);
                             return false; //break from $.each
                         }
                     });
@@ -439,7 +460,7 @@
                 return test.fn != null ? test.fn : false;
             }
             function getMaskLength() {
-                var maxLength = $el.prop('maxLength'), maskLength;
+                var maskLength; maxLength = $el.prop('maxLength');
                 if (opts.greedy == false) {
                     var lvp = getLastValidPosition() + 1,
                         test = getTest(lvp);
@@ -978,15 +999,7 @@
                             }
                             if (refresh !== true) {
                                 if (opts.insertMode == true) {
-                                    var freePos = p;
-                                    if (getBufferElement(buffer, p) != getPlaceholder(p)) {
-                                        while (getMaskSet()["validPositions"][freePos]) {
-                                            freePos = seekNext(freePos);
-                                        }
-                                    }
-                                    if (freePos < getMaskLength()) {
-                                        shiftR(p, getMaskLength(), c);
-                                    } else getMaskSet()["writeOutBuffer"] = false;
+                                    getMaskSet()["buffer"] = undefined;
                                 } else setBufferElement(buffer, p, c);
                             }
                             forwardPosition = seekNext(p);

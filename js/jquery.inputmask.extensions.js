@@ -117,6 +117,10 @@ Optional extensions on the jquery.inputmask base
                     definitionSymbol: "i"
                 }
             }
+        },
+        "email": {
+            mask: "*{1,20}[.*{1,20}][.*{1,20}]@*{1,20}.*{2,6}[.*{2}]",
+            greedy: false
         }
     });
 })(jQuery);
