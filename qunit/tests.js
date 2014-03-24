@@ -235,6 +235,21 @@ test("inputmask(\"(999)999-9999\") - ruslanfedoseenko mask", function () {
 
     $("#testmask").remove();
 });
+test("inputmask(\"(999)999-9999\") - insert false - ruslanfedoseenko mask", function () {
+    var $fixture = $( "#qunit-fixture" );
+	$fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("(999)999-9999", { insertMode: false});
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").val("9999999999");
+    caret($("#testmask"), 4, 5);
+    $("#testmask").Type("7");
+
+    equal($("#testmask").val(), "(999)999-9999", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
 
 test("inputmask(\"\") - empty mask - andywolk", function () {
     var $fixture = $( "#qunit-fixture" );

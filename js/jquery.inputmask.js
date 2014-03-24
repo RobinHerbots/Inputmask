@@ -430,7 +430,7 @@
                             }
                             if (ndx != 0) {
                                 getMaskSet()["buffer"] = undefined;
-                                getMaskSet()["tests"] = {}; //clear the tests cache
+                                getMaskSet()["tests"] = {}; //clear the tests cache todo optimize
                             }
                             setValidPosition(validatedPos, $.extend({}, tst, { "input": elem }), strict);
                             return false; //break from $.each
@@ -442,7 +442,7 @@
 
                 var maskPos = pos;
                 var result = _isValid(maskPos, c, strict);
-                if (!strict && result === false && !isMask(maskPos)) { //does the input match on a further position?
+                if (!strict && (opts.insertMode || getMaskSet()["validPositions"][seekNext(pos)] == undefined) && result === false && !isMask(maskPos)) { //does the input match on a further position?
                     for (var nPos = maskPos + 1, snPos = seekNext(maskPos) ; nPos <= snPos; nPos++) {
                         result = _isValid(nPos, c, strict);
                         if (result !== false) {
