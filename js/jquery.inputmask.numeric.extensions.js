@@ -75,7 +75,7 @@ Optional extensions on the jquery.inputmask base
                     if (radixPosition != -1) {
                         var masksets = $input.data('_inputmask')['masksets'];
                         var activeMasksetIndex = $input.data('_inputmask')['activeMasksetIndex'];
-                        for (var i = 1; i <= opts.digits && i < opts.getMaskLength(masksets[activeMasksetIndex]["_buffer"], masksets[activeMasksetIndex]["greedy"], masksets[activeMasksetIndex]["repeat"], buffer, opts) ; i++) {
+                        for (var i = 1; i <= opts.digits && i < opts.getMaskLength(masksets[activeMasksetIndex]["_buffer"], opts.greedy, opts.repeat, buffer, opts) ; i++) {
                             if (buffer[radixPosition + i] == undefined || buffer[radixPosition + i] == "") buffer[radixPosition + i] = "0";
                         }
                         input._valueSet(buffer.join(''));
