@@ -594,7 +594,7 @@ test("inputmask({ \"mask\": \"(999) 999-9999\" }) ~ .val(\"8144419449\") - type=
     $("#testmask").remove();
 });
 
-module("Optional & multi masks");
+module("Optional");
 test("inputmask(\"(99) 9999[9]-99999\") - input 121234-12345", function () {
     var $fixture = $( "#qunit-fixture" );
 	$fixture.append('<input type="text" id="testmask" />');
@@ -619,6 +619,95 @@ test("inputmask(\"(99) 9999[9]-99999\") - input 121234512345", function () {
 
     $("#testmask").remove();
 });
+
+test("inputmask({ mask: \"99999[-9999]\", greedy: true }) - input 123", function () {
+    var $fixture = $( "#qunit-fixture" );
+	$fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: "99999[-9999]", greedy: true });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123");
+    equal($("#testmask").val(), "123__-____", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask({ mask: \"99999[-9999]\", greedy: false }) - input 123", function () {
+    var $fixture = $( "#qunit-fixture" );
+	$fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: "99999[-9999]", greedy: false });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123");
+    equal($("#testmask").val(), "123__", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask({ mask: \"99999[-9999]\", greedy: false }) - input 12345", function () {
+    var $fixture = $( "#qunit-fixture" );
+	$fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: "99999[-9999]", greedy: false });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("12345");
+    equal($("#testmask").val(), "12345", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask({ mask: \"99999[-9999]\", greedy: false }) - input 123456", function () {
+    var $fixture = $( "#qunit-fixture" );
+	$fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: "99999[-9999]", greedy: false });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123456");
+    equal($("#testmask").val(), "12345-6___", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask({ mask: \"99999[-9999]\", greedy: false }) - input 123456789", function () {
+    var $fixture = $( "#qunit-fixture" );
+	$fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: "99999[-9999]", greedy: false });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123456789");
+    equal($("#testmask").val(), "12345-6789", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask(\"9[9][9] 999[9] 9999\") - input 123123 space 1234 - vipink70", function () {
+    var $fixture = $( "#qunit-fixture" );
+	$fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("9[9][9] 999[9] 9999");
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123123");
+    $("#testmask").SendKey(keyCodes.SPACE);
+    $("#testmask").Type("1234");
+    equal($("#testmask").val(), "123 123 1234", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask('[9-]AAA.999') ", function () {
+    var $fixture = $( "#qunit-fixture" );
+	$fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('[9-]AAA.999');
+
+    $("#testmask").Type("1abc123");
+    caret($("#testmask"), 4, 5);
+    $("#testmask").Type("d");
+    equal($("#testmask").val(), "1-ABD.123", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+module("multi masks");
 test("inputmask({ mask: [\"999.999.999-99\", \"99.999.999/9999-99\"]}) - input 12312312312", function () {
     var $fixture = $( "#qunit-fixture" );
 	$fixture.append('<input type="text" id="testmask" />');
@@ -712,66 +801,6 @@ test("inputmask({ mask: [\"99999\", \"99999-9999\", \"999999-9999\"]]}) - input 
     $("#testmask").remove();
 });
 
-test("inputmask({ mask: \"99999[-9999]\", greedy: true }) - input 123", function () {
-    var $fixture = $( "#qunit-fixture" );
-	$fixture.append('<input type="text" id="testmask" />');
-    $("#testmask").inputmask({ mask: "99999[-9999]", greedy: true });
-
-    $("#testmask")[0].focus();
-    $("#testmask").Type("123");
-    equal($("#testmask").val(), "123__-____", "Result " + $("#testmask").val());
-
-    $("#testmask").remove();
-});
-
-test("inputmask({ mask: \"99999[-9999]\", greedy: false }) - input 123", function () {
-    var $fixture = $( "#qunit-fixture" );
-	$fixture.append('<input type="text" id="testmask" />');
-    $("#testmask").inputmask({ mask: "99999[-9999]", greedy: false });
-
-    $("#testmask")[0].focus();
-    $("#testmask").Type("123");
-    equal($("#testmask").val(), "123__", "Result " + $("#testmask").val());
-
-    $("#testmask").remove();
-});
-
-test("inputmask({ mask: \"99999[-9999]\", greedy: false }) - input 12345", function () {
-    var $fixture = $( "#qunit-fixture" );
-	$fixture.append('<input type="text" id="testmask" />');
-    $("#testmask").inputmask({ mask: "99999[-9999]", greedy: false });
-
-    $("#testmask")[0].focus();
-    $("#testmask").Type("12345");
-    equal($("#testmask").val(), "12345", "Result " + $("#testmask").val());
-
-    $("#testmask").remove();
-});
-
-test("inputmask({ mask: \"99999[-9999]\", greedy: false }) - input 123456", function () {
-    var $fixture = $( "#qunit-fixture" );
-	$fixture.append('<input type="text" id="testmask" />');
-    $("#testmask").inputmask({ mask: "99999[-9999]", greedy: false });
-
-    $("#testmask")[0].focus();
-    $("#testmask").Type("123456");
-    equal($("#testmask").val(), "12345-6___", "Result " + $("#testmask").val());
-
-    $("#testmask").remove();
-});
-
-test("inputmask({ mask: \"99999[-9999]\", greedy: false }) - input 123456789", function () {
-    var $fixture = $( "#qunit-fixture" );
-	$fixture.append('<input type="text" id="testmask" />');
-    $("#testmask").inputmask({ mask: "99999[-9999]", greedy: false });
-
-    $("#testmask")[0].focus();
-    $("#testmask").Type("123456789");
-    equal($("#testmask").val(), "12345-6789", "Result " + $("#testmask").val());
-
-    $("#testmask").remove();
-});
-
 test("inputmask({ mask: [\"99999\", \"99999-9999\", \"999999-9999\"]]}) - input 123456 (rtl)", function () {
     var $fixture = $( "#qunit-fixture" );
 	$fixture.append('<input type="text" id="testmask" dir="rtl" />');
@@ -780,20 +809,6 @@ test("inputmask({ mask: [\"99999\", \"99999-9999\", \"999999-9999\"]]}) - input 
     $("#testmask")[0].focus();
     $("#testmask").Type("123456");
     equal($("#testmask").val(), "____-654321", "Result " + $("#testmask").val());
-
-    $("#testmask").remove();
-});
-
-test("inputmask(\"9[9][9] 999[9] 9999\") - input 123123 space 1234 - vipink70", function () {
-    var $fixture = $( "#qunit-fixture" );
-	$fixture.append('<input type="text" id="testmask" />');
-    $("#testmask").inputmask("9[9][9] 999[9] 9999");
-
-    $("#testmask")[0].focus();
-    $("#testmask").Type("123123");
-    $("#testmask").SendKey(keyCodes.SPACE);
-    $("#testmask").Type("1234");
-    equal($("#testmask").val(), "123 123 1234", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });
@@ -807,19 +822,6 @@ test("inputmask({ mask: ['9 AAA-AAA', 'A 999-999'] }) ", function () {
     caret($("#testmask"), 0, 9);
     $("#testmask").Type("a123");
     equal($("#testmask").val(), "A 123-___", "Result " + $("#testmask").val());
-
-    $("#testmask").remove();
-});
-
-test("inputmask('[9-]AAA.999') ", function () {
-    var $fixture = $( "#qunit-fixture" );
-	$fixture.append('<input type="text" id="testmask" />');
-    $("#testmask").inputmask('[9-]AAA.999');
-
-    $("#testmask").Type("1abc123");
-    caret($("#testmask"), 4, 5);
-    $("#testmask").Type("d");
-    equal($("#testmask").val(), "1-ABD.123", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });
@@ -1080,6 +1082,8 @@ test("inputmask(\"dd/mm/yyyy\") - input 01011000 - Skiv22", function () {
 
     $("#testmask").remove();
 });
+
+
 
 module("Numeric.Extensions");
 test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - input 12345.123", function () {

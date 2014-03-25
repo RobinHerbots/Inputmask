@@ -262,15 +262,33 @@
                 }
                 return lastValidPosition;
             }
-            function setValidPosition(pos, validTest, strict) {
-                if (opts.insertMode && getMaskSet()["validPositions"][pos] != undefined) {
-                    var currentValid = getMaskSet()["validPositions"][pos];
-                    getMaskSet()["validPositions"][pos] = validTest;
+            function setValidPosition(pos, validTest, strict, fromSetValid) {
+                if (opts.insertMode && getMaskSet()["validPositions"][pos] != undefined && fromSetValid == undefined) {
                     //reposition & revalidate others
+                    var positionsClone = $.extend(true, {}, getMaskSet()["validPositions"]);
 
-                    isValid(pos + 1, currentValid["input"], strict);
+                    for (var i = seekPrevious(getMaskLength()) ; i > pos && i >= 0; i--) {
+                        if (isMask(i)) {
+                            var j = seekPrevious(i);
+                            var t = getMaskSet()["validPositions"][j];
+                            if (t != undefined) {
+                                if (getTest(i).def == getTest(j).def && getMaskSet()["validPositions"][i] == undefined && isValid(i, t["input"], strict, true) !== false) {
+                                    getMaskSet()["validPositions"][j] = undefined;
+                                }
+                            }
+                        }
+                    }
+
+                    if (getMaskSet()["validPositions"][pos] == undefined) {
+                        getMaskSet()["validPositions"][pos] = validTest;
+                    } else {
+                        getMaskSet()["validPositions"] = $.extend(true, {}, positionsClone);
+                        return false;
+                    }
                 } else
                     getMaskSet()["validPositions"][pos] = validTest;
+
+                return true;
             }
             function getTest(pos) {
                 if (getMaskSet()['validPositions'][pos]) {
@@ -386,10 +404,10 @@
                 }
                 return getMaskSet()['buffer'];
             }
-            function isValid(pos, c, strict) { //strict true ~ no correction or autofill
+            function isValid(pos, c, strict, fromSetValid) { //strict true ~ no correction or autofill
                 strict = strict === true; //always set a value to strict to prevent possible strange behavior in the extensions 
 
-                function _isValid(position, c, strict) {
+                function _isValid(position, c, strict, fromSetValid) {
                     var rslt = false;
                     $.each(getTests(position, !strict), function (ndx, tst) {
                         var test = tst["match"];
@@ -432,7 +450,8 @@
                                 getMaskSet()["buffer"] = undefined;
                                 getMaskSet()["tests"] = {}; //clear the tests cache todo optimize
                             }
-                            setValidPosition(validatedPos, $.extend({}, tst, { "input": elem }), strict);
+                            if (!setValidPosition(validatedPos, $.extend({}, tst, { "input": elem }), strict, fromSetValid))
+                                rslt = false;
                             return false; //break from $.each
                         }
                     });
@@ -441,10 +460,10 @@
                 }
 
                 var maskPos = pos;
-                var result = _isValid(maskPos, c, strict);
+                var result = _isValid(maskPos, c, strict, fromSetValid);
                 if (!strict && (opts.insertMode || getMaskSet()["validPositions"][seekNext(pos)] == undefined) && result === false && !isMask(maskPos)) { //does the input match on a further position?
                     for (var nPos = maskPos + 1, snPos = seekNext(maskPos) ; nPos <= snPos; nPos++) {
-                        result = _isValid(nPos, c, strict);
+                        result = _isValid(nPos, c, strict, fromSetValid);
                         if (result !== false) {
                             maskPos = nPos;
                             break;
@@ -969,7 +988,7 @@
                         //should we clear a possible selection??
                         var isSlctn = isSelection(pos.begin, pos.end);
                         if (isSlctn) {
-                            getMaskSet()["undoBuffer"] = getBuffer().join(''); //init undobuffer for recovery when not valid
+                            getMaskSet()["undoPositions"] = $.extend(true, {}, getMaskSet()["validPositions"]); //init undobuffer for recovery when not valid
                             HandleRemove(input, opts.keyCode.DELETE, pos);
                             if (!opts.insertMode) { //preserve some space
                                 shiftR(pos.begin, getMaskLength());
@@ -1034,11 +1053,13 @@
                                         $input.trigger("input");
                                     }, 0);
                                 }
-                            } else if (isSlctn) { //TODO FIXME
-                                getMaskSet()["buffer"] = getMaskSet()["undoBuffer"].split('');
+                            } else if (isSlctn) {
+                                getMaskSet()["buffer"] = undefined;
+                                getMaskSet()["validPositions"] = getMaskSet()["undoPositions"];
                             }
-                        } else if (isSlctn) { //TODO FIXME
-                            getMaskSet()["buffer"] = getMaskSet()["undoBuffer"].split('');
+                        } else if (isSlctn) {
+                            getMaskSet()["buffer"] = undefined;
+                            getMaskSet()["validPositions"] = getMaskSet()["undoPositions"];
                         }
 
 
