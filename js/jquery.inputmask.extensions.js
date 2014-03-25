@@ -86,7 +86,7 @@ Optional extensions on the jquery.inputmask base
             autoUnmask: false
         },
         "ip": { //ip-address mask
-            mask: ["[[x]y]z.[[x]y]z.[[x]y]z.x[yz]", "[[x]y]z.[[x]y]z.[[x]y]z.[[x]y][z]"],
+            mask: "[[x]y]z.[[x]y]z.[[x]y]z.[[x]y]z",
             definitions: {
                 'x': {
                     validator: "[012]",
