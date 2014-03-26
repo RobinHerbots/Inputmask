@@ -273,7 +273,7 @@
                             var t = getMaskSet()["validPositions"][j];
                             if (t != undefined) {
                                 if (getTest(i).def == getTest(j).def && getMaskSet()["validPositions"][i] == undefined && isValid(i, t["input"], strict, true) !== false) {
-                                    getMaskSet()["validPositions"][j] = undefined;
+                                    delete getMaskSet()["validPositions"][j];
                                 }
                             }
                         }
@@ -289,6 +289,23 @@
                     getMaskSet()["validPositions"][pos] = validTest;
 
                 return true;
+            }
+            function stripValidPositions(start, end) {
+                var i, ml, startPos = seekNext(start - 1);
+                for (i = start; i < end; i++) { //clear selection
+                    delete getMaskSet()["validPositions"][i];
+                }
+                for (i = end, ml = getMaskLength() ; i < ml; i++) { //clear selection
+                    var t = getMaskSet()["validPositions"][i];
+                    var s = getMaskSet()["validPositions"][startPos];
+                    if (t != undefined && s == undefined) {
+                        if (getTest(startPos).def == t.match.def && isValid(startPos, t["input"], false) !== false) {
+                            delete getMaskSet()["validPositions"][i];
+                        }
+                        startPos = seekNext(startPos);
+                    }
+                }
+                getMaskSet()["buffer"] = undefined;
             }
             function getTest(pos) {
                 if (getMaskSet()['validPositions'][pos]) {
@@ -423,7 +440,7 @@
                         rslt = test.fn != null ?
                             test.fn.test(chrs, buffer, position, strict, opts)
                             : (c == test["def"] || c == opts.skipOptionalPartCharacter) ?
-                                { "refresh": ndx == 0, c: test["def"], pos: position }
+                                { c: test["def"], pos: position }
                                 : false;
 
                         if (rslt !== false) {
@@ -510,24 +527,6 @@
                 ;
                 return position;
             }
-            function setBufferElement(buffer, position, element) {
-                position = prepareBuffer(buffer, position);
-
-                var test = getTest(position);
-                var elem = element;
-                if (elem != undefined && test != undefined) {
-                    switch (test.casing) {
-                        case "upper":
-                            elem = element.toUpperCase();
-                            break;
-                        case "lower":
-                            elem = element.toLowerCase();
-                            break;
-                    }
-                }
-
-                buffer[position] = elem;
-            }
             function getBufferElement(buffer, position) {
                 position = prepareBuffer(buffer, position);
                 return buffer[position];
@@ -551,18 +550,6 @@
                 if (caretPos != undefined) {
                     caret(input, caretPos);
                 }
-            }
-            function clearBuffer(buffer, start, end, stripNomasks) {
-                for (var i = start, maskL = getMaskLength() ; i < end && i < maskL; i++) {
-                    if (stripNomasks === true) {
-                        if (!isMask(i))
-                            setBufferElement(buffer, i, "");
-                    } else
-                        setBufferElement(buffer, i, getPlaceholder(i));
-                }
-            }
-            function setPlaceholder(pos) {
-                setBufferElement(getBuffer(), pos, getPlaceholder(pos));
             }
             function getPlaceholder(pos) {
                 var test = getTest(pos);
@@ -786,73 +773,6 @@
                     PatchValhook(npt.type);
                 }
             }
-            //shift chars to left from start to end and put c at end position if defined
-            function shiftL(start, end, c, maskJumps) {
-                var buffer = getBuffer();
-                if (maskJumps !== false) //jumping over nonmask position
-                    while (!isMask(start) && start - 1 >= 0) start--;
-                for (var i = start; i < end && i < getMaskLength() ; i++) {
-                    if (isMask(i)) {
-                        setPlaceholder(i);
-                        var j = seekNext(i);
-                        var p = getBufferElement(buffer, j);
-                        if (p != getPlaceholder(j)) {
-                            if (j < getMaskLength() && isValid(i, p, true) !== false && getTest(i).def == getTest(j).def) {
-                                setBufferElement(buffer, i, p);
-                                if (j < end) {
-                                    setPlaceholder(j); //cleanup next position
-                                }
-                            } else {
-                                if (isMask(i))
-                                    break;
-                            }
-                        }
-                    } else {
-                        setPlaceholder(i);
-                    }
-                }
-                if (c != undefined)
-                    setBufferElement(buffer, seekPrevious(end), c);
-                if (opts.greedy == false) {
-                    var trbuffer = truncateInput(buffer.join('')).split('');
-                    buffer.length = trbuffer.length;
-                    for (var i = 0, bl = buffer.length; i < bl; i++) {
-                        buffer[i] = trbuffer[i];
-                    }
-                    if (buffer.length == 0) getMaskSet()["buffer"] = getBufferTemplate().slice();
-                }
-                return start; //return the used start position
-            }
-            function shiftR(start, end, c) {
-                var buffer = getBuffer();
-                if (getBufferElement(buffer, start) != getPlaceholder(start)) {
-                    for (var i = seekPrevious(end) ; i > start && i >= 0; i--) {
-                        if (isMask(i)) {
-                            var j = seekPrevious(i);
-                            var t = getBufferElement(buffer, j);
-                            if (t != getPlaceholder(j)) {
-                                if (isValid(i, t, true) !== false && getTest(i).def == getTest(j).def) {
-                                    setBufferElement(buffer, i, t);
-                                    setPlaceholder(j);
-                                } //else break;
-                            }
-                        } else
-                            setPlaceholder(i);
-                    }
-                }
-                if (c != undefined && getBufferElement(buffer, start) == getPlaceholder(start))
-                    setBufferElement(buffer, start, c);
-                var lengthBefore = buffer.length;
-                if (opts.greedy == false) {
-                    var trbuffer = truncateInput(buffer.join('')).split('');
-                    buffer.length = trbuffer.length;
-                    for (var i = 0, bl = buffer.length; i < bl; i++) {
-                        buffer[i] = trbuffer[i];
-                    }
-                    if (buffer.length == 0) getMaskSet()["buffer"] = getBufferTemplate().slice();
-                }
-                return end - (lengthBefore - buffer.length); //return new start position
-            }
             function HandleRemove(input, k, pos) {
                 if (opts.numericInput || isRTL) {
                     switch (k) {
@@ -870,40 +790,23 @@
                     }
                 }
 
-                var isSelection = true;
                 if (pos.begin == pos.end) {
                     var posBegin = k == opts.keyCode.BACKSPACE ? pos.begin - 1 : pos.begin;
                     if (opts.isNumeric && opts.radixPoint != "" && getBuffer()[posBegin] == opts.radixPoint) {
                         pos.begin = (getBuffer().length - 1 == posBegin) /* radixPoint is latest? delete it */ ? pos.begin : k == opts.keyCode.BACKSPACE ? posBegin : seekNext(posBegin);
                         pos.end = pos.begin;
                     }
-                    isSelection = false;
                     if (k == opts.keyCode.BACKSPACE)
-                        pos.begin--;
+                        pos.begin =seekPrevious(pos.begin);
                     else if (k == opts.keyCode.DELETE)
                         pos.end++;
                 } else if (pos.end - pos.begin == 1 && !opts.insertMode) {
-                    isSelection = false;
                     if (k == opts.keyCode.BACKSPACE)
                         pos.begin--;
                 }
 
-                clearBuffer(getBuffer(), pos.begin, pos.end);
-
-                var ml = getMaskLength();
-                if (opts.greedy == false && (isNaN(opts.repeat) || opts.repeat > 0)) {
-                    shiftL(pos.begin, ml, undefined, !isRTL && (k == opts.keyCode.BACKSPACE && !isSelection));
-                } else {
-                    var newpos = pos.begin;
-                    for (var i = pos.begin; i < pos.end; i++) { //seeknext to skip placeholders at start in selection
-                        if (isMask(i) || !isSelection)
-                            newpos = shiftL(pos.begin, ml, undefined, !isRTL && (k == opts.keyCode.BACKSPACE && !isSelection));
-                    }
-                    if (!isSelection) pos.begin = newpos;
-                }
+                stripValidPositions(pos.begin, pos.end);
                 var firstMaskPos = seekNext(-1);
-                clearBuffer(getBuffer(), pos.begin, pos.end, true);
-                checkVal(input, false, false, getBuffer());
                 if (getLastValidPosition() < firstMaskPos) {
                     getMaskSet()["p"] = firstMaskPos;
                 } else {
@@ -991,7 +894,9 @@
                             getMaskSet()["undoPositions"] = $.extend(true, {}, getMaskSet()["validPositions"]); //init undobuffer for recovery when not valid
                             HandleRemove(input, opts.keyCode.DELETE, pos);
                             if (!opts.insertMode) { //preserve some space
-                                shiftR(pos.begin, getMaskLength());
+                                opts.insertMode = !opts.insertMode;
+                                setValidPosition(pos.begin, undefined, strict);
+                                opts.insertMode = !opts.insertMode;
                             }
                         }
 
@@ -1010,17 +915,12 @@
                         var p = pos.begin;
                         var valResult = isValid(p, c, strict);
                         if (valResult !== false) {
-                            var refresh = false, buffer = getBuffer();
+                            var buffer = getBuffer();
                             if (valResult !== true) {
-                                refresh = valResult["refresh"]; //only rewrite buffer from isValid
                                 p = valResult.pos != undefined ? valResult.pos : p; //set new position from isValid
                                 c = valResult.c != undefined ? valResult.c : c; //set new char from isValid
                             }
-                            if (refresh !== true) {
-                                if (opts.insertMode == true) {
-                                    getMaskSet()["buffer"] = undefined;
-                                } else setBufferElement(buffer, p, c);
-                            }
+                            getMaskSet()["buffer"] = undefined;
                             forwardPosition = seekNext(p);
                             getMaskSet()["p"] = forwardPosition; //needed for checkval
                         }
