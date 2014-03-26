@@ -2117,6 +2117,11 @@ test("$.inputmask.format(\"016501030020001DE1015170\", { mask: \"99 999 999 999 
     equal(formattedValue, "01 650 103 002 0001 DE101 5170", "Result " + formattedValue);
 });
 
+test("$.inputmask.format(\"12\", {  mask: \"$ 999999\", numericInput: true, placeholder: \"0\" }); - gigermocas", function () {
+    var formattedValue = $.inputmask.format("12", {  mask: "$ 999999", numericInput: true, placeholder: "0" });
+    equal(formattedValue, "$ 000012", "Result " + formattedValue);
+});
+
 module("Value Validating");
 test("$.inputmask.isValid(\"23/03/1973\", { alias: \"date\"})", function () {
     var formattedValue = $.inputmask.isValid("23/03/1973", { alias: "date" });

@@ -1248,9 +1248,9 @@
                             opts.isNumeric = opts.numericInput;
                             isRTL = true;
                         }
-
-                        checkVal($el, false, false, actionObj["value"].split(''), true);
-                        return getBuffer().join('');
+						var valueBuffer = actionObj["value"].split('');
+                        checkVal($el, false, false, isRTL ? valueBuffer.reverse() : valueBuffer, true);
+                        return isRTL ? getBuffer().reverse().join('') : getBuffer().join('');
                     case "isValid":
                         $el = $({});
                         $el.data('_inputmask', {
@@ -1262,8 +1262,8 @@
                             opts.isNumeric = opts.numericInput;
                             isRTL = true;
                         }
-
-                        checkVal($el, false, true, actionObj["value"].split(''));
+						var valueBuffer = actionObj["value"].split('');
+                        checkVal($el, false, true, isRTL ? valueBuffer.reverse() : valueBuffer);
                         return isComplete(getBuffer());
                 }
             }
