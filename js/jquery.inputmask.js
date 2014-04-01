@@ -219,7 +219,6 @@
                 ignorable = false,
                 maxLength;
 
-
             //maskset helperfunctions
             function getMaskTemplate(baseOnInput, minimalPos, includeInput) {
                 minimalPos = minimalPos || 0;
@@ -253,8 +252,8 @@
                 maskset["tests"] = {};
                 maskset["p"] = -1;
             }
-            function getLastValidPosition(maskset, closestTo) { //TODO implement closest to
-                maskset = maskset || getMaskSet();
+            function getLastValidPosition(closestTo) { //TODO implement closest to
+                var maskset = getMaskSet();
                 var lastValidPosition = -1;
                 for (var posNdx in maskset["validPositions"]) {
                     var psNdx = parseInt(posNdx);
@@ -328,10 +327,16 @@
                                 match = handleMatch(maskToken.matches[tndx + 1], loopNdx);
                                 if (match) return true;
                             } else if (match.isOptional) {
+                                var optionalToken = match;
                                 match = ResolveTestFromToken(match, ndxInitializer, loopNdx, quantifierRecurse);
                                 if (match) {
-                                    //search for next possible match
-                                    testPos = currentPos;
+                                    var latestMatch = matches[matches.length - 1]["match"];
+                                    var isFirstMatch = (optionalToken.matches.indexOf(latestMatch) == 0);
+                                    if (isFirstMatch) {
+                                        insertStop = true; //insert a stop for non greedy
+                                        //search for next possible match
+                                        testPos = currentPos;
+                                    }
                                 }
                             } else if (match.isQuantifier && quantifierRecurse !== true) {
                                 var qt = match;
@@ -417,7 +422,7 @@
             }
             function getBuffer() {
                 if (getMaskSet()['buffer'] == undefined) {
-                    getMaskSet()['buffer'] = getMaskTemplate(true, 0, true);
+                    getMaskSet()['buffer'] = getMaskTemplate(true, getLastValidPosition(), true);
                 }
                 return getMaskSet()['buffer'];
             }
@@ -478,7 +483,7 @@
 
                 var maskPos = pos;
                 var result = _isValid(maskPos, c, strict, fromSetValid);
-                if (!strict && (opts.insertMode || getMaskSet()["validPositions"][seekNext(pos)] == undefined) && result === false && !isMask(maskPos)) { //does the input match on a further position?
+                if (!strict && (opts.insertMode || getMaskSet()["validPositions"][seekNext(maskPos)] == undefined) && result === false && !isMask(maskPos)) { //does the input match on a further position?
                     for (var nPos = maskPos + 1, snPos = seekNext(maskPos) ; nPos <= snPos; nPos++) {
                         result = _isValid(nPos, c, strict, fromSetValid);
                         if (result !== false) {
@@ -499,12 +504,15 @@
                 var maskLength; maxLength = $el.prop('maxLength');
                 if (opts.greedy == false) {
                     var lvp = getLastValidPosition() + 1,
-                        test = getTest(lvp);
-                    while (test.fn != null && test.def != "") {
-                        var tests = getTests(++lvp);
-                        test = tests[tests.length - 1];
+                       test = getTest(lvp);
+                    while (!(test.fn == null && test.def == "")) { //determine last possible position
+                        test = getTest(++lvp);
+                        if (test.optionality !== true) {
+                            var tests = getTests(lvp);
+                            test = tests[tests.length - 1]["match"];
+                        }
                     }
-                    maskLength = getMaskTemplate(false, lvp).length;
+                    maskLength = getMaskTemplate(true, lvp).length;
                 } else
                     maskLength = getBuffer().length;
 
@@ -579,12 +587,10 @@
                 return inputValue.replace(new RegExp("(" + escapeRegex(getBufferTemplate().join('')) + ")*$"), "");
             }
             function clearOptionalTail(input) {
-                var buffer = getBuffer(), tmpBuffer = buffer.slice(), testPos, pos;
-                for (var pos = tmpBuffer.length - 1; pos >= 0; pos--) {
-                    if (getTest(pos).optionality) {
-                        if (!isMask(pos) || !isValid(pos, buffer[pos], true))
-                            tmpBuffer.pop();
-                        else break;
+                var buffer = getBuffer(), tmpBuffer = buffer.slice(), pos;
+                for (pos = tmpBuffer.length - 1; pos >= 0; pos--) {
+                    if (getTest(pos).optionality && tmpBuffer[pos] == getPlaceholder(pos)) {
+                        tmpBuffer.pop();
                     } else break;
                 }
                 writeBuffer(input, tmpBuffer);
@@ -595,7 +601,8 @@
                         return isMask(index) && isValid(index, element, true) ? element : null;
                     });
                     var unmaskedValue = (isRTL ? umValue.reverse() : umValue).join('');
-                    return $.isFunction(opts.onUnMask) ? opts.onUnMask.call($input, getBuffer().join(''), unmaskedValue, opts) : unmaskedValue;
+                    var bufferValue = (isRTL ? getBuffer().reverse() : getBuffer()).join('');
+                    return $.isFunction(opts.onUnMask) ? opts.onUnMask.call($input, bufferValue, unmaskedValue, opts) : unmaskedValue;
                 } else {
                     return $input[0]._valueGet();
                 }
@@ -797,7 +804,7 @@
                         pos.end = pos.begin;
                     }
                     if (k == opts.keyCode.BACKSPACE)
-                        pos.begin =seekPrevious(pos.begin);
+                        pos.begin = seekPrevious(pos.begin);
                     else if (k == opts.keyCode.DELETE)
                         pos.end++;
                 } else if (pos.end - pos.begin == 1 && !opts.insertMode) {
@@ -915,7 +922,6 @@
                         var p = pos.begin;
                         var valResult = isValid(p, c, strict);
                         if (valResult !== false) {
-                            var buffer = getBuffer();
                             if (valResult !== true) {
                                 p = valResult.pos != undefined ? valResult.pos : p; //set new position from isValid
                                 c = valResult.c != undefined ? valResult.c : c; //set new char from isValid
@@ -1140,7 +1146,7 @@
                             var selectedCaret = caret(input), buffer = getBuffer();
                             if (selectedCaret.begin == selectedCaret.end) {
                                 var clickPosition = isRTL ? TranslatePosition(selectedCaret.begin) : selectedCaret.begin,
-                                lvp = getLastValidPosition(undefined, clickPosition),
+                                lvp = getLastValidPosition(clickPosition),
                                 lastPosition;
                                 if (opts.isNumeric) {
                                     lastPosition = opts.skipRadixDance === false && opts.radixPoint != "" && $.inArray(opts.radixPoint, buffer) != -1 ?
@@ -1248,7 +1254,7 @@
                             opts.isNumeric = opts.numericInput;
                             isRTL = true;
                         }
-						var valueBuffer = actionObj["value"].split('');
+                        var valueBuffer = actionObj["value"].split('');
                         checkVal($el, false, false, isRTL ? valueBuffer.reverse() : valueBuffer, true);
                         return isRTL ? getBuffer().reverse().join('') : getBuffer().join('');
                     case "isValid":
@@ -1262,7 +1268,7 @@
                             opts.isNumeric = opts.numericInput;
                             isRTL = true;
                         }
-						var valueBuffer = actionObj["value"].split('');
+                        var valueBuffer = actionObj["value"].split('');
                         checkVal($el, false, true, isRTL ? valueBuffer.reverse() : valueBuffer);
                         return isComplete(getBuffer());
                 }
