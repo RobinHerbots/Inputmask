@@ -86,24 +86,9 @@ Optional extensions on the jquery.inputmask base
             autoUnmask: false
         },
         "ip": { //ip-address mask
-            mask: "[[x]y]z.[[x]y]z.[[x]y]z.[[x]y]z",
+            mask: "i[i[i]].i[i[i]].i[i[i]].i[i[i]]",
             definitions: {
-                'x': {
-                    validator: "[012]",
-                    cardinality: 1,
-                    definitionSymbol: "i"
-                },
-                'y': {
-                    validator: function (chrs, buffer, pos, strict, opts) {
-                        if (pos - 1 > -1 && buffer[pos - 1] != ".")
-                            chrs = buffer[pos - 1] + chrs;
-                        else chrs = "0" + chrs;
-                        return new RegExp("2[0-5]|[01][0-9]").test(chrs);
-                    },
-                    cardinality: 1,
-                    definitionSymbol: "i"
-                },
-                'z': {
+                'i': {
                     validator: function (chrs, buffer, pos, strict, opts) {
                         if (pos - 1 > -1 && buffer[pos - 1] != ".") {
                             chrs = buffer[pos - 1] + chrs;
@@ -113,8 +98,7 @@ Optional extensions on the jquery.inputmask base
                         } else chrs = "00" + chrs;
                         return new RegExp("25[0-5]|2[0-4][0-9]|[01][0-9][0-9]").test(chrs);
                     },
-                    cardinality: 1,
-                    definitionSymbol: "i"
+                    cardinality: 1
                 }
             }
         },
