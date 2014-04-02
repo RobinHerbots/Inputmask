@@ -2182,10 +2182,10 @@ test("inputmask(\"9-a{1,3}/9{2,3}\" - simple dynamic mask - greedy true", functi
 
     $("#testmask").remove();
 });
-test("inputmask(\"*{1,20}[.*{1,20}][.*{1,20}]@*{1,20}.*{2,6}[.*{2}]\" - email mask greedy false", function () {
+test("email mask greedy false", function () {
     var $fixture = $( "#qunit-fixture" );
 	$fixture.append('<input type="text" id="testmask" />');
-    $("#testmask").inputmask("*{1,20}[.*{1,20}][.*{1,20}]@*{1,20}.*{2,6}[.*{2}]",{ greedy: false });
+    $("#testmask").inputmask("email",{ greedy: false });
 
     $("#testmask")[0].focus();
     $("#testmask").Type("some.body@mail.com");
@@ -2194,10 +2194,10 @@ test("inputmask(\"*{1,20}[.*{1,20}][.*{1,20}]@*{1,20}.*{2,6}[.*{2}]\" - email ma
 
     $("#testmask").remove();
 });
-test("inputmask(\"*{1,20}[.*{1,20}][.*{1,20}]@*{1,20}.*{2,6}[.*{2}]\" - email mask greedy true", function () {
+test("email mask greedy true", function () {
     var $fixture = $( "#qunit-fixture" );
 	$fixture.append('<input type="text" id="testmask" />');
-    $("#testmask").inputmask("*{1,20}[.*{1,20}][.*{1,20}]@*{1,20}.*{2,6}[.*{2}]",{ greedy: true });
+    $("#testmask").inputmask("email",{ greedy: true });
 
     $("#testmask")[0].focus();
     $("#testmask").Type("some.body@mail.com");

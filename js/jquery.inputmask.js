@@ -438,7 +438,7 @@
                         var test = tst["match"];
                         var loopend = c ? 1 : 0, chrs = '', buffer = getBuffer();
                         for (var i = test.cardinality; i > loopend; i--) {
-                            chrs += getBufferElement(buffer, position - (i - 1), true);
+                            chrs += getBufferElement(position - (i - 1));
                         }
                         if (c) {
                             chrs += c;
@@ -538,23 +538,8 @@
                 ;
                 return position;
             }
-            function getBufferElement(buffer, position) {
-                position = prepareBuffer(buffer, position);
-                return buffer[position];
-            }
-            //needed to handle the non-greedy mask repetitions
-            function prepareBuffer(buffer, position) { //TODO DROP BUFFER PASSING + optimize me
-                if (buffer.length <= position) {
-                    var trbuffer = getMaskTemplate(true, position);
-                    buffer.length = trbuffer.length;
-                    for (var i = 0, bl = buffer.length; i < bl; i++) {
-                        if (buffer[i] == undefined)
-                            buffer[i] = trbuffer[i];
-                    }
-                    buffer[position] = getPlaceholder(position);
-                }
-
-                return position;
+            function getBufferElement(position) {
+                return getMaskSet()["validPositions"][position] == undefined ? getPlaceholder(position) : getMaskSet()["validPositions"][position]["input"];
             }
             function writeBuffer(input, buffer, caretPos) {
                 input._valueSet(buffer.join(''));
