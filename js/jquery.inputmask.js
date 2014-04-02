@@ -137,7 +137,7 @@
                 if (currentToken.matches.length > 0)
                     maskTokens.push(currentToken);
 
-                console.log(JSON.stringify(maskTokens));
+                //console.log(JSON.stringify(maskTokens));
                 return maskTokens;
             }
             function generateMask(mask, metadata) {
@@ -244,13 +244,15 @@
             function getMaskSet() {
                 return maskset;
             }
-            function resetMaskSet() {
+            function resetMaskSet(soft) {
                 var maskset = getMaskSet();
                 maskset["buffer"] = undefined;
-                maskset["_buffer"] = undefined;
-                maskset["validPositions"] = {};
                 maskset["tests"] = {};
-                maskset["p"] = -1;
+                if (soft !== true) {
+                    maskset["_buffer"] = undefined;
+                    maskset["validPositions"] = {};
+                    maskset["p"] = -1;
+                }
             }
             function getLastValidPosition(closestTo) { //TODO implement closest to
                 var maskset = getMaskSet();
@@ -298,13 +300,14 @@
                     var t = getMaskSet()["validPositions"][i];
                     var s = getMaskSet()["validPositions"][startPos];
                     if (t != undefined && s == undefined) {
+                        console.log(JSON.stringify(getTest(startPos)));
                         if (getTest(startPos).def == t.match.def && isValid(startPos, t["input"], false) !== false) {
                             delete getMaskSet()["validPositions"][i];
                         }
                         startPos = seekNext(startPos);
                     }
                 }
-                getMaskSet()["buffer"] = undefined;
+                resetMaskSet(true);
             }
             function getTest(pos) {
                 if (getMaskSet()['validPositions'][pos]) {
@@ -334,9 +337,9 @@
                                     var isFirstMatch = (optionalToken.matches.indexOf(latestMatch) == 0);
                                     if (isFirstMatch) {
                                         insertStop = true; //insert a stop for non greedy
-                                        //search for next possible match
-                                        testPos = currentPos;
                                     }
+                                    //search for next possible match
+                                    testPos = currentPos;
                                 }
                             } else if (match.isQuantifier && quantifierRecurse !== true) {
                                 var qt = match;
@@ -410,7 +413,7 @@
                     matches.push({ "match": { fn: null, cardinality: 0, optionality: true, casing: null, def: "" }, "locator": [] });
 
                 getMaskSet()['tests'][pos] = matches;
-                console.log(pos + " - " + JSON.stringify(matches));
+                //console.log(pos + " - " + JSON.stringify(matches));
                 return matches;
             }
             function getBufferTemplate() {
@@ -444,12 +447,12 @@
                         //return is false or a json object => { pos: ??, c: ??} or true
                         rslt = test.fn != null ?
                             test.fn.test(chrs, buffer, position, strict, opts)
-                            : (c == test["def"] || c == opts.skipOptionalPartCharacter) ?
+                            : (c == test["def"] || c == opts.skipOptionalPartCharacter) && test["def"] != "" ? //non mask
                                 { c: test["def"], pos: position }
                                 : false;
 
                         if (rslt !== false) {
-                            var elem = c;
+                            var elem = c == opts.skipOptionalPartCharacter ? test["def"] : c;
                             switch (test.casing) {
                                 case "upper":
                                     elem = elem.toUpperCase();
