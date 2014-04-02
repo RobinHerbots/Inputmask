@@ -471,7 +471,7 @@
                                 }
                                 tst = getTests(validatedPos, !strict)[0]; //possible mismatch TODO
                             }
-                            if (ndx != 0) {
+                            if (ndx > 0) {
                                 getMaskSet()["buffer"] = undefined;
                                 getMaskSet()["tests"] = {}; //clear the tests cache todo optimize
                             }
@@ -1226,6 +1226,7 @@
                     case "isComplete":
                         return isComplete(actionObj["buffer"]);
                     case "unmaskedvalue":
+                        $el = actionObj["$input"];
                         isRTL = actionObj["$input"].data('_inputmask')['isRTL'];
                         return unmaskedvalue(actionObj["$input"], actionObj["skipDatepickerCheck"]);
                     case "mask":
