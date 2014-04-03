@@ -45,6 +45,7 @@
                 };
                 //test definition => {fn: RegExp/function, cardinality: int, optionality: bool, newBlockMarker: bool, offset: int, casing: null/upper/lower, def: definitionSymbol}
                 function insertTestDefinition(mtoken, element, position) {
+                    console.log("insertTestDefinition for " + element);
                     var maskdef = opts.definitions[element];
                     position = position != undefined ? position : mtoken.matches.length;
                     if (maskdef && !escaped) {
@@ -137,7 +138,7 @@
                 if (currentToken.matches.length > 0)
                     maskTokens.push(currentToken);
 
-                //console.log(JSON.stringify(maskTokens));
+                console.log(JSON.stringify(maskTokens));
                 return maskTokens;
             }
             function generateMask(mask, metadata) {

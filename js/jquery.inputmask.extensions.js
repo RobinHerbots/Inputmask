@@ -103,7 +103,7 @@ Optional extensions on the jquery.inputmask base
             }
         },
         "email": {
-            mask: "*{1,20}[.*{1,20}][.*{1,20}]@*{1,20}.*{2,6}[.*{2}]",
+            mask: "*{1,20}[.*{1,20}][.*{1,20}][.*{1,20}]@*{1,20}.*{2,6}",
             greedy: false
         }
     });
