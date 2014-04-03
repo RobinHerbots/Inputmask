@@ -472,8 +472,7 @@
                                 tst = getTests(validatedPos, !strict)[0]; //possible mismatch TODO
                             }
                             if (ndx > 0) {
-                                getMaskSet()["buffer"] = undefined;
-                                getMaskSet()["tests"] = {}; //clear the tests cache todo optimize
+                                resetMaskSet(true);
                             }
                             if (!setValidPosition(validatedPos, $.extend({}, tst, { "input": elem }), strict, fromSetValid))
                                 rslt = false;
@@ -505,7 +504,7 @@
             }
             function getMaskLength() {
                 var maskLength; maxLength = $el.prop('maxLength');
-                if (opts.greedy == false) {
+                if (opts.greedy == false) { //TODO FIXME OPTIMIZE ME
                     var lvp = getLastValidPosition() + 1,
                        test = getTest(lvp);
                     while (!(test.fn == null && test.def == "")) { //determine last possible position
@@ -516,6 +515,7 @@
                         }
                     }
                     maskLength = getMaskTemplate(true, lvp).length;
+                    getMaskSet()["tests"] = {}; //cleanup tests
                 } else
                     maskLength = getBuffer().length;
 
@@ -914,7 +914,7 @@
                                 p = valResult.pos != undefined ? valResult.pos : p; //set new position from isValid
                                 c = valResult.c != undefined ? valResult.c : c; //set new char from isValid
                             }
-                            getMaskSet()["buffer"] = undefined;
+                            resetMaskSet(true);
                             forwardPosition = seekNext(p);
                             getMaskSet()["p"] = forwardPosition; //needed for checkval
                         }
