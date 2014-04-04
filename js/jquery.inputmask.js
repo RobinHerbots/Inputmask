@@ -45,7 +45,6 @@
                 };
                 //test definition => {fn: RegExp/function, cardinality: int, optionality: bool, newBlockMarker: bool, offset: int, casing: null/upper/lower, def: definitionSymbol}
                 function insertTestDefinition(mtoken, element, position) {
-                    console.log("insertTestDefinition for " + element);
                     var maskdef = opts.definitions[element];
                     position = position != undefined ? position : mtoken.matches.length;
                     if (maskdef && !escaped) {
@@ -350,6 +349,9 @@
                                     if (match) {
                                         //get latest match
                                         var latestMatch = matches[matches.length - 1]["match"];
+                                        if (qndx > qt.quantifier.min - 1) { //mark optionality
+                                            latestMatch.optionalQuantifier = true;
+                                        }
                                         var isFirstMatch = (tokenGroup.matches.indexOf(latestMatch) == 0);
                                         if (isFirstMatch) { //search for next possible match
                                             if (qndx > qt.quantifier.min - 1) {
@@ -578,7 +580,8 @@
             function clearOptionalTail(input) {
                 var buffer = getBuffer(), tmpBuffer = buffer.slice(), pos;
                 for (pos = tmpBuffer.length - 1; pos >= 0; pos--) {
-                    if (getTest(pos).optionality && tmpBuffer[pos] == getPlaceholder(pos)) {
+                    var test = getTest(pos);
+                    if ((test.optionality || test.optionalQuantifier) && tmpBuffer[pos] == getPlaceholder(pos)) {
                         tmpBuffer.pop();
                     } else break;
                 }
