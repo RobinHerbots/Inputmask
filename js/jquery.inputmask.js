@@ -1416,9 +1416,12 @@
                     case "hasMaskedValue": //check wheter the returned value is masked or not; currently only works reliable when using jquery.val fn to retrieve the value 
                         return this.data('_inputmask') ? !this.data('_inputmask')['opts'].autoUnmask : false;
                     case "isComplete":
-                        maskset = this.data('_inputmask')['maskset'];
-                        opts = this.data('_inputmask')['opts'];
-                        return maskScope(maskset, opts, { "action": "isComplete", "buffer": this[0]._valueGet().split('') });
+                        if (this.data('_inputmask')) {
+                            maskset = this.data('_inputmask')['maskset'];
+                            opts = this.data('_inputmask')['opts'];
+                            return maskScope(maskset, opts, { "action": "isComplete", "buffer": this[0]._valueGet().split('') });
+			}
+			else return true;
                     case "getmetadata": //return mask metadata if exists
                         if (this.data('_inputmask')) {
                             maskset = this.data('_inputmask')['maskset'];
