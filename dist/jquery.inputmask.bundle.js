@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 2.5.8
+* Version: 2.5.9
 */
 
 (function ($) {
@@ -1645,10 +1645,13 @@
                     case "hasMaskedValue": //check wheter the returned value is masked or not; currently only works reliable when using jquery.val fn to retrieve the value 
                         return this.data('_inputmask') ? !this.data('_inputmask')['opts'].autoUnmask : false;
                     case "isComplete":
-                        masksets = this.data('_inputmask')['masksets'];
-                        activeMasksetIndex = this.data('_inputmask')['activeMasksetIndex'];
-                        opts = this.data('_inputmask')['opts'];
-                        return maskScope(masksets, activeMasksetIndex, opts, { "action": "isComplete", "buffer": this[0]._valueGet().split('') });
+						if (this.data('_inputmask')) {
+							masksets = this.data('_inputmask')['masksets'];
+							activeMasksetIndex = this.data('_inputmask')['activeMasksetIndex'];
+							opts = this.data('_inputmask')['opts'];
+							return maskScope(masksets, activeMasksetIndex, opts, { "action": "isComplete", "buffer": this[0]._valueGet().split('') });
+						}
+						else return true;
                     case "getmetadata": //return mask metadata if exists
                         if (this.data('_inputmask')) {
                             masksets = this.data('_inputmask')['masksets'];
@@ -1705,7 +1708,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.5.8
+Version: 2.5.9
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1827,7 +1830,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.5.8
+Version: 2.5.9
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2315,7 +2318,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.5.8
+Version: 2.5.9
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2501,7 +2504,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.5.8
+Version: 2.5.9
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2688,7 +2691,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 2.5.8
+Version: 2.5.9
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
