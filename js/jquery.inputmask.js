@@ -137,7 +137,7 @@
                 if (currentToken.matches.length > 0)
                     maskTokens.push(currentToken);
 
-                console.log(JSON.stringify(maskTokens));
+                //console.log(JSON.stringify(maskTokens));
                 return maskTokens;
             }
             function generateMask(mask, metadata) {
@@ -300,8 +300,7 @@
                     var t = getMaskSet()["validPositions"][i];
                     var s = getMaskSet()["validPositions"][startPos];
                     if (t != undefined && s == undefined) {
-                        console.log(JSON.stringify(getTest(startPos)));
-                        if (getTest(startPos).def == t.match.def && isValid(startPos, t["input"], false) !== false) {
+                        if (getTest(startPos).def == t.match.def && isValid(startPos, t["input"], true) !== false) {
                             delete getMaskSet()["validPositions"][i];
                         }
                         startPos = seekNext(startPos);
@@ -432,11 +431,13 @@
                 }
                 return getMaskSet()['buffer'];
             }
-            function refreshFromBuffer(start, end, strict) {
+            function refreshFromBuffer(start, end) {
                 var buffer = getBuffer();
                 for (var i = start; i < end; i++) {
-                    var ltst = getTests(i, !strict)[0];
-                    setValidPosition(i, $.extend({}, ltst, { "input": casing(buffer[i], ltst["match"]) }), strict);
+                    if (buffer[i] != getPlaceholder(i)) {
+                        var ltst = getTests(i, false)[0];
+                        setValidPosition(i, $.extend({}, ltst, { "input": casing(buffer[i], ltst["match"]) }), true);
+                    }
                 }
             }
             function casing(elem, test) {
@@ -479,10 +480,15 @@
                             elem = elem == opts.skipOptionalPartCharacter ? test["def"] : elem;
 
                             var validatedPos = position;
-                            if (rslt !== true && (rslt["pos"] != position || rslt["refreshFromBuffer"])) { //their is a position offset
+                            if (rslt["refreshFromBuffer"] === true) {
+                                strict = true;
+                                validatedPos = rslt["pos"];
+                                getMaskSet()["validPositions"] = {};
+                                refreshFromBuffer(0, getBuffer().length);
+                            } else if (rslt !== true && rslt["pos"] != position) { //their is a position offset
                                 setValidPosition(position, $.extend({}, tst, { "input": casing(buffer[position], test) }), strict);
                                 validatedPos = rslt["pos"];
-                                refreshFromBuffer(position + 1, validatedPos, strict);
+                                refreshFromBuffer(position + 1, validatedPos);
                                 tst = getTests(validatedPos, !strict)[0]; //possible mismatch TODO
                             }
                             if (ndx > 0) {
@@ -869,8 +875,12 @@
                 }
 
                 var currentCaretPos = caret(input);
-                if (opts.onKeyDown.call(this, e, getBuffer(), opts) === true) //extra stuff to execute on keydown
+                var keydownResult = opts.onKeyDown.call(this, e, getBuffer(), opts);
+                if (keydownResult && keydownResult["refreshFromBuffer"] === true) { //extra stuff to execute on keydown
+                    getMaskSet()["validPositions"] = {};
+                    refreshFromBuffer(0, getBuffer().length);
                     caret(input, currentCaretPos.begin, currentCaretPos.end);
+                }
                 ignorable = $.inArray(k, opts.ignorables) != -1;
             }
             function keypressEvent(e, checkval, k, writeOut, strict, ndx) {
@@ -984,10 +994,15 @@
             function keyupEvent(e) {
                 var $input = $(this), input = this, k = e.keyCode, buffer = getBuffer();
 
-                opts.onKeyUp.call(this, e, buffer, opts); //extra stuff to execute on keyup
+                var keyupResult = opts.onKeyUp.call(this, e, buffer, opts);
+                if (keyupResult && keyupResult["refreshFromBuffer"] === true) {
+                    getMaskSet()["validPositions"] = {};
+                    refreshFromBuffer(0, getBuffer().length);
+                }
                 if (k == opts.keyCode.TAB && opts.showMaskOnFocus) {
                     if ($input.hasClass('focus.inputmask') && input._valueGet().length == 0) {
-                        buffer = getBufferTemplate().slice();
+                        resetMaskSet();
+                        buffer = getBuffer();
                         writeBuffer(input, buffer);
                         caret(input, 0);
                         valueOnFocus = getBuffer().join('');

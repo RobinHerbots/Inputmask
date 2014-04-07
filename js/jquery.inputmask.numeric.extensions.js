@@ -81,12 +81,12 @@ Optional extensions on the jquery.inputmask base
                         for (var i = 1; i <= opts.digits && i < opts.getMaskLength(masksets[activeMasksetIndex]["_buffer"], opts.greedy, opts.repeat, buffer, opts) ; i++) {
                             if (buffer[radixPosition + i] == undefined || buffer[radixPosition + i] == "") buffer[radixPosition + i] = "0";
                         }
-                        input._valueSet(buffer.join(''));
+                        return { "refreshFromBuffer": true };
                     }
                 } else if (e.keyCode == opts.keyCode.DELETE || e.keyCode == opts.keyCode.BACKSPACE) {
                     opts.postFormat(buffer, 0, true, opts);
                     input._valueSet(buffer.join(''));
-                    return true;
+                    return { "refreshFromBuffer": true };
                 }
             },
             definitions: {
@@ -141,7 +141,7 @@ Optional extensions on the jquery.inputmask base
 
                         if (isValid != false && !strict && chrs != opts.radixPoint) {
                             var newPos = opts.postFormat(buffer, pos, (chrs == "-" || chrs == "+") ? true : false, opts);
-                            return { "pos": newPos };
+                            return { "pos": newPos, "refreshFromBuffer": true };
                         }
 
                         return isValid;
