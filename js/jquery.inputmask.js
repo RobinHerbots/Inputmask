@@ -432,10 +432,30 @@
                 }
                 return getMaskSet()['buffer'];
             }
+            function refreshFromBuffer(start, end, strict) {
+                var buffer = getBuffer();
+                for (var i = start; i < end; i++) {
+                    var ltst = getTests(i, !strict)[0];
+                    setValidPosition(i, $.extend({}, ltst, { "input": casing(buffer[i], ltst["match"]) }), strict);
+                }
+            }
+            function casing(elem, test) {
+                switch (test.casing) {
+                    case "upper":
+                        elem = elem.toUpperCase();
+                        break;
+                    case "lower":
+                        elem = elem.toLowerCase();
+                        break;
+                }
+
+                return elem;
+            }
             function isValid(pos, c, strict, fromSetValid) { //strict true ~ no correction or autofill
                 strict = strict === true; //always set a value to strict to prevent possible strange behavior in the extensions 
 
                 function _isValid(position, c, strict, fromSetValid) {
+
                     var rslt = false;
                     $.each(getTests(position, !strict), function (ndx, tst) {
                         var test = tst["match"];
@@ -455,29 +475,20 @@
                                 : false;
 
                         if (rslt !== false) {
-                            var elem = c == opts.skipOptionalPartCharacter ? test["def"] : c;
-                            switch (test.casing) {
-                                case "upper":
-                                    elem = elem.toUpperCase();
-                                    break;
-                                case "lower":
-                                    elem = elem.toLowerCase();
-                                    break;
-                            }
+                            var elem = rslt.c != undefined ? rslt.c : c;
+                            elem = elem == opts.skipOptionalPartCharacter ? test["def"] : elem;
 
                             var validatedPos = position;
-                            if (rslt !== true && rslt["pos"] != position) { //their is an position offset
-                                setValidPosition(position, $.extend({}, tst, { "input": buffer[position] }), strict);
+                            if (rslt !== true && (rslt["pos"] != position || rslt["refreshFromBuffer"])) { //their is a position offset
+                                setValidPosition(position, $.extend({}, tst, { "input": casing(buffer[position], test) }), strict);
                                 validatedPos = rslt["pos"];
-                                for (var op = position + 1; op < validatedPos; op++) {
-                                    setValidPosition(op, $.extend({}, getTests(op, !strict)[0], { "input": buffer[op] }), strict);
-                                }
+                                refreshFromBuffer(position + 1, validatedPos, strict);
                                 tst = getTests(validatedPos, !strict)[0]; //possible mismatch TODO
                             }
                             if (ndx > 0) {
                                 resetMaskSet(true);
                             }
-                            if (!setValidPosition(validatedPos, $.extend({}, tst, { "input": elem }), strict, fromSetValid))
+                            if (!setValidPosition(validatedPos, $.extend({}, tst, { "input": casing(elem, test) }), strict, fromSetValid))
                                 rslt = false;
                             return false; //break from $.each
                         }
@@ -1416,9 +1427,11 @@
                     case "hasMaskedValue": //check wheter the returned value is masked or not; currently only works reliable when using jquery.val fn to retrieve the value 
                         return this.data('_inputmask') ? !this.data('_inputmask')['opts'].autoUnmask : false;
                     case "isComplete":
-                        maskset = this.data('_inputmask')['maskset'];
-                        opts = this.data('_inputmask')['opts'];
-                        return maskScope(maskset, opts, { "action": "isComplete", "buffer": this[0]._valueGet().split('') });
+                        if (this.data('_inputmask')) {
+                            maskset = this.data('_inputmask')['maskset'];
+                            opts = this.data('_inputmask')['opts'];
+                            return maskScope(maskset, opts, { "action": "isComplete", "buffer": this[0]._valueGet().split('') });
+                        } else return true;
                     case "getmetadata": //return mask metadata if exists
                         if (this.data('_inputmask')) {
                             maskset = this.data('_inputmask')['maskset'];
