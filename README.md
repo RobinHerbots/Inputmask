@@ -42,9 +42,10 @@ Define your masks:
 
 ```javascript
 $(document).ready(function(){
-   $("#date").inputmask("d/m/y");  //direct mask
-   $("#phone").inputmask("mask", {"mask": "(999) 999-9999"}); //specifying fn & options
-   $("#tin").inputmask({"mask": "99-9999999"}); //specifying options only
+   $(selector).inputmask("99-9999999");  //direct mask
+   $(selector).inputmask("mask", {"mask": "(999) 999-9999"}); //specifying fn & options
+   $(selector).inputmask({"mask": "99-9999999"}); //specifying options only
+   $(selector).inputmask("9-a{1,3}9{1,3}"); //direct mask with dynamic syntax 
 });
 ```
 
@@ -69,6 +70,23 @@ $(document).ready(function(){
 
 There are more definitions defined within the extensions.  
 You can find info within the js-files or by further exploring the options.
+
+## Masking types
+### Basic masks
+
+TODO
+
+### Optional masks
+
+TODO
+
+### Dynamic masks
+
+TODO
+
+### Multi masks
+
+TODO
 
 ## Options:
 
