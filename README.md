@@ -1,7 +1,7 @@
 #Branch 1.x is no longer maintained!
 
 
-#jquery.inputmask
+#jquery.inputmask 1.x
 
 Copyright (c) 2010 - 2013 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
