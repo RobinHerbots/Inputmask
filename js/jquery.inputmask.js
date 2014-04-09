@@ -1358,7 +1358,7 @@
                 }
             }
             $(el).bind("mouseenter blur focus mouseleave click dblclick " + PasteEventType + " dragdrop drop keydown keypress keypress", function (e) {
-                var caretPos, k;
+                var caretPos = caret(el), k;
                 if (e.type == "keydown") {
                     k = e.keyCode;
                     if (k == opts.keyCode.DOWN && activeMasksetIndex < elmasks.length) {
@@ -1375,16 +1375,13 @@
                     if (e.type == "keydown") {
                         k = e.keyCode;
                         if (k == opts.keyCode.RIGHT) {
-                            caretPos = caret(el);
                             caret(lmnt, caretPos.begin + 1, caretPos.end + 1);
                             return;
                         } else if (k == opts.keyCode.LEFT) {
-                            caretPos = caret(el);
                             caret(lmnt, caretPos.begin - 1, caretPos.end - 1);
                             return;
                         }
-                    } else if (["click", "keydown", "keypress", "keyup"].indexOf(e.type) != -1) {
-                        caretPos = caret(el);
+                    } else if (["click"].indexOf(e.type) != -1) {
                         caret(lmnt, caretPos.begin, caretPos.end);
                     }
                     setTimeout(function () {
