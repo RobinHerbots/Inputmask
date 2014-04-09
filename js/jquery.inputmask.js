@@ -612,7 +612,8 @@
                         return isMask(index) && isValid(index, element, true) ? element : null;
                     });
                     var unmaskedValue = (isRTL ? umValue.reverse() : umValue).join('');
-                    return $.isFunction(opts.onUnMask) ? opts.onUnMask.call($input, getActiveBuffer().join(''), unmaskedValue, opts) : unmaskedValue;
+                    var bufferValue = (isRTL ? getBuffer().reverse() : getBuffer()).join('');
+                    return $.isFunction(opts.onUnMask) ? opts.onUnMask.call($input, bufferValue, unmaskedValue, opts) : unmaskedValue;
                 } else {
                     return $input[0]._valueGet();
                 }
