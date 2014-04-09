@@ -31,7 +31,7 @@
             return false;
         }
         function generateMaskSet(opts) {
-            var ms;
+            var ms = [];
             function analyseMask(mask) {
                 var tokenizer = /(?:[?*+]|\{[0-9]+(?:,[0-9\+\*]*)?\})\??|[^.?*+^${[]()|\\]+|./g,
                      escaped = false;
@@ -172,11 +172,10 @@
             if ($.isArray(opts.mask)) {
                 $.each(opts.mask, function (ndx, msk) {
                     if (msk["mask"] != undefined) {
-                        ms = generateMask(msk["mask"].toString(), msk);
+                        ms.push(generateMask(msk["mask"].toString(), msk));
                     } else {
-                        ms = generateMask(msk.toString());
+                        ms.push(generateMask(msk.toString()));
                     }
-                    return false; //break after first multiple not supported for now (again) 
                 });
             } else {
                 if (opts.mask.length == 1 && opts.greedy == false && opts.repeat != 0) {
@@ -628,10 +627,17 @@
                 if (typeof begin == 'number') {
                     begin = TranslatePosition(begin);
                     end = TranslatePosition(end);
+                    end = (typeof end == 'number') ? end : begin;
+
+                    //store caret for multi scope
+                    var data = $(input).data('_inputmask') || {};
+                    data["caret"] = { "begin": begin, "end": end };
+                    $(input).data('_inputmask', data);
+
                     if (!$(npt).is(':visible')) {
                         return;
                     }
-                    end = (typeof end == 'number') ? end : begin;
+
                     npt.scrollLeft = npt.scrollWidth;
                     if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
                     if (npt.setSelectionRange) {
@@ -647,7 +653,8 @@
                     }
                 } else {
                     if (!$(input).is(':visible')) {
-                        return { "begin": 0, "end": 0 };
+                        var data = $(input).data('_inputmask');
+                        return data["caret"] || { begin: 0, end: 0 };
                     }
                     if (npt.setSelectionRange) {
                         begin = npt.selectionStart;
@@ -1294,6 +1301,102 @@
             }
         };
 
+        function multiMaskScope(el, masksets, opts) {
+            function caret(input, begin, end) {
+                var npt = input.jquery && input.length > 0 ? input[0] : input, range;
+                if (typeof begin == 'number') {
+                    end = (typeof end == 'number') ? end : begin;
+
+                    //store caret for multi scope
+                    var data = $(input).data('_inputmask') || {};
+                    data["caret"] = { "begin": begin, "end": end };
+                    $(input).data('_inputmask', data);
+
+                    if (!$(npt).is(':visible')) {
+                        return;
+                    }
+
+                    npt.scrollLeft = npt.scrollWidth;
+                    if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
+                    if (npt.setSelectionRange) {
+                        npt.selectionStart = begin;
+                        npt.selectionEnd = end;
+
+                    } else if (npt.createTextRange) {
+                        range = npt.createTextRange();
+                        range.collapse(true);
+                        range.moveEnd('character', end);
+                        range.moveStart('character', begin);
+                        range.select();
+                    }
+                } else {
+                    if (!$(input).is(':visible')) {
+                        var data = $(input).data('_inputmask');
+                        return data["caret"] || { begin: 0, end: 0 };
+                    }
+                    if (npt.setSelectionRange) {
+                        begin = npt.selectionStart;
+                        end = npt.selectionEnd;
+                    } else if (document.selection && document.selection.createRange) {
+                        range = document.selection.createRange();
+                        begin = 0 - range.duplicate().moveStart('character', -100000);
+                        end = begin + range.text.length;
+                    }
+                    return { "begin": begin, "end": end };
+                }
+            }
+            var activeMasksetIndex = 0, elmasks = $.map(masksets, function (msk, ndx) {
+                var elmask = $('<input type="text" />')[0];
+                maskScope($.extend(true, {}, msk), opts, { "action": "mask", "el": elmask });
+                return elmask;
+            });
+            function determineActiveMask(eventType, elmasks) {
+                if ($.isFunction(opts.determineActiveMasksetIndex)) activeMasksetIndex = opts.determineActiveMasksetIndex.call($el, eventType, elmasks);
+                $(el).val(elmasks[activeMasksetIndex]._valueGet());
+                if (["blur", "focus"].indexOf(eventType) == -1) {
+                    caret(el, caret(elmasks[activeMasksetIndex]).begin);
+                }
+            }
+            $(el).bind("mouseenter blur focus mouseleave click dblclick " + PasteEventType + " dragdrop drop keydown keypress keypress", function (e) {
+                var caretPos, k;
+                if (e.type == "keydown") {
+                    k = e.keyCode;
+                    if (k == opts.keyCode.DOWN && activeMasksetIndex < elmasks.length) {
+                        activeMasksetIndex++;
+                        determineActiveMask(e.type, elmasks);
+                        return false;
+                    } else if (k == opts.keyCode.UP && activeMasksetIndex > 0) {
+                        activeMasksetIndex--;
+                        determineActiveMask(e.type, elmasks);
+                        return false;
+                    }
+                }
+                $.each(elmasks, function (ndx, lmnt) {
+                    if (e.type == "keydown") {
+                        k = e.keyCode;
+                        if (k == opts.keyCode.RIGHT) {
+                            caretPos = caret(el);
+                            caret(lmnt, caretPos.begin + 1, caretPos.end + 1);
+                            return;
+                        } else if (k == opts.keyCode.LEFT) {
+                            caretPos = caret(el);
+                            caret(lmnt, caretPos.begin - 1, caretPos.end - 1);
+                            return;
+                        }
+                    } else if (["click", "keydown", "keypress", "keyup"].indexOf(e.type) != -1) {
+                        caretPos = caret(el);
+                        caret(lmnt, caretPos.begin, caretPos.end);
+                    }
+                    setTimeout(function () {
+                        $(lmnt).triggerHandler(e);
+                        setTimeout(function () {
+                            determineActiveMask(e.type, elmasks);
+                        }, 0);
+                    }, 0);
+                });
+            });
+        };
+
         $.inputmask = {
             //options default
             defaults: {
@@ -1352,7 +1455,9 @@
                 },
                 //specify keycodes which should not be considered in the keypress event, otherwise the preventDefault will stop their default behavior especially in FF
                 ignorables: [8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123],
-                isComplete: undefined //override for isComplete - args => buffer, opts - return true || false
+                isComplete: undefined, //override for isComplete - args => buffer, opts - return true || false
+                //multi-masks
+                determineActiveMasksetIndex: undefined //override determineActiveMasksetIndex - args => eventType, elmasks - return int
             },
             masksCache: {},
             escapeRegex: function (str) {
@@ -1383,7 +1488,10 @@
                         if (maskset.length == 0) { return this; }
 
                         return this.each(function () {
-                            maskScope($.extend(true, {}, maskset), 0, opts, { "action": "mask", "el": this });
+                            if ($.isArray(maskset)) {
+                                multiMaskScope(this, maskset, opts);
+                            } else
+                                maskScope($.extend(true, {}, maskset), opts, { "action": "mask", "el": this });
                         });
                     case "unmaskedvalue":
                         var $input = $(this), input = this;
@@ -1463,7 +1571,10 @@
                         maskset = generateMaskSet(opts);
                         if (maskset == undefined) { return this; }
                         return this.each(function () {
-                            maskScope($.extend(true, {}, maskset), opts, { "action": "mask", "el": this });
+                            if ($.isArray(maskset)) {
+                                multiMaskScope(this, maskset, opts);
+                            } else
+                                maskScope($.extend(true, {}, maskset), opts, { "action": "mask", "el": this });
                         });
 
                         break;
@@ -1475,7 +1586,10 @@
                 maskset = generateMaskSet(opts);
                 if (maskset == undefined) { return this; }
                 return this.each(function () {
-                    maskScope($.extend(true, {}, maskset), opts, { "action": "mask", "el": this });
+                    if ($.isArray(maskset)) {
+                        multiMaskScope(this, maskset, opts);
+                    } else
+                        maskScope($.extend(true, {}, maskset), opts, { "action": "mask", "el": this });
                 });
             } else if (fn == undefined) {
                 //look for data-inputmask atribute - the attribute should only contain optipns
