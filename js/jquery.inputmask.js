@@ -569,7 +569,7 @@
                 var maskL = getMaskLength();
                 if (pos >= maskL) return maskL;
                 var position = pos;
-                while (++position < maskL && !isMask(position)) {
+                while (++position < maskL && !isMask(position) && (opts.nojumps !== true || opts.nojumpsThreshold > position)) {
                 }
                 return position;
             }
@@ -578,7 +578,7 @@
                 var position = pos;
                 if (position <= 0) return 0;
 
-                while (--position > 0 && !isMask(position)) {
+                while (--position > 0 && !isMask(position) && (opts.nojumps !== true || opts.nojumpsThreshold > position)) {
                 };
                 return position;
             }
@@ -1352,7 +1352,6 @@
         };
 
         function multiMaskScope(el, masksets, opts) {
-
             function caret(input, begin, end) {
                 var npt = input.jquery && input.length > 0 ? input[0] : input, range;
                 if (typeof begin == 'number') {
@@ -1434,7 +1433,7 @@
                 var caretPos = caret(el), k;
                 if (e.type == "keydown") {
                     k = e.keyCode;
-                    if (k == opts.keyCode.DOWN && activeMasksetIndex < elmasks.length) {
+                    if (k == opts.keyCode.DOWN && activeMasksetIndex < elmasks.length - 1) {
                         activeMasksetIndex++;
                         determineActiveMask("multiMaskScope", elmasks);
                         return false;
@@ -1525,6 +1524,8 @@
                 ignorables: [8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123],
                 isComplete: undefined, //override for isComplete - args => buffer, opts - return true || false
                 //multi-masks
+                nojumps: false, //do not jump over fixed parts in the mask
+                nojumpsThreshold: 0, //start nojumps as of
                 determineActiveMasksetIndex: undefined //override determineActiveMasksetIndex - args => eventType, elmasks - return int
             },
             masksCache: {},
