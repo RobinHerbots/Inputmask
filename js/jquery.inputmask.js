@@ -1457,12 +1457,10 @@
                     } else if (["click"].indexOf(e.type) != -1) {
                         caret(lmnt, caretPos.begin, caretPos.end);
                     }
+                    $(lmnt).triggerHandler(e);
                     setTimeout(function () {
-                        $(lmnt).triggerHandler(e);
-                        setTimeout(function () {
-                            determineActiveMask(e.type, elmasks);
-                        }, 0);
-                    }, 0);
+                        determineActiveMask(e.type, elmasks);
+                    }, 5);
                 });
             });
         };
