@@ -45,6 +45,11 @@ When using this extension make sure you specify the correct url to get the masks
                 //maskList.splice(0, 0, "+p(ppp)ppp-pppp");
                 return maskList;
             },
+            nojumpsThreshold: 1
+        },
+        'phonebe': {
+            alias: "phone",
+            url: "phone-codes/phone-be.json",
             nojumpsThreshold: 4
         }
     });
