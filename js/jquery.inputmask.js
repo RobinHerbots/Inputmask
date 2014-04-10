@@ -1424,13 +1424,19 @@
 
                     if ($.isFunction(opts.determineActiveMasksetIndex)) activeMasksetIndex = opts.determineActiveMasksetIndex.call($el, eventType, elmasks);
                 }
+                console.log(elmasks[activeMasksetIndex]._valueGet());
                 $(el).val(elmasks[activeMasksetIndex]._valueGet());
                 if (["blur", "focus"].indexOf(eventType) == -1) {
-                    caret(el, caret(elmasks[activeMasksetIndex]).begin);
+                    console.log("2 " + eventType);
+                    if ($(elmasks[activeMasksetIndex]).hasClass("focus.inputmask")) {
+                        var activeCaret = caret(elmasks[activeMasksetIndex]);
+                        caret(el, activeCaret.begin, activeCaret.end);
+                    }
                 }
             }
             $(el).bind("mouseenter blur focus mouseleave click dblclick " + PasteEventType + " dragdrop drop keydown keypress keypress", function (e) {
-                var caretPos = caret(el), k;
+                //console.log(e.type);
+                var caretPos = caret(el), k, goDetermine = true;
                 if (e.type == "keydown") {
                     k = e.keyCode;
                     if (k == opts.keyCode.DOWN && activeMasksetIndex < elmasks.length - 1) {
@@ -1446,21 +1452,36 @@
                 $.each(elmasks, function (ndx, lmnt) {
                     if (e.type == "keydown") {
                         k = e.keyCode;
-                        if (k == opts.keyCode.RIGHT) {
+
+                        if (k == opts.keyCode.BACKSPACE & lmnt._valueGet().length < caretPos.begin) {
+                            return;
+                        }
+                        else if (k == opts.keyCode.RIGHT) {
                             caret(lmnt, caretPos.begin + 1, caretPos.end + 1);
+                            goDetermine = false;
                             return;
                         } else if (k == opts.keyCode.LEFT) {
                             caret(lmnt, caretPos.begin - 1, caretPos.end - 1);
+                            goDetermine = false;
                             return;
                         }
-                    } else if (["click"].indexOf(e.type) != -1) {
+                    }
+                    if (["click"].indexOf(e.type) != -1 && caretPos.begin != caretPos.end) {
+                        caret(lmnt, caretPos.begin, caretPos.end);
+                        goDetermine = false;
+                        return;
+                    }
+
+                    if (["click", "keydown"].indexOf(e.type) != -1) {
                         caret(lmnt, caretPos.begin, caretPos.end);
                     }
                     $(lmnt).triggerHandler(e);
+                });
+                if (goDetermine) {
                     setTimeout(function () {
                         determineActiveMask(e.type, elmasks);
                     }, 5);
-                });
+                }
             });
         };
 
