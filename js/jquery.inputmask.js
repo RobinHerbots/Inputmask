@@ -1352,6 +1352,7 @@
         };
 
         function multiMaskScope(el, masksets, opts) {
+            opts.nojumps = true;
             function caret(input, begin, end) {
                 var npt = input.jquery && input.length > 0 ? input[0] : input, range;
                 if (typeof begin == 'number') {
