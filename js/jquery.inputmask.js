@@ -578,7 +578,7 @@
                 var position = pos;
                 if (position <= 0) return 0;
 
-                while (--position > 0 && !isMask(position) /*&& (opts.nojumps !== true || opts.nojumpsThreshold > position)*/) {
+                while (--position > 0 && !isMask(position)) {
                 };
                 return position;
             }
@@ -1353,7 +1353,6 @@
 
         function multiMaskScope(el, masksets, opts) {
             var $el = $(el);
-            opts.nojumps = true;
             function mcaret(input, begin, end) {
                 var npt = input.jquery && input.length > 0 ? input[0] : input, range;
                 if (typeof begin == 'number') {

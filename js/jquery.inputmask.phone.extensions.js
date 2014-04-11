@@ -45,6 +45,7 @@ When using this extension make sure you specify the correct url to get the masks
                 maskList.splice(0, 0, "+p(ppp)ppp-pppp");
                 return maskList;
             },
+            nojumps: true,
             nojumpsThreshold: 1
         },
         'phonebe': {
@@ -73,6 +74,7 @@ When using this extension make sure you specify the correct url to get the masks
                 maskList.splice(0, 0, "+32(ppp)ppp-pppp");
                 return maskList;
             },
+            nojumps: true,
             nojumpsThreshold: 4
         }
     });
