@@ -578,7 +578,7 @@
                 var position = pos;
                 if (position <= 0) return 0;
 
-                while (--position > 0 && !isMask(position) && (opts.nojumps !== true || opts.nojumpsThreshold > position)) {
+                while (--position > 0 && !isMask(position) /*&& (opts.nojumps !== true || opts.nojumpsThreshold > position)*/) {
                 };
                 return position;
             }
@@ -690,7 +690,7 @@
                 } else {
                     if (!$(input).is(':visible')) {
                         var data = $(input).data('_inputmask') || {};
-                        return data["caret"] || { begin: 0, end: 0 };
+                        return data["caret"] || { "begin": TranslatePosition(0), "end": TranslatePosition(0) };
                     }
                     if (npt.setSelectionRange) {
                         begin = npt.selectionStart;
@@ -1399,7 +1399,11 @@
 
             var activeMasksetIndex = 0,
                 elmasks = $.map(masksets, function (msk, ndx) {
-                    var elmask = $('<input type="text" value="' + $el.attr("value") + '" />')[0];
+                    var elMaskStr = '<input type="text" ';
+                    if ($el.attr("value")) elMaskStr += 'value="' + $el.attr("value") + '" ';
+                    if ($el.attr("dir")) elMaskStr += 'dir="' + $el.attr("dir") + '" ';
+                    elMaskStr += '/>';
+                    var elmask = $(elMaskStr)[0];
                     maskScope($.extend(true, {}, msk), opts, { "action": "mask", "el": elmask });
                     return elmask;
                 });
@@ -1410,14 +1414,15 @@
                     $.each(elmasks, function (ndx, lmsk) {
                         var data = $(lmsk).data('_inputmask');
                         var maskset = data["maskset"];
-                        var lastValidPosition = -1, positionCount = -1;
+                        var lastValidPosition = -1, positionCount = 0;
                         for (var posNdx in maskset["validPositions"]) {
                             var psNdx = parseInt(posNdx);
                             if (psNdx > lastValidPosition) lastValidPosition = psNdx;
                             positionCount++;
                         }
+                        //console.log(positionCount + " " + lastValidPosition);
                         if (positionCount >= lpc) {
-                            if ((lastValidPosition < lvp && positionCount == lpc) || positionCount > lpc) {
+                            if ((lastValidPosition > lvp && positionCount == lpc) || positionCount > lpc) {
                                 lvp = lastValidPosition;
                                 lpc = positionCount;
                                 activeMasksetIndex = ndx;
@@ -1428,12 +1433,9 @@
                     if ($.isFunction(opts.determineActiveMasksetIndex)) activeMasksetIndex = opts.determineActiveMasksetIndex.call($el, eventType, elmasks);
                 }
 
-                if ($(el).val() == "") {
-                    $el.val(elmasks[activeMasksetIndex]._valueGet());
-                    mcaret(el, 0, $el.val().length);
-                }
                 if (["focus"].indexOf(eventType) == -1 && $el.val() != elmasks[activeMasksetIndex]._valueGet()) {
-                    $el.val(elmasks[activeMasksetIndex]._valueGet());
+                    var value = $(elmasks[activeMasksetIndex]).val() == "" ? elmasks[activeMasksetIndex]._valueGet() : $(elmasks[activeMasksetIndex]).val();
+                    $el.val(value);
                 }
                 if (["blur", "focus"].indexOf(eventType) == -1) {
                     if ($(elmasks[activeMasksetIndex]).hasClass("focus.inputmask")) {
@@ -1464,7 +1466,7 @@
                     if (e.type == "keydown") {
                         k = e.keyCode;
 
-                        if (k == opts.keyCode.BACKSPACE & lmnt._valueGet().length < caretPos.begin) {
+                        if (k == opts.keyCode.BACKSPACE && lmnt._valueGet().length < caretPos.begin) {
                             return;
                         } else if (k == opts.keyCode.TAB) {
                             goDetermine = false;
@@ -1484,9 +1486,10 @@
                         return;
                     }
 
-                    if (["click", "keydown"].indexOf(e.type) != -1) {
+                    if (["click"].indexOf(e.type) != -1 || (["keydown"].indexOf(e.type) != -1 && caretPos.begin != caretPos.end)) {
                         mcaret(lmnt, caretPos.begin, caretPos.end);
                     }
+
                     $(lmnt).triggerHandler(e);
                 });
                 if (goDetermine) {
@@ -1496,9 +1499,11 @@
                 }
             });
 
-            setTimeout(function () {
-                determineActiveMask("init", elmasks);
-            }, 0);
+            if ($el.attr("value") != "") {
+                setTimeout(function () {
+                    determineActiveMask("init", elmasks);
+                }, 0);
+            }
         };
 
         $.inputmask = {
