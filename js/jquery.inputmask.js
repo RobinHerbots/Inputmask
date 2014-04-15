@@ -1432,20 +1432,21 @@
             }
             function determineActiveMask(eventType, elmasks) {
                 if (eventType != "multiMaskScope") {
-                    var lvp = -1, lpc = -1;
+                    var lvp = -1, lpc = -1, cp = -1;
                     $.each(elmasks, function (ndx, lmsk) {
                         var data = $(lmsk).data('_inputmask');
                         var maskset = data["maskset"];
-                        var lastValidPosition = -1, positionCount = 0;
+                        var lastValidPosition = -1, positionCount = 0, caretPos = mcaret(lmsk).begin;
                         for (var posNdx in maskset["validPositions"]) {
                             var psNdx = parseInt(posNdx);
                             if (psNdx > lastValidPosition) lastValidPosition = psNdx;
                             positionCount++;
                         }
                         if (positionCount >= lpc) {
-                            if ((lastValidPosition > lvp && positionCount == lpc) || positionCount > lpc) {
+                            if ((lastValidPosition > lvp && positionCount == lpc && (cp == -1 || cp >= caretPos)) || positionCount > lpc) {
                                 lvp = lastValidPosition;
                                 lpc = positionCount;
+                                cp = caretPos;
                                 activeMasksetIndex = ndx;
                             }
                         }
@@ -1462,7 +1463,6 @@
                     if ($(elmasks[activeMasksetIndex]).hasClass("focus.inputmask")) {
                         var activeCaret = mcaret(elmasks[activeMasksetIndex]);
                         mcaret(el, activeCaret.begin, activeCaret.end);
-                        console.log("haaa " + eventType + " " + activeCaret.begin);
                     }
                 }
             }
