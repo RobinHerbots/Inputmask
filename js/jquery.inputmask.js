@@ -673,9 +673,9 @@
                     end = (typeof end == 'number') ? end : begin;
 
                     //store caret for multi scope
-                    var data = $(input).data('_inputmask') || {};
+                    var data = $(npt).data('_inputmask') || {};
                     data["caret"] = { "begin": begin, "end": end };
-                    $(input).data('_inputmask', data);
+                    $(npt).data('_inputmask', data);
 
                     if (!$(npt).is(':visible')) {
                         return;
@@ -695,12 +695,11 @@
                         range.select();
                     }
                 } else {
-                    if (!$(input).is(':visible')) {
-                        var data = $(input).data('_inputmask') || {};
-                        data["caret"] = { "begin": TranslatePosition(data["caret"] ? data["caret"].begin : 0), "end": TranslatePosition(data["caret"] ? data["caret"].end : 0) };
-                        return data["caret"];
-                    }
-                    if (npt.setSelectionRange) {
+                    var data = $(npt).data('_inputmask');
+                    if (!$(npt).is(':visible') && data && data["caret"] != undefined) {
+                        begin = data["caret"]["begin"];
+                        end = data["caret"]["end"];
+                    } else if (npt.setSelectionRange) {
                         begin = npt.selectionStart;
                         end = npt.selectionEnd;
                     } else if (document.selection && document.selection.createRange) {
@@ -1365,14 +1364,20 @@
             function mcaret(input, begin, end) {
                 var npt = input.jquery && input.length > 0 ? input[0] : input, range;
                 if (typeof begin == 'number') {
+                    begin = TranslatePosition(begin);
+                    end = TranslatePosition(end);
                     end = (typeof end == 'number') ? end : begin;
-                    if (!$(npt).is(':visible') && input != el) { //do not touch the host input 
-                        //store caret for multi scope
-                        var data = $(input).data('_inputmask') || {};
+
+                    //store caret for multi scope
+                    if (npt != el) {
+                        var data = $(npt).data('_inputmask') || {};
                         data["caret"] = { "begin": begin, "end": end };
-                        $(input).data('_inputmask', data);
+                        $(npt).data('_inputmask', data);
+                    }
+                    if (!$(npt).is(':visible')) {
                         return;
                     }
+
                     npt.scrollLeft = npt.scrollWidth;
                     if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
                     if (npt.setSelectionRange) {
@@ -1387,11 +1392,11 @@
                         range.select();
                     }
                 } else {
-                    if (!$(input).is(':visible')) {
-                        var data = $(input).data('_inputmask') || {};
-                        return data["caret"] || { begin: 0, end: 0 };
-                    }
-                    if (npt.setSelectionRange) {
+                    if (!$(npt).is(':visible') && $(npt).data('_inputmask')["caret"] != undefined) {
+                        var data = $(npt).data('_inputmask');
+                        begin = data["caret"]["begin"];
+                        end = data["caret"]["end"];
+                    } else if (npt.setSelectionRange) {
                         begin = npt.selectionStart;
                         end = npt.selectionEnd;
                     } else if (document.selection && document.selection.createRange) {
@@ -1399,6 +1404,8 @@
                         begin = 0 - range.duplicate().moveStart('character', -100000);
                         end = begin + range.text.length;
                     }
+                    begin = TranslatePosition(begin);
+                    end = TranslatePosition(end);
                     return { "begin": begin, "end": end };
                 }
             }
@@ -1424,8 +1431,6 @@
                 return pos;
             }
             function determineActiveMask(eventType, elmasks) {
-                console.log("determine for " + eventType);
-
                 if (eventType != "multiMaskScope") {
                     var lvp = -1, lpc = -1;
                     $.each(elmasks, function (ndx, lmsk) {
@@ -1452,13 +1457,12 @@
                 if (["focus"].indexOf(eventType) == -1 && $el.val() != elmasks[activeMasksetIndex]._valueGet()) {
                     var value = $(elmasks[activeMasksetIndex]).val() == "" ? elmasks[activeMasksetIndex]._valueGet() : $(elmasks[activeMasksetIndex]).val();
                     $el.val(value);
-                    console.log("yaaa");
                 }
                 if (["blur", "focus"].indexOf(eventType) == -1) {
                     if ($(elmasks[activeMasksetIndex]).hasClass("focus.inputmask")) {
                         var activeCaret = mcaret(elmasks[activeMasksetIndex]);
                         mcaret(el, activeCaret.begin, activeCaret.end);
-                        console.log("haaa");
+                        console.log("haaa " + eventType + " " + activeCaret.begin);
                     }
                 }
             }
@@ -1498,15 +1502,15 @@
                             return;
                         }
                     }
-                    if (["click"].indexOf(e.type) != -1 && caretPos.begin != caretPos.end) {
-                        mcaret(lmnt, caretPos.begin, caretPos.end);
-                        goDetermine = false;
-                        console.log(e.type + " 2");
-                        return;
+                    if (["click"].indexOf(e.type) != -1) {
+                        mcaret(lmnt, TranslatePosition(caretPos.begin), TranslatePosition(caretPos.end));
+                        if (caretPos.begin != caretPos.end) {
+                            goDetermine = false;
+                            return;
+                        }
                     }
 
-                    if (["click"].indexOf(e.type) != -1 || (["keydown"].indexOf(e.type) != -1 && caretPos.begin != caretPos.end)) {
-                        console.log("OOOHHHNOOOOOO " + e.type);
+                    if (["keydown"].indexOf(e.type) != -1 && caretPos.begin != caretPos.end) {
                         mcaret(lmnt, caretPos.begin, caretPos.end);
                     }
 
