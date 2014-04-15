@@ -500,11 +500,18 @@
                             elem = elem == opts.skipOptionalPartCharacter ? test["def"] : elem;
 
                             var validatedPos = position;
-                            if (rslt["refreshFromBuffer"] === true) {
+                            if (rslt["refreshFromBuffer"]) {
+                                var refresh = rslt["refreshFromBuffer"];
                                 strict = true;
-                                validatedPos = rslt["pos"];
-                                getMaskSet()["validPositions"] = {};
-                                refreshFromBuffer(0, getBuffer().length);
+                                validatedPos = rslt.pos != undefined ? rslt.pos : position;
+                                tst = getTests(validatedPos, !strict)[0]; //possible mismatch TODO
+                                if (refresh === true) {
+                                    getMaskSet()["validPositions"] = {};
+                                    refreshFromBuffer(0, getBuffer().length);
+                                }
+                                else {
+                                    refreshFromBuffer(refresh["start"], refresh["end"]);
+                                }
                             } else if (rslt !== true && rslt["pos"] != position) { //their is a position offset
                                 setValidPosition(position, $.extend({}, tst, { "input": casing(buffer[position], test) }), strict);
                                 validatedPos = rslt["pos"];
@@ -690,7 +697,8 @@
                 } else {
                     if (!$(input).is(':visible')) {
                         var data = $(input).data('_inputmask') || {};
-                        return data["caret"] || { "begin": TranslatePosition(0), "end": TranslatePosition(0) };
+                        data["caret"] = { "begin": TranslatePosition(data["caret"] ? data["caret"].begin : 0), "end": TranslatePosition(data["caret"] ? data["caret"].end : 0) };
+                        return data["caret"];
                     }
                     if (npt.setSelectionRange) {
                         begin = npt.selectionStart;
@@ -1352,20 +1360,19 @@
         };
 
         function multiMaskScope(el, masksets, opts) {
-            var $el = $(el);
+            var $el = $(el), isRTL = el.dir == "rtl" || opts.numericInput;
+
             function mcaret(input, begin, end) {
                 var npt = input.jquery && input.length > 0 ? input[0] : input, range;
                 if (typeof begin == 'number') {
                     end = (typeof end == 'number') ? end : begin;
-
-                    if (!$(npt).is(':visible') && input != el) { //do not touch the host input
+                    if (!$(npt).is(':visible') && input != el) { //do not touch the host input 
                         //store caret for multi scope
                         var data = $(input).data('_inputmask') || {};
                         data["caret"] = { "begin": begin, "end": end };
                         $(input).data('_inputmask', data);
                         return;
                     }
-
                     npt.scrollLeft = npt.scrollWidth;
                     if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
                     if (npt.setSelectionRange) {
@@ -1395,7 +1402,6 @@
                     return { "begin": begin, "end": end };
                 }
             }
-
             var activeMasksetIndex = 0,
                 elmasks = $.map(masksets, function (msk, ndx) {
                     var elMaskStr = '<input type="text" ';
@@ -1406,8 +1412,20 @@
                     maskScope($.extend(true, {}, msk), opts, { "action": "mask", "el": elmask });
                     return elmask;
                 });
-
+            if (el.dir == "rtl" || (opts.numericInput && opts.rightAlignNumerics) || (opts.isNumeric && opts.rightAlignNumerics))
+                $el.css("text-align", "right");
+            el.dir = "ltr";
+            $el.removeAttr("dir");
+            function TranslatePosition(pos) {
+                if (isRTL && typeof pos == 'number' && (!opts.greedy || opts.placeholder != "")) {
+                    var bffrLght = $el.val().length;
+                    pos = bffrLght - pos;
+                }
+                return pos;
+            }
             function determineActiveMask(eventType, elmasks) {
+                console.log("determine for " + eventType);
+
                 if (eventType != "multiMaskScope") {
                     var lvp = -1, lpc = -1;
                     $.each(elmasks, function (ndx, lmsk) {
@@ -1419,7 +1437,6 @@
                             if (psNdx > lastValidPosition) lastValidPosition = psNdx;
                             positionCount++;
                         }
-                        //console.log(positionCount + " " + lastValidPosition);
                         if (positionCount >= lpc) {
                             if ((lastValidPosition > lvp && positionCount == lpc) || positionCount > lpc) {
                                 lvp = lastValidPosition;
@@ -1435,11 +1452,13 @@
                 if (["focus"].indexOf(eventType) == -1 && $el.val() != elmasks[activeMasksetIndex]._valueGet()) {
                     var value = $(elmasks[activeMasksetIndex]).val() == "" ? elmasks[activeMasksetIndex]._valueGet() : $(elmasks[activeMasksetIndex]).val();
                     $el.val(value);
+                    console.log("yaaa");
                 }
                 if (["blur", "focus"].indexOf(eventType) == -1) {
                     if ($(elmasks[activeMasksetIndex]).hasClass("focus.inputmask")) {
                         var activeCaret = mcaret(elmasks[activeMasksetIndex]);
                         mcaret(el, activeCaret.begin, activeCaret.end);
+                        console.log("haaa");
                     }
                 }
             }
@@ -1482,10 +1501,12 @@
                     if (["click"].indexOf(e.type) != -1 && caretPos.begin != caretPos.end) {
                         mcaret(lmnt, caretPos.begin, caretPos.end);
                         goDetermine = false;
+                        console.log(e.type + " 2");
                         return;
                     }
 
                     if (["click"].indexOf(e.type) != -1 || (["keydown"].indexOf(e.type) != -1 && caretPos.begin != caretPos.end)) {
+                        console.log("OOOHHHNOOOOOO " + e.type);
                         mcaret(lmnt, caretPos.begin, caretPos.end);
                     }
 

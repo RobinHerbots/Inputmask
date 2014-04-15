@@ -372,8 +372,8 @@ Optional extensions on the jquery.inputmask base
             alias: "dd/mm/yyyy",
             regex: {
                 hrspre: new RegExp("[012]"), //hours pre
-                hrs24: new RegExp("2[0-9]|1[3-9]"),
-                hrs: new RegExp("[01][0-9]|2[0-3]"), //hours
+                hrs24: new RegExp("2[0-4]|1[3-9]"),
+                hrs: new RegExp("[01][0-9]|2[0-4]"), //hours
                 ampm: new RegExp("^[a|p|A|P][m|M]")
             },
             timeseparator: ':',
@@ -381,6 +381,14 @@ Optional extensions on the jquery.inputmask base
             definitions: {
                 'h': { //hours
                     validator: function (chrs, buffer, pos, strict, opts) {
+                        if (opts.hourFormat == "24") {
+                            if (parseInt(chrs, 10) == 24) {
+                                buffer[pos - 1] = "0";
+                                buffer[pos] = "0";
+                                return { "refreshFromBuffer": { start: pos - 1, end: pos }, "c": "0" };
+                            }
+                        }
+
                         var isValid = opts.regex.hrs.test(chrs);
                         if (!strict && !isValid) {
                             if (chrs.charAt(1) == opts.timeseparator || "-.:".indexOf(chrs.charAt(1)) != -1) {
@@ -389,7 +397,7 @@ Optional extensions on the jquery.inputmask base
                                     buffer[pos - 1] = "0";
                                     buffer[pos] = chrs.charAt(0);
                                     pos++;
-                                    return { "pos": pos };
+                                    return { "refreshFromBuffer": { start: pos - 2, end: pos }, "pos": pos, "c": opts.timeseparator };
                                 }
                             }
                         }
@@ -416,7 +424,7 @@ Optional extensions on the jquery.inputmask base
                                 buffer[pos - 1] = tmp.toString().charAt(0);
                             }
 
-                            return { "pos": pos, "c": buffer[pos] };
+                            return { "refreshFromBuffer": { start: pos - 1, end: pos + 6 }, "c": buffer[pos] };
                         }
 
                         return isValid;
