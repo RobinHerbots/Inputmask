@@ -54,6 +54,7 @@ Optional extensions on the jquery.inputmask base
             separator: '/',
             yearrange: { minyear: 1900, maxyear: 2099 },
             isInYearRange: function (chrs, minyear, maxyear) {
+                if (isNaN(chrs)) return false;
                 var enteredyear = parseInt(chrs.concat(minyear.toString().slice(chrs.length)));
                 var enteredyear2 = parseInt(chrs.concat(maxyear.toString().slice(chrs.length)));
                 return (!isNaN(enteredyear) ? minyear <= enteredyear && enteredyear <= maxyear : false) ||

@@ -1449,6 +1449,7 @@
                             lpc = validPositionCount;
                             cp = caretPos;
                             activeMasksetIndex = ndx;
+                            lvp = lastValidPosition;
                         }
                     });
 
