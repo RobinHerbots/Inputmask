@@ -245,7 +245,7 @@
                         maskTemplate.push(test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length));
                     }
                     pos++;
-                } while ((maxLength == undefined || (pos - 1 < maxLength && maxLength > -1)) && test["fn"] != null || (test["fn"] == null && test["def"] != "") || minimalPos >= pos);
+                } while ((maxLength == undefined || pos - 1 < maxLength) && test["fn"] != null || (test["fn"] == null && test["def"] != "") || minimalPos >= pos);
                 maskTemplate.pop(); //drop the last one which is empty
                 return maskTemplate;
             }
@@ -554,6 +554,7 @@
             function getMaskLength() {
                 var maskLength;
                 maxLength = $el.prop('maxLength');
+                if (maxLength == -1) maxLength = undefined; /* FF sets no defined max length to -1 */
                 if (opts.greedy == false) { //TODO FIXME OPTIMIZE ME
                     var lvp = getLastValidPosition() + 1,
                         test = getTest(lvp);
@@ -569,7 +570,7 @@
                 } else
                     maskLength = getBuffer().length;
 
-                return maxLength == undefined || (maskLength < maxLength && maxLength > -1) /* FF sets no defined max length to -1 */ ? maskLength : maxLength;
+                return (maxLength == undefined || maskLength < maxLength) ? maskLength : maxLength;
             }
 
             function seekNext(pos) {
@@ -1432,23 +1433,22 @@
             }
             function determineActiveMask(eventType, elmasks) {
                 if (eventType != "multiMaskScope") {
-                    var lvp = -1, lpc = -1, cp = -1;
+                    var lpc = -1, cp = -1, lvp = -1;;
                     $.each(elmasks, function (ndx, lmsk) {
                         var data = $(lmsk).data('_inputmask');
                         var maskset = data["maskset"];
-                        var lastValidPosition = -1, positionCount = 0, caretPos = mcaret(lmsk).begin;
+                        var lastValidPosition = -1, validPositionCount = 0, caretPos = mcaret(lmsk).begin;
                         for (var posNdx in maskset["validPositions"]) {
                             var psNdx = parseInt(posNdx);
                             if (psNdx > lastValidPosition) lastValidPosition = psNdx;
-                            positionCount++;
+                            validPositionCount++;
                         }
-                        if (positionCount >= lpc) {
-                            if ((lastValidPosition > lvp && positionCount == lpc && (cp == -1 || cp >= caretPos)) || positionCount > lpc) {
-                                lvp = lastValidPosition;
-                                lpc = positionCount;
-                                cp = caretPos;
-                                activeMasksetIndex = ndx;
-                            }
+                        if (validPositionCount > lpc
+                            || (validPositionCount == lpc && cp > caretPos)
+                            || (validPositionCount == lpc && cp == caretPos && lvp < lastValidPosition)) {
+                            lpc = validPositionCount;
+                            cp = caretPos;
+                            activeMasksetIndex = ndx;
                         }
                     });
 
