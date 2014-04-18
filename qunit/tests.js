@@ -836,7 +836,7 @@ asyncTest("inputmask({ mask: [\"99999\", \"99999-9999\", \"999999-9999\"]]}) - i
     $("#testmask")[0].focus();
     $("#testmask").Type("123456");
     setTimeout(function () {
-        equal($("#testmask").val(), "___6-54321", "Result " + $("#testmask").val());
+        equal($("#testmask").val(), "____-654321", "Result " + $("#testmask").val());
         start();
         $("#testmask").remove();
     }, 0);
@@ -848,7 +848,18 @@ asyncTest("inputmask({ mask: ['9 AAA-AAA', 'A 999-999'] }) ", function () {
     $("#testmask").inputmask({ mask: ['9 AAA-AAA', 'A 999-999'] });
 
     $("#testmask").Type("1abc");
-    caret($("#testmask"), 0, 9);
+    setTimeout(function () {
+        equal($("#testmask").val(), "1 ABC-___", "Result " + $("#testmask").val());
+        start();
+        $("#testmask").remove();
+    }, 0);
+});
+
+asyncTest("inputmask({ mask: ['9 AAA-AAA', 'A 999-999'] }) ", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: ['9 AAA-AAA', 'A 999-999'] });
+
     $("#testmask").Type("a123");
     setTimeout(function () {
         equal($("#testmask").val(), "A 123-___", "Result " + $("#testmask").val());
@@ -2011,7 +2022,21 @@ test("inputmask('Regex', { regex: \"(abc){2,4}(def)\" }); - Flyarbonkers regex a
 
 module("Phone masks")
 
-asyncTest("inputmask(\"phone be\") - value=\"32473890428\"", 1, function () {
+asyncTest("inputmask(\"phone be\") - type \"473890428\"", 1, function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("phonebe", { "url": "https://rawgit.com/RobinHerbots/jquery.inputmask/3.x/js/phone-codes/phone-be.json" });
+
+	$("#testmask").Type("473890428");
+	
+    setTimeout(function () {
+        equal($("#testmask").val(), "+32(473)89-04-28", "Result " + $("#testmask").val());
+        start();
+        $("#testmask").remove();
+    }, 0);
+});
+
+asyncTest("inputmask(\"phone be\") - value \"32473890428\"", 1, function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" value="32473890428" />');
     $("#testmask").inputmask("phonebe", { "url": "https://rawgit.com/RobinHerbots/jquery.inputmask/3.x/js/phone-codes/phone-be.json" });
@@ -2022,7 +2047,6 @@ asyncTest("inputmask(\"phone be\") - value=\"32473890428\"", 1, function () {
         $("#testmask").remove();
     }, 0);
 });
-
 
 asyncTest("inputmask(\"phone\") - value=\"+32(473)890-428\"", 1, function () {
     var $fixture = $("#qunit-fixture");
@@ -2077,7 +2101,7 @@ asyncTest("inputmask(\"phone\") - Brazil switch", 1, function () {
     $fixture.append('<input type="text" id="testmask" value="55121234-1234" />');
     $("#testmask").inputmask("phone", { "url": "https://rawgit.com/RobinHerbots/jquery.inputmask/3.x/js/phone-codes/phone-codes.json" });
 
-    setTimeout(function () {
+ 
         $("#testmask")[0].focus();
         caret($("#testmask"), $("#testmask")[0].value.length); //for FF
         $("#testmask").SendKey(keyCodes.BACKSPACE);
@@ -2085,10 +2109,11 @@ asyncTest("inputmask(\"phone\") - Brazil switch", 1, function () {
         $("#testmask").SendKey(keyCodes.BACKSPACE);
         $("#testmask").SendKey(keyCodes.BACKSPACE);
         $("#testmask").SendKey(keyCodes.BACKSPACE);
-        $("#testmask").Type("451234");
-        equal($("#testmask").val(), "+55-12-12345-1234", "Result " + $("#testmask").val());
-        start();
-        $("#testmask").remove();
+		$("#testmask").Type("451234");
+		setTimeout(function () {
+			equal($("#testmask").val(), "+55-12-12345-1234", "Result " + $("#testmask").val());
+			start();
+			$("#testmask").remove();
     }, 0);
 });
 

@@ -979,6 +979,7 @@
                                 setValidPosition(pos.begin, undefined, strict);
                                 opts.insertMode = !opts.insertMode;
                             }
+                            isSlctn = !opts.multi;
                         }
 
                         var radixPosition = getBuffer().join('').indexOf(opts.radixPoint);
@@ -1319,6 +1320,7 @@
             if (actionObj != undefined) {
                 switch (actionObj["action"]) {
                     case "isComplete":
+                        $el = $(actionObj["el"]);
                         return isComplete(actionObj["buffer"]);
                     case "unmaskedvalue":
                         $el = actionObj["$input"];
@@ -1360,6 +1362,7 @@
         };
 
         function multiMaskScope(el, masksets, opts) {
+            opts.multi = true;
             var $el = $(el), isRTL = el.dir == "rtl" || opts.numericInput;
 
             function mcaret(input, begin, end) {
@@ -1444,8 +1447,10 @@
                             validPositionCount++;
                         }
                         if (validPositionCount > lpc
-                            || (validPositionCount == lpc && cp > caretPos)
-                            || (validPositionCount == lpc && cp == caretPos && lvp < lastValidPosition)) {
+                            || (validPositionCount == lpc && cp > caretPos && lvp > lastValidPosition)
+                            || (validPositionCount == lpc && cp == caretPos && lvp < lastValidPosition)
+                            ) {
+                            //console.log("lvp " + lastValidPosition + " vpc " + validPositionCount + " caret " + caretPos + " ams " + ndx);
                             lpc = validPositionCount;
                             cp = caretPos;
                             activeMasksetIndex = ndx;
@@ -1591,6 +1596,7 @@
                 ignorables: [8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123],
                 isComplete: undefined, //override for isComplete - args => buffer, opts - return true || false
                 //multi-masks
+                multi: false, //do not alter - internal use
                 nojumps: false, //do not jump over fixed parts in the mask
                 nojumpsThreshold: 0, //start nojumps as of
                 determineActiveMasksetIndex: undefined //override determineActiveMasksetIndex - args => eventType, elmasks - return int
@@ -1689,7 +1695,7 @@
                         if (this.data('_inputmask')) {
                             maskset = this.data('_inputmask')['maskset'];
                             opts = this.data('_inputmask')['opts'];
-                            return maskScope(maskset, opts, { "action": "isComplete", "buffer": this[0]._valueGet().split('') });
+                            return maskScope(maskset, opts, { "action": "isComplete", "buffer": this[0]._valueGet().split(''), "el": this });
                         } else return true;
                     case "getmetadata": //return mask metadata if exists
                         if (this.data('_inputmask')) {
