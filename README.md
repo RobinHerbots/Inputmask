@@ -88,7 +88,7 @@ TODO
 
 TODO
 
-### Define custom definitions
+## Define custom definitions
 
 You can define your own definitions to use in your mask.  
 Start by choosing a masksymbol. 
