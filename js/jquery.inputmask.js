@@ -1472,7 +1472,7 @@
                     }
                 }
             }
-            $el.bind("mouseenter blur focus mouseleave click dblclick " + PasteEventType + " dragdrop drop keydown keypress keypress", function (e) {
+            $el.bind("mouseenter blur focus mouseleave click dblclick keydown keypress keypress", function (e) {
                 var caretPos = mcaret(el), k, goDetermine = true;
                 if (e.type == "keydown") {
                     k = e.keyCode;
@@ -1527,6 +1527,19 @@
                         determineActiveMask(e.type, elmasks);
                     }, 0);
                 }
+            });
+
+            $el.bind(PasteEventType + " dragdrop drop", function (e) {
+                var caretPos = mcaret(el);
+                setTimeout(function () {
+                    $.each(elmasks, function (ndx, lmnt) {
+                        lmnt._valueSet($el.val());
+                        $(lmnt).triggerHandler(e);
+                    });
+                    setTimeout(function () {
+                        determineActiveMask(e.type, elmasks);
+                    }, 0);
+                }, 0);
             });
 
             if ($el.attr("value") != "") {
