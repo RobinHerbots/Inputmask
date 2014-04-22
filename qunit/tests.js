@@ -307,6 +307,34 @@ test("inputmask(\"A.\", { repeat: \"*\" }) - type abc - joostburg", function () 
     $("#testmask").remove();
 });
 
+test("{ mask: \"A\", placeholder: \"\", repeat: 16 }) - type testtest - glosswordteam", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: "A", placeholder: "", repeat: 16 });
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").Type("testtest");
+
+    equal($("#testmask").val(), "TESTTEST", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("{ mask: \"A\", repeat: 16, greedy: false }) - type testtest - glosswordteam", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: "A", repeat: 16, greedy: false });
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").Type("testtest");
+
+    equal($("#testmask").val(), "TESTTEST", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
 module("greedy masks");
 test("inputmask(\"*\", { greedy: true, repeat: 10, clearMaskOnLostFocus: false  })", function () {
     var $fixture = $("#qunit-fixture");

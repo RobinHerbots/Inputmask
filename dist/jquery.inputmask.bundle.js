@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.0
+* Version: 3.0.1
 */
 
 (function ($) {
@@ -40,11 +40,12 @@
                 var tokenizer = /(?:[?*+]|\{[0-9]+(?:,[0-9\+\*]*)?\})\??|[^.?*+^${[]()|\\]+|./g,
                     escaped = false;
 
-                function maskToken(isGroup, isOptional, isQuantifier) {
+                function maskToken(isGroup, isOptional, isQuantifier, isAlternator) {
                     this.matches = [];
                     this.isGroup = isGroup || false;
                     this.isOptional = isOptional || false;
                     this.isQuantifier = isQuantifier || false;
+                    this.isAlternator = isAlternator || false;
                     this.quantifier = { min: 1, max: 1 };
                 };
 
@@ -124,6 +125,9 @@
                             break;
                         case opts.escapeChar:
                             escaped = true;
+                            break;
+                        case opts.alternatormarker:
+                            console.log("alternator");
                             break;
                         default:
                             if (openenings.length > 0) {
@@ -238,7 +242,7 @@
                         ndxIntlzr = validPos["locator"].slice();
                         maskTemplate.push(test["fn"] == null ? test["def"] : (includeInput === true ? validPos["input"] : opts.placeholder.charAt(pos % opts.placeholder.length)));
                     } else {
-                        var testPos = getTests(pos, false, ndxIntlzr, pos - 1);
+                        var testPos = getTests(pos, true, ndxIntlzr, pos - 1);
                         testPos = testPos[opts.greedy || minimalPos > pos ? 0 : (testPos.length - 1)];
                         test = testPos["match"];
                         ndxIntlzr = testPos["locator"].slice();
@@ -1589,6 +1593,7 @@
                 optionalmarker: { start: "[", end: "]" },
                 quantifiermarker: { start: "{", end: "}" },
                 groupmarker: { start: "(", end: ")" },
+                alternatormarker: "|",
                 escapeChar: "\\",
                 mask: null,
                 oncomplete: $.noop, //executes when the mask is complete
@@ -1804,7 +1809,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.0
+Version: 3.0.1
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1914,7 +1919,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.0
+Version: 3.0.1
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2411,7 +2416,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.0
+Version: 3.0.1
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2578,7 +2583,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.0
+Version: 3.0.1
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2765,7 +2770,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.0
+Version: 3.0.1
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
