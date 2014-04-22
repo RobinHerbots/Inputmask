@@ -1362,9 +1362,32 @@
         };
 
         function multiMaskScope(el, masksets, opts) {
-            opts.multi = true;
-            var $el = $(el), isRTL = el.dir == "rtl" || opts.numericInput;
+            function PatchValhookMulti(type) {
+                if ($.valHooks[type] == undefined || $.valHooks[type].inputmaskmultipatch != true) {
+                    var valueGet = $.valHooks[type] && $.valHooks[type].get ? $.valHooks[type].get : function (elem) { return elem.value; };
+                    var valueSet = $.valHooks[type] && $.valHooks[type].set ? $.valHooks[type].set : function (elem, value) {
+                        elem.value = value;
+                        return elem;
+                    };
 
+                    $.valHooks[type] = {
+                        get: function (elem) {
+                            var $elem = $(elem);
+                            if ($elem.data('_inputmask-multi')) {
+                                var data = $elem.data('_inputmask-multi');
+                                return valueGet(data["elmasks"][data["activeMasksetIndex"]]);
+                            } else return valueGet(elem);
+                        },
+                        set: function (elem, value) {
+                            var $elem = $(elem);
+                            var result = valueSet(elem, value);
+                            if ($elem.data('_inputmask-multi')) $elem.triggerHandler('setvalue.inputmaskmulti');
+                            return result;
+                        },
+                        inputmaskmultipatch: true
+                    };
+                }
+            }
             function mcaret(input, begin, end) {
                 var npt = input.jquery && input.length > 0 ? input[0] : input, range;
                 if (typeof begin == 'number') {
@@ -1413,23 +1436,9 @@
                     return { "begin": begin, "end": end };
                 }
             }
-            var activeMasksetIndex = 0,
-                elmasks = $.map(masksets, function (msk, ndx) {
-                    var elMaskStr = '<input type="text" ';
-                    if ($el.attr("value")) elMaskStr += 'value="' + $el.attr("value") + '" ';
-                    if ($el.attr("dir")) elMaskStr += 'dir="' + $el.attr("dir") + '" ';
-                    elMaskStr += '/>';
-                    var elmask = $(elMaskStr)[0];
-                    maskScope($.extend(true, {}, msk), opts, { "action": "mask", "el": elmask });
-                    return elmask;
-                });
-            if (el.dir == "rtl" || (opts.numericInput && opts.rightAlignNumerics) || (opts.isNumeric && opts.rightAlignNumerics))
-                $el.css("text-align", "right");
-            el.dir = "ltr";
-            $el.removeAttr("dir");
             function TranslatePosition(pos) {
                 if (isRTL && typeof pos == 'number' && (!opts.greedy || opts.placeholder != "")) {
-                    var bffrLght = $el.val().length;
+                    var bffrLght = el.value.length;
                     pos = bffrLght - pos;
                 }
                 return pos;
@@ -1459,9 +1468,13 @@
                     });
 
                     if ($.isFunction(opts.determineActiveMasksetIndex)) activeMasksetIndex = opts.determineActiveMasksetIndex.call($el, eventType, elmasks);
+
+                    var data = $el.data('_inputmask-multi') || { "activeMasksetIndex": 0, "elmasks": elmasks };
+                    data["activeMasksetIndex"] = activeMasksetIndex;
+                    $el.data('_inputmask-multi', data);
                 }
 
-                if (["focus"].indexOf(eventType) == -1 && $el.val() != elmasks[activeMasksetIndex]._valueGet()) {
+                if (["focus"].indexOf(eventType) == -1 && el.value != elmasks[activeMasksetIndex]._valueGet()) {
                     var value = $(elmasks[activeMasksetIndex]).val() == "" ? elmasks[activeMasksetIndex]._valueGet() : $(elmasks[activeMasksetIndex]).val();
                     $el.val(value);
                 }
@@ -1472,6 +1485,25 @@
                     }
                 }
             }
+            opts.multi = true;
+            var $el = $(el), isRTL = el.dir == "rtl" || opts.numericInput;
+            var activeMasksetIndex = 0,
+             elmasks = $.map(masksets, function (msk, ndx) {
+                 var elMaskStr = '<input type="text" ';
+                 if ($el.attr("value")) elMaskStr += 'value="' + $el.attr("value") + '" ';
+                 if ($el.attr("dir")) elMaskStr += 'dir="' + $el.attr("dir") + '" ';
+                 elMaskStr += '/>';
+                 var elmask = $(elMaskStr)[0];
+                 maskScope($.extend(true, {}, msk), opts, { "action": "mask", "el": elmask });
+                 return elmask;
+             });
+
+            $el.data('_inputmask-multi', { "activeMasksetIndex": 0, "elmasks": elmasks });
+            if (el.dir == "rtl" || (opts.numericInput && opts.rightAlignNumerics) || (opts.isNumeric && opts.rightAlignNumerics))
+                $el.css("text-align", "right");
+            el.dir = "ltr";
+            $el.removeAttr("dir");
+
             $el.bind("mouseenter blur focus mouseleave click dblclick keydown keypress keypress", function (e) {
                 var caretPos = mcaret(el), k, goDetermine = true;
                 if (e.type == "keydown") {
@@ -1529,11 +1561,11 @@
                 }
             });
 
-            $el.bind(PasteEventType + " dragdrop drop", function (e) {
+            $el.bind(PasteEventType + " dragdrop drop setvalue.inputmaskmulti", function (e) {
                 var caretPos = mcaret(el);
                 setTimeout(function () {
                     $.each(elmasks, function (ndx, lmnt) {
-                        lmnt._valueSet($el.val());
+                        lmnt._valueSet(el.value);
                         $(lmnt).triggerHandler(e);
                     });
                     setTimeout(function () {
@@ -1541,6 +1573,7 @@
                     }, 0);
                 }, 0);
             });
+            PatchValhookMulti(el.type);
 
             if ($el.attr("value") != "") {
                 setTimeout(function () {
