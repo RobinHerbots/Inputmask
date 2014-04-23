@@ -127,7 +127,7 @@
                             escaped = true;
                             break;
                         case opts.alternatormarker:
-                            console.log("alternator");
+
                             break;
                         default:
                             if (openenings.length > 0) {
@@ -359,6 +359,8 @@
                                     //search for next possible match
                                     testPos = currentPos;
                                 }
+                            } else if (match.isAlternator) {
+                                //TODO
                             } else if (match.isQuantifier && quantifierRecurse !== true) {
                                 var qt = match;
                                 for (var qndx = (ndxInitializer.length > 0 && quantifierRecurse !== true) ? ndxInitializer.shift() : 0; (qndx < (isNaN(qt.quantifier.max) ? qndx + 1 : qt.quantifier.max)) && testPos <= pos; qndx++) {
@@ -1480,7 +1482,7 @@
 
                 if (["focus"].indexOf(eventType) == -1 && el.value != elmasks[activeMasksetIndex]._valueGet()) {
                     var value = $(elmasks[activeMasksetIndex]).val() == "" ? elmasks[activeMasksetIndex]._valueGet() : $(elmasks[activeMasksetIndex]).val();
-                    $el.val(value);
+                    el.value = value;
                 }
                 if (["blur", "focus"].indexOf(eventType) == -1) {
                     if ($(elmasks[activeMasksetIndex]).hasClass("focus.inputmask")) {
