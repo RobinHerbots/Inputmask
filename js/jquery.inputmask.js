@@ -1387,7 +1387,7 @@
                         set: function (elem, value) {
                             var $elem = $(elem);
                             var result = valueSet(elem, value);
-                            if ($elem.data('_inputmask-multi')) $elem.triggerHandler('setvalue.inputmaskmulti');
+                            if ($elem.data('_inputmask-multi')) $elem.triggerHandler('setvalue');
                             return result;
                         },
                         inputmaskmultipatch: true
@@ -1509,6 +1509,9 @@
                 $el.css("text-align", "right");
             el.dir = "ltr";
             $el.removeAttr("dir");
+            if ($el.attr("value") != "") {
+                determineActiveMask("init", elmasks);
+            }
 
             $el.bind("mouseenter blur focus mouseleave click dblclick keydown keypress keypress", function (e) {
                 var caretPos = mcaret(el), k, goDetermine = true;
@@ -1566,8 +1569,7 @@
                     }, 0);
                 }
             });
-
-            $el.bind(PasteEventType + " dragdrop drop setvalue.inputmaskmulti", function (e) {
+            $el.bind(PasteEventType + " dragdrop drop setvalue", function (e) {
                 var caretPos = mcaret(el);
                 setTimeout(function () {
                     $.each(elmasks, function (ndx, lmnt) {
@@ -1580,12 +1582,6 @@
                 }, 0);
             });
             PatchValhookMulti(el.type);
-
-            if ($el.attr("value") != "") {
-                setTimeout(function () {
-                    determineActiveMask("init", elmasks);
-                }, 0);
-            }
         };
 
         $.inputmask = {
