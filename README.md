@@ -70,8 +70,8 @@ Any option can also be passed through the use of a data attribute. Use data-inpu
 ```
 ```javascript
 $(document).ready(function(){
-   $(example1).inputmask("99-9999999");
-   $(selector).inputmask("Regex");
+   $("#example1").inputmask("99-9999999");
+   $("#example2").inputmask("Regex");
 });
 ```
 
