@@ -1073,6 +1073,19 @@ test("inputmask(\"dd/mm/yyyy\") - input 23373 ", function () {
     $("#testmask").remove();
 });
 
+test("inputmask(\"dd/mm/yyyy\") - input 23318 - jimithing277", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("dd/mm/yyyy");
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").Type("23318");
+    equal($("#testmask").val(), "23/03/2018", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
 test("inputmask(\"dd/mm/yyyy\", { yearrange: { minyear: 1900, maxyear: 2000 } }) - input 23373 ", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');

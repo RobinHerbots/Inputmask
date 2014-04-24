@@ -519,9 +519,8 @@
                                     refreshFromBuffer(refresh["start"], refresh["end"]);
                                 }
                             } else if (rslt !== true && rslt["pos"] != position) { //their is a position offset
-                                setValidPosition(position, $.extend({}, tst, { "input": casing(buffer[position], test) }), strict);
                                 validatedPos = rslt["pos"];
-                                refreshFromBuffer(position + 1, validatedPos);
+                                refreshFromBuffer(position, validatedPos);
                                 tst = getTests(validatedPos, !strict)[0]; //possible mismatch TODO
                             }
                             if (ndx > 0) {

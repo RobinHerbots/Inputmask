@@ -91,7 +91,7 @@ Optional extensions on the jquery.inputmask base
                                 isValid = opts.regex.val1.test("0" + chrs.charAt(0));
                                 if (isValid) {
                                     buffer[pos - 1] = "0";
-                                    return { "pos": pos, "c": chrs.charAt(0) };
+                                    return { "refreshFromBuffer": { start: pos - 1, end: pos }, "pos": pos, "c": chrs.charAt(0) };
                                 }
                             }
                         }
@@ -123,7 +123,7 @@ Optional extensions on the jquery.inputmask base
                                 isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs.charAt(0));
                                 if (isValid) {
                                     buffer[pos - 1] = "0";
-                                    return { "pos": pos, "c": chrs.charAt(0) };
+                                    return { "refreshFromBuffer": { start: pos - 1, end: pos }, "pos": pos, "c": chrs.charAt(0) };
                                 }
                             }
                         }
@@ -223,7 +223,7 @@ Optional extensions on the jquery.inputmask base
                                 buffer[pos - 1] = yearPrefix[0];
                                 buffer[pos++] = yearPrefix[1];
                                 buffer[pos++] = chrs[0];
-                                return { "pos": pos };
+                                return { "refreshFromBuffer": { start: pos - 3, end: pos }, "pos": pos };
                             }
                         }
                         return isValid;
@@ -281,7 +281,7 @@ Optional extensions on the jquery.inputmask base
                                 isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs.charAt(0));
                                 if (isValid) {
                                     buffer[pos - 1] = "0";
-                                    return { "pos": pos, "c": chrs.charAt(0) };
+                                    return { "refreshFromBuffer": { start: pos - 1, end: pos }, "pos": pos, "c": chrs.charAt(0) };
                                 }
                             }
                         }
