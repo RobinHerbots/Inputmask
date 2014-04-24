@@ -1666,6 +1666,15 @@
             }
         };
         $.fn.inputmask = function (fn, options) {
+            function importAttributeOptions(npt, opts) {
+                var $npt = $(npt);
+                for (var option in opts) {
+                    var optionData = $npt.data("inputmask-" + option.toLowerCase());
+                    if (optionData != undefined)
+                        opts[option] = optionData;
+                }
+                return opts;
+            }
             var opts = $.extend(true, {}, $.inputmask.defaults, options),
                 maskset;
 
@@ -1679,9 +1688,9 @@
 
                         return this.each(function () {
                             if ($.isArray(maskset)) {
-                                multiMaskScope(this, maskset, opts);
+                                multiMaskScope(this, maskset, importAttributeOptions(this, opts));
                             } else
-                                maskScope($.extend(true, {}, maskset), opts, { "action": "mask", "el": this });
+                                maskScope($.extend(true, {}, maskset), importAttributeOptions(this, opts), { "action": "mask", "el": this });
                         });
                     case "unmaskedvalue":
                         var $input = $(this), input = this;
@@ -1762,9 +1771,9 @@
                         if (maskset == undefined) { return this; }
                         return this.each(function () {
                             if ($.isArray(maskset)) {
-                                multiMaskScope(this, maskset, opts);
+                                multiMaskScope(this, maskset, importAttributeOptions(this, opts));
                             } else
-                                maskScope($.extend(true, {}, maskset), opts, { "action": "mask", "el": this });
+                                maskScope($.extend(true, {}, maskset), importAttributeOptions(this, opts), { "action": "mask", "el": this });
                         });
 
                         break;
@@ -1777,9 +1786,9 @@
                 if (maskset == undefined) { return this; }
                 return this.each(function () {
                     if ($.isArray(maskset)) {
-                        multiMaskScope(this, maskset, opts);
+                        multiMaskScope(this, maskset, importAttributeOptions(this, opts));
                     } else
-                        maskScope($.extend(true, {}, maskset), opts, { "action": "mask", "el": this });
+                        maskScope($.extend(true, {}, maskset), importAttributeOptions(this, opts), { "action": "mask", "el": this });
                 });
             } else if (fn == undefined) {
                 //look for data-inputmask atribute - the attribute should only contain optipns

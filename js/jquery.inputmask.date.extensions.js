@@ -100,7 +100,8 @@ Optional extensions on the jquery.inputmask base
                     cardinality: 2,
                     prevalidator: [{
                         validator: function (chrs, buffer, pos, strict, opts) {
-                            var isValid = opts.regex.val1pre.test(chrs);
+                            if (!isNaN(buffer[pos + 1])) chrs += buffer[pos + 1];
+                            var isValid = chrs.length == 1 ? opts.regex.val1pre.test(chrs) : opts.regex.val1.test(chrs);
                             if (!strict && !isValid) {
                                 isValid = opts.regex.val1.test("0" + chrs);
                                 if (isValid) {
@@ -115,7 +116,7 @@ Optional extensions on the jquery.inputmask base
                 },
                 '2': { //val2 ~ day or month
                     validator: function (chrs, buffer, pos, strict, opts) {
-                        var frontValue = buffer.join('').substr(0, 3);
+                        var frontValue = (opts.mask.indexOf("2") == opts.mask.length - 1) ? buffer.join('').substr(5, 3) : buffer.join('').substr(0, 3);
                         if (frontValue.indexOf(opts.placeholder[0]) != -1) frontValue = "01" + opts.separator;
                         var isValid = opts.regex.val2(opts.separator).test(frontValue + chrs);
                         if (!strict && !isValid) {
@@ -127,14 +128,33 @@ Optional extensions on the jquery.inputmask base
                                 }
                             }
                         }
+
+                        //check leap yeap
+                        if ((opts.mask.indexOf("2") == opts.mask.length - 1) && isValid) {
+                            var dayMonthValue = buffer.join('').substr(4, 4) + chrs;
+                            if (dayMonthValue != opts.leapday)
+                                return true;
+                            else {
+                                var year = parseInt(buffer.join('').substr(0, 4), 10);  //detect leap year
+                                if (year % 4 === 0)
+                                    if (year % 100 === 0)
+                                        if (year % 400 === 0)
+                                            return true;
+                                        else return false;
+                                    else return true;
+                                else return false;
+                            }
+                        }
+
                         return isValid;
                     },
                     cardinality: 2,
                     prevalidator: [{
                         validator: function (chrs, buffer, pos, strict, opts) {
-                            var frontValue = buffer.join('').substr(0, 3);
+                            if (!isNaN(buffer[pos + 1])) chrs += buffer[pos + 1];
+                            var frontValue = (opts.mask.indexOf("2") == opts.mask.length - 1) ? buffer.join('').substr(5, 3) : buffer.join('').substr(0, 3);
                             if (frontValue.indexOf(opts.placeholder[0]) != -1) frontValue = "01" + opts.separator;
-                            var isValid = opts.regex.val2pre(opts.separator).test(frontValue + chrs);
+                            var isValid = chrs.length == 1 ? opts.regex.val2pre(opts.separator).test(frontValue + chrs) : opts.regex.val2(opts.separator).test(frontValue + chrs);
                             if (!strict && !isValid) {
                                 isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs);
                                 if (isValid) {
@@ -268,60 +288,6 @@ Optional extensions on the jquery.inputmask base
                 if (e.ctrlKey && e.keyCode == opts.keyCode.RIGHT) {
                     var today = new Date();
                     $input.val(today.getFullYear().toString() + (today.getMonth() + 1).toString() + today.getDate().toString());
-                }
-            },
-            definitions: {
-                '2': { //val2 ~ day or month
-                    validator: function (chrs, buffer, pos, strict, opts) {
-                        var frontValue = buffer.join('').substr(5, 3);
-                        if (frontValue.indexOf(opts.placeholder[5]) != -1) frontValue = "01" + opts.separator;
-                        var isValid = opts.regex.val2(opts.separator).test(frontValue + chrs);
-                        if (!strict && !isValid) {
-                            if (chrs.charAt(1) == opts.separator || "-./".indexOf(chrs.charAt(1)) != -1) {
-                                isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs.charAt(0));
-                                if (isValid) {
-                                    buffer[pos - 1] = "0";
-                                    return { "refreshFromBuffer": { start: pos - 1, end: pos }, "pos": pos, "c": chrs.charAt(0) };
-                                }
-                            }
-                        }
-
-                        //check leap yeap
-                        if (isValid) {
-                            var dayMonthValue = buffer.join('').substr(4, 4) + chrs;
-                            if (dayMonthValue != opts.leapday)
-                                return true;
-                            else {
-                                var year = parseInt(buffer.join('').substr(0, 4), 10);  //detect leap year
-                                if (year % 4 === 0)
-                                    if (year % 100 === 0)
-                                        if (year % 400 === 0)
-                                            return true;
-                                        else return false;
-                                    else return true;
-                                else return false;
-                            }
-                        }
-
-                        return isValid;
-                    },
-                    cardinality: 2,
-                    prevalidator: [{
-                        validator: function (chrs, buffer, pos, strict, opts) {
-                            var frontValue = buffer.join('').substr(5, 3);
-                            if (frontValue.indexOf(opts.placeholder[5]) != -1) frontValue = "01" + opts.separator;
-                            var isValid = opts.regex.val2pre(opts.separator).test(frontValue + chrs);
-                            if (!strict && !isValid) {
-                                isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs);
-                                if (isValid) {
-                                    buffer[pos] = "0";
-                                    pos++;
-                                    return { "pos": pos };
-                                }
-                            }
-                            return isValid;
-                        }, cardinality: 1
-                    }]
                 }
             }
         },

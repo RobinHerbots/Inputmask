@@ -49,7 +49,7 @@ $(document).ready(function(){
 });
 ```
 
-or
+or via data-inputmask attribute
 
 ```html
 <input data-inputmask="'alias': 'date'" />
@@ -61,6 +61,20 @@ $(document).ready(function(){
     $(":input").inputmask();
 });
 ```
+
+Any option can also be passed through the use of a data attribute. Use data-inputmask-***the name op the option***="value"
+
+```html
+<input id="example1" data-inputmask-clearmaskonlostfocus="false" />
+<input id="example2" data-inputmask-regex="[a-za-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?" />
+```
+```javascript
+$(document).ready(function(){
+   $(example1).inputmask("99-9999999");
+   $(selector).inputmask("Regex");
+});
+```
+
 
 #### Default masking definitions
 
