@@ -12,7 +12,8 @@ Optional extensions on the jquery.inputmask base
     $.extend($.inputmask.defaults.aliases, {
         'numeric': {
             mask: function (opts) {
-                var mask = opts.prefix + "~{1," + opts.integerDigits + "}";
+                var mask = opts.prefix;
+                mask += "[+]~{1," + opts.integerDigits + "}";
                 mask += "[" + opts.radixPoint + "~{" + opts.digits + "}]";
                 mask += opts.suffix;
                 return mask;
@@ -62,10 +63,28 @@ Optional extensions on the jquery.inputmask base
 
                 return reformatOnly ? pos : newPos;
             },
+            regex: {
+                signed: function (opts) { }
+            },
             definitions: {
                 '~': {
                     validator: function (chrs, buffer, pos, strict, opts) {
+                        if (chrs === "-") {
+                            //negate value
+                        }
                         var isValid = new RegExp("[0-9]").test(chrs);
+                        return isValid;
+                    },
+                    cardinality: 1,
+                    prevalidator: null
+                },
+                '+': {
+                    validator: function (chrs, buffer, pos, strict, opts) {
+                        var signed = "[";
+                        if (opts.allowMinus === true) signed += "-";
+                        if (opts.allowPlus === true) signed += "\+";
+                        signed += "]";
+                        var isValid = new RegExp(signed).test(chrs);
                         return isValid;
                     },
                     cardinality: 1,
