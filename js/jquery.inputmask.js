@@ -309,11 +309,12 @@
             }
 
             function stripValidPositions(start, end) {
-                var i, ml, startPos = seekNext(start - 1);
+                var i, ml, startPos = seekNext(start - 1), lvp;
                 for (i = start; i < end; i++) { //clear selection
                     delete getMaskSet()["validPositions"][i];
                 }
-                for (i = end, ml = getMaskLength() ; i < ml; i++) { //clear selection
+
+                for (i = seekNext(end - 1) ; i <= getLastValidPosition() ; i = seekNext(i)) { //clear selection
                     var t = getMaskSet()["validPositions"][i];
                     var s = getMaskSet()["validPositions"][startPos];
                     if (t != undefined && s == undefined) {
@@ -322,6 +323,12 @@
                         }
                         startPos = seekNext(startPos);
                     }
+                }
+                var lvp = getLastValidPosition();
+                //catchup
+                while (lvp > 0 && (getMaskSet()["validPositions"][lvp] == undefined || getMaskSet()["validPositions"][lvp].match.fn == null)) {
+                    delete getMaskSet()["validPositions"][lvp];
+                    lvp--;
                 }
                 resetMaskSet(true);
             }

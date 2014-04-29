@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.3
+* Version: 3.0.4
 */
 
 (function ($) {
@@ -309,11 +309,12 @@
             }
 
             function stripValidPositions(start, end) {
-                var i, ml, startPos = seekNext(start - 1);
+                var i, ml, startPos = seekNext(start - 1), lvp;
                 for (i = start; i < end; i++) { //clear selection
                     delete getMaskSet()["validPositions"][i];
                 }
-                for (i = end, ml = getMaskLength() ; i < ml; i++) { //clear selection
+
+                for (i = seekNext(end - 1) ; i <= getLastValidPosition() ; i = seekNext(i)) { //clear selection
                     var t = getMaskSet()["validPositions"][i];
                     var s = getMaskSet()["validPositions"][startPos];
                     if (t != undefined && s == undefined) {
@@ -322,6 +323,12 @@
                         }
                         startPos = seekNext(startPos);
                     }
+                }
+                var lvp = getLastValidPosition();
+                //catchup
+                while (lvp > 0 && (getMaskSet()["validPositions"][lvp] == undefined || getMaskSet()["validPositions"][lvp].match.fn == null)) {
+                    delete getMaskSet()["validPositions"][lvp];
+                    lvp--;
                 }
                 resetMaskSet(true);
             }
@@ -1815,7 +1822,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.3
+Version: 3.0.4
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1925,7 +1932,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.3
+Version: 3.0.4
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2388,13 +2395,97 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.3
+Version: 3.0.4
 
 Optional extensions on the jquery.inputmask base
 */
 (function ($) {
     //number aliases
     $.extend($.inputmask.defaults.aliases, {
+        'numeric': {
+            mask: function (opts) {
+                var mask = opts.prefix;
+                mask += "[+]~{1," + opts.integerDigits + "}";
+                mask += "[" + opts.radixPoint + "~{" + opts.digits + "}]";
+                mask += opts.suffix;
+                return mask;
+            },
+            placeholder: "",
+            greedy: false,
+            numericInput: false,
+            isNumeric: false,
+            digits: "2", //number of fractionalDigits
+            groupSeparator: "",//",", // | "."
+            radixPoint: ".",
+            groupSize: 3,
+            autoGroup: false,
+            allowPlus: true,
+            allowMinus: true,
+            integerDigits: "20", //number of integerDigits
+            defaultValue: "",
+            prefix: "",
+            suffix: "",
+            postFormat: function (buffer, pos, reformatOnly, opts) {
+                if (opts.groupSeparator == "") return pos;
+                var cbuf = buffer.slice(),
+                    radixPos = $.inArray(opts.radixPoint, buffer);
+                if (!reformatOnly) {
+                    cbuf.splice(pos, 0, "?"); //set position indicator
+                }
+                var bufVal = cbuf.join('');
+                if (opts.autoGroup || (reformatOnly && bufVal.indexOf(opts.groupSeparator) != -1)) {
+                    var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
+                    bufVal = bufVal.replace(new RegExp(escapedGroupSeparator, "g"), '');
+                    var radixSplit = bufVal.split(opts.radixPoint);
+                    bufVal = radixSplit[0];
+                    var reg = new RegExp('([-\+]?[\\d\?]+)([\\d\?]{' + opts.groupSize + '})');
+                    while (reg.test(bufVal)) {
+                        bufVal = bufVal.replace(reg, '$1' + opts.groupSeparator + '$2');
+                        bufVal = bufVal.replace(opts.groupSeparator + opts.groupSeparator, opts.groupSeparator);
+                    }
+                    if (radixSplit.length > 1)
+                        bufVal += opts.radixPoint + radixSplit[1];
+                }
+                buffer.length = bufVal.length; //align the length
+                for (var i = 0, l = bufVal.length; i < l; i++) {
+                    buffer[i] = bufVal.charAt(i);
+                }
+                var newPos = $.inArray("?", buffer);
+                if (!reformatOnly) buffer.splice(newPos, 1);
+
+                return reformatOnly ? pos : newPos;
+            },
+            regex: {
+                signed: function (opts) { }
+            },
+            definitions: {
+                '~': {
+                    validator: function (chrs, buffer, pos, strict, opts) {
+                        if (chrs === "-") {
+                            //negate value
+                        }
+                        var isValid = new RegExp("[0-9]").test(chrs);
+                        return isValid;
+                    },
+                    cardinality: 1,
+                    prevalidator: null
+                },
+                '+': {
+                    validator: function (chrs, buffer, pos, strict, opts) {
+                        var signed = "[";
+                        if (opts.allowMinus === true) signed += "-";
+                        if (opts.allowPlus === true) signed += "\+";
+                        signed += "]";
+                        var isValid = new RegExp(signed).test(chrs);
+                        return isValid;
+                    },
+                    cardinality: 1,
+                    prevalidator: null
+                }
+            },
+            insertMode: true,
+            autoUnmask: false
+        },
         'decimal': {
             mask: "~",
             placeholder: "",
@@ -2449,7 +2540,7 @@ Optional extensions on the jquery.inputmask base
                     var escapedRadixPoint = $.inputmask.escapeRegex.call(this, opts.radixPoint);
                     var digitExpression = isNaN(opts.digits) ? opts.digits : '{0,' + opts.digits + '}';
                     var integerExpression = isNaN(opts.integerDigits) ? opts.integerDigits : '{1,' + opts.integerDigits + '}';
-                    var signedExpression = opts.allowPlus || opts.allowMinus ? "[" + (opts.allowPlus ? "\+" : "") + (opts.allowMinus ? "-" : "") + "]?" : "";                   
+                    var signedExpression = opts.allowPlus || opts.allowMinus ? "[" + (opts.allowPlus ? "\+" : "") + (opts.allowMinus ? "-" : "") + "]?" : "";
 
                     var currentRegExp = "^" + signedExpression + "\\d" + integerExpression + "(" + escapedRadixPoint + "\\d" + digitExpression + ")?$";
                     return new RegExp(currentRegExp);
@@ -2555,7 +2646,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.3
+Version: 3.0.4
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2742,7 +2833,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.3
+Version: 3.0.4
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
