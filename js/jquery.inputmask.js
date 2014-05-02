@@ -52,16 +52,17 @@
                 //test definition => {fn: RegExp/function, cardinality: int, optionality: bool, newBlockMarker: bool, offset: int, casing: null/upper/lower, def: definitionSymbol}
                 function insertTestDefinition(mtoken, element, position) {
                     var maskdef = opts.definitions[element];
+                    var newBlockMarker = mtoken.matches.length == 0;
                     position = position != undefined ? position : mtoken.matches.length;
                     if (maskdef && !escaped) {
                         var prevalidators = maskdef["prevalidator"], prevalidatorsL = prevalidators ? prevalidators.length : 0;
                         for (var i = 1; i < maskdef.cardinality; i++) {
                             var prevalidator = prevalidatorsL >= i ? prevalidators[i - 1] : [], validator = prevalidator["validator"], cardinality = prevalidator["cardinality"];
-                            mtoken.matches.splice(position++, 0, { fn: validator ? typeof validator == 'string' ? new RegExp(validator) : new function () { this.test = validator; } : new RegExp("."), cardinality: cardinality ? cardinality : 1, optionality: mtoken.isOptional, casing: maskdef["casing"], def: maskdef["definitionSymbol"] || element });
+                            mtoken.matches.splice(position++, 0, { fn: validator ? typeof validator == 'string' ? new RegExp(validator) : new function () { this.test = validator; } : new RegExp("."), cardinality: cardinality ? cardinality : 1, optionality: mtoken.isOptional, newBlockMarker: newBlockMarker, casing: maskdef["casing"], def: maskdef["definitionSymbol"] || element });
                         }
-                        mtoken.matches.splice(position++, 0, { fn: maskdef.validator ? typeof maskdef.validator == 'string' ? new RegExp(maskdef.validator) : new function () { this.test = maskdef.validator; } : new RegExp("."), cardinality: maskdef.cardinality, optionality: mtoken.isOptional, casing: maskdef["casing"], def: maskdef["definitionSymbol"] || element });
+                        mtoken.matches.splice(position++, 0, { fn: maskdef.validator ? typeof maskdef.validator == 'string' ? new RegExp(maskdef.validator) : new function () { this.test = maskdef.validator; } : new RegExp("."), cardinality: maskdef.cardinality, optionality: mtoken.isOptional, newBlockMarker: newBlockMarker, casing: maskdef["casing"], def: maskdef["definitionSymbol"] || element });
                     } else {
-                        mtoken.matches.splice(position++, 0, { fn: null, cardinality: 0, optionality: mtoken.isOptional, casing: null, def: element });
+                        mtoken.matches.splice(position++, 0, { fn: null, cardinality: 0, optionality: mtoken.isOptional, newBlockMarker: newBlockMarker, casing: null, def: element });
                         escaped = false;
                     }
                 }
@@ -242,8 +243,8 @@
                         ndxIntlzr = validPos["locator"].slice();
                         maskTemplate.push(test["fn"] == null ? test["def"] : (includeInput === true ? validPos["input"] : opts.placeholder.charAt(pos % opts.placeholder.length)));
                     } else {
-                        var testPos = getTests(pos, ndxIntlzr, pos - 1);
-                        testPos = testPos[opts.greedy || minimalPos > pos ? 0 : (testPos.length - 1)];
+                        var testPos = getTests(pos, ndxIntlzr, pos - 1), firstMatch = testPos[0]["match"];
+                        testPos = testPos[(minimalPos > pos || (firstMatch.optionalQuantifier !== true && (opts.greedy || (firstMatch.optionality === true && firstMatch.newBlockMarker === false)))) ? 0 : (testPos.length - 1)];
                         test = testPos["match"];
                         ndxIntlzr = testPos["locator"].slice();
                         maskTemplate.push(test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length));
@@ -526,7 +527,7 @@
                                 if (rslt.pos == undefined) {
                                     rslt.pos = getLastValidPosition();
                                     return false;//breakout if refreshFromBuffer && nothing to insert
-                                } 
+                                }
                                 validatedPos = rslt.pos != undefined ? rslt.pos : position;
                                 tst = getTests(validatedPos)[0]; //possible mismatch TODO
 
