@@ -1169,6 +1169,18 @@ test("inputmask(\"dd/mm/yyyy\") - input 01011000 - Skiv22", function () {
 
 
 module("Numeric.Extensions");
+test("inputmask(\"numeric\", { prefix: \"€ \" }\") - input 12345.12", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("numeric", { prefix: "€ " });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("12345.12");
+  
+    equal($("#testmask").val(), "€ 12345.12", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
 test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - input 12345.123", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');

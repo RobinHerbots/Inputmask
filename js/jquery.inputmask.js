@@ -242,7 +242,7 @@
                         ndxIntlzr = validPos["locator"].slice();
                         maskTemplate.push(test["fn"] == null ? test["def"] : (includeInput === true ? validPos["input"] : opts.placeholder.charAt(pos % opts.placeholder.length)));
                     } else {
-                        var testPos = getTests(pos, true, ndxIntlzr, pos - 1);
+                        var testPos = getTests(pos, ndxIntlzr, pos - 1);
                         testPos = testPos[opts.greedy || minimalPos > pos ? 0 : (testPos.length - 1)];
                         test = testPos["match"];
                         ndxIntlzr = testPos["locator"].slice();
@@ -340,7 +340,7 @@
                 return getTests(pos)[0]["match"];
             }
 
-            function getTests(pos, disableCache, ndxIntlzr, tstPs) {
+            function getTests(pos, ndxIntlzr, tstPs) {
                 var maskTokens = getMaskSet()["maskToken"], testPos = ndxIntlzr ? tstPs : 0, ndxInitializer = ndxIntlzr || [0], matches = [], insertStop = false;
 
                 function ResolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) { //ndxInitilizer contains a set of indexes to speedup searches in the mtokens
@@ -411,9 +411,9 @@
                     }
                 }
 
-                if (disableCache !== true && getMaskSet()['tests'][pos] && !getMaskSet()['validPositions'][pos]) {
-                    return getMaskSet()['tests'][pos];
-                }
+                //if (disableCache !== true && getMaskSet()['tests'][pos] && !getMaskSet()['validPositions'][pos]) {
+                //    return getMaskSet()['tests'][pos];
+                //}
                 if (ndxIntlzr == undefined) {
                     var previousPos = pos - 1, test;
                     while ((test = getMaskSet()['validPositions'][previousPos]) == undefined && previousPos > -1) {
@@ -463,11 +463,10 @@
             }
 
             function refreshFromBuffer(start, end) {
-                var buffer = getBuffer();
+                var buffer = getBuffer().slice(); //work on clone
                 for (var i = start; i < end; i++) {
-                    if (buffer[i] != getPlaceholder(i)) {
-                        var ltst = getTests(i, false)[0];
-                        setValidPosition(i, $.extend({}, ltst, { "input": casing(buffer[i], ltst["match"]) }), true);
+                    if (buffer[i] != getPlaceholder(i) && buffer[i] != opts.skipOptionalPartCharacter) {
+                        isValid(i, buffer[i], true, true);
                     }
                 }
             }
@@ -491,7 +490,7 @@
                 function _isValid(position, c, strict, fromSetValid) {
 
                     var rslt = false;
-                    $.each(getTests(position, !strict), function (ndx, tst) {
+                    $.each(getTests(position), function (ndx, tst) {
                         var test = tst["match"];
                         var loopend = c ? 1 : 0, chrs = '', buffer = getBuffer();
                         for (var i = test.cardinality; i > loopend; i--) {
@@ -516,19 +515,25 @@
                             if (rslt["refreshFromBuffer"]) {
                                 var refresh = rslt["refreshFromBuffer"];
                                 strict = true;
-                                validatedPos = rslt.pos != undefined ? rslt.pos : position;
-                                tst = getTests(validatedPos, !strict)[0]; //possible mismatch TODO
                                 if (refresh === true) {
                                     getMaskSet()["validPositions"] = {};
+                                    getMaskSet()["tests"] = {};
                                     refreshFromBuffer(0, getBuffer().length);
                                 }
                                 else {
                                     refreshFromBuffer(refresh["start"], refresh["end"]);
                                 }
+                                if (rslt.pos == undefined) {
+                                    rslt.pos = getLastValidPosition();
+                                    return false;//breakout if refreshFromBuffer && nothing to insert
+                                } 
+                                validatedPos = rslt.pos != undefined ? rslt.pos : position;
+                                tst = getTests(validatedPos)[0]; //possible mismatch TODO
+
                             } else if (rslt !== true && rslt["pos"] != position) { //their is a position offset
                                 validatedPos = rslt["pos"];
                                 refreshFromBuffer(position, validatedPos);
-                                tst = getTests(validatedPos, !strict)[0]; //possible mismatch TODO
+                                tst = getTests(validatedPos)[0]; //possible mismatch TODO
                             }
                             if (ndx > 0) {
                                 resetMaskSet(true);

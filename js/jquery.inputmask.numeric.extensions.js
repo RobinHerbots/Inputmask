@@ -64,13 +64,25 @@ Optional extensions on the jquery.inputmask base
                 return reformatOnly ? pos : newPos;
             },
             regex: {
-                signed: function (opts) { }
+                integerPart: function (opts) { return new RegExp('[-\+]?\\d+'); }
             },
             definitions: {
                 '~': {
                     validator: function (chrs, buffer, pos, strict, opts) {
-                        if (chrs === "-") {
-                            //negate value
+                        if (!strict && chrs === "-") {
+                            var matchRslt = buffer.join('').match(opts.regex.integerPart(opts));
+
+                            if (matchRslt.length > 0) {
+                                if (buffer[matchRslt.index] == "+") {
+                                    buffer.splice(matchRslt.index, 1);
+                                    return { "pos": matchRslt.index, "c": "-", "refreshFromBuffer": true };
+                                } else if (buffer[matchRslt.index] == "-") {
+                                    buffer.splice(matchRslt.index, 1);
+                                    return { "refreshFromBuffer": true };
+                                } else {
+                                    return { "pos": matchRslt.index, "c": "-" };
+                                }
+                            }
                         }
                         var isValid = new RegExp("[0-9]").test(chrs);
                         return isValid;
