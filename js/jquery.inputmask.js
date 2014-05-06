@@ -272,8 +272,8 @@
 
             function getLastValidPosition(closestTo) { //TODO implement closest to
                 var maskset = getMaskSet();
-                var lastValidPosition = -1;
-                for (var posNdx in maskset["validPositions"]) {
+                var lastValidPosition = -1, valids = maskset["validPositions"];
+                for (var posNdx in valids) {
                     var psNdx = parseInt(posNdx);
                     if (psNdx > lastValidPosition) lastValidPosition = psNdx;
                 }
@@ -283,23 +283,27 @@
             function setValidPosition(pos, validTest, strict, fromSetValid) {
                 if (opts.insertMode && getMaskSet()["validPositions"][pos] != undefined && fromSetValid == undefined) {
                     //reposition & revalidate others
-                    var positionsClone = $.extend(true, {}, getMaskSet()["validPositions"]);
-
-                    for (var i = seekPrevious(getMaskLength()) ; i > pos && i >= 0; i--) {
-                        if (isMask(i)) {
-                            var j = seekPrevious(i);
-                            var t = getMaskSet()["validPositions"][j];
-                            if (t != undefined) {
-                                if (getTest(i).def == getTest(j).def && getMaskSet()["validPositions"][i] == undefined && isValid(i, t["input"], strict, true) !== false) {
-                                    delete getMaskSet()["validPositions"][j];
-                                }
+                    var positionsClone = $.extend(true, {}, getMaskSet()["validPositions"]), lvp = getLastValidPosition(), i;
+                    for (i = pos; i <= lvp; i++) { //clear selection
+                        delete getMaskSet()["validPositions"][i];
+                    }
+                    getMaskSet()["validPositions"][pos] = validTest;
+                    var valid = true;
+                    for (i = pos; i <= lvp ;) {
+                        var j = seekNext(i);
+                        var t = positionsClone[i];
+                        if (t != undefined) {
+                            var nextTest = getTest(j);
+                            if (nextTest.fn == null && nextTest.def == "")
+                                valid = false;
+                            else if (t["match"].fn == null || t["match"].def == nextTest.def) {
+                                valid = valid && isValid(j, t["input"], strict, true) !== false;
                             }
                         }
+                        i = j;
                     }
 
-                    if (getMaskSet()["validPositions"][pos] == undefined) {
-                        getMaskSet()["validPositions"][pos] = validTest;
-                    } else {
+                    if (!valid) {
                         getMaskSet()["validPositions"] = $.extend(true, {}, positionsClone);
                         return false;
                     }
@@ -315,7 +319,7 @@
                     delete getMaskSet()["validPositions"][i];
                 }
 
-                for (i = seekNext(end - 1) ; i <= getLastValidPosition() ; i = seekNext(i)) { //clear selection
+                for (i = seekNext(end - 1) ; i <= getLastValidPosition() ; i = seekNext(i)) {
                     var t = getMaskSet()["validPositions"][i];
                     var s = getMaskSet()["validPositions"][startPos];
                     if (t != undefined && s == undefined) {
@@ -510,7 +514,7 @@
 
                         if (rslt !== false) {
                             var elem = rslt.c != undefined ? rslt.c : c;
-                            elem = elem == opts.skipOptionalPartCharacter ? test["def"] : elem;
+                            elem = (elem == opts.skipOptionalPartCharacter && test["fn"] === null) ? test["def"] : elem;
 
                             var validatedPos = position;
                             if (rslt["refreshFromBuffer"]) {
@@ -635,13 +639,15 @@
                             lvp = p == -1 ? p : seekPrevious(p),
                             pos = lvp == -1 ? ndx : seekNext(lvp);
                         if ($.inArray(charCode, getBufferTemplate().slice(lvp + 1, pos)) == -1) {
-                            keypressEvent.call(input, undefined, true, charCode.charCodeAt(0), writeOut, strict, ndx);
+                            keypressEvent.call(input, undefined, true, charCode.charCodeAt(0), false, strict, ndx);
                         }
                     } else {
-                        keypressEvent.call(input, undefined, true, charCode.charCodeAt(0), writeOut, strict, ndx);
+                        keypressEvent.call(input, undefined, true, charCode.charCodeAt(0), false, strict, ndx);
                         strict = strict || (ndx > 0 && ndx > getMaskSet()["p"]);
                     }
                 });
+                if (writeOut)
+                    writeBuffer(input, getBuffer(), seekNext(getLastValidPosition()));
             }
 
             function escapeRegex(str) {
@@ -1067,7 +1073,7 @@
                         }
 
                         //needed for IE8 and below
-                        if (e) e.preventDefault ? e.preventDefault() : e.returnValue = false;
+                        if (e && checkval != true) e.preventDefault ? e.preventDefault() : e.returnValue = false;
                     }
                 }
             }
@@ -1111,14 +1117,12 @@
                 }
                 setTimeout(function () {
                     var pasteValue = $.isFunction(opts.onBeforePaste) ? opts.onBeforePaste.call(input, input._valueGet(), opts) : input._valueGet();
-                    checkVal(input, false, false, pasteValue.split(''), true);
-                    writeBuffer(input, getBuffer());
+                    checkVal(input, true, false, pasteValue.split(''), true);
                     if (isComplete(getBuffer()) === true)
                         $input.trigger("complete");
                     $input.click();
                 }, 0);
             }
-
             function mobileInputEvent(e) {
                 var input = this, $input = $(input);
 
@@ -1138,8 +1142,7 @@
                     e.keyCode = opts.keyCode.BACKSPACE;
                     keydownEvent.call(input, e);
                 } else { //nonnumerics don't fire keypress 
-                    checkVal(input, false, false, currentValue.split(''));
-                    writeBuffer(input, getBuffer());
+                    checkVal(input, true, false, currentValue.split(''));
                     if (isComplete(getBuffer()) === true)
                         $input.trigger("complete");
                     $input.click();

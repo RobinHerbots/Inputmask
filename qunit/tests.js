@@ -14,7 +14,7 @@ test("inputmask(\"99-99-99\", { clearMaskOnLostFocus: true}", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("99-99-99", { clearMaskOnLostFocus: true });
-
+    $("#testmask").blur();
     equal(document.getElementById("testmask").value, "", "Result " + document.getElementById("testmask").value);
 
     $("#testmask").remove();
@@ -230,9 +230,7 @@ test("inputmask(\"(999)999-9999\") - ruslanfedoseenko mask", function () {
     $("#testmask").val("9999999999");
     caret($("#testmask"), 4, 5);
     $("#testmask").Type("7");
-
     equal($("#testmask").val(), "(999)999-9999", "Result " + $("#testmask").val());
-
     $("#testmask").remove();
 });
 test("inputmask(\"(999)999-9999\") - insert false - ruslanfedoseenko mask", function () {
@@ -245,9 +243,7 @@ test("inputmask(\"(999)999-9999\") - insert false - ruslanfedoseenko mask", func
     $("#testmask").val("9999999999");
     caret($("#testmask"), 4, 5);
     $("#testmask").Type("7");
-
     equal($("#testmask").val(), "(999)999-9999", "Result " + $("#testmask").val());
-
     $("#testmask").remove();
 });
 
@@ -259,6 +255,21 @@ test("inputmask(\"\") - empty mask - andywolk", function () {
     $("#testmask")[0].focus();
     $("#testmask").val("123");
     equal($("#testmask").val(), "123", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("Intergroup selection - dhilt", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("dd/mm/yyyy");
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("23314");
+
+    caret($("#testmask"), 4, 7);
+    $("#testmask").SendKey("6");
+    equal($("#testmask").val(), "23/06/y014", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });
@@ -1176,7 +1187,7 @@ test("inputmask(\"numeric\", { prefix: \"€ \" }\") - input 12345.12", function
 
     $("#testmask")[0].focus();
     $("#testmask").Type("12345.12");
-  
+
     equal($("#testmask").val(), "€ 12345.12", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
@@ -2073,6 +2084,19 @@ test("inputmask('Regex', { regex: \"(abc){2,4}(def)\" }); - Flyarbonkers regex a
     $("#testmask").remove();
 });
 
+test("inputmask(\"Regex\", {regex: \"[а-яА-Я\\s]*\"}) - type space - SilentImp", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("Regex", { regex: "[а-яА-Я\\s]*" });
+
+    $("#testmask")[0].focus();
+    $("#testmask").SendKey(keyCodes.SPACE);
+
+    equal($("#testmask").val(), " ", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
 module("Phone masks")
 
 asyncTest("inputmask(\"phone be\") - type \"473890428\"", 1, function () {
@@ -2080,8 +2104,8 @@ asyncTest("inputmask(\"phone be\") - type \"473890428\"", 1, function () {
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("phonebe", { "url": "https://rawgit.com/RobinHerbots/jquery.inputmask/3.x/js/phone-codes/phone-be.json" });
 
-	$("#testmask").Type("473890428");
-	
+    $("#testmask").Type("473890428");
+
     setTimeout(function () {
         equal($("#testmask").val(), "+32(473)89-04-28", "Result " + $("#testmask").val());
         start();
@@ -2154,19 +2178,19 @@ asyncTest("inputmask(\"phone\") - Brazil switch", 1, function () {
     $fixture.append('<input type="text" id="testmask" value="55121234-1234" />');
     $("#testmask").inputmask("phone", { "url": "https://rawgit.com/RobinHerbots/jquery.inputmask/3.x/js/phone-codes/phone-codes.json" });
 
- 
-        $("#testmask")[0].focus();
-        caret($("#testmask"), $("#testmask")[0].value.length); //for FF
-        $("#testmask").SendKey(keyCodes.BACKSPACE);
-        $("#testmask").SendKey(keyCodes.BACKSPACE);
-        $("#testmask").SendKey(keyCodes.BACKSPACE);
-        $("#testmask").SendKey(keyCodes.BACKSPACE);
-        $("#testmask").SendKey(keyCodes.BACKSPACE);
-		$("#testmask").Type("451234");
-		setTimeout(function () {
-			equal($("#testmask").val(), "+55-12-12345-1234", "Result " + $("#testmask").val());
-			start();
-			$("#testmask").remove();
+
+    $("#testmask")[0].focus();
+    caret($("#testmask"), $("#testmask")[0].value.length); //for FF
+    $("#testmask").SendKey(keyCodes.BACKSPACE);
+    $("#testmask").SendKey(keyCodes.BACKSPACE);
+    $("#testmask").SendKey(keyCodes.BACKSPACE);
+    $("#testmask").SendKey(keyCodes.BACKSPACE);
+    $("#testmask").SendKey(keyCodes.BACKSPACE);
+    $("#testmask").Type("451234");
+    setTimeout(function () {
+        equal($("#testmask").val(), "+55-12-12345-1234", "Result " + $("#testmask").val());
+        start();
+        $("#testmask").remove();
     }, 0);
 });
 

@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.5
+* Version: 3.0.6
 */
 
 (function ($) {
@@ -52,16 +52,17 @@
                 //test definition => {fn: RegExp/function, cardinality: int, optionality: bool, newBlockMarker: bool, offset: int, casing: null/upper/lower, def: definitionSymbol}
                 function insertTestDefinition(mtoken, element, position) {
                     var maskdef = opts.definitions[element];
+                    var newBlockMarker = mtoken.matches.length == 0;
                     position = position != undefined ? position : mtoken.matches.length;
                     if (maskdef && !escaped) {
                         var prevalidators = maskdef["prevalidator"], prevalidatorsL = prevalidators ? prevalidators.length : 0;
                         for (var i = 1; i < maskdef.cardinality; i++) {
                             var prevalidator = prevalidatorsL >= i ? prevalidators[i - 1] : [], validator = prevalidator["validator"], cardinality = prevalidator["cardinality"];
-                            mtoken.matches.splice(position++, 0, { fn: validator ? typeof validator == 'string' ? new RegExp(validator) : new function () { this.test = validator; } : new RegExp("."), cardinality: cardinality ? cardinality : 1, optionality: mtoken.isOptional, casing: maskdef["casing"], def: maskdef["definitionSymbol"] || element });
+                            mtoken.matches.splice(position++, 0, { fn: validator ? typeof validator == 'string' ? new RegExp(validator) : new function () { this.test = validator; } : new RegExp("."), cardinality: cardinality ? cardinality : 1, optionality: mtoken.isOptional, newBlockMarker: newBlockMarker, casing: maskdef["casing"], def: maskdef["definitionSymbol"] || element });
                         }
-                        mtoken.matches.splice(position++, 0, { fn: maskdef.validator ? typeof maskdef.validator == 'string' ? new RegExp(maskdef.validator) : new function () { this.test = maskdef.validator; } : new RegExp("."), cardinality: maskdef.cardinality, optionality: mtoken.isOptional, casing: maskdef["casing"], def: maskdef["definitionSymbol"] || element });
+                        mtoken.matches.splice(position++, 0, { fn: maskdef.validator ? typeof maskdef.validator == 'string' ? new RegExp(maskdef.validator) : new function () { this.test = maskdef.validator; } : new RegExp("."), cardinality: maskdef.cardinality, optionality: mtoken.isOptional, newBlockMarker: newBlockMarker, casing: maskdef["casing"], def: maskdef["definitionSymbol"] || element });
                     } else {
-                        mtoken.matches.splice(position++, 0, { fn: null, cardinality: 0, optionality: mtoken.isOptional, casing: null, def: element });
+                        mtoken.matches.splice(position++, 0, { fn: null, cardinality: 0, optionality: mtoken.isOptional, newBlockMarker: newBlockMarker, casing: null, def: element });
                         escaped = false;
                     }
                 }
@@ -242,8 +243,8 @@
                         ndxIntlzr = validPos["locator"].slice();
                         maskTemplate.push(test["fn"] == null ? test["def"] : (includeInput === true ? validPos["input"] : opts.placeholder.charAt(pos % opts.placeholder.length)));
                     } else {
-                        var testPos = getTests(pos, ndxIntlzr, pos - 1);
-                        testPos = testPos[opts.greedy || minimalPos > pos ? 0 : (testPos.length - 1)];
+                        var testPos = getTests(pos, ndxIntlzr, pos - 1), firstMatch = testPos[0]["match"];
+                        testPos = testPos[(minimalPos > pos || (firstMatch.optionalQuantifier !== true && (opts.greedy || (firstMatch.optionality === true && firstMatch.newBlockMarker === false)))) ? 0 : (testPos.length - 1)];
                         test = testPos["match"];
                         ndxIntlzr = testPos["locator"].slice();
                         maskTemplate.push(test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length));
@@ -271,8 +272,8 @@
 
             function getLastValidPosition(closestTo) { //TODO implement closest to
                 var maskset = getMaskSet();
-                var lastValidPosition = -1;
-                for (var posNdx in maskset["validPositions"]) {
+                var lastValidPosition = -1, valids = maskset["validPositions"];
+                for (var posNdx in valids) {
                     var psNdx = parseInt(posNdx);
                     if (psNdx > lastValidPosition) lastValidPosition = psNdx;
                 }
@@ -282,23 +283,27 @@
             function setValidPosition(pos, validTest, strict, fromSetValid) {
                 if (opts.insertMode && getMaskSet()["validPositions"][pos] != undefined && fromSetValid == undefined) {
                     //reposition & revalidate others
-                    var positionsClone = $.extend(true, {}, getMaskSet()["validPositions"]);
-
-                    for (var i = seekPrevious(getMaskLength()) ; i > pos && i >= 0; i--) {
-                        if (isMask(i)) {
-                            var j = seekPrevious(i);
-                            var t = getMaskSet()["validPositions"][j];
-                            if (t != undefined) {
-                                if (getTest(i).def == getTest(j).def && getMaskSet()["validPositions"][i] == undefined && isValid(i, t["input"], strict, true) !== false) {
-                                    delete getMaskSet()["validPositions"][j];
-                                }
+                    var positionsClone = $.extend(true, {}, getMaskSet()["validPositions"]), lvp = getLastValidPosition(), i;
+                    for (i = pos; i <= lvp; i++) { //clear selection
+                        delete getMaskSet()["validPositions"][i];
+                    }
+                    getMaskSet()["validPositions"][pos] = validTest;
+                    var valid = true;
+                    for (i = pos; i <= lvp ;) {
+                        var j = seekNext(i);
+                        var t = positionsClone[i];
+                        if (t != undefined) {
+                            var nextTest = getTest(j);
+                            if (nextTest.fn == null && nextTest.def == "")
+                                valid = false;
+                            else if (t["match"].fn == null || t["match"].def == nextTest.def) {
+                                valid = valid && isValid(j, t["input"], strict, true) !== false;
                             }
                         }
+                        i = j;
                     }
 
-                    if (getMaskSet()["validPositions"][pos] == undefined) {
-                        getMaskSet()["validPositions"][pos] = validTest;
-                    } else {
+                    if (!valid) {
                         getMaskSet()["validPositions"] = $.extend(true, {}, positionsClone);
                         return false;
                     }
@@ -314,7 +319,7 @@
                     delete getMaskSet()["validPositions"][i];
                 }
 
-                for (i = seekNext(end - 1) ; i <= getLastValidPosition() ; i = seekNext(i)) { //clear selection
+                for (i = seekNext(end - 1) ; i <= getLastValidPosition() ; i = seekNext(i)) {
                     var t = getMaskSet()["validPositions"][i];
                     var s = getMaskSet()["validPositions"][startPos];
                     if (t != undefined && s == undefined) {
@@ -509,7 +514,7 @@
 
                         if (rslt !== false) {
                             var elem = rslt.c != undefined ? rslt.c : c;
-                            elem = elem == opts.skipOptionalPartCharacter ? test["def"] : elem;
+                            elem = (elem == opts.skipOptionalPartCharacter && test["fn"] === null) ? test["def"] : elem;
 
                             var validatedPos = position;
                             if (rslt["refreshFromBuffer"]) {
@@ -526,7 +531,7 @@
                                 if (rslt.pos == undefined) {
                                     rslt.pos = getLastValidPosition();
                                     return false;//breakout if refreshFromBuffer && nothing to insert
-                                } 
+                                }
                                 validatedPos = rslt.pos != undefined ? rslt.pos : position;
                                 tst = getTests(validatedPos)[0]; //possible mismatch TODO
 
@@ -634,13 +639,15 @@
                             lvp = p == -1 ? p : seekPrevious(p),
                             pos = lvp == -1 ? ndx : seekNext(lvp);
                         if ($.inArray(charCode, getBufferTemplate().slice(lvp + 1, pos)) == -1) {
-                            keypressEvent.call(input, undefined, true, charCode.charCodeAt(0), writeOut, strict, ndx);
+                            keypressEvent.call(input, undefined, true, charCode.charCodeAt(0), false, strict, ndx);
                         }
                     } else {
-                        keypressEvent.call(input, undefined, true, charCode.charCodeAt(0), writeOut, strict, ndx);
+                        keypressEvent.call(input, undefined, true, charCode.charCodeAt(0), false, strict, ndx);
                         strict = strict || (ndx > 0 && ndx > getMaskSet()["p"]);
                     }
                 });
+                if (writeOut)
+                    writeBuffer(input, getBuffer(), seekNext(getLastValidPosition()));
             }
 
             function escapeRegex(str) {
@@ -1066,7 +1073,7 @@
                         }
 
                         //needed for IE8 and below
-                        if (e) e.preventDefault ? e.preventDefault() : e.returnValue = false;
+                        if (e && checkval != true) e.preventDefault ? e.preventDefault() : e.returnValue = false;
                     }
                 }
             }
@@ -1110,14 +1117,12 @@
                 }
                 setTimeout(function () {
                     var pasteValue = $.isFunction(opts.onBeforePaste) ? opts.onBeforePaste.call(input, input._valueGet(), opts) : input._valueGet();
-                    checkVal(input, false, false, pasteValue.split(''), true);
-                    writeBuffer(input, getBuffer());
+                    checkVal(input, true, false, pasteValue.split(''), true);
                     if (isComplete(getBuffer()) === true)
                         $input.trigger("complete");
                     $input.click();
                 }, 0);
             }
-
             function mobileInputEvent(e) {
                 var input = this, $input = $(input);
 
@@ -1137,8 +1142,7 @@
                     e.keyCode = opts.keyCode.BACKSPACE;
                     keydownEvent.call(input, e);
                 } else { //nonnumerics don't fire keypress 
-                    checkVal(input, false, false, currentValue.split(''));
-                    writeBuffer(input, getBuffer());
+                    checkVal(input, true, false, currentValue.split(''));
                     if (isComplete(getBuffer()) === true)
                         $input.trigger("complete");
                     $input.click();
@@ -1827,7 +1831,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.5
+Version: 3.0.6
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1937,7 +1941,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.5
+Version: 3.0.6
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2400,7 +2404,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.5
+Version: 3.0.6
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2663,7 +2667,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.5
+Version: 3.0.6
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2850,7 +2854,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.5
+Version: 3.0.6
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
