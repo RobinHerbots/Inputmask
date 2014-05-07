@@ -596,7 +596,7 @@ Show the current mask definition as a tooltip.
 With this call-in you can override the default implementation of the isComplete function.  
 
 ```javascript
-$("selector).inputmask("Regex", { 
+$(selector).inputmask("Regex", { 
 	regex: "[0-9]*", 
 	isComplete: function(buffer, opts) {
 		return new RegExp(opts.regex).test(buffer.join(''));
