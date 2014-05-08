@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.6
+* Version: 3.0.7
 */
 
 (function ($) {
@@ -244,7 +244,7 @@
                         maskTemplate.push(test["fn"] == null ? test["def"] : (includeInput === true ? validPos["input"] : opts.placeholder.charAt(pos % opts.placeholder.length)));
                     } else {
                         var testPos = getTests(pos, ndxIntlzr, pos - 1), firstMatch = testPos[0]["match"];
-                        testPos = testPos[(minimalPos > pos || (firstMatch.optionalQuantifier !== true && (opts.greedy || (firstMatch.optionality === true && firstMatch.newBlockMarker === false)))) ? 0 : (testPos.length - 1)];
+                        testPos = testPos[(minimalPos > pos || (opts.greedy || (firstMatch.optionality === true && firstMatch.newBlockMarker === false && firstMatch.optionalQuantifier !== true))) ? 0 : (testPos.length - 1)];
                         test = testPos["match"];
                         ndxIntlzr = testPos["locator"].slice();
                         maskTemplate.push(test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length));
@@ -351,7 +351,6 @@
                 function ResolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) { //ndxInitilizer contains a set of indexes to speedup searches in the mtokens
 
                     function handleMatch(match, loopNdx, quantifierRecurse) {
-                        var currentPos = testPos;
                         if (testPos == pos && match.matches == undefined) {
                             matches.push({ "match": match, "locator": loopNdx.reverse() });
                             return true;
@@ -368,8 +367,7 @@
                                     if (isFirstMatch) {
                                         insertStop = true; //insert a stop for non greedy
                                     }
-                                    //search for next possible match
-                                    testPos = currentPos;
+                                    testPos = pos; //match the position after the group
                                 }
                             } else if (match.isAlternator) {
                                 //TODO
@@ -381,9 +379,7 @@
                                     if (match) {
                                         //get latest match
                                         var latestMatch = matches[matches.length - 1]["match"];
-                                        if (qndx > qt.quantifier.min - 1) { //mark optionality
-                                            latestMatch.optionalQuantifier = true;
-                                        }
+                                        latestMatch.optionalQuantifier = qndx > qt.quantifier.min - 1;
                                         var isFirstMatch = (tokenGroup.matches.indexOf(latestMatch) == 0);
                                         if (isFirstMatch) { //search for next possible match
                                             if (qndx > qt.quantifier.min - 1) {
@@ -1831,7 +1827,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.6
+Version: 3.0.7
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1941,7 +1937,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.6
+Version: 3.0.7
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2404,7 +2400,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.6
+Version: 3.0.7
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2667,7 +2663,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.6
+Version: 3.0.7
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2854,7 +2850,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.6
+Version: 3.0.7
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
