@@ -620,8 +620,8 @@
                 }
             }
 
-            function getPlaceholder(pos) {
-                var test = getTest(pos);
+            function getPlaceholder(pos, test) {
+                test = test || getTest(pos);
                 return test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length);
             }
 
@@ -655,10 +655,20 @@
             }
 
             function clearOptionalTail(input) {
-                var buffer = getBuffer(), tmpBuffer = buffer.slice(), pos;
-                for (pos = tmpBuffer.length - 1; pos >= 0; pos--) {
-                    var test = getTest(pos);
-                    if ((test.optionality || test.optionalQuantifier) && tmpBuffer[pos] == getPlaceholder(pos)) {
+                var buffer = getBuffer(), tmpBuffer = buffer.slice(),
+                    pos, lvp = getLastValidPosition(), positions = {},
+                    ndxIntlzr = getMaskSet()["validPositions"][lvp]["locator"].slice(), testPos;
+                for (pos = lvp + 1; pos < tmpBuffer.length; pos++) {
+                    testPos = getTests(pos, ndxIntlzr, pos - 1);
+                    var firstMatch = testPos[0]["match"];
+                    testPos = testPos[(opts.greedy || (firstMatch.optionality === true && firstMatch.newBlockMarker === false && firstMatch.optionalQuantifier !== true)) ? 0 : (testPos.length - 1)];
+                    positions[pos] = testPos;
+                    ndxIntlzr = testPos["locator"].slice();
+                }
+
+                for (pos = tmpBuffer.length - 1; pos > lvp; pos--) {
+                    testPos = positions[pos]["match"];
+                    if (testPos.optionality && tmpBuffer[pos] == getPlaceholder(pos, testPos)) {
                         tmpBuffer.pop();
                     } else break;
                 }
