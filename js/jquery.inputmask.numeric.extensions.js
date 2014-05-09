@@ -75,12 +75,12 @@ Optional extensions on the jquery.inputmask base
                             if (matchRslt.length > 0) {
                                 if (buffer[matchRslt.index] == "+") {
                                     buffer.splice(matchRslt.index, 1);
-                                    return { "pos": matchRslt.index, "c": "-", "refreshFromBuffer": true };
+                                    return { "pos": matchRslt.index, "c": "-", "refreshFromBuffer": true, "caret": pos };
                                 } else if (buffer[matchRslt.index] == "-") {
                                     buffer.splice(matchRslt.index, 1);
-                                    return { "refreshFromBuffer": true };
+                                    return { "refreshFromBuffer": true, "caret": pos - 1 };
                                 } else {
-                                    return { "pos": matchRslt.index, "c": "-" };
+                                    return { "pos": matchRslt.index, "c": "-", "caret": pos + 1 };
                                 }
                             }
                         }

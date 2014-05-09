@@ -1032,7 +1032,7 @@
                                 c = valResult.c != undefined ? valResult.c : c; //set new char from isValid
                             }
                             resetMaskSet(true);
-                            forwardPosition = seekNext(p);
+                            forwardPosition = valResult.caret != undefined ? valResult.caret : seekNext(p);
                             getMaskSet()["p"] = forwardPosition; //needed for checkval
                         }
 
