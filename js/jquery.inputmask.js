@@ -160,8 +160,19 @@
             }
 
             function generateMask(mask, metadata) {
-                if (opts.numericInput) { //TODO FIXME for dynamic masks
-                    mask = mask.split('').reverse().join('');
+                if (opts.numericInput) { //TODO FIX FOR DYNAMIC MASKS WITH QUANTIFIERS
+                    mask = mask.split('').reverse();
+                    for (var ndx in mask) {
+                        if (mask[ndx] == opts.optionalmarker.start)
+                            mask[ndx] = opts.optionalmarker.end;
+                        else if (mask[ndx] == opts.optionalmarker.end)
+                            mask[ndx] = opts.optionalmarker.start;
+                        else if (mask[ndx] == opts.groupmarker.start)
+                            mask[ndx] = opts.groupmarker.end;
+                        else if (mask[ndx] == opts.groupmarker.end)
+                            mask[ndx] = opts.groupmarker.start;
+                    }
+                    mask = mask.join('');
                 }
                 if (mask == undefined || mask == "")
                     return undefined;
