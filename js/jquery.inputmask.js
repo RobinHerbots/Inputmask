@@ -693,9 +693,12 @@
 
             function unmaskedvalue($input, skipDatepickerCheck) {
                 if ($input.data('_inputmask') && (skipDatepickerCheck === true || !$input.hasClass('hasDatepicker'))) {
-                    var umValue = $.map(getBuffer(), function (element, index) {
-                        return isMask(index) && isValid(index, element, true) ? element : null;
-                    });
+                    var umValue = [], vps = getMaskSet()["validPositions"];
+                    for (var pndx in vps) {
+                        if (vps[pndx]["match"].fn != null) {
+                            umValue.push(vps[pndx]["input"]);
+                        }
+                    }
                     var unmaskedValue = (isRTL ? umValue.reverse() : umValue).join('');
                     var bufferValue = (isRTL ? getBuffer().reverse() : getBuffer()).join('');
                     return $.isFunction(opts.onUnMask) ? opts.onUnMask.call($input, bufferValue, unmaskedValue, opts) : unmaskedValue;
