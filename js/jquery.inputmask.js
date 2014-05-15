@@ -1229,27 +1229,30 @@
                             }
                         }
                     }).bind("blur.inputmask", function () {
-                        var $input = $(this), input = this, nptValue = input._valueGet(), buffer = getBuffer();
-                        $input.removeClass('focus.inputmask');
-                        if (valueOnFocus != getBuffer().join('')) {
-                            $input.change();
-                        }
-                        if (opts.clearMaskOnLostFocus && nptValue != '') {
-                            if (nptValue == getBufferTemplate().join(''))
-                                input._valueSet('');
-                            else { //clearout optional tail of the mask
-                                clearOptionalTail(input);
+                        var $input = $(this), input = this;
+                        if ($input.data('_inputmask')) {
+                            var nptValue = input._valueGet(), buffer = getBuffer();
+                            $input.removeClass('focus.inputmask');
+                            if (valueOnFocus != getBuffer().join('')) {
+                                $input.change();
                             }
-                        }
-                        if (isComplete(buffer) === false) {
-                            $input.trigger("incomplete");
-                            if (opts.clearIncomplete) {
-                                resetMaskSet();
-                                if (opts.clearMaskOnLostFocus)
+                            if (opts.clearMaskOnLostFocus && nptValue != '') {
+                                if (nptValue == getBufferTemplate().join(''))
                                     input._valueSet('');
-                                else {
-                                    buffer = getBufferTemplate().slice();
-                                    writeBuffer(input, buffer);
+                                else { //clearout optional tail of the mask
+                                    clearOptionalTail(input);
+                                }
+                            }
+                            if (isComplete(buffer) === false) {
+                                $input.trigger("incomplete");
+                                if (opts.clearIncomplete) {
+                                    resetMaskSet();
+                                    if (opts.clearMaskOnLostFocus)
+                                        input._valueSet('');
+                                    else {
+                                        buffer = getBufferTemplate().slice();
+                                        writeBuffer(input, buffer);
+                                    }
                                 }
                             }
                         }
@@ -1493,30 +1496,33 @@
                 return pos;
             }
             function determineActiveMask(eventType, elmasks) {
-                if (eventType != "multiMaskScope") {
-                    var lpc = -1, cp = -1, lvp = -1;;
-                    $.each(elmasks, function (ndx, lmsk) {
-                        var data = $(lmsk).data('_inputmask');
-                        var maskset = data["maskset"];
-                        var lastValidPosition = -1, validPositionCount = 0, caretPos = mcaret(lmsk).begin;
-                        for (var posNdx in maskset["validPositions"]) {
-                            var psNdx = parseInt(posNdx);
-                            if (psNdx > lastValidPosition) lastValidPosition = psNdx;
-                            validPositionCount++;
-                        }
-                        if (validPositionCount > lpc
-                            || (validPositionCount == lpc && cp > caretPos && lvp > lastValidPosition)
-                            || (validPositionCount == lpc && cp == caretPos && lvp < lastValidPosition)
-                            ) {
-                            //console.log("lvp " + lastValidPosition + " vpc " + validPositionCount + " caret " + caretPos + " ams " + ndx);
-                            lpc = validPositionCount;
-                            cp = caretPos;
-                            activeMasksetIndex = ndx;
-                            lvp = lastValidPosition;
-                        }
-                    });
 
-                    if ($.isFunction(opts.determineActiveMasksetIndex)) activeMasksetIndex = opts.determineActiveMasksetIndex.call($el, eventType, elmasks);
+                if (eventType != "multiMaskScope") {
+                    if ($.isFunction(opts.determineActiveMasksetIndex))
+                        activeMasksetIndex = opts.determineActiveMasksetIndex.call($el, eventType, elmasks);
+                    else {
+                        var lpc = -1, cp = -1, lvp = -1;;
+                        $.each(elmasks, function (ndx, lmsk) {
+                            var data = $(lmsk).data('_inputmask');
+                            var maskset = data["maskset"];
+                            var lastValidPosition = -1, validPositionCount = 0, caretPos = mcaret(lmsk).begin;
+                            for (var posNdx in maskset["validPositions"]) {
+                                var psNdx = parseInt(posNdx);
+                                if (psNdx > lastValidPosition) lastValidPosition = psNdx;
+                                validPositionCount++;
+                            }
+                            if (validPositionCount > lpc
+                                    || (validPositionCount == lpc && cp > caretPos && lvp > lastValidPosition)
+                                    || (validPositionCount == lpc && cp == caretPos && lvp < lastValidPosition)
+                            ) {
+                                //console.log("lvp " + lastValidPosition + " vpc " + validPositionCount + " caret " + caretPos + " ams " + ndx);
+                                lpc = validPositionCount;
+                                cp = caretPos;
+                                activeMasksetIndex = ndx;
+                                lvp = lastValidPosition;
+                            }
+                        });
+                    }
 
                     var data = $el.data('_inputmask-multi') || { "activeMasksetIndex": 0, "elmasks": elmasks };
                     data["activeMasksetIndex"] = activeMasksetIndex;
@@ -1751,11 +1757,11 @@
                                 opts = $input.data('_inputmask')['opts'];
                                 //writeout the unmaskedvalue
                                 input._valueSet(maskScope(maskset, opts, { "action": "unmaskedvalue", "$input": $input, "skipDatepickerCheck": true }));
-                                //clear data
-                                $input.removeData('_inputmask');
                                 //unbind all events
                                 $input.unbind(".inputmask");
                                 $input.removeClass('focus.inputmask');
+                                //clear data
+                                $input.removeData('_inputmask');
                                 //restore the value property
                                 var valueProperty;
                                 if (Object.getOwnPropertyDescriptor)
