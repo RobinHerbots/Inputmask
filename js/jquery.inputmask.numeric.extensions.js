@@ -19,16 +19,18 @@ Optional extensions on the jquery.inputmask base
                 var mask = opts.prefix;
                 mask += "[+]";
                 mask += "~{1," + opts.integerDigits + "}";
-                if (opts.digits != undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0))
-                    mask += "[" + opts.radixPoint + "={" + opts.digits + "}]";
+                if (opts.digits != undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0)) {
+                    if (opts.digitsOptional)
+                        mask += "[" + opts.radixPoint + "={" + opts.digits + "}]";
+                    else mask += opts.radixPoint + "={" + opts.digits + "}";
+                }
                 mask += opts.suffix;
                 return mask;
             },
             placeholder: "",
             greedy: false,
-            numericInput: false,
-            isNumeric: true,
             digits: "*", //number of fractionalDigits
+            digitsOptional: true,
             groupSeparator: "",//",", // | "."
             radixPoint: ".",
             groupSize: 3,
@@ -39,10 +41,26 @@ Optional extensions on the jquery.inputmask base
             defaultValue: "",
             prefix: "",
             suffix: "",
+            skipRadixDance: false, //disable radixpoint caret positioning
+            getLastValidPosition: function (maskset, closestTo, opts) {
+                var lastValidPosition = -1, valids = maskset["validPositions"];
+                for (var posNdx in valids) {
+                    var psNdx = parseInt(posNdx);
+                    if (psNdx > lastValidPosition) lastValidPosition = psNdx;
+                }
+
+                if (closestTo != undefined) {
+                    var buffer = maskset["buffer"];
+                    if (opts.skipRadixDance === false && opts.radixPoint != "" && $.inArray(opts.radixPoint, buffer) != -1)
+                        lastValidPosition = $.inArray(opts.radixPoint, buffer);
+                }
+
+                return lastValidPosition;
+            },
+            rightAlign: true,
             postFormat: function (buffer, pos, reformatOnly, opts) {
                 if (opts.groupSeparator == "") return pos;
-                var cbuf = buffer.slice(),
-                    radixPos = $.inArray(opts.radixPoint, buffer);
+                var cbuf = buffer.slice();
                 if (!reformatOnly) {
                     cbuf.splice(pos, 0, "?"); //set position indicator
                 }
@@ -99,7 +117,7 @@ Optional extensions on the jquery.inputmask base
                         }
                         var isValid = strict ? new RegExp("[0-9" + $.inputmask.escapeRegex.call(this, opts.groupSeparator) + "]").test(chrs) : new RegExp("[0-9]").test(chrs);
 
-                        if (isValid != false && !strict && chrs != opts.radixPoint) {
+                        if (isValid != false && !strict && chrs != opts.radixPoint && opts.autoGroup === true) {
                             var newPos = opts.postFormat(buffer, pos, (chrs == "-" || chrs == "+") ? true : false, opts);
                             return { "pos": newPos, "refreshFromBuffer": true };
                         }
