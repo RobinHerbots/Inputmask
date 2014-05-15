@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.15
+* Version: 3.0.16
 */
 
 (function ($) {
@@ -1879,7 +1879,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.15
+Version: 3.0.16
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1989,7 +1989,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.15
+Version: 3.0.16
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2452,7 +2452,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.15
+Version: 3.0.16
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2468,8 +2468,11 @@ Optional extensions on the jquery.inputmask base
                 var mask = opts.prefix;
                 mask += "[+]";
                 mask += "~{1," + opts.integerDigits + "}";
-                if (opts.digits != undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0))
-                    mask += "[" + opts.radixPoint + "={" + opts.digits + "}]";
+                if (opts.digits != undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0)) {
+                    if (opts.digitsOptional)
+                        mask += "[" + opts.radixPoint + "={" + opts.digits + "}]";
+                    else mask += opts.radixPoint + "={" + opts.digits + "}";
+                }
                 mask += opts.suffix;
                 return mask;
             },
@@ -2478,6 +2481,7 @@ Optional extensions on the jquery.inputmask base
             numericInput: false,
             isNumeric: true,
             digits: "*", //number of fractionalDigits
+            digitsOptional: true,
             groupSeparator: "",//",", // | "."
             radixPoint: ".",
             groupSize: 3,
@@ -2490,8 +2494,7 @@ Optional extensions on the jquery.inputmask base
             suffix: "",
             postFormat: function (buffer, pos, reformatOnly, opts) {
                 if (opts.groupSeparator == "") return pos;
-                var cbuf = buffer.slice(),
-                    radixPos = $.inArray(opts.radixPoint, buffer);
+                var cbuf = buffer.slice();
                 if (!reformatOnly) {
                     cbuf.splice(pos, 0, "?"); //set position indicator
                 }
@@ -2548,7 +2551,7 @@ Optional extensions on the jquery.inputmask base
                         }
                         var isValid = strict ? new RegExp("[0-9" + $.inputmask.escapeRegex.call(this, opts.groupSeparator) + "]").test(chrs) : new RegExp("[0-9]").test(chrs);
 
-                        if (isValid != false && !strict && chrs != opts.radixPoint) {
+                        if (isValid != false && !strict && chrs != opts.radixPoint && opts.autoGroup === true) {
                             var newPos = opts.postFormat(buffer, pos, (chrs == "-" || chrs == "+") ? true : false, opts);
                             return { "pos": newPos, "refreshFromBuffer": true };
                         }
@@ -2611,7 +2614,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.15
+Version: 3.0.16
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2798,7 +2801,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.15
+Version: 3.0.16
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
