@@ -240,7 +240,7 @@
             //maskset helperfunctions
             function getMaskTemplate(baseOnInput, minimalPos, includeInput) {
                 minimalPos = minimalPos || 0;
-                var maskTemplate = [], ndxIntlzr, pos = 0, test;
+                var maskTemplate = [], ndxIntlzr, pos = 0, test, testPos;
                 do {
                     if (baseOnInput === true && getMaskSet()['validPositions'][pos]) {
                         var validPos = getMaskSet()['validPositions'][pos];
@@ -248,8 +248,12 @@
                         ndxIntlzr = validPos["locator"].slice();
                         maskTemplate.push(test["fn"] == null ? test["def"] : (includeInput === true ? validPos["input"] : opts.placeholder.charAt(pos % opts.placeholder.length)));
                     } else {
-                        var testPos = getTests(pos, ndxIntlzr, pos - 1), firstMatch = testPos[0]["match"];
-                        testPos = testPos[(minimalPos > pos || (opts.greedy || (firstMatch.optionality === true && firstMatch.newBlockMarker === false && firstMatch.optionalQuantifier !== true))) ? 0 : (testPos.length - 1)];
+                        if (minimalPos > pos) {
+                            var testPositions = getTests(pos, ndxIntlzr, pos - 1);
+                            testPos = testPositions[0];
+                        } else {
+                            testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
+                        }
                         test = testPos["match"];
                         ndxIntlzr = testPos["locator"].slice();
                         maskTemplate.push(test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length));
@@ -296,9 +300,10 @@
                     var valid = true;
                     for (i = pos; i <= lvp ;) {
                         var j = seekNext(i);
+                        if (i == j) valid = false;
                         var t = positionsClone[i];
                         if (t != undefined) {
-                            var nextTest = getTest(j, t["locator"].slice(), i);
+                            var nextTest = getTest(j);
                             if (nextTest.fn == null && nextTest.def == "")
                                 valid = false;
                             else if (t["match"].fn == null || t["match"].def == nextTest.def) {
@@ -344,12 +349,22 @@
                 resetMaskSet(true);
             }
 
-            function getTest(pos, ndxIntlzr, tstPs) {
+            function getTestTemplate(pos, ndxIntlzr, tstPs) {
+                var testPositions = getTests(pos, ndxIntlzr, tstPs), testPos;
+                for (var ndx in testPositions) {
+                    testPos = testPositions[ndx];
+                    if (opts.greedy || ((testPos["match"].optionality === false || testPos["match"].newBlockMarker === false) && testPos["match"].optionalQuantifier !== true)) {
+                        break;
+                    }
+                }
+
+                return testPos;
+            }
+            function getTest(pos) {
                 if (getMaskSet()['validPositions'][pos]) {
                     return getMaskSet()['validPositions'][pos]["match"];
                 }
-                var testPos = getTests(pos, ndxIntlzr, tstPs);
-                return testPos[0]["match"];
+                return getTests(pos)[0]["match"];
             }
 
             function getTests(pos, ndxIntlzr, tstPs) {
@@ -584,9 +599,7 @@
                     var pos, lvp = getLastValidPosition(), testPos = getMaskSet()["validPositions"][lvp],
                         ndxIntlzr = testPos != undefined ? testPos["locator"].slice() : undefined;
                     for (pos = lvp + 1; testPos == undefined || (testPos["match"]["fn"] != null || (testPos["match"]["fn"] == null && testPos["match"]["def"] != "")) ; pos++) {
-                        testPos = getTests(pos, ndxIntlzr, pos - 1);
-                        var firstMatch = testPos[0]["match"];
-                        testPos = testPos[(opts.greedy || (firstMatch.optionality === true && firstMatch.newBlockMarker === false && firstMatch.optionalQuantifier !== true)) ? 0 : (testPos.length - 1)];
+                        testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
                         ndxIntlzr = testPos["locator"].slice();
                     }
                     maskLength = pos;
@@ -664,11 +677,9 @@
                     pos, lvp = getLastValidPosition(), positions = {},
                     ndxIntlzr = getMaskSet()["validPositions"][lvp]["locator"].slice(), testPos;
                 for (pos = lvp + 1; pos < tmpBuffer.length; pos++) {
-                    testPos = getTests(pos, ndxIntlzr, pos - 1);
-                    var firstMatch = testPos[0]["match"];
-                    testPos = testPos[(opts.greedy || (firstMatch.optionality === true && firstMatch.newBlockMarker === false && firstMatch.optionalQuantifier !== true)) ? 0 : (testPos.length - 1)];
-                    positions[pos] = testPos;
+                    testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
                     ndxIntlzr = testPos["locator"].slice();
+                    positions[pos] = testPos;
                 }
 
                 for (pos = tmpBuffer.length - 1; pos > lvp; pos--) {

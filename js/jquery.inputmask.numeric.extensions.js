@@ -12,11 +12,15 @@ Optional extensions on the jquery.inputmask base
     $.extend($.inputmask.defaults.aliases, {
         'numeric': {
             mask: function (opts) {
+                if (opts.repeat !== 0 && isNaN(opts.integerDigits)) {
+                    opts.integerDigits = opts.repeat;
+                }
+                opts.repeat = 0;
                 var mask = opts.prefix;
                 mask += "[+]";
                 mask += "~{1," + opts.integerDigits + "}";
-                if (parseInt(opts.digits) > 0)
-                    mask += "[" + opts.radixPoint + "~{" + opts.digits + "}]";
+                if (opts.digits != undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0))
+                    mask += "[" + opts.radixPoint + "={" + opts.digits + "}]";
                 mask += opts.suffix;
                 return mask;
             },
@@ -100,6 +104,29 @@ Optional extensions on the jquery.inputmask base
                             return { "pos": newPos, "refreshFromBuffer": true };
                         }
 
+                        return isValid;
+                    },
+                    cardinality: 1,
+                    prevalidator: null
+                },
+                '=': {
+                    validator: function (chrs, buffer, pos, strict, opts) {
+                        if (!strict && chrs === "-") {
+                            var matchRslt = buffer.join('').match(opts.regex.integerPart(opts));
+
+                            if (matchRslt.length > 0) {
+                                if (buffer[matchRslt.index] == "+") {
+                                    buffer.splice(matchRslt.index, 1);
+                                    return { "pos": matchRslt.index, "c": "-", "refreshFromBuffer": true, "caret": pos };
+                                } else if (buffer[matchRslt.index] == "-") {
+                                    buffer.splice(matchRslt.index, 1);
+                                    return { "refreshFromBuffer": true, "caret": pos - 1 };
+                                } else {
+                                    return { "pos": matchRslt.index, "c": "-", "caret": pos + 1 };
+                                }
+                            }
+                        }
+                        var isValid = new RegExp("[0-9]").test(chrs);
                         return isValid;
                     },
                     cardinality: 1,
