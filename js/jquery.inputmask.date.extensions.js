@@ -391,7 +391,7 @@ Optional extensions on the jquery.inputmask base
                                 buffer[pos - 1] = tmp.toString().charAt(0);
                             }
 
-                            return { "refreshFromBuffer": { start: pos - 1, end: pos + 6 }, "c": buffer[pos] };
+                            return { "refreshFromBuffer": { start: pos - 1, end: pos + 6 }, "c": buffer[pos], "pos": pos + 1 };
                         }
 
                         return isValid;
