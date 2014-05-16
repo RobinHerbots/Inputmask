@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.16
+* Version: 3.0.21
 */
 
 (function ($) {
@@ -291,11 +291,14 @@
             }
 
             function getLastValidPosition(closestTo) { //TODO implement closest to
-                var maskset = getMaskSet();
-                var lastValidPosition = -1, valids = maskset["validPositions"];
-                for (var posNdx in valids) {
-                    var psNdx = parseInt(posNdx);
-                    if (psNdx > lastValidPosition) lastValidPosition = psNdx;
+                var maskset = getMaskSet(), lastValidPosition = -1, valids = maskset["validPositions"];
+                if ($.isFunction(opts.getLastValidPosition))
+                    lastValidPosition = opts.getLastValidPosition.call($el, maskset, closestTo, opts);
+                else {
+                    for (var posNdx in valids) {
+                        var psNdx = parseInt(posNdx);
+                        if (psNdx > lastValidPosition) lastValidPosition = psNdx;
+                    }
                 }
                 return lastValidPosition;
             }
@@ -927,10 +930,6 @@
 
                 if (pos.begin == pos.end) {
                     var posBegin = k == opts.keyCode.BACKSPACE ? pos.begin - 1 : pos.begin;
-                    if (opts.isNumeric && opts.radixPoint != "" && getBuffer()[posBegin] == opts.radixPoint) {
-                        pos.begin = (getBuffer().length - 1 == posBegin) /* radixPoint is latest? delete it */ ? pos.begin : k == opts.keyCode.BACKSPACE ? posBegin : seekNext(posBegin);
-                        pos.end = pos.begin;
-                    }
                     if (k == opts.keyCode.BACKSPACE)
                         pos.begin = seekPrevious(pos.begin);
                     else if (k == opts.keyCode.DELETE)
@@ -1045,17 +1044,6 @@
                             isSlctn = !opts.multi;
                         }
 
-                        var radixPosition = getBuffer().join('').indexOf(opts.radixPoint);
-                        if (opts.isNumeric && checkval !== true && radixPosition != -1) {
-                            if (opts.greedy && pos.begin <= radixPosition) {
-                                pos.begin = seekPrevious(pos.begin);
-                                pos.end = pos.begin;
-                            } else if (c == opts.radixPoint) {
-                                pos.begin = radixPosition;
-                                pos.end = pos.begin;
-                            }
-                        }
-
                         getMaskSet()["writeOutBuffer"] = true;
                         var p = pos.begin;
                         var valResult = isValid(p, c, strict);
@@ -1065,7 +1053,14 @@
                                 c = valResult.c != undefined ? valResult.c : c; //set new char from isValid
                             }
                             resetMaskSet(true);
-                            forwardPosition = valResult.caret != undefined ? valResult.caret : seekNext(p);
+                            if (valResult.caret != undefined)
+                                forwardPosition = valResult.caret;
+                            else {
+                                var vps = getMaskSet()["validPositions"];
+                                if (vps[p + 1] != undefined && getTestTemplate(pos + 1, vps[p].locator.slice(), p)["match"].def != vps[p + 1]["match"].def)
+                                    forwardPosition = p + 1;
+                                else forwardPosition = seekNext(p);
+                            }
                             getMaskSet()["p"] = forwardPosition; //needed for checkval
                         }
 
@@ -1074,21 +1069,7 @@
                             setTimeout(function () { opts.onKeyValidation.call(self, valResult, opts); }, 0);
                             if (getMaskSet()["writeOutBuffer"] && valResult !== false) {
                                 var buffer = getBuffer();
-
-                                var newCaretPosition;
-                                if (checkval) {
-                                    newCaretPosition = undefined;
-                                } else if (opts.numericInput) {
-                                    if (p > radixPosition) {
-                                        newCaretPosition = seekPrevious(forwardPosition);
-                                    } else if (c == opts.radixPoint) {
-                                        newCaretPosition = forwardPosition - 1;
-                                    } else newCaretPosition = seekPrevious(forwardPosition - 1);
-                                } else {
-                                    newCaretPosition = forwardPosition;
-                                }
-
-                                writeBuffer(input, buffer, newCaretPosition);
+                                writeBuffer(input, buffer, checkval ? undefined : opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
                                 if (checkval !== true) {
                                     setTimeout(function () { //timeout needed for IE
                                         if (isComplete(buffer) === true)
@@ -1137,11 +1118,7 @@
                         valueOnFocus = getBuffer().join('');
                     } else {
                         writeBuffer(input, buffer);
-                        if (buffer.join('') == getBufferTemplate().join('') && $.inArray(opts.radixPoint, buffer) != -1) {
-                            caret(input, TranslatePosition(0));
-                            $input.click();
-                        } else
-                            caret(input, TranslatePosition(0), TranslatePosition(getMaskLength()));
+                        caret(input, TranslatePosition(0), TranslatePosition(getMaskLength()));
                     }
                 }
             }
@@ -1209,8 +1186,7 @@
 
                     patchValueProperty(el);
 
-                    if (opts.numericInput) opts.isNumeric = opts.numericInput;
-                    if (el.dir == "rtl" || (opts.numericInput && opts.rightAlignNumerics) || (opts.isNumeric && opts.rightAlignNumerics))
+                    if (el.dir == "rtl" || opts.rightAlign)
                         $el.css("text-align", "right");
 
                     if (el.dir == "rtl" || opts.numericInput) {
@@ -1297,14 +1273,7 @@
                             if (selectedCaret.begin == selectedCaret.end) {
                                 var clickPosition = isRTL ? TranslatePosition(selectedCaret.begin) : selectedCaret.begin,
                                     lvp = getLastValidPosition(clickPosition),
-                                    lastPosition;
-                                if (opts.isNumeric) {
-                                    lastPosition = opts.skipRadixDance === false && opts.radixPoint != "" && $.inArray(opts.radixPoint, buffer) != -1 ?
-                                        (opts.numericInput ? seekNext($.inArray(opts.radixPoint, buffer)) : $.inArray(opts.radixPoint, buffer)) :
-                                        seekNext(lvp);
-                                } else {
                                     lastPosition = seekNext(lvp);
-                                }
                                 if (clickPosition < lastPosition) {
                                     if (isMask(clickPosition))
                                         caret(input, clickPosition);
@@ -1403,7 +1372,6 @@
                             'isRTL': opts.numericInput
                         });
                         if (opts.numericInput) {
-                            opts.isNumeric = opts.numericInput;
                             isRTL = true;
                         }
                         var valueBuffer = actionObj["value"].split('');
@@ -1417,7 +1385,6 @@
                             'isRTL': opts.numericInput
                         });
                         if (opts.numericInput) {
-                            opts.isNumeric = opts.numericInput;
                             isRTL = true;
                         }
                         var valueBuffer = actionObj["value"].split('');
@@ -1568,7 +1535,7 @@
              });
 
             $el.data('_inputmask-multi', { "activeMasksetIndex": 0, "elmasks": elmasks });
-            if (el.dir == "rtl" || (opts.numericInput && opts.rightAlignNumerics) || (opts.isNumeric && opts.rightAlignNumerics))
+            if (el.dir == "rtl" || opts.rightAlign)
                 $el.css("text-align", "right");
             el.dir = "ltr";
             $el.removeAttr("dir");
@@ -1678,11 +1645,10 @@
                 skipOptionalPartCharacter: " ", //a character which can be used to skip an optional part of a mask
                 showTooltip: false, //show the activemask as tooltip
                 numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
+                getLastValidPosition: undefined, //override getLastValidPosition - args => maskset, closestTo, opts - return position (int)
+                rightAlign: false, //align to the right
                 //numeric basic properties
-                isNumeric: false, //enable numeric features
                 radixPoint: "", //".", // | ","
-                skipRadixDance: false, //disable radixpoint caret positioning
-                rightAlignNumerics: true, //align numerics to the right
                 //numeric basic properties
                 definitions: {
                     '9': {
@@ -1879,7 +1845,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.16
+Version: 3.0.21
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1989,7 +1955,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.16
+Version: 3.0.21
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2452,7 +2418,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.16
+Version: 3.0.21
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2470,16 +2436,14 @@ Optional extensions on the jquery.inputmask base
                 mask += "~{1," + opts.integerDigits + "}";
                 if (opts.digits != undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0)) {
                     if (opts.digitsOptional)
-                        mask += "[" + opts.radixPoint + "={" + opts.digits + "}]";
-                    else mask += opts.radixPoint + "={" + opts.digits + "}";
+                        mask += "[" + opts.radixPoint + "~{" + opts.digits + "}]";
+                    else mask += opts.radixPoint + "~{" + opts.digits + "}";
                 }
                 mask += opts.suffix;
                 return mask;
             },
             placeholder: "",
             greedy: false,
-            numericInput: false,
-            isNumeric: true,
             digits: "*", //number of fractionalDigits
             digitsOptional: true,
             groupSeparator: "",//",", // | "."
@@ -2492,6 +2456,23 @@ Optional extensions on the jquery.inputmask base
             defaultValue: "",
             prefix: "",
             suffix: "",
+            skipRadixDance: false, //disable radixpoint caret positioning
+            getLastValidPosition: function (maskset, closestTo, opts) {
+                var lastValidPosition = -1, valids = maskset["validPositions"];
+                for (var posNdx in valids) {
+                    var psNdx = parseInt(posNdx);
+                    if (psNdx > lastValidPosition) lastValidPosition = psNdx;
+                }
+
+                if (closestTo != undefined) {
+                    var buffer = maskset["buffer"];
+                    if (opts.skipRadixDance === false && opts.radixPoint != "" && $.inArray(opts.radixPoint, buffer) != -1)
+                        lastValidPosition = $.inArray(opts.radixPoint, buffer);
+                }
+
+                return lastValidPosition;
+            },
+            rightAlign: true,
             postFormat: function (buffer, pos, reformatOnly, opts) {
                 if (opts.groupSeparator == "") return pos;
                 var cbuf = buffer.slice();
@@ -2561,29 +2542,6 @@ Optional extensions on the jquery.inputmask base
                     cardinality: 1,
                     prevalidator: null
                 },
-                '=': {
-                    validator: function (chrs, buffer, pos, strict, opts) {
-                        if (!strict && chrs === "-") {
-                            var matchRslt = buffer.join('').match(opts.regex.integerPart(opts));
-
-                            if (matchRslt.length > 0) {
-                                if (buffer[matchRslt.index] == "+") {
-                                    buffer.splice(matchRslt.index, 1);
-                                    return { "pos": matchRslt.index, "c": "-", "refreshFromBuffer": true, "caret": pos };
-                                } else if (buffer[matchRslt.index] == "-") {
-                                    buffer.splice(matchRslt.index, 1);
-                                    return { "refreshFromBuffer": true, "caret": pos - 1 };
-                                } else {
-                                    return { "pos": matchRslt.index, "c": "-", "caret": pos + 1 };
-                                }
-                            }
-                        }
-                        var isValid = new RegExp("[0-9]").test(chrs);
-                        return isValid;
-                    },
-                    cardinality: 1,
-                    prevalidator: null
-                },
                 '+': {
                     validator: function (chrs, buffer, pos, strict, opts) {
                         var signed = "[";
@@ -2614,7 +2572,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.16
+Version: 3.0.21
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2801,7 +2759,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.16
+Version: 3.0.21
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks

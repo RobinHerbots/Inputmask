@@ -1053,7 +1053,14 @@
                                 c = valResult.c != undefined ? valResult.c : c; //set new char from isValid
                             }
                             resetMaskSet(true);
-                            forwardPosition = valResult.caret != undefined ? valResult.caret : seekNext(p);
+                            if (valResult.caret != undefined)
+                                forwardPosition = valResult.caret;
+                            else {
+                                var vps = getMaskSet()["validPositions"];
+                                if (vps[p + 1] != undefined && getTestTemplate(pos + 1, vps[p].locator.slice(), p)["match"].def != vps[p + 1]["match"].def)
+                                    forwardPosition = p + 1;
+                                else forwardPosition = seekNext(p);
+                            }
                             getMaskSet()["p"] = forwardPosition; //needed for checkval
                         }
 
