@@ -21,8 +21,8 @@ Optional extensions on the jquery.inputmask base
                 mask += "~{1," + opts.integerDigits + "}";
                 if (opts.digits != undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0)) {
                     if (opts.digitsOptional)
-                        mask += "[" + opts.radixPoint + "={" + opts.digits + "}]";
-                    else mask += opts.radixPoint + "={" + opts.digits + "}";
+                        mask += "[" + opts.radixPoint + "~{" + opts.digits + "}]";
+                    else mask += opts.radixPoint + "~{" + opts.digits + "}";
                 }
                 mask += opts.suffix;
                 return mask;
@@ -122,29 +122,6 @@ Optional extensions on the jquery.inputmask base
                             return { "pos": newPos, "refreshFromBuffer": true };
                         }
 
-                        return isValid;
-                    },
-                    cardinality: 1,
-                    prevalidator: null
-                },
-                '=': {
-                    validator: function (chrs, buffer, pos, strict, opts) {
-                        if (!strict && chrs === "-") {
-                            var matchRslt = buffer.join('').match(opts.regex.integerPart(opts));
-
-                            if (matchRslt.length > 0) {
-                                if (buffer[matchRslt.index] == "+") {
-                                    buffer.splice(matchRslt.index, 1);
-                                    return { "pos": matchRslt.index, "c": "-", "refreshFromBuffer": true, "caret": pos };
-                                } else if (buffer[matchRslt.index] == "-") {
-                                    buffer.splice(matchRslt.index, 1);
-                                    return { "refreshFromBuffer": true, "caret": pos - 1 };
-                                } else {
-                                    return { "pos": matchRslt.index, "c": "-", "caret": pos + 1 };
-                                }
-                            }
-                        }
-                        var isValid = new RegExp("[0-9]").test(chrs);
                         return isValid;
                     },
                     cardinality: 1,

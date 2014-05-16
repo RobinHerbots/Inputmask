@@ -1716,7 +1716,7 @@ test("inputmask({ mask: \"€ 999.999.999,99\", numericInput: true }); - 123 pos
     $("#testmask").remove();
 });
 
-asyncTest("inputmask({ mask: \"€ 999.999.999,99\", { numericInput: true, radixPoint: \",\" }); - 123", function () {
+asyncTest("inputmask({ mask: \"€ 999.999.999,99\", { numericInput: true, radixPoint: \",\" }); - 123 - radixpoint has no logic anymore in base", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask('€ 999.999.999,99', { numericInput: true, radixPoint: "," });
@@ -1726,7 +1726,7 @@ asyncTest("inputmask({ mask: \"€ 999.999.999,99\", { numericInput: true, radix
     setTimeout(function () {
         $("#testmask").Type("123");
 
-        equal($("#testmask").val(), "€ ___.___.123,__", "Result " + $("#testmask").val());
+        equal($("#testmask").val(), "€ ___.___.__1,23", "Result " + $("#testmask").val());
         start();
         $("#testmask").remove();
     }, 0);
@@ -2342,6 +2342,20 @@ test("email mask - partial input", function () {
     $("#testmask").Type("some.");
     $("#testmask").blur();
     equal($("#testmask").val(), "some._@_.__", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("email mask - partial input 2", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("email");
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("some@mail.com");
+    caret($("#testmask"), 4);
+    $("#testmask").Type(".body");
+    equal($("#testmask").val(), "some.body@mail.com", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });
