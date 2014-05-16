@@ -297,13 +297,13 @@ $(document).ready(function(){
 
 This behavior can be skipped by setting the skipRadixDance to true.
 
-#### align the numerics to the right
+#### align the input to the right
 
-By setting the rightAlignNumerics you can specify to right align a numeric inputmask.  Default is true.  
+By setting the rightAlign you can specify to right align an inputmask.  Default is true.  
 
 ```javascript
 $(document).ready(function(){
-    $(selector).inputmask('decimal', { rightAlignNumerics: false });  //disables the right alignment of the decimal input
+    $(selector).inputmask('decimal', { rightAlign: false });  //disables the right alignment of the decimal input
 });
 ```
 
