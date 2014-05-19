@@ -754,7 +754,7 @@
 
                     npt.scrollLeft = npt.scrollWidth;
                     if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
-                    if (npt.setSelectionRange) {
+                    if (npt.setSelectionRange &&  $(npt).is(":focus") == true) { 
                         npt.selectionStart = begin;
                         npt.selectionEnd = end;
 
@@ -1445,7 +1445,7 @@
 
                     npt.scrollLeft = npt.scrollWidth;
                     if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
-                    if (npt.setSelectionRange) {
+                    if (npt.setSelectionRange &&  $(npt).is(":focus") == true) { 
                         npt.selectionStart = begin;
                         npt.selectionEnd = end;
 
