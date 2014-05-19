@@ -249,6 +249,8 @@
                 maxLength;
 
             //maskset helperfunctions
+
+
             function getMaskTemplate(baseOnInput, minimalPos, includeInput) {
                 minimalPos = minimalPos || 0;
                 var maskTemplate = [], ndxIntlzr, pos = 0, test, testPos;
@@ -312,20 +314,15 @@
                     }
                     getMaskSet()["validPositions"][pos] = validTest;
                     var valid = true;
-                    for (i = pos; i <= lvp ;) {
-                        var j = seekNext(i);
-                        if (i == j) valid = false;
+                    for (i = pos; i <= lvp ; i++) {
                         var t = positionsClone[i];
                         if (t != undefined) {
-                            var nextTest = getTest(j);
-                            if (nextTest.fn == null && nextTest.def == "")
-                                valid = false;
-                            else if (t["match"].fn == null || t["match"].def == nextTest.def) {
+                            var j = t["match"].fn == null ? i + 1 : seekNext(i);
+                            if (positionCanMatchDefinition(j, t["match"].def)) {
                                 valid = valid && isValid(j, t["input"], true, true) !== false;
-                            }
+                            } else valid = false;
                         }
                         if (!valid) break;
-                        i = j;
                     }
 
                     if (!valid) {
@@ -339,22 +336,23 @@
             }
 
             function stripValidPositions(start, end) {
-                var i, ml, startPos = seekNext(start - 1), lvp;
+                var i, startPos = start, lvp;
                 for (i = start; i < end; i++) { //clear selection
                     delete getMaskSet()["validPositions"][i];
                 }
 
-                for (i = seekNext(end - 1) ; i <= getLastValidPosition() ; i = seekNext(i)) {
+                for (i = end ; i <= getLastValidPosition() ;) {
                     var t = getMaskSet()["validPositions"][i];
                     var s = getMaskSet()["validPositions"][startPos];
                     if (t != undefined && s == undefined) {
-                        if (getTest(startPos).def == t.match.def && isValid(startPos, t["input"], true) !== false) {
+                        if (positionCanMatchDefinition(startPos, t.match.def) && isValid(startPos, t["input"], true) !== false) {
                             delete getMaskSet()["validPositions"][i];
+                            i++;
                         }
-                        startPos = seekNext(startPos);
-                    }
+                        startPos++;
+                    } else i++;
                 }
-                var lvp = getLastValidPosition();
+                lvp = getLastValidPosition();
                 //catchup
                 while (lvp > 0 && (getMaskSet()["validPositions"][lvp] == undefined || getMaskSet()["validPositions"][lvp].match.fn == null)) {
                     delete getMaskSet()["validPositions"][lvp];
@@ -380,7 +378,16 @@
                 }
                 return getTests(pos)[0]["match"];
             }
-
+            function positionCanMatchDefinition(pos, def) {
+                var valid = false, tests = getTests(pos);
+                for (var tndx in tests) {
+                    if (tests[tndx]["match"].def == def) {
+                        valid = true;
+                        break;
+                    }
+                }
+                return valid;
+            };
             function getTests(pos, ndxIntlzr, tstPs) {
                 var maskTokens = getMaskSet()["maskToken"], testPos = ndxIntlzr ? tstPs : 0, ndxInitializer = ndxIntlzr || [0], matches = [], insertStop = false;
 

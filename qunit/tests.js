@@ -1299,6 +1299,7 @@ test("inputmask(\"decimal\", { autoGroup: false, groupSeparator: \",\" }\") - in
     $("#testmask").SendKey(keyCodes.DELETE);
     $("#testmask").SendKey(keyCodes.DELETE);
     $("#testmask").SendKey(keyCodes.DELETE);
+    $("#testmask").SendKey(keyCodes.DELETE);
     $("#testmask").Type(".789");
 
     equal($("#testmask").val(), "12345.789", "Result " + $("#testmask").val());
