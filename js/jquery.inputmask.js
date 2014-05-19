@@ -1317,15 +1317,13 @@
                             .attr("autocapitalize", "off")
                             .attr("spellcheck", false);
 
-                        if (androidfirefox || kindle) {
-                            $el.unbind("keydown.inputmask", keydownEvent
-                            ).unbind("keypress.inputmask", keypressEvent
-                            ).unbind("keyup.inputmask", keyupEvent);
-                            if (PasteEventType == "input") {
-                                $el.unbind(PasteEventType + ".inputmask");
-                            }
-                            $el.bind("input.inputmask", mobileInputEvent);
+                        $el.unbind("keydown.inputmask", keydownEvent
+                        ).unbind("keypress.inputmask", keypressEvent
+                        ).unbind("keyup.inputmask", keyupEvent);
+                        if (PasteEventType == "input") {
+                            $el.unbind(PasteEventType + ".inputmask");
                         }
+                        $el.bind("input.inputmask", mobileInputEvent);
                     }
 
                     if (msie1x)
