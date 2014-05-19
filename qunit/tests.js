@@ -274,6 +274,21 @@ test("Intergroup selection - dhilt", function () {
     $("#testmask").remove();
 });
 
+test("Delete selection with non-masks", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("(999)999-9999");
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("9999999999");
+
+    caret($("#testmask"), 8, 11);
+    $("#testmask").SendKey(keyCodes.DELETE);
+    equal($("#testmask").val(), "(999)999-99__", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
 module("Non-greedy masks");
 test("inputmask(\"*\", { greedy: false, repeat: \"*\" }) - replace cd with 1", function () {
     var $fixture = $("#qunit-fixture");
