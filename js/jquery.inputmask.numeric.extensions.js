@@ -59,7 +59,8 @@ Optional extensions on the jquery.inputmask base
             },
             rightAlign: true,
             postFormat: function (buffer, pos, reformatOnly, opts) {
-                if (opts.groupSeparator == "") return pos;
+                var needsRefresh = false;
+                if (opts.groupSeparator == "") return { pos: pos };
                 var cbuf = buffer.slice();
                 if (!reformatOnly) {
                     cbuf.splice(pos, 0, "?"); //set position indicator
@@ -70,10 +71,13 @@ Optional extensions on the jquery.inputmask base
                     bufVal = bufVal.replace(new RegExp(escapedGroupSeparator, "g"), '');
                     var radixSplit = bufVal.split(opts.radixPoint);
                     bufVal = radixSplit[0];
-                    var reg = new RegExp('([-\+]?[\\d\?]+)([\\d\?]{' + opts.groupSize + '})');
-                    while (reg.test(bufVal)) {
-                        bufVal = bufVal.replace(reg, '$1' + opts.groupSeparator + '$2');
-                        bufVal = bufVal.replace(opts.groupSeparator + opts.groupSeparator, opts.groupSeparator);
+                    if (bufVal != (opts.prefix + "?0")) {
+                        needsRefresh = true;
+                        var reg = new RegExp('([-\+]?[\\d\?]+)([\\d\?]{' + opts.groupSize + '})');
+                        while (reg.test(bufVal)) {
+                            bufVal = bufVal.replace(reg, '$1' + opts.groupSeparator + '$2');
+                            bufVal = bufVal.replace(opts.groupSeparator + opts.groupSeparator, opts.groupSeparator);
+                        }
                     }
                     if (radixSplit.length > 1)
                         bufVal += opts.radixPoint + radixSplit[1];
@@ -85,13 +89,12 @@ Optional extensions on the jquery.inputmask base
                 var newPos = $.inArray("?", buffer);
                 if (!reformatOnly) buffer.splice(newPos, 1);
 
-                return reformatOnly ? pos : newPos;
+                return { pos: reformatOnly ? pos : newPos, "refreshFromBuffer": needsRefresh };
             },
             onKeyDown: function (e, buffer, opts) {
                 var $input = $(this), input = this;
                 if (opts.autoGroup && e.keyCode == opts.keyCode.DELETE || e.keyCode == opts.keyCode.BACKSPACE) {
-                    opts.postFormat(buffer, 0, true, opts);
-                    return { "refreshFromBuffer": true };
+                    return opts.postFormat(buffer, 0, true, opts);
                 }
             },
             regex: {
@@ -118,8 +121,7 @@ Optional extensions on the jquery.inputmask base
                         var isValid = strict ? new RegExp("[0-9" + $.inputmask.escapeRegex.call(this, opts.groupSeparator) + "]").test(chrs) : new RegExp("[0-9]").test(chrs);
 
                         if (isValid != false && !strict && chrs != opts.radixPoint && opts.autoGroup === true) {
-                            var newPos = opts.postFormat(buffer, pos, (chrs == "-" || chrs == "+") ? true : false, opts);
-                            return { "pos": newPos, "refreshFromBuffer": true };
+                            return opts.postFormat(buffer, pos, (chrs == "-" || chrs == "+") ? true : false, opts);
                         }
 
                         return isValid;

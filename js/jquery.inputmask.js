@@ -593,12 +593,17 @@
 
                 var maskPos = pos;
                 var result = _isValid(maskPos, c, strict, fromSetValid);
-                if (!strict && (opts.insertMode || getMaskSet()["validPositions"][seekNext(maskPos)] == undefined) && result === false && !isMask(maskPos)) { //does the input match on a further position?
-                    for (var nPos = maskPos + 1, snPos = seekNext(maskPos) ; nPos <= snPos; nPos++) {
-                        result = _isValid(nPos, c, strict, fromSetValid);
-                        if (result !== false) {
-                            maskPos = nPos;
-                            break;
+                if (!strict && result === false) {
+                    var currentPosValid = getMaskSet()["validPositions"][maskPos];
+                    if (currentPosValid && currentPosValid["match"].fn == null && (currentPosValid["match"].def == c || c == opts.skipOptionalPartCharacter)) {
+                        result = { "caret": seekNext(maskPos) };
+                    } else if ((opts.insertMode || getMaskSet()["validPositions"][seekNext(maskPos)] == undefined) && !isMask(maskPos)) { //does the input match on a further position?
+                        for (var nPos = maskPos + 1, snPos = seekNext(maskPos) ; nPos <= snPos; nPos++) {
+                            result = _isValid(nPos, c, strict, fromSetValid);
+                            if (result !== false) {
+                                maskPos = nPos;
+                                break;
+                            }
                         }
                     }
                 }
@@ -748,13 +753,13 @@
                     data["caret"] = { "begin": begin, "end": end };
                     $(npt).data('_inputmask', data);
 
-                    if (!$(npt).is(":focus")) {
+                    if (!$(npt).is(":visible")) {
                         return;
                     }
 
                     npt.scrollLeft = npt.scrollWidth;
                     if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
-                    if (npt.setSelectionRange) { 
+                    if (npt.setSelectionRange) {
                         npt.selectionStart = begin;
                         npt.selectionEnd = end;
 
@@ -767,7 +772,7 @@
                     }
                 } else {
                     var data = $(npt).data('_inputmask');
-                    if (!$(npt).is(':visible') && data && data["caret"] != undefined) {
+                    if (!$(npt).is(":visible") && data && data["caret"] != undefined) {
                         begin = data["caret"]["begin"];
                         end = data["caret"]["end"];
                     } else if (npt.setSelectionRange) {
@@ -1331,7 +1336,8 @@
 
                     //apply mask
                     var initialValue = $.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call(el, el._valueGet(), opts) : el._valueGet();
-                    checkVal(el, true, false, initialValue.split(''), true);
+                    checkVal(el, false, false, initialValue.split(''), true);
+                    writeBuffer(el, getBuffer());
                     valueOnFocus = getBuffer().join('');
                     // Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
                     var activeElement;
@@ -1439,13 +1445,13 @@
                         data["caret"] = { "begin": begin, "end": end };
                         $(npt).data('_inputmask', data);
                     }
-                    if (!$(npt).is(":focus")) {
+                    if (!$(npt).is(":visible")) {
                         return;
                     }
 
                     npt.scrollLeft = npt.scrollWidth;
                     if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
-                    if (npt.setSelectionRange) { 
+                    if (npt.setSelectionRange) {
                         npt.selectionStart = begin;
                         npt.selectionEnd = end;
 
@@ -1457,8 +1463,8 @@
                         range.select();
                     }
                 } else {
-                    if (!$(npt).is(':visible') && $(npt).data('_inputmask')["caret"] != undefined) {
-                        var data = $(npt).data('_inputmask');
+                    var data = $(npt).data('_inputmask');
+                    if (!$(npt).is(":visible") && data && data["caret"] != undefined) {
                         begin = data["caret"]["begin"];
                         end = data["caret"]["end"];
                     } else if (npt.setSelectionRange) {
