@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.24
+* Version: 3.0.26
 */
 
 (function ($) {
@@ -593,12 +593,17 @@
 
                 var maskPos = pos;
                 var result = _isValid(maskPos, c, strict, fromSetValid);
-                if (!strict && (opts.insertMode || getMaskSet()["validPositions"][seekNext(maskPos)] == undefined) && result === false && !isMask(maskPos)) { //does the input match on a further position?
-                    for (var nPos = maskPos + 1, snPos = seekNext(maskPos) ; nPos <= snPos; nPos++) {
-                        result = _isValid(nPos, c, strict, fromSetValid);
-                        if (result !== false) {
-                            maskPos = nPos;
-                            break;
+                if (!strict && result === false) {
+                    var currentPosValid = getMaskSet()["validPositions"][maskPos];
+                    if (currentPosValid && currentPosValid["match"].fn == null && (currentPosValid["match"].def == c || c == opts.skipOptionalPartCharacter)) {
+                        result = { "caret": seekNext(maskPos) };
+                    } else if ((opts.insertMode || getMaskSet()["validPositions"][seekNext(maskPos)] == undefined) && !isMask(maskPos)) { //does the input match on a further position?
+                        for (var nPos = maskPos + 1, snPos = seekNext(maskPos) ; nPos <= snPos; nPos++) {
+                            result = _isValid(nPos, c, strict, fromSetValid);
+                            if (result !== false) {
+                                maskPos = nPos;
+                                break;
+                            }
                         }
                     }
                 }
@@ -748,13 +753,13 @@
                     data["caret"] = { "begin": begin, "end": end };
                     $(npt).data('_inputmask', data);
 
-                    if (!$(npt).is(":focus")) {
+                    if (!$(npt).is(":visible")) {
                         return;
                     }
 
                     npt.scrollLeft = npt.scrollWidth;
                     if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
-                    if (npt.setSelectionRange) { 
+                    if (npt.setSelectionRange) {
                         npt.selectionStart = begin;
                         npt.selectionEnd = end;
 
@@ -767,7 +772,7 @@
                     }
                 } else {
                     var data = $(npt).data('_inputmask');
-                    if (!$(npt).is(':visible') && data && data["caret"] != undefined) {
+                    if (!$(npt).is(":visible") && data && data["caret"] != undefined) {
                         begin = data["caret"]["begin"];
                         end = data["caret"]["end"];
                     } else if (npt.setSelectionRange) {
@@ -1331,7 +1336,8 @@
 
                     //apply mask
                     var initialValue = $.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call(el, el._valueGet(), opts) : el._valueGet();
-                    checkVal(el, true, false, initialValue.split(''), true);
+                    checkVal(el, false, false, initialValue.split(''), true);
+                    writeBuffer(el, getBuffer());
                     valueOnFocus = getBuffer().join('');
                     // Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
                     var activeElement;
@@ -1439,13 +1445,13 @@
                         data["caret"] = { "begin": begin, "end": end };
                         $(npt).data('_inputmask', data);
                     }
-                    if (!$(npt).is(":focus")) {
+                    if (!$(npt).is(":visible")) {
                         return;
                     }
 
                     npt.scrollLeft = npt.scrollWidth;
                     if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
-                    if (npt.setSelectionRange) { 
+                    if (npt.setSelectionRange) {
                         npt.selectionStart = begin;
                         npt.selectionEnd = end;
 
@@ -1457,8 +1463,8 @@
                         range.select();
                     }
                 } else {
-                    if (!$(npt).is(':visible') && $(npt).data('_inputmask')["caret"] != undefined) {
-                        var data = $(npt).data('_inputmask');
+                    var data = $(npt).data('_inputmask');
+                    if (!$(npt).is(":visible") && data && data["caret"] != undefined) {
                         begin = data["caret"]["begin"];
                         end = data["caret"]["end"];
                     } else if (npt.setSelectionRange) {
@@ -1850,7 +1856,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.24
+Version: 3.0.26
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1960,7 +1966,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.24
+Version: 3.0.26
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2423,7 +2429,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.24
+Version: 3.0.26
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2479,7 +2485,8 @@ Optional extensions on the jquery.inputmask base
             },
             rightAlign: true,
             postFormat: function (buffer, pos, reformatOnly, opts) {
-                if (opts.groupSeparator == "") return pos;
+                var needsRefresh = false;
+                if (opts.groupSeparator == "") return { pos: pos };
                 var cbuf = buffer.slice();
                 if (!reformatOnly) {
                     cbuf.splice(pos, 0, "?"); //set position indicator
@@ -2490,10 +2497,13 @@ Optional extensions on the jquery.inputmask base
                     bufVal = bufVal.replace(new RegExp(escapedGroupSeparator, "g"), '');
                     var radixSplit = bufVal.split(opts.radixPoint);
                     bufVal = radixSplit[0];
-                    var reg = new RegExp('([-\+]?[\\d\?]+)([\\d\?]{' + opts.groupSize + '})');
-                    while (reg.test(bufVal)) {
-                        bufVal = bufVal.replace(reg, '$1' + opts.groupSeparator + '$2');
-                        bufVal = bufVal.replace(opts.groupSeparator + opts.groupSeparator, opts.groupSeparator);
+                    if (bufVal != (opts.prefix + "?0")) {
+                        needsRefresh = true;
+                        var reg = new RegExp('([-\+]?[\\d\?]+)([\\d\?]{' + opts.groupSize + '})');
+                        while (reg.test(bufVal)) {
+                            bufVal = bufVal.replace(reg, '$1' + opts.groupSeparator + '$2');
+                            bufVal = bufVal.replace(opts.groupSeparator + opts.groupSeparator, opts.groupSeparator);
+                        }
                     }
                     if (radixSplit.length > 1)
                         bufVal += opts.radixPoint + radixSplit[1];
@@ -2505,13 +2515,12 @@ Optional extensions on the jquery.inputmask base
                 var newPos = $.inArray("?", buffer);
                 if (!reformatOnly) buffer.splice(newPos, 1);
 
-                return reformatOnly ? pos : newPos;
+                return { pos: reformatOnly ? pos : newPos, "refreshFromBuffer": needsRefresh };
             },
             onKeyDown: function (e, buffer, opts) {
                 var $input = $(this), input = this;
                 if (opts.autoGroup && e.keyCode == opts.keyCode.DELETE || e.keyCode == opts.keyCode.BACKSPACE) {
-                    opts.postFormat(buffer, 0, true, opts);
-                    return { "refreshFromBuffer": true };
+                    return opts.postFormat(buffer, 0, true, opts);
                 }
             },
             regex: {
@@ -2538,8 +2547,7 @@ Optional extensions on the jquery.inputmask base
                         var isValid = strict ? new RegExp("[0-9" + $.inputmask.escapeRegex.call(this, opts.groupSeparator) + "]").test(chrs) : new RegExp("[0-9]").test(chrs);
 
                         if (isValid != false && !strict && chrs != opts.radixPoint && opts.autoGroup === true) {
-                            var newPos = opts.postFormat(buffer, pos, (chrs == "-" || chrs == "+") ? true : false, opts);
-                            return { "pos": newPos, "refreshFromBuffer": true };
+                            return opts.postFormat(buffer, pos, (chrs == "-" || chrs == "+") ? true : false, opts);
                         }
 
                         return isValid;
@@ -2577,7 +2585,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.24
+Version: 3.0.26
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2764,7 +2772,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.24
+Version: 3.0.26
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
