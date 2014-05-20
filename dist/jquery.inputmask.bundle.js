@@ -365,7 +365,7 @@
                 var testPositions = getTests(pos, ndxIntlzr, tstPs), testPos;
                 for (var ndx in testPositions) {
                     testPos = testPositions[ndx];
-                    if (opts.greedy || ((testPos["match"].optionality === false || testPos["match"].newBlockMarker === false) && testPos["match"].optionalQuantifier !== true)) {
+                    if (opts.greedy || (((!testPos["match"].optionality) || (!testPos["match"].newBlockMarker)) && !testPos["match"].optionalQuantifier)) {
                         break;
                     }
                 }
