@@ -748,13 +748,13 @@
                     data["caret"] = { "begin": begin, "end": end };
                     $(npt).data('_inputmask', data);
 
-                    if (!$(npt).is(':visible')) {
+                    if (!$(npt).is(":focus")) {
                         return;
                     }
 
                     npt.scrollLeft = npt.scrollWidth;
                     if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
-                    if (npt.setSelectionRange &&  $(npt).is(":focus") == true) { 
+                    if (npt.setSelectionRange) { 
                         npt.selectionStart = begin;
                         npt.selectionEnd = end;
 
@@ -1439,13 +1439,13 @@
                         data["caret"] = { "begin": begin, "end": end };
                         $(npt).data('_inputmask', data);
                     }
-                    if (!$(npt).is(':visible')) {
+                    if (!$(npt).is(":focus")) {
                         return;
                     }
 
                     npt.scrollLeft = npt.scrollWidth;
                     if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
-                    if (npt.setSelectionRange &&  $(npt).is(":focus") == true) { 
+                    if (npt.setSelectionRange) { 
                         npt.selectionStart = begin;
                         npt.selectionEnd = end;
 
