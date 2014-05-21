@@ -292,15 +292,21 @@
                 }
             }
 
-            function getLastValidPosition(closestTo) { //TODO implement closest to
+            function getLastValidPosition(closestTo) {
                 var maskset = getMaskSet(), lastValidPosition = -1, valids = maskset["validPositions"];
                 if ($.isFunction(opts.getLastValidPosition))
                     lastValidPosition = opts.getLastValidPosition.call($el, maskset, closestTo, opts);
                 else {
+                    if (closestTo == undefined) closestTo = -1;
+                    var before = lastValidPosition, after = lastValidPosition;
                     for (var posNdx in valids) {
                         var psNdx = parseInt(posNdx);
-                        if (psNdx > lastValidPosition) lastValidPosition = psNdx;
+                        if (closestTo == -1 || valids[psNdx]["match"].fn != null) {
+                            if (psNdx < closestTo) before = psNdx;
+                            if (psNdx >= closestTo) after = psNdx;
+                        }
                     }
+                    lastValidPosition = (closestTo - before) > 1 || after < closestTo ? before : after;
                 }
                 return lastValidPosition;
             }
@@ -687,7 +693,7 @@
                     }
                 });
                 if (writeOut)
-                    writeBuffer(input, getBuffer(), seekNext(getLastValidPosition()));
+                    writeBuffer(input, getBuffer(), seekNext(getLastValidPosition(0)));
             }
 
             function escapeRegex(str) {
@@ -1330,7 +1336,7 @@
                         if (PasteEventType == "input") {
                             $el.unbind(PasteEventType + ".inputmask");
                         }
-                        $el.bind("input.inputmask", mobileInputEvent);   
+                        $el.bind("input.inputmask", mobileInputEvent);
                     }
 
                     if (msie1x)

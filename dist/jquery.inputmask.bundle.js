@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.27
+* Version: 3.0.28
 */
 
 (function ($) {
@@ -292,15 +292,21 @@
                 }
             }
 
-            function getLastValidPosition(closestTo) { //TODO implement closest to
+            function getLastValidPosition(closestTo) {
                 var maskset = getMaskSet(), lastValidPosition = -1, valids = maskset["validPositions"];
                 if ($.isFunction(opts.getLastValidPosition))
                     lastValidPosition = opts.getLastValidPosition.call($el, maskset, closestTo, opts);
                 else {
+                    if (closestTo == undefined) closestTo = -1;
+                    var before = lastValidPosition, after = lastValidPosition;
                     for (var posNdx in valids) {
                         var psNdx = parseInt(posNdx);
-                        if (psNdx > lastValidPosition) lastValidPosition = psNdx;
+                        if (closestTo == -1 || valids[psNdx]["match"].fn != null) {
+                            if (psNdx < closestTo) before = psNdx;
+                            if (psNdx >= closestTo) after = psNdx;
+                        }
                     }
+                    lastValidPosition = (closestTo - before) > 1 || after < closestTo ? before : after;
                 }
                 return lastValidPosition;
             }
@@ -687,7 +693,7 @@
                     }
                 });
                 if (writeOut)
-                    writeBuffer(input, getBuffer(), seekNext(getLastValidPosition()));
+                    writeBuffer(input, getBuffer(), seekNext(getLastValidPosition(0)));
             }
 
             function escapeRegex(str) {
@@ -1330,7 +1336,7 @@
                         if (PasteEventType == "input") {
                             $el.unbind(PasteEventType + ".inputmask");
                         }
-                        $el.bind("input.inputmask", mobileInputEvent);   
+                        $el.bind("input.inputmask", mobileInputEvent);
                     }
 
                     if (msie1x)
@@ -1858,7 +1864,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.27
+Version: 3.0.28
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1968,7 +1974,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.27
+Version: 3.0.28
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2431,7 +2437,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.27
+Version: 3.0.28
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2587,7 +2593,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.27
+Version: 3.0.28
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2774,7 +2780,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.27
+Version: 3.0.28
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
