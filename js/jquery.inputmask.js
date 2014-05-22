@@ -1161,7 +1161,11 @@
                 }, 0);
             }
             function mobileInputEvent(e) {
-                var input = this, $input = $(input);
+                if (skipInputEvent === true && e.type == "input") {
+                    skipInputEvent = false;
+                    return true;
+                }
+                var input = this;
 
                 //backspace in chrome32 only fires input event - detect & treat
                 var caretPos = caret(input),
@@ -1178,11 +1182,6 @@
                     && !isMask(caretPos.begin)) {
                     e.keyCode = opts.keyCode.BACKSPACE;
                     keydownEvent.call(input, e);
-                } else { //nonnumerics don't fire keypress 
-                    checkVal(input, true, false, currentValue.split(''));
-                    if (isComplete(getBuffer()) === true)
-                        $input.trigger("complete");
-                    $input.click();
                 }
                 e.preventDefault();
             }
@@ -1320,19 +1319,7 @@
                     ).bind("keypress.inputmask", keypressEvent
                     ).bind("keyup.inputmask", keyupEvent);
 
-                    // as the other inputevents aren't reliable for the moment we only base on the input event
-                    // needs follow-up
                     if (android || androidfirefox || androidchrome || kindle) {
-                        $el.attr("autocomplete", "off")
-                            .attr("autocorrect", "off")
-                            .attr("autocapitalize", "off")
-                            .attr("spellcheck", false);
-
-                        if (androidfirefox || kindle) {
-                            $el.unbind("keydown.inputmask", keydownEvent
-                            ).unbind("keypress.inputmask", keypressEvent
-                            ).unbind("keyup.inputmask", keyupEvent);
-                        }
                         if (PasteEventType == "input") {
                             $el.unbind(PasteEventType + ".inputmask");
                         }
