@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.28
+* Version: 3.0.29
 */
 
 (function ($) {
@@ -1161,7 +1161,11 @@
                 }, 0);
             }
             function mobileInputEvent(e) {
-                var input = this, $input = $(input);
+                if (skipInputEvent === true && e.type == "input") {
+                    skipInputEvent = false;
+                    return true;
+                }
+                var input = this;
 
                 //backspace in chrome32 only fires input event - detect & treat
                 var caretPos = caret(input),
@@ -1178,11 +1182,6 @@
                     && !isMask(caretPos.begin)) {
                     e.keyCode = opts.keyCode.BACKSPACE;
                     keydownEvent.call(input, e);
-                } else { //nonnumerics don't fire keypress 
-                    checkVal(input, true, false, currentValue.split(''));
-                    if (isComplete(getBuffer()) === true)
-                        $input.trigger("complete");
-                    $input.click();
                 }
                 e.preventDefault();
             }
@@ -1320,19 +1319,7 @@
                     ).bind("keypress.inputmask", keypressEvent
                     ).bind("keyup.inputmask", keyupEvent);
 
-                    // as the other inputevents aren't reliable for the moment we only base on the input event
-                    // needs follow-up
                     if (android || androidfirefox || androidchrome || kindle) {
-                        $el.attr("autocomplete", "off")
-                            .attr("autocorrect", "off")
-                            .attr("autocapitalize", "off")
-                            .attr("spellcheck", false);
-
-                        if (androidfirefox || kindle) {
-                            $el.unbind("keydown.inputmask", keydownEvent
-                            ).unbind("keypress.inputmask", keypressEvent
-                            ).unbind("keyup.inputmask", keyupEvent);
-                        }
                         if (PasteEventType == "input") {
                             $el.unbind(PasteEventType + ".inputmask");
                         }
@@ -1864,7 +1851,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.28
+Version: 3.0.29
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1974,7 +1961,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.28
+Version: 3.0.29
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2437,7 +2424,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.28
+Version: 3.0.29
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2593,7 +2580,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.28
+Version: 3.0.29
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2780,7 +2767,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.28
+Version: 3.0.29
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
