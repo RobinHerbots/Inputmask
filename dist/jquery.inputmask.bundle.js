@@ -1304,7 +1304,7 @@
                         setTimeout(function () {
                             caret(input, 0, seekNext(getLastValidPosition()));
                         }, 0);
-                    }).bind(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", pasteEvent
+                    }).bind(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask compositionend.inputmask", pasteEvent
                     ).bind('setvalue.inputmask', function () {
                         var input = this;
                         checkVal(input, true);
