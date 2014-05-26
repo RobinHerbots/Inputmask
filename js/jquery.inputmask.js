@@ -891,8 +891,10 @@
 
                         Object.defineProperty(npt, "value", {
                             get: function () {
-                                var $self = $(this), inputData = $(this).data('_inputmask'), maskset = inputData['maskset'];
-                                return inputData && inputData['opts'].autoUnmask ? $self.inputmask('unmaskedvalue') : valueGet.call(this) != maskset['_buffer'].join('') ? valueGet.call(this) : '';
+                                var $self = $(this), inputData = $(this).data('_inputmask');
+                                if (inputData) {
+                                    return inputData['opts'].autoUnmask ? $self.inputmask('unmaskedvalue') : (valueGet.call(this) != getBufferTemplate().join('') ? valueGet.call(this) : '');
+                                } else return valueGet.call(this);
                             },
                             set: function (value) {
                                 valueSet.call(this, value);
