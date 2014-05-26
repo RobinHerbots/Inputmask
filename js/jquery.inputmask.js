@@ -371,7 +371,7 @@
                 var testPositions = getTests(pos, ndxIntlzr, tstPs), testPos;
                 for (var ndx in testPositions) {
                     testPos = testPositions[ndx];
-                    if (opts.greedy || ((testPos["match"].optionality === false || testPos["match"].newBlockMarker === false) && testPos["match"].optionalQuantifier !== true)) {
+                    if (opts.greedy || (testPos["match"] && (testPos["match"].optionality === false || testPos["match"].newBlockMarker === false) && testPos["match"].optionalQuantifier !== true)) {
                         break;
                     }
                 }
@@ -387,7 +387,7 @@
             function positionCanMatchDefinition(pos, def) {
                 var valid = false, tests = getTests(pos);
                 for (var tndx in tests) {
-                    if (tests[tndx]["match"].def == def) {
+                    if (tests[tndx]["match"] && tests[tndx]["match"].def == def) {
                         valid = true;
                         break;
                     }
@@ -727,7 +727,7 @@
                 if ($input.data('_inputmask') && (skipDatepickerCheck === true || !$input.hasClass('hasDatepicker'))) {
                     var umValue = [], vps = getMaskSet()["validPositions"];
                     for (var pndx in vps) {
-                        if (vps[pndx]["match"].fn != null) {
+                        if (vps[pndx]["match"] && vps[pndx]["match"].fn != null) {
                             umValue.push(vps[pndx]["input"]);
                         }
                     }
