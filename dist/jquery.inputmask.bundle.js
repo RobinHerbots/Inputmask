@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.29
+* Version: 3.0.30
 */
 
 (function ($) {
@@ -891,8 +891,10 @@
 
                         Object.defineProperty(npt, "value", {
                             get: function () {
-                                var $self = $(this), inputData = $(this).data('_inputmask'), maskset = inputData['maskset'];
-                                return inputData && inputData['opts'].autoUnmask ? $self.inputmask('unmaskedvalue') : valueGet.call(this) != maskset['_buffer'].join('') ? valueGet.call(this) : '';
+                                var $self = $(this), inputData = $(this).data('_inputmask');
+                                if (inputData) {
+                                    return inputData['opts'].autoUnmask ? $self.inputmask('unmaskedvalue') : (valueGet.call(this) != getBufferTemplate().join('') ? valueGet.call(this) : '');
+                                } else return valueGet.call(this);
                             },
                             set: function (value) {
                                 valueSet.call(this, value);
@@ -912,8 +914,10 @@
                         };
 
                         npt.__defineGetter__("value", function () {
-                            var $self = $(this), inputData = $(this).data('_inputmask'), maskset = inputData['maskset'];
-                            return inputData && inputData['opts'].autoUnmask ? $self.inputmask('unmaskedvalue') : valueGet.call(this) != maskset['_buffer'].join('') ? valueGet.call(this) : '';
+                            var $self = $(this), inputData = $(this).data('_inputmask');
+                            if (inputData) {
+                                return inputData['opts'].autoUnmask ? $self.inputmask('unmaskedvalue') : (valueGet.call(this) != getBufferTemplate().join('') ? valueGet.call(this) : '');
+                            } else return valueGet.call(this);
                         });
                         npt.__defineSetter__("value", function (value) {
                             valueSet.call(this, value);
@@ -1304,7 +1308,7 @@
                         setTimeout(function () {
                             caret(input, 0, seekNext(getLastValidPosition()));
                         }, 0);
-                    }).bind(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask compositionend.inputmask", pasteEvent
+                    }).bind(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", pasteEvent
                     ).bind('setvalue.inputmask', function () {
                         var input = this;
                         checkVal(input, true);
@@ -1851,7 +1855,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.29
+Version: 3.0.30
 
 Optional extensions on the jquery.inputmask base
 */
@@ -1961,7 +1965,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.29
+Version: 3.0.30
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2424,7 +2428,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.29
+Version: 3.0.30
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2580,7 +2584,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.29
+Version: 3.0.30
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2767,7 +2771,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.29
+Version: 3.0.30
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
