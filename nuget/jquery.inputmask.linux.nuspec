@@ -38,5 +38,6 @@ Highlights:
 		<file src="js/jquery.inputmask.regex.extensions.js" target="content/Scripts/jquery.inputmask/jquery.inputmask.regex.extensions-0.0.0.js" />
 		<file src="js/jquery.inputmask.phone.extensions.js" target="content/Scripts/jquery.inputmask/jquery.inputmask.phone.extensions-0.0.0.js" />
         <file src="js/jquery.inputmask.js" target="content/Scripts/jquery.inputmask/jquery.inputmask-0.0.0.js" />
+		<file src="js/jquery.inputmask-multi.js" target="content/Scripts/jquery.inputmask/jquery.inputmask-multi-0.0.0.js" />
     </files>
 </package>

@@ -12,8 +12,9 @@
        <replaceregexp file="nuget/jquery.inputmask.nuspec" match="&lt;version&gt;.*&lt;/version&gt;" replace="&lt;version&gt;${build.major}.${build.minor}.${build.revision}&lt;/version&gt;" />
        <replaceregexp file="nuget/jquery.inputmask.nuspec" match="-0.0.0" replace="-${build.major}.${build.minor}.${build.revision}"  byline="true"/>
        <replaceregexp file="nuget/jquery.inputmask.linux.nuspec" match="&lt;version&gt;.*&lt;/version&gt;" replace="&lt;version&gt;${build.major}.${build.minor}.${build.revision}&lt;/version&gt;" />
-	<replaceregexp file="nuget/jquery.inputmask.linux.nuspec" match="-0.0.0" replace="-${build.major}.${build.minor}.${build.revision}"  byline="true"/>
+	   <replaceregexp file="nuget/jquery.inputmask.linux.nuspec" match="-0.0.0" replace="-${build.major}.${build.minor}.${build.revision}"  byline="true"/>
 	   <replaceregexp file="${srcdir}/jquery.inputmask.js" match="Version:.*" replace="Version: ${build.major}.${build.minor}.${build.revision}"  byline="true"/>
+	   <replaceregexp file="${srcdir}/jquery.inputmask-multi.js" match="Version:.*" replace="Version: ${build.major}.${build.minor}.${build.revision}"  byline="true"/>
 	   <replaceregexp file="${srcdir}/jquery.inputmask.extensions.js" match="Version:.*" replace="Version: ${build.major}.${build.minor}.${build.revision}"  byline="true"/>
 	   <replaceregexp file="${srcdir}/jquery.inputmask.date.extensions.js" match="Version:.*" replace="Version: ${build.major}.${build.minor}.${build.revision}"  byline="true"/>
 	   <replaceregexp file="${srcdir}/jquery.inputmask.numeric.extensions.js" match="Version:.*" replace="Version: ${build.major}.${build.minor}.${build.revision}"  byline="true"/>
@@ -26,9 +27,10 @@
 	<target name="resetVersions">
        <replaceregexp file="nuget/jquery.inputmask.nuspec" match="&lt;version&gt;.*&lt;/version&gt;" replace="&lt;version&gt;0.0.0&lt;/version&gt;" />
 	   <replaceregexp file="nuget/jquery.inputmask.nuspec" replace="-0.0.0" match="-${build.major}.${build.minor}.${build.revision}"  byline="true"/>
-	<replaceregexp file="nuget/jquery.inputmask.linux.nuspec" match="&lt;version&gt;.*&lt;/version&gt;" replace="&lt;version&gt;0.0.0&lt;/version&gt;" />
+	   <replaceregexp file="nuget/jquery.inputmask.linux.nuspec" match="&lt;version&gt;.*&lt;/version&gt;" replace="&lt;version&gt;0.0.0&lt;/version&gt;" />
 	   <replaceregexp file="nuget/jquery.inputmask.linux.nuspec" replace="-0.0.0" match="-${build.major}.${build.minor}.${build.revision}"  byline="true"/>
 	   <replaceregexp file="${srcdir}/jquery.inputmask.js" match="Version:.*" replace="Version: 0.0.0"  byline="true"/>
+	   <replaceregexp file="${srcdir}/jquery.inputmask-multi.js" match="Version:.*" replace="Version: 0.0.0"  byline="true"/>
 	   <replaceregexp file="${srcdir}/jquery.inputmask.extensions.js" match="Version:.*" replace="Version: 0.0.0"  byline="true"/>
 	   <replaceregexp file="${srcdir}/jquery.inputmask.date.extensions.js" match="Version:.*" replace="Version: 0.0.0"  byline="true"/>
 	   <replaceregexp file="${srcdir}/jquery.inputmask.numeric.extensions.js" match="Version:.*" replace="Version: 0.0.0"  byline="true"/>
@@ -39,6 +41,7 @@
     <target name="jquery.inputmask" depends="init, updateVersions">
         <concat destfile="${distdir}/${target}">
 			<fileset file="${srcdir}/jquery.inputmask.js"/>
+			<fileset file="${srcdir}/jquery.inputmask-multi.js"/>
 			<fileset file="${srcdir}/jquery.inputmask.extensions.js"/>
 			<fileset file="${srcdir}/jquery.inputmask.date.extensions.js"/>
 			<fileset file="${srcdir}/jquery.inputmask.numeric.extensions.js"/>

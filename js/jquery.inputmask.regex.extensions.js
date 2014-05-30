@@ -103,7 +103,7 @@ Allows for using regular expressions as a mask
                                 if (matchToken["isGroup"] == true) {
                                     isvalid = validateRegexToken(matchToken, true);
                                 } else if (matchToken["isQuantifier"] == true) {
-                                    var crrntndx = token["matches"].indexOf(matchToken),
+                                    var crrntndx = $.inArray(matchToken, token["matches"]),
                                         matchGroup = token["matches"][crrntndx - 1];
                                     var regexPartBak = regexPart;
                                     if (isNaN(matchToken.quantifier.max)) {

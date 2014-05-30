@@ -179,6 +179,45 @@ $.extend($.inputmask.defaults, {
 
 ## Options:
 
+#### placeholder
+#### optionalmarker
+#### quantifiermarker
+#### groupmarker
+#### alternatormarker
+#### escapeChar
+#### mask
+#### oncomplete
+#### onincomplete
+#### oncleared
+#### repeat
+#### greedy
+#### autoUnmask
+#### clearMaskOnLostFocus
+#### insertMode
+#### clearIncomplete
+#### aliases
+#### onKeyUp
+#### onKeyDown
+#### onBeforeMask
+#### onBeforePaste
+#### onUnMask
+#### showMaskOnFocus
+#### showMaskOnHover
+#### onKeyValidation
+#### skipOptionalPartCharacter
+#### showTooltip
+#### numericInput
+#### getLastValidPosition
+#### rightAlign
+#### radixPoint
+#### definitions
+#### ignorables
+#### isComplete
+#### multi
+#### nojumps
+#### nojumpsThreshold
+#### determineActiveMasksetIndex
+
 ### change the placeholder
 
 
