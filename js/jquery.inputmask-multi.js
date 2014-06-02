@@ -166,7 +166,7 @@
                     if ($el.attr("dir")) elMaskStr += 'dir="' + $el.attr("dir") + '" ';
                     elMaskStr += '/>';
                     var elmask = $(elMaskStr)[0];
-                    $(elmask).inputmask(msk.mask, opts);
+                    $(elmask).inputmask($.extend({}, opts, { mask: msk.mask }));
                     return elmask;
                 });
 
@@ -350,16 +350,13 @@
 
         $.inputmask._fn = $.fn.inputmask;
         $.fn.inputmask = function (fn, options) {
-            var opts = $.extend(true, {}, $.inputmask.defaults, options);
-
             if (typeof fn === "string") {
-                opts.mask = fn;
-                if ($.inputmask._fn("_detectScope", opts))
+                if ($.inputmask._fn("_detectScope", options, undefined, undefined, fn))
                     return $.inputmask._fn.call(this, fn, options, multiMaskScope, "_inputmask-multi");
                 else return $.inputmask._fn.call(this, fn, options);
             } else if (typeof fn == "object") {
                 opts = $.extend(true, {}, $.inputmask.defaults, fn);
-                if ($.inputmask._fn("_detectScope", opts))
+                if ($.inputmask._fn("_detectScope", fn))
                     return $.inputmask._fn.call(this, fn, options, multiMaskScope, "_inputmask-multi");
                 else return $.inputmask._fn.call(this, fn, options);
             } else if (fn == undefined)

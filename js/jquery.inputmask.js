@@ -104,8 +104,7 @@
                                 mq0 = isNaN(mq[0]) ? mq[0] : parseInt(mq[0]),
                                 mq1 = mq.length == 1 ? mq0 : (isNaN(mq[1]) ? mq[1] : parseInt(mq[1]));
                             if (mq1 == "*" || mq1 == "+") {
-                                mq0 = mq0 == "*" ? 0 : 1;
-                                opts.greedy = false;
+                                mq0 = mq1 == "*" ? 0 : 1;
                             }
                             quantifier.quantifier = { min: mq0, max: mq1 };
                             if (openenings.length > 0) {
@@ -160,9 +159,9 @@
             }
 
             function generateMask(mask, metadata) {
-                if (opts.numericInput) { //TODO FIX FOR DYNAMIC MASKS WITH QUANTIFIERS
+                if (opts.numericInput && opts.multi !== true) { //TODO FIX FOR DYNAMIC MASKS WITH QUANTIFIERS
                     mask = mask.split('').reverse();
-                    for (var ndx in mask) {
+                    for (var ndx = 0; ndx < mask.length; ndx++) {
                         if (mask[ndx] == opts.optionalmarker.start)
                             mask[ndx] = opts.optionalmarker.end;
                         else if (mask[ndx] == opts.optionalmarker.end)
@@ -192,6 +191,7 @@
                             "metadata": metadata
                         };
                     }
+
                     return $.extend(true, {}, $.inputmask.masksCache[mask]);
                 }
             }
@@ -369,7 +369,7 @@
 
             function getTestTemplate(pos, ndxIntlzr, tstPs) {
                 var testPositions = getTests(pos, ndxIntlzr, tstPs), testPos;
-                for (var ndx in testPositions) {
+                for (var ndx = 0; ndx < testPositions.length; ndx++) {
                     testPos = testPositions[ndx];
                     if (opts.greedy || (testPos["match"] && (testPos["match"].optionality === false || testPos["match"].newBlockMarker === false) && testPos["match"].optionalQuantifier !== true)) {
                         break;
@@ -386,7 +386,7 @@
             }
             function positionCanMatchDefinition(pos, def) {
                 var valid = false, tests = getTests(pos);
-                for (var tndx in tests) {
+                for (var tndx = 0; tndx < tests.length; tndx++) {
                     if (tests[tndx]["match"] && tests[tndx]["match"].def == def) {
                         valid = true;
                         break;
@@ -422,6 +422,7 @@
                                 //TODO
                             } else if (match.isQuantifier && quantifierRecurse !== true) {
                                 var qt = match;
+                                opts.greedy = opts.greedy && !isNaN(qt.quantifier.max); //greedy must be off when * or + is used (always!!)
                                 for (var qndx = (ndxInitializer.length > 0 && quantifierRecurse !== true) ? ndxInitializer.shift() : 0; (qndx < (isNaN(qt.quantifier.max) ? qndx + 1 : qt.quantifier.max)) && testPos <= pos; qndx++) {
                                     var tokenGroup = maskToken.matches[$.inArray(qt, maskToken.matches) - 1];
                                     match = handleMatch(tokenGroup, [qndx].concat(loopNdx), true);
@@ -707,7 +708,7 @@
             function clearOptionalTail(input) {
                 var buffer = getBuffer(), tmpBuffer = buffer.slice(),
                     pos, lvp = getLastValidPosition(), positions = {},
-                    ndxIntlzr = getMaskSet()["validPositions"][lvp]["locator"].slice(), testPos;
+                    ndxIntlzr = getMaskSet()["validPositions"][lvp] != undefined ? getMaskSet()["validPositions"][lvp]["locator"].slice() : undefined, testPos;
                 for (pos = lvp + 1; pos < tmpBuffer.length; pos++) {
                     testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
                     ndxIntlzr = testPos["locator"].slice();
@@ -1519,16 +1520,16 @@
             format: function (value, options) {
                 var opts = $.extend(true, {}, $.inputmask.defaults, options);
                 resolveAlias(opts.alias, options, opts);
-                return maskScope(generateMaskSet(opts), opts, { "action": "format", "value": value });
+                return maskScope({ "action": "format", "value": value }, generateMaskSet(opts), opts);
             },
             isValid: function (value, options) {
                 var opts = $.extend(true, {}, $.inputmask.defaults, options);
                 resolveAlias(opts.alias, options, opts);
-                return maskScope(generateMaskSet(opts), opts, { "action": "isValid", "value": value });
+                return maskScope({ "action": "isValid", "value": value }, generateMaskSet(opts), opts);
             }
         };
 
-        $.fn.inputmask = function (fn, options, targetScope, targetData) {
+        $.fn.inputmask = function (fn, options, targetScope, targetData, msk) {
             targetScope = targetScope || maskScope;
             targetData = targetData || "_inputmask";
             function importAttributeOptions(npt, opts) {
@@ -1584,8 +1585,14 @@
                         }
                         else return undefined;
                     case "_detectScope":
-                        resolveAlias(opts.alias, fn, opts); //resolve aliases
-                        return $.isArray(generateMaskSet(opts));
+                        resolveAlias(opts.alias, options, opts);
+                        if (msk != undefined && !resolveAlias(msk, options, opts) && $.inArray(msk, ["mask", "unmaskedvalue", "remove", "getemptymask", "hasMaskedValue", "isComplete", "getmetadata", "_detectScope"]) == -1) {
+                            opts.mask = msk;
+                        }
+                        if ($.isFunction(opts.mask)) {
+                            opts.mask = opts.mask.call(this, opts);
+                        }
+                        return $.isArray(opts.mask);
                     default:
                         //check if the fn is an alias
                         if (!resolveAlias(fn, options, opts)) {
