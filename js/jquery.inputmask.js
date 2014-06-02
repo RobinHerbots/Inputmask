@@ -760,7 +760,7 @@
                     data["caret"] = { "begin": begin, "end": end };
                     $(npt).data('_inputmask', data);
 
-                    if (!$(npt).is(":visible")) {
+                    if (!$(npt).is(":visible") || !$(input).is(":focus")) {
                         return;
                     }
 
