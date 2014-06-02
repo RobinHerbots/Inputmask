@@ -37,7 +37,7 @@ Optional extensions on the jquery.inputmask base
             autoGroup: false,
             allowPlus: true,
             allowMinus: true,
-            integerDigits: "*", //number of integerDigits
+            integerDigits: "+", //number of integerDigits
             defaultValue: "",
             prefix: "",
             suffix: "",
