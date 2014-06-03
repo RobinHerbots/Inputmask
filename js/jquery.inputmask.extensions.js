@@ -104,7 +104,18 @@ Optional extensions on the jquery.inputmask base
         },
         "email": {
             mask: "*{1,20}[.*{1,20}][.*{1,20}][.*{1,20}]@*{1,20}.*{2,6}[.*{1,2}]",
-            greedy: false
+            greedy: false,
+            onBeforePaste: function (pastedValue, opts) {
+                pastedValue = pastedValue.toLowerCase();
+                return pastedValue.replace("mailto:", "");
+            },
+            definitions: {
+                '*': {
+                    validator: "[A-Za-z\u0410-\u044F\u0401\u04510-9]",
+                    cardinality: 1,
+                    casing: "lower"
+                }
+            }
         }
     });
 })(jQuery);

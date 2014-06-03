@@ -1553,7 +1553,7 @@
                         if (maskset.length == 0) { return this; }
 
                         return this.each(function () {
-                            targetScope({ "action": "mask", "el": this }, $.extend(true, {}, maskset), importAttributeOptions(this, opts));
+                            targetScope({ "action": "mask", "el": this }, $.extend(true, {}, $.isArray(maskset) && targetScope === maskScope ? maskset[0] : maskset), importAttributeOptions(this, opts));
                         });
                     case "unmaskedvalue":
                         var $input = $(this);
@@ -1603,7 +1603,7 @@
                         maskset = generateMaskSet(opts);
                         if (maskset == undefined) { return this; }
                         return this.each(function () {
-                            targetScope({ "action": "mask", "el": this }, $.extend(true, {}, maskset), importAttributeOptions(this, opts));
+                            targetScope({ "action": "mask", "el": this }, $.extend(true, {}, $.isArray(maskset) && targetScope === maskScope ? maskset[0] : maskset), importAttributeOptions(this, opts));
                         });
                 }
             } else if (typeof fn == "object") {
@@ -1613,7 +1613,7 @@
                 maskset = generateMaskSet(opts);
                 if (maskset == undefined) { return this; }
                 return this.each(function () {
-                    targetScope({ "action": "mask", "el": this }, $.extend(true, {}, maskset), importAttributeOptions(this, opts));
+                    targetScope({ "action": "mask", "el": this }, $.extend(true, {}, $.isArray(maskset) && targetScope === maskScope ? maskset[0] : maskset), importAttributeOptions(this, opts));
                 });
             } else if (fn == undefined) {
                 //look for data-inputmask atribute - the attribute should only contain optipns

@@ -3,7 +3,7 @@
  http://github.com/RobinHerbots/jquery.inputmask
  Copyright (c) 2010 - 2014 Robin Herbots
  Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
- Version: 3.0.31
+ Version: 3.0.32
 */
 (function(c){if(void 0!=c.fn.inputmask){var s=function(a,h,g){function s(c){var e=document.createElement("input");c="on"+c;var k=c in e;k||(e.setAttribute(c,"return;"),k="function"==typeof e[c]);return k}function v(b){if(void 0==c.valHooks[b]||!0!=c.valHooks[b].inputmaskmultipatch){var e=c.valHooks[b]&&c.valHooks[b].get?c.valHooks[b].get:function(c){return c.value},k=c.valHooks[b]&&c.valHooks[b].set?c.valHooks[b].set:function(c,e){c.value=e;return c};c.valHooks[b]={get:function(b){var k=c(b);return k.data("_inputmask-multi")?
 (b=k.data("_inputmask-multi"),e(b.elmasks[b.activeMasksetIndex])):e(b)},set:function(b,e){var a=c(b),d=k(b,e);a.data("_inputmask-multi")&&a.triggerHandler("setvalue");return d},inputmaskmultipatch:!0}}}function p(b,e,k){b=b.jquery&&0<b.length?b[0]:b;if("number"==typeof e){e=q(e);k=q(k);k="number"==typeof k?k:e;if(b!=f){var a=c(b).data("_inputmask")||{};a.caret={begin:e,end:k};c(b).data("_inputmask",a)}c(b).is(":visible")&&(b.scrollLeft=b.scrollWidth,!1==g.insertMode&&e==k&&k++,b.setSelectionRange?
