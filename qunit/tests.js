@@ -1195,6 +1195,42 @@ test("inputmask(\"dd/mm/yyyy\") - input 01011000 - Skiv22", function () {
 
 
 module("Numeric.Extensions");
+test("numeric alias with allowMinus:false type=text - vijjj", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("numeric", {
+        radixPoint: ".",
+        integerDigits: 6,
+        allowMinus: false
+    });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123456");
+    caret($("#testmask"), 0);
+    $("#testmask").SendKey("-");
+
+    equal($("#testmask").val(), "123456", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("numeric alias with allowMinus:false type=number - MartinVerges", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="number" id="testmask" />');
+    $("#testmask").inputmask("numeric", {
+        radixPoint: ".",
+        integerDigits: 6,
+        allowMinus: false
+    });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123456");
+    caret($("#testmask"), 0);
+    $("#testmask").SendKey("-");
+
+    equal($("#testmask").val(), "123456", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
 test("inputmask(\"numeric\", { prefix: \"€ \" }\") - input 12345.12", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');

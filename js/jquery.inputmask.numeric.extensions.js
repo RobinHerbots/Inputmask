@@ -103,7 +103,7 @@ Optional extensions on the jquery.inputmask base
             definitions: {
                 '~': {
                     validator: function (chrs, buffer, pos, strict, opts) {
-                        if (!strict && chrs === "-") {
+                        if (!strict && opts.allowMinus && chrs === "-") {
                             var matchRslt = buffer.join('').match(opts.regex.integerPart(opts));
 
                             if (matchRslt.length > 0) {
