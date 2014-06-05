@@ -151,8 +151,15 @@
                     }
                 }
 
-                if (currentToken.matches.length > 0)
+                if (currentToken.matches.length > 0) {
+                    var lastMatch = currentToken.matches[currentToken.matches.length - 1];
+                    if (lastMatch["isGroup"]) { //this is not a group but a normal mask => convert
+                        lastMatch.isGroup = false;
+                        insertTestDefinition(lastMatch, opts.groupmarker.start, 0);
+                        insertTestDefinition(lastMatch, opts.groupmarker.end);
+                    }
                     maskTokens.push(currentToken);
+                }
 
                 //console.log(JSON.stringify(maskTokens));
                 return maskTokens;
@@ -1193,7 +1200,7 @@
 
             function mask(el) {
                 $el = $(el);
-                if ($el.is(":input")) {
+                if ($el.is(":input") && $el.attr("type") != "number") {
                     //store tests & original buffer in the input element - used to get the unmasked value
                     $el.data('_inputmask', {
                         'maskset': maskset,
@@ -1472,6 +1479,7 @@
                 insertMode: true, //insert the input or overwrite the input
                 clearIncomplete: false, //clear the incomplete input on blur
                 aliases: {}, //aliases definitions => see jquery.inputmask.extensions.js
+				alias: null,
                 onKeyUp: $.noop, //override to implement autocomplete on certain keys for example
                 onKeyDown: $.noop, //override to implement autocomplete on certain keys for example
                 onBeforeMask: undefined, //executes before masking the initial value to allow preprocessing of the initial value.  args => initialValue, opts => return processedValue
