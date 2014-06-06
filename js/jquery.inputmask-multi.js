@@ -355,7 +355,6 @@
                     return $.inputmask._fn.call(this, fn, options, multiMaskScope, "_inputmask-multi");
                 else return $.inputmask._fn.call(this, fn, options);
             } else if (typeof fn == "object") {
-                opts = $.extend(true, {}, $.inputmask.defaults, fn);
                 if ($.inputmask._fn("_detectScope", fn))
                     return $.inputmask._fn.call(this, fn, options, multiMaskScope, "_inputmask-multi");
                 else return $.inputmask._fn.call(this, fn, options);

@@ -17,9 +17,11 @@ Highlights:
 - non-greedy masks
 - many features can be enabled/disabled/configured by options
 - supports readonly/disabled/dir="rtl" attributes
-- support data-inputmask attribute  
+- support data-inputmask attribute(s)  
 - multi-mask support
 - regex-mask support
+- dynamic-mask support
+- preprocessing-mask support
 - value formatting / validating without input element
 
 Demo page see http://robinherbots.github.io/jquery.inputmask
@@ -62,7 +64,7 @@ $(document).ready(function(){
 });
 ```
 
-Any option can also be passed through the use of a data attribute. Use data-inputmask-***the name op the option***="value"
+Any option can also be passed through the use of a data attribute. Use data-inputmask-<***the name op the option***>="value"
 
 ```html
 <input id="example1" data-inputmask-clearmaskonlostfocus="false" />
@@ -92,7 +94,46 @@ TODO
 
 ### Optional masks
 
-TODO
+It is possible to define some parts in the mask as optional.  This is done by using [ ].
+
+Example:
+
+```javascript
+$('#test').inputmask('(99) 9999[9]-9999');
+```
+This mask wil allow input like (99) 99999-9999 or (99) 9999-9999.  
+Input => 12123451234      mask => (12) 12345-1234    (trigger complete)  
+Input => 121234-1234      mask => (12) 1234-1234     (trigger complete)  
+Input => 1212341234       mask => (12) 12341-234_    (trigger incomplete)  
+
+#### skipOptionalPartCharacter
+As an extra there is another configurable character which is used to skip an optional part in the mask.  
+
+```javascript
+skipOptionalPartCharacter: " ",
+```
+Input => 121234 1234      mask => (12) 1234-1234     (trigger complete)  
+
+When `clearMaskOnLostFocus: true` is set in the options (default), the mask will clear out the optional part when it is not filled in and this only in case the optional part is at the end of the mask.
+
+For example, given:
+
+```javascript
+$('#test').inputmask('999[-AAA]');
+```
+While the field has focus and is blank, users will see the full mask `___-___`.
+When the required part of the mask is filled and the field loses focus, the user will see `123`.
+When both the required and optional parts of the mask are filled out and the field loses focus, the user will see `123-ABC`.
+
+#### Optional masks with greedy false
+
+When defining an optional mask together with the greedy: false option, the inputmask will show the smallest possible mask as input first.
+
+```javascript
+$(selector).inputmask({ mask: "99999[-9999]", greedy: false });
+```
+
+The initial mask shown will be "_____" instead of "_____-____". 
 
 ### Dynamic masks
 
@@ -100,7 +141,43 @@ TODO
 
 ### Multi masks
 
-TODO
+In the current implemantation you need to include the jquery.inputmask-multi.js
+
+You can define multiple mask for your input.  Depending on the input the masking will switch between the defined masks.  
+This can be useful when the masks are too different to solve it with optional parts.
+
+```javascript
+  $(selector).inputmask({ mask: ["999.999", "aa-aa-aa"]});
+```
+
+#### inputmask-multi format (https://github.com/andr-04/inputmask-multi)
+
+You can also pass an array for masking with the a format like the format used in inputmask-multi 
+
+```javascript
+var phones = [
+            { "mask": "+247-####", "cc": "AC", "name_en": "Ascension", "desc_en": "", "name_ru": "Остров Вознесения", "desc_ru": "" },
+            { "mask": "+376-###-###", "cc": "AD", "name_en": "Andorra", "desc_en": "", "name_ru": "Андорра", "desc_ru": "" },
+            { "mask": "+971-5#-###-####", "cc": "AE", "name_en": "United Arab Emirates", "desc_en": "mobile", "name_ru": "Объединенные Арабские Эмираты", "desc_ru": "мобильные" },
+          ...
+]
+$(selector).inputmask({ mask: phones, definitions: { '#': { validator: "[0-9]", cardinality: 1}} }); //in case of inputmask-multi you need to specify the validator for #
+```
+
+The metadata of the actual mask provided in the mask definitions can be obtained by calling
+
+```javascript
+$(selector).inputmask("getmetadata");
+```
+
+### Preprocessing masks
+
+You can define the mask as a function which can allow to preprocess the resulting mask.  Example sorting for multiple masks or retrieving mask definitions dynamically through ajax.
+The preprocessing fn should return a valid mask definition.
+
+```javascript
+  $(selector).inputmask({ mask: function () { /* do stuff */ return ["[1-]AAA-999", "[1-]999-AAA"]; }});
+```
 
 ## Define custom definitions
 
@@ -180,46 +257,8 @@ $.extend($.inputmask.defaults, {
 ## Options:
 
 #### placeholder
-#### optionalmarker
-#### quantifiermarker
-#### groupmarker
-#### alternatormarker
-#### escapeChar
-#### mask
-#### oncomplete
-#### onincomplete
-#### oncleared
-#### repeat
-#### greedy
-#### autoUnmask
-#### clearMaskOnLostFocus
-#### insertMode
-#### clearIncomplete
-#### aliases
-#### onKeyUp
-#### onKeyDown
-#### onBeforeMask
-#### onBeforePaste
-#### onUnMask
-#### showMaskOnFocus
-#### showMaskOnHover
-#### onKeyValidation
-#### skipOptionalPartCharacter
-#### showTooltip
-#### numericInput
-#### getLastValidPosition
-#### rightAlign
-#### radixPoint
-#### definitions
-#### ignorables
-#### isComplete
-#### multi
-#### nojumps
-#### nojumpsThreshold
-#### determineActiveMasksetIndex
 
-### change the placeholder
-
+Change the mask placeholder
 
 ```javascript
 $(document).ready(function(){
@@ -234,26 +273,44 @@ $(document).ready(function(){
    $("#date").inputmask("d/m/y",{ "placeholder": "dd/mm/yyyy" });
 });
 ```
+#### optionalmarker
+#### quantifiermarker
+#### groupmarker
+#### alternatormarker
+#### escapeChar
+#### mask
+#### oncomplete
 
-### execute a function when the mask is completed, incomplete or cleared
+Execute a function when the mask is completed
 
 ```javascript
 $(document).ready(function(){
    $("#date").inputmask("d/m/y",{ "oncomplete": function(){ alert('inputmask complete'); } });
+});
+```
+
+#### onincomplete
+
+Execute a function when the mask is incomplete.  Executes on blur.
+
+```javascript
+$(document).ready(function(){
    $("#date").inputmask("d/m/y",{ "onincomplete": function(){ alert('inputmask incomplete'); } });
+});
+```
+#### oncleared
+
+Execute a function when the mask is cleared.
+
+```javascript
+$(document).ready(function(){
    $("#date").inputmask("d/m/y",{ "oncleared": function(){ alert('inputmask cleared'); } });
 });
 ```
 
-### clearIncomplete - clear the incomplete input on blur
+#### repeat
 
-```javascript
-$(document).ready(function(){
-   $("#date").inputmask("d/m/y",{ "clearIncomplete": true } });
-});
-```
-
-### mask repeat function
+Mask repeat function. Repeat the mask definition x-times.
 
 ```javascript
 $(document).ready(function(){
@@ -261,7 +318,10 @@ $(document).ready(function(){
 });
 ```
 
-### mask non-greedy repeat function
+#### greedy
+
+Toggle to allocate as much possible or the opposite.
+Non-greedy repeat function.
 
 ```javascript
 $(document).ready(function(){
@@ -271,101 +331,10 @@ $(document).ready(function(){
 
 With the non-greedy option set to false, you can specify * as repeat.  This makes an endless repeat.
 
-### get the unmaskedvalue
+#### autoUnmask
+#### clearMaskOnLostFocus
 
-```javascript
-$(document).ready(function(){
-   $("#number").inputmask('unmaskedvalue');
-});
-```
-
-### onUnMask
-Executes after unmasking to allow post-processing of the unmaskedvalue.  The arguments to the function are maskedValue, unmaskedValue.
-
-```javascript
-$(document).ready(function(){
-   $("#number").inputmask("decimal", { onUnMask: function(maskedValue, unmaskedValue) {
-		//do something with the value
-		return unmaskedValue;
-   }});
-});
-```
-
-### set a value and apply mask
-
-this can be done with the traditional jquery.val function (all browsers) or JavaScript value property for browsers which implement lookupGetter or getOwnPropertyDescriptor
-
-```javascript
-$(document).ready(function(){
-   $("#number").val(12345);
-
-   var number = document.getElementById("number");
-   number.value = 12345;
-});
-```
-
-with the autoUnmaskoption you can change the return of $.fn.val (or value property) to unmaskedvalue or the maskedvalue
-
-```javascript
-$(document).ready(function(){
-   	$('#<%= tbDate.ClientID%>').inputmask({ "mask": "d/m/y", 'autoUnmask' : true});	//  value: 23/03/1973
-	alert($('#<%= tbDate.ClientID%>').val());	// shows 23031973     (autoUnmask: true)
-
-	var tbDate = document.getElementById("<%= tbDate.ClientID%>");
-    alert(tbDate.value);	// shows 23031973     (autoUnmask: true)
-});
-```
-
-### numeric input direction
-
-```javascript
-$(document).ready(function(){
-    $(selector).inputmask('€ 999.999.999,99', { numericInput: true });    //123456  =>  € ___.__1.234,56
-});
-```
-
-#### skipRadixDance
-
-If you define a radixPoint the caret will always jump to the integer part, until you type the radixpoint.  
-
-```javascript
-$(document).ready(function(){
-    $(selector).inputmask('€ 999.999.999,99', { numericInput: true, radixPoint: "," });
-});
-```
-
-This behavior can be skipped by setting the skipRadixDance to true.
-
-#### align the input to the right
-
-By setting the rightAlign you can specify to right align an inputmask.  Default is true.  
-
-```javascript
-$(document).ready(function(){
-    $(selector).inputmask('decimal', { rightAlign: false });  //disables the right alignment of the decimal input
-});
-```
-
-
-### remove the inputmask
-
-```javascript
-$(document).ready(function(){
-    $('selector').inputmask('remove');
-});
-```
-
-### escape special mask chars
-
-```javascript
-$(document).ready(function(){
-    $("#months").inputmask("m \\months");
-});
-```
-
-### clearMaskOnLostFocus
-
-remove the empty mask on blur or when not empty removes the optional trailing part
+Remove the empty mask on blur or when not empty removes the optional trailing part
 
 ```javascript
 $(document).ready(function(){
@@ -373,88 +342,21 @@ $(document).ready(function(){
 });
 ```
 
-### Optional Masks
+#### insertMode
+#### clearIncomplete
 
-It is possible to define some parts in the mask as optional.  This is done by using [ ].
-
-Example:
-
-```javascript
-$('#test').inputmask('(99) 9999[9]-9999');
-```
-This mask wil allow input like (99) 99999-9999 or (99) 9999-9999.  
-Input => 12123451234      mask => (12) 12345-1234    (trigger complete)  
-Input => 121234-1234      mask => (12) 1234-1234     (trigger complete)  
-Input => 1212341234       mask => (12) 12341-234_    (trigger incomplete)  
-
-#### skipOptionalPartCharacter
-As an extra there is another configurable character which is used to skip an optional part in the mask.  
+Clear the incomplete input on blur
 
 ```javascript
-skipOptionalPartCharacter: " ",
-```
-Input => 121234 1234      mask => (12) 1234-1234     (trigger complete)  
-
-When `clearMaskOnLostFocus: true` is set in the options (default), the mask will clear out the optional part when it is not filled in and this only in case the optional part is at the end of the mask.
-
-For example, given:
-
-```javascript
-$('#test').inputmask('999[-AAA]');
-```
-While the field has focus and is blank, users will see the full mask `___-___`.
-When the required part of the mask is filled and the field loses focus, the user will see `123`.
-When both the required and optional parts of the mask are filled out and the field loses focus, the user will see `123-ABC`.
-
-#### Optional masks with greedy false
-
-When defining an optional mask together with the greedy: false option, the inputmask will show the smallest possible mask as input first.
-
-```javascript
-$(selector).inputmask({ mask: "99999[-9999]", greedy: false });
+$(document).ready(function(){
+   $("#date").inputmask("d/m/y",{ "clearIncomplete": true } });
+});
 ```
 
-The initial mask shown will be "_____" instead of "_____-____". 
+#### aliases
 
-### Multiple masks
+//ADD better explanation
 
-You can define multiple mask for your input.  Depending on the input the masking will switch between the defined masks.  
-This can be useful when the masks are too different to solve it with optional parts.
-
-```javascript
-  $(selector).inputmask({ mask: ["999.999", "aa-aa-aa"]});
-```
-
-#### inputmask-multi format
-
-You can also pass an array for masking with the a format like the format used in inputmask-multi
-
-```javascript
-var phones = [
-            { "mask": "+247-####", "cc": "AC", "name_en": "Ascension", "desc_en": "", "name_ru": "Остров Вознесения", "desc_ru": "" },
-            { "mask": "+376-###-###", "cc": "AD", "name_en": "Andorra", "desc_en": "", "name_ru": "Андорра", "desc_ru": "" },
-            { "mask": "+971-5#-###-####", "cc": "AE", "name_en": "United Arab Emirates", "desc_en": "mobile", "name_ru": "Объединенные Арабские Эмираты", "desc_ru": "мобильные" },
-          ...
-]
-$(selector).inputmask({ mask: phones, definitions: { '#': { validator: "[0-9]", cardinality: 1}} }); //in case of inputmask-multi you need to specify the validator for #
-```
-
-The metadata of the actual mask provided in the mask definitions can be obtained by calling
-
-```javascript
-$(selector).inputmask("getmetadata");
-```
-
-### Preprocessing mask
-
-You can define the mask as a function which can allow to preprocess the resulting mask.  Example sorting for multiple masks or retrieving mask definitions dynamically through ajax.
-The preprocessing fn should return a valid mask definition.
-
-```javascript
-  $(selector).inputmask({ mask: function () { /* do stuff */ return ["[1-]AAA-999", "[1-]999-AAA"]; }});
-```
-
-### aliases option
 
 First you have to create an alias definition (more examples can be found in jquery.inputmask.extensions.js)
 
@@ -485,6 +387,169 @@ $(document).ready(function(){
 });
 ```
 
+#### alias
+
+#### onKeyUp
+#### onKeyDown
+#### onBeforeMask
+#### onBeforePaste
+#### onUnMask
+
+Executes after unmasking to allow post-processing of the unmaskedvalue.  The arguments to the function are maskedValue, unmaskedValue.
+
+```javascript
+$(document).ready(function(){
+   $("#number").inputmask("decimal", { onUnMask: function(maskedValue, unmaskedValue) {
+		//do something with the value
+		return unmaskedValue;
+   }});
+});
+```
+
+#### showMaskOnFocus
+#### showMaskOnHover
+#### onKeyValidation
+#### skipOptionalPartCharacter
+#### showTooltip
+
+Show the current mask definition as a tooltip.
+
+```javascript
+  $(selector).inputmask({ mask: ["999-999-9999 [x99999]", "+099 99 99 9999[9]-9999"], showTooltip: true });
+```
+
+#### numericInput
+
+Numeric input direction.  Keeps the caret at the end.
+
+```javascript
+$(document).ready(function(){
+    $(selector).inputmask('€ 999.999.999,99', { numericInput: true });    //123456  =>  € ___.__1.234,56
+});
+```
+
+#### getLastValidPosition
+
+With this call-in you can override the default implementation of the getLastValidPosition Args => maskset, closestTo, opts  
+Return => position (int)
+
+See the jquery.inputmask.numeric.extensions.js for an example.
+
+#### rightAlign
+
+Align the input to the right
+
+By setting the rightAlign you can specify to right align an inputmask. This is only applied in combination op the numericInput option or the dir-attribute. Default is true.  
+
+```javascript
+$(document).ready(function(){
+    $(selector).inputmask('decimal', { rightAlign: false });  //disables the right alignment of the decimal input
+});
+```
+
+#### radixPoint
+#### definitions
+#### ignorables
+
+#### isComplete
+
+With this call-in you can override the default implementation of the isComplete function.  
+Args => buffer, opts   
+Return => true || false
+
+```javascript
+$(selector).inputmask("Regex", { 
+	regex: "[0-9]*", 
+	isComplete: function(buffer, opts) {
+		return new RegExp(opts.regex).test(buffer.join(''));
+	}
+});
+```
+### multi-masks options:
+#### multi
+#### nojumps
+#### nojumpsThreshold
+#### determineActiveMasksetIndex
+
+##Functions
+
+#### mask
+#### unmaskedvalue
+
+Get the unmaskedvalue
+
+```javascript
+$(document).ready(function(){
+   $(selector).inputmask('unmaskedvalue');
+});
+```
+#### remove
+
+Remove the inputmask.
+
+```javascript
+$(document).ready(function(){
+    $(selector).inputmask('remove');
+});
+```
+
+#### getemptymask
+#### hasMaskedValue
+#### isComplete
+
+Verify whether the current value is complete or not.
+
+```javascript
+$(document).ready(function(){
+    if($(selector).inputmask("isComplete")){
+		//do something
+	}
+});
+```
+#### getmetadata
+
+Only applies on multi-masks.
+The metadata of the actual mask provided in the mask definitions can be obtained by calling
+
+```javascript
+$(selector).inputmask("getmetadata");
+```
+
+#### _detectScope
+
+##General
+
+### set a value and apply mask
+
+this can be done with the traditional jquery.val function (all browsers) or JavaScript value property for browsers which implement lookupGetter or getOwnPropertyDescriptor
+
+```javascript
+$(document).ready(function(){
+   $("#number").val(12345);
+
+   var number = document.getElementById("number");
+   number.value = 12345;
+});
+```
+
+with the autoUnmaskoption you can change the return of $.fn.val (or value property) to unmaskedvalue or the maskedvalue
+
+```javascript
+$(document).ready(function(){
+   	$('#<%= tbDate.ClientID%>').inputmask({ "mask": "d/m/y", 'autoUnmask' : true});	//  value: 23/03/1973
+	alert($('#<%= tbDate.ClientID%>').val());	// shows 23031973     (autoUnmask: true)
+
+	var tbDate = document.getElementById("<%= tbDate.ClientID%>");
+    alert(tbDate.value);	// shows 23031973     (autoUnmask: true)
+});
+```
+### escape special mask chars
+
+```javascript
+$(document).ready(function(){
+    $("#months").inputmask("m \\months");
+});
+```
 ### auto upper/lower- casing inputmask
 
 You can define within a definition to automatically lowercase or uppercase the entry in an input by giving the casing.  
@@ -511,6 +576,27 @@ $(document).ready(function(){
    $("#test").inputmask("999-AAA");    //   => 123abc ===> 123-ABC
 });
 ```
+#=========== TODO ===========
+
+
+
+#### skipRadixDance
+
+If you define a radixPoint the caret will always jump to the integer part, until you type the radixpoint.  
+
+```javascript
+$(document).ready(function(){
+    $(selector).inputmask('€ 999.999.999,99', { numericInput: true, radixPoint: "," });
+});
+```
+
+This behavior can be skipped by setting the skipRadixDance to true.
+
+
+
+
+
+
 ### getemptymask command
 
 return the default (empty) mask value
@@ -610,38 +696,9 @@ $(document).ready(function(){
 								} });
 });
 ```
-### isComplete
 
-Verify whether the current value is complete or not.
 
-```javascript
-$(document).ready(function(){
-    if($("#ssn").inputmask("isComplete")){
-		//do something
-	}
-});
-```
 
-### showTooltip
-
-Show the current mask definition as a tooltip.
-
-```javascript
-  $(selector).inputmask({ mask: ["999-999-9999 [x99999]", "+099 99 99 9999[9]-9999"], showTooltip: true });
-```
-
-## Function overrides
-### isComplete
-With this call-in you can override the default implementation of the isComplete function.  
-
-```javascript
-$(selector).inputmask("Regex", { 
-	regex: "[0-9]*", 
-	isComplete: function(buffer, opts) {
-		return new RegExp(opts.regex).test(buffer.join(''));
-	}
-});
-```
 
 ## Supported markup options
 ### RTL attribute
@@ -673,6 +730,19 @@ This gets parsed with $.parseJSON (for the moment), so be sure to use a well-for
 ```html
 <input data-inputmask="'alias': 'date'" />
 <input data-inputmask="'mask': '9', 'repeat': 10, 'greedy' : false" />
+```
+```javascript
+$(document).ready(function(){
+    $(":input").inputmask();
+});
+```
+### data-inputmask-<option\> attribute
+
+All options can also be passed through data-attributes. 
+
+
+```html
+<input data-inputmask-mask="9" data-inputmask-repeat="10" data-inputmask-greedy="false" />
 ```
 ```javascript
 $(document).ready(function(){
@@ -831,8 +901,3 @@ $(document).ready(function(){
 ```
 
 You can find/modify/extend this alias in the jquery.inputmask.extensions.js
-
-##External links
-
-https://github.com/andr-04/inputmask-multi  
-https://github.com/greengerong/green.inputmask4angular

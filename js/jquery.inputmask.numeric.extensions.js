@@ -16,6 +16,15 @@ Optional extensions on the jquery.inputmask base
                     opts.integerDigits = opts.repeat;
                 }
                 opts.repeat = 0;
+
+                opts.autoGroup = opts.autoGroup && opts.groupSeparator != "";
+
+                if (opts.autoGroup && isFinite(opts.integerDigits)) {
+                    var seps = Math.floor(opts.integerDigits / opts.groupSize);
+                    var mod = opts.integerDigits % opts.groupSize;
+                    opts.integerDigits += mod == 0 ? seps - 1 : seps;
+                }
+
                 var mask = opts.prefix;
                 mask += "[+]";
                 mask += "~{1," + opts.integerDigits + "}";

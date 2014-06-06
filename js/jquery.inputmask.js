@@ -429,7 +429,7 @@
                                 //TODO
                             } else if (match.isQuantifier && quantifierRecurse !== true) {
                                 var qt = match;
-                                opts.greedy = opts.greedy && !isNaN(qt.quantifier.max); //greedy must be off when * or + is used (always!!)
+                                opts.greedy = opts.greedy && isFinite(qt.quantifier.max); //greedy must be off when * or + is used (always!!)
                                 for (var qndx = (ndxInitializer.length > 0 && quantifierRecurse !== true) ? ndxInitializer.shift() : 0; (qndx < (isNaN(qt.quantifier.max) ? qndx + 1 : qt.quantifier.max)) && testPos <= pos; qndx++) {
                                     var tokenGroup = maskToken.matches[$.inArray(qt, maskToken.matches) - 1];
                                     match = handleMatch(tokenGroup, [qndx].concat(loopNdx), true);
