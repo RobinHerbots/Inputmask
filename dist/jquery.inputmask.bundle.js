@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.34
+* Version: 3.0.35
 */
 
 (function ($) {
@@ -586,14 +586,18 @@
                                     return false;//breakout if refreshFromBuffer && nothing to insert
                                 }
                                 validatedPos = rslt.pos != undefined ? rslt.pos : position;
-                                if (validatedPos != position)
-                                    tst = getTests(validatedPos)[0]; //possible mismatch TODO
+                                if (validatedPos != position) {
+                                    rslt = isValid(validatedPos, elem, true, true); //revalidate new position strict
+                                    return false;
+                                }
 
                             } else if (rslt !== true && rslt["pos"] != position) { //their is a position offset
                                 validatedPos = rslt["pos"];
                                 refreshFromBuffer(position, validatedPos);
-                                if (validatedPos != position)
-                                    tst = getTests(validatedPos)[0]; //possible mismatch TODO
+                                if (validatedPos != position) {
+                                    rslt = isValid(validatedPos, elem, true, true); //revalidate new position strict
+                                    return false;
+                                }
                             }
                             if (ndx > 0) {
                                 resetMaskSet(true);
@@ -1651,7 +1655,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.34
+* Version: 3.0.35
 */
 
 (function ($) {
@@ -2016,7 +2020,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.34
+Version: 3.0.35
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2137,7 +2141,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.34
+Version: 3.0.35
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2600,7 +2604,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.34
+Version: 3.0.35
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2728,18 +2732,18 @@ Optional extensions on the jquery.inputmask base
                     validator: function (chrs, buffer, pos, strict, opts) {
                         var isValid = opts.negationhandler(chrs, buffer, pos, strict, opts);
                         if (!isValid) {
-                            //handle 0 for integerpart
-                            //if (!strict && chrs === "0") {
-                            //    var matchRslt = buffer.join('').match(opts.regex.integerPart(opts));
-                            //    if (matchRslt && matchRslt[matchRslt.index].indexOf("0") == -1) {
-                            //        return false;
-                            //    }
-                            //}
-
                             isValid = strict ? new RegExp("[0-9" + $.inputmask.escapeRegex.call(this, opts.groupSeparator) + "]").test(chrs) : new RegExp("[0-9]").test(chrs);
 
+                            //handle 0 for integerpart
+                            if (isValid != false) {
+                                var matchRslt = buffer.join('').match(opts.regex.integerPart(opts));
+                                if (matchRslt && matchRslt["0"][0] == 0 && pos > opts.prefix.length && ($.inArray(opts.radixPoint, buffer) == -1 || pos < $.inArray(opts.radixPoint, buffer))) {
+                                    buffer.splice(matchRslt.index, 1);
+                                    return { "pos": matchRslt.index, "c": chrs, "refreshFromBuffer": true, "caret": pos };
+                                }
+                            }
                             if (isValid != false && !strict && chrs != opts.radixPoint && opts.autoGroup === true) {
-                                return opts.postFormat(buffer, pos, (chrs == "-" || chrs == "+") ? true : false, opts);
+                                isValid = opts.postFormat(buffer, pos, (chrs == "-" || chrs == "+") ? true : false, opts);
                             }
                         }
                         return isValid;
@@ -2777,7 +2781,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.34
+Version: 3.0.35
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2964,7 +2968,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.34
+Version: 3.0.35
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks

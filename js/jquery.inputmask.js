@@ -586,14 +586,18 @@
                                     return false;//breakout if refreshFromBuffer && nothing to insert
                                 }
                                 validatedPos = rslt.pos != undefined ? rslt.pos : position;
-                                if (validatedPos != position)
-                                    tst = getTests(validatedPos)[0]; //possible mismatch TODO
+                                if (validatedPos != position) {
+                                    rslt = isValid(validatedPos, elem, true, true); //revalidate new position strict
+                                    return false;
+                                }
 
                             } else if (rslt !== true && rslt["pos"] != position) { //their is a position offset
                                 validatedPos = rslt["pos"];
                                 refreshFromBuffer(position, validatedPos);
-                                if (validatedPos != position)
-                                    tst = getTests(validatedPos)[0]; //possible mismatch TODO
+                                if (validatedPos != position) {
+                                    rslt = isValid(validatedPos, elem, true, true); //revalidate new position strict
+                                    return false;
+                                }
                             }
                             if (ndx > 0) {
                                 resetMaskSet(true);

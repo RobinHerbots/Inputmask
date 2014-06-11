@@ -131,18 +131,18 @@ Optional extensions on the jquery.inputmask base
                     validator: function (chrs, buffer, pos, strict, opts) {
                         var isValid = opts.negationhandler(chrs, buffer, pos, strict, opts);
                         if (!isValid) {
-                            //handle 0 for integerpart
-                            //if (!strict && chrs === "0") {
-                            //    var matchRslt = buffer.join('').match(opts.regex.integerPart(opts));
-                            //    if (matchRslt && matchRslt[matchRslt.index].indexOf("0") == -1) {
-                            //        return false;
-                            //    }
-                            //}
-
                             isValid = strict ? new RegExp("[0-9" + $.inputmask.escapeRegex.call(this, opts.groupSeparator) + "]").test(chrs) : new RegExp("[0-9]").test(chrs);
 
+                            //handle 0 for integerpart
+                            if (isValid != false) {
+                                var matchRslt = buffer.join('').match(opts.regex.integerPart(opts));
+                                if (matchRslt && matchRslt["0"][0] == 0 && pos > opts.prefix.length && ($.inArray(opts.radixPoint, buffer) == -1 || pos < $.inArray(opts.radixPoint, buffer))) {
+                                    buffer.splice(matchRslt.index, 1);
+                                    return { "pos": matchRslt.index, "c": chrs, "refreshFromBuffer": true, "caret": pos };
+                                }
+                            }
                             if (isValid != false && !strict && chrs != opts.radixPoint && opts.autoGroup === true) {
-                                return opts.postFormat(buffer, pos, (chrs == "-" || chrs == "+") ? true : false, opts);
+                                isValid = opts.postFormat(buffer, pos, (chrs == "-" || chrs == "+") ? true : false, opts);
                             }
                         }
                         return isValid;
