@@ -47,7 +47,6 @@ Optional extensions on the jquery.inputmask base
             allowPlus: true,
             allowMinus: true,
             integerDigits: "+", //number of integerDigits
-            defaultValue: "",
             prefix: "",
             suffix: "",
             skipRadixDance: false, //disable radixpoint caret positioning
@@ -109,30 +108,43 @@ Optional extensions on the jquery.inputmask base
             regex: {
                 integerPart: function (opts) { return new RegExp('[-\+]?\\d+'); }
             },
+            negationhandler: function (chrs, buffer, pos, strict, opts) {
+                if (!strict && opts.allowMinus && chrs === "-") {
+                    var matchRslt = buffer.join('').match(opts.regex.integerPart(opts));
+
+                    if (matchRslt.length > 0) {
+                        if (buffer[matchRslt.index] == "+") {
+                            buffer.splice(matchRslt.index, 1);
+                            return { "pos": matchRslt.index, "c": "-", "refreshFromBuffer": true, "caret": pos };
+                        } else if (buffer[matchRslt.index] == "-") {
+                            buffer.splice(matchRslt.index, 1);
+                            return { "refreshFromBuffer": true, "caret": pos - 1 };
+                        } else {
+                            return { "pos": matchRslt.index, "c": "-", "caret": pos + 1 };
+                        }
+                    }
+                }
+                return false;
+            },
             definitions: {
                 '~': {
                     validator: function (chrs, buffer, pos, strict, opts) {
-                        if (!strict && opts.allowMinus && chrs === "-") {
-                            var matchRslt = buffer.join('').match(opts.regex.integerPart(opts));
+                        var isValid = opts.negationhandler(chrs, buffer, pos, strict, opts);
+                        if (!isValid) {
+                            //handle 0 for integerpart
+                            //if (!strict && chrs === "0") {
+                            //    var matchRslt = buffer.join('').match(opts.regex.integerPart(opts));
+                            //    if (matchRslt && matchRslt[matchRslt.index].indexOf("0") == -1) {
+                            //        return false;
+                            //    }
+                            //}
 
-                            if (matchRslt.length > 0) {
-                                if (buffer[matchRslt.index] == "+") {
-                                    buffer.splice(matchRslt.index, 1);
-                                    return { "pos": matchRslt.index, "c": "-", "refreshFromBuffer": true, "caret": pos };
-                                } else if (buffer[matchRslt.index] == "-") {
-                                    buffer.splice(matchRslt.index, 1);
-                                    return { "refreshFromBuffer": true, "caret": pos - 1 };
-                                } else {
-                                    return { "pos": matchRslt.index, "c": "-", "caret": pos + 1 };
-                                }
+                            isValid = strict ? new RegExp("[0-9" + $.inputmask.escapeRegex.call(this, opts.groupSeparator) + "]").test(chrs) : new RegExp("[0-9]").test(chrs);
+
+                            if (isValid != false && !strict && chrs != opts.radixPoint && opts.autoGroup === true) {
+                                return opts.postFormat(buffer, pos, (chrs == "-" || chrs == "+") ? true : false, opts);
                             }
                         }
-                        var isValid = strict ? new RegExp("[0-9" + $.inputmask.escapeRegex.call(this, opts.groupSeparator) + "]").test(chrs) : new RegExp("[0-9]").test(chrs);
-
-                        if (isValid != false && !strict && chrs != opts.radixPoint && opts.autoGroup === true) {
-                            return opts.postFormat(buffer, pos, (chrs == "-" || chrs == "+") ? true : false, opts);
-                        }
-
                         return isValid;
                     },
                     cardinality: 1,

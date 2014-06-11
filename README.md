@@ -141,7 +141,7 @@ TODO
 
 ### Multi masks
 
-In the current implemantation you need to include the jquery.inputmask-multi.js
+In the current implementation you need to include the jquery.inputmask-multi.js
 
 You can define multiple mask for your input.  Depending on the input the masking will switch between the defined masks.  
 This can be useful when the masks are too different to solve it with optional parts.
@@ -405,10 +405,41 @@ $(document).ready(function(){
    }});
 });
 ```
-
 #### showMaskOnFocus
+
+Shows the mask when the input gets focus. (default = true)
+
+```javascript
+$(document).ready(function(){
+    $("#ssn").inputmask("999-99-9999",{ showMaskOnFocus: true }); //default
+});
+```
+
+To make sure no mask is visible on focus also set the showMaskOnHover to false.  Otherwise hovering with the mouse will set the mask and will stay on focus.
+
 #### showMaskOnHover
+
+Shows the mask when hovering the mouse. (default = true)
+
+```javascript
+$(document).ready(function(){
+    $("#ssn").inputmask("999-99-9999",{ showMaskOnHover: true }); //default
+});
+```
+
 #### onKeyValidation
+
+Callback function is executed on every keyvalidation with the result as parameter.
+
+```javascript
+$(document).ready(function(){
+    $("#ssn").inputmask("999-99-9999",
+			{ onKeyValidation: function (result) {
+								console.log(result);
+								} });
+});
+```
+
 #### skipOptionalPartCharacter
 #### showTooltip
 
@@ -663,39 +694,7 @@ $(document).ready(function(){
    else validateValue(val); 
 });
 ```
-### showMaskOnFocus
 
-Shows the mask when the input gets focus. (default = true)
-
-```javascript
-$(document).ready(function(){
-    $("#ssn").inputmask("999-99-9999",{ showMaskOnFocus: true }); //default
-});
-```
-
-To make sure no mask is visible on focus also set the showMaskOnHover to false.  Otherwise hovering with the mouse will set the mask and will stay on focus.
-
-### showMaskOnHover
-
-Shows the mask when hovering the mouse. (default = true)
-
-```javascript
-$(document).ready(function(){
-    $("#ssn").inputmask("999-99-9999",{ showMaskOnHover: true }); //default
-});
-```
-### onKeyValidation
-
-Callback function is executed on every keyvalidation with the result as parameter.
-
-```javascript
-$(document).ready(function(){
-    $("#ssn").inputmask("999-99-9999",
-			{ onKeyValidation: function (result) {
-								console.log(result);
-								} });
-});
-```
 
 
 

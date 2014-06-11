@@ -586,12 +586,14 @@
                                     return false;//breakout if refreshFromBuffer && nothing to insert
                                 }
                                 validatedPos = rslt.pos != undefined ? rslt.pos : position;
-                                tst = getTests(validatedPos)[0]; //possible mismatch TODO
+                                if (validatedPos != position)
+                                    tst = getTests(validatedPos)[0]; //possible mismatch TODO
 
                             } else if (rslt !== true && rslt["pos"] != position) { //their is a position offset
                                 validatedPos = rslt["pos"];
                                 refreshFromBuffer(position, validatedPos);
-                                tst = getTests(validatedPos)[0]; //possible mismatch TODO
+                                if (validatedPos != position)
+                                    tst = getTests(validatedPos)[0]; //possible mismatch TODO
                             }
                             if (ndx > 0) {
                                 resetMaskSet(true);
@@ -606,6 +608,7 @@
                 }
 
                 var maskPos = pos;
+                if (maskPos >= getMaskLength()) return false;
                 var result = _isValid(maskPos, c, strict, fromSetValid);
                 if (!strict && result === false) {
                     var currentPosValid = getMaskSet()["validPositions"][maskPos];
@@ -1479,7 +1482,7 @@
                 insertMode: true, //insert the input or overwrite the input
                 clearIncomplete: false, //clear the incomplete input on blur
                 aliases: {}, //aliases definitions => see jquery.inputmask.extensions.js
-				alias: null,
+                alias: null,
                 onKeyUp: $.noop, //override to implement autocomplete on certain keys for example
                 onKeyDown: $.noop, //override to implement autocomplete on certain keys for example
                 onBeforeMask: undefined, //executes before masking the initial value to allow preprocessing of the initial value.  args => initialValue, opts => return processedValue
