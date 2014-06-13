@@ -68,7 +68,7 @@ Optional extensions on the jquery.inputmask base
             rightAlign: true,
             postFormat: function (buffer, pos, reformatOnly, opts) {
                 var needsRefresh = false;
-                if (opts.groupSeparator == "") return { pos: pos };
+                if (opts.groupSeparator == "" || ($.inArray(opts.radixPoint, buffer) != -1 && pos >= $.inArray(opts.radixPoint, buffer))) return { pos: pos };
                 var cbuf = buffer.slice();
                 if (!reformatOnly) {
                     cbuf.splice(pos, 0, "?"); //set position indicator
@@ -135,10 +135,11 @@ Optional extensions on the jquery.inputmask base
 
                             //handle 0 for integerpart
                             if (isValid != false) {
-                                var matchRslt = buffer.join('').match(opts.regex.integerPart(opts));
-                                if (matchRslt && matchRslt["0"][0] == 0 && pos > opts.prefix.length && ($.inArray(opts.radixPoint, buffer) == -1 || pos < $.inArray(opts.radixPoint, buffer))) {
+                                var matchRslt = buffer.join('').match(opts.regex.integerPart(opts)), radixPosition = $.inArray(opts.radixPoint, buffer);
+                                if (matchRslt && matchRslt["0"][0] == "0" && pos >= opts.prefix.length && (radixPosition == -1 || pos < radixPosition)) {
                                     buffer.splice(matchRslt.index, 1);
-                                    return { "pos": matchRslt.index, "c": chrs, "refreshFromBuffer": true, "caret": pos };
+                                } else if (chrs == "0" && matchRslt && matchRslt["0"].length > 0 && pos == opts.prefix.length) {
+                                    return false;
                                 }
                             }
                             if (isValid != false && !strict && chrs != opts.radixPoint && opts.autoGroup === true) {
@@ -164,7 +165,10 @@ Optional extensions on the jquery.inputmask base
                 }
             },
             insertMode: true,
-            autoUnmask: false
+            autoUnmask: false,
+            onUnMask: function (maskedValue, unmaskedValue, opts) {
+                return unmaskedValue;
+            }
         },
         'decimal': {
             alias: "numeric"

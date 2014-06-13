@@ -523,7 +523,7 @@
             function refreshFromBuffer(start, end) {
                 var buffer = getBuffer().slice(); //work on clone
                 for (var i = start; i < end; i++) {
-                    if (buffer[i] != getPlaceholder(i) && buffer[i] != opts.skipOptionalPartCharacter) {
+                    if (buffer[i] != opts.skipOptionalPartCharacter) {
                         isValid(i, buffer[i], true, true);
                     }
                 }
@@ -587,7 +587,7 @@
                                 }
                                 validatedPos = rslt.pos != undefined ? rslt.pos : position;
                                 if (validatedPos != position) {
-                                    rslt = isValid(validatedPos, elem, true, true); //revalidate new position strict
+                                    rslt = isValid(validatedPos, elem, true); //revalidate new position strict
                                     return false;
                                 }
 
@@ -595,7 +595,7 @@
                                 validatedPos = rslt["pos"];
                                 refreshFromBuffer(position, validatedPos);
                                 if (validatedPos != position) {
-                                    rslt = isValid(validatedPos, elem, true, true); //revalidate new position strict
+                                    rslt = isValid(validatedPos, elem, true); //revalidate new position strict
                                     return false;
                                 }
                             }

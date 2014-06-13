@@ -1,5 +1,145 @@
 module("Numeric.Extensions");
 
+test("integer  type 124 correct to 1234", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("numeric", {
+        groupSeparator: ",",
+        autoGroup: true
+    });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("124");
+    caret($("#testmask")[0], 2);
+    $("#testmask").Type("3");
+    equal($("#testmask").val(), "1,234", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("numeric  type 00000 - Webunity", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("numeric", {
+        groupSeparator: ",",
+        autoGroup: true,
+        integerDigits: 9
+    });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("00000");
+
+    equal($("#testmask").val(), "0", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("numeric -placeholder 0 type 00000 - Webunity", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("numeric", {
+        groupSeparator: ",",
+        autoGroup: true,
+        placeholder: "0"
+    });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("00000");
+
+    equal($("#testmask").val(), "0", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("numeric placeholder 0 prefix € type 0.123 - Webunity", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("numeric", {
+        groupSeparator: ",",
+        autoGroup: true,
+        placeholder: "0",
+        prefix: "€ "
+    });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("0.123");
+
+    equal($("#testmask").val(), "€ 0.123", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("numeric placeholder 0 prefix € type 0.123 - backspace - Webunity", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("numeric", {
+        groupSeparator: ",",
+        autoGroup: true,
+        placeholder: "0",
+        prefix: "€ "
+    });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("0.123");
+    $("#testmask").SendKey(keyCodes.BACKSPACE);
+
+    equal($("#testmask").val(), "€ 0.12", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("numeric placeholder 0 prefix € type 0.123 + add 1 in front - Webunity", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("numeric", {
+        groupSeparator: ",",
+        autoGroup: true,
+        placeholder: "0",
+        prefix: "€ "
+    });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("0.123");
+    caret($("#testmask")[0], 2);
+    $("#testmask").Type("1");
+
+    equal($("#testmask").val(), "€ 10.123", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("numeric placeholder 0 autoGroup: false prefix € type 0.123 + add 123 in front - Webunity", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("numeric", {
+        groupSeparator: ",",
+        autoGroup: false,
+        placeholder: "0",
+        prefix: "€ "
+    });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("0.123");
+    caret($("#testmask")[0], 2);
+    $("#testmask").Type("123");
+
+    equal($("#testmask").val(), "€ 1230.123", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("numeric placeholder 0 autoGroup: true prefix € type 0.123 + add 123 in front - Webunity", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("numeric", {
+        groupSeparator: ",",
+        autoGroup: true,
+        placeholder: "0",
+        prefix: "€ "
+    });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("0.123");
+    caret($("#testmask")[0], 2);
+    $("#testmask").Type("123");
+
+    equal($("#testmask").val(), "€ 1,230.123", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
 test("integer alias with integerDigits 9 & autogroup - type 123456789 - gigermocas", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
