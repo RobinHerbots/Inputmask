@@ -67,7 +67,7 @@ test("email mask greedy true", function () {
     $("#testmask")[0].focus();
     $("#testmask").Type("some.body@mail.com");
     $("#testmask").blur();
-    equal($("#testmask").val(), "some.body@mail.com___", "Result " + $("#testmask").val());
+    equal($("#testmask").val(), "some.body@mail.com", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });

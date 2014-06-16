@@ -718,26 +718,6 @@
             function truncateInput(inputValue) {
                 return inputValue.replace(new RegExp("(" + escapeRegex(getBufferTemplate().join('')) + ")*$"), "");
             }
-
-            function clearOptionalTail(input) {
-                var buffer = getBuffer(), tmpBuffer = buffer.slice(),
-                    pos, lvp = getLastValidPosition(), positions = {},
-                    ndxIntlzr = getMaskSet()["validPositions"][lvp] != undefined ? getMaskSet()["validPositions"][lvp]["locator"].slice() : undefined, testPos;
-                for (pos = lvp + 1; pos < tmpBuffer.length; pos++) {
-                    testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
-                    ndxIntlzr = testPos["locator"].slice();
-                    positions[pos] = testPos;
-                }
-
-                for (pos = tmpBuffer.length - 1; pos > lvp; pos--) {
-                    testPos = positions[pos]["match"];
-                    if (testPos.optionality && tmpBuffer[pos] == getPlaceholder(pos, testPos)) {
-                        tmpBuffer.pop();
-                    } else break;
-                }
-                writeBuffer(input, tmpBuffer);
-            }
-
             function unmaskedvalue($input, skipDatepickerCheck) {
                 if ($input.data('_inputmask') && (skipDatepickerCheck === true || !$input.hasClass('hasDatepicker'))) {
                     var umValue = [], vps = getMaskSet()["validPositions"];
@@ -753,7 +733,6 @@
                     return $input[0]._valueGet();
                 }
             }
-
             function TranslatePosition(pos) {
                 if (isRTL && typeof pos == 'number' && (!opts.greedy || opts.placeholder != "")) {
                     var bffrLght = getBuffer().length;
@@ -761,7 +740,6 @@
                 }
                 return pos;
             }
-
             function caret(input, begin, end) {
                 var npt = input.jquery && input.length > 0 ? input[0] : input, range;
                 if (typeof begin == 'number') {
@@ -809,19 +787,44 @@
                     return { "begin": begin, "end": end };
                 }
             }
+            function determineLastRequiredPosition(returnDefinition) {
+                var buffer = getBuffer(), bl = buffer.length,
+                   pos, lvp = getLastValidPosition(), positions = {},
+                   ndxIntlzr = getMaskSet()["validPositions"][lvp] != undefined ? getMaskSet()["validPositions"][lvp]["locator"].slice() : undefined, testPos;
+                for (pos = lvp + 1; pos < buffer.length; pos++) {
+                    testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
+                    ndxIntlzr = testPos["locator"].slice();
+                    positions[pos] = $.extend(true, {}, testPos);
+                }
 
+                for (pos = bl - 1; pos > lvp; pos--) {
+                    testPos = positions[pos]["match"];
+                    if ((testPos.optionality || testPos.optionalQuantifier) && buffer[pos] == getPlaceholder(pos, testPos)) {
+                        bl--;
+                    } else break;
+                }
+                return returnDefinition ? { "l": bl, "def": positions[bl] ? positions[bl]["match"] : undefined } : bl;
+            }
+            function clearOptionalTail(input) {
+                var buffer = getBuffer(), tmpBuffer = buffer.slice();
+                var rl = determineLastRequiredPosition();
+                tmpBuffer.length = rl;
+                writeBuffer(input, tmpBuffer);
+            }
             function isComplete(buffer) { //return true / false / undefined (repeat *)
                 if ($.isFunction(opts.isComplete)) return opts.isComplete.call($el, buffer, opts);
                 if (opts.repeat == "*") return undefined;
-                var complete = false,
-                    aml = seekPrevious(getMaskLength());
-                if (getLastValidPosition() == aml) {
-                    complete = true;
-                    for (var i = 0; i <= aml; i++) {
-                        var mask = isMask(i);
-                        if ((mask && (buffer[i] == undefined || buffer[i] == getPlaceholder(i))) || (!mask && buffer[i] != getPlaceholder(i))) {
-                            complete = false;
-                            break;
+                var complete = false, lrp = determineLastRequiredPosition(true), aml = seekPrevious(lrp["l"]), lvp = getLastValidPosition();
+
+                if (lvp == aml) {
+                    if (lrp["def"] == undefined || lrp["def"].newBlockMarker || lrp["def"].optionalQuantifier) {
+                        complete = true;
+                        for (var i = 0; i <= aml; i++) {
+                            var mask = isMask(i);
+                            if ((mask && (buffer[i] == undefined || buffer[i] == getPlaceholder(i))) || (!mask && buffer[i] != getPlaceholder(i))) {
+                                complete = false;
+                                break;
+                            }
                         }
                     }
                 }
