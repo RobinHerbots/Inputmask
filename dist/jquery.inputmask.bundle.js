@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.39
+* Version: 3.0.40
 */
 
 (function ($) {
@@ -883,9 +883,13 @@
                                 } else return valueGet(elem);
                             },
                             set: function (elem, value) {
-                                var $elem = $(elem);
-                                var result = valueSet(elem, value);
-                                if ($elem.data('_inputmask')) $elem.triggerHandler('setvalue.inputmask');
+                                var $elem = $(elem), inputData = $elem.data('_inputmask'), result;
+                                if (inputData) {
+                                    result = valueSet(elem, $.isFunction(inputData['opts'].onBeforeMask) ? inputData['opts'].onBeforeMask.call(el, value, inputData['opts']) : value);
+                                    $elem.triggerHandler('setvalue.inputmask');
+                                } else {
+                                    result = valueSet(elem, value);
+                                }
                                 return result;
                             },
                             inputmaskpatch: true
@@ -915,8 +919,13 @@
                                 } else return valueGet.call(this);
                             },
                             set: function (value) {
-                                valueSet.call(this, value);
-                                $(this).triggerHandler('setvalue.inputmask');
+                                var inputData = $(this).data('_inputmask');
+                                if (inputData) {
+                                    valueSet.call(this, $.isFunction(inputData['opts'].onBeforeMask) ? inputData['opts'].onBeforeMask.call(el, value, inputData['opts']) : value);
+                                    $(this).triggerHandler('setvalue.inputmask');
+                                } else {
+                                    valueSet.call(this, value);
+                                }
                             }
                         });
                     }
@@ -938,8 +947,13 @@
                             } else return valueGet.call(this);
                         });
                         npt.__defineSetter__("value", function (value) {
-                            valueSet.call(this, value);
-                            $(this).triggerHandler('setvalue.inputmask');
+                            var inputData = $(this).data('_inputmask');
+                            if (inputData) {
+                                valueSet.call(this, $.isFunction(inputData['opts'].onBeforeMask) ? inputData['opts'].onBeforeMask.call(el, value, inputData['opts']) : value);
+                                $(this).triggerHandler('setvalue.inputmask');
+                            } else {
+                                valueSet.call(this, value);
+                            }
                         });
                     }
                 } else {
@@ -1664,7 +1678,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.39
+* Version: 3.0.40
 */
 
 (function ($) {
@@ -2029,7 +2043,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.39
+Version: 3.0.40
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2150,7 +2164,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.39
+Version: 3.0.40
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2613,7 +2627,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.39
+Version: 3.0.40
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2790,6 +2804,9 @@ Optional extensions on the jquery.inputmask base
                 processValue = processValue.replace(new RegExp(opts.groupSeparator, "g"), "");
                 processValue = processValue.replace(opts.radixPoint, ".");
                 return isFinite(processValue);
+            },
+            onBeforeMask: function (initialValue, opts) {
+                return isFinite(initialValue) ? initialValue.toString().replace(".", opts.radixPoint) : initialValue;
             }
         },
         'decimal': {
@@ -2806,7 +2823,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.39
+Version: 3.0.40
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2993,7 +3010,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.39
+Version: 3.0.40
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks

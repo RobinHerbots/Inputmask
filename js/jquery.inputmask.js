@@ -883,9 +883,13 @@
                                 } else return valueGet(elem);
                             },
                             set: function (elem, value) {
-                                var $elem = $(elem);
-                                var result = valueSet(elem, value);
-                                if ($elem.data('_inputmask')) $elem.triggerHandler('setvalue.inputmask');
+                                var $elem = $(elem), inputData = $elem.data('_inputmask'), result;
+                                if (inputData) {
+                                    result = valueSet(elem, $.isFunction(inputData['opts'].onBeforeMask) ? inputData['opts'].onBeforeMask.call(el, value, inputData['opts']) : value);
+                                    $elem.triggerHandler('setvalue.inputmask');
+                                } else {
+                                    result = valueSet(elem, value);
+                                }
                                 return result;
                             },
                             inputmaskpatch: true
@@ -915,8 +919,13 @@
                                 } else return valueGet.call(this);
                             },
                             set: function (value) {
-                                valueSet.call(this, value);
-                                $(this).triggerHandler('setvalue.inputmask');
+                                var inputData = $(this).data('_inputmask');
+                                if (inputData) {
+                                    valueSet.call(this, $.isFunction(inputData['opts'].onBeforeMask) ? inputData['opts'].onBeforeMask.call(el, value, inputData['opts']) : value);
+                                    $(this).triggerHandler('setvalue.inputmask');
+                                } else {
+                                    valueSet.call(this, value);
+                                }
                             }
                         });
                     }
@@ -938,8 +947,13 @@
                             } else return valueGet.call(this);
                         });
                         npt.__defineSetter__("value", function (value) {
-                            valueSet.call(this, value);
-                            $(this).triggerHandler('setvalue.inputmask');
+                            var inputData = $(this).data('_inputmask');
+                            if (inputData) {
+                                valueSet.call(this, $.isFunction(inputData['opts'].onBeforeMask) ? inputData['opts'].onBeforeMask.call(el, value, inputData['opts']) : value);
+                                $(this).triggerHandler('setvalue.inputmask');
+                            } else {
+                                valueSet.call(this, value);
+                            }
                         });
                     }
                 } else {

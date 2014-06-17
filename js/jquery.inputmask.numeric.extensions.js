@@ -180,6 +180,9 @@ Optional extensions on the jquery.inputmask base
                 processValue = processValue.replace(new RegExp(opts.groupSeparator, "g"), "");
                 processValue = processValue.replace(opts.radixPoint, ".");
                 return isFinite(processValue);
+            },
+            onBeforeMask: function (initialValue, opts) {
+                return isFinite(initialValue) ? initialValue.toString().replace(".", opts.radixPoint) : initialValue;
             }
         },
         'decimal': {
