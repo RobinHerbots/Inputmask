@@ -1364,14 +1364,20 @@
                     if (activeElement === el) { //position the caret when in focus
                         $el.addClass('focus.inputmask');
                         caret(el, seekNext(getLastValidPosition()));
-                    } else if (opts.clearMaskOnLostFocus) {
-                        if (getBuffer().join('') == getBufferTemplate().join('')) {
-                            el._valueSet('');
-                        } else {
-                            clearOptionalTail(el);
-                        }
                     } else {
-                        writeBuffer(el, getBuffer());
+                        if (isComplete(getBuffer()) === false) {
+                            if (opts.clearIncomplete)
+                                resetMaskSet();
+                        }
+                        if (opts.clearMaskOnLostFocus) {
+                            if (getBuffer().join('') == getBufferTemplate().join('')) {
+                                el._valueSet('');
+                            } else {
+                                clearOptionalTail(el);
+                            }
+                        } else {
+                            writeBuffer(el, getBuffer());
+                        }
                     }
 
                     installEventRuler(el);
