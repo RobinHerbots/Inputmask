@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.38
+* Version: 3.0.39
 */
 
 (function ($) {
@@ -1664,7 +1664,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.38
+* Version: 3.0.39
 */
 
 (function ($) {
@@ -2029,7 +2029,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.38
+Version: 3.0.39
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2150,7 +2150,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.38
+Version: 3.0.39
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2613,7 +2613,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.38
+Version: 3.0.39
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2777,7 +2777,19 @@ Optional extensions on the jquery.inputmask base
             insertMode: true,
             autoUnmask: false,
             onUnMask: function (maskedValue, unmaskedValue, opts) {
-                return unmaskedValue;
+                var processValue = maskedValue.replace(opts.prefix, "");
+                processValue = processValue.replace(opts.suffix, "");
+                processValue = processValue.replace(new RegExp(opts.groupSeparator, "g"), "");
+                processValue = processValue.replace(opts.radixPoint, ".");
+                return Number(processValue);
+            },
+            isComplete: function (buffer, opts) {
+                var maskedValue = buffer.join('');
+                var processValue = maskedValue.replace(opts.prefix, "");
+                processValue = processValue.replace(opts.suffix, "");
+                processValue = processValue.replace(new RegExp(opts.groupSeparator, "g"), "");
+                processValue = processValue.replace(opts.radixPoint, ".");
+                return isFinite(processValue);
             }
         },
         'decimal': {
@@ -2794,7 +2806,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.38
+Version: 3.0.39
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -2981,7 +2993,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.38
+Version: 3.0.39
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks

@@ -167,7 +167,19 @@ Optional extensions on the jquery.inputmask base
             insertMode: true,
             autoUnmask: false,
             onUnMask: function (maskedValue, unmaskedValue, opts) {
-                return unmaskedValue;
+                var processValue = maskedValue.replace(opts.prefix, "");
+                processValue = processValue.replace(opts.suffix, "");
+                processValue = processValue.replace(new RegExp(opts.groupSeparator, "g"), "");
+                processValue = processValue.replace(opts.radixPoint, ".");
+                return Number(processValue);
+            },
+            isComplete: function (buffer, opts) {
+                var maskedValue = buffer.join('');
+                var processValue = maskedValue.replace(opts.prefix, "");
+                processValue = processValue.replace(opts.suffix, "");
+                processValue = processValue.replace(new RegExp(opts.groupSeparator, "g"), "");
+                processValue = processValue.replace(opts.radixPoint, ".");
+                return isFinite(processValue);
             }
         },
         'decimal': {
