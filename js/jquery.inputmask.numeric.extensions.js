@@ -100,8 +100,12 @@ Optional extensions on the jquery.inputmask base
                 return { pos: reformatOnly ? pos : newPos, "refreshFromBuffer": needsRefresh };
             },
             onKeyDown: function (e, buffer, opts) {
-                var $input = $(this), input = this;
-                if (opts.autoGroup && e.keyCode == opts.keyCode.DELETE || e.keyCode == opts.keyCode.BACKSPACE) {
+                if (opts.autoGroup && (e.keyCode == opts.keyCode.DELETE || e.keyCode == opts.keyCode.BACKSPACE)) {
+                    return opts.postFormat(buffer, 0, true, opts);
+                }
+            },
+            onKeyUp: function (e, buffer, opts) {
+                if (opts.autoGroup && (e.keyCode == 110 || e.keyCode == 188 || e.keyCode == 190)) {
                     return opts.postFormat(buffer, 0, true, opts);
                 }
             },

@@ -1155,6 +1155,7 @@
             function keyupEvent(e) {
                 var $input = $(this), input = this, k = e.keyCode, buffer = getBuffer();
 
+                var currentCaretPos = caret(input);
                 var keyupResult = opts.onKeyUp.call(this, e, buffer, opts);
                 if (keyupResult && keyupResult["refreshFromBuffer"] === true) {
                     getMaskSet()["validPositions"] = {};
@@ -1162,6 +1163,7 @@
                     refreshFromBuffer(0, getBuffer().length);
                     resetMaskSet(true);
                     writeBuffer(input, getBuffer());
+                    caret(input, currentCaretPos.begin, currentCaretPos.end);
                 }
                 if (k == opts.keyCode.TAB && opts.showMaskOnFocus) {
                     if ($input.hasClass('focus.inputmask') && input._valueGet().length == 0) {
