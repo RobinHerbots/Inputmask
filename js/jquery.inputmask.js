@@ -1042,7 +1042,7 @@
                     } else if (k == opts.keyCode.LEFT) {
                         setTimeout(function () {
                             var caretPos = caret(input);
-                            caret(input, caretPos.begin - 1);
+                            caret(input, isRTL ? caretPos.begin + 1 : caretPos.begin - 1);
                         }, 0);
                     }
                 }
@@ -1099,7 +1099,7 @@
                         }
 
                         getMaskSet()["writeOutBuffer"] = true;
-                        var p = pos.begin;
+                        var p = isRTL && !isSlctn ? pos.end : pos.begin;
                         var valResult = isValid(p, c, strict);
                         if (valResult !== false) {
                             if (valResult !== true) {
