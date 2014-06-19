@@ -343,8 +343,6 @@
         $.extend($.inputmask.defaults, {
             //multi-masks
             multi: false, //do not alter - internal use
-            nojumps: false, //do not jump over fixed parts in the mask
-            nojumpsThreshold: 0, //start nojumps as of
             determineActiveMasksetIndex: undefined //override determineActiveMasksetIndex - args => eventType, elmasks - return int
         });
 

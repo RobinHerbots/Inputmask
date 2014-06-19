@@ -403,7 +403,6 @@
             };
             function getTests(pos, ndxIntlzr, tstPs) {
                 var maskTokens = getMaskSet()["maskToken"], testPos = ndxIntlzr ? tstPs : 0, ndxInitializer = ndxIntlzr || [0], matches = [], insertStop = false;
-
                 function ResolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) { //ndxInitilizer contains a set of indexes to speedup searches in the mtokens
 
                     function handleMatch(match, loopNdx, quantifierRecurse) {
@@ -438,6 +437,7 @@
                                         var latestMatch = matches[matches.length - 1]["match"];
                                         latestMatch.optionalQuantifier = qndx > qt.quantifier.min - 1;
                                         var isFirstMatch = $.inArray(latestMatch, tokenGroup.matches) == 0;
+
                                         if (isFirstMatch) { //search for next possible match
                                             if (qndx > qt.quantifier.min - 1) {
                                                 insertStop = true;
@@ -547,8 +547,20 @@
 
                 function _isValid(position, c, strict, fromSetValid) {
 
-                    var rslt = false;
-                    $.each(getTests(position), function (ndx, tst) {
+                    var rslt = false, validTests = getTests(position);
+
+                    //prefilter validTests based on the current input
+                    var prevPos = seekPrevious(position);
+                    if (prevPos > 0 && getMaskSet()["validPositions"][prevPos] == undefined) {
+                        var current = getBuffer()[position];
+						validTests = $.map(validTests, function(tst, ndx){
+							if(tst["match"].optionalQuantifier == false){
+								return tst;
+							}
+						});
+                    }
+
+                    $.each(validTests, function (ndx, tst) {
                         var test = tst["match"];
                         var loopend = c ? 1 : 0, chrs = '', buffer = getBuffer();
                         for (var i = test.cardinality; i > loopend; i--) {
@@ -965,7 +977,7 @@
                 }
             }
 
-            function HandleRemove(input, k, pos) {
+            function handleRemove(input, k, pos) {
                 if (opts.numericInput || isRTL) {
                     switch (k) {
                         case opts.keyCode.BACKSPACE:
@@ -983,7 +995,6 @@
                 }
 
                 if (pos.begin == pos.end) {
-                    var posBegin = k == opts.keyCode.BACKSPACE ? pos.begin - 1 : pos.begin;
                     if (k == opts.keyCode.BACKSPACE)
                         pos.begin = seekPrevious(pos.begin);
                     else if (k == opts.keyCode.DELETE)
@@ -1002,6 +1013,17 @@
                 }
             }
 
+            function handleOnKeyResult(input, keyResult, caretPos) {
+                if (keyResult && keyResult["refreshFromBuffer"] === true) {
+                    getMaskSet()["validPositions"] = {};
+                    getMaskSet()["tests"] = {};
+                    refreshFromBuffer(0, getBuffer().length);
+                    resetMaskSet(true);
+                    writeBuffer(input, getBuffer());
+                    caret(input, keyResult.caret || caretPos.begin, keyResult.caret || caretPos.end);
+                }
+            }
+
             function keydownEvent(e) {
                 //Safari 5.1.x - modal dialog fires keypress twice workaround
                 skipKeyPressEvent = false;
@@ -1011,7 +1033,7 @@
                 if (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE || (iphone && k == 127) || e.ctrlKey && k == 88) { //backspace/delete
                     e.preventDefault(); //stop default action but allow propagation
                     if (k == 88) valueOnFocus = getBuffer().join('');
-                    HandleRemove(input, k, pos);
+                    handleRemove(input, k, pos);
                     writeBuffer(input, getBuffer(), getMaskSet()["p"]);
                     if (input._valueGet() == getBufferTemplate().join(''))
                         $input.trigger('cleared');
@@ -1049,14 +1071,7 @@
 
                 var currentCaretPos = caret(input);
                 var keydownResult = opts.onKeyDown.call(this, e, getBuffer(), opts);
-                if (keydownResult && keydownResult["refreshFromBuffer"] === true) { //extra stuff to execute on keydown
-                    getMaskSet()["validPositions"] = {};
-                    getMaskSet()["tests"] = {};
-                    refreshFromBuffer(0, getBuffer().length);
-                    resetMaskSet(true);
-                    writeBuffer(input, getBuffer());
-                    caret(input, currentCaretPos.begin, currentCaretPos.end);
-                }
+                handleOnKeyResult(input, keydownResult, currentCaretPos);
                 ignorable = $.inArray(k, opts.ignorables) != -1;
             }
 
@@ -1089,7 +1104,7 @@
                         var isSlctn = isSelection(pos.begin, pos.end);
                         if (isSlctn) {
                             getMaskSet()["undoPositions"] = $.extend(true, {}, getMaskSet()["validPositions"]); //init undobuffer for recovery when not valid
-                            HandleRemove(input, opts.keyCode.DELETE, pos);
+                            handleRemove(input, opts.keyCode.DELETE, pos);
                             if (!opts.insertMode) { //preserve some space
                                 opts.insertMode = !opts.insertMode;
                                 setValidPosition(pos.begin, strict);
@@ -1147,24 +1162,22 @@
                         }
 
                         //needed for IE8 and below
-                        if (e && checkval != true) e.preventDefault ? e.preventDefault() : e.returnValue = false;
+                        if (e && checkval != true)  {
+                        	e.preventDefault ? e.preventDefault() : e.returnValue = false;
+
+                        	var currentCaretPos = caret(input);
+                        	var keypressResult = opts.onKeyPress.call(this, e, getBuffer(), opts);
+                        	handleOnKeyResult(input, keypressResult, currentCaretPos);
+                        }
                     }
                 }
             }
-
             function keyupEvent(e) {
                 var $input = $(this), input = this, k = e.keyCode, buffer = getBuffer();
 
                 var currentCaretPos = caret(input);
                 var keyupResult = opts.onKeyUp.call(this, e, buffer, opts);
-                if (keyupResult && keyupResult["refreshFromBuffer"] === true) {
-                    getMaskSet()["validPositions"] = {};
-                    getMaskSet()["tests"] = {};
-                    refreshFromBuffer(0, getBuffer().length);
-                    resetMaskSet(true);
-                    writeBuffer(input, getBuffer());
-                    caret(input, currentCaretPos.begin, currentCaretPos.end);
-                }
+                handleOnKeyResult(input, keyupResult, currentCaretPos);
                 if (k == opts.keyCode.TAB && opts.showMaskOnFocus) {
                     if ($input.hasClass('focus.inputmask') && input._valueGet().length == 0) {
                         resetMaskSet();
@@ -1512,8 +1525,9 @@
                 clearIncomplete: false, //clear the incomplete input on blur
                 aliases: {}, //aliases definitions => see jquery.inputmask.extensions.js
                 alias: null,
-                onKeyUp: $.noop, //override to implement autocomplete on certain keys for example
-                onKeyDown: $.noop, //override to implement autocomplete on certain keys for example
+                onKeyUp: $.noop, //callback to implement autocomplete on certain keys for example
+                onKeyPress: $.noop, //callback to implement autocomplete on certain keys for example
+                onKeyDown: $.noop, //callback to implement autocomplete on certain keys for example
                 onBeforeMask: undefined, //executes before masking the initial value to allow preprocessing of the initial value.  args => initialValue, opts => return processedValue
                 onBeforePaste: undefined, //executes before masking the pasted value to allow preprocessing of the pasted value.  args => pastedValue, opts => return processedValue
                 onUnMask: undefined, //executes after unmasking to allow postprocessing of the unmaskedvalue.  args => maskedValue, unmaskedValue, opts
@@ -1528,6 +1542,8 @@
                 //numeric basic properties
                 radixPoint: "", //".", // | ","
                 //numeric basic properties
+                nojumps: false, //do not jump over fixed parts in the mask
+                nojumpsThreshold: 0, //start nojumps as of
                 definitions: {
                     '9': {
                         validator: "[0-9]",

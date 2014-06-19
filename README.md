@@ -390,6 +390,7 @@ $(document).ready(function(){
 #### alias
 
 #### onKeyUp
+#### onKeyPress
 #### onKeyDown
 #### onBeforeMask
 #### onBeforePaste
@@ -479,6 +480,8 @@ $(document).ready(function(){
 ```
 
 #### radixPoint
+#### nojumps: false, //do not jump over fixed parts in the mask
+#### nojumpsThreshold: 0, //start nojumps as of
 #### definitions
 #### ignorables
 
@@ -498,8 +501,6 @@ $(selector).inputmask("Regex", {
 ```
 ### multi-masks options:
 #### multi
-#### nojumps
-#### nojumpsThreshold
 #### determineActiveMasksetIndex
 
 ##Functions

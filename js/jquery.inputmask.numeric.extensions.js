@@ -30,8 +30,8 @@ Optional extensions on the jquery.inputmask base
                 mask += "~{1," + opts.integerDigits + "}";
                 if (opts.digits != undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0)) {
                     if (opts.digitsOptional)
-                        mask += "[" + opts.radixPoint + "~{" + opts.digits + "}]";
-                    else mask += opts.radixPoint + "~{" + opts.digits + "}";
+                        mask += "[" + ":" + "~{" + opts.digits + "}]";
+                    else mask += ":" + "~{" + opts.digits + "}";
                 }
                 mask += opts.suffix;
                 return mask;
@@ -104,9 +104,13 @@ Optional extensions on the jquery.inputmask base
                     return opts.postFormat(buffer, 0, true, opts);
                 }
             },
-            onKeyUp: function (e, buffer, opts) {
-                if (opts.autoGroup && (e.keyCode == 110 || e.keyCode == 188 || e.keyCode == 190)) {
-                    return opts.postFormat(buffer, 0, true, opts);
+            onKeyPress: function (e, buffer, opts) {
+                var k = (e.which || e.charCode || e.keyCode);
+                if (k == 46 && e.shiftKey == false && opts.radixPoint == ",") k = 44;
+                if (opts.autoGroup && String.fromCharCode(k) == opts.radixPoint) {
+                    var refresh = opts.postFormat(buffer, 0, true, opts);
+                    refresh.caret = $.inArray(opts.radixPoint, buffer) + 1;
+                    return refresh;
                 }
             },
             regex: {
@@ -162,6 +166,18 @@ Optional extensions on the jquery.inputmask base
                         if (opts.allowPlus === true) signed += "\+";
                         signed += "]";
                         var isValid = new RegExp(signed).test(chrs);
+                        return isValid;
+                    },
+                    cardinality: 1,
+                    prevalidator: null
+                },
+                ':': {
+                    validator: function (chrs, buffer, pos, strict, opts) {
+                        var isValid = opts.negationhandler(chrs, buffer, pos, strict, opts);
+                        if (!isValid) {
+                            var radix = "[" + $.inputmask.escapeRegex.call(this, opts.radixPoint) + "]";
+                            isValid = new RegExp(radix).test(chrs);
+                        }
                         return isValid;
                     },
                     cardinality: 1,

@@ -296,12 +296,10 @@ test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - inp
     $("#testmask")[0].focus();
 
     $("#testmask").Type("12345.123");
-    $("#testmask").SendKey(keyCodes.LEFT);
-    $("#testmask").SendKey(keyCodes.LEFT);
-    $("#testmask").SendKey(keyCodes.LEFT);
-    $("#testmask").SendKey(keyCodes.DELETE);
-    $("#testmask").SendKey(keyCodes.DELETE);
-    $("#testmask").SendKey(keyCodes.DELETE);
+    $("#testmask").SendKey(keyCodes.BACKSPACE);
+    $("#testmask").SendKey(keyCodes.BACKSPACE);
+    $("#testmask").SendKey(keyCodes.BACKSPACE);
+    $("#testmask").SendKey(keyCodes.BACKSPACE);
 
     equal($("#testmask").val(), "12,345", "Result " + $("#testmask").val());
     $("#testmask").remove();
@@ -352,6 +350,8 @@ test("inputmask(\"decimal\", { autoGroup: false, groupSeparator: \",\" }\") - in
     $("#testmask").SendKey(keyCodes.LEFT);
     $("#testmask").SendKey(keyCodes.LEFT);
     $("#testmask").SendKey(keyCodes.LEFT);
+    $("#testmask").SendKey(keyCodes.LEFT);
+    $("#testmask").SendKey(keyCodes.DELETE);
     $("#testmask").SendKey(keyCodes.DELETE);
     $("#testmask").SendKey(keyCodes.DELETE);
     $("#testmask").SendKey(keyCodes.DELETE);
@@ -416,7 +416,7 @@ test("inputmask(\"decimal, { repeat: 5 }\") - maxlength 10", function () {
 
     $("#testmask").Type("123456789012345");
 
-    equal($("#testmask").val(), "12345.6789", "Result " + $("#testmask").val());
+    equal($("#testmask").val(), "12345", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
 

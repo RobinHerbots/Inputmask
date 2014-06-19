@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.41
+* Version: 3.0.42
 */
 
 (function ($) {
@@ -403,7 +403,6 @@
             };
             function getTests(pos, ndxIntlzr, tstPs) {
                 var maskTokens = getMaskSet()["maskToken"], testPos = ndxIntlzr ? tstPs : 0, ndxInitializer = ndxIntlzr || [0], matches = [], insertStop = false;
-
                 function ResolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) { //ndxInitilizer contains a set of indexes to speedup searches in the mtokens
 
                     function handleMatch(match, loopNdx, quantifierRecurse) {
@@ -438,6 +437,7 @@
                                         var latestMatch = matches[matches.length - 1]["match"];
                                         latestMatch.optionalQuantifier = qndx > qt.quantifier.min - 1;
                                         var isFirstMatch = $.inArray(latestMatch, tokenGroup.matches) == 0;
+
                                         if (isFirstMatch) { //search for next possible match
                                             if (qndx > qt.quantifier.min - 1) {
                                                 insertStop = true;
@@ -547,8 +547,20 @@
 
                 function _isValid(position, c, strict, fromSetValid) {
 
-                    var rslt = false;
-                    $.each(getTests(position), function (ndx, tst) {
+                    var rslt = false, validTests = getTests(position);
+
+                    //prefilter validTests based on the current input
+                    var prevPos = seekPrevious(position);
+                    if (prevPos > 0 && getMaskSet()["validPositions"][prevPos] == undefined) {
+                        var current = getBuffer()[position];
+						validTests = $.map(validTests, function(tst, ndx){
+							if(tst["match"].optionalQuantifier == false){
+								return tst;
+							}
+						});
+                    }
+
+                    $.each(validTests, function (ndx, tst) {
                         var test = tst["match"];
                         var loopend = c ? 1 : 0, chrs = '', buffer = getBuffer();
                         for (var i = test.cardinality; i > loopend; i--) {
@@ -965,7 +977,7 @@
                 }
             }
 
-            function HandleRemove(input, k, pos) {
+            function handleRemove(input, k, pos) {
                 if (opts.numericInput || isRTL) {
                     switch (k) {
                         case opts.keyCode.BACKSPACE:
@@ -983,7 +995,6 @@
                 }
 
                 if (pos.begin == pos.end) {
-                    var posBegin = k == opts.keyCode.BACKSPACE ? pos.begin - 1 : pos.begin;
                     if (k == opts.keyCode.BACKSPACE)
                         pos.begin = seekPrevious(pos.begin);
                     else if (k == opts.keyCode.DELETE)
@@ -1002,6 +1013,17 @@
                 }
             }
 
+            function handleOnKeyResult(input, keyResult, caretPos) {
+                if (keyResult && keyResult["refreshFromBuffer"] === true) {
+                    getMaskSet()["validPositions"] = {};
+                    getMaskSet()["tests"] = {};
+                    refreshFromBuffer(0, getBuffer().length);
+                    resetMaskSet(true);
+                    writeBuffer(input, getBuffer());
+                    caret(input, keyResult.caret || caretPos.begin, keyResult.caret || caretPos.end);
+                }
+            }
+
             function keydownEvent(e) {
                 //Safari 5.1.x - modal dialog fires keypress twice workaround
                 skipKeyPressEvent = false;
@@ -1011,7 +1033,7 @@
                 if (k == opts.keyCode.BACKSPACE || k == opts.keyCode.DELETE || (iphone && k == 127) || e.ctrlKey && k == 88) { //backspace/delete
                     e.preventDefault(); //stop default action but allow propagation
                     if (k == 88) valueOnFocus = getBuffer().join('');
-                    HandleRemove(input, k, pos);
+                    handleRemove(input, k, pos);
                     writeBuffer(input, getBuffer(), getMaskSet()["p"]);
                     if (input._valueGet() == getBufferTemplate().join(''))
                         $input.trigger('cleared');
@@ -1049,14 +1071,7 @@
 
                 var currentCaretPos = caret(input);
                 var keydownResult = opts.onKeyDown.call(this, e, getBuffer(), opts);
-                if (keydownResult && keydownResult["refreshFromBuffer"] === true) { //extra stuff to execute on keydown
-                    getMaskSet()["validPositions"] = {};
-                    getMaskSet()["tests"] = {};
-                    refreshFromBuffer(0, getBuffer().length);
-                    resetMaskSet(true);
-                    writeBuffer(input, getBuffer());
-                    caret(input, currentCaretPos.begin, currentCaretPos.end);
-                }
+                handleOnKeyResult(input, keydownResult, currentCaretPos);
                 ignorable = $.inArray(k, opts.ignorables) != -1;
             }
 
@@ -1089,7 +1104,7 @@
                         var isSlctn = isSelection(pos.begin, pos.end);
                         if (isSlctn) {
                             getMaskSet()["undoPositions"] = $.extend(true, {}, getMaskSet()["validPositions"]); //init undobuffer for recovery when not valid
-                            HandleRemove(input, opts.keyCode.DELETE, pos);
+                            handleRemove(input, opts.keyCode.DELETE, pos);
                             if (!opts.insertMode) { //preserve some space
                                 opts.insertMode = !opts.insertMode;
                                 setValidPosition(pos.begin, strict);
@@ -1147,22 +1162,22 @@
                         }
 
                         //needed for IE8 and below
-                        if (e && checkval != true) e.preventDefault ? e.preventDefault() : e.returnValue = false;
+                        if (e && checkval != true)  {
+                        	e.preventDefault ? e.preventDefault() : e.returnValue = false;
+
+                        	var currentCaretPos = caret(input);
+                        	var keypressResult = opts.onKeyPress.call(this, e, getBuffer(), opts);
+                        	handleOnKeyResult(input, keypressResult, currentCaretPos);
+                        }
                     }
                 }
             }
-
             function keyupEvent(e) {
                 var $input = $(this), input = this, k = e.keyCode, buffer = getBuffer();
 
+                var currentCaretPos = caret(input);
                 var keyupResult = opts.onKeyUp.call(this, e, buffer, opts);
-                if (keyupResult && keyupResult["refreshFromBuffer"] === true) {
-                    getMaskSet()["validPositions"] = {};
-                    getMaskSet()["tests"] = {};
-                    refreshFromBuffer(0, getBuffer().length);
-                    resetMaskSet(true);
-                    writeBuffer(input, getBuffer());
-                }
+                handleOnKeyResult(input, keyupResult, currentCaretPos);
                 if (k == opts.keyCode.TAB && opts.showMaskOnFocus) {
                     if ($input.hasClass('focus.inputmask') && input._valueGet().length == 0) {
                         resetMaskSet();
@@ -1510,8 +1525,9 @@
                 clearIncomplete: false, //clear the incomplete input on blur
                 aliases: {}, //aliases definitions => see jquery.inputmask.extensions.js
                 alias: null,
-                onKeyUp: $.noop, //override to implement autocomplete on certain keys for example
-                onKeyDown: $.noop, //override to implement autocomplete on certain keys for example
+                onKeyUp: $.noop, //callback to implement autocomplete on certain keys for example
+                onKeyPress: $.noop, //callback to implement autocomplete on certain keys for example
+                onKeyDown: $.noop, //callback to implement autocomplete on certain keys for example
                 onBeforeMask: undefined, //executes before masking the initial value to allow preprocessing of the initial value.  args => initialValue, opts => return processedValue
                 onBeforePaste: undefined, //executes before masking the pasted value to allow preprocessing of the pasted value.  args => pastedValue, opts => return processedValue
                 onUnMask: undefined, //executes after unmasking to allow postprocessing of the unmaskedvalue.  args => maskedValue, unmaskedValue, opts
@@ -1526,6 +1542,8 @@
                 //numeric basic properties
                 radixPoint: "", //".", // | ","
                 //numeric basic properties
+                nojumps: false, //do not jump over fixed parts in the mask
+                nojumpsThreshold: 0, //start nojumps as of
                 definitions: {
                     '9': {
                         validator: "[0-9]",
@@ -1678,7 +1696,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.41
+* Version: 3.0.42
 */
 
 (function ($) {
@@ -2018,8 +2036,6 @@
         $.extend($.inputmask.defaults, {
             //multi-masks
             multi: false, //do not alter - internal use
-            nojumps: false, //do not jump over fixed parts in the mask
-            nojumpsThreshold: 0, //start nojumps as of
             determineActiveMasksetIndex: undefined //override determineActiveMasksetIndex - args => eventType, elmasks - return int
         });
 
@@ -2043,7 +2059,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.41
+Version: 3.0.42
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2164,7 +2180,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.41
+Version: 3.0.42
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2627,7 +2643,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.41
+Version: 3.0.42
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2654,8 +2670,8 @@ Optional extensions on the jquery.inputmask base
                 mask += "~{1," + opts.integerDigits + "}";
                 if (opts.digits != undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0)) {
                     if (opts.digitsOptional)
-                        mask += "[" + opts.radixPoint + "~{" + opts.digits + "}]";
-                    else mask += opts.radixPoint + "~{" + opts.digits + "}";
+                        mask += "[" + ":" + "~{" + opts.digits + "}]";
+                    else mask += ":" + "~{" + opts.digits + "}";
                 }
                 mask += opts.suffix;
                 return mask;
@@ -2724,9 +2740,17 @@ Optional extensions on the jquery.inputmask base
                 return { pos: reformatOnly ? pos : newPos, "refreshFromBuffer": needsRefresh };
             },
             onKeyDown: function (e, buffer, opts) {
-                var $input = $(this), input = this;
-                if (opts.autoGroup && e.keyCode == opts.keyCode.DELETE || e.keyCode == opts.keyCode.BACKSPACE) {
+                if (opts.autoGroup && (e.keyCode == opts.keyCode.DELETE || e.keyCode == opts.keyCode.BACKSPACE)) {
                     return opts.postFormat(buffer, 0, true, opts);
+                }
+            },
+            onKeyPress: function (e, buffer, opts) {
+                var k = (e.which || e.charCode || e.keyCode);
+                if (k == 46 && e.shiftKey == false && opts.radixPoint == ",") k = 44;
+                if (opts.autoGroup && String.fromCharCode(k) == opts.radixPoint) {
+                    var refresh = opts.postFormat(buffer, 0, true, opts);
+                    refresh.caret = $.inArray(opts.radixPoint, buffer) + 1;
+                    return refresh;
                 }
             },
             regex: {
@@ -2786,6 +2810,18 @@ Optional extensions on the jquery.inputmask base
                     },
                     cardinality: 1,
                     prevalidator: null
+                },
+                ':': {
+                    validator: function (chrs, buffer, pos, strict, opts) {
+                        var isValid = opts.negationhandler(chrs, buffer, pos, strict, opts);
+                        if (!isValid) {
+                            var radix = "[" + $.inputmask.escapeRegex.call(this, opts.radixPoint) + "]";
+                            isValid = new RegExp(radix).test(chrs);
+                        }
+                        return isValid;
+                    },
+                    cardinality: 1,
+                    prevalidator: null
                 }
             },
             insertMode: true,
@@ -2823,7 +2859,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.41
+Version: 3.0.42
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -3010,7 +3046,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.41
+Version: 3.0.42
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
