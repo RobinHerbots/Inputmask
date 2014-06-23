@@ -184,13 +184,23 @@ The preprocessing fn should return a valid mask definition.
 You can define your own definitions to use in your mask.  
 Start by choosing a masksymbol. 
 
-##### validator
-Next define your validator.  The validator can be a regular expression or a function.
+##### validator(chrs, maskset, pos, strict, opts)
+Next define your validator.  The validator can be a regular expression or a function. 
+
+The return value of a validator can be true,  false or a command object.  
+###### Options of the command object
+- pos : position to insert
+- c : character to insert
+- caret : position of the caret
+- remove : position to remove
+- refreshFromBuffer : 
+	- true => refresh validPositions from the complete buffer
+	- { start: , end: } => refresh from start to end
 
 ##### cardinality
 Cardinality specifies how many characters are represented and validated for the definition.
 
-##### prevalidator
+##### prevalidator(chrs, maskset, pos, strict, opts)
 The prevalidator option is 
 used to validate the characters before the definition cardinality is reached. (see 'j' example)
 
@@ -244,6 +254,9 @@ $.extend($.inputmask.defaults.definitions, {
       }
 });
 ```
+
+##### placeholder
+Specify a placeholder for a definition.
 
 ### set defaults
 

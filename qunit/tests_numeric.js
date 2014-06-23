@@ -1,5 +1,24 @@
 module("Numeric.Extensions");
 
+test("€ Currency precision 2", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("numeric", {
+        groupSeparator: ",",
+        placeholder: "0",
+        autoGroup: true,
+        digits: 2,
+        digitsOptional: false,
+        prefix: "€ "
+    });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("1234");
+    equal($("#testmask").val(), "€ 1,234.00", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+
 test("integer  type 124 correct to 1234", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
@@ -144,14 +163,14 @@ test("integer alias with integerDigits 9 & autogroup - type 123456789 - gigermoc
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("integer", {
-		groupSeparator: ",",
-		autoGroup: true,
-		integerDigits: 9
-	});
+        groupSeparator: ",",
+        autoGroup: true,
+        integerDigits: 9
+    });
 
     $("#testmask")[0].focus();
     $("#testmask").Type("123456789");
-    
+
     equal($("#testmask").val(), "123,456,789", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
@@ -160,14 +179,14 @@ test("integer alias with integerDigits 9 & autogroup - type 1234567890123456789 
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("integer", {
-		groupSeparator: ",",
-		autoGroup: true,
-		integerDigits: 9
-	});
+        groupSeparator: ",",
+        autoGroup: true,
+        integerDigits: 9
+    });
 
     $("#testmask")[0].focus();
     $("#testmask").Type("1234567890123456789");
-    
+
     equal($("#testmask").val(), "123,456,789", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
@@ -176,14 +195,14 @@ test("integer alias with integerDigits 4 & autogroup - type 1234567890123456789 
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("integer", {
-		groupSeparator: ",",
-		autoGroup: true,
-		integerDigits: 4
-	});
+        groupSeparator: ",",
+        autoGroup: true,
+        integerDigits: 4
+    });
 
     $("#testmask")[0].focus();
     $("#testmask").Type("1234567890123456789");
-    
+
     equal($("#testmask").val(), "1,234", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
@@ -192,14 +211,14 @@ test("decimal alias with integerDigits 9 & autogroup - type 123456789 - gigermoc
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("decimal", {
-		groupSeparator: ",",
-		autoGroup: true,
-		integerDigits: 9
-	});
+        groupSeparator: ",",
+        autoGroup: true,
+        integerDigits: 9
+    });
 
     $("#testmask")[0].focus();
     $("#testmask").Type("123456789");
-    
+
     equal($("#testmask").val(), "123,456,789", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
@@ -208,14 +227,14 @@ test("decimal alias with integerDigits 4 & autogroup - type 1234 - gigermocas", 
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("decimal", {
-		groupSeparator: ",",
-		autoGroup: true,
-		integerDigits: 4
-	});
+        groupSeparator: ",",
+        autoGroup: true,
+        integerDigits: 4
+    });
 
     $("#testmask")[0].focus();
     $("#testmask").Type("1234");
-    
+
     equal($("#testmask").val(), "1,234", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
@@ -613,5 +632,25 @@ test("decimal alias with plus or minus & autogroup - YoussefTaghlabi", function 
     $("#testmask").SendKey("-");
 
     equal($("#testmask").val(), "-123,456", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("decimal alias with plus or minus & autogroup", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("decimal", {
+        radixPoint: ".",
+        groupSeparator: ",",
+        groupSize: 3,
+        digits: 2,
+        autoGroup: true,
+        allowPlus: true,
+        allowMinus: true
+    });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("1234.56");
+
+    equal($("#testmask").val(), "1,234.56", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });

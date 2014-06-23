@@ -24,7 +24,7 @@ Allows for using regular expressions as a mask
             },
             definitions: {
                 'r': {
-                    validator: function (chrs, buffer, pos, strict, opts) {
+                    validator: function (chrs, maskset, pos, strict, opts) {
                         function regexToken(isGroup, isQuantifier) {
                             this.matches = [];
                             this.isGroup = isGroup || false;
@@ -168,7 +168,7 @@ Allows for using regular expressions as a mask
                             analyseRegex();
                         }
 
-                        var cbuffer = buffer.slice(), regexPart = "", isValid = false, openGroupCount = 0;
+                        var cbuffer = maskset.buffer.slice(), regexPart = "", isValid = false, openGroupCount = 0;
                         cbuffer.splice(pos, 0, chrs);
                         var bufferStr = cbuffer.join('');
                         for (var i = 0; i < opts.regexTokens.length; i++) {

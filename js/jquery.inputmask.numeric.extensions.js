@@ -25,6 +25,8 @@ Optional extensions on the jquery.inputmask base
                     opts.integerDigits += mod == 0 ? seps - 1 : seps;
                 }
 
+                opts.definitions[":"].placeholder = opts.radixPoint;
+
                 var mask = opts.prefix;
                 mask += "[+]";
                 mask += "~{1," + opts.integerDigits + "}";
@@ -68,7 +70,7 @@ Optional extensions on the jquery.inputmask base
             rightAlign: true,
             postFormat: function (buffer, pos, reformatOnly, opts) {
                 var needsRefresh = false;
-                if (opts.groupSeparator == "" || ($.inArray(opts.radixPoint, buffer) != -1 && pos >= $.inArray(opts.radixPoint, buffer))) return { pos: pos };
+                if (opts.groupSeparator == "" || ($.inArray(opts.radixPoint, buffer) != -1 && pos > $.inArray(opts.radixPoint, buffer))) return { pos: pos };
                 var cbuf = buffer.slice();
                 if (!reformatOnly) {
                     cbuf.splice(pos, 0, "?"); //set position indicator
@@ -76,10 +78,11 @@ Optional extensions on the jquery.inputmask base
                 var bufVal = cbuf.join('');
                 if (opts.autoGroup || (reformatOnly && bufVal.indexOf(opts.groupSeparator) != -1)) {
                     var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
+                    needsRefresh = bufVal.indexOf(opts.groupSeparator) == 0;
                     bufVal = bufVal.replace(new RegExp(escapedGroupSeparator, "g"), '');
                     var radixSplit = bufVal.split(opts.radixPoint);
                     bufVal = radixSplit[0];
-                    if (bufVal != (opts.prefix + "?0")) {
+                    if (bufVal != (opts.prefix + "?0") && bufVal.length > (opts.groupSize + opts.prefix.length)) {
                         needsRefresh = true;
                         var reg = new RegExp('([-\+]?[\\d\?]+)([\\d\?]{' + opts.groupSize + '})');
                         while (reg.test(bufVal)) {
@@ -122,11 +125,9 @@ Optional extensions on the jquery.inputmask base
 
                     if (matchRslt.length > 0) {
                         if (buffer[matchRslt.index] == "+") {
-                            buffer.splice(matchRslt.index, 1);
-                            return { "pos": matchRslt.index, "c": "-", "refreshFromBuffer": true, "caret": pos };
+                            return { "pos": matchRslt.index, "c": "-", "remove": matchRslt.index, "caret": pos };
                         } else if (buffer[matchRslt.index] == "-") {
-                            buffer.splice(matchRslt.index, 1);
-                            return { "refreshFromBuffer": true, "caret": pos - 1 };
+                            return { "remove": matchRslt.index, "caret": pos - 1 };
                         } else {
                             return { "pos": matchRslt.index, "c": "-", "caret": pos + 1 };
                         }
@@ -136,31 +137,47 @@ Optional extensions on the jquery.inputmask base
             },
             definitions: {
                 '~': {
-                    validator: function (chrs, buffer, pos, strict, opts) {
-                        var isValid = opts.negationhandler(chrs, buffer, pos, strict, opts);
+                    validator: function (chrs, maskset, pos, strict, opts) {
+                        var isValid = opts.negationhandler(chrs, maskset.buffer, pos, strict, opts);
                         if (!isValid) {
                             isValid = strict ? new RegExp("[0-9" + $.inputmask.escapeRegex.call(this, opts.groupSeparator) + "]").test(chrs) : new RegExp("[0-9]").test(chrs);
-
-                            //handle 0 for integerpart
-                            if (isValid != false) {
-                                var matchRslt = buffer.join('').match(opts.regex.integerPart(opts)), radixPosition = $.inArray(opts.radixPoint, buffer);
-                                if (matchRslt && matchRslt["0"][0] == "0" && pos >= opts.prefix.length && (radixPosition == -1 || pos < radixPosition)) {
-                                    buffer.splice(matchRslt.index, 1);
-                                } else if (chrs == "0" && matchRslt && matchRslt["0"].length > 0 && pos == opts.prefix.length) {
-                                    return false;
+                            if (isValid === true) isValid = { pos: pos };
+                            if (isValid != false && !strict) {
+                                //handle 0 for integerpart
+                                var matchRslt = maskset.buffer.join('').match(opts.regex.integerPart(opts)), radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
+                                if (matchRslt) {
+                                    if (matchRslt["0"][0].indexOf("0") == 0 && pos >= opts.prefix.length) {
+                                        if (radixPosition == -1 || (pos <= radixPosition && maskset["validPositions"][radixPosition] == undefined)) {
+                                            maskset.buffer.splice(matchRslt.index, 1);
+                                            pos = pos > matchRslt.index ? pos - 1 : matchRslt.index;
+                                            $.extend(isValid, { "pos": pos, "remove": matchRslt.index });
+                                        } else if (pos > matchRslt.index && pos <= radixPosition) {
+                                            maskset.buffer.splice(matchRslt.index, 1);
+                                            pos = pos > matchRslt.index ? pos - 1 : matchRslt.index;
+                                            $.extend(isValid, { "pos": pos, "remove": matchRslt.index });
+                                        }
+                                    } else if (chrs = "0" && pos <= matchRslt.index) {
+                                        return false;
+                                    }
+                                }
+                                //handle overwrite when fixed precision
+                                if (opts.digitsOptional === false && pos > radixPosition) {
+                                    return { "pos": pos, "remove": pos };
                                 }
                             }
+
                             if (isValid != false && !strict && chrs != opts.radixPoint && opts.autoGroup === true) {
-                                isValid = opts.postFormat(buffer, pos, (chrs == "-" || chrs == "+") ? true : false, opts);
+                                isValid = $.extend(isValid, opts.postFormat(maskset.buffer, pos, false, opts));
                             }
                         }
+
                         return isValid;
                     },
                     cardinality: 1,
                     prevalidator: null
                 },
                 '+': {
-                    validator: function (chrs, buffer, pos, strict, opts) {
+                    validator: function (chrs, maskset, pos, strict, opts) {
                         var signed = "[";
                         if (opts.allowMinus === true) signed += "-";
                         if (opts.allowPlus === true) signed += "\+";
@@ -172,8 +189,8 @@ Optional extensions on the jquery.inputmask base
                     prevalidator: null
                 },
                 ':': {
-                    validator: function (chrs, buffer, pos, strict, opts) {
-                        var isValid = opts.negationhandler(chrs, buffer, pos, strict, opts);
+                    validator: function (chrs, maskset, pos, strict, opts) {
+                        var isValid = opts.negationhandler(chrs, maskset.buffer, pos, strict, opts);
                         if (!isValid) {
                             var radix = "[" + $.inputmask.escapeRegex.call(this, opts.radixPoint) + "]";
                             isValid = new RegExp(radix).test(chrs);
@@ -181,8 +198,10 @@ Optional extensions on the jquery.inputmask base
                         return isValid;
                     },
                     cardinality: 1,
-                    prevalidator: null
+                    prevalidator: null,
+                    placeholder: "" //radixpoint will be set in the mask function
                 }
+
             },
             insertMode: true,
             autoUnmask: false,
