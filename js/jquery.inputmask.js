@@ -1215,18 +1215,25 @@
                     return true;
                 }
 
-                var input = this, $input = $(input);
+                var input = this, $input = $(input), inputValue = input._valueGet();
                 //paste event for IE8 and lower I guess ;-)
                 if (e.type == "propertychange" && input._valueGet().length <= getMaskLength()) {
                     return true;
+                } else if (e.type == "paste") {
+                    if (window.clipboardData && window.clipboardData.getData) { // IE
+                        inputValue = window.clipboardData.getData('Text');
+                    } else if (e.originalEvent.clipboardData && e.originalEvent.clipboardData.getData) {
+                        inputValue = e.originalEvent.clipboardData.getData('text/plain');
+                    }
                 }
-                setTimeout(function () {
-                    var pasteValue = $.isFunction(opts.onBeforePaste) ? opts.onBeforePaste.call(input, input._valueGet(), opts) : input._valueGet();
-                    checkVal(input, true, false, pasteValue.split(''), true);
-                    if (isComplete(getBuffer()) === true)
-                        $input.trigger("complete");
-                    $input.click();
-                }, 0);
+
+                var pasteValue = $.isFunction(opts.onBeforePaste) ? opts.onBeforePaste.call(input, inputValue, opts) : inputValue;
+                checkVal(input, true, false, pasteValue.split(''), true);
+                $input.click();
+                if (isComplete(getBuffer()) === true)
+                    $input.trigger("complete");
+
+                return false;
             }
             function mobileInputEvent(e) {
                 if (skipInputEvent === true && e.type == "input") {

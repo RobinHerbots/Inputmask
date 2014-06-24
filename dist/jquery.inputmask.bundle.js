@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.43
+* Version: 3.0.44
 */
 
 (function ($) {
@@ -1215,18 +1215,25 @@
                     return true;
                 }
 
-                var input = this, $input = $(input);
+                var input = this, $input = $(input), inputValue = input._valueGet();
                 //paste event for IE8 and lower I guess ;-)
                 if (e.type == "propertychange" && input._valueGet().length <= getMaskLength()) {
                     return true;
+                } else if (e.type == "paste") {
+                    if (window.clipboardData && window.clipboardData.getData) { // IE
+                        inputValue = window.clipboardData.getData('Text');
+                    } else if (e.originalEvent.clipboardData && e.originalEvent.clipboardData.getData) {
+                        inputValue = e.originalEvent.clipboardData.getData('text/plain');
+                    }
                 }
-                setTimeout(function () {
-                    var pasteValue = $.isFunction(opts.onBeforePaste) ? opts.onBeforePaste.call(input, input._valueGet(), opts) : input._valueGet();
-                    checkVal(input, true, false, pasteValue.split(''), true);
-                    if (isComplete(getBuffer()) === true)
-                        $input.trigger("complete");
-                    $input.click();
-                }, 0);
+
+                var pasteValue = $.isFunction(opts.onBeforePaste) ? opts.onBeforePaste.call(input, inputValue, opts) : inputValue;
+                checkVal(input, true, false, pasteValue.split(''), true);
+                $input.click();
+                if (isComplete(getBuffer()) === true)
+                    $input.trigger("complete");
+
+                return false;
             }
             function mobileInputEvent(e) {
                 if (skipInputEvent === true && e.type == "input") {
@@ -1713,7 +1720,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.43
+* Version: 3.0.44
 */
 
 (function ($) {
@@ -2076,7 +2083,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.43
+Version: 3.0.44
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2197,7 +2204,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.43
+Version: 3.0.44
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2660,7 +2667,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.43
+Version: 3.0.44
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2895,7 +2902,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.43
+Version: 3.0.44
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -3082,7 +3089,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.43
+Version: 3.0.44
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
