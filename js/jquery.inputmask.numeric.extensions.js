@@ -156,7 +156,7 @@ Optional extensions on the jquery.inputmask base
                                             pos = pos > matchRslt.index ? pos - 1 : matchRslt.index;
                                             $.extend(isValid, { "pos": pos, "remove": matchRslt.index });
                                         }
-                                    } else if (chrs = "0" && pos <= matchRslt.index) {
+                                    } else if (chrs == "0" && pos <= matchRslt.index) {
                                         return false;
                                     }
                                 }
