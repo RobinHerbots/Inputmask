@@ -1222,7 +1222,7 @@
                 } else if (e.type == "paste") {
                     if (window.clipboardData && window.clipboardData.getData) { // IE
                         inputValue = window.clipboardData.getData('Text');
-                    } else if (e.originalEvent.clipboardData && e.originalEvent.clipboardData.getData) {
+                    } else if (e.originalEvent && e.originalEvent.clipboardData && e.originalEvent.clipboardData.getData) {
                         inputValue = e.originalEvent.clipboardData.getData('text/plain');
                     }
                 }
