@@ -44,3 +44,56 @@ test("$.inputmask.isValid email greedy => true", function () {
     var isValid = $.inputmask.isValid("some.body@mail.com", { alias: "email", greedy: true });
     equal(isValid, true, "Result " + isValid);
 });
+
+test("YoussefTaghlabi isValid(\"100\", { alias: \"integer\" }", function () {
+    var isValid = $.inputmask.isValid("100", { alias: "integer" });
+    equal(isValid, true, "Result " + isValid);
+});
+test("YoussefTaghlabi isValid(\"100.00\", { alias: \"integer\" }", function () {
+    var isValid = $.inputmask.isValid("100.00", { alias: "integer" });
+    equal(isValid, false, "Result " + isValid);
+});
+test("YoussefTaghlabi isValid(\"123\", { alias: \"decimal\" }", function () {
+    var isValid = $.inputmask.isValid("123", { alias: "decimal" });
+    equal(isValid, true, "Result " + isValid);
+});
+test("YoussefTaghlabi isValid(\"123.45\", { alias: \"decimal\" }", function () {
+    var isValid = $.inputmask.isValid("123.45", { alias: "decimal" });
+    equal(isValid, true, "Result " + isValid);
+});
+test("YoussefTaghlabi isValid(\"123456.78\", { alias: \"decimal\" }", function () {
+    var isValid = $.inputmask.isValid("123456.78", { alias: "decimal" });
+    equal(isValid, true, "Result " + isValid);
+});
+test("YoussefTaghlabi isValid(\"123,456.78\", { alias: \"decimal\" }", function () {
+    var isValid = $.inputmask.isValid("123,456.78", {
+        alias: "decimal", radixPoint: ".",
+        groupSeparator: ",",
+        groupSize: 3,
+    });
+    equal(isValid, true, "Result " + isValid);
+});
+test("YoussefTaghlabi isValid(\"12,\", { alias: \"decimal\" }", function () {
+    var isValid = $.inputmask.isValid("12,", {
+        alias: "decimal", radixPoint: ".",
+        groupSeparator: ",",
+        groupSize: 3,
+    });
+    equal(isValid, false, "Result " + isValid);
+});
+test("YoussefTaghlabi isValid(\"12,1.45\", { alias: \"decimal\" }", function () {
+    var isValid = $.inputmask.isValid("12,1.45", {
+        alias: "decimal", radixPoint: ".",
+        groupSeparator: ",",
+        groupSize: 3,
+    });
+    equal(isValid, false, "Result " + isValid);
+});
+test("YoussefTaghlabi isValid(\"12,345.67\", { alias: \"decimal\" }", function () {
+    var isValid = $.inputmask.isValid("12,345.67", {
+        alias: "decimal", radixPoint: ".",
+        groupSeparator: ",",
+        groupSize: 3,
+    });
+    equal(isValid, true, "Result " + isValid);
+});
