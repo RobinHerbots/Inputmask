@@ -1360,20 +1360,22 @@
                         }
                     }).bind("click.inputmask", function () {
                         var input = this;
-                        setTimeout(function () {
-                            var selectedCaret = caret(input), buffer = getBuffer();
-                            if (selectedCaret.begin == selectedCaret.end) {
-                                var clickPosition = isRTL ? TranslatePosition(selectedCaret.begin) : selectedCaret.begin,
-                                    lvp = getLastValidPosition(clickPosition),
-                                    lastPosition = seekNext(lvp);
-                                if (clickPosition < lastPosition) {
-                                    if (isMask(clickPosition))
-                                        caret(input, clickPosition);
-                                    else caret(input, seekNext(clickPosition));
-                                } else
-                                    caret(input, lastPosition);
-                            }
-                        }, 0);
+                        if ($(input).is(":focus")) {
+                            setTimeout(function() {
+                                var selectedCaret = caret(input), buffer = getBuffer();
+                                if (selectedCaret.begin == selectedCaret.end) {
+                                    var clickPosition = isRTL ? TranslatePosition(selectedCaret.begin) : selectedCaret.begin,
+                                        lvp = getLastValidPosition(clickPosition),
+                                        lastPosition = seekNext(lvp);
+                                    if (clickPosition < lastPosition) {
+                                        if (isMask(clickPosition))
+                                            caret(input, clickPosition);
+                                        else caret(input, seekNext(clickPosition));
+                                    } else
+                                        caret(input, lastPosition);
+                                }
+                            }, 0);
+                        }
                     }).bind('dblclick.inputmask', function () {
                         var input = this;
                         setTimeout(function () {
@@ -1480,7 +1482,11 @@
                         }
                         var valueBuffer = actionObj["value"].split('');
                         checkVal($el, false, true, isRTL ? valueBuffer.reverse() : valueBuffer);
-                        return isComplete(getBuffer());
+                        var buffer = getBuffer();
+                        var rl = determineLastRequiredPosition();
+                        buffer.length = rl;
+
+                        return isComplete(buffer) && actionObj["value"] == buffer.join('');
                     case "getemptymask":
                         $el = $(actionObj["el"]);
                         maskset = $el.data('_inputmask')['maskset'];
