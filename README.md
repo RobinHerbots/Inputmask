@@ -473,13 +473,6 @@ $(document).ready(function(){
 });
 ```
 
-#### getLastValidPosition
-
-With this call-in you can override the default implementation of the getLastValidPosition Args => maskset, closestTo, opts  
-Return => position (int)
-
-See the jquery.inputmask.numeric.extensions.js for an example.
-
 #### rightAlign
 
 Align the input to the right
@@ -622,24 +615,6 @@ $(document).ready(function(){
 });
 ```
 #=========== TODO ===========
-
-
-
-#### skipRadixDance
-
-If you define a radixPoint the caret will always jump to the integer part, until you type the radixpoint.  
-
-```javascript
-$(document).ready(function(){
-    $(selector).inputmask('€ 999.999.999,99', { numericInput: true, radixPoint: "," });
-});
-```
-
-This behavior can be skipped by setting the skipRadixDance to true.
-
-
-
-
 
 
 ### getemptymask command
@@ -842,11 +817,6 @@ $(document).ready(function(){
    $(selector).inputmask("integer");
 });
 ```
-
-RadixDance
-
-With the decimal mask the caret will always jump to the integer part, until you type the radixpoint.  
-There is autocompletion on tab with decimal numbers.  You can disable this behaviour by setting the skipRadixDance to true.
 
 Define the radixpoint
 

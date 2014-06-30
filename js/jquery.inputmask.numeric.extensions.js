@@ -51,22 +51,6 @@ Optional extensions on the jquery.inputmask base
             integerDigits: "+", //number of integerDigits
             prefix: "",
             suffix: "",
-            skipRadixDance: false, //disable radixpoint caret positioning
-            getLastValidPosition: function (maskset, closestTo, opts) {
-                var lastValidPosition = -1, valids = maskset["validPositions"];
-                for (var posNdx in valids) {
-                    var psNdx = parseInt(posNdx);
-                    if (psNdx > lastValidPosition) lastValidPosition = psNdx;
-                }
-
-                if (closestTo != undefined) {
-                    var buffer = maskset["buffer"];
-                    if (opts.skipRadixDance === false && opts.radixPoint != "" && $.inArray(opts.radixPoint, buffer) != -1)
-                        lastValidPosition = $.inArray(opts.radixPoint, buffer);
-                }
-
-                return lastValidPosition;
-            },
             rightAlign: true,
             postFormat: function (buffer, pos, reformatOnly, opts) {
                 var needsRefresh = false;

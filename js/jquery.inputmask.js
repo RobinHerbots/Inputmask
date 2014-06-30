@@ -301,20 +301,16 @@
 
             function getLastValidPosition(closestTo) {
                 var maskset = getMaskSet(), lastValidPosition = -1, valids = maskset["validPositions"];
-                if ($.isFunction(opts.getLastValidPosition))
-                    lastValidPosition = opts.getLastValidPosition.call($el, maskset, closestTo, opts);
-                else {
-                    if (closestTo == undefined) closestTo = -1;
-                    var before = lastValidPosition, after = lastValidPosition;
-                    for (var posNdx in valids) {
-                        var psNdx = parseInt(posNdx);
-                        if (closestTo == -1 || valids[psNdx]["match"].fn != null) {
-                            if (psNdx < closestTo) before = psNdx;
-                            if (psNdx >= closestTo) after = psNdx;
-                        }
+                if (closestTo == undefined) closestTo = -1;
+                var before = lastValidPosition, after = lastValidPosition;
+                for (var posNdx in valids) {
+                    var psNdx = parseInt(posNdx);
+                    if (closestTo == -1 || valids[psNdx]["match"].fn != null) {
+                        if (psNdx < closestTo) before = psNdx;
+                        if (psNdx >= closestTo) after = psNdx;
                     }
-                    lastValidPosition = (closestTo - before) > 1 || after < closestTo ? before : after;
                 }
+                lastValidPosition = (closestTo - before) > 1 || after < closestTo ? before : after;
                 return lastValidPosition;
             }
 
@@ -1018,9 +1014,9 @@
                 }
 
                 stripValidPositions(pos.begin, pos.end);
-                var firstMaskPos = seekNext(-1);
-                if (getLastValidPosition() < firstMaskPos) {
-                    getMaskSet()["p"] = firstMaskPos;
+                var firstMaskedPos = getLastValidPosition(pos.begin);
+                if (firstMaskedPos < pos.begin) {
+                    getMaskSet()["p"] = seekNext(firstMaskedPos);
                 } else {
                     getMaskSet()["p"] = pos.begin;
                 }
@@ -1361,8 +1357,8 @@
                     }).bind("click.inputmask", function () {
                         var input = this;
                         if ($(input).is(":focus")) {
-                            setTimeout(function() {
-                                var selectedCaret = caret(input), buffer = getBuffer();
+                            setTimeout(function () {
+                                var selectedCaret = caret(input);
                                 if (selectedCaret.begin == selectedCaret.end) {
                                     var clickPosition = isRTL ? TranslatePosition(selectedCaret.begin) : selectedCaret.begin,
                                         lvp = getLastValidPosition(clickPosition),
@@ -1567,7 +1563,6 @@
                 skipOptionalPartCharacter: " ", //a character which can be used to skip an optional part of a mask
                 showTooltip: false, //show the activemask as tooltip
                 numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
-                getLastValidPosition: undefined, //override getLastValidPosition - args => maskset, closestTo, opts - return position (int)
                 rightAlign: false, //align to the right
                 //numeric basic properties
                 radixPoint: "", //".", // | ","
