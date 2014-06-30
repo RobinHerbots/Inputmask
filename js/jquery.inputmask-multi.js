@@ -146,7 +146,7 @@
                     el.value = value;
                 }
                 if ($.inArray(eventType, ["blur", "focus"]) == -1) {
-                    if ($(elmasks[activeMasksetIndex]).hasClass("focus.inputmask")) {
+                    if ($(elmasks[activeMasksetIndex]).hasClass("focus-inputmask")) {
                         var activeCaret = mcaret(elmasks[activeMasksetIndex]);
                         mcaret(el, activeCaret.begin, activeCaret.end);
                     }
@@ -307,7 +307,7 @@
                         el._valueSet(unmaskedvalue($el));
                         //unbind all events
                         $el.unbind(".inputmask");
-                        $el.removeClass('focus.inputmask');
+                        $el.removeClass('focus-inputmask');
                         //clear data
                         $el.removeData('_inputmask');
                         //restore the value property

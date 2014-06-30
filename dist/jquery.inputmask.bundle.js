@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.46
+* Version: 3.0.47
 */
 
 (function ($) {
@@ -1196,7 +1196,7 @@
                 var keyupResult = opts.onKeyUp.call(this, e, buffer, opts);
                 handleOnKeyResult(input, keyupResult, currentCaretPos);
                 if (k == opts.keyCode.TAB && opts.showMaskOnFocus) {
-                    if ($input.hasClass('focus.inputmask') && input._valueGet().length == 0) {
+                    if ($input.hasClass('focus-inputmask') && input._valueGet().length == 0) {
                         resetMaskSet();
                         buffer = getBuffer();
                         writeBuffer(input, buffer);
@@ -1292,7 +1292,7 @@
 
                     //unbind all events - to make sure that no other mask will interfere when re-masking
                     $el.unbind(".inputmask");
-                    $el.removeClass('focus.inputmask');
+                    $el.removeClass('focus-inputmask');
                     //bind events
                     $el.closest('form').bind("submit", function () { //trigger change on submit if any
                         if (valueOnFocus != getBuffer().join('')) {
@@ -1305,7 +1305,7 @@
                     });
                     $el.bind("mouseenter.inputmask", function () {
                         var $input = $(this), input = this;
-                        if (!$input.hasClass('focus.inputmask') && opts.showMaskOnHover) {
+                        if (!$input.hasClass('focus-inputmask') && opts.showMaskOnHover) {
                             if (input._valueGet() != getBuffer().join('')) {
                                 writeBuffer(input, getBuffer());
                             }
@@ -1314,7 +1314,7 @@
                         var $input = $(this), input = this;
                         if ($input.data('_inputmask')) {
                             var nptValue = input._valueGet(), buffer = getBuffer();
-                            $input.removeClass('focus.inputmask');
+                            $input.removeClass('focus-inputmask');
                             if (valueOnFocus != getBuffer().join('')) {
                                 $input.change();
                             }
@@ -1340,17 +1340,17 @@
                         }
                     }).bind("focus.inputmask", function () {
                         var $input = $(this), input = this, nptValue = input._valueGet();
-                        if (opts.showMaskOnFocus && !$input.hasClass('focus.inputmask') && (!opts.showMaskOnHover || (opts.showMaskOnHover && nptValue == ''))) {
+                        if (opts.showMaskOnFocus && !$input.hasClass('focus-inputmask') && (!opts.showMaskOnHover || (opts.showMaskOnHover && nptValue == ''))) {
                             if (input._valueGet() != getBuffer().join('')) {
                                 writeBuffer(input, getBuffer(), seekNext(getLastValidPosition()));
                             }
                         }
-                        $input.addClass('focus.inputmask');
+                        $input.addClass('focus-inputmask');
                         valueOnFocus = getBuffer().join('');
                     }).bind("mouseleave.inputmask", function () {
                         var $input = $(this), input = this;
                         if (opts.clearMaskOnLostFocus) {
-                            if (!$input.hasClass('focus.inputmask') && input._valueGet() != $input.attr("placeholder")) {
+                            if (!$input.hasClass('focus-inputmask') && input._valueGet() != $input.attr("placeholder")) {
                                 if (input._valueGet() == getBufferTemplate().join('') || input._valueGet() == '')
                                     input._valueSet('');
                                 else { //clearout optional tail of the mask
@@ -1417,7 +1417,7 @@
                     } catch (e) {
                     }
                     if (activeElement === el) { //position the caret when in focus
-                        $el.addClass('focus.inputmask');
+                        $el.addClass('focus-inputmask');
                         caret(el, seekNext(getLastValidPosition()));
                     } else {
                         if (isComplete(getBuffer()) === false) {
@@ -1501,7 +1501,7 @@
                         el._valueSet(unmaskedvalue($el));
                         //unbind all events
                         $el.unbind(".inputmask");
-                        $el.removeClass('focus.inputmask');
+                        $el.removeClass('focus-inputmask');
                         //clear data
                         $el.removeData('_inputmask');
                         //restore the value property
@@ -1726,7 +1726,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.46
+* Version: 3.0.47
 */
 
 (function ($) {
@@ -1869,7 +1869,7 @@
                     el.value = value;
                 }
                 if ($.inArray(eventType, ["blur", "focus"]) == -1) {
-                    if ($(elmasks[activeMasksetIndex]).hasClass("focus.inputmask")) {
+                    if ($(elmasks[activeMasksetIndex]).hasClass("focus-inputmask")) {
                         var activeCaret = mcaret(elmasks[activeMasksetIndex]);
                         mcaret(el, activeCaret.begin, activeCaret.end);
                     }
@@ -2030,7 +2030,7 @@
                         el._valueSet(unmaskedvalue($el));
                         //unbind all events
                         $el.unbind(".inputmask");
-                        $el.removeClass('focus.inputmask');
+                        $el.removeClass('focus-inputmask');
                         //clear data
                         $el.removeData('_inputmask');
                         //restore the value property
@@ -2089,7 +2089,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.46
+Version: 3.0.47
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2210,7 +2210,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.46
+Version: 3.0.47
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2673,7 +2673,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.46
+Version: 3.0.47
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2908,7 +2908,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.46
+Version: 3.0.47
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -3095,7 +3095,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.46
+Version: 3.0.47
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
