@@ -197,7 +197,11 @@ Optional extensions on the jquery.inputmask base
                 return Number(processValue);
             },
             isComplete: function (buffer, opts) {
-                var maskedValue = buffer.join('');
+                var maskedValue = buffer.join(''), bufClone = buffer.slice();
+                //verify separator positions
+                opts.postFormat(bufClone, 0, true, opts);
+                if (bufClone.join('') != maskedValue) return false;
+
                 var processValue = maskedValue.replace(opts.prefix, "");
                 processValue = processValue.replace(opts.suffix, "");
                 processValue = processValue.replace(new RegExp(opts.groupSeparator, "g"), "");
