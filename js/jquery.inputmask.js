@@ -1127,9 +1127,10 @@
                                 forwardPosition = valResult.caret;
                             else {
                                 var vps = getMaskSet()["validPositions"];
-                                if (vps[p + 1] != undefined && getTestTemplate(pos + 1, vps[p].locator.slice(), p)["match"].def != vps[p + 1]["match"].def)
+                                if (vps[p + 1] != undefined && getTests(p + 1, vps[p].locator.slice(), p).length > 1)
                                     forwardPosition = p + 1;
-                                else forwardPosition = seekNext(p);
+                                else
+                                    forwardPosition = seekNext(p);
                             }
                             getMaskSet()["p"] = forwardPosition; //needed for checkval
                         }
