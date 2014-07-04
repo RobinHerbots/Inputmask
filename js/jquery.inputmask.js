@@ -988,14 +988,11 @@
 
             function handleRemove(input, k, pos) {
                 if (opts.numericInput || isRTL) {
-                    switch (k) {
-                        case opts.keyCode.BACKSPACE:
-                            k = opts.keyCode.DELETE;
-                            break;
-                        case opts.keyCode.DELETE:
-                            k = opts.keyCode.BACKSPACE;
-                            break;
-                    }
+                    if (k == opts.keyCode.BACKSPACE)
+                        k = opts.keyCode.DELETE;
+                    else if (k == opts.keyCode.DELETE)
+                        k = opts.keyCode.BACKSPACE;
+
                     if (isRTL) {
                         var pend = pos.end;
                         pos.end = pos.begin;
@@ -1003,15 +1000,10 @@
                     }
                 }
 
-                if (pos.begin == pos.end) {
-                    if (k == opts.keyCode.BACKSPACE)
-                        pos.begin = seekPrevious(pos.begin);
-                    else if (k == opts.keyCode.DELETE)
-                        pos.end++;
-                } else if (pos.end - pos.begin == 1 && !opts.insertMode) {
-                    if (k == opts.keyCode.BACKSPACE)
-                        pos.begin--;
-                }
+                if (k == opts.keyCode.BACKSPACE && pos.end - pos.begin <= 1)
+                    pos.begin = seekPrevious(pos.begin);
+                else if (k == opts.keyCode.DELETE && pos.begin == pos.end)
+                    pos.end++;
 
                 stripValidPositions(pos.begin, pos.end);
                 var firstMaskedPos = getLastValidPosition(pos.begin);
@@ -1675,6 +1667,7 @@
                         }
                         return $.isArray(opts.mask);
                     default:
+                        resolveAlias(opts.alias, options, opts);
                         //check if the fn is an alias
                         if (!resolveAlias(fn, options, opts)) {
                             //maybe fn is a mask so we try

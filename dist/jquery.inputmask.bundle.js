@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.48
+* Version: 3.0.49
 */
 
 (function ($) {
@@ -988,14 +988,11 @@
 
             function handleRemove(input, k, pos) {
                 if (opts.numericInput || isRTL) {
-                    switch (k) {
-                        case opts.keyCode.BACKSPACE:
-                            k = opts.keyCode.DELETE;
-                            break;
-                        case opts.keyCode.DELETE:
-                            k = opts.keyCode.BACKSPACE;
-                            break;
-                    }
+                    if (k == opts.keyCode.BACKSPACE)
+                        k = opts.keyCode.DELETE;
+                    else if (k == opts.keyCode.DELETE)
+                        k = opts.keyCode.BACKSPACE;
+
                     if (isRTL) {
                         var pend = pos.end;
                         pos.end = pos.begin;
@@ -1003,15 +1000,10 @@
                     }
                 }
 
-                if (pos.begin == pos.end) {
-                    if (k == opts.keyCode.BACKSPACE)
-                        pos.begin = seekPrevious(pos.begin);
-                    else if (k == opts.keyCode.DELETE)
-                        pos.end++;
-                } else if (pos.end - pos.begin == 1 && !opts.insertMode) {
-                    if (k == opts.keyCode.BACKSPACE)
-                        pos.begin--;
-                }
+                if (k == opts.keyCode.BACKSPACE && pos.end - pos.begin <= 1)
+                    pos.begin = seekPrevious(pos.begin);
+                else if (k == opts.keyCode.DELETE && pos.begin == pos.end)
+                    pos.end++;
 
                 stripValidPositions(pos.begin, pos.end);
                 var firstMaskedPos = getLastValidPosition(pos.begin);
@@ -1675,6 +1667,7 @@
                         }
                         return $.isArray(opts.mask);
                     default:
+                        resolveAlias(opts.alias, options, opts);
                         //check if the fn is an alias
                         if (!resolveAlias(fn, options, opts)) {
                             //maybe fn is a mask so we try
@@ -1721,7 +1714,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.48
+* Version: 3.0.49
 */
 
 (function ($) {
@@ -2084,7 +2077,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.48
+Version: 3.0.49
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2205,7 +2198,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.48
+Version: 3.0.49
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2668,7 +2661,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.48
+Version: 3.0.49
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2891,7 +2884,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.48
+Version: 3.0.49
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -3078,7 +3071,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.48
+Version: 3.0.49
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
