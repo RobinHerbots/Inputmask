@@ -192,9 +192,9 @@ Optional extensions on the jquery.inputmask base
             onUnMask: function (maskedValue, unmaskedValue, opts) {
                 var processValue = maskedValue.replace(opts.prefix, "");
                 processValue = processValue.replace(opts.suffix, "");
-                processValue = processValue.replace(new RegExp(opts.groupSeparator, "g"), "");
-                processValue = processValue.replace(opts.radixPoint, ".");
-                return Number(processValue);
+                processValue = processValue.replace(new RegExp($.inputmask.escapeRegex.call(this, opts.groupSeparator), "g"), "");
+                processValue = processValue.replace($.inputmask.escapeRegex.call(this, opts.radixPoint), ".");
+                return processValue;
             },
             isComplete: function (buffer, opts) {
                 var maskedValue = buffer.join(''), bufClone = buffer.slice();
@@ -204,8 +204,8 @@ Optional extensions on the jquery.inputmask base
 
                 var processValue = maskedValue.replace(opts.prefix, "");
                 processValue = processValue.replace(opts.suffix, "");
-                processValue = processValue.replace(new RegExp(opts.groupSeparator, "g"), "");
-                processValue = processValue.replace(opts.radixPoint, ".");
+                processValue = processValue.replace(new RegExp($.inputmask.escapeRegex.call(this, opts.groupSeparator), "g"), "");
+                processValue = processValue.replace($.inputmask.escapeRegex.call(this, opts.radixPoint), ".");
                 return isFinite(processValue);
             },
             onBeforeMask: function (initialValue, opts) {

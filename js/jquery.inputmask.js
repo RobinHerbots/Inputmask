@@ -749,7 +749,10 @@
                     }
                     var unmaskedValue = (isRTL ? umValue.reverse() : umValue).join('');
                     var bufferValue = (isRTL ? getBuffer().reverse() : getBuffer()).join('');
-                    return $.isFunction(opts.onUnMask) ? opts.onUnMask.call($input, bufferValue, unmaskedValue, opts) : unmaskedValue;
+                    if ($.isFunction(opts.onUnMask)) {
+                        unmaskedValue = opts.onUnMask.call($input, bufferValue, unmaskedValue, opts);
+                    }
+                    return unmaskedValue;
                 } else {
                     return $input[0]._valueGet();
                 }
@@ -1197,7 +1200,6 @@
                     }
                 }
             }
-
             function pasteEvent(e) {
                 if (skipInputEvent === true && e.type == "input") {
                     skipInputEvent = false;
