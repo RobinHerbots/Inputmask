@@ -75,7 +75,7 @@ Optional extensions on the jquery.inputmask base
 
                 return currentyear;
             },
-            onKeyUp: function (e, buffer, opts) {
+            onKeyUp: function (e, buffer, caretPos, opts) {
                 var $input = $(this);
                 if (e.ctrlKey && e.keyCode == opts.keyCode.RIGHT) {
                     var today = new Date();
@@ -270,7 +270,7 @@ Optional extensions on the jquery.inputmask base
                 val1: new RegExp("0[1-9]|1[012]") //month
             },
             leapday: "02/29/",
-            onKeyUp: function (e, buffer, opts) {
+            onKeyUp: function (e, buffer, caretPos, opts) {
                 var $input = $(this);
                 if (e.ctrlKey && e.keyCode == opts.keyCode.RIGHT) {
                     var today = new Date();
@@ -283,7 +283,7 @@ Optional extensions on the jquery.inputmask base
             placeholder: "yyyy/mm/dd",
             alias: "mm/dd/yyyy",
             leapday: "/02/29",
-            onKeyUp: function (e, buffer, opts) {
+            onKeyUp: function (e, buffer, caretPos, opts) {
                 var $input = $(this);
                 if (e.ctrlKey && e.keyCode == opts.keyCode.RIGHT) {
                     var today = new Date();

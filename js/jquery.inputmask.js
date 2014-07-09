@@ -728,8 +728,11 @@
                         strict = strict || (ndx > 0 && ndx > getMaskSet()["p"]);
                     }
                 });
-                if (writeOut)
+                if (writeOut) {
+                    var keypressResult = opts.onKeyPress.call(this, undefined, getBuffer(), 0, opts);
+                    handleOnKeyResult(input, keypressResult);
                     writeBuffer(input, getBuffer(), $(input).is(":focus") ? seekNext(getLastValidPosition(0)) : undefined);
+                }
             }
 
             function escapeRegex(str) {
@@ -1023,8 +1026,10 @@
                     refreshFromBuffer(refresh === true ? refresh : refresh["start"], refresh["end"]);
 
                     resetMaskSet(true);
-                    writeBuffer(input, getBuffer());
-                    caret(input, keyResult.caret || caretPos.begin, keyResult.caret || caretPos.end);
+                    if (caretPos != undefined) {
+                        writeBuffer(input, getBuffer());
+                        caret(input, keyResult.caret || caretPos.begin, keyResult.caret || caretPos.end);
+                    }
                 }
             }
 
@@ -1074,7 +1079,7 @@
                 }
 
                 var currentCaretPos = caret(input);
-                var keydownResult = opts.onKeyDown.call(this, e, getBuffer(), opts);
+                var keydownResult = opts.onKeyDown.call(this, e, getBuffer(), currentCaretPos.begin, opts);
                 handleOnKeyResult(input, keydownResult, currentCaretPos);
                 ignorable = $.inArray(k, opts.ignorables) != -1;
             }
@@ -1171,7 +1176,7 @@
                             e.preventDefault ? e.preventDefault() : e.returnValue = false;
 
                             var currentCaretPos = caret(input);
-                            var keypressResult = opts.onKeyPress.call(this, e, getBuffer(), opts);
+                            var keypressResult = opts.onKeyPress.call(this, e, getBuffer(), currentCaretPos.begin, opts);
                             handleOnKeyResult(input, keypressResult, currentCaretPos);
                         }
                         var temp;
@@ -1185,7 +1190,7 @@
                 var $input = $(this), input = this, k = e.keyCode, buffer = getBuffer();
 
                 var currentCaretPos = caret(input);
-                var keyupResult = opts.onKeyUp.call(this, e, buffer, opts);
+                var keyupResult = opts.onKeyUp.call(this, e, buffer, currentCaretPos.begin, opts);
                 handleOnKeyResult(input, keyupResult, currentCaretPos);
                 if (k == opts.keyCode.TAB && opts.showMaskOnFocus) {
                     if ($input.hasClass('focus-inputmask') && input._valueGet().length == 0) {

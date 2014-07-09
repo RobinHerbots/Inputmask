@@ -593,7 +593,7 @@ test("decimal alias with groupseparator backspace - YoussefTaghlabi", function (
     $("#testmask").remove();
 });
 
-test("decimal alias with plus or minus & autogroup - YoussefTaghlabi", function () {
+test("decimal alias with plus or minus & autogroup - type -123456 - YoussefTaghlabi", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("decimal", {
@@ -613,7 +613,7 @@ test("decimal alias with plus or minus & autogroup - YoussefTaghlabi", function 
     $("#testmask").remove();
 });
 
-test("decimal alias with plus or minus & autogroup - YoussefTaghlabi", function () {
+test("decimal alias with plus or minus & autogroup - type 123465 - - YoussefTaghlabi", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("decimal", {
@@ -652,5 +652,22 @@ test("decimal alias with plus or minus & autogroup", function () {
     $("#testmask").Type("1234.56");
 
     equal($("#testmask").val(), "1,234.56", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("decimal alias set value with val() - kochelmonster", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("decimal", {
+        radixPoint: ",",
+        groupSeparator: ".",
+        digits: 2,
+        autoGroup: true,
+        suffix: ' €'
+    });
+
+    $("#testmask").val("39.399.392,22 €");
+
+    equal($("#testmask").val(), "39.399.392,22 €", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
