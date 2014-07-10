@@ -194,7 +194,7 @@ Optional extensions on the jquery.inputmask base
                 var processValue = maskedValue.replace(opts.prefix, "");
                 processValue = processValue.replace(opts.suffix, "");
                 processValue = processValue.replace(new RegExp($.inputmask.escapeRegex.call(this, opts.groupSeparator), "g"), "");
-                processValue = processValue.replace($.inputmask.escapeRegex.call(this, opts.radixPoint), ".");
+                //processValue = processValue.replace($.inputmask.escapeRegex.call(this, opts.radixPoint), ".");
                 return processValue;
             },
             isComplete: function (buffer, opts) {

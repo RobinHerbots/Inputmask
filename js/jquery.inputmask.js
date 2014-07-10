@@ -742,8 +742,8 @@
             function truncateInput(inputValue) {
                 return inputValue.replace(new RegExp("(" + escapeRegex(getBufferTemplate().join('')) + ")*$"), "");
             }
-            function unmaskedvalue($input, skipDatepickerCheck) {
-                if ($input.data('_inputmask') && (skipDatepickerCheck === true || !$input.hasClass('hasDatepicker'))) {
+            function unmaskedvalue($input) {
+                if ($input.data('_inputmask') && !$input.hasClass('hasDatepicker')) {
                     var umValue = [], vps = getMaskSet()["validPositions"];
                     for (var pndx in vps) {
                         if (vps[pndx]["match"] && vps[pndx]["match"].fn != null) {
@@ -1294,6 +1294,9 @@
                         if (valueOnFocus != getBuffer().join('')) {
                             $el.change();
                         }
+                        if (opts.autoUnmask && opts.removeMaskOnSubmit) {
+                            $el.inputmask("remove");
+                        }
                     }).bind('reset', function () {
                         setTimeout(function () {
                             $el.trigger("setvalue");
@@ -1448,7 +1451,7 @@
                         maskset = $el.data('_inputmask')['maskset'];
                         opts = $el.data('_inputmask')['opts'];
                         isRTL = actionObj["$input"].data('_inputmask')['isRTL'];
-                        return unmaskedvalue(actionObj["$input"], actionObj["skipDatepickerCheck"]);
+                        return unmaskedvalue(actionObj["$input"]);
                     case "mask":
                         valueOnFocus = getBuffer().join('');
                         mask(actionObj["el"]);
@@ -1546,6 +1549,7 @@
                 repeat: 0, //repetitions of the mask: * ~ forever, otherwise specify an integer
                 greedy: true, //true: allocated buffer for the mask and repetitions - false: allocate only if needed
                 autoUnmask: false, //automatically unmask when retrieving the value with $.fn.val or value if the browser supports __lookupGetter__ or getOwnPropertyDescriptor
+                removeMaskOnSubmit: false, //remove the mask before submitting the form.  Use in combination with autoUnmask: true
                 clearMaskOnLostFocus: true,
                 insertMode: true, //insert the input or overwrite the input
                 clearIncomplete: false, //clear the incomplete input on blur

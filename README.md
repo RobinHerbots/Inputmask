@@ -345,6 +345,8 @@ $(document).ready(function(){
 With the non-greedy option set to false, you can specify * as repeat.  This makes an endless repeat.
 
 #### autoUnmask
+#### removeMaskOnSubmit
+Remove the mask before submitting the form.  Use in combination with autoUnmask: true
 #### clearMaskOnLostFocus
 
 Remove the empty mask on blur or when not empty removes the optional trailing part
