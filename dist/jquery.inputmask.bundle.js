@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.55
+* Version: 3.0.56
 */
 
 (function ($) {
@@ -1385,8 +1385,6 @@
                         var input = this;
                         checkVal(input, true);
                         valueOnFocus = getBuffer().join('');
-                        if (input._valueGet() == getBufferTemplate().join(''))
-                            input._valueSet('');
                     }).bind('complete.inputmask', opts.oncomplete
                     ).bind('incomplete.inputmask', opts.onincomplete
                     ).bind('cleared.inputmask', opts.oncleared);
@@ -1415,23 +1413,22 @@
                         activeElement = document.activeElement;
                     } catch (e) {
                     }
+                    if (isComplete(getBuffer()) === false) {
+                        if (opts.clearIncomplete)
+                            resetMaskSet();
+                    }
+                    if (opts.clearMaskOnLostFocus) {
+                        if (getBuffer().join('') == getBufferTemplate().join('')) {
+                            el._valueSet('');
+                        } else {
+                            clearOptionalTail(el);
+                        }
+                    } else {
+                        writeBuffer(el, getBuffer());
+                    }
                     if (activeElement === el) { //position the caret when in focus
                         $el.addClass('focus-inputmask');
                         caret(el, seekNext(getLastValidPosition()));
-                    } else {
-                        if (isComplete(getBuffer()) === false) {
-                            if (opts.clearIncomplete)
-                                resetMaskSet();
-                        }
-                        if (opts.clearMaskOnLostFocus) {
-                            if (getBuffer().join('') == getBufferTemplate().join('')) {
-                                el._valueSet('');
-                            } else {
-                                clearOptionalTail(el);
-                            }
-                        } else {
-                            writeBuffer(el, getBuffer());
-                        }
                     }
 
                     installEventRuler(el);
@@ -1726,7 +1723,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.55
+* Version: 3.0.56
 */
 
 (function ($) {
@@ -2089,7 +2086,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.55
+Version: 3.0.56
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2210,7 +2207,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.55
+Version: 3.0.56
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2698,7 +2695,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.55
+Version: 3.0.56
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2747,7 +2744,7 @@ Optional extensions on the jquery.inputmask base
             prefix: "",
             suffix: "",
             rightAlign: true,
-            postFormat: function (buffer, pos, reformatOnly, opts) {
+            postFormat: function (buffer, pos, reformatOnly, opts) {  //this needs to be removed // this is crap
                 var needsRefresh = false, charAtPos = buffer[pos];
                 if (opts.groupSeparator == "" ||
                     ($.inArray(opts.radixPoint, buffer) != -1 && pos >= $.inArray(opts.radixPoint, buffer)) ||
@@ -2942,7 +2939,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.55
+Version: 3.0.56
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -3129,7 +3126,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.55
+Version: 3.0.56
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks

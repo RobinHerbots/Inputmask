@@ -52,7 +52,7 @@ Optional extensions on the jquery.inputmask base
             prefix: "",
             suffix: "",
             rightAlign: true,
-            postFormat: function (buffer, pos, reformatOnly, opts) {
+            postFormat: function (buffer, pos, reformatOnly, opts) {  //this needs to be removed // this is crap
                 var needsRefresh = false, charAtPos = buffer[pos];
                 if (opts.groupSeparator == "" ||
                     ($.inArray(opts.radixPoint, buffer) != -1 && pos >= $.inArray(opts.radixPoint, buffer)) ||

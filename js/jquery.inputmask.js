@@ -1385,8 +1385,6 @@
                         var input = this;
                         checkVal(input, true);
                         valueOnFocus = getBuffer().join('');
-                        if (input._valueGet() == getBufferTemplate().join(''))
-                            input._valueSet('');
                     }).bind('complete.inputmask', opts.oncomplete
                     ).bind('incomplete.inputmask', opts.onincomplete
                     ).bind('cleared.inputmask', opts.oncleared);
@@ -1415,23 +1413,22 @@
                         activeElement = document.activeElement;
                     } catch (e) {
                     }
+                    if (isComplete(getBuffer()) === false) {
+                        if (opts.clearIncomplete)
+                            resetMaskSet();
+                    }
+                    if (opts.clearMaskOnLostFocus) {
+                        if (getBuffer().join('') == getBufferTemplate().join('')) {
+                            el._valueSet('');
+                        } else {
+                            clearOptionalTail(el);
+                        }
+                    } else {
+                        writeBuffer(el, getBuffer());
+                    }
                     if (activeElement === el) { //position the caret when in focus
                         $el.addClass('focus-inputmask');
                         caret(el, seekNext(getLastValidPosition()));
-                    } else {
-                        if (isComplete(getBuffer()) === false) {
-                            if (opts.clearIncomplete)
-                                resetMaskSet();
-                        }
-                        if (opts.clearMaskOnLostFocus) {
-                            if (getBuffer().join('') == getBufferTemplate().join('')) {
-                                el._valueSet('');
-                            } else {
-                                clearOptionalTail(el);
-                            }
-                        } else {
-                            writeBuffer(el, getBuffer());
-                        }
                     }
 
                     installEventRuler(el);
