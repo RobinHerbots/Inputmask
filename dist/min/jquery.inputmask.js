@@ -3,7 +3,7 @@
  http://github.com/RobinHerbots/jquery.inputmask
  Copyright (c) 2010 - 2014 Robin Herbots
  Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
- Version: 3.0.54
+ Version: 3.0.55
 */
 (function(d){if(void 0===d.fn.inputmask){var T=function(d){var e=document.createElement("input");d="on"+d;var b=d in e;b||(e.setAttribute(d,"return;"),b="function"==typeof e[d]);return b},G=function(c,e,b){return(c=b.aliases[c])?(c.alias&&G(c.alias,void 0,b),d.extend(!0,b,c),d.extend(!0,b,e),!0):!1},J=function(c){function e(b){function d(b,e,c,l){this.matches=[];this.isGroup=b||!1;this.isOptional=e||!1;this.isQuantifier=c||!1;this.isAlternator=l||!1;this.quantifier={min:1,max:1}}function e(b,d,l){var g=
 c.definitions[d],L=0==b.matches.length;l=void 0!=l?l:b.matches.length;if(g&&!E){for(var r=g.prevalidator,y=r?r.length:0,w=1;w<g.cardinality;w++){var t=y>=w?r[w-1]:[],v=t.validator,t=t.cardinality;b.matches.splice(l++,0,{fn:v?"string"==typeof v?RegExp(v):new function(){this.test=v}:/./,cardinality:t?t:1,optionality:b.isOptional,newBlockMarker:L,casing:g.casing,def:g.definitionSymbol||d,placeholder:g.placeholder})}b.matches.splice(l++,0,{fn:g.validator?"string"==typeof g.validator?RegExp(g.validator):

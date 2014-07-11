@@ -179,6 +179,9 @@ Optional extensions on the jquery.inputmask base
                         if (!isValid) {
                             var radix = "[" + $.inputmask.escapeRegex.call(this, opts.radixPoint) + "]";
                             isValid = new RegExp(radix).test(chrs);
+                            if (isValid && maskset["validPositions"][pos] && maskset["validPositions"][pos]["match"].placeholder == opts.radixPoint) {
+                                isValid = { "pos": pos, "remove": pos };
+                            }
                         }
                         return isValid;
                     },
