@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.53
+* Version: 3.0.54
 */
 
 (function ($) {
@@ -1549,7 +1549,7 @@
                 repeat: 0, //repetitions of the mask: * ~ forever, otherwise specify an integer
                 greedy: true, //true: allocated buffer for the mask and repetitions - false: allocate only if needed
                 autoUnmask: false, //automatically unmask when retrieving the value with $.fn.val or value if the browser supports __lookupGetter__ or getOwnPropertyDescriptor
-                removeMaskOnSubmit: false, //remove the mask before submitting the form.  Use in combination with autoUnmask: true
+                removeMaskOnSubmit: true, //remove the mask before submitting the form.  Use in combination with autoUnmask: true
                 clearMaskOnLostFocus: true,
                 insertMode: true, //insert the input or overwrite the input
                 clearIncomplete: false, //clear the incomplete input on blur
@@ -1726,7 +1726,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.53
+* Version: 3.0.54
 */
 
 (function ($) {
@@ -2089,7 +2089,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.53
+Version: 3.0.54
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2210,7 +2210,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.53
+Version: 3.0.54
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2548,7 +2548,9 @@ Optional extensions on the jquery.inputmask base
                 hrspre: new RegExp("[012]"), //hours pre
                 hrs24: new RegExp("2[0-4]|1[3-9]"),
                 hrs: new RegExp("[01][0-9]|2[0-4]"), //hours
-                ampm: new RegExp("^[a|p|A|P][m|M]")
+                ampm: new RegExp("^[a|p|A|P][m|M]"),
+                mspre: new RegExp("[0-5]"), //minutes/seconds pre
+                ms: new RegExp("[0-5][0-9]")
             },
             timeseparator: ':',
             hourFormat: "24", // or 12
@@ -2619,6 +2621,25 @@ Optional extensions on the jquery.inputmask base
                         }, cardinality: 1
                     }]
                 },
+                's': { //seconds || minutes
+                    validator: "[0-5][0-9]",
+                    cardinality: 2,
+                    prevalidator: [
+                        {
+                            validator: function (chrs, maskset, pos, strict, opts) {
+                                var isValid = opts.regex.mspre.test(chrs);
+                                if (!strict && !isValid) {
+                                    isValid = opts.regex.ms.test("0" + chrs);
+                                    if (isValid) {
+                                        maskset.buffer[pos] = "0";
+                                        pos++;
+                                        return { "pos": pos };
+                                    }
+                                }
+                                return isValid;
+                            }, cardinality: 1
+                        }]
+                },
                 't': { //am/pm
                     validator: function (chrs, maskset, pos, strict, opts) {
                         return opts.regex.ampm.test(chrs + "m");
@@ -2650,10 +2671,14 @@ Optional extensions on the jquery.inputmask base
         },
         'hh:mm:ss': {
             mask: "h:s:s",
+            placeholder: "hh:mm:ss",
+            alias: "datetime",
             autoUnmask: false
         },
         'hh:mm': {
             mask: "h:s",
+            placeholder: "hh:mm",
+            alias: "datetime",
             autoUnmask: false
         },
         'date': {
@@ -2673,7 +2698,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.53
+Version: 3.0.54
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2914,7 +2939,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.53
+Version: 3.0.54
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -3101,7 +3126,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.53
+Version: 3.0.54
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
