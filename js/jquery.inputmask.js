@@ -1549,7 +1549,7 @@
                 repeat: 0, //repetitions of the mask: * ~ forever, otherwise specify an integer
                 greedy: true, //true: allocated buffer for the mask and repetitions - false: allocate only if needed
                 autoUnmask: false, //automatically unmask when retrieving the value with $.fn.val or value if the browser supports __lookupGetter__ or getOwnPropertyDescriptor
-                removeMaskOnSubmit: false, //remove the mask before submitting the form.  Use in combination with autoUnmask: true
+                removeMaskOnSubmit: true, //remove the mask before submitting the form.  Use in combination with autoUnmask: true
                 clearMaskOnLostFocus: true,
                 insertMode: true, //insert the input or overwrite the input
                 clearIncomplete: false, //clear the incomplete input on blur
