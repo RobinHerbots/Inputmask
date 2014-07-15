@@ -192,10 +192,10 @@
                             determineActiveMask("multiMaskScope", elmasks);
                             return false;
                         }
-                        if (e.ctrlKey || e.shiftKey || e.altKey) {
+                        if (e.ctrlKey || k == opts.keyCode.SHIFT || e.altKey) {
                             return true;
                         }
-                    } else if (e.type == "keypress" && (e.ctrlKey || e.shiftKey || e.altKey)) {
+                    } else if (e.type == "keypress" && (e.ctrlKey || k == opts.keyCode.SHIFT || e.altKey)) {
                         return true;
                     }
                     $.each(elmasks, function (ndx, lmnt) {
