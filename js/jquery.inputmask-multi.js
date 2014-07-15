@@ -267,37 +267,6 @@
                     case "mask":
                         mask(actionObj["el"]);
                         break;
-                    case "format": //TODO
-                        $el = $({});
-                        $el.data('_inputmask', {
-                            'maskset': maskset,
-                            'opts': opts,
-                            'isRTL': opts.numericInput
-                        });
-                        if (opts.numericInput) {
-                            isRTL = true;
-                        }
-                        var valueBuffer = actionObj["value"].split('');
-                        checkVal($el, false, false, isRTL ? valueBuffer.reverse() : valueBuffer, true);
-                        return isRTL ? getBuffer().reverse().join('') : getBuffer().join('');
-                    case "isValid": //TODO
-                        $el = $({});
-                        $el.data('_inputmask', {
-                            'maskset': maskset,
-                            'opts': opts,
-                            'isRTL': opts.numericInput
-                        });
-                        if (opts.numericInput) {
-                            isRTL = true;
-                        }
-                        var valueBuffer = actionObj["value"].split('');
-                        checkVal($el, false, true, isRTL ? valueBuffer.reverse() : valueBuffer);
-                        return isComplete(getBuffer());
-                    case "getemptymask": //TODO
-                        $el = $(actionObj["el"]);
-                        maskset = $el.data('_inputmask')['maskset'];
-                        opts = $el.data('_inputmask')['opts'];
-                        return getBufferTemplate();
                     case "remove": //TODO
                         var el = actionObj["el"];
                         $el = $(el);
