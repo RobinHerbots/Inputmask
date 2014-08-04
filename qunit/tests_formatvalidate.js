@@ -14,6 +14,21 @@ test("$.inputmask.format(\"12\", {  mask: \"$ 999999\", numericInput: true, plac
     equal(formattedValue, "$ 000012", "Result " + formattedValue);
 });
 
+
+test("$.inputmask.format(\"1111111.11\" - ... autoGroup: true - swd120", function () {
+    var formattedValue = $.inputmask.format("1111111.11", {
+        alias: "decimal",
+        radixPoint: ".",
+        digits: 2,
+        autoGroup: true,
+        groupSeparator: ",",
+        groupSize: 3,
+        allowMinus: true
+    });
+    equal(formattedValue, "1,111,111.11", "Result " + formattedValue);
+});
+
+
 module("Value Validating");
 test("$.inputmask.isValid(\"23/03/1973\", { alias: \"date\"})", function () {
     var isValid = $.inputmask.isValid("23/03/1973", { alias: "date" });

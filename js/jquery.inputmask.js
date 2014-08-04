@@ -1544,6 +1544,7 @@
                         }
                         var valueBuffer = actionObj["value"].split('');
                         checkVal($el, false, false, isRTL ? valueBuffer.reverse() : valueBuffer, true);
+                        opts.onKeyPress.call(this, undefined, getBuffer(), 0, opts);
                         return isRTL ? getBuffer().reverse().join('') : getBuffer().join('');
                     case "isValid":
                         $el = $({});
