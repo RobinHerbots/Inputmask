@@ -5,8 +5,15 @@
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
 * Version: 0.0.0
 */
-
-(function ($) {
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define("jquery.inputmask-multi", ['jquery', 'jquery.inputmask'], factory);
+    } else {
+        // Browser globals
+        factory(jQuery);
+    }
+}(function ($) {
     if ($.fn.inputmask != undefined) {
         function multiMaskScope(actionObj, masksets, opts) {
             function isInputEventSupported(eventName) {
@@ -329,4 +336,4 @@
                 return $.inputmask._fn.call(this, fn, options);
         };
     }
-})(jQuery);
+}));

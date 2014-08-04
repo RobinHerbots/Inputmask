@@ -7,7 +7,15 @@ Version: 0.0.0
 
 Optional extensions on the jquery.inputmask base
 */
-(function ($) {
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define("jquery.inputmask.date.extensions", ['jquery', 'jquery.inputmask'], factory);
+    } else {
+        // Browser globals
+        factory(jQuery);
+    }
+}(function ($) {
     //date & time aliases
     $.extend($.inputmask.defaults.definitions, {
         'h': { //hours
@@ -485,4 +493,4 @@ Optional extensions on the jquery.inputmask base
             alias: "mm/dd/yyyy"
         }
     });
-})(jQuery);
+}));

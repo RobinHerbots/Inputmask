@@ -3,10 +3,18 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.58
+* Version: 3.0.59
 */
 
-(function ($) {
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define("jquery.inputmask", ['jquery'], factory);
+    } else {
+        // Browser globals
+        factory(jQuery);
+    }
+}(function ($) {
     if ($.fn.inputmask === undefined) {
 
         //helper functions
@@ -1797,16 +1805,23 @@
             }
         };
     }
-})(jQuery);
+}));
 /**
 * @license Input Mask plugin for jquery
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.58
+* Version: 3.0.59
 */
-
-(function ($) {
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define("jquery.inputmask-multi", ['jquery', 'jquery.inputmask'], factory);
+    } else {
+        // Browser globals
+        factory(jQuery);
+    }
+}(function ($) {
     if ($.fn.inputmask != undefined) {
         function multiMaskScope(actionObj, masksets, opts) {
             function isInputEventSupported(eventName) {
@@ -2129,17 +2144,25 @@
                 return $.inputmask._fn.call(this, fn, options);
         };
     }
-})(jQuery);
+}));
 /*
 Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.58
+Version: 3.0.59
 
 Optional extensions on the jquery.inputmask base
 */
-(function ($) {
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define("jquery.inputmask.extensions", ['jquery', 'jquery.inputmask'], factory);
+    } else {
+        // Browser globals
+        factory(jQuery);
+    }
+}(function ($) {
     //extra definitions
     $.extend($.inputmask.defaults.definitions, {
         'A': {
@@ -2250,17 +2273,25 @@ Optional extensions on the jquery.inputmask base
             }
         }
     });
-})(jQuery);
+}));
 /*
 Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.58
+Version: 3.0.59
 
 Optional extensions on the jquery.inputmask base
 */
-(function ($) {
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define("jquery.inputmask.date.extensions", ['jquery', 'jquery.inputmask'], factory);
+    } else {
+        // Browser globals
+        factory(jQuery);
+    }
+}(function ($) {
     //date & time aliases
     $.extend($.inputmask.defaults.definitions, {
         'h': { //hours
@@ -2738,17 +2769,25 @@ Optional extensions on the jquery.inputmask base
             alias: "mm/dd/yyyy"
         }
     });
-})(jQuery);
+}));
 /*
 Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.58
+Version: 3.0.59
 
 Optional extensions on the jquery.inputmask base
 */
-(function ($) {
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define("jquery.inputmask.numeric.extensions", ['jquery', 'jquery.inputmask'], factory);
+    } else {
+        // Browser globals
+        factory(jQuery);
+    }
+}(function ($) {
     //number aliases
     $.extend($.inputmask.defaults.aliases, {
         'numeric': {
@@ -2982,18 +3021,26 @@ Optional extensions on the jquery.inputmask base
             digits: "0"
         }
     });
-})(jQuery);
+}));
 /*
 Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.58
+Version: 3.0.59
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
 */
-(function ($) {
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define("jquery.inputmask.regex.extensions", ['jquery', 'jquery.inputmask'], factory);
+    } else {
+        // Browser globals
+        factory(jQuery);
+    }
+}(function ($) {
     $.extend($.inputmask.defaults.aliases, { // $(selector).inputmask("Regex", { regex: "[0-9]*"}
         'Regex': {
             mask: "r",
@@ -3169,13 +3216,13 @@ Allows for using regular expressions as a mask
             }
         }
     });
-})(jQuery);
+}));
 /*
 Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.58
+Version: 3.0.59
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
@@ -3189,7 +3236,15 @@ When using this extension make sure you specify the correct url to get the masks
 
 
 */
-(function ($) {
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define("jquery.inputmask.phone.extensions", ['jquery', 'jquery.inputmask'], factory);
+    } else {
+        // Browser globals
+        factory(jQuery);
+    }
+}(function ($) {
     $.extend($.inputmask.defaults.aliases, {
         'phone': {
             url: "phone-codes/phone-codes.json",
@@ -3250,4 +3305,4 @@ When using this extension make sure you specify the correct url to get the masks
             nojumpsThreshold: 4
         }
     });
-})(jQuery);
+}));

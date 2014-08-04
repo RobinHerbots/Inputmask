@@ -17,7 +17,15 @@ When using this extension make sure you specify the correct url to get the masks
 
 
 */
-(function ($) {
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define("jquery.inputmask.phone.extensions", ['jquery', 'jquery.inputmask'], factory);
+    } else {
+        // Browser globals
+        factory(jQuery);
+    }
+}(function ($) {
     $.extend($.inputmask.defaults.aliases, {
         'phone': {
             url: "phone-codes/phone-codes.json",
@@ -78,4 +86,4 @@ When using this extension make sure you specify the correct url to get the masks
             nojumpsThreshold: 4
         }
     });
-})(jQuery);
+}));

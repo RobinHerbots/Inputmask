@@ -6,7 +6,15 @@
 * Version: 0.0.0
 */
 
-(function ($) {
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define("jquery.inputmask", ['jquery'], factory);
+    } else {
+        // Browser globals
+        factory(jQuery);
+    }
+}(function ($) {
     if ($.fn.inputmask === undefined) {
 
         //helper functions
@@ -1797,4 +1805,4 @@
             }
         };
     }
-})(jQuery);
+}));

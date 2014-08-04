@@ -7,7 +7,15 @@ Version: 0.0.0
 
 Optional extensions on the jquery.inputmask base
 */
-(function ($) {
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define("jquery.inputmask.numeric.extensions", ['jquery', 'jquery.inputmask'], factory);
+    } else {
+        // Browser globals
+        factory(jQuery);
+    }
+}(function ($) {
     //number aliases
     $.extend($.inputmask.defaults.aliases, {
         'numeric': {
@@ -241,4 +249,4 @@ Optional extensions on the jquery.inputmask base
             digits: "0"
         }
     });
-})(jQuery);
+}));

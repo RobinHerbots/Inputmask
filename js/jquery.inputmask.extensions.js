@@ -7,7 +7,15 @@ Version: 0.0.0
 
 Optional extensions on the jquery.inputmask base
 */
-(function ($) {
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define("jquery.inputmask.extensions", ['jquery', 'jquery.inputmask'], factory);
+    } else {
+        // Browser globals
+        factory(jQuery);
+    }
+}(function ($) {
     //extra definitions
     $.extend($.inputmask.defaults.definitions, {
         'A': {
@@ -118,4 +126,4 @@ Optional extensions on the jquery.inputmask base
             }
         }
     });
-})(jQuery);
+}));
