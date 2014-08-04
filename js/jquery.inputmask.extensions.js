@@ -111,7 +111,7 @@ Optional extensions on the jquery.inputmask base
             },
             definitions: {
                 '*': {
-                    validator: "[A-Za-z\u0410-\u044F\u0401\u04510-9]",
+                    validator: "[A-Za-z\u0410-\u044F\u0401\u04510-9!#$%&'*+/=?^_`{|}~\-]",
                     cardinality: 1,
                     casing: "lower"
                 }
