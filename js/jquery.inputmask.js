@@ -138,6 +138,7 @@
                                 var matches = openenings[openenings.length - 1]["matches"];
                                 match = matches.pop();
                                 alternator.matches.push(match);
+                                matches.push(alternator);
                                 openenings.push(alternator);
                             } else {
                                 match = currentToken.matches.pop();
@@ -702,7 +703,7 @@
 
                 var maskPos = pos;
                 if (maskPos >= getMaskLength()) {
-                   // console.log("try alternate match");
+                    // console.log("try alternate match");
                     return false;
                 }
                 var result = _isValid(maskPos, c, strict, fromSetValid);
@@ -955,7 +956,8 @@
             }
 
             function patchValueProperty(npt) {
-
+                var valueGet;
+                var valueSet;
                 function PatchValhook(type) {
                     if ($.valHooks[type] == undefined || $.valHooks[type].inputmaskpatch != true) {
                         var valueGet = $.valHooks[type] && $.valHooks[type].get ? $.valHooks[type].get : function (elem) { return elem.value; };
@@ -994,72 +996,79 @@
                         };
                     }
                 }
+                function getter() {
+                    var $self = $(this), inputData = $(this).data('_inputmask');
+                    if (inputData) {
+                        return inputData['opts'].autoUnmask ? $self.inputmask('unmaskedvalue') : (valueGet.call(this) != getBufferTemplate().join('') ? valueGet.call(this) : '');
+                    } else return valueGet.call(this);
+                }
+                function setter(value) {
+                    var inputData = $(this).data('_inputmask');
+                    if (inputData) {
+                        valueSet.call(this, $.isFunction(inputData['opts'].onBeforeMask) ? inputData['opts'].onBeforeMask.call(el, value, inputData['opts']) : value);
+                        $(this).triggerHandler('setvalue.inputmask');
+                    } else {
+                        valueSet.call(this, value);
+                    }
+                }
+                function InstallNativeValueSetFallback(npt) {
+                    $(npt).bind("mouseenter.inputmask", function (event) {
+                        var $input = $(this), input = this;
+                        if (input._valueGet() != getBuffer().join('')) {
+                            $input.trigger("setvalue");
+                        }
+                    });
+                    //!! the bound handlers are executed in the order they where bound
+                    //reorder the events
+                    var events = $._data(npt).events;
+                    var handlers = events["mouseover"];
+                    if (handlers) {
+                        var ourHandler = handlers[handlers.length - 1];
+                        for (var i = handlers.length - 1; i > 0; i--) {
+                            handlers[i] = handlers[i - 1];
+                        }
+                        handlers[0] = ourHandler;
+                    }
+                }
 
-                var valueProperty;
-                if (Object.getOwnPropertyDescriptor)
-                    valueProperty = Object.getOwnPropertyDescriptor(npt, "value");
-                if (valueProperty && valueProperty.get) {
-                    if (!npt._valueGet) {
-                        var valueGet = valueProperty.get;
-                        var valueSet = valueProperty.set;
-                        npt._valueGet = function () {
-                            return isRTL ? valueGet.call(this).split('').reverse().join('') : valueGet.call(this);
-                        };
-                        npt._valueSet = function (value) {
-                            valueSet.call(this, isRTL ? value.split('').reverse().join('') : value);
-                        };
+                if (!npt._valueGet) {
+                    //var valueProperty;
+                    if (Object.getOwnPropertyDescriptor)
+                        var valueProperty = Object.getOwnPropertyDescriptor(npt, "value");
+                    if (valueProperty && valueProperty.configurable && false) { //experimental for chrome
+                        npt._value = valueProperty.value;
+                        valueGet = function () {
+                            return this._value || "";
+                        }
+                        valueSet = function (value) {
+                            this._value = value;
+                            this.select();
+                            this.setRangeText(value);
+                            this.selectionStart = this.selectionEnd;
+                        }
 
                         Object.defineProperty(npt, "value", {
-                            get: function () {
-                                var $self = $(this), inputData = $(this).data('_inputmask');
-                                if (inputData) {
-                                    return inputData['opts'].autoUnmask ? $self.inputmask('unmaskedvalue') : (valueGet.call(this) != getBufferTemplate().join('') ? valueGet.call(this) : '');
-                                } else return valueGet.call(this);
-                            },
-                            set: function (value) {
-                                var inputData = $(this).data('_inputmask');
-                                if (inputData) {
-                                    valueSet.call(this, $.isFunction(inputData['opts'].onBeforeMask) ? inputData['opts'].onBeforeMask.call(el, value, inputData['opts']) : value);
-                                    $(this).triggerHandler('setvalue.inputmask');
-                                } else {
-                                    valueSet.call(this, value);
-                                }
-                            }
+                            get: getter,
+                            set: setter
                         });
-                    }
-                } else if (document.__lookupGetter__ && npt.__lookupGetter__("value")) {
-                    if (!npt._valueGet) {
-                        var valueGet = npt.__lookupGetter__("value");
-                        var valueSet = npt.__lookupSetter__("value");
-                        npt._valueGet = function () {
-                            return isRTL ? valueGet.call(this).split('').reverse().join('') : valueGet.call(this);
-                        };
-                        npt._valueSet = function (value) {
-                            valueSet.call(this, isRTL ? value.split('').reverse().join('') : value);
-                        };
+                    } else if (document.__lookupGetter__ && npt.__lookupGetter__("value")) {
+                        valueGet = npt.__lookupGetter__("value");
+                        valueSet = npt.__lookupSetter__("value");
 
-                        npt.__defineGetter__("value", function () {
-                            var $self = $(this), inputData = $(this).data('_inputmask');
-                            if (inputData) {
-                                return inputData['opts'].autoUnmask ? $self.inputmask('unmaskedvalue') : (valueGet.call(this) != getBufferTemplate().join('') ? valueGet.call(this) : '');
-                            } else return valueGet.call(this);
-                        });
-                        npt.__defineSetter__("value", function (value) {
-                            var inputData = $(this).data('_inputmask');
-                            if (inputData) {
-                                valueSet.call(this, $.isFunction(inputData['opts'].onBeforeMask) ? inputData['opts'].onBeforeMask.call(el, value, inputData['opts']) : value);
-                                $(this).triggerHandler('setvalue.inputmask');
-                            } else {
-                                valueSet.call(this, value);
-                            }
-                        });
+                        npt.__defineGetter__("value", getter);
+                        npt.__defineSetter__("value", setter);
+                    } else { //jquery.val 
+                        valueGet = function () { return npt.value; }
+                        valueSet = function (value) { npt.value = value; }
+                        PatchValhook(npt.type);
+                        InstallNativeValueSetFallback(npt);
                     }
-                } else {
-                    if (!npt._valueGet) {
-                        npt._valueGet = function () { return isRTL ? this.value.split('').reverse().join('') : this.value; };
-                        npt._valueSet = function (value) { this.value = isRTL ? value.split('').reverse().join('') : value; };
-                    }
-                    PatchValhook(npt.type);
+                    npt._valueGet = function () {
+                        return isRTL ? valueGet.call(this).split('').reverse().join('') : valueGet.call(this);
+                    };
+                    npt._valueSet = function (value) {
+                        valueSet.call(this, isRTL ? value.split('').reverse().join('') : value);
+                    };
                 }
             }
 
@@ -1154,7 +1163,6 @@
                 handleOnKeyResult(input, keydownResult, currentCaretPos);
                 ignorable = $.inArray(k, opts.ignorables) != -1;
             }
-
             function keypressEvent(e, checkval, k, writeOut, strict, ndx) {
                 //Safari 5.1.x - modal dialog fires keypress twice workaround
                 if (k == undefined && skipKeyPressEvent) return false;
@@ -1343,8 +1351,6 @@
                         $el.prop("title", getMaskSet()["mask"]);
                     }
 
-                    patchValueProperty(el);
-
                     if (el.dir == "rtl" || opts.rightAlign)
                         $el.css("text-align", "right");
 
@@ -1473,6 +1479,8 @@
 
                     if (msie1x)
                         $el.bind("input.inputmask", pasteEvent);
+
+                    patchValueProperty(el);
 
                     //apply mask
                     var initialValue = $.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call(el, el._valueGet(), opts) : el._valueGet();
