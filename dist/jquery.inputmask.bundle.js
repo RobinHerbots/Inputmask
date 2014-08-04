@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.56
+* Version: 3.0.57
 */
 
 (function ($) {
@@ -33,7 +33,7 @@
             return false;
         }
 
-        function generateMaskSet(opts) {
+        function generateMaskSet(opts, multi) {
             var ms = [];
 
             function analyseMask(mask) {
@@ -49,7 +49,7 @@
                     this.quantifier = { min: 1, max: 1 };
                 };
 
-                //test definition => {fn: RegExp/function, cardinality: int, optionality: bool, newBlockMarker: bool, offset: int, casing: null/upper/lower, def: definitionSymbol, placeholder: placeholder}
+                //test definition => {fn: RegExp/function, cardinality: int, optionality: bool, newBlockMarker: bool, casing: null/upper/lower, def: definitionSymbol, placeholder: placeholder, mask: real maskDefinition}
                 function insertTestDefinition(mtoken, element, position) {
                     var maskdef = opts.definitions[element];
                     var newBlockMarker = mtoken.matches.length == 0;
@@ -58,11 +58,11 @@
                         var prevalidators = maskdef["prevalidator"], prevalidatorsL = prevalidators ? prevalidators.length : 0;
                         for (var i = 1; i < maskdef.cardinality; i++) {
                             var prevalidator = prevalidatorsL >= i ? prevalidators[i - 1] : [], validator = prevalidator["validator"], cardinality = prevalidator["cardinality"];
-                            mtoken.matches.splice(position++, 0, { fn: validator ? typeof validator == 'string' ? new RegExp(validator) : new function () { this.test = validator; } : new RegExp("."), cardinality: cardinality ? cardinality : 1, optionality: mtoken.isOptional, newBlockMarker: newBlockMarker, casing: maskdef["casing"], def: maskdef["definitionSymbol"] || element, placeholder: maskdef["placeholder"] });
+                            mtoken.matches.splice(position++, 0, { fn: validator ? typeof validator == 'string' ? new RegExp(validator) : new function () { this.test = validator; } : new RegExp("."), cardinality: cardinality ? cardinality : 1, optionality: mtoken.isOptional, newBlockMarker: newBlockMarker, casing: maskdef["casing"], def: maskdef["definitionSymbol"] || element, placeholder: maskdef["placeholder"], mask: element });
                         }
-                        mtoken.matches.splice(position++, 0, { fn: maskdef.validator ? typeof maskdef.validator == 'string' ? new RegExp(maskdef.validator) : new function () { this.test = maskdef.validator; } : new RegExp("."), cardinality: maskdef.cardinality, optionality: mtoken.isOptional, newBlockMarker: newBlockMarker, casing: maskdef["casing"], def: maskdef["definitionSymbol"] || element, placeholder: maskdef["placeholder"] });
+                        mtoken.matches.splice(position++, 0, { fn: maskdef.validator ? typeof maskdef.validator == 'string' ? new RegExp(maskdef.validator) : new function () { this.test = maskdef.validator; } : new RegExp("."), cardinality: maskdef.cardinality, optionality: mtoken.isOptional, newBlockMarker: newBlockMarker, casing: maskdef["casing"], def: maskdef["definitionSymbol"] || element, placeholder: maskdef["placeholder"], mask: element });
                     } else {
-                        mtoken.matches.splice(position++, 0, { fn: null, cardinality: 0, optionality: mtoken.isOptional, newBlockMarker: newBlockMarker, casing: null, def: element, placeholder: undefined });
+                        mtoken.matches.splice(position++, 0, { fn: null, cardinality: 0, optionality: mtoken.isOptional, newBlockMarker: newBlockMarker, casing: null, def: element, placeholder: undefined, mask: element });
                         escaped = false;
                     }
                 }
@@ -71,7 +71,8 @@
                     match,
                     m,
                     openenings = [],
-                    maskTokens = [];
+                    maskTokens = [],
+                    openingToken;
 
                 while (match = tokenizer.exec(mask)) {
                     m = match[0];
@@ -80,7 +81,7 @@
                             // optional closing
                         case opts.groupmarker.end:
                             // Group closing
-                            var openingToken = openenings.pop();
+                            openingToken = openenings.pop();
                             if (openenings.length > 0) {
                                 openenings[openenings.length - 1]["matches"].push(openingToken);
                             } else {
@@ -109,7 +110,7 @@
                             quantifier.quantifier = { min: mq0, max: mq1 };
                             if (openenings.length > 0) {
                                 var matches = openenings[openenings.length - 1]["matches"];
-                                var match = matches.pop();
+                                match = matches.pop();
                                 if (!match["isGroup"]) {
                                     var groupToken = new maskToken(true);
                                     groupToken.matches.push(match);
@@ -118,7 +119,7 @@
                                 matches.push(match);
                                 matches.push(quantifier);
                             } else {
-                                var match = currentToken.matches.pop();
+                                match = currentToken.matches.pop();
                                 if (!match["isGroup"]) {
                                     var groupToken = new maskToken(true);
                                     groupToken.matches.push(match);
@@ -132,11 +133,34 @@
                             escaped = true;
                             break;
                         case opts.alternatormarker:
-
+                            var alternator = new maskToken(false, false, false, true);
+                            if (openenings.length > 0) {
+                                var matches = openenings[openenings.length - 1]["matches"];
+                                match = matches.pop();
+                                alternator.matches.push(match);
+                                matches.push(alternator);
+                                openenings.push(alternator);
+                            } else {
+                                match = currentToken.matches.pop();
+                                alternator.matches.push(match);
+                                openenings.push(alternator);
+                            }
                             break;
                         default:
                             if (openenings.length > 0) {
                                 insertTestDefinition(openenings[openenings.length - 1], m);
+                                var lastToken = openenings[openenings.length - 1];
+                                if (lastToken["isAlternator"]) {
+                                    openingToken = openenings.pop();
+                                    for (var mndx = 0; mndx < openingToken.matches.length; mndx++) {
+                                        openingToken.matches[mndx].isGroup = false; //don't mark alternate groups as group
+                                    }
+                                    if (openenings.length > 0) {
+                                        openenings[openenings.length - 1]["matches"].push(openingToken);
+                                    } else {
+                                        currentToken.matches.push(openingToken);
+                                    }
+                                }
                             } else {
                                 if (currentToken.matches.length > 0) {
                                     var lastMatch = currentToken.matches[currentToken.matches.length - 1];
@@ -151,6 +175,15 @@
                     }
                 }
 
+                if (openenings.length > 0) {
+                    var lastToken = openenings[openenings.length - 1];
+                    if (lastToken["isAlternator"]) {
+                        for (var mndx = 0; mndx < lastToken.matches.length; mndx++) {
+                            lastToken.matches[mndx].isGroup = false; //don't mark alternate groups as group
+                        }
+                    }
+                    currentToken.matches = currentToken.matches.concat(openenings);
+                }
                 if (currentToken.matches.length > 0) {
                     var lastMatch = currentToken.matches[currentToken.matches.length - 1];
                     if (lastMatch["isGroup"]) { //this is not a group but a normal mask => convert
@@ -207,13 +240,18 @@
                 opts.mask = opts.mask.call(this, opts);
             }
             if ($.isArray(opts.mask)) {
-                $.each(opts.mask, function (ndx, msk) {
-                    if (msk["mask"] != undefined) {
-                        ms.push(generateMask(msk["mask"].toString(), msk));
-                    } else {
-                        ms.push(generateMask(msk.toString()));
-                    }
-                });
+                if (multi) {
+                    $.each(opts.mask, function (ndx, msk) {
+                        if (msk["mask"] != undefined) {
+                            ms.push(generateMask(msk["mask"].toString(), msk));
+                        } else {
+                            ms.push(generateMask(msk.toString()));
+                        }
+                    });
+                } else {
+                    var altMask = "(" + opts.mask.join(")|(") + ")";
+                    ms = generateMask(altMask);
+                }
             } else {
                 if (opts.mask.length == 1 && opts.greedy == false && opts.repeat != 0) {
                     opts.placeholder = "";
@@ -422,7 +460,38 @@
                                     testPos = pos; //match the position after the group
                                 }
                             } else if (match.isAlternator) {
-                                //TODO
+                                var alternateToken = match;
+                                var currentMatches = matches.slice(), malternate1, malternate2, loopNdxCnt = loopNdx.length;
+                                var altIndex = ndxInitializer.length > 0 ? ndxInitializer.shift() : -1;
+                                if (altIndex == -1) {
+                                    var currentPos = testPos;
+                                    matches = [];
+                                    match = ResolveTestFromToken(alternateToken.matches[0], ndxInitializer.slice(), [0].concat(loopNdx), quantifierRecurse);
+                                    malternate1 = matches.slice();
+                                    testPos = currentPos;
+                                    matches = [];
+                                    match = ResolveTestFromToken(alternateToken.matches[1], ndxInitializer, [1].concat(loopNdx), quantifierRecurse);
+                                    malternate2 = matches.slice();
+                                    //fuzzy merge matches
+                                    matches = [];
+                                    for (var ndx1 = 0; ndx1 < malternate1.length; ndx1++) {
+                                        var altMatch = malternate1[ndx1]; currentMatches.push(altMatch);
+                                        for (var ndx2 = 0; ndx2 < malternate2.length; ndx2++) {
+                                            var altMatch2 = malternate2[ndx2];
+                                            //verify equality
+                                            if (altMatch.match.mask == altMatch2.match.mask) {
+                                                malternate2.splice(ndx2, 1);
+                                                altMatch.locator[loopNdxCnt] = -1;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    matches = currentMatches.concat(malternate2);
+
+                                } else {
+                                    match = handleMatch(alternateToken.matches[altIndex], [altIndex].concat(loopNdx), quantifierRecurse);
+                                }
+                                if (match) return true;
                             } else if (match.isQuantifier && quantifierRecurse !== true) {
                                 var qt = match;
                                 opts.greedy = opts.greedy && isFinite(qt.quantifier.max); //greedy must be off when * or + is used (always!!)
@@ -633,7 +702,10 @@
                 }
 
                 var maskPos = pos;
-                if (maskPos >= getMaskLength()) return false;
+                if (maskPos >= getMaskLength()) {
+                    // console.log("try alternate match");
+                    return false;
+                }
                 var result = _isValid(maskPos, c, strict, fromSetValid);
                 if (!strict && result === false) {
                     var currentPosValid = getMaskSet()["validPositions"][maskPos];
@@ -884,7 +956,8 @@
             }
 
             function patchValueProperty(npt) {
-
+                var valueGet;
+                var valueSet;
                 function PatchValhook(type) {
                     if ($.valHooks[type] == undefined || $.valHooks[type].inputmaskpatch != true) {
                         var valueGet = $.valHooks[type] && $.valHooks[type].get ? $.valHooks[type].get : function (elem) { return elem.value; };
@@ -923,72 +996,79 @@
                         };
                     }
                 }
+                function getter() {
+                    var $self = $(this), inputData = $(this).data('_inputmask');
+                    if (inputData) {
+                        return inputData['opts'].autoUnmask ? $self.inputmask('unmaskedvalue') : (valueGet.call(this) != getBufferTemplate().join('') ? valueGet.call(this) : '');
+                    } else return valueGet.call(this);
+                }
+                function setter(value) {
+                    var inputData = $(this).data('_inputmask');
+                    if (inputData) {
+                        valueSet.call(this, $.isFunction(inputData['opts'].onBeforeMask) ? inputData['opts'].onBeforeMask.call(el, value, inputData['opts']) : value);
+                        $(this).triggerHandler('setvalue.inputmask');
+                    } else {
+                        valueSet.call(this, value);
+                    }
+                }
+                function InstallNativeValueSetFallback(npt) {
+                    $(npt).bind("mouseenter.inputmask", function (event) {
+                        var $input = $(this), input = this;
+                        if (input._valueGet() != getBuffer().join('')) {
+                            $input.trigger("setvalue");
+                        }
+                    });
+                    //!! the bound handlers are executed in the order they where bound
+                    //reorder the events
+                    var events = $._data(npt).events;
+                    var handlers = events["mouseover"];
+                    if (handlers) {
+                        var ourHandler = handlers[handlers.length - 1];
+                        for (var i = handlers.length - 1; i > 0; i--) {
+                            handlers[i] = handlers[i - 1];
+                        }
+                        handlers[0] = ourHandler;
+                    }
+                }
 
-                var valueProperty;
-                if (Object.getOwnPropertyDescriptor)
-                    valueProperty = Object.getOwnPropertyDescriptor(npt, "value");
-                if (valueProperty && valueProperty.get) {
-                    if (!npt._valueGet) {
-                        var valueGet = valueProperty.get;
-                        var valueSet = valueProperty.set;
-                        npt._valueGet = function () {
-                            return isRTL ? valueGet.call(this).split('').reverse().join('') : valueGet.call(this);
-                        };
-                        npt._valueSet = function (value) {
-                            valueSet.call(this, isRTL ? value.split('').reverse().join('') : value);
-                        };
+                if (!npt._valueGet) {
+                    //var valueProperty;
+                    if (Object.getOwnPropertyDescriptor)
+                        var valueProperty = Object.getOwnPropertyDescriptor(npt, "value");
+                    if (valueProperty && valueProperty.configurable && false) { //experimental for chrome
+                        npt._value = valueProperty.value;
+                        valueGet = function () {
+                            return this._value || "";
+                        }
+                        valueSet = function (value) {
+                            this._value = value;
+                            this.select();
+                            this.setRangeText(value);
+                            this.selectionStart = this.selectionEnd;
+                        }
 
                         Object.defineProperty(npt, "value", {
-                            get: function () {
-                                var $self = $(this), inputData = $(this).data('_inputmask');
-                                if (inputData) {
-                                    return inputData['opts'].autoUnmask ? $self.inputmask('unmaskedvalue') : (valueGet.call(this) != getBufferTemplate().join('') ? valueGet.call(this) : '');
-                                } else return valueGet.call(this);
-                            },
-                            set: function (value) {
-                                var inputData = $(this).data('_inputmask');
-                                if (inputData) {
-                                    valueSet.call(this, $.isFunction(inputData['opts'].onBeforeMask) ? inputData['opts'].onBeforeMask.call(el, value, inputData['opts']) : value);
-                                    $(this).triggerHandler('setvalue.inputmask');
-                                } else {
-                                    valueSet.call(this, value);
-                                }
-                            }
+                            get: getter,
+                            set: setter
                         });
-                    }
-                } else if (document.__lookupGetter__ && npt.__lookupGetter__("value")) {
-                    if (!npt._valueGet) {
-                        var valueGet = npt.__lookupGetter__("value");
-                        var valueSet = npt.__lookupSetter__("value");
-                        npt._valueGet = function () {
-                            return isRTL ? valueGet.call(this).split('').reverse().join('') : valueGet.call(this);
-                        };
-                        npt._valueSet = function (value) {
-                            valueSet.call(this, isRTL ? value.split('').reverse().join('') : value);
-                        };
+                    } else if (document.__lookupGetter__ && npt.__lookupGetter__("value")) {
+                        valueGet = npt.__lookupGetter__("value");
+                        valueSet = npt.__lookupSetter__("value");
 
-                        npt.__defineGetter__("value", function () {
-                            var $self = $(this), inputData = $(this).data('_inputmask');
-                            if (inputData) {
-                                return inputData['opts'].autoUnmask ? $self.inputmask('unmaskedvalue') : (valueGet.call(this) != getBufferTemplate().join('') ? valueGet.call(this) : '');
-                            } else return valueGet.call(this);
-                        });
-                        npt.__defineSetter__("value", function (value) {
-                            var inputData = $(this).data('_inputmask');
-                            if (inputData) {
-                                valueSet.call(this, $.isFunction(inputData['opts'].onBeforeMask) ? inputData['opts'].onBeforeMask.call(el, value, inputData['opts']) : value);
-                                $(this).triggerHandler('setvalue.inputmask');
-                            } else {
-                                valueSet.call(this, value);
-                            }
-                        });
+                        npt.__defineGetter__("value", getter);
+                        npt.__defineSetter__("value", setter);
+                    } else { //jquery.val 
+                        valueGet = function () { return npt.value; }
+                        valueSet = function (value) { npt.value = value; }
+                        PatchValhook(npt.type);
+                        InstallNativeValueSetFallback(npt);
                     }
-                } else {
-                    if (!npt._valueGet) {
-                        npt._valueGet = function () { return isRTL ? this.value.split('').reverse().join('') : this.value; };
-                        npt._valueSet = function (value) { this.value = isRTL ? value.split('').reverse().join('') : value; };
-                    }
-                    PatchValhook(npt.type);
+                    npt._valueGet = function () {
+                        return isRTL ? valueGet.call(this).split('').reverse().join('') : valueGet.call(this);
+                    };
+                    npt._valueSet = function (value) {
+                        valueSet.call(this, isRTL ? value.split('').reverse().join('') : value);
+                    };
                 }
             }
 
@@ -1083,7 +1163,6 @@
                 handleOnKeyResult(input, keydownResult, currentCaretPos);
                 ignorable = $.inArray(k, opts.ignorables) != -1;
             }
-
             function keypressEvent(e, checkval, k, writeOut, strict, ndx) {
                 //Safari 5.1.x - modal dialog fires keypress twice workaround
                 if (k == undefined && skipKeyPressEvent) return false;
@@ -1272,8 +1351,6 @@
                         $el.prop("title", getMaskSet()["mask"]);
                     }
 
-                    patchValueProperty(el);
-
                     if (el.dir == "rtl" || opts.rightAlign)
                         $el.css("text-align", "right");
 
@@ -1402,6 +1479,8 @@
 
                     if (msie1x)
                         $el.bind("input.inputmask", pasteEvent);
+
+                    patchValueProperty(el);
 
                     //apply mask
                     var initialValue = $.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call(el, el._valueGet(), opts) : el._valueGet();
@@ -1631,11 +1710,11 @@
                     case "mask":
                         //resolve possible aliases given by options
                         resolveAlias(opts.alias, options, opts);
-                        maskset = generateMaskSet(opts);
+                        maskset = generateMaskSet(opts, targetScope !== maskScope);
                         if (maskset.length == 0) { return this; }
 
                         return this.each(function () {
-                            targetScope({ "action": "mask", "el": this }, $.extend(true, {}, $.isArray(maskset) && targetScope === maskScope ? maskset[0] : maskset), importAttributeOptions(this, opts));
+                            targetScope({ "action": "mask", "el": this }, $.extend(true, {}, maskset), importAttributeOptions(this, opts));
                         });
                     case "unmaskedvalue":
                         var $input = $(this);
@@ -1683,20 +1762,20 @@
                             //set mask
                             opts.mask = fn;
                         }
-                        maskset = generateMaskSet(opts);
+                        maskset = generateMaskSet(opts, targetScope !== maskScope);
                         if (maskset == undefined) { return this; }
                         return this.each(function () {
-                            targetScope({ "action": "mask", "el": this }, $.extend(true, {}, $.isArray(maskset) && targetScope === maskScope ? maskset[0] : maskset), importAttributeOptions(this, opts));
+                            targetScope({ "action": "mask", "el": this }, $.extend(true, {}, maskset), importAttributeOptions(this, opts));
                         });
                 }
             } else if (typeof fn == "object") {
                 opts = $.extend(true, {}, $.inputmask.defaults, fn);
 
                 resolveAlias(opts.alias, fn, opts); //resolve aliases
-                maskset = generateMaskSet(opts);
+                maskset = generateMaskSet(opts, targetScope !== maskScope);
                 if (maskset == undefined) { return this; }
                 return this.each(function () {
-                    targetScope({ "action": "mask", "el": this }, $.extend(true, {}, $.isArray(maskset) && targetScope === maskScope ? maskset[0] : maskset), importAttributeOptions(this, opts));
+                    targetScope({ "action": "mask", "el": this }, $.extend(true, {}, maskset), importAttributeOptions(this, opts));
                 });
             } else if (fn == undefined) {
                 //look for data-inputmask atribute - the attribute should only contain optipns
@@ -1723,7 +1802,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.56
+* Version: 3.0.57
 */
 
 (function ($) {
@@ -1912,10 +1991,10 @@
                             determineActiveMask("multiMaskScope", elmasks);
                             return false;
                         }
-                        if (e.ctrlKey || e.shiftKey || e.altKey) {
+                        if (e.ctrlKey || k == opts.keyCode.SHIFT || e.altKey) {
                             return true;
                         }
-                    } else if (e.type == "keypress" && (e.ctrlKey || e.shiftKey || e.altKey)) {
+                    } else if (e.type == "keypress" && (e.ctrlKey || k == opts.keyCode.SHIFT || e.altKey)) {
                         return true;
                     }
                     $.each(elmasks, function (ndx, lmnt) {
@@ -1987,37 +2066,6 @@
                     case "mask":
                         mask(actionObj["el"]);
                         break;
-                    case "format": //TODO
-                        $el = $({});
-                        $el.data('_inputmask', {
-                            'maskset': maskset,
-                            'opts': opts,
-                            'isRTL': opts.numericInput
-                        });
-                        if (opts.numericInput) {
-                            isRTL = true;
-                        }
-                        var valueBuffer = actionObj["value"].split('');
-                        checkVal($el, false, false, isRTL ? valueBuffer.reverse() : valueBuffer, true);
-                        return isRTL ? getBuffer().reverse().join('') : getBuffer().join('');
-                    case "isValid": //TODO
-                        $el = $({});
-                        $el.data('_inputmask', {
-                            'maskset': maskset,
-                            'opts': opts,
-                            'isRTL': opts.numericInput
-                        });
-                        if (opts.numericInput) {
-                            isRTL = true;
-                        }
-                        var valueBuffer = actionObj["value"].split('');
-                        checkVal($el, false, true, isRTL ? valueBuffer.reverse() : valueBuffer);
-                        return isComplete(getBuffer());
-                    case "getemptymask": //TODO
-                        $el = $(actionObj["el"]);
-                        maskset = $el.data('_inputmask')['maskset'];
-                        opts = $el.data('_inputmask')['opts'];
-                        return getBufferTemplate();
                     case "remove": //TODO
                         var el = actionObj["el"];
                         $el = $(el);
@@ -2086,7 +2134,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.56
+Version: 3.0.57
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2194,7 +2242,7 @@ Optional extensions on the jquery.inputmask base
             },
             definitions: {
                 '*': {
-                    validator: "[A-Za-z\u0410-\u044F\u0401\u04510-9]",
+                    validator: "[A-Za-z\u0410-\u044F\u0401\u04510-9!#$%&'*+/=?^_`{|}~\-]",
                     cardinality: 1,
                     casing: "lower"
                 }
@@ -2207,7 +2255,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.56
+Version: 3.0.57
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2695,7 +2743,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.56
+Version: 3.0.57
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2763,7 +2811,7 @@ Optional extensions on the jquery.inputmask base
                     bufVal = bufVal.replace(new RegExp(escapedGroupSeparator, "g"), '');
                     var radixSplit = bufVal.split(opts.radixPoint);
                     bufVal = radixSplit[0];
-                    if (bufVal != (opts.prefix + "?0") && bufVal.length > (opts.groupSize + opts.prefix.length)) {
+                    if (bufVal != (opts.prefix + "?0") && bufVal.length >= (opts.groupSize + opts.prefix.length)) {
                         needsRefresh = true;
                         var reg = new RegExp('([-\+]?[\\d\?]+)([\\d\?]{' + opts.groupSize + '})');
                         while (reg.test(bufVal)) {
@@ -2939,7 +2987,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.56
+Version: 3.0.57
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -3126,7 +3174,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.56
+Version: 3.0.57
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
