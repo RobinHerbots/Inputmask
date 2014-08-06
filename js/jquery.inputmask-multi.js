@@ -4,13 +4,15 @@
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
 * Version: 0.0.0
+*
+*  THIS IS A TEMPORARY HACK TO BE COMPATIBLE WITH MULTIPLE MASKS LIKE IN VERSION 2.X - WHEN THE ALTERNATOR SYNTAX IS IMPLEMENTED inputmask-multi WILL BE DELETED!!
+*
+*
 */
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
         define("jquery.inputmask-multi", ['jquery', 'jquery.inputmask'], factory);
     } else {
-        // Browser globals
         factory(jQuery);
     }
 }(function ($) {
@@ -168,13 +170,15 @@
                 isRTL = el.dir == "rtl" || opts.numericInput;
                 activeMasksetIndex = 0;
                 elmasks = $.map(masksets, function (msk, ndx) {
-                    var elMaskStr = '<input type="text" ';
-                    if ($el.attr("value")) elMaskStr += 'value="' + $el.attr("value") + '" ';
-                    if ($el.attr("dir")) elMaskStr += 'dir="' + $el.attr("dir") + '" ';
-                    elMaskStr += '/>';
-                    var elmask = $(elMaskStr)[0];
-                    $(elmask).inputmask($.extend({}, opts, { mask: msk.mask }));
-                    return elmask;
+                    if (isFinite(ndx)) { //handle extension in the prototype of array for ie8
+                        var elMaskStr = '<input type="text" ';
+                        if ($el.attr("value")) elMaskStr += 'value="' + $el.attr("value") + '" ';
+                        if ($el.attr("dir")) elMaskStr += 'dir="' + $el.attr("dir") + '" ';
+                        elMaskStr += '/>';
+                        var elmask = $(elMaskStr)[0];
+                        $(elmask).inputmask($.extend({}, opts, { mask: msk.mask }));
+                        return elmask;
+                    }
                 });
 
                 $el.data('_inputmask-multi', { "activeMasksetIndex": 0, "elmasks": elmasks });
@@ -273,44 +277,6 @@
                         return $(activeMask).inputmask("unmaskedvalue");
                     case "mask":
                         mask(actionObj["el"]);
-                        break;
-                    case "remove": //TODO
-                        var el = actionObj["el"];
-                        $el = $(el);
-                        maskset = $el.data('_inputmask')['maskset'];
-                        opts = $el.data('_inputmask')['opts'];
-                        //writeout the unmaskedvalue
-                        el._valueSet(unmaskedvalue($el));
-                        //unbind all events
-                        $el.unbind(".inputmask");
-                        $el.removeClass('focus-inputmask');
-                        //clear data
-                        $el.removeData('_inputmask');
-                        //restore the value property
-                        var valueProperty;
-                        if (Object.getOwnPropertyDescriptor)
-                            valueProperty = Object.getOwnPropertyDescriptor(el, "value");
-                        if (valueProperty && valueProperty.get) {
-                            if (el._valueGet) {
-                                Object.defineProperty(el, "value", {
-                                    get: el._valueGet,
-                                    set: el._valueSet
-                                });
-                            }
-                        } else if (document.__lookupGetter__ && el.__lookupGetter__("value")) {
-                            if (el._valueGet) {
-                                el.__defineGetter__("value", el._valueGet);
-                                el.__defineSetter__("value", el._valueSet);
-                            }
-                        }
-                        try { //try catch needed for IE7 as it does not supports deleting fns
-                            delete el._valueGet;
-                            delete el._valueSet;
-                        } catch (e) {
-                            el._valueGet = undefined;
-                            el._valueSet = undefined;
-
-                        }
                         break;
                 }
             }

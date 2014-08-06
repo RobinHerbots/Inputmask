@@ -19,10 +19,8 @@ When using this extension make sure you specify the correct url to get the masks
 */
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
         define("jquery.inputmask.phone.extensions", ['jquery', 'jquery.inputmask'], factory);
     } else {
-        // Browser globals
         factory(jQuery);
     }
 }(function ($) {

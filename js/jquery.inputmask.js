@@ -8,10 +8,8 @@
 
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
         define("jquery.inputmask", ['jquery'], factory);
     } else {
-        // Browser globals
         factory(jQuery);
     }
 }(function ($) {
@@ -91,7 +89,10 @@
                             // Group closing
                             openingToken = openenings.pop();
                             if (openenings.length > 0) {
-                                openenings[openenings.length - 1]["matches"].push(openingToken);
+                                openingToken = openenings[openenings.length - 1];
+                                openingToken["matches"].push(openingToken);
+                                if (openingToken.isAlternator)
+                                    openenings.pop();
                             } else {
                                 currentToken.matches.push(openingToken);
                             }

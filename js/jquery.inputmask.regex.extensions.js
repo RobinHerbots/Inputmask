@@ -10,10 +10,8 @@ Allows for using regular expressions as a mask
 */
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
         define("jquery.inputmask.regex.extensions", ['jquery', 'jquery.inputmask'], factory);
     } else {
-        // Browser globals
         factory(jQuery);
     }
 }(function ($) {
