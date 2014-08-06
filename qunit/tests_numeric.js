@@ -270,7 +270,8 @@ test("numeric alias with allowMinus:false type=number - mask not applied - Marti
     $("#testmask").Type("123456");
     $("#testmask").SendKey("-");
 
-    equal($("#testmask").val(), "", "Result " + $("#testmask").val());
+    //IE7 does not know type=number and treats as type=text
+    ok($("#testmask").val() == "" || $("#testmask").val() == "123456", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
 

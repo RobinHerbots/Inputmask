@@ -134,7 +134,7 @@ Allows for using regular expressions as a mask
                                     }
                                 } else {
                                     var testExp;
-                                    if (matchToken[0] == "[") {
+                                    if (matchToken.charAt(0) == "[") {
                                         testExp = regexPart;
                                         testExp += matchToken;
                                         for (var j = 0; j < openGroupCount; j++) {
@@ -144,7 +144,7 @@ Allows for using regular expressions as a mask
                                         isvalid = exp.test(bufferStr);
                                     } else {
                                         for (var l = 0, tl = matchToken.length; l < tl; l++) {
-                                            if (matchToken[l] == "\\") continue;
+                                            if (matchToken.charAt(l) == "\\") continue;
                                             testExp = regexPart;
                                             testExp += matchToken.substr(0, l + 1);
                                             testExp = testExp.replace(/\|$/, "");

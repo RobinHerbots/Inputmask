@@ -84,7 +84,7 @@ test("YoussefTaghlabi isValid(\"123,456.78\", { alias: \"decimal\" }", function 
     var isValid = $.inputmask.isValid("123,456.78", {
         alias: "decimal", radixPoint: ".",
         groupSeparator: ",",
-        groupSize: 3,
+        groupSize: 3
     });
     equal(isValid, true, "Result " + isValid);
 });
@@ -92,7 +92,7 @@ test("YoussefTaghlabi isValid(\"12,\", { alias: \"decimal\" }", function () {
     var isValid = $.inputmask.isValid("12,", {
         alias: "decimal", radixPoint: ".",
         groupSeparator: ",",
-        groupSize: 3,
+        groupSize: 3
     });
     equal(isValid, false, "Result " + isValid);
 });
@@ -100,7 +100,7 @@ test("YoussefTaghlabi isValid(\"12,1.45\", { alias: \"decimal\" }", function () 
     var isValid = $.inputmask.isValid("12,1.45", {
         alias: "decimal", radixPoint: ".",
         groupSeparator: ",",
-        groupSize: 3,
+        groupSize: 3
     });
     equal(isValid, false, "Result " + isValid);
 });
@@ -108,7 +108,7 @@ test("YoussefTaghlabi isValid(\"12,345.67\", { alias: \"decimal\" }", function (
     var isValid = $.inputmask.isValid("12,345.67", {
         alias: "decimal", radixPoint: ".",
         groupSeparator: ",",
-        groupSize: 3,
+        groupSize: 3
     });
     equal(isValid, true, "Result " + isValid);
 });

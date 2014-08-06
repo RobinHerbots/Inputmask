@@ -89,9 +89,9 @@
                             // Group closing
                             openingToken = openenings.pop();
                             if (openenings.length > 0) {
-                                openingToken = openenings[openenings.length - 1];
-                                openingToken["matches"].push(openingToken);
-                                if (openingToken.isAlternator)
+                                var currentOpeningToken = openenings[openenings.length - 1];
+                                currentOpeningToken["matches"].push(openingToken);
+                                if (currentOpeningToken.isAlternator)
                                     openenings.pop();
                             } else {
                                 currentToken.matches.push(openingToken);

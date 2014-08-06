@@ -3,15 +3,13 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.59
+* Version: 3.0.60
 */
 
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
         define("jquery.inputmask", ['jquery'], factory);
     } else {
-        // Browser globals
         factory(jQuery);
     }
 }(function ($) {
@@ -91,7 +89,10 @@
                             // Group closing
                             openingToken = openenings.pop();
                             if (openenings.length > 0) {
-                                openenings[openenings.length - 1]["matches"].push(openingToken);
+                                var currentOpeningToken = openenings[openenings.length - 1];
+                                currentOpeningToken["matches"].push(openingToken);
+                                if (currentOpeningToken.isAlternator)
+                                    openenings.pop();
                             } else {
                                 currentToken.matches.push(openingToken);
                             }
@@ -1811,14 +1812,16 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.59
+* Version: 3.0.60
+*
+*  THIS IS A TEMPORARY HACK TO BE COMPATIBLE WITH MULTIPLE MASKS LIKE IN VERSION 2.X - WHEN THE ALTERNATOR SYNTAX IS IMPLEMENTED inputmask-multi WILL BE DELETED!!
+*
+*
 */
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
         define("jquery.inputmask-multi", ['jquery', 'jquery.inputmask'], factory);
     } else {
-        // Browser globals
         factory(jQuery);
     }
 }(function ($) {
@@ -1976,13 +1979,15 @@
                 isRTL = el.dir == "rtl" || opts.numericInput;
                 activeMasksetIndex = 0;
                 elmasks = $.map(masksets, function (msk, ndx) {
-                    var elMaskStr = '<input type="text" ';
-                    if ($el.attr("value")) elMaskStr += 'value="' + $el.attr("value") + '" ';
-                    if ($el.attr("dir")) elMaskStr += 'dir="' + $el.attr("dir") + '" ';
-                    elMaskStr += '/>';
-                    var elmask = $(elMaskStr)[0];
-                    $(elmask).inputmask($.extend({}, opts, { mask: msk.mask }));
-                    return elmask;
+                    if (isFinite(ndx)) { //handle extension in the prototype of array for ie8
+                        var elMaskStr = '<input type="text" ';
+                        if ($el.attr("value")) elMaskStr += 'value="' + $el.attr("value") + '" ';
+                        if ($el.attr("dir")) elMaskStr += 'dir="' + $el.attr("dir") + '" ';
+                        elMaskStr += '/>';
+                        var elmask = $(elMaskStr)[0];
+                        $(elmask).inputmask($.extend({}, opts, { mask: msk.mask }));
+                        return elmask;
+                    }
                 });
 
                 $el.data('_inputmask-multi', { "activeMasksetIndex": 0, "elmasks": elmasks });
@@ -2082,44 +2087,6 @@
                     case "mask":
                         mask(actionObj["el"]);
                         break;
-                    case "remove": //TODO
-                        var el = actionObj["el"];
-                        $el = $(el);
-                        maskset = $el.data('_inputmask')['maskset'];
-                        opts = $el.data('_inputmask')['opts'];
-                        //writeout the unmaskedvalue
-                        el._valueSet(unmaskedvalue($el));
-                        //unbind all events
-                        $el.unbind(".inputmask");
-                        $el.removeClass('focus-inputmask');
-                        //clear data
-                        $el.removeData('_inputmask');
-                        //restore the value property
-                        var valueProperty;
-                        if (Object.getOwnPropertyDescriptor)
-                            valueProperty = Object.getOwnPropertyDescriptor(el, "value");
-                        if (valueProperty && valueProperty.get) {
-                            if (el._valueGet) {
-                                Object.defineProperty(el, "value", {
-                                    get: el._valueGet,
-                                    set: el._valueSet
-                                });
-                            }
-                        } else if (document.__lookupGetter__ && el.__lookupGetter__("value")) {
-                            if (el._valueGet) {
-                                el.__defineGetter__("value", el._valueGet);
-                                el.__defineSetter__("value", el._valueSet);
-                            }
-                        }
-                        try { //try catch needed for IE7 as it does not supports deleting fns
-                            delete el._valueGet;
-                            delete el._valueSet;
-                        } catch (e) {
-                            el._valueGet = undefined;
-                            el._valueSet = undefined;
-
-                        }
-                        break;
                 }
             }
         };
@@ -2150,16 +2117,14 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.59
+Version: 3.0.60
 
 Optional extensions on the jquery.inputmask base
 */
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
         define("jquery.inputmask.extensions", ['jquery', 'jquery.inputmask'], factory);
     } else {
-        // Browser globals
         factory(jQuery);
     }
 }(function ($) {
@@ -2279,16 +2244,14 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.59
+Version: 3.0.60
 
 Optional extensions on the jquery.inputmask base
 */
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
         define("jquery.inputmask.date.extensions", ['jquery', 'jquery.inputmask'], factory);
     } else {
-        // Browser globals
         factory(jQuery);
     }
 }(function ($) {
@@ -2479,15 +2442,15 @@ Optional extensions on the jquery.inputmask base
 
                             isValid = opts.isInYearRange(yearPrefix + chrs, opts.yearrange.minyear, opts.yearrange.maxyear);
                             if (isValid) {
-                                maskset.buffer[pos++] = yearPrefix[0];
+                                maskset.buffer[pos++] = yearPrefix.charAt(0);
                                 return { "pos": pos };
                             }
                             yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear, chrs + "0").toString().slice(0, 2);
 
                             isValid = opts.isInYearRange(yearPrefix + chrs, opts.yearrange.minyear, opts.yearrange.maxyear);
                             if (isValid) {
-                                maskset.buffer[pos++] = yearPrefix[0];
-                                maskset.buffer[pos++] = yearPrefix[1];
+                                maskset.buffer[pos++] = yearPrefix.charAt(0);
+                                maskset.buffer[pos++] = yearPrefix.charAt(1);
                                 return { "pos": pos };
                             }
                         }
@@ -2503,7 +2466,7 @@ Optional extensions on the jquery.inputmask base
 
                             isValid = opts.isInYearRange(chrs[0] + yearPrefix[1] + chrs[1], opts.yearrange.minyear, opts.yearrange.maxyear);
                             if (isValid) {
-                                maskset.buffer[pos++] = yearPrefix[1];
+                                maskset.buffer[pos++] = yearPrefix.charAt(1);
                                 return { "pos": pos };
                             }
 
@@ -2524,9 +2487,9 @@ Optional extensions on the jquery.inputmask base
                                 }
                             } else isValid = false;
                             if (isValid) {
-                                maskset.buffer[pos - 1] = yearPrefix[0];
-                                maskset.buffer[pos++] = yearPrefix[1];
-                                maskset.buffer[pos++] = chrs[0];
+                                maskset.buffer[pos - 1] = yearPrefix.charAt(0);
+                                maskset.buffer[pos++] = yearPrefix.charAt(1);
+                                maskset.buffer[pos++] = chrs.charAt(0);
                                 return { "refreshFromBuffer": { start: pos - 3, end: pos }, "pos": pos };
                             }
                         }
@@ -2775,16 +2738,14 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.59
+Version: 3.0.60
 
 Optional extensions on the jquery.inputmask base
 */
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
         define("jquery.inputmask.numeric.extensions", ['jquery', 'jquery.inputmask'], factory);
     } else {
-        // Browser globals
         factory(jQuery);
     }
 }(function ($) {
@@ -2915,7 +2876,7 @@ Optional extensions on the jquery.inputmask base
                                 //handle 0 for integerpart
                                 var matchRslt = maskset.buffer.join('').match(opts.regex.integerPart(opts)), radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
                                 if (matchRslt) {
-                                    if (matchRslt["0"][0].indexOf("0") == 0 && pos >= opts.prefix.length) {
+                                    if (matchRslt["0"].indexOf("0") == 0 && pos >= opts.prefix.length) {
                                         if (radixPosition == -1 || (pos <= radixPosition && maskset["validPositions"][radixPosition] == undefined)) {
                                             maskset.buffer.splice(matchRslt.index, 1);
                                             pos = pos > matchRslt.index ? pos - 1 : matchRslt.index;
@@ -3027,17 +2988,15 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.59
+Version: 3.0.60
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
 */
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
         define("jquery.inputmask.regex.extensions", ['jquery', 'jquery.inputmask'], factory);
     } else {
-        // Browser globals
         factory(jQuery);
     }
 }(function ($) {
@@ -3160,7 +3119,7 @@ Allows for using regular expressions as a mask
                                     }
                                 } else {
                                     var testExp;
-                                    if (matchToken[0] == "[") {
+                                    if (matchToken.charAt(0) == "[") {
                                         testExp = regexPart;
                                         testExp += matchToken;
                                         for (var j = 0; j < openGroupCount; j++) {
@@ -3170,7 +3129,7 @@ Allows for using regular expressions as a mask
                                         isvalid = exp.test(bufferStr);
                                     } else {
                                         for (var l = 0, tl = matchToken.length; l < tl; l++) {
-                                            if (matchToken[l] == "\\") continue;
+                                            if (matchToken.charAt(l) == "\\") continue;
                                             testExp = regexPart;
                                             testExp += matchToken.substr(0, l + 1);
                                             testExp = testExp.replace(/\|$/, "");
@@ -3222,7 +3181,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.59
+Version: 3.0.60
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
@@ -3238,10 +3197,8 @@ When using this extension make sure you specify the correct url to get the masks
 */
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
         define("jquery.inputmask.phone.extensions", ['jquery', 'jquery.inputmask'], factory);
     } else {
-        // Browser globals
         factory(jQuery);
     }
 }(function ($) {

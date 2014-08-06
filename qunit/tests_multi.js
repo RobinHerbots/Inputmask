@@ -125,11 +125,13 @@ asyncTest("inputmask({ mask: [\"99999\", \"99999-9999\", \"999999-9999\"]]}) - i
     $("#testmask").inputmask({ mask: ["99999", "99999-9999", "999999-9999"] });
 
     $("#testmask")[0].focus();
-    $("#testmask").Type("123456");
-    setTimeout(function () {
-        equal($("#testmask").val(), "____-654321", "Result " + $("#testmask").val());
-        start();
-        $("#testmask").remove();
+    setTimeout(function () { //needed to pass on ie
+        $("#testmask").Type("123456");
+        setTimeout(function () {
+            start();
+            equal($("#testmask").val(), "____-654321", "Result " + $("#testmask").val());
+            $("#testmask").remove();
+        }, 0);
     }, 0);
 });
 

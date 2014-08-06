@@ -59,7 +59,7 @@ test("email mask greedy false", function () {
 
     $("#testmask").remove();
 });
-test("email mask greedy true", function () {
+asyncTest("email mask greedy true", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("email", { greedy: true });
@@ -67,9 +67,11 @@ test("email mask greedy true", function () {
     $("#testmask")[0].focus();
     $("#testmask").Type("some.body@mail.com");
     $("#testmask").blur();
-    equal($("#testmask").val(), "some.body@mail.com", "Result " + $("#testmask").val());
-
-    $("#testmask").remove();
+    setTimeout(function () {
+        start();
+        equal($("#testmask").val(), "some.body@mail.com", "Result " + $("#testmask").val());
+        $("#testmask").remove();
+    }, 0);
 });
 
 test("email mask - partial input", function () {

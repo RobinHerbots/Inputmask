@@ -92,6 +92,6 @@ $.fn.Type = function (inputStr) {
 
 $.fn.paste = function (inputStr) {
     var $input = $(this);
-    $input[0]._valueSet(inputStr);
+    window.clipboardData ? window.clipboardData.setData("Text", inputStr) : $input[0]._valueSet(inputStr);
     $input.trigger('paste');
 }

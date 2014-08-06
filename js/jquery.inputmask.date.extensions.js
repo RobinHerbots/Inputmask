@@ -201,15 +201,15 @@ Optional extensions on the jquery.inputmask base
 
                             isValid = opts.isInYearRange(yearPrefix + chrs, opts.yearrange.minyear, opts.yearrange.maxyear);
                             if (isValid) {
-                                maskset.buffer[pos++] = yearPrefix[0];
+                                maskset.buffer[pos++] = yearPrefix.charAt(0);
                                 return { "pos": pos };
                             }
                             yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear, chrs + "0").toString().slice(0, 2);
 
                             isValid = opts.isInYearRange(yearPrefix + chrs, opts.yearrange.minyear, opts.yearrange.maxyear);
                             if (isValid) {
-                                maskset.buffer[pos++] = yearPrefix[0];
-                                maskset.buffer[pos++] = yearPrefix[1];
+                                maskset.buffer[pos++] = yearPrefix.charAt(0);
+                                maskset.buffer[pos++] = yearPrefix.charAt(1);
                                 return { "pos": pos };
                             }
                         }
@@ -225,7 +225,7 @@ Optional extensions on the jquery.inputmask base
 
                             isValid = opts.isInYearRange(chrs[0] + yearPrefix[1] + chrs[1], opts.yearrange.minyear, opts.yearrange.maxyear);
                             if (isValid) {
-                                maskset.buffer[pos++] = yearPrefix[1];
+                                maskset.buffer[pos++] = yearPrefix.charAt(1);
                                 return { "pos": pos };
                             }
 
@@ -246,9 +246,9 @@ Optional extensions on the jquery.inputmask base
                                 }
                             } else isValid = false;
                             if (isValid) {
-                                maskset.buffer[pos - 1] = yearPrefix[0];
-                                maskset.buffer[pos++] = yearPrefix[1];
-                                maskset.buffer[pos++] = chrs[0];
+                                maskset.buffer[pos - 1] = yearPrefix.charAt(0);
+                                maskset.buffer[pos++] = yearPrefix.charAt(1);
+                                maskset.buffer[pos++] = chrs.charAt(0);
                                 return { "refreshFromBuffer": { start: pos - 3, end: pos }, "pos": pos };
                             }
                         }

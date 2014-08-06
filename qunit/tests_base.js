@@ -567,6 +567,7 @@ asyncTest("inputmask(\"+7 (999) 999-99-99\") ~ paste \"+7 (+79114041112___) ___-
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("+7 (999) 999-99-99");
+    $("#testmask")[0].focus();
     $("#testmask").paste("+7 (+79114041112___) ___-__-__");
 
     setTimeout(function () {
@@ -587,6 +588,7 @@ asyncTest("inputmask(\"+7 (999) 999-99-99\") ~ paste \"0079114041112\" - monobla
             return strippedValue;
         }
     });
+    $("#testmask")[0].focus();
     $("#testmask").paste("0079114041112");
 
     setTimeout(function () {
