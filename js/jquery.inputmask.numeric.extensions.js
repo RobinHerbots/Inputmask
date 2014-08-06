@@ -141,7 +141,7 @@ Optional extensions on the jquery.inputmask base
                                 //handle 0 for integerpart
                                 var matchRslt = maskset.buffer.join('').match(opts.regex.integerPart(opts)), radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
                                 if (matchRslt) {
-                                    if (matchRslt["0"][0].indexOf("0") == 0 && pos >= opts.prefix.length) {
+                                    if (matchRslt["0"].indexOf("0") == 0 && pos >= opts.prefix.length) {
                                         if (radixPosition == -1 || (pos <= radixPosition && maskset["validPositions"][radixPosition] == undefined)) {
                                             maskset.buffer.splice(matchRslt.index, 1);
                                             pos = pos > matchRslt.index ? pos - 1 : matchRslt.index;
