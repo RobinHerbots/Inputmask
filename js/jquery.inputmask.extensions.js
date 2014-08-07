@@ -17,12 +17,12 @@ Optional extensions on the jquery.inputmask base
     //extra definitions
     $.extend($.inputmask.defaults.definitions, {
         'A': {
-            validator: "[A-Za-z]",
+            validator: "[A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
             cardinality: 1,
             casing: "upper" //auto uppercasing
         },
         '#': {
-            validator: "[A-Za-z\u0410-\u044F\u0401\u04510-9]",
+            validator: "[0-9A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
             cardinality: 1,
             casing: "upper"
         }
