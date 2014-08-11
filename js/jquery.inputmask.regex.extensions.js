@@ -10,7 +10,7 @@ Allows for using regular expressions as a mask
 */
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
-        define("jquery.inputmask.regex.extensions", ['jquery', 'jquery.inputmask'], factory);
+        define(['jquery', 'jquery.inputmask'], factory);
     } else {
         factory(jQuery);
     }

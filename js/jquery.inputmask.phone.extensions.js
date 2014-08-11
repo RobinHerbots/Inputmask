@@ -19,7 +19,7 @@ When using this extension make sure you specify the correct url to get the masks
 */
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
-        define("jquery.inputmask.phone.extensions", ['jquery', 'jquery.inputmask'], factory);
+        define(['jquery', 'jquery.inputmask'], factory);
     } else {
         factory(jQuery);
     }

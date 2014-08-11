@@ -9,7 +9,7 @@ Optional extensions on the jquery.inputmask base
 */
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
-        define("jquery.inputmask.numeric.extensions", ['jquery', 'jquery.inputmask'], factory);
+        define(['jquery', 'jquery.inputmask'], factory);
     } else {
         factory(jQuery);
     }
