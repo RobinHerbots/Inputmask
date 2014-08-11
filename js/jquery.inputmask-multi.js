@@ -11,7 +11,7 @@
 */
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
-        define(['jquery', 'jquery.inputmask'], factory);
+        define(['jquery', './jquery.inputmask'], factory);
     } else {
         factory(jQuery);
     }
