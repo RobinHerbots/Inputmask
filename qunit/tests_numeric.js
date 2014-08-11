@@ -672,3 +672,16 @@ test("decimal alias set value with val() - kochelmonster", function () {
     equal($("#testmask").val(), "39.399.392,22 €", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
+
+test("inputmask(\"decimal\") - value=\"123.1\" tab out", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("decimal", { digits: 3 });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123.1");
+    $("#testmask").SendKey(keyCodes.TAB);
+
+    equal($("#testmask").val(), "123.100", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});

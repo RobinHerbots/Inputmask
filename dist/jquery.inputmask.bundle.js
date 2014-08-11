@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.60
+* Version: 3.0.61
 */
 
 (function (factory) {
@@ -448,8 +448,8 @@
             function getTests(pos, ndxIntlzr, tstPs) {
                 var maskTokens = getMaskSet()["maskToken"], testPos = ndxIntlzr ? tstPs : 0, ndxInitializer = ndxIntlzr || [0], matches = [], insertStop = false;
                 function ResolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) { //ndxInitilizer contains a set of indexes to speedup searches in the mtokens
-
                     function handleMatch(match, loopNdx, quantifierRecurse) {
+                        if (testPos > 10000) alert("jquery.inputmask: There is probably an error in your mask definition or in the code. Create an issue on github with an example of the mask you are using.");
                         if (testPos == pos && match.matches == undefined) {
                             matches.push({ "match": match, "locator": loopNdx.reverse() });
                             return true;
@@ -1022,8 +1022,8 @@
                 }
                 function InstallNativeValueSetFallback(npt) {
                     $(npt).bind("mouseenter.inputmask", function (event) {
-                        var $input = $(this), input = this;
-                        if (input._valueGet() != getBuffer().join('')) {
+                        var $input = $(this), input = this, value = input._valueGet();
+                        if (value != "" && value != getBuffer().join('')) {
                             $input.trigger("setvalue");
                         }
                     });
@@ -1666,12 +1666,12 @@
                         definitionSymbol: "*"
                     },
                     'a': {
-                        validator: "[A-Za-z\u0410-\u044F\u0401\u0451]",
+                        validator: "[A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
                         cardinality: 1,
                         definitionSymbol: "*"
                     },
                     '*': {
-                        validator: "[A-Za-z\u0410-\u044F\u0401\u04510-9]",
+                        validator: "[0-9A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
                         cardinality: 1
                     }
                 },
@@ -1812,7 +1812,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.60
+* Version: 3.0.61
 *
 *  THIS IS A TEMPORARY HACK TO BE COMPATIBLE WITH MULTIPLE MASKS LIKE IN VERSION 2.X - WHEN THE ALTERNATOR SYNTAX IS IMPLEMENTED inputmask-multi WILL BE DELETED!!
 *
@@ -2117,7 +2117,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.60
+Version: 3.0.61
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2131,12 +2131,12 @@ Optional extensions on the jquery.inputmask base
     //extra definitions
     $.extend($.inputmask.defaults.definitions, {
         'A': {
-            validator: "[A-Za-z]",
+            validator: "[A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
             cardinality: 1,
             casing: "upper" //auto uppercasing
         },
         '#': {
-            validator: "[A-Za-z\u0410-\u044F\u0401\u04510-9]",
+            validator: "[0-9A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
             cardinality: 1,
             casing: "upper"
         }
@@ -2231,7 +2231,7 @@ Optional extensions on the jquery.inputmask base
             },
             definitions: {
                 '*': {
-                    validator: "[A-Za-z\u0410-\u044F\u0401\u04510-9!#$%&'*+/=?^_`{|}~\-]",
+                    validator: "[0-9A-Za-z!#$%&'*+/=?^_`{|}~\-]",
                     cardinality: 1,
                     casing: "lower"
                 }
@@ -2244,7 +2244,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.60
+Version: 3.0.61
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2738,7 +2738,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.60
+Version: 3.0.61
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2833,7 +2833,15 @@ Optional extensions on the jquery.inputmask base
                 return { pos: newPos, "refreshFromBuffer": needsRefresh };
             },
             onKeyDown: function (e, buffer, caretPos, opts) {
-                if (opts.autoGroup && (e.keyCode == opts.keyCode.DELETE || e.keyCode == opts.keyCode.BACKSPACE)) {
+                if (e.keyCode == opts.keyCode.TAB && opts.placeholder.charAt(0) != "0") {
+                    var radixPosition = $.inArray(opts.radixPoint, buffer);
+                    if (radixPosition != -1 && isFinite(opts.digits)) {
+                        for (var i = 1; i <= opts.digits; i++) {
+                            if (buffer[radixPosition + i] == undefined || buffer[radixPosition + i] == opts.placeholder.charAt(0)) buffer[radixPosition + i] = "0";
+                        }
+                        return { "refreshFromBuffer": { start: ++radixPosition, end: radixPosition + opts.digits } };
+                    }
+                } else if (opts.autoGroup && (e.keyCode == opts.keyCode.DELETE || e.keyCode == opts.keyCode.BACKSPACE)) {
                     var rslt = opts.postFormat(buffer, caretPos - 1, true, opts);
                     rslt.caret = rslt.pos + 1;
                     return rslt;
@@ -2988,7 +2996,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.60
+Version: 3.0.61
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -3181,7 +3189,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.60
+Version: 3.0.61
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks

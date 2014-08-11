@@ -448,8 +448,8 @@
             function getTests(pos, ndxIntlzr, tstPs) {
                 var maskTokens = getMaskSet()["maskToken"], testPos = ndxIntlzr ? tstPs : 0, ndxInitializer = ndxIntlzr || [0], matches = [], insertStop = false;
                 function ResolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) { //ndxInitilizer contains a set of indexes to speedup searches in the mtokens
-
                     function handleMatch(match, loopNdx, quantifierRecurse) {
+                        if (testPos > 10000) alert("jquery.inputmask: There is probably an error in your mask definition or in the code. Create an issue on github with an example of the mask you are using.");
                         if (testPos == pos && match.matches == undefined) {
                             matches.push({ "match": match, "locator": loopNdx.reverse() });
                             return true;
@@ -1022,8 +1022,8 @@
                 }
                 function InstallNativeValueSetFallback(npt) {
                     $(npt).bind("mouseenter.inputmask", function (event) {
-                        var $input = $(this), input = this;
-                        if (input._valueGet() != getBuffer().join('')) {
+                        var $input = $(this), input = this, value = input._valueGet();
+                        if (value != "" && value != getBuffer().join('')) {
                             $input.trigger("setvalue");
                         }
                     });

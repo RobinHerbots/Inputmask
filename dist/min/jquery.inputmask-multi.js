@@ -3,7 +3,7 @@
  http://github.com/RobinHerbots/jquery.inputmask
  Copyright (c) 2010 - 2014 Robin Herbots
  Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
- Version: 3.0.60
+ Version: 3.0.61
 
   THIS IS A TEMPORARY HACK TO BE COMPATIBLE WITH MULTIPLE MASKS LIKE IN VERSION 2.X - WHEN THE ALTERNATOR SYNTAX IS IMPLEMENTED inputmask-multi WILL BE DELETED!!
 
