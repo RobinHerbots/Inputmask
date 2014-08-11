@@ -1267,10 +1267,6 @@
                             var keypressResult = opts.onKeyPress.call(this, e, getBuffer(), currentCaretPos.begin, opts);
                             handleOnKeyResult(input, keypressResult, currentCaretPos);
                         }
-                        var temp;
-                        for (var i in getMaskSet().validPositions) {
-                            temp += " " + i;
-                        }
                     }
                 }
             }
@@ -1343,6 +1339,18 @@
                     keydownEvent.call(input, e);
                 }
                 e.preventDefault();
+            }
+            function compositionupdateEvent(e) {
+                var that = this;
+                setTimeout(function () {
+                    caret(that, caret(that).begin - 1);
+                    var keypress = $.Event("keypress");
+                    keypress.which = e.originalEvent.data.charCodeAt(0);
+                    keypressEvent.call(that, keypress, undefined, undefined, false);
+                    var forwardPosition = getMaskSet()["p"];
+                    writeBuffer(that, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
+                }, 0);
+                return false;
             }
 
             function mask(el) {
@@ -1477,7 +1485,8 @@
 
                     $el.bind("keydown.inputmask", keydownEvent
                     ).bind("keypress.inputmask", keypressEvent
-                    ).bind("keyup.inputmask", keyupEvent);
+                    ).bind("keyup.inputmask", keyupEvent
+                    ).bind("compositionupdate.inputmask", compositionupdateEvent);
 
                     if (android || androidfirefox || androidchrome || kindle) {
                         if (PasteEventType == "input") {

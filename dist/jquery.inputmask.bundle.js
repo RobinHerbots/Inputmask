@@ -3,12 +3,12 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.61
+* Version: 3.0.62
 */
 
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
-        define("jquery.inputmask", ['jquery'], factory);
+        define(['jquery'], factory);
     } else {
         factory(jQuery);
     }
@@ -1267,10 +1267,6 @@
                             var keypressResult = opts.onKeyPress.call(this, e, getBuffer(), currentCaretPos.begin, opts);
                             handleOnKeyResult(input, keypressResult, currentCaretPos);
                         }
-                        var temp;
-                        for (var i in getMaskSet().validPositions) {
-                            temp += " " + i;
-                        }
                     }
                 }
             }
@@ -1343,6 +1339,18 @@
                     keydownEvent.call(input, e);
                 }
                 e.preventDefault();
+            }
+            function compositionupdateEvent(e) {
+                var that = this;
+                setTimeout(function () {
+                    caret(that, caret(that).begin - 1);
+                    var keypress = $.Event("keypress");
+                    keypress.which = e.originalEvent.data.charCodeAt(0);
+                    keypressEvent.call(that, keypress, undefined, undefined, false);
+                    var forwardPosition = getMaskSet()["p"];
+                    writeBuffer(that, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
+                }, 0);
+                return false;
             }
 
             function mask(el) {
@@ -1477,7 +1485,8 @@
 
                     $el.bind("keydown.inputmask", keydownEvent
                     ).bind("keypress.inputmask", keypressEvent
-                    ).bind("keyup.inputmask", keyupEvent);
+                    ).bind("keyup.inputmask", keyupEvent
+                    ).bind("compositionupdate.inputmask", compositionupdateEvent);
 
                     if (android || androidfirefox || androidchrome || kindle) {
                         if (PasteEventType == "input") {
@@ -1812,7 +1821,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.61
+* Version: 3.0.62
 *
 *  THIS IS A TEMPORARY HACK TO BE COMPATIBLE WITH MULTIPLE MASKS LIKE IN VERSION 2.X - WHEN THE ALTERNATOR SYNTAX IS IMPLEMENTED inputmask-multi WILL BE DELETED!!
 *
@@ -1820,7 +1829,7 @@
 */
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
-        define("jquery.inputmask-multi", ['jquery', 'jquery.inputmask'], factory);
+        define(['jquery', './jquery.inputmask'], factory);
     } else {
         factory(jQuery);
     }
@@ -2117,13 +2126,13 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.61
+Version: 3.0.62
 
 Optional extensions on the jquery.inputmask base
 */
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
-        define("jquery.inputmask.extensions", ['jquery', 'jquery.inputmask'], factory);
+        define(['jquery', './jquery.inputmask'], factory);
     } else {
         factory(jQuery);
     }
@@ -2244,13 +2253,13 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.61
+Version: 3.0.62
 
 Optional extensions on the jquery.inputmask base
 */
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
-        define("jquery.inputmask.date.extensions", ['jquery', 'jquery.inputmask'], factory);
+        define(['jquery', './jquery.inputmask'], factory);
     } else {
         factory(jQuery);
     }
@@ -2738,13 +2747,13 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.61
+Version: 3.0.62
 
 Optional extensions on the jquery.inputmask base
 */
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
-        define("jquery.inputmask.numeric.extensions", ['jquery', 'jquery.inputmask'], factory);
+        define(['jquery', './jquery.inputmask'], factory);
     } else {
         factory(jQuery);
     }
@@ -2996,14 +3005,14 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.61
+Version: 3.0.62
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
 */
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
-        define("jquery.inputmask.regex.extensions", ['jquery', 'jquery.inputmask'], factory);
+        define(['jquery', './jquery.inputmask'], factory);
     } else {
         factory(jQuery);
     }
@@ -3189,7 +3198,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.61
+Version: 3.0.62
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
@@ -3205,7 +3214,7 @@ When using this extension make sure you specify the correct url to get the masks
 */
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
-        define("jquery.inputmask.phone.extensions", ['jquery', 'jquery.inputmask'], factory);
+        define(['jquery', './jquery.inputmask'], factory);
     } else {
         factory(jQuery);
     }
