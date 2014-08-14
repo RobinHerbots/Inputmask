@@ -42,7 +42,7 @@ test("$.inputmask.isValid(\"01 650 103 002 0001 DE101 5170\", { mask: \"99 999 9
 
 test("$.inputmask.isValid email => false", function () {
     var isValid = $.inputmask.isValid("some.body@mail.c", { alias: "email" });
-    equal(isValid, false, "Result " + isValid);
+    equal(isValid, true, "Result " + isValid);
 });
 
 test("$.inputmask.isValid email => true", function () {
@@ -52,7 +52,7 @@ test("$.inputmask.isValid email => true", function () {
 
 test("$.inputmask.isValid email greedy => false", function () {
     var isValid = $.inputmask.isValid("some.body@mail.c", { alias: "email", greedy: true });
-    equal(isValid, false, "Result " + isValid);
+    equal(isValid, true, "Result " + isValid);
 });
 
 test("$.inputmask.isValid email greedy => true", function () {
