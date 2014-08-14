@@ -82,7 +82,7 @@ test("email mask - partial input", function () {
     $("#testmask")[0].focus();
     $("#testmask").Type("some.");
     $("#testmask").blur();
-    equal($("#testmask").val(), "some._@_.__", "Result " + $("#testmask").val());
+    equal($("#testmask").val(), "some._@_", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });

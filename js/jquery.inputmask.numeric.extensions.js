@@ -185,7 +185,8 @@ Optional extensions on the jquery.inputmask base
                         return isValid;
                     },
                     cardinality: 1,
-                    prevalidator: null
+                    prevalidator: null,
+                    placeholder: ""
                 },
                 ':': {
                     validator: function (chrs, maskset, pos, strict, opts) {

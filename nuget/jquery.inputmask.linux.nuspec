@@ -24,10 +24,12 @@ Highlights:
 - non-greedy masks
 - many features can be enabled/disabled/configured by options
 - supports readonly/disabled/dir="rtl" attributes
-- support data-inputmask attribute
-- multi-mask support
+- support data-inputmask attribute(s)  
+- alternator-mask support
 - regex-mask support
-- value formatting without input element
+- dynamic-mask support
+- preprocessing-mask support
+- value formatting / validating without input element
 </description>
         <tags>jQuery, plugins, input, form, inputmask, mask</tags>
     </metadata>
@@ -38,6 +40,5 @@ Highlights:
 		<file src="js/jquery.inputmask.regex.extensions.js" target="content/Scripts/jquery.inputmask/jquery.inputmask.regex.extensions-0.0.0.js" />
 		<file src="js/jquery.inputmask.phone.extensions.js" target="content/Scripts/jquery.inputmask/jquery.inputmask.phone.extensions-0.0.0.js" />
         <file src="js/jquery.inputmask.js" target="content/Scripts/jquery.inputmask/jquery.inputmask-0.0.0.js" />
-		<file src="js/jquery.inputmask-multi.js" target="content/Scripts/jquery.inputmask/jquery.inputmask-multi-0.0.0.js" />
     </files>
 </package>

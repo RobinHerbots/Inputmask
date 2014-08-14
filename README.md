@@ -18,7 +18,7 @@ Highlights:
 - many features can be enabled/disabled/configured by options
 - supports readonly/disabled/dir="rtl" attributes
 - support data-inputmask attribute(s)  
-- multi-mask support
+- alternator-mask support
 - regex-mask support
 - dynamic-mask support
 - preprocessing-mask support
@@ -90,7 +90,7 @@ You can find info within the js-files or by further exploring the options.
 ## Masking types
 ### Basic masks
 
-TODO
+TODO - explain
 
 ### Optional masks
 
@@ -137,37 +137,36 @@ The initial mask shown will be "_____" instead of "_____-____".
 
 ### Dynamic masks
 
-TODO
+TODO - explain
 
-### Multi masks
+### Alternator masks
 
-In the current implementation you need to include the jquery.inputmask-multi.js
-
-You can define multiple mask for your input.  Depending on the input the masking will switch between the defined masks.  
-This can be useful when the masks are too different to solve it with optional parts.
+TODO - explain
 
 ```javascript
-  $(selector).inputmask({ mask: ["999.999", "aa-aa-aa"]});
+$("selector").inputmask("(99.9)|(X)", {
+                definitions: {
+                    "X": {
+                        validator: "[xX]",
+                        cardinality: 1,
+                        casing: "upper"
+                    }
+                }
+            });
 ```
-
-#### inputmask-multi format (https://github.com/andr-04/inputmask-multi)
-
-You can also pass an array for masking with the a format like the format used in inputmask-multi 
+or
 
 ```javascript
-var phones = [
-            { "mask": "+247-####", "cc": "AC", "name_en": "Ascension", "desc_en": "", "name_ru": "Остров Вознесения", "desc_ru": "" },
-            { "mask": "+376-###-###", "cc": "AD", "name_en": "Andorra", "desc_en": "", "name_ru": "Андорра", "desc_ru": "" },
-            { "mask": "+971-5#-###-####", "cc": "AE", "name_en": "United Arab Emirates", "desc_en": "mobile", "name_ru": "Объединенные Арабские Эмираты", "desc_ru": "мобильные" },
-          ...
-]
-$(selector).inputmask({ mask: phones, definitions: { '#': { validator: "[0-9]", cardinality: 1}} }); //in case of inputmask-multi you need to specify the validator for #
-```
-
-The metadata of the actual mask provided in the mask definitions can be obtained by calling
-
-```javascript
-$(selector).inputmask("getmetadata");
+$("selector").inputmask({
+                mask: ["99.9", "X"],
+                definitions: {
+                    "X": {
+                        validator: "[xX]",
+                        cardinality: 1,
+                        casing: "upper"
+                    }
+                }
+            });
 ```
 
 ### Preprocessing masks
@@ -490,6 +489,18 @@ $(document).ready(function(){
 #### radixPoint
 #### nojumps: false, //do not jump over fixed parts in the mask
 #### nojumpsThreshold: 0, //start nojumps as of
+#### keepStatic
+Default: false 
+Use in combination of the alternator syntax
+Try to keep the mask static while typing. Decisions to alter the mask will be posponed if possible.
+
+ex.
+$(selector).inputmask({ mask: ["+55-99-9999-9999", "+55-99-99999-9999", ], keepStatic: true });
+
+typing 1212345123 => should result in +55-12-1234-5123
+type extra 4 => switch to +55-12-12345-1234
+
+
 #### definitions
 #### ignorables
 
@@ -616,79 +627,6 @@ $(document).ready(function(){
    $("#test").inputmask("999-AAA");    //   => 123abc ===> 123-ABC
 });
 ```
-#=========== TODO ===========
-
-
-### getemptymask command
-
-return the default (empty) mask value
-
-
-```javascript
-$(document).ready(function(){
-   $("#test").inputmask("999-AAA");
-   var initialValue = $("#test").inputmask("getemptymask");  // initialValue  => "___-___"
-});
-```
-
-### onKeyUp / onKeyDown option
-
-Use this to do some extra processing of the input when certain keys are pressed.
-This can be usefull when implementing an alias, ex. decimal alias, autofill the digits when pressing tab.
-
-see jquery.inputmask.extensions.js for some examples
-
-### onBeforePaste
-
-This callback allows for preprocessing the pasted value before actually handling the value for masking.  This can be usefull for stripping away some characters before processing.
-
-```javascript
-$(document).ready(function(){
-   $("#test").inputmask("99.", {
-                repeat: 4,
-                onBeforePaste: function (pastedValue) {
-                    //do somehing with the value
-                    return pastedValue;
-                }
-            });
-});
-```
-
-### onBeforeMask
-
-This callback allows for preprocessing the initial value before actually handling the value for masking.  This can be usefull for stripping away some characters before processing.
-
-```javascript
-$(document).ready(function(){
-   $("#test").inputmask("99.", {
-                repeat: 4,
-                onBeforeMask: function (initialValue) {
-                    //do somehing with the value
-                    return initialValue;
-                }
-            });
-});
-```
-
-### hasMaskedValue
-
-Check whether the returned value is masked or not; currently only works reliably when using jquery.val fn to retrieve the value 
-
-```javascript
-$(document).ready(function(){
-	function validateMaskedValue(val){}
-	function validateValue(val){}
-
-	var val = $("#test").val();
-    if($("#test").inputmask("hasMaskedValue"))
-	  validateMaskedValue(val); 
-   else validateValue(val); 
-});
-```
-
-
-
-
 
 ## Supported markup options
 ### RTL attribute
@@ -780,6 +718,81 @@ In Layout
 ```html
 @Scripts.Render("~/bundles/inputmask")
 ```
+
+#=========== TODO ===========
+
+
+### getemptymask command
+
+return the default (empty) mask value
+
+
+```javascript
+$(document).ready(function(){
+   $("#test").inputmask("999-AAA");
+   var initialValue = $("#test").inputmask("getemptymask");  // initialValue  => "___-___"
+});
+```
+
+### onKeyUp / onKeyDown option
+
+Use this to do some extra processing of the input when certain keys are pressed.
+This can be usefull when implementing an alias, ex. decimal alias, autofill the digits when pressing tab.
+
+see jquery.inputmask.extensions.js for some examples
+
+### onBeforePaste
+
+This callback allows for preprocessing the pasted value before actually handling the value for masking.  This can be usefull for stripping away some characters before processing.
+
+```javascript
+$(document).ready(function(){
+   $("#test").inputmask("99.", {
+                repeat: 4,
+                onBeforePaste: function (pastedValue) {
+                    //do somehing with the value
+                    return pastedValue;
+                }
+            });
+});
+```
+
+### onBeforeMask
+
+This callback allows for preprocessing the initial value before actually handling the value for masking.  This can be usefull for stripping away some characters before processing.
+
+```javascript
+$(document).ready(function(){
+   $("#test").inputmask("99.", {
+                repeat: 4,
+                onBeforeMask: function (initialValue) {
+                    //do somehing with the value
+                    return initialValue;
+                }
+            });
+});
+```
+
+### hasMaskedValue
+
+Check whether the returned value is masked or not; currently only works reliably when using jquery.val fn to retrieve the value 
+
+```javascript
+$(document).ready(function(){
+	function validateMaskedValue(val){}
+	function validateValue(val){}
+
+	var val = $("#test").val();
+    if($("#test").inputmask("hasMaskedValue"))
+	  validateMaskedValue(val); 
+   else validateValue(val); 
+});
+```
+
+
+
+
+
 
 
 # jquery.inputmask extensions

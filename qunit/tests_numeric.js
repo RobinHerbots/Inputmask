@@ -63,7 +63,7 @@ test("numeric -placeholder 0 type 00000 - Webunity", function () {
     $("#testmask")[0].focus();
     $("#testmask").Type("00000");
 
-    equal($("#testmask").val(), "0", "Result " + $("#testmask").val());
+    equal($("#testmask")[0]._valueGet(), "0", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
 

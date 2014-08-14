@@ -46,6 +46,20 @@ asyncTest("inputmask({ mask: [\"99999\", \"99999-9999\"]]}) - input 12345", func
 
     $("#testmask")[0].focus();
     $("#testmask").Type("12345");
+    $("#testmask").blur();
+    setTimeout(function () {
+        equal($("#testmask").val(), "12345", "Result " + $("#testmask").val());
+        start();
+        $("#testmask").remove();
+    }, 0);
+});
+asyncTest("inputmask({ mask: [\"99999\", \"99999-9999\"]]}) - input 12345", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: ["99999", "99999-9999"], greedy: false, keepStatic: true });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("12345");
     setTimeout(function () {
         equal($("#testmask").val(), "12345", "Result " + $("#testmask").val());
         start();
@@ -105,10 +119,38 @@ asyncTest("inputmask({ mask: [\"99999\", \"99999-9999\", \"999999-9999\"]]}) - i
         $("#testmask").remove();
     }, 0);
 });
+
+asyncTest("inputmask({ mask: [\"99999\", \"99999-9999\", \"999999-9999\"]]}) - input 12345-6", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: ["99999", "99999-9999", "999999-9999"] });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("12345-6");
+    setTimeout(function () {
+        equal($("#testmask").val(), "12345-6___", "Result " + $("#testmask").val());
+        start();
+        $("#testmask").remove();
+    }, 0);
+});
 asyncTest("inputmask({ mask: [\"99999\", \"99999-9999\", \"999999-9999\"]]}) - input 123456", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask({ mask: ["99999", "99999-9999", "999999-9999"] });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123456");
+    setTimeout(function () {
+        equal($("#testmask").val(), "123456-____", "Result " + $("#testmask").val());
+        start();
+        $("#testmask").remove();
+    }, 0);
+});
+
+asyncTest("inputmask({ mask: [\"99999\", \"99999-9999\", \"999999-9999\"] , keepStatic: true}) - input 123456", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: ["99999", "99999-9999", "999999-9999"], keepStatic: true });
 
     $("#testmask")[0].focus();
     $("#testmask").Type("123456");
@@ -159,4 +201,23 @@ asyncTest("inputmask({ mask: ['9 AAA-AAA', 'A 999-999'] }) ", function () {
         start();
         $("#testmask").remove();
     }, 0);
+});
+
+test("inputmask({ mask: ['99.9', 'X'}) - annames", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({
+        mask: ["99.9", "X", "abc"],
+        definitions: {
+            "X": {
+                validator: "[xX]",
+                cardinality: 1,
+                casing: "upper"
+            }
+        }
+    });
+
+    $("#testmask").Type("x");
+    equal($("#testmask").val(), "X", "Result " + $("#testmask").val());
+    $("#testmask").remove();
 });
