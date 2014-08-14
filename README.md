@@ -497,7 +497,7 @@ Try to keep the mask static while typing. Decisions to alter the mask will be po
 ex.
 $(selector).inputmask({ mask: ["+55-99-9999-9999", "+55-99-99999-9999", ], keepStatic: true });
 
-typing 1212345123 => should result in +55-12-1234-5123
+typing 1212345123 => should result in +55-12-1234-5123 
 type extra 4 => switch to +55-12-12345-1234
 
 
@@ -518,10 +518,6 @@ $(selector).inputmask("Regex", {
 	}
 });
 ```
-### multi-masks options:
-#### multi
-#### determineActiveMasksetIndex
-
 ##Functions
 
 #### mask
