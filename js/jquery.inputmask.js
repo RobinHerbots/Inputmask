@@ -1386,6 +1386,8 @@
                     caret(that, caret(that).begin - 1);
                     var keypress = $.Event("keypress");
                     keypress.which = e.originalEvent.data.charCodeAt(0);
+                    skipKeyPressEvent = false;
+                     ignorable = false;
                     keypressEvent.call(that, keypress, undefined, undefined, false);
                     var forwardPosition = getMaskSet()["p"];
                     writeBuffer(that, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
