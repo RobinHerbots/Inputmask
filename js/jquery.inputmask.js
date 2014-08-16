@@ -1312,7 +1312,6 @@
             }
             function keyupEvent(e) {
                 var $input = $(this), input = this, k = e.keyCode, buffer = getBuffer();
-
                 var currentCaretPos = caret(input);
                 var keyupResult = opts.onKeyUp.call(this, e, buffer, currentCaretPos.begin, opts);
                 handleOnKeyResult(input, keyupResult, currentCaretPos);
@@ -1401,6 +1400,7 @@
                 e.preventDefault();
             }
             function compositionupdateEvent(e) { //fix for special latin-charset FF/Linux
+                skipInputEvent = true; //stop inutFallback
                 var input = this;
                 setTimeout(function () {
                     caret(input, caret(input).begin - 1);
@@ -1412,6 +1412,7 @@
                     var forwardPosition = getMaskSet()["p"];
                     writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
                 }, 0);
+                skipInputEvent === true
                 return false;
             }
             function mask(el) {
