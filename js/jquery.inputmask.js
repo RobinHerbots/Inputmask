@@ -1380,17 +1380,37 @@
                 }
                 e.preventDefault();
             }
-            function compositionupdateEvent(e) {
-                var that = this;
+            function inputFallBackEvent(e) { //fallback when keypress & compositionevents fail
+             	if (skipInputEvent === true && e.type == "input") {
+                    skipInputEvent = false;
+                    return true;
+                }
+                var input = this;
+                var caretPos = caret(input),
+                    currentValue = input._valueGet();
+                
+                caret(input, caretPos.begin - 1);
+                var keypress = $.Event("keypress");
+                keypress.which = currentValue.charCodeAt(caretPos.begin - 1);
+                skipKeyPressEvent = false;
+                ignorable = false;
+                keypressEvent.call(input, keypress, undefined, undefined, false);
+                var forwardPosition = getMaskSet()["p"];
+                writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
+               
+                e.preventDefault();
+            }
+            function compositionupdateEvent(e) { //fix for special latin-charset FF/Linux
+                var input = this;
                 setTimeout(function () {
-                    caret(that, caret(that).begin - 1);
+                    caret(input, caret(input).begin - 1);
                     var keypress = $.Event("keypress");
                     keypress.which = e.originalEvent.data.charCodeAt(0);
                     skipKeyPressEvent = false;
-                     ignorable = false;
-                    keypressEvent.call(that, keypress, undefined, undefined, false);
+                    ignorable = false;
+                    keypressEvent.call(input, keypress, undefined, undefined, false);
                     var forwardPosition = getMaskSet()["p"];
-                    writeBuffer(that, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
+                    writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
                 }, 0);
                 return false;
             }
@@ -1528,7 +1548,10 @@
                     ).bind("keypress.inputmask", keypressEvent
                     ).bind("keyup.inputmask", keyupEvent
                     ).bind("compositionupdate.inputmask", compositionupdateEvent);
-
+                    
+                    if (PasteEventType === "paste") {
+                     	$el.bind("input.inputmask", inputFallBackEvent);
+                    }
                     if (android || androidfirefox || androidchrome || kindle) {
                         if (PasteEventType == "input") {
                             $el.unbind(PasteEventType + ".inputmask");
