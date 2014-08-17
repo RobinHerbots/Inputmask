@@ -5,10 +5,10 @@
   "main": [
     "./dist/inputmask/jquery.inputmask.js",
     "./dist/inputmask/jquery.inputmask.extensions.js",
-	"./dist/inputmask/jquery.inputmask.date.extensions.js",
-	"./dist/inputmask/jquery.inputmask.numeric.extensions.js",
-	"./dist/inputmask/jquery.inputmask.phone.extensions.js",
-	"./dist/inputmask/jquery.inputmask.regex.extensions.js"
+    "./dist/inputmask/jquery.inputmask.date.extensions.js",
+    "./dist/inputmask/jquery.inputmask.numeric.extensions.js",
+    "./dist/inputmask/jquery.inputmask.phone.extensions.js",
+    "./dist/inputmask/jquery.inputmask.regex.extensions.js"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -32,7 +32,10 @@
     "url": "https://github.com/RobinHerbots/jquery.inputmask/issues"
   },
   "homepage": "https://github.com/RobinHerbots/jquery.inputmask",
-  "dependencies": {
+  "peerDependencies": {
+    "jquery": ">=1.7"
+  },
+  "devDependencies": {
     "jquery": ">=1.7"
   }
 }

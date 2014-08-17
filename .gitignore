@@ -2,3 +2,4 @@
 test.html
 jquery-1.10.2.js
 dist/jQuery.InputMask.*.nupkg
+node_modules/
