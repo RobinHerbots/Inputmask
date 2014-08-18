@@ -1,6 +1,6 @@
 {
   "name": "jquery.inputmask",
-  "version": "3.0.67",
+  "version": "3.0.68",
   "main": [
     "./dist/inputmask/jquery.inputmask.js",
     "./dist/inputmask/jquery.inputmask.extensions.js",
@@ -13,13 +13,15 @@
   "description": "jquery.inputmask is a jquery plugin which create an input mask.",
   "license": "http://opensource.org/licenses/mit-license.php",
   "ignore": [
+	"**/.*",
     "qunit/",
     "nuget/",
     "tools/",
     "js/",
-    "README.md",
+    "*.md",
     "build.properties",
-    "build.xml"
+    "build.xml",
+	jquery.inputmask.jquery.json
   ],
   "dependencies": {
       "jquery": ">=1.7"

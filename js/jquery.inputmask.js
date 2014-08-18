@@ -763,9 +763,55 @@
                 }
 
                 var maskPos = pos;
-                if (maskPos >= getMaskLength()) {
-                    console.log("try alternate match");
-                    return false;
+                if (maskPos >= getMaskLength()) { //try fuzzy alternator logic
+                    var continueMask = false;
+                    if (opts.keepStatic) {
+                        var validPs = getMaskSet()["validPositions"],
+                            firstAlt,
+                            alternation;
+                        //find first alternation
+                        for (firstAlt in validPs) {
+                            if (validPs[firstAlt].alternation != undefined) {
+                                alternation = validPs[firstAlt].alternation;
+                                break;
+                            }
+                        }
+                        //find first decision making position
+                        for (var decisionPos in validPs) {
+                            if (parseInt(decisionPos) > parseInt(firstAlt) && validPs[decisionPos].alternation === undefined) {
+                                var altPos = validPs[decisionPos],
+                                    decisionTaker = altPos.locator[alternation],
+                                    altNdxs = validPs[firstAlt].locator[alternation].split(",");
+                                if (decisionTaker == "0") {
+                                    for (var mndx = 0; mndx < altNdxs.length; mndx++) {
+                                        if (decisionTaker != altNdxs[mndx]) {
+                                            altPos = validPs[seekPrevious(decisionPos)];
+                                            altPos.locator[alternation] = altNdxs[mndx];
+                                            break;
+                                        }
+                                    }
+                                    getMaskSet()["buffer"].splice(decisionPos, 1);
+                                    var buffer = getBuffer().slice(); //work on clone
+                                    for (var i = decisionPos; i < getLastValidPosition() + 1; i++) {
+                                        delete getMaskSet()["validPositions"][i];
+                                        delete getMaskSet()["tests"][i];
+                                    }
+                                    resetMaskSet(true); //clear getbuffer
+                                    for (var i = decisionPos; i < buffer.length; i++) {
+                                        if (buffer[i] != opts.skipOptionalPartCharacter) {
+                                            isValid(getLastValidPosition() + 1, buffer[i], false, true);
+                                        }
+                                    }
+
+                                    continueMask = true;
+                                    break;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    if (!continueMask)
+                        return false;
                 }
                 var result = _isValid(maskPos, c, strict, fromSetValid);
                 if (!strict && result === false) {
@@ -1380,14 +1426,14 @@
                 e.preventDefault();
             }
             function inputFallBackEvent(e) { //fallback when keypress & compositionevents fail
-             	if (skipInputEvent === true && e.type == "input") {
+                if (skipInputEvent === true && e.type == "input") {
                     skipInputEvent = false;
                     return true;
                 }
                 var input = this;
                 var caretPos = caret(input),
                     currentValue = input._valueGet();
-                
+
                 caret(input, caretPos.begin - 1);
                 var keypress = $.Event("keypress");
                 keypress.which = currentValue.charCodeAt(caretPos.begin - 1);
@@ -1396,7 +1442,7 @@
                 keypressEvent.call(input, keypress, undefined, undefined, false);
                 var forwardPosition = getMaskSet()["p"];
                 writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
-               
+
                 e.preventDefault();
             }
             function compositionupdateEvent(e) { //fix for special latin-charset FF/Linux
@@ -1549,9 +1595,9 @@
                     ).bind("keypress.inputmask", keypressEvent
                     ).bind("keyup.inputmask", keyupEvent
                     ).bind("compositionupdate.inputmask", compositionupdateEvent);
-                    
+
                     if (PasteEventType === "paste") {
-                     	$el.bind("input.inputmask", inputFallBackEvent);
+                        $el.bind("input.inputmask", inputFallBackEvent);
                     }
                     if (android || androidfirefox || androidchrome || kindle) {
                         if (PasteEventType == "input") {
