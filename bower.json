@@ -21,7 +21,7 @@
     "*.md",
     "build.properties",
     "build.xml",
-	jquery.inputmask.jquery.json
+	"jquery.inputmask.jquery.json"
   ],
   "dependencies": {
       "jquery": ">=1.7"
