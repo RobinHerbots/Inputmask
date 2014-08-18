@@ -802,6 +802,7 @@
                                             isValid(getLastValidPosition() + 1, buffer[i], false, true);
                                         }
                                     }
+                                    altPos.locator[alternation] = decisionTaker; //reset forceddecision ~ needed for proper delete
 
                                     continueMask = true;
                                     break;
