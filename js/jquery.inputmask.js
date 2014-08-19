@@ -750,23 +750,10 @@
 
                     return rslt;
                 }
-
-                //Check for a nonmask before the pos
-                var buffer = getBuffer();
-                for (var pndx = pos - 1; pndx > -1; pndx--) {
-                    if (getMaskSet()["validPositions"][pndx] && getMaskSet()["validPositions"][pndx].fn == null)
-                        break;
-                    else if ((!isMask(pndx) || buffer[pndx] != getPlaceholder(pndx)) && getTests(pndx).length > 1) {
-                        _isValid(pndx, buffer[pndx], true);
-                        break;
-                    }
-                }
-
-                var maskPos = pos;
-                if (maskPos >= getMaskLength()) { //try fuzzy alternator logic
-                    var continueMask = false;
+                function alternate(pos, c, strict, fromSetValid) {
                     if (opts.keepStatic) {
-                        var validPs = getMaskSet()["validPositions"],
+                        var validPsClone = $.extend(true, {}, getMaskSet()["validPositions"]),
+                            validPs = getMaskSet()["validPositions"],
                             firstAlt,
                             alternation;
                         //find first alternation
@@ -804,15 +791,33 @@
                                     }
                                     altPos.locator[alternation] = decisionTaker; //reset forceddecision ~ needed for proper delete
 
-                                    continueMask = true;
-                                    break;
+                                    var isValidRslt = isValid(pos, c, strict, fromSetValid);
+                                    if (!isValidRslt) {
+                                        resetMaskSet();
+                                        getMaskSet()["validPositions"] = $.extend(true, {}, validPsClone);
+                                    }
+                                    return isValidRslt;
                                 }
                                 break;
                             }
                         }
                     }
-                    if (!continueMask)
-                        return false;
+                    return false;
+                }
+                //Check for a nonmask before the pos
+                var buffer = getBuffer();
+                for (var pndx = pos - 1; pndx > -1; pndx--) {
+                    if (getMaskSet()["validPositions"][pndx] && getMaskSet()["validPositions"][pndx].fn == null)
+                        break;
+                    else if ((!isMask(pndx) || buffer[pndx] != getPlaceholder(pndx)) && getTests(pndx).length > 1) {
+                        _isValid(pndx, buffer[pndx], true);
+                        break;
+                    }
+                }
+
+                var maskPos = pos;
+                if (maskPos >= getMaskLength()) { //try fuzzy alternator logic
+                    return alternate(pos, c, strict, fromSetValid);
                 }
                 var result = _isValid(maskPos, c, strict, fromSetValid);
                 if (!strict && result === false) {
