@@ -32,11 +32,10 @@
     "url": "https://github.com/RobinHerbots/jquery.inputmask/issues"
   },
   "homepage": "https://github.com/RobinHerbots/jquery.inputmask",
-  "dependencies": {
-    "peerDependencies": {
-      "jquery": ">=1.7"
-    },
-    "devDependencies": {
-      "jquery": ">=1.7"
-    }
+  "peerDependencies": {
+    "jquery": ">=1.7"
+  },
+  "devDependencies": {
+    "jquery": ">=1.7"
+  }
 }
