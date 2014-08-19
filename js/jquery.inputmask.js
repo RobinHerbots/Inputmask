@@ -522,9 +522,9 @@
                                                 var altMatch2 = malternateMatches[ndx2];
                                                 //verify equality
                                                 if (altMatch.match.mask == altMatch2.match.mask && (typeof altIndex != "string" || $.inArray(altMatch.locator[loopNdxCnt].toString(), altIndexArr) != -1)) {
-                                                    malternateMatches.splice(ndx2, 1);
-                                                    altMatch.locator[loopNdxCnt] = altMatch2.locator[loopNdxCnt] + "," + altMatch.locator[loopNdxCnt];
-                                                    altMatch.alternation = loopNdxCnt; //we pass the alternation index => used in determineLastRequiredPosition
+                                                    maltMatches.splice(ndx1, 1);
+                                                    altMatch2.locator[loopNdxCnt] = altMatch2.locator[loopNdxCnt] + "," + altMatch.locator[loopNdxCnt];
+                                                    altMatch2.alternation = loopNdxCnt; //we pass the alternation index => used in determineLastRequiredPosition
                                                     break;
                                                 }
                                             }
