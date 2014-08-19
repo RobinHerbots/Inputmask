@@ -256,4 +256,5 @@ Optional extensions on the jquery.inputmask base
             digits: "0"
         }
     });
+    return $.fn.inputmask;
 }));

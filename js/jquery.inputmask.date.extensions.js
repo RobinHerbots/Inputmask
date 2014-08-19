@@ -491,4 +491,6 @@ Optional extensions on the jquery.inputmask base
             alias: "mm/dd/yyyy"
         }
     });
+
+    return $.fn.inputmask;
 }));

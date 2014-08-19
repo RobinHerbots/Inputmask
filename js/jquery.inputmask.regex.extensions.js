@@ -190,4 +190,5 @@ Allows for using regular expressions as a mask
             }
         }
     });
+    return $.fn.inputmask;
 }));

@@ -1934,4 +1934,5 @@
             }
         };
     }
+    return $.fn.inputmask;
 }));
