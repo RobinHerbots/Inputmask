@@ -769,14 +769,15 @@
                                 var altPos = validPs[decisionPos],
                                     decisionTaker = altPos.locator[alternation],
                                     altNdxs = validPs[firstAlt].locator[alternation].split(",");
-                                if (decisionTaker == "0") {
-                                    for (var mndx = 0; mndx < altNdxs.length; mndx++) {
-                                        if (decisionTaker != altNdxs[mndx]) {
-                                            altPos = validPs[seekPrevious(decisionPos)];
-                                            altPos.locator[alternation] = altNdxs[mndx];
-                                            break;
-                                        }
+
+                                for (var mndx = 0; mndx < altNdxs.length; mndx++) {
+                                    if (decisionTaker < altNdxs[mndx]) {
+                                        altPos = validPs[seekPrevious(decisionPos)];
+                                        altPos.locator[alternation] = altNdxs[mndx];
+                                        break;
                                     }
+                                }
+                                if (decisionTaker != altPos.locator[alternation]) {
                                     getMaskSet()["buffer"].splice(decisionPos, 1);
                                     var buffer = getBuffer().slice(); //work on clone
                                     for (var i = decisionPos; i < getLastValidPosition() + 1; i++) {

@@ -34,11 +34,11 @@ Highlights:
         <tags>jQuery, plugins, input, form, inputmask, mask</tags>
     </metadata>
     <files>
-        <file src="..\js\jquery.inputmask.date.extensions.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.date.extensions-0.0.0.js" />
-        <file src="..\js\jquery.inputmask.extensions.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.extensions-0.0.0.js" />
-        <file src="..\js\jquery.inputmask.numeric.extensions.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.numeric.extensions-0.0.0.js" />
-		<file src="..\js\jquery.inputmask.regex.extensions.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.regex.extensions-0.0.0.js" />
-		<file src="..\js\jquery.inputmask.phone.extensions.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.phone.extensions-0.0.0.js" />
-        <file src="..\js\jquery.inputmask.js" target="content\Scripts\jquery.inputmask\jquery.inputmask-0.0.0.js" />
+        <file src="..\js\jquery.inputmask.date.extensions.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.date.extensions.js" />
+        <file src="..\js\jquery.inputmask.extensions.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.extensions.js" />
+        <file src="..\js\jquery.inputmask.numeric.extensions.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.numeric.extensions.js" />
+		<file src="..\js\jquery.inputmask.regex.extensions.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.regex.extensions.js" />
+		<file src="..\js\jquery.inputmask.phone.extensions.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.phone.extensions.js" />
+        <file src="..\js\jquery.inputmask.js" target="content\Scripts\jquery.inputmask\jquery.inputmask.js" />
     </files>
 </package>

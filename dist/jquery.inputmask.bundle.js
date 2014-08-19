@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.0.69
+* Version: 3.0.70
 */
 
 (function (factory) {
@@ -750,23 +750,10 @@
 
                     return rslt;
                 }
-
-                //Check for a nonmask before the pos
-                var buffer = getBuffer();
-                for (var pndx = pos - 1; pndx > -1; pndx--) {
-                    if (getMaskSet()["validPositions"][pndx] && getMaskSet()["validPositions"][pndx].fn == null)
-                        break;
-                    else if ((!isMask(pndx) || buffer[pndx] != getPlaceholder(pndx)) && getTests(pndx).length > 1) {
-                        _isValid(pndx, buffer[pndx], true);
-                        break;
-                    }
-                }
-
-                var maskPos = pos;
-                if (maskPos >= getMaskLength()) { //try fuzzy alternator logic
-                    var continueMask = false;
+                function alternate(pos, c, strict, fromSetValid) {
                     if (opts.keepStatic) {
-                        var validPs = getMaskSet()["validPositions"],
+                        var validPsClone = $.extend(true, {}, getMaskSet()["validPositions"]),
+                            validPs = getMaskSet()["validPositions"],
                             firstAlt,
                             alternation;
                         //find first alternation
@@ -782,14 +769,15 @@
                                 var altPos = validPs[decisionPos],
                                     decisionTaker = altPos.locator[alternation],
                                     altNdxs = validPs[firstAlt].locator[alternation].split(",");
-                                if (decisionTaker == "0") {
-                                    for (var mndx = 0; mndx < altNdxs.length; mndx++) {
-                                        if (decisionTaker != altNdxs[mndx]) {
-                                            altPos = validPs[seekPrevious(decisionPos)];
-                                            altPos.locator[alternation] = altNdxs[mndx];
-                                            break;
-                                        }
+
+                                for (var mndx = 0; mndx < altNdxs.length; mndx++) {
+                                    if (decisionTaker < altNdxs[mndx]) {
+                                        altPos = validPs[seekPrevious(decisionPos)];
+                                        altPos.locator[alternation] = altNdxs[mndx];
+                                        break;
                                     }
+                                }
+                                if (decisionTaker != altPos.locator[alternation]) {
                                     getMaskSet()["buffer"].splice(decisionPos, 1);
                                     var buffer = getBuffer().slice(); //work on clone
                                     for (var i = decisionPos; i < getLastValidPosition() + 1; i++) {
@@ -804,15 +792,33 @@
                                     }
                                     altPos.locator[alternation] = decisionTaker; //reset forceddecision ~ needed for proper delete
 
-                                    continueMask = true;
-                                    break;
+                                    var isValidRslt = isValid(pos, c, strict, fromSetValid);
+                                    if (!isValidRslt) {
+                                        resetMaskSet();
+                                        getMaskSet()["validPositions"] = $.extend(true, {}, validPsClone);
+                                    }
+                                    return isValidRslt;
                                 }
                                 break;
                             }
                         }
                     }
-                    if (!continueMask)
-                        return false;
+                    return false;
+                }
+                //Check for a nonmask before the pos
+                var buffer = getBuffer();
+                for (var pndx = pos - 1; pndx > -1; pndx--) {
+                    if (getMaskSet()["validPositions"][pndx] && getMaskSet()["validPositions"][pndx].fn == null)
+                        break;
+                    else if ((!isMask(pndx) || buffer[pndx] != getPlaceholder(pndx)) && getTests(pndx).length > 1) {
+                        _isValid(pndx, buffer[pndx], true);
+                        break;
+                    }
+                }
+
+                var maskPos = pos;
+                if (maskPos >= getMaskLength()) { //try fuzzy alternator logic
+                    return alternate(pos, c, strict, fromSetValid);
                 }
                 var result = _isValid(maskPos, c, strict, fromSetValid);
                 if (!strict && result === false) {
@@ -1934,7 +1940,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.69
+Version: 3.0.70
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2061,7 +2067,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.69
+Version: 3.0.70
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2555,7 +2561,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.69
+Version: 3.0.70
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2814,7 +2820,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.69
+Version: 3.0.70
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -3007,7 +3013,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.0.69
+Version: 3.0.70
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
