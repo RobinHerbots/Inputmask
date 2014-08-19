@@ -493,7 +493,7 @@ $(document).ready(function(){
 #### nojumpsThreshold: 0, //start nojumps as of
 #### keepStatic
 Default: false 
-Use in combination of the alternator syntax
+Use in combination with the alternator syntax
 Try to keep the mask static while typing. Decisions to alter the mask will be posponed if possible.
 
 ex.
