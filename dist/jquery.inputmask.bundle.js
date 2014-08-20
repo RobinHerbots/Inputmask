@@ -538,11 +538,14 @@
                                                 var altLocArr = lmnt.locator[loopNdxCnt].toString().split(",");
                                                 var mamatch;
                                                 lmnt.locator[loopNdxCnt] = "";
+                                                lmnt.alternation = undefined;
                                                 for (var alndx = 0; alndx < altLocArr.length; alndx++) {
                                                     mamatch = $.inArray(altLocArr[alndx], altIndexArr) != -1;
                                                     if (mamatch) {
-                                                        if (lmnt.locator[loopNdxCnt] != "")
+                                                        if (lmnt.locator[loopNdxCnt] != "") {
                                                             lmnt.locator[loopNdxCnt] += ",";
+                                                            lmnt.alternation = loopNdxCnt; //only define alternation when there is more then 1 possibility
+                                                        }
                                                         lmnt.locator[loopNdxCnt] += altLocArr[alndx]; //rebuild the locator with valid entries
                                                     }
                                                 }
@@ -753,51 +756,57 @@
                 function alternate(pos, c, strict, fromSetValid) {
                     if (opts.keepStatic) {
                         var validPsClone = $.extend(true, {}, getMaskSet()["validPositions"]),
-                            validPs = getMaskSet()["validPositions"],
                             firstAlt,
                             alternation;
                         //find first alternation
-                        for (firstAlt in validPs) {
-                            if (validPs[firstAlt].alternation != undefined) {
-                                alternation = validPs[firstAlt].alternation;
+                        for (firstAlt in getMaskSet()["validPositions"]) {
+                            if (getMaskSet()["validPositions"][firstAlt].alternation != undefined) {
+                                alternation = getMaskSet()["validPositions"][firstAlt].alternation;
                                 break;
                             }
                         }
                         //find first decision making position
-                        for (var decisionPos in validPs) {
-                            if (parseInt(decisionPos) > parseInt(firstAlt) && validPs[decisionPos].alternation === undefined) {
-                                var altPos = validPs[decisionPos],
+                        for (var decisionPos in getMaskSet()["validPositions"]) {
+                            if (parseInt(decisionPos) > parseInt(firstAlt) && getMaskSet()["validPositions"][decisionPos].alternation === undefined) {
+                                var altPos = getMaskSet()["validPositions"][decisionPos],
                                     decisionTaker = altPos.locator[alternation],
-                                    altNdxs = validPs[firstAlt].locator[alternation].split(",");
+                                    altNdxs = getMaskSet()["validPositions"][firstAlt].locator[alternation].split(",");
 
                                 for (var mndx = 0; mndx < altNdxs.length; mndx++) {
                                     if (decisionTaker < altNdxs[mndx]) {
-                                        altPos = validPs[seekPrevious(decisionPos)];
-                                        altPos.locator[alternation] = altNdxs[mndx];
-                                        break;
-                                    }
-                                }
-                                if (decisionTaker != altPos.locator[alternation]) {
-                                    getMaskSet()["buffer"].splice(decisionPos, 1);
-                                    var buffer = getBuffer().slice(); //work on clone
-                                    for (var i = decisionPos; i < getLastValidPosition() + 1; i++) {
-                                        delete getMaskSet()["validPositions"][i];
-                                        delete getMaskSet()["tests"][i];
-                                    }
-                                    resetMaskSet(true); //clear getbuffer
-                                    for (var i = decisionPos; i < buffer.length; i++) {
-                                        if (buffer[i] != opts.skipOptionalPartCharacter) {
-                                            isValid(getLastValidPosition() + 1, buffer[i], false, true);
+                                        var possibilityPos, possibilities;
+                                        for (var dp = decisionPos - 1; dp >= 0; dp--) {
+                                            possibilityPos = getMaskSet()["validPositions"][seekPrevious(decisionPos)];
+                                            if (possibilityPos != undefined) {
+                                                possibilities = possibilityPos.locator[alternation]; //store to reset 
+                                                possibilityPos.locator[alternation] = altNdxs[mndx];
+                                                break;
+                                            }
+                                        }
+                                        if (decisionTaker != possibilityPos.locator[alternation]) {
+                                            var buffer = getBuffer().slice(); //work on clone
+                                            for (var i = decisionPos; i < getLastValidPosition() + 1; i++) {
+                                                delete getMaskSet()["validPositions"][i];
+                                                delete getMaskSet()["tests"][i];
+                                            }
+                                            resetMaskSet(true); //clear getbuffer
+                                            opts.keepStatic = !opts.keepStatic; //disable keepStatic on getMaskLength
+                                            for (var i = decisionPos; i < buffer.length; i++) {
+                                                if (buffer[i] != opts.skipOptionalPartCharacter) {
+                                                    isValid(getLastValidPosition() + 1, buffer[i], false, true);
+                                                }
+                                            }
+                                            possibilityPos.locator[alternation] = possibilities; //reset forceddecision ~ needed for proper delete
+
+                                            var isValidRslt = isValid(pos, c, strict, fromSetValid);
+                                            opts.keepStatic = !opts.keepStatic; //enable keepStatic on getMaskLength
+                                            if (!isValidRslt) {
+                                                resetMaskSet();
+                                                getMaskSet()["validPositions"] = $.extend(true, {}, validPsClone);
+                                            }
+                                            return isValidRslt;
                                         }
                                     }
-                                    altPos.locator[alternation] = decisionTaker; //reset forceddecision ~ needed for proper delete
-
-                                    var isValidRslt = isValid(pos, c, strict, fromSetValid);
-                                    if (!isValidRslt) {
-                                        resetMaskSet();
-                                        getMaskSet()["validPositions"] = $.extend(true, {}, validPsClone);
-                                    }
-                                    return isValidRslt;
                                 }
                                 break;
                             }
@@ -812,7 +821,6 @@
                         break;
                     else if ((!isMask(pndx) || buffer[pndx] != getPlaceholder(pndx)) && getTests(pndx).length > 1) {
                         _isValid(pndx, buffer[pndx], true);
-                        break;
                     }
                 }
 
