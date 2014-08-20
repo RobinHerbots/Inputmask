@@ -927,7 +927,7 @@
                         }
                     }
                     var unmaskedValue = (isRTL ? umValue.reverse() : umValue).join('');
-                    var bufferValue = (isRTL ? getBuffer().reverse() : getBuffer()).join('');
+                    var bufferValue = (isRTL ? getBuffer().slice().reverse() : getBuffer()).join('');
                     if ($.isFunction(opts.onUnMask)) {
                         unmaskedValue = opts.onUnMask.call($input, bufferValue, unmaskedValue, opts);
                     }
@@ -1681,7 +1681,7 @@
                         var valueBuffer = actionObj["value"].split('');
                         checkVal($el, false, false, isRTL ? valueBuffer.reverse() : valueBuffer, true);
                         opts.onKeyPress.call(this, undefined, getBuffer(), 0, opts);
-                        return isRTL ? getBuffer().reverse().join('') : getBuffer().join('');
+                        return isRTL ? getBuffer().slice().reverse().join('') : getBuffer().join('');
                     case "isValid":
                         $el = $({});
                         $el.data('_inputmask', {
