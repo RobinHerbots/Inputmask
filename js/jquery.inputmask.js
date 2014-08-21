@@ -1511,7 +1511,7 @@
                     $el.closest('form').bind("submit", function () { //trigger change on submit if any
                         if (valueOnFocus != getBuffer().join('')) {
                             $el.change();
-                        }
+                        } else $el[0]._valueSet(''); //clear masktemplete on submit and still has focus
                         if (opts.autoUnmask && opts.removeMaskOnSubmit) {
                             $el.inputmask("remove");
                         }
