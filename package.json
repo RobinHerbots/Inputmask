@@ -1,6 +1,6 @@
 {
   "name": "jquery.inputmask",
-  "version": "3.0.74",
+  "version": "3.0.75",
   "description": "jquery.inputmask is a jquery plugin which create an input mask.",
   "main": [
     "./dist/inputmask/jquery.inputmask.js",

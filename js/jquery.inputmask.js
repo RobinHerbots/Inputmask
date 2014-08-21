@@ -800,8 +800,7 @@
                                                     }
                                                 }
                                                 possibilityPos.locator[alternation] = possibilities; //reset forceddecision ~ needed for proper delete
-
-                                                var isValidRslt = isValid(pos, c, strict, fromSetValid);
+                                                var isValidRslt = getLastValidPosition() + 1 == pos && isValid(pos, c, strict, fromSetValid);
                                                 opts.keepStatic = !opts.keepStatic; //enable keepStatic on getMaskLength
                                                 if (!isValidRslt) {
                                                     resetMaskSet();
@@ -821,9 +820,9 @@
                 //Check for a nonmask before the pos
                 var buffer = getBuffer();
                 for (var pndx = pos - 1; pndx > -1; pndx--) {
-                    if (getMaskSet()["validPositions"][pndx] && getMaskSet()["validPositions"][pndx].fn == null)
+                    if (getMaskSet()["validPositions"][pndx] && getMaskSet()["validPositions"][pndx]["match"].fn == null)
                         break;
-                    else if ((!isMask(pndx) || buffer[pndx] != getPlaceholder(pndx)) && getTests(pndx).length > 1) {
+                    else if (getMaskSet()["validPositions"][pndx] == undefined && (!isMask(pndx) || buffer[pndx] != getPlaceholder(pndx)) && getTests(pndx).length > 1) {
                         _isValid(pndx, buffer[pndx], true);
                     }
                 }
