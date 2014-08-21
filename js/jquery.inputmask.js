@@ -1687,7 +1687,7 @@
                         if (opts.numericInput) {
                             isRTL = true;
                         }
-                        var valueBuffer = actionObj["value"].split('');
+                        var valueBuffer = ($.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call($el, actionObj["value"], opts) : actionObj["value"]).split('');
                         checkVal($el, false, false, isRTL ? valueBuffer.reverse() : valueBuffer, true);
                         opts.onKeyPress.call(this, undefined, getBuffer(), 0, opts);
                         return isRTL ? getBuffer().slice().reverse().join('') : getBuffer().join('');
