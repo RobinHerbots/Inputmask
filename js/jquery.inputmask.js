@@ -265,7 +265,7 @@
             if ($.isArray(opts.mask)) {
                 if (multi) {  //remove me
                     $.each(opts.mask, function (ndx, msk) {
-                        if (msk["mask"] != undefined) {
+                        if (msk["mask"] != undefined && !$.isFunction(msk["mask"])) {
                             ms.push(generateMask(msk["mask"].toString(), msk));
                         } else {
                             ms.push(generateMask(msk.toString()));
@@ -278,7 +278,7 @@
                     $.each(opts.mask, function (ndx, msk) {
                         if (altMask.length > 1)
                             altMask += ")|(";
-                        if (msk["mask"] != undefined) {
+                        if (msk["mask"] != undefined && !$.isFunction(msk["mask"])) {
                             hasMetaData = true;
                             altMask += msk["mask"].toString();
                         } else {
@@ -292,7 +292,7 @@
                 if (opts.mask.length == 1 && opts.greedy == false && opts.repeat != 0) {
                     opts.placeholder = "";
                 } //hide placeholder with single non-greedy mask
-                if (opts.mask["mask"] != undefined) {
+                if (opts.mask["mask"] != undefined && !$.isFunction(opts.mask["mask"])) {
                     ms = generateMask(opts.mask["mask"].toString(), opts.mask);
                 } else {
                     ms = generateMask(opts.mask.toString());
