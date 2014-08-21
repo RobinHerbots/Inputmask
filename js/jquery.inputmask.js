@@ -263,7 +263,7 @@
                 opts.mask = opts.mask.call(this, opts);
             }
             if ($.isArray(opts.mask)) {
-                if (multi) {
+                if (multi) {  //remove me
                     $.each(opts.mask, function (ndx, msk) {
                         if (msk["mask"] != undefined) {
                             ms.push(generateMask(msk["mask"].toString(), msk));
@@ -272,6 +272,7 @@
                         }
                     });
                 } else {
+                    opts.keepStatic = opts.keepStatic == undefined ? true: opts.keepStatic; //enable by default when passing multiple masks when the option is not explicitly specified
                     var hasMetaData = false;
                     var altMask = "(";
                     $.each(opts.mask, function (ndx, msk) {
@@ -537,19 +538,20 @@
                                             if (isFinite(ndx)) {
                                                 var altLocArr = lmnt.locator[loopNdxCnt].toString().split(",");
                                                 var mamatch;
-                                                lmnt.locator[loopNdxCnt] = "";
+                                                lmnt.locator[loopNdxCnt] = undefined;
                                                 lmnt.alternation = undefined;
                                                 for (var alndx = 0; alndx < altLocArr.length; alndx++) {
                                                     mamatch = $.inArray(altLocArr[alndx], altIndexArr) != -1;
-                                                    if (mamatch) {
-                                                        if (lmnt.locator[loopNdxCnt] != "") {
+                                                    if (mamatch) { //rebuild the locator with valid entries
+                                                        if (lmnt.locator[loopNdxCnt] != undefined) {
                                                             lmnt.locator[loopNdxCnt] += ",";
                                                             lmnt.alternation = loopNdxCnt; //only define alternation when there is more then 1 possibility
-                                                        }
-                                                        lmnt.locator[loopNdxCnt] += altLocArr[alndx]; //rebuild the locator with valid entries
+                                                            lmnt.locator[loopNdxCnt] += altLocArr[alndx];
+                                                        } else
+                                                            lmnt.locator[loopNdxCnt] = parseInt(altLocArr[alndx]);
                                                     }
                                                 }
-                                                if (lmnt.locator[loopNdxCnt] != "") return lmnt;
+                                                if (lmnt.locator[loopNdxCnt] != undefined) return lmnt;
                                             }
                                         });
                                     }
@@ -758,57 +760,59 @@
                         var validPsClone = $.extend(true, {}, getMaskSet()["validPositions"]),
                             firstAlt,
                             alternation;
-                        //find first alternation
-                        for (firstAlt in getMaskSet()["validPositions"]) {
-                            if (getMaskSet()["validPositions"][firstAlt].alternation != undefined) {
+                        //find last alternation
+                        for (firstAlt = getLastValidPosition() ; firstAlt >= 0; firstAlt--) {
+                            if (getMaskSet()["validPositions"][firstAlt] && getMaskSet()["validPositions"][firstAlt].alternation != undefined) {
                                 alternation = getMaskSet()["validPositions"][firstAlt].alternation;
                                 break;
                             }
                         }
-                        //find first decision making position
-                        for (var decisionPos in getMaskSet()["validPositions"]) {
-                            if (parseInt(decisionPos) > parseInt(firstAlt) && getMaskSet()["validPositions"][decisionPos].alternation === undefined) {
-                                var altPos = getMaskSet()["validPositions"][decisionPos],
-                                    decisionTaker = altPos.locator[alternation],
-                                    altNdxs = getMaskSet()["validPositions"][firstAlt].locator[alternation].split(",");
+                        if (alternation != undefined) {
+                            //find first decision making position
+                            for (var decisionPos in getMaskSet()["validPositions"]) {
+                                if (parseInt(decisionPos) > parseInt(firstAlt) && getMaskSet()["validPositions"][decisionPos].alternation === undefined) {
+                                    var altPos = getMaskSet()["validPositions"][decisionPos],
+                                        decisionTaker = altPos.locator[alternation],
+                                        altNdxs = getMaskSet()["validPositions"][firstAlt].locator[alternation].split(",");
 
-                                for (var mndx = 0; mndx < altNdxs.length; mndx++) {
-                                    if (decisionTaker < altNdxs[mndx]) {
-                                        var possibilityPos, possibilities;
-                                        for (var dp = decisionPos - 1; dp >= 0; dp--) {
-                                            possibilityPos = getMaskSet()["validPositions"][seekPrevious(decisionPos)];
-                                            if (possibilityPos != undefined) {
-                                                possibilities = possibilityPos.locator[alternation]; //store to reset 
-                                                possibilityPos.locator[alternation] = altNdxs[mndx];
-                                                break;
-                                            }
-                                        }
-                                        if (decisionTaker != possibilityPos.locator[alternation]) {
-                                            var buffer = getBuffer().slice(); //work on clone
-                                            for (var i = decisionPos; i < getLastValidPosition() + 1; i++) {
-                                                delete getMaskSet()["validPositions"][i];
-                                                delete getMaskSet()["tests"][i];
-                                            }
-                                            resetMaskSet(true); //clear getbuffer
-                                            opts.keepStatic = !opts.keepStatic; //disable keepStatic on getMaskLength
-                                            for (var i = decisionPos; i < buffer.length; i++) {
-                                                if (buffer[i] != opts.skipOptionalPartCharacter) {
-                                                    isValid(getLastValidPosition() + 1, buffer[i], false, true);
+                                    for (var mndx = 0; mndx < altNdxs.length; mndx++) {
+                                        if (decisionTaker < altNdxs[mndx]) {
+                                            var possibilityPos, possibilities;
+                                            for (var dp = decisionPos - 1; dp >= 0; dp--) {
+                                                possibilityPos = getMaskSet()["validPositions"][dp];
+                                                if (possibilityPos != undefined) {
+                                                    possibilities = possibilityPos.locator[alternation]; //store to reset 
+                                                    possibilityPos.locator[alternation] = altNdxs[mndx];
+                                                    break;
                                                 }
                                             }
-                                            possibilityPos.locator[alternation] = possibilities; //reset forceddecision ~ needed for proper delete
+                                            if (decisionTaker != possibilityPos.locator[alternation]) {
+                                                var buffer = getBuffer().slice(); //work on clone
+                                                for (var i = decisionPos; i < getLastValidPosition() + 1; i++) {
+                                                    delete getMaskSet()["validPositions"][i];
+                                                    delete getMaskSet()["tests"][i];
+                                                }
+                                                resetMaskSet(true); //clear getbuffer
+                                                opts.keepStatic = !opts.keepStatic; //disable keepStatic on getMaskLength
+                                                for (var i = decisionPos; i < buffer.length; i++) {
+                                                    if (buffer[i] != opts.skipOptionalPartCharacter) {
+                                                        isValid(getLastValidPosition() + 1, buffer[i], false, true);
+                                                    }
+                                                }
+                                                possibilityPos.locator[alternation] = possibilities; //reset forceddecision ~ needed for proper delete
 
-                                            var isValidRslt = isValid(pos, c, strict, fromSetValid);
-                                            opts.keepStatic = !opts.keepStatic; //enable keepStatic on getMaskLength
-                                            if (!isValidRslt) {
-                                                resetMaskSet();
-                                                getMaskSet()["validPositions"] = $.extend(true, {}, validPsClone);
+                                                var isValidRslt = isValid(pos, c, strict, fromSetValid);
+                                                opts.keepStatic = !opts.keepStatic; //enable keepStatic on getMaskLength
+                                                if (!isValidRslt) {
+                                                    resetMaskSet();
+                                                    getMaskSet()["validPositions"] = $.extend(true, {}, validPsClone);
+                                                } else
+                                                    return isValidRslt;
                                             }
-                                            return isValidRslt;
                                         }
                                     }
+                                    break;
                                 }
-                                break;
                             }
                         }
                     }
@@ -1473,7 +1477,6 @@
                     var forwardPosition = getMaskSet()["p"];
                     writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
                 }, 0);
-                skipInputEvent === true
                 return false;
             }
             function mask(el) {
@@ -1600,7 +1603,7 @@
                     }).bind(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", pasteEvent
                     ).bind('setvalue.inputmask', function () {
                         var input = this;
-                        checkVal(input, true);
+                        checkVal(input, true, false, undefined, true);
                         valueOnFocus = getBuffer().join('');
                     }).bind('complete.inputmask', opts.oncomplete
                     ).bind('incomplete.inputmask', opts.onincomplete
@@ -1794,7 +1797,7 @@
                 //numeric basic properties
                 nojumps: false, //do not jump over fixed parts in the mask
                 nojumpsThreshold: 0, //start nojumps as of
-                keepStatic: false, //try to keep the mask static while typing. Decisions to alter the mask will be posponed if possible
+                keepStatic: undefined, //try to keep the mask static while typing. Decisions to alter the mask will be posponed if possible - undefined see auto selection for multi masks
                 definitions: {
                     '9': {
                         validator: "[0-9]",

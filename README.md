@@ -46,10 +46,10 @@ Define your masks:
 
 ```javascript
 $(document).ready(function(){
-   $(selector).inputmask("99-9999999");  //direct mask
+   $(selector).inputmask("99-9999999");  //static mask
    $(selector).inputmask("mask", {"mask": "(999) 999-9999"}); //specifying fn & options
    $(selector).inputmask({"mask": "99-9999999"}); //specifying options only
-   $(selector).inputmask("9-a{1,3}9{1,3}"); //direct mask with dynamic syntax 
+   $(selector).inputmask("9-a{1,3}9{1,3}"); //mask with dynamic syntax 
 });
 ```
 
@@ -90,9 +90,17 @@ There are more definitions defined within the extensions.
 You can find info within the js-files or by further exploring the options.
 
 ## Masking types
-### Basic masks
+### Static masks
 
-TODO - explain
+These are the very basic of masking.  The mask is defined and will not change during the input.
+
+
+```javascript
+$(document).ready(function(){
+   $(selector).inputmask("aa-9999");  //static mask
+   $(selector).inputmask({mask: "aa-9999"});  //static mask
+});
+```
 
 ### Optional masks
 
@@ -139,7 +147,35 @@ The initial mask shown will be "_____" instead of "_____-____".
 
 ### Dynamic masks
 
-TODO - explain
+Dynamic masks can change during the input.  To define a dynamic part use { }.
+
+{n} => n repeats  
+{n,m} => from n to m repeats
+
+Also {+} and {*} is allowed. + start from 1 and * start from 0.
+
+```javascript
+$(document).ready(function(){
+   $(selector).inputmask("aa-9{4}");  //static mask with dynamic syntax
+   $(selector).inputmask("aa-9{1,4}");  //dynamic mask ~ the 9 def can be occur 1 to 4 times
+
+   //email mask	
+   $(selector).inputmask({
+            mask: "*{1,20}[.*{1,20}][.*{1,20}][.*{1,20}]@*{1,20}[.*{2,6}][.*{1,2}]",
+            greedy: false,
+            onBeforePaste: function (pastedValue, opts) {
+                pastedValue = pastedValue.toLowerCase();
+                return pastedValue.replace("mailto:", "");
+            },
+            definitions: {
+                '*': {
+                    validator: "[0-9A-Za-z!#$%&'*+/=?^_`{|}~\-]",
+                    cardinality: 1,
+                    casing: "lower"
+                }
+            }
+	});
+```
 
 ### Alternator masks
 
@@ -492,7 +528,7 @@ $(document).ready(function(){
 #### nojumps: false, //do not jump over fixed parts in the mask
 #### nojumpsThreshold: 0, //start nojumps as of
 #### keepStatic
-Default: false 
+Default: undefined (~false)   
 Use in combination with the alternator syntax
 Try to keep the mask static while typing. Decisions to alter the mask will be posponed if possible.
 
@@ -502,6 +538,7 @@ $(selector).inputmask({ mask: ["+55-99-9999-9999", "+55-99-99999-9999", ], keepS
 typing 1212345123 => should result in +55-12-1234-5123 
 type extra 4 => switch to +55-12-12345-1234
 
+When passing multiple masks (an array of masks) keepStatic is automatically set to true unless explicitly set through the options.
 
 #### definitions
 #### ignorables

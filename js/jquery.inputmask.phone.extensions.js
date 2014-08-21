@@ -48,7 +48,7 @@ When using this extension make sure you specify the correct url to get the masks
                     }
                 });
 
-                maskList.splice(0, 0, "+p(ppp)ppp-pppp");
+                maskList.splice(0, 0, "+pp-pppppppppp");
                 return maskList;
             },
             nojumps: true,
@@ -77,7 +77,7 @@ When using this extension make sure you specify the correct url to get the masks
                     }
                 });
 
-                maskList.splice(0, 0, "+32(ppp)ppp-pppp");
+                maskList.splice(0, 0, "+32-pppppppppp");
                 return maskList;
             },
             nojumps: true,
