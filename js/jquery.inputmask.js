@@ -367,7 +367,7 @@
                 if (soft !== true) {
                     maskset["_buffer"] = undefined;
                     maskset["validPositions"] = {};
-                    maskset["p"] = -1;
+                    maskset["p"] = 0;
                 }
             }
             function getLastValidPosition(closestTo) {
@@ -1294,7 +1294,7 @@
 
                         var pos, forwardPosition, c = String.fromCharCode(k);
                         if (checkval) {
-                            var pcaret = strict ? ndx : getLastValidPosition() + 1;
+                            var pcaret = strict ? ndx : getMaskSet()["p"];
                             pos = { begin: pcaret, end: pcaret };
                         } else {
                             pos = caret(input);
