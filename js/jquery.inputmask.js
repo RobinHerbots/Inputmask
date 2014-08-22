@@ -1691,6 +1691,14 @@
                         var valueBuffer = ($.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call($el, actionObj["value"], opts) : actionObj["value"]).split('');
                         checkVal($el, false, false, isRTL ? valueBuffer.reverse() : valueBuffer, true);
                         opts.onKeyPress.call(this, undefined, getBuffer(), 0, opts);
+
+                        if (actionObj["metadata"]) {
+                            return {
+                                value: isRTL ? getBuffer().slice().reverse().join('') : getBuffer().join(''),
+                                metadata: $el.inputmask("getmetadata")
+                            }
+                        }
+
                         return isRTL ? getBuffer().slice().reverse().join('') : getBuffer().join('');
                     case "isValid":
                         $el = $({});
@@ -1845,10 +1853,10 @@
                 var specials = ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\'];
                 return str.replace(new RegExp('(\\' + specials.join('|\\') + ')', 'gim'), '\\$1');
             },
-            format: function (value, options) {
+            format: function (value, options, metadata) {
                 var opts = $.extend(true, {}, $.inputmask.defaults, options);
                 resolveAlias(opts.alias, options, opts);
-                return maskScope({ "action": "format", "value": value }, generateMaskSet(opts), opts);
+                return maskScope({ "action": "format", "value": value, "metadata": metadata }, generateMaskSet(opts), opts);
             },
             isValid: function (value, options) {
                 var opts = $.extend(true, {}, $.inputmask.defaults, options);
