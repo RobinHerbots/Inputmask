@@ -829,7 +829,12 @@
 
                 var maskPos = pos;
                 if (maskPos >= getMaskLength()) { //try fuzzy alternator logic
-                    return alternate(pos, c, strict, fromSetValid);
+                    if (fromSetValid) {
+                        resetMaskSet(true);
+                        if (maskPos >= getMaskLength())
+                            return alternate(pos, c, strict, fromSetValid);
+                    } else
+                        return alternate(pos, c, strict, fromSetValid);
                 }
                 var result = _isValid(maskPos, c, strict, fromSetValid);
                 if (!strict && result === false) {
@@ -1627,7 +1632,7 @@
                         }
                         $el.bind("input.inputmask", mobileInputEvent);
                     }
-                    
+
                     patchValueProperty(el);
 
                     //apply mask

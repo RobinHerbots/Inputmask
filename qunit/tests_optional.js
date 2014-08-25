@@ -110,3 +110,16 @@ test("inputmask('[9-]AAA.999') ", function () {
 
     $("#testmask").remove();
 });
+
+test("inputmask('9[9]:99') ", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('9[9]:99');
+
+    $("#testmask").Type("3:44");
+    caret($("#testmask"), 1);
+    $("#testmask").Type("3");
+    equal($("#testmask").val(), "33:44", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
