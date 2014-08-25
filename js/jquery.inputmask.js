@@ -1615,8 +1615,11 @@
                     ).bind("keyup.inputmask", keyupEvent
                     ).bind("compositionupdate.inputmask", compositionupdateEvent);
 
-                    if (PasteEventType === "paste") {
+                    if (PasteEventType === "paste" && !msie1x) {
                         $el.bind("input.inputmask", inputFallBackEvent);
+                    }
+                    if (msie1x) { //todo enhance inputFallBack to handle this case
+                        $el.bind("input.inputmask", pasteEvent);
                     }
                     if (android || androidfirefox || androidchrome || kindle) {
                         if (PasteEventType == "input") {
@@ -1624,10 +1627,7 @@
                         }
                         $el.bind("input.inputmask", mobileInputEvent);
                     }
-
-                    if (msie1x)
-                        $el.bind("input.inputmask", pasteEvent);
-
+                    
                     patchValueProperty(el);
 
                     //apply mask
