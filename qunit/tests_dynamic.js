@@ -94,7 +94,7 @@ test("email mask - partial input 2", function () {
 
     $("#testmask")[0].focus();
     $("#testmask").Type("some@mail.com");
-    caret($("#testmask"), 4);
+    $.caret($("#testmask"), 4);
     $("#testmask").Type(".body");
     equal($("#testmask").val(), "some.body@mail.com", "Result " + $("#testmask").val());
 

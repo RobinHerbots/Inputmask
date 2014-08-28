@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.6
+* Version: 3.1.8
 */
 
 (function (factory) {
@@ -1029,8 +1029,11 @@
             }
             function clearOptionalTail(input) {
                 var buffer = getBuffer(), tmpBuffer = buffer.slice();
-                var rl = determineLastRequiredPosition();
-                tmpBuffer.length = rl;
+                var rl = determineLastRequiredPosition(), lmib = tmpBuffer.length - 1;
+                for (; lmib > rl; lmib--) {
+                    if (isMask(lmib)) break;
+                }
+                tmpBuffer.splice(rl, lmib + 1 - rl);
                 writeBuffer(input, tmpBuffer);
             }
             function isComplete(buffer) { //return true / false / undefined (repeat *)
@@ -1513,11 +1516,11 @@
                     $el.unbind(".inputmask");
                     $el.removeClass('focus-inputmask');
                     //bind events
-                    $el.closest('form').bind("submit", function () { //trigger change on submit if any
+                    $el.closest('form').bind("submit", function (e) { //trigger change on submit if any
                         if (valueOnFocus != getBuffer().join('')) {
                             $el.change();
                         }
-                        if ($el[0]._valueGet() == getBufferTemplate().join('')) {
+                        if ($el[0]._valueGet && $el[0]._valueGet() == getBufferTemplate().join('')) {
                             $el[0]._valueSet(''); //clear masktemplete on submit and still has focus
                         }
                         if (opts.autoUnmask && opts.removeMaskOnSubmit) {
@@ -1720,8 +1723,11 @@
                         var valueBuffer = actionObj["value"].split('');
                         checkVal($el, false, true, isRTL ? valueBuffer.reverse() : valueBuffer);
                         var buffer = getBuffer();
-                        var rl = determineLastRequiredPosition();
-                        buffer.length = rl;
+                        var rl = determineLastRequiredPosition(), lmib = buffer.length - 1;
+                        for (; lmib > rl; lmib--) {
+                            if (isMask(lmib)) break;
+                        }
+                        buffer.splice(rl, lmib + 1 - rl);
 
                         return isComplete(buffer) && actionObj["value"] == buffer.join('');
                     case "getemptymask":
@@ -1851,7 +1857,7 @@
                     ALT: 18, BACKSPACE: 8, CAPS_LOCK: 20, COMMA: 188, COMMAND: 91, COMMAND_LEFT: 91, COMMAND_RIGHT: 93, CONTROL: 17, DELETE: 46, DOWN: 40, END: 35, ENTER: 13, ESCAPE: 27, HOME: 36, INSERT: 45, LEFT: 37, MENU: 93, NUMPAD_ADD: 107, NUMPAD_DECIMAL: 110, NUMPAD_DIVIDE: 111, NUMPAD_ENTER: 108,
                     NUMPAD_MULTIPLY: 106, NUMPAD_SUBTRACT: 109, PAGE_DOWN: 34, PAGE_UP: 33, PERIOD: 190, RIGHT: 39, SHIFT: 16, SPACE: 32, TAB: 9, UP: 38, WINDOWS: 91
                 },
-                //specify keycodes which should not be considered in the keypress event, otherwise the preventDefault will stop their default behavior especially in FF
+                //specify $.keyCodes which should not be considered in the keypress event, otherwise the preventDefault will stop their default behavior especially in FF
                 ignorables: [8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123],
                 isComplete: undefined //override for isComplete - args => buffer, opts - return true || false
             },
@@ -1984,7 +1990,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.1.6
+Version: 3.1.8
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2112,7 +2118,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.1.6
+Version: 3.1.8
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2608,7 +2614,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.1.6
+Version: 3.1.8
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2868,7 +2874,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.1.6
+Version: 3.1.8
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -3062,7 +3068,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.1.6
+Version: 3.1.8
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks

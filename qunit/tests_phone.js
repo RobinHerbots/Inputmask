@@ -82,12 +82,12 @@ asyncTest("inputmask(\"phone\") - Brazil switch", 1, function () {
 
 
     $("#testmask")[0].focus();
-    caret($("#testmask"), $("#testmask")[0].value.length); //for FF
-    $("#testmask").SendKey(keyCodes.BACKSPACE);
-    $("#testmask").SendKey(keyCodes.BACKSPACE);
-    $("#testmask").SendKey(keyCodes.BACKSPACE);
-    $("#testmask").SendKey(keyCodes.BACKSPACE);
-    $("#testmask").SendKey(keyCodes.BACKSPACE);
+    $.caret($("#testmask"), $("#testmask")[0].value.length); //for FF
+    $("#testmask").SendKey($.keyCodes.BACKSPACE);
+    $("#testmask").SendKey($.keyCodes.BACKSPACE);
+    $("#testmask").SendKey($.keyCodes.BACKSPACE);
+    $("#testmask").SendKey($.keyCodes.BACKSPACE);
+    $("#testmask").SendKey($.keyCodes.BACKSPACE);
     $("#testmask").Type("451234");
     setTimeout(function () {
         equal($("#testmask").val(), "+55-12-12345-1234", "Result " + $("#testmask").val());

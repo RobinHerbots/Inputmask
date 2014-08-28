@@ -128,7 +128,7 @@ test("inputmask(\"dd/mm/yyyy\") - input CTRL RIGHT", function () {
     $("#testmask").inputmask("dd/mm/yyyy");
 
     $("#testmask")[0].focus();
-    $("#testmask").SendKey(keyCodes.RIGHT, keyCodes.CONTROL);
+    $("#testmask").SendKey($.keyCodes.RIGHT, $.keyCodes.CONTROL);
     ok($("#testmask").val() != "dd/mm/yyyy", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
@@ -148,10 +148,10 @@ test("inputmask(\"dd/mm/yyyy\") - input 2331973 BACKSPACE x4 2013", function () 
     $("#testmask").SendKey("9");
     $("#testmask").SendKey("7");
     $("#testmask").SendKey("3");
-    $("#testmask").SendKey(keyCodes.BACKSPACE);
-    $("#testmask").SendKey(keyCodes.BACKSPACE);
-    $("#testmask").SendKey(keyCodes.BACKSPACE);
-    $("#testmask").SendKey(keyCodes.BACKSPACE);
+    $("#testmask").SendKey($.keyCodes.BACKSPACE);
+    $("#testmask").SendKey($.keyCodes.BACKSPACE);
+    $("#testmask").SendKey($.keyCodes.BACKSPACE);
+    $("#testmask").SendKey($.keyCodes.BACKSPACE);
     $("#testmask").SendKey("2");
     $("#testmask").SendKey("0");
     $("#testmask").SendKey("1");
@@ -234,7 +234,7 @@ test("inputmask(\"mm/dd/yyyy\") - select some input 1 - Guamaso", function () {
     $("#testmask").inputmask("mm/dd/yyyy");
 
     $("#testmask")[0].focus();
-    caret($("#testmask")[0], 0, 5);
+    $.caret($("#testmask")[0], 0, 5);
     $("#testmask").Type("1");
     equal($("#testmask").val(), "1m/dd/yyyy", "Result " + $("#testmask").val());
     $("#testmask").remove();
@@ -247,8 +247,8 @@ test("inputmask(\"dd/mm/yyyy\") - input 2331973 - remove 23", function () {
 
     $("#testmask")[0].focus();
     $("#testmask").Type("23031973");
-    caret($("#testmask"), 0, 2);
-    $("#testmask").SendKey(keyCodes.DELETE);
+    $.caret($("#testmask"), 0, 2);
+    $("#testmask").SendKey($.keyCodes.DELETE);
 
     equal($("#testmask").val(), "dd/03/1973", "Result " + $("#testmask").val());
 

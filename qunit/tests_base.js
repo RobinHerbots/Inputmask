@@ -41,7 +41,7 @@ test("inputmask(\"999.999.999\") + backspace", function () {
     $("#testmask")[0].focus();
 
     $("#testmask").Type("123");
-    $("#testmask").SendKey(keyCodes.BACKSPACE);
+    $("#testmask").SendKey($.keyCodes.BACKSPACE);
     equal($("#testmask").val(), "12_.___.___", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
@@ -104,11 +104,11 @@ test("inputmask(\"999.999.999\") - delete 2nd with backspace, continue the mask"
     $("#testmask")[0].focus();
 
     $("#testmask").Type("123");
-    $("#testmask").SendKey(keyCodes.LEFT);
-    $("#testmask").SendKey(keyCodes.LEFT);
-    $("#testmask").SendKey(keyCodes.BACKSPACE);
+    $("#testmask").SendKey($.keyCodes.LEFT);
+    $("#testmask").SendKey($.keyCodes.LEFT);
+    $("#testmask").SendKey($.keyCodes.BACKSPACE);
     $("#testmask").Type("4");
-    $("#testmask").SendKey(keyCodes.RIGHT);
+    $("#testmask").SendKey($.keyCodes.RIGHT);
     $("#testmask").Type("56");
 
     equal($("#testmask").val(), "143.56_.___", "Result " + $("#testmask").val());
@@ -126,12 +126,12 @@ test("inputmask(\"999.999.999\") - delete 2nd with delete, continue the mask", f
     $("#testmask").SendKey(49);
     $("#testmask").SendKey(50);
     $("#testmask").SendKey(51);
-    $("#testmask").SendKey(keyCodes.LEFT);
-    $("#testmask").SendKey(keyCodes.LEFT);
-    $("#testmask").SendKey(keyCodes.LEFT);
-    $("#testmask").SendKey(keyCodes.DELETE);
+    $("#testmask").SendKey($.keyCodes.LEFT);
+    $("#testmask").SendKey($.keyCodes.LEFT);
+    $("#testmask").SendKey($.keyCodes.LEFT);
+    $("#testmask").SendKey($.keyCodes.DELETE);
     $("#testmask").SendKey(52);
-    $("#testmask").SendKey(keyCodes.RIGHT);
+    $("#testmask").SendKey($.keyCodes.RIGHT);
     $("#testmask").SendKey(53);
     $("#testmask").SendKey(54);
 
@@ -148,8 +148,8 @@ test("inputmask(\"999.999.999\") - delete selection start with nomask", function
     $("#testmask")[0].focus();
 
     $("#testmask").Type("123456789");
-    caret($("#testmask"), 3, 7);
-    $("#testmask").SendKey(keyCodes.DELETE);
+    $.caret($("#testmask"), 3, 7);
+    $("#testmask").SendKey($.keyCodes.DELETE);
 
     equal($("#testmask").val(), "123.789.___", "Result " + $("#testmask").val());
 
@@ -164,8 +164,8 @@ test("inputmask(\"999.999.999\") - backspace selection start with nomask", funct
     $("#testmask")[0].focus();
 
     $("#testmask").Type("123456789");
-    caret($("#testmask"), 3, 7);
-    $("#testmask").SendKey(keyCodes.DELETE);
+    $.caret($("#testmask"), 3, 7);
+    $("#testmask").SendKey($.keyCodes.DELETE);
 
     equal($("#testmask").val(), "123.789.___", "Result " + $("#testmask").val());
 
@@ -180,7 +180,7 @@ test("inputmask(\"999.999.999\") - overtype selection start with nomask", functi
     $("#testmask")[0].focus();
 
     $("#testmask").Type("123456789");
-    caret($("#testmask"), 3, 7);
+    $.caret($("#testmask"), 3, 7);
     $("#testmask").Type("1");
 
     equal($("#testmask").val(), "123.178.9__", "Result " + $("#testmask").val());
@@ -196,7 +196,7 @@ test("inputmask(\"*****\")", function () {
     $("#testmask")[0].focus();
 
     $("#testmask").Type("abe");
-    $("#testmask").SendKey(keyCodes.LEFT);
+    $("#testmask").SendKey($.keyCodes.LEFT);
     $("#testmask").Type("cd");
 
     equal($("#testmask").val(), "abcde", "Result " + $("#testmask").val());
@@ -212,8 +212,8 @@ test("inputmask(\"d/m/y\")", function () {
     $("#testmask")[0].focus();
 
     $("#testmask").Type("23031973");
-    caret($("#testmask"), 5);
-    $("#testmask").SendKey(keyCodes.BACKSPACE);
+    $.caret($("#testmask"), 5);
+    $("#testmask").SendKey($.keyCodes.BACKSPACE);
 
     equal($("#testmask").val(), "23/0_/1973", "Result " + $("#testmask").val());
 
@@ -228,7 +228,7 @@ test("inputmask(\"(999)999-9999\") - ruslanfedoseenko mask", function () {
     $("#testmask")[0].focus();
 
     $("#testmask").val("9999999999");
-    caret($("#testmask"), 4, 5);
+    $.caret($("#testmask"), 4, 5);
     $("#testmask").Type("7");
     equal($("#testmask").val(), "(999)999-9999", "Result " + $("#testmask").val());
     $("#testmask").remove();
@@ -241,7 +241,7 @@ test("inputmask(\"(999)999-9999\") - insert false - ruslanfedoseenko mask", func
     $("#testmask")[0].focus();
 
     $("#testmask").val("9999999999");
-    caret($("#testmask"), 4, 5);
+    $.caret($("#testmask"), 4, 5);
     $("#testmask").Type("7");
     equal($("#testmask").val(), "(999)999-9999", "Result " + $("#testmask").val());
     $("#testmask").remove();
@@ -267,7 +267,7 @@ test("Intergroup selection - dhilt", function () {
     $("#testmask")[0].focus();
     $("#testmask").Type("23314");
 
-    caret($("#testmask"), 4, 7);
+    $.caret($("#testmask"), 4, 7);
     $("#testmask").SendKey("6");
     equal($("#testmask").val(), "23/06/y014", "Result " + $("#testmask").val());
 
@@ -282,8 +282,8 @@ test("Delete selection with non-masks", function () {
     $("#testmask")[0].focus();
     $("#testmask").Type("9999999999");
 
-    caret($("#testmask"), 8, 11);
-    $("#testmask").SendKey(keyCodes.DELETE);
+    $.caret($("#testmask"), 8, 11);
+    $("#testmask").SendKey($.keyCodes.DELETE);
     equal($("#testmask").val(), "(999)999-99__", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
@@ -298,7 +298,7 @@ test("inputmask(\"*\", { greedy: false, repeat: \"*\" }) - replace cd with 1", f
     $("#testmask")[0].focus();
 
     $("#testmask").Type("abcdef");
-    caret($("#testmask"), 2, 4);
+    $.caret($("#testmask"), 2, 4);
     $("#testmask").SendKey("1");
     equal($("#testmask").val(), "ab1ef", "Result " + $("#testmask").val());
 
@@ -448,7 +448,7 @@ test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"01650103002000
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" value="016501030020001DE1015170" />');
     $("#testmask").inputmask("99 999 999 999 9999 \\D\\E*** 9999");
-    caret($("#testmask"), 13, 14);
+    $.caret($("#testmask"), 13, 14);
     $("#testmask").Type("3");
     equal($("#testmask").val(), "01 650 103 003 0001 DE101 5170", "Result " + $("#testmask").val());
 
@@ -459,7 +459,7 @@ test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"01650103002000
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" value="016501030020001DE1015170" />');
     $("#testmask").inputmask("99 999 999 999 9999 \\D\\E*** 9999");
-    caret($("#testmask"), 11, 14);
+    $.caret($("#testmask"), 11, 14);
     $("#testmask").Type("003");
     equal($("#testmask").val(), "01 650 103 003 0001 DE101 5170", "Result " + $("#testmask").val());
 
@@ -470,7 +470,7 @@ test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"01650103002000
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" value="016501030020001DE1015170" />');
     $("#testmask").inputmask("99 999 999 999 9999 \\D\\E*** 9999");
-    caret($("#testmask"), 12, 14);
+    $.caret($("#testmask"), 12, 14);
     $("#testmask").Type("01");
     equal($("#testmask").val(), "01 650 103 001 0001 DE101 5170", "Result " + $("#testmask").val());
 
@@ -481,7 +481,7 @@ test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\", { greedy: false }) ~ val
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" value="016501030020001DE1015170" />');
     $("#testmask").inputmask("99 999 999 999 9999 \\D\\E*** 9999", { greedy: false });
-    caret($("#testmask"), 12, 14);
+    $.caret($("#testmask"), 12, 14);
     $("#testmask").Type("01");
     equal($("#testmask").val(), "01 650 103 001 0001 DE101 5170", "Result " + $("#testmask").val());
 
@@ -539,7 +539,7 @@ test("inputmask(\"6703 9999 9999 9999 9\") ~ type \"6703 1234 5678 9012 3\" + ba
     $("#testmask").inputmask("6703 9999 9999 9999 9");
     $("#testmask")[0].focus();
     $("#testmask").Type("1234567890123");
-    $("#testmask").SendKey(keyCodes.BACKSPACE);
+    $("#testmask").SendKey($.keyCodes.BACKSPACE);
 
     equal($("#testmask").val(), "6703 1234 5678 9012 _", "Result " + $("#testmask").val());
 
@@ -554,7 +554,7 @@ asyncTest("inputmask(\"6703 9999 9999 9999 9\") ~ type \"6703670367036\" + backs
     $("#testmask").click();
     setTimeout(function () {
         $("#testmask").Type("6703670367036");
-        $("#testmask").SendKey(keyCodes.BACKSPACE);
+        $("#testmask").SendKey($.keyCodes.BACKSPACE);
         equal($("#testmask").val(), "6703 6703 6703 6703 _", "Result " + $("#testmask").val());
         start();
         $("#testmask").remove();

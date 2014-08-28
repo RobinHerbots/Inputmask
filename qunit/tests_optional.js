@@ -91,7 +91,7 @@ test("inputmask(\"9[9][9] 999[9] 9999\") - input 123123 space 1234 - vipink70", 
 
     $("#testmask")[0].focus();
     $("#testmask").Type("123123");
-    $("#testmask").SendKey(keyCodes.SPACE);
+    $("#testmask").SendKey($.keyCodes.SPACE);
     $("#testmask").Type("1234");
     equal($("#testmask").val(), "123 123 1234", "Result " + $("#testmask").val());
 
@@ -104,7 +104,7 @@ test("inputmask('[9-]AAA.999') ", function () {
     $("#testmask").inputmask('[9-]AAA.999');
 
     $("#testmask").Type("1abc123");
-    caret($("#testmask"), 4, 5);
+    $.caret($("#testmask"), 4, 5);
     $("#testmask").Type("d");
     equal($("#testmask").val(), "1-ABD.123", "Result " + $("#testmask").val());
 
@@ -117,7 +117,7 @@ test("inputmask('9[9]:99') ", function () {
     $("#testmask").inputmask('9[9]:99');
 
     $("#testmask").Type("3:44");
-    caret($("#testmask"), 1);
+    $.caret($("#testmask"), 1);
     $("#testmask").Type("3");
     equal($("#testmask").val(), "33:44", "Result " + $("#testmask").val());
 
