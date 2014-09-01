@@ -3,7 +3,7 @@
  http://github.com/RobinHerbots/jquery.inputmask
  Copyright (c) 2010 - 2014 Robin Herbots
  Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
- Version: 3.1.9
+ Version: 3.1.10
 */
 (function(f){"function"===typeof define&&define.amd?define(["jquery"],f):f(jQuery)})(function(f){if(void 0===f.fn.inputmask){var T=function(f){var e=document.createElement("input");f="on"+f;var d=f in e;d||(e.setAttribute(f,"return;"),d="function"==typeof e[f]);return d},E=function(c,e,d){return(c=d.aliases[c])?(c.alias&&E(c.alias,void 0,d),f.extend(!0,d,c),f.extend(!0,d,e),!0):!1},Q=function(c,e){function d(d){function f(d,e,c,h){this.matches=[];this.isGroup=d||!1;this.isOptional=e||!1;this.isQuantifier=
 c||!1;this.isAlternator=h||!1;this.quantifier={min:1,max:1}}function e(d,f,h){var l=c.definitions[f],n=0==d.matches.length;h=void 0!=h?h:d.matches.length;if(l&&!p){for(var A=l.prevalidator,t=A?A.length:0,s=1;s<l.cardinality;s++){var u=t>=s?A[s-1]:[],r=u.validator,u=u.cardinality;d.matches.splice(h++,0,{fn:r?"string"==typeof r?RegExp(r):new function(){this.test=r}:/./,cardinality:u?u:1,optionality:d.isOptional,newBlockMarker:n,casing:l.casing,def:l.definitionSymbol||f,placeholder:l.placeholder,mask:f})}d.matches.splice(h++,

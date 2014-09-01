@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.9
+* Version: 3.1.10
 */
 
 (function (factory) {
@@ -1983,7 +1983,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.1.9
+Version: 3.1.10
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2111,7 +2111,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.1.9
+Version: 3.1.10
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2607,7 +2607,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.1.9
+Version: 3.1.10
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2867,7 +2867,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.1.9
+Version: 3.1.10
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -3061,7 +3061,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.1.9
+Version: 3.1.10
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
@@ -3106,7 +3106,7 @@ When using this extension make sure you specify the correct url to get the masks
                     }
                 });
 
-                maskList.splice(0, 0, "+#p(pp)pppppppp");
+                maskList.splice(0, 0, "+pp(pp)pppppppp");
                 return maskList;
             },
             nojumps: true,
@@ -3135,7 +3135,7 @@ When using this extension make sure you specify the correct url to get the masks
                     }
                 });
 
-                maskList.splice(0, 0, "+32(#p)pppppppp");
+                maskList.splice(0, 0, "+32(pp)pppppppp");
                 return maskList;
             },
             nojumps: true,
