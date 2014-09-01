@@ -26,7 +26,7 @@ When using this extension make sure you specify the correct url to get the masks
 }(function ($) {
     $.extend($.inputmask.defaults.aliases, {
         'phone': {
-            url: "phone-codes/phone-codes.json",
+            url: "phone-codes/phone-codes.js",
             mask: function (opts) {
                 opts.definitions = {
                     'p': {
@@ -48,14 +48,14 @@ When using this extension make sure you specify the correct url to get the masks
                     }
                 });
 
-                maskList.splice(0, 0, "+pp(pp)pppppppp");
+                maskList.splice(0, 0, "+#p(pp)pppppppp");
                 return maskList;
             },
             nojumps: true,
             nojumpsThreshold: 1
         },
         'phonebe': {
-            url: "phone-codes/phone-be.json",
+            url: "phone-codes/phone-be.js",
             mask: function (opts) {
                 opts.definitions = {
                     'p': {
@@ -77,7 +77,7 @@ When using this extension make sure you specify the correct url to get the masks
                     }
                 });
 
-                maskList.splice(0, 0, "+32(pp)pppppppp");
+                maskList.splice(0, 0, "+32(#p)pppppppp");
                 return maskList;
             },
             nojumps: true,

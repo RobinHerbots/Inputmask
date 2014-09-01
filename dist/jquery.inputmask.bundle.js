@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.8
+* Version: 3.1.9
 */
 
 (function (factory) {
@@ -914,10 +914,10 @@
                         var lvp = getLastValidPosition(),
                             pos = lvp == -1 ? ndx : seekNext(lvp);
                         if ($.inArray(charCode, getBufferTemplate().slice(lvp + 1, pos)) == -1) {
-                            keypressEvent.call(input, undefined, true, charCode.charCodeAt(0), false, strict, ndx);
+                            keypressEvent.call(input, undefined, true, charCode.charCodeAt(0), false, strict, strict ? ndx : getMaskSet()["p"]);
                         }
                     } else {
-                        keypressEvent.call(input, undefined, true, charCode.charCodeAt(0), false, strict, ndx);
+                        keypressEvent.call(input, undefined, true, charCode.charCodeAt(0), false, strict, strict ? ndx : getMaskSet()["p"]);
                         strict = strict || (ndx > 0 && ndx > getMaskSet()["p"]);
                     }
                 });
@@ -1299,14 +1299,7 @@
                     if (k) {
                         //special treat the decimal separator
                         if (checkval !== true && k == 46 && e.shiftKey == false && opts.radixPoint == ",") k = 44;
-
-                        var pos, forwardPosition, c = String.fromCharCode(k);
-                        if (checkval) {
-                            var pcaret = strict ? ndx : getMaskSet()["p"];
-                            pos = { begin: pcaret, end: pcaret };
-                        } else {
-                            pos = caret(input);
-                        }
+                        var pos = checkval ? { begin: ndx, end: ndx } : caret(input), forwardPosition, c = String.fromCharCode(k);
 
                         //should we clear a possible selection??
                         var isSlctn = isSelection(pos.begin, pos.end);
@@ -1418,7 +1411,7 @@
                 }
 
                 var pasteValue = $.isFunction(opts.onBeforePaste) ? opts.onBeforePaste.call(input, inputValue, opts) : inputValue;
-                checkVal(input, true, false, pasteValue.split(''), true);
+                checkVal(input, true, false, isRTL ? pasteValue.split('').reverse() : pasteValue.split(''), true);
                 $input.click();
                 if (isComplete(getBuffer()) === true)
                     $input.trigger("complete");
@@ -1857,7 +1850,7 @@
                     ALT: 18, BACKSPACE: 8, CAPS_LOCK: 20, COMMA: 188, COMMAND: 91, COMMAND_LEFT: 91, COMMAND_RIGHT: 93, CONTROL: 17, DELETE: 46, DOWN: 40, END: 35, ENTER: 13, ESCAPE: 27, HOME: 36, INSERT: 45, LEFT: 37, MENU: 93, NUMPAD_ADD: 107, NUMPAD_DECIMAL: 110, NUMPAD_DIVIDE: 111, NUMPAD_ENTER: 108,
                     NUMPAD_MULTIPLY: 106, NUMPAD_SUBTRACT: 109, PAGE_DOWN: 34, PAGE_UP: 33, PERIOD: 190, RIGHT: 39, SHIFT: 16, SPACE: 32, TAB: 9, UP: 38, WINDOWS: 91
                 },
-                //specify $.keyCodes which should not be considered in the keypress event, otherwise the preventDefault will stop their default behavior especially in FF
+                //specify keyCodes which should not be considered in the keypress event, otherwise the preventDefault will stop their default behavior especially in FF
                 ignorables: [8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123],
                 isComplete: undefined //override for isComplete - args => buffer, opts - return true || false
             },
@@ -1990,7 +1983,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.1.8
+Version: 3.1.9
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2118,7 +2111,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.1.8
+Version: 3.1.9
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2614,7 +2607,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.1.8
+Version: 3.1.9
 
 Optional extensions on the jquery.inputmask base
 */
@@ -2874,7 +2867,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.1.8
+Version: 3.1.9
 
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
@@ -3068,7 +3061,7 @@ Input Mask plugin extensions
 http://github.com/RobinHerbots/jquery.inputmask
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 3.1.8
+Version: 3.1.9
 
 Phone extension.
 When using this extension make sure you specify the correct url to get the masks
@@ -3091,7 +3084,7 @@ When using this extension make sure you specify the correct url to get the masks
 }(function ($) {
     $.extend($.inputmask.defaults.aliases, {
         'phone': {
-            url: "phone-codes/phone-codes.json",
+            url: "phone-codes/phone-codes.js",
             mask: function (opts) {
                 opts.definitions = {
                     'p': {
@@ -3113,14 +3106,14 @@ When using this extension make sure you specify the correct url to get the masks
                     }
                 });
 
-                maskList.splice(0, 0, "+pp(pp)pppppppp");
+                maskList.splice(0, 0, "+#p(pp)pppppppp");
                 return maskList;
             },
             nojumps: true,
             nojumpsThreshold: 1
         },
         'phonebe': {
-            url: "phone-codes/phone-be.json",
+            url: "phone-codes/phone-be.js",
             mask: function (opts) {
                 opts.definitions = {
                     'p': {
@@ -3142,7 +3135,7 @@ When using this extension make sure you specify the correct url to get the masks
                     }
                 });
 
-                maskList.splice(0, 0, "+32(pp)pppppppp");
+                maskList.splice(0, 0, "+32(#p)pppppppp");
                 return maskList;
             },
             nojumps: true,
