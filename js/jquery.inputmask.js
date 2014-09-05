@@ -1606,7 +1606,7 @@
                         var input = this;
                         checkVal(input, true, false, undefined, true);
                         valueOnFocus = getBuffer().join('');
-                        if (input._valueGet() == getBufferTemplate().join(''))
+                        if ((opts.clearMaskOnLostFocus || opts.clearIncomplete) && input._valueGet() == getBufferTemplate().join(''))
                             input._valueSet('');
                     }).bind('complete.inputmask', opts.oncomplete
                     ).bind('incomplete.inputmask', opts.onincomplete
