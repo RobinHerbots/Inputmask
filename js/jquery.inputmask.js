@@ -1363,9 +1363,8 @@
                             $input.prop("title", getMaskSet()["mask"]);
                         }
 
-                        //needed for IE8 and below
                         if (e && checkval != true) {
-                            e.preventDefault ? e.preventDefault() : e.returnValue = false;
+                            e.preventDefault();
 
                             var currentCaretPos = caret(input);
                             var keypressResult = opts.onKeyPress.call(this, e, getBuffer(), currentCaretPos.begin, opts);
@@ -1607,6 +1606,8 @@
                         var input = this;
                         checkVal(input, true, false, undefined, true);
                         valueOnFocus = getBuffer().join('');
+                        if (input._valueGet() == getBufferTemplate().join(''))
+                            input._valueSet('');
                     }).bind('complete.inputmask', opts.oncomplete
                     ).bind('incomplete.inputmask', opts.onincomplete
                     ).bind('cleared.inputmask', opts.oncleared);
