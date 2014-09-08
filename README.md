@@ -730,11 +730,6 @@ Validate a given value against the mask.
 var isValid = $.inputmask.isValid("23/03/1973", { alias: "dd/mm/yyyy"});
 ```
 
-## Compiling with Google Closure Compiler
-
-First grab the sources from GitHub.  In the root you type ant.
-A new folder dist is created with the minified and optimized js-files
-
 ## .NET Nuget Package Install
 ```html
 PM> Install-Package jQuery.InputMask

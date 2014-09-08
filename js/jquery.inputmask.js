@@ -270,25 +270,23 @@
                         if (msk["mask"] != undefined && !$.isFunction(msk["mask"])) {
                             ms.push(generateMask(msk["mask"].toString(), msk));
                         } else {
-                            ms.push(generateMask(msk.toString()));
+                            ms.push(generateMask(msk.toString(), msk));
                         }
                     });
                 } else {
                     opts.keepStatic = opts.keepStatic == undefined ? true : opts.keepStatic; //enable by default when passing multiple masks when the option is not explicitly specified
-                    var hasMetaData = false;
                     var altMask = "(";
                     $.each(opts.mask, function (ndx, msk) {
                         if (altMask.length > 1)
                             altMask += ")|(";
                         if (msk["mask"] != undefined && !$.isFunction(msk["mask"])) {
-                            hasMetaData = true;
                             altMask += msk["mask"].toString();
                         } else {
                             altMask += msk.toString();
                         }
                     });
                     altMask += ")";
-                    ms = generateMask(altMask, hasMetaData ? opts.mask : undefined);
+                    ms = generateMask(altMask, opts.mask);
                 }
             } else {
                 if (opts.mask.length == 1 && opts.greedy == false && opts.repeat != 0) {
@@ -297,7 +295,7 @@
                 if (opts.mask["mask"] != undefined && !$.isFunction(opts.mask["mask"])) {
                     ms = generateMask(opts.mask["mask"].toString(), opts.mask);
                 } else {
-                    ms = generateMask(opts.mask.toString());
+                    ms = generateMask(opts.mask.toString(), opts.mask);
                 }
             }
             return ms;
