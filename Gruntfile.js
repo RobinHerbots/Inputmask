@@ -54,6 +54,35 @@ module.exports = function (grunt) {
         clean: ["dist"],
         qunit: {
             files: ['qunit/qunit.html']
+        },
+        bump: {
+            options: {
+                files: ['package.json', 'bower.json', 'jquery.inputmask.jquery.json'],
+                updateConfigs: ['pkg'],
+                commit: false,
+                createTag: false,
+                push: false
+            }
+        },
+        release: {
+            options: {
+                bump: false,
+                commitMessage: 'jquery.inputmask <%= version %>'
+            }
+        },
+        nugetpack: {
+            dist: {
+                src: 'nuget/jquery.inputmask.nuspec',
+                dest: 'dist/',
+                options: {
+                    version: '<%= pkg.version %>'
+                }
+            }
+        },
+        nugetpush: {
+            dist: {
+                src: 'dist/jQuery.InputMask.<%= pkg.version %>.nupkg'
+            }
         }
     });
 
@@ -61,6 +90,13 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-qunit');
+    grunt.loadNpmTasks('grunt-bump');
+    grunt.loadNpmTasks('grunt-release');
+    grunt.loadNpmTasks('grunt-nuget');
+
+    grunt.registerTask('publish:patch', ['clean', 'bump:patch', 'uglify', 'release', 'nugetpack', 'nugetpush']);
+    grunt.registerTask('publish:minor', ['clean', 'bump:minor', 'uglify', 'release', 'nugetpack', 'nugetpush']);
+    grunt.registerTask('publish:major', ['clean', 'bump:major', 'uglify', 'release', 'nugetpack', 'nugetpush']);
 
     // Default task(s).
     grunt.registerTask('default', ['clean', 'uglify']);
