@@ -6,13 +6,7 @@
 * Version: 0.0.0
 */
 
-(function (factory) {
-    if (typeof define === 'function' && define.amd) {
-        define(['jquery'], factory);
-    } else {
-        factory(jQuery);
-    }
-}(function ($) {
+(function ($) {
     if ($.fn.inputmask === undefined) {
 
         //helper functions
@@ -1986,4 +1980,4 @@
         };
     }
     return $.fn.inputmask;
-}));
+})(jQuery);

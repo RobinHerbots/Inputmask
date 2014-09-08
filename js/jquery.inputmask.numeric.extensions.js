@@ -7,13 +7,7 @@ Version: 0.0.0
 
 Optional extensions on the jquery.inputmask base
 */
-(function (factory) {
-    if (typeof define === 'function' && define.amd) {
-        define(['jquery', './jquery.inputmask'], factory);
-    } else {
-        factory(jQuery);
-    }
-}(function ($) {
+(function ($) {
     //number aliases
     $.extend($.inputmask.defaults.aliases, {
         'numeric': {
@@ -257,4 +251,4 @@ Optional extensions on the jquery.inputmask base
         }
     });
     return $.fn.inputmask;
-}));
+})(jQuery);
