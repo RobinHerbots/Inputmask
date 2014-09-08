@@ -91,6 +91,9 @@ module.exports = function (grunt) {
             },
             gitadd: {
                 command: 'git add .'
+            },
+            gitpush: {
+                command: 'git push origin'
             }
         }
     });
