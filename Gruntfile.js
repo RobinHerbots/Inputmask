@@ -91,8 +91,8 @@ module.exports = function (grunt) {
             },
             gitpushchanges: {
                 command: ['git add .',
-                    'git commit -m "jquery.inputmask <%= pkg.version %>"'//,
-                   /* 'git push origin'*/].join('&&')
+                    'git commit -m "jquery.inputmask <%= pkg.version %>"',
+                    'git push origin'].join('&&')
             }
         }
     });
