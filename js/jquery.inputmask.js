@@ -18,14 +18,20 @@
         //helper functions
         function isInputEventSupported(eventName) {
             var el = document.createElement('input'),
-                eventName = 'on' + eventName,
-                isSupported = (eventName in el);
+                evName = 'on' + eventName,
+                isSupported = (evName in el);
             if (!isSupported) {
-                el.setAttribute(eventName, 'return;');
-                isSupported = typeof el[eventName] == 'function';
+                el.setAttribute(evName, 'return;');
+                isSupported = typeof el[evName] == 'function';
             }
-            el = null;
+            document.remove(el);
             return isSupported;
+        }
+
+        function isInputTypeSupported(inputType) {
+            var el = document.createElement('input');
+            el.setAttribute("type", inputType);
+            return el.type !== "text";
         }
 
         function resolveAlias(aliasStr, options, opts) {
@@ -1479,7 +1485,7 @@
             }
             function mask(el) {
                 $el = $(el);
-                if ($el.is(":input") && $el.attr("type") != "number") {
+                if ($el.is(":input") && !isInputTypeSupported($el.attr("type"))) {
                     //store tests & original buffer in the input element - used to get the unmasked value
                     $el.data('_inputmask', {
                         'maskset': maskset,

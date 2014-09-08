@@ -9,54 +9,30 @@ module.exports = function (grunt) {
             '*/\n';
     }
 
+    function createUglifyConfig(path) {
+        var uglifyConfig = {};
+        var srcFiles = grunt.file.expand(path + "/*.js");
+        for (var srcNdx in srcFiles) {
+            var dstFile = srcFiles[srcNdx].replace("js/", "");
+            uglifyConfig[dstFile] = {
+                dest: 'dist/inputmask/' + dstFile,
+                src: srcFiles[srcNdx],
+                options: { banner: createBanner(dstFile) }
+            };
+        }
+        uglifyConfig["inputmaskbundle"] = {
+            files: {
+                'dist/<%= pkg.name %>.bundle.js': srcFiles
+            },
+            options: { banner: createBanner('<%= pkg.name %>.bundle') }
+        }
+        return uglifyConfig;
+    }
+
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-        uglify: {
-            "inputmask": {
-                dest: 'dist/inputmask/<%= pkg.name %>.js',
-                src: 'js/<%= pkg.name %>.js',
-                options: { banner: createBanner('<%= pkg.name %>') }
-            },
-            "inputmask.extensions": {
-                dest: 'dist/inputmask/<%= pkg.name %>.extensions.js',
-                src: 'js/<%= pkg.name %>.extensions.js',
-                options: { banner: createBanner('<%= pkg.name %>.extensions') }
-            },
-            "inputmask.date.extensions": {
-                dest: 'dist/inputmask/<%= pkg.name %>.date.extensions.js',
-                src: 'js/<%= pkg.name %>.date.extensions.js',
-                options: { banner: createBanner('<%= pkg.name %>.date.extensions') }
-            },
-            "inputmask.numeric.extensions": {
-                dest: 'dist/inputmask/<%= pkg.name %>.numeric.extensions.js',
-                src: 'js/<%= pkg.name %>.numeric.extensions.js',
-                options: { banner: createBanner('<%= pkg.name %>.numeric.extensions') }
-            },
-            "inputmask.phone.extensions": {
-                dest: 'dist/inputmask/<%= pkg.name %>.phone.extensions.js',
-                src: 'js/<%= pkg.name %>.phone.extensions.js',
-                options: { banner: createBanner('<%= pkg.name %>.phone.extensions') }
-            },
-            "inputmask.regex.extensions": {
-                dest: 'dist/inputmask/<%= pkg.name %>.regex.extensions.js',
-                src: 'js/<%= pkg.name %>.regex.extensions.js',
-                options: { banner: createBanner('<%= pkg.name %>.regex.extensions') }
-            },
-            "inputmaskbundle": {
-                files: {
-                    'dist/<%= pkg.name %>.bundle.js': [
-                        'js/<%= pkg.name %>.js',
-                        'js/<%= pkg.name %>.extensions.js',
-                        'js/<%= pkg.name %>.date.extensions.js',
-                        'js/<%= pkg.name %>.numeric.extensions.js',
-                        'js/<%= pkg.name %>.phone.extensions.js',
-                        'js/<%= pkg.name %>.regex.extensions.js'
-                    ]
-                },
-                options: { banner: createBanner('<%= pkg.name %>.bundle') }
-            }
-        },
+        uglify: createUglifyConfig("js"),
         clean: ["dist"],
         qunit: {
             files: ['qunit/qunit.html']
