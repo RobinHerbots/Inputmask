@@ -24,14 +24,16 @@
                 el.setAttribute(evName, 'return;');
                 isSupported = typeof el[evName] == 'function';
             }
-            document.remove(el);
+            el = null;
             return isSupported;
         }
 
         function isInputTypeSupported(inputType) {
             var el = document.createElement('input');
             el.setAttribute("type", inputType);
-            return el.type !== "text";
+            var isSupported = el.type !== "text";
+            el = null;
+            return isSupported;
         }
 
         function resolveAlias(aliasStr, options, opts) {
