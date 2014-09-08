@@ -89,11 +89,10 @@ module.exports = function (grunt) {
             options: {
                 stderr: false
             },
-            gitadd: {
-                command: 'git add .'
-            },
-            gitpush: {
-                command: 'git push origin'
+            gitpushchanges: {
+                command: ['git add .',
+                    'git commit -m "jquery.inputmask <%= pkg.version %>"'//,
+                   /* 'git push origin'*/].join('&&')
             }
         }
     });
@@ -107,9 +106,9 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-nuget');
     grunt.loadNpmTasks('grunt-shell');
 
-    grunt.registerTask('publish:patch', ['clean', 'bump:patch', 'uglify', 'shell:gitadd', 'release', 'nugetpack', 'nugetpush']);
-    grunt.registerTask('publish:minor', ['clean', 'bump:minor', 'uglify', 'shell:gitadd', 'release', 'nugetpack', 'nugetpush']);
-    grunt.registerTask('publish:major', ['clean', 'bump:major', 'uglify', 'shell:gitadd', 'release', 'nugetpack', 'nugetpush']);
+    grunt.registerTask('publish:patch', ['clean', 'bump:patch', 'uglify', 'shell:gitpushchanges', 'release', 'nugetpack', 'nugetpush']);
+    grunt.registerTask('publish:minor', ['clean', 'bump:minor', 'uglify', 'shell:gitpushchanges', 'release', 'nugetpack', 'nugetpush']);
+    grunt.registerTask('publish:major', ['clean', 'bump:major', 'uglify', 'shell:gitpushchanges', 'release', 'nugetpack', 'nugetpush']);
 
     // Default task(s).
     grunt.registerTask('default', ['clean', 'uglify']);
