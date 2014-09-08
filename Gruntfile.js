@@ -67,8 +67,7 @@ module.exports = function (grunt) {
         release: {
             options: {
                 bump: false,
-                commitMessage: 'jquery.inputmask <%= version %>',
-                add: true
+                commitMessage: 'jquery.inputmask <%= version %>'
             }
         },
         nugetpack: {
@@ -91,7 +90,9 @@ module.exports = function (grunt) {
             },
             gitcommitchanges: {
                 command: ['git add .',
-                    'git commit -m "jquery.inputmask <%= pkg.version %>"'].join('&&')
+                    'git reset -- package.json',
+                    'git commit -m "jquery.inputmask <%= pkg.version %>"'
+                ].join('&&')
             }
         }
     });
