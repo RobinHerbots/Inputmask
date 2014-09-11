@@ -416,8 +416,8 @@
             function stripValidPositions(start, end) {
                 var i, startPos = start, lvp;
                 for (i = start; i < end; i++) { //clear selection
-                    //TODO FIXME BETTER CHECK
-                    delete getMaskSet()["validPositions"][i];
+                    if (getMaskSet()["validPositions"][i] != undefined && (getMaskSet()["validPositions"][i].input != opts.radixPoint || i == getLastValidPosition()))
+                        delete getMaskSet()["validPositions"][i];
                 }
 
                 for (i = end ; i <= getLastValidPosition() ;) {
@@ -430,12 +430,6 @@
                         }
                         startPos++;
                     } else i++;
-                }
-                lvp = getLastValidPosition();
-                //catchup
-                while (lvp > 0 && (getMaskSet()["validPositions"][lvp] == undefined || getMaskSet()["validPositions"][lvp].match.fn == null)) {
-                    delete getMaskSet()["validPositions"][lvp];
-                    lvp--;
                 }
                 resetMaskSet(true);
             }

@@ -698,7 +698,7 @@ test("inputmask(\"mm/yyyy\") ~ .val(\"031973\") - disabled input", function () {
 
 test("inputmask({ \"mask\": \"(999) 999-9999\" }) ~ .val(\"8144419449\") - type=\"tel\" - bodrick", function () {
     var $fixture = $("#qunit-fixture");
-    $fixture.append('<input type="tel" id="testmask" disabled="disabled" />');
+    $fixture.append('<input type="text" id="testmask" disabled="disabled" />');
     $("#testmask").inputmask({ "mask": "(999) 999-9999" });
     $("#testmask").val("8144419449");
     equal($("#testmask").val(), "(814) 441-9449", "Result " + $("#testmask").val());
