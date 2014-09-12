@@ -414,10 +414,16 @@
                 return true;
             }
             function stripValidPositions(start, end) {
-                var i, startPos = start, lvp;
-                for (i = start; i < end; i++) { //clear selection
-                    if (getMaskSet()["validPositions"][i] != undefined && (getMaskSet()["validPositions"][i].input != opts.radixPoint || i == getLastValidPosition()))
-                        delete getMaskSet()["validPositions"][i];
+                var i, startPos = start;
+                for (i = startPos; i < end; i++) { //clear selection
+                    if (getMaskSet()["validPositions"][i] != undefined) {
+                        if (getMaskSet()["validPositions"][i].input != opts.radixPoint || i == getLastValidPosition())
+                            delete getMaskSet()["validPositions"][i];
+                        else if (getMaskSet()["validPositions"][i].input == opts.radixPoint) {
+                            end++;
+                            startPos++;
+                        }
+                    }
                 }
 
                 for (i = end ; i <= getLastValidPosition() ;) {
@@ -431,6 +437,10 @@
                         startPos++;
                     } else i++;
                 }
+                //remove radixpoint if needed
+                if (getMaskSet()["validPositions"][start] != undefined && (getMaskSet()["validPositions"][start].input == opts.radixPoint && startPos == getLastValidPosition()))
+                    delete getMaskSet()["validPositions"][startPos];
+
                 resetMaskSet(true);
             }
             function getTestTemplate(pos, ndxIntlzr, tstPs) {

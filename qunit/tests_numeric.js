@@ -308,10 +308,10 @@ test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - inp
     $("#testmask").remove();
 });
 
-test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - input 12345.123 + remove .123", function () {
+test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\", decimalProtect: true }\") - input 12345.123 + remove .123", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
-    $("#testmask").inputmask("decimal", { autoGroup: true, groupSeparator: "," });
+    $("#testmask").inputmask("decimal", { autoGroup: true, groupSeparator: ",", decimalProtect: true });
 
     $("#testmask")[0].focus();
 
@@ -358,10 +358,10 @@ test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - inp
     equal($("#testmask").val(), "12,345.789", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
-test("inputmask(\"decimal\", { autoGroup: false, groupSeparator: \",\" }\") - input 12345.123 + remove .123", function () {
+test("inputmask(\"decimal\", { autoGroup: false, groupSeparator: \",\", decimalProtect: true  }\") - input 12345.123 + remove .123", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
-    $("#testmask").inputmask("decimal", { autoGroup: false, groupSeparator: "," });
+    $("#testmask").inputmask("decimal", { autoGroup: false, groupSeparator: ",", decimalProtect: true });
 
     $("#testmask")[0].focus();
 
@@ -379,10 +379,31 @@ test("inputmask(\"decimal\", { autoGroup: false, groupSeparator: \",\" }\") - in
     equal($("#testmask").val(), "12345", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
-test("inputmask(\"decimal\", { autoGroup: false, groupSeparator: \",\" }\") - input 12345.123 + replace .123 => .789", function () {
+test("inputmask(\"decimal\", { autoGroup: false, groupSeparator: \",\", decimalProtect: false  }\") - input 12345.123 + remove .123", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
-    $("#testmask").inputmask("decimal", { autoGroup: false, groupSeparator: "," });
+    $("#testmask").inputmask("decimal", { autoGroup: false, groupSeparator: ",", decimalProtect: false });
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").Type("12345.123");
+    //$("#testmask").click();
+    $("#testmask").SendKey($.keyCodes.LEFT);
+    $("#testmask").SendKey($.keyCodes.LEFT);
+    $("#testmask").SendKey($.keyCodes.LEFT);
+    $("#testmask").SendKey($.keyCodes.LEFT);
+    $("#testmask").SendKey($.keyCodes.DELETE);
+    $("#testmask").SendKey($.keyCodes.DELETE);
+    $("#testmask").SendKey($.keyCodes.DELETE);
+    $("#testmask").SendKey($.keyCodes.DELETE);
+
+    equal($("#testmask").val(), "12345.", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+test("inputmask(\"decimal\", { autoGroup: false, groupSeparator: \",\", decimalProtect: true  }\") - input 12345.123 + replace .123 => .789", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("decimal", { autoGroup: false, groupSeparator: ",", decimalProtect: true });
 
     $("#testmask")[0].focus();
 
@@ -427,16 +448,29 @@ test("inputmask(\"decimal, { repeat: 15 }\") - maxlength 10", function () {
     $("#testmask").remove();
 });
 
-test("inputmask(\"decimal, { repeat: 5 }\") - maxlength 10", function () {
+test("inputmask(\"decimal, { repeat: 5, decimalProtect: true }\") - maxlength 10", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" maxlength="10" />');
-    $("#testmask").inputmask("decimal", { repeat: 5 });
+    $("#testmask").inputmask("decimal", { repeat: 5, decimalProtect: true });
 
     $("#testmask")[0].focus();
 
     $("#testmask").Type("123456789012345");
 
     equal($("#testmask").val(), "12345", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("inputmask(\"decimal, { repeat: 5, decimalProtect: false }\") - maxlength 10", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" maxlength="10" />');
+    $("#testmask").inputmask("decimal", { repeat: 5, decimalProtect: false });
+
+    $("#testmask")[0].focus();
+
+    $("#testmask").Type("123456789012345");
+
+    equal($("#testmask").val(), "12345.6789", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
 

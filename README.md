@@ -179,7 +179,13 @@ $(document).ready(function(){
 
 ### Alternator masks
 
-TODO - explain
+The alternator syntax is like an **OR** statement.  The mask can be one of the 2 choices specified in the alternator.
+
+To define an alternator use the |.  
+ex: "a|9" => a or 9  
+	"(aaa)|(999)" => aaa or 999  
+
+Also make sure to read about the keepStatic option.  
 
 ```javascript
 $("selector").inputmask("(99.9)|(X)", {
@@ -324,10 +330,37 @@ $(document).ready(function(){
 });
 ```
 #### optionalmarker
+
+Definition of the symbols used to indicate an optional part in the mask.  
+```javascript
+optionalmarker: { start: "[", end: "]" },
+```
 #### quantifiermarker
+
+Definition of the symbols used to indicate a quantifier in the mask.  
+```javascript
+quantifiermarker: { start: "{", end: "}" },
+```
 #### groupmarker
+
+Definition of the symbols used to indicate a group in the mask.  
+```javascript
+groupmarker: { start: "(", end: ")" },
+```
 #### alternatormarker
+
+Definition of the symbols used to indicate an alternator part in the mask.  
+```javascript
+alternatormarker: "|",
+```
 #### escapeChar
+
+Definition of the symbols used to escape a part in the mask.  
+```javascript
+escapeChar: "\\",
+```
+See **escape special mask chars**
+
 #### mask
 #### oncomplete
 
@@ -594,8 +627,7 @@ $(document).ready(function(){
 ```
 #### getmetadata
 
-Only applies on multi-masks.
-The metadata of the actual mask provided in the mask definitions can be obtained by calling
+The metadata of the actual mask provided in the mask definitions can be obtained by calling getmetadata.  If only a mask is provided the mask definition will be returned by the getmetadata.  
 
 ```javascript
 $(selector).inputmask("getmetadata");

@@ -25,15 +25,16 @@ Optional extensions on the jquery.inputmask base
                     opts.integerDigits += mod == 0 ? seps - 1 : seps;
                 }
 
-				opts.definitions[":"].placeholder = opts.radixPoint;
+                opts.definitions[";"] = opts.definitions["~"]; //clone integer def for decimals
+                opts.definitions[":"].placeholder = opts.radixPoint;
 
                 var mask = opts.prefix;
                 mask += "[+]";
                 mask += "~{1," + opts.integerDigits + "}";
                 if (opts.digits != undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0)) {
                     if (opts.digitsOptional)
-                        mask += "[" + (opts.decimalProtect ? ":" : opts.radixPoint) + "~{" + opts.digits + "}]";
-                    else mask += (opts.decimalProtect ? ":" : opts.radixPoint) + "~{" + opts.digits + "}";
+                        mask += "[" + (opts.decimalProtect ? ":" : opts.radixPoint) + ";{" + opts.digits + "}]";
+                    else mask += (opts.decimalProtect ? ":" : opts.radixPoint) + ";{" + opts.digits + "}";
                 }
                 mask += opts.suffix;
                 return mask;
@@ -52,7 +53,7 @@ Optional extensions on the jquery.inputmask base
             prefix: "",
             suffix: "",
             rightAlign: true,
-            decimalProtect: false, //only decimals allowed after entering the radixpoint
+            decimalProtect: true, //do not allow assumption of decimals input without entering the radixpoint
             postFormat: function (buffer, pos, reformatOnly, opts) {  //this needs to be removed // this is crap
                 var needsRefresh = false, charAtPos = buffer[pos];
                 if (opts.groupSeparator == "" ||
@@ -202,21 +203,21 @@ Optional extensions on the jquery.inputmask base
                     prevalidator: null
                 },
                 ':': {
-					validator: function (chrs, maskset, pos, strict, opts) {
-						var isValid = opts.negationhandler(chrs, maskset.buffer, pos, strict, opts);
-						if (!isValid) {
-							var radix = "[" + $.inputmask.escapeRegex.call(this, opts.radixPoint) + "]";
-							isValid = new RegExp(radix).test(chrs);
-							if (isValid && maskset["validPositions"][pos] && maskset["validPositions"][pos]["match"].placeholder == opts.radixPoint) {
-								isValid = { "pos": pos, "remove": pos };
-							}
-						}
-						return isValid;
-					},
-					cardinality: 1,
-					prevalidator: null,
-					placeholder: "" //radixpoint will be set in the mask function
-				}
+                    validator: function (chrs, maskset, pos, strict, opts) {
+                        var isValid = opts.negationhandler(chrs, maskset.buffer, pos, strict, opts);
+                        if (!isValid) {
+                            var radix = "[" + $.inputmask.escapeRegex.call(this, opts.radixPoint) + "]";
+                            isValid = new RegExp(radix).test(chrs);
+                            if (isValid && maskset["validPositions"][pos] && maskset["validPositions"][pos]["match"].placeholder == opts.radixPoint) {
+                                isValid = { "pos": pos, "remove": pos };
+                            }
+                        }
+                        return isValid;
+                    },
+                    cardinality: 1,
+                    prevalidator: null,
+                    placeholder: "" //radixpoint will be set in the mask function
+                }
             },
             insertMode: true,
             autoUnmask: false,
@@ -259,6 +260,18 @@ Optional extensions on the jquery.inputmask base
                     return initialValue;
                 }
             }
+        },
+        'currency': {
+            prefix: "€",
+            groupSeparator: ".",
+            radixPoint: ",",
+            alias: "numeric",
+            placeholder: "0",
+            autoGroup: true,
+            digits: 2,
+            digitsOptional: false,
+            clearMaskOnLostFocus: false,
+            decimalProtect: true,
         },
         'decimal': {
             alias: "numeric"
