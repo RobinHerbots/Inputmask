@@ -100,3 +100,27 @@ test("email mask - partial input 2", function () {
 
     $("#testmask").remove();
 });
+
+test("email mask - babu@us.lufthansa.com - babupca", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("email");
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("babu@us.lufthansa.com");
+    equal($("#testmask").val(), "babu@us.lufthansa.com", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("email mask - email@subdomain.domain.com - babupca", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("email");
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("email@subdomain.domain.com");
+    equal($("#testmask").val(), "email@subdomain.domain.com", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
