@@ -16,7 +16,13 @@ Optional extensions on the jquery.inputmask base
                     opts.integerDigits = opts.repeat;
                 }
                 opts.repeat = 0;
-
+				if(opts.groupSeparator == opts.radixPoint){ //treat equal separator and radixpoint
+					if(opts.radixPoint == ".")
+						opts.groupSeparator = ",";
+					else if(opts.radixPoint == ",")
+						opts.groupSeparator = ".";
+					else opts.groupSeparator = "";
+				}
                 opts.autoGroup = opts.autoGroup && opts.groupSeparator != "";
 
                 if (opts.autoGroup && isFinite(opts.integerDigits)) {
