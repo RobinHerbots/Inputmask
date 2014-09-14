@@ -268,9 +268,9 @@ Optional extensions on the jquery.inputmask base
             }
         },
         'currency': {
-            prefix: "€",
-            groupSeparator: ".",
-            radixPoint: ",",
+            prefix: "$",
+            groupSeparator: ",",
+            radixPoint: ".",
             alias: "numeric",
             placeholder: "0",
             autoGroup: true,
