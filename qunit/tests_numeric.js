@@ -397,7 +397,7 @@ test("inputmask(\"decimal\", { autoGroup: false, groupSeparator: \",\", decimalP
     $("#testmask").SendKey($.keyCodes.DELETE);
     $("#testmask").SendKey($.keyCodes.DELETE);
 
-    equal($("#testmask").val(), "12345.", "Result " + $("#testmask").val());
+    equal($("#testmask").val(), "12345", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
 test("inputmask(\"decimal\", { autoGroup: false, groupSeparator: \",\", decimalProtect: true  }\") - input 12345.123 + replace .123 => .789", function () {

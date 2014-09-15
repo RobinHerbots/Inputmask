@@ -415,15 +415,14 @@
             }
             function stripValidPositions(start, end) {
                 var i, startPos = start;
+                if (getMaskSet()["validPositions"][start] != undefined && getMaskSet()["validPositions"][start].input == opts.radixPoint) {
+                    end++;
+                    startPos++;
+                }
                 for (i = startPos; i < end; i++) { //clear selection
-                    if (getMaskSet()["validPositions"][i] != undefined) {
-                        if (getMaskSet()["validPositions"][i].input != opts.radixPoint || i == getLastValidPosition())
-                            delete getMaskSet()["validPositions"][i];
-                        else if (getMaskSet()["validPositions"][i].input == opts.radixPoint) {
-                            end++;
-                            startPos++;
-                        }
-                    }
+                    if (getMaskSet()["validPositions"][i] != undefined &&
+                        (getMaskSet()["validPositions"][i].input != opts.radixPoint || i == getLastValidPosition()))
+                        delete getMaskSet()["validPositions"][i];
                 }
 
                 for (i = end ; i <= getLastValidPosition() ;) {
@@ -438,8 +437,9 @@
                     } else i++;
                 }
                 //remove radixpoint if needed
-                if (getMaskSet()["validPositions"][start] != undefined && (getMaskSet()["validPositions"][start].input == opts.radixPoint && startPos == getLastValidPosition()))
-                    delete getMaskSet()["validPositions"][startPos];
+                var lvp = getLastValidPosition();
+                if (start <= lvp && getMaskSet()["validPositions"][lvp] != undefined && (getMaskSet()["validPositions"][lvp].input == opts.radixPoint))
+                    delete getMaskSet()["validPositions"][lvp];
 
                 resetMaskSet(true);
             }
