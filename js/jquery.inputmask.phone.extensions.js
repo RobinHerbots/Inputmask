@@ -11,7 +11,7 @@ When using this extension make sure you specify the correct url to get the masks
  $(selector).inputmask("phone", {
                 url: "Scripts/jquery.inputmask/phone-codes/phone-codes.json", 
                 onKeyValidation: function () { //show some metadata in the console
-                    console.log($(this).inputmask("getmetadata")["name_en"]);
+                    console.log($(this).inputmask("getmetadata")["cd"]);
                 } 
   });
 
@@ -21,6 +21,7 @@ When using this extension make sure you specify the correct url to get the masks
     $.extend($.inputmask.defaults.aliases, {
         'phone': {
             url: "phone-codes/phone-codes.js",
+            maskInit: "+pp(pp)pppppppp",
             mask: function (opts) {
                 opts.definitions = {
                     'p': {
@@ -42,39 +43,17 @@ When using this extension make sure you specify the correct url to get the masks
                     }
                 });
 
-                maskList.splice(0, 0, "+pp(pp)pppppppp");
+                maskList.splice(0, 0, opts.maskInit);
+                maskList.sort(function (a, b) { return a.length - b.length; });
                 return maskList;
             },
             nojumps: true,
             nojumpsThreshold: 1
         },
         'phonebe': {
+            alias: "phone",
             url: "phone-codes/phone-be.js",
-            mask: function (opts) {
-                opts.definitions = {
-                    'p': {
-                        validator: function () { return false; },
-                        cardinality: 1
-                    },
-                    '#': {
-                        validator: "[0-9]",
-                        cardinality: 1
-                    }
-                };
-                var maskList = [];
-                $.ajax({
-                    url: opts.url,
-                    async: false,
-                    dataType: 'json',
-                    success: function (response) {
-                        maskList = response;
-                    }
-                });
-
-                maskList.splice(0, 0, "+32(pp)pppppppp");
-                return maskList;
-            },
-            nojumps: true,
+            maskInit: "+32(pp)pppppppp",
             nojumpsThreshold: 4
         }
     });
