@@ -23,6 +23,9 @@ Optional extensions on the jquery.inputmask base
                         opts.groupSeparator = ".";
                     else opts.groupSeparator = "";
                 }
+                if (opts.groupSeparator === " ") { //prevent conflict with default skipOptionalPartCharacter
+                    opts.skipOptionalPartCharacter = undefined;
+                }
                 opts.autoGroup = opts.autoGroup && opts.groupSeparator != "";
 
                 if (opts.autoGroup && isFinite(opts.integerDigits)) {

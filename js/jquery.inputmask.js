@@ -1591,12 +1591,13 @@
                                     var clickPosition = isRTL ? TranslatePosition(selectedCaret.begin) : selectedCaret.begin,
                                         lvp = getLastValidPosition(clickPosition),
                                         lastPosition = seekNext(lvp);
-                                    if (clickPosition < lastPosition) {
+                                    if (clickPosition <= lastPosition) {
                                         if (isMask(clickPosition))
                                             caret(input, clickPosition);
-                                        else caret(input, seekNext(clickPosition));
-                                    } else
+                                        else caret(input, lvp == -1 && opts.radixPoint != "" ? $.inArray(opts.radixPoint, getBuffer()) : seekNext(clickPosition));
+                                    } else {
                                         caret(input, lastPosition);
+                                    }
                                 }
                             }, 0);
                         }
@@ -1894,13 +1895,14 @@
             if (typeof fn === "string") {
                 switch (fn) {
                     case "mask":
+                    	importAttributeOptions(this, opts);
                         //resolve possible aliases given by options
                         resolveAlias(opts.alias, options, opts);
                         maskset = generateMaskSet(opts, targetScope !== maskScope);
                         if (maskset.length == 0) { return this; }
 
                         return this.each(function () {
-                            targetScope({ "action": "mask", "el": this }, $.extend(true, {}, maskset), importAttributeOptions(this, opts));
+                            targetScope({ "action": "mask", "el": this }, $.extend(true, {}, maskset), opts);
                         });
                     case "unmaskedvalue":
                         var $input = $(this);
@@ -1940,6 +1942,7 @@
                         }
                         return $.isArray(opts.mask);
                     default:
+                        importAttributeOptions(this, opts);
                         resolveAlias(opts.alias, options, opts);
                         //check if the fn is an alias
                         if (!resolveAlias(fn, options, opts)) {
@@ -1950,17 +1953,17 @@
                         maskset = generateMaskSet(opts, targetScope !== maskScope);
                         if (maskset == undefined) { return this; }
                         return this.each(function () {
-                            targetScope({ "action": "mask", "el": this }, $.extend(true, {}, maskset), importAttributeOptions(this, opts));
+                            targetScope({ "action": "mask", "el": this }, $.extend(true, {}, maskset), opts);
                         });
                 }
             } else if (typeof fn == "object") {
                 opts = $.extend(true, {}, $.inputmask.defaults, fn);
-
+				importAttributeOptions(this, opts);
                 resolveAlias(opts.alias, fn, opts); //resolve aliases
                 maskset = generateMaskSet(opts, targetScope !== maskScope);
                 if (maskset == undefined) { return this; }
                 return this.each(function () {
-                    targetScope({ "action": "mask", "el": this }, $.extend(true, {}, maskset), importAttributeOptions(this, opts));
+                    targetScope({ "action": "mask", "el": this }, $.extend(true, {}, maskset), opts);
                 });
             } else if (fn == undefined) {
                 //look for data-inputmask atribute - the attribute should only contain optipns
@@ -1976,6 +1979,9 @@
                             opts.alias = undefined;
                             $(this).inputmask("mask", opts, targetScope);
                         } catch (ex) { } //need a more relax parseJSON
+                    }
+                    if ($(this).attr("data-inputmask-mask") || $(this).attr("data-inputmask-alias")) {
+                        $(this).inputmask("mask", {}, targetScope);
                     }
                 });
             }
