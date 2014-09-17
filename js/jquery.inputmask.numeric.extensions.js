@@ -35,8 +35,7 @@ Optional extensions on the jquery.inputmask base
                 }
 
                 opts.definitions[";"] = opts.definitions["~"]; //clone integer def for decimals
-                opts.definitions[":"].placeholder = opts.radixPoint;
-
+				
                 var mask = opts.prefix;
                 mask += "[+]";
                 mask += "~{1," + opts.integerDigits + "}";
@@ -225,7 +224,7 @@ Optional extensions on the jquery.inputmask base
                     },
                     cardinality: 1,
                     prevalidator: null,
-                    placeholder: "" //radixpoint will be set in the mask function
+                    placeholder: function(opts) { return opts.radixPoint; }
                 }
             },
             insertMode: true,
