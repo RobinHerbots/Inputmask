@@ -144,7 +144,7 @@ Optional extensions on the jquery.inputmask base
             },
             radixhandler: function (chrs, maskset, pos, strict, opts) {
                 if (!strict && chrs === opts.radixPoint) {
-                    var radixPos = $.inArray(opts.radixPoint, maskset.buffer.join('')), integerValue = maskset.buffer.join('').match(opts.regex.integerPart(opts));
+                    var radixPos = $.inArray(opts.radixPoint, maskset.buffer), integerValue = maskset.buffer.join('').match(opts.regex.integerPart(opts));
 
                     if (radixPos != -1) {
                         if (maskset["validPositions"][radixPos - 1])
