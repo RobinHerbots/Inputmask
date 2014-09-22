@@ -5,84 +5,94 @@
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
 * Version: 3.1.26
 */
-(function (factory) {if (typeof define === 'function' && define.amd) {define(["jquery","./jquery.inputmask"], factory);} else {factory(jQuery);}}/*
-Input Mask plugin extensions
-http://github.com/RobinHerbots/jquery.inputmask
-Copyright (c) 2010 - 2014 Robin Herbots
-Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.0.0
-
-Optional extensions on the jquery.inputmask base
-*/
-(function ($) {
-    //date & time aliases
-    $.extend($.inputmask.defaults.definitions, {
-        'h': { //hours
+!function(factory) {
+    "function" == typeof define && define.amd ? define([ "jquery", "./jquery.inputmask" ], factory) : factory(jQuery);
+}(function($) {
+    return $.extend($.inputmask.defaults.definitions, {
+        h: {
             validator: "[01][0-9]|2[0-3]",
             cardinality: 2,
-            prevalidator: [{ validator: "[0-2]", cardinality: 1 }]
+            prevalidator: [ {
+                validator: "[0-2]",
+                cardinality: 1
+            } ]
         },
-        's': { //seconds || minutes
+        s: {
             validator: "[0-5][0-9]",
             cardinality: 2,
-            prevalidator: [{ validator: "[0-5]", cardinality: 1 }]
+            prevalidator: [ {
+                validator: "[0-5]",
+                cardinality: 1
+            } ]
         },
-        'd': { //basic day
+        d: {
             validator: "0[1-9]|[12][0-9]|3[01]",
             cardinality: 2,
-            prevalidator: [{ validator: "[0-3]", cardinality: 1 }]
+            prevalidator: [ {
+                validator: "[0-3]",
+                cardinality: 1
+            } ]
         },
-        'm': { //basic month
+        m: {
             validator: "0[1-9]|1[012]",
             cardinality: 2,
-            prevalidator: [{ validator: "[01]", cardinality: 1 }]
+            prevalidator: [ {
+                validator: "[01]",
+                cardinality: 1
+            } ]
         },
-        'y': { //basic year
+        y: {
             validator: "(19|20)\\d{2}",
             cardinality: 4,
-            prevalidator: [
-                        { validator: "[12]", cardinality: 1 },
-                        { validator: "(19|20)", cardinality: 2 },
-                        { validator: "(19|20)\\d", cardinality: 3 }
-            ]
+            prevalidator: [ {
+                validator: "[12]",
+                cardinality: 1
+            }, {
+                validator: "(19|20)",
+                cardinality: 2
+            }, {
+                validator: "(19|20)\\d",
+                cardinality: 3
+            } ]
         }
-    });
-    $.extend($.inputmask.defaults.aliases, {
-        'dd/mm/yyyy': {
+    }), $.extend($.inputmask.defaults.aliases, {
+        "dd/mm/yyyy": {
             mask: "1/2/y",
             placeholder: "dd/mm/yyyy",
             regex: {
-                val1pre: new RegExp("[0-3]"), //daypre
-                val1: new RegExp("0[1-9]|[12][0-9]|3[01]"), //day
-                val2pre: function (separator) { var escapedSeparator = $.inputmask.escapeRegex.call(this, separator); return new RegExp("((0[1-9]|[12][0-9]|3[01])" + escapedSeparator + "[01])"); }, //monthpre
-                val2: function (separator) { var escapedSeparator = $.inputmask.escapeRegex.call(this, separator); return new RegExp("((0[1-9]|[12][0-9])" + escapedSeparator + "(0[1-9]|1[012]))|(30" + escapedSeparator + "(0[13-9]|1[012]))|(31" + escapedSeparator + "(0[13578]|1[02]))"); }//month
+                val1pre: new RegExp("[0-3]"),
+                val1: new RegExp("0[1-9]|[12][0-9]|3[01]"),
+                val2pre: function(separator) {
+                    var escapedSeparator = $.inputmask.escapeRegex.call(this, separator);
+                    return new RegExp("((0[1-9]|[12][0-9]|3[01])" + escapedSeparator + "[01])");
+                },
+                val2: function(separator) {
+                    var escapedSeparator = $.inputmask.escapeRegex.call(this, separator);
+                    return new RegExp("((0[1-9]|[12][0-9])" + escapedSeparator + "(0[1-9]|1[012]))|(30" + escapedSeparator + "(0[13-9]|1[012]))|(31" + escapedSeparator + "(0[13578]|1[02]))");
+                }
             },
             leapday: "29/02/",
-            separator: '/',
-            yearrange: { minyear: 1900, maxyear: 2099 },
-            isInYearRange: function (chrs, minyear, maxyear) {
-                if (isNaN(chrs)) return false;
-                var enteredyear = parseInt(chrs.concat(minyear.toString().slice(chrs.length)));
-                var enteredyear2 = parseInt(chrs.concat(maxyear.toString().slice(chrs.length)));
-                return (!isNaN(enteredyear) ? minyear <= enteredyear && enteredyear <= maxyear : false) ||
-            		   (!isNaN(enteredyear2) ? minyear <= enteredyear2 && enteredyear2 <= maxyear : false);
+            separator: "/",
+            yearrange: {
+                minyear: 1900,
+                maxyear: 2099
             },
-            determinebaseyear: function (minyear, maxyear, hint) {
-                var currentyear = (new Date()).getFullYear();
+            isInYearRange: function(chrs, minyear, maxyear) {
+                if (isNaN(chrs)) return !1;
+                var enteredyear = parseInt(chrs.concat(minyear.toString().slice(chrs.length))), enteredyear2 = parseInt(chrs.concat(maxyear.toString().slice(chrs.length)));
+                return (isNaN(enteredyear) ? !1 : enteredyear >= minyear && maxyear >= enteredyear) || (isNaN(enteredyear2) ? !1 : enteredyear2 >= minyear && maxyear >= enteredyear2);
+            },
+            determinebaseyear: function(minyear, maxyear, hint) {
+                var currentyear = new Date().getFullYear();
                 if (minyear > currentyear) return minyear;
-                if (maxyear < currentyear) {
-                    var maxYearPrefix = maxyear.toString().slice(0, 2);
-                    var maxYearPostfix = maxyear.toString().slice(2, 4);
-                    while (maxyear < maxYearPrefix + hint) {
-                        maxYearPrefix--;
-                    }
+                if (currentyear > maxyear) {
+                    for (var maxYearPrefix = maxyear.toString().slice(0, 2), maxYearPostfix = maxyear.toString().slice(2, 4); maxYearPrefix + hint > maxyear; ) maxYearPrefix--;
                     var maxxYear = maxYearPrefix + maxYearPostfix;
                     return minyear > maxxYear ? minyear : maxxYear;
                 }
-
                 return currentyear;
             },
-            onKeyUp: function (e, buffer, caretPos, opts) {
+            onKeyUp: function(e) {
                 var $input = $(this);
                 if (e.ctrlKey && e.keyCode == $.inputmask.keyCode.RIGHT) {
                     var today = new Date();
@@ -90,194 +100,155 @@ Optional extensions on the jquery.inputmask base
                 }
             },
             definitions: {
-                '1': { //val1 ~ day or month
-                    validator: function (chrs, maskset, pos, strict, opts) {
+                "1": {
+                    validator: function(chrs, maskset, pos, strict, opts) {
                         var isValid = opts.regex.val1.test(chrs);
-                        if (!strict && !isValid) {
-                            if (chrs.charAt(1) == opts.separator || "-./".indexOf(chrs.charAt(1)) != -1) {
-                                isValid = opts.regex.val1.test("0" + chrs.charAt(0));
-                                if (isValid) {
-                                    maskset.buffer[pos - 1] = "0";
-                                    return { "refreshFromBuffer": { start: pos - 1, end: pos }, "pos": pos, "c": chrs.charAt(0) };
-                                }
-                            }
-                        }
-                        return isValid;
+                        return strict || isValid || chrs.charAt(1) != opts.separator && -1 == "-./".indexOf(chrs.charAt(1)) || !(isValid = opts.regex.val1.test("0" + chrs.charAt(0))) ? isValid : (maskset.buffer[pos - 1] = "0", 
+                        {
+                            refreshFromBuffer: {
+                                start: pos - 1,
+                                end: pos
+                            },
+                            pos: pos,
+                            c: chrs.charAt(0)
+                        });
                     },
                     cardinality: 2,
-                    prevalidator: [{
-                        validator: function (chrs, maskset, pos, strict, opts) {
-                            if (!isNaN(maskset.buffer[pos + 1])) chrs += maskset.buffer[pos + 1];
-                            var isValid = chrs.length == 1 ? opts.regex.val1pre.test(chrs) : opts.regex.val1.test(chrs);
-                            if (!strict && !isValid) {
-                                isValid = opts.regex.val1.test("0" + chrs);
-                                if (isValid) {
-                                    maskset.buffer[pos] = "0";
-                                    pos++;
-                                    return { "pos": pos };
-                                }
-                            }
-                            return isValid;
-                        }, cardinality: 1
-                    }]
+                    prevalidator: [ {
+                        validator: function(chrs, maskset, pos, strict, opts) {
+                            isNaN(maskset.buffer[pos + 1]) || (chrs += maskset.buffer[pos + 1]);
+                            var isValid = 1 == chrs.length ? opts.regex.val1pre.test(chrs) : opts.regex.val1.test(chrs);
+                            return strict || isValid || !(isValid = opts.regex.val1.test("0" + chrs)) ? isValid : (maskset.buffer[pos] = "0", 
+                            pos++, {
+                                pos: pos
+                            });
+                        },
+                        cardinality: 1
+                    } ]
                 },
-                '2': { //val2 ~ day or month
-                    validator: function (chrs, maskset, pos, strict, opts) {
-                        var frontValue = (opts.mask.indexOf("2") == opts.mask.length - 1) ? maskset.buffer.join('').substr(5, 3) : maskset.buffer.join('').substr(0, 3);
-                        if (frontValue.indexOf(opts.placeholder[0]) != -1) frontValue = "01" + opts.separator;
+                "2": {
+                    validator: function(chrs, maskset, pos, strict, opts) {
+                        var frontValue = opts.mask.indexOf("2") == opts.mask.length - 1 ? maskset.buffer.join("").substr(5, 3) : maskset.buffer.join("").substr(0, 3);
+                        -1 != frontValue.indexOf(opts.placeholder[0]) && (frontValue = "01" + opts.separator);
                         var isValid = opts.regex.val2(opts.separator).test(frontValue + chrs);
-                        if (!strict && !isValid) {
-                            if (chrs.charAt(1) == opts.separator || "-./".indexOf(chrs.charAt(1)) != -1) {
-                                isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs.charAt(0));
-                                if (isValid) {
-                                    maskset.buffer[pos - 1] = "0";
-                                    return { "refreshFromBuffer": { start: pos - 1, end: pos }, "pos": pos, "c": chrs.charAt(0) };
-                                }
-                            }
+                        if (!strict && !isValid && (chrs.charAt(1) == opts.separator || -1 != "-./".indexOf(chrs.charAt(1))) && (isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs.charAt(0)))) return maskset.buffer[pos - 1] = "0", 
+                        {
+                            refreshFromBuffer: {
+                                start: pos - 1,
+                                end: pos
+                            },
+                            pos: pos,
+                            c: chrs.charAt(0)
+                        };
+                        if (opts.mask.indexOf("2") == opts.mask.length - 1 && isValid) {
+                            var dayMonthValue = maskset.buffer.join("").substr(4, 4) + chrs;
+                            if (dayMonthValue != opts.leapday) return !0;
+                            var year = parseInt(maskset.buffer.join("").substr(0, 4), 10);
+                            return year % 4 === 0 ? year % 100 === 0 ? year % 400 === 0 ? !0 : !1 : !0 : !1;
                         }
-
-                        //check leap yeap
-                        if ((opts.mask.indexOf("2") == opts.mask.length - 1) && isValid) {
-                            var dayMonthValue = maskset.buffer.join('').substr(4, 4) + chrs;
-                            if (dayMonthValue != opts.leapday)
-                                return true;
-                            else {
-                                var year = parseInt(maskset.buffer.join('').substr(0, 4), 10);  //detect leap year
-                                if (year % 4 === 0)
-                                    if (year % 100 === 0)
-                                        if (year % 400 === 0)
-                                            return true;
-                                        else return false;
-                                    else return true;
-                                else return false;
-                            }
-                        }
-
                         return isValid;
                     },
                     cardinality: 2,
-                    prevalidator: [{
-                        validator: function (chrs, maskset, pos, strict, opts) {
-                            if (!isNaN(maskset.buffer[pos + 1])) chrs += maskset.buffer[pos + 1];
-                            var frontValue = (opts.mask.indexOf("2") == opts.mask.length - 1) ? maskset.buffer.join('').substr(5, 3) : maskset.buffer.join('').substr(0, 3);
-                            if (frontValue.indexOf(opts.placeholder[0]) != -1) frontValue = "01" + opts.separator;
-                            var isValid = chrs.length == 1 ? opts.regex.val2pre(opts.separator).test(frontValue + chrs) : opts.regex.val2(opts.separator).test(frontValue + chrs);
-                            if (!strict && !isValid) {
-                                isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs);
-                                if (isValid) {
-                                    maskset.buffer[pos] = "0";
-                                    pos++;
-                                    return { "pos": pos };
-                                }
-                            }
-                            return isValid;
-                        }, cardinality: 1
-                    }]
+                    prevalidator: [ {
+                        validator: function(chrs, maskset, pos, strict, opts) {
+                            isNaN(maskset.buffer[pos + 1]) || (chrs += maskset.buffer[pos + 1]);
+                            var frontValue = opts.mask.indexOf("2") == opts.mask.length - 1 ? maskset.buffer.join("").substr(5, 3) : maskset.buffer.join("").substr(0, 3);
+                            -1 != frontValue.indexOf(opts.placeholder[0]) && (frontValue = "01" + opts.separator);
+                            var isValid = 1 == chrs.length ? opts.regex.val2pre(opts.separator).test(frontValue + chrs) : opts.regex.val2(opts.separator).test(frontValue + chrs);
+                            return strict || isValid || !(isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs)) ? isValid : (maskset.buffer[pos] = "0", 
+                            pos++, {
+                                pos: pos
+                            });
+                        },
+                        cardinality: 1
+                    } ]
                 },
-                'y': { //year
-                    validator: function (chrs, maskset, pos, strict, opts) {
+                y: {
+                    validator: function(chrs, maskset, pos, strict, opts) {
                         if (opts.isInYearRange(chrs, opts.yearrange.minyear, opts.yearrange.maxyear)) {
-                            var dayMonthValue = maskset.buffer.join('').substr(0, 6);
-                            if (dayMonthValue != opts.leapday)
-                                return true;
-                            else {
-                                var year = parseInt(chrs, 10);//detect leap year
-                                if (year % 4 === 0)
-                                    if (year % 100 === 0)
-                                        if (year % 400 === 0)
-                                            return true;
-                                        else return false;
-                                    else return true;
-                                else return false;
-                            }
-                        } else return false;
+                            var dayMonthValue = maskset.buffer.join("").substr(0, 6);
+                            if (dayMonthValue != opts.leapday) return !0;
+                            var year = parseInt(chrs, 10);
+                            return year % 4 === 0 ? year % 100 === 0 ? year % 400 === 0 ? !0 : !1 : !0 : !1;
+                        }
+                        return !1;
                     },
                     cardinality: 4,
-                    prevalidator: [
-                {
-                    validator: function (chrs, maskset, pos, strict, opts) {
-                        var isValid = opts.isInYearRange(chrs, opts.yearrange.minyear, opts.yearrange.maxyear);
-                        if (!strict && !isValid) {
-                            var yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear, chrs + "0").toString().slice(0, 1);
-
-                            isValid = opts.isInYearRange(yearPrefix + chrs, opts.yearrange.minyear, opts.yearrange.maxyear);
-                            if (isValid) {
-                                maskset.buffer[pos++] = yearPrefix.charAt(0);
-                                return { "pos": pos };
+                    prevalidator: [ {
+                        validator: function(chrs, maskset, pos, strict, opts) {
+                            var isValid = opts.isInYearRange(chrs, opts.yearrange.minyear, opts.yearrange.maxyear);
+                            if (!strict && !isValid) {
+                                var yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear, chrs + "0").toString().slice(0, 1);
+                                if (isValid = opts.isInYearRange(yearPrefix + chrs, opts.yearrange.minyear, opts.yearrange.maxyear)) return maskset.buffer[pos++] = yearPrefix.charAt(0), 
+                                {
+                                    pos: pos
+                                };
+                                if (yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear, chrs + "0").toString().slice(0, 2), 
+                                isValid = opts.isInYearRange(yearPrefix + chrs, opts.yearrange.minyear, opts.yearrange.maxyear)) return maskset.buffer[pos++] = yearPrefix.charAt(0), 
+                                maskset.buffer[pos++] = yearPrefix.charAt(1), {
+                                    pos: pos
+                                };
                             }
-                            yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear, chrs + "0").toString().slice(0, 2);
-
-                            isValid = opts.isInYearRange(yearPrefix + chrs, opts.yearrange.minyear, opts.yearrange.maxyear);
-                            if (isValid) {
-                                maskset.buffer[pos++] = yearPrefix.charAt(0);
-                                maskset.buffer[pos++] = yearPrefix.charAt(1);
-                                return { "pos": pos };
+                            return isValid;
+                        },
+                        cardinality: 1
+                    }, {
+                        validator: function(chrs, maskset, pos, strict, opts) {
+                            var isValid = opts.isInYearRange(chrs, opts.yearrange.minyear, opts.yearrange.maxyear);
+                            if (!strict && !isValid) {
+                                var yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear, chrs).toString().slice(0, 2);
+                                if (isValid = opts.isInYearRange(chrs[0] + yearPrefix[1] + chrs[1], opts.yearrange.minyear, opts.yearrange.maxyear)) return maskset.buffer[pos++] = yearPrefix.charAt(1), 
+                                {
+                                    pos: pos
+                                };
+                                if (yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear, chrs).toString().slice(0, 2), 
+                                opts.isInYearRange(yearPrefix + chrs, opts.yearrange.minyear, opts.yearrange.maxyear)) {
+                                    var dayMonthValue = maskset.buffer.join("").substr(0, 6);
+                                    if (dayMonthValue != opts.leapday) isValid = !0; else {
+                                        var year = parseInt(chrs, 10);
+                                        isValid = year % 4 === 0 ? year % 100 === 0 ? year % 400 === 0 ? !0 : !1 : !0 : !1;
+                                    }
+                                } else isValid = !1;
+                                if (isValid) return maskset.buffer[pos - 1] = yearPrefix.charAt(0), maskset.buffer[pos++] = yearPrefix.charAt(1), 
+                                maskset.buffer[pos++] = chrs.charAt(0), {
+                                    refreshFromBuffer: {
+                                        start: pos - 3,
+                                        end: pos
+                                    },
+                                    pos: pos
+                                };
                             }
-                        }
-                        return isValid;
-                    },
-                    cardinality: 1
-                },
-                {
-                    validator: function (chrs, maskset, pos, strict, opts) {
-                        var isValid = opts.isInYearRange(chrs, opts.yearrange.minyear, opts.yearrange.maxyear);
-                        if (!strict && !isValid) {
-                            var yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear, chrs).toString().slice(0, 2);
-
-                            isValid = opts.isInYearRange(chrs[0] + yearPrefix[1] + chrs[1], opts.yearrange.minyear, opts.yearrange.maxyear);
-                            if (isValid) {
-                                maskset.buffer[pos++] = yearPrefix.charAt(1);
-                                return { "pos": pos };
-                            }
-
-                            yearPrefix = opts.determinebaseyear(opts.yearrange.minyear, opts.yearrange.maxyear, chrs).toString().slice(0, 2);
-                            if (opts.isInYearRange(yearPrefix + chrs, opts.yearrange.minyear, opts.yearrange.maxyear)) {
-                                var dayMonthValue = maskset.buffer.join('').substr(0, 6);
-                                if (dayMonthValue != opts.leapday)
-                                    isValid = true;
-                                else {
-                                    var year = parseInt(chrs, 10);//detect leap year
-                                    if (year % 4 === 0)
-                                        if (year % 100 === 0)
-                                            if (year % 400 === 0)
-                                                isValid = true;
-                                            else isValid = false;
-                                        else isValid = true;
-                                    else isValid = false;
-                                }
-                            } else isValid = false;
-                            if (isValid) {
-                                maskset.buffer[pos - 1] = yearPrefix.charAt(0);
-                                maskset.buffer[pos++] = yearPrefix.charAt(1);
-                                maskset.buffer[pos++] = chrs.charAt(0);
-                                return { "refreshFromBuffer": { start: pos - 3, end: pos }, "pos": pos };
-                            }
-                        }
-                        return isValid;
-                    }, cardinality: 2
-                },
-                {
-                    validator: function (chrs, maskset, pos, strict, opts) {
-                        return opts.isInYearRange(chrs, opts.yearrange.minyear, opts.yearrange.maxyear);
-                    }, cardinality: 3
-                }
-                    ]
+                            return isValid;
+                        },
+                        cardinality: 2
+                    }, {
+                        validator: function(chrs, maskset, pos, strict, opts) {
+                            return opts.isInYearRange(chrs, opts.yearrange.minyear, opts.yearrange.maxyear);
+                        },
+                        cardinality: 3
+                    } ]
                 }
             },
-            insertMode: false,
-            autoUnmask: false
+            insertMode: !1,
+            autoUnmask: !1
         },
-        'mm/dd/yyyy': {
+        "mm/dd/yyyy": {
             placeholder: "mm/dd/yyyy",
-            alias: "dd/mm/yyyy", //reuse functionality of dd/mm/yyyy alias
+            alias: "dd/mm/yyyy",
             regex: {
-                val2pre: function (separator) { var escapedSeparator = $.inputmask.escapeRegex.call(this, separator); return new RegExp("((0[13-9]|1[012])" + escapedSeparator + "[0-3])|(02" + escapedSeparator + "[0-2])"); }, //daypre
-                val2: function (separator) { var escapedSeparator = $.inputmask.escapeRegex.call(this, separator); return new RegExp("((0[1-9]|1[012])" + escapedSeparator + "(0[1-9]|[12][0-9]))|((0[13-9]|1[012])" + escapedSeparator + "30)|((0[13578]|1[02])" + escapedSeparator + "31)"); }, //day
-                val1pre: new RegExp("[01]"), //monthpre
-                val1: new RegExp("0[1-9]|1[012]") //month
+                val2pre: function(separator) {
+                    var escapedSeparator = $.inputmask.escapeRegex.call(this, separator);
+                    return new RegExp("((0[13-9]|1[012])" + escapedSeparator + "[0-3])|(02" + escapedSeparator + "[0-2])");
+                },
+                val2: function(separator) {
+                    var escapedSeparator = $.inputmask.escapeRegex.call(this, separator);
+                    return new RegExp("((0[1-9]|1[012])" + escapedSeparator + "(0[1-9]|[12][0-9]))|((0[13-9]|1[012])" + escapedSeparator + "30)|((0[13578]|1[02])" + escapedSeparator + "31)");
+                },
+                val1pre: new RegExp("[01]"),
+                val1: new RegExp("0[1-9]|1[012]")
             },
             leapday: "02/29/",
-            onKeyUp: function (e, buffer, caretPos, opts) {
+            onKeyUp: function(e) {
                 var $input = $(this);
                 if (e.ctrlKey && e.keyCode == $.inputmask.keyCode.RIGHT) {
                     var today = new Date();
@@ -285,12 +256,12 @@ Optional extensions on the jquery.inputmask base
                 }
             }
         },
-        'yyyy/mm/dd': {
+        "yyyy/mm/dd": {
             mask: "y/1/2",
             placeholder: "yyyy/mm/dd",
             alias: "mm/dd/yyyy",
             leapday: "/02/29",
-            onKeyUp: function (e, buffer, caretPos, opts) {
+            onKeyUp: function(e) {
                 var $input = $(this);
                 if (e.ctrlKey && e.keyCode == $.inputmask.keyCode.RIGHT) {
                     var today = new Date();
@@ -298,200 +269,174 @@ Optional extensions on the jquery.inputmask base
                 }
             }
         },
-        'dd.mm.yyyy': {
+        "dd.mm.yyyy": {
             mask: "1.2.y",
             placeholder: "dd.mm.yyyy",
             leapday: "29.02.",
-            separator: '.',
+            separator: ".",
             alias: "dd/mm/yyyy"
         },
-        'dd-mm-yyyy': {
+        "dd-mm-yyyy": {
             mask: "1-2-y",
             placeholder: "dd-mm-yyyy",
             leapday: "29-02-",
-            separator: '-',
+            separator: "-",
             alias: "dd/mm/yyyy"
         },
-        'mm.dd.yyyy': {
+        "mm.dd.yyyy": {
             mask: "1.2.y",
             placeholder: "mm.dd.yyyy",
             leapday: "02.29.",
-            separator: '.',
+            separator: ".",
             alias: "mm/dd/yyyy"
         },
-        'mm-dd-yyyy': {
+        "mm-dd-yyyy": {
             mask: "1-2-y",
             placeholder: "mm-dd-yyyy",
             leapday: "02-29-",
-            separator: '-',
+            separator: "-",
             alias: "mm/dd/yyyy"
         },
-        'yyyy.mm.dd': {
+        "yyyy.mm.dd": {
             mask: "y.1.2",
             placeholder: "yyyy.mm.dd",
             leapday: ".02.29",
-            separator: '.',
+            separator: ".",
             alias: "yyyy/mm/dd"
         },
-        'yyyy-mm-dd': {
+        "yyyy-mm-dd": {
             mask: "y-1-2",
             placeholder: "yyyy-mm-dd",
             leapday: "-02-29",
-            separator: '-',
+            separator: "-",
             alias: "yyyy/mm/dd"
         },
-        'datetime': {
+        datetime: {
             mask: "1/2/y h:s",
             placeholder: "dd/mm/yyyy hh:mm",
             alias: "dd/mm/yyyy",
             regex: {
-                hrspre: new RegExp("[012]"), //hours pre
+                hrspre: new RegExp("[012]"),
                 hrs24: new RegExp("2[0-4]|1[3-9]"),
-                hrs: new RegExp("[01][0-9]|2[0-4]"), //hours
+                hrs: new RegExp("[01][0-9]|2[0-4]"),
                 ampm: new RegExp("^[a|p|A|P][m|M]"),
-                mspre: new RegExp("[0-5]"), //minutes/seconds pre
+                mspre: new RegExp("[0-5]"),
                 ms: new RegExp("[0-5][0-9]")
             },
-            timeseparator: ':',
-            hourFormat: "24", // or 12
+            timeseparator: ":",
+            hourFormat: "24",
             definitions: {
-                'h': { //hours
-                    validator: function (chrs, maskset, pos, strict, opts) {
-                        if (opts.hourFormat == "24") {
-                            if (parseInt(chrs, 10) == 24) {
-                                maskset.buffer[pos - 1] = "0";
-                                maskset.buffer[pos] = "0";
-                                return { "refreshFromBuffer": { start: pos - 1, end: pos }, "c": "0" };
-                            }
-                        }
-
+                h: {
+                    validator: function(chrs, maskset, pos, strict, opts) {
+                        if ("24" == opts.hourFormat && 24 == parseInt(chrs, 10)) return maskset.buffer[pos - 1] = "0", 
+                        maskset.buffer[pos] = "0", {
+                            refreshFromBuffer: {
+                                start: pos - 1,
+                                end: pos
+                            },
+                            c: "0"
+                        };
                         var isValid = opts.regex.hrs.test(chrs);
-                        if (!strict && !isValid) {
-                            if (chrs.charAt(1) == opts.timeseparator || "-.:".indexOf(chrs.charAt(1)) != -1) {
-                                isValid = opts.regex.hrs.test("0" + chrs.charAt(0));
-                                if (isValid) {
-                                    maskset.buffer[pos - 1] = "0";
-                                    maskset.buffer[pos] = chrs.charAt(0);
-                                    pos++;
-                                    return { "refreshFromBuffer": { start: pos - 2, end: pos }, "pos": pos, "c": opts.timeseparator };
-                                }
-                            }
-                        }
-
-                        if (isValid && opts.hourFormat !== "24" && opts.regex.hrs24.test(chrs)) {
-
+                        if (!strict && !isValid && (chrs.charAt(1) == opts.timeseparator || -1 != "-.:".indexOf(chrs.charAt(1))) && (isValid = opts.regex.hrs.test("0" + chrs.charAt(0)))) return maskset.buffer[pos - 1] = "0", 
+                        maskset.buffer[pos] = chrs.charAt(0), pos++, {
+                            refreshFromBuffer: {
+                                start: pos - 2,
+                                end: pos
+                            },
+                            pos: pos,
+                            c: opts.timeseparator
+                        };
+                        if (isValid && "24" !== opts.hourFormat && opts.regex.hrs24.test(chrs)) {
                             var tmp = parseInt(chrs, 10);
-
-                            if (tmp == 24) {
-                                maskset.buffer[pos + 5] = "a";
-                                maskset.buffer[pos + 6] = "m";
-                            } else {
-                                maskset.buffer[pos + 5] = "p";
-                                maskset.buffer[pos + 6] = "m";
-                            }
-
-                            tmp = tmp - 12;
-
-                            if (tmp < 10) {
-                                maskset.buffer[pos] = tmp.toString();
-                                maskset.buffer[pos - 1] = "0";
-                            } else {
-                                maskset.buffer[pos] = tmp.toString().charAt(1);
-                                maskset.buffer[pos - 1] = tmp.toString().charAt(0);
-                            }
-
-                            return { "refreshFromBuffer": { start: pos - 1, end: pos + 6 }, "c": maskset.buffer[pos] };
+                            return 24 == tmp ? (maskset.buffer[pos + 5] = "a", maskset.buffer[pos + 6] = "m") : (maskset.buffer[pos + 5] = "p", 
+                            maskset.buffer[pos + 6] = "m"), tmp -= 12, 10 > tmp ? (maskset.buffer[pos] = tmp.toString(), 
+                            maskset.buffer[pos - 1] = "0") : (maskset.buffer[pos] = tmp.toString().charAt(1), 
+                            maskset.buffer[pos - 1] = tmp.toString().charAt(0)), {
+                                refreshFromBuffer: {
+                                    start: pos - 1,
+                                    end: pos + 6
+                                },
+                                c: maskset.buffer[pos]
+                            };
                         }
-
                         return isValid;
                     },
                     cardinality: 2,
-                    prevalidator: [{
-                        validator: function (chrs, maskset, pos, strict, opts) {
+                    prevalidator: [ {
+                        validator: function(chrs, maskset, pos, strict, opts) {
                             var isValid = opts.regex.hrspre.test(chrs);
-                            if (!strict && !isValid) {
-                                isValid = opts.regex.hrs.test("0" + chrs);
-                                if (isValid) {
-                                    maskset.buffer[pos] = "0";
-                                    pos++;
-                                    return { "pos": pos };
-                                }
-                            }
-                            return isValid;
-                        }, cardinality: 1
-                    }]
+                            return strict || isValid || !(isValid = opts.regex.hrs.test("0" + chrs)) ? isValid : (maskset.buffer[pos] = "0", 
+                            pos++, {
+                                pos: pos
+                            });
+                        },
+                        cardinality: 1
+                    } ]
                 },
-                's': { //seconds || minutes
+                s: {
                     validator: "[0-5][0-9]",
                     cardinality: 2,
-                    prevalidator: [
-                        {
-                            validator: function (chrs, maskset, pos, strict, opts) {
-                                var isValid = opts.regex.mspre.test(chrs);
-                                if (!strict && !isValid) {
-                                    isValid = opts.regex.ms.test("0" + chrs);
-                                    if (isValid) {
-                                        maskset.buffer[pos] = "0";
-                                        pos++;
-                                        return { "pos": pos };
-                                    }
-                                }
-                                return isValid;
-                            }, cardinality: 1
-                        }]
+                    prevalidator: [ {
+                        validator: function(chrs, maskset, pos, strict, opts) {
+                            var isValid = opts.regex.mspre.test(chrs);
+                            return strict || isValid || !(isValid = opts.regex.ms.test("0" + chrs)) ? isValid : (maskset.buffer[pos] = "0", 
+                            pos++, {
+                                pos: pos
+                            });
+                        },
+                        cardinality: 1
+                    } ]
                 },
-                't': { //am/pm
-                    validator: function (chrs, maskset, pos, strict, opts) {
+                t: {
+                    validator: function(chrs, maskset, pos, strict, opts) {
                         return opts.regex.ampm.test(chrs + "m");
                     },
                     casing: "lower",
                     cardinality: 1
                 }
             },
-            insertMode: false,
-            autoUnmask: false
+            insertMode: !1,
+            autoUnmask: !1
         },
-        'datetime12': {
+        datetime12: {
             mask: "1/2/y h:s t\\m",
             placeholder: "dd/mm/yyyy hh:mm xm",
             alias: "datetime",
             hourFormat: "12"
         },
-        'hh:mm t': {
+        "hh:mm t": {
             mask: "h:s t\\m",
             placeholder: "hh:mm xm",
             alias: "datetime",
             hourFormat: "12"
         },
-        'h:s t': {
+        "h:s t": {
             mask: "h:s t\\m",
             placeholder: "hh:mm xm",
             alias: "datetime",
             hourFormat: "12"
         },
-        'hh:mm:ss': {
+        "hh:mm:ss": {
             mask: "h:s:s",
             placeholder: "hh:mm:ss",
             alias: "datetime",
-            autoUnmask: false
+            autoUnmask: !1
         },
-        'hh:mm': {
+        "hh:mm": {
             mask: "h:s",
             placeholder: "hh:mm",
             alias: "datetime",
-            autoUnmask: false
+            autoUnmask: !1
         },
-        'date': {
-            alias: "dd/mm/yyyy" // "mm/dd/yyyy"
+        date: {
+            alias: "dd/mm/yyyy"
         },
-        'mm/yyyy': {
+        "mm/yyyy": {
             mask: "1/y",
             placeholder: "mm/yyyy",
             leapday: "donotuse",
-            separator: '/',
+            separator: "/",
             alias: "mm/dd/yyyy"
         }
-    });
-
-    return $.fn.inputmask;
-}));
+    }), $.fn.inputmask;
+});

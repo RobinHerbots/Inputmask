@@ -9,28 +9,28 @@ module.exports = function (grunt) {
             '*/\n';
     }
 
-    function createConcatConfig(path) {
-        var concatConfig = {};
+    function createUglifyConfig(path) {
+        var uglifyConfig = {};
         var srcFiles = grunt.file.expand(path + "/*.js");
         for (var srcNdx in srcFiles) {
             var dstFile = srcFiles[srcNdx].replace("js/", "");
             wrapAMDLoader(srcFiles[srcNdx], "build/" + dstFile, dstFile.indexOf("extension") == -1 ? ["jquery"] : ["jquery", "./jquery.inputmask"]);
-            concatConfig[dstFile] = {
+            uglifyConfig[dstFile] = {
                 dest: 'dist/inputmask/' + dstFile,
                 src: "build/" + dstFile,
-                options: { banner: createBanner(dstFile), stripBanners: true, }
+                options: { banner: createBanner(dstFile), beautify: true, mangle: false }
             };
         }
 
         srcFiles = grunt.file.expand(path + "/*.extensions.js");
         srcFiles.splice(0, 0, "js/jquery.inputmask.js");
-        concatConfig["inputmaskbundle"] = {
+        uglifyConfig["inputmaskbundle"] = {
             files: {
                 'dist/<%= pkg.name %>.bundle.js': srcFiles
             },
-            options: { banner: createBanner('<%= pkg.name %>.bundle'), stripBanners: true, }
+            options: { banner: createBanner('<%= pkg.name %>.bundle'), beautify: true, mangle: false }
         }
-        return concatConfig;
+        return uglifyConfig;
     }
     function wrapAMDLoader(src, dst, dependencies) {
         function stripClosureExecution() {
@@ -43,14 +43,14 @@ module.exports = function (grunt) {
                 "define(" + JSON.stringify(dependencies) + ", factory);" +
                 "} else {" +
                 "factory(jQuery);" +
-                "}}" + stripClosureExecution() + ");";
+                "}}\n" + stripClosureExecution() + ");";
         grunt.file.write(dst, dstContent);
     }
 
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-        concat: createConcatConfig("js"),
+        uglify: createUglifyConfig("js"),
         clean: ["dist"],
         qunit: {
             files: ['qunit/qunit.html']
@@ -98,7 +98,7 @@ module.exports = function (grunt) {
     });
 
     // Load the plugin that provides the tasks.
-    grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-qunit');
     grunt.loadNpmTasks('grunt-bump');
@@ -106,11 +106,11 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-nuget');
     grunt.loadNpmTasks('grunt-shell');
 
-    grunt.registerTask('publish:patch', ['clean', 'bump:patch', 'concat', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
-    grunt.registerTask('publish:minor', ['clean', 'bump:minor', 'concat', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
-    grunt.registerTask('publish:major', ['clean', 'bump:major', 'concat', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
+    grunt.registerTask('publish:patch', ['clean', 'bump:patch', 'uglify', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
+    grunt.registerTask('publish:minor', ['clean', 'bump:minor', 'uglify', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
+    grunt.registerTask('publish:major', ['clean', 'bump:major', 'uglify', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
 
     // Default task(s).
-    grunt.registerTask('default', ['clean', 'concat']);
+    grunt.registerTask('default', ['clean', 'uglify']);
 
 };

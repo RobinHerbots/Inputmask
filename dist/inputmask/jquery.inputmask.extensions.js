@@ -5,31 +5,22 @@
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
 * Version: 3.1.26
 */
-(function (factory) {if (typeof define === 'function' && define.amd) {define(["jquery","./jquery.inputmask"], factory);} else {factory(jQuery);}}/*
-Input Mask plugin extensions
-http://github.com/RobinHerbots/jquery.inputmask
-Copyright (c) 2010 - 2014 Robin Herbots
-Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.0.0
-
-Optional extensions on the jquery.inputmask base
-*/
-(function ($) {
-    //extra definitions
-    $.extend($.inputmask.defaults.definitions, {
-        'A': {
-            validator: "[A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
+!function(factory) {
+    "function" == typeof define && define.amd ? define([ "jquery", "./jquery.inputmask" ], factory) : factory(jQuery);
+}(function($) {
+    return $.extend($.inputmask.defaults.definitions, {
+        A: {
+            validator: "[A-Za-zА-яЁёÀ-ÿµ]",
             cardinality: 1,
-            casing: "upper" //auto uppercasing
+            casing: "upper"
         },
-        '#': {
-            validator: "[0-9A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
+        "#": {
+            validator: "[0-9A-Za-zА-яЁёÀ-ÿµ]",
             cardinality: 1,
             casing: "upper"
         }
-    });
-    $.extend($.inputmask.defaults.aliases, {
-        'url': {
+    }), $.extend($.inputmask.defaults.aliases, {
+        url: {
             mask: "ir",
             placeholder: "",
             separator: "",
@@ -45,85 +36,72 @@ Optional extensions on the jquery.inputmask base
                 urlpre8: new RegExp("(ftp://|ftps://|http://|https://)")
             },
             definitions: {
-                'i': {
-                    validator: function (chrs, maskset, pos, strict, opts) {
-                        return true;
+                i: {
+                    validator: function() {
+                        return !0;
                     },
                     cardinality: 8,
-                    prevalidator: (function () {
-                        var result = [], prefixLimit = 8;
-                        for (var i = 0; i < prefixLimit; i++) {
-                            result[i] = (function () {
-                                var j = i;
-                                return {
-                                    validator: function (chrs, maskset, pos, strict, opts) {
-                                        if (opts.regex["urlpre" + (j + 1)]) {
-                                            var tmp = chrs, k;
-                                            if (((j + 1) - chrs.length) > 0) {
-                                                tmp = maskset.buffer.join('').substring(0, ((j + 1) - chrs.length)) + "" + tmp;
-                                            }
-                                            var isValid = opts.regex["urlpre" + (j + 1)].test(tmp);
-                                            if (!strict && !isValid) {
-                                                pos = pos - j;
-                                                for (k = 0; k < opts.defaultPrefix.length; k++) {
-                                                    maskset.buffer[pos] = opts.defaultPrefix[k]; pos++;
-                                                }
-                                                for (k = 0; k < tmp.length - 1; k++) {
-                                                    maskset.buffer[pos] = tmp[k]; pos++;
-                                                }
-                                                return { "pos": pos };
-                                            }
-                                            return isValid;
-                                        } else {
-                                            return false;
+                    prevalidator: function() {
+                        for (var result = [], prefixLimit = 8, i = 0; prefixLimit > i; i++) result[i] = function() {
+                            var j = i;
+                            return {
+                                validator: function(chrs, maskset, pos, strict, opts) {
+                                    if (opts.regex["urlpre" + (j + 1)]) {
+                                        var k, tmp = chrs;
+                                        j + 1 - chrs.length > 0 && (tmp = maskset.buffer.join("").substring(0, j + 1 - chrs.length) + "" + tmp);
+                                        var isValid = opts.regex["urlpre" + (j + 1)].test(tmp);
+                                        if (!strict && !isValid) {
+                                            for (pos -= j, k = 0; k < opts.defaultPrefix.length; k++) maskset.buffer[pos] = opts.defaultPrefix[k], 
+                                            pos++;
+                                            for (k = 0; k < tmp.length - 1; k++) maskset.buffer[pos] = tmp[k], pos++;
+                                            return {
+                                                pos: pos
+                                            };
                                         }
-                                    }, cardinality: j
-                                };
-                            })();
-                        }
+                                        return isValid;
+                                    }
+                                    return !1;
+                                },
+                                cardinality: j
+                            };
+                        }();
                         return result;
-                    })()
+                    }()
                 },
-                "r": {
+                r: {
                     validator: ".",
                     cardinality: 50
                 }
             },
-            insertMode: false,
-            autoUnmask: false
+            insertMode: !1,
+            autoUnmask: !1
         },
-        "ip": { //ip-address mask
+        ip: {
             mask: "i[i[i]].i[i[i]].i[i[i]].i[i[i]]",
             definitions: {
-                'i': {
-                    validator: function (chrs, maskset, pos, strict, opts) {
-                        if (pos - 1 > -1 && maskset.buffer[pos - 1] != ".") {
-                            chrs = maskset.buffer[pos - 1] + chrs;
-                            if (pos - 2 > -1 && maskset.buffer[pos - 2] != ".") {
-                                chrs = maskset.buffer[pos - 2] + chrs;
-                            } else chrs = "0" + chrs;
-                        } else chrs = "00" + chrs;
-                        return new RegExp("25[0-5]|2[0-4][0-9]|[01][0-9][0-9]").test(chrs);
+                i: {
+                    validator: function(chrs, maskset, pos) {
+                        return pos - 1 > -1 && "." != maskset.buffer[pos - 1] ? (chrs = maskset.buffer[pos - 1] + chrs, 
+                        chrs = pos - 2 > -1 && "." != maskset.buffer[pos - 2] ? maskset.buffer[pos - 2] + chrs : "0" + chrs) : chrs = "00" + chrs, 
+                        new RegExp("25[0-5]|2[0-4][0-9]|[01][0-9][0-9]").test(chrs);
                     },
                     cardinality: 1
                 }
             }
         },
-        "email": {
+        email: {
             mask: "*{1,20}[.*{1,20}][.*{1,20}][.*{1,20}]@*{1,20}[.*{2,20}][.*{2,6}][.*{1,2}]",
-            greedy: false,
-            onBeforePaste: function (pastedValue, opts) {
-                pastedValue = pastedValue.toLowerCase();
-                return pastedValue.replace("mailto:", "");
+            greedy: !1,
+            onBeforePaste: function(pastedValue) {
+                return pastedValue = pastedValue.toLowerCase(), pastedValue.replace("mailto:", "");
             },
             definitions: {
-                '*': {
-                    validator: "[0-9A-Za-z!#$%&'*+/=?^_`{|}~\-]",
+                "*": {
+                    validator: "[0-9A-Za-z!#$%&'*+/=?^_`{|}~-]",
                     cardinality: 1,
                     casing: "lower"
                 }
             }
         }
-    });
-    return $.fn.inputmask;
-}));
+    }), $.fn.inputmask;
+});
