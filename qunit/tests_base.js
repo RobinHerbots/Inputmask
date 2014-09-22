@@ -41,7 +41,7 @@ test("inputmask(\"999.999.999\") + backspace", function () {
     $("#testmask")[0].focus();
 
     $("#testmask").Type("123");
-    $("#testmask").SendKey($.keyCodes.BACKSPACE);
+    $("#testmask").SendKey($.inputmask.keyCode.BACKSPACE);
     equal($("#testmask").val(), "12_.___.___", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
@@ -104,11 +104,11 @@ test("inputmask(\"999.999.999\") - delete 2nd with backspace, continue the mask"
     $("#testmask")[0].focus();
 
     $("#testmask").Type("123");
-    $("#testmask").SendKey($.keyCodes.LEFT);
-    $("#testmask").SendKey($.keyCodes.LEFT);
-    $("#testmask").SendKey($.keyCodes.BACKSPACE);
+    $("#testmask").SendKey($.inputmask.keyCode.LEFT);
+    $("#testmask").SendKey($.inputmask.keyCode.LEFT);
+    $("#testmask").SendKey($.inputmask.keyCode.BACKSPACE);
     $("#testmask").Type("4");
-    $("#testmask").SendKey($.keyCodes.RIGHT);
+    $("#testmask").SendKey($.inputmask.keyCode.RIGHT);
     $("#testmask").Type("56");
 
     equal($("#testmask").val(), "143.56_.___", "Result " + $("#testmask").val());
@@ -126,12 +126,12 @@ test("inputmask(\"999.999.999\") - delete 2nd with delete, continue the mask", f
     $("#testmask").SendKey(49);
     $("#testmask").SendKey(50);
     $("#testmask").SendKey(51);
-    $("#testmask").SendKey($.keyCodes.LEFT);
-    $("#testmask").SendKey($.keyCodes.LEFT);
-    $("#testmask").SendKey($.keyCodes.LEFT);
-    $("#testmask").SendKey($.keyCodes.DELETE);
+    $("#testmask").SendKey($.inputmask.keyCode.LEFT);
+    $("#testmask").SendKey($.inputmask.keyCode.LEFT);
+    $("#testmask").SendKey($.inputmask.keyCode.LEFT);
+    $("#testmask").SendKey($.inputmask.keyCode.DELETE);
     $("#testmask").SendKey(52);
-    $("#testmask").SendKey($.keyCodes.RIGHT);
+    $("#testmask").SendKey($.inputmask.keyCode.RIGHT);
     $("#testmask").SendKey(53);
     $("#testmask").SendKey(54);
 
@@ -149,7 +149,7 @@ test("inputmask(\"999.999.999\") - delete selection start with nomask", function
 
     $("#testmask").Type("123456789");
     $.caret($("#testmask"), 3, 7);
-    $("#testmask").SendKey($.keyCodes.DELETE);
+    $("#testmask").SendKey($.inputmask.keyCode.DELETE);
 
     equal($("#testmask").val(), "123.789.___", "Result " + $("#testmask").val());
 
@@ -165,7 +165,7 @@ test("inputmask(\"999.999.999\") - backspace selection start with nomask", funct
 
     $("#testmask").Type("123456789");
     $.caret($("#testmask"), 3, 7);
-    $("#testmask").SendKey($.keyCodes.DELETE);
+    $("#testmask").SendKey($.inputmask.keyCode.DELETE);
 
     equal($("#testmask").val(), "123.789.___", "Result " + $("#testmask").val());
 
@@ -196,7 +196,7 @@ test("inputmask(\"*****\")", function () {
     $("#testmask")[0].focus();
 
     $("#testmask").Type("abe");
-    $("#testmask").SendKey($.keyCodes.LEFT);
+    $("#testmask").SendKey($.inputmask.keyCode.LEFT);
     $("#testmask").Type("cd");
 
     equal($("#testmask").val(), "abcde", "Result " + $("#testmask").val());
@@ -213,7 +213,7 @@ test("inputmask(\"d/m/y\")", function () {
 
     $("#testmask").Type("23031973");
     $.caret($("#testmask"), 5);
-    $("#testmask").SendKey($.keyCodes.BACKSPACE);
+    $("#testmask").SendKey($.inputmask.keyCode.BACKSPACE);
 
     equal($("#testmask").val(), "23/0_/1973", "Result " + $("#testmask").val());
 
@@ -283,7 +283,7 @@ test("Delete selection with non-masks", function () {
     $("#testmask").Type("9999999999");
 
     $.caret($("#testmask"), 8, 11);
-    $("#testmask").SendKey($.keyCodes.DELETE);
+    $("#testmask").SendKey($.inputmask.keyCode.DELETE);
     equal($("#testmask").val(), "(999)999-99__", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
@@ -539,7 +539,7 @@ test("inputmask(\"6703 9999 9999 9999 9\") ~ type \"6703 1234 5678 9012 3\" + ba
     $("#testmask").inputmask("6703 9999 9999 9999 9");
     $("#testmask")[0].focus();
     $("#testmask").Type("1234567890123");
-    $("#testmask").SendKey($.keyCodes.BACKSPACE);
+    $("#testmask").SendKey($.inputmask.keyCode.BACKSPACE);
 
     equal($("#testmask").val(), "6703 1234 5678 9012 _", "Result " + $("#testmask").val());
 
@@ -554,7 +554,7 @@ asyncTest("inputmask(\"6703 9999 9999 9999 9\") ~ type \"6703670367036\" + backs
     $("#testmask").click();
     setTimeout(function () {
         $("#testmask").Type("6703670367036");
-        $("#testmask").SendKey($.keyCodes.BACKSPACE);
+        $("#testmask").SendKey($.inputmask.keyCode.BACKSPACE);
         equal($("#testmask").val(), "6703 6703 6703 6703 _", "Result " + $("#testmask").val());
         start();
         $("#testmask").remove();

@@ -102,7 +102,7 @@ Optional extensions on the jquery.inputmask base
                 return { pos: newPos, "refreshFromBuffer": needsRefresh };
             },
             onKeyDown: function (e, buffer, caretPos, opts) {
-                if (e.keyCode == opts.keyCode.TAB && opts.placeholder.charAt(0) != "0") {
+                if (e.keyCode == $.inputmask.keyCode.TAB && opts.placeholder.charAt(0) != "0") {
                     var radixPosition = $.inArray(opts.radixPoint, buffer);
                     if (radixPosition != -1 && isFinite(opts.digits)) {
                         for (var i = 1; i <= opts.digits; i++) {
@@ -110,7 +110,7 @@ Optional extensions on the jquery.inputmask base
                         }
                         return { "refreshFromBuffer": { start: ++radixPosition, end: radixPosition + opts.digits } };
                     }
-                } else if (opts.autoGroup && (e.keyCode == opts.keyCode.DELETE || e.keyCode == opts.keyCode.BACKSPACE)) {
+                } else if (opts.autoGroup && (e.keyCode == $.inputmask.keyCode.DELETE || e.keyCode == $.inputmask.keyCode.BACKSPACE)) {
                     var rslt = opts.postFormat(buffer, caretPos - 1, true, opts);
                     rslt.caret = rslt.pos + 1;
                     return rslt;

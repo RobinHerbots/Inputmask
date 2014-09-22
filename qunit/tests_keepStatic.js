@@ -46,3 +46,16 @@ test("{ mask: \"+55-99-9999|(99)-9999\", keepStatic: true } type 12123451234", f
 
     $("#testmask").remove();
 });
+
+test("{ mask: [\"+55-99-9999-9999\", \"+55-99-99999-9999\", ], keepStatic: true } - type 12123451234 + backspace", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: ["+55-99-9999-9999", "+55-99-99999-9999"], keepStatic: true });
+    $("#testmask")[0].focus();
+    $("#testmask").Type("12123451234");
+    $("#testmask").SendKey($.inputmask.keyCode.BACKSPACE);
+
+    equal(document.getElementById("testmask")._valueGet(), "+55-12-1234-5123", "Result " + document.getElementById("testmask")._valueGet());
+
+    $("#testmask").remove();
+});

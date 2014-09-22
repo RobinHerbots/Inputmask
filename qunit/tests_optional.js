@@ -91,7 +91,7 @@ test("inputmask(\"9[9][9] 999[9] 9999\") - input 123123 space 1234 - vipink70", 
 
     $("#testmask")[0].focus();
     $("#testmask").Type("123123");
-    $("#testmask").SendKey($.keyCodes.SPACE);
+    $("#testmask").SendKey($.inputmask.keyCode.SPACE);
     $("#testmask").Type("1234");
     equal($("#testmask").val(), "123 123 1234", "Result " + $("#testmask").val());
 
