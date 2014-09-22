@@ -3,7 +3,2038 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.25
+* Version: 3.1.26
 */
-!function(a){"function"==typeof define&&define.amd?define(["jquery"],a):a(jQuery)}(function(a){function b(a){var b=document.createElement("input"),c="on"+a,d=c in b;return d||(b.setAttribute(c,"return;"),d="function"==typeof b[c]),b=null,d}function c(a){var b=document.createElement("input");b.setAttribute("type",a);var c="text"!==b.type;return b=null,c}function d(b,c,e){var f=e.aliases[b];return f?(f.alias&&d(f.alias,void 0,e),a.extend(!0,e,f),a.extend(!0,e,c),!0):!1}function e(b,c){function d(a){function c(a,b,c,d){this.matches=[],this.isGroup=a||!1,this.isOptional=b||!1,this.isQuantifier=c||!1,this.isAlternator=d||!1,this.quantifier={min:1,max:1}}function d(a,c,d){var e=b.definitions[c],f=0==a.matches.length;if(d=void 0!=d?d:a.matches.length,e&&!l){for(var g=e.prevalidator,h=g?g.length:0,i=1;i<e.cardinality;i++){var j=h>=i?g[i-1]:[],k=j.validator,m=j.cardinality;a.matches.splice(d++,0,{fn:k?"string"==typeof k?new RegExp(k):new function(){this.test=k}:new RegExp("."),cardinality:m?m:1,optionality:a.isOptional,newBlockMarker:f,casing:e.casing,def:e.definitionSymbol||c,placeholder:e.placeholder,mask:c})}a.matches.splice(d++,0,{fn:e.validator?"string"==typeof e.validator?new RegExp(e.validator):new function(){this.test=e.validator}:new RegExp("."),cardinality:e.cardinality,optionality:a.isOptional,newBlockMarker:f,casing:e.casing,def:e.definitionSymbol||c,placeholder:e.placeholder,mask:c})}else a.matches.splice(d++,0,{fn:null,cardinality:0,optionality:a.isOptional,newBlockMarker:f,casing:null,def:c,placeholder:void 0,mask:c}),l=!1}for(var e,f,g,h,i,j,k=/(?:[?*+]|\{[0-9\+\*]+(?:,[0-9\+\*]*)?\})\??|[^.?*+^${[]()|\\]+|./g,l=!1,m=new c,n=[],o=[];e=k.exec(a);)switch(f=e[0],f.charAt(0)){case b.optionalmarker.end:case b.groupmarker.end:if(g=n.pop(),n.length>0){if(h=n[n.length-1],h.matches.push(g),h.isAlternator){i=n.pop();for(var p=0;p<i.matches.length;p++)i.matches[p].isGroup=!1;n.length>0?(h=n[n.length-1],h.matches.push(i)):m.matches.push(i)}}else m.matches.push(g);break;case b.optionalmarker.start:n.push(new c(!1,!0));break;case b.groupmarker.start:n.push(new c(!0));break;case b.quantifiermarker.start:var q=new c(!1,!1,!0);f=f.replace(/[{}]/g,"");var r=f.split(","),s=isNaN(r[0])?r[0]:parseInt(r[0]),t=1==r.length?s:isNaN(r[1])?r[1]:parseInt(r[1]);if(("*"==t||"+"==t)&&(s="*"==t?0:1),q.quantifier={min:s,max:t},n.length>0){var u=n[n.length-1].matches;if(e=u.pop(),!e.isGroup){var v=new c(!0);v.matches.push(e),e=v}u.push(e),u.push(q)}else{if(e=m.matches.pop(),!e.isGroup){var v=new c(!0);v.matches.push(e),e=v}m.matches.push(e),m.matches.push(q)}break;case b.escapeChar:l=!0;break;case b.alternatormarker:n.length>0?(h=n[n.length-1],j=h.matches.pop()):j=m.matches.pop(),j.isAlternator?n.push(j):(i=new c(!1,!1,!1,!0),i.matches.push(j),n.push(i));break;default:if(n.length>0){if(h=n[n.length-1],h.matches.length>0&&(j=h.matches[h.matches.length-1],j.isGroup&&(j.isGroup=!1,d(j,b.groupmarker.start,0),d(j,b.groupmarker.end))),d(h,f),h.isAlternator){i=n.pop();for(var p=0;p<i.matches.length;p++)i.matches[p].isGroup=!1;n.length>0?(h=n[n.length-1],h.matches.push(i)):m.matches.push(i)}}else m.matches.length>0&&(j=m.matches[m.matches.length-1],j.isGroup&&(j.isGroup=!1,d(j,b.groupmarker.start,0),d(j,b.groupmarker.end))),d(m,f)}return m.matches.length>0&&(j=m.matches[m.matches.length-1],j.isGroup&&(j.isGroup=!1,d(j,b.groupmarker.start,0),d(j,b.groupmarker.end)),o.push(m)),o}function e(c,e){if(b.numericInput&&b.multi!==!0){c=c.split("").reverse();for(var f=0;f<c.length;f++)c[f]==b.optionalmarker.start?c[f]=b.optionalmarker.end:c[f]==b.optionalmarker.end?c[f]=b.optionalmarker.start:c[f]==b.groupmarker.start?c[f]=b.groupmarker.end:c[f]==b.groupmarker.end&&(c[f]=b.groupmarker.start);c=c.join("")}if(void 0==c||""==c)return void 0;if(1==c.length&&0==b.greedy&&0!=b.repeat&&(b.placeholder=""),b.repeat>0||"*"==b.repeat||"+"==b.repeat){var g="*"==b.repeat?0:"+"==b.repeat?1:b.repeat;c=b.groupmarker.start+c+b.groupmarker.end+b.quantifiermarker.start+g+","+b.repeat+b.quantifiermarker.end}return void 0==a.inputmask.masksCache[c]&&(a.inputmask.masksCache[c]={mask:c,maskToken:d(c),validPositions:{},_buffer:void 0,buffer:void 0,tests:{},metadata:e}),a.extend(!0,{},a.inputmask.masksCache[c])}var f=void 0;if(a.isFunction(b.mask)&&(b.mask=b.mask.call(this,b)),a.isArray(b.mask))if(c)f=[],a.each(b.mask,function(b,c){f.push(void 0==c.mask||a.isFunction(c.mask)?e(c.toString(),c):e(c.mask.toString(),c))});else{b.keepStatic=void 0==b.keepStatic?!0:b.keepStatic;var g="(";a.each(b.mask,function(b,c){g.length>1&&(g+=")|("),g+=void 0==c.mask||a.isFunction(c.mask)?c.toString():c.mask.toString()}),g+=")",f=e(g,b.mask)}else b.mask&&(f=void 0==b.mask.mask||a.isFunction(b.mask.mask)?e(b.mask.toString(),b.mask):e(b.mask.mask.toString(),b.mask));return f}function f(b,d,e){function f(a,b,c){b=b||0;var d,e,f,g=[],i=0;do{if(a===!0&&h().validPositions[i]){var j=h().validPositions[i];e=j.match,d=j.locator.slice(),g.push(c===!0?j.input:H(i,e))}else{if(b>i){var k=v(i,d,i-1);f=k[0]}else f=s(i,d,i-1);e=f.match,d=f.locator.slice(),g.push(H(i,e))}i++}while((void 0==eb||eb>i-1)&&null!=e.fn||null==e.fn&&""!=e.def||b>=i);return g.pop(),g}function h(){return d}function o(a){var b=h();b.buffer=void 0,b.tests={},a!==!0&&(b._buffer=void 0,b.validPositions={},b.p=0)}function p(a){var b=h(),c=-1,d=b.validPositions;void 0==a&&(a=-1);var e=c,f=c;for(var g in d){var i=parseInt(g);(-1==a||null!=d[i].match.fn)&&(a>i&&(e=i),i>=a&&(f=i))}return c=a-e>1||a>f?e:f}function q(b,c,d){if(e.insertMode&&void 0!=h().validPositions[b]&&void 0==d){var f,g=a.extend(!0,{},h().validPositions),i=p();for(f=b;i>=f;f++)delete h().validPositions[f];h().validPositions[b]=c;var j=!0;for(f=b;i>=f;f++){var k=g[f];if(void 0!=k){var l=null==k.match.fn?f+1:D(f);j=u(l,k.match.def)?j&&A(l,k.input,!0,!0)!==!1:!1}if(!j)break}if(!j)return h().validPositions=a.extend(!0,{},g),!1}else h().validPositions[b]=c;return!0}function r(a,b){var c,d=a;for(void 0!=h().validPositions[a]&&h().validPositions[a].input==e.radixPoint&&(b++,d++),c=d;b>c;c++)void 0==h().validPositions[c]||h().validPositions[c].input==e.radixPoint&&c!=p()||delete h().validPositions[c];for(c=b;c<=p();){var f=h().validPositions[c],g=h().validPositions[d];void 0!=f&&void 0==g?(u(d,f.match.def)&&A(d,f.input,!0)!==!1&&(delete h().validPositions[c],c++),d++):c++}var i=p();i>=a&&void 0!=h().validPositions[i]&&h().validPositions[i].input==e.radixPoint&&delete h().validPositions[i],o(!0)}function s(b,c,d){for(var f,g=v(b,c,d),i=p(),j=h().validPositions[i]||v(0)[0],k=void 0!=j.alternation?j.locator[j.alternation].split(","):[],l=0;l<g.length&&(f=g[l],!e.greedy&&(!f.match||f.match.optionality!==!1&&f.match.newBlockMarker!==!1||f.match.optionalQuantifier===!0||void 0!=j.alternation&&(void 0==f.locator[j.alternation]||-1!=a.inArray(f.locator[j.alternation].toString(),k))));l++);return f}function t(a){return h().validPositions[a]?h().validPositions[a].match:v(a)[0].match}function u(a,b){for(var c=!1,d=v(a),e=0;e<d.length;e++)if(d[e].match&&d[e].match.def==b){c=!0;break}return c}function v(b,c,d){function f(c,d,g,j){function m(g,j,o){if(i>1e4)return alert("jquery.inputmask: There is probably an error in your mask definition or in the code. Create an issue on github with an example of the mask you are using. "+h().mask),!0;if(i==b&&void 0==g.matches)return k.push({match:g,locator:j.reverse()}),!0;if(void 0!=g.matches){if(g.isGroup&&o!==!0){if(g=m(c.matches[n+1],j))return!0}else if(g.isOptional){var p=g;if(g=f(g,d,j,o)){var q=k[k.length-1].match,r=0==a.inArray(q,p.matches);r&&(l=!0),i=b}}else if(g.isAlternator){var s,t=g,u=[],v=k.slice(),w=j.length,x=d.length>0?d.shift():-1;if(-1==x||"string"==typeof x){var y,z=i,A=d.slice();"string"==typeof x&&(y=x.split(","));for(var B=0;B<t.matches.length;B++){k=[],g=m(t.matches[B],[B].concat(j),o)||g,s=k.slice(),i=z,k=[];for(var C=0;C<A.length;C++)d[C]=A[C];for(var D=0;D<s.length;D++)for(var E=s[D],F=0;F<u.length;F++){var G=u[F];if(E.match.mask==G.match.mask&&("string"!=typeof x||-1!=a.inArray(E.locator[w].toString(),y))){s.splice(D,1),G.locator[w]=G.locator[w]+","+E.locator[w],G.alternation=w;break}}u=u.concat(s)}"string"==typeof x&&(u=a.map(u,function(b,c){if(isFinite(c)){var d,e=b.locator[w].toString().split(",");b.locator[w]=void 0,b.alternation=void 0;for(var f=0;f<e.length;f++)d=-1!=a.inArray(e[f],y),d&&(void 0!=b.locator[w]?(b.locator[w]+=",",b.alternation=w,b.locator[w]+=e[f]):b.locator[w]=parseInt(e[f]));if(void 0!=b.locator[w])return b}})),k=v.concat(u),l=!0}else g=m(t.matches[x],[x].concat(j),o);if(g)return!0}else if(g.isQuantifier&&o!==!0){var H=g;e.greedy=e.greedy&&isFinite(H.quantifier.max);for(var I=d.length>0&&o!==!0?d.shift():0;I<(isNaN(H.quantifier.max)?I+1:H.quantifier.max)&&b>=i;I++){var J=c.matches[a.inArray(H,c.matches)-1];if(g=m(J,[I].concat(j),!0)){var q=k[k.length-1].match;q.optionalQuantifier=I>H.quantifier.min-1;var r=0==a.inArray(q,J.matches);if(r){if(I>H.quantifier.min-1){l=!0,i=b;break}return!0}return!0}}}else if(g=f(g,d,j,o))return!0}else i++}for(var n=d.length>0?d.shift():0;n<c.matches.length;n++)if(c.matches[n].isQuantifier!==!0){var o=m(c.matches[n],[n].concat(g),j);if(o&&i==b)return o;if(i>b)break}}var g=h().maskToken,i=c?d:0,j=c||[0],k=[],l=!1;if(void 0==c){for(var m,n=b-1;void 0==(m=h().validPositions[n])&&n>-1;)n--;if(void 0!=m&&n>-1)i=n,j=m.locator.slice();else{for(n=b-1;void 0==(m=h().tests[n])&&n>-1;)n--;void 0!=m&&n>-1&&(i=n,j=m[0].locator.slice())}}for(var o=j.shift();o<g.length;o++){var p=f(g[o],j,[o]);if(p&&i==b||i>b)break}return(0==k.length||l)&&k.push({match:{fn:null,cardinality:0,optionality:!0,casing:null,def:""},locator:[]}),h().tests[b]=a.extend(!0,[],k),h().tests[b]}function w(){return void 0==h()._buffer&&(h()._buffer=f(!1,1)),h()._buffer}function x(){return void 0==h().buffer&&(h().buffer=f(!0,p(),!0)),h().buffer}function y(a,b){var c=x().slice();if(a===!0)o(),a=0,b=c.length;else for(var d=a;b>d;d++)delete h().validPositions[d],delete h().tests[d];for(var d=a;b>d;d++)c[d]!=e.skipOptionalPartCharacter&&A(d,c[d],!0,!0)}function z(a,b){switch(b.casing){case"upper":a=a.toUpperCase();break;case"lower":a=a.toLowerCase()}return a}function A(b,c,d,f){function g(b,c,d,f){var g=!1;return a.each(v(b),function(i,j){for(var k=j.match,l=c?1:0,m="",n=(x(),k.cardinality);n>l;n--)m+=F(b-(n-1));if(c&&(m+=c),g=null!=k.fn?k.fn.test(m,h(),b,d,e):c!=k.def&&c!=e.skipOptionalPartCharacter||""==k.def?!1:{c:k.def,pos:b},g!==!1){var s=void 0!=g.c?g.c:c;s=s==e.skipOptionalPartCharacter&&null===k.fn?k.def:s;var t=b;if(void 0!=g.remove&&r(g.remove,g.remove+1),g.refreshFromBuffer){var u=g.refreshFromBuffer;if(d=!0,y(u===!0?u:u.start,u.end),void 0==g.pos&&void 0==g.c)return g.pos=p(),!1;if(t=void 0!=g.pos?g.pos:b,t!=b)return g=a.extend(g,A(t,s,!0)),!1}else if(g!==!0&&void 0!=g.pos&&g.pos!=b&&(t=g.pos,y(b,t),t!=b))return g=a.extend(g,A(t,s,!0)),!1;return 1!=g&&void 0==g.pos&&void 0==g.c?!1:(i>0&&o(!0),q(t,a.extend({},j,{input:z(s,k)}),f)||(g=!1),!1)}}),g}function i(b,c,d,f){if(e.keepStatic){var g,i,j=a.extend(!0,{},h().validPositions);for(g=p();g>=0;g--)if(h().validPositions[g]&&void 0!=h().validPositions[g].alternation){i=h().validPositions[g].alternation;break}if(void 0!=i)for(var k in h().validPositions)if(parseInt(k)>parseInt(g)&&void 0===h().validPositions[k].alternation){for(var l=h().validPositions[k],m=l.locator[i],n=h().validPositions[g].locator[i].split(","),q=0;q<n.length;q++)if(m<n[q]){for(var r,s,t=k-1;t>=0;t--)if(r=h().validPositions[t],void 0!=r){s=r.locator[i],r.locator[i]=n[q];break}if(m!=r.locator[i]){for(var u=x().slice(),v=k;v<p()+1;v++)delete h().validPositions[v],delete h().tests[v];o(!0),e.keepStatic=!e.keepStatic;for(var v=k;v<u.length;v++)u[v]!=e.skipOptionalPartCharacter&&A(p()+1,u[v],!1,!0);r.locator[i]=s;var w=p()+1==b&&A(b,c,d,f);if(e.keepStatic=!e.keepStatic,w)return w;o(),h().validPositions=a.extend(!0,{},j)}}break}}return!1}d=d===!0;for(var j=x(),k=b-1;k>-1&&(!h().validPositions[k]||null!=h().validPositions[k].match.fn);k--)void 0==h().validPositions[k]&&(!B(k)||j[k]!=H(k))&&v(k).length>1&&g(k,j[k],!0);var l=b;if(l>=C()){if(!f)return i(b,c,d,f);if(o(!0),l>=C())return i(b,c,d,f)}var m=g(l,c,d,f);if(!d&&m===!1){var n=h().validPositions[l];if(!n||null!=n.match.fn||n.match.def!=c&&c!=e.skipOptionalPartCharacter){if((e.insertMode||void 0==h().validPositions[D(l)])&&!B(l))for(var s=l+1,t=D(l);t>=s;s++)if(m=g(s,c,d,f),m!==!1){l=s;break}}else m={caret:D(l)}}return m===!0&&(m={pos:l}),m}function B(a){var b=t(a);return null!=b.fn?b.fn:!1}function C(){var a;if(eb=db.prop("maxLength"),-1==eb&&(eb=void 0),0==e.greedy){var b,c=p(),d=h().validPositions[c],f=void 0!=d?d.locator.slice():void 0;for(b=c+1;void 0==d||null!=d.match.fn||null==d.match.fn&&""!=d.match.def;b++)d=s(b,f,b-1),f=d.locator.slice();a=b}else a=x().length;return void 0==eb||eb>a?a:eb}function D(a){var b=C();if(a>=b)return b;for(var c=a;++c<b&&!B(c)&&(e.nojumps!==!0||e.nojumpsThreshold>c););return c}function E(a){var b=a;if(0>=b)return 0;for(;--b>0&&!B(b););return b}function F(a){return void 0==h().validPositions[a]?H(a):h().validPositions[a].input}function G(a,b,c){a._valueSet(b.join("")),void 0!=c&&N(a,c)}function H(b,c){return c=c||t(b),(a.isFunction(c.placeholder)?c.placeholder.call(this,e):c.placeholder)||(null==c.fn?c.def:e.placeholder.charAt(b%e.placeholder.length))}function I(b,c,d,f,g){var i=void 0!=f?f.slice():K(b._valueGet()).split("");if(o(),c&&b._valueSet(""),a.each(i,function(c,e){if(g===!0){var f=p(),i=-1==f?c:D(f);-1==a.inArray(e,w().slice(f+1,i))&&X.call(b,void 0,!0,e.charCodeAt(0),!1,d,d?c:h().p)}else X.call(b,void 0,!0,e.charCodeAt(0),!1,d,d?c:h().p),d=d||c>0&&c>h().p}),c){var j=e.onKeyPress.call(this,void 0,x(),0,e);V(b,j),G(b,x(),a(b).is(":focus")?D(p(0)):void 0)}}function J(b){return a.inputmask.escapeRegex.call(this,b)}function K(a){return a.replace(new RegExp("("+J(w().join(""))+")*$"),"")}function L(b){if(b.data("_inputmask")&&!b.hasClass("hasDatepicker")){var c=[],d=h().validPositions;for(var f in d)d[f].match&&null!=d[f].match.fn&&c.push(d[f].input);var g=(fb?c.reverse():c).join(""),i=(fb?x().slice().reverse():x()).join("");return a.isFunction(e.onUnMask)&&(g=e.onUnMask.call(b,i,g,e)),g}return b[0]._valueGet()}function M(a){if(fb&&"number"==typeof a&&(!e.greedy||""!=e.placeholder)){var b=x().length;a=b-a}return a}function N(b,c,d){var f,g=b.jquery&&b.length>0?b[0]:b;if("number"!=typeof c){var h=a(g).data("_inputmask");return!a(g).is(":visible")&&h&&void 0!=h.caret?(c=h.caret.begin,d=h.caret.end):g.setSelectionRange?(c=g.selectionStart,d=g.selectionEnd):document.selection&&document.selection.createRange&&(f=document.selection.createRange(),c=0-f.duplicate().moveStart("character",-1e5),d=c+f.text.length),c=M(c),d=M(d),{begin:c,end:d}}c=M(c),d=M(d),d="number"==typeof d?d:c;var h=a(g).data("_inputmask")||{};h.caret={begin:c,end:d},a(g).data("_inputmask",h),a(g).is(":visible")&&(g.scrollLeft=g.scrollWidth,0==e.insertMode&&c==d&&d++,g.setSelectionRange?(g.selectionStart=c,g.selectionEnd=d):g.createTextRange&&(f=g.createTextRange(),f.collapse(!0),f.moveEnd("character",d),f.moveStart("character",c),f.select()))}function O(b){var c,d,e=x(),f=e.length,g=p(),i={},j=h().validPositions[g],k=void 0!=j?j.locator.slice():void 0;for(c=g+1;c<e.length;c++)d=s(c,k,c-1),k=d.locator.slice(),i[c]=a.extend(!0,{},d);var l=j&&void 0!=j.alternation?j.locator[j.alternation].split(","):[];for(c=f-1;c>g&&(d=i[c].match,(d.optionality||d.optionalQuantifier||j&&void 0!=j.alternation&&void 0!=i[c].locator[j.alternation]&&-1!=a.inArray(i[c].locator[j.alternation].toString(),l))&&e[c]==H(c,d));c--)f--;return b?{l:f,def:i[f]?i[f].match:void 0}:f}function P(a){for(var b=x(),c=b.slice(),d=O(),e=c.length-1;e>d&&!B(e);e--);c.splice(d,e+1-d),G(a,c)}function Q(b){if(a.isFunction(e.isComplete))return e.isComplete.call(db,b,e);if("*"==e.repeat)return void 0;var c=!1,d=O(!0),f=E(d.l),g=p();if(g==f&&(void 0==d.def||d.def.newBlockMarker||d.def.optionalQuantifier)){c=!0;for(var h=0;f>=h;h++){var i=B(h);if(i&&(void 0==b[h]||b[h]==H(h))||!i&&b[h]!=H(h)){c=!1;break}}}return c}function R(a,b){return fb?a-b>1||a-b==1&&e.insertMode:b-a>1||b-a==1&&e.insertMode}function S(b){var c=a._data(b).events;a.each(c,function(b,c){a.each(c,function(a,b){if("inputmask"==b.namespace&&"setvalue"!=b.type){var c=b.handler;b.handler=function(a){return this.readOnly||this.disabled?void a.preventDefault:c.apply(this,arguments)}}})})}function T(b){function c(b){if(void 0==a.valHooks[b]||1!=a.valHooks[b].inputmaskpatch){var c=a.valHooks[b]&&a.valHooks[b].get?a.valHooks[b].get:function(a){return a.value},d=a.valHooks[b]&&a.valHooks[b].set?a.valHooks[b].set:function(a,b){return a.value=b,a};a.valHooks[b]={get:function(b){var d=a(b);if(d.data("_inputmask")){if(d.data("_inputmask").opts.autoUnmask)return d.inputmask("unmaskedvalue");var e=c(b),f=d.data("_inputmask"),g=f.maskset,h=g._buffer;return h=h?h.join(""):"",e!=h?e:""}return c(b)},set:function(b,c){var e,f=a(b),g=f.data("_inputmask");return g?(e=d(b,a.isFunction(g.opts.onBeforeMask)?g.opts.onBeforeMask.call(nb,c,g.opts):c),f.triggerHandler("setvalue.inputmask")):e=d(b,c),e},inputmaskpatch:!0}}}function d(){var b=a(this),c=a(this).data("_inputmask");return c?c.opts.autoUnmask?b.inputmask("unmaskedvalue"):g.call(this)!=w().join("")?g.call(this):"":g.call(this)}function e(b){var c=a(this).data("_inputmask");c?(h.call(this,a.isFunction(c.opts.onBeforeMask)?c.opts.onBeforeMask.call(nb,b,c.opts):b),a(this).triggerHandler("setvalue.inputmask")):h.call(this,b)}function f(b){a(b).bind("mouseenter.inputmask",function(){var b=a(this),c=this,d=c._valueGet();""!=d&&d!=x().join("")&&b.trigger("setvalue")});var c=a._data(b).events,d=c.mouseover;if(d){for(var e=d[d.length-1],f=d.length-1;f>0;f--)d[f]=d[f-1];d[0]=e}}var g,h;if(!b._valueGet){if(Object.getOwnPropertyDescriptor){Object.getOwnPropertyDescriptor(b,"value")}document.__lookupGetter__&&b.__lookupGetter__("value")?(g=b.__lookupGetter__("value"),h=b.__lookupSetter__("value"),b.__defineGetter__("value",d),b.__defineSetter__("value",e)):(g=function(){return b.value},h=function(a){b.value=a},c(b.type),f(b)),b._valueGet=function(){return fb?g.call(this).split("").reverse().join(""):g.call(this)},b._valueSet=function(a){h.call(this,fb?a.split("").reverse().join(""):a)}}}function U(b,c,d){function f(){if(e.keepStatic){var a,c=[];for(a=p();a>=0;a--)if(h().validPositions[a]){if(void 0!=h().validPositions[a].alternation)break;c.push(h().validPositions[a].input),delete h().validPositions[a]}if(a>0)for(;c.length>0;)h().p=D(p()),X.call(b,void 0,!0,c.pop().charCodeAt(0),!1,!1,h().p)}}if((e.numericInput||fb)&&(c==a.inputmask.keyCode.BACKSPACE?c=a.inputmask.keyCode.DELETE:c==a.inputmask.keyCode.DELETE&&(c=a.inputmask.keyCode.BACKSPACE),fb)){var g=d.end;d.end=d.begin,d.begin=g}c==a.inputmask.keyCode.BACKSPACE&&d.end-d.begin<=1?d.begin=E(d.begin):c==a.inputmask.keyCode.DELETE&&d.begin==d.end&&d.end++,r(d.begin,d.end),f();var i=p(d.begin);h().p=i<d.begin?D(i):d.begin}function V(a,b,c){if(b&&b.refreshFromBuffer){var d=b.refreshFromBuffer;y(d===!0?d:d.start,d.end),o(!0),void 0!=c&&(G(a,x()),N(a,b.caret||c.begin,b.caret||c.end))}}function W(b){gb=!1;var c=this,d=a(c),f=b.keyCode,g=N(c);f==a.inputmask.keyCode.BACKSPACE||f==a.inputmask.keyCode.DELETE||i&&127==f||b.ctrlKey&&88==f?(b.preventDefault(),88==f&&(cb=x().join("")),U(c,f,g),G(c,x(),h().p),c._valueGet()==w().join("")&&d.trigger("cleared"),e.showTooltip&&d.prop("title",h().mask)):f==a.inputmask.keyCode.END||f==a.inputmask.keyCode.PAGE_DOWN?setTimeout(function(){var a=D(p());e.insertMode||a!=C()||b.shiftKey||a--,N(c,b.shiftKey?g.begin:a,a)},0):f==a.inputmask.keyCode.HOME&&!b.shiftKey||f==a.inputmask.keyCode.PAGE_UP?N(c,0,b.shiftKey?g.begin:0):f==a.inputmask.keyCode.ESCAPE||90==f&&b.ctrlKey?(I(c,!0,!1,cb.split("")),d.click()):f!=a.inputmask.keyCode.INSERT||b.shiftKey||b.ctrlKey?0!=e.insertMode||b.shiftKey||(f==a.inputmask.keyCode.RIGHT?setTimeout(function(){var a=N(c);N(c,a.begin)},0):f==a.inputmask.keyCode.LEFT&&setTimeout(function(){var a=N(c);N(c,fb?a.begin+1:a.begin-1)},0)):(e.insertMode=!e.insertMode,N(c,e.insertMode||g.begin!=C()?g.begin:g.begin-1));var j=N(c),k=e.onKeyDown.call(this,b,x(),j.begin,e);V(c,k,j),ib=-1!=a.inArray(f,e.ignorables)}function X(b,c,d,f,g,i){if(void 0==d&&gb)return!1;gb=!0;var j=this,k=a(j);b=b||window.event;var d=c?d:b.which||b.charCode||b.keyCode;if(!(c===!0||b.ctrlKey&&b.altKey)&&(b.ctrlKey||b.metaKey||ib))return!0;if(d){c!==!0&&46==d&&0==b.shiftKey&&","==e.radixPoint&&(d=44);var l,m=c?{begin:i,end:i}:N(j),n=String.fromCharCode(d),p=R(m.begin,m.end);p&&(h().undoPositions=a.extend(!0,{},h().validPositions),U(j,a.inputmask.keyCode.DELETE,m),e.insertMode||(e.insertMode=!e.insertMode,q(m.begin,g),e.insertMode=!e.insertMode),p=!e.multi),h().writeOutBuffer=!0;var r=fb&&!p?m.end:m.begin,s=A(r,n,g);if(s!==!1){if(s!==!0&&(r=void 0!=s.pos?s.pos:r,n=void 0!=s.c?s.c:n),o(!0),void 0!=s.caret)l=s.caret;else{var t=h().validPositions;l=!e.keepStatic&&(void 0!=t[r+1]&&v(r+1,t[r].locator.slice(),r).length>1||void 0!=t[r].alternation)?r+1:D(r)}h().p=l}if(f!==!1){var u=this;if(setTimeout(function(){e.onKeyValidation.call(u,s,e)},0),h().writeOutBuffer&&s!==!1){var w=x();G(j,w,c?void 0:e.numericInput?E(l):l),c!==!0&&setTimeout(function(){Q(w)===!0&&k.trigger("complete"),hb=!0,k.trigger("input")},0)}else p&&(h().buffer=void 0,h().validPositions=h().undoPositions)}else p&&(h().buffer=void 0,h().validPositions=h().undoPositions);if(e.showTooltip&&k.prop("title",h().mask),b&&1!=c){b.preventDefault();var y=N(j),z=e.onKeyPress.call(this,b,x(),y.begin,e);V(j,z,y)}}}function Y(b){var c=a(this),d=this,f=b.keyCode,g=x(),h=N(d),i=e.onKeyUp.call(this,b,g,h.begin,e);V(d,i,h),f==a.inputmask.keyCode.TAB&&e.showMaskOnFocus&&(c.hasClass("focus-inputmask")&&0==d._valueGet().length?(o(),g=x(),G(d,g),N(d,0),cb=x().join("")):(G(d,g),N(d,M(0),M(C()))))}function Z(b){if(hb===!0&&"input"==b.type)return hb=!1,!0;var c=this,d=a(c),f=c._valueGet();if("propertychange"==b.type&&c._valueGet().length<=C())return!0;"paste"==b.type&&(window.clipboardData&&window.clipboardData.getData?f=window.clipboardData.getData("Text"):b.originalEvent&&b.originalEvent.clipboardData&&b.originalEvent.clipboardData.getData&&(f=b.originalEvent.clipboardData.getData("text/plain")));var g=a.isFunction(e.onBeforePaste)?e.onBeforePaste.call(c,f,e):f;return I(c,!0,!1,fb?g.split("").reverse():g.split(""),!0),d.click(),Q(x())===!0&&d.trigger("complete"),!1}function $(b){if(hb===!0&&"input"==b.type)return hb=!1,!0;var c=this,d=N(c),e=c._valueGet();e=e.replace(new RegExp("("+J(w().join(""))+")*"),""),d.begin>e.length&&(N(c,e.length),d=N(c)),x().length-e.length!=1||e.charAt(d.begin)==x()[d.begin]||e.charAt(d.begin+1)==x()[d.begin]||B(d.begin)||(b.keyCode=a.inputmask.keyCode.BACKSPACE,W.call(c,b)),b.preventDefault()}function _(b){if(hb===!0&&"input"==b.type)return hb=!1,!0;var c=this,d=N(c),f=c._valueGet();N(c,d.begin-1);var g=a.Event("keypress");g.which=f.charCodeAt(d.begin-1),gb=!1,ib=!1,X.call(c,g,void 0,void 0,!1);var i=h().p;G(c,x(),e.numericInput?E(i):i),b.preventDefault()}function ab(b){hb=!0;var c=this;return setTimeout(function(){N(c,N(c).begin-1);var d=a.Event("keypress");d.which=b.originalEvent.data.charCodeAt(0),gb=!1,ib=!1,X.call(c,d,void 0,void 0,!1);var f=h().p;G(c,x(),e.numericInput?E(f):f)},0),!1}function bb(b){if(db=a(b),db.is(":input")&&!c(db.attr("type"))){if(db.data("_inputmask",{maskset:d,opts:e,isRTL:!1}),e.showTooltip&&db.prop("title",h().mask),("rtl"==b.dir||e.rightAlign)&&db.css("text-align","right"),"rtl"==b.dir||e.numericInput){b.dir="ltr",db.removeAttr("dir");var f=db.data("_inputmask");f.isRTL=!0,db.data("_inputmask",f),fb=!0}db.unbind(".inputmask"),db.removeClass("focus-inputmask"),db.closest("form").bind("submit",function(){cb!=x().join("")&&db.change(),db[0]._valueGet&&db[0]._valueGet()==w().join("")&&db[0]._valueSet(""),e.autoUnmask&&e.removeMaskOnSubmit&&db.inputmask("remove")}).bind("reset",function(){setTimeout(function(){db.trigger("setvalue")},0)}),db.bind("mouseenter.inputmask",function(){var b=a(this),c=this;!b.hasClass("focus-inputmask")&&e.showMaskOnHover&&c._valueGet()!=x().join("")&&G(c,x())}).bind("blur.inputmask",function(){var b=a(this),c=this;if(b.data("_inputmask")){var d=c._valueGet(),f=x();b.removeClass("focus-inputmask"),cb!=x().join("")&&b.change(),e.clearMaskOnLostFocus&&""!=d&&(d==w().join("")?c._valueSet(""):P(c)),Q(f)===!1&&(b.trigger("incomplete"),e.clearIncomplete&&(o(),e.clearMaskOnLostFocus?c._valueSet(""):(f=w().slice(),G(c,f))))}}).bind("focus.inputmask",function(){var b=a(this),c=this,d=c._valueGet();e.showMaskOnFocus&&!b.hasClass("focus-inputmask")&&(!e.showMaskOnHover||e.showMaskOnHover&&""==d)&&c._valueGet()!=x().join("")&&G(c,x(),D(p())),b.addClass("focus-inputmask"),cb=x().join("")}).bind("mouseleave.inputmask",function(){var b=a(this),c=this;e.clearMaskOnLostFocus&&(b.hasClass("focus-inputmask")||c._valueGet()==b.attr("placeholder")||(c._valueGet()==w().join("")||""==c._valueGet()?c._valueSet(""):P(c)))}).bind("click.inputmask",function(){var b=this;a(b).is(":focus")&&setTimeout(function(){var c=N(b);if(c.begin==c.end){var d=fb?M(c.begin):c.begin,f=p(d),g=D(f);g>=d?B(d)?N(b,d):N(b,-1==f&&""!=e.radixPoint?a.inArray(e.radixPoint,x()):D(d)):N(b,g)}},0)}).bind("dblclick.inputmask",function(){var a=this;setTimeout(function(){N(a,0,D(p()))},0)}).bind(n+".inputmask dragdrop.inputmask drop.inputmask",Z).bind("setvalue.inputmask",function(){var a=this;I(a,!0,!1,void 0,!0),cb=x().join(""),(e.clearMaskOnLostFocus||e.clearIncomplete)&&a._valueGet()==w().join("")&&a._valueSet("")}).bind("complete.inputmask",e.oncomplete).bind("incomplete.inputmask",e.onincomplete).bind("cleared.inputmask",e.oncleared),db.bind("keydown.inputmask",W).bind("keypress.inputmask",X).bind("keyup.inputmask",Y).bind("compositionupdate.inputmask",ab),"paste"!==n||g||db.bind("input.inputmask",_),g&&db.bind("input.inputmask",Z),(j||l||k||m)&&("input"==n&&db.unbind(n+".inputmask"),db.bind("input.inputmask",$)),T(b);var i=a.isFunction(e.onBeforeMask)?e.onBeforeMask.call(b,b._valueGet(),e):b._valueGet();I(b,!0,!1,i.split(""),!0),cb=x().join("");var q;try{q=document.activeElement}catch(r){}Q(x())===!1&&e.clearIncomplete&&o(),e.clearMaskOnLostFocus?x().join("")==w().join("")?b._valueSet(""):P(b):G(b,x()),q===b&&(db.addClass("focus-inputmask"),N(b,D(p()))),S(b)}}var cb,db,eb,fb=!1,gb=!1,hb=!1,ib=!1;if(void 0!=b)switch(b.action){case"isComplete":return db=a(b.el),d=db.data("_inputmask").maskset,e=db.data("_inputmask").opts,Q(b.buffer);case"unmaskedvalue":return db=b.$input,d=db.data("_inputmask").maskset,e=db.data("_inputmask").opts,fb=b.$input.data("_inputmask").isRTL,L(b.$input);case"mask":cb=x().join(""),bb(b.el);break;case"format":db=a({}),db.data("_inputmask",{maskset:d,opts:e,isRTL:e.numericInput}),e.numericInput&&(fb=!0);var jb=(a.isFunction(e.onBeforeMask)?e.onBeforeMask.call(db,b.value,e):b.value).split("");return I(db,!1,!1,fb?jb.reverse():jb,!0),e.onKeyPress.call(this,void 0,x(),0,e),b.metadata?{value:fb?x().slice().reverse().join(""):x().join(""),metadata:db.inputmask("getmetadata")}:fb?x().slice().reverse().join(""):x().join("");case"isValid":db=a({}),db.data("_inputmask",{maskset:d,opts:e,isRTL:e.numericInput}),e.numericInput&&(fb=!0);var jb=b.value.split("");I(db,!1,!0,fb?jb.reverse():jb);for(var kb=x(),lb=O(),mb=kb.length-1;mb>lb&&!B(mb);mb--);return kb.splice(lb,mb+1-lb),Q(kb)&&b.value==kb.join("");case"getemptymask":return db=a(b.el),d=db.data("_inputmask").maskset,e=db.data("_inputmask").opts,w();case"remove":var nb=b.el;db=a(nb),d=db.data("_inputmask").maskset,e=db.data("_inputmask").opts,nb._valueSet(L(db)),db.unbind(".inputmask"),db.removeClass("focus-inputmask"),db.removeData("_inputmask");var ob;Object.getOwnPropertyDescriptor&&(ob=Object.getOwnPropertyDescriptor(nb,"value")),ob&&ob.get?nb._valueGet&&Object.defineProperty(nb,"value",{get:nb._valueGet,set:nb._valueSet}):document.__lookupGetter__&&nb.__lookupGetter__("value")&&nb._valueGet&&(nb.__defineGetter__("value",nb._valueGet),nb.__defineSetter__("value",nb._valueSet));try{delete nb._valueGet,delete nb._valueSet}catch(pb){nb._valueGet=void 0,nb._valueSet=void 0}break;case"getmetadata":if(db=a(b.el),d=db.data("_inputmask").maskset,e=db.data("_inputmask").opts,a.isArray(d.metadata)){for(var qb,rb=p(),sb=rb;sb>=0;sb--)if(h().validPositions[sb]&&void 0!=h().validPositions[sb].alternation){qb=h().validPositions[sb].alternation;break}return void 0!=qb?d.metadata[h().validPositions[rb].locator[qb]]:d.metadata[0]}return d.metadata}}if(void 0===a.fn.inputmask){var g="function"==typeof ScriptEngineMajorVersion?ScriptEngineMajorVersion():new Function("/*@cc_on return @_jscript_version; @*/")()>=10,h=navigator.userAgent,i=null!==h.match(new RegExp("iphone","i")),j=null!==h.match(new RegExp("android.*safari.*","i")),k=null!==h.match(new RegExp("android.*chrome.*","i")),l=null!==h.match(new RegExp("android.*firefox.*","i")),m=/Kindle/i.test(h)||/Silk/i.test(h)||/KFTT/i.test(h)||/KFOT/i.test(h)||/KFJWA/i.test(h)||/KFJWI/i.test(h)||/KFSOWI/i.test(h)||/KFTHWA/i.test(h)||/KFTHWI/i.test(h)||/KFAPWA/i.test(h)||/KFAPWI/i.test(h),n=b("paste")?"paste":b("input")?"input":"propertychange";a.inputmask={defaults:{placeholder:"_",optionalmarker:{start:"[",end:"]"},quantifiermarker:{start:"{",end:"}"},groupmarker:{start:"(",end:")"},alternatormarker:"|",escapeChar:"\\",mask:null,oncomplete:a.noop,onincomplete:a.noop,oncleared:a.noop,repeat:0,greedy:!0,autoUnmask:!1,removeMaskOnSubmit:!0,clearMaskOnLostFocus:!0,insertMode:!0,clearIncomplete:!1,aliases:{},alias:null,onKeyUp:a.noop,onKeyPress:a.noop,onKeyDown:a.noop,onBeforeMask:void 0,onBeforePaste:void 0,onUnMask:void 0,showMaskOnFocus:!0,showMaskOnHover:!0,onKeyValidation:a.noop,skipOptionalPartCharacter:" ",showTooltip:!1,numericInput:!1,rightAlign:!1,radixPoint:"",nojumps:!1,nojumpsThreshold:0,keepStatic:void 0,definitions:{9:{validator:"[0-9]",cardinality:1,definitionSymbol:"*"},a:{validator:"[A-Za-zА-яЁёÀ-ÿµ]",cardinality:1,definitionSymbol:"*"},"*":{validator:"[0-9A-Za-zА-яЁёÀ-ÿµ]",cardinality:1}},ignorables:[8,9,13,19,27,33,34,35,36,37,38,39,40,45,46,93,112,113,114,115,116,117,118,119,120,121,122,123],isComplete:void 0},keyCode:{ALT:18,BACKSPACE:8,CAPS_LOCK:20,COMMA:188,COMMAND:91,COMMAND_LEFT:91,COMMAND_RIGHT:93,CONTROL:17,DELETE:46,DOWN:40,END:35,ENTER:13,ESCAPE:27,HOME:36,INSERT:45,LEFT:37,MENU:93,NUMPAD_ADD:107,NUMPAD_DECIMAL:110,NUMPAD_DIVIDE:111,NUMPAD_ENTER:108,NUMPAD_MULTIPLY:106,NUMPAD_SUBTRACT:109,PAGE_DOWN:34,PAGE_UP:33,PERIOD:190,RIGHT:39,SHIFT:16,SPACE:32,TAB:9,UP:38,WINDOWS:91},masksCache:{},escapeRegex:function(a){var b=["/",".","*","+","?","|","(",")","[","]","{","}","\\"];return a.replace(new RegExp("(\\"+b.join("|\\")+")","gim"),"\\$1")},format:function(b,c,g){var h=a.extend(!0,{},a.inputmask.defaults,c);return d(h.alias,c,h),f({action:"format",value:b,metadata:g},e(h),h)},isValid:function(b,c){var g=a.extend(!0,{},a.inputmask.defaults,c);return d(g.alias,c,g),f({action:"isValid",value:b},e(g),g)}},a.fn.inputmask=function(b,c,g,h,i){function j(b,c,e){var f=a(b);f.data("inputmask-alias")&&d(f.data("inputmask-alias"),{},c);for(var g in c){var h=f.data("inputmask-"+g.toLowerCase());void 0!=h&&("mask"==g&&0==h.indexOf("[")?(c[g]=h.replace(/[\s[\]]/g,"").split("','"),c[g][0]=c[g][0].replace("'",""),c[g][c[g].length-1]=c[g][c[g].length-1].replace("'","")):c[g]="boolean"==typeof h?h:h.toString(),e&&(e[g]=c[g]))}return c}g=g||f,h=h||"_inputmask";var k,l=a.extend(!0,{},a.inputmask.defaults,c);if("string"==typeof b)switch(b){case"mask":return d(l.alias,c,l),k=e(l,g!==f),void 0==k?this:this.each(function(){g({action:"mask",el:this},a.extend(!0,{},k),j(this,l))});case"unmaskedvalue":var m=a(this);return m.data(h)?g({action:"unmaskedvalue",$input:m}):m.val();case"remove":return this.each(function(){var b=a(this);b.data(h)&&g({action:"remove",el:this})});case"getemptymask":return this.data(h)?g({action:"getemptymask",el:this}):"";case"hasMaskedValue":return this.data(h)?!this.data(h).opts.autoUnmask:!1;case"isComplete":return this.data(h)?g({action:"isComplete",buffer:this[0]._valueGet().split(""),el:this}):!0;
-case"getmetadata":return this.data(h)?g({action:"getmetadata",el:this}):void 0;case"_detectScope":return d(l.alias,c,l),void 0==i||d(i,c,l)||-1!=a.inArray(i,["mask","unmaskedvalue","remove","getemptymask","hasMaskedValue","isComplete","getmetadata","_detectScope"])||(l.mask=i),a.isFunction(l.mask)&&(l.mask=l.mask.call(this,l)),a.isArray(l.mask);default:return d(l.alias,c,l),d(b,c,l)||(l.mask=b),k=e(l,g!==f),void 0==k?this:this.each(function(){g({action:"mask",el:this},a.extend(!0,{},k),j(this,l))})}else{if("object"==typeof b)return l=a.extend(!0,{},a.inputmask.defaults,b),d(l.alias,b,l),k=e(l,g!==f),void 0==k?this:this.each(function(){g({action:"mask",el:this},a.extend(!0,{},k),j(this,l))});if(void 0==b)return this.each(function(){var b=a(this).attr("data-inputmask");if(b&&""!=b)try{b=b.replace(new RegExp("'","g"),'"');var e=a.parseJSON("{"+b+"}");a.extend(!0,e,c),l=a.extend(!0,{},a.inputmask.defaults,e),l=j(this,l),d(l.alias,e,l),l.alias=void 0,a(this).inputmask("mask",l,g)}catch(f){}if(a(this).attr("data-inputmask-mask")||a(this).attr("data-inputmask-alias")){l=a.extend(!0,{},a.inputmask.defaults,{});var h={};l=j(this,l,h),d(l.alias,h,l),l.alias=void 0,a(this).inputmask("mask",l,g)}})}}}return a.fn.inputmask});
+(function (factory) {if (typeof define === 'function' && define.amd) {define(["jquery"], factory);} else {factory(jQuery);}}/**
+* @license Input Mask plugin for jquery
+* http://github.com/RobinHerbots/jquery.inputmask
+* Copyright (c) 2010 - 2014 Robin Herbots
+* Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
+* Version: 0.0.0
+*/
+
+(function ($) {
+    if ($.fn.inputmask === undefined) {
+
+        //helper functions
+        function isInputEventSupported(eventName) {
+            var el = document.createElement('input'),
+                evName = 'on' + eventName,
+                isSupported = (evName in el);
+            if (!isSupported) {
+                el.setAttribute(evName, 'return;');
+                isSupported = typeof el[evName] == 'function';
+            }
+            el = null;
+            return isSupported;
+        }
+
+        function isInputTypeSupported(inputType) {
+            var el = document.createElement('input');
+            el.setAttribute("type", inputType);
+            var isSupported = el.type !== "text";
+            el = null;
+            return isSupported;
+        }
+
+        function resolveAlias(aliasStr, options, opts) {
+            var aliasDefinition = opts.aliases[aliasStr];
+            if (aliasDefinition) {
+                if (aliasDefinition.alias) resolveAlias(aliasDefinition.alias, undefined, opts); //alias is another alias
+                $.extend(true, opts, aliasDefinition); //merge alias definition in the options
+                $.extend(true, opts, options); //reapply extra given options
+                return true;
+            }
+            return false;
+        }
+
+        function generateMaskSet(opts, multi) {
+            var ms = undefined;
+
+            function analyseMask(mask) {
+                var tokenizer = /(?:[?*+]|\{[0-9\+\*]+(?:,[0-9\+\*]*)?\})\??|[^.?*+^${[]()|\\]+|./g,
+                    escaped = false;
+
+                function maskToken(isGroup, isOptional, isQuantifier, isAlternator) {
+                    this.matches = [];
+                    this.isGroup = isGroup || false;
+                    this.isOptional = isOptional || false;
+                    this.isQuantifier = isQuantifier || false;
+                    this.isAlternator = isAlternator || false;
+                    this.quantifier = { min: 1, max: 1 };
+                };
+
+                //test definition => {fn: RegExp/function, cardinality: int, optionality: bool, newBlockMarker: bool, casing: null/upper/lower, def: definitionSymbol, placeholder: placeholder, mask: real maskDefinition}
+                function insertTestDefinition(mtoken, element, position) {
+                    var maskdef = opts.definitions[element];
+                    var newBlockMarker = mtoken.matches.length == 0;
+                    position = position != undefined ? position : mtoken.matches.length;
+                    if (maskdef && !escaped) {
+                        var prevalidators = maskdef["prevalidator"], prevalidatorsL = prevalidators ? prevalidators.length : 0;
+                        for (var i = 1; i < maskdef.cardinality; i++) {
+                            var prevalidator = prevalidatorsL >= i ? prevalidators[i - 1] : [], validator = prevalidator["validator"], cardinality = prevalidator["cardinality"];
+                            mtoken.matches.splice(position++, 0, { fn: validator ? typeof validator == 'string' ? new RegExp(validator) : new function () { this.test = validator; } : new RegExp("."), cardinality: cardinality ? cardinality : 1, optionality: mtoken.isOptional, newBlockMarker: newBlockMarker, casing: maskdef["casing"], def: maskdef["definitionSymbol"] || element, placeholder: maskdef["placeholder"], mask: element });
+                        }
+                        mtoken.matches.splice(position++, 0, { fn: maskdef.validator ? typeof maskdef.validator == 'string' ? new RegExp(maskdef.validator) : new function () { this.test = maskdef.validator; } : new RegExp("."), cardinality: maskdef.cardinality, optionality: mtoken.isOptional, newBlockMarker: newBlockMarker, casing: maskdef["casing"], def: maskdef["definitionSymbol"] || element, placeholder: maskdef["placeholder"], mask: element });
+                    } else {
+                        mtoken.matches.splice(position++, 0, { fn: null, cardinality: 0, optionality: mtoken.isOptional, newBlockMarker: newBlockMarker, casing: null, def: element, placeholder: undefined, mask: element });
+                        escaped = false;
+                    }
+                }
+
+                var currentToken = new maskToken(),
+                    match,
+                    m,
+                    openenings = [],
+                    maskTokens = [],
+                    openingToken,
+                    currentOpeningToken,
+                    alternator,
+                    lastMatch;
+
+                while (match = tokenizer.exec(mask)) {
+                    m = match[0];
+                    switch (m.charAt(0)) {
+                        case opts.optionalmarker.end:
+                            // optional closing
+                        case opts.groupmarker.end:
+                            // Group closing
+                            openingToken = openenings.pop();
+                            if (openenings.length > 0) {
+                                currentOpeningToken = openenings[openenings.length - 1];
+                                currentOpeningToken["matches"].push(openingToken);
+                                if (currentOpeningToken.isAlternator) {  //handle alternator (a) | (b) case
+                                    alternator = openenings.pop();
+                                    for (var mndx = 0; mndx < alternator.matches.length; mndx++) {
+                                        alternator.matches[mndx].isGroup = false; //don't mark alternate groups as group
+                                    }
+                                    if (openenings.length > 0) {
+                                        currentOpeningToken = openenings[openenings.length - 1];
+                                        currentOpeningToken["matches"].push(alternator);
+                                    } else {
+                                        currentToken.matches.push(alternator);
+                                    }
+                                }
+                            } else {
+                                currentToken.matches.push(openingToken);
+                            }
+                            break;
+                        case opts.optionalmarker.start:
+                            // optional opening
+                            openenings.push(new maskToken(false, true));
+                            break;
+                        case opts.groupmarker.start:
+                            // Group opening
+                            openenings.push(new maskToken(true));
+                            break;
+                        case opts.quantifiermarker.start:
+                            //Quantifier
+                            var quantifier = new maskToken(false, false, true);
+
+                            m = m.replace(/[{}]/g, "");
+                            var mq = m.split(","),
+                                mq0 = isNaN(mq[0]) ? mq[0] : parseInt(mq[0]),
+                                mq1 = mq.length == 1 ? mq0 : (isNaN(mq[1]) ? mq[1] : parseInt(mq[1]));
+                            if (mq1 == "*" || mq1 == "+") {
+                                mq0 = mq1 == "*" ? 0 : 1;
+                            }
+                            quantifier.quantifier = { min: mq0, max: mq1 };
+                            if (openenings.length > 0) {
+                                var matches = openenings[openenings.length - 1]["matches"];
+                                match = matches.pop();
+                                if (!match["isGroup"]) {
+                                    var groupToken = new maskToken(true);
+                                    groupToken.matches.push(match);
+                                    match = groupToken;
+                                }
+                                matches.push(match);
+                                matches.push(quantifier);
+                            } else {
+                                match = currentToken.matches.pop();
+                                if (!match["isGroup"]) {
+                                    var groupToken = new maskToken(true);
+                                    groupToken.matches.push(match);
+                                    match = groupToken;
+                                }
+                                currentToken.matches.push(match);
+                                currentToken.matches.push(quantifier);
+                            }
+                            break;
+                        case opts.escapeChar:
+                            escaped = true;
+                            break;
+                        case opts.alternatormarker:
+                            if (openenings.length > 0) {
+                                currentOpeningToken = openenings[openenings.length - 1];
+                                lastMatch = currentOpeningToken.matches.pop();
+                            } else {
+                                lastMatch = currentToken.matches.pop();
+                            }
+                            if (lastMatch.isAlternator) {
+                                openenings.push(lastMatch);
+                            } else {
+                                alternator = new maskToken(false, false, false, true);
+                                alternator.matches.push(lastMatch);
+                                openenings.push(alternator);
+                            }
+                            break;
+                        default:
+                            if (openenings.length > 0) {
+                                currentOpeningToken = openenings[openenings.length - 1];
+                                if (currentOpeningToken.matches.length > 0) {
+                                    lastMatch = currentOpeningToken.matches[currentOpeningToken.matches.length - 1];
+                                    if (lastMatch["isGroup"]) { //this is not a group but a normal mask => convert
+                                        lastMatch.isGroup = false;
+                                        insertTestDefinition(lastMatch, opts.groupmarker.start, 0);
+                                        insertTestDefinition(lastMatch, opts.groupmarker.end);
+                                    }
+                                }
+                                insertTestDefinition(currentOpeningToken, m);
+                                if (currentOpeningToken.isAlternator) {  //handle alternator a | b case
+                                    alternator = openenings.pop();
+                                    for (var mndx = 0; mndx < alternator.matches.length; mndx++) {
+                                        alternator.matches[mndx].isGroup = false; //don't mark alternate groups as group
+                                    }
+                                    if (openenings.length > 0) {
+                                        currentOpeningToken = openenings[openenings.length - 1];
+                                        currentOpeningToken["matches"].push(alternator);
+                                    } else {
+                                        currentToken.matches.push(alternator);
+                                    }
+                                }
+                            } else {
+                                if (currentToken.matches.length > 0) {
+                                    lastMatch = currentToken.matches[currentToken.matches.length - 1];
+                                    if (lastMatch["isGroup"]) { //this is not a group but a normal mask => convert
+                                        lastMatch.isGroup = false;
+                                        insertTestDefinition(lastMatch, opts.groupmarker.start, 0);
+                                        insertTestDefinition(lastMatch, opts.groupmarker.end);
+                                    }
+                                }
+                                insertTestDefinition(currentToken, m);
+                            }
+                    }
+                }
+
+                if (currentToken.matches.length > 0) {
+                    lastMatch = currentToken.matches[currentToken.matches.length - 1];
+                    if (lastMatch["isGroup"]) { //this is not a group but a normal mask => convert
+                        lastMatch.isGroup = false;
+                        insertTestDefinition(lastMatch, opts.groupmarker.start, 0);
+                        insertTestDefinition(lastMatch, opts.groupmarker.end);
+                    }
+                    maskTokens.push(currentToken);
+                }
+
+                //console.log(JSON.stringify(maskTokens));
+                return maskTokens;
+            }
+
+            function generateMask(mask, metadata) {
+                if (opts.numericInput && opts.multi !== true) { //TODO FIX FOR DYNAMIC MASKS WITH QUANTIFIERS
+                    mask = mask.split('').reverse();
+                    for (var ndx = 0; ndx < mask.length; ndx++) {
+                        if (mask[ndx] == opts.optionalmarker.start)
+                            mask[ndx] = opts.optionalmarker.end;
+                        else if (mask[ndx] == opts.optionalmarker.end)
+                            mask[ndx] = opts.optionalmarker.start;
+                        else if (mask[ndx] == opts.groupmarker.start)
+                            mask[ndx] = opts.groupmarker.end;
+                        else if (mask[ndx] == opts.groupmarker.end)
+                            mask[ndx] = opts.groupmarker.start;
+                    }
+                    mask = mask.join('');
+                }
+                if (mask == undefined || mask == "")
+                    return undefined;
+                else {
+                    if (mask.length == 1 && opts.greedy == false && opts.repeat != 0) {
+                        opts.placeholder = "";
+                    } //hide placeholder with single non-greedy mask
+                    if (opts.repeat > 0 || opts.repeat == "*" || opts.repeat == "+") {
+                        var repeatStart = opts.repeat == "*" ? 0 : (opts.repeat == "+" ? 1 : opts.repeat);
+                        mask = opts.groupmarker.start + mask + opts.groupmarker.end + opts.quantifiermarker.start + repeatStart + "," + opts.repeat + opts.quantifiermarker.end;
+                    }
+                    if ($.inputmask.masksCache[mask] == undefined) {
+                        $.inputmask.masksCache[mask] = {
+                            "mask": mask,
+                            "maskToken": analyseMask(mask),
+                            "validPositions": {},
+                            "_buffer": undefined,
+                            "buffer": undefined,
+                            "tests": {},
+                            "metadata": metadata
+                        };
+                    }
+
+                    return $.extend(true, {}, $.inputmask.masksCache[mask]);
+                }
+            }
+
+            if ($.isFunction(opts.mask)) { //allow mask to be a preprocessing fn - should return a valid mask
+                opts.mask = opts.mask.call(this, opts);
+            }
+            if ($.isArray(opts.mask)) {
+                if (multi) {  //remove me
+                    ms = [];
+                    $.each(opts.mask, function (ndx, msk) {
+                        if (msk["mask"] != undefined && !$.isFunction(msk["mask"])) {
+                            ms.push(generateMask(msk["mask"].toString(), msk));
+                        } else {
+                            ms.push(generateMask(msk.toString(), msk));
+                        }
+                    });
+                } else {
+                    opts.keepStatic = opts.keepStatic == undefined ? true : opts.keepStatic; //enable by default when passing multiple masks when the option is not explicitly specified
+                    var altMask = "(";
+                    $.each(opts.mask, function (ndx, msk) {
+                        if (altMask.length > 1)
+                            altMask += ")|(";
+                        if (msk["mask"] != undefined && !$.isFunction(msk["mask"])) {
+                            altMask += msk["mask"].toString();
+                        } else {
+                            altMask += msk.toString();
+                        }
+                    });
+                    altMask += ")";
+                    ms = generateMask(altMask, opts.mask);
+                }
+            } else {
+                if (opts.mask) {
+                    if (opts.mask["mask"] != undefined && !$.isFunction(opts.mask["mask"])) {
+                        ms = generateMask(opts.mask["mask"].toString(), opts.mask);
+                    } else {
+                        ms = generateMask(opts.mask.toString(), opts.mask);
+                    }
+                }
+            }
+            return ms;
+        }
+
+        var msie1x = typeof ScriptEngineMajorVersion === "function"
+                ? ScriptEngineMajorVersion() //IE11 detection
+                : new Function("/*@cc_on return @_jscript_version; @*/")() >= 10, //conditional compilation from mickeysoft trick
+            ua = navigator.userAgent,
+            iphone = ua.match(new RegExp("iphone", "i")) !== null,
+            android = ua.match(new RegExp("android.*safari.*", "i")) !== null,
+            androidchrome = ua.match(new RegExp("android.*chrome.*", "i")) !== null,
+            androidfirefox = ua.match(new RegExp("android.*firefox.*", "i")) !== null,
+            kindle = /Kindle/i.test(ua) || /Silk/i.test(ua) || /KFTT/i.test(ua) || /KFOT/i.test(ua) || /KFJWA/i.test(ua) || /KFJWI/i.test(ua) || /KFSOWI/i.test(ua) || /KFTHWA/i.test(ua) || /KFTHWI/i.test(ua) || /KFAPWA/i.test(ua) || /KFAPWI/i.test(ua),
+            PasteEventType = isInputEventSupported('paste') ? 'paste' : isInputEventSupported('input') ? 'input' : "propertychange";
+
+        //if (androidchrome) {
+        //    var browser = navigator.userAgent.match(new RegExp("chrome.*", "i")),
+        //        version = parseInt(new RegExp(/[0-9]+/).exec(browser));
+        //    androidchrome32 = (version == 32);
+        //}
+
+        //masking scope
+        //actionObj definition see below
+        function maskScope(actionObj, maskset, opts) {
+            var isRTL = false,
+                valueOnFocus,
+                $el,
+                skipKeyPressEvent = false, //Safari 5.1.x - modal dialog fires keypress twice workaround
+                skipInputEvent = false, //skip when triggered from within inputmask
+                ignorable = false,
+                maxLength;
+
+            //maskset helperfunctions
+
+
+            function getMaskTemplate(baseOnInput, minimalPos, includeInput) {
+                minimalPos = minimalPos || 0;
+                var maskTemplate = [], ndxIntlzr, pos = 0, test, testPos;
+                do {
+                    if (baseOnInput === true && getMaskSet()['validPositions'][pos]) {
+                        var validPos = getMaskSet()['validPositions'][pos];
+                        test = validPos["match"];
+                        ndxIntlzr = validPos["locator"].slice();
+                        maskTemplate.push(includeInput === true ? validPos["input"] : getPlaceholder(pos, test));
+                    } else {
+                        if (minimalPos > pos) {
+                            var testPositions = getTests(pos, ndxIntlzr, pos - 1);
+                            testPos = testPositions[0];
+                        } else {
+                            testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
+                        }
+                        test = testPos["match"];
+                        ndxIntlzr = testPos["locator"].slice();
+                        maskTemplate.push(getPlaceholder(pos, test));
+                    }
+                    pos++;
+                } while ((maxLength == undefined || pos - 1 < maxLength) && test["fn"] != null || (test["fn"] == null && test["def"] != "") || minimalPos >= pos);
+                maskTemplate.pop(); //drop the last one which is empty
+                return maskTemplate;
+            }
+            function getMaskSet() {
+                return maskset;
+            }
+            function resetMaskSet(soft) {
+                var maskset = getMaskSet();
+                maskset["buffer"] = undefined;
+                maskset["tests"] = {};
+                if (soft !== true) {
+                    maskset["_buffer"] = undefined;
+                    maskset["validPositions"] = {};
+                    maskset["p"] = 0;
+                }
+            }
+            function getLastValidPosition(closestTo) {
+                var maskset = getMaskSet(), lastValidPosition = -1, valids = maskset["validPositions"];
+                if (closestTo == undefined) closestTo = -1;
+                var before = lastValidPosition, after = lastValidPosition;
+                for (var posNdx in valids) {
+                    var psNdx = parseInt(posNdx);
+                    if (closestTo == -1 || valids[psNdx]["match"].fn != null) {
+                        if (psNdx < closestTo) before = psNdx;
+                        if (psNdx >= closestTo) after = psNdx;
+                    }
+                }
+                lastValidPosition = (closestTo - before) > 1 || after < closestTo ? before : after;
+                return lastValidPosition;
+            }
+            function setValidPosition(pos, validTest, fromSetValid) {
+                if (opts.insertMode && getMaskSet()["validPositions"][pos] != undefined && fromSetValid == undefined) {
+                    //reposition & revalidate others
+                    var positionsClone = $.extend(true, {}, getMaskSet()["validPositions"]), lvp = getLastValidPosition(), i;
+                    for (i = pos; i <= lvp; i++) { //clear selection
+                        delete getMaskSet()["validPositions"][i];
+                    }
+                    getMaskSet()["validPositions"][pos] = validTest;
+                    var valid = true;
+                    for (i = pos; i <= lvp ; i++) {
+                        var t = positionsClone[i];
+                        if (t != undefined) {
+                            var j = t["match"].fn == null ? i + 1 : seekNext(i);
+                            if (positionCanMatchDefinition(j, t["match"].def)) {
+                                valid = valid && isValid(j, t["input"], true, true) !== false;
+                            } else valid = false;
+                        }
+                        if (!valid) break;
+                    }
+
+                    if (!valid) {
+                        getMaskSet()["validPositions"] = $.extend(true, {}, positionsClone);
+                        return false;
+                    }
+                } else
+                    getMaskSet()["validPositions"][pos] = validTest;
+
+                return true;
+            }
+            function stripValidPositions(start, end) {
+                var i, startPos = start;
+                if (getMaskSet()["validPositions"][start] != undefined && getMaskSet()["validPositions"][start].input == opts.radixPoint) {
+                    end++;
+                    startPos++;
+                }
+                for (i = startPos; i < end; i++) { //clear selection
+                    if (getMaskSet()["validPositions"][i] != undefined &&
+                        (getMaskSet()["validPositions"][i].input != opts.radixPoint || i == getLastValidPosition()))
+                        delete getMaskSet()["validPositions"][i];
+                }
+
+                for (i = end ; i <= getLastValidPosition() ;) {
+                    var t = getMaskSet()["validPositions"][i];
+                    var s = getMaskSet()["validPositions"][startPos];
+                    if (t != undefined && s == undefined) {
+                        if (positionCanMatchDefinition(startPos, t.match.def) && isValid(startPos, t["input"], true) !== false) {
+                            delete getMaskSet()["validPositions"][i];
+                            i++;
+                        }
+                        startPos++;
+                    } else i++;
+                }
+                //remove radixpoint if needed
+                var lvp = getLastValidPosition();
+                if (start <= lvp && getMaskSet()["validPositions"][lvp] != undefined && (getMaskSet()["validPositions"][lvp].input == opts.radixPoint))
+                    delete getMaskSet()["validPositions"][lvp];
+
+                resetMaskSet(true);
+            }
+            function getTestTemplate(pos, ndxIntlzr, tstPs) {
+                var testPositions = getTests(pos, ndxIntlzr, tstPs),
+                    testPos,
+                    lvp = getLastValidPosition(),
+                    lvTest = getMaskSet()["validPositions"][lvp] || getTests(0)[0],
+                    lvTestAltArr = (lvTest.alternation != undefined) ? lvTest["locator"][lvTest.alternation].split(",") : [];
+                for (var ndx = 0; ndx < testPositions.length; ndx++) {
+                    testPos = testPositions[ndx];
+
+                    if (opts.greedy ||
+                        ((testPos["match"] && (testPos["match"].optionality === false || testPos["match"].newBlockMarker === false) && testPos["match"].optionalQuantifier !== true) &&
+                        (lvTest.alternation == undefined || (testPos["locator"][lvTest.alternation] != undefined && $.inArray(testPos["locator"][lvTest.alternation].toString(), lvTestAltArr) == -1)))) {
+                        break;
+                    }
+                }
+
+                return testPos;
+            }
+            function getTest(pos) {
+                if (getMaskSet()['validPositions'][pos]) {
+                    return getMaskSet()['validPositions'][pos]["match"];
+                }
+                return getTests(pos)[0]["match"];
+            }
+            function positionCanMatchDefinition(pos, def) {
+                var valid = false, tests = getTests(pos);
+                for (var tndx = 0; tndx < tests.length; tndx++) {
+                    if (tests[tndx]["match"] && tests[tndx]["match"].def == def) {
+                        valid = true;
+                        break;
+                    }
+                }
+                return valid;
+            };
+            function getTests(pos, ndxIntlzr, tstPs) {
+                var maskTokens = getMaskSet()["maskToken"], testPos = ndxIntlzr ? tstPs : 0, ndxInitializer = ndxIntlzr || [0], matches = [], insertStop = false;
+                function ResolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) { //ndxInitilizer contains a set of indexes to speedup searches in the mtokens
+                    function handleMatch(match, loopNdx, quantifierRecurse) {
+                        if (testPos > 10000) {
+                            alert("jquery.inputmask: There is probably an error in your mask definition or in the code. Create an issue on github with an example of the mask you are using. " + getMaskSet()["mask"]);
+                            return true;
+                        }
+                        if (testPos == pos && match.matches == undefined) {
+                            matches.push({ "match": match, "locator": loopNdx.reverse() });
+                            return true;
+                        } else if (match.matches != undefined) {
+                            if (match.isGroup && quantifierRecurse !== true) { //when a group pass along to the quantifier
+                                match = handleMatch(maskToken.matches[tndx + 1], loopNdx);
+                                if (match) return true;
+                            } else if (match.isOptional) {
+                                var optionalToken = match;
+                                match = ResolveTestFromToken(match, ndxInitializer, loopNdx, quantifierRecurse);
+                                if (match) {
+                                    var latestMatch = matches[matches.length - 1]["match"];
+                                    var isFirstMatch = $.inArray(latestMatch, optionalToken.matches) == 0;
+                                    if (isFirstMatch) {
+                                        insertStop = true; //insert a stop for non greedy
+                                    }
+                                    testPos = pos; //match the position after the group
+                                }
+                            } else if (match.isAlternator) {
+                                var alternateToken = match, malternateMatches = [], maltMatches,
+                                    currentMatches = matches.slice(), loopNdxCnt = loopNdx.length;
+                                var altIndex = ndxInitializer.length > 0 ? ndxInitializer.shift() : -1;
+                                if (altIndex == -1 || typeof altIndex == "string") {
+                                    var currentPos = testPos, ndxInitializerClone = ndxInitializer.slice(), altIndexArr;
+                                    if (typeof altIndex == "string") altIndexArr = altIndex.split(",");
+                                    for (var amndx = 0; amndx < alternateToken.matches.length; amndx++) {
+                                        matches = [];
+                                        match = handleMatch(alternateToken.matches[amndx], [amndx].concat(loopNdx), quantifierRecurse) || match;
+                                        maltMatches = matches.slice();
+                                        testPos = currentPos;
+                                        matches = [];
+                                        //cloneback
+                                        for (var i = 0; i < ndxInitializerClone.length; i++) {
+                                            ndxInitializer[i] = ndxInitializerClone[i];
+                                        }
+                                        //fuzzy merge matches
+                                        for (var ndx1 = 0; ndx1 < maltMatches.length; ndx1++) {
+                                            var altMatch = maltMatches[ndx1];
+                                            for (var ndx2 = 0; ndx2 < malternateMatches.length; ndx2++) {
+                                                var altMatch2 = malternateMatches[ndx2];
+                                                //verify equality
+                                                if (altMatch.match.mask == altMatch2.match.mask && (typeof altIndex != "string" || $.inArray(altMatch.locator[loopNdxCnt].toString(), altIndexArr) != -1)) {
+                                                    maltMatches.splice(ndx1, 1);
+                                                    altMatch2.locator[loopNdxCnt] = altMatch2.locator[loopNdxCnt] + "," + altMatch.locator[loopNdxCnt];
+                                                    altMatch2.alternation = loopNdxCnt; //we pass the alternation index => used in determineLastRequiredPosition
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        malternateMatches = malternateMatches.concat(maltMatches);
+                                    }
+
+                                    if (typeof altIndex == "string") { //filter matches
+                                        malternateMatches = $.map(malternateMatches, function (lmnt, ndx) {
+                                            if (isFinite(ndx)) {
+                                                var altLocArr = lmnt.locator[loopNdxCnt].toString().split(",");
+                                                var mamatch;
+                                                lmnt.locator[loopNdxCnt] = undefined;
+                                                lmnt.alternation = undefined;
+                                                for (var alndx = 0; alndx < altLocArr.length; alndx++) {
+                                                    mamatch = $.inArray(altLocArr[alndx], altIndexArr) != -1;
+                                                    if (mamatch) { //rebuild the locator with valid entries
+                                                        if (lmnt.locator[loopNdxCnt] != undefined) {
+                                                            lmnt.locator[loopNdxCnt] += ",";
+                                                            lmnt.alternation = loopNdxCnt; //only define alternation when there is more then 1 possibility
+                                                            lmnt.locator[loopNdxCnt] += altLocArr[alndx];
+                                                        } else
+                                                            lmnt.locator[loopNdxCnt] = parseInt(altLocArr[alndx]);
+                                                    }
+                                                }
+                                                if (lmnt.locator[loopNdxCnt] != undefined) return lmnt;
+                                            }
+                                        });
+                                    }
+
+                                    matches = currentMatches.concat(malternateMatches);
+                                    //console.log("alternates " + pos + " -> " + JSON.stringify(matches));
+                                    insertStop = true; //insert a stopelemnt when there is an alternate
+                                } else {
+                                    match = handleMatch(alternateToken.matches[altIndex], [altIndex].concat(loopNdx), quantifierRecurse);
+                                }
+                                if (match) return true;
+                            } else if (match.isQuantifier && quantifierRecurse !== true) {
+                                var qt = match;
+                                opts.greedy = opts.greedy && isFinite(qt.quantifier.max); //greedy must be off when * or + is used (always!!)
+                                for (var qndx = (ndxInitializer.length > 0 && quantifierRecurse !== true) ? ndxInitializer.shift() : 0; (qndx < (isNaN(qt.quantifier.max) ? qndx + 1 : qt.quantifier.max)) && testPos <= pos; qndx++) {
+                                    var tokenGroup = maskToken.matches[$.inArray(qt, maskToken.matches) - 1];
+                                    match = handleMatch(tokenGroup, [qndx].concat(loopNdx), true);
+                                    if (match) {
+                                        //get latest match
+                                        var latestMatch = matches[matches.length - 1]["match"];
+                                        latestMatch.optionalQuantifier = qndx > (qt.quantifier.min - 1);
+                                        var isFirstMatch = $.inArray(latestMatch, tokenGroup.matches) == 0;
+
+                                        if (isFirstMatch) { //search for next possible match
+                                            if (qndx > (qt.quantifier.min - 1)) {
+                                                insertStop = true;
+                                                testPos = pos; //match the position after the group
+                                                break; //stop quantifierloop
+                                            } else return true;
+                                        } else {
+                                            return true;
+                                        }
+                                    }
+                                }
+                            } else {
+                                match = ResolveTestFromToken(match, ndxInitializer, loopNdx, quantifierRecurse);
+                                if (match)
+                                    return true;
+                            }
+                        } else testPos++;
+                    }
+
+                    for (var tndx = (ndxInitializer.length > 0 ? ndxInitializer.shift() : 0) ; tndx < maskToken.matches.length; tndx++) {
+                        if (maskToken.matches[tndx]["isQuantifier"] !== true) {
+                            var match = handleMatch(maskToken.matches[tndx], [tndx].concat(loopNdx), quantifierRecurse);
+                            if (match && testPos == pos) {
+                                return match;
+                            } else if (testPos > pos) {
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                //if (disableCache !== true && getMaskSet()['tests'][pos] && !getMaskSet()['validPositions'][pos]) {
+                //    return getMaskSet()['tests'][pos];
+                //}
+                if (ndxIntlzr == undefined) {
+                    var previousPos = pos - 1, test;
+                    while ((test = getMaskSet()['validPositions'][previousPos]) == undefined && previousPos > -1) {
+                        previousPos--;
+                    }
+                    if (test != undefined && previousPos > -1) {
+                        testPos = previousPos;
+                        ndxInitializer = test["locator"].slice();
+                    } else {
+                        previousPos = pos - 1;
+                        while ((test = getMaskSet()['tests'][previousPos]) == undefined && previousPos > -1) {
+                            previousPos--;
+                        }
+                        if (test != undefined && previousPos > -1) {
+                            testPos = previousPos;
+                            ndxInitializer = test[0]["locator"].slice();
+                        }
+                    }
+                }
+                for (var mtndx = ndxInitializer.shift() ; mtndx < maskTokens.length; mtndx++) {
+                    var match = ResolveTestFromToken(maskTokens[mtndx], ndxInitializer, [mtndx]);
+                    if ((match && testPos == pos) || testPos > pos) {
+                        break;
+                    }
+                }
+                if (matches.length == 0 || insertStop)
+                    matches.push({ "match": { fn: null, cardinality: 0, optionality: true, casing: null, def: "" }, "locator": [] });
+
+                getMaskSet()['tests'][pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
+                //console.log(pos + " - " + JSON.stringify(matches));
+                return getMaskSet()['tests'][pos];
+            }
+            function getBufferTemplate() {
+                if (getMaskSet()['_buffer'] == undefined) {
+                    //generate template
+                    getMaskSet()["_buffer"] = getMaskTemplate(false, 1);
+                }
+                return getMaskSet()['_buffer'];
+            }
+            function getBuffer() {
+                if (getMaskSet()['buffer'] == undefined) {
+                    getMaskSet()['buffer'] = getMaskTemplate(true, getLastValidPosition(), true);
+                }
+                return getMaskSet()['buffer'];
+            }
+            function refreshFromBuffer(start, end) {
+                var buffer = getBuffer().slice(); //work on clone
+                if (start === true) {
+                    resetMaskSet();
+                    start = 0;
+                    end = buffer.length;
+                } else {
+                    for (var i = start; i < end; i++) {
+                        delete getMaskSet()["validPositions"][i];
+                        delete getMaskSet()["tests"][i];
+                    }
+                }
+
+                for (var i = start; i < end; i++) {
+                    if (buffer[i] != opts.skipOptionalPartCharacter) {
+                        isValid(i, buffer[i], true, true);
+                    }
+                }
+            }
+            function casing(elem, test) {
+                switch (test.casing) {
+                    case "upper":
+                        elem = elem.toUpperCase();
+                        break;
+                    case "lower":
+                        elem = elem.toLowerCase();
+                        break;
+                }
+
+                return elem;
+            }
+            function isValid(pos, c, strict, fromSetValid) { //strict true ~ no correction or autofill
+                strict = strict === true; //always set a value to strict to prevent possible strange behavior in the extensions 
+
+                function _isValid(position, c, strict, fromSetValid) {
+                    var rslt = false;
+                    $.each(getTests(position), function (ndx, tst) {
+                        var test = tst["match"];
+                        var loopend = c ? 1 : 0, chrs = '', buffer = getBuffer();
+                        for (var i = test.cardinality; i > loopend; i--) {
+                            chrs += getBufferElement(position - (i - 1));
+                        }
+                        if (c) {
+                            chrs += c;
+                        }
+
+                        //return is false or a json object => { pos: ??, c: ??} or true
+                        rslt = test.fn != null ?
+                            test.fn.test(chrs, getMaskSet(), position, strict, opts)
+                            : (c == test["def"] || c == opts.skipOptionalPartCharacter) && test["def"] != "" ? //non mask
+                            { c: test["def"], pos: position }
+                            : false;
+
+                        if (rslt !== false) {
+                            var elem = rslt.c != undefined ? rslt.c : c;
+                            elem = (elem == opts.skipOptionalPartCharacter && test["fn"] === null) ? test["def"] : elem;
+
+                            var validatedPos = position;
+                            if (rslt["remove"] != undefined) { //remove position
+                                stripValidPositions(rslt["remove"], rslt["remove"] + 1);
+                            }
+
+                            if (rslt["refreshFromBuffer"]) {
+                                var refresh = rslt["refreshFromBuffer"];
+                                strict = true;
+                                refreshFromBuffer(refresh === true ? refresh : refresh["start"], refresh["end"]);
+                                if (rslt.pos == undefined && rslt.c == undefined) {
+                                    rslt.pos = getLastValidPosition();
+                                    return false;//breakout if refreshFromBuffer && nothing to insert
+                                }
+                                validatedPos = rslt.pos != undefined ? rslt.pos : position;
+                                if (validatedPos != position) {
+                                    rslt = $.extend(rslt, isValid(validatedPos, elem, true)); //revalidate new position strict
+                                    return false;
+                                }
+
+                            } else if (rslt !== true && rslt.pos != undefined && rslt["pos"] != position) { //their is a position offset
+                                validatedPos = rslt["pos"];
+                                refreshFromBuffer(position, validatedPos);
+                                if (validatedPos != position) {
+                                    rslt = $.extend(rslt, isValid(validatedPos, elem, true)); //revalidate new position strict
+                                    return false;
+                                }
+                            }
+
+                            if (rslt != true && rslt.pos == undefined && rslt.c == undefined) {
+                                return false; //breakout if nothing to insert
+                            }
+
+                            if (ndx > 0) {
+                                resetMaskSet(true);
+                            }
+
+                            if (!setValidPosition(validatedPos, $.extend({}, tst, { "input": casing(elem, test) }), fromSetValid))
+                                rslt = false;
+                            return false; //break from $.each
+                        }
+                    });
+
+                    return rslt;
+                }
+                function alternate(pos, c, strict, fromSetValid) {
+                    if (opts.keepStatic) {
+                        var validPsClone = $.extend(true, {}, getMaskSet()["validPositions"]),
+                            lastAlt,
+                            alternation;
+                        //find last alternation
+                        for (lastAlt = getLastValidPosition() ; lastAlt >= 0; lastAlt--) {
+                            if (getMaskSet()["validPositions"][lastAlt] && getMaskSet()["validPositions"][lastAlt].alternation != undefined) {
+                                alternation = getMaskSet()["validPositions"][lastAlt].alternation;
+                                break;
+                            }
+                        }
+                        if (alternation != undefined) {
+                            //find first decision making position
+                            for (var decisionPos in getMaskSet()["validPositions"]) {
+                                if (parseInt(decisionPos) > parseInt(lastAlt) && getMaskSet()["validPositions"][decisionPos].alternation === undefined) {
+                                    var altPos = getMaskSet()["validPositions"][decisionPos],
+                                        decisionTaker = altPos.locator[alternation],
+                                        altNdxs = getMaskSet()["validPositions"][lastAlt].locator[alternation].split(",");
+
+                                    for (var mndx = 0; mndx < altNdxs.length; mndx++) {
+                                        if (decisionTaker < altNdxs[mndx]) {
+                                            var possibilityPos, possibilities;
+                                            for (var dp = decisionPos - 1; dp >= 0; dp--) {
+                                                possibilityPos = getMaskSet()["validPositions"][dp];
+                                                if (possibilityPos != undefined) {
+                                                    possibilities = possibilityPos.locator[alternation]; //store to reset 
+                                                    possibilityPos.locator[alternation] = altNdxs[mndx];
+                                                    break;
+                                                }
+                                            }
+                                            if (decisionTaker != possibilityPos.locator[alternation]) {
+                                                var buffer = getBuffer().slice(); //work on clone
+                                                for (var i = decisionPos; i < getLastValidPosition() + 1; i++) {
+                                                    delete getMaskSet()["validPositions"][i];
+                                                    delete getMaskSet()["tests"][i];
+                                                }
+                                                resetMaskSet(true); //clear getbuffer
+                                                opts.keepStatic = !opts.keepStatic; //disable keepStatic on getMaskLength
+                                                for (var i = decisionPos; i < buffer.length; i++) {
+                                                    if (buffer[i] != opts.skipOptionalPartCharacter) {
+                                                        isValid(getLastValidPosition() + 1, buffer[i], false, true);
+                                                    }
+                                                }
+                                                possibilityPos.locator[alternation] = possibilities; //reset forceddecision ~ needed for proper delete
+                                                var isValidRslt = getLastValidPosition() + 1 == pos && isValid(pos, c, strict, fromSetValid);
+                                                opts.keepStatic = !opts.keepStatic; //enable keepStatic on getMaskLength
+                                                if (!isValidRslt) {
+                                                    resetMaskSet();
+                                                    getMaskSet()["validPositions"] = $.extend(true, {}, validPsClone);
+                                                } else
+                                                    return isValidRslt;
+                                            }
+                                        }
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    return false;
+                }
+                //Check for a nonmask before the pos
+                var buffer = getBuffer();
+                for (var pndx = pos - 1; pndx > -1; pndx--) {
+                    if (getMaskSet()["validPositions"][pndx] && getMaskSet()["validPositions"][pndx]["match"].fn == null)
+                        break;
+                    else if (getMaskSet()["validPositions"][pndx] == undefined && (!isMask(pndx) || buffer[pndx] != getPlaceholder(pndx)) && getTests(pndx).length > 1) {
+                        _isValid(pndx, buffer[pndx], true);
+                    }
+                }
+
+                var maskPos = pos;
+                if (maskPos >= getMaskLength()) { //try fuzzy alternator logic
+                    if (fromSetValid) {
+                        resetMaskSet(true);
+                        if (maskPos >= getMaskLength())
+                            return alternate(pos, c, strict, fromSetValid);
+                    } else
+                        return alternate(pos, c, strict, fromSetValid);
+                }
+                var result = _isValid(maskPos, c, strict, fromSetValid);
+                if (!strict && result === false) {
+                    var currentPosValid = getMaskSet()["validPositions"][maskPos];
+                    if (currentPosValid && currentPosValid["match"].fn == null && (currentPosValid["match"].def == c || c == opts.skipOptionalPartCharacter)) {
+                        result = { "caret": seekNext(maskPos) };
+                    } else if ((opts.insertMode || getMaskSet()["validPositions"][seekNext(maskPos)] == undefined) && !isMask(maskPos)) { //does the input match on a further position?
+                        for (var nPos = maskPos + 1, snPos = seekNext(maskPos) ; nPos <= snPos; nPos++) {
+                            result = _isValid(nPos, c, strict, fromSetValid);
+                            if (result !== false) {
+                                maskPos = nPos;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (result === true) result = { "pos": maskPos };
+                return result;
+            }
+            function isMask(pos) {
+                var test = getTest(pos);
+                return test.fn != null ? test.fn : false;
+            }
+            function getMaskLength() {
+                var maskLength;
+                maxLength = $el.prop('maxLength');
+                if (maxLength == -1) maxLength = undefined; /* FF sets no defined max length to -1 */
+                if (opts.greedy == false) {
+                    var pos, lvp = getLastValidPosition(), testPos = getMaskSet()["validPositions"][lvp],
+                        ndxIntlzr = testPos != undefined ? testPos["locator"].slice() : undefined;
+                    for (pos = lvp + 1; testPos == undefined || (testPos["match"]["fn"] != null || (testPos["match"]["fn"] == null && testPos["match"]["def"] != "")) ; pos++) {
+                        testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
+                        ndxIntlzr = testPos["locator"].slice();
+                    }
+                    maskLength = pos;
+                } else
+                    maskLength = getBuffer().length;
+
+                return (maxLength == undefined || maskLength < maxLength) ? maskLength : maxLength;
+            }
+            function seekNext(pos) {
+                var maskL = getMaskLength();
+                if (pos >= maskL) return maskL;
+                var position = pos;
+                while (++position < maskL && !isMask(position) && (opts.nojumps !== true || opts.nojumpsThreshold > position)) {
+                }
+                return position;
+            }
+            function seekPrevious(pos) {
+                var position = pos;
+                if (position <= 0) return 0;
+
+                while (--position > 0 && !isMask(position)) {
+                };
+                return position;
+            }
+            function getBufferElement(position) {
+                return getMaskSet()["validPositions"][position] == undefined ? getPlaceholder(position) : getMaskSet()["validPositions"][position]["input"];
+            }
+            function writeBuffer(input, buffer, caretPos) {
+                input._valueSet(buffer.join(''));
+                if (caretPos != undefined) {
+                    caret(input, caretPos);
+                }
+            }
+            function getPlaceholder(pos, test) {
+                test = test || getTest(pos);
+                return ($.isFunction(test["placeholder"]) ? test["placeholder"].call(this, opts) : test["placeholder"]) || (test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length));
+            }
+            function checkVal(input, writeOut, strict, nptvl, intelliCheck) {
+                var inputValue = nptvl != undefined ? nptvl.slice() : truncateInput(input._valueGet()).split('');
+                resetMaskSet();
+                if (writeOut) input._valueSet(""); //initial clear
+                $.each(inputValue, function (ndx, charCode) {
+                    if (intelliCheck === true) {
+                        var lvp = getLastValidPosition(),
+                            pos = lvp == -1 ? ndx : seekNext(lvp);
+                        if ($.inArray(charCode, getBufferTemplate().slice(lvp + 1, pos)) == -1) {
+                            keypressEvent.call(input, undefined, true, charCode.charCodeAt(0), false, strict, strict ? ndx : getMaskSet()["p"]);
+                        }
+                    } else {
+                        keypressEvent.call(input, undefined, true, charCode.charCodeAt(0), false, strict, strict ? ndx : getMaskSet()["p"]);
+                        strict = strict || (ndx > 0 && ndx > getMaskSet()["p"]);
+                    }
+                });
+                if (writeOut) {
+                    var keypressResult = opts.onKeyPress.call(this, undefined, getBuffer(), 0, opts);
+                    handleOnKeyResult(input, keypressResult);
+                    writeBuffer(input, getBuffer(), $(input).is(":focus") ? seekNext(getLastValidPosition(0)) : undefined);
+                }
+            }
+            function escapeRegex(str) {
+                return $.inputmask.escapeRegex.call(this, str);
+            }
+            function truncateInput(inputValue) {
+                return inputValue.replace(new RegExp("(" + escapeRegex(getBufferTemplate().join('')) + ")*$"), "");
+            }
+            function unmaskedvalue($input) {
+                if ($input.data('_inputmask') && !$input.hasClass('hasDatepicker')) {
+                    var umValue = [], vps = getMaskSet()["validPositions"];
+                    for (var pndx in vps) {
+                        if (vps[pndx]["match"] && vps[pndx]["match"].fn != null) {
+                            umValue.push(vps[pndx]["input"]);
+                        }
+                    }
+                    var unmaskedValue = (isRTL ? umValue.reverse() : umValue).join('');
+                    var bufferValue = (isRTL ? getBuffer().slice().reverse() : getBuffer()).join('');
+                    if ($.isFunction(opts.onUnMask)) {
+                        unmaskedValue = opts.onUnMask.call($input, bufferValue, unmaskedValue, opts);
+                    }
+                    return unmaskedValue;
+                } else {
+                    return $input[0]._valueGet();
+                }
+            }
+            function TranslatePosition(pos) {
+                if (isRTL && typeof pos == 'number' && (!opts.greedy || opts.placeholder != "")) {
+                    var bffrLght = getBuffer().length;
+                    pos = bffrLght - pos;
+                }
+                return pos;
+            }
+            function caret(input, begin, end) {
+                var npt = input.jquery && input.length > 0 ? input[0] : input, range;
+                if (typeof begin == 'number') {
+                    begin = TranslatePosition(begin);
+                    end = TranslatePosition(end);
+                    end = (typeof end == 'number') ? end : begin;
+
+                    //store caret for multi scope
+                    var data = $(npt).data('_inputmask') || {};
+                    data["caret"] = { "begin": begin, "end": end };
+                    $(npt).data('_inputmask', data);
+
+                    if (!$(npt).is(":visible")) {
+                        return;
+                    }
+
+                    npt.scrollLeft = npt.scrollWidth;
+                    if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
+                    if (npt.setSelectionRange) {
+                        npt.selectionStart = begin;
+                        npt.selectionEnd = end;
+
+                    } else if (npt.createTextRange) {
+                        range = npt.createTextRange();
+                        range.collapse(true);
+                        range.moveEnd('character', end);
+                        range.moveStart('character', begin);
+                        range.select();
+                    }
+                } else {
+                    var data = $(npt).data('_inputmask');
+                    if (!$(npt).is(":visible") && data && data["caret"] != undefined) {
+                        begin = data["caret"]["begin"];
+                        end = data["caret"]["end"];
+                    } else if (npt.setSelectionRange) {
+                        begin = npt.selectionStart;
+                        end = npt.selectionEnd;
+                    } else if (document.selection && document.selection.createRange) {
+                        range = document.selection.createRange();
+                        begin = 0 - range.duplicate().moveStart('character', -100000);
+                        end = begin + range.text.length;
+                    }
+                    begin = TranslatePosition(begin);
+                    end = TranslatePosition(end);
+                    return { "begin": begin, "end": end };
+                }
+            }
+            function determineLastRequiredPosition(returnDefinition) {
+                var buffer = getBuffer(), bl = buffer.length,
+                   pos, lvp = getLastValidPosition(), positions = {}, lvTest = getMaskSet()["validPositions"][lvp],
+                   ndxIntlzr = lvTest != undefined ? lvTest["locator"].slice() : undefined, testPos;
+                for (pos = lvp + 1; pos < buffer.length; pos++) {
+                    testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
+                    ndxIntlzr = testPos["locator"].slice();
+                    positions[pos] = $.extend(true, {}, testPos);
+                }
+
+                var lvTestAltArr = lvTest && lvTest.alternation != undefined ? lvTest["locator"][lvTest.alternation].split(",") : [];
+                for (pos = bl - 1; pos > lvp; pos--) {
+                    testPos = positions[pos]["match"];
+                    if ((testPos.optionality ||
+                        testPos.optionalQuantifier ||
+                        (lvTest && lvTest.alternation != undefined && positions[pos]["locator"][lvTest.alternation] != undefined && $.inArray(positions[pos]["locator"][lvTest.alternation].toString(), lvTestAltArr) != -1))
+                        && buffer[pos] == getPlaceholder(pos, testPos)) {
+                        bl--;
+                    } else break;
+                }
+                return returnDefinition ? { "l": bl, "def": positions[bl] ? positions[bl]["match"] : undefined } : bl;
+            }
+            function clearOptionalTail(input) {
+                var buffer = getBuffer(), tmpBuffer = buffer.slice();
+                var rl = determineLastRequiredPosition(), lmib = tmpBuffer.length - 1;
+                for (; lmib > rl; lmib--) {
+                    if (isMask(lmib)) break;
+                }
+                tmpBuffer.splice(rl, lmib + 1 - rl);
+                writeBuffer(input, tmpBuffer);
+            }
+            function isComplete(buffer) { //return true / false / undefined (repeat *)
+                if ($.isFunction(opts.isComplete)) return opts.isComplete.call($el, buffer, opts);
+                if (opts.repeat == "*") return undefined;
+                var complete = false, lrp = determineLastRequiredPosition(true), aml = seekPrevious(lrp["l"]), lvp = getLastValidPosition();
+
+                if (lvp == aml) {
+                    if (lrp["def"] == undefined || lrp["def"].newBlockMarker || lrp["def"].optionalQuantifier) {
+                        complete = true;
+                        for (var i = 0; i <= aml; i++) {
+                            var mask = isMask(i);
+                            if ((mask && (buffer[i] == undefined || buffer[i] == getPlaceholder(i))) || (!mask && buffer[i] != getPlaceholder(i))) {
+                                complete = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+                return complete;
+            }
+            function isSelection(begin, end) {
+                return isRTL ? (begin - end) > 1 || ((begin - end) == 1 && opts.insertMode) :
+                (end - begin) > 1 || ((end - begin) == 1 && opts.insertMode);
+            }
+            function installEventRuler(npt) {
+                var events = $._data(npt).events;
+
+                $.each(events, function (eventType, eventHandlers) {
+                    $.each(eventHandlers, function (ndx, eventHandler) {
+                        if (eventHandler.namespace == "inputmask") {
+                            if (eventHandler.type != "setvalue") {
+                                var handler = eventHandler.handler;
+                                eventHandler.handler = function (e) {
+                                    if (this.readOnly || this.disabled)
+                                        e.preventDefault;
+                                    else
+                                        return handler.apply(this, arguments);
+                                };
+                            }
+                        }
+                    });
+                });
+            }
+            function patchValueProperty(npt) {
+                var valueGet;
+                var valueSet;
+                function PatchValhook(type) {
+                    if ($.valHooks[type] == undefined || $.valHooks[type].inputmaskpatch != true) {
+                        var valueGet = $.valHooks[type] && $.valHooks[type].get ? $.valHooks[type].get : function (elem) { return elem.value; };
+                        var valueSet = $.valHooks[type] && $.valHooks[type].set ? $.valHooks[type].set : function (elem, value) {
+                            elem.value = value;
+                            return elem;
+                        };
+
+                        $.valHooks[type] = {
+                            get: function (elem) {
+                                var $elem = $(elem);
+                                if ($elem.data('_inputmask')) {
+                                    if ($elem.data('_inputmask')['opts'].autoUnmask)
+                                        return $elem.inputmask('unmaskedvalue');
+                                    else {
+                                        var result = valueGet(elem),
+                                            inputData = $elem.data('_inputmask'),
+                                            maskset = inputData['maskset'],
+                                            bufferTemplate = maskset['_buffer'];
+                                        bufferTemplate = bufferTemplate ? bufferTemplate.join('') : '';
+                                        return result != bufferTemplate ? result : '';
+                                    }
+                                } else return valueGet(elem);
+                            },
+                            set: function (elem, value) {
+                                var $elem = $(elem), inputData = $elem.data('_inputmask'), result;
+                                if (inputData) {
+                                    result = valueSet(elem, $.isFunction(inputData['opts'].onBeforeMask) ? inputData['opts'].onBeforeMask.call(el, value, inputData['opts']) : value);
+                                    $elem.triggerHandler('setvalue.inputmask');
+                                } else {
+                                    result = valueSet(elem, value);
+                                }
+                                return result;
+                            },
+                            inputmaskpatch: true
+                        };
+                    }
+                }
+                function getter() {
+                    var $self = $(this), inputData = $(this).data('_inputmask');
+                    if (inputData) {
+                        return inputData['opts'].autoUnmask ? $self.inputmask('unmaskedvalue') : (valueGet.call(this) != getBufferTemplate().join('') ? valueGet.call(this) : '');
+                    } else return valueGet.call(this);
+                }
+                function setter(value) {
+                    var inputData = $(this).data('_inputmask');
+                    if (inputData) {
+                        valueSet.call(this, $.isFunction(inputData['opts'].onBeforeMask) ? inputData['opts'].onBeforeMask.call(el, value, inputData['opts']) : value);
+                        $(this).triggerHandler('setvalue.inputmask');
+                    } else {
+                        valueSet.call(this, value);
+                    }
+                }
+                function InstallNativeValueSetFallback(npt) {
+                    $(npt).bind("mouseenter.inputmask", function (event) {
+                        var $input = $(this), input = this, value = input._valueGet();
+                        if (value != "" && value != getBuffer().join('')) {
+                            $input.trigger("setvalue");
+                        }
+                    });
+                    //!! the bound handlers are executed in the order they where bound
+                    //reorder the events
+                    var events = $._data(npt).events;
+                    var handlers = events["mouseover"];
+                    if (handlers) {
+                        var ourHandler = handlers[handlers.length - 1];
+                        for (var i = handlers.length - 1; i > 0; i--) {
+                            handlers[i] = handlers[i - 1];
+                        }
+                        handlers[0] = ourHandler;
+                    }
+                }
+
+                if (!npt._valueGet) {
+                    //var valueProperty;
+                    if (Object.getOwnPropertyDescriptor)
+                        var valueProperty = Object.getOwnPropertyDescriptor(npt, "value");
+                    if (valueProperty && valueProperty.configurable && false) { //experimental for chrome
+                        npt._value = valueProperty.value;
+                        valueGet = function () {
+                            return this._value || "";
+                        }
+                        valueSet = function (value) {
+                            this._value = value;
+                            this.select();
+                            this.setRangeText(value);
+                            this.selectionStart = this.selectionEnd;
+                        }
+
+                        Object.defineProperty(npt, "value", {
+                            get: getter,
+                            set: setter
+                        });
+                    } else if (document.__lookupGetter__ && npt.__lookupGetter__("value")) {
+                        valueGet = npt.__lookupGetter__("value");
+                        valueSet = npt.__lookupSetter__("value");
+
+                        npt.__defineGetter__("value", getter);
+                        npt.__defineSetter__("value", setter);
+                    } else { //jquery.val 
+                        valueGet = function () { return npt.value; }
+                        valueSet = function (value) { npt.value = value; }
+                        PatchValhook(npt.type);
+                        InstallNativeValueSetFallback(npt);
+                    }
+                    npt._valueGet = function () {
+                        return isRTL ? valueGet.call(this).split('').reverse().join('') : valueGet.call(this);
+                    };
+                    npt._valueSet = function (value) {
+                        valueSet.call(this, isRTL ? value.split('').reverse().join('') : value);
+                    };
+                }
+            }
+            function handleRemove(input, k, pos) {
+                function generalize() {
+                    if (opts.keepStatic) {
+                        var validInputs = [],
+                          lastAlt;
+                        //find last alternation
+                        for (lastAlt = getLastValidPosition() ; lastAlt >= 0; lastAlt--) {
+                            if (getMaskSet()["validPositions"][lastAlt]) {
+                                if (getMaskSet()["validPositions"][lastAlt].alternation != undefined) {
+                                    break;
+                                }
+                                validInputs.push(getMaskSet()["validPositions"][lastAlt].input);
+                                delete getMaskSet()["validPositions"][lastAlt];
+                            }
+                        }
+                        if (lastAlt > 0) {
+                            while (validInputs.length > 0) {
+                                getMaskSet()["p"] = seekNext(getLastValidPosition());
+                                keypressEvent.call(input, undefined, true, validInputs.pop().charCodeAt(0), false, false, getMaskSet()["p"]);
+                            }
+                        }
+                    }
+                }
+
+                if (opts.numericInput || isRTL) {
+                    if (k == $.inputmask.keyCode.BACKSPACE)
+                        k = $.inputmask.keyCode.DELETE;
+                    else if (k == $.inputmask.keyCode.DELETE)
+                        k = $.inputmask.keyCode.BACKSPACE;
+
+                    if (isRTL) {
+                        var pend = pos.end;
+                        pos.end = pos.begin;
+                        pos.begin = pend;
+                    }
+                }
+
+                if (k == $.inputmask.keyCode.BACKSPACE && pos.end - pos.begin <= 1)
+                    pos.begin = seekPrevious(pos.begin);
+                else if (k == $.inputmask.keyCode.DELETE && pos.begin == pos.end)
+                    pos.end++;
+
+                stripValidPositions(pos.begin, pos.end);
+                generalize(); //revert the alternation
+
+                var firstMaskedPos = getLastValidPosition(pos.begin);
+                if (firstMaskedPos < pos.begin) {
+                    getMaskSet()["p"] = seekNext(firstMaskedPos);
+                } else {
+                    getMaskSet()["p"] = pos.begin;
+                }
+            }
+            function handleOnKeyResult(input, keyResult, caretPos) {
+                if (keyResult && keyResult["refreshFromBuffer"]) {
+                    var refresh = keyResult["refreshFromBuffer"];
+                    refreshFromBuffer(refresh === true ? refresh : refresh["start"], refresh["end"]);
+
+                    resetMaskSet(true);
+                    if (caretPos != undefined) {
+                        writeBuffer(input, getBuffer());
+                        caret(input, keyResult.caret || caretPos.begin, keyResult.caret || caretPos.end);
+                    }
+                }
+            }
+            function keydownEvent(e) {
+                //Safari 5.1.x - modal dialog fires keypress twice workaround
+                skipKeyPressEvent = false;
+                var input = this, $input = $(input), k = e.keyCode, pos = caret(input);
+
+                //backspace, delete, and escape get special treatment
+                if (k == $.inputmask.keyCode.BACKSPACE || k == $.inputmask.keyCode.DELETE || (iphone && k == 127) || e.ctrlKey && k == 88) { //backspace/delete
+                    e.preventDefault(); //stop default action but allow propagation
+                    if (k == 88) valueOnFocus = getBuffer().join('');
+                    handleRemove(input, k, pos);
+                    writeBuffer(input, getBuffer(), getMaskSet()["p"]);
+                    if (input._valueGet() == getBufferTemplate().join(''))
+                        $input.trigger('cleared');
+
+                    if (opts.showTooltip) { //update tooltip
+                        $input.prop("title", getMaskSet()["mask"]);
+                    }
+                } else if (k == $.inputmask.keyCode.END || k == $.inputmask.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
+                    setTimeout(function () {
+                        var caretPos = seekNext(getLastValidPosition());
+                        if (!opts.insertMode && caretPos == getMaskLength() && !e.shiftKey) caretPos--;
+                        caret(input, e.shiftKey ? pos.begin : caretPos, caretPos);
+                    }, 0);
+                } else if ((k == $.inputmask.keyCode.HOME && !e.shiftKey) || k == $.inputmask.keyCode.PAGE_UP) { //Home or page_up
+                    caret(input, 0, e.shiftKey ? pos.begin : 0);
+                } else if (k == $.inputmask.keyCode.ESCAPE || (k == 90 && e.ctrlKey)) { //escape && undo
+                    checkVal(input, true, false, valueOnFocus.split(''));
+                    $input.click();
+                } else if (k == $.inputmask.keyCode.INSERT && !(e.shiftKey || e.ctrlKey)) { //insert
+                    opts.insertMode = !opts.insertMode;
+                    caret(input, !opts.insertMode && pos.begin == getMaskLength() ? pos.begin - 1 : pos.begin);
+                } else if (opts.insertMode == false && !e.shiftKey) {
+                    if (k == $.inputmask.keyCode.RIGHT) {
+                        setTimeout(function () {
+                            var caretPos = caret(input);
+                            caret(input, caretPos.begin);
+                        }, 0);
+                    } else if (k == $.inputmask.keyCode.LEFT) {
+                        setTimeout(function () {
+                            var caretPos = caret(input);
+                            caret(input, isRTL ? caretPos.begin + 1 : caretPos.begin - 1);
+                        }, 0);
+                    }
+                }
+
+                var currentCaretPos = caret(input);
+                var keydownResult = opts.onKeyDown.call(this, e, getBuffer(), currentCaretPos.begin, opts);
+                handleOnKeyResult(input, keydownResult, currentCaretPos);
+                ignorable = $.inArray(k, opts.ignorables) != -1;
+            }
+            function keypressEvent(e, checkval, k, writeOut, strict, ndx) {
+                //Safari 5.1.x - modal dialog fires keypress twice workaround
+                if (k == undefined && skipKeyPressEvent) return false;
+                skipKeyPressEvent = true;
+
+                var input = this, $input = $(input);
+
+                e = e || window.event;
+                var k = checkval ? k : (e.which || e.charCode || e.keyCode);
+
+                if (checkval !== true && (!(e.ctrlKey && e.altKey) && (e.ctrlKey || e.metaKey || ignorable))) {
+                    return true;
+                } else {
+                    if (k) {
+                        //special treat the decimal separator
+                        if (checkval !== true && k == 46 && e.shiftKey == false && opts.radixPoint == ",") k = 44;
+                        var pos = checkval ? { begin: ndx, end: ndx } : caret(input), forwardPosition, c = String.fromCharCode(k);
+
+                        //should we clear a possible selection??
+                        var isSlctn = isSelection(pos.begin, pos.end);
+                        if (isSlctn) {
+                            getMaskSet()["undoPositions"] = $.extend(true, {}, getMaskSet()["validPositions"]); //init undobuffer for recovery when not valid
+                            handleRemove(input, $.inputmask.keyCode.DELETE, pos);
+                            if (!opts.insertMode) { //preserve some space
+                                opts.insertMode = !opts.insertMode;
+                                setValidPosition(pos.begin, strict);
+                                opts.insertMode = !opts.insertMode;
+                            }
+                            isSlctn = !opts.multi;
+                        }
+
+                        getMaskSet()["writeOutBuffer"] = true;
+                        var p = isRTL && !isSlctn ? pos.end : pos.begin;
+                        var valResult = isValid(p, c, strict);
+                        if (valResult !== false) {
+                            if (valResult !== true) {
+                                p = valResult.pos != undefined ? valResult.pos : p; //set new position from isValid
+                                c = valResult.c != undefined ? valResult.c : c; //set new char from isValid
+                            }
+                            resetMaskSet(true);
+                            if (valResult.caret != undefined)
+                                forwardPosition = valResult.caret;
+                            else {
+                                var vps = getMaskSet()["validPositions"];
+                                if (!opts.keepStatic && (vps[p + 1] != undefined && getTests(p + 1, vps[p].locator.slice(), p).length > 1 || vps[p].alternation != undefined))
+                                    forwardPosition = p + 1;
+                                else
+                                    forwardPosition = seekNext(p);
+                            }
+                            getMaskSet()["p"] = forwardPosition; //needed for checkval
+                        }
+
+                        if (writeOut !== false) {
+                            var self = this;
+                            setTimeout(function () { opts.onKeyValidation.call(self, valResult, opts); }, 0);
+                            if (getMaskSet()["writeOutBuffer"] && valResult !== false) {
+                                var buffer = getBuffer();
+                                writeBuffer(input, buffer, checkval ? undefined : opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
+                                if (checkval !== true) {
+                                    setTimeout(function () { //timeout needed for IE
+                                        if (isComplete(buffer) === true)
+                                            $input.trigger("complete");
+                                        skipInputEvent = true;
+                                        $input.trigger("input");
+                                    }, 0);
+                                }
+                            } else if (isSlctn) {
+                                getMaskSet()["buffer"] = undefined;
+                                getMaskSet()["validPositions"] = getMaskSet()["undoPositions"];
+                            }
+                        } else if (isSlctn) {
+                            getMaskSet()["buffer"] = undefined;
+                            getMaskSet()["validPositions"] = getMaskSet()["undoPositions"];
+                        }
+
+
+                        if (opts.showTooltip) { //update tooltip
+                            $input.prop("title", getMaskSet()["mask"]);
+                        }
+
+                        if (e && checkval != true) {
+                            e.preventDefault();
+
+                            var currentCaretPos = caret(input);
+                            var keypressResult = opts.onKeyPress.call(this, e, getBuffer(), currentCaretPos.begin, opts);
+                            handleOnKeyResult(input, keypressResult, currentCaretPos);
+                        }
+                    }
+                }
+            }
+            function keyupEvent(e) {
+                var $input = $(this), input = this, k = e.keyCode, buffer = getBuffer();
+                var currentCaretPos = caret(input);
+                var keyupResult = opts.onKeyUp.call(this, e, buffer, currentCaretPos.begin, opts);
+                handleOnKeyResult(input, keyupResult, currentCaretPos);
+                if (k == $.inputmask.keyCode.TAB && opts.showMaskOnFocus) {
+                    if ($input.hasClass('focus-inputmask') && input._valueGet().length == 0) {
+                        resetMaskSet();
+                        buffer = getBuffer();
+                        writeBuffer(input, buffer);
+                        caret(input, 0);
+                        valueOnFocus = getBuffer().join('');
+                    } else {
+                        writeBuffer(input, buffer);
+                        caret(input, TranslatePosition(0), TranslatePosition(getMaskLength()));
+                    }
+                }
+            }
+            function pasteEvent(e) {
+                if (skipInputEvent === true && e.type == "input") {
+                    skipInputEvent = false;
+                    return true;
+                }
+
+                var input = this, $input = $(input), inputValue = input._valueGet();
+                //paste event for IE8 and lower I guess ;-)
+                if (e.type == "propertychange" && input._valueGet().length <= getMaskLength()) {
+                    return true;
+                } else if (e.type == "paste") {
+                    if (window.clipboardData && window.clipboardData.getData) { // IE
+                        inputValue = window.clipboardData.getData('Text');
+                    } else if (e.originalEvent && e.originalEvent.clipboardData && e.originalEvent.clipboardData.getData) {
+                        inputValue = e.originalEvent.clipboardData.getData('text/plain');
+                    }
+                }
+
+                var pasteValue = $.isFunction(opts.onBeforePaste) ? opts.onBeforePaste.call(input, inputValue, opts) : inputValue;
+                checkVal(input, true, false, isRTL ? pasteValue.split('').reverse() : pasteValue.split(''), true);
+                $input.click();
+                if (isComplete(getBuffer()) === true)
+                    $input.trigger("complete");
+
+                return false;
+            }
+            function mobileInputEvent(e) {
+                if (skipInputEvent === true && e.type == "input") {
+                    skipInputEvent = false;
+                    return true;
+                }
+                var input = this;
+
+                //backspace in chrome32 only fires input event - detect & treat
+                var caretPos = caret(input),
+                    currentValue = input._valueGet();
+
+                currentValue = currentValue.replace(new RegExp("(" + escapeRegex(getBufferTemplate().join('')) + ")*"), "");
+                //correct caretposition for chrome
+                if (caretPos.begin > currentValue.length) {
+                    caret(input, currentValue.length);
+                    caretPos = caret(input);
+                }
+                if ((getBuffer().length - currentValue.length) == 1 && currentValue.charAt(caretPos.begin) != getBuffer()[caretPos.begin]
+                    && currentValue.charAt(caretPos.begin + 1) != getBuffer()[caretPos.begin]
+                    && !isMask(caretPos.begin)) {
+                    e.keyCode = $.inputmask.keyCode.BACKSPACE;
+                    keydownEvent.call(input, e);
+                }
+                e.preventDefault();
+            }
+            function inputFallBackEvent(e) { //fallback when keypress & compositionevents fail
+                if (skipInputEvent === true && e.type == "input") {
+                    skipInputEvent = false;
+                    return true;
+                }
+                var input = this;
+                var caretPos = caret(input),
+                    currentValue = input._valueGet();
+
+                caret(input, caretPos.begin - 1);
+                var keypress = $.Event("keypress");
+                keypress.which = currentValue.charCodeAt(caretPos.begin - 1);
+                skipKeyPressEvent = false;
+                ignorable = false;
+                keypressEvent.call(input, keypress, undefined, undefined, false);
+                var forwardPosition = getMaskSet()["p"];
+                writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
+
+                e.preventDefault();
+            }
+            function compositionupdateEvent(e) { //fix for special latin-charset FF/Linux
+                skipInputEvent = true; //stop inutFallback
+                var input = this;
+                setTimeout(function () {
+                    caret(input, caret(input).begin - 1);
+                    var keypress = $.Event("keypress");
+                    keypress.which = e.originalEvent.data.charCodeAt(0);
+                    skipKeyPressEvent = false;
+                    ignorable = false;
+                    keypressEvent.call(input, keypress, undefined, undefined, false);
+                    var forwardPosition = getMaskSet()["p"];
+                    writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
+                }, 0);
+                return false;
+            }
+            function mask(el) {
+                $el = $(el);
+                if ($el.is(":input") && !isInputTypeSupported($el.attr("type"))) {
+                    //store tests & original buffer in the input element - used to get the unmasked value
+                    $el.data('_inputmask', {
+                        'maskset': maskset,
+                        'opts': opts,
+                        'isRTL': false
+                    });
+
+                    //show tooltip
+                    if (opts.showTooltip) {
+                        $el.prop("title", getMaskSet()["mask"]);
+                    }
+
+                    if (el.dir == "rtl" || opts.rightAlign)
+                        $el.css("text-align", "right");
+
+                    if (el.dir == "rtl" || opts.numericInput) {
+                        el.dir = "ltr";
+                        $el.removeAttr("dir");
+                        var inputData = $el.data('_inputmask');
+                        inputData['isRTL'] = true;
+                        $el.data('_inputmask', inputData);
+                        isRTL = true;
+                    }
+
+                    //unbind all events - to make sure that no other mask will interfere when re-masking
+                    $el.unbind(".inputmask");
+                    $el.removeClass('focus-inputmask');
+                    //bind events
+                    $el.closest('form').bind("submit", function (e) { //trigger change on submit if any
+                        if (valueOnFocus != getBuffer().join('')) {
+                            $el.change();
+                        }
+                        if ($el[0]._valueGet && $el[0]._valueGet() == getBufferTemplate().join('')) {
+                            $el[0]._valueSet(''); //clear masktemplete on submit and still has focus
+                        }
+                        if (opts.autoUnmask && opts.removeMaskOnSubmit) {
+                            $el.inputmask("remove");
+                        }
+                    }).bind('reset', function () {
+                        setTimeout(function () {
+                            $el.trigger("setvalue");
+                        }, 0);
+                    });
+                    $el.bind("mouseenter.inputmask", function () {
+                        var $input = $(this), input = this;
+                        if (!$input.hasClass('focus-inputmask') && opts.showMaskOnHover) {
+                            if (input._valueGet() != getBuffer().join('')) {
+                                writeBuffer(input, getBuffer());
+                            }
+                        }
+                    }).bind("blur.inputmask", function () {
+                        var $input = $(this), input = this;
+                        if ($input.data('_inputmask')) {
+                            var nptValue = input._valueGet(), buffer = getBuffer();
+                            $input.removeClass('focus-inputmask');
+                            if (valueOnFocus != getBuffer().join('')) {
+                                $input.change();
+                            }
+                            if (opts.clearMaskOnLostFocus && nptValue != '') {
+                                if (nptValue == getBufferTemplate().join(''))
+                                    input._valueSet('');
+                                else { //clearout optional tail of the mask
+                                    clearOptionalTail(input);
+                                }
+                            }
+                            if (isComplete(buffer) === false) {
+                                $input.trigger("incomplete");
+                                if (opts.clearIncomplete) {
+                                    resetMaskSet();
+                                    if (opts.clearMaskOnLostFocus)
+                                        input._valueSet('');
+                                    else {
+                                        buffer = getBufferTemplate().slice();
+                                        writeBuffer(input, buffer);
+                                    }
+                                }
+                            }
+                        }
+                    }).bind("focus.inputmask", function () {
+                        var $input = $(this), input = this, nptValue = input._valueGet();
+                        if (opts.showMaskOnFocus && !$input.hasClass('focus-inputmask') && (!opts.showMaskOnHover || (opts.showMaskOnHover && nptValue == ''))) {
+                            if (input._valueGet() != getBuffer().join('')) {
+                                writeBuffer(input, getBuffer(), seekNext(getLastValidPosition()));
+                            }
+                        }
+                        $input.addClass('focus-inputmask');
+                        valueOnFocus = getBuffer().join('');
+                    }).bind("mouseleave.inputmask", function () {
+                        var $input = $(this), input = this;
+                        if (opts.clearMaskOnLostFocus) {
+                            if (!$input.hasClass('focus-inputmask') && input._valueGet() != $input.attr("placeholder")) {
+                                if (input._valueGet() == getBufferTemplate().join('') || input._valueGet() == '')
+                                    input._valueSet('');
+                                else { //clearout optional tail of the mask
+                                    clearOptionalTail(input);
+                                }
+                            }
+                        }
+                    }).bind("click.inputmask", function () {
+                        var input = this;
+                        if ($(input).is(":focus")) {
+                            setTimeout(function () {
+                                var selectedCaret = caret(input);
+                                if (selectedCaret.begin == selectedCaret.end) {
+                                    var clickPosition = isRTL ? TranslatePosition(selectedCaret.begin) : selectedCaret.begin,
+                                        lvp = getLastValidPosition(clickPosition),
+                                        lastPosition = seekNext(lvp);
+                                    if (clickPosition <= lastPosition) {
+                                        if (isMask(clickPosition))
+                                            caret(input, clickPosition);
+                                        else caret(input, lvp == -1 && opts.radixPoint != "" ? $.inArray(opts.radixPoint, getBuffer()) : seekNext(clickPosition));
+                                    } else {
+                                        caret(input, lastPosition);
+                                    }
+                                }
+                            }, 0);
+                        }
+                    }).bind('dblclick.inputmask', function () {
+                        var input = this;
+                        setTimeout(function () {
+                            caret(input, 0, seekNext(getLastValidPosition()));
+                        }, 0);
+                    }).bind(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", pasteEvent
+                    ).bind('setvalue.inputmask', function () {
+                        var input = this;
+                        checkVal(input, true, false, undefined, true);
+                        valueOnFocus = getBuffer().join('');
+                        if ((opts.clearMaskOnLostFocus || opts.clearIncomplete) && input._valueGet() == getBufferTemplate().join(''))
+                            input._valueSet('');
+                    }).bind('complete.inputmask', opts.oncomplete
+                    ).bind('incomplete.inputmask', opts.onincomplete
+                    ).bind('cleared.inputmask', opts.oncleared);
+
+                    $el.bind("keydown.inputmask", keydownEvent
+                    ).bind("keypress.inputmask", keypressEvent
+                    ).bind("keyup.inputmask", keyupEvent
+                    ).bind("compositionupdate.inputmask", compositionupdateEvent);
+
+                    if (PasteEventType === "paste" && !msie1x) {
+                        $el.bind("input.inputmask", inputFallBackEvent);
+                    }
+                    if (msie1x) { //todo enhance inputFallBack to handle this case
+                        $el.bind("input.inputmask", pasteEvent);
+                    }
+                    if (android || androidfirefox || androidchrome || kindle) {
+                        if (PasteEventType == "input") {
+                            $el.unbind(PasteEventType + ".inputmask");
+                        }
+                        $el.bind("input.inputmask", mobileInputEvent);
+                    }
+
+                    patchValueProperty(el);
+
+                    //apply mask
+                    var initialValue = $.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call(el, el._valueGet(), opts) : el._valueGet();
+                    checkVal(el, true, false, initialValue.split(''), true);
+                    valueOnFocus = getBuffer().join('');
+                    // Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
+                    var activeElement;
+                    try {
+                        activeElement = document.activeElement;
+                    } catch (e) {
+                    }
+                    if (isComplete(getBuffer()) === false) {
+                        if (opts.clearIncomplete)
+                            resetMaskSet();
+                    }
+                    if (opts.clearMaskOnLostFocus) {
+                        if (getBuffer().join('') == getBufferTemplate().join('')) {
+                            el._valueSet('');
+                        } else {
+                            clearOptionalTail(el);
+                        }
+                    } else {
+                        writeBuffer(el, getBuffer());
+                    }
+                    if (activeElement === el) { //position the caret when in focus
+                        $el.addClass('focus-inputmask');
+                        caret(el, seekNext(getLastValidPosition()));
+                    }
+
+                    installEventRuler(el);
+                }
+            }
+
+            //action object
+            if (actionObj != undefined) {
+                switch (actionObj["action"]) {
+                    case "isComplete":
+                        $el = $(actionObj["el"]);
+                        maskset = $el.data('_inputmask')['maskset'];
+                        opts = $el.data('_inputmask')['opts'];
+                        return isComplete(actionObj["buffer"]);
+                    case "unmaskedvalue":
+                        $el = actionObj["$input"];
+                        maskset = $el.data('_inputmask')['maskset'];
+                        opts = $el.data('_inputmask')['opts'];
+                        isRTL = actionObj["$input"].data('_inputmask')['isRTL'];
+                        return unmaskedvalue(actionObj["$input"]);
+                    case "mask":
+                        valueOnFocus = getBuffer().join('');
+                        mask(actionObj["el"]);
+                        break;
+                    case "format":
+                        $el = $({});
+                        $el.data('_inputmask', {
+                            'maskset': maskset,
+                            'opts': opts,
+                            'isRTL': opts.numericInput
+                        });
+                        if (opts.numericInput) {
+                            isRTL = true;
+                        }
+                        var valueBuffer = ($.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call($el, actionObj["value"], opts) : actionObj["value"]).split('');
+                        checkVal($el, false, false, isRTL ? valueBuffer.reverse() : valueBuffer, true);
+                        opts.onKeyPress.call(this, undefined, getBuffer(), 0, opts);
+
+                        if (actionObj["metadata"]) {
+                            return {
+                                value: isRTL ? getBuffer().slice().reverse().join('') : getBuffer().join(''),
+                                metadata: $el.inputmask("getmetadata")
+                            }
+                        }
+
+                        return isRTL ? getBuffer().slice().reverse().join('') : getBuffer().join('');
+                    case "isValid":
+                        $el = $({});
+                        $el.data('_inputmask', {
+                            'maskset': maskset,
+                            'opts': opts,
+                            'isRTL': opts.numericInput
+                        });
+                        if (opts.numericInput) {
+                            isRTL = true;
+                        }
+                        var valueBuffer = actionObj["value"].split('');
+                        checkVal($el, false, true, isRTL ? valueBuffer.reverse() : valueBuffer);
+                        var buffer = getBuffer();
+                        var rl = determineLastRequiredPosition(), lmib = buffer.length - 1;
+                        for (; lmib > rl; lmib--) {
+                            if (isMask(lmib)) break;
+                        }
+                        buffer.splice(rl, lmib + 1 - rl);
+
+                        return isComplete(buffer) && actionObj["value"] == buffer.join('');
+                    case "getemptymask":
+                        $el = $(actionObj["el"]);
+                        maskset = $el.data('_inputmask')['maskset'];
+                        opts = $el.data('_inputmask')['opts'];
+                        return getBufferTemplate();
+                    case "remove":
+                        var el = actionObj["el"];
+                        $el = $(el);
+                        maskset = $el.data('_inputmask')['maskset'];
+                        opts = $el.data('_inputmask')['opts'];
+                        //writeout the unmaskedvalue
+                        el._valueSet(unmaskedvalue($el));
+                        //unbind all events
+                        $el.unbind(".inputmask");
+                        $el.removeClass('focus-inputmask');
+                        //clear data
+                        $el.removeData('_inputmask');
+                        //restore the value property
+                        var valueProperty;
+                        if (Object.getOwnPropertyDescriptor)
+                            valueProperty = Object.getOwnPropertyDescriptor(el, "value");
+                        if (valueProperty && valueProperty.get) {
+                            if (el._valueGet) {
+                                Object.defineProperty(el, "value", {
+                                    get: el._valueGet,
+                                    set: el._valueSet
+                                });
+                            }
+                        } else if (document.__lookupGetter__ && el.__lookupGetter__("value")) {
+                            if (el._valueGet) {
+                                el.__defineGetter__("value", el._valueGet);
+                                el.__defineSetter__("value", el._valueSet);
+                            }
+                        }
+                        try { //try catch needed for IE7 as it does not supports deleting fns
+                            delete el._valueGet;
+                            delete el._valueSet;
+                        } catch (e) {
+                            el._valueGet = undefined;
+                            el._valueSet = undefined;
+
+                        }
+                        break;
+                    case "getmetadata":
+                        $el = $(actionObj["el"]);
+                        maskset = $el.data('_inputmask')['maskset'];
+                        opts = $el.data('_inputmask')['opts'];
+                        if ($.isArray(maskset["metadata"])) {
+                            //find last alternation
+                            var alternation, lvp = getLastValidPosition();
+                            for (var firstAlt = lvp; firstAlt >= 0; firstAlt--) {
+                                if (getMaskSet()["validPositions"][firstAlt] && getMaskSet()["validPositions"][firstAlt].alternation != undefined) {
+                                    alternation = getMaskSet()["validPositions"][firstAlt].alternation;
+                                    break;
+                                }
+                            }
+                            if (alternation != undefined) {
+                                return maskset["metadata"][getMaskSet()["validPositions"][lvp].locator[alternation]];
+                            } else return maskset["metadata"][0];
+                        }
+
+                        return maskset["metadata"];
+                }
+            }
+        }
+
+        $.inputmask = {
+            //options default
+            defaults: {
+                placeholder: "_",
+                optionalmarker: { start: "[", end: "]" },
+                quantifiermarker: { start: "{", end: "}" },
+                groupmarker: { start: "(", end: ")" },
+                alternatormarker: "|",
+                escapeChar: "\\",
+                mask: null,
+                oncomplete: $.noop, //executes when the mask is complete
+                onincomplete: $.noop, //executes when the mask is incomplete and focus is lost
+                oncleared: $.noop, //executes when the mask is cleared
+                repeat: 0, //repetitions of the mask: * ~ forever, otherwise specify an integer
+                greedy: true, //true: allocated buffer for the mask and repetitions - false: allocate only if needed
+                autoUnmask: false, //automatically unmask when retrieving the value with $.fn.val or value if the browser supports __lookupGetter__ or getOwnPropertyDescriptor
+                removeMaskOnSubmit: true, //remove the mask before submitting the form.  Use in combination with autoUnmask: true
+                clearMaskOnLostFocus: true,
+                insertMode: true, //insert the input or overwrite the input
+                clearIncomplete: false, //clear the incomplete input on blur
+                aliases: {}, //aliases definitions => see jquery.inputmask.extensions.js
+                alias: null,
+                onKeyUp: $.noop, //callback to implement autocomplete on certain keys for example
+                onKeyPress: $.noop, //callback to implement autocomplete on certain keys for example
+                onKeyDown: $.noop, //callback to implement autocomplete on certain keys for example
+                onBeforeMask: undefined, //executes before masking the initial value to allow preprocessing of the initial value.  args => initialValue, opts => return processedValue
+                onBeforePaste: undefined, //executes before masking the pasted value to allow preprocessing of the pasted value.  args => pastedValue, opts => return processedValue
+                onUnMask: undefined, //executes after unmasking to allow postprocessing of the unmaskedvalue.  args => maskedValue, unmaskedValue, opts
+                showMaskOnFocus: true, //show the mask-placeholder when the input has focus
+                showMaskOnHover: true, //show the mask-placeholder when hovering the empty input
+                onKeyValidation: $.noop, //executes on every key-press with the result of isValid. Params: result, opts
+                skipOptionalPartCharacter: " ", //a character which can be used to skip an optional part of a mask
+                showTooltip: false, //show the activemask as tooltip
+                numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
+                rightAlign: false, //align to the right
+                //numeric basic properties
+                radixPoint: "", //".", // | ","
+                //numeric basic properties
+                nojumps: false, //do not jump over fixed parts in the mask
+                nojumpsThreshold: 0, //start nojumps as of
+                keepStatic: undefined, //try to keep the mask static while typing. Decisions to alter the mask will be posponed if possible - undefined see auto selection for multi masks
+                definitions: {
+                    '9': {
+                        validator: "[0-9]",
+                        cardinality: 1,
+                        definitionSymbol: "*"
+                    },
+                    'a': {
+                        validator: "[A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
+                        cardinality: 1,
+                        definitionSymbol: "*"
+                    },
+                    '*': {
+                        validator: "[0-9A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
+                        cardinality: 1
+                    }
+                },
+                //specify keyCodes which should not be considered in the keypress event, otherwise the preventDefault will stop their default behavior especially in FF
+                ignorables: [8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123],
+                isComplete: undefined //override for isComplete - args => buffer, opts - return true || false
+            },
+            keyCode: {
+                ALT: 18, BACKSPACE: 8, CAPS_LOCK: 20, COMMA: 188, COMMAND: 91, COMMAND_LEFT: 91, COMMAND_RIGHT: 93, CONTROL: 17, DELETE: 46, DOWN: 40, END: 35, ENTER: 13, ESCAPE: 27, HOME: 36, INSERT: 45, LEFT: 37, MENU: 93, NUMPAD_ADD: 107, NUMPAD_DECIMAL: 110, NUMPAD_DIVIDE: 111, NUMPAD_ENTER: 108,
+                NUMPAD_MULTIPLY: 106, NUMPAD_SUBTRACT: 109, PAGE_DOWN: 34, PAGE_UP: 33, PERIOD: 190, RIGHT: 39, SHIFT: 16, SPACE: 32, TAB: 9, UP: 38, WINDOWS: 91
+            },
+            masksCache: {},
+            escapeRegex: function (str) {
+                var specials = ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\'];
+                return str.replace(new RegExp('(\\' + specials.join('|\\') + ')', 'gim'), '\\$1');
+            },
+            format: function (value, options, metadata) {
+                var opts = $.extend(true, {}, $.inputmask.defaults, options);
+                resolveAlias(opts.alias, options, opts);
+                return maskScope({ "action": "format", "value": value, "metadata": metadata }, generateMaskSet(opts), opts);
+            },
+            isValid: function (value, options) {
+                var opts = $.extend(true, {}, $.inputmask.defaults, options);
+                resolveAlias(opts.alias, options, opts);
+                return maskScope({ "action": "isValid", "value": value }, generateMaskSet(opts), opts);
+            }
+        };
+
+        $.fn.inputmask = function (fn, options, targetScope, targetData, msk) {
+            targetScope = targetScope || maskScope;
+            targetData = targetData || "_inputmask";
+            function importAttributeOptions(npt, opts, importedOptionsContainer) {
+                var $npt = $(npt);
+                if ($npt.data("inputmask-alias")) {
+                    resolveAlias($npt.data("inputmask-alias"), {}, opts);
+                }
+                for (var option in opts) {
+                    var optionData = $npt.data("inputmask-" + option.toLowerCase());
+                    if (optionData != undefined) {
+                        if (option == "mask" && optionData.indexOf("[") == 0) {
+                            opts[option] = optionData.replace(/[\s[\]]/g, "").split("','");
+                            opts[option][0] = opts[option][0].replace("'", "");
+                            opts[option][opts[option].length - 1] = opts[option][opts[option].length - 1].replace("'", "");
+                        } else
+                            opts[option] = typeof optionData == "boolean" ? optionData : optionData.toString();
+                        if (importedOptionsContainer)
+                            importedOptionsContainer[option] = opts[option];
+                    }
+                }
+                return opts;
+            }
+            var opts = $.extend(true, {}, $.inputmask.defaults, options),
+                maskset;
+
+            if (typeof fn === "string") {
+                switch (fn) {
+                    case "mask":
+                        //resolve possible aliases given by options
+                        resolveAlias(opts.alias, options, opts);
+                        maskset = generateMaskSet(opts, targetScope !== maskScope);
+                        if (maskset == undefined) { return this; }
+
+                        return this.each(function () {
+                            targetScope({ "action": "mask", "el": this }, $.extend(true, {}, maskset), importAttributeOptions(this, opts));
+                        });
+                    case "unmaskedvalue":
+                        var $input = $(this);
+                        if ($input.data(targetData)) {
+                            return targetScope({ "action": "unmaskedvalue", "$input": $input });
+                        } else return $input.val();
+                    case "remove":
+                        return this.each(function () {
+                            var $input = $(this);
+                            if ($input.data(targetData)) {
+                                targetScope({ "action": "remove", "el": this });
+                            }
+                        });
+                    case "getemptymask": //return the default (empty) mask value, usefull for setting the default value in validation
+                        if (this.data(targetData)) {
+                            return targetScope({ "action": "getemptymask", "el": this });
+                        }
+                        else return "";
+                    case "hasMaskedValue": //check wheter the returned value is masked or not; currently only works reliable when using jquery.val fn to retrieve the value 
+                        return this.data(targetData) ? !this.data(targetData)['opts'].autoUnmask : false;
+                    case "isComplete":
+                        if (this.data(targetData)) {
+                            return targetScope({ "action": "isComplete", "buffer": this[0]._valueGet().split(''), "el": this });
+                        } else return true;
+                    case "getmetadata": //return mask metadata if exists
+                        if (this.data(targetData)) {
+                            return targetScope({ "action": "getmetadata", "el": this });
+                        }
+                        else return undefined;
+                    case "_detectScope":
+                        resolveAlias(opts.alias, options, opts);
+                        if (msk != undefined && !resolveAlias(msk, options, opts) && $.inArray(msk, ["mask", "unmaskedvalue", "remove", "getemptymask", "hasMaskedValue", "isComplete", "getmetadata", "_detectScope"]) == -1) {
+                            opts.mask = msk;
+                        }
+                        if ($.isFunction(opts.mask)) {
+                            opts.mask = opts.mask.call(this, opts);
+                        }
+                        return $.isArray(opts.mask);
+                    default:
+                        resolveAlias(opts.alias, options, opts);
+                        //check if the fn is an alias
+                        if (!resolveAlias(fn, options, opts)) {
+                            //maybe fn is a mask so we try
+                            //set mask
+                            opts.mask = fn;
+                        }
+                        maskset = generateMaskSet(opts, targetScope !== maskScope);
+                        if (maskset == undefined) { return this; }
+                        return this.each(function () {
+                            targetScope({ "action": "mask", "el": this }, $.extend(true, {}, maskset), importAttributeOptions(this, opts));
+                        });
+                }
+            } else if (typeof fn == "object") {
+                opts = $.extend(true, {}, $.inputmask.defaults, fn);
+                resolveAlias(opts.alias, fn, opts); //resolve aliases
+                maskset = generateMaskSet(opts, targetScope !== maskScope);
+                if (maskset == undefined) { return this; }
+                return this.each(function () {
+                    targetScope({ "action": "mask", "el": this }, $.extend(true, {}, maskset), importAttributeOptions(this, opts));
+                });
+            } else if (fn == undefined) {
+                //look for data-inputmask atribute - the attribute should only contain optipns
+                return this.each(function () {
+                    var attrOptions = $(this).attr("data-inputmask");
+                    if (attrOptions && attrOptions != "") {
+                        try {
+                            attrOptions = attrOptions.replace(new RegExp("'", "g"), '"');
+                            var dataoptions = $.parseJSON("{" + attrOptions + "}");
+                            $.extend(true, dataoptions, options);
+                            opts = $.extend(true, {}, $.inputmask.defaults, dataoptions);
+                            opts = importAttributeOptions(this, opts);
+                            resolveAlias(opts.alias, dataoptions, opts);
+                            opts.alias = undefined;
+                            $(this).inputmask("mask", opts, targetScope);
+                        } catch (ex) { } //need a more relax parseJSON
+                    }
+                    if ($(this).attr("data-inputmask-mask") || $(this).attr("data-inputmask-alias")) {
+                        opts = $.extend(true, {}, $.inputmask.defaults, {});
+                        var dataOptions = {};
+                        opts = importAttributeOptions(this, opts, dataOptions);
+                        resolveAlias(opts.alias, dataOptions, opts);
+                        opts.alias = undefined;
+                        $(this).inputmask("mask", opts, targetScope);
+                    }
+                });
+            }
+        };
+    }
+    return $.fn.inputmask;
+}));

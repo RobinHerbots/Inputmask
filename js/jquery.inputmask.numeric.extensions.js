@@ -35,7 +35,7 @@ Optional extensions on the jquery.inputmask base
                 }
 
                 opts.definitions[";"] = opts.definitions["~"]; //clone integer def for decimals
-				
+
                 var mask = opts.prefix;
                 mask += "[+]";
                 mask += "~{1," + opts.integerDigits + "}";
@@ -208,7 +208,8 @@ Optional extensions on the jquery.inputmask base
                         return new RegExp(signed).test(chrs);
                     },
                     cardinality: 1,
-                    prevalidator: null
+                    prevalidator: null,
+                    placeholder: ''
                 },
                 ':': {
                     validator: function (chrs, maskset, pos, strict, opts) {
@@ -224,7 +225,7 @@ Optional extensions on the jquery.inputmask base
                     },
                     cardinality: 1,
                     prevalidator: null,
-                    placeholder: function(opts) { return opts.radixPoint; }
+                    placeholder: function (opts) { return opts.radixPoint; }
                 }
             },
             insertMode: true,
