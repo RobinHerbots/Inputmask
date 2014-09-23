@@ -513,7 +513,9 @@
             input._valueSet(buffer.join("")), void 0 != caretPos && caret(input, caretPos);
         }
         function getPlaceholder(pos, test) {
-            return test = test || getTest(pos), ($.isFunction(test.placeholder) ? test.placeholder.call(this, opts) : test.placeholder) || (null == test.fn ? test.def : opts.placeholder.charAt(pos % opts.placeholder.length));
+            test = test || getTest(pos);
+            var placeholder = $.isFunction(test.placeholder) ? test.placeholder.call(this, opts) : test.placeholder;
+            return void 0 != placeholder ? placeholder : null == test.fn ? test.def : opts.placeholder.charAt(pos % opts.placeholder.length);
         }
         function checkVal(input, writeOut, strict, nptvl, intelliCheck) {
             var inputValue = void 0 != nptvl ? nptvl.slice() : truncateInput(input._valueGet()).split("");

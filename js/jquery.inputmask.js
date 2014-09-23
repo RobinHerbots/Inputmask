@@ -910,7 +910,8 @@
             }
             function getPlaceholder(pos, test) {
                 test = test || getTest(pos);
-                return ($.isFunction(test["placeholder"]) ? test["placeholder"].call(this, opts) : test["placeholder"]) || (test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length));
+                var placeholder = $.isFunction(test["placeholder"]) ? test["placeholder"].call(this, opts) : test["placeholder"];
+                return placeholder != undefined ? placeholder : (test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length));
             }
             function checkVal(input, writeOut, strict, nptvl, intelliCheck) {
                 var inputValue = nptvl != undefined ? nptvl.slice() : truncateInput(input._valueGet()).split('');
