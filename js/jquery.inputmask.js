@@ -1248,7 +1248,7 @@
 
                 var firstMaskedPos = getLastValidPosition(pos.begin);
                 if (firstMaskedPos < pos.begin) {
-                    //resetMaskSet();
+                    if (firstMaskedPos == -1) resetMaskSet();
                     getMaskSet()["p"] = seekNext(firstMaskedPos);
                 } else {
                     getMaskSet()["p"] = pos.begin;

@@ -708,7 +708,7 @@
             k == $.inputmask.keyCode.BACKSPACE && pos.end - pos.begin <= 1 ? pos.begin = seekPrevious(pos.begin) : k == $.inputmask.keyCode.DELETE && pos.begin == pos.end && pos.end++, 
             stripValidPositions(pos.begin, pos.end), generalize();
             var firstMaskedPos = getLastValidPosition(pos.begin);
-            getMaskSet().p = firstMaskedPos < pos.begin ? seekNext(firstMaskedPos) : pos.begin;
+            firstMaskedPos < pos.begin ? (-1 == firstMaskedPos && resetMaskSet(), getMaskSet().p = seekNext(firstMaskedPos)) : getMaskSet().p = pos.begin;
         }
         function handleOnKeyResult(input, keyResult, caretPos) {
             if (keyResult && keyResult.refreshFromBuffer) {
