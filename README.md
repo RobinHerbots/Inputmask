@@ -478,10 +478,56 @@ $(document).ready(function(){
 #### onKeyPress
 #### onKeyDown
 #### onBeforeMask
+
+Executes before masking the initial value to allow preprocessing of the initial value.
+  
+Function arguments: initialValue, opts  
+Function return: processedValue
+
+```javascript
+$(selector).inputmask({
+                alias: 'phonebe',
+                onBeforeMask: function (value, opts) {
+                     		    var processedValue = value.replace(/^0/g, "");
+                                if (processedValue.indexOf("32") > 1 || 	processedValue.indexOf("32") == -1) {
+                                    processedValue = "32" + processedValue;
+                                }
+                                      
+                                return processedValue;
+                            }
+            });
+```
+
+
 #### onBeforePaste
+
+Executes before masking the pasted value to allow preprocessing of the pasted value. 
+
+Function arguments: pastedValue, opts  
+Function return: processedValue
+
+```javascript
+$(selector).inputmask({
+                mask: '9999 9999 9999 9999',
+                placeholder: ' ',
+                showMaskOnHover: false,
+                showMaskOnFocus: false,
+                onBeforePaste: function (pastedValue, opts) { 
+					var processedValue = pastedValue; 
+
+					//do something with it
+
+					return processedValue; 
+				}
+            });
+```
+
 #### onUnMask
 
-Executes after unmasking to allow post-processing of the unmaskedvalue.  The arguments to the function are maskedValue, unmaskedValue.
+Executes after unmasking to allow post-processing of the unmaskedvalue. 
+
+Function arguments: maskedValue, unmaskedValue  
+Function return: processedValue
 
 ```javascript
 $(document).ready(function(){

@@ -539,7 +539,7 @@
                 var umValue = [], vps = getMaskSet().validPositions;
                 for (var pndx in vps) vps[pndx].match && null != vps[pndx].match.fn && umValue.push(vps[pndx].input);
                 var unmaskedValue = (isRTL ? umValue.reverse() : umValue).join(""), bufferValue = (isRTL ? getBuffer().slice().reverse() : getBuffer()).join("");
-                return $.isFunction(opts.onUnMask) && (unmaskedValue = opts.onUnMask.call($input, bufferValue, unmaskedValue, opts)), 
+                return $.isFunction(opts.onUnMask) && (unmaskedValue = opts.onUnMask.call($input, bufferValue, unmaskedValue, opts) || unmaskedValue), 
                 unmaskedValue;
             }
             return $input[0]._valueGet();
@@ -641,7 +641,7 @@
                         },
                         set: function(elem, value) {
                             var result, $elem = $(elem), inputData = $elem.data("_inputmask");
-                            return inputData ? (result = valueSet(elem, $.isFunction(inputData.opts.onBeforeMask) ? inputData.opts.onBeforeMask.call(el, value, inputData.opts) : value), 
+                            return inputData ? (result = valueSet(elem, $.isFunction(inputData.opts.onBeforeMask) ? inputData.opts.onBeforeMask.call(el, value, inputData.opts) || value : value), 
                             $elem.triggerHandler("setvalue.inputmask")) : result = valueSet(elem, value), result;
                         },
                         inputmaskpatch: !0
@@ -654,7 +654,7 @@
             }
             function setter(value) {
                 var inputData = $(this).data("_inputmask");
-                inputData ? (valueSet.call(this, $.isFunction(inputData.opts.onBeforeMask) ? inputData.opts.onBeforeMask.call(el, value, inputData.opts) : value), 
+                inputData ? (valueSet.call(this, $.isFunction(inputData.opts.onBeforeMask) ? inputData.opts.onBeforeMask.call(el, value, inputData.opts) || value : value), 
                 $(this).triggerHandler("setvalue.inputmask")) : valueSet.call(this, value);
             }
             function InstallNativeValueSetFallback(npt) {
@@ -791,7 +791,7 @@
             var input = this, $input = $(input), inputValue = input._valueGet();
             if ("propertychange" == e.type && input._valueGet().length <= getMaskLength()) return !0;
             "paste" == e.type && (window.clipboardData && window.clipboardData.getData ? inputValue = window.clipboardData.getData("Text") : e.originalEvent && e.originalEvent.clipboardData && e.originalEvent.clipboardData.getData && (inputValue = e.originalEvent.clipboardData.getData("text/plain")));
-            var pasteValue = $.isFunction(opts.onBeforePaste) ? opts.onBeforePaste.call(input, inputValue, opts) : inputValue;
+            var pasteValue = $.isFunction(opts.onBeforePaste) ? opts.onBeforePaste.call(input, inputValue, opts) || inputValue : inputValue;
             return checkVal(input, !0, !1, isRTL ? pasteValue.split("").reverse() : pasteValue.split(""), !0), 
             $input.click(), isComplete(getBuffer()) === !0 && $input.trigger("complete"), !1;
         }
@@ -887,7 +887,7 @@
                 "paste" !== PasteEventType || msie1x || $el.bind("input.inputmask", inputFallBackEvent), 
                 msie1x && $el.bind("input.inputmask", pasteEvent), (android || androidfirefox || androidchrome || kindle) && ("input" == PasteEventType && $el.unbind(PasteEventType + ".inputmask"), 
                 $el.bind("input.inputmask", mobileInputEvent)), patchValueProperty(el);
-                var initialValue = $.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call(el, el._valueGet(), opts) : el._valueGet();
+                var initialValue = $.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call(el, el._valueGet(), opts) || el._valueGet() : el._valueGet();
                 checkVal(el, !0, !1, initialValue.split(""), !0), valueOnFocus = getBuffer().join("");
                 var activeElement;
                 try {
@@ -918,7 +918,7 @@
                 opts: opts,
                 isRTL: opts.numericInput
             }), opts.numericInput && (isRTL = !0);
-            var valueBuffer = ($.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call($el, actionObj.value, opts) : actionObj.value).split("");
+            var valueBuffer = ($.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call($el, actionObj.value, opts) || actionObj.value : actionObj.value).split("");
             return checkVal($el, !1, !1, isRTL ? valueBuffer.reverse() : valueBuffer, !0), opts.onKeyPress.call(this, void 0, getBuffer(), 0, opts), 
             actionObj.metadata ? {
                 value: isRTL ? getBuffer().slice().reverse().join("") : getBuffer().join(""),

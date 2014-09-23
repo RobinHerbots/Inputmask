@@ -951,7 +951,7 @@
                     var unmaskedValue = (isRTL ? umValue.reverse() : umValue).join('');
                     var bufferValue = (isRTL ? getBuffer().slice().reverse() : getBuffer()).join('');
                     if ($.isFunction(opts.onUnMask)) {
-                        unmaskedValue = opts.onUnMask.call($input, bufferValue, unmaskedValue, opts);
+                        unmaskedValue = (opts.onUnMask.call($input, bufferValue, unmaskedValue, opts) || unmaskedValue);
                     }
                     return unmaskedValue;
                 } else {
@@ -1115,7 +1115,7 @@
                             set: function (elem, value) {
                                 var $elem = $(elem), inputData = $elem.data('_inputmask'), result;
                                 if (inputData) {
-                                    result = valueSet(elem, $.isFunction(inputData['opts'].onBeforeMask) ? inputData['opts'].onBeforeMask.call(el, value, inputData['opts']) : value);
+                                    result = valueSet(elem, $.isFunction(inputData['opts'].onBeforeMask) ? (inputData['opts'].onBeforeMask.call(el, value, inputData['opts']) || value) : value);
                                     $elem.triggerHandler('setvalue.inputmask');
                                 } else {
                                     result = valueSet(elem, value);
@@ -1135,7 +1135,7 @@
                 function setter(value) {
                     var inputData = $(this).data('_inputmask');
                     if (inputData) {
-                        valueSet.call(this, $.isFunction(inputData['opts'].onBeforeMask) ? inputData['opts'].onBeforeMask.call(el, value, inputData['opts']) : value);
+                        valueSet.call(this, $.isFunction(inputData['opts'].onBeforeMask) ? (inputData['opts'].onBeforeMask.call(el, value, inputData['opts']) || value) : value);
                         $(this).triggerHandler('setvalue.inputmask');
                     } else {
                         valueSet.call(this, value);
@@ -1248,6 +1248,7 @@
 
                 var firstMaskedPos = getLastValidPosition(pos.begin);
                 if (firstMaskedPos < pos.begin) {
+                    //resetMaskSet();
                     getMaskSet()["p"] = seekNext(firstMaskedPos);
                 } else {
                     getMaskSet()["p"] = pos.begin;
@@ -1441,7 +1442,7 @@
                     }
                 }
 
-                var pasteValue = $.isFunction(opts.onBeforePaste) ? opts.onBeforePaste.call(input, inputValue, opts) : inputValue;
+                var pasteValue = $.isFunction(opts.onBeforePaste) ? (opts.onBeforePaste.call(input, inputValue, opts) || inputValue) : inputValue;
                 checkVal(input, true, false, isRTL ? pasteValue.split('').reverse() : pasteValue.split(''), true);
                 $input.click();
                 if (isComplete(getBuffer()) === true)
@@ -1666,7 +1667,7 @@
                     patchValueProperty(el);
 
                     //apply mask
-                    var initialValue = $.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call(el, el._valueGet(), opts) : el._valueGet();
+                    var initialValue = $.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(el, el._valueGet(), opts) || el._valueGet()) : el._valueGet();
                     checkVal(el, true, false, initialValue.split(''), true);
                     valueOnFocus = getBuffer().join('');
                     // Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
@@ -1725,7 +1726,7 @@
                         if (opts.numericInput) {
                             isRTL = true;
                         }
-                        var valueBuffer = ($.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call($el, actionObj["value"], opts) : actionObj["value"]).split('');
+                        var valueBuffer = ($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call($el, actionObj["value"], opts) || actionObj["value"]) : actionObj["value"]).split('');
                         checkVal($el, false, false, isRTL ? valueBuffer.reverse() : valueBuffer, true);
                         opts.onKeyPress.call(this, undefined, getBuffer(), 0, opts);
 
