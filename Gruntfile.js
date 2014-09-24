@@ -30,6 +30,12 @@ module.exports = function (grunt) {
             },
             options: { banner: createBanner('<%= pkg.name %>.bundle'), beautify: true, mangle: false }
         }
+        uglifyConfig["inputmaskbundlemin"] = {
+            files: {
+                'dist/<%= pkg.name %>.bundle.min.js': srcFiles
+            },
+            options: { banner: createBanner('<%= pkg.name %>.bundle') }
+        }
         return uglifyConfig;
     }
     function wrapAMDLoader(src, dst, dependencies) {
