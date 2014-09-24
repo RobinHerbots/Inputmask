@@ -872,8 +872,11 @@
                     $(input).is(":focus") && setTimeout(function() {
                         var selectedCaret = caret(input);
                         if (selectedCaret.begin == selectedCaret.end) {
-                            var clickPosition = isRTL ? TranslatePosition(selectedCaret.begin) : selectedCaret.begin, lvp = getLastValidPosition(clickPosition), lastPosition = seekNext(lvp);
-                            lastPosition >= clickPosition ? isMask(clickPosition) ? caret(input, clickPosition) : caret(input, -1 == lvp && "" != opts.radixPoint ? $.inArray(opts.radixPoint, getBuffer()) : seekNext(clickPosition)) : caret(input, lastPosition);
+                            var clickPosition = isRTL ? TranslatePosition(selectedCaret.begin) : selectedCaret.begin, lvp = getLastValidPosition(clickPosition);
+                            if (-1 == lvp && opts.radixFocus && "" != opts.radixPoint && -1 != $.inArray(opts.radixPoint, getBuffer())) caret(input, $.inArray(opts.radixPoint, getBuffer())); else {
+                                var lastPosition = seekNext(lvp);
+                                lastPosition > clickPosition ? caret(input, isMask(clickPosition) ? clickPosition : seekNext(clickPosition)) : caret(input, lastPosition);
+                            }
                         }
                     }, 0);
                 }).bind("dblclick.inputmask", function() {
@@ -1019,6 +1022,7 @@
                 numericInput: !1,
                 rightAlign: !1,
                 radixPoint: "",
+                radixFocus: !1,
                 nojumps: !1,
                 nojumpsThreshold: 0,
                 keepStatic: void 0,
@@ -1749,6 +1753,7 @@
             digitsOptional: !0,
             groupSeparator: "",
             radixPoint: ".",
+            radixFocus: !0,
             groupSize: 3,
             autoGroup: !1,
             allowPlus: !0,

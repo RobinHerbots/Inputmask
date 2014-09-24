@@ -53,6 +53,7 @@ Optional extensions on the jquery.inputmask base
             digitsOptional: true,
             groupSeparator: "",//",", // | "."
             radixPoint: ".",
+            radixFocus: true,
             groupSize: 3,
             autoGroup: false,
             allowPlus: true,

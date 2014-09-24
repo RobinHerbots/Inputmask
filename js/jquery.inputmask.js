@@ -1619,14 +1619,17 @@
                                 var selectedCaret = caret(input);
                                 if (selectedCaret.begin == selectedCaret.end) {
                                     var clickPosition = isRTL ? TranslatePosition(selectedCaret.begin) : selectedCaret.begin,
-                                        lvp = getLastValidPosition(clickPosition),
-                                        lastPosition = seekNext(lvp);
-                                    if (clickPosition <= lastPosition) {
-                                        if (isMask(clickPosition))
-                                            caret(input, clickPosition);
-                                        else caret(input, lvp == -1 && opts.radixPoint != "" ? $.inArray(opts.radixPoint, getBuffer()) : seekNext(clickPosition));
-                                    } else {
-                                        caret(input, lastPosition);
+                                        lvp = getLastValidPosition(clickPosition);
+
+                                    if (lvp == -1 && opts.radixFocus && opts.radixPoint != "" && $.inArray(opts.radixPoint, getBuffer()) != -1)
+                                        caret(input, $.inArray(opts.radixPoint, getBuffer()));
+                                    else {
+                                        var lastPosition = seekNext(lvp);
+                                        if (clickPosition < lastPosition) {
+                                            caret(input, isMask(clickPosition) ? clickPosition : seekNext(clickPosition));
+                                        } else {
+                                            caret(input, lastPosition);
+                                        }
                                     }
                                 }
                             }, 0);
@@ -1862,6 +1865,7 @@
                 rightAlign: false, //align to the right
                 //numeric basic properties
                 radixPoint: "", //".", // | ","
+                radixFocus: false, //position caret to radixpoint on initial click
                 //numeric basic properties
                 nojumps: false, //do not jump over fixed parts in the mask
                 nojumpsThreshold: 0, //start nojumps as of

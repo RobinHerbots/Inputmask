@@ -604,8 +604,24 @@ $(document).ready(function(){
 ```
 
 #### radixPoint
-#### nojumps: false, //do not jump over fixed parts in the mask
-#### nojumpsThreshold: 0, //start nojumps as of
+
+Define the radixpoint (decimal separator)  
+Default: ""
+
+####radixFocus
+
+Position the caret to the radixpoint on the initial click into the inputfield.  
+Default: false
+
+#### nojumps
+ 
+Do not jump over fixed parts in the mask.  
+Default: false
+#### nojumpsThreshold
+
+Start nojumps as of  
+Default: 0
+ 
 #### keepStatic
 Default: undefined (~false)   
 Use in combination with the alternator syntax

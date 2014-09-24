@@ -195,7 +195,7 @@ asyncTest("inputmask({ mask: \"€ 999.999.999,99\", numericInput: true }); - 12
     }, 0);
 });
 
-asyncTest("inputmask({ mask: \"€ 999.999.999,99\", { numericInput: true, radixPoint: \",\" }); - 123 - radixpoint has no logic anymore in base", function () {
+asyncTest("inputmask({ mask: \"€ 999.999.999,99\", { numericInput: true, radixPoint: \",\" }); - 123", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask('€ 999.999.999,99', { numericInput: true, radixPoint: "," });

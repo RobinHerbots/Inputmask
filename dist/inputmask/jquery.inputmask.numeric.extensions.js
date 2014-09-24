@@ -29,6 +29,7 @@
             digitsOptional: !0,
             groupSeparator: "",
             radixPoint: ".",
+            radixFocus: !0,
             groupSize: 3,
             autoGroup: !1,
             allowPlus: !0,
