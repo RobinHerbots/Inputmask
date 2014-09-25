@@ -1719,7 +1719,7 @@
             }
         },
         email: {
-            mask: "*{1,20}[.*{1,20}][.*{1,20}][.*{1,20}]@*{1,20}[.*{2,20}][.*{2,6}][.*{1,2}]",
+            mask: "*{1,64}[.*{1,64}][.*{1,64}][.*{1,64}]@*{1,64}[.*{2,64}][.*{2,6}][.*{1,2}]",
             greedy: !1,
             onBeforePaste: function(pastedValue) {
                 return pastedValue = pastedValue.toLowerCase(), pastedValue.replace("mailto:", "");
