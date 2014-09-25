@@ -93,12 +93,15 @@
             regex: {
                 integerPart: function() {
                     return new RegExp("[-+]?\\d+");
+                },
+                integerNPart: function() {
+                    return new RegExp("\\d+");
                 }
             },
             negationhandler: function(chrs, buffer, pos, strict, opts) {
                 if (!strict && opts.allowMinus && "-" === chrs) {
                     var matchRslt = buffer.join("").match(opts.regex.integerPart(opts));
-                    if (matchRslt.length > 0) return "+" == buffer[matchRslt.index] ? {
+                    if (matchRslt && matchRslt.length > 0) return "+" == buffer[matchRslt.index] ? {
                         pos: matchRslt.index,
                         c: "-",
                         remove: matchRslt.index,
@@ -128,7 +131,7 @@
                 return !1;
             },
             leadingZeroHandler: function(chrs, maskset, pos, strict, opts) {
-                var matchRslt = maskset.buffer.join("").match(opts.regex.integerPart(opts)), radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
+                var matchRslt = maskset.buffer.join("").match(opts.regex.integerNPart(opts)), radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
                 if (matchRslt && !strict && (-1 == radixPosition || matchRslt.index < radixPosition)) if (0 == matchRslt[0].indexOf("0") && pos >= opts.prefix.length) {
                     if (-1 == radixPosition || radixPosition >= pos && void 0 == maskset.validPositions[radixPosition]) return maskset.buffer.splice(matchRslt.index, 1), 
                     pos = pos > matchRslt.index ? pos - 1 : matchRslt.index, {

@@ -23,10 +23,13 @@
         }
 
         function isInputTypeSupported(inputType) {
-            var el = document.createElement('input');
-            el.setAttribute("type", inputType);
-            var isSupported = el.type !== "text";
-            el = null;
+            var isSupported = inputType == "text" || inputType == "tel";
+            if (!isSupported) {
+                var el = document.createElement('input');
+                el.setAttribute("type", inputType);
+                isSupported = el.type === "text"; //apply mask only if the type is not natively supported
+                el = null;
+            }
             return isSupported;
         }
 
@@ -1513,7 +1516,7 @@
             }
             function mask(el) {
                 $el = $(el);
-                if ($el.is(":input") && !isInputTypeSupported($el.attr("type"))) {
+                if ($el.is(":input") && isInputTypeSupported($el.attr("type"))) {
                     //store tests & original buffer in the input element - used to get the unmasked value
                     $el.data('_inputmask', {
                         'maskset': maskset,

@@ -14,10 +14,12 @@
         el = null, isSupported;
     }
     function isInputTypeSupported(inputType) {
-        var el = document.createElement("input");
-        el.setAttribute("type", inputType);
-        var isSupported = "text" !== el.type;
-        return el = null, isSupported;
+        var isSupported = "text" == inputType || "tel" == inputType;
+        if (!isSupported) {
+            var el = document.createElement("input");
+            el.setAttribute("type", inputType), isSupported = "text" === el.type, el = null;
+        }
+        return isSupported;
     }
     function resolveAlias(aliasStr, options, opts) {
         var aliasDefinition = opts.aliases[aliasStr];
@@ -831,7 +833,7 @@
             }, 0), !1;
         }
         function mask(el) {
-            if ($el = $(el), $el.is(":input") && !isInputTypeSupported($el.attr("type"))) {
+            if ($el = $(el), $el.is(":input") && isInputTypeSupported($el.attr("type"))) {
                 if ($el.data("_inputmask", {
                     maskset: maskset,
                     opts: opts,

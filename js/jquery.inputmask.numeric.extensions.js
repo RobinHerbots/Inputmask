@@ -125,13 +125,14 @@ Optional extensions on the jquery.inputmask base
                 }
             },
             regex: {
-                integerPart: function (opts) { return new RegExp('[-\+]?\\d+'); }
+                integerPart: function (opts) { return new RegExp('[-\+]?\\d+'); },
+                integerNPart: function (opts) { return new RegExp('\\d+'); }
             },
             negationhandler: function (chrs, buffer, pos, strict, opts) {
                 if (!strict && opts.allowMinus && chrs === "-") {
                     var matchRslt = buffer.join('').match(opts.regex.integerPart(opts));
 
-                    if (matchRslt.length > 0) {
+                    if (matchRslt && matchRslt.length > 0) {
                         if (buffer[matchRslt.index] == "+") {
                             return { "pos": matchRslt.index, "c": "-", "remove": matchRslt.index, "caret": pos };
                         } else if (buffer[matchRslt.index] == "-") {
@@ -156,7 +157,7 @@ Optional extensions on the jquery.inputmask base
                 return false;
             },
             leadingZeroHandler: function (chrs, maskset, pos, strict, opts) {
-                var matchRslt = maskset.buffer.join('').match(opts.regex.integerPart(opts)), radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
+                var matchRslt = maskset.buffer.join('').match(opts.regex.integerNPart(opts)), radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
                 if (matchRslt && !strict && (radixPosition == -1 || matchRslt.index < radixPosition)) {
                     if (matchRslt["0"].indexOf("0") == 0 && pos >= opts.prefix.length) {
                         if (radixPosition == -1 || (pos <= radixPosition && maskset["validPositions"][radixPosition] == undefined)) {
