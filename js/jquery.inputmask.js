@@ -1621,13 +1621,11 @@
                             setTimeout(function () {
                                 var selectedCaret = caret(input);
                                 if (selectedCaret.begin == selectedCaret.end) {
-                                    var clickPosition = isRTL ? TranslatePosition(selectedCaret.begin) : selectedCaret.begin,
-                                        lvp = getLastValidPosition(clickPosition);
-
-                                    if (lvp == -1 && opts.radixFocus && opts.radixPoint != "" && $.inArray(opts.radixPoint, getBuffer()) != -1)
+                                    if (opts.radixFocus && opts.radixPoint != "" && $.inArray(opts.radixPoint, getBuffer()) != -1 && getBuffer().join('') == getBufferTemplate().join(''))
                                         caret(input, $.inArray(opts.radixPoint, getBuffer()));
                                     else {
-                                        var lastPosition = seekNext(lvp);
+                                        var clickPosition = isRTL ? TranslatePosition(selectedCaret.begin) : selectedCaret.begin,
+                                            lastPosition = seekNext(getLastValidPosition(clickPosition));
                                         if (clickPosition < lastPosition) {
                                             caret(input, isMask(clickPosition) ? clickPosition : seekNext(clickPosition));
                                         } else {

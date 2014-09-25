@@ -875,12 +875,9 @@
                     var input = this;
                     $(input).is(":focus") && setTimeout(function() {
                         var selectedCaret = caret(input);
-                        if (selectedCaret.begin == selectedCaret.end) {
-                            var clickPosition = isRTL ? TranslatePosition(selectedCaret.begin) : selectedCaret.begin, lvp = getLastValidPosition(clickPosition);
-                            if (-1 == lvp && opts.radixFocus && "" != opts.radixPoint && -1 != $.inArray(opts.radixPoint, getBuffer())) caret(input, $.inArray(opts.radixPoint, getBuffer())); else {
-                                var lastPosition = seekNext(lvp);
-                                lastPosition > clickPosition ? caret(input, isMask(clickPosition) ? clickPosition : seekNext(clickPosition)) : caret(input, lastPosition);
-                            }
+                        if (selectedCaret.begin == selectedCaret.end) if (opts.radixFocus && "" != opts.radixPoint && -1 != $.inArray(opts.radixPoint, getBuffer()) && getBuffer().join("") == getBufferTemplate().join("")) caret(input, $.inArray(opts.radixPoint, getBuffer())); else {
+                            var clickPosition = isRTL ? TranslatePosition(selectedCaret.begin) : selectedCaret.begin, lastPosition = seekNext(getLastValidPosition(clickPosition));
+                            lastPosition > clickPosition ? caret(input, isMask(clickPosition) ? clickPosition : seekNext(clickPosition)) : caret(input, lastPosition);
                         }
                     }, 0);
                 }).bind("dblclick.inputmask", function() {
