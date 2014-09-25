@@ -98,26 +98,26 @@
                     return new RegExp("\\d+");
                 }
             },
-            negationhandler: function(chrs, buffer, pos, strict, opts) {
-                if (!strict && opts.allowMinus && "-" === chrs) {
+            signHandler: function(chrs, buffer, pos, strict, opts) {
+                if (!strict && (opts.allowMinus && "-" === chrs || opts.allowPlus && "+" === chrs)) {
                     var matchRslt = buffer.join("").match(opts.regex.integerPart(opts));
-                    if (matchRslt && matchRslt.length > 0) return "+" == buffer[matchRslt.index] ? {
+                    if (matchRslt && matchRslt.length > 0 && "0" !== matchRslt[matchRslt.index]) return buffer[matchRslt.index] == ("-" === chrs ? "+" : "-") ? {
                         pos: matchRslt.index,
-                        c: "-",
+                        c: chrs,
                         remove: matchRslt.index,
                         caret: pos
-                    } : "-" == buffer[matchRslt.index] ? {
+                    } : buffer[matchRslt.index] == ("-" === chrs ? "-" : "+") ? {
                         remove: matchRslt.index,
                         caret: pos - 1
                     } : {
                         pos: matchRslt.index,
-                        c: "-",
+                        c: chrs,
                         caret: pos + 1
                     };
                 }
                 return !1;
             },
-            radixhandler: function(chrs, maskset, pos, strict, opts) {
+            radixHandler: function(chrs, maskset, pos, strict, opts) {
                 if (!strict && chrs === opts.radixPoint) {
                     var radixPos = $.inArray(opts.radixPoint, maskset.buffer), integerValue = maskset.buffer.join("").match(opts.regex.integerPart(opts));
                     if (-1 != radixPos) return maskset.validPositions[radixPos - 1] ? {
@@ -149,8 +149,8 @@
             definitions: {
                 "~": {
                     validator: function(chrs, maskset, pos, strict, opts) {
-                        var isValid = opts.negationhandler(chrs, maskset.buffer, pos, strict, opts);
-                        if (!isValid && (isValid = opts.radixhandler(chrs, maskset, pos, strict, opts), 
+                        var isValid = opts.signHandler(chrs, maskset.buffer, pos, strict, opts);
+                        if (!isValid && (isValid = opts.radixHandler(chrs, maskset, pos, strict, opts), 
                         !isValid && (isValid = strict ? new RegExp("[0-9" + $.inputmask.escapeRegex.call(this, opts.groupSeparator) + "]").test(chrs) : new RegExp("[0-9]").test(chrs), 
                         isValid === !0 && (isValid = opts.leadingZeroHandler(chrs, maskset, pos, strict, opts), 
                         isValid === !0)))) {
@@ -169,9 +169,13 @@
                 },
                 "+": {
                     validator: function(chrs, maskset, pos, strict, opts) {
-                        var signed = "[";
-                        return opts.allowMinus === !0 && (signed += "-"), opts.allowPlus === !0 && (signed += "+"), 
-                        signed += "]", new RegExp(signed).test(chrs);
+                        var isValid = opts.signHandler(chrs, maskset.buffer, pos, strict, opts);
+                        if (!isValid) {
+                            var signed = "[";
+                            opts.allowMinus === !0 && (signed += "-"), opts.allowPlus === !0 && (signed += "+"), 
+                            signed += "]", isValid = new RegExp(signed).test(chrs);
+                        }
+                        return isValid;
                     },
                     cardinality: 1,
                     prevalidator: null,
@@ -179,7 +183,7 @@
                 },
                 ":": {
                     validator: function(chrs, maskset, pos, strict, opts) {
-                        var isValid = opts.negationhandler(chrs, maskset.buffer, pos, strict, opts);
+                        var isValid = opts.signHandler(chrs, maskset.buffer, pos, strict, opts);
                         if (!isValid) {
                             var radix = "[" + $.inputmask.escapeRegex.call(this, opts.radixPoint) + "]";
                             isValid = new RegExp(radix).test(chrs), isValid && maskset.validPositions[pos] && maskset.validPositions[pos].match.placeholder == opts.radixPoint && (isValid = {

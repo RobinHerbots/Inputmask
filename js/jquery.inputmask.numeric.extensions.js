@@ -128,23 +128,23 @@ Optional extensions on the jquery.inputmask base
                 integerPart: function (opts) { return new RegExp('[-\+]?\\d+'); },
                 integerNPart: function (opts) { return new RegExp('\\d+'); }
             },
-            negationhandler: function (chrs, buffer, pos, strict, opts) {
-                if (!strict && opts.allowMinus && chrs === "-") {
+            signHandler: function (chrs, buffer, pos, strict, opts) {
+                if (!strict && (opts.allowMinus && chrs === "-" || opts.allowPlus && chrs === "+")) {
                     var matchRslt = buffer.join('').match(opts.regex.integerPart(opts));
 
-                    if (matchRslt && matchRslt.length > 0) {
-                        if (buffer[matchRslt.index] == "+") {
-                            return { "pos": matchRslt.index, "c": "-", "remove": matchRslt.index, "caret": pos };
-                        } else if (buffer[matchRslt.index] == "-") {
+                    if (matchRslt && matchRslt.length > 0 && matchRslt[matchRslt.index] !== "0") {
+                        if (buffer[matchRslt.index] == (chrs === "-" ? "+" : "-")) {
+                            return { "pos": matchRslt.index, "c": chrs, "remove": matchRslt.index, "caret": pos };
+                        } else if (buffer[matchRslt.index] == (chrs === "-" ? "-" : "+")) {
                             return { "remove": matchRslt.index, "caret": pos - 1 };
                         } else {
-                            return { "pos": matchRslt.index, "c": "-", "caret": pos + 1 };
+                            return { "pos": matchRslt.index, "c": chrs, "caret": pos + 1 };
                         }
                     }
                 }
                 return false;
             },
-            radixhandler: function (chrs, maskset, pos, strict, opts) {
+            radixHandler: function (chrs, maskset, pos, strict, opts) {
                 if (!strict && chrs === opts.radixPoint) {
                     var radixPos = $.inArray(opts.radixPoint, maskset.buffer), integerValue = maskset.buffer.join('').match(opts.regex.integerPart(opts));
 
@@ -178,9 +178,9 @@ Optional extensions on the jquery.inputmask base
             definitions: {
                 '~': {
                     validator: function (chrs, maskset, pos, strict, opts) {
-                        var isValid = opts.negationhandler(chrs, maskset.buffer, pos, strict, opts);
+                        var isValid = opts.signHandler(chrs, maskset.buffer, pos, strict, opts);
                         if (!isValid) {
-                            isValid = opts.radixhandler(chrs, maskset, pos, strict, opts);
+                            isValid = opts.radixHandler(chrs, maskset, pos, strict, opts);
                             if (!isValid) {
                                 isValid = strict ? new RegExp("[0-9" + $.inputmask.escapeRegex.call(this, opts.groupSeparator) + "]").test(chrs) : new RegExp("[0-9]").test(chrs);
                                 if (isValid === true) {
@@ -203,11 +203,15 @@ Optional extensions on the jquery.inputmask base
                 },
                 '+': {
                     validator: function (chrs, maskset, pos, strict, opts) {
-                        var signed = "[";
-                        if (opts.allowMinus === true) signed += "-";
-                        if (opts.allowPlus === true) signed += "\+";
-                        signed += "]";
-                        return new RegExp(signed).test(chrs);
+                        var isValid = opts.signHandler(chrs, maskset.buffer, pos, strict, opts);
+                        if (!isValid) {
+                            var signed = "[";
+                            if (opts.allowMinus === true) signed += "-";
+                            if (opts.allowPlus === true) signed += "\+";
+                            signed += "]";
+                            isValid = new RegExp(signed).test(chrs);
+                        }
+                        return isValid;
                     },
                     cardinality: 1,
                     prevalidator: null,
@@ -215,7 +219,7 @@ Optional extensions on the jquery.inputmask base
                 },
                 ':': {
                     validator: function (chrs, maskset, pos, strict, opts) {
-                        var isValid = opts.negationhandler(chrs, maskset.buffer, pos, strict, opts);
+                        var isValid = opts.signHandler(chrs, maskset.buffer, pos, strict, opts);
                         if (!isValid) {
                             var radix = "[" + $.inputmask.escapeRegex.call(this, opts.radixPoint) + "]";
                             isValid = new RegExp(radix).test(chrs);
