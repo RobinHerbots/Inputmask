@@ -232,12 +232,13 @@
                 var i, positionsClone = $.extend(!0, {}, getMaskSet().validPositions), lvp = getLastValidPosition();
                 for (i = pos; lvp >= i; i++) delete getMaskSet().validPositions[i];
                 getMaskSet().validPositions[pos] = validTest;
-                var valid = !0;
+                var j, valid = !0;
                 for (i = pos; lvp >= i; i++) {
                     var t = positionsClone[i];
                     if (void 0 != t) {
-                        var j = null == t.match.fn ? i + 1 : seekNext(i);
-                        valid = positionCanMatchDefinition(j, t.match.def) ? valid && isValid(j, t.input, !0, !0) !== !1 : !1;
+                        var vps = getMaskSet().validPositions;
+                        j = !opts.keepStatic && (void 0 != vps[i + 1] && getTests(i + 1, vps[i].locator.slice(), i).length > 1 || vps[i] && void 0 != vps[i].alternation) ? i + 1 : seekNext(i), 
+                        valid = positionCanMatchDefinition(j, t.match.def) ? valid && isValid(j, t.input, !0, !0) !== !1 : null == t.match.fn;
                     }
                     if (!valid) break;
                 }
@@ -430,44 +431,38 @@
                 }), rslt;
             }
             function alternate(pos, c, strict, fromSetValid) {
-                if (opts.keepStatic) {
-                    var lastAlt, alternation, validPsClone = $.extend(!0, {}, getMaskSet().validPositions);
-                    for (lastAlt = getLastValidPosition(); lastAlt >= 0; lastAlt--) if (getMaskSet().validPositions[lastAlt] && void 0 != getMaskSet().validPositions[lastAlt].alternation) {
-                        alternation = getMaskSet().validPositions[lastAlt].alternation;
-                        break;
-                    }
-                    if (void 0 != alternation) for (var decisionPos in getMaskSet().validPositions) if (parseInt(decisionPos) > parseInt(lastAlt) && void 0 === getMaskSet().validPositions[decisionPos].alternation) {
-                        for (var altPos = getMaskSet().validPositions[decisionPos], decisionTaker = altPos.locator[alternation], altNdxs = getMaskSet().validPositions[lastAlt].locator[alternation].split(","), mndx = 0; mndx < altNdxs.length; mndx++) if (decisionTaker < altNdxs[mndx]) {
-                            for (var possibilityPos, possibilities, dp = decisionPos - 1; dp >= 0; dp--) if (possibilityPos = getMaskSet().validPositions[dp], 
-                            void 0 != possibilityPos) {
-                                possibilities = possibilityPos.locator[alternation], possibilityPos.locator[alternation] = altNdxs[mndx];
-                                break;
-                            }
-                            if (decisionTaker != possibilityPos.locator[alternation]) {
-                                for (var buffer = getBuffer().slice(), i = decisionPos; i < getLastValidPosition() + 1; i++) delete getMaskSet().validPositions[i], 
-                                delete getMaskSet().tests[i];
-                                resetMaskSet(!0), opts.keepStatic = !opts.keepStatic;
-                                for (var i = decisionPos; i < buffer.length; i++) buffer[i] != opts.skipOptionalPartCharacter && isValid(getLastValidPosition() + 1, buffer[i], !1, !0);
-                                possibilityPos.locator[alternation] = possibilities;
-                                var isValidRslt = getLastValidPosition() + 1 == pos && isValid(pos, c, strict, fromSetValid);
-                                if (opts.keepStatic = !opts.keepStatic, isValidRslt) return isValidRslt;
-                                resetMaskSet(), getMaskSet().validPositions = $.extend(!0, {}, validPsClone);
-                            }
+                var lastAlt, alternation, validPsClone = $.extend(!0, {}, getMaskSet().validPositions);
+                for (lastAlt = getLastValidPosition(); lastAlt >= 0; lastAlt--) if (getMaskSet().validPositions[lastAlt] && void 0 != getMaskSet().validPositions[lastAlt].alternation) {
+                    alternation = getMaskSet().validPositions[lastAlt].alternation;
+                    break;
+                }
+                if (void 0 != alternation) for (var decisionPos in getMaskSet().validPositions) if (parseInt(decisionPos) > parseInt(lastAlt) && void 0 === getMaskSet().validPositions[decisionPos].alternation) {
+                    for (var altPos = getMaskSet().validPositions[decisionPos], decisionTaker = altPos.locator[alternation], altNdxs = getMaskSet().validPositions[lastAlt].locator[alternation].split(","), mndx = 0; mndx < altNdxs.length; mndx++) if (decisionTaker < altNdxs[mndx]) {
+                        for (var possibilityPos, possibilities, dp = decisionPos - 1; dp >= 0; dp--) if (possibilityPos = getMaskSet().validPositions[dp], 
+                        void 0 != possibilityPos) {
+                            possibilities = possibilityPos.locator[alternation], possibilityPos.locator[alternation] = altNdxs[mndx];
+                            break;
                         }
-                        break;
+                        if (decisionTaker != possibilityPos.locator[alternation]) {
+                            for (var buffer = getBuffer().slice(), i = decisionPos; i < getLastValidPosition() + 1; i++) delete getMaskSet().validPositions[i], 
+                            delete getMaskSet().tests[i];
+                            resetMaskSet(!0), opts.keepStatic = !opts.keepStatic;
+                            for (var i = decisionPos; i < buffer.length; i++) buffer[i] != opts.skipOptionalPartCharacter && isValid(getLastValidPosition() + 1, buffer[i], !1, !0);
+                            possibilityPos.locator[alternation] = possibilities;
+                            var isValidRslt = isValid(pos, c, strict, fromSetValid);
+                            if (opts.keepStatic = !opts.keepStatic, isValidRslt) return isValidRslt;
+                            resetMaskSet(), getMaskSet().validPositions = $.extend(!0, {}, validPsClone);
+                        }
                     }
+                    break;
                 }
                 return !1;
             }
             strict = strict === !0;
             for (var buffer = getBuffer(), pndx = pos - 1; pndx > -1 && (!getMaskSet().validPositions[pndx] || null != getMaskSet().validPositions[pndx].match.fn); pndx--) void 0 == getMaskSet().validPositions[pndx] && (!isMask(pndx) || buffer[pndx] != getPlaceholder(pndx)) && getTests(pndx).length > 1 && _isValid(pndx, buffer[pndx], !0);
-            var maskPos = pos;
-            if (maskPos >= getMaskLength()) {
-                if (!fromSetValid) return alternate(pos, c, strict, fromSetValid);
-                if (resetMaskSet(!0), maskPos >= getMaskLength()) return alternate(pos, c, strict, fromSetValid);
-            }
-            var result = _isValid(maskPos, c, strict, fromSetValid);
-            if (!strict && result === !1) {
+            var maskPos = pos, result = !1;
+            if (fromSetValid && maskPos >= getMaskLength() && resetMaskSet(!0), maskPos < getMaskLength() && (result = _isValid(maskPos, c, strict, fromSetValid), 
+            !strict && result === !1)) {
                 var currentPosValid = getMaskSet().validPositions[maskPos];
                 if (!currentPosValid || null != currentPosValid.match.fn || currentPosValid.match.def != c && c != opts.skipOptionalPartCharacter) {
                     if ((opts.insertMode || void 0 == getMaskSet().validPositions[seekNext(maskPos)]) && !isMask(maskPos)) for (var nPos = maskPos + 1, snPos = seekNext(maskPos); snPos >= nPos; nPos++) if (result = _isValid(nPos, c, strict, fromSetValid), 
@@ -479,7 +474,8 @@
                     caret: seekNext(maskPos)
                 };
             }
-            return result === !0 && (result = {
+            return result === !1 && opts.keepStatic && isComplete(buffer) && (result = alternate(pos, c, strict, fromSetValid)), 
+            result === !0 && (result = {
                 pos: maskPos
             }), result;
         }
@@ -695,6 +691,7 @@
         function handleRemove(input, k, pos) {
             function generalize() {
                 if (opts.keepStatic) {
+                    resetMaskSet(!0);
                     var lastAlt, validInputs = [];
                     for (lastAlt = getLastValidPosition(); lastAlt >= 0; lastAlt--) if (getMaskSet().validPositions[lastAlt]) {
                         if (void 0 != getMaskSet().validPositions[lastAlt].alternation) break;
