@@ -282,7 +282,7 @@ Optional extensions on the jquery.inputmask base
             digits: 2,
             digitsOptional: false,
             clearMaskOnLostFocus: false,
-            decimalProtect: true,
+            decimalProtect: true
         },
         'decimal': {
             alias: "numeric"
