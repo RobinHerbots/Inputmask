@@ -1281,7 +1281,7 @@
                 var input = this, $input = $(input), k = e.keyCode, pos = caret(input);
 
                 //backspace, delete, and escape get special treatment
-                if (k == $.inputmask.keyCode.BACKSPACE || k == $.inputmask.keyCode.DELETE || (iphone && k == 127) || e.ctrlKey && k == 88) { //backspace/delete
+                if (k == $.inputmask.keyCode.BACKSPACE || k == $.inputmask.keyCode.DELETE || (iphone && k == 127) || (e.ctrlKey && k == 88 && !isInputEventSupported("cut"))) { //backspace/delete
                     e.preventDefault(); //stop default action but allow propagation
                     if (k == 88) valueOnFocus = getBuffer().join('');
                     handleRemove(input, k, pos);
@@ -1652,6 +1652,19 @@
                         valueOnFocus = getBuffer().join('');
                         if ((opts.clearMaskOnLostFocus || opts.clearIncomplete) && input._valueGet() == getBufferTemplate().join(''))
                             input._valueSet('');
+                    }).bind('cut.inputmask', function (e) {
+                        skipInputEvent = true; //stop inutFallback
+                        var input = this, $input = $(input), pos = caret(input);
+
+                        handleRemove(input, $.inputmask.keyCode.DELETE, pos);
+                        var keypressResult = opts.onKeyPress.call(this, e, getBuffer(), getMaskSet()["p"], opts);
+                        handleOnKeyResult(input, keypressResult, { begin: getMaskSet()["p"], end: getMaskSet()["p"] });
+                        if (input._valueGet() == getBufferTemplate().join(''))
+                            $input.trigger('cleared');
+
+                        if (opts.showTooltip) { //update tooltip
+                            $input.prop("title", getMaskSet()["mask"]);
+                        }
                     }).bind('complete.inputmask', opts.oncomplete
                     ).bind('incomplete.inputmask', opts.onincomplete
                     ).bind('cleared.inputmask', opts.oncleared);

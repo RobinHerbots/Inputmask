@@ -719,7 +719,7 @@
         function keydownEvent(e) {
             skipKeyPressEvent = !1;
             var input = this, $input = $(input), k = e.keyCode, pos = caret(input);
-            k == $.inputmask.keyCode.BACKSPACE || k == $.inputmask.keyCode.DELETE || iphone && 127 == k || e.ctrlKey && 88 == k ? (e.preventDefault(), 
+            k == $.inputmask.keyCode.BACKSPACE || k == $.inputmask.keyCode.DELETE || iphone && 127 == k || e.ctrlKey && 88 == k && !isInputEventSupported("cut") ? (e.preventDefault(), 
             88 == k && (valueOnFocus = getBuffer().join("")), handleRemove(input, k, pos), writeBuffer(input, getBuffer(), getMaskSet().p), 
             input._valueGet() == getBufferTemplate().join("") && $input.trigger("cleared"), 
             opts.showTooltip && $input.prop("title", getMaskSet().mask)) : k == $.inputmask.keyCode.END || k == $.inputmask.keyCode.PAGE_DOWN ? setTimeout(function() {
@@ -883,6 +883,16 @@
                 }).bind(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", pasteEvent).bind("setvalue.inputmask", function() {
                     var input = this;
                     checkVal(input, !0, !1, void 0, !0), valueOnFocus = getBuffer().join(""), (opts.clearMaskOnLostFocus || opts.clearIncomplete) && input._valueGet() == getBufferTemplate().join("") && input._valueSet("");
+                }).bind("cut.inputmask", function(e) {
+                    skipInputEvent = !0;
+                    var input = this, $input = $(input), pos = caret(input);
+                    handleRemove(input, $.inputmask.keyCode.DELETE, pos);
+                    var keypressResult = opts.onKeyPress.call(this, e, getBuffer(), getMaskSet().p, opts);
+                    handleOnKeyResult(input, keypressResult, {
+                        begin: getMaskSet().p,
+                        end: getMaskSet().p
+                    }), input._valueGet() == getBufferTemplate().join("") && $input.trigger("cleared"), 
+                    opts.showTooltip && $input.prop("title", getMaskSet().mask);
                 }).bind("complete.inputmask", opts.oncomplete).bind("incomplete.inputmask", opts.onincomplete).bind("cleared.inputmask", opts.oncleared), 
                 $el.bind("keydown.inputmask", keydownEvent).bind("keypress.inputmask", keypressEvent).bind("keyup.inputmask", keyupEvent).bind("compositionupdate.inputmask", compositionupdateEvent), 
                 "paste" !== PasteEventType || msie1x || $el.bind("input.inputmask", inputFallBackEvent), 

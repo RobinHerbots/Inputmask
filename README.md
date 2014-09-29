@@ -25,6 +25,7 @@ Highlights:
 - dynamic-mask support
 - preprocessing-mask support
 - value formatting / validating without input element
+- AMD support
 
 Demo page see http://robinherbots.github.io/jquery.inputmask
 
@@ -34,6 +35,8 @@ Demo page see http://robinherbots.github.io/jquery.inputmask
 ## Usage:
 
 Include the js-files which you can find in the dist-folder. You have the bundled file which contains the main plugin code and also all extensions (date, numerics, other) or if you prefer to only include some parts, use the separate js-files in the dist/min folder.
+
+If you use a module loader like requireJS, use the js-files in dist/inputmask
 
 The minimum to include is the jquery.inputmask.js
 
