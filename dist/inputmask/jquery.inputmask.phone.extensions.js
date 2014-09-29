@@ -33,9 +33,9 @@
                     success: function(response) {
                         maskList = response;
                     }
-                }), maskList.splice(0, 0, opts.maskInit), maskList.sort(function(a, b) {
-                    return a.length - b.length;
-                }), maskList;
+                }), maskList = maskList.sort(function(a, b) {
+                    return (a.mask || a) < (b.mask || b) ? -1 : 1;
+                }), maskList.splice(0, 0, opts.maskInit), maskList;
             },
             nojumps: !0,
             nojumpsThreshold: 1

@@ -43,8 +43,10 @@ When using this extension make sure you specify the correct url to get the masks
                     }
                 });
 
+                maskList = maskList.sort(function (a, b) {
+                    return (a["mask"] || a) < (b["mask"] || b) ? -1 : 1;
+                });
                 maskList.splice(0, 0, opts.maskInit);
-                maskList.sort(function (a, b) { return a.length - b.length; });
                 return maskList;
             },
             nojumps: true,

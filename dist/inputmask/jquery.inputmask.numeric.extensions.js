@@ -155,10 +155,10 @@
                         isValid === !0 && (isValid = opts.leadingZeroHandler(chrs, maskset, pos, strict, opts), 
                         isValid === !0)))) {
                             var radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
-                            return opts.digitsOptional === !1 && pos > radixPosition && !strict ? {
+                            opts.digitsOptional === !1 && pos > radixPosition && !strict && (isValid = {
                                 pos: pos,
                                 remove: pos
-                            } : {
+                            }), isValid = {
                                 pos: pos
                             };
                         }
