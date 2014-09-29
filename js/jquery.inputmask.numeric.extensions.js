@@ -9,6 +9,9 @@ Optional extensions on the jquery.inputmask base
 */
 (function ($) {
     //number aliases
+    var inArray = function(searchValue, array, fromIndex) {
+        return $.isArray(array) ? $.inArray(searchValue, array, fromIndex) : array.indexOf(searchValue, fromIndex);
+    };
     $.extend($.inputmask.defaults.aliases, {
         'numeric': {
             mask: function (opts) {
@@ -66,7 +69,7 @@ Optional extensions on the jquery.inputmask base
             postFormat: function (buffer, pos, reformatOnly, opts) {  //this needs to be removed // this is crap
                 var needsRefresh = false, charAtPos = buffer[pos];
                 if (opts.groupSeparator == "" ||
-                    ($.inArray(opts.radixPoint, buffer) != -1 && pos >= $.inArray(opts.radixPoint, buffer)) ||
+                    (inArray(opts.radixPoint, buffer) != -1 && pos >= inArray(opts.radixPoint, buffer)) ||
                     new RegExp('[-\+]').test(charAtPos)
                     ) return { pos: pos };
                 var cbuf = buffer.slice();
@@ -97,14 +100,14 @@ Optional extensions on the jquery.inputmask base
                 for (var i = 0, l = bufVal.length; i < l; i++) {
                     buffer[i] = bufVal.charAt(i);
                 }
-                var newPos = $.inArray("?", buffer);
+                var newPos = inArray("?", buffer);
                 if (reformatOnly) buffer[newPos] = charAtPos; else buffer.splice(newPos, 1);
 
                 return { pos: newPos, "refreshFromBuffer": needsRefresh };
             },
             onKeyDown: function (e, buffer, caretPos, opts) {
                 if (e.keyCode == $.inputmask.keyCode.TAB && opts.placeholder.charAt(0) != "0") {
-                    var radixPosition = $.inArray(opts.radixPoint, buffer);
+                    var radixPosition = inArray(opts.radixPoint, buffer);
                     if (radixPosition != -1 && isFinite(opts.digits)) {
                         for (var i = 1; i <= opts.digits; i++) {
                             if (buffer[radixPosition + i] == undefined || buffer[radixPosition + i] == opts.placeholder.charAt(0)) buffer[radixPosition + i] = "0";
@@ -146,7 +149,7 @@ Optional extensions on the jquery.inputmask base
             },
             radixHandler: function (chrs, maskset, pos, strict, opts) {
                 if (!strict && chrs === opts.radixPoint) {
-                    var radixPos = $.inArray(opts.radixPoint, maskset.buffer), integerValue = maskset.buffer.join('').match(opts.regex.integerPart(opts));
+                    var radixPos = inArray(opts.radixPoint, maskset.buffer), integerValue = maskset.buffer.join('').match(opts.regex.integerPart(opts));
 
                     if (radixPos != -1) {
                         if (maskset["validPositions"][radixPos - 1])
@@ -157,7 +160,7 @@ Optional extensions on the jquery.inputmask base
                 return false;
             },
             leadingZeroHandler: function (chrs, maskset, pos, strict, opts) {
-                var matchRslt = maskset.buffer.join('').match(opts.regex.integerNPart(opts)), radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
+                var matchRslt = maskset.buffer.join('').match(opts.regex.integerNPart(opts)), radixPosition = inArray(opts.radixPoint, maskset.buffer);
                 if (matchRslt && !strict && (radixPosition == -1 || matchRslt.index < radixPosition)) {
                     if (matchRslt["0"].indexOf("0") == 0 && pos >= opts.prefix.length) {
                         if (radixPosition == -1 || (pos <= radixPosition && maskset["validPositions"][radixPosition] == undefined)) {
@@ -187,7 +190,7 @@ Optional extensions on the jquery.inputmask base
                                     isValid = opts.leadingZeroHandler(chrs, maskset, pos, strict, opts);
                                     if (isValid === true) {
                                         //handle overwrite when fixed precision
-                                        var radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
+                                        var radixPosition = inArray(opts.radixPoint, maskset.buffer);
                                         if (opts.digitsOptional === false && pos > radixPosition && !strict) {
                                             return { "pos": pos, "remove": pos };
                                         } else return { pos: pos };

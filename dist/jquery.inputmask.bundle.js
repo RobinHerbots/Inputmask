@@ -1728,6 +1728,9 @@
         }
     }), $.fn.inputmask;
 }(jQuery), function($) {
+    var inArray = function(searchValue, array, fromIndex) {
+        return $.isArray(array) ? $.inArray(searchValue, array, fromIndex) : array.indexOf(searchValue, fromIndex);
+    };
     return $.extend($.inputmask.defaults.aliases, {
         numeric: {
             mask: function(opts) {
@@ -1761,7 +1764,7 @@
             decimalProtect: !0,
             postFormat: function(buffer, pos, reformatOnly, opts) {
                 var needsRefresh = !1, charAtPos = buffer[pos];
-                if ("" == opts.groupSeparator || -1 != $.inArray(opts.radixPoint, buffer) && pos >= $.inArray(opts.radixPoint, buffer) || new RegExp("[-+]").test(charAtPos)) return {
+                if ("" == opts.groupSeparator || -1 != inArray(opts.radixPoint, buffer) && pos >= inArray(opts.radixPoint, buffer) || new RegExp("[-+]").test(charAtPos)) return {
                     pos: pos
                 };
                 var cbuf = buffer.slice();
@@ -1781,7 +1784,7 @@
                 }
                 buffer.length = bufVal.length;
                 for (var i = 0, l = bufVal.length; l > i; i++) buffer[i] = bufVal.charAt(i);
-                var newPos = $.inArray("?", buffer);
+                var newPos = inArray("?", buffer);
                 return reformatOnly ? buffer[newPos] = charAtPos : buffer.splice(newPos, 1), {
                     pos: newPos,
                     refreshFromBuffer: needsRefresh
@@ -1789,7 +1792,7 @@
             },
             onKeyDown: function(e, buffer, caretPos, opts) {
                 if (e.keyCode == $.inputmask.keyCode.TAB && "0" != opts.placeholder.charAt(0)) {
-                    var radixPosition = $.inArray(opts.radixPoint, buffer);
+                    var radixPosition = inArray(opts.radixPoint, buffer);
                     if (-1 != radixPosition && isFinite(opts.digits)) {
                         for (var i = 1; i <= opts.digits; i++) (void 0 == buffer[radixPosition + i] || buffer[radixPosition + i] == opts.placeholder.charAt(0)) && (buffer[radixPosition + i] = "0");
                         return {
@@ -1839,7 +1842,7 @@
             },
             radixHandler: function(chrs, maskset, pos, strict, opts) {
                 if (!strict && chrs === opts.radixPoint) {
-                    var radixPos = $.inArray(opts.radixPoint, maskset.buffer), integerValue = maskset.buffer.join("").match(opts.regex.integerPart(opts));
+                    var radixPos = inArray(opts.radixPoint, maskset.buffer), integerValue = maskset.buffer.join("").match(opts.regex.integerPart(opts));
                     if (-1 != radixPos) return maskset.validPositions[radixPos - 1] ? {
                         caret: radixPos + 1
                     } : {
@@ -1851,7 +1854,7 @@
                 return !1;
             },
             leadingZeroHandler: function(chrs, maskset, pos, strict, opts) {
-                var matchRslt = maskset.buffer.join("").match(opts.regex.integerNPart(opts)), radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
+                var matchRslt = maskset.buffer.join("").match(opts.regex.integerNPart(opts)), radixPosition = inArray(opts.radixPoint, maskset.buffer);
                 if (matchRslt && !strict && (-1 == radixPosition || matchRslt.index < radixPosition)) if (0 == matchRslt[0].indexOf("0") && pos >= opts.prefix.length) {
                     if (-1 == radixPosition || radixPosition >= pos && void 0 == maskset.validPositions[radixPosition]) return maskset.buffer.splice(matchRslt.index, 1), 
                     pos = pos > matchRslt.index ? pos - 1 : matchRslt.index, {
@@ -1874,7 +1877,7 @@
                         !isValid && (isValid = strict ? new RegExp("[0-9" + $.inputmask.escapeRegex.call(this, opts.groupSeparator) + "]").test(chrs) : new RegExp("[0-9]").test(chrs), 
                         isValid === !0 && (isValid = opts.leadingZeroHandler(chrs, maskset, pos, strict, opts), 
                         isValid === !0)))) {
-                            var radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
+                            var radixPosition = inArray(opts.radixPoint, maskset.buffer);
                             return opts.digitsOptional === !1 && pos > radixPosition && !strict ? {
                                 pos: pos,
                                 remove: pos
