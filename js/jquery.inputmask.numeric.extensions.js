@@ -205,11 +205,7 @@ Optional extensions on the jquery.inputmask base
                     validator: function (chrs, maskset, pos, strict, opts) {
                         var isValid = opts.signHandler(chrs, maskset.buffer, pos, strict, opts);
                         if (!isValid) {
-                            var signed = "[";
-                            if (opts.allowMinus === true) signed += "-";
-                            if (opts.allowPlus === true) signed += "\+";
-                            signed += "]";
-                            isValid = new RegExp(signed).test(chrs);
+                            isValid = (opts.allowMinus && chrs == "-") || (opts.allowPlus && chrs == "+");
                         }
                         return isValid;
                     },

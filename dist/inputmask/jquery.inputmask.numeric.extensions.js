@@ -170,12 +170,8 @@
                 "+": {
                     validator: function(chrs, maskset, pos, strict, opts) {
                         var isValid = opts.signHandler(chrs, maskset.buffer, pos, strict, opts);
-                        if (!isValid) {
-                            var signed = "[";
-                            opts.allowMinus === !0 && (signed += "-"), opts.allowPlus === !0 && (signed += "+"), 
-                            signed += "]", isValid = new RegExp(signed).test(chrs);
-                        }
-                        return isValid;
+                        return isValid || (isValid = opts.allowMinus && "-" == chrs || opts.allowPlus && "+" == chrs), 
+                        isValid;
                     },
                     cardinality: 1,
                     prevalidator: null,
