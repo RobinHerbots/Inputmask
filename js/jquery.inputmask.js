@@ -1439,15 +1439,15 @@
                     return true;
                 }
 
-                var input = this, $input = $(input), inputValue = input._valueGet();
+                var input = this, $input = $(input), inputValue = input._valueGet(), caretPos = caret(input);
                 //paste event for IE8 and lower I guess ;-)
                 if (e.type == "propertychange" && input._valueGet().length <= getMaskLength()) {
                     return true;
                 } else if (e.type == "paste") {
                     if (window.clipboardData && window.clipboardData.getData) { // IE
-                        inputValue = window.clipboardData.getData('Text');
+                        inputValue = inputValue.substr(0, caretPos.begin) + window.clipboardData.getData('Text') + inputValue.substr(caretPos.end, inputValue.length);
                     } else if (e.originalEvent && e.originalEvent.clipboardData && e.originalEvent.clipboardData.getData) {
-                        inputValue = e.originalEvent.clipboardData.getData('text/plain');
+                        inputValue = inputValue.substr(0, caretPos.begin) + e.originalEvent.clipboardData.getData('text/plain') + inputValue.substr(caretPos.end, inputValue.length);;
                     }
                 }
 

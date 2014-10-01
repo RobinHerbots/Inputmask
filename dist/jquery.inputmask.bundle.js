@@ -789,9 +789,9 @@
         }
         function pasteEvent(e) {
             if (skipInputEvent === !0 && "input" == e.type) return skipInputEvent = !1, !0;
-            var input = this, $input = $(input), inputValue = input._valueGet();
+            var input = this, $input = $(input), inputValue = input._valueGet(), caretPos = caret(input);
             if ("propertychange" == e.type && input._valueGet().length <= getMaskLength()) return !0;
-            "paste" == e.type && (window.clipboardData && window.clipboardData.getData ? inputValue = window.clipboardData.getData("Text") : e.originalEvent && e.originalEvent.clipboardData && e.originalEvent.clipboardData.getData && (inputValue = e.originalEvent.clipboardData.getData("text/plain")));
+            "paste" == e.type && (window.clipboardData && window.clipboardData.getData ? inputValue = inputValue.substr(0, caretPos.begin) + window.clipboardData.getData("Text") + inputValue.substr(caretPos.end, inputValue.length) : e.originalEvent && e.originalEvent.clipboardData && e.originalEvent.clipboardData.getData && (inputValue = inputValue.substr(0, caretPos.begin) + e.originalEvent.clipboardData.getData("text/plain") + inputValue.substr(caretPos.end, inputValue.length)));
             var pasteValue = $.isFunction(opts.onBeforePaste) ? opts.onBeforePaste.call(input, inputValue, opts) || inputValue : inputValue;
             return checkVal(input, !0, !1, isRTL ? pasteValue.split("").reverse() : pasteValue.split(""), !0), 
             $input.click(), isComplete(getBuffer()) === !0 && $input.trigger("complete"), !1;
