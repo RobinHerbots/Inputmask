@@ -455,6 +455,16 @@
                 resetMaskSet(true);
             }
             function getTestTemplate(pos, ndxIntlzr, tstPs) {
+            	function checkAlternationMatch(test, altNdx, altArr){
+            	       var isMatch=false, altLocArr = test.locator[altNdx].toString().split(",");
+                       for (var alndx = 0; alndx < altLocArr.length; alndx++) {
+                          if($.inArray(altLocArr[alndx], altArr) != -1){
+                          	isMatch = true;
+                          	break;
+                          }
+					   }
+					   return isMatch;
+               	}
                 var testPositions = getTests(pos, ndxIntlzr, tstPs),
                     testPos,
                     lvp = getLastValidPosition(),
@@ -465,7 +475,8 @@
 
                     if (opts.greedy ||
                         ((testPos["match"] && (testPos["match"].optionality === false || testPos["match"].newBlockMarker === false) && testPos["match"].optionalQuantifier !== true) &&
-                        (lvTest.alternation == undefined || (testPos["locator"][lvTest.alternation] != undefined && $.inArray(testPos["locator"][lvTest.alternation].toString(), lvTestAltArr) == -1)))) {
+                        (lvTest.alternation == undefined ||
+                        (testPos["locator"][lvTest.alternation] != undefined && checkAlternationMatch(testPos, lvTest.alternation, lvTestAltArr))))) {
                         break;
                     }
                 }
