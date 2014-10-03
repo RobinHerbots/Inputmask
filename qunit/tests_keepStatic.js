@@ -81,3 +81,13 @@ test("{ mask: [\"99-99999-9\",\"99-999999-9\"] } - type 121234561", function () 
 
     $("#testmask").remove();
 });
+
+test("{ \"keepStatic\": true, greedy: false, mask: \"(99-9)|(99999)\" } - type 1234", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ "keepStatic": true, greedy: false, "mask": "(99-9)|(99999)" });
+    $("#testmask").Type("1234");
+    equal(document.getElementById("testmask")._valueGet(), "1234", "Result " + document.getElementById("testmask")._valueGet());
+
+    $("#testmask").remove();
+});
