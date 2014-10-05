@@ -275,21 +275,20 @@ Optional extensions on the jquery.inputmask base
         'currency': {
             prefix: "$ ",
             groupSeparator: ",",
-            radixPoint: ".",
             alias: "numeric",
             placeholder: "0",
             autoGroup: true,
             digits: 2,
             digitsOptional: false,
-            clearMaskOnLostFocus: false,
-            decimalProtect: true
+            clearMaskOnLostFocus: false
         },
         'decimal': {
             alias: "numeric"
         },
         'integer': {
             alias: "numeric",
-            digits: "0"
+            digits: "0",
+            radixPoint: ""
         }
     });
     return $.fn.inputmask;
