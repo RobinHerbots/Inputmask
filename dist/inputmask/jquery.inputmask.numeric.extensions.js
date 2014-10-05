@@ -222,21 +222,20 @@
         currency: {
             prefix: "$ ",
             groupSeparator: ",",
-            radixPoint: ".",
             alias: "numeric",
             placeholder: "0",
             autoGroup: !0,
             digits: 2,
             digitsOptional: !1,
-            clearMaskOnLostFocus: !1,
-            decimalProtect: !0
+            clearMaskOnLostFocus: !1
         },
         decimal: {
             alias: "numeric"
         },
         integer: {
             alias: "numeric",
-            digits: "0"
+            digits: "0",
+            radixPoint: ""
         }
     }), $.fn.inputmask;
 });
