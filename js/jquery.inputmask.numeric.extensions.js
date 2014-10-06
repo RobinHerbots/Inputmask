@@ -68,7 +68,8 @@ Optional extensions on the jquery.inputmask base
                 if (opts.groupSeparator == "" ||
                     ($.inArray(opts.radixPoint, buffer) != -1 && pos >= $.inArray(opts.radixPoint, buffer)) ||
                     new RegExp('[-\+]').test(charAtPos)
-                    ) return { pos: pos };
+                    )
+                     return { pos: pos };
                 var cbuf = buffer.slice();
                 if (charAtPos == opts.groupSeparator) {
                     cbuf.splice(pos--, 1);
@@ -76,12 +77,12 @@ Optional extensions on the jquery.inputmask base
                 }
                 if (reformatOnly) cbuf[pos] = "?"; else cbuf.splice(pos, 0, "?"); //set position indicator
                 var bufVal = cbuf.join('');
-                if (opts.autoGroup || (reformatOnly && bufVal.indexOf(opts.groupSeparator) != -1)) {
+                if (bufVal.length > 0 && opts.autoGroup || (reformatOnly && bufVal.indexOf(opts.groupSeparator) != -1)) {
                     var escapedGroupSeparator = $.inputmask.escapeRegex.call(this, opts.groupSeparator);
                     needsRefresh = bufVal.indexOf(opts.groupSeparator) == 0;
                     bufVal = bufVal.replace(new RegExp(escapedGroupSeparator, "g"), '');
                     var radixSplit = bufVal.split(opts.radixPoint);
-                    bufVal = radixSplit[0];
+                    bufVal = opts.radixPoint == "" ? bufVal : radixSplit[0];
                     if (bufVal != (opts.prefix + "?0") && bufVal.length >= (opts.groupSize + opts.prefix.length)) {
                         needsRefresh = true;
                         var reg = new RegExp('([-\+]?[\\d\?]+)([\\d\?]{' + opts.groupSize + '})');
@@ -90,7 +91,7 @@ Optional extensions on the jquery.inputmask base
                             bufVal = bufVal.replace(opts.groupSeparator + opts.groupSeparator, opts.groupSeparator);
                         }
                     }
-                    if (radixSplit.length > 1)
+                    if (opts.radixPoint != "" && radixSplit.length > 1)
                         bufVal += opts.radixPoint + radixSplit[1];
                 }
                 buffer.length = bufVal.length; //align the length
