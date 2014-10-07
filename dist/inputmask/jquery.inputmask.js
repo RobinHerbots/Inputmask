@@ -524,14 +524,12 @@
             var placeholder = $.isFunction(test.placeholder) ? test.placeholder.call(this, opts) : test.placeholder;
             return void 0 != placeholder ? placeholder : null == test.fn ? test.def : opts.placeholder.charAt(pos % opts.placeholder.length);
         }
-        function checkVal(input, writeOut, strict, nptvl, intelliCheck) {
-            var inputValue = void 0 != nptvl ? nptvl.slice() : truncateInput(input._valueGet()).split("");
+        function checkVal(input, writeOut, strict, nptvl) {
+            var inputValue = void 0 != nptvl ? nptvl.slice() : input._valueGet().split("");
             if (resetMaskSet(), writeOut && input._valueSet(""), $.each(inputValue, function(ndx, charCode) {
-                if (intelliCheck === !0) {
-                    var lvp = getLastValidPosition(), pos = -1 == lvp ? ndx : seekNext(lvp);
-                    -1 == $.inArray(charCode, getBufferTemplate().slice(lvp + 1, pos)) && keypressEvent.call(input, void 0, !0, charCode.charCodeAt(0), !1, strict, strict ? ndx : getMaskSet().p);
-                } else keypressEvent.call(input, void 0, !0, charCode.charCodeAt(0), !1, strict, strict ? ndx : getMaskSet().p), 
-                strict = strict || ndx > 0 && ndx > getMaskSet().p;
+                var lvp = getLastValidPosition(), pos = -1 == lvp ? ndx : seekNext(lvp);
+                (-1 == $.inArray(charCode, getBufferTemplate().slice(lvp + 1, pos)) || strict) && (keypressEvent.call(input, void 0, !0, charCode.charCodeAt(0), !1, strict, strict ? ndx : getMaskSet().p), 
+                strict = strict || ndx > 0 && ndx > getMaskSet().p);
             }), writeOut) {
                 var keypressResult = opts.onKeyPress.call(this, void 0, getBuffer(), 0, opts);
                 handleOnKeyResult(input, keypressResult), writeBuffer(input, getBuffer(), $(input).is(":focus") ? seekNext(getLastValidPosition(0)) : void 0);
@@ -539,9 +537,6 @@
         }
         function escapeRegex(str) {
             return $.inputmask.escapeRegex.call(this, str);
-        }
-        function truncateInput(inputValue) {
-            return inputValue.replace(new RegExp("(" + escapeRegex(getBufferTemplate().join("")) + ")*$"), "");
         }
         function unmaskedvalue($input) {
             if ($input.data("_inputmask") && !$input.hasClass("hasDatepicker")) {
@@ -802,7 +797,7 @@
             if ("propertychange" == e.type && input._valueGet().length <= getMaskLength()) return !0;
             "paste" == e.type && (window.clipboardData && window.clipboardData.getData ? inputValue = inputValue.substr(0, caretPos.begin) + window.clipboardData.getData("Text") + inputValue.substr(caretPos.end, inputValue.length) : e.originalEvent && e.originalEvent.clipboardData && e.originalEvent.clipboardData.getData && (inputValue = inputValue.substr(0, caretPos.begin) + e.originalEvent.clipboardData.getData("text/plain") + inputValue.substr(caretPos.end, inputValue.length)));
             var pasteValue = $.isFunction(opts.onBeforePaste) ? opts.onBeforePaste.call(input, inputValue, opts) || inputValue : inputValue;
-            return checkVal(input, !0, !1, isRTL ? pasteValue.split("").reverse() : pasteValue.split(""), !0), 
+            return checkVal(input, !0, !1, isRTL ? pasteValue.split("").reverse() : pasteValue.split("")), 
             $input.click(), isComplete(getBuffer()) === !0 && $input.trigger("complete"), !1;
         }
         function mobileInputEvent(e) {
@@ -891,7 +886,7 @@
                     }, 0);
                 }).bind(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", pasteEvent).bind("setvalue.inputmask", function() {
                     var input = this;
-                    checkVal(input, !0, !1, void 0, !0), valueOnFocus = getBuffer().join(""), (opts.clearMaskOnLostFocus || opts.clearIncomplete) && input._valueGet() == getBufferTemplate().join("") && input._valueSet("");
+                    checkVal(input, !0, !1), valueOnFocus = getBuffer().join(""), (opts.clearMaskOnLostFocus || opts.clearIncomplete) && input._valueGet() == getBufferTemplate().join("") && input._valueSet("");
                 }).bind("cut.inputmask", function(e) {
                     skipInputEvent = !0;
                     var input = this, $input = $(input), pos = caret(input);
@@ -908,7 +903,7 @@
                 msie1x && $el.bind("input.inputmask", pasteEvent), (android || androidfirefox || androidchrome || kindle) && ("input" == PasteEventType && $el.unbind(PasteEventType + ".inputmask"), 
                 $el.bind("input.inputmask", mobileInputEvent)), patchValueProperty(el);
                 var initialValue = $.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call(el, el._valueGet(), opts) || el._valueGet() : el._valueGet();
-                checkVal(el, !0, !1, initialValue.split(""), !0), valueOnFocus = getBuffer().join("");
+                checkVal(el, !0, !1, initialValue.split("")), valueOnFocus = getBuffer().join("");
                 var activeElement;
                 try {
                     activeElement = document.activeElement;
@@ -939,7 +934,7 @@
                 isRTL: opts.numericInput
             }), opts.numericInput && (isRTL = !0);
             var valueBuffer = ($.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call($el, actionObj.value, opts) || actionObj.value : actionObj.value).split("");
-            return checkVal($el, !1, !1, isRTL ? valueBuffer.reverse() : valueBuffer, !0), opts.onKeyPress.call(this, void 0, getBuffer(), 0, opts), 
+            return checkVal($el, !1, !1, isRTL ? valueBuffer.reverse() : valueBuffer), opts.onKeyPress.call(this, void 0, getBuffer(), 0, opts), 
             actionObj.metadata ? {
                 value: isRTL ? getBuffer().slice().reverse().join("") : getBuffer().join(""),
                 metadata: $el.inputmask("getmetadata")

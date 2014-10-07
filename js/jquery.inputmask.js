@@ -455,16 +455,16 @@
                 resetMaskSet(true);
             }
             function getTestTemplate(pos, ndxIntlzr, tstPs) {
-            	function checkAlternationMatch(test, altNdx, altArr){
-            	       var isMatch=false, altLocArr = test.locator[altNdx].toString().split(",");
-                       for (var alndx = 0; alndx < altLocArr.length; alndx++) {
-                          if($.inArray(altLocArr[alndx], altArr) != -1){
-                          	isMatch = true;
-                          	break;
-                          }
-					   }
-					   return isMatch;
-               	}
+                function checkAlternationMatch(test, altNdx, altArr) {
+                    var isMatch = false, altLocArr = test.locator[altNdx].toString().split(",");
+                    for (var alndx = 0; alndx < altLocArr.length; alndx++) {
+                        if ($.inArray(altLocArr[alndx], altArr) != -1) {
+                            isMatch = true;
+                            break;
+                        }
+                    }
+                    return isMatch;
+                }
                 var testPositions = getTests(pos, ndxIntlzr, tstPs),
                     testPos,
                     lvp = getLastValidPosition(),
@@ -931,21 +931,18 @@
                 var placeholder = $.isFunction(test["placeholder"]) ? test["placeholder"].call(this, opts) : test["placeholder"];
                 return placeholder != undefined ? placeholder : (test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length));
             }
-            function checkVal(input, writeOut, strict, nptvl, intelliCheck) {
-                var inputValue = nptvl != undefined ? nptvl.slice() : truncateInput(input._valueGet()).split('');
+            function checkVal(input, writeOut, strict, nptvl) {
+                var inputValue = nptvl != undefined ? nptvl.slice() : input._valueGet().split('');
                 resetMaskSet();
                 if (writeOut) input._valueSet(""); //initial clear
                 $.each(inputValue, function (ndx, charCode) {
-                    if (intelliCheck === true) {
-                        var lvp = getLastValidPosition(),
-                            pos = lvp == -1 ? ndx : seekNext(lvp);
-                        if ($.inArray(charCode, getBufferTemplate().slice(lvp + 1, pos)) == -1) {
-                            keypressEvent.call(input, undefined, true, charCode.charCodeAt(0), false, strict, strict ? ndx : getMaskSet()["p"]);
-                        }
-                    } else {
+                    var lvp = getLastValidPosition(),
+                        pos = lvp == -1 ? ndx : seekNext(lvp);
+                    if ($.inArray(charCode, getBufferTemplate().slice(lvp + 1, pos)) == -1 || strict) {
                         keypressEvent.call(input, undefined, true, charCode.charCodeAt(0), false, strict, strict ? ndx : getMaskSet()["p"]);
                         strict = strict || (ndx > 0 && ndx > getMaskSet()["p"]);
                     }
+
                 });
                 if (writeOut) {
                     var keypressResult = opts.onKeyPress.call(this, undefined, getBuffer(), 0, opts);
@@ -955,9 +952,6 @@
             }
             function escapeRegex(str) {
                 return $.inputmask.escapeRegex.call(this, str);
-            }
-            function truncateInput(inputValue) {
-                return inputValue.replace(new RegExp("(" + escapeRegex(getBufferTemplate().join('')) + ")*$"), "");
             }
             function unmaskedvalue($input) {
                 if ($input.data('_inputmask') && !$input.hasClass('hasDatepicker')) {
@@ -1463,7 +1457,7 @@
                 }
 
                 var pasteValue = $.isFunction(opts.onBeforePaste) ? (opts.onBeforePaste.call(input, inputValue, opts) || inputValue) : inputValue;
-                checkVal(input, true, false, isRTL ? pasteValue.split('').reverse() : pasteValue.split(''), true);
+                checkVal(input, true, false, isRTL ? pasteValue.split('').reverse() : pasteValue.split(''));
                 $input.click();
                 if (isComplete(getBuffer()) === true)
                     $input.trigger("complete");
@@ -1659,7 +1653,7 @@
                     }).bind(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", pasteEvent
                     ).bind('setvalue.inputmask', function () {
                         var input = this;
-                        checkVal(input, true, false, undefined, true);
+                        checkVal(input, true, false);
                         valueOnFocus = getBuffer().join('');
                         if ((opts.clearMaskOnLostFocus || opts.clearIncomplete) && input._valueGet() == getBufferTemplate().join(''))
                             input._valueSet('');
@@ -1702,7 +1696,7 @@
 
                     //apply mask
                     var initialValue = $.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(el, el._valueGet(), opts) || el._valueGet()) : el._valueGet();
-                    checkVal(el, true, false, initialValue.split(''), true);
+                    checkVal(el, true, false, initialValue.split(''));
                     valueOnFocus = getBuffer().join('');
                     // Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
                     var activeElement;
@@ -1761,7 +1755,7 @@
                             isRTL = true;
                         }
                         var valueBuffer = ($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call($el, actionObj["value"], opts) || actionObj["value"]) : actionObj["value"]).split('');
-                        checkVal($el, false, false, isRTL ? valueBuffer.reverse() : valueBuffer, true);
+                        checkVal($el, false, false, isRTL ? valueBuffer.reverse() : valueBuffer);
                         opts.onKeyPress.call(this, undefined, getBuffer(), 0, opts);
 
                         if (actionObj["metadata"]) {
