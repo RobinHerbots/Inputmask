@@ -527,9 +527,9 @@
         function checkVal(input, writeOut, strict, nptvl) {
             var inputValue = void 0 != nptvl ? nptvl.slice() : input._valueGet().split("");
             if (resetMaskSet(), writeOut && input._valueSet(""), $.each(inputValue, function(ndx, charCode) {
-                var lvp = getLastValidPosition(), pos = -1 == lvp ? ndx : seekNext(lvp);
-                (-1 == $.inArray(charCode, getBufferTemplate().slice(lvp + 1, pos)) || strict) && (keypressEvent.call(input, void 0, !0, charCode.charCodeAt(0), !1, strict, strict ? ndx : getMaskSet().p), 
-                strict = strict || ndx > 0 && ndx > getMaskSet().p);
+                var lvp = getLastValidPosition();
+                -1 == $.inArray(charCode, getBufferTemplate().slice(lvp + 1, getMaskSet().p)) || strict ? (keypressEvent.call(input, void 0, !0, charCode.charCodeAt(0), !1, strict, strict ? ndx : getMaskSet().p), 
+                strict = strict || ndx > 0 && ndx > getMaskSet().p) : keypressEvent.call(input, void 0, !0, charCode.charCodeAt(0), !1, !0, lvp + 1);
             }), writeOut) {
                 var keypressResult = opts.onKeyPress.call(this, void 0, getBuffer(), 0, opts);
                 handleOnKeyResult(input, keypressResult), writeBuffer(input, getBuffer(), $(input).is(":focus") ? seekNext(getLastValidPosition(0)) : void 0);

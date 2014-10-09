@@ -44,7 +44,12 @@
             alias: "phone",
             url: "phone-codes/phone-be.js",
             maskInit: "+32(pp)pppppppp",
-            nojumpsThreshold: 4
+            nojumpsThreshold: 4,
+            onBeforeMask: function(value) {
+                var processedValue = value.replace(/^0/g, "");
+                return (processedValue.indexOf("32") > 1 || -1 == processedValue.indexOf("32")) && (processedValue = "32" + processedValue), 
+                processedValue;
+            }
         }
     }), $.fn.inputmask;
 });

@@ -936,11 +936,12 @@
                 resetMaskSet();
                 if (writeOut) input._valueSet(""); //initial clear
                 $.each(inputValue, function (ndx, charCode) {
-                    var lvp = getLastValidPosition(),
-                        pos = lvp == -1 ? ndx : seekNext(lvp);
-                    if ($.inArray(charCode, getBufferTemplate().slice(lvp + 1, pos)) == -1 || strict) {
+                    var lvp = getLastValidPosition();
+                    if ($.inArray(charCode, getBufferTemplate().slice(lvp + 1, getMaskSet()["p"])) == -1 || strict) {
                         keypressEvent.call(input, undefined, true, charCode.charCodeAt(0), false, strict, strict ? ndx : getMaskSet()["p"]);
                         strict = strict || (ndx > 0 && ndx > getMaskSet()["p"]);
+                    } else {
+                        keypressEvent.call(input, undefined, true, charCode.charCodeAt(0), false, true, lvp + 1);
                     }
 
                 });
