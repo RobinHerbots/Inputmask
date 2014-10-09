@@ -1,4 +1,4 @@
-/*
+/*!
 * jquery.inputmask.numeric.extensions.js
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
