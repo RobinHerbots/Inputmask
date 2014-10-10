@@ -69,7 +69,7 @@ Optional extensions on the jquery.inputmask base
                     ($.inArray(opts.radixPoint, buffer) != -1 && pos >= $.inArray(opts.radixPoint, buffer)) ||
                     new RegExp('[-\+]').test(charAtPos)
                     )
-                     return { pos: pos };
+                    return { pos: pos };
                 var cbuf = buffer.slice();
                 if (charAtPos == opts.groupSeparator) {
                     cbuf.splice(pos--, 1);
@@ -149,7 +149,7 @@ Optional extensions on the jquery.inputmask base
                 if (!strict && chrs === opts.radixPoint) {
                     var radixPos = $.inArray(opts.radixPoint, maskset.buffer), integerValue = maskset.buffer.join('').match(opts.regex.integerPart(opts));
 
-                    if (radixPos != -1) {
+                    if (radixPos != -1 && maskset["validPositions"][radixPos]) {
                         if (maskset["validPositions"][radixPos - 1])
                             return { "caret": radixPos + 1 };
                         else return { "pos": integerValue.index, c: integerValue[0], "caret": radixPos + 1 };
@@ -193,7 +193,7 @@ Optional extensions on the jquery.inputmask base
                                             isValid = { "pos": pos, "remove": pos };
                                         } isValid = { pos: pos };
                                     }
-                                } 
+                                }
                             }
                         }
 

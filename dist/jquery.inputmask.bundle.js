@@ -1854,7 +1854,7 @@
             radixHandler: function(chrs, maskset, pos, strict, opts) {
                 if (!strict && chrs === opts.radixPoint) {
                     var radixPos = $.inArray(opts.radixPoint, maskset.buffer), integerValue = maskset.buffer.join("").match(opts.regex.integerPart(opts));
-                    if (-1 != radixPos) return maskset.validPositions[radixPos - 1] ? {
+                    if (-1 != radixPos && maskset.validPositions[radixPos]) return maskset.validPositions[radixPos - 1] ? {
                         caret: radixPos + 1
                     } : {
                         pos: integerValue.index,
