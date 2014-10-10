@@ -526,7 +526,7 @@
             var inputValue = void 0 != nptvl ? nptvl.slice() : input._valueGet().split("");
             resetMaskSet(), writeOut && input._valueSet("");
             var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(""), matches = inputValue.join("").match(new RegExp(escapeRegex(staticInput), "g"));
-            if (matches && matches.length > 0 && inputValue.splice(0, staticInput.length), $.each(inputValue, function(ndx, charCode) {
+            if (matches && matches.length > 1 && inputValue.splice(0, staticInput.length), $.each(inputValue, function(ndx, charCode) {
                 var lvp = getLastValidPosition();
                 -1 == $.inArray(charCode, getBufferTemplate().slice(lvp + 1, getMaskSet().p)) || strict ? (keypressEvent.call(input, void 0, !0, charCode.charCodeAt(0), !1, strict, strict ? ndx : getMaskSet().p), 
                 strict = strict || ndx > 0 && ndx > getMaskSet().p) : keypressEvent.call(input, void 0, !0, charCode.charCodeAt(0), !1, !0, lvp + 1);

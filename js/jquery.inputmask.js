@@ -937,7 +937,7 @@
                 if (writeOut) input._valueSet(""); //initial clear
 
                 var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(''), matches = inputValue.join('').match(new RegExp(escapeRegex(staticInput), "g"));
-                if (matches && matches.length > 0) {
+                if (matches && matches.length > 1) {
                     inputValue.splice(0, staticInput.length);
                 }
 
