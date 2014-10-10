@@ -935,6 +935,12 @@
                 var inputValue = nptvl != undefined ? nptvl.slice() : input._valueGet().split('');
                 resetMaskSet();
                 if (writeOut) input._valueSet(""); //initial clear
+
+                var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(''), matches = inputValue.join('').match(new RegExp(escapeRegex(staticInput), "g"));
+                if (matches && matches.length > 0) {
+                    inputValue.splice(0, staticInput.length);
+                }
+
                 $.each(inputValue, function (ndx, charCode) {
                     var lvp = getLastValidPosition();
                     if ($.inArray(charCode, getBufferTemplate().slice(lvp + 1, getMaskSet()["p"])) == -1 || strict) {
