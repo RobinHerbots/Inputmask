@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.28
+* Version: 3.1.29
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery", "./jquery.inputmask" ], factory) : factory(jQuery);
@@ -155,10 +155,10 @@
                         isValid === !0 && (isValid = opts.leadingZeroHandler(chrs, maskset, pos, strict, opts), 
                         isValid === !0)))) {
                             var radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
-                            opts.digitsOptional === !1 && pos > radixPosition && !strict && (isValid = {
+                            isValid = opts.digitsOptional === !1 && pos > radixPosition && !strict ? {
                                 pos: pos,
                                 remove: pos
-                            }), isValid = {
+                            } : {
                                 pos: pos
                             };
                         }

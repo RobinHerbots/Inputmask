@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <form method="post">
+        <span>
+            <label>
+                Test1
+            </label>
+            <span>
+                <input id="test1" name="test1" type="text">
+            </span>
+        </span>
+        <br />
+        <input id="test2" name="test2" /><br />
+        <input id="test3" name="test3" type="tel" /><br />
+        <!--<input type="text" id="test4" name="test4" data-inputmask-mask="['$9.99', '$99.99' , '$999.99' , '$9,999.99' , '$99,999.99' , '$999,999.99' , '$9,999,999.99' , '$99,999,999.99' , '$999,999,999.99' ]"
+               data-inputmask-placeholder=" " data-inputmask-numericinput="true" data-inputmask-rightalignnumerics="false" value="$100,000.00" />-->
+        <br />
+        <!--<input id="test5" name="test5" data-inputmask="'mask': ['$9.99', '$99.99' , '$999.99' , '$9,999.99'], 'placeholder':' ' , 'numericInput':
+               true, 'rightAlignNumerics' : false" />-->
+        <br />
+        <input id="test6" name="test6" /><br />
+        <input id="test7" name="test7" /><br />
+        <!--<input id="test8" name="test8" /><br />-->
+        <input id="button" type="submit" value="Submit" />
+    </form>
+    <input id="button2" type="button" value="Click" />
+    <script src="node_modules/jquery/jquery.js"></script>
+    <script src="js/jquery.inputmask.js"></script>
+    <script src="js/jquery.inputmask.extensions.js"></script>
+    <script src="js/jquery.inputmask.date.extensions.js"></script>
+    <script src="js/jquery.inputmask.numeric.extensions.js"></script>
+    <script src="js/jquery.inputmask.regex.extensions.js"></script>
+    <script src="js/jquery.inputmask.phone.extensions.js"></script>
+    <script>
+        if (!Array.prototype.indexOf) {
+            Array.prototype.indexOf = function (obj, start) {
+                for (var i = (start || 0), j = this.length; i < j; i++) {
+                    if (this[i] === obj) { return i; }
+                }
+                return -1;
+            }
+        }
+        $(document).ready(function () {
+            //$(":input").inputmask();
+            //$("#test2").inputmask({
+            //    alias: "decimal",
+            //    digits: 2,
+            //    digitsOptional: false,
+            //    placeholder: "0"
+            //});
+
+
+            var test = ["abcd", "abc", "abcdef"];
+            test = test.sort(function (a, b) { return a.length - b.length; });
+
+            //$(function () {
+            //    $('#test1, #test2').inputmask({
+            //        "mask": "+7(999)999-99-99"
+            //    });
+
+            //    $('#test1').on('keyup', function () {
+            //        $('#test2').val($('#test1').val());
+            //    });
+            //});
+            //$("#test1").inputmask({ mask: "99-9999-9999", keepStatic: true });
+            $("#test3").inputmask({ "keepStatic": true, greedy: false, "mask": "(99-9)|(99999)" });
+            //  $("#test3").inputmask({"keepStatic":true,greedy:false,"mask":"(9{4} 9{6} 9[5])|(9{4} 9{4} 9{4} 9{4})|(9{9} 9{9})"});
+            //$("#test3").inputmask({ mask: ["99-99999-9", "99-999999-9"], keepStatic: true });
+            $("#test6").inputmask("currency");
+            $("#test7").inputmask({ mask: ["99999", "99999-9999"] });
+            //$("#test3").inputmask("phone", { "url": "https://rawgit.com/RobinHerbots/jquery.inputmask/3.x/js/phone-codes/phone-codes.js" });
+            //                    //$("#test3").inputmask("+55-99-9999|(99)-9999", { keepStatic: true });
+            //$("#test1").inputmask({ "mask": "99.999.999/9999-99", "numericInput": true, "rightAlignNumerics": false, "autoUnmask": true });
+            //$("#test1").inputmask({ mask: ["9.99", "99.99", "999.99"] });
+            //$("#test2").inputmask({ mask: ["99999", "99999-9999", "999999-9999"], numericInput: false, keepStatic: false, greedy: false });
+            //$("#test1").inputmask('9999 9999 9999 9999[99]', {
+            //    greedy: false,
+            //    showMaskOnFocus: false,
+            //    showMaskOnHover: false
+            //});
+            //$("#test2").inputmask({
+            //    mask: ["99.9", "X"],
+            //    definitions: {
+            //        "X": {
+            //            validator: "[xX]",
+            //            cardinality: 1,
+            //            casing: "upper"
+            //        }
+            //    }
+            //});
+            //$("#test1").inputmask({
+            //    mask: '9999 9999 9999 9999',
+            //    placeholder: ' ',
+            //    showMaskOnHover: false,
+            //    showMaskOnFocus: false,
+            //    onBeforePaste: function (val) { console.log(val); }
+            //});
+            //$("#test1").inputmask("999 kg", {
+            //    greedy: false,
+            //    placeholder: " ",
+            //    autoUnmask: true,
+            //    numericInput: true
+            //}).on("blur", function () {
+            //    //$("#test1").val();
+            //});
+
+            //$("#test5").inputmask('9{1,3}[.999.999-99]', { removeMaskOnSubmit: true, autoUnmask: true, showMaskOnHover: false, showMaskOnFocus: false, greedy: false });
+            //$("#test6").inputmask({ alias: "numeric", groupSeparator: ".", groupSize: 3, radixPoint: ",", digits: 2, autoGroup: true, digitsOptional: false, placeholder: "0", rightAlignNumerics: true });
+            //$("#test7").inputmask({"keepStatic":true,"mask":"(9{4} 9{4} 9{4} 9{4})|(9{4} 9{6} 9[5])|(9{9} 9{9})"});
+            //$("#test6").inputmask("numeric", { placeholder: "0", decimalProtect: true });
+            //$("#test7").inputmask("date", { yearrange: { minyear: 1900, maxyear: 2000 } });
+            //$("#test7").inputmask({ alias: "numeric", placeholder: "0", groupSeparator: " ", radixPoint: ",", autoGroup: true, digits: 2, digitsOptional: false, clearMaskOnLostFocus: false, decimalProtect: true });
+            //$("#test8").inputmask({ alias: "numeric", placeholder: "0", groupSeparator: ".", radixPoint: ",", autoGroup: true, digits: 2, digitsOptional: false, clearMaskOnLostFocus: false });
+            $("#button2").click(function () {
+                //alert(JSON.stringify($.inputmask.format($("#test4").val(), {
+                //    alias: "phonebe", "url": "https://rawgit.com/RobinHerbots/jquery.inputmask/3.x/js/phone-codes/phone-be.json", onBeforeMask: function (value, opts) {
+                //        var processedValue = value.replace(/^0/g, "");
+                //        if (processedValue.indexOf("32") != 0) {
+                //            processedValue = "32" + processedValue;
+                //        }
+                //        return processedValue;
+                //    }
+                //}, true)));
+                //alert(JSON.stringify($('#test3').inputmask("getmetadata")));
+                //$("form").submit();
+                $("#test6").val('+375 (+375) 999-99-99');
+                //return false;
+            });
+        });
+    </script>
+</body>
+</html>
