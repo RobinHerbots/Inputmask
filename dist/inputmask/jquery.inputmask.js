@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.31
+* Version: 3.1.32
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery" ], factory) : factory(jQuery);
@@ -222,7 +222,7 @@
             var before = lastValidPosition, after = lastValidPosition;
             for (var posNdx in valids) {
                 var psNdx = parseInt(posNdx);
-                (-1 == closestTo || null != valids[psNdx].match.fn) && (closestTo > psNdx && (before = psNdx), 
+                (-1 == closestTo || null != valids[psNdx].match.fn) && (closestTo >= psNdx && (before = psNdx), 
                 psNdx >= closestTo && (after = psNdx));
             }
             return lastValidPosition = closestTo - before > 1 || closestTo > after ? before : after;

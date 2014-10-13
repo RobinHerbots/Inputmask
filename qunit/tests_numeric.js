@@ -719,3 +719,20 @@ test("inputmask(\"decimal\") - value=\"123.1\" tab out", function () {
     equal($("#testmask").val(), "123.100", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
+
+asyncTest("currency alias - 200000 => replace 2 to 3", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("currency");
+
+    $("#testmask")[0].focus();
+    $("#testmask").click();
+    setTimeout(function () {
+        $("#testmask").Type("200000");
+        $.caret($("#testmask"), 2, 3);
+        $("#testmask").Type("3");
+        start();
+        equal($("#testmask").val(), "$ 300,000.00", "Result " + $("#testmask").val());
+        $("#testmask").remove();
+    }, 5);
+});

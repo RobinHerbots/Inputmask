@@ -383,7 +383,7 @@
                 for (var posNdx in valids) {
                     var psNdx = parseInt(posNdx);
                     if (closestTo == -1 || valids[psNdx]["match"].fn != null) {
-                        if (psNdx < closestTo) before = psNdx;
+                        if (psNdx <= closestTo) before = psNdx;
                         if (psNdx >= closestTo) after = psNdx;
                     }
                 }

@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.31
+* Version: 3.1.32
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery", "./jquery.inputmask" ], factory) : factory(jQuery);
@@ -132,7 +132,7 @@
             },
             leadingZeroHandler: function(chrs, maskset, pos, strict, opts) {
                 var matchRslt = maskset.buffer.join("").match(opts.regex.integerNPart(opts)), radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
-                if (matchRslt && !strict && (-1 == radixPosition || matchRslt.index < radixPosition)) if (0 == matchRslt[0].indexOf("0") && pos >= opts.prefix.length) {
+                if (matchRslt && !strict && (-1 == radixPosition || matchRslt.index < radixPosition)) if ("0" == matchRslt[0] && pos >= opts.prefix.length) {
                     if (-1 == radixPosition || radixPosition >= pos && void 0 == maskset.validPositions[radixPosition]) return maskset.buffer.splice(matchRslt.index, 1), 
                     pos = pos > matchRslt.index ? pos - 1 : matchRslt.index, {
                         pos: pos,
@@ -142,6 +142,10 @@
                     pos = pos > matchRslt.index ? pos - 1 : matchRslt.index, {
                         pos: pos,
                         remove: matchRslt.index
+                    };
+                    if (void 0 == maskset.validPositions[radixPosition]) return maskset.buffer[pos] = chrs, 
+                    {
+                        refreshFromBuffer: !0
                     };
                 } else if ("0" == chrs && pos <= matchRslt.index) return !1;
                 return !0;
