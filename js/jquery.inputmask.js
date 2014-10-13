@@ -1502,17 +1502,12 @@
                     return true;
                 }
                 var input = this;
-                var caretPos = caret(input),
-                    currentValue = input._valueGet();
-
-                caret(input, caretPos.begin - 1);
-                var keypress = $.Event("keypress");
-                keypress.which = currentValue.charCodeAt(caretPos.begin - 1);
-                skipKeyPressEvent = false;
-                ignorable = false;
-                keypressEvent.call(input, keypress, undefined, undefined, false);
+                checkVal(input, false, false);
                 var forwardPosition = getMaskSet()["p"];
                 writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
+
+                if (isComplete(getBuffer()) === true)
+                    $(input).trigger("complete");
 
                 e.preventDefault();
             }
@@ -1686,16 +1681,12 @@
                     ).bind("keyup.inputmask", keyupEvent
                     ).bind("compositionupdate.inputmask", compositionupdateEvent);
 
-                    if (PasteEventType === "paste" && !msie1x) {
+                    if (PasteEventType === "paste") {
                         $el.bind("input.inputmask", inputFallBackEvent);
                     }
-                    if (msie1x) { //todo enhance inputFallBack to handle this case
-                        $el.bind("input.inputmask", pasteEvent);
-                    }
+
                     if (android || androidfirefox || androidchrome || kindle) {
-                        if (PasteEventType == "input") {
-                            $el.unbind(PasteEventType + ".inputmask");
-                        }
+                        $el.unbind("input.inputmask");
                         $el.bind("input.inputmask", mobileInputEvent);
                     }
 
