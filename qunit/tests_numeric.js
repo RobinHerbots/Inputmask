@@ -736,3 +736,27 @@ asyncTest("currency alias - 200000 => replace 2 to 3", function () {
         $("#testmask").remove();
     }, 5);
 });
+
+test("inputmask(\"integer\") - -0 - laxmikantG", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("integer", { placeholder: "0" });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("-0");
+
+    equal($("#testmask").val(), "", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("inputmask(\"integer\") - 123- - laxmikantG", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("integer", { placeholder: "0" });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123-");
+
+    equal($("#testmask").val(), "-123", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
