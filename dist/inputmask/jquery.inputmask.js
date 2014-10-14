@@ -262,7 +262,7 @@
         }
         function getTestTemplate(pos, ndxIntlzr, tstPs) {
             function checkAlternationMatch(test, altNdx, altArr) {
-                for (var isMatch = !1, altLocArr = test.locator[altNdx].toString().split(","), alndx = 0; alndx < altLocArr.length; alndx++) if (-1 != $.inArray(altLocArr[alndx], altArr)) {
+                for (var altArrC = opts.greedy ? altArr : altArr.slice(0, 1), isMatch = !1, altLocArr = test.locator[altNdx].toString().split(","), alndx = 0; alndx < altLocArr.length; alndx++) if (-1 != $.inArray(altLocArr[alndx], altArrC)) {
                     isMatch = !0;
                     break;
                 }

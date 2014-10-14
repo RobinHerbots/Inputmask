@@ -39,7 +39,7 @@ asyncTest("inputmask({ mask: [\"999.999.999-99\", \"99.999.999/9999-99\"]}) - in
     }, 0);
 });
 
-asyncTest("inputmask({ mask: [\"99999\", \"99999-9999\"]]}) - input 12345", function () {
+asyncTest("inputmask({ mask: [\"99999\", \"99999-9999\"]]}) - input 12345 greedy + blur", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask({ mask: ["99999", "99999-9999"] });
@@ -53,7 +53,7 @@ asyncTest("inputmask({ mask: [\"99999\", \"99999-9999\"]]}) - input 12345", func
         $("#testmask").remove();
     }, 0);
 });
-asyncTest("inputmask({ mask: [\"99999\", \"99999-9999\"]]}) - input 12345", function () {
+asyncTest("inputmask({ mask: [\"99999\", \"99999-9999\"]]}) - input 12345 not greedy", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask({ mask: ["99999", "99999-9999"], greedy: false, keepStatic: true });

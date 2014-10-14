@@ -456,9 +456,10 @@
             }
             function getTestTemplate(pos, ndxIntlzr, tstPs) {
                 function checkAlternationMatch(test, altNdx, altArr) {
+                    var altArrC = opts.greedy ? altArr : altArr.slice(0, 1);
                     var isMatch = false, altLocArr = test.locator[altNdx].toString().split(",");
                     for (var alndx = 0; alndx < altLocArr.length; alndx++) {
-                        if ($.inArray(altLocArr[alndx], altArr) != -1) {
+                        if ($.inArray(altLocArr[alndx], altArrC) != -1) {
                             isMatch = true;
                             break;
                         }
