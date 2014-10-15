@@ -158,7 +158,7 @@
     { "mask": "+31-77-###-####", "cc": "NL", "cd": "Netherlands", "city": "Venlo" },
     { "mask": "+31-78-###-####", "cc": "NL", "cd": "Netherlands", "city": "Dordrecht" },
     { "mask": "+31-79-###-####", "cc": "NL", "cd": "Netherlands", "city": "Zoetermeer" },
-    /* Niet-geografische nummers */
+
     { "mask": "+31-61-###-####", "cc": "NL", "cd": "Netherlands", "city": "Mobiele nummers" },
     { "mask": "+31-62-###-####", "cc": "NL", "cd": "Netherlands", "city": "Mobiele nummers" },
     { "mask": "+31-63-###-####", "cc": "NL", "cd": "Netherlands", "city": "Mobiele nummers" },
