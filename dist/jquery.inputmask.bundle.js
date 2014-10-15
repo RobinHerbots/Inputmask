@@ -854,8 +854,8 @@
                     var $input = $(this), input = this;
                     if ($input.data("_inputmask")) {
                         var nptValue = input._valueGet(), buffer = getBuffer();
-                        $input.removeClass("focus-inputmask"), valueOnFocus != getBuffer().join("") && $input.change(), 
-                        opts.clearMaskOnLostFocus && "" != nptValue && (nptValue == getBufferTemplate().join("") ? input._valueSet("") : clearOptionalTail(input)), 
+                        $input.removeClass("focus-inputmask"), valueOnFocus != getBuffer().join("") && ($input.change(), 
+                        valueOnFocus = getBuffer().join("")), opts.clearMaskOnLostFocus && "" != nptValue && (nptValue == getBufferTemplate().join("") ? input._valueSet("") : clearOptionalTail(input)), 
                         isComplete(buffer) === !1 && ($input.trigger("incomplete"), opts.clearIncomplete && (resetMaskSet(), 
                         opts.clearMaskOnLostFocus ? input._valueSet("") : (buffer = getBufferTemplate().slice(), 
                         writeBuffer(input, buffer))));

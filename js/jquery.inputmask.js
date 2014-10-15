@@ -1587,6 +1587,7 @@
                             $input.removeClass('focus-inputmask');
                             if (valueOnFocus != getBuffer().join('')) {
                                 $input.change();
+                                valueOnFocus = getBuffer().join('');
                             }
                             if (opts.clearMaskOnLostFocus && nptValue != '') {
                                 if (nptValue == getBufferTemplate().join(''))
