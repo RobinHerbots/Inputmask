@@ -787,7 +787,7 @@
         }
         function keyupEvent(e) {
             var $input = $(this), input = this, k = e.keyCode, buffer = getBuffer(), currentCaretPos = caret(input), keyupResult = opts.onKeyUp.call(this, e, buffer, currentCaretPos.begin, opts);
-            handleOnKeyResult(input, keyupResult, currentCaretPos), k == $.inputmask.keyCode.TAB && opts.showMaskOnFocus && ($input.hasClass("focus-inputmask") && 0 == input._valueGet().length ? (resetMaskSet(), 
+            handleOnKeyResult(input, keyupResult, currentCaretPos), k == $.inputmask.keyCode.TAB && opts.showMaskOnFocus && ($input.is(":focus") && 0 == input._valueGet().length ? (resetMaskSet(), 
             buffer = getBuffer(), writeBuffer(input, buffer), caret(input, 0), valueOnFocus = getBuffer().join("")) : (writeBuffer(input, buffer), 
             caret(input, TranslatePosition(0), TranslatePosition(getMaskLength()))));
         }
@@ -840,7 +840,7 @@
                     var inputData = $el.data("_inputmask");
                     inputData.isRTL = !0, $el.data("_inputmask", inputData), isRTL = !0;
                 }
-                $el.unbind(".inputmask"), $el.removeClass("focus-inputmask"), $el.closest("form").bind("submit", function() {
+                $el.unbind(".inputmask"), $el.closest("form").bind("submit", function() {
                     valueOnFocus != getBuffer().join("") && $el.change(), $el[0]._valueGet && $el[0]._valueGet() == getBufferTemplate().join("") && $el[0]._valueSet(""), 
                     opts.autoUnmask && opts.removeMaskOnSubmit && $el.inputmask("remove");
                 }).bind("reset", function() {
@@ -849,33 +849,34 @@
                     }, 0);
                 }), $el.bind("mouseenter.inputmask", function() {
                     var $input = $(this), input = this;
-                    !$input.hasClass("focus-inputmask") && opts.showMaskOnHover && input._valueGet() != getBuffer().join("") && writeBuffer(input, getBuffer());
+                    !$input.is(":focus") && opts.showMaskOnHover && input._valueGet() != getBuffer().join("") && writeBuffer(input, getBuffer());
                 }).bind("blur.inputmask", function() {
                     var $input = $(this), input = this;
                     if ($input.data("_inputmask")) {
                         var nptValue = input._valueGet(), buffer = getBuffer();
-                        $input.removeClass("focus-inputmask"), valueOnFocus != getBuffer().join("") && ($input.change(), 
-                        valueOnFocus = getBuffer().join("")), opts.clearMaskOnLostFocus && "" != nptValue && (nptValue == getBufferTemplate().join("") ? input._valueSet("") : clearOptionalTail(input)), 
+                        firstClick = !0, valueOnFocus != getBuffer().join("") && ($input.change(), valueOnFocus = getBuffer().join("")), 
+                        opts.clearMaskOnLostFocus && "" != nptValue && (nptValue == getBufferTemplate().join("") ? input._valueSet("") : clearOptionalTail(input)), 
                         isComplete(buffer) === !1 && ($input.trigger("incomplete"), opts.clearIncomplete && (resetMaskSet(), 
                         opts.clearMaskOnLostFocus ? input._valueSet("") : (buffer = getBufferTemplate().slice(), 
                         writeBuffer(input, buffer))));
                     }
                 }).bind("focus.inputmask", function() {
                     var $input = $(this), input = this, nptValue = input._valueGet();
-                    opts.showMaskOnFocus && !$input.hasClass("focus-inputmask") && (!opts.showMaskOnHover || opts.showMaskOnHover && "" == nptValue) && input._valueGet() != getBuffer().join("") && writeBuffer(input, getBuffer(), seekNext(getLastValidPosition())), 
-                    $input.addClass("focus-inputmask"), valueOnFocus = getBuffer().join("");
+                    opts.showMaskOnFocus && !$input.is(":focus") && (!opts.showMaskOnHover || opts.showMaskOnHover && "" == nptValue) && input._valueGet() != getBuffer().join("") && writeBuffer(input, getBuffer(), seekNext(getLastValidPosition())), 
+                    valueOnFocus = getBuffer().join("");
                 }).bind("mouseleave.inputmask", function() {
                     var $input = $(this), input = this;
-                    opts.clearMaskOnLostFocus && ($input.hasClass("focus-inputmask") || input._valueGet() == $input.attr("placeholder") || (input._valueGet() == getBufferTemplate().join("") || "" == input._valueGet() ? input._valueSet("") : clearOptionalTail(input)));
+                    opts.clearMaskOnLostFocus && ($input.is(":focus") || input._valueGet() == $input.attr("placeholder") || (input._valueGet() == getBufferTemplate().join("") || "" == input._valueGet() ? input._valueSet("") : clearOptionalTail(input)));
                 }).bind("click.inputmask", function() {
-                    var input = this;
-                    $(input).is(":focus") && setTimeout(function() {
+                    var $input = $(this), input = this;
+                    if ($input.is(":focus")) {
                         var selectedCaret = caret(input);
-                        if (selectedCaret.begin == selectedCaret.end) if (opts.radixFocus && "" != opts.radixPoint && -1 != $.inArray(opts.radixPoint, getBuffer()) && getBuffer().join("") == getBufferTemplate().join("")) caret(input, $.inArray(opts.radixPoint, getBuffer())); else {
+                        if (selectedCaret.begin == selectedCaret.end) if (opts.radixFocus && "" != opts.radixPoint && -1 != $.inArray(opts.radixPoint, getBuffer()) && (firstClick || getBuffer().join("") == getBufferTemplate().join(""))) caret(input, $.inArray(opts.radixPoint, getBuffer())), 
+                        firstClick = !1; else {
                             var clickPosition = isRTL ? TranslatePosition(selectedCaret.begin) : selectedCaret.begin, lastPosition = seekNext(getLastValidPosition(clickPosition));
                             lastPosition > clickPosition ? caret(input, isMask(clickPosition) ? clickPosition : seekNext(clickPosition)) : caret(input, lastPosition);
                         }
-                    }, 0);
+                    }
                 }).bind("dblclick.inputmask", function() {
                     var input = this;
                     setTimeout(function() {
@@ -905,11 +906,10 @@
                     activeElement = document.activeElement;
                 } catch (e) {}
                 isComplete(getBuffer()) === !1 && opts.clearIncomplete && resetMaskSet(), opts.clearMaskOnLostFocus ? getBuffer().join("") == getBufferTemplate().join("") ? el._valueSet("") : clearOptionalTail(el) : writeBuffer(el, getBuffer()), 
-                activeElement === el && ($el.addClass("focus-inputmask"), caret(el, seekNext(getLastValidPosition()))), 
-                installEventRuler(el);
+                activeElement === el && caret(el, seekNext(getLastValidPosition())), installEventRuler(el);
             }
         }
-        var valueOnFocus, $el, maxLength, isRTL = !1, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1;
+        var valueOnFocus, $el, maxLength, isRTL = !1, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, firstClick = !0;
         if (void 0 != actionObj) switch (actionObj.action) {
           case "isComplete":
             return $el = $(actionObj.el), maskset = $el.data("_inputmask").maskset, opts = $el.data("_inputmask").opts, 
@@ -954,8 +954,7 @@
           case "remove":
             var el = actionObj.el;
             $el = $(el), maskset = $el.data("_inputmask").maskset, opts = $el.data("_inputmask").opts, 
-            el._valueSet(unmaskedvalue($el)), $el.unbind(".inputmask"), $el.removeClass("focus-inputmask"), 
-            $el.removeData("_inputmask");
+            el._valueSet(unmaskedvalue($el)), $el.unbind(".inputmask"), $el.removeData("_inputmask");
             var valueProperty;
             Object.getOwnPropertyDescriptor && (valueProperty = Object.getOwnPropertyDescriptor(el, "value")), 
             valueProperty && valueProperty.get ? el._valueGet && Object.defineProperty(el, "value", {
