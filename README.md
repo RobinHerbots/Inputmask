@@ -365,6 +365,9 @@ escapeChar: "\\",
 See **escape special mask chars**
 
 #### mask
+
+The mask to use.
+
 #### oncomplete
 
 Execute a function when the mask is completed
@@ -418,8 +421,14 @@ $(document).ready(function(){
 With the non-greedy option set to false, you can specify * as repeat.  This makes an endless repeat.
 
 #### autoUnmask
+
+Automatically unmask the value when retrieved.  
+Default: false.
+
 #### removeMaskOnSubmit
-Remove the mask before submitting the form.  Use in combination with autoUnmask: true
+Remove the mask before submitting the form.  
+Use in combination with autoUnmask: true
+
 #### clearMaskOnLostFocus
 
 Remove the empty mask on blur or when not empty removes the optional trailing part
@@ -431,6 +440,11 @@ $(document).ready(function(){
 ```
 
 #### insertMode
+
+Toggle to insert or overwrite input.  
+Default: true.  
+This option can be altered by pressing the Insert key.
+
 #### clearIncomplete
 
 Clear the incomplete input on blur
@@ -443,39 +457,44 @@ $(document).ready(function(){
 
 #### aliases
 
-//ADD better explanation
+Definitions of aliases.
+
+With an alias you can define a complex mask definition and call it by using an alias name.  So this is mainly to simplify the use of your masks.  Some aliases found in the extensions are: email, currency, decimal, integer, date, datetime, dd/mm/yyyy, etc. 
 
 
-First you have to create an alias definition (more examples can be found in jquery.inputmask.extensions.js)
+First you have to create an alias definition.  The alias definition can contain options for the mask, custom definitions, the mask to use etc. 
 
-```javascript
-$.extend($.inputmask.defaults.aliases, {
-        'date': {
-            mask: "d/m/y"
-        },
-        'dd/mm/yyyy': {
-	    alias: "date"
-	}
-});
-```
+When you pass in an alias, the alias is first resolved and then the other options are applied.  So you can call an alias and pass another mask to be applied over the alias.
+This also means that you can write aliases which "inherit" from another alias.
+
+Some examples can be found in jquery.inputmask.xxx.extensions.js
 
 use:
 
 ```javascript
-$(document).ready(function(){
-   $("#date").inputmask("date");    //   => equals to    $("#date").inputmask("d/m/y");
-});
+   $("#date").inputmask("date");
+```
+or
+```javascript
+   $("#date").inputmask({ alias: "date"});
 ```
 
-or use the dd/mm/yyyy alias of the date alias:
+You can also call an alias and extend it with some more options
 
 ```javascript
-$(document).ready(function(){
-   $("#date").inputmask("dd/mm/yyyy");   //    => equals to    $("#date").inputmask("d/m/y");
-});
+   $("#date").inputmask("date", { "clearIncomplete": true });
+```
+or
+```javascript
+   $("#date").inputmask({ alias: "date", "clearIncomplete": true });
 ```
 
 #### alias
+
+The alias to use.
+```javascript
+   $("#date").inputmask({ alias: "email"});
+```
 
 #### onKeyUp
 #### onKeyPress
@@ -643,7 +662,7 @@ When passing multiple masks (an array of masks) keepStatic is automatically set 
 
 #### isComplete
 
-With this call-in you can override the default implementation of the isComplete function.  
+With this call-in (hook) you can override the default implementation of the isComplete function.  
 Args => buffer, opts   
 Return => true || false
 
