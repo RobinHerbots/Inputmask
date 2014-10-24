@@ -843,6 +843,31 @@
                     }
                     return false;
                 }
+                //set alternator choice on previous skipped placeholder positions
+                function trackbackAlternations(originalPos, newPos) {
+                    var vp = getMaskSet()["validPositions"][newPos],
+                        targetLocator = vp.locator,
+                        tll = targetLocator.length;
+
+                    //console.log("target locator: " + targetLocator);
+                    for (var ps = originalPos; ps < newPos; ps++) {
+                        if (!isMask(ps)) {
+                            var tests = getTests(ps),
+                            bestMatch, equality = -1;
+                            for (var tndx in tests) {
+                                var activeTest = tests[tndx];
+                                for (var i = 0; i < tll; i++) {
+                                    if (targetLocator[i] == activeTest.locator[i] && equality < i) { //needs fix for locators with multiple alternations
+                                        equality = i;
+                                        bestMatch = activeTest;
+                                    }
+                                }
+                                //console.log(bestMatch.locator);
+                            }
+                            setValidPosition(ps, $.extend({}, bestMatch, { "input": bestMatch["match"].def }), true)
+                        }
+                    }
+                }
                 //Check for a nonmask before the pos
                 var buffer = getBuffer();
                 for (var pndx = pos - 1; pndx > -1; pndx--) {
@@ -869,6 +894,7 @@
                             for (var nPos = maskPos + 1, snPos = seekNext(maskPos) ; nPos <= snPos; nPos++) {
                                 result = _isValid(nPos, c, strict, fromSetValid);
                                 if (result !== false) {
+                                    trackbackAlternations(maskPos, nPos);
                                     maskPos = nPos;
                                     break;
                                 }
