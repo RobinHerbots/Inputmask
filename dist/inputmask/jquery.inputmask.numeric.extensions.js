@@ -90,6 +90,10 @@
                     return rslt.caret = rslt.pos + 1, rslt;
                 }
             },
+            postProcessOnBlur: function(tmpBuffer, opts) {
+                var tmpBufSplit = "" != opts.radixPoint ? tmpBuffer.join("").split(opts.radixPoint) : [ tmpBuffer.join("") ], matchRslt = tmpBufSplit[0].match(opts.regex.integerPart(opts)), matchRsltDigits = 2 == tmpBufSplit.length ? tmpBufSplit[1].match(opts.regex.integerNPart(opts)) : void 0;
+                matchRslt && "-0" == matchRslt[matchRslt.index] && (void 0 == matchRsltDigits || matchRsltDigits[matchRsltDigits.index].match(/^0+$/)) && tmpBuffer.splice(0, 1);
+            },
             regex: {
                 integerPart: function() {
                     return new RegExp("[-+]?\\d+");

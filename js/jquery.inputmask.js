@@ -1084,11 +1084,15 @@
             }
             function clearOptionalTail(input) {
                 var buffer = getBuffer(), tmpBuffer = buffer.slice();
-                var rl = determineLastRequiredPosition(), lmib = tmpBuffer.length - 1;
-                for (; lmib > rl; lmib--) {
-                    if (isMask(lmib)) break;
+                if ($.isFunction(opts.postProcessOnBlur))
+                    opts.postProcessOnBlur.call(input, tmpBuffer, opts);
+                else {
+                    var rl = determineLastRequiredPosition(), lmib = tmpBuffer.length - 1;
+                    for (; lmib > rl; lmib--) {
+                        if (isMask(lmib)) break;
+                    }
+                    tmpBuffer.splice(rl, lmib + 1 - rl);
                 }
-                tmpBuffer.splice(rl, lmib + 1 - rl);
                 writeBuffer(input, tmpBuffer);
             }
             function isComplete(buffer) { //return true / false / undefined (repeat *)
@@ -1934,7 +1938,8 @@
                 },
                 //specify keyCodes which should not be considered in the keypress event, otherwise the preventDefault will stop their default behavior especially in FF
                 ignorables: [8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123],
-                isComplete: undefined //override for isComplete - args => buffer, opts - return true || false
+                isComplete: undefined, //override for isComplete - args => buffer, opts - return true || false
+                postProcessOnBlur: undefined //do some postprocessing of the value on the blur event, this overrides the clearOptionalTail functionality, args => tmpBuffer, opts
             },
             keyCode: {
                 ALT: 18, BACKSPACE: 8, CAPS_LOCK: 20, COMMA: 188, COMMAND: 91, COMMAND_LEFT: 91, COMMAND_RIGHT: 93, CONTROL: 17, DELETE: 46, DOWN: 40, END: 35, ENTER: 13, ESCAPE: 27, HOME: 36, INSERT: 45, LEFT: 37, MENU: 93, NUMPAD_ADD: 107, NUMPAD_DECIMAL: 110, NUMPAD_DIVIDE: 111, NUMPAD_ENTER: 108,

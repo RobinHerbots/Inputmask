@@ -744,7 +744,7 @@ test("inputmask(\"integer\") - -0 - laxmikantG", function () {
 
     $("#testmask")[0].focus();
     $("#testmask").Type("-0");
-
+    $("#testmask").blur();
     equal($("#testmask").val(), "", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
@@ -776,5 +776,24 @@ test("inputmask(\"decimal\") - val(\"-5000,77\"); - ManRueda", function () {
     $("#testmask").val("-5000,77");
 
     equal($("#testmask").val(), "-5.000,77", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("inputmask(\"decimal\") - -0 - ManRueda", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('decimal', {
+        integerDigits: 10,
+        groupSeparator: '.',
+        autoGroup: true,
+        digits: 2,
+        radixPoint: ',',
+        groupSize: 3
+    });
+
+    $("#testmask").val("-0");
+    $("#testmask").blur();
+
+    equal($("#testmask").val(), "0", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });

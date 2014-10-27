@@ -600,8 +600,12 @@
             } : bl;
         }
         function clearOptionalTail(input) {
-            for (var buffer = getBuffer(), tmpBuffer = buffer.slice(), rl = determineLastRequiredPosition(), lmib = tmpBuffer.length - 1; lmib > rl && !isMask(lmib); lmib--) ;
-            tmpBuffer.splice(rl, lmib + 1 - rl), writeBuffer(input, tmpBuffer);
+            var buffer = getBuffer(), tmpBuffer = buffer.slice();
+            if ($.isFunction(opts.postProcessOnBlur)) opts.postProcessOnBlur.call(input, tmpBuffer, opts); else {
+                for (var rl = determineLastRequiredPosition(), lmib = tmpBuffer.length - 1; lmib > rl && !isMask(lmib); lmib--) ;
+                tmpBuffer.splice(rl, lmib + 1 - rl);
+            }
+            writeBuffer(input, tmpBuffer);
         }
         function isComplete(buffer) {
             if ($.isFunction(opts.isComplete)) return opts.isComplete.call($el, buffer, opts);
@@ -1059,7 +1063,8 @@
                     }
                 },
                 ignorables: [ 8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123 ],
-                isComplete: void 0
+                isComplete: void 0,
+                postProcessOnBlur: void 0
             },
             keyCode: {
                 ALT: 18,
@@ -1829,6 +1834,10 @@
                     var rslt = opts.postFormat(buffer, caretPos - 1, !0, opts);
                     return rslt.caret = rslt.pos + 1, rslt;
                 }
+            },
+            postProcessOnBlur: function(tmpBuffer, opts) {
+                var tmpBufSplit = "" != opts.radixPoint ? tmpBuffer.join("").split(opts.radixPoint) : [ tmpBuffer.join("") ], matchRslt = tmpBufSplit[0].match(opts.regex.integerPart(opts)), matchRsltDigits = 2 == tmpBufSplit.length ? tmpBufSplit[1].match(opts.regex.integerNPart(opts)) : void 0;
+                matchRslt && "-0" == matchRslt[matchRslt.index] && (void 0 == matchRsltDigits || matchRsltDigits[matchRsltDigits.index].match(/^0+$/)) && tmpBuffer.splice(0, 1);
             },
             regex: {
                 integerPart: function() {

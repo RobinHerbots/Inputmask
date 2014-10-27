@@ -125,6 +125,14 @@ Optional extensions on the jquery.inputmask base
                     return rslt;
                 }
             },
+            postProcessOnBlur: function (tmpBuffer, opts) {
+                var tmpBufSplit = opts.radixPoint != "" ? tmpBuffer.join('').split(opts.radixPoint) : [tmpBuffer.join('')],
+                    matchRslt = tmpBufSplit[0].match(opts.regex.integerPart(opts)),
+                    matchRsltDigits = tmpBufSplit.length == 2 ? tmpBufSplit[1].match(opts.regex.integerNPart(opts)) : undefined;
+                if (matchRslt && matchRslt[matchRslt.index] == "-0" && (matchRsltDigits == undefined || matchRsltDigits[matchRsltDigits.index].match(/^0+$/))) {
+                    tmpBuffer.splice(0, 1);
+                }
+            },
             regex: {
                 integerPart: function (opts) { return new RegExp('[-\+]?\\d+'); },
                 integerNPart: function (opts) { return new RegExp('\\d+'); }

@@ -674,6 +674,13 @@ $(selector).inputmask("Regex", {
 	}
 });
 ```
+
+#### postProcessOnBlur
+
+This is a hook todo some postprocessing of the value on the blur event, this overrides the clearOptionalTail functionality
+Args => tmpBuffer, opts
+Manipulations in the tmpBuffer are written to input element
+
 ##Functions
 
 #### mask
