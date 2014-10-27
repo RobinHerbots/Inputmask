@@ -130,22 +130,16 @@ Optional extensions on the jquery.inputmask base
                 integerNPart: function (opts) { return new RegExp('\\d+'); }
             },
             signHandler: function (chrs, maskset, pos, strict, opts) {
-                if (!strict && (opts.allowMinus && chrs === "-" || opts.allowPlus && chrs === "+" || chrs === "0")) {
+                if (!strict && (opts.allowMinus && chrs === "-" || opts.allowPlus && chrs === "+")) {
                     var matchRslt = maskset.buffer.join('').match(opts.regex.integerPart(opts));
 
-                    if (matchRslt && matchRslt.length > 0 && (matchRslt[matchRslt.index] !== "0" || (maskset.buffer && maskset._buffer && maskset.buffer.join('') != maskset._buffer.join('')))) {
-                        if (chrs === "0") {
-                            if (maskset.buffer[matchRslt.index] == "-" || maskset.buffer[matchRslt.index] == "+") {
-                                return { "remove": matchRslt.index, "caret": pos - 1 };
-                            }
+                    if (matchRslt && matchRslt[matchRslt.index].length > 0 && (matchRslt[matchRslt.index] !== "0" || (maskset.buffer && maskset._buffer && maskset.buffer.join('') != maskset._buffer.join('')))) {
+                        if (maskset.buffer[matchRslt.index] == (chrs === "-" ? "+" : "-")) {
+                            return { "pos": matchRslt.index, "c": chrs, "remove": matchRslt.index, "caret": pos };
+                        } else if (maskset.buffer[matchRslt.index] == (chrs === "-" ? "-" : "+")) {
+                            return { "remove": matchRslt.index, "caret": pos - 1 };
                         } else {
-                            if (maskset.buffer[matchRslt.index] == (chrs === "-" ? "+" : "-")) {
-                                return { "pos": matchRslt.index, "c": chrs, "remove": matchRslt.index, "caret": pos };
-                            } else if (maskset.buffer[matchRslt.index] == (chrs === "-" ? "-" : "+")) {
-                                return { "remove": matchRslt.index, "caret": pos - 1 };
-                            } else {
-                                return { "pos": matchRslt.index, "c": chrs, "caret": pos + 1 };
-                            }
+                            return { "pos": matchRslt.index, "c": chrs, "caret": pos + 1 };
                         }
                     }
                 }

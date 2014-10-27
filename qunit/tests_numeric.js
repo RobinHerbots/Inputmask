@@ -760,3 +760,21 @@ test("inputmask(\"integer\") - 123- - laxmikantG", function () {
     equal($("#testmask").val(), "-123", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
+
+test("inputmask(\"decimal\") - val(\"-5000,77\"); - ManRueda", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('decimal', {
+        integerDigits: 10,
+        groupSeparator: '.',
+        autoGroup: true,
+        digits: 2,
+        radixPoint: ',',
+        groupSize: 3
+    });
+
+    $("#testmask").val("-5000,77");
+
+    equal($("#testmask").val(), "-5.000,77", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});

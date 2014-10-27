@@ -99,27 +99,21 @@
                 }
             },
             signHandler: function(chrs, maskset, pos, strict, opts) {
-                if (!strict && (opts.allowMinus && "-" === chrs || opts.allowPlus && "+" === chrs || "0" === chrs)) {
+                if (!strict && (opts.allowMinus && "-" === chrs || opts.allowPlus && "+" === chrs)) {
                     var matchRslt = maskset.buffer.join("").match(opts.regex.integerPart(opts));
-                    if (matchRslt && matchRslt.length > 0 && ("0" !== matchRslt[matchRslt.index] || maskset.buffer && maskset._buffer && maskset.buffer.join("") != maskset._buffer.join(""))) {
-                        if ("0" !== chrs) return maskset.buffer[matchRslt.index] == ("-" === chrs ? "+" : "-") ? {
-                            pos: matchRslt.index,
-                            c: chrs,
-                            remove: matchRslt.index,
-                            caret: pos
-                        } : maskset.buffer[matchRslt.index] == ("-" === chrs ? "-" : "+") ? {
-                            remove: matchRslt.index,
-                            caret: pos - 1
-                        } : {
-                            pos: matchRslt.index,
-                            c: chrs,
-                            caret: pos + 1
-                        };
-                        if ("-" == maskset.buffer[matchRslt.index] || "+" == maskset.buffer[matchRslt.index]) return {
-                            remove: matchRslt.index,
-                            caret: pos - 1
-                        };
-                    }
+                    if (matchRslt && matchRslt[matchRslt.index].length > 0 && ("0" !== matchRslt[matchRslt.index] || maskset.buffer && maskset._buffer && maskset.buffer.join("") != maskset._buffer.join(""))) return maskset.buffer[matchRslt.index] == ("-" === chrs ? "+" : "-") ? {
+                        pos: matchRslt.index,
+                        c: chrs,
+                        remove: matchRslt.index,
+                        caret: pos
+                    } : maskset.buffer[matchRslt.index] == ("-" === chrs ? "-" : "+") ? {
+                        remove: matchRslt.index,
+                        caret: pos - 1
+                    } : {
+                        pos: matchRslt.index,
+                        c: chrs,
+                        caret: pos + 1
+                    };
                 }
                 return !1;
             },

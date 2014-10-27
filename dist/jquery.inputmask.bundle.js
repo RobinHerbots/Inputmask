@@ -463,6 +463,16 @@
                 }
                 return !1;
             }
+            function trackbackAlternations(originalPos, newPos) {
+                for (var vp = getMaskSet().validPositions[newPos], targetLocator = vp.locator, tll = targetLocator.length, ps = originalPos; newPos > ps; ps++) if (!isMask(ps)) {
+                    var bestMatch, tests = getTests(ps), equality = -1;
+                    for (var tndx in tests) for (var activeTest = tests[tndx], i = 0; tll > i; i++) targetLocator[i] == activeTest.locator[i] && i > equality && (equality = i, 
+                    bestMatch = activeTest);
+                    setValidPosition(ps, $.extend({}, bestMatch, {
+                        input: bestMatch.match.def
+                    }), !0);
+                }
+            }
             strict = strict === !0;
             for (var buffer = getBuffer(), pndx = pos - 1; pndx > -1 && (!getMaskSet().validPositions[pndx] || null != getMaskSet().validPositions[pndx].match.fn); pndx--) void 0 == getMaskSet().validPositions[pndx] && (!isMask(pndx) || buffer[pndx] != getPlaceholder(pndx)) && getTests(pndx).length > 1 && _isValid(pndx, buffer[pndx], !0);
             var maskPos = pos, result = !1;
@@ -472,7 +482,7 @@
                 if (!currentPosValid || null != currentPosValid.match.fn || currentPosValid.match.def != c && c != opts.skipOptionalPartCharacter) {
                     if ((opts.insertMode || void 0 == getMaskSet().validPositions[seekNext(maskPos)]) && !isMask(maskPos)) for (var nPos = maskPos + 1, snPos = seekNext(maskPos); snPos >= nPos; nPos++) if (result = _isValid(nPos, c, strict, fromSetValid), 
                     result !== !1) {
-                        maskPos = nPos;
+                        trackbackAlternations(maskPos, nPos), maskPos = nPos;
                         break;
                     }
                 } else result = {
@@ -1829,27 +1839,21 @@
                 }
             },
             signHandler: function(chrs, maskset, pos, strict, opts) {
-                if (!strict && (opts.allowMinus && "-" === chrs || opts.allowPlus && "+" === chrs || "0" === chrs)) {
+                if (!strict && (opts.allowMinus && "-" === chrs || opts.allowPlus && "+" === chrs)) {
                     var matchRslt = maskset.buffer.join("").match(opts.regex.integerPart(opts));
-                    if (matchRslt && matchRslt.length > 0 && ("0" !== matchRslt[matchRslt.index] || maskset.buffer && maskset._buffer && maskset.buffer.join("") != maskset._buffer.join(""))) {
-                        if ("0" !== chrs) return maskset.buffer[matchRslt.index] == ("-" === chrs ? "+" : "-") ? {
-                            pos: matchRslt.index,
-                            c: chrs,
-                            remove: matchRslt.index,
-                            caret: pos
-                        } : maskset.buffer[matchRslt.index] == ("-" === chrs ? "-" : "+") ? {
-                            remove: matchRslt.index,
-                            caret: pos - 1
-                        } : {
-                            pos: matchRslt.index,
-                            c: chrs,
-                            caret: pos + 1
-                        };
-                        if ("-" == maskset.buffer[matchRslt.index] || "+" == maskset.buffer[matchRslt.index]) return {
-                            remove: matchRslt.index,
-                            caret: pos - 1
-                        };
-                    }
+                    if (matchRslt && matchRslt[matchRslt.index].length > 0 && ("0" !== matchRslt[matchRslt.index] || maskset.buffer && maskset._buffer && maskset.buffer.join("") != maskset._buffer.join(""))) return maskset.buffer[matchRslt.index] == ("-" === chrs ? "+" : "-") ? {
+                        pos: matchRslt.index,
+                        c: chrs,
+                        remove: matchRslt.index,
+                        caret: pos
+                    } : maskset.buffer[matchRslt.index] == ("-" === chrs ? "-" : "+") ? {
+                        remove: matchRslt.index,
+                        caret: pos - 1
+                    } : {
+                        pos: matchRslt.index,
+                        c: chrs,
+                        caret: pos + 1
+                    };
                 }
                 return !1;
             },
