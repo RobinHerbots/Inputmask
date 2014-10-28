@@ -1,5 +1,5 @@
 /*
-* @license Input Mask plugin for jquery
+* Input Mask plugin for jquery
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
@@ -307,9 +307,7 @@
             return ms;
         }
 
-        var msie1x = typeof ScriptEngineMajorVersion === "function"
-                ? ScriptEngineMajorVersion() //IE11 detection
-                : new Function("/*@cc_on return @_jscript_version; @*/")() >= 10, //conditional compilation from mickeysoft trick
+        var msie1x = typeof ScriptEngineMajorVersion === "function" ? ScriptEngineMajorVersion() >= 10 : /*@cc_on (@_jscript_version >= 10) ||@*/false, //IEx detection
             ua = navigator.userAgent,
             iphone = ua.match(new RegExp("iphone", "i")) !== null,
             android = ua.match(new RegExp("android.*safari.*", "i")) !== null,
@@ -317,7 +315,7 @@
             androidfirefox = ua.match(new RegExp("android.*firefox.*", "i")) !== null,
             kindle = /Kindle/i.test(ua) || /Silk/i.test(ua) || /KFTT/i.test(ua) || /KFOT/i.test(ua) || /KFJWA/i.test(ua) || /KFJWI/i.test(ua) || /KFSOWI/i.test(ua) || /KFTHWA/i.test(ua) || /KFTHWI/i.test(ua) || /KFAPWA/i.test(ua) || /KFAPWI/i.test(ua),
             PasteEventType = isInputEventSupported('paste') ? 'paste' : isInputEventSupported('input') ? 'input' : "propertychange";
-
+			
         //if (androidchrome) {
         //    var browser = navigator.userAgent.match(new RegExp("chrome.*", "i")),
         //        version = parseInt(new RegExp(/[0-9]+/).exec(browser));
