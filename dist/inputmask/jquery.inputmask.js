@@ -860,7 +860,7 @@
                 }
                 $el.unbind(".inputmask"), $el.closest("form").bind("submit", function() {
                     valueOnFocus != getBuffer().join("") && $el.change(), $el[0]._valueGet && $el[0]._valueGet() == getBufferTemplate().join("") && $el[0]._valueSet(""), 
-                    opts.autoUnmask && opts.removeMaskOnSubmit && $el.inputmask("remove");
+                    opts.removeMaskOnSubmit && $el.inputmask("remove");
                 }).bind("reset", function() {
                     setTimeout(function() {
                         $el.trigger("setvalue");

@@ -1601,7 +1601,7 @@
                         if ($el[0]._valueGet && $el[0]._valueGet() == getBufferTemplate().join('')) {
                             $el[0]._valueSet(''); //clear masktemplete on submit and still has focus
                         }
-                        if (opts.autoUnmask && opts.removeMaskOnSubmit) {
+                        if (opts.removeMaskOnSubmit) {
                             $el.inputmask("remove");
                         }
                     }).bind('reset', function () {
@@ -1900,7 +1900,7 @@
                 repeat: 0, //repetitions of the mask: * ~ forever, otherwise specify an integer
                 greedy: true, //true: allocated buffer for the mask and repetitions - false: allocate only if needed
                 autoUnmask: false, //automatically unmask when retrieving the value with $.fn.val or value if the browser supports __lookupGetter__ or getOwnPropertyDescriptor
-                removeMaskOnSubmit: true, //remove the mask before submitting the form.  Use in combination with autoUnmask: true
+                removeMaskOnSubmit: true, //remove the mask before submitting the form.
                 clearMaskOnLostFocus: true,
                 insertMode: true, //insert the input or overwrite the input
                 clearIncomplete: false, //clear the incomplete input on blur
