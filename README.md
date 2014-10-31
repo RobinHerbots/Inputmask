@@ -975,6 +975,15 @@ $(document).ready(function(){
 });
 ```
 
+### jqueryui.datepicker example
+```javascript
+    $('#calender').datepicker({
+                dateFormat: 'dd/mm/yy',                
+                changeMonth: true,
+                changeYear: true
+    }).inputmask('dd/mm/yyyy');
+```
+
 ## numeric extensions
 
 ```javascript
