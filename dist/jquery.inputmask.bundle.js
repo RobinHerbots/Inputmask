@@ -678,7 +678,8 @@
             function InstallNativeValueSetFallback(npt) {
                 $(npt).bind("mouseenter.inputmask", function() {
                     var $input = $(this), input = this, value = input._valueGet();
-                    "" != value && value != getBuffer().join("") && $input.trigger("setvalue");
+                    "" != value && value != getBuffer().join("") && (valueSet.call(this, $.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call(el, value, opts) || value : value), 
+                    $input.trigger("setvalue"));
                 });
                 //!! the bound handlers are executed in the order they where bound
                 var events = $._data(npt).events, handlers = events.mouseover;

@@ -1202,6 +1202,7 @@
                     $(npt).bind("mouseenter.inputmask", function (event) {
                         var $input = $(this), input = this, value = input._valueGet();
                         if (value != "" && value != getBuffer().join('')) {
+                            valueSet.call(this, $.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(el, value, opts) || value) : value);
                             $input.trigger("setvalue");
                         }
                     });
