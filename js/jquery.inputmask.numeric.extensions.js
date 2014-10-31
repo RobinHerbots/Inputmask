@@ -264,8 +264,8 @@ Optional extensions on the jquery.inputmask base
                 return isFinite(processValue);
             },
             onBeforeMask: function (initialValue, opts) {
-                if (isFinite(initialValue)) {
-                    return initialValue.toString().replace(".", opts.radixPoint);
+                if (opts.radixPoint != "" && isFinite(initialValue)) {
+                    initialValue = initialValue.toString().replace(".", opts.radixPoint);
                 } else {
                     var kommaMatches = initialValue.match(/,/g);
                     var dotMatches = initialValue.match(/\./g);
@@ -276,12 +276,23 @@ Optional extensions on the jquery.inputmask base
                         } else if (kommaMatches.length > dotMatches.length) {
                             initialValue = initialValue.replace(/,/g, "");
                             initialValue = initialValue.replace(".", opts.radixPoint);
+                        } else { //equal 
+                            initialValue = initialValue.indexOf(".") < initialValue.indexOf(",") ? initialValue.replace(/\./g, "") : initialValue = initialValue.replace(/,/g, "");
                         }
                     } else {
                         initialValue = initialValue.replace(new RegExp($.inputmask.escapeRegex.call(this, opts.groupSeparator), "g"), "");
                     }
-                    return initialValue;
                 }
+
+                if (opts.digits == 0) {
+                    if (initialValue.indexOf(".") != -1) {
+                        initialValue = initialValue.substring(0, initialValue.indexOf("."));
+                    } else if (initialValue.indexOf(",") != -1) {
+                        initialValue = initialValue.substring(0, initialValue.indexOf(","));
+                    }
+                }
+
+                return initialValue;
             }
         },
         'currency': {

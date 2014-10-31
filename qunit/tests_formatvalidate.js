@@ -28,6 +28,12 @@ test("$.inputmask.format(\"1111111.11\" - ... autoGroup: true - swd120", functio
     equal(formattedValue, "1,111,111.11", "Result " + formattedValue);
 });
 
+test("$.inputmask.format(phone, { mask: '(999) 999-9999' })); - krivaten", function () {
+    var phone = '5551112222';
+    var formattedValue = $.inputmask.format(phone, { mask: '(999) 999-9999' });
+    equal(formattedValue, "(555) 111-2222", "Result " + formattedValue);
+});
+
 
 module("Value Validating");
 test("$.inputmask.isValid(\"23/03/1973\", { alias: \"date\"})", function () {

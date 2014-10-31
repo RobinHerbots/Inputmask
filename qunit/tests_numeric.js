@@ -797,3 +797,15 @@ test("inputmask(\"decimal\") - -0 - ManRueda", function () {
     equal($("#testmask").val(), "0", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
+
+test("inputmask(\"integer\") - -5.000,77 - DrSammyD", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('integer', { placeholder: "0" });
+
+    $("#testmask").val("-5.000,77");
+    $("#testmask").blur();
+
+    equal($("#testmask").val(), "-5000", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});

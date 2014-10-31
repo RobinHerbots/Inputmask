@@ -843,6 +843,13 @@
                 }
                 //set alternator choice on previous skipped placeholder positions
                 function trackbackAlternations(originalPos, newPos) {
+                    //for (var alndx = 0; alndx < altLocArr.length; alndx++) {
+                    //    if ($.inArray(altLocArr[alndx], altArrC) != -1) {
+                    //        isMatch = true;
+                    //        break;
+                    //    }
+                    //}
+
                     var vp = getMaskSet()["validPositions"][newPos],
                         targetLocator = vp.locator,
                         tll = targetLocator.length;
