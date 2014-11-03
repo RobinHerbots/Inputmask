@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.34
+* Version: 3.1.35
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery" ], factory) : factory(jQuery);
@@ -261,15 +261,8 @@
             resetMaskSet(!0);
         }
         function getTestTemplate(pos, ndxIntlzr, tstPs) {
-            function checkAlternationMatch(test, altNdx, altArr) {
-                for (var altArrC = opts.greedy ? altArr : altArr.slice(0, 1), isMatch = !1, altLocArr = test.locator[altNdx].toString().split(","), alndx = 0; alndx < altLocArr.length; alndx++) if (-1 != $.inArray(altLocArr[alndx], altArrC)) {
-                    isMatch = !0;
-                    break;
-                }
-                return isMatch;
-            }
             for (var testPos, testPositions = getTests(pos, ndxIntlzr, tstPs), lvp = getLastValidPosition(), lvTest = getMaskSet().validPositions[lvp] || getTests(0)[0], lvTestAltArr = void 0 != lvTest.alternation ? lvTest.locator[lvTest.alternation].split(",") : [], ndx = 0; ndx < testPositions.length && (testPos = testPositions[ndx], 
-            !(opts.greedy || testPos.match && (testPos.match.optionality === !1 || testPos.match.newBlockMarker === !1) && testPos.match.optionalQuantifier !== !0 && (void 0 == lvTest.alternation || void 0 != testPos.locator[lvTest.alternation] && checkAlternationMatch(testPos, lvTest.alternation, lvTestAltArr)))); ndx++) ;
+            !(opts.greedy || testPos.match && (testPos.match.optionality === !1 || testPos.match.newBlockMarker === !1) && testPos.match.optionalQuantifier !== !0 && (void 0 == lvTest.alternation || void 0 != testPos.locator[lvTest.alternation] && checkAlternationMatch(testPos.locator[lvTest.alternation].toString().split(","), lvTestAltArr)))); ndx++) ;
             return testPos;
         }
         function getTest(pos) {
@@ -407,6 +400,13 @@
             }
             return elem;
         }
+        function checkAlternationMatch(altArr1, altArr2) {
+            for (var altArrC = opts.greedy ? altArr2 : altArr2.slice(0, 1), isMatch = !1, alndx = 0; alndx < altArr1.length; alndx++) if (-1 != $.inArray(altArr1[alndx], altArrC)) {
+                isMatch = !0;
+                break;
+            }
+            return isMatch;
+        }
         function isValid(pos, c, strict, fromSetValid) {
             function _isValid(position, c, strict, fromSetValid) {
                 var rslt = !1;
@@ -467,8 +467,8 @@
             }
             function trackbackAlternations(originalPos, newPos) {
                 for (var vp = getMaskSet().validPositions[newPos], targetLocator = vp.locator, tll = targetLocator.length, ps = originalPos; newPos > ps; ps++) if (!isMask(ps)) {
-                    var bestMatch, tests = getTests(ps), equality = -1;
-                    for (var tndx in tests) for (var activeTest = tests[tndx], i = 0; tll > i; i++) targetLocator[i] == activeTest.locator[i] && i > equality && (equality = i, 
+                    var tests = getTests(ps), bestMatch = tests[0], equality = -1;
+                    for (var tndx in tests) for (var activeTest = tests[tndx], i = 0; tll > i; i++) activeTest.locator[i] && checkAlternationMatch(activeTest.locator[i].toString().split(","), targetLocator[i].toString().split(",")) && i > equality && (equality = i, 
                     bestMatch = activeTest);
                     setValidPosition(ps, $.extend({}, bestMatch, {
                         input: bestMatch.match.def
@@ -684,7 +684,7 @@
                     $input.trigger("setvalue"));
                 });
                 //!! the bound handlers are executed in the order they where bound
-                var events = $._data(npt).events, handlers = events.mouseover;
+                var events = $._data(npt).events, handlers = events.mouseenter;
                 if (handlers) {
                     for (var ourHandler = handlers[handlers.length - 1], i = handlers.length - 1; i > 0; i--) handlers[i] = handlers[i - 1];
                     handlers[0] = ourHandler;

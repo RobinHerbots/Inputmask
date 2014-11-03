@@ -315,7 +315,7 @@
             androidfirefox = ua.match(new RegExp("android.*firefox.*", "i")) !== null,
             kindle = /Kindle/i.test(ua) || /Silk/i.test(ua) || /KFTT/i.test(ua) || /KFOT/i.test(ua) || /KFJWA/i.test(ua) || /KFJWI/i.test(ua) || /KFSOWI/i.test(ua) || /KFTHWA/i.test(ua) || /KFTHWI/i.test(ua) || /KFAPWA/i.test(ua) || /KFAPWI/i.test(ua),
             PasteEventType = isInputEventSupported('paste') ? 'paste' : isInputEventSupported('input') ? 'input' : "propertychange";
-			
+
         //if (androidchrome) {
         //    var browser = navigator.userAgent.match(new RegExp("chrome.*", "i")),
         //        version = parseInt(new RegExp(/[0-9]+/).exec(browser));
@@ -454,17 +454,6 @@
                 resetMaskSet(true);
             }
             function getTestTemplate(pos, ndxIntlzr, tstPs) {
-                function checkAlternationMatch(test, altNdx, altArr) {
-                    var altArrC = opts.greedy ? altArr : altArr.slice(0, 1);
-                    var isMatch = false, altLocArr = test.locator[altNdx].toString().split(",");
-                    for (var alndx = 0; alndx < altLocArr.length; alndx++) {
-                        if ($.inArray(altLocArr[alndx], altArrC) != -1) {
-                            isMatch = true;
-                            break;
-                        }
-                    }
-                    return isMatch;
-                }
                 var testPositions = getTests(pos, ndxIntlzr, tstPs),
                     testPos,
                     lvp = getLastValidPosition(),
@@ -476,7 +465,7 @@
                     if (opts.greedy ||
                         ((testPos["match"] && (testPos["match"].optionality === false || testPos["match"].newBlockMarker === false) && testPos["match"].optionalQuantifier !== true) &&
                         (lvTest.alternation == undefined ||
-                        (testPos["locator"][lvTest.alternation] != undefined && checkAlternationMatch(testPos, lvTest.alternation, lvTestAltArr))))) {
+                        (testPos["locator"][lvTest.alternation] != undefined && checkAlternationMatch(testPos.locator[lvTest.alternation].toString().split(","), lvTestAltArr))))) {
                         break;
                     }
                 }
@@ -711,6 +700,17 @@
 
                 return elem;
             }
+            function checkAlternationMatch(altArr1, altArr2) {
+                var altArrC = opts.greedy ? altArr2 : altArr2.slice(0, 1),
+                    isMatch = false;
+                for (var alndx = 0; alndx < altArr1.length; alndx++) {
+                    if ($.inArray(altArr1[alndx], altArrC) != -1) {
+                        isMatch = true;
+                        break;
+                    }
+                }
+                return isMatch;
+            }
             function isValid(pos, c, strict, fromSetValid) { //strict true ~ no correction or autofill
                 strict = strict === true; //always set a value to strict to prevent possible strange behavior in the extensions 
 
@@ -843,26 +843,19 @@
                 }
                 //set alternator choice on previous skipped placeholder positions
                 function trackbackAlternations(originalPos, newPos) {
-                    //for (var alndx = 0; alndx < altLocArr.length; alndx++) {
-                    //    if ($.inArray(altLocArr[alndx], altArrC) != -1) {
-                    //        isMatch = true;
-                    //        break;
-                    //    }
-                    //}
-
                     var vp = getMaskSet()["validPositions"][newPos],
-                        targetLocator = vp.locator,
-                        tll = targetLocator.length;
+                         targetLocator = vp.locator,
+                         tll = targetLocator.length;
 
                     //console.log("target locator: " + targetLocator);
                     for (var ps = originalPos; ps < newPos; ps++) {
                         if (!isMask(ps)) {
                             var tests = getTests(ps),
-                            bestMatch, equality = -1;
+                            bestMatch = tests[0], equality = -1;
                             for (var tndx in tests) {
                                 var activeTest = tests[tndx];
                                 for (var i = 0; i < tll; i++) {
-                                    if (targetLocator[i] == activeTest.locator[i] && equality < i) { //needs fix for locators with multiple alternations
+                                    if (activeTest.locator[i] && checkAlternationMatch(activeTest.locator[i].toString().split(','), targetLocator[i].toString().split(',')) && equality < i) { //needs fix for locators with multiple alternations
                                         equality = i;
                                         bestMatch = activeTest;
                                     }
@@ -1209,7 +1202,7 @@
                     //!! the bound handlers are executed in the order they where bound
                     //reorder the events
                     var events = $._data(npt).events;
-                    var handlers = events["mouseover"];
+                    var handlers = events["mouseenter"];
                     if (handlers) {
                         var ourHandler = handlers[handlers.length - 1];
                         for (var i = handlers.length - 1; i > 0; i--) {
