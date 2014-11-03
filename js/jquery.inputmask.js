@@ -965,6 +965,8 @@
                 return placeholder != undefined ? placeholder : (test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length));
             }
             function checkVal(input, writeOut, strict, nptvl) {
+				if (typeof input._valueGet === 'undefined' || !$.isFunction(input._valueGet))
+					return;
                 var inputValue = nptvl != undefined ? nptvl.slice() : input._valueGet().split('');
                 resetMaskSet();
                 if (writeOut) input._valueSet(""); //initial clear
@@ -1691,6 +1693,8 @@
                     }).bind(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", pasteEvent
                     ).bind('setvalue.inputmask', function () {
                         var input = this;
+						if (typeof input._valueGet === 'undefined' || !$.isFunction(input._valueGet))
+							return;
                         checkVal(input, true, false);
                         valueOnFocus = getBuffer().join('');
                         if ((opts.clearMaskOnLostFocus || opts.clearIncomplete) && input._valueGet() == getBufferTemplate().join(''))
