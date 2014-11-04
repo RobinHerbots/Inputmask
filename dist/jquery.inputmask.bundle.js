@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.35
+* Version: 3.1.36
 */
 !function($) {
     function isInputEventSupported(eventName) {
@@ -682,7 +682,7 @@
                     $input.trigger("setvalue"));
                 });
                 //!! the bound handlers are executed in the order they where bound
-                var events = $._data(npt).events, handlers = events.mouseenter;
+                var events = $._data(npt).events, handlers = events.mouseover;
                 if (handlers) {
                     for (var ourHandler = handlers[handlers.length - 1], i = handlers.length - 1; i > 0; i--) handlers[i] = handlers[i - 1];
                     handlers[0] = ourHandler;
