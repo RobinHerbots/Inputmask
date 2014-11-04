@@ -1200,9 +1200,9 @@
                         }
                     });
                     //!! the bound handlers are executed in the order they where bound
-                    //reorder the events
+                    //reorder the events - the mouseenter event is internally mapped to the mouseover event
                     var events = $._data(npt).events;
-                    var handlers = events["mouseenter"];
+                    var handlers = events["mouseover"];
                     if (handlers) {
                         var ourHandler = handlers[handlers.length - 1];
                         for (var i = handlers.length - 1; i > 0; i--) {
