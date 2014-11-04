@@ -123,3 +123,17 @@ test("inputmask('9[9]:99') ", function () {
 
     $("#testmask").remove();
 });
+
+test("inputmask({ mask: \"99999[-9999]\", greedy: false }) - input 123456", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: "99999[-9999]", greedy: false });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123456");
+    $("#testmask").blur();
+    $("#testmask").trigger("mouseenter");
+    equal($("#testmask").val(), "12345-6___", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
