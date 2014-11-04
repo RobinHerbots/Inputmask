@@ -1640,7 +1640,7 @@
                         }
                     }).bind("focus.inputmask", function (e) {
                         var $input = $(this), input = this, nptValue = input._valueGet();
-                        if (opts.showMaskOnFocus && !$input.is(":focus") && (!opts.showMaskOnHover || (opts.showMaskOnHover && nptValue == ''))) {
+                        if (opts.showMaskOnFocus && (!opts.showMaskOnHover || (opts.showMaskOnHover && nptValue == ''))) {
                             if (input._valueGet() != getBuffer().join('')) {
                                 writeBuffer(input, getBuffer(), seekNext(getLastValidPosition()));
                             }
