@@ -27,11 +27,13 @@ Optional extensions on the jquery.inputmask base
                     opts.skipOptionalPartCharacter = undefined;
                 }
                 opts.autoGroup = opts.autoGroup && opts.groupSeparator != "";
-
-                if (opts.autoGroup && isFinite(opts.integerDigits)) {
-                    var seps = Math.floor(opts.integerDigits / opts.groupSize);
-                    var mod = opts.integerDigits % opts.groupSize;
-                    opts.integerDigits += mod == 0 ? seps - 1 : seps;
+                if (opts.autoGroup) {
+                    if (typeof opts.groupSize == "string" && isFinite(opts.groupSize)) opts.groupSize = parseInt(opts.groupSize);
+                    if (isFinite(opts.integerDigits)) {
+                        var seps = Math.floor(opts.integerDigits / opts.groupSize);
+                        var mod = opts.integerDigits % opts.groupSize;
+                        opts.integerDigits = parseInt(opts.integerDigits) + (mod == 0 ? seps - 1 : seps);
+                    }
                 }
 
                 opts.definitions[";"] = opts.definitions["~"]; //clone integer def for decimals
