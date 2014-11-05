@@ -87,6 +87,7 @@
             onKeyPress: function(e, buffer, caretPos, opts) {
                 if (opts.autoGroup) {
                     var rslt = opts.postFormat(buffer, caretPos - 1, !0, opts);
+                    if (caretPos = 1) rslt.refreshFromBuffer = true;
                     return rslt.caret = rslt.pos + 1, rslt;
                 }
             },
