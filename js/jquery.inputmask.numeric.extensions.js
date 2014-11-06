@@ -124,6 +124,7 @@ Optional extensions on the jquery.inputmask base
                 if (opts.autoGroup /*&& String.fromCharCode(k) == opts.radixPoint*/) {
                     var rslt = opts.postFormat(buffer, caretPos - 1, true, opts);
                     rslt.caret = rslt.pos + 1;
+                    if (caretPos = 1) rslt.refreshFromBuffer = true; // fix issue #718
                     return rslt;
                 }
             },
