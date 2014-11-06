@@ -132,7 +132,7 @@
                         c: integerValue[0],
                         caret: radixPos + 1
                     };
-                    if (!integerValue || "0" == integerValue[0]) return maskset.buffer[integerValue ? integerValue.index : pos] = "0", 
+                    if (!integerValue || -1 == radixPos && "0" == integerValue[0]) return maskset.buffer[integerValue ? integerValue.index : pos] = "0", 
                     {
                         pos: (integerValue ? integerValue.index : pos) + 1
                     };

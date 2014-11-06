@@ -163,7 +163,7 @@ Optional extensions on the jquery.inputmask base
                         if (maskset["validPositions"][radixPos - 1])
                             return { "caret": radixPos + 1 };
                         else return { "pos": integerValue.index, c: integerValue[0], "caret": radixPos + 1 };
-                    } else if (!integerValue || integerValue["0"] == "0") {
+                    } else if (!integerValue || (radixPos == -1 && integerValue["0"] == "0")) {
                         maskset.buffer[integerValue ? integerValue.index : pos] = "0";
                         return { "pos": (integerValue ? integerValue.index : pos) + 1 };
                     }

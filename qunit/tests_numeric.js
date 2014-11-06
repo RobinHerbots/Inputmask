@@ -809,3 +809,27 @@ test("inputmask(\"integer\") - -5.000,77 - DrSammyD", function () {
     equal($("#testmask").val(), "-5000", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
+
+asyncTest("inputmask(\"decimal\ placeholder :\"\" digitsoptional: false) - 123 - loostro", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" value="0,00" />');
+    $("#testmask").inputmask("decimal", {
+        radixPoint: ",",
+        digits: 2,
+        digitsOptional: false,
+        autoGroup: true,
+        groupSeparator: " ",
+        groupSize: 3,
+        allowPlus: false,
+        allowMinus: false,
+    });
+    $("#testmask")[0].focus();
+    $("#testmask").click();
+
+    setTimeout(function() {
+        $("#testmask").Type("123");
+        start();
+        equal($("#testmask").val(), "123,00", "Result " + $("#testmask").val());
+        $("#testmask").remove();
+    }, 0);
+});
