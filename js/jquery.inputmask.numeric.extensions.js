@@ -106,15 +106,7 @@ Optional extensions on the jquery.inputmask base
                 return { pos: newPos, "refreshFromBuffer": needsRefresh };
             },
             onKeyDown: function (e, buffer, caretPos, opts) {
-                if (e.keyCode == $.inputmask.keyCode.TAB && opts.placeholder.charAt(0) != "0") {
-                    var radixPosition = $.inArray(opts.radixPoint, buffer);
-                    if (radixPosition != -1 && isFinite(opts.digits)) {
-                        for (var i = 1; i <= opts.digits; i++) {
-                            if (buffer[radixPosition + i] == undefined || buffer[radixPosition + i] == opts.placeholder.charAt(0)) buffer[radixPosition + i] = "0";
-                        }
-                        return { "refreshFromBuffer": { start: ++radixPosition, end: radixPosition + opts.digits } };
-                    }
-                } else if (opts.autoGroup && (e.keyCode == $.inputmask.keyCode.DELETE || e.keyCode == $.inputmask.keyCode.BACKSPACE)) {
+                if (opts.autoGroup && (e.keyCode == $.inputmask.keyCode.DELETE || e.keyCode == $.inputmask.keyCode.BACKSPACE)) {
                     var rslt = opts.postFormat(buffer, caretPos - 1, true, opts);
                     rslt.caret = rslt.pos + 1;
                     return rslt;
@@ -133,6 +125,12 @@ Optional extensions on the jquery.inputmask base
                     matchRsltDigits = tmpBufSplit.length == 2 ? tmpBufSplit[1].match(opts.regex.integerNPart(opts)) : undefined;
                 if (matchRslt && matchRslt[matchRslt.index] == "-0" && (matchRsltDigits == undefined || matchRsltDigits[matchRsltDigits.index].match(/^0+$/))) {
                     tmpBuffer.splice(0, 1);
+                }
+                var radixPosition = $.inArray(opts.radixPoint, tmpBuffer);
+                if (radixPosition != -1 && isFinite(opts.digits)) {
+                    for (var i = 1; i <= opts.digits; i++) {
+                        if (tmpBuffer[radixPosition + i] == undefined || tmpBuffer[radixPosition + i] == opts.placeholder.charAt(0)) tmpBuffer[radixPosition + i] = "0";
+                    }
                 }
             },
             regex: {
