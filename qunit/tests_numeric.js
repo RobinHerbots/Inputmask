@@ -833,3 +833,22 @@ asyncTest("inputmask(\"decimal\ placeholder :\"\" digitsoptional: false) - 123 -
         $("#testmask").remove();
     }, 0);
 });
+
+asyncTest("inputmask(\"decimal\ placeholder :\"0\" digitsoptional: false) - .12 - YodaJM", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('decimal', {
+        digits: 2,
+        placeholder: "0",
+        digitsOptional: false
+    });
+    $("#testmask")[0].focus();
+    $.caret($("#testmask"), 0, 4);
+
+    setTimeout(function () {
+        $("#testmask").Type(".12");
+        start();
+        equal($("#testmask").val(), "0.12", "Result " + $("#testmask").val());
+        $("#testmask").remove();
+    }, 0);
+});
