@@ -427,6 +427,7 @@ Default: false.
 
 #### removeMaskOnSubmit
 Remove the mask before submitting the form.  
+Default: false
 
 #### clearMaskOnLostFocus
 

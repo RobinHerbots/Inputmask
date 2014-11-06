@@ -879,8 +879,8 @@
                         writeBuffer(input, buffer))));
                     }
                 }).bind("focus.inputmask", function() {
-                    var $input = $(this), input = this, nptValue = input._valueGet();
-                    opts.showMaskOnFocus && !$input.is(":focus") && (!opts.showMaskOnHover || opts.showMaskOnHover && "" == nptValue) && input._valueGet() != getBuffer().join("") && writeBuffer(input, getBuffer(), seekNext(getLastValidPosition())), 
+                    var input = ($(this), this), nptValue = input._valueGet();
+                    opts.showMaskOnFocus && (!opts.showMaskOnHover || opts.showMaskOnHover && "" == nptValue) && input._valueGet() != getBuffer().join("") && writeBuffer(input, getBuffer(), seekNext(getLastValidPosition())), 
                     valueOnFocus = getBuffer().join("");
                 }).bind("mouseleave.inputmask", function() {
                     var $input = $(this), input = this;
@@ -1026,7 +1026,7 @@
                 repeat: 0,
                 greedy: !0,
                 autoUnmask: !1,
-                removeMaskOnSubmit: !0,
+                removeMaskOnSubmit: !1,
                 clearMaskOnLostFocus: !0,
                 insertMode: !0,
                 clearIncomplete: !1,
