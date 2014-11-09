@@ -852,16 +852,15 @@
                         if (!isMask(ps)) {
                             var tests = getTests(ps),
                             bestMatch = tests[0], equality = -1;
-                            for (var tndx in tests) {
-                                var activeTest = tests[tndx];
+                            $.each(tests, function(ndx, tst) {
                                 for (var i = 0; i < tll; i++) {
-                                    if (activeTest.locator[i] && checkAlternationMatch(activeTest.locator[i].toString().split(','), targetLocator[i].toString().split(',')) && equality < i) { //needs fix for locators with multiple alternations
+                                    if (tst.locator[i] && checkAlternationMatch(tst.locator[i].toString().split(','), targetLocator[i].toString().split(',')) && equality < i) {
                                         equality = i;
-                                        bestMatch = activeTest;
+                                        bestMatch = tst;
                                     }
                                 }
                                 //console.log(bestMatch.locator);
-                            }
+                            });
                             setValidPosition(ps, $.extend({}, bestMatch, { "input": bestMatch["match"].def }), true)
                         }
                     }

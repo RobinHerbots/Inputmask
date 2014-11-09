@@ -468,9 +468,10 @@
             function trackbackAlternations(originalPos, newPos) {
                 for (var vp = getMaskSet().validPositions[newPos], targetLocator = vp.locator, tll = targetLocator.length, ps = originalPos; newPos > ps; ps++) if (!isMask(ps)) {
                     var tests = getTests(ps), bestMatch = tests[0], equality = -1;
-                    for (var tndx in tests) for (var activeTest = tests[tndx], i = 0; tll > i; i++) activeTest.locator[i] && checkAlternationMatch(activeTest.locator[i].toString().split(","), targetLocator[i].toString().split(",")) && i > equality && (equality = i, 
-                    bestMatch = activeTest);
-                    setValidPosition(ps, $.extend({}, bestMatch, {
+                    $.each(tests, function(ndx, tst) {
+                        for (var i = 0; tll > i; i++) tst.locator[i] && checkAlternationMatch(tst.locator[i].toString().split(","), targetLocator[i].toString().split(",")) && i > equality && (equality = i, 
+                        bestMatch = tst);
+                    }), setValidPosition(ps, $.extend({}, bestMatch, {
                         input: bestMatch.match.def
                     }), !0);
                 }
