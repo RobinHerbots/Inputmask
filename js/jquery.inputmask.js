@@ -402,7 +402,7 @@
                         var t = positionsClone[i];
                         if (t != undefined) {
                             var vps = getMaskSet()["validPositions"];
-                            if (!opts.keepStatic && (vps[i + 1] != undefined && getTests(i + 1, vps[i].locator.slice(), i).length > 1 || (vps[i] && vps[i].alternation != undefined)))
+                            if (!opts.keepStatic && vps[i] && (vps[i + 1] != undefined && getTests(i + 1, vps[i].locator.slice(), i).length > 1 || vps[i].alternation != undefined))
                                 j = i + 1;
                             else
                                 j = seekNext(i);
@@ -847,19 +847,17 @@
                          targetLocator = vp.locator,
                          tll = targetLocator.length;
 
-                    //console.log("target locator: " + targetLocator);
                     for (var ps = originalPos; ps < newPos; ps++) {
                         if (!isMask(ps)) {
                             var tests = getTests(ps),
                             bestMatch = tests[0], equality = -1;
-                            $.each(tests, function(ndx, tst) {
+                            $.each(tests, function (ndx, tst) {
                                 for (var i = 0; i < tll; i++) {
                                     if (tst.locator[i] && checkAlternationMatch(tst.locator[i].toString().split(','), targetLocator[i].toString().split(',')) && equality < i) {
                                         equality = i;
                                         bestMatch = tst;
                                     }
                                 }
-                                //console.log(bestMatch.locator);
                             });
                             setValidPosition(ps, $.extend({}, bestMatch, { "input": bestMatch["match"].def }), true)
                         }
@@ -967,9 +965,10 @@
                 }
 
                 $.each(inputValue, function (ndx, charCode) {
-                    var lvp = getLastValidPosition();
+                    var lvp = getLastValidPosition(), lvTest = getMaskSet()["validPositions"][lvp], nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : undefined, lvp);
                     if ($.inArray(charCode, getBufferTemplate().slice(lvp + 1, getMaskSet()["p"])) == -1 || strict) {
-                        keypressEvent.call(input, undefined, true, charCode.charCodeAt(0), false, strict, strict ? ndx : getMaskSet()["p"]);
+                        var pos = strict ? ndx : (nextTest["match"].fn == null ? lvp + 1 : getMaskSet()["p"]);
+                        keypressEvent.call(input, undefined, true, charCode.charCodeAt(0), false, strict, pos);
                         strict = strict || (ndx > 0 && ndx > getMaskSet()["p"]);
                     } else {
                         keypressEvent.call(input, undefined, true, charCode.charCodeAt(0), false, true, lvp + 1);
@@ -1079,18 +1078,12 @@
                 }
                 return returnDefinition ? { "l": bl, "def": positions[bl] ? positions[bl]["match"] : undefined } : bl;
             }
-            function clearOptionalTail(input) {
-                var buffer = getBuffer(), tmpBuffer = buffer.slice();
-                if ($.isFunction(opts.postProcessOnBlur))
-                    opts.postProcessOnBlur.call(input, tmpBuffer, opts);
-                else {
-                    var rl = determineLastRequiredPosition(), lmib = tmpBuffer.length - 1;
-                    for (; lmib > rl; lmib--) {
-                        if (isMask(lmib)) break;
-                    }
-                    tmpBuffer.splice(rl, lmib + 1 - rl);
+            function clearOptionalTail(buffer) {
+                var rl = determineLastRequiredPosition(), lmib = buffer.length - 1;
+                for (; lmib > rl; lmib--) {
+                    if (isMask(lmib)) break;
                 }
-                writeBuffer(input, tmpBuffer);
+                buffer.splice(rl, lmib + 1 - rl);
             }
             function isComplete(buffer) { //return true / false / undefined (repeat *)
                 if ($.isFunction(opts.isComplete)) return opts.isComplete.call($el, buffer, opts);
@@ -1611,30 +1604,38 @@
                     }).bind("blur.inputmask", function () {
                         var $input = $(this), input = this;
                         if ($input.data('_inputmask')) {
-                            var nptValue = input._valueGet(), buffer = getBuffer();
+                            var nptValue = input._valueGet(), buffer = getBuffer().slice();
                             firstClick = true;
-                            if (valueOnFocus != getBuffer().join('')) {
+                            if (valueOnFocus != buffer.join('')) {
                                 $input.change();
-                                valueOnFocus = getBuffer().join('');
+                                valueOnFocus = buffer.join('');
                             }
-                            if (opts.clearMaskOnLostFocus && nptValue != '') {
-                                if (nptValue == getBufferTemplate().join(''))
-                                    input._valueSet('');
-                                else { //clearout optional tail of the mask
-                                    clearOptionalTail(input);
-                                }
-                            }
-                            if (isComplete(buffer) === false) {
-                                $input.trigger("incomplete");
-                                if (opts.clearIncomplete) {
-                                    resetMaskSet();
-                                    if (opts.clearMaskOnLostFocus)
-                                        input._valueSet('');
-                                    else {
-                                        buffer = getBufferTemplate().slice();
-                                        writeBuffer(input, buffer);
+                            if (nptValue != '') {
+                                if (opts.clearMaskOnLostFocus) {
+                                    if (nptValue == getBufferTemplate().join(''))
+                                        buffer = [];
+                                    else { //clearout optional tail of the mask
+                                        clearOptionalTail(buffer);
                                     }
                                 }
+                                if (isComplete(buffer) === false) {
+                                    $input.trigger("incomplete");
+                                    if (opts.clearIncomplete) {
+                                        resetMaskSet();
+                                        if (opts.clearMaskOnLostFocus)
+                                            buffer = [];
+                                        else {
+                                            buffer = getBufferTemplate().slice();
+
+                                        }
+                                    }
+                                }
+
+                                if ($.isFunction(opts.postProcessOnBlur)) {
+                                    opts.postProcessOnBlur.call(input, buffer, opts);
+                                }
+
+                                writeBuffer(input, buffer);
                             }
                         }
                     }).bind("focus.inputmask", function (e) {
@@ -1648,12 +1649,14 @@
                     }).bind("mouseleave.inputmask", function () {
                         var $input = $(this), input = this;
                         if (opts.clearMaskOnLostFocus) {
-                            if (!$input.is(":focus") && input._valueGet() != $input.attr("placeholder")) {
-                                if (input._valueGet() == getBufferTemplate().join('') || input._valueGet() == '')
-                                    input._valueSet('');
+                            var buffer = getBuffer().slice(), nptValue = input._valueGet();
+                            if (!$input.is(":focus") && nptValue != $input.attr("placeholder") && nptValue != '') {
+                                if (nptValue == getBufferTemplate().join(''))
+                                    buffer = [];
                                 else { //clearout optional tail of the mask
-                                    clearOptionalTail(input);
+                                    clearOptionalTail(buffer);
                                 }
+                                writeBuffer(input, buffer);
                             }
                         }
                     }).bind("click.inputmask", function () {
@@ -1723,26 +1726,26 @@
                     //apply mask
                     var initialValue = $.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(el, el._valueGet(), opts) || el._valueGet()) : el._valueGet();
                     checkVal(el, true, false, initialValue.split(''));
-                    valueOnFocus = getBuffer().join('');
+                    var buffer = getBuffer().slice();
+                    valueOnFocus = buffer.join('');
                     // Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
                     var activeElement;
                     try {
                         activeElement = document.activeElement;
                     } catch (e) {
                     }
-                    if (isComplete(getBuffer()) === false) {
+                    if (isComplete(buffer) === false) {
                         if (opts.clearIncomplete)
                             resetMaskSet();
                     }
                     if (opts.clearMaskOnLostFocus) {
-                        if (getBuffer().join('') == getBufferTemplate().join('')) {
-                            el._valueSet('');
+                        if (buffer.join('') == getBufferTemplate().join('')) {
+                            buffer = [];
                         } else {
-                            clearOptionalTail(el);
+                            clearOptionalTail(buffer);
                         }
-                    } else {
-                        writeBuffer(el, getBuffer());
                     }
+                    writeBuffer(el, buffer);
                     if (activeElement === el) { //position the caret when in focus
                         caret(el, seekNext(getLastValidPosition()));
                     }
@@ -1937,7 +1940,7 @@
                 //specify keyCodes which should not be considered in the keypress event, otherwise the preventDefault will stop their default behavior especially in FF
                 ignorables: [8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123],
                 isComplete: undefined, //override for isComplete - args => buffer, opts - return true || false
-                postProcessOnBlur: undefined //do some postprocessing of the value on the blur event, this overrides the clearOptionalTail functionality, args => tmpBuffer, opts
+                postProcessOnBlur: undefined //do some postprocessing of the value on the blur event, args => tmpBuffer, opts
             },
             keyCode: {
                 ALT: 18, BACKSPACE: 8, CAPS_LOCK: 20, COMMA: 188, COMMAND: 91, COMMAND_LEFT: 91, COMMAND_RIGHT: 93, CONTROL: 17, DELETE: 46, DOWN: 40, END: 35, ENTER: 13, ESCAPE: 27, HOME: 36, INSERT: 45, LEFT: 37, MENU: 93, NUMPAD_ADD: 107, NUMPAD_DECIMAL: 110, NUMPAD_DIVIDE: 111, NUMPAD_ENTER: 108,

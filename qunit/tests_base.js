@@ -10,14 +10,17 @@ test("inputmask(\"99-99-99\", { clearMaskOnLostFocus: false}", function () {
     $("#testmask").remove();
 });
 
-test("inputmask(\"99-99-99\", { clearMaskOnLostFocus: true}", function () {
+asyncTest("inputmask(\"99-99-99\", { clearMaskOnLostFocus: true}", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("99-99-99", { clearMaskOnLostFocus: true });
     $("#testmask").blur();
-    equal(document.getElementById("testmask").value, "", "Result " + document.getElementById("testmask").value);
+    setTimeout(function () {
+        start();
+        equal(document.getElementById("testmask").value, "", "Result " + document.getElementById("testmask").value);
 
-    $("#testmask").remove();
+        $("#testmask").remove();
+    }, 0);
 });
 
 test("inputmask(\"999.999.999\")", function () {
