@@ -12,6 +12,13 @@ Optional extensions on the jquery.inputmask base
     $.extend($.inputmask.defaults.aliases, {
         'numeric': {
             mask: function (opts) {
+                function autoEscape(txt) {
+                    var escapedTxt = "";
+                    for (var i = 0; i < txt.length; i++) {
+                        escapedTxt += opts.definitions[txt[i]] ? "\\" + txt[i] : txt[i];
+                    }
+                    return escapedTxt;
+                }
                 if (opts.repeat !== 0 && isNaN(opts.integerDigits)) {
                     opts.integerDigits = opts.repeat;
                 }
@@ -38,7 +45,7 @@ Optional extensions on the jquery.inputmask base
 
                 opts.definitions[";"] = opts.definitions["~"]; //clone integer def for decimals
 
-                var mask = opts.prefix;
+                var mask = autoEscape(opts.prefix);
                 mask += "[+]";
                 mask += "~{1," + opts.integerDigits + "}";
                 if (opts.digits != undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0)) {
@@ -46,7 +53,7 @@ Optional extensions on the jquery.inputmask base
                         mask += "[" + (opts.decimalProtect ? ":" : opts.radixPoint) + ";{" + opts.digits + "}]";
                     else mask += (opts.decimalProtect ? ":" : opts.radixPoint) + ";{" + opts.digits + "}";
                 }
-                mask += opts.suffix;
+                mask += autoEscape(opts.suffix);
                 return mask;
             },
             placeholder: "",
