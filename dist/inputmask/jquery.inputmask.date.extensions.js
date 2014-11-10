@@ -99,6 +99,13 @@
                     $input.val(today.getDate().toString() + (today.getMonth() + 1).toString() + today.getFullYear().toString());
                 }
             },
+            getFrontValue: function(mask, buffer, opts) {
+                for (var start = 0, length = 0, i = 0; i < mask.length && "2" != mask[i]; i++) {
+                    var definition = opts.definitions[mask[i]];
+                    definition ? (start += length, length = definition.cardinality) : length++;
+                }
+                return buffer.join("").substr(start, length);
+            },
             definitions: {
                 "1": {
                     validator: function(chrs, maskset, pos, strict, opts) {
@@ -128,7 +135,7 @@
                 },
                 "2": {
                     validator: function(chrs, maskset, pos, strict, opts) {
-                        var frontValue = opts.mask.indexOf("2") == opts.mask.length - 1 ? maskset.buffer.join("").substr(5, 3) : maskset.buffer.join("").substr(0, 3);
+                        var frontValue = opts.getFrontValue(maskset.mask, maskset.buffer, opts);
                         -1 != frontValue.indexOf(opts.placeholder[0]) && (frontValue = "01" + opts.separator);
                         var isValid = opts.regex.val2(opts.separator).test(frontValue + chrs);
                         if (!strict && !isValid && (chrs.charAt(1) == opts.separator || -1 != "-./".indexOf(chrs.charAt(1))) && (isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs.charAt(0)))) return maskset.buffer[pos - 1] = "0", 
@@ -152,7 +159,7 @@
                     prevalidator: [ {
                         validator: function(chrs, maskset, pos, strict, opts) {
                             isNaN(maskset.buffer[pos + 1]) || (chrs += maskset.buffer[pos + 1]);
-                            var frontValue = opts.mask.indexOf("2") == opts.mask.length - 1 ? maskset.buffer.join("").substr(5, 3) : maskset.buffer.join("").substr(0, 3);
+                            var frontValue = opts.getFrontValue(maskset.mask, maskset.buffer, opts);
                             -1 != frontValue.indexOf(opts.placeholder[0]) && (frontValue = "01" + opts.separator);
                             var isValid = 1 == chrs.length ? opts.regex.val2pre(opts.separator).test(frontValue + chrs) : opts.regex.val2(opts.separator).test(frontValue + chrs);
                             return strict || isValid || !(isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs)) ? isValid : (maskset.buffer[pos] = "0", 
