@@ -242,7 +242,7 @@ Optional extensions on the jquery.inputmask base
                             var radix = "[" + $.inputmask.escapeRegex.call(this, opts.radixPoint) + "]";
                             isValid = new RegExp(radix).test(chrs);
                             if (isValid && maskset["validPositions"][pos] && maskset["validPositions"][pos]["match"].placeholder == opts.radixPoint) {
-                                isValid = { "pos": pos, "remove": pos };
+                                isValid = { "caret": pos + 1 };
                             }
                         }
                         return isValid;

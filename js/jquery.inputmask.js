@@ -66,6 +66,7 @@
                     var newBlockMarker = mtoken.matches.length == 0;
                     position = position != undefined ? position : mtoken.matches.length;
                     if (maskdef && !escaped) {
+                        maskdef["placeholder"] = $.isFunction(maskdef["placeholder"]) ? maskdef["placeholder"].call(this, opts) : maskdef["placeholder"];
                         var prevalidators = maskdef["prevalidator"], prevalidatorsL = prevalidators ? prevalidators.length : 0;
                         for (var i = 1; i < maskdef.cardinality; i++) {
                             var prevalidator = prevalidatorsL >= i ? prevalidators[i - 1] : [], validator = prevalidator["validator"], cardinality = prevalidator["cardinality"];
@@ -951,8 +952,7 @@
             }
             function getPlaceholder(pos, test) {
                 test = test || getTest(pos);
-                var placeholder = $.isFunction(test["placeholder"]) ? test["placeholder"].call(this, opts) : test["placeholder"];
-                return placeholder != undefined ? placeholder : (test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length));
+                return test["placeholder"] != undefined ? test["placeholder"] : (test["fn"] == null ? test["def"] : opts.placeholder.charAt(pos % opts.placeholder.length));
             }
             function checkVal(input, writeOut, strict, nptvl) {
                 var inputValue = nptvl != undefined ? nptvl.slice() : input._valueGet().split('');
@@ -1025,7 +1025,7 @@
                         return;
                     }
 
-                    npt.scrollLeft = npt.scrollWidth;
+                    npt.scrollLeft = ($(npt).css("font-size").replace("px", "") * end) > npt.scrollWidth ? npt.scrollWidth : 0;
                     if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
                     if (npt.setSelectionRange) {
                         npt.selectionStart = begin;

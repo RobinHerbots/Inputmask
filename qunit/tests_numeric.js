@@ -852,3 +852,75 @@ asyncTest("inputmask(\"decimal\ placeholder :\"0\" digitsoptional: false) - .12 
         $("#testmask").remove();
     }, 0);
 });
+
+test("inputmask(\"decimal\") - '8100000.00' - ManRueda", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('decimal', {
+        integerDigits: 6,
+        groupSeparator: '.',
+        autoGroup: true,
+        digits: 2,
+        radixPoint: ',',
+        groupSize: 3
+    });
+
+    $("#testmask").val("8100000.00");
+
+    equal($("#testmask").val(), "810.000,00", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("inputmask(\"decimal\") - '8100000,00' - ManRueda", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('decimal', {
+        integerDigits: 6,
+        groupSeparator: '.',
+        autoGroup: true,
+        digits: 2,
+        radixPoint: ',',
+        groupSize: 3
+    });
+
+    $("#testmask").val("8100000,00");
+
+    equal($("#testmask").val(), "810.000,00", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("inputmask(\"decimal\") - 8100000.00 - ManRueda", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('decimal', {
+        integerDigits: 6,
+        groupSeparator: '.',
+        autoGroup: true,
+        digits: 2,
+        radixPoint: ',',
+        groupSize: 3
+    });
+
+    $("#testmask").val(8100000.00);
+
+    equal($("#testmask").val(), "810.000,00", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("inputmask(\"decimal\") - 810000.00 - ManRueda", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('decimal', {
+        integerDigits: 6,
+        groupSeparator: '.',
+        autoGroup: true,
+        digits: 2,
+        radixPoint: ',',
+        groupSize: 3
+    });
+
+    $("#testmask").val('810000.00');
+
+    equal($("#testmask").val(), "810.000,00", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});

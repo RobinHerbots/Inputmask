@@ -39,6 +39,7 @@
             function insertTestDefinition(mtoken, element, position) {
                 var maskdef = opts.definitions[element], newBlockMarker = 0 == mtoken.matches.length;
                 if (position = void 0 != position ? position : mtoken.matches.length, maskdef && !escaped) {
+                    maskdef.placeholder = $.isFunction(maskdef.placeholder) ? maskdef.placeholder.call(this, opts) : maskdef.placeholder;
                     for (var prevalidators = maskdef.prevalidator, prevalidatorsL = prevalidators ? prevalidators.length : 0, i = 1; i < maskdef.cardinality; i++) {
                         var prevalidator = prevalidatorsL >= i ? prevalidators[i - 1] : [], validator = prevalidator.validator, cardinality = prevalidator.cardinality;
                         mtoken.matches.splice(position++, 0, {
@@ -531,9 +532,7 @@
             input._valueSet(buffer.join("")), void 0 != caretPos && caret(input, caretPos);
         }
         function getPlaceholder(pos, test) {
-            test = test || getTest(pos);
-            var placeholder = $.isFunction(test.placeholder) ? test.placeholder.call(this, opts) : test.placeholder;
-            return void 0 != placeholder ? placeholder : null == test.fn ? test.def : opts.placeholder.charAt(pos % opts.placeholder.length);
+            return test = test || getTest(pos), void 0 != test.placeholder ? test.placeholder : null == test.fn ? test.def : opts.placeholder.charAt(pos % opts.placeholder.length);
         }
         function checkVal(input, writeOut, strict, nptvl) {
             var inputValue = void 0 != nptvl ? nptvl.slice() : input._valueGet().split("");
@@ -588,7 +587,7 @@
             data.caret = {
                 begin: begin,
                 end: end
-            }, $(npt).data("_inputmask", data), $(npt).is(":visible") && (npt.scrollLeft = npt.scrollWidth, 
+            }, $(npt).data("_inputmask", data), $(npt).is(":visible") && (npt.scrollLeft = $(npt).css("font-size").replace("px", "") * end > npt.scrollWidth ? npt.scrollWidth : 0, 
             0 == opts.insertMode && begin == end && end++, npt.setSelectionRange ? (npt.selectionStart = begin, 
             npt.selectionEnd = end) : npt.createTextRange && (range = npt.createTextRange(), 
             range.collapse(!0), range.moveEnd("character", end), range.moveStart("character", begin), 

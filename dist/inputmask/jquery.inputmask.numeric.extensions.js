@@ -191,8 +191,7 @@
                         if (!isValid) {
                             var radix = "[" + $.inputmask.escapeRegex.call(this, opts.radixPoint) + "]";
                             isValid = new RegExp(radix).test(chrs), isValid && maskset.validPositions[pos] && maskset.validPositions[pos].match.placeholder == opts.radixPoint && (isValid = {
-                                pos: pos,
-                                remove: pos
+                                caret: pos + 1
                             });
                         }
                         return isValid;
