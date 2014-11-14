@@ -582,14 +582,16 @@
             }
             begin = TranslatePosition(begin), end = TranslatePosition(end), end = "number" == typeof end ? end : begin;
             var data = $(npt).data("_inputmask") || {};
-            data.caret = {
+            if (data.caret = {
                 begin: begin,
                 end: end
-            }, $(npt).data("_inputmask", data), $(npt).is(":visible") && (npt.scrollLeft = $(npt).css("font-size").replace("px", "") * end > npt.scrollWidth ? npt.scrollWidth : 0, 
-            0 == opts.insertMode && begin == end && end++, npt.setSelectionRange ? (npt.selectionStart = begin, 
-            npt.selectionEnd = end) : npt.createTextRange && (range = npt.createTextRange(), 
-            range.collapse(!0), range.moveEnd("character", end), range.moveStart("character", begin), 
-            range.select()));
+            }, $(npt).data("_inputmask", data), $(npt).is(":visible")) {
+                var scrollCalc = $(npt).css("font-size").replace("px", "") * end;
+                npt.scrollLeft = scrollCalc > npt.scrollWidth ? scrollCalc : 0, 0 == opts.insertMode && begin == end && end++, 
+                npt.setSelectionRange ? (npt.selectionStart = begin, npt.selectionEnd = end) : npt.createTextRange && (range = npt.createTextRange(), 
+                range.collapse(!0), range.moveEnd("character", end), range.moveStart("character", begin), 
+                range.select());
+            }
         }
         function determineLastRequiredPosition(returnDefinition) {
             var pos, testPos, buffer = getBuffer(), bl = buffer.length, lvp = getLastValidPosition(), positions = {}, lvTest = getMaskSet().validPositions[lvp], ndxIntlzr = void 0 != lvTest ? lvTest.locator.slice() : void 0;
@@ -1848,7 +1850,7 @@
                 var tmpBufSplit = "" != opts.radixPoint ? tmpBuffer.join("").split(opts.radixPoint) : [ tmpBuffer.join("") ], matchRslt = tmpBufSplit[0].match(opts.regex.integerPart(opts)), matchRsltDigits = 2 == tmpBufSplit.length ? tmpBufSplit[1].match(opts.regex.integerNPart(opts)) : void 0;
                 matchRslt && "-0" == matchRslt[matchRslt.index] && (void 0 == matchRsltDigits || matchRsltDigits[matchRsltDigits.index].match(/^0+$/)) && tmpBuffer.splice(0, 1);
                 var radixPosition = $.inArray(opts.radixPoint, tmpBuffer);
-                if (-1 != radixPosition && isFinite(opts.digits)) for (var i = 1; i <= opts.digits; i++) (void 0 == tmpBuffer[radixPosition + i] || tmpBuffer[radixPosition + i] == opts.placeholder.charAt(0)) && (tmpBuffer[radixPosition + i] = "0");
+                if (-1 != radixPosition && isFinite(opts.digits) && !opts.digitsOptional) for (var i = 1; i <= opts.digits; i++) (void 0 == tmpBuffer[radixPosition + i] || tmpBuffer[radixPosition + i] == opts.placeholder.charAt(0)) && (tmpBuffer[radixPosition + i] = "0");
             },
             regex: {
                 integerPart: function() {

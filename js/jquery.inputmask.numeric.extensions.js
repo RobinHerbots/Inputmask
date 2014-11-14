@@ -134,7 +134,7 @@ Optional extensions on the jquery.inputmask base
                     tmpBuffer.splice(0, 1);
                 }
                 var radixPosition = $.inArray(opts.radixPoint, tmpBuffer);
-                if (radixPosition != -1 && isFinite(opts.digits)) {
+                if (radixPosition != -1 && isFinite(opts.digits) && !opts.digitsOptional) {
                     for (var i = 1; i <= opts.digits; i++) {
                         if (tmpBuffer[radixPosition + i] == undefined || tmpBuffer[radixPosition + i] == opts.placeholder.charAt(0)) tmpBuffer[radixPosition + i] = "0";
                     }

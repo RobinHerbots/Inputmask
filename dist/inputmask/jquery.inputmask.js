@@ -584,14 +584,16 @@
             }
             begin = TranslatePosition(begin), end = TranslatePosition(end), end = "number" == typeof end ? end : begin;
             var data = $(npt).data("_inputmask") || {};
-            data.caret = {
+            if (data.caret = {
                 begin: begin,
                 end: end
-            }, $(npt).data("_inputmask", data), $(npt).is(":visible") && (npt.scrollLeft = $(npt).css("font-size").replace("px", "") * end > npt.scrollWidth ? npt.scrollWidth : 0, 
-            0 == opts.insertMode && begin == end && end++, npt.setSelectionRange ? (npt.selectionStart = begin, 
-            npt.selectionEnd = end) : npt.createTextRange && (range = npt.createTextRange(), 
-            range.collapse(!0), range.moveEnd("character", end), range.moveStart("character", begin), 
-            range.select()));
+            }, $(npt).data("_inputmask", data), $(npt).is(":visible")) {
+                var scrollCalc = $(npt).css("font-size").replace("px", "") * end;
+                npt.scrollLeft = scrollCalc > npt.scrollWidth ? scrollCalc : 0, 0 == opts.insertMode && begin == end && end++, 
+                npt.setSelectionRange ? (npt.selectionStart = begin, npt.selectionEnd = end) : npt.createTextRange && (range = npt.createTextRange(), 
+                range.collapse(!0), range.moveEnd("character", end), range.moveStart("character", begin), 
+                range.select());
+            }
         }
         function determineLastRequiredPosition(returnDefinition) {
             var pos, testPos, buffer = getBuffer(), bl = buffer.length, lvp = getLastValidPosition(), positions = {}, lvTest = getMaskSet().validPositions[lvp], ndxIntlzr = void 0 != lvTest ? lvTest.locator.slice() : void 0;
