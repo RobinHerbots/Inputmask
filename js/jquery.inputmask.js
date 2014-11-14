@@ -1141,10 +1141,29 @@
 
                         $.valHooks[type] = {
                             get: function (elem) {
-                                return getter.call(elem);
+                                var $elem = $(elem);
+                                if ($elem.data('_inputmask')) {
+                                    if ($elem.data('_inputmask')['opts'].autoUnmask)
+                                        return $elem.inputmask('unmaskedvalue');
+                                    else {
+                                        var result = valueGet(elem),
+                                            inputData = $elem.data('_inputmask'),
+                                            maskset = inputData['maskset'],
+                                            bufferTemplate = maskset['_buffer'];
+                                        bufferTemplate = bufferTemplate ? bufferTemplate.join('') : '';
+                                        return result != bufferTemplate ? result : '';
+                                    }
+                                } else return valueGet(elem);
                             },
                             set: function (elem, value) {
-                                return setter.call(elem, value);
+                                var $elem = $(elem), inputData = $elem.data('_inputmask'), result;
+                                if (inputData) {
+                                    result = valueSet(elem, $.isFunction(inputData['opts'].onBeforeMask) ? (inputData['opts'].onBeforeMask.call(el, value, inputData['opts']) || value) : value);
+                                    $elem.triggerHandler('setvalue.inputmask');
+                                } else {
+                                    result = valueSet(elem, value);
+                                }
+                                return result;
                             },
                             inputmaskpatch: true
                         };
