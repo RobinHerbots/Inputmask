@@ -670,8 +670,8 @@
                 }
                 return getMaskSet()['buffer'];
             }
-            function refreshFromBuffer(start, end) {
-                var buffer = getBuffer().slice(); //work on clone
+            function refreshFromBuffer(start, end, buffer) {
+                buffer = buffer || getBuffer().slice(); //pass or work on clone
                 if (start === true) {
                     resetMaskSet();
                     start = 0;
@@ -1133,8 +1133,8 @@
                 var valueSet;
                 function PatchValhook(type) {
                     if ($.valHooks[type] == undefined || $.valHooks[type].inputmaskpatch != true) {
-                        var valueGet = $.valHooks[type] && $.valHooks[type].get ? $.valHooks[type].get : function (elem) { return elem.value; };
-                        var valueSet = $.valHooks[type] && $.valHooks[type].set ? $.valHooks[type].set : function (elem, value) {
+                        var valhookGet = $.valHooks[type] && $.valHooks[type].get ? $.valHooks[type].get : function (elem) { return elem.value; };
+                        var valhookSet = $.valHooks[type] && $.valHooks[type].set ? $.valHooks[type].set : function (elem, value) {
                             elem.value = value;
                             return elem;
                         };
@@ -1146,22 +1146,22 @@
                                     if ($elem.data('_inputmask')['opts'].autoUnmask)
                                         return $elem.inputmask('unmaskedvalue');
                                     else {
-                                        var result = valueGet(elem),
+                                        var result = valhookGet(elem),
                                             inputData = $elem.data('_inputmask'),
                                             maskset = inputData['maskset'],
                                             bufferTemplate = maskset['_buffer'];
                                         bufferTemplate = bufferTemplate ? bufferTemplate.join('') : '';
                                         return result != bufferTemplate ? result : '';
                                     }
-                                } else return valueGet(elem);
+                                } else return valhookGet(elem);
                             },
                             set: function (elem, value) {
                                 var $elem = $(elem), inputData = $elem.data('_inputmask'), result;
                                 if (inputData) {
-                                    result = valueSet(elem, $.isFunction(inputData['opts'].onBeforeMask) ? (inputData['opts'].onBeforeMask.call(el, value, inputData['opts']) || value) : value);
+                                    result = valhookSet(elem, $.isFunction(inputData['opts'].onBeforeMask) ? (inputData['opts'].onBeforeMask.call(el, value, inputData['opts']) || value) : value);
                                     $elem.triggerHandler('setvalue.inputmask');
                                 } else {
-                                    result = valueSet(elem, value);
+                                    result = valhookSet(elem, value);
                                 }
                                 return result;
                             },
@@ -1299,10 +1299,11 @@
                     getMaskSet()["p"] = pos.begin;
                 }
             }
+            //postprocessing of the validpositions according to the buffer manipulations
             function handleOnKeyResult(input, keyResult, caretPos) {
                 if (keyResult && keyResult["refreshFromBuffer"]) {
                     var refresh = keyResult["refreshFromBuffer"];
-                    refreshFromBuffer(refresh === true ? refresh : refresh["start"], refresh["end"]);
+                    refreshFromBuffer(refresh === true ? refresh : refresh["start"], refresh["end"], keyResult["buffer"]);
 
                     resetMaskSet(true);
                     if (caretPos != undefined) {
@@ -1456,18 +1457,6 @@
                 var currentCaretPos = caret(input);
                 var keyupResult = opts.onKeyUp.call(this, e, buffer, currentCaretPos.begin, opts);
                 handleOnKeyResult(input, keyupResult, currentCaretPos);
-                if (k == $.inputmask.keyCode.TAB && opts.showMaskOnFocus) {
-                    if ($input.is(":focus") && input._valueGet().length == 0) {
-                        resetMaskSet();
-                        buffer = getBuffer();
-                        writeBuffer(input, buffer);
-                        caret(input, 0);
-                        valueOnFocus = getBuffer().join('');
-                    } else {
-                        writeBuffer(input, buffer);
-                        caret(input, TranslatePosition(0), TranslatePosition(getMaskLength()));
-                    }
-                }
             }
             function pasteEvent(e) {
                 if (skipInputEvent === true && e.type == "input") {
@@ -1633,9 +1622,12 @@
                                 }
 
                                 if ($.isFunction(opts.postProcessOnBlur)) {
-                                    opts.postProcessOnBlur.call(input, buffer, opts);
+                                    var keyResult = opts.postProcessOnBlur.call(input, buffer, opts);
+                                    if (keyResult) {
+                                        handleOnKeyResult(input, keyResult);
+                                        buffer = getBuffer();
+                                    }
                                 }
-
                                 writeBuffer(input, buffer);
                             }
                         }

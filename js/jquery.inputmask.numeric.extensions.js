@@ -138,6 +138,7 @@ Optional extensions on the jquery.inputmask base
                     for (var i = 1; i <= opts.digits; i++) {
                         if (tmpBuffer[radixPosition + i] == undefined || tmpBuffer[radixPosition + i] == opts.placeholder.charAt(0)) tmpBuffer[radixPosition + i] = "0";
                     }
+                    return { "refreshFromBuffer": true, "buffer": tmpBuffer };
                 }
             },
             regex: {

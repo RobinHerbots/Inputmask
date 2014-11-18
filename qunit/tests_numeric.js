@@ -707,10 +707,23 @@ test("decimal alias set value with val() - kochelmonster", function () {
     $("#testmask").remove();
 });
 
-test("inputmask(\"decimal\") - value=\"123.1\" blur", function () {
+test("inputmask(\"decimal\") - value=\"123.1\" blur digitsoptional", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("decimal", { digits: 3 });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123.1");
+    $("#testmask").blur();
+
+    equal($("#testmask").val(), "123.1", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("inputmask(\"decimal\") - value=\"123.1\" blur", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("decimal", { digits: 3, digitsOptional: false });
 
     $("#testmask")[0].focus();
     $("#testmask").Type("123.1");
