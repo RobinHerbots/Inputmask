@@ -1442,12 +1442,16 @@
                             $input.prop("title", getMaskSet()["mask"]);
                         }
 
-                        if (e && checkval != true) {
-                            e.preventDefault();
-
+                        if (e) e.preventDefault();
+                        if (checkval) {
+                            var keyResult = opts.onKeyPress.call(this, e, getBuffer(), -1, opts);
+                            if (keyResult) {
+                                handleOnKeyResult(input, keyResult);
+                                getMaskSet()["p"] = getLastValidPosition() + 1;
+                            }
+                        } else {
                             var currentCaretPos = caret(input);
-                            var keypressResult = opts.onKeyPress.call(this, e, getBuffer(), currentCaretPos.begin, opts);
-                            handleOnKeyResult(input, keypressResult, currentCaretPos);
+                            handleOnKeyResult(input, opts.onKeyPress.call(this, e, getBuffer(), currentCaretPos.begin, opts), currentCaretPos);
                         }
                     }
                 }

@@ -798,10 +798,13 @@
                         }, 0);
                     } else isSlctn && (getMaskSet().buffer = void 0, getMaskSet().validPositions = getMaskSet().undoPositions);
                 } else isSlctn && (getMaskSet().buffer = void 0, getMaskSet().validPositions = getMaskSet().undoPositions);
-                if (opts.showTooltip && $input.prop("title", getMaskSet().mask), e && 1 != checkval) {
-                    e.preventDefault();
-                    var currentCaretPos = caret(input), keypressResult = opts.onKeyPress.call(this, e, getBuffer(), currentCaretPos.begin, opts);
-                    handleOnKeyResult(input, keypressResult, currentCaretPos);
+                if (opts.showTooltip && $input.prop("title", getMaskSet().mask), e && e.preventDefault(), 
+                checkval) {
+                    var keyResult = opts.onKeyPress.call(this, e, getBuffer(), -1, opts);
+                    keyResult && (handleOnKeyResult(input, keyResult), getMaskSet().p = getLastValidPosition() + 1);
+                } else {
+                    var currentCaretPos = caret(input);
+                    handleOnKeyResult(input, opts.onKeyPress.call(this, e, getBuffer(), currentCaretPos.begin, opts), currentCaretPos);
                 }
             }
         }

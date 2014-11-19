@@ -916,6 +916,25 @@ test("inputmask(\"decimal\") - 8100000.00 - ManRueda", function () {
 
     $("#testmask").val(8100000.00);
 
+    equal($("#testmask").val(), "810.000", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+test("inputmask(\"decimal\") - 8100000.00 digitsoptional false - ManRueda", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('decimal', {
+        integerDigits: 6,
+        groupSeparator: '.',
+        autoGroup: true,
+        digits: 2,
+        digitsOptional: false,
+        radixPoint: ',',
+        groupSize: 3
+    });
+
+    $("#testmask").val(8100000.00);
+
     equal($("#testmask").val(), "810.000,00", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
