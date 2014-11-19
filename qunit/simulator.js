@@ -70,12 +70,12 @@
                     if (modifier == $.inputmask.keyCode.CONTROL)
                         keypress.ctrlKey = true;
                     $(this).trigger(keypress);
-                    if (!keypress.isDefaultPrevented()) {
-                        keyup.keyCode = keyCode;
-                        if (modifier == $.inputmask.keyCode.CONTROL)
-                            keyup.ctrlKey = true;
-                        $(this).trigger(keyup);
-                    }
+                    //if (!keypress.isDefaultPrevented()) {
+                    keyup.keyCode = keyCode;
+                    if (modifier == $.inputmask.keyCode.CONTROL)
+                        keyup.ctrlKey = true;
+                    $(this).trigger(keyup);
+                    //}
                 }
             }
         }

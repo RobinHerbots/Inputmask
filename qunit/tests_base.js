@@ -417,3 +417,24 @@ test("inputmask({ mask: \"9\", repeat: 10, placeholder: \"\", numericInput: true
     $("#testmask").remove();
 });
 
+asyncTest("creditcard switch - pchelailya", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("9999 9999 9999 9999");
+    $("#testmask").on("keyup", function (event) {
+        var value = $(this).inputmask("unmaskedvalue");
+
+        if (value.length === 2 && value === "37") {
+            $("input").inputmask("9999 999999 99999");
+        }
+    });
+    $("#testmask")[0].focus();
+    $("#testmask").Type("37");
+    setTimeout(function() {
+        $("#testmask").Type("12");
+        start();
+        equal($("#testmask").val(), "3712 ______ _____", "Result " + $("#testmask").val());
+
+        $("#testmask").remove();
+    }, 0);
+});
