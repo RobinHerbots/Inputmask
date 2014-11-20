@@ -10,12 +10,12 @@
 }(function($) {
     return $.extend($.inputmask.defaults.definitions, {
         A: {
-            validator: "[A-Za-zА-яЁёÀ-ÿµ]",
+            validator: "[A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
             cardinality: 1,
             casing: "upper"
         },
         "#": {
-            validator: "[0-9A-Za-zА-яЁёÀ-ÿµ]",
+            validator: "[0-9A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
             cardinality: 1,
             casing: "upper"
         }

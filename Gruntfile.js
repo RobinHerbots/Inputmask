@@ -18,7 +18,7 @@ module.exports = function (grunt) {
             uglifyConfig[dstFile] = {
                 dest: 'dist/inputmask/' + dstFile,
                 src: "build/" + dstFile,
-                options: { banner: createBanner(dstFile), beautify: true, mangle: false, preserveComments: "some" }
+                options: { banner: createBanner(dstFile), beautify: true, mangle: false, preserveComments: "some", ASCIIOnly: true }
             };
         }
 
@@ -28,13 +28,13 @@ module.exports = function (grunt) {
             files: {
                 'dist/<%= pkg.name %>.bundle.js': srcFiles
             },
-            options: { banner: createBanner('<%= pkg.name %>.bundle'), beautify: true, mangle: false, preserveComments: "some" }
+            options: { banner: createBanner('<%= pkg.name %>.bundle'), beautify: true, mangle: false, preserveComments: "some", ASCIIOnly: true }
         }
         uglifyConfig["inputmaskbundlemin"] = {
             files: {
                 'dist/<%= pkg.name %>.bundle.min.js': srcFiles
             },
-            options: { banner: createBanner('<%= pkg.name %>.bundle'), preserveComments: "some" }
+            options: { banner: createBanner('<%= pkg.name %>.bundle'), preserveComments: "some", ASCIIOnly: true }
         }
         return uglifyConfig;
     }
