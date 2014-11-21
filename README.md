@@ -624,6 +624,10 @@ $(document).ready(function(){
     $(selector).inputmask('decimal', { rightAlign: false });  //disables the right alignment of the decimal input
 });
 ```
+#### undoOnEscape
+Make escape behave like undo. (ctrl-Z)  
+Pressing escape reverts the value to the value before focus.  
+Default: true 
 
 #### radixPoint
 

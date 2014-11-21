@@ -1336,7 +1336,7 @@
                     }, 0);
                 } else if ((k == $.inputmask.keyCode.HOME && !e.shiftKey) || k == $.inputmask.keyCode.PAGE_UP) { //Home or page_up
                     caret(input, 0, e.shiftKey ? pos.begin : 0);
-                } else if (k == $.inputmask.keyCode.ESCAPE || (k == 90 && e.ctrlKey)) { //escape && undo
+                } else if ((opts.undoOnEscape && k == $.inputmask.keyCode.ESCAPE) || (k == 90 && e.ctrlKey)) { //escape && undo
                     checkVal(input, true, false, valueOnFocus.split(''));
                     $input.click();
                 } else if (k == $.inputmask.keyCode.INSERT && !(e.shiftKey || e.ctrlKey)) { //insert
@@ -1911,6 +1911,7 @@
                 showTooltip: false, //show the activemask as tooltip
                 numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
                 rightAlign: false, //align to the right
+                undoOnEscape: true, //pressing escape reverts the value to the value before focus
                 //numeric basic properties
                 radixPoint: "", //".", // | ","
                 radixFocus: false, //position caret to radixpoint on initial click
