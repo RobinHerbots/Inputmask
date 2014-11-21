@@ -228,20 +228,6 @@
             }
 
             function generateMask(mask, metadata) {
-                if (opts.numericInput && opts.multi !== true) { //TODO FIX FOR DYNAMIC MASKS WITH QUANTIFIERS
-                    mask = mask.split('').reverse();
-                    for (var ndx = 0; ndx < mask.length; ndx++) {
-                        if (mask[ndx] == opts.optionalmarker.start)
-                            mask[ndx] = opts.optionalmarker.end;
-                        else if (mask[ndx] == opts.optionalmarker.end)
-                            mask[ndx] = opts.optionalmarker.start;
-                        else if (mask[ndx] == opts.groupmarker.start)
-                            mask[ndx] = opts.groupmarker.end;
-                        else if (mask[ndx] == opts.groupmarker.end)
-                            mask[ndx] = opts.groupmarker.start;
-                    }
-                    mask = mask.join('');
-                }
                 if (mask == undefined || mask == "")
                     return undefined;
                 else {
@@ -267,6 +253,24 @@
                     return $.extend(true, {}, $.inputmask.masksCache[mask]);
                 }
             }
+            function preProcessMask(mask) {
+                mask = mask.toString();
+                if (opts.numericInput) { //TODO FIX FOR DYNAMIC MASKS WITH QUANTIFIERS
+                    mask = mask.split('').reverse();
+                    for (var ndx = 0; ndx < mask.length; ndx++) {
+                        if (mask[ndx] == opts.optionalmarker.start)
+                            mask[ndx] = opts.optionalmarker.end;
+                        else if (mask[ndx] == opts.optionalmarker.end)
+                            mask[ndx] = opts.optionalmarker.start;
+                        else if (mask[ndx] == opts.groupmarker.start)
+                            mask[ndx] = opts.groupmarker.end;
+                        else if (mask[ndx] == opts.groupmarker.end)
+                            mask[ndx] = opts.groupmarker.start;
+                    }
+                    mask = mask.join('');
+                }
+                return mask;
+            }
 
             if ($.isFunction(opts.mask)) { //allow mask to be a preprocessing fn - should return a valid mask
                 opts.mask = opts.mask.call(this, opts);
@@ -276,9 +280,9 @@
                     ms = [];
                     $.each(opts.mask, function (ndx, msk) {
                         if (msk["mask"] != undefined && !$.isFunction(msk["mask"])) {
-                            ms.push(generateMask(msk["mask"].toString(), msk));
+                            ms.push(generateMask(preProcessMask(msk["mask"]), msk));
                         } else {
-                            ms.push(generateMask(msk.toString(), msk));
+                            ms.push(generateMask(preProcessMask(msk), msk));
                         }
                     });
                 } else {
@@ -288,9 +292,9 @@
                         if (altMask.length > 1)
                             altMask += ")|(";
                         if (msk["mask"] != undefined && !$.isFunction(msk["mask"])) {
-                            altMask += msk["mask"].toString();
+                            altMask += preProcessMask(msk["mask"]);
                         } else {
-                            altMask += msk.toString();
+                            altMask += preProcessMask(msk);
                         }
                     });
                     altMask += ")";
@@ -299,9 +303,9 @@
             } else {
                 if (opts.mask) {
                     if (opts.mask["mask"] != undefined && !$.isFunction(opts.mask["mask"])) {
-                        ms = generateMask(opts.mask["mask"].toString(), opts.mask);
+                        ms = generateMask(preProcessMask(opts.mask["mask"]), opts.mask);
                     } else {
-                        ms = generateMask(opts.mask.toString(), opts.mask);
+                        ms = generateMask(preProcessMask(opts.mask), opts.mask);
                     }
                 }
             }
@@ -1081,7 +1085,7 @@
             function clearOptionalTail(buffer) {
                 var rl = determineLastRequiredPosition(), lmib = buffer.length - 1;
                 for (; lmib > rl; lmib--) {
-                    if (isMask(lmib)) break;
+                    if (isMask(lmib)) break; //fixme ismask is not good enough
                 }
                 buffer.splice(rl, lmib + 1 - rl);
             }
@@ -1187,7 +1191,7 @@
                     $(npt).bind("mouseenter.inputmask", function (event) {
                         var $input = $(this), input = this, value = input._valueGet();
                         if (value != "" && value != getBuffer().join('')) {
-                            valueSet.call(this, $.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(el, value, opts) || value) : value);
+                            this._valueSet($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(el, value, opts) || value) : value);
                             $input.trigger("setvalue");
                         }
                     });

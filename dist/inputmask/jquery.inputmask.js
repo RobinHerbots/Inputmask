@@ -156,11 +156,6 @@
             maskTokens;
         }
         function generateMask(mask, metadata) {
-            if (opts.numericInput && opts.multi !== !0) {
-                mask = mask.split("").reverse();
-                for (var ndx = 0; ndx < mask.length; ndx++) mask[ndx] == opts.optionalmarker.start ? mask[ndx] = opts.optionalmarker.end : mask[ndx] == opts.optionalmarker.end ? mask[ndx] = opts.optionalmarker.start : mask[ndx] == opts.groupmarker.start ? mask[ndx] = opts.groupmarker.end : mask[ndx] == opts.groupmarker.end && (mask[ndx] = opts.groupmarker.start);
-                mask = mask.join("");
-            }
             if (void 0 == mask || "" == mask) return void 0;
             if (1 == mask.length && 0 == opts.greedy && 0 != opts.repeat && (opts.placeholder = ""), 
             opts.repeat > 0 || "*" == opts.repeat || "+" == opts.repeat) {
@@ -177,17 +172,25 @@
                 metadata: metadata
             }), $.extend(!0, {}, $.inputmask.masksCache[mask]);
         }
+        function preProcessMask(mask) {
+            if (mask = mask.toString(), opts.numericInput) {
+                mask = mask.split("").reverse();
+                for (var ndx = 0; ndx < mask.length; ndx++) mask[ndx] == opts.optionalmarker.start ? mask[ndx] = opts.optionalmarker.end : mask[ndx] == opts.optionalmarker.end ? mask[ndx] = opts.optionalmarker.start : mask[ndx] == opts.groupmarker.start ? mask[ndx] = opts.groupmarker.end : mask[ndx] == opts.groupmarker.end && (mask[ndx] = opts.groupmarker.start);
+                mask = mask.join("");
+            }
+            return mask;
+        }
         var ms = void 0;
         if ($.isFunction(opts.mask) && (opts.mask = opts.mask.call(this, opts)), $.isArray(opts.mask)) if (multi) ms = [], 
         $.each(opts.mask, function(ndx, msk) {
-            ms.push(void 0 == msk.mask || $.isFunction(msk.mask) ? generateMask(msk.toString(), msk) : generateMask(msk.mask.toString(), msk));
+            ms.push(void 0 == msk.mask || $.isFunction(msk.mask) ? generateMask(preProcessMask(msk), msk) : generateMask(preProcessMask(msk.mask), msk));
         }); else {
             opts.keepStatic = void 0 == opts.keepStatic ? !0 : opts.keepStatic;
             var altMask = "(";
             $.each(opts.mask, function(ndx, msk) {
-                altMask.length > 1 && (altMask += ")|("), altMask += void 0 == msk.mask || $.isFunction(msk.mask) ? msk.toString() : msk.mask.toString();
+                altMask.length > 1 && (altMask += ")|("), altMask += preProcessMask(void 0 == msk.mask || $.isFunction(msk.mask) ? msk : msk.mask);
             }), altMask += ")", ms = generateMask(altMask, opts.mask);
-        } else opts.mask && (ms = void 0 == opts.mask.mask || $.isFunction(opts.mask.mask) ? generateMask(opts.mask.toString(), opts.mask) : generateMask(opts.mask.mask.toString(), opts.mask));
+        } else opts.mask && (ms = void 0 == opts.mask.mask || $.isFunction(opts.mask.mask) ? generateMask(preProcessMask(opts.mask), opts.mask) : generateMask(preProcessMask(opts.mask.mask), opts.mask));
         return ms;
     }
     function maskScope(actionObj, maskset, opts) {
@@ -682,7 +685,7 @@
             function InstallNativeValueSetFallback(npt) {
                 $(npt).bind("mouseenter.inputmask", function() {
                     var $input = $(this), input = this, value = input._valueGet();
-                    "" != value && value != getBuffer().join("") && (valueSet.call(this, $.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call(el, value, opts) || value : value), 
+                    "" != value && value != getBuffer().join("") && (this._valueSet($.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call(el, value, opts) || value : value), 
                     $input.trigger("setvalue"));
                 });
                 //!! the bound handlers are executed in the order they where bound
