@@ -308,8 +308,7 @@
             return ms;
         }
 
-        var msie1x = typeof ScriptEngineMajorVersion === "function" ? ScriptEngineMajorVersion() >= 10 : /*@cc_on (@_jscript_version >= 10) ||@*/false, //IEx detection
-            ua = navigator.userAgent,
+        var ua = navigator.userAgent,
             iphone = ua.match(new RegExp("iphone", "i")) !== null,
             android = ua.match(new RegExp("android.*safari.*", "i")) !== null,
             androidchrome = ua.match(new RegExp("android.*chrome.*", "i")) !== null,
