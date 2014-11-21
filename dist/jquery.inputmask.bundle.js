@@ -539,7 +539,7 @@
             if (matches && matches.length > 1 && inputValue.splice(0, staticInput.length), $.each(inputValue, function(ndx, charCode) {
                 var lvp = getLastValidPosition(), lvTest = getMaskSet().validPositions[lvp], nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : void 0, lvp);
                 if (-1 == $.inArray(charCode, getBufferTemplate().slice(lvp + 1, getMaskSet().p)) || strict) {
-                    var pos = strict ? ndx : null == nextTest.match.fn ? lvp + 1 : getMaskSet().p;
+                    var pos = strict ? ndx : null == nextTest.match.fn && lvp + 1 < getMaskSet().p ? lvp + 1 : getMaskSet().p;
                     keypressEvent.call(input, void 0, !0, charCode.charCodeAt(0), !1, strict, pos), 
                     strict = strict || ndx > 0 && ndx > getMaskSet().p;
                 } else keypressEvent.call(input, void 0, !0, charCode.charCodeAt(0), !1, !0, lvp + 1);
@@ -798,8 +798,9 @@
                 } else isSlctn && (getMaskSet().buffer = void 0, getMaskSet().validPositions = getMaskSet().undoPositions);
                 if (opts.showTooltip && $input.prop("title", getMaskSet().mask), e && e.preventDefault(), 
                 checkval) {
-                    var keyResult = opts.onKeyPress.call(this, e, getBuffer(), -1, opts);
-                    keyResult && (handleOnKeyResult(input, keyResult), getMaskSet().p = getLastValidPosition() + 1);
+                    var keyResult = opts.onKeyPress.call(this, e, getBuffer(), forwardPosition, opts);
+                    keyResult && keyResult.refreshFromBuffer && (handleOnKeyResult(input, keyResult), 
+                    keyResult.caret && (getMaskSet().p = keyResult.caret));
                 } else {
                     var currentCaretPos = caret(input);
                     handleOnKeyResult(input, opts.onKeyPress.call(this, e, getBuffer(), currentCaretPos.begin, opts), currentCaretPos);

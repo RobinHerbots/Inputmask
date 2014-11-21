@@ -934,6 +934,7 @@ test("inputmask(\"decimal\") - 8100000.00 digitsoptional false - ManRueda", func
     });
 
     $("#testmask").val(8100000.00);
+    $("#testmask").blur();
 
     equal($("#testmask").val(), "810.000,00", "Result " + $("#testmask").val());
     $("#testmask").remove();

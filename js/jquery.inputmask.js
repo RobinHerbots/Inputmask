@@ -967,7 +967,7 @@
                 $.each(inputValue, function (ndx, charCode) {
                     var lvp = getLastValidPosition(), lvTest = getMaskSet()["validPositions"][lvp], nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : undefined, lvp);
                     if ($.inArray(charCode, getBufferTemplate().slice(lvp + 1, getMaskSet()["p"])) == -1 || strict) {
-                        var pos = strict ? ndx : (nextTest["match"].fn == null ? lvp + 1 : getMaskSet()["p"]);
+                        var pos = strict ? ndx : (nextTest["match"].fn == null && (lvp + 1) < getMaskSet()["p"] ? lvp + 1 : getMaskSet()["p"]);
                         keypressEvent.call(input, undefined, true, charCode.charCodeAt(0), false, strict, pos);
                         strict = strict || (ndx > 0 && ndx > getMaskSet()["p"]);
                     } else {
@@ -1444,10 +1444,11 @@
 
                         if (e) e.preventDefault();
                         if (checkval) {
-                            var keyResult = opts.onKeyPress.call(this, e, getBuffer(), -1, opts);
-                            if (keyResult) {
+                            var keyResult = opts.onKeyPress.call(this, e, getBuffer(), forwardPosition, opts);
+                            if (keyResult && keyResult["refreshFromBuffer"]) {
                                 handleOnKeyResult(input, keyResult);
-                                getMaskSet()["p"] = getLastValidPosition() + 1;
+                                if (keyResult.caret)
+                                    getMaskSet()["p"] = keyResult.caret;
                             }
                         } else {
                             var currentCaretPos = caret(input);
