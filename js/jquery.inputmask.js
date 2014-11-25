@@ -1445,7 +1445,11 @@
                             $input.prop("title", getMaskSet()["mask"]);
                         }
 
-                        if (e) e.preventDefault();
+                        if (e) {
+                            if (e.preventDefault)
+                                e.preventDefault();
+                        }
+                        
                         if (checkval) {
                             var keyResult = opts.onKeyPress.call(this, e, getBuffer(), forwardPosition, opts);
                             if (keyResult && keyResult["refreshFromBuffer"]) {
