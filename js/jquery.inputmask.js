@@ -330,7 +330,8 @@
         //actionObj definition see below
         function maskScope(actionObj, maskset, opts) {
             var isRTL = false,
-                valueOnFocus,
+                undoValue,
+                compositionUpdateData,
                 $el,
                 skipKeyPressEvent = false, //Safari 5.1.x - modal dialog fires keypress twice workaround
                 skipInputEvent = false, //skip when triggered from within inputmask
@@ -968,20 +969,24 @@
                 }
 
                 $.each(inputValue, function (ndx, charCode) {
+                    var keypress = $.Event("keypress");
+                    keypress.which = charCode.charCodeAt(0);
                     var lvp = getLastValidPosition(), lvTest = getMaskSet()["validPositions"][lvp], nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : undefined, lvp);
                     if ($.inArray(charCode, getBufferTemplate().slice(lvp + 1, getMaskSet()["p"])) == -1 || strict) {
                         var pos = strict ? ndx : (nextTest["match"].fn == null && (lvp + 1) < getMaskSet()["p"] ? lvp + 1 : getMaskSet()["p"]);
-                        keypressEvent.call(input, undefined, true, charCode.charCodeAt(0), false, strict, pos);
+                        keypressEvent.call(input, keypress, true, false, strict, pos);
                         strict = strict || (ndx > 0 && ndx > getMaskSet()["p"]);
                     } else {
-                        keypressEvent.call(input, undefined, true, charCode.charCodeAt(0), false, true, lvp + 1);
+                        keypressEvent.call(input, keypress, true, false, true, lvp + 1);
                     }
 
                 });
                 if (writeOut) {
                     var keypressResult = opts.onKeyPress.call(this, undefined, getBuffer(), 0, opts);
                     handleOnKeyResult(input, keypressResult);
-                    writeBuffer(input, getBuffer(), $(input).is(":focus") ? seekNext(getLastValidPosition(0)) : undefined);
+                    //writeBuffer(input, getBuffer(), $(input).is(":focus") ? seekNext(getLastValidPosition(0)) : undefined);
+                    var forwardPosition = getMaskSet()["p"];
+                    writeBuffer(input, getBuffer(), $(input).is(":focus") ? (opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition) : undefined);
                 }
             }
             function escapeRegex(str) {
@@ -1121,10 +1126,32 @@
                             if (eventHandler.type != "setvalue") {
                                 var handler = eventHandler.handler;
                                 eventHandler.handler = function (e) {
+                                    //console.log(e.type);
                                     if (this.readOnly || this.disabled)
                                         e.preventDefault;
-                                    else
+                                    else {
+                                        switch (e.type) {
+                                            case "input":
+                                                if (skipInputEvent === true) {
+                                                    skipInputEvent = false;
+                                                    return e.preventDefault;
+                                                }
+                                                break;
+                                            case "keydown":
+                                                //Safari 5.1.x - modal dialog fires keypress twice workaround
+                                                skipKeyPressEvent = false;
+                                                break;
+                                            case "keypress":
+                                                if (skipKeyPressEvent === true)
+                                                    return e.preventDefault;
+                                                skipKeyPressEvent = true;
+                                                break;
+                                            case "compositionupdate":
+                                                skipInputEvent = true; //stop inutFallback
+                                                break;
+                                        }
                                         return handler.apply(this, arguments);
+                                    }
                                 };
                             }
                         }
@@ -1267,7 +1294,9 @@
                         if (lastAlt > 0) {
                             while (validInputs.length > 0) {
                                 getMaskSet()["p"] = seekNext(getLastValidPosition());
-                                keypressEvent.call(input, undefined, true, validInputs.pop().charCodeAt(0), false, false, getMaskSet()["p"]);
+                                var keypress = $.Event("keypress");
+                                keypress.which = validInputs.pop().charCodeAt(0);
+                                keypressEvent.call(input, keypress, true, false, false, getMaskSet()["p"]);
                             }
                         }
                     }
@@ -1316,14 +1345,12 @@
                 }
             }
             function keydownEvent(e) {
-                //Safari 5.1.x - modal dialog fires keypress twice workaround
-                skipKeyPressEvent = false;
                 var input = this, $input = $(input), k = e.keyCode, pos = caret(input);
 
                 //backspace, delete, and escape get special treatment
                 if (k == $.inputmask.keyCode.BACKSPACE || k == $.inputmask.keyCode.DELETE || (iphone && k == 127) || (e.ctrlKey && k == 88 && !isInputEventSupported("cut"))) { //backspace/delete
                     e.preventDefault(); //stop default action but allow propagation
-                    if (k == 88) valueOnFocus = getBuffer().join('');
+                    if (k == 88) undoValue = getBuffer().join('');
                     handleRemove(input, k, pos);
                     writeBuffer(input, getBuffer(), getMaskSet()["p"]);
                     if (input._valueGet() == getBufferTemplate().join(''))
@@ -1341,7 +1368,7 @@
                 } else if ((k == $.inputmask.keyCode.HOME && !e.shiftKey) || k == $.inputmask.keyCode.PAGE_UP) { //Home or page_up
                     caret(input, 0, e.shiftKey ? pos.begin : 0);
                 } else if ((opts.undoOnEscape && k == $.inputmask.keyCode.ESCAPE) || (k == 90 && e.ctrlKey)) { //escape && undo
-                    checkVal(input, true, false, valueOnFocus.split(''));
+                    checkVal(input, true, false, undoValue.split(''));
                     $input.click();
                 } else if (k == $.inputmask.keyCode.INSERT && !(e.shiftKey || e.ctrlKey)) { //insert
                     opts.insertMode = !opts.insertMode;
@@ -1365,22 +1392,16 @@
                 handleOnKeyResult(input, keydownResult, currentCaretPos);
                 ignorable = $.inArray(k, opts.ignorables) != -1;
             }
-            function keypressEvent(e, checkval, k, writeOut, strict, ndx) {
-                //Safari 5.1.x - modal dialog fires keypress twice workaround
-                if (k == undefined && skipKeyPressEvent) return false;
-                skipKeyPressEvent = true;
-
+            function keypressEvent(e, checkval, writeOut, strict, ndx) {
                 var input = this, $input = $(input);
 
-                e = e || window.event;
-                var k = checkval ? k : (e.which || e.charCode || e.keyCode);
-
+                var k = e.which || e.charCode || e.keyCode;
                 if (checkval !== true && (!(e.ctrlKey && e.altKey) && (e.ctrlKey || e.metaKey || ignorable))) {
                     return true;
                 } else {
                     if (k) {
                         //special treat the decimal separator
-                        if (checkval !== true && k == 46 && e.shiftKey == false && opts.radixPoint == ",") k = 44;
+                        if (k == 46 && e.shiftKey == false && opts.radixPoint == ",") k = 44;
                         var pos = checkval ? { begin: ndx, end: ndx } : caret(input), forwardPosition, c = String.fromCharCode(k);
 
                         //should we clear a possible selection??
@@ -1445,7 +1466,6 @@
                             $input.prop("title", getMaskSet()["mask"]);
                         }
 
-                        if (e) e.preventDefault();
                         if (checkval) {
                             var keyResult = opts.onKeyPress.call(this, e, getBuffer(), forwardPosition, opts);
                             if (keyResult && keyResult["refreshFromBuffer"]) {
@@ -1457,6 +1477,7 @@
                             var currentCaretPos = caret(input);
                             handleOnKeyResult(input, opts.onKeyPress.call(this, e, getBuffer(), currentCaretPos.begin, opts), currentCaretPos);
                         }
+                        e.preventDefault();
                     }
                 }
             }
@@ -1467,11 +1488,6 @@
                 handleOnKeyResult(input, keyupResult, currentCaretPos);
             }
             function pasteEvent(e) {
-                if (skipInputEvent === true && e.type == "input") {
-                    skipInputEvent = false;
-                    return true;
-                }
-
                 var input = this, $input = $(input), inputValue = input._valueGet(), caretPos = caret(input);
                 //paste event for IE8 and lower I guess ;-)
                 if (e.type == "propertychange" && input._valueGet().length <= getMaskLength()) {
@@ -1493,10 +1509,6 @@
                 return false;
             }
             function mobileInputEvent(e) {
-                if (skipInputEvent === true && e.type == "input") {
-                    skipInputEvent = false;
-                    return true;
-                }
                 var input = this;
 
                 //backspace in chrome32 only fires input event - detect & treat
@@ -1518,14 +1530,10 @@
                 e.preventDefault();
             }
             function inputFallBackEvent(e) { //fallback when keypress & compositionevents fail
-                if (skipInputEvent === true && e.type == "input") {
-                    skipInputEvent = false;
-                    return true;
-                }
                 var input = this;
-                checkVal(input, false, false);
-                var forwardPosition = getMaskSet()["p"];
-                writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
+                checkVal(input, true, false);
+                //var forwardPosition = getMaskSet()["p"];
+                //writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
 
                 if (isComplete(getBuffer()) === true)
                     $(input).trigger("complete");
@@ -1533,7 +1541,7 @@
                 e.preventDefault();
             }
             function compositionupdateEvent(e) { //fix for special latin-charset FF/Linux
-                skipInputEvent = true; //stop inutFallback
+                //console.log(e.originalEvent.data + " vs " + compositionUpdateData);
                 var input = this;
                 setTimeout(function () {
                     caret(input, caret(input).begin - 1);
@@ -1578,7 +1586,7 @@
                     $el.unbind(".inputmask");
                     //bind events
                     $el.closest('form').bind("submit", function (e) { //trigger change on submit if any
-                        if (valueOnFocus != getBuffer().join('')) {
+                        if (undoValue != getBuffer().join('')) {
                             $el.change();
                         }
                         if ($el[0]._valueGet && $el[0]._valueGet() == getBufferTemplate().join('')) {
@@ -1604,9 +1612,9 @@
                         if ($input.data('_inputmask')) {
                             var nptValue = input._valueGet(), buffer = getBuffer().slice();
                             firstClick = true;
-                            if (valueOnFocus != buffer.join('')) {
+                            if (undoValue != buffer.join('')) {
                                 $input.change();
-                                valueOnFocus = buffer.join('');
+                                undoValue = buffer.join('');
                             }
                             if (nptValue != '') {
                                 if (opts.clearMaskOnLostFocus) {
@@ -1646,7 +1654,7 @@
                                 writeBuffer(input, getBuffer(), seekNext(getLastValidPosition()));
                             }
                         }
-                        valueOnFocus = getBuffer().join('');
+                        undoValue = getBuffer().join('');
                     }).bind("mouseleave.inputmask", function () {
                         var $input = $(this), input = this;
                         if (opts.clearMaskOnLostFocus) {
@@ -1688,7 +1696,7 @@
                     ).bind('setvalue.inputmask', function () {
                         var input = this;
                         checkVal(input, true, false);
-                        valueOnFocus = getBuffer().join('');
+                        undoValue = getBuffer().join('');
                         if ((opts.clearMaskOnLostFocus || opts.clearIncomplete) && input._valueGet() == getBufferTemplate().join(''))
                             input._valueSet('');
                     }).bind('cut.inputmask', function (e) {
@@ -1711,16 +1719,23 @@
                     $el.bind("keydown.inputmask", keydownEvent
                     ).bind("keypress.inputmask", keypressEvent
                     ).bind("keyup.inputmask", keyupEvent
-                    ).bind("compositionupdate.inputmask", compositionupdateEvent);
+                    ).bind("compositionstart.inputmask", function (e) {
+                        undoValue = getBuffer().join('');
+                        //init compositionUpdateData
+                        compositionUpdateData = "";
+                    }).bind("compositionupdate.inputmask", compositionupdateEvent
+                    ).bind("compositionend.inputmask", function (e) {
+
+                    });
 
                     if (PasteEventType === "paste") {
                         $el.bind("input.inputmask", inputFallBackEvent);
                     }
 
-                    if (android || androidfirefox || androidchrome || kindle) {
-                        $el.unbind("input.inputmask");
-                        $el.bind("input.inputmask", mobileInputEvent);
-                    }
+                    //if (android || androidfirefox || androidchrome || kindle) {
+                    //    $el.unbind("input.inputmask");
+                    //    $el.bind("input.inputmask", mobileInputEvent);
+                    //}
 
                     patchValueProperty(el);
 
@@ -1728,7 +1743,7 @@
                     var initialValue = $.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(el, el._valueGet(), opts) || el._valueGet()) : el._valueGet();
                     checkVal(el, true, false, initialValue.split(''));
                     var buffer = getBuffer().slice();
-                    valueOnFocus = buffer.join('');
+                    undoValue = buffer.join('');
                     // Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
                     var activeElement;
                     try {
@@ -1770,7 +1785,7 @@
                         isRTL = actionObj["$input"].data('_inputmask')['isRTL'];
                         return unmaskedvalue(actionObj["$input"]);
                     case "mask":
-                        valueOnFocus = getBuffer().join('');
+                        undoValue = getBuffer().join('');
                         mask(actionObj["el"]);
                         break;
                     case "format":

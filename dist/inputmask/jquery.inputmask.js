@@ -542,15 +542,18 @@
             resetMaskSet(), writeOut && input._valueSet("");
             var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(""), matches = inputValue.join("").match(new RegExp(escapeRegex(staticInput), "g"));
             if (matches && matches.length > 1 && inputValue.splice(0, staticInput.length), $.each(inputValue, function(ndx, charCode) {
+                var keypress = $.Event("keypress");
+                keypress.which = charCode.charCodeAt(0);
                 var lvp = getLastValidPosition(), lvTest = getMaskSet().validPositions[lvp], nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : void 0, lvp);
                 if (-1 == $.inArray(charCode, getBufferTemplate().slice(lvp + 1, getMaskSet().p)) || strict) {
                     var pos = strict ? ndx : null == nextTest.match.fn && lvp + 1 < getMaskSet().p ? lvp + 1 : getMaskSet().p;
-                    keypressEvent.call(input, void 0, !0, charCode.charCodeAt(0), !1, strict, pos), 
-                    strict = strict || ndx > 0 && ndx > getMaskSet().p;
-                } else keypressEvent.call(input, void 0, !0, charCode.charCodeAt(0), !1, !0, lvp + 1);
+                    keypressEvent.call(input, keypress, !0, !1, strict, pos), strict = strict || ndx > 0 && ndx > getMaskSet().p;
+                } else keypressEvent.call(input, keypress, !0, !1, !0, lvp + 1);
             }), writeOut) {
                 var keypressResult = opts.onKeyPress.call(this, void 0, getBuffer(), 0, opts);
-                handleOnKeyResult(input, keypressResult), writeBuffer(input, getBuffer(), $(input).is(":focus") ? seekNext(getLastValidPosition(0)) : void 0);
+                handleOnKeyResult(input, keypressResult);
+                var forwardPosition = getMaskSet().p;
+                writeBuffer(input, getBuffer(), $(input).is(":focus") ? opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition : void 0);
             }
         }
         function escapeRegex(str) {
@@ -639,7 +642,27 @@
                     if ("inputmask" == eventHandler.namespace && "setvalue" != eventHandler.type) {
                         var handler = eventHandler.handler;
                         eventHandler.handler = function(e) {
-                            return this.readOnly || this.disabled ? void e.preventDefault : handler.apply(this, arguments);
+                            if (!this.readOnly && !this.disabled) {
+                                switch (e.type) {
+                                  case "input":
+                                    if (skipInputEvent === !0) return skipInputEvent = !1, e.preventDefault;
+                                    break;
+
+                                  case "keydown":
+                                    skipKeyPressEvent = !1;
+                                    break;
+
+                                  case "keypress":
+                                    if (skipKeyPressEvent === !0) return e.preventDefault;
+                                    skipKeyPressEvent = !0;
+                                    break;
+
+                                  case "compositionupdate":
+                                    skipInputEvent = !0;
+                                }
+                                return handler.apply(this, arguments);
+                            }
+                            e.preventDefault;
                         };
                     }
                 });
@@ -722,8 +745,11 @@
                         if (void 0 != getMaskSet().validPositions[lastAlt].alternation) break;
                         validInputs.push(getMaskSet().validPositions[lastAlt].input), delete getMaskSet().validPositions[lastAlt];
                     }
-                    if (lastAlt > 0) for (;validInputs.length > 0; ) getMaskSet().p = seekNext(getLastValidPosition()), 
-                    keypressEvent.call(input, void 0, !0, validInputs.pop().charCodeAt(0), !1, !1, getMaskSet().p);
+                    if (lastAlt > 0) for (;validInputs.length > 0; ) {
+                        getMaskSet().p = seekNext(getLastValidPosition());
+                        var keypress = $.Event("keypress");
+                        keypress.which = validInputs.pop().charCodeAt(0), keypressEvent.call(input, keypress, !0, !1, !1, getMaskSet().p);
+                    }
                 }
             }
             if ((opts.numericInput || isRTL) && (k == $.inputmask.keyCode.BACKSPACE ? k = $.inputmask.keyCode.DELETE : k == $.inputmask.keyCode.DELETE && (k = $.inputmask.keyCode.BACKSPACE), 
@@ -744,15 +770,14 @@
             }
         }
         function keydownEvent(e) {
-            skipKeyPressEvent = !1;
             var input = this, $input = $(input), k = e.keyCode, pos = caret(input);
             k == $.inputmask.keyCode.BACKSPACE || k == $.inputmask.keyCode.DELETE || iphone && 127 == k || e.ctrlKey && 88 == k && !isInputEventSupported("cut") ? (e.preventDefault(), 
-            88 == k && (valueOnFocus = getBuffer().join("")), handleRemove(input, k, pos), writeBuffer(input, getBuffer(), getMaskSet().p), 
+            88 == k && (undoValue = getBuffer().join("")), handleRemove(input, k, pos), writeBuffer(input, getBuffer(), getMaskSet().p), 
             input._valueGet() == getBufferTemplate().join("") && $input.trigger("cleared"), 
             opts.showTooltip && $input.prop("title", getMaskSet().mask)) : k == $.inputmask.keyCode.END || k == $.inputmask.keyCode.PAGE_DOWN ? setTimeout(function() {
                 var caretPos = seekNext(getLastValidPosition());
                 opts.insertMode || caretPos != getMaskLength() || e.shiftKey || caretPos--, caret(input, e.shiftKey ? pos.begin : caretPos, caretPos);
-            }, 0) : k == $.inputmask.keyCode.HOME && !e.shiftKey || k == $.inputmask.keyCode.PAGE_UP ? caret(input, 0, e.shiftKey ? pos.begin : 0) : opts.undoOnEscape && k == $.inputmask.keyCode.ESCAPE || 90 == k && e.ctrlKey ? (checkVal(input, !0, !1, valueOnFocus.split("")), 
+            }, 0) : k == $.inputmask.keyCode.HOME && !e.shiftKey || k == $.inputmask.keyCode.PAGE_UP ? caret(input, 0, e.shiftKey ? pos.begin : 0) : opts.undoOnEscape && k == $.inputmask.keyCode.ESCAPE || 90 == k && e.ctrlKey ? (checkVal(input, !0, !1, undoValue.split("")), 
             $input.click()) : k != $.inputmask.keyCode.INSERT || e.shiftKey || e.ctrlKey ? 0 != opts.insertMode || e.shiftKey || (k == $.inputmask.keyCode.RIGHT ? setTimeout(function() {
                 var caretPos = caret(input);
                 caret(input, caretPos.begin);
@@ -763,15 +788,11 @@
             var currentCaretPos = caret(input), keydownResult = opts.onKeyDown.call(this, e, getBuffer(), currentCaretPos.begin, opts);
             handleOnKeyResult(input, keydownResult, currentCaretPos), ignorable = -1 != $.inArray(k, opts.ignorables);
         }
-        function keypressEvent(e, checkval, k, writeOut, strict, ndx) {
-            if (void 0 == k && skipKeyPressEvent) return !1;
-            skipKeyPressEvent = !0;
-            var input = this, $input = $(input);
-            e = e || window.event;
-            var k = checkval ? k : e.which || e.charCode || e.keyCode;
+        function keypressEvent(e, checkval, writeOut, strict, ndx) {
+            var input = this, $input = $(input), k = e.which || e.charCode || e.keyCode;
             if (!(checkval === !0 || e.ctrlKey && e.altKey) && (e.ctrlKey || e.metaKey || ignorable)) return !0;
             if (k) {
-                checkval !== !0 && 46 == k && 0 == e.shiftKey && "," == opts.radixPoint && (k = 44);
+                46 == k && 0 == e.shiftKey && "," == opts.radixPoint && (k = 44);
                 var forwardPosition, pos = checkval ? {
                     begin: ndx,
                     end: ndx
@@ -801,8 +822,7 @@
                         }, 0);
                     } else isSlctn && (getMaskSet().buffer = void 0, getMaskSet().validPositions = getMaskSet().undoPositions);
                 } else isSlctn && (getMaskSet().buffer = void 0, getMaskSet().validPositions = getMaskSet().undoPositions);
-                if (opts.showTooltip && $input.prop("title", getMaskSet().mask), e && e.preventDefault(), 
-                checkval) {
+                if (opts.showTooltip && $input.prop("title", getMaskSet().mask), checkval) {
                     var keyResult = opts.onKeyPress.call(this, e, getBuffer(), forwardPosition, opts);
                     keyResult && keyResult.refreshFromBuffer && (handleOnKeyResult(input, keyResult), 
                     keyResult.caret && (getMaskSet().p = keyResult.caret));
@@ -810,6 +830,7 @@
                     var currentCaretPos = caret(input);
                     handleOnKeyResult(input, opts.onKeyPress.call(this, e, getBuffer(), currentCaretPos.begin, opts), currentCaretPos);
                 }
+                e.preventDefault();
             }
         }
         function keyupEvent(e) {
@@ -817,7 +838,6 @@
             handleOnKeyResult(input, keyupResult, currentCaretPos);
         }
         function pasteEvent(e) {
-            if (skipInputEvent === !0 && "input" == e.type) return skipInputEvent = !1, !0;
             var input = this, $input = $(input), inputValue = input._valueGet(), caretPos = caret(input);
             if ("propertychange" == e.type && input._valueGet().length <= getMaskLength()) return !0;
             "paste" == e.type && (window.clipboardData && window.clipboardData.getData ? inputValue = inputValue.substr(0, caretPos.begin) + window.clipboardData.getData("Text") + inputValue.substr(caretPos.end, inputValue.length) : e.originalEvent && e.originalEvent.clipboardData && e.originalEvent.clipboardData.getData && (inputValue = inputValue.substr(0, caretPos.begin) + e.originalEvent.clipboardData.getData("text/plain") + inputValue.substr(caretPos.end, inputValue.length)));
@@ -825,24 +845,12 @@
             return checkVal(input, !0, !1, isRTL ? pasteValue.split("").reverse() : pasteValue.split("")), 
             $input.click(), isComplete(getBuffer()) === !0 && $input.trigger("complete"), !1;
         }
-        function mobileInputEvent(e) {
-            if (skipInputEvent === !0 && "input" == e.type) return skipInputEvent = !1, !0;
-            var input = this, caretPos = caret(input), currentValue = input._valueGet();
-            currentValue = currentValue.replace(new RegExp("(" + escapeRegex(getBufferTemplate().join("")) + ")*"), ""), 
-            caretPos.begin > currentValue.length && (caret(input, currentValue.length), caretPos = caret(input)), 
-            getBuffer().length - currentValue.length != 1 || currentValue.charAt(caretPos.begin) == getBuffer()[caretPos.begin] || currentValue.charAt(caretPos.begin + 1) == getBuffer()[caretPos.begin] || isMask(caretPos.begin) || (e.keyCode = $.inputmask.keyCode.BACKSPACE, 
-            keydownEvent.call(input, e)), e.preventDefault();
-        }
         function inputFallBackEvent(e) {
-            if (skipInputEvent === !0 && "input" == e.type) return skipInputEvent = !1, !0;
             var input = this;
-            checkVal(input, !1, !1);
-            var forwardPosition = getMaskSet().p;
-            writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition), 
-            isComplete(getBuffer()) === !0 && $(input).trigger("complete"), e.preventDefault();
+            checkVal(input, !0, !1), isComplete(getBuffer()) === !0 && $(input).trigger("complete"), 
+            e.preventDefault();
         }
         function compositionupdateEvent(e) {
-            skipInputEvent = !0;
             var input = this;
             return setTimeout(function() {
                 caret(input, caret(input).begin - 1);
@@ -866,7 +874,7 @@
                     inputData.isRTL = !0, $el.data("_inputmask", inputData), isRTL = !0;
                 }
                 $el.unbind(".inputmask"), $el.closest("form").bind("submit", function() {
-                    valueOnFocus != getBuffer().join("") && $el.change(), $el[0]._valueGet && $el[0]._valueGet() == getBufferTemplate().join("") && $el[0]._valueSet(""), 
+                    undoValue != getBuffer().join("") && $el.change(), $el[0]._valueGet && $el[0]._valueGet() == getBufferTemplate().join("") && $el[0]._valueSet(""), 
                     opts.removeMaskOnSubmit && $el.inputmask("remove");
                 }).bind("reset", function() {
                     setTimeout(function() {
@@ -879,7 +887,7 @@
                     var $input = $(this), input = this;
                     if ($input.data("_inputmask")) {
                         var nptValue = input._valueGet(), buffer = getBuffer().slice();
-                        if (firstClick = !0, valueOnFocus != buffer.join("") && ($input.change(), valueOnFocus = buffer.join("")), 
+                        if (firstClick = !0, undoValue != buffer.join("") && ($input.change(), undoValue = buffer.join("")), 
                         "" != nptValue) {
                             if (opts.clearMaskOnLostFocus && (nptValue == getBufferTemplate().join("") ? buffer = [] : clearOptionalTail(buffer)), 
                             isComplete(buffer) === !1 && ($input.trigger("incomplete"), opts.clearIncomplete && (resetMaskSet(), 
@@ -893,7 +901,7 @@
                 }).bind("focus.inputmask", function() {
                     var input = ($(this), this), nptValue = input._valueGet();
                     opts.showMaskOnFocus && (!opts.showMaskOnHover || opts.showMaskOnHover && "" == nptValue) && input._valueGet() != getBuffer().join("") && writeBuffer(input, getBuffer(), seekNext(getLastValidPosition())), 
-                    valueOnFocus = getBuffer().join("");
+                    undoValue = getBuffer().join("");
                 }).bind("mouseleave.inputmask", function() {
                     var $input = $(this), input = this;
                     if (opts.clearMaskOnLostFocus) {
@@ -918,7 +926,7 @@
                     }, 0);
                 }).bind(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", pasteEvent).bind("setvalue.inputmask", function() {
                     var input = this;
-                    checkVal(input, !0, !1), valueOnFocus = getBuffer().join(""), (opts.clearMaskOnLostFocus || opts.clearIncomplete) && input._valueGet() == getBufferTemplate().join("") && input._valueSet("");
+                    checkVal(input, !0, !1), undoValue = getBuffer().join(""), (opts.clearMaskOnLostFocus || opts.clearIncomplete) && input._valueGet() == getBufferTemplate().join("") && input._valueSet("");
                 }).bind("cut.inputmask", function(e) {
                     skipInputEvent = !0;
                     var input = this, $input = $(input), pos = caret(input);
@@ -930,13 +938,14 @@
                     }), input._valueGet() == getBufferTemplate().join("") && $input.trigger("cleared"), 
                     opts.showTooltip && $input.prop("title", getMaskSet().mask);
                 }).bind("complete.inputmask", opts.oncomplete).bind("incomplete.inputmask", opts.onincomplete).bind("cleared.inputmask", opts.oncleared), 
-                $el.bind("keydown.inputmask", keydownEvent).bind("keypress.inputmask", keypressEvent).bind("keyup.inputmask", keyupEvent).bind("compositionupdate.inputmask", compositionupdateEvent), 
-                "paste" === PasteEventType && $el.bind("input.inputmask", inputFallBackEvent), (android || androidfirefox || androidchrome || kindle) && ($el.unbind("input.inputmask"), 
-                $el.bind("input.inputmask", mobileInputEvent)), patchValueProperty(el);
+                $el.bind("keydown.inputmask", keydownEvent).bind("keypress.inputmask", keypressEvent).bind("keyup.inputmask", keyupEvent).bind("compositionstart.inputmask", function() {
+                    undoValue = getBuffer().join(""), compositionUpdateData = "";
+                }).bind("compositionupdate.inputmask", compositionupdateEvent).bind("compositionend.inputmask", function() {}), 
+                "paste" === PasteEventType && $el.bind("input.inputmask", inputFallBackEvent), patchValueProperty(el);
                 var initialValue = $.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call(el, el._valueGet(), opts) || el._valueGet() : el._valueGet();
                 checkVal(el, !0, !1, initialValue.split(""));
                 var buffer = getBuffer().slice();
-                valueOnFocus = buffer.join("");
+                undoValue = buffer.join("");
                 var activeElement;
                 try {
                     activeElement = document.activeElement;
@@ -946,7 +955,7 @@
                 installEventRuler(el);
             }
         }
-        var valueOnFocus, $el, maxLength, isRTL = !1, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, firstClick = !0;
+        var undoValue, compositionUpdateData, $el, maxLength, isRTL = !1, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, firstClick = !0;
         if (void 0 != actionObj) switch (actionObj.action) {
           case "isComplete":
             return $el = $(actionObj.el), maskset = $el.data("_inputmask").maskset, opts = $el.data("_inputmask").opts, 
@@ -957,7 +966,7 @@
             isRTL = actionObj.$input.data("_inputmask").isRTL, unmaskedvalue(actionObj.$input);
 
           case "mask":
-            valueOnFocus = getBuffer().join(""), mask(actionObj.el);
+            undoValue = getBuffer().join(""), mask(actionObj.el);
             break;
 
           case "format":
@@ -1019,7 +1028,10 @@
         }
     }
     if (void 0 === $.fn.inputmask) {
-        var ua = navigator.userAgent, iphone = null !== ua.match(new RegExp("iphone", "i")), android = null !== ua.match(new RegExp("android.*safari.*", "i")), androidchrome = null !== ua.match(new RegExp("android.*chrome.*", "i")), androidfirefox = null !== ua.match(new RegExp("android.*firefox.*", "i")), kindle = /Kindle/i.test(ua) || /Silk/i.test(ua) || /KFTT/i.test(ua) || /KFOT/i.test(ua) || /KFJWA/i.test(ua) || /KFJWI/i.test(ua) || /KFSOWI/i.test(ua) || /KFTHWA/i.test(ua) || /KFTHWI/i.test(ua) || /KFAPWA/i.test(ua) || /KFAPWI/i.test(ua), PasteEventType = isInputEventSupported("paste") ? "paste" : isInputEventSupported("input") ? "input" : "propertychange";
+        var ua = navigator.userAgent, iphone = null !== ua.match(new RegExp("iphone", "i")), PasteEventType = (null !== ua.match(new RegExp("android.*safari.*", "i")), 
+        null !== ua.match(new RegExp("android.*chrome.*", "i")), null !== ua.match(new RegExp("android.*firefox.*", "i")), 
+        /Kindle/i.test(ua) || /Silk/i.test(ua) || /KFTT/i.test(ua) || /KFOT/i.test(ua) || /KFJWA/i.test(ua) || /KFJWI/i.test(ua) || /KFSOWI/i.test(ua) || /KFTHWA/i.test(ua) || /KFTHWI/i.test(ua) || /KFAPWA/i.test(ua) || /KFAPWI/i.test(ua), 
+        isInputEventSupported("paste") ? "paste" : isInputEventSupported("input") ? "input" : "propertychange");
         $.inputmask = {
             defaults: {
                 placeholder: "_",
