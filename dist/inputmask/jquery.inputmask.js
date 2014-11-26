@@ -551,9 +551,7 @@
                 } else keypressEvent.call(input, keypress, !0, !1, !0, lvp + 1);
             }), writeOut) {
                 var keypressResult = opts.onKeyPress.call(this, void 0, getBuffer(), 0, opts);
-                handleOnKeyResult(input, keypressResult);
-                var forwardPosition = getMaskSet().p;
-                writeBuffer(input, getBuffer(), $(input).is(":focus") ? opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition : void 0);
+                handleOnKeyResult(input, keypressResult), writeBuffer(input, getBuffer(), $(input).is(":focus") ? seekNext(getLastValidPosition(0)) : void 0);
             }
         }
         function escapeRegex(str) {
@@ -658,6 +656,7 @@
                                     break;
 
                                   case "compositionupdate":
+                                  case "compositionend":
                                     skipInputEvent = !0;
                                 }
                                 return handler.apply(this, arguments);
@@ -850,15 +849,16 @@
             checkVal(input, !0, !1), isComplete(getBuffer()) === !0 && $(input).trigger("complete"), 
             e.preventDefault();
         }
-        function compositionupdateEvent(e) {
-            var input = this;
+        function compositionEndEvent(e) {
+            var input = this, caretPos = caret(input);
             return setTimeout(function() {
-                caret(input, caret(input).begin - 1);
-                var keypress = $.Event("keypress");
-                keypress.which = e.originalEvent.data.charCodeAt(0), skipKeyPressEvent = !1, ignorable = !1, 
-                keypressEvent.call(input, keypress, void 0, void 0, !1);
-                var forwardPosition = getMaskSet().p;
-                writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
+                var newData = e.originalEvent.data;
+                caret(input, caretPos.begin - 1, caretPos.end);
+                for (var i = 0; i < newData.length; i++) {
+                    var keypress = $.Event("keypress");
+                    keypress.which = newData.charCodeAt(i), skipKeyPressEvent = !1, ignorable = !1, 
+                    keypressEvent.call(input, keypress);
+                }
             }, 0), !1;
         }
         function mask(el) {
@@ -939,8 +939,8 @@
                     opts.showTooltip && $input.prop("title", getMaskSet().mask);
                 }).bind("complete.inputmask", opts.oncomplete).bind("incomplete.inputmask", opts.onincomplete).bind("cleared.inputmask", opts.oncleared), 
                 $el.bind("keydown.inputmask", keydownEvent).bind("keypress.inputmask", keypressEvent).bind("keyup.inputmask", keyupEvent).bind("compositionstart.inputmask", function() {
-                    undoValue = getBuffer().join(""), compositionUpdateData = "";
-                }).bind("compositionupdate.inputmask", compositionupdateEvent).bind("compositionend.inputmask", function() {}), 
+                    undoValue = getBuffer().join("");
+                }).bind("compositionupdate.inputmask", function() {}).bind("compositionend.inputmask", compositionEndEvent), 
                 "paste" === PasteEventType && $el.bind("input.inputmask", inputFallBackEvent), patchValueProperty(el);
                 var initialValue = $.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call(el, el._valueGet(), opts) || el._valueGet() : el._valueGet();
                 checkVal(el, !0, !1, initialValue.split(""));
@@ -955,7 +955,7 @@
                 installEventRuler(el);
             }
         }
-        var undoValue, compositionUpdateData, $el, maxLength, isRTL = !1, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, firstClick = !0;
+        var undoValue, $el, maxLength, isRTL = !1, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, firstClick = !0;
         if (void 0 != actionObj) switch (actionObj.action) {
           case "isComplete":
             return $el = $(actionObj.el), maskset = $el.data("_inputmask").maskset, opts = $el.data("_inputmask").opts, 

@@ -331,7 +331,6 @@
         function maskScope(actionObj, maskset, opts) {
             var isRTL = false,
                 undoValue,
-                compositionUpdateData,
                 $el,
                 skipKeyPressEvent = false, //Safari 5.1.x - modal dialog fires keypress twice workaround
                 skipInputEvent = false, //skip when triggered from within inputmask
@@ -984,9 +983,7 @@
                 if (writeOut) {
                     var keypressResult = opts.onKeyPress.call(this, undefined, getBuffer(), 0, opts);
                     handleOnKeyResult(input, keypressResult);
-                    //writeBuffer(input, getBuffer(), $(input).is(":focus") ? seekNext(getLastValidPosition(0)) : undefined);
-                    var forwardPosition = getMaskSet()["p"];
-                    writeBuffer(input, getBuffer(), $(input).is(":focus") ? (opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition) : undefined);
+                    writeBuffer(input, getBuffer(), $(input).is(":focus") ? seekNext(getLastValidPosition(0)) : undefined);
                 }
             }
             function escapeRegex(str) {
@@ -1146,7 +1143,7 @@
                                                     return e.preventDefault;
                                                 skipKeyPressEvent = true;
                                                 break;
-                                            case "compositionupdate":
+                                            case "compositionupdate": case "compositionend":
                                                 skipInputEvent = true; //stop inutFallback
                                                 break;
                                         }
@@ -1508,27 +1505,27 @@
 
                 return false;
             }
-            function mobileInputEvent(e) {
-                var input = this;
+            //function mobileInputEvent(e) {
+            //    var input = this;
 
-                //backspace in chrome32 only fires input event - detect & treat
-                var caretPos = caret(input),
-                    currentValue = input._valueGet();
+            //    //backspace in chrome32 only fires input event - detect & treat
+            //    var caretPos = caret(input),
+            //        currentValue = input._valueGet();
 
-                currentValue = currentValue.replace(new RegExp("(" + escapeRegex(getBufferTemplate().join('')) + ")*"), "");
-                //correct caretposition for chrome
-                if (caretPos.begin > currentValue.length) {
-                    caret(input, currentValue.length);
-                    caretPos = caret(input);
-                }
-                if ((getBuffer().length - currentValue.length) == 1 && currentValue.charAt(caretPos.begin) != getBuffer()[caretPos.begin]
-                    && currentValue.charAt(caretPos.begin + 1) != getBuffer()[caretPos.begin]
-                    && !isMask(caretPos.begin)) {
-                    e.keyCode = $.inputmask.keyCode.BACKSPACE;
-                    keydownEvent.call(input, e);
-                }
-                e.preventDefault();
-            }
+            //    currentValue = currentValue.replace(new RegExp("(" + escapeRegex(getBufferTemplate().join('')) + ")*"), "");
+            //    //correct caretposition for chrome
+            //    if (caretPos.begin > currentValue.length) {
+            //        caret(input, currentValue.length);
+            //        caretPos = caret(input);
+            //    }
+            //    if ((getBuffer().length - currentValue.length) == 1 && currentValue.charAt(caretPos.begin) != getBuffer()[caretPos.begin]
+            //        && currentValue.charAt(caretPos.begin + 1) != getBuffer()[caretPos.begin]
+            //        && !isMask(caretPos.begin)) {
+            //        e.keyCode = $.inputmask.keyCode.BACKSPACE;
+            //        keydownEvent.call(input, e);
+            //    }
+            //    e.preventDefault();
+            //}
             function inputFallBackEvent(e) { //fallback when keypress & compositionevents fail
                 var input = this;
                 checkVal(input, true, false);
@@ -1540,18 +1537,18 @@
 
                 e.preventDefault();
             }
-            function compositionupdateEvent(e) { //fix for special latin-charset FF/Linux
-                //console.log(e.originalEvent.data + " vs " + compositionUpdateData);
-                var input = this;
+            function compositionEndEvent(e) {
+                var input = this, caretPos = caret(input);
                 setTimeout(function () {
-                    caret(input, caret(input).begin - 1);
-                    var keypress = $.Event("keypress");
-                    keypress.which = e.originalEvent.data.charCodeAt(0);
-                    skipKeyPressEvent = false;
-                    ignorable = false;
-                    keypressEvent.call(input, keypress, undefined, undefined, false);
-                    var forwardPosition = getMaskSet()["p"];
-                    writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
+                    var newData = e.originalEvent.data;
+                    caret(input, caretPos.begin - 1, caretPos.end);
+                    for (var i = 0; i < newData.length; i++) {
+                        var keypress = $.Event("keypress");
+                        keypress.which = newData.charCodeAt(i);
+                        skipKeyPressEvent = false;
+                        ignorable = false;
+                        keypressEvent.call(input, keypress);
+                    }
                 }, 0);
                 return false;
             }
@@ -1721,12 +1718,9 @@
                     ).bind("keyup.inputmask", keyupEvent
                     ).bind("compositionstart.inputmask", function (e) {
                         undoValue = getBuffer().join('');
-                        //init compositionUpdateData
-                        compositionUpdateData = "";
-                    }).bind("compositionupdate.inputmask", compositionupdateEvent
-                    ).bind("compositionend.inputmask", function (e) {
-
-                    });
+                    }).bind("compositionupdate.inputmask", function (e) {
+                        
+                    }).bind("compositionend.inputmask", compositionEndEvent);
 
                     if (PasteEventType === "paste") {
                         $el.bind("input.inputmask", inputFallBackEvent);
