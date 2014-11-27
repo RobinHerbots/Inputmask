@@ -335,6 +335,8 @@
         function maskScope(actionObj, maskset, opts) {
             var isRTL = false,
                 undoValue,
+                compositionData,
+                compositionValidPos,
                 $el,
                 skipKeyPressEvent = false, //Safari 5.1.x - modal dialog fires keypress twice workaround
                 skipInputEvent = false, //skip when triggered from within inputmask
@@ -1119,7 +1121,8 @@
                 (end - begin) > 1 || ((end - begin) == 1 && opts.insertMode);
             }
             function installEventRuler(npt) {
-                var events = $._data(npt).events;
+                var events = $._data(npt).events,
+                    incomposition = false;
 
                 $.each(events, function (eventType, eventHandlers) {
                     $.each(eventHandlers, function (ndx, eventHandler) {
@@ -1127,13 +1130,13 @@
                             if (eventHandler.type != "setvalue") {
                                 var handler = eventHandler.handler;
                                 eventHandler.handler = function (e) {
-                                    //console.log(e.type);
+                                    //console.log("triggered " + e.type);
                                     if (this.readOnly || this.disabled)
                                         e.preventDefault;
                                     else {
                                         switch (e.type) {
                                             case "input":
-                                                if (skipInputEvent === true) {
+                                                if (skipInputEvent === true || incomposition) {
                                                     skipInputEvent = false;
                                                     return e.preventDefault;
                                                 }
@@ -1147,10 +1150,16 @@
                                                     return e.preventDefault;
                                                 skipKeyPressEvent = true;
                                                 break;
-                                            case "compositionupdate": case "compositionend":
-                                                skipInputEvent = true; //stop inputFallback
+                                            case "compositionstart": case "compositionupdate": case "compositionend":
+                                                incomposition = true;
+                                                break;
+                                            case "compositionupdate":
+                                                break;
+                                            case "compositionend":
+                                                incomposition = false;
                                                 break;
                                         }
+                                        //console.log("executed " + e.type);
                                         return handler.apply(this, arguments);
                                     }
                                 };
@@ -1533,8 +1542,6 @@
             function inputFallBackEvent(e) { //fallback when keypress & compositionevents fail
                 var input = this;
                 checkVal(input, true, false);
-                //var forwardPosition = getMaskSet()["p"];
-                //writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
 
                 if (isComplete(getBuffer()) === true)
                     $(input).trigger("complete");
@@ -1543,8 +1550,10 @@
             }
             function compositionEndEvent(e) {
                 var input = this, caretPos = caret(input);
+                getMaskSet()["validPositions"] = $.extend(true, {}, compositionValidPos);
                 setTimeout(function () {
                     var newData = e.originalEvent.data;
+                    newData = newData.replace(compositionData, "");
                     caret(input, caretPos.begin - 1, caretPos.end);
                     for (var i = 0; i < newData.length; i++) {
                         var keypress = $.Event("keypress");
@@ -1553,8 +1562,10 @@
                         ignorable = false;
                         keypressEvent.call(input, keypress);
                     }
+                    compositionData = e.originalEvent.data;
+                    var forwardPosition = getMaskSet()["p"];
+                    writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
                 }, 0);
-                return false;
             }
             function mask(el) {
                 $el = $(el);
@@ -1722,8 +1733,7 @@
                     ).bind("keyup.inputmask", keyupEvent
                     ).bind("compositionstart.inputmask", function (e) {
                         undoValue = getBuffer().join('');
-                    }).bind("compositionupdate.inputmask", function (e) {
-
+                        compositionValidPos = $.extend(true, {}, getMaskSet()["validPositions"]);
                     }).bind("compositionend.inputmask", compositionEndEvent);
 
                     if (PasteEventType === "paste") {
