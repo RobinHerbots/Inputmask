@@ -221,3 +221,18 @@ test("inputmask({ mask: ['99.9', 'X'}) - annames", function () {
     equal($("#testmask").val(), "X", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
+
+test("inputmask({ mask: [{ \"mask\": \"###-##-####\" }]) - lynxlive", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    var ssns = [{ "mask": "###-##-####" }];
+    $('#testmask').inputmask({
+        mask: ssns,
+        greedy: false,
+        definitions: { '#': { validator: "[0-9]", cardinality: 1 } }
+    });
+   
+    $("#testmask").Type("123121234");
+    equal($("#testmask").val(), "123-12-1234", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});

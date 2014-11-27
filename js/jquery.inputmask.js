@@ -276,7 +276,7 @@
                 opts.mask = opts.mask.call(this, opts);
             }
             if ($.isArray(opts.mask)) {
-                if (multi) {  //remove me
+                if (multi) {  //remove me legacy
                     ms = [];
                     $.each(opts.mask, function (ndx, msk) {
                         if (msk["mask"] != undefined && !$.isFunction(msk["mask"])) {
@@ -285,30 +285,34 @@
                             ms.push(generateMask(preProcessMask(msk), msk));
                         }
                     });
+                    return ms;
                 } else {
-                    opts.keepStatic = opts.keepStatic == undefined ? true : opts.keepStatic; //enable by default when passing multiple masks when the option is not explicitly specified
-                    var altMask = "(";
-                    $.each(opts.mask, function (ndx, msk) {
-                        if (altMask.length > 1)
-                            altMask += ")|(";
-                        if (msk["mask"] != undefined && !$.isFunction(msk["mask"])) {
-                            altMask += preProcessMask(msk["mask"]);
-                        } else {
-                            altMask += preProcessMask(msk);
-                        }
-                    });
-                    altMask += ")";
-                    ms = generateMask(altMask, opts.mask);
-                }
-            } else {
-                if (opts.mask) {
-                    if (opts.mask["mask"] != undefined && !$.isFunction(opts.mask["mask"])) {
-                        ms = generateMask(preProcessMask(opts.mask["mask"]), opts.mask);
-                    } else {
-                        ms = generateMask(preProcessMask(opts.mask), opts.mask);
-                    }
+                    if (opts.mask.length > 1) {
+                        opts.keepStatic = opts.keepStatic == undefined ? true : opts.keepStatic; //enable by default when passing multiple masks when the option is not explicitly specified
+                        var altMask = "(";
+                        $.each(opts.mask, function (ndx, msk) {
+                            if (altMask.length > 1)
+                                altMask += ")|(";
+                            if (msk["mask"] != undefined && !$.isFunction(msk["mask"])) {
+                                altMask += preProcessMask(msk["mask"]);
+                            } else {
+                                altMask += preProcessMask(msk);
+                            }
+                        });
+                        altMask += ")";
+                        return generateMask(altMask, opts.mask);
+                    } else opts.mask = opts.mask.pop();
                 }
             }
+
+            if (opts.mask) {
+                if (opts.mask["mask"] != undefined && !$.isFunction(opts.mask["mask"])) {
+                    ms = generateMask(preProcessMask(opts.mask["mask"]), opts.mask);
+                } else {
+                    ms = generateMask(preProcessMask(opts.mask), opts.mask);
+                }
+            }
+
             return ms;
         }
 
@@ -1144,7 +1148,7 @@
                                                 skipKeyPressEvent = true;
                                                 break;
                                             case "compositionupdate": case "compositionend":
-                                                skipInputEvent = true; //stop inutFallback
+                                                skipInputEvent = true; //stop inputFallback
                                                 break;
                                         }
                                         return handler.apply(this, arguments);
@@ -1719,7 +1723,7 @@
                     ).bind("compositionstart.inputmask", function (e) {
                         undoValue = getBuffer().join('');
                     }).bind("compositionupdate.inputmask", function (e) {
-                        
+
                     }).bind("compositionend.inputmask", compositionEndEvent);
 
                     if (PasteEventType === "paste") {

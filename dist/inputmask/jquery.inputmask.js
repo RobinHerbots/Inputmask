@@ -181,17 +181,21 @@
             return mask;
         }
         var ms = void 0;
-        if ($.isFunction(opts.mask) && (opts.mask = opts.mask.call(this, opts)), $.isArray(opts.mask)) if (multi) ms = [], 
-        $.each(opts.mask, function(ndx, msk) {
-            ms.push(void 0 == msk.mask || $.isFunction(msk.mask) ? generateMask(preProcessMask(msk), msk) : generateMask(preProcessMask(msk.mask), msk));
-        }); else {
-            opts.keepStatic = void 0 == opts.keepStatic ? !0 : opts.keepStatic;
-            var altMask = "(";
-            $.each(opts.mask, function(ndx, msk) {
-                altMask.length > 1 && (altMask += ")|("), altMask += preProcessMask(void 0 == msk.mask || $.isFunction(msk.mask) ? msk : msk.mask);
-            }), altMask += ")", ms = generateMask(altMask, opts.mask);
-        } else opts.mask && (ms = void 0 == opts.mask.mask || $.isFunction(opts.mask.mask) ? generateMask(preProcessMask(opts.mask), opts.mask) : generateMask(preProcessMask(opts.mask.mask), opts.mask));
-        return ms;
+        if ($.isFunction(opts.mask) && (opts.mask = opts.mask.call(this, opts)), $.isArray(opts.mask)) {
+            if (multi) return ms = [], $.each(opts.mask, function(ndx, msk) {
+                ms.push(void 0 == msk.mask || $.isFunction(msk.mask) ? generateMask(preProcessMask(msk), msk) : generateMask(preProcessMask(msk.mask), msk));
+            }), ms;
+            if (opts.mask.length > 1) {
+                opts.keepStatic = void 0 == opts.keepStatic ? !0 : opts.keepStatic;
+                var altMask = "(";
+                return $.each(opts.mask, function(ndx, msk) {
+                    altMask.length > 1 && (altMask += ")|("), altMask += preProcessMask(void 0 == msk.mask || $.isFunction(msk.mask) ? msk : msk.mask);
+                }), altMask += ")", generateMask(altMask, opts.mask);
+            }
+            opts.mask = opts.mask.pop();
+        }
+        return opts.mask && (ms = void 0 == opts.mask.mask || $.isFunction(opts.mask.mask) ? generateMask(preProcessMask(opts.mask), opts.mask) : generateMask(preProcessMask(opts.mask.mask), opts.mask)), 
+        ms;
     }
     function maskScope(actionObj, maskset, opts) {
         function getMaskTemplate(baseOnInput, minimalPos, includeInput) {
