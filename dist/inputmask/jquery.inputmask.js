@@ -644,10 +644,10 @@
                     if ("inputmask" == eventHandler.namespace && "setvalue" != eventHandler.type) {
                         var handler = eventHandler.handler;
                         eventHandler.handler = function(e) {
-                            if (!this.readOnly && !this.disabled) {
+                            if (console.log("triggered " + e.type), !this.readOnly && !this.disabled) {
                                 switch (e.type) {
                                   case "input":
-                                    if (skipInputEvent === !0 || incomposition) return skipInputEvent = !1, e.preventDefault;
+                                    if (skipInputEvent === !0 || incomposition) return skipInputEvent = !1, e.preventDefault();
                                     break;
 
                                   case "keydown":
@@ -655,13 +655,11 @@
                                     break;
 
                                   case "keypress":
-                                    if (skipKeyPressEvent === !0) return e.preventDefault;
+                                    if (skipKeyPressEvent === !0) return e.preventDefault();
                                     skipKeyPressEvent = !0;
                                     break;
 
                                   case "compositionstart":
-                                  case "compositionupdate":
-                                  case "compositionend":
                                     incomposition = !0;
                                     break;
 
@@ -669,11 +667,11 @@
                                     break;
 
                                   case "compositionend":
-                                    incomposition = !1;
+                                    incomposition = !1, skipInputEvent = !0;
                                 }
-                                return handler.apply(this, arguments);
+                                return console.log("executed " + e.type), handler.apply(this, arguments);
                             }
-                            e.preventDefault;
+                            e.preventDefault();
                         };
                     }
                 });
@@ -861,20 +859,27 @@
             checkVal(input, !0, !1), isComplete(getBuffer()) === !0 && $(input).trigger("complete"), 
             e.preventDefault();
         }
-        function compositionEndEvent(e) {
-            var input = this, caretPos = caret(input);
+        function compositionStartEvent(e) {
+            var input = this;
+            undoValue = getBuffer().join(""), 0 != e.originalEvent.data.indexOf(compositionData) && (compositionValidPos = $.extend(!0, {}, getMaskSet().validPositions), 
+            compositionCaretPos = caret(input));
+        }
+        function compositionUpdateEvent(e) {
+            var input = this, caretPos = compositionCaretPos;
             getMaskSet().validPositions = $.extend(!0, {}, compositionValidPos), setTimeout(function() {
                 var newData = e.originalEvent.data;
-                newData = newData.replace(compositionData, ""), caret(input, caretPos.begin - 1, caretPos.end);
+                caret(input, caretPos.begin, caretPos.end);
                 for (var i = 0; i < newData.length; i++) {
                     var keypress = $.Event("keypress");
                     keypress.which = newData.charCodeAt(i), skipKeyPressEvent = !1, ignorable = !1, 
                     keypressEvent.call(input, keypress);
                 }
-                compositionData = e.originalEvent.data;
                 var forwardPosition = getMaskSet().p;
                 writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
             }, 0);
+        }
+        function compositionEndEvent(e) {
+            compositionData = e.originalEvent.data;
         }
         function mask(el) {
             if ($el = $(el), $el.is(":input") && isInputTypeSupported($el.attr("type"))) {
@@ -953,10 +958,8 @@
                     }), input._valueGet() == getBufferTemplate().join("") && $input.trigger("cleared"), 
                     opts.showTooltip && $input.prop("title", getMaskSet().mask);
                 }).bind("complete.inputmask", opts.oncomplete).bind("incomplete.inputmask", opts.onincomplete).bind("cleared.inputmask", opts.oncleared), 
-                $el.bind("keydown.inputmask", keydownEvent).bind("keypress.inputmask", keypressEvent).bind("keyup.inputmask", keyupEvent).bind("compositionstart.inputmask", function() {
-                    undoValue = getBuffer().join(""), compositionValidPos = $.extend(!0, {}, getMaskSet().validPositions);
-                }).bind("compositionend.inputmask", compositionEndEvent), "paste" === PasteEventType && $el.bind("input.inputmask", inputFallBackEvent), 
-                patchValueProperty(el);
+                $el.bind("keydown.inputmask", keydownEvent).bind("keypress.inputmask", keypressEvent).bind("keyup.inputmask", keyupEvent).bind("compositionstart.inputmask", compositionStartEvent).bind("compositionupdate.inputmask", compositionUpdateEvent).bind("compositionend.inputmask", compositionEndEvent), 
+                "paste" === PasteEventType && $el.bind("input.inputmask", inputFallBackEvent), patchValueProperty(el);
                 var initialValue = $.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call(el, el._valueGet(), opts) || el._valueGet() : el._valueGet();
                 checkVal(el, !0, !1, initialValue.split(""));
                 var buffer = getBuffer().slice();
@@ -970,7 +973,7 @@
                 installEventRuler(el);
             }
         }
-        var undoValue, compositionData, compositionValidPos, $el, maxLength, isRTL = !1, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, firstClick = !0;
+        var undoValue, compositionValidPos, compositionCaretPos, compositionData, $el, maxLength, isRTL = !1, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, firstClick = !0;
         if (void 0 != actionObj) switch (actionObj.action) {
           case "isComplete":
             return $el = $(actionObj.el), maskset = $el.data("_inputmask").maskset, opts = $el.data("_inputmask").opts, 
