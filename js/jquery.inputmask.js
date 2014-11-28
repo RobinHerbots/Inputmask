@@ -1131,7 +1131,7 @@
                             if (eventHandler.type != "setvalue") {
                                 var handler = eventHandler.handler;
                                 eventHandler.handler = function (e) {
-                                    console.log("triggered " + e.type);
+                                    //console.log("triggered " + e.type);
                                     if (this.readOnly || this.disabled)
                                         e.preventDefault();
                                     else {
@@ -1161,7 +1161,7 @@
                                                 skipInputEvent = true;
                                                 break;
                                         }
-                                        console.log("executed " + e.type);
+                                        //console.log("executed " + e.type);
                                         return handler.apply(this, arguments);
                                     }
                                 };

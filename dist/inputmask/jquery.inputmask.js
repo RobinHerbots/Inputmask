@@ -644,7 +644,7 @@
                     if ("inputmask" == eventHandler.namespace && "setvalue" != eventHandler.type) {
                         var handler = eventHandler.handler;
                         eventHandler.handler = function(e) {
-                            if (console.log("triggered " + e.type), !this.readOnly && !this.disabled) {
+                            if (!this.readOnly && !this.disabled) {
                                 switch (e.type) {
                                   case "input":
                                     if (skipInputEvent === !0 || incomposition) return skipInputEvent = !1, e.preventDefault();
@@ -669,7 +669,7 @@
                                   case "compositionend":
                                     incomposition = !1, skipInputEvent = !0;
                                 }
-                                return console.log("executed " + e.type), handler.apply(this, arguments);
+                                return handler.apply(this, arguments);
                             }
                             e.preventDefault();
                         };
