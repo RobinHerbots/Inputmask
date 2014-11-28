@@ -1561,19 +1561,20 @@
             function compositionUpdateEvent(e) {
                 var input = this, caretPos = compositionCaretPos;
                 getMaskSet()["validPositions"] = $.extend(true, {}, compositionValidPos);
+
+                var newData = e.originalEvent.data;
+                caret(input, caretPos.begin, caretPos.end);
+                for (var i = 0; i < newData.length; i++) {
+                    var keypress = $.Event("keypress");
+                    keypress.which = newData.charCodeAt(i);
+                    skipKeyPressEvent = false;
+                    ignorable = false;
+                    keypressEvent.call(input, keypress);
+                }
                 setTimeout(function () {
-                    var newData = e.originalEvent.data;
-                    caret(input, caretPos.begin, caretPos.end);
-                    for (var i = 0; i < newData.length; i++) {
-                        var keypress = $.Event("keypress");
-                        keypress.which = newData.charCodeAt(i);
-                        skipKeyPressEvent = false;
-                        ignorable = false;
-                        keypressEvent.call(input, keypress);
-                    }
                     var forwardPosition = getMaskSet()["p"];
                     writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
-                }, 0);
+                }, 10);
             }
             function compositionEndEvent(e) {
                 compositionData = e.originalEvent.data;
