@@ -1155,6 +1155,7 @@
                                                 incomposition = true;
                                                 break;
                                             case "compositionupdate":
+                                                //console.log("cu " + e.originalEvent.data);
                                                 break;
                                             case "compositionend":
                                                 incomposition = false;
@@ -1559,7 +1560,7 @@
                 }
             }
             function compositionUpdateEvent(e) {
-                var input = this, caretPos = compositionCaretPos;
+                var input = this, caretPos = compositionCaretPos || caret(input);
                 getMaskSet()["validPositions"] = $.extend(true, {}, compositionValidPos);
 
                 var newData = e.originalEvent.data;

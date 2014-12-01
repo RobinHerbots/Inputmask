@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.41
+* Version: 3.1.42
 */
 !function($) {
     function isInputEventSupported(eventName) {
@@ -863,7 +863,7 @@
             compositionCaretPos = caret(input));
         }
         function compositionUpdateEvent(e) {
-            var input = this, caretPos = compositionCaretPos;
+            var input = this, caretPos = compositionCaretPos || caret(input);
             getMaskSet().validPositions = $.extend(!0, {}, compositionValidPos);
             var newData = e.originalEvent.data;
             caret(input, caretPos.begin, caretPos.end);
