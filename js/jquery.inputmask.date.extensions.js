@@ -85,9 +85,9 @@ Optional extensions on the jquery.inputmask base
             getFrontValue: function (mask, buffer, opts) {
                 var start = 0, length = 0;
                 for (var i = 0; i < mask.length; i++) {
-                    if (mask[i] == "2")
+                    if (mask.charAt(i) == "2")
                         break;
-                    var definition = opts.definitions[mask[i]];
+                    var definition = opts.definitions[mask.charAt(i)];
                     if (definition) {
                         start += length;
                         length = definition.cardinality;
