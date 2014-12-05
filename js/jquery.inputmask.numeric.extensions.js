@@ -93,7 +93,7 @@ Optional extensions on the jquery.inputmask base
                     var radixSplit = bufVal.split(opts.radixPoint);
                     bufVal = opts.radixPoint == "" ? bufVal : radixSplit[0];
                     if (bufVal != (opts.prefix + "?0") && bufVal.length >= (opts.groupSize + opts.prefix.length)) {
-                        needsRefresh = true;
+                        //needsRefresh = true;
                         var reg = new RegExp('([-\+]?[\\d\?]+)([\\d\?]{' + opts.groupSize + '})');
                         while (reg.test(bufVal)) {
                             bufVal = bufVal.replace(reg, '$1' + opts.groupSeparator + '$2');
@@ -103,6 +103,7 @@ Optional extensions on the jquery.inputmask base
                     if (opts.radixPoint != "" && radixSplit.length > 1)
                         bufVal += opts.radixPoint + radixSplit[1];
                 }
+                needsRefresh = buffer.length != bufVal.length;
                 buffer.length = bufVal.length; //align the length
                 for (var i = 0, l = bufVal.length; i < l; i++) {
                     buffer[i] = bufVal.charAt(i);

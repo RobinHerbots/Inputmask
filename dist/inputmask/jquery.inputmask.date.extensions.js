@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2014 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.42
+* Version: 3.1.43
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery", "./jquery.inputmask" ], factory) : factory(jQuery);
@@ -100,8 +100,8 @@
                 }
             },
             getFrontValue: function(mask, buffer, opts) {
-                for (var start = 0, length = 0, i = 0; i < mask.length && "2" != mask[i]; i++) {
-                    var definition = opts.definitions[mask[i]];
+                for (var start = 0, length = 0, i = 0; i < mask.length && "2" != mask.charAt(i); i++) {
+                    var definition = opts.definitions[mask.charAt(i)];
                     definition ? (start += length, length = definition.cardinality) : length++;
                 }
                 return buffer.join("").substr(start, length);

@@ -981,7 +981,6 @@
                     if ($.inArray(charCode, getBufferTemplate().slice(lvp + 1, getMaskSet()["p"])) == -1 || strict) {
                         var pos = strict ? ndx : (nextTest["match"].fn == null && (lvp + 1) < getMaskSet()["p"] ? lvp + 1 : getMaskSet()["p"]);
                         keypressEvent.call(input, keypress, true, false, strict, pos);
-                        strict = strict || (ndx > 0 && ndx > getMaskSet()["p"]);
                     } else {
                         keypressEvent.call(input, keypress, true, false, true, lvp + 1);
                     }
@@ -1122,8 +1121,7 @@
                 (end - begin) > 1 || ((end - begin) == 1 && opts.insertMode);
             }
             function installEventRuler(npt) {
-                var events = $._data(npt).events,
-                    incomposition = false;
+                var events = $._data(npt).events;
 
                 $.each(events, function (eventType, eventHandlers) {
                     $.each(eventHandlers, function (ndx, eventHandler) {
@@ -1137,7 +1135,7 @@
                                     else {
                                         switch (e.type) {
                                             case "input":
-                                                if (skipInputEvent === true || incomposition) {
+                                                if (skipInputEvent === true) {
                                                     skipInputEvent = false;
                                                     return e.preventDefault();
                                                 }
@@ -1150,16 +1148,14 @@
                                                 if (skipKeyPressEvent === true)
                                                     return e.preventDefault();
                                                 skipKeyPressEvent = true;
+
                                                 break;
                                             case "compositionstart":
-                                                incomposition = true;
                                                 break;
                                             case "compositionupdate":
-                                                //console.log("cu " + e.originalEvent.data);
+                                                skipInputEvent = true;
                                                 break;
                                             case "compositionend":
-                                                incomposition = false;
-                                                skipInputEvent = true;
                                                 break;
                                         }
                                         //console.log("executed " + e.type);
@@ -1483,8 +1479,9 @@
                             var keyResult = opts.onKeyPress.call(this, e, getBuffer(), forwardPosition, opts);
                             if (keyResult && keyResult["refreshFromBuffer"]) {
                                 handleOnKeyResult(input, keyResult);
-                                if (keyResult.caret)
+                                if (keyResult.caret) {
                                     getMaskSet()["p"] = keyResult.caret;
+                                }
                             }
                         } else {
                             var currentCaretPos = caret(input);
@@ -1554,15 +1551,16 @@
             function compositionStartEvent(e) {
                 var input = this;
                 undoValue = getBuffer().join('');
-                if (e.originalEvent.data.indexOf(compositionData) != 0) {
-                    compositionValidPos = $.extend(true, {}, getMaskSet()["validPositions"]);
+                if (compositionData == "" || e.originalEvent.data.indexOf(compositionData) != 0) {
                     compositionCaretPos = caret(input);
                 }
             }
             function compositionUpdateEvent(e) {
                 var input = this, caretPos = compositionCaretPos || caret(input);
-                getMaskSet()["validPositions"] = $.extend(true, {}, compositionValidPos);
-
+                if (e.originalEvent.data.indexOf(compositionData) == 0) {
+                    resetMaskSet();
+                    caretPos = { begin: 0, end: 0 };
+                }
                 var newData = e.originalEvent.data;
                 caret(input, caretPos.begin, caretPos.end);
                 for (var i = 0; i < newData.length; i++) {
@@ -1575,10 +1573,11 @@
                 setTimeout(function () {
                     var forwardPosition = getMaskSet()["p"];
                     writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
-                }, 10);
+                }, 0);
+                compositionData = e.originalEvent.data;
             }
             function compositionEndEvent(e) {
-                compositionData = e.originalEvent.data;
+                //pickup by inputfallback
             }
             function mask(el) {
                 $el = $(el);
@@ -1743,10 +1742,13 @@
 
                     $el.bind("keydown.inputmask", keydownEvent
                     ).bind("keypress.inputmask", keypressEvent
-                    ).bind("keyup.inputmask", keyupEvent
-                    ).bind("compositionstart.inputmask", compositionStartEvent
-                    ).bind("compositionupdate.inputmask", compositionUpdateEvent
-                    ).bind("compositionend.inputmask", compositionEndEvent);
+                    ).bind("keyup.inputmask", keyupEvent);
+
+                    if (!androidfirefox) {
+                        $el.bind("compositionstart.inputmask", compositionStartEvent
+                        ).bind("compositionupdate.inputmask", compositionUpdateEvent
+                        ).bind("compositionend.inputmask", compositionEndEvent);
+                    }
 
                     if (PasteEventType === "paste") {
                         $el.bind("input.inputmask", inputFallBackEvent);

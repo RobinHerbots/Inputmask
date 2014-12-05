@@ -884,6 +884,24 @@ test("inputmask(\"decimal\") - '8100000.00' - ManRueda", function () {
     $("#testmask").remove();
 });
 
+test("inputmask(\"decimal\") - '12345678.12' - ManRueda", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('decimal', {
+        integerDigits: 6,
+        groupSeparator: '.',
+        autoGroup: true,
+        digits: 2,
+        radixPoint: ',',
+        groupSize: 3
+    });
+
+    $("#testmask").val("12345678.12");
+
+    equal($("#testmask").val(), "123.456,12", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
 test("inputmask(\"decimal\") - '8100000,00' - ManRueda", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
@@ -955,5 +973,27 @@ test("inputmask(\"decimal\") - 810000.00 - ManRueda", function () {
     $("#testmask").val('810000.00');
 
     equal($("#testmask").val(), "810.000,00", "Result " + $("#testmask").val());
+    $("#testmask").remove();
+});
+
+
+test("inputmask(\"decimal\") - 123456   78 - babupca", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({
+        alias: "decimal",
+        integerDigits: 6,
+        digits: 3,
+        allowMinus: false,
+        digitsOptional: false,
+        placeholder: "0"
+    });
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123456");
+    $.caret($("#testmask"), 8);
+    $("#testmask").Type("78");
+    $.caret($("#testmask"), 5);
+    $("#testmask").SendKey($.inputmask.keyCode.BACKSPACE);
+    equal($("#testmask").val(), "12346.078", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
