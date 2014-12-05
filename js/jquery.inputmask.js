@@ -971,14 +971,14 @@
 
                 var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(''), matches = inputValue.join('').match(new RegExp(escapeRegex(staticInput), "g"));
                 if (matches && matches.length > 1) {
-                    inputValue.splice(0, staticInput.length);
+                    inputValue.splice(0, staticInput.length * matches.length);
                 }
 
                 $.each(inputValue, function (ndx, charCode) {
                     var keypress = $.Event("keypress");
                     keypress.which = charCode.charCodeAt(0);
                     var lvp = getLastValidPosition(), lvTest = getMaskSet()["validPositions"][lvp], nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : undefined, lvp);
-                    if ($.inArray(charCode, getBufferTemplate().slice(lvp + 1, getMaskSet()["p"])) == -1 || strict) {
+                    if ($.inArray(charCode, getBufferTemplate().slice(lvp + 1, ndx < getMaskSet()["p"] ? ndx : getMaskSet()["p"])) == -1 || strict) {
                         var pos = strict ? ndx : (nextTest["match"].fn == null && (lvp + 1) < getMaskSet()["p"] ? lvp + 1 : getMaskSet()["p"]);
                         keypressEvent.call(input, keypress, true, false, strict, pos);
                     } else {

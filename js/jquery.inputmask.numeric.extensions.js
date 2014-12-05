@@ -103,7 +103,7 @@ Optional extensions on the jquery.inputmask base
                     if (opts.radixPoint != "" && radixSplit.length > 1)
                         bufVal += opts.radixPoint + radixSplit[1];
                 }
-                needsRefresh = buffer.length != bufVal.length;
+                needsRefresh = buffer.join('') != bufVal;
                 buffer.length = bufVal.length; //align the length
                 for (var i = 0, l = bufVal.length; i < l; i++) {
                     buffer[i] = bufVal.charAt(i);
