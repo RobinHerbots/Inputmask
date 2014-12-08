@@ -540,17 +540,30 @@
             return test = test || getTest(pos), void 0 != test.placeholder ? test.placeholder : null == test.fn ? test.def : opts.placeholder.charAt(pos % opts.placeholder.length);
         }
         function checkVal(input, writeOut, strict, nptvl) {
+            function isTemplateMatch() {
+                var isMatch = !1, charCodeNdx = getBufferTemplate().slice(initialNdx, seekNext(initialNdx)).join("").indexOf(charCodes);
+                if (-1 != charCodeNdx) {
+                    isMatch = !0;
+                    for (var bufferTemplateArr = getBufferTemplate().slice(initialNdx, initialNdx + charCodeNdx), i = 0; i < bufferTemplateArr.length; i++) if (" " != bufferTemplateArr[i]) {
+                        isMatch = !1;
+                        break;
+                    }
+                }
+                return isMatch;
+            }
             var inputValue = void 0 != nptvl ? nptvl.slice() : input._valueGet().split("");
-            resetMaskSet(), writeOut && input._valueSet("");
+            resetMaskSet(), getMaskSet().p = seekNext(-1), writeOut && input._valueSet("");
             var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(""), matches = inputValue.join("").match(new RegExp(escapeRegex(staticInput), "g"));
-            if (matches && matches.length > 1 && inputValue.splice(0, staticInput.length * matches.length), 
-            $.each(inputValue, function(ndx, charCode) {
+            matches && matches.length > 0 && inputValue.splice(0, staticInput.length * matches.length);
+            var charCodes = "", initialNdx = 0;
+            if ($.each(inputValue, function(ndx, charCode) {
                 var keypress = $.Event("keypress");
-                keypress.which = charCode.charCodeAt(0);
+                keypress.which = charCode.charCodeAt(0), charCodes += charCode;
                 var lvp = getLastValidPosition(), lvTest = getMaskSet().validPositions[lvp], nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : void 0, lvp);
-                if (-1 == $.inArray(charCode, getBufferTemplate().slice(lvp + 1, ndx < getMaskSet().p ? ndx : getMaskSet().p)) || strict) {
-                    var pos = strict ? ndx : null == nextTest.match.fn && lvp + 1 < getMaskSet().p ? lvp + 1 : getMaskSet().p;
-                    keypressEvent.call(input, keypress, !0, !1, strict, pos);
+                if (!isTemplateMatch() || strict) {
+                    var pos = strict ? ndx : null == nextTest.match.fn && nextTest.match.optionality && lvp + 1 < getMaskSet().p ? lvp + 1 : getMaskSet().p;
+                    keypressEvent.call(input, keypress, !0, !1, strict, pos), initialNdx = pos + 1, 
+                    charCodes = "";
                 } else keypressEvent.call(input, keypress, !0, !1, !0, lvp + 1);
             }), writeOut) {
                 var keypressResult = opts.onKeyPress.call(this, void 0, getBuffer(), 0, opts);
@@ -2092,7 +2105,7 @@
             nojumpsThreshold: 1,
             onBeforeMask: function(value, opts) {
                 var processedValue = value.replace(/^0/g, "");
-                return (processedValue.indexOf(opts.countrycode) > 1 || -1 == processedValue.indexOf(opts.countrycode)) && (processedValue = opts.countrycode + processedValue), 
+                return (processedValue.indexOf(opts.countrycode) > 1 || -1 == processedValue.indexOf(opts.countrycode)) && (processedValue = "+" + opts.countrycode + processedValue), 
                 processedValue;
             }
         },

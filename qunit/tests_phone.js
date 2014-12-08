@@ -15,9 +15,9 @@ asyncTest("inputmask(\"phone be\") - type \"473890428\"", 1, function () {
     }, 0);
 });
 
-asyncTest("inputmask(\"phone be\") - value \"32473890428\"", 1, function () {
+asyncTest("inputmask(\"phone be\") - value \"+32473890428\"", 1, function () {
     var $fixture = $("#qunit-fixture");
-    $fixture.append('<input type="text" id="testmask" value="32473890428" />');
+    $fixture.append('<input type="text" id="testmask" value="+32473890428" />');
     $("#testmask").inputmask("phonebe", { "url": "https://rawgit.com/RobinHerbots/jquery.inputmask/3.x/js/phone-codes/phone-be.js" });
     $("#testmask")[0].focus();
     setTimeout(function () {
