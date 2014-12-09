@@ -876,10 +876,22 @@
                 }
                 //Check for a nonmask before the pos
                 var buffer = getBuffer();
+                //find previous valid
                 for (var pndx = pos - 1; pndx > -1; pndx--) {
-                    if (getMaskSet()["validPositions"][pndx] && getMaskSet()["validPositions"][pndx]["match"].fn == null)
+                    if (getMaskSet()["validPositions"][pndx])
                         break;
-                    else if (getMaskSet()["validPositions"][pndx] == undefined && (!isMask(pndx) || buffer[pndx] != getPlaceholder(pndx)) && getTests(pndx).length > 1) {
+                }
+                ////fill missing nonmask and valid placeholders
+                pndx++;
+                for (; pndx < pos; pndx++) {
+                    //console.log("missing " + pndx + " " + buffer[pndx] + " ismask " + isMask(pndx) + " plchldr " + getPlaceholder(pndx) + " nrt " + getTests(pndx).len);
+                    if (getMaskSet()["validPositions"][pndx] == undefined
+                           && (((!isMask(pndx)
+                           || buffer[pndx] != getPlaceholder(pndx))
+                           && getTests(pndx).length > 1)
+                           || (buffer[pndx] == opts.radixPoint || buffer[pndx] == "0" && $.inArray(opts.radixPoint, buffer) < pndx))) //special case for decimals ~ = placeholder but yet valid input
+                    {
+                        //console.log("inject " + pndx + " " + buffer[pndx]);
                         _isValid(pndx, buffer[pndx], true);
                     }
                 }
