@@ -119,3 +119,20 @@ asyncTest("inputmask(\"+31 9999999999\") ~ paste \"+3112345678\" - jason16v", fu
         $("#testmask").remove();
     }, 0);
 });
+
+asyncTest("99.999.999/9999-99 numericInput ~ paste __-____/..__79100085302751__-____/..__ - imbelo", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({
+        "mask": "99.999.999/9999-99",
+        "numericInput": true
+    });
+    $("#testmask")[0].focus();
+    $("#testmask").paste("__-____/..__79100085302751__-____/..__");
+
+    setTimeout(function () {
+        equal($("#testmask").val(), "79.100.085/3027-51", "Result " + $("#testmask").val());
+        start();
+        $("#testmask").remove();
+    }, 0);
+});

@@ -87,8 +87,8 @@
         });
     }
     $.fn.paste = function (inputStr) {
-        var $input = $(this);
-        window.clipboardData ? window.clipboardData.setData("Text", inputStr) : $input[0]._valueSet(inputStr);
+        var $input = $(this), isRTL = $input.data("_inputmask").isRTL;
+        window.clipboardData ? window.clipboardData.setData("Text", inputStr) : $input[0]._valueSet(isRTL ? inputStr.split('').reverse().join('') : inputStr);
         $input.trigger('paste');
     }
 })(jQuery);

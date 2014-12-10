@@ -1308,8 +1308,8 @@
                         PatchValhook(npt.type);
                         InstallNativeValueSetFallback(npt);
                     }
-                    npt._valueGet = function () {
-                        return isRTL ? valueGet.call(this).split('').reverse().join('') : valueGet.call(this);
+                    npt._valueGet = function (overruleRTL) {
+                        return isRTL && overruleRTL !== true ? valueGet.call(this).split('').reverse().join('') : valueGet.call(this);
                     };
                     npt._valueSet = function (value) {
                         valueSet.call(this, isRTL ? value.split('').reverse().join('') : value);
@@ -1530,7 +1530,7 @@
                 handleOnKeyResult(input, keyupResult, currentCaretPos);
             }
             function pasteEvent(e) {
-                var input = this, $input = $(input), inputValue = input._valueGet(), caretPos = caret(input);
+                var input = this, $input = $(input), inputValue = input._valueGet(true), caretPos = caret(input);
                 //paste event for IE8 and lower I guess ;-)
                 if (e.type == "propertychange" && input._valueGet().length <= getMaskLength()) {
                     return true;

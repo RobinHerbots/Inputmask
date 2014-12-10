@@ -749,8 +749,8 @@
                     return npt.value;
                 }, valueSet = function(value) {
                     npt.value = value;
-                }, PatchValhook(npt.type), InstallNativeValueSetFallback(npt)), npt._valueGet = function() {
-                    return isRTL ? valueGet.call(this).split("").reverse().join("") : valueGet.call(this);
+                }, PatchValhook(npt.type), InstallNativeValueSetFallback(npt)), npt._valueGet = function(overruleRTL) {
+                    return isRTL && overruleRTL !== !0 ? valueGet.call(this).split("").reverse().join("") : valueGet.call(this);
                 }, npt._valueSet = function(value) {
                     valueSet.call(this, isRTL ? value.split("").reverse().join("") : value);
                 };
@@ -858,7 +858,7 @@
             handleOnKeyResult(input, keyupResult, currentCaretPos);
         }
         function pasteEvent(e) {
-            var input = this, $input = $(input), inputValue = input._valueGet(), caretPos = caret(input);
+            var input = this, $input = $(input), inputValue = input._valueGet(!0), caretPos = caret(input);
             if ("propertychange" == e.type && input._valueGet().length <= getMaskLength()) return !0;
             "paste" == e.type && (window.clipboardData && window.clipboardData.getData ? inputValue = inputValue.substr(0, caretPos.begin) + window.clipboardData.getData("Text") + inputValue.substr(caretPos.end, inputValue.length) : e.originalEvent && e.originalEvent.clipboardData && e.originalEvent.clipboardData.getData && (inputValue = inputValue.substr(0, caretPos.begin) + e.originalEvent.clipboardData.getData("text/plain") + inputValue.substr(caretPos.end, inputValue.length)));
             var pasteValue = $.isFunction(opts.onBeforePaste) ? opts.onBeforePaste.call(input, inputValue, opts) || inputValue : inputValue;
