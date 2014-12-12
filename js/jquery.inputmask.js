@@ -966,10 +966,14 @@
             function getBufferElement(position) {
                 return getMaskSet()["validPositions"][position] == undefined ? getPlaceholder(position) : getMaskSet()["validPositions"][position]["input"];
             }
-            function writeBuffer(input, buffer, caretPos) {
+            function writeBuffer(input, buffer, caretPos, triggerInputEvent) {
                 input._valueSet(buffer.join(''));
                 if (caretPos != undefined) {
                     caret(input, caretPos);
+                }
+                if (triggerInputEvent === true) {
+                    skipInputEvent = true;
+                    $(input).trigger("input");
                 }
             }
             function getPlaceholder(pos, test) {
@@ -1393,7 +1397,7 @@
                     e.preventDefault(); //stop default action but allow propagation
                     if (k == 88) undoValue = getBuffer().join('');
                     handleRemove(input, k, pos);
-                    writeBuffer(input, getBuffer(), getMaskSet()["p"]);
+                    writeBuffer(input, getBuffer(), getMaskSet()["p"], undoValue != getBuffer().join(''));
                     if (input._valueGet() == getBufferTemplate().join(''))
                         $input.trigger('cleared');
 
@@ -1484,13 +1488,11 @@
                             setTimeout(function () { opts.onKeyValidation.call(self, valResult, opts); }, 0);
                             if (getMaskSet()["writeOutBuffer"] && valResult !== false) {
                                 var buffer = getBuffer();
-                                writeBuffer(input, buffer, checkval ? undefined : opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
+                                writeBuffer(input, buffer, checkval ? undefined : opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition, checkval !== true);
                                 if (checkval !== true) {
                                     setTimeout(function () { //timeout needed for IE
                                         if (isComplete(buffer) === true)
                                             $input.trigger("complete");
-                                        skipInputEvent = true;
-                                        $input.trigger("input");
                                     }, 0);
                                 }
                             } else if (isSlctn) {
