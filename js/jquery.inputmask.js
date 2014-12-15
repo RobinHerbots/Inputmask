@@ -1604,7 +1604,7 @@
                     keypress.which = newData.charCodeAt(i);
                     skipKeyPressEvent = false;
                     ignorable = false;
-                    keypressEvent.call(input, keypress);
+                    keypressEvent.call(input, keypress); //needs update
                 }
                 setTimeout(function () {
                     var forwardPosition = getMaskSet()["p"];
