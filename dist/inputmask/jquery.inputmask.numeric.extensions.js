@@ -140,7 +140,7 @@
                         pos: pos,
                         remove: matchRslt.index
                     };
-                    if (pos > matchRslt.index && radixPosition >= pos) return maskset.buffer.splice(matchRslt.index, 1), 
+                    if (pos >= matchRslt.index && radixPosition >= pos) return maskset.buffer.splice(matchRslt.index, 1), 
                     pos = pos > matchRslt.index ? pos - 1 : matchRslt.index, {
                         pos: pos,
                         remove: matchRslt.index

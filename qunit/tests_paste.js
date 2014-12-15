@@ -136,3 +136,17 @@ asyncTest("99.999.999/9999-99 numericInput ~ paste __-____/..__79100085302751__-
         $("#testmask").remove();
     }, 0);
 });
+
+asyncTest("currency ~ $123.22 - sjk07", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('currency');
+    $("#testmask")[0].focus();
+    $("#testmask").paste("$123.22");
+
+    setTimeout(function () {
+        equal($("#testmask").val(), "$ 123.22", "Result " + $("#testmask").val());
+        start();
+        $("#testmask").remove();
+    }, 0);
+});

@@ -180,7 +180,7 @@ Optional extensions on the jquery.inputmask base
                             maskset.buffer.splice(matchRslt.index, 1);
                             pos = pos > matchRslt.index ? pos - 1 : matchRslt.index;
                             return { "pos": pos, "remove": matchRslt.index };
-                        } else if (pos > matchRslt.index && pos <= radixPosition) {
+                        } else if (pos >= matchRslt.index && pos <= radixPosition) {
                             maskset.buffer.splice(matchRslt.index, 1);
                             pos = pos > matchRslt.index ? pos - 1 : matchRslt.index;
                             return { "pos": pos, "remove": matchRslt.index };
