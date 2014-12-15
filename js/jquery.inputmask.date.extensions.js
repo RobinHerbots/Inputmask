@@ -75,11 +75,12 @@ Optional extensions on the jquery.inputmask base
 
                 return currentyear;
             },
-            onKeyUp: function (e, buffer, caretPos, opts) {
+            onKeyUp: function (e, buffer, opts) {
                 var $input = $(this);
                 if (e.ctrlKey && e.keyCode == $.inputmask.keyCode.RIGHT) {
                     var today = new Date();
                     $input.val(today.getDate().toString() + (today.getMonth() + 1).toString() + today.getFullYear().toString());
+                    $input.triggerHandler('setvalue.inputmask');
                 }
             },
             getFrontValue: function (mask, buffer, opts) {
@@ -283,11 +284,12 @@ Optional extensions on the jquery.inputmask base
                 val1: new RegExp("0[1-9]|1[012]") //month
             },
             leapday: "02/29/",
-            onKeyUp: function (e, buffer, caretPos, opts) {
+            onKeyUp: function (e, buffer, opts) {
                 var $input = $(this);
                 if (e.ctrlKey && e.keyCode == $.inputmask.keyCode.RIGHT) {
                     var today = new Date();
                     $input.val((today.getMonth() + 1).toString() + today.getDate().toString() + today.getFullYear().toString());
+                    $input.triggerHandler('setvalue.inputmask');
                 }
             }
         },
@@ -296,11 +298,12 @@ Optional extensions on the jquery.inputmask base
             placeholder: "yyyy/mm/dd",
             alias: "mm/dd/yyyy",
             leapday: "/02/29",
-            onKeyUp: function (e, buffer, caretPos, opts) {
+            onKeyUp: function (e, buffer, opts) {
                 var $input = $(this);
                 if (e.ctrlKey && e.keyCode == $.inputmask.keyCode.RIGHT) {
                     var today = new Date();
                     $input.val(today.getFullYear().toString() + (today.getMonth() + 1).toString() + today.getDate().toString());
+                    $input.triggerHandler('setvalue.inputmask');
                 }
             }
         },

@@ -45,6 +45,7 @@
             rightAlign: !0,
             decimalProtect: !0,
             postFormat: function(buffer, pos, reformatOnly, opts) {
+                pos = pos >= buffer.length ? buffer.length - 1 : pos;
                 var needsRefresh = !1, charAtPos = buffer[pos];
                 if ("" == opts.groupSeparator || -1 != $.inArray(opts.radixPoint, buffer) && pos >= $.inArray(opts.radixPoint, buffer) || new RegExp("[-+]").test(charAtPos)) return {
                     pos: pos
@@ -69,28 +70,22 @@
                     refreshFromBuffer: needsRefresh
                 };
             },
-            onKeyDown: function(e, buffer, caretPos, opts) {
-                if (opts.autoGroup && (e.keyCode == $.inputmask.keyCode.DELETE || e.keyCode == $.inputmask.keyCode.BACKSPACE)) {
-                    var rslt = opts.postFormat(buffer, caretPos - 1, !0, opts);
-                    return rslt.caret = rslt.pos + 1, rslt;
+            onBeforeWrite: function(e, buffer, caretPos, opts) {
+                if (e && "blur" == e.type) {
+                    var tmpBufSplit = "" != opts.radixPoint ? buffer.join("").split(opts.radixPoint) : [ buffer.join("") ], matchRslt = tmpBufSplit[0].match(opts.regex.integerPart(opts)), matchRsltDigits = 2 == tmpBufSplit.length ? tmpBufSplit[1].match(opts.regex.integerNPart(opts)) : void 0;
+                    matchRslt && "-0" == matchRslt[matchRslt.index] && (void 0 == matchRsltDigits || matchRsltDigits[matchRsltDigits.index].match(/^0+$/)) && buffer.splice(0, 1);
+                    var radixPosition = $.inArray(opts.radixPoint, buffer);
+                    if (-1 != radixPosition && isFinite(opts.digits) && !opts.digitsOptional) {
+                        for (var i = 1; i <= opts.digits; i++) (void 0 == buffer[radixPosition + i] || buffer[radixPosition + i] == opts.placeholder.charAt(0)) && (buffer[radixPosition + i] = "0");
+                        return {
+                            refreshFromBuffer: !0,
+                            buffer: buffer
+                        };
+                    }
                 }
-            },
-            onKeyPress: function(e, buffer, caretPos, opts) {
                 if (opts.autoGroup) {
                     var rslt = opts.postFormat(buffer, caretPos - 1, !0, opts);
                     return rslt.caret = rslt.pos + 1, rslt;
-                }
-            },
-            postProcessOnBlur: function(tmpBuffer, opts) {
-                var tmpBufSplit = "" != opts.radixPoint ? tmpBuffer.join("").split(opts.radixPoint) : [ tmpBuffer.join("") ], matchRslt = tmpBufSplit[0].match(opts.regex.integerPart(opts)), matchRsltDigits = 2 == tmpBufSplit.length ? tmpBufSplit[1].match(opts.regex.integerNPart(opts)) : void 0;
-                matchRslt && "-0" == matchRslt[matchRslt.index] && (void 0 == matchRsltDigits || matchRsltDigits[matchRsltDigits.index].match(/^0+$/)) && tmpBuffer.splice(0, 1);
-                var radixPosition = $.inArray(opts.radixPoint, tmpBuffer);
-                if (-1 != radixPosition && isFinite(opts.digits) && !opts.digitsOptional) {
-                    for (var i = 1; i <= opts.digits; i++) (void 0 == tmpBuffer[radixPosition + i] || tmpBuffer[radixPosition + i] == opts.placeholder.charAt(0)) && (tmpBuffer[radixPosition + i] = "0");
-                    return {
-                        refreshFromBuffer: !0,
-                        buffer: tmpBuffer
-                    };
                 }
             },
             regex: {

@@ -73,6 +73,7 @@ Optional extensions on the jquery.inputmask base
             rightAlign: true,
             decimalProtect: true, //do not allow assumption of decimals input without entering the radixpoint
             postFormat: function (buffer, pos, reformatOnly, opts) {  //this needs to be removed // this is crap
+                pos = pos >= buffer.length ? buffer.length - 1 : pos;
                 var needsRefresh = false, charAtPos = buffer[pos];
                 if (opts.groupSeparator == "" ||
                     ($.inArray(opts.radixPoint, buffer) != -1 && pos >= $.inArray(opts.radixPoint, buffer)) ||
@@ -113,33 +114,27 @@ Optional extensions on the jquery.inputmask base
 
                 return { pos: newPos, "refreshFromBuffer": needsRefresh };
             },
-            onKeyDown: function (e, buffer, caretPos, opts) {
-                if (opts.autoGroup && (e.keyCode == $.inputmask.keyCode.DELETE || e.keyCode == $.inputmask.keyCode.BACKSPACE)) {
-                    var rslt = opts.postFormat(buffer, caretPos - 1, true, opts);
-                    rslt.caret = rslt.pos + 1;
-                    return rslt;
-                }
-            },
-            onKeyPress: function (e, buffer, caretPos, opts) {
-                if (opts.autoGroup /*&& String.fromCharCode(k) == opts.radixPoint*/) {
-                    var rslt = opts.postFormat(buffer, caretPos - 1, true, opts);
-                    rslt.caret = rslt.pos + 1;
-                    return rslt;
-                }
-            },
-            postProcessOnBlur: function (tmpBuffer, opts) {
-                var tmpBufSplit = opts.radixPoint != "" ? tmpBuffer.join('').split(opts.radixPoint) : [tmpBuffer.join('')],
-                    matchRslt = tmpBufSplit[0].match(opts.regex.integerPart(opts)),
-                    matchRsltDigits = tmpBufSplit.length == 2 ? tmpBufSplit[1].match(opts.regex.integerNPart(opts)) : undefined;
-                if (matchRslt && matchRslt[matchRslt.index] == "-0" && (matchRsltDigits == undefined || matchRsltDigits[matchRsltDigits.index].match(/^0+$/))) {
-                    tmpBuffer.splice(0, 1);
-                }
-                var radixPosition = $.inArray(opts.radixPoint, tmpBuffer);
-                if (radixPosition != -1 && isFinite(opts.digits) && !opts.digitsOptional) {
-                    for (var i = 1; i <= opts.digits; i++) {
-                        if (tmpBuffer[radixPosition + i] == undefined || tmpBuffer[radixPosition + i] == opts.placeholder.charAt(0)) tmpBuffer[radixPosition + i] = "0";
+            onBeforeWrite: function (e, buffer, caretPos, opts) {
+                if (e && e.type == "blur") {
+                    var tmpBufSplit = opts.radixPoint != "" ? buffer.join('').split(opts.radixPoint) : [buffer.join('')],
+                   matchRslt = tmpBufSplit[0].match(opts.regex.integerPart(opts)),
+                   matchRsltDigits = tmpBufSplit.length == 2 ? tmpBufSplit[1].match(opts.regex.integerNPart(opts)) : undefined;
+                    if (matchRslt && matchRslt[matchRslt.index] == "-0" && (matchRsltDigits == undefined || matchRsltDigits[matchRsltDigits.index].match(/^0+$/))) {
+                        buffer.splice(0, 1);
                     }
-                    return { "refreshFromBuffer": true, "buffer": tmpBuffer };
+                    var radixPosition = $.inArray(opts.radixPoint, buffer);
+                    if (radixPosition != -1 && isFinite(opts.digits) && !opts.digitsOptional) {
+                        for (var i = 1; i <= opts.digits; i++) {
+                            if (buffer[radixPosition + i] == undefined || buffer[radixPosition + i] == opts.placeholder.charAt(0)) buffer[radixPosition + i] = "0";
+                        }
+                        return { "refreshFromBuffer": true, "buffer": buffer };
+                    }
+                }
+
+                if (opts.autoGroup) {
+                    var rslt = opts.postFormat(buffer, caretPos - 1, true, opts);
+                    rslt.caret = rslt.pos + 1;
+                    return rslt;
                 }
             },
             regex: {

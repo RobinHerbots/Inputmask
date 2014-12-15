@@ -497,8 +497,11 @@ The alias to use.
 ```
 
 #### onKeyUp
-#### onKeyPress
-#### onKeyDown
+Callback to implement autocomplete on certain keys for example
+
+Function arguments: buffer, opts  
+Function return: 
+
 #### onBeforeMask
 
 Executes before masking the initial value to allow preprocessing of the initial value.
@@ -523,7 +526,7 @@ $(selector).inputmask({
 
 #### onBeforePaste
 
-Executes before masking the pasted value to allow preprocessing of the pasted value. 
+This callback allows for preprocessing the pasted value before actually handling the value for masking.  This can be usefull for stripping away some characters before processing.
 
 Function arguments: pastedValue, opts  
 Function return: processedValue
@@ -543,6 +546,17 @@ $(selector).inputmask({
 				}
             });
 ```
+
+#### onBeforeWrite
+
+Executes before writing to the masked element 
+
+Use this to do some extra processing of the input.
+This can be usefull when implementing an alias, ex. decimal alias, autofill the digits when pressing tab.
+ 
+Function arguments: event, buffer, caretPos, opts  
+Function return: command object (see Define custom definitions)
+
 
 #### onUnMask
 
@@ -679,13 +693,6 @@ $(selector).inputmask("Regex", {
 });
 ```
 
-#### postProcessOnBlur
-
-This is a hook todo some postprocessing of the value on the blur event.  
-Args => buffer, opts
-
-Manipulations in the buffer are written to input element
-
 ##Functions
 
 #### mask
@@ -709,7 +716,33 @@ $(document).ready(function(){
 ```
 
 #### getemptymask
+
+return the default (empty) mask value
+
+
+```javascript
+$(document).ready(function(){
+   $("#test").inputmask("999-AAA");
+   var initialValue = $("#test").inputmask("getemptymask");  // initialValue  => "___-___"
+});
+```
+
 #### hasMaskedValue
+
+Check whether the returned value is masked or not; currently only works reliably when using jquery.val fn to retrieve the value 
+
+```javascript
+$(document).ready(function(){
+	function validateMaskedValue(val){}
+	function validateValue(val){}
+
+	var val = $("#test").val();
+    if($("#test").inputmask("hasMaskedValue"))
+	  validateMaskedValue(val); 
+   else validateValue(val); 
+});
+```
+
 #### isComplete
 
 Verify whether the current value is complete or not.
@@ -866,10 +899,11 @@ PM> Install-Package jQuery.InputMask
 In App_Start, BundleConfig.cs
 ```c#
 bundles.Add(new ScriptBundle("~/bundles/inputmask").Include(
-                        "~/Scripts/jquery.inputmask/jquery.inputmask-{version}.js",
-						"~/Scripts/jquery.inputmask/jquery.inputmask.extensions-{version}.js",
-						"~/Scripts/jquery.inputmask/jquery.inputmask.date.extensions-{version}.js",
-						"~/Scripts/jquery.inputmask/jquery.inputmask.numeric.extensions-{version}.js"));
+                        "~/Scripts/jquery.inputmask/jquery.inputmask.js",
+						"~/Scripts/jquery.inputmask/jquery.inputmask.extensions.js",
+						"~/Scripts/jquery.inputmask/jquery.inputmask.date.extensions.js",
+						//and other extensions you want to include
+						"~/Scripts/jquery.inputmask/jquery.inputmask.numeric.extensions.js"));
 ```
 
 In Layout
@@ -880,72 +914,10 @@ In Layout
 #=========== TODO ===========
 
 
-### getemptymask command
-
-return the default (empty) mask value
 
 
-```javascript
-$(document).ready(function(){
-   $("#test").inputmask("999-AAA");
-   var initialValue = $("#test").inputmask("getemptymask");  // initialValue  => "___-___"
-});
-```
 
-### onKeyUp / onKeyDown option
 
-Use this to do some extra processing of the input when certain keys are pressed.
-This can be usefull when implementing an alias, ex. decimal alias, autofill the digits when pressing tab.
-
-see jquery.inputmask.extensions.js for some examples
-
-### onBeforePaste
-
-This callback allows for preprocessing the pasted value before actually handling the value for masking.  This can be usefull for stripping away some characters before processing.
-
-```javascript
-$(document).ready(function(){
-   $("#test").inputmask("99.", {
-                repeat: 4,
-                onBeforePaste: function (pastedValue) {
-                    //do somehing with the value
-                    return pastedValue;
-                }
-            });
-});
-```
-
-### onBeforeMask
-
-This callback allows for preprocessing the initial value before actually handling the value for masking.  This can be usefull for stripping away some characters before processing.
-
-```javascript
-$(document).ready(function(){
-   $("#test").inputmask("99.", {
-                repeat: 4,
-                onBeforeMask: function (initialValue) {
-                    //do somehing with the value
-                    return initialValue;
-                }
-            });
-});
-```
-
-### hasMaskedValue
-
-Check whether the returned value is masked or not; currently only works reliably when using jquery.val fn to retrieve the value 
-
-```javascript
-$(document).ready(function(){
-	function validateMaskedValue(val){}
-	function validateValue(val){}
-
-	var val = $("#test").val();
-    if($("#test").inputmask("hasMaskedValue"))
-	  validateMaskedValue(val); 
-   else validateValue(val); 
-});
-```
 
 
 
