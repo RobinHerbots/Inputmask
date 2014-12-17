@@ -397,7 +397,7 @@
                         if (psNdx >= closestTo) after = psNdx;
                     }
                 }
-                lastValidPosition = (closestTo - before) > 1 || after < closestTo ? before : after;
+                lastValidPosition = (before != -1 && (closestTo - before) > 1) || after < closestTo ? before : after;
                 return lastValidPosition;
             }
             function setValidPosition(pos, validTest, fromSetValid) {
@@ -994,7 +994,7 @@
                 function isTemplateMatch() {
                     var isMatch = false;
                     var charCodeNdx = getBufferTemplate().slice(initialNdx, seekNext(initialNdx)).join('').indexOf(charCodes);
-                    if (charCodeNdx != -1) {
+                    if (charCodeNdx != -1 && !isMask(initialNdx)) {
                         isMatch = true;
                         var bufferTemplateArr = getBufferTemplate().slice(initialNdx, initialNdx + charCodeNdx);
                         for (var i = 0; i < bufferTemplateArr.length; i++) {
@@ -1018,6 +1018,7 @@
 
                 var charCodes = "", initialNdx = 0;
                 $.each(inputValue, function (ndx, charCode) {
+                    console.log("checkval " + charCode);
                     var keypress = $.Event("keypress");
                     keypress.which = charCode.charCodeAt(0);
                     charCodes += charCode;
@@ -1539,10 +1540,16 @@
                 if (e.type == "propertychange" && input._valueGet().length <= getMaskLength()) {
                     return true;
                 } else if (e.type == "paste") {
+                    var valueBeforeCaret = inputValue.substr(0, caretPos.begin),
+                        valueAfterCaret = inputValue.substr(caretPos.end, inputValue.length);
+
+                    if (valueBeforeCaret == getBufferTemplate().slice(0, caretPos.begin).join('')) valueBeforeCaret = "";
+                    if (valueAfterCaret == getBufferTemplate().slice(caretPos.end).join('')) valueAfterCaret = "";
+
                     if (window.clipboardData && window.clipboardData.getData) { // IE
-                        inputValue = inputValue.substr(0, caretPos.begin) + window.clipboardData.getData('Text') + inputValue.substr(caretPos.end, inputValue.length);
+                        inputValue = valueBeforeCaret + window.clipboardData.getData('Text') + valueAfterCaret;
                     } else if (e.originalEvent && e.originalEvent.clipboardData && e.originalEvent.clipboardData.getData) {
-                        inputValue = inputValue.substr(0, caretPos.begin) + e.originalEvent.clipboardData.getData('text/plain') + inputValue.substr(caretPos.end, inputValue.length);;
+                        inputValue = valueBeforeCaret + e.originalEvent.clipboardData.getData('text/plain') + valueAfterCaret;
                     }
                 }
 

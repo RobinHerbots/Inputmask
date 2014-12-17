@@ -119,7 +119,7 @@ Optional extensions on the jquery.inputmask base
                     var tmpBufSplit = opts.radixPoint != "" ? buffer.join('').split(opts.radixPoint) : [buffer.join('')],
                    matchRslt = tmpBufSplit[0].match(opts.regex.integerPart(opts)),
                    matchRsltDigits = tmpBufSplit.length == 2 ? tmpBufSplit[1].match(opts.regex.integerNPart(opts)) : undefined;
-                    if (matchRslt && matchRslt[matchRslt.index] == "-0" && (matchRsltDigits == undefined || matchRsltDigits[matchRsltDigits.index].match(/^0+$/))) {
+                    if (matchRslt && matchRslt[0] == "-0" && (matchRsltDigits == undefined || matchRsltDigits[0].match(/^0+$/))) {
                         buffer.splice(0, 1);
                     }
                     var radixPosition = $.inArray(opts.radixPoint, buffer);
@@ -145,7 +145,7 @@ Optional extensions on the jquery.inputmask base
                 if (!strict && (opts.allowMinus && chrs === "-" || opts.allowPlus && chrs === "+")) {
                     var matchRslt = maskset.buffer.join('').match(opts.regex.integerPart(opts));
 
-                    if (matchRslt && matchRslt[matchRslt.index].length > 0 && (matchRslt[matchRslt.index] !== "0" || (maskset.buffer && maskset._buffer && maskset.buffer.join('') != maskset._buffer.join('')))) {
+                    if (matchRslt && matchRslt[0].length > 0 && (matchRslt[0] !== "0" || (maskset.buffer && maskset._buffer && maskset.buffer.join('') != maskset._buffer.join('')))) {
                         if (maskset.buffer[matchRslt.index] == (chrs === "-" ? "+" : "-")) {
                             return { "pos": matchRslt.index, "c": chrs, "remove": matchRslt.index, "caret": pos };
                         } else if (maskset.buffer[matchRslt.index] == (chrs === "-" ? "-" : "+")) {
@@ -174,22 +174,21 @@ Optional extensions on the jquery.inputmask base
             },
             leadingZeroHandler: function (chrs, maskset, pos, strict, opts) {
                 var matchRslt = maskset.buffer.join('').match(opts.regex.integerNPart(opts)), radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
-                if (matchRslt && !strict && (radixPosition == -1 || matchRslt.index < radixPosition)) {
-                    if (matchRslt["0"] == "0" && pos >= opts.prefix.length) {
-                        if (radixPosition == -1 || (pos <= radixPosition && maskset["validPositions"][radixPosition] == undefined)) {
+                if (matchRslt && !strict && (radixPosition == -1 || pos <= radixPosition)) {
+                    if (matchRslt["0"].indexOf("0") == 0) {
+                        if (pos < opts.prefix.length) pos = matchRslt.index; //position
+                        var digitsMatch = maskset._buffer && maskset.buffer.slice(radixPosition).join('') == maskset._buffer.slice(radixPosition).join('');
+                        var integerMatch = maskset._buffer && maskset.buffer.slice(opts.prefix.length, radixPosition).join('') == maskset._buffer.slice(opts.prefix.length, radixPosition).join('');
+
+                        if (radixPosition == -1 || digitsMatch && integerMatch) {
                             maskset.buffer.splice(matchRslt.index, 1);
                             pos = pos > matchRslt.index ? pos - 1 : matchRslt.index;
                             return { "pos": pos, "remove": matchRslt.index };
-                        } else if (pos >= matchRslt.index && pos <= radixPosition) {
+                        } else if (matchRslt.index + 1 == pos || chrs == "0") {
                             maskset.buffer.splice(matchRslt.index, 1);
-                            pos = pos > matchRslt.index ? pos - 1 : matchRslt.index;
+                            pos = matchRslt.index;
                             return { "pos": pos, "remove": matchRslt.index };
-                        } if (maskset["validPositions"][radixPosition] == undefined) {
-                            maskset["buffer"][pos] = chrs;
-                            return { "refreshFromBuffer": true };
                         }
-                    } else if (chrs == "0" && pos <= matchRslt.index) {
-                        return false;
                     }
                 }
                 return true;

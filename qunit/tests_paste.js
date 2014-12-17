@@ -150,3 +150,59 @@ asyncTest("currency ~ $123.22 - sjk07", function () {
         $("#testmask").remove();
     }, 0);
 });
+
+asyncTest("currency ~ $-123.22 - sjk07", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('currency');
+    $("#testmask")[0].focus();
+    $("#testmask").paste("$-123.22");
+
+    setTimeout(function () {
+        equal($("#testmask").val(), "$ -123.22", "Result " + $("#testmask").val());
+        start();
+        $("#testmask").remove();
+    }, 0);
+});
+
+asyncTest("currency ~ 1000.00 - sjk07", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('currency');
+    $("#testmask")[0].focus();
+    $("#testmask").paste("1000.00");
+
+    setTimeout(function () {
+        equal($("#testmask").val(), "$ 1,000.00", "Result " + $("#testmask").val());
+        start();
+        $("#testmask").remove();
+    }, 0);
+});
+
+asyncTest("currency ~ -1000.00 - sjk07", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('currency');
+    $("#testmask")[0].focus();
+    $("#testmask").paste("-1000.00");
+
+    setTimeout(function () {
+        equal($("#testmask").val(), "$ -1,000.00", "Result " + $("#testmask").val());
+        start();
+        $("#testmask").remove();
+    }, 0);
+});
+
+asyncTest("currency ~ 000.02 - sjk07", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('currency');
+    $("#testmask")[0].focus();
+    $("#testmask").paste("000.02");
+
+    setTimeout(function () {
+        equal($("#testmask").val(), "$ 0.02", "Result " + $("#testmask").val());
+        start();
+        $("#testmask").remove();
+    }, 0);
+});
