@@ -1175,7 +1175,7 @@
                                 var handler = eventHandler.handler;
                                 eventHandler.handler = function (e) {
                                     //console.log("triggered " + e.type);
-                                    if (this.readOnly || this.disabled)
+                                    if (this.disabled || (this.readOnly && !(e.type == "keydown" && e.ctrlKey && e.keyCode == 67)))
                                         e.preventDefault();
                                     else {
                                         switch (e.type) {
