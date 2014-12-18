@@ -134,9 +134,9 @@
             },
             leadingZeroHandler: function(chrs, maskset, pos, strict, opts) {
                 var matchRslt = maskset.buffer.join("").match(opts.regex.integerNPart(opts)), radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
-                if (matchRslt && !strict && (-1 == radixPosition || radixPosition >= pos) && 0 == matchRslt[0].indexOf("0")) {
+                if (matchRslt && !strict && (-1 == radixPosition || radixPosition >= pos)) if (0 == matchRslt[0].indexOf("0")) {
                     pos < opts.prefix.length && (pos = matchRslt.index);
-                    var digitsMatch = maskset._buffer && maskset.buffer.slice(radixPosition).join("") == maskset._buffer.slice(radixPosition).join(""), integerMatch = maskset._buffer && maskset.buffer.slice(opts.prefix.length, radixPosition).join("") == maskset._buffer.slice(opts.prefix.length, radixPosition).join("");
+                    var _radixPosition = $.inArray(opts.radixPoint, maskset._buffer), digitsMatch = maskset._buffer && maskset.buffer.slice(radixPosition).join("") == maskset._buffer.slice(_radixPosition).join(""), integerMatch = maskset._buffer && maskset.buffer.slice(matchRslt.index, radixPosition).join("") == maskset._buffer.slice(opts.prefix.length, _radixPosition).join("");
                     if (-1 == radixPosition || digitsMatch && integerMatch) return maskset.buffer.splice(matchRslt.index, 1), 
                     pos = pos > matchRslt.index ? pos - 1 : matchRslt.index, {
                         pos: pos,
@@ -147,7 +147,7 @@
                         pos: pos,
                         remove: matchRslt.index
                     };
-                }
+                } else if ("0" === chrs && pos <= matchRslt.index) return !1;
                 return !0;
             },
             definitions: {

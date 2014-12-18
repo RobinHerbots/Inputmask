@@ -177,8 +177,9 @@ Optional extensions on the jquery.inputmask base
                 if (matchRslt && !strict && (radixPosition == -1 || pos <= radixPosition)) {
                     if (matchRslt["0"].indexOf("0") == 0) {
                         if (pos < opts.prefix.length) pos = matchRslt.index; //position
-                        var digitsMatch = maskset._buffer && maskset.buffer.slice(radixPosition).join('') == maskset._buffer.slice(radixPosition).join('');
-                        var integerMatch = maskset._buffer && maskset.buffer.slice(opts.prefix.length, radixPosition).join('') == maskset._buffer.slice(opts.prefix.length, radixPosition).join('');
+                        var _radixPosition = $.inArray(opts.radixPoint, maskset._buffer);
+                        var digitsMatch = maskset._buffer && maskset.buffer.slice(radixPosition).join('') == maskset._buffer.slice(_radixPosition).join('');
+                        var integerMatch = maskset._buffer && maskset.buffer.slice(matchRslt.index, radixPosition).join('') == maskset._buffer.slice(opts.prefix.length, _radixPosition).join('');
 
                         if (radixPosition == -1 || digitsMatch && integerMatch) {
                             maskset.buffer.splice(matchRslt.index, 1);
@@ -189,6 +190,8 @@ Optional extensions on the jquery.inputmask base
                             pos = matchRslt.index;
                             return { "pos": pos, "remove": matchRslt.index };
                         }
+                    } else if (chrs === "0" && pos <= matchRslt.index) {
+                        return false;
                     }
                 }
                 return true;
