@@ -54,6 +54,8 @@ Optional extensions on the jquery.inputmask base
                     else mask += (opts.decimalProtect ? ":" : opts.radixPoint) + ";{" + opts.digits + "}";
                 }
                 mask += autoEscape(opts.suffix);
+
+                opts.greedy = false; //enforce greedy false
                 return mask;
             },
             placeholder: "",
@@ -122,7 +124,7 @@ Optional extensions on the jquery.inputmask base
                    matchRslt = tmpBufSplit[0].match(opts.regex.integerPart(opts)),
                    matchRsltDigits = tmpBufSplit.length == 2 ? tmpBufSplit[1].match(opts.regex.integerNPart(opts)) : undefined;
                     if (matchRslt && matchRslt[0] == "-0" && (matchRsltDigits == undefined || matchRsltDigits[0].match(/^0+$/))) {
-                        buffer.splice(0, 1);
+                        buffer.splice(matchRslt.index, 1);
                     }
                     var radixPosition = $.inArray(opts.radixPoint, buffer);
                     if (radixPosition != -1 && isFinite(opts.digits) && !opts.digitsOptional) {
@@ -147,7 +149,7 @@ Optional extensions on the jquery.inputmask base
                 if (!strict && (opts.allowMinus && chrs === "-" || opts.allowPlus && chrs === "+")) {
                     var matchRslt = maskset.buffer.join('').match(opts.regex.integerPart(opts));
 
-                    if (matchRslt && matchRslt[0].length > 0 && (matchRslt[0] !== "0" || (maskset.buffer && maskset._buffer && maskset.buffer.join('') != maskset._buffer.join('')))) {
+                    if (matchRslt && matchRslt[0].length > 0) {
                         if (maskset.buffer[matchRslt.index] == (chrs === "-" ? "+" : "-")) {
                             return { "pos": matchRslt.index, "c": chrs, "remove": matchRslt.index, "caret": pos };
                         } else if (maskset.buffer[matchRslt.index] == (chrs === "-" ? "-" : "+")) {

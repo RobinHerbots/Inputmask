@@ -193,6 +193,34 @@ asyncTest("currency ~ -1000.00 - sjk07", function () {
     }, 0);
 });
 
+asyncTest("currency ~ $1000.00 - sjk07", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('currency');
+    $("#testmask")[0].focus();
+    $("#testmask").paste("$1000.00");
+
+    setTimeout(function () {
+        equal($("#testmask").val(), "$ 1,000.00", "Result " + $("#testmask").val());
+        start();
+        $("#testmask").remove();
+    }, 0);
+});
+
+asyncTest("currency ~ $-1000.00 - sjk07", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask('currency');
+    $("#testmask")[0].focus();
+    $("#testmask").paste("$-1000.00");
+
+    setTimeout(function () {
+        equal($("#testmask").val(), "$ -1,000.00", "Result " + $("#testmask").val());
+        start();
+        $("#testmask").remove();
+    }, 0);
+});
+
 asyncTest("currency ~ 000.02 - sjk07", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');

@@ -665,7 +665,7 @@
                     if ("inputmask" == eventHandler.namespace && "setvalue" != eventHandler.type) {
                         var handler = eventHandler.handler;
                         eventHandler.handler = function(e) {
-                            if (!this.readOnly && !this.disabled) {
+                            if (!this.disabled && (!this.readOnly || "keydown" == e.type && e.ctrlKey && 67 == e.keyCode)) {
                                 switch (e.type) {
                                   case "input":
                                     if (skipInputEvent === !0) return skipInputEvent = !1, e.preventDefault();
