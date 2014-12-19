@@ -441,8 +441,7 @@
                     startPos++;
                 }
                 for (i = startPos; i < end; i++) { //clear selection
-                    if (getMaskSet()["validPositions"][i] != undefined &&
-                        (getMaskSet()["validPositions"][i].input != opts.radixPoint || i == getLastValidPosition()))
+                    if (getMaskSet()["validPositions"][i] != undefined && opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), opts) != false)
                         delete getMaskSet()["validPositions"][i];
                 }
 
@@ -1018,7 +1017,6 @@
 
                 var charCodes = "", initialNdx = 0;
                 $.each(inputValue, function (ndx, charCode) {
-                    console.log("checkval " + charCode);
                     var keypress = $.Event("keypress");
                     keypress.which = charCode.charCodeAt(0);
                     charCodes += charCode;
@@ -2013,7 +2011,8 @@
                 },
                 //specify keyCodes which should not be considered in the keypress event, otherwise the preventDefault will stop their default behavior especially in FF
                 ignorables: [8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123],
-                isComplete: undefined //override for isComplete - args => buffer, opts - return true || false
+                isComplete: undefined, //override for isComplete - args => buffer, opts - return true || false
+                canClearPosition: $.noop //hook to alter the clear behavior in the stripValidPositions args => maskset, position, lastValidPosition, opts => return true|false
             },
             keyCode: {
                 ALT: 18, BACKSPACE: 8, CAPS_LOCK: 20, COMMA: 188, COMMAND: 91, COMMAND_LEFT: 91, COMMAND_RIGHT: 93, CONTROL: 17, DELETE: 46, DOWN: 40, END: 35, ENTER: 13, ESCAPE: 27, HOME: 36, INSERT: 45, LEFT: 37, MENU: 93, NUMPAD_ADD: 107, NUMPAD_DECIMAL: 110, NUMPAD_DIVIDE: 111, NUMPAD_ENTER: 108,

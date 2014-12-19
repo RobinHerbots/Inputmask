@@ -258,7 +258,7 @@
         function stripValidPositions(start, end) {
             var i, startPos = start;
             for (void 0 != getMaskSet().validPositions[start] && getMaskSet().validPositions[start].input == opts.radixPoint && (end++, 
-            startPos++), i = startPos; end > i; i++) void 0 == getMaskSet().validPositions[i] || getMaskSet().validPositions[i].input == opts.radixPoint && i != getLastValidPosition() || delete getMaskSet().validPositions[i];
+            startPos++), i = startPos; end > i; i++) void 0 != getMaskSet().validPositions[i] && 0 != opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), opts) && delete getMaskSet().validPositions[i];
             for (i = end; i <= getLastValidPosition(); ) {
                 var t = getMaskSet().validPositions[i], s = getMaskSet().validPositions[startPos];
                 void 0 != t && void 0 == s ? (positionCanMatchDefinition(startPos, t.match.def) && isValid(startPos, t.input, !0) !== !1 && (delete getMaskSet().validPositions[i], 
@@ -569,7 +569,6 @@
             matches && matches.length > 0 && inputValue.splice(0, staticInput.length * matches.length);
             var charCodes = "", initialNdx = 0;
             $.each(inputValue, function(ndx, charCode) {
-                console.log("checkval " + charCode);
                 var keypress = $.Event("keypress");
                 keypress.which = charCode.charCodeAt(0), charCodes += charCode;
                 var lvp = getLastValidPosition(), lvTest = getMaskSet().validPositions[lvp], nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : void 0, lvp);
@@ -1123,7 +1122,8 @@
                     }
                 },
                 ignorables: [ 8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123 ],
-                isComplete: void 0
+                isComplete: void 0,
+                canClearPosition: $.noop
             },
             keyCode: {
                 ALT: 18,

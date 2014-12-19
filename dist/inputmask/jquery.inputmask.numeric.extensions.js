@@ -45,7 +45,7 @@
             rightAlign: !0,
             decimalProtect: !0,
             postFormat: function(buffer, pos, reformatOnly, opts) {
-                pos = pos >= buffer.length ? buffer.length - 1 : pos;
+                pos = pos >= buffer.length ? buffer.length - 1 : pos < opts.prefix.length ? opts.prefix.length : pos;
                 var needsRefresh = !1, charAtPos = buffer[pos];
                 if ("" == opts.groupSeparator || -1 != $.inArray(opts.radixPoint, buffer) && pos >= $.inArray(opts.radixPoint, buffer) || new RegExp("[-+]").test(charAtPos)) return {
                     pos: pos
@@ -92,8 +92,8 @@
                 integerPart: function() {
                     return new RegExp("[-+]?\\d+");
                 },
-                integerNPart: function() {
-                    return new RegExp("\\d+");
+                integerNPart: function(opts) {
+                    return new RegExp("[\\d" + $.inputmask.escapeRegex.call(this, opts.groupSeparator) + "]+");
                 }
             },
             signHandler: function(chrs, maskset, pos, strict, opts) {
@@ -222,6 +222,16 @@
                 }
                 return 0 == opts.digits && (-1 != initialValue.indexOf(".") ? initialValue = initialValue.substring(0, initialValue.indexOf(".")) : -1 != initialValue.indexOf(",") && (initialValue = initialValue.substring(0, initialValue.indexOf(",")))), 
                 initialValue;
+            },
+            canClearPosition: function(maskset, position, lvp, opts) {
+                var canClear = maskset.validPositions[position].input != opts.radixPoint || position == lvp;
+                if (canClear) {
+                    var matchRslt = maskset.buffer.join("").match(opts.regex.integerNPart(opts)), radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
+                    matchRslt && (-1 == radixPosition || radixPosition >= position) && (0 == matchRslt[0].indexOf("0") ? canClear = matchRslt.index != position : -1 != radixPosition && 1 == matchRslt[0].length && matchRslt.index == position && (maskset.validPositions[position].input = "0", 
+                    canClear = !1));
+                }
+                return canClear && maskset.validPositions[position + 1] && maskset.validPositions[position + 1].input == opts.groupSeparator && delete maskset.validPositions[position + 1], 
+                canClear;
             }
         },
         currency: {

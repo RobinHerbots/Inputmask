@@ -997,3 +997,71 @@ test("inputmask(\"decimal\") - 123456   78 - babupca", function () {
     equal($("#testmask").val(), "12346.078", "Result " + $("#testmask").val());
     $("#testmask").remove();
 });
+
+asyncTest("currency alias - 1234 => del 1", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("currency");
+
+    $("#testmask")[0].focus();
+    $("#testmask").click();
+    setTimeout(function () {
+        $("#testmask").Type("1234");
+        $.caret($("#testmask"), 3);
+        $("#testmask").SendKey($.inputmask.keyCode.BACKSPACE);
+        start();
+        equal($("#testmask").val(), "$ 234.00", "Result " + $("#testmask").val());
+        $("#testmask").remove();
+    }, 5);
+});
+
+asyncTest("currency alias - 0.02 => type 1 in integer part", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("currency");
+
+    $("#testmask")[0].focus();
+    $("#testmask").click();
+    setTimeout(function () {
+        $("#testmask").Type("0.02");
+        $.caret($("#testmask"), 3);
+        $("#testmask").SendKey("1");
+        start();
+        equal($("#testmask").val(), "$ 1.02", "Result " + $("#testmask").val());
+        $("#testmask").remove();
+    }, 5);
+});
+
+asyncTest("currency alias - 0.02 => position before 0 type 1 in integer part", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("currency");
+
+    $("#testmask")[0].focus();
+    $("#testmask").click();
+    setTimeout(function () {
+        $("#testmask").Type("0.02");
+        $.caret($("#testmask"), 2);
+        $("#testmask").SendKey("1");
+        start();
+        equal($("#testmask").val(), "$ 10.02", "Result " + $("#testmask").val());
+        $("#testmask").remove();
+    }, 5);
+});
+
+asyncTest("currency alias - 1.23 => del 1 in integer part", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("currency");
+
+    $("#testmask")[0].focus();
+    $("#testmask").click();
+    setTimeout(function () {
+        $("#testmask").Type("1.23");
+        $.caret($("#testmask"), 3);
+        $("#testmask").SendKey($.inputmask.keyCode.BACKSPACE);
+        start();
+        equal($("#testmask").val(), "$ 0.23", "Result " + $("#testmask").val());
+        $("#testmask").remove();
+    }, 5);
+});

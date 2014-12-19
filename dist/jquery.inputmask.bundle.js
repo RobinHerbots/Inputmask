@@ -256,7 +256,7 @@
         function stripValidPositions(start, end) {
             var i, startPos = start;
             for (void 0 != getMaskSet().validPositions[start] && getMaskSet().validPositions[start].input == opts.radixPoint && (end++, 
-            startPos++), i = startPos; end > i; i++) void 0 == getMaskSet().validPositions[i] || getMaskSet().validPositions[i].input == opts.radixPoint && i != getLastValidPosition() || delete getMaskSet().validPositions[i];
+            startPos++), i = startPos; end > i; i++) void 0 != getMaskSet().validPositions[i] && 0 != opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), opts) && delete getMaskSet().validPositions[i];
             for (i = end; i <= getLastValidPosition(); ) {
                 var t = getMaskSet().validPositions[i], s = getMaskSet().validPositions[startPos];
                 void 0 != t && void 0 == s ? (positionCanMatchDefinition(startPos, t.match.def) && isValid(startPos, t.input, !0) !== !1 && (delete getMaskSet().validPositions[i], 
@@ -567,7 +567,6 @@
             matches && matches.length > 0 && inputValue.splice(0, staticInput.length * matches.length);
             var charCodes = "", initialNdx = 0;
             $.each(inputValue, function(ndx, charCode) {
-                console.log("checkval " + charCode);
                 var keypress = $.Event("keypress");
                 keypress.which = charCode.charCodeAt(0), charCodes += charCode;
                 var lvp = getLastValidPosition(), lvTest = getMaskSet().validPositions[lvp], nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : void 0, lvp);
@@ -1121,7 +1120,8 @@
                     }
                 },
                 ignorables: [ 8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123 ],
-                isComplete: void 0
+                isComplete: void 0,
+                canClearPosition: $.noop
             },
             keyCode: {
                 ALT: 18,
@@ -1857,7 +1857,7 @@
             rightAlign: !0,
             decimalProtect: !0,
             postFormat: function(buffer, pos, reformatOnly, opts) {
-                pos = pos >= buffer.length ? buffer.length - 1 : pos;
+                pos = pos >= buffer.length ? buffer.length - 1 : pos < opts.prefix.length ? opts.prefix.length : pos;
                 var needsRefresh = !1, charAtPos = buffer[pos];
                 if ("" == opts.groupSeparator || -1 != $.inArray(opts.radixPoint, buffer) && pos >= $.inArray(opts.radixPoint, buffer) || new RegExp("[-+]").test(charAtPos)) return {
                     pos: pos
@@ -1904,8 +1904,8 @@
                 integerPart: function() {
                     return new RegExp("[-+]?\\d+");
                 },
-                integerNPart: function() {
-                    return new RegExp("\\d+");
+                integerNPart: function(opts) {
+                    return new RegExp("[\\d" + $.inputmask.escapeRegex.call(this, opts.groupSeparator) + "]+");
                 }
             },
             signHandler: function(chrs, maskset, pos, strict, opts) {
@@ -2034,6 +2034,16 @@
                 }
                 return 0 == opts.digits && (-1 != initialValue.indexOf(".") ? initialValue = initialValue.substring(0, initialValue.indexOf(".")) : -1 != initialValue.indexOf(",") && (initialValue = initialValue.substring(0, initialValue.indexOf(",")))), 
                 initialValue;
+            },
+            canClearPosition: function(maskset, position, lvp, opts) {
+                var canClear = maskset.validPositions[position].input != opts.radixPoint || position == lvp;
+                if (canClear) {
+                    var matchRslt = maskset.buffer.join("").match(opts.regex.integerNPart(opts)), radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
+                    matchRslt && (-1 == radixPosition || radixPosition >= position) && (0 == matchRslt[0].indexOf("0") ? canClear = matchRslt.index != position : -1 != radixPosition && 1 == matchRslt[0].length && matchRslt.index == position && (maskset.validPositions[position].input = "0", 
+                    canClear = !1));
+                }
+                return canClear && maskset.validPositions[position + 1] && maskset.validPositions[position + 1].input == opts.groupSeparator && delete maskset.validPositions[position + 1], 
+                canClear;
             }
         },
         currency: {

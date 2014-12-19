@@ -73,7 +73,9 @@ Optional extensions on the jquery.inputmask base
             rightAlign: true,
             decimalProtect: true, //do not allow assumption of decimals input without entering the radixpoint
             postFormat: function (buffer, pos, reformatOnly, opts) {  //this needs to be removed // this is crap
-                pos = pos >= buffer.length ? buffer.length - 1 : pos;
+                //position overflow corrections
+                pos = pos >= buffer.length ? buffer.length - 1 : (pos < opts.prefix.length ? opts.prefix.length : pos);
+
                 var needsRefresh = false, charAtPos = buffer[pos];
                 if (opts.groupSeparator == "" ||
                     ($.inArray(opts.radixPoint, buffer) != -1 && pos >= $.inArray(opts.radixPoint, buffer)) ||
@@ -139,7 +141,7 @@ Optional extensions on the jquery.inputmask base
             },
             regex: {
                 integerPart: function (opts) { return new RegExp('[-\+]?\\d+'); },
-                integerNPart: function (opts) { return new RegExp('\\d+'); }
+                integerNPart: function (opts) { return new RegExp('[\\d' + $.inputmask.escapeRegex.call(this, opts.groupSeparator) + ']+'); }
             },
             signHandler: function (chrs, maskset, pos, strict, opts) {
                 if (!strict && (opts.allowMinus && chrs === "-" || opts.allowPlus && chrs === "+")) {
@@ -302,6 +304,27 @@ Optional extensions on the jquery.inputmask base
                 }
 
                 return initialValue;
+            },
+            canClearPosition: function (maskset, position, lvp, opts) {
+                var canClear = maskset["validPositions"][position].input != opts.radixPoint || position == lvp;
+
+                if (canClear) {
+                    var matchRslt = maskset.buffer.join('').match(opts.regex.integerNPart(opts)), radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
+                    if (matchRslt && (radixPosition == -1 || position <= radixPosition)) {
+                        if (matchRslt["0"].indexOf("0") == 0) {
+                            canClear = matchRslt.index != position;
+                        } else if (radixPosition != -1 && matchRslt["0"].length == 1 && matchRslt.index == position) {
+                            maskset["validPositions"][position].input = "0";
+                            canClear = false;
+                        }
+                    }
+                }
+
+                if (canClear && maskset["validPositions"][position + 1] && maskset["validPositions"][position + 1].input == opts.groupSeparator) {
+                    delete maskset["validPositions"][position + 1];
+                }
+
+                return canClear;
             }
         },
         'currency': {
