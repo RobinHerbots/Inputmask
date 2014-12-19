@@ -26,7 +26,7 @@
         return aliasDefinition ? (aliasDefinition.alias && resolveAlias(aliasDefinition.alias, void 0, opts), 
         $.extend(!0, opts, aliasDefinition), $.extend(!0, opts, options), !0) : !1;
     }
-    function generateMaskSet(opts, multi) {
+    function generateMaskSet(opts) {
         function analyseMask(mask) {
             function maskToken(isGroup, isOptional, isQuantifier, isAlternator) {
                 this.matches = [], this.isGroup = isGroup || !1, this.isOptional = isOptional || !1, 
@@ -182,9 +182,6 @@
         }
         var ms = void 0;
         if ($.isFunction(opts.mask) && (opts.mask = opts.mask.call(this, opts)), $.isArray(opts.mask)) {
-            if (multi) return ms = [], $.each(opts.mask, function(ndx, msk) {
-                ms.push(void 0 == msk.mask || $.isFunction(msk.mask) ? generateMask(preProcessMask(msk), msk) : generateMask(preProcessMask(msk.mask), msk));
-            }), ms;
             if (opts.mask.length > 1) {
                 opts.keepStatic = void 0 == opts.keepStatic ? !0 : opts.keepStatic;
                 var altMask = "(";
@@ -601,22 +598,15 @@
         }
         function caret(input, begin, end) {
             var range, npt = input.jquery && input.length > 0 ? input[0] : input;
-            if ("number" != typeof begin) {
-                var data = $(npt).data("_inputmask");
-                return !$(npt).is(":visible") && data && void 0 != data.caret ? (begin = data.caret.begin, 
-                end = data.caret.end) : npt.setSelectionRange ? (begin = npt.selectionStart, end = npt.selectionEnd) : document.selection && document.selection.createRange && (range = document.selection.createRange(), 
-                begin = 0 - range.duplicate().moveStart("character", -1e5), end = begin + range.text.length), 
-                begin = TranslatePosition(begin), end = TranslatePosition(end), {
-                    begin: begin,
-                    end: end
-                };
-            }
-            begin = TranslatePosition(begin), end = TranslatePosition(end), end = "number" == typeof end ? end : begin;
-            var data = $(npt).data("_inputmask") || {};
-            if (data.caret = {
-                begin: begin,
-                end: end
-            }, $(npt).data("_inputmask", data), $(npt).is(":visible")) {
+            if ("number" != typeof begin) return npt.setSelectionRange ? (begin = npt.selectionStart, 
+            end = npt.selectionEnd) : document.selection && document.selection.createRange && (range = document.selection.createRange(), 
+            begin = 0 - range.duplicate().moveStart("character", -1e5), end = begin + range.text.length), 
+            {
+                begin: TranslatePosition(begin),
+                end: TranslatePosition(end)
+            };
+            if (begin = TranslatePosition(begin), end = TranslatePosition(end), end = "number" == typeof end ? end : begin, 
+            $(npt).is(":visible")) {
                 var scrollCalc = $(npt).css("font-size").replace("px", "") * end;
                 npt.scrollLeft = scrollCalc > npt.scrollWidth ? scrollCalc : 0, 0 == opts.insertMode && begin == end && end++, 
                 npt.setSelectionRange ? (npt.selectionStart = begin, npt.selectionEnd = end) : npt.createTextRange && (range = npt.createTextRange(), 
@@ -1179,7 +1169,7 @@
                     value: value
                 }, generateMaskSet(opts), opts);
             }
-        }, $.fn.inputmask = function(fn, options, targetScope, targetData, msk) {
+        }, $.fn.inputmask = function(fn, options) {
             function importAttributeOptions(npt, opts, importedOptionsContainer) {
                 var $npt = $(npt);
                 $npt.data("inputmask-alias") && resolveAlias($npt.data("inputmask-alias"), {}, opts);
@@ -1191,13 +1181,12 @@
                 }
                 return opts;
             }
-            targetScope = targetScope || maskScope, targetData = targetData || "_inputmask";
             var maskset, opts = $.extend(!0, {}, $.inputmask.defaults, options);
             if ("string" == typeof fn) switch (fn) {
               case "mask":
-                return resolveAlias(opts.alias, options, opts), maskset = generateMaskSet(opts, targetScope !== maskScope), 
+                return resolveAlias(opts.alias, options, opts), maskset = generateMaskSet(opts), 
                 void 0 == maskset ? this : this.each(function() {
-                    targetScope({
+                    maskScope({
                         action: "mask",
                         el: this
                     }, $.extend(!0, {}, maskset), importAttributeOptions(this, opts));
@@ -1205,7 +1194,7 @@
 
               case "unmaskedvalue":
                 var $input = $(this);
-                return $input.data(targetData) ? targetScope({
+                return $input.data("_inputmask") ? maskScope({
                     action: "unmaskedvalue",
                     $input: $input
                 }) : $input.val();
@@ -1213,51 +1202,46 @@
               case "remove":
                 return this.each(function() {
                     var $input = $(this);
-                    $input.data(targetData) && targetScope({
+                    $input.data("_inputmask") && maskScope({
                         action: "remove",
                         el: this
                     });
                 });
 
               case "getemptymask":
-                return this.data(targetData) ? targetScope({
+                return this.data("_inputmask") ? maskScope({
                     action: "getemptymask",
                     el: this
                 }) : "";
 
               case "hasMaskedValue":
-                return this.data(targetData) ? !this.data(targetData).opts.autoUnmask : !1;
+                return this.data("_inputmask") ? !this.data("_inputmask").opts.autoUnmask : !1;
 
               case "isComplete":
-                return this.data(targetData) ? targetScope({
+                return this.data("_inputmask") ? maskScope({
                     action: "isComplete",
                     buffer: this[0]._valueGet().split(""),
                     el: this
                 }) : !0;
 
               case "getmetadata":
-                return this.data(targetData) ? targetScope({
+                return this.data("_inputmask") ? maskScope({
                     action: "getmetadata",
                     el: this
                 }) : void 0;
 
-              case "_detectScope":
-                return resolveAlias(opts.alias, options, opts), void 0 == msk || resolveAlias(msk, options, opts) || -1 != $.inArray(msk, [ "mask", "unmaskedvalue", "remove", "getemptymask", "hasMaskedValue", "isComplete", "getmetadata", "_detectScope" ]) || (opts.mask = msk), 
-                $.isFunction(opts.mask) && (opts.mask = opts.mask.call(this, opts)), $.isArray(opts.mask);
-
               default:
                 return resolveAlias(opts.alias, options, opts), resolveAlias(fn, options, opts) || (opts.mask = fn), 
-                maskset = generateMaskSet(opts, targetScope !== maskScope), void 0 == maskset ? this : this.each(function() {
-                    targetScope({
+                maskset = generateMaskSet(opts), void 0 == maskset ? this : this.each(function() {
+                    maskScope({
                         action: "mask",
                         el: this
                     }, $.extend(!0, {}, maskset), importAttributeOptions(this, opts));
                 });
             } else {
                 if ("object" == typeof fn) return opts = $.extend(!0, {}, $.inputmask.defaults, fn), 
-                resolveAlias(opts.alias, fn, opts), maskset = generateMaskSet(opts, targetScope !== maskScope), 
-                void 0 == maskset ? this : this.each(function() {
-                    targetScope({
+                resolveAlias(opts.alias, fn, opts), maskset = generateMaskSet(opts), void 0 == maskset ? this : this.each(function() {
+                    maskScope({
                         action: "mask",
                         el: this
                     }, $.extend(!0, {}, maskset), importAttributeOptions(this, opts));
@@ -1269,13 +1253,13 @@
                         var dataoptions = $.parseJSON("{" + attrOptions + "}");
                         $.extend(!0, dataoptions, options), opts = $.extend(!0, {}, $.inputmask.defaults, dataoptions), 
                         opts = importAttributeOptions(this, opts), resolveAlias(opts.alias, dataoptions, opts), 
-                        opts.alias = void 0, $(this).inputmask("mask", opts, targetScope);
+                        opts.alias = void 0, $(this).inputmask("mask", opts);
                     } catch (ex) {}
                     if ($(this).attr("data-inputmask-mask") || $(this).attr("data-inputmask-alias")) {
                         opts = $.extend(!0, {}, $.inputmask.defaults, {});
                         var dataOptions = {};
                         opts = importAttributeOptions(this, opts, dataOptions), resolveAlias(opts.alias, dataOptions, opts), 
-                        opts.alias = void 0, $(this).inputmask("mask", opts, targetScope);
+                        opts.alias = void 0, $(this).inputmask("mask", opts);
                     }
                 });
             }
