@@ -19,7 +19,7 @@ test("inputmask(\"9-a{1,3}9{1,3}\" - simple dynamic mask", function () {
     $("#testmask")[0].focus();
     $("#testmask").Type("1a1");
 
-    equal($("#testmask").val(), "1-a1__", "Result " + $("#testmask").val());
+    equal($("#testmask").val(), "1-a1", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });
@@ -121,6 +121,30 @@ test("email mask - email@subdomain.domain.com - babupca", function () {
     $("#testmask")[0].focus();
     $("#testmask").Type("email@subdomain.domain.com");
     equal($("#testmask").val(), "email@subdomain.domain.com", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("quantifier mask greedy false - FairSite2C", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("9{0,4}", { greedy: false });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123");
+    equal($("#testmask").val(), "123", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("quantifier mask greedy true - FairSite2C", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("9{0,4}", { greedy: true });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("123");
+    equal($("#testmask").val(), "123", "Result " + $("#testmask").val());
 
     $("#testmask").remove();
 });

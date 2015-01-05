@@ -422,18 +422,22 @@
 
                 return true;
             }
-            function stripValidPositions(start, end) {
+            function stripValidPositions(start, end, nocheck) {
                 var i, startPos = start;
                 if (getMaskSet()["validPositions"][start] != undefined && getMaskSet()["validPositions"][start].input == opts.radixPoint) {
                     end++;
                     startPos++;
                 }
+                var endPos = end;
                 for (i = startPos; i < end; i++) { //clear selection
-                    if (getMaskSet()["validPositions"][i] != undefined && opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), opts) != false)
-                        delete getMaskSet()["validPositions"][i];
+                    if (getMaskSet()["validPositions"][i] != undefined) {
+                        if (opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), opts) != false || nocheck === true)
+                            delete getMaskSet()["validPositions"][i];
+                        else endPos--;
+                    }
                 }
 
-                for (i = end ; i <= getLastValidPosition() ;) {
+                for (i = endPos ; i <= getLastValidPosition() ;) {
                     var t = getMaskSet()["validPositions"][i];
                     var s = getMaskSet()["validPositions"][startPos];
                     if (t != undefined && s == undefined) {
@@ -460,8 +464,9 @@
                 for (var ndx = 0; ndx < testPositions.length; ndx++) {
                     testPos = testPositions[ndx];
 
-                    if (opts.greedy ||
-                        ((testPos["match"] && (testPos["match"].optionality === false || testPos["match"].newBlockMarker === false) && testPos["match"].optionalQuantifier !== true) &&
+                    if (testPos["match"] &&
+                        (((opts.greedy && testPos["match"].optionalQuantifier !== true)
+                         || (testPos["match"].optionality === false || testPos["match"].newBlockMarker === false) && testPos["match"].optionalQuantifier !== true) &&
                         (lvTest.alternation == undefined ||
                         (testPos["locator"][lvTest.alternation] != undefined && checkAlternationMatch(testPos.locator[lvTest.alternation].toString().split(","), lvTestAltArr))))) {
                         break;
@@ -508,7 +513,7 @@
                                     var latestMatch = matches[matches.length - 1]["match"];
                                     var isFirstMatch = $.inArray(latestMatch, optionalToken.matches) == 0;
                                     if (isFirstMatch) {
-                                        insertStop = true; //insert a stop for non greedy
+                                        insertStop = true; //insert a stop
                                     }
                                     testPos = pos; //match the position after the group
                                 }
@@ -578,7 +583,6 @@
                                 if (match) return true;
                             } else if (match.isQuantifier && quantifierRecurse !== true) {
                                 var qt = match;
-                                opts.greedy = opts.greedy && isFinite(qt.quantifier.max); //greedy must be off when * or + is used (always!!)
                                 for (var qndx = (ndxInitializer.length > 0 && quantifierRecurse !== true) ? ndxInitializer.shift() : 0; (qndx < (isNaN(qt.quantifier.max) ? qndx + 1 : qt.quantifier.max)) && testPos <= pos; qndx++) {
                                     var tokenGroup = maskToken.matches[$.inArray(qt, maskToken.matches) - 1];
                                     match = handleMatch(tokenGroup, [qndx].concat(loopNdx), true);
@@ -737,7 +741,7 @@
 
                             var validatedPos = position;
                             if (rslt["remove"] != undefined) { //remove position
-                                stripValidPositions(rslt["remove"], rslt["remove"] + 1);
+                                stripValidPositions(rslt["remove"], rslt["remove"] + 1, true);
                             }
 
                             if (rslt["refreshFromBuffer"]) {
@@ -921,16 +925,16 @@
                 var maskLength;
                 maxLength = $el.prop('maxLength');
                 if (maxLength == -1) maxLength = undefined; /* FF sets no defined max length to -1 */
-                if (opts.greedy == false) {
-                    var pos, lvp = getLastValidPosition(), testPos = getMaskSet()["validPositions"][lvp],
-                        ndxIntlzr = testPos != undefined ? testPos["locator"].slice() : undefined;
-                    for (pos = lvp + 1; testPos == undefined || (testPos["match"]["fn"] != null || (testPos["match"]["fn"] == null && testPos["match"]["def"] != "")) ; pos++) {
-                        testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
-                        ndxIntlzr = testPos["locator"].slice();
-                    }
-                    maskLength = pos;
-                } else
-                    maskLength = getBuffer().length;
+                //if (opts.greedy == false) { //FIXME TODO
+                var pos, lvp = getLastValidPosition(), testPos = getMaskSet()["validPositions"][lvp],
+                    ndxIntlzr = testPos != undefined ? testPos["locator"].slice() : undefined;
+                for (pos = lvp + 1; testPos == undefined || (testPos["match"]["fn"] != null || (testPos["match"]["fn"] == null && testPos["match"]["def"] != "")) ; pos++) {
+                    testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
+                    ndxIntlzr = testPos["locator"].slice();
+                }
+                maskLength = pos;
+                //} else
+                //    maskLength = getBuffer().length;
 
                 return (maxLength == undefined || maskLength < maxLength) ? maskLength : maxLength;
             }
@@ -1349,10 +1353,10 @@
                 stripValidPositions(pos.begin, pos.end);
                 generalize(); //revert the alternation
 
-                var firstMaskedPos = getLastValidPosition(pos.begin);
-                if (firstMaskedPos < pos.begin) {
-                    if (firstMaskedPos == -1) resetMaskSet();
-                    getMaskSet()["p"] = seekNext(firstMaskedPos);
+                var lvp = getLastValidPosition(pos.begin);
+                if (lvp < pos.begin) {
+                    if (lvp == -1) resetMaskSet();
+                    getMaskSet()["p"] = seekNext(lvp);
                 } else {
                     getMaskSet()["p"] = pos.begin;
                 }
