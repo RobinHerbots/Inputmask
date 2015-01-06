@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.50
+* Version: 3.1.51
 */
 !function($) {
     function isInputEventSupported(eventName) {
@@ -256,7 +256,7 @@
             startPos++);
             var endPos = end;
             for (i = startPos; end > i; i++) void 0 != getMaskSet().validPositions[i] && (0 != opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), opts) || nocheck === !0 ? delete getMaskSet().validPositions[i] : endPos--);
-            for (i = endPos; i <= getLastValidPosition(); ) {
+            for (i = startPos; i <= getLastValidPosition(); ) {
                 var t = getMaskSet().validPositions[i], s = getMaskSet().validPositions[startPos];
                 void 0 != t && void 0 == s ? (positionCanMatchDefinition(startPos, t.match.def) && isValid(startPos, t.input, !0) !== !1 && (delete getMaskSet().validPositions[i], 
                 i++), startPos++) : i++;

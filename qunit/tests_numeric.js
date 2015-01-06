@@ -1065,3 +1065,41 @@ asyncTest("currency alias - 1.23 => del 1 in integer part", function () {
         $("#testmask").remove();
     }, 5);
 });
+
+asyncTest("currency alias - 1234.56 => delete all", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("currency");
+
+    $("#testmask")[0].focus();
+    $("#testmask").click();
+    setTimeout(function () {
+        $("#testmask").Type("1234.56");
+        $.caret($("#testmask"), 0, 10);
+        $("#testmask").SendKey($.inputmask.keyCode.BACKSPACE);
+        start();
+        equal($("#testmask")[0]._valueGet(), "$ 0.00", "Result " + $("#testmask")[0]._valueGet());
+        $("#testmask").remove();
+    }, 5);
+});
+
+asyncTest("numeric prefix='$' - paste 1234.56 - baileyjames9 & TheAndyBob", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("numeric", {
+        radixPoint: ".",
+        groupSeparator: ",",
+        digits: 2,
+        autoGroup: true,
+        prefix: '$' //No Space, this will truncate the first character
+    });
+
+    $("#testmask")[0].focus();
+    $("#testmask").click();
+    setTimeout(function () {
+        $("#testmask").paste("1234.56");
+        start();
+        equal($("#testmask").val(), "$1,234.56", "Result " + $("#testmask").val());
+        $("#testmask").remove();
+    }, 5);
+});

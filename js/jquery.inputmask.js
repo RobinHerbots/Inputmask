@@ -437,7 +437,7 @@
                     }
                 }
 
-                for (i = endPos ; i <= getLastValidPosition() ;) {
+                for (i = startPos ; i <= getLastValidPosition() ;) {
                     var t = getMaskSet()["validPositions"][i];
                     var s = getMaskSet()["validPositions"][startPos];
                     if (t != undefined && s == undefined) {
