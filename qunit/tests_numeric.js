@@ -839,7 +839,7 @@ asyncTest("inputmask(\"decimal\ placeholder :\"\" digitsoptional: false) - 123 -
     $("#testmask")[0].focus();
     $("#testmask").click();
 
-    setTimeout(function() {
+    setTimeout(function () {
         $("#testmask").Type("123");
         start();
         equal($("#testmask").val(), "123,00", "Result " + $("#testmask").val());
@@ -1100,6 +1100,23 @@ asyncTest("numeric prefix='$' - paste 1234.56 - baileyjames9 & TheAndyBob", func
         $("#testmask").paste("1234.56");
         start();
         equal($("#testmask").val(), "$1,234.56", "Result " + $("#testmask").val());
+        $("#testmask").remove();
+    }, 5);
+});
+
+asyncTest("currency alias - 1234.56 => select integer press 1 - babupca", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("currency");
+
+    $("#testmask")[0].focus();
+    $("#testmask").click();
+    setTimeout(function () {
+        $("#testmask").Type("1234.56");
+        $.caret($("#testmask"), 0, 7);
+        $("#testmask").SendKey("1");
+        start();
+        equal($("#testmask")[0]._valueGet(), "$ 1.56", "Result " + $("#testmask")[0]._valueGet());
         $("#testmask").remove();
     }, 5);
 });

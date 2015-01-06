@@ -423,7 +423,7 @@
                 return true;
             }
             function stripValidPositions(start, end, nocheck) {
-                var i, startPos = start;
+                var i, startPos = start, s;
                 if (getMaskSet()["validPositions"][start] != undefined && getMaskSet()["validPositions"][start].input == opts.radixPoint) {
                     end++;
                     startPos++;
@@ -431,15 +431,16 @@
                 var endPos = end;
                 for (i = startPos; i < end; i++) { //clear selection
                     if (getMaskSet()["validPositions"][i] != undefined) {
-                        if (opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), opts) != false || nocheck === true)
+                        if (nocheck === true || opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), opts) != false)
                             delete getMaskSet()["validPositions"][i];
-                        else endPos--;
                     }
                 }
 
-                for (i = startPos ; i <= getLastValidPosition() ;) {
+                resetMaskSet(true);
+                for (i = startPos + 1 ; i <= getLastValidPosition() ;) {
+                    while ((s = getMaskSet()["validPositions"][startPos]) != undefined) startPos++;
+                    if (i < startPos) i = startPos + 1;
                     var t = getMaskSet()["validPositions"][i];
-                    var s = getMaskSet()["validPositions"][startPos];
                     if (t != undefined && s == undefined) {
                         if (positionCanMatchDefinition(startPos, t.match.def) && isValid(startPos, t["input"], true) !== false) {
                             delete getMaskSet()["validPositions"][i];
@@ -1305,7 +1306,7 @@
                     };
                 }
             }
-            function handleRemove(input, k, pos) {
+            function handleRemove(input, k, pos, noCheck) {
                 function generalize() {
                     if (opts.keepStatic) {
                         resetMaskSet(true);
@@ -1350,7 +1351,7 @@
                 else if (k == $.inputmask.keyCode.DELETE && pos.begin == pos.end)
                     pos.end++;
 
-                stripValidPositions(pos.begin, pos.end);
+                stripValidPositions(pos.begin, pos.end, noCheck);
                 generalize(); //revert the alternation
 
                 var lvp = getLastValidPosition(pos.begin);
@@ -1435,7 +1436,7 @@
                         var isSlctn = isSelection(pos.begin, pos.end);
                         if (isSlctn) {
                             getMaskSet()["undoPositions"] = $.extend(true, {}, getMaskSet()["validPositions"]); //init undobuffer for recovery when not valid
-                            handleRemove(input, $.inputmask.keyCode.DELETE, pos);
+                            handleRemove(input, $.inputmask.keyCode.DELETE, pos, true);
                             if (!opts.insertMode) { //preserve some space
                                 opts.insertMode = !opts.insertMode;
                                 setValidPosition(pos.begin, strict);

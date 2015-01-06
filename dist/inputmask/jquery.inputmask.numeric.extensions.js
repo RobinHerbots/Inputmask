@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.52
+* Version: 3.1.53
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery", "./jquery.inputmask" ], factory) : factory(jQuery);
@@ -224,8 +224,10 @@
                 initialValue;
             },
             canClearPosition: function(maskset, position, lvp, opts) {
-                var positionInput = maskset.validPositions[position].input, canClear = positionInput != opts.radixPoint || position == lvp;
+                var positionInput = maskset.validPositions[position].input, canClear = positionInput != opts.radixPoint && isFinite(positionInput) || position == lvp;
                 if (canClear && isFinite(positionInput)) {
+                    for (var pos = position + 1; maskset.validPositions[pos] && (maskset.validPositions[pos].input == opts.groupSeparator || "0" == maskset.validPositions[pos].input); ) delete maskset.validPositions[pos], 
+                    pos++;
                     var buffer = [];
                     for (var vp in maskset.validPositions) buffer.push(maskset.validPositions[vp].input);
                     var matchRslt = buffer.join("").match(opts.regex.integerNPart(opts)), radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
@@ -235,8 +237,7 @@
                         canClear = !1);
                     }
                 }
-                return canClear && maskset.validPositions[position + 1] && maskset.validPositions[position + 1].input == opts.groupSeparator && delete maskset.validPositions[position + 1], 
-                canClear;
+                return canClear;
             }
         },
         currency: {

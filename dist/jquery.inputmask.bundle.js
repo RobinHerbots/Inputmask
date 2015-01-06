@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.52
+* Version: 3.1.53
 */
 !function($) {
     function isInputEventSupported(eventName) {
@@ -251,13 +251,14 @@
             return !0;
         }
         function stripValidPositions(start, end, nocheck) {
-            var i, startPos = start;
+            var i, s, startPos = start;
             void 0 != getMaskSet().validPositions[start] && getMaskSet().validPositions[start].input == opts.radixPoint && (end++, 
             startPos++);
-            var endPos = end;
-            for (i = startPos; end > i; i++) void 0 != getMaskSet().validPositions[i] && (0 != opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), opts) || nocheck === !0 ? delete getMaskSet().validPositions[i] : endPos--);
-            for (i = startPos; i <= getLastValidPosition(); ) {
-                var t = getMaskSet().validPositions[i], s = getMaskSet().validPositions[startPos];
+            for (i = startPos; end > i; i++) void 0 != getMaskSet().validPositions[i] && (nocheck === !0 || 0 != opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), opts)) && delete getMaskSet().validPositions[i];
+            for (resetMaskSet(!0), i = startPos + 1; i <= getLastValidPosition(); ) {
+                for (;void 0 != (s = getMaskSet().validPositions[startPos]); ) startPos++;
+                startPos > i && (i = startPos + 1);
+                var t = getMaskSet().validPositions[i];
                 void 0 != t && void 0 == s ? (positionCanMatchDefinition(startPos, t.match.def) && isValid(startPos, t.input, !0) !== !1 && (delete getMaskSet().validPositions[i], 
                 i++), startPos++) : i++;
             }
@@ -747,7 +748,7 @@
                 };
             }
         }
-        function handleRemove(input, k, pos) {
+        function handleRemove(input, k, pos, noCheck) {
             function generalize() {
                 if (opts.keepStatic) {
                     resetMaskSet(!0);
@@ -769,7 +770,7 @@
                 pos.end = pos.begin, pos.begin = pend;
             }
             k == $.inputmask.keyCode.BACKSPACE && pos.end - pos.begin <= 1 ? pos.begin = seekPrevious(pos.begin) : k == $.inputmask.keyCode.DELETE && pos.begin == pos.end && pos.end++, 
-            stripValidPositions(pos.begin, pos.end), generalize();
+            stripValidPositions(pos.begin, pos.end, noCheck), generalize();
             var lvp = getLastValidPosition(pos.begin);
             lvp < pos.begin ? (-1 == lvp && resetMaskSet(), getMaskSet().p = seekNext(lvp)) : getMaskSet().p = pos.begin;
         }
@@ -801,7 +802,7 @@
                     end: ndx
                 } : caret(input), c = String.fromCharCode(k), isSlctn = isSelection(pos.begin, pos.end);
                 isSlctn && (getMaskSet().undoPositions = $.extend(!0, {}, getMaskSet().validPositions), 
-                handleRemove(input, $.inputmask.keyCode.DELETE, pos), opts.insertMode || (opts.insertMode = !opts.insertMode, 
+                handleRemove(input, $.inputmask.keyCode.DELETE, pos, !0), opts.insertMode || (opts.insertMode = !opts.insertMode, 
                 setValidPosition(pos.begin, strict), opts.insertMode = !opts.insertMode), isSlctn = !opts.multi), 
                 getMaskSet().writeOutBuffer = !0;
                 var p = isRTL && !isSlctn ? pos.end : pos.begin, valResult = isValid(p, c, strict);
@@ -2015,8 +2016,10 @@
                 initialValue;
             },
             canClearPosition: function(maskset, position, lvp, opts) {
-                var positionInput = maskset.validPositions[position].input, canClear = positionInput != opts.radixPoint || position == lvp;
+                var positionInput = maskset.validPositions[position].input, canClear = positionInput != opts.radixPoint && isFinite(positionInput) || position == lvp;
                 if (canClear && isFinite(positionInput)) {
+                    for (var pos = position + 1; maskset.validPositions[pos] && (maskset.validPositions[pos].input == opts.groupSeparator || "0" == maskset.validPositions[pos].input); ) delete maskset.validPositions[pos], 
+                    pos++;
                     var buffer = [];
                     for (var vp in maskset.validPositions) buffer.push(maskset.validPositions[vp].input);
                     var matchRslt = buffer.join("").match(opts.regex.integerNPart(opts)), radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
@@ -2026,8 +2029,7 @@
                         canClear = !1);
                     }
                 }
-                return canClear && maskset.validPositions[position + 1] && maskset.validPositions[position + 1].input == opts.groupSeparator && delete maskset.validPositions[position + 1], 
-                canClear;
+                return canClear;
             }
         },
         currency: {

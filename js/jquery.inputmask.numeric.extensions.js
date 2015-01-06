@@ -308,10 +308,16 @@ Optional extensions on the jquery.inputmask base
                 return initialValue;
             },
             canClearPosition: function (maskset, position, lvp, opts) {
-                var positionInput = maskset["validPositions"][position].input, canClear = positionInput != opts.radixPoint || position == lvp,
+                var positionInput = maskset["validPositions"][position].input, canClear = (positionInput != opts.radixPoint && isFinite(positionInput)) || position == lvp,
                     posOffset = 0;
 
                 if (canClear && isFinite(positionInput)) {
+                    var pos = position + 1;
+                    while (maskset["validPositions"][pos] && (maskset["validPositions"][pos].input == opts.groupSeparator || maskset["validPositions"][pos].input == "0")) {
+                        delete maskset["validPositions"][pos];
+                        pos++;
+                    }
+
                     var buffer = [];
                     //build new buffer from validPositions
                     for (var vp in maskset.validPositions) {
@@ -329,10 +335,6 @@ Optional extensions on the jquery.inputmask base
                             }
                         }
                     }
-                }
-
-                if (canClear && maskset["validPositions"][position + 1] && maskset["validPositions"][position + 1].input == opts.groupSeparator) {
-                    delete maskset["validPositions"][position + 1];
                 }
 
                 return canClear;
