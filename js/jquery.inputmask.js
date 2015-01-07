@@ -1306,7 +1306,7 @@
                     };
                 }
             }
-            function handleRemove(input, k, pos, noCheck) {
+            function handleRemove(input, k, pos) {
                 function generalize() {
                     if (opts.keepStatic) {
                         resetMaskSet(true);
@@ -1351,7 +1351,7 @@
                 else if (k == $.inputmask.keyCode.DELETE && pos.begin == pos.end)
                     pos.end++;
 
-                stripValidPositions(pos.begin, pos.end, noCheck);
+                stripValidPositions(pos.begin, pos.end);
                 generalize(); //revert the alternation
 
                 var lvp = getLastValidPosition(pos.begin);
@@ -1436,7 +1436,7 @@
                         var isSlctn = isSelection(pos.begin, pos.end);
                         if (isSlctn) {
                             getMaskSet()["undoPositions"] = $.extend(true, {}, getMaskSet()["validPositions"]); //init undobuffer for recovery when not valid
-                            handleRemove(input, $.inputmask.keyCode.DELETE, pos, true);
+                            handleRemove(input, $.inputmask.keyCode.DELETE, pos);
                             if (!opts.insertMode) { //preserve some space
                                 opts.insertMode = !opts.insertMode;
                                 setValidPosition(pos.begin, strict);

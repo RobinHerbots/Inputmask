@@ -750,7 +750,7 @@
                 };
             }
         }
-        function handleRemove(input, k, pos, noCheck) {
+        function handleRemove(input, k, pos) {
             function generalize() {
                 if (opts.keepStatic) {
                     resetMaskSet(!0);
@@ -772,7 +772,7 @@
                 pos.end = pos.begin, pos.begin = pend;
             }
             k == $.inputmask.keyCode.BACKSPACE && pos.end - pos.begin <= 1 ? pos.begin = seekPrevious(pos.begin) : k == $.inputmask.keyCode.DELETE && pos.begin == pos.end && pos.end++, 
-            stripValidPositions(pos.begin, pos.end, noCheck), generalize();
+            stripValidPositions(pos.begin, pos.end), generalize();
             var lvp = getLastValidPosition(pos.begin);
             lvp < pos.begin ? (-1 == lvp && resetMaskSet(), getMaskSet().p = seekNext(lvp)) : getMaskSet().p = pos.begin;
         }
@@ -804,7 +804,7 @@
                     end: ndx
                 } : caret(input), c = String.fromCharCode(k), isSlctn = isSelection(pos.begin, pos.end);
                 isSlctn && (getMaskSet().undoPositions = $.extend(!0, {}, getMaskSet().validPositions), 
-                handleRemove(input, $.inputmask.keyCode.DELETE, pos, !0), opts.insertMode || (opts.insertMode = !opts.insertMode, 
+                handleRemove(input, $.inputmask.keyCode.DELETE, pos), opts.insertMode || (opts.insertMode = !opts.insertMode, 
                 setValidPosition(pos.begin, strict), opts.insertMode = !opts.insertMode), isSlctn = !opts.multi), 
                 getMaskSet().writeOutBuffer = !0;
                 var p = isRTL && !isSlctn ? pos.end : pos.begin, valResult = isValid(p, c, strict);

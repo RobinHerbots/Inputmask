@@ -910,6 +910,8 @@ In Layout
 ```html
 @Scripts.Render("~/bundles/inputmask")
 ```
+# jquery.inputmask extensions
+
 
 #=========== TODO ===========
 
@@ -925,7 +927,7 @@ In Layout
 
 
 
-# jquery.inputmask extensions
+
 
 ## date & datetime extensions
 
