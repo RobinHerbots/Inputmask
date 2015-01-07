@@ -42,6 +42,8 @@ Optional extensions on the jquery.inputmask base
                         opts.integerDigits = parseInt(opts.integerDigits) + (mod == 0 ? seps - 1 : seps);
                     }
                 }
+                //only allow radixfocus when placeholder = 0
+                opts.radixFocus = opts.radixFocus && opts.placeholder == "0";
 
                 opts.definitions[";"] = opts.definitions["~"]; //clone integer def for decimals
 
