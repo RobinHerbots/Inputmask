@@ -184,8 +184,8 @@ Optional extensions on the jquery.inputmask base
                     if (matchRslt["0"].indexOf("0") == 0) {
                         if (pos < opts.prefix.length) pos = matchRslt.index; //position
                         var _radixPosition = $.inArray(opts.radixPoint, maskset._buffer);
-                        var digitsMatch = maskset._buffer && maskset.buffer.slice(radixPosition).join('') == maskset._buffer.slice(_radixPosition).join('');
-                        var integerMatch = maskset._buffer && maskset.buffer.slice(matchRslt.index, radixPosition).join('') == maskset._buffer.slice(opts.prefix.length, _radixPosition).join('');
+                        var digitsMatch = maskset._buffer && maskset.buffer.slice(radixPosition).join('') == maskset._buffer.slice(_radixPosition).join('') || parseInt(maskset.buffer.slice(radixPosition + 1).join('')) == 0;
+                        var integerMatch = maskset._buffer && maskset.buffer.slice(matchRslt.index, radixPosition).join('') == maskset._buffer.slice(opts.prefix.length, _radixPosition).join('') || maskset.buffer.slice(matchRslt.index, radixPosition).join('') == "0";
 
                         if (radixPosition == -1 || digitsMatch && integerMatch) {
                             maskset.buffer.splice(matchRslt.index, 1);
@@ -331,8 +331,8 @@ Optional extensions on the jquery.inputmask base
                             canClear = matchRslt.index != position || radixPosition == -1;
                         } else {
                             var intPart = parseInt(matchRslt["0"].replace(new RegExp($.inputmask.escapeRegex.call(this, opts.groupSeparator), "g"), ""));
-                            if (radixPosition != -1 && intPart < 10) {
-                                maskset["validPositions"][position].input = opts.placeholder.charAt(0);
+                            if (radixPosition != -1 && intPart < 10 && opts.placeholder.charAt(0) == "0") {
+                                maskset["validPositions"][position].input = "0";
                                 canClear = false;
                             }
                         }

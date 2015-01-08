@@ -824,7 +824,7 @@ test("inputmask(\"integer\") - -5.000,77 - DrSammyD", function () {
 });
 
 asyncTest("inputmask(\"decimal\ placeholder :\"\" digitsoptional: false) - 123 - loostro", function () {
-    var $fixture = $("#qunit-fixture");
+    var $fixture = $("body");
     $fixture.append('<input type="text" id="testmask" value="0,00" />');
     $("#testmask").inputmask("decimal", {
         radixPoint: ",",
@@ -838,13 +838,14 @@ asyncTest("inputmask(\"decimal\ placeholder :\"\" digitsoptional: false) - 123 -
     });
     $("#testmask")[0].focus();
     $("#testmask").click();
+    $.caret($("#testmask"), 0);
 
     setTimeout(function () {
         $("#testmask").Type("123");
         start();
         equal($("#testmask").val(), "123,00", "Result " + $("#testmask").val());
         $("#testmask").remove();
-    }, 0);
+    }, 5);
 });
 
 asyncTest("inputmask(\"decimal\ placeholder :\"0\" digitsoptional: false) - .12 - YodaJM", function () {
