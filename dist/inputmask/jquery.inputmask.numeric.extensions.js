@@ -223,10 +223,10 @@
                 return 0 == opts.digits && (-1 != initialValue.indexOf(".") ? initialValue = initialValue.substring(0, initialValue.indexOf(".")) : -1 != initialValue.indexOf(",") && (initialValue = initialValue.substring(0, initialValue.indexOf(",")))), 
                 initialValue;
             },
-            canClearPosition: function(maskset, position, lvp, opts) {
+            canClearPosition: function(maskset, position, lvp, strict, opts) {
                 var positionInput = maskset.validPositions[position].input, canClear = positionInput != opts.radixPoint && isFinite(positionInput) || position == lvp;
                 if (canClear && isFinite(positionInput)) {
-                    for (var pos = position + 1; maskset.validPositions[pos] && (maskset.validPositions[pos].input == opts.groupSeparator || "0" == maskset.validPositions[pos].input); ) delete maskset.validPositions[pos], 
+                    if (!strict) for (var pos = position + 1; maskset.validPositions[pos] && (maskset.validPositions[pos].input == opts.groupSeparator || "0" == maskset.validPositions[pos].input); ) delete maskset.validPositions[pos], 
                     pos++;
                     var buffer = [];
                     for (var vp in maskset.validPositions) buffer.push(maskset.validPositions[vp].input);

@@ -252,11 +252,11 @@
             } else getMaskSet().validPositions[pos] = validTest;
             return !0;
         }
-        function stripValidPositions(start, end, nocheck) {
+        function stripValidPositions(start, end, nocheck, strict) {
             var i, s, startPos = start;
             void 0 != getMaskSet().validPositions[start] && getMaskSet().validPositions[start].input == opts.radixPoint && (end++, 
             startPos++);
-            for (i = startPos; end > i; i++) void 0 != getMaskSet().validPositions[i] && (nocheck === !0 || 0 != opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), opts)) && delete getMaskSet().validPositions[i];
+            for (i = startPos; end > i; i++) void 0 != getMaskSet().validPositions[i] && (nocheck === !0 || 0 != opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), strict, opts)) && delete getMaskSet().validPositions[i];
             for (resetMaskSet(!0), i = startPos + 1; i <= getLastValidPosition(); ) {
                 for (;void 0 != (s = getMaskSet().validPositions[startPos]); ) startPos++;
                 startPos > i && (i = startPos + 1);
@@ -750,7 +750,7 @@
                 };
             }
         }
-        function handleRemove(input, k, pos, noCheck) {
+        function handleRemove(input, k, pos, strict) {
             function generalize() {
                 if (opts.keepStatic) {
                     resetMaskSet(!0);
@@ -772,7 +772,7 @@
                 pos.end = pos.begin, pos.begin = pend;
             }
             k == $.inputmask.keyCode.BACKSPACE && pos.end - pos.begin <= 1 ? pos.begin = seekPrevious(pos.begin) : k == $.inputmask.keyCode.DELETE && pos.begin == pos.end && pos.end++, 
-            stripValidPositions(pos.begin, pos.end, noCheck), generalize();
+            stripValidPositions(pos.begin, pos.end, !1, strict), generalize();
             var lvp = getLastValidPosition(pos.begin);
             lvp < pos.begin ? (-1 == lvp && resetMaskSet(), getMaskSet().p = seekNext(lvp)) : getMaskSet().p = pos.begin;
         }

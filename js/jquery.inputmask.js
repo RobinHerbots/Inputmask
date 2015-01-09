@@ -422,7 +422,7 @@
 
                 return true;
             }
-            function stripValidPositions(start, end, nocheck) {
+            function stripValidPositions(start, end, nocheck, strict) {
                 var i, startPos = start, s;
                 if (getMaskSet()["validPositions"][start] != undefined && getMaskSet()["validPositions"][start].input == opts.radixPoint) {
                     end++;
@@ -431,7 +431,7 @@
                 var endPos = end;
                 for (i = startPos; i < end; i++) { //clear selection
                     if (getMaskSet()["validPositions"][i] != undefined) {
-                        if (nocheck === true || opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), opts) != false)
+                        if (nocheck === true || opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), strict, opts) != false)
                             delete getMaskSet()["validPositions"][i];
                     }
                 }
@@ -1306,7 +1306,7 @@
                     };
                 }
             }
-            function handleRemove(input, k, pos, noCheck) {
+            function handleRemove(input, k, pos, strict) {
                 function generalize() {
                     if (opts.keepStatic) {
                         resetMaskSet(true);
@@ -1351,7 +1351,7 @@
                 else if (k == $.inputmask.keyCode.DELETE && pos.begin == pos.end)
                     pos.end++;
 
-                stripValidPositions(pos.begin, pos.end, noCheck);
+                stripValidPositions(pos.begin, pos.end, false, strict);
                 generalize(); //revert the alternation
 
                 var lvp = getLastValidPosition(pos.begin);

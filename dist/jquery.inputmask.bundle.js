@@ -250,11 +250,11 @@
             } else getMaskSet().validPositions[pos] = validTest;
             return !0;
         }
-        function stripValidPositions(start, end, nocheck) {
+        function stripValidPositions(start, end, nocheck, strict) {
             var i, s, startPos = start;
             void 0 != getMaskSet().validPositions[start] && getMaskSet().validPositions[start].input == opts.radixPoint && (end++, 
             startPos++);
-            for (i = startPos; end > i; i++) void 0 != getMaskSet().validPositions[i] && (nocheck === !0 || 0 != opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), opts)) && delete getMaskSet().validPositions[i];
+            for (i = startPos; end > i; i++) void 0 != getMaskSet().validPositions[i] && (nocheck === !0 || 0 != opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), strict, opts)) && delete getMaskSet().validPositions[i];
             for (resetMaskSet(!0), i = startPos + 1; i <= getLastValidPosition(); ) {
                 for (;void 0 != (s = getMaskSet().validPositions[startPos]); ) startPos++;
                 startPos > i && (i = startPos + 1);
@@ -748,7 +748,7 @@
                 };
             }
         }
-        function handleRemove(input, k, pos, noCheck) {
+        function handleRemove(input, k, pos, strict) {
             function generalize() {
                 if (opts.keepStatic) {
                     resetMaskSet(!0);
@@ -770,7 +770,7 @@
                 pos.end = pos.begin, pos.begin = pend;
             }
             k == $.inputmask.keyCode.BACKSPACE && pos.end - pos.begin <= 1 ? pos.begin = seekPrevious(pos.begin) : k == $.inputmask.keyCode.DELETE && pos.begin == pos.end && pos.end++, 
-            stripValidPositions(pos.begin, pos.end, noCheck), generalize();
+            stripValidPositions(pos.begin, pos.end, !1, strict), generalize();
             var lvp = getLastValidPosition(pos.begin);
             lvp < pos.begin ? (-1 == lvp && resetMaskSet(), getMaskSet().p = seekNext(lvp)) : getMaskSet().p = pos.begin;
         }
@@ -2015,10 +2015,10 @@
                 return 0 == opts.digits && (-1 != initialValue.indexOf(".") ? initialValue = initialValue.substring(0, initialValue.indexOf(".")) : -1 != initialValue.indexOf(",") && (initialValue = initialValue.substring(0, initialValue.indexOf(",")))), 
                 initialValue;
             },
-            canClearPosition: function(maskset, position, lvp, opts) {
+            canClearPosition: function(maskset, position, lvp, strict, opts) {
                 var positionInput = maskset.validPositions[position].input, canClear = positionInput != opts.radixPoint && isFinite(positionInput) || position == lvp;
                 if (canClear && isFinite(positionInput)) {
-                    for (var pos = position + 1; maskset.validPositions[pos] && (maskset.validPositions[pos].input == opts.groupSeparator || "0" == maskset.validPositions[pos].input); ) delete maskset.validPositions[pos], 
+                    if (!strict) for (var pos = position + 1; maskset.validPositions[pos] && (maskset.validPositions[pos].input == opts.groupSeparator || "0" == maskset.validPositions[pos].input); ) delete maskset.validPositions[pos], 
                     pos++;
                     var buffer = [];
                     for (var vp in maskset.validPositions) buffer.push(maskset.validPositions[vp].input);
