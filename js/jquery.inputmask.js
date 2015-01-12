@@ -423,7 +423,8 @@
                 return true;
             }
             function stripValidPositions(start, end, nocheck, strict) {
-                var i, startPos = start, s;
+                var i, startPos = start;
+                getMaskSet()["p"] = start; //needed for alternated position after overtype selection
                 if (getMaskSet()["validPositions"][start] != undefined && getMaskSet()["validPositions"][start].input == opts.radixPoint) {
                     end++;
                     startPos++;
@@ -438,7 +439,8 @@
 
                 resetMaskSet(true);
                 for (i = startPos + 1 ; i <= getLastValidPosition() ;) {
-                    while ((s = getMaskSet()["validPositions"][startPos]) != undefined) startPos++;
+                    while (getMaskSet()["validPositions"][startPos] != undefined) startPos++;
+                    var s = getMaskSet()["validPositions"][startPos];
                     if (i < startPos) i = startPos + 1;
                     var t = getMaskSet()["validPositions"][i];
                     if (t != undefined && s == undefined) {
@@ -1352,14 +1354,16 @@
                     pos.end++;
 
                 stripValidPositions(pos.begin, pos.end, false, strict);
-                generalize(); //revert the alternation
+                if (strict !== true) {
+                    generalize(); //revert the alternation
 
-                var lvp = getLastValidPosition(pos.begin);
-                if (lvp < pos.begin) {
-                    if (lvp == -1) resetMaskSet();
-                    getMaskSet()["p"] = seekNext(lvp);
-                } else {
-                    getMaskSet()["p"] = pos.begin;
+                    var lvp = getLastValidPosition(pos.begin);
+                    if (lvp < pos.begin) {
+                        if (lvp == -1) resetMaskSet();
+                        getMaskSet()["p"] = seekNext(lvp);
+                    } else {
+                        getMaskSet()["p"] = pos.begin;
+                    }
                 }
             }
             //postprocessing of the validpositions according to the buffer manipulations
@@ -1437,6 +1441,7 @@
                         if (isSlctn) {
                             getMaskSet()["undoPositions"] = $.extend(true, {}, getMaskSet()["validPositions"]); //init undobuffer for recovery when not valid
                             handleRemove(input, $.inputmask.keyCode.DELETE, pos, true);
+                            pos.begin = getMaskSet()["p"];
                             if (!opts.insertMode) { //preserve some space
                                 opts.insertMode = !opts.insertMode;
                                 setValidPosition(pos.begin, strict);

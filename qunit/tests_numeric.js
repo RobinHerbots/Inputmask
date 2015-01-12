@@ -1121,3 +1121,37 @@ asyncTest("currency alias - 1234.56 => select integer press 1 - babupca", functi
         $("#testmask").remove();
     }, 5);
 });
+
+asyncTest("currency alias - 123.56 => select integer press 1 - babupca", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("currency");
+
+    $("#testmask")[0].focus();
+    $("#testmask").click();
+    setTimeout(function () {
+        $("#testmask").Type("123.56");
+        $.caret($("#testmask"), 0, 7);
+        $("#testmask").SendKey("1");
+        start();
+        equal($("#testmask")[0]._valueGet(), "$ 1.56", "Result " + $("#testmask")[0]._valueGet());
+        $("#testmask").remove();
+    }, 5);
+});
+
+asyncTest("currency alias - 123.56 => select integer press 1 - babupca", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("currency", { prefix: "$" });
+
+    $("#testmask")[0].focus();
+    $("#testmask").click();
+    setTimeout(function () {
+        $("#testmask").Type("123.56");
+        $.caret($("#testmask"), 0, 7);
+        $("#testmask").SendKey("1");
+        start();
+        equal($("#testmask")[0]._valueGet(), "$1.56", "Result " + $("#testmask")[0]._valueGet());
+        $("#testmask").remove();
+    }, 5);
+});

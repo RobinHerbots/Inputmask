@@ -310,7 +310,8 @@ Optional extensions on the jquery.inputmask base
                 return initialValue;
             },
             canClearPosition: function (maskset, position, lvp, strict, opts) {
-                var positionInput = maskset["validPositions"][position].input, canClear = (positionInput != opts.radixPoint && isFinite(positionInput)) || position == lvp,
+                var positionInput = maskset["validPositions"][position].input,
+                    canClear = (positionInput != opts.radixPoint && isFinite(positionInput)) || position == lvp || positionInput == opts.groupSeparator,
                     posOffset = 0;
 
                 if (canClear && isFinite(positionInput)) {
@@ -335,6 +336,7 @@ Optional extensions on the jquery.inputmask base
                             var intPart = parseInt(matchRslt["0"].replace(new RegExp($.inputmask.escapeRegex.call(this, opts.groupSeparator), "g"), ""));
                             if (radixPosition != -1 && intPart < 10 && opts.placeholder.charAt(0) == "0") {
                                 maskset["validPositions"][position].input = "0";
+                                maskset["p"] = opts.prefix.length + 1;
                                 canClear = false;
                             }
                         }
