@@ -346,12 +346,7 @@
                         ndxIntlzr = validPos["locator"].slice();
                         maskTemplate.push(includeInput === true ? validPos["input"] : getPlaceholder(pos, test));
                     } else {
-                        if (minimalPos > pos) {
-                            var testPositions = getTests(pos, ndxIntlzr, pos - 1);
-                            testPos = testPositions[0];
-                        } else {
-                            testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
-                        }
+                        testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
                         test = testPos["match"];
                         ndxIntlzr = testPos["locator"].slice();
                         maskTemplate.push(getPlaceholder(pos, test));
@@ -1348,7 +1343,7 @@
                     }
                 }
 
-                if (k == $.inputmask.keyCode.BACKSPACE && pos.end - pos.begin <= 1)
+                if (k == $.inputmask.keyCode.BACKSPACE && (pos.end - pos.begin < 1 || opts.insertMode == false))
                     pos.begin = seekPrevious(pos.begin);
                 else if (k == $.inputmask.keyCode.DELETE && pos.begin == pos.end)
                     pos.end++;

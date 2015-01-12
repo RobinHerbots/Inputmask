@@ -707,7 +707,7 @@ test("decimal alias set value with val() - kochelmonster", function () {
     $("#testmask").remove();
 });
 
-test("inputmask(\"decimal\") - value=\"123.1\" blur digitsoptional", function () {
+asyncTest("inputmask(\"decimal\") - value=\"123.1\" blur digitsoptional", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("decimal", { digits: 3 });
@@ -715,12 +715,14 @@ test("inputmask(\"decimal\") - value=\"123.1\" blur digitsoptional", function ()
     $("#testmask")[0].focus();
     $("#testmask").Type("123.1");
     $("#testmask").blur();
-
-    equal($("#testmask").val(), "123.1", "Result " + $("#testmask").val());
-    $("#testmask").remove();
+    setTimeout(function () {
+        start();
+        equal($("#testmask").val(), "123.1", "Result " + $("#testmask").val());
+        $("#testmask").remove();
+    }, 0);
 });
 
-test("inputmask(\"decimal\") - value=\"123.1\" blur", function () {
+asyncTest("inputmask(\"decimal\") - value=\"123.1\" blur", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("decimal", { digits: 3, digitsOptional: false });
@@ -728,9 +730,11 @@ test("inputmask(\"decimal\") - value=\"123.1\" blur", function () {
     $("#testmask")[0].focus();
     $("#testmask").Type("123.1");
     $("#testmask").blur();
-
-    equal($("#testmask").val(), "123.100", "Result " + $("#testmask").val());
-    $("#testmask").remove();
+    setTimeout(function () {
+        start();
+        equal($("#testmask").val(), "123.100", "Result " + $("#testmask").val());
+        $("#testmask").remove();
+    }, 0);
 });
 
 asyncTest("currency alias - 200000 => replace 2 to 3", function () {
@@ -750,7 +754,7 @@ asyncTest("currency alias - 200000 => replace 2 to 3", function () {
     }, 5);
 });
 
-test("inputmask(\"integer\") - -0 - laxmikantG", function () {
+asyncTest("inputmask(\"integer\") - -0 - laxmikantG", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("integer", { placeholder: "0" });
@@ -758,8 +762,11 @@ test("inputmask(\"integer\") - -0 - laxmikantG", function () {
     $("#testmask")[0].focus();
     $("#testmask").Type("-0");
     $("#testmask").blur();
-    equal($("#testmask").val(), "", "Result " + $("#testmask").val());
-    $("#testmask").remove();
+    setTimeout(function () {
+        start();
+        equal($("#testmask").val(), "", "Result " + $("#testmask").val());
+        $("#testmask").remove();
+    }, 0);
 });
 
 test("inputmask(\"integer\") - 123- - laxmikantG", function () {
@@ -1131,7 +1138,7 @@ asyncTest("currency alias - 123.56 => select integer press 1 - babupca", functio
     $("#testmask").click();
     setTimeout(function () {
         $("#testmask").Type("123.56");
-        $.caret($("#testmask"), 0, 7);
+        $.caret($("#testmask"), 0, 5);
         $("#testmask").SendKey("1");
         start();
         equal($("#testmask")[0]._valueGet(), "$ 1.56", "Result " + $("#testmask")[0]._valueGet());
@@ -1148,7 +1155,7 @@ asyncTest("currency alias - 123.56 => select integer press 1 - babupca", functio
     $("#testmask").click();
     setTimeout(function () {
         $("#testmask").Type("123.56");
-        $.caret($("#testmask"), 0, 7);
+        $.caret($("#testmask"), 0, 4);
         $("#testmask").SendKey("1");
         start();
         equal($("#testmask")[0]._valueGet(), "$1.56", "Result " + $("#testmask")[0]._valueGet());
