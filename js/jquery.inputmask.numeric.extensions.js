@@ -76,6 +76,8 @@ Optional extensions on the jquery.inputmask base
             suffix: "",
             rightAlign: true,
             decimalProtect: true, //do not allow assumption of decimals input without entering the radixpoint
+            min: undefined, //minimum value
+            max: undefined, //maximum value
             postFormat: function (buffer, pos, reformatOnly, opts) {  //this needs to be removed // this is crap
                 //position overflow corrections
                 pos = pos >= buffer.length ? buffer.length - 1 : (pos < opts.prefix.length ? opts.prefix.length : pos);
