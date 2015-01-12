@@ -139,7 +139,7 @@ Optional extensions on the jquery.inputmask base
 
                 if (opts.autoGroup) {
                     var rslt = opts.postFormat(buffer, caretPos - 1, true, opts);
-                    rslt.caret = rslt.pos + 1;
+                    rslt.caret = caretPos == 0 ? caretPos : rslt.pos + 1;
                     return rslt;
                 }
             },

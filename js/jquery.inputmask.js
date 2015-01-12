@@ -958,11 +958,13 @@
             function writeBuffer(input, buffer, caretPos, event, triggerInputEvent) {
                 if (event && $.isFunction(opts.onBeforeWrite)) {
                     var result = opts.onBeforeWrite.call(input, event, buffer, caretPos, opts);
-                    if (result && result["refreshFromBuffer"]) {
-                        var refresh = result["refreshFromBuffer"];
-                        refreshFromBuffer(refresh === true ? refresh : refresh["start"], refresh["end"], result["buffer"]);
+                    if (result) {
+                        if (result["refreshFromBuffer"]) {
+                            var refresh = result["refreshFromBuffer"];
+                            refreshFromBuffer(refresh === true ? refresh : refresh["start"], refresh["end"], result["buffer"]);
 
-                        resetMaskSet(true);
+                            resetMaskSet(true);
+                        }
                         caretPos = result.caret || caretPos;
                     }
                 }

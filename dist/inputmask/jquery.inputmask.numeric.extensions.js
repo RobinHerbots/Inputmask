@@ -85,7 +85,7 @@
                 }
                 if (opts.autoGroup) {
                     var rslt = opts.postFormat(buffer, caretPos - 1, !0, opts);
-                    return rslt.caret = rslt.pos + 1, rslt;
+                    return rslt.caret = 0 == caretPos ? caretPos : rslt.pos + 1, rslt;
                 }
             },
             regex: {
