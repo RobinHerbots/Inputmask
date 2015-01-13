@@ -779,7 +779,7 @@
             var input = this, $input = $(input), k = e.keyCode, pos = caret(input);
             k == $.inputmask.keyCode.BACKSPACE || k == $.inputmask.keyCode.DELETE || iphone && 127 == k || e.ctrlKey && 88 == k && !isInputEventSupported("cut") ? (e.preventDefault(), 
             88 == k && (undoValue = getBuffer().join("")), handleRemove(input, k, pos), writeBuffer(input, getBuffer(), getMaskSet().p, e, undoValue != getBuffer().join("")), 
-            input._valueGet() == getBufferTemplate().join("") && $input.trigger("cleared"), 
+            input._valueGet() == getBufferTemplate().join("") ? $input.trigger("cleared") : isComplete(getBuffer()) === !0 && $input.trigger("complete"), 
             opts.showTooltip && $input.prop("title", getMaskSet().mask)) : k == $.inputmask.keyCode.END || k == $.inputmask.keyCode.PAGE_DOWN ? setTimeout(function() {
                 var caretPos = seekNext(getLastValidPosition());
                 opts.insertMode || caretPos != getMaskLength() || e.shiftKey || caretPos--, caret(input, e.shiftKey ? pos.begin : caretPos, caretPos);
@@ -1837,6 +1837,8 @@
             suffix: "",
             rightAlign: !0,
             decimalProtect: !0,
+            min: void 0,
+            max: void 0,
             postFormat: function(buffer, pos, reformatOnly, opts) {
                 pos = pos >= buffer.length ? buffer.length - 1 : pos < opts.prefix.length ? opts.prefix.length : pos;
                 var needsRefresh = !1, charAtPos = buffer[pos];
@@ -1941,6 +1943,9 @@
                         remove: matchRslt.index
                     };
                 } else if ("0" === chrs && pos <= matchRslt.index) return !1;
+                return !0;
+            },
+            verifyRange: function() {
                 return !0;
             },
             definitions: {

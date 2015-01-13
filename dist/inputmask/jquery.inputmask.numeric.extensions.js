@@ -44,6 +44,8 @@
             suffix: "",
             rightAlign: !0,
             decimalProtect: !0,
+            min: void 0,
+            max: void 0,
             postFormat: function(buffer, pos, reformatOnly, opts) {
                 pos = pos >= buffer.length ? buffer.length - 1 : pos < opts.prefix.length ? opts.prefix.length : pos;
                 var needsRefresh = !1, charAtPos = buffer[pos];
@@ -148,6 +150,9 @@
                         remove: matchRslt.index
                     };
                 } else if ("0" === chrs && pos <= matchRslt.index) return !1;
+                return !0;
+            },
+            verifyRange: function() {
                 return !0;
             },
             definitions: {

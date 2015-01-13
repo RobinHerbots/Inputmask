@@ -1387,7 +1387,8 @@
                     writeBuffer(input, getBuffer(), getMaskSet()["p"], e, undoValue != getBuffer().join(''));
                     if (input._valueGet() == getBufferTemplate().join(''))
                         $input.trigger('cleared');
-
+                    else if (isComplete(getBuffer()) === true)
+                        $input.trigger("complete");
                     if (opts.showTooltip) { //update tooltip
                         $input.prop("title", getMaskSet()["mask"]);
                     }

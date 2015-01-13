@@ -204,6 +204,9 @@ Optional extensions on the jquery.inputmask base
                 }
                 return true;
             },
+            verifyRange: function (opts) {
+                return true;
+            },
             definitions: {
                 '~': {
                     validator: function (chrs, maskset, pos, strict, opts) {
