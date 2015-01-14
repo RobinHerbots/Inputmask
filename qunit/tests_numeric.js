@@ -1162,3 +1162,32 @@ asyncTest("currency alias - 123.56 => select integer press 1 - babupca", functio
         $("#testmask").remove();
     }, 5);
 });
+
+asyncTest("currency alias - min 1000", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("currency", { min: 1000 });
+
+    $("#testmask")[0].focus();
+    $("#testmask").blur();
+    setTimeout(function () {
+        start();
+        equal($("#testmask")[0]._valueGet(), "$ 1,000.00", "Result " + $("#testmask")[0]._valueGet());
+        $("#testmask").remove();
+    }, 5);
+});
+
+asyncTest("currency alias - max 1000 - type 1234", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("currency", { max: 1000 });
+
+    $("#testmask")[0].focus();
+    $("#testmask").click();
+    setTimeout(function () {
+        $("#testmask").Type("1234");
+        start();
+        equal($("#testmask")[0]._valueGet(), "$ 123.00", "Result " + $("#testmask")[0]._valueGet());
+        $("#testmask").remove();
+    }, 5);
+});

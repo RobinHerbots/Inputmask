@@ -120,10 +120,23 @@ Optional extensions on the jquery.inputmask base
                 var newPos = $.inArray("?", buffer);
                 if (reformatOnly) buffer[newPos] = charAtPos; else buffer.splice(newPos, 1);
 
-                return { pos: newPos, "refreshFromBuffer": needsRefresh };
+                return { pos: newPos, "refreshFromBuffer": needsRefresh, "buffer": buffer };
             },
             onBeforeWrite: function (e, buffer, caretPos, opts) {
                 if (e && e.type == "blur") {
+                    //handle minvalue
+                    var maskedValue = buffer.join(''),
+                     processValue = maskedValue.replace(opts.prefix, "");
+                    processValue = processValue.replace(opts.suffix, "");
+                    processValue = processValue.replace(new RegExp($.inputmask.escapeRegex.call(this, opts.groupSeparator), "g"), "");
+                    processValue = processValue.replace($.inputmask.escapeRegex.call(this, opts.radixPoint), ".");
+
+                    if (isFinite(processValue)) {
+                        if (isFinite(opts.min) && parseFloat(processValue) < parseFloat(opts.min)) {
+                            return opts.postFormat((opts.prefix + opts.min).split(''), 0, true, opts);
+                        }
+                    }
+
                     var tmpBufSplit = opts.radixPoint != "" ? buffer.join('').split(opts.radixPoint) : [buffer.join('')],
                    matchRslt = tmpBufSplit[0].match(opts.regex.integerPart(opts)),
                    matchRsltDigits = tmpBufSplit.length == 2 ? tmpBufSplit[1].match(opts.regex.integerNPart(opts)) : undefined;
@@ -204,8 +217,22 @@ Optional extensions on the jquery.inputmask base
                 }
                 return true;
             },
-            verifyRange: function (opts) {
-                return true;
+            postValidation: function (buffer, opts) {
+                //handle maxvalue
+                var isValid = true,
+                maskedValue = buffer.join(''),
+                processValue = maskedValue.replace(opts.prefix, "");
+                processValue = processValue.replace(opts.suffix, "");
+                processValue = processValue.replace(new RegExp($.inputmask.escapeRegex.call(this, opts.groupSeparator), "g"), "");
+                processValue = processValue.replace($.inputmask.escapeRegex.call(this, opts.radixPoint), ".");
+
+                if (isFinite(processValue)) {
+                    if (isFinite(opts.max)) {
+                        isValid = parseFloat(processValue) <= parseFloat(opts.max);
+                    }
+                }
+
+                return isValid;
             },
             definitions: {
                 '~': {

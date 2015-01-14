@@ -682,7 +682,7 @@ When passing multiple masks (an array of masks) keepStatic is automatically set 
 
 With this call-in (hook) you can override the default implementation of the isComplete function.  
 Args => buffer, opts   
-Return => true || false
+Return => true|false
 
 ```javascript
 $(selector).inputmask("Regex", { 
@@ -692,6 +692,15 @@ $(selector).inputmask("Regex", {
 	}
 });
 ```
+#### canClearPosition
+Hook to alter the clear behavior in the stripValidPositions  
+Args => maskset, position, lastValidPosition, opts  
+Return => true|false
+
+#### postValidation
+Hook to postValidate the result from isValid.  Usefull for validating the entry as a whole.  Args => buffer, opts  
+Return => true|false
+
 
 ##Functions
 
@@ -761,8 +770,6 @@ The metadata of the actual mask provided in the mask definitions can be obtained
 ```javascript
 $(selector).inputmask("getmetadata");
 ```
-
-#### _detectScope
 
 ##General
 

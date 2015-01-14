@@ -477,8 +477,8 @@
             strict = strict === !0;
             for (var buffer = getBuffer(), pndx = pos - 1; pndx > -1 && !getMaskSet().validPositions[pndx]; pndx--) ;
             for (pndx++; pos > pndx; pndx++) void 0 == getMaskSet().validPositions[pndx] && ((!isMask(pndx) || buffer[pndx] != getPlaceholder(pndx)) && getTests(pndx).length > 1 || buffer[pndx] == opts.radixPoint || "0" == buffer[pndx] && $.inArray(opts.radixPoint, buffer) < pndx) && _isValid(pndx, buffer[pndx], !0);
-            var maskPos = pos, result = !1;
-            if (fromSetValid && maskPos >= getMaskLength() && resetMaskSet(!0), maskPos < getMaskLength() && (result = _isValid(maskPos, c, strict, fromSetValid), 
+            var maskPos = pos, result = !1, positionsClone = $.extend(!0, {}, getMaskSet().validPositions);
+            if (maskPos < getMaskLength() && (result = _isValid(maskPos, c, strict, fromSetValid), 
             !strict && result === !1)) {
                 var currentPosValid = getMaskSet().validPositions[maskPos];
                 if (!currentPosValid || null != currentPosValid.match.fn || currentPosValid.match.def != c && c != opts.skipOptionalPartCharacter) {
@@ -491,10 +491,16 @@
                     caret: seekNext(maskPos)
                 };
             }
-            return result === !1 && opts.keepStatic && isComplete(buffer) && (result = alternate(pos, c, strict, fromSetValid)), 
+            if (result === !1 && opts.keepStatic && isComplete(buffer) && (result = alternate(pos, c, strict, fromSetValid)), 
             result === !0 && (result = {
                 pos: maskPos
-            }), result;
+            }), $.isFunction(opts.postValidation) && 0 != result && !strict) {
+                resetMaskSet(!0);
+                var postValidResult = opts.postValidation(getBuffer(), opts);
+                if (!postValidResult) return getMaskSet().validPositions = $.extend(!0, {}, positionsClone), 
+                !1;
+            }
+            return result;
         }
         function isMask(pos) {
             var test = getTest(pos);
@@ -530,7 +536,7 @@
                     if (result.refreshFromBuffer) {
                         var refresh = result.refreshFromBuffer;
                         refreshFromBuffer(refresh === !0 ? refresh : refresh.start, refresh.end, result.buffer), 
-                        resetMaskSet(!0);
+                        resetMaskSet(!0), buffer = getBuffer();
                     }
                     caretPos = result.caret || caretPos;
                 }
@@ -1108,7 +1114,8 @@
                 },
                 ignorables: [ 8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123 ],
                 isComplete: void 0,
-                canClearPosition: $.noop
+                canClearPosition: $.noop,
+                postValidation: void 0
             },
             keyCode: {
                 ALT: 18,
@@ -1862,11 +1869,16 @@
                 var newPos = $.inArray("?", buffer);
                 return reformatOnly ? buffer[newPos] = charAtPos : buffer.splice(newPos, 1), {
                     pos: newPos,
-                    refreshFromBuffer: needsRefresh
+                    refreshFromBuffer: needsRefresh,
+                    buffer: buffer
                 };
             },
             onBeforeWrite: function(e, buffer, caretPos, opts) {
                 if (e && "blur" == e.type) {
+                    var maskedValue = buffer.join(""), processValue = maskedValue.replace(opts.prefix, "");
+                    if (processValue = processValue.replace(opts.suffix, ""), processValue = processValue.replace(new RegExp($.inputmask.escapeRegex.call(this, opts.groupSeparator), "g"), ""), 
+                    processValue = processValue.replace($.inputmask.escapeRegex.call(this, opts.radixPoint), "."), 
+                    isFinite(processValue) && isFinite(opts.min) && parseFloat(processValue) < parseFloat(opts.min)) return opts.postFormat((opts.prefix + opts.min).split(""), 0, !0, opts);
                     var tmpBufSplit = "" != opts.radixPoint ? buffer.join("").split(opts.radixPoint) : [ buffer.join("") ], matchRslt = tmpBufSplit[0].match(opts.regex.integerPart(opts)), matchRsltDigits = 2 == tmpBufSplit.length ? tmpBufSplit[1].match(opts.regex.integerNPart(opts)) : void 0;
                     matchRslt && "-0" == matchRslt[0] && (void 0 == matchRsltDigits || matchRsltDigits[0].match(/^0+$/)) && buffer.splice(matchRslt.index, 1);
                     var radixPosition = $.inArray(opts.radixPoint, buffer);
@@ -1945,8 +1957,12 @@
                 } else if ("0" === chrs && pos <= matchRslt.index) return !1;
                 return !0;
             },
-            verifyRange: function() {
-                return !0;
+            postValidation: function(buffer, opts) {
+                var isValid = !0, maskedValue = buffer.join(""), processValue = maskedValue.replace(opts.prefix, "");
+                return processValue = processValue.replace(opts.suffix, ""), processValue = processValue.replace(new RegExp($.inputmask.escapeRegex.call(this, opts.groupSeparator), "g"), ""), 
+                processValue = processValue.replace($.inputmask.escapeRegex.call(this, opts.radixPoint), "."), 
+                isFinite(processValue) && isFinite(opts.max) && (isValid = parseFloat(processValue) <= parseFloat(opts.max)), 
+                isValid;
             },
             definitions: {
                 "~": {

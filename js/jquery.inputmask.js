@@ -885,12 +885,13 @@
                     }
                 }
 
-                var maskPos = pos;
-                var result = false;
+                var maskPos = pos,
+                    result = false,
+                    positionsClone = $.extend(true, {}, getMaskSet()["validPositions"]); //clone the currentPositions
 
-                if (fromSetValid && maskPos >= getMaskLength()) {
-                    resetMaskSet(true); //masklenght can be altered on the process => reset to get the actual length
-                }
+                //if (fromSetValid && maskPos >= getMaskLength()) {
+                //    resetMaskSet(true); //masklenght can be altered on the process => reset to get the actual length
+                //}
                 if (maskPos < getMaskLength()) {
                     result = _isValid(maskPos, c, strict, fromSetValid);
                     if (!strict && result === false) {
@@ -913,6 +914,16 @@
                     result = alternate(pos, c, strict, fromSetValid);
                 }
                 if (result === true) result = { "pos": maskPos };
+
+                if ($.isFunction(opts.postValidation) && result != false && !strict) {
+                    resetMaskSet(true);
+                    var postValidResult = opts.postValidation(getBuffer(), opts);
+                    if (!postValidResult) {
+                        getMaskSet()["validPositions"] = $.extend(true, {}, positionsClone); //revert validation changes
+                        return false;
+                    }
+                }
+
                 return result;
             }
             function isMask(pos) {
@@ -964,6 +975,7 @@
                             refreshFromBuffer(refresh === true ? refresh : refresh["start"], refresh["end"], result["buffer"]);
 
                             resetMaskSet(true);
+                            buffer = getBuffer();
                         }
                         caretPos = result.caret || caretPos;
                     }
@@ -1994,7 +2006,8 @@
                 //specify keyCodes which should not be considered in the keypress event, otherwise the preventDefault will stop their default behavior especially in FF
                 ignorables: [8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123],
                 isComplete: undefined, //override for isComplete - args => buffer, opts - return true || false
-                canClearPosition: $.noop //hook to alter the clear behavior in the stripValidPositions args => maskset, position, lastValidPosition, opts => return true|false
+                canClearPosition: $.noop, //hook to alter the clear behavior in the stripValidPositions args => maskset, position, lastValidPosition, opts => return true|false
+                postValidation: undefined //hook to postValidate the result from isValid.  Usefull for validating the entry as a whole.  args => buffer, opts => return true/false
             },
             keyCode: {
                 ALT: 18, BACKSPACE: 8, CAPS_LOCK: 20, COMMA: 188, COMMAND: 91, COMMAND_LEFT: 91, COMMAND_RIGHT: 93, CONTROL: 17, DELETE: 46, DOWN: 40, END: 35, ENTER: 13, ESCAPE: 27, HOME: 36, INSERT: 45, LEFT: 37, MENU: 93, NUMPAD_ADD: 107, NUMPAD_DECIMAL: 110, NUMPAD_DIVIDE: 111, NUMPAD_ENTER: 108,
