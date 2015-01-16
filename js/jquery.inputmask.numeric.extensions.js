@@ -56,6 +56,7 @@ Optional extensions on the jquery.inputmask base
                     else mask += (opts.decimalProtect ? ":" : opts.radixPoint) + ";{" + opts.digits + "}";
                 }
                 mask += autoEscape(opts.suffix);
+                mask += "[-]";
 
                 opts.greedy = false; //enforce greedy false
                 return mask;
@@ -71,6 +72,10 @@ Optional extensions on the jquery.inputmask base
             autoGroup: false,
             allowPlus: true,
             allowMinus: true,
+            negationSymbol: {
+                front: "-", //"("
+                back: "" //")"
+            },
             integerDigits: "+", //number of integerDigits
             prefix: "",
             suffix: "",
@@ -159,20 +164,20 @@ Optional extensions on the jquery.inputmask base
                 }
             },
             regex: {
-                integerPart: function (opts) { return new RegExp('[-\+]?\\d+'); },
+                integerPart: function (opts) { return new RegExp('[' + opts.negationSymbol.front + '\+]?\\d+'); },
                 integerNPart: function (opts) { return new RegExp('[\\d' + $.inputmask.escapeRegex.call(this, opts.groupSeparator) + ']+'); }
             },
             signHandler: function (chrs, maskset, pos, strict, opts) {
-                if (!strict && (opts.allowMinus && chrs === "-" || opts.allowPlus && chrs === "+")) {
+                if (!strict && (opts.allowMinus && chrs === "-") || (opts.allowPlus && chrs === "+")) {
                     var matchRslt = maskset.buffer.join('').match(opts.regex.integerPart(opts));
 
                     if (matchRslt && matchRslt[0].length > 0) {
-                        if (maskset.buffer[matchRslt.index] == (chrs === "-" ? "+" : "-")) {
-                            return { "pos": matchRslt.index, "c": chrs, "remove": matchRslt.index, "caret": pos };
-                        } else if (maskset.buffer[matchRslt.index] == (chrs === "-" ? "-" : "+")) {
+                        if (maskset.buffer[matchRslt.index] == (chrs === "-" ? "+" : opts.negationSymbol.front)) {
+                            return { "pos": matchRslt.index, "c": chrs === "-" ? opts.negationSymbol.front : "+", "remove": matchRslt.index, "caret": pos };
+                        } else if (maskset.buffer[matchRslt.index] == (chrs === "-" ? opts.negationSymbol.front : "+")) {
                             return { "remove": matchRslt.index, "caret": pos - 1 };
                         } else {
-                            return { "pos": matchRslt.index, "c": chrs, "caret": pos + 1 };
+                            return { "pos": matchRslt.index, "c": chrs === "-" ? opts.negationSymbol.front : "+", "caret": pos + 1 };
                         }
                     }
                 }
@@ -263,8 +268,20 @@ Optional extensions on the jquery.inputmask base
                 '+': {
                     validator: function (chrs, maskset, pos, strict, opts) {
                         var isValid = opts.signHandler(chrs, maskset, pos, strict, opts);
-                        if (!isValid) {
-                            isValid = (opts.allowMinus && chrs == "-") || (opts.allowPlus && chrs == "+");
+                        if (!isValid && ((strict && opts.allowMinus && chrs === opts.negationSymbol.front) || (opts.allowMinus && chrs == "-") || (opts.allowPlus && chrs == "+"))) {
+                            isValid = true;
+                        }
+                        return isValid;
+                    },
+                    cardinality: 1,
+                    prevalidator: null,
+                    placeholder: ''
+                },
+                '-': {
+                    validator: function (chrs, maskset, pos, strict, opts) {
+                        var isValid = opts.signHandler(chrs, maskset, pos, strict, opts);
+                        if (!isValid && strict && opts.allowMinus && chrs === opts.negationSymbol.back) {
+                            isValid = true;
                         }
                         return isValid;
                     },
@@ -347,11 +364,14 @@ Optional extensions on the jquery.inputmask base
                     posOffset = 0;
 
                 if (canClear && isFinite(positionInput)) {
+                    var matchRslt = maskset["buffer"].join('').substr(0, position).match(opts.regex.integerNPart(opts));
                     if (!strict) {
-                        var pos = position + 1;
-                        while (maskset["validPositions"][pos] && (maskset["validPositions"][pos].input == opts.groupSeparator || maskset["validPositions"][pos].input == "0")) {
-                            delete maskset["validPositions"][pos];
-                            pos++;
+                        var pos = position + 1, isNull = matchRslt == null || parseInt(matchRslt["0"].replace(new RegExp($.inputmask.escapeRegex.call(this, opts.groupSeparator), "g"), "")) == 0;
+                        if (isNull) {
+                            while (maskset["validPositions"][pos] && (maskset["validPositions"][pos].input == opts.groupSeparator || maskset["validPositions"][pos].input == "0")) {
+                                delete maskset["validPositions"][pos];
+                                pos++;
+                            }
                         }
                     }
 
@@ -360,7 +380,7 @@ Optional extensions on the jquery.inputmask base
                     for (var vp in maskset.validPositions) {
                         buffer.push(maskset.validPositions[vp].input);
                     }
-                    var matchRslt = buffer.join('').match(opts.regex.integerNPart(opts)), radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
+                    matchRslt = buffer.join('').match(opts.regex.integerNPart(opts)), radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
                     if (matchRslt && (radixPosition == -1 || position <= radixPosition)) {
                         if (matchRslt["0"].indexOf("0") == 0) {
                             canClear = matchRslt.index != position || radixPosition == -1;

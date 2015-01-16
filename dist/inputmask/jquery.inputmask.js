@@ -499,7 +499,7 @@
             }), $.isFunction(opts.postValidation) && 0 != result && !strict) {
                 resetMaskSet(!0);
                 var postValidResult = opts.postValidation(getBuffer(), opts);
-                if (!postValidResult) return getMaskSet().validPositions = $.extend(!0, {}, positionsClone), 
+                if (!postValidResult) return resetMaskSet(!0), getMaskSet().validPositions = $.extend(!0, {}, positionsClone), 
                 !1;
             }
             return result;

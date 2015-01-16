@@ -919,6 +919,7 @@
                     resetMaskSet(true);
                     var postValidResult = opts.postValidation(getBuffer(), opts);
                     if (!postValidResult) {
+                        resetMaskSet(true);
                         getMaskSet()["validPositions"] = $.extend(true, {}, positionsClone); //revert validation changes
                         return false;
                     }

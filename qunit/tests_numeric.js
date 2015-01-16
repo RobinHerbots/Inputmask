@@ -1191,3 +1191,31 @@ asyncTest("currency alias - max 1000 - type 1234", function () {
         $("#testmask").remove();
     }, 5);
 });
+
+test("currency alias - type 1010 delete first 1 - FilipeZhou", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("currency");
+
+    $("#testmask")[0].focus();
+    $("#testmask").click();
+    $("#testmask").Type("1010");
+    $.caret($("#testmask"), 3);
+    $("#testmask").SendKey($.inputmask.keyCode.BACKSPACE);
+    equal($("#testmask")[0]._valueGet(), "$ 10.00", "Result " + $("#testmask")[0]._valueGet());
+    $("#testmask").remove();
+});
+
+test("currency alias - type 1010 delete middle 1 - FilipeZhou", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("currency");
+
+    $("#testmask")[0].focus();
+    $("#testmask").click();
+    $("#testmask").Type("1010");
+    $.caret($("#testmask"), 6);
+    $("#testmask").SendKey($.inputmask.keyCode.BACKSPACE);
+    equal($("#testmask")[0]._valueGet(), "$ 100.00", "Result " + $("#testmask")[0]._valueGet());
+    $("#testmask").remove();
+});
