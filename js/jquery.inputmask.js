@@ -1413,7 +1413,7 @@
                     }, 0);
                 } else if ((k == $.inputmask.keyCode.HOME && !e.shiftKey) || k == $.inputmask.keyCode.PAGE_UP) { //Home or page_up
                     caret(input, 0, e.shiftKey ? pos.begin : 0);
-                } else if ((opts.undoOnEscape && k == $.inputmask.keyCode.ESCAPE) || (k == 90 && e.ctrlKey)) { //escape && undo
+                } else if (((opts.undoOnEscape && k == $.inputmask.keyCode.ESCAPE) || (k == 90 && e.ctrlKey)) && e.altKey !== true ) { //escape && undo && #762
                     checkVal(input, true, false, undoValue.split(''));
                     $input.click();
                 } else if (k == $.inputmask.keyCode.INSERT && !(e.shiftKey || e.ctrlKey)) { //insert
@@ -1436,9 +1436,9 @@
                 ignorable = $.inArray(k, opts.ignorables) != -1;
             }
             function keypressEvent(e, checkval, writeOut, strict, ndx) {
-                var input = this, $input = $(input);
+                var input = this, $input = $(input),
+                    k = e.which || e.charCode || e.keyCode;
 
-                var k = e.which || e.charCode || e.keyCode;
                 if (checkval !== true && (!(e.ctrlKey && e.altKey) && (e.ctrlKey || e.metaKey || ignorable))) {
                     return true;
                 } else {
