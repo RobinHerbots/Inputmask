@@ -11,11 +11,7 @@
     "url": "https://github.com/RobinHerbots/jquery.inputmask.git"
   },
   "keywords": [
-    "input",
-    "form",
-    "inputmask",
-    "mask",
-    "jquery"
+    "jquery", "plugins", "input", "form", "inputmask", "mask"
   ],
   "author": {
     "name": "Robin Herbots",
