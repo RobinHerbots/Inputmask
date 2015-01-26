@@ -1547,7 +1547,7 @@
                 }
 
                 var pasteValue = inputValue;
-                if($.isFunction(opts.onBeforePaste)) {
+                if ($.isFunction(opts.onBeforePaste)) {
                     pasteValue = opts.onBeforePaste.call(input, inputValue, opts);
                     if (pasteValue === false) {
                         e.preventDefault();
