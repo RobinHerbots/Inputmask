@@ -69,7 +69,7 @@ module.exports = function (grunt) {
         },
         bump: {
             options: {
-                files: ['package.json', 'bower.json', 'jquery.inputmask.jquery.json'],
+                files: ['package.json', 'bower.json', 'composer.json'],
                 updateConfigs: ['pkg'],
                 commit: false,
                 createTag: false,
