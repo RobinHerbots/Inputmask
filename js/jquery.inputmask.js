@@ -1546,7 +1546,16 @@
                     }
                 }
 
-                var pasteValue = $.isFunction(opts.onBeforePaste) ? (opts.onBeforePaste.call(input, inputValue, opts) || inputValue) : inputValue;
+                var pasteValue = inputValue;
+                if($.isFunction(opts.onBeforePaste)) {
+                    pasteValue = opts.onBeforePaste.call(input, inputValue, opts);
+                    if (pasteValue === false) {
+                        e.preventDefault();
+                        return false;
+                    }
+                    if (!pasteValue)
+                        pasteValue = inputValue;
+                }
                 checkVal(input, true, false, isRTL ? pasteValue.split('').reverse() : pasteValue.split(''));
                 $input.click();
                 if (isComplete(getBuffer()) === true)
