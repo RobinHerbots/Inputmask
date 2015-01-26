@@ -14,7 +14,8 @@
     "input",
     "form",
     "inputmask",
-    "mask"
+    "mask",
+    "jquery"
   ],
   "author": {
     "name": "Robin Herbots",
