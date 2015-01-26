@@ -324,7 +324,7 @@ Optional extensions on the jquery.inputmask base
                 var processValue = maskedValue.replace(opts.prefix, "");
                 processValue = processValue.replace(opts.suffix, "");
                 processValue = processValue.replace(new RegExp($.inputmask.escapeRegex.call(this, opts.groupSeparator), "g"), "");
-                processValue = processValue.replace($.inputmask.escapeRegex.call(this, opts.radixPoint), ".");
+                if (opts.radixPoint === ",") processValue = processValue.replace($.inputmask.escapeRegex.call(this, opts.radixPoint), ".");
                 return isFinite(processValue);
             },
             onBeforeMask: function (initialValue, opts) {
@@ -360,7 +360,11 @@ Optional extensions on the jquery.inputmask base
             },
             canClearPosition: function (maskset, position, lvp, strict, opts) {
                 var positionInput = maskset["validPositions"][position].input,
-                    canClear = (positionInput != opts.radixPoint && isFinite(positionInput)) || position == lvp || positionInput == opts.groupSeparator,
+                    canClear = (positionInput != opts.radixPoint && isFinite(positionInput)) ||
+                                position == lvp ||
+                                positionInput == opts.groupSeparator ||
+                                positionInput == opts.negationSymbol.front ||
+                                positionInput == opts.negationSymbol.back,
                     posOffset = 0;
 
                 if (canClear && isFinite(positionInput)) {
@@ -380,7 +384,8 @@ Optional extensions on the jquery.inputmask base
                     for (var vp in maskset.validPositions) {
                         buffer.push(maskset.validPositions[vp].input);
                     }
-                    matchRslt = buffer.join('').match(opts.regex.integerNPart(opts)), radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
+                    matchRslt = buffer.join('').match(opts.regex.integerNPart(opts));
+                    var radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
                     if (matchRslt && (radixPosition == -1 || position <= radixPosition)) {
                         if (matchRslt["0"].indexOf("0") == 0) {
                             canClear = matchRslt.index != position || radixPosition == -1;

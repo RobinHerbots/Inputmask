@@ -1219,3 +1219,17 @@ test("currency alias - type 1010 delete middle 1 - FilipeZhou", function () {
     equal($("#testmask")[0]._valueGet(), "$ 100.00", "Result " + $("#testmask")[0]._valueGet());
     $("#testmask").remove();
 });
+
+test("currency alias - type -1234 delete -", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("currency");
+
+    $("#testmask")[0].focus();
+    $("#testmask").click();
+    $("#testmask").Type("-1234");
+    $.caret($("#testmask"), 0);
+    $("#testmask").SendKey($.inputmask.keyCode.DELETE);
+    equal($("#testmask")[0]._valueGet(), "$ 1,234.00", "Result " + $("#testmask")[0]._valueGet());
+    $("#testmask").remove();
+});

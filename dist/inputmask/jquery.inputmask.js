@@ -776,7 +776,7 @@
                 var pend = pos.end;
                 pos.end = pos.begin, pos.begin = pend;
             }
-            if (k == $.inputmask.keyCode.BACKSPACE && (pos.end - pos.begin < 1 || 0 == opts.insertMode) ? pos.begin = seekPrevious(pos.begin) : k == $.inputmask.keyCode.DELETE && pos.begin == pos.end && pos.end++, 
+            if (k == $.inputmask.keyCode.BACKSPACE && (pos.end - pos.begin < 1 || 0 == opts.insertMode) ? pos.begin = seekPrevious(pos.begin) : k == $.inputmask.keyCode.DELETE && pos.begin == pos.end && (pos.end = isMask(pos.end) ? pos.end + 1 : seekNext(pos.end) + 1), 
             stripValidPositions(pos.begin, pos.end, !1, strict), strict !== !0) {
                 generalize();
                 var lvp = getLastValidPosition(pos.begin);

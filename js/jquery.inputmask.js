@@ -1361,7 +1361,7 @@
                 if (k == $.inputmask.keyCode.BACKSPACE && (pos.end - pos.begin < 1 || opts.insertMode == false))
                     pos.begin = seekPrevious(pos.begin);
                 else if (k == $.inputmask.keyCode.DELETE && pos.begin == pos.end)
-                    pos.end++;
+                    pos.end = isMask(pos.end) ? pos.end + 1 : seekNext(pos.end) + 1;
 
                 stripValidPositions(pos.begin, pos.end, false, strict);
                 if (strict !== true) {
@@ -1413,7 +1413,7 @@
                     }, 0);
                 } else if ((k == $.inputmask.keyCode.HOME && !e.shiftKey) || k == $.inputmask.keyCode.PAGE_UP) { //Home or page_up
                     caret(input, 0, e.shiftKey ? pos.begin : 0);
-                } else if (((opts.undoOnEscape && k == $.inputmask.keyCode.ESCAPE) || (k == 90 && e.ctrlKey)) && e.altKey !== true ) { //escape && undo && #762
+                } else if (((opts.undoOnEscape && k == $.inputmask.keyCode.ESCAPE) || (k == 90 && e.ctrlKey)) && e.altKey !== true) { //escape && undo && #762
                     checkVal(input, true, false, undoValue.split(''));
                     $input.click();
                 } else if (k == $.inputmask.keyCode.INSERT && !(e.shiftKey || e.ctrlKey)) { //insert
