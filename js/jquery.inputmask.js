@@ -1682,8 +1682,10 @@
                             var nptValue = input._valueGet(), buffer = getBuffer().slice();
                             firstClick = true;
                             if (undoValue != buffer.join('')) {
-                                $input.change();
-                                undoValue = buffer.join('');
+                                setTimeout(function () { //change event should be triggered after the other buffer manipulations on blur
+                                    $input.change();
+                                    undoValue = buffer.join('');
+                                }, 0);
                             }
                             if (nptValue != '') {
                                 if (opts.clearMaskOnLostFocus) {
