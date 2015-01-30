@@ -496,10 +496,10 @@ The alias to use.
    $("#date").inputmask({ alias: "email"});
 ```
 
-#### onKeyUp
+#### onKeyDown
 Callback to implement autocomplete on certain keys for example
 
-Function arguments: buffer, opts  
+Function arguments: event, buffer, caretPos, opts  
 Function return: 
 
 #### onBeforeMask
@@ -554,7 +554,7 @@ You can also disable pasting a value by returning false in the onBeforePaste cal
 Executes before writing to the masked element 
 
 Use this to do some extra processing of the input.
-This can be usefull when implementing an alias, ex. decimal alias, autofill the digits when pressing tab.
+This can be usefull when implementing an alias, ex. decimal alias, autofill the digits when leaving the inputfield.
  
 Function arguments: event, buffer, caretPos, opts  
 Function return: command object (see Define custom definitions)

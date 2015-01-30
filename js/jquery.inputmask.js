@@ -1432,7 +1432,7 @@
                         }, 0);
                     }
                 }
-
+                opts.onKeyDown.call(this, e, getBuffer(), caret(input).begin, opts);
                 ignorable = $.inArray(k, opts.ignorables) != -1;
             }
             function keypressEvent(e, checkval, writeOut, strict, ndx) {
@@ -1522,10 +1522,6 @@
                         e.preventDefault();
                     }
                 }
-            }
-            function keyupEvent(e) {
-                var $input = $(this), input = this, k = e.keyCode, buffer = getBuffer();
-                opts.onKeyUp.call(this, e, buffer, opts);
             }
             function pasteEvent(e) {
                 var input = this, $input = $(input), inputValue = input._valueGet(true), caretPos = caret(input);
@@ -1781,8 +1777,7 @@
                     ).bind('cleared.inputmask', opts.oncleared);
 
                     $el.bind("keydown.inputmask", keydownEvent
-                    ).bind("keypress.inputmask", keypressEvent
-                    ).bind("keyup.inputmask", keyupEvent);
+                    ).bind("keypress.inputmask", keypressEvent);
 
                     if (!androidfirefox) {
                         $el.bind("compositionstart.inputmask", compositionStartEvent
@@ -1979,7 +1974,7 @@
                 clearIncomplete: false, //clear the incomplete input on blur
                 aliases: {}, //aliases definitions => see jquery.inputmask.extensions.js
                 alias: null,
-                onKeyUp: $.noop, //callback to implement autocomplete on certain keys for example
+                onKeyDown: $.noop, //callback to implement autocomplete on certain keys for example. args => event, buffer, caretPos, opts
                 onBeforeMask: undefined, //executes before masking the initial value to allow preprocessing of the initial value.  args => initialValue, opts => return processedValue
                 onBeforePaste: undefined, //executes before masking the pasted value to allow preprocessing of the pasted value.  args => pastedValue, opts => return processedValue
                 onBeforeWrite: undefined, //executes before writing to the masked element. args => event, opts
