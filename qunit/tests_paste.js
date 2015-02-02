@@ -234,3 +234,17 @@ asyncTest("currency ~ 000.02 - sjk07", function () {
         $("#testmask").remove();
     }, 0);
 });
+
+asyncTest("02.999.999 ~ paste 02.024.900 - tnavarra", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("02.999.999");
+    $("#testmask")[0].focus();
+    $("#testmask").paste("02.024.900");
+
+    setTimeout(function () {
+        equal($("#testmask").val(), "02.024.900", "Result " + $("#testmask").val());
+        start();
+        $("#testmask").remove();
+    }, 0);
+});

@@ -118,3 +118,23 @@ test("YoussefTaghlabi isValid(\"12,345.67\", { alias: \"decimal\" }", function (
     });
     equal(isValid, true, "Result " + isValid);
 });
+
+test("thomstark isValid(\"12lbs\", {mask:\"99[9]lb\\s\", greedy:false, skipOptionalPartCharacter: \"\", \"clearIncomplete\":true}", function () {
+    var isValid = $.inputmask.isValid("12lbs", {mask:"99[9]lb\\s", greedy:false, skipOptionalPartCharacter: "", "clearIncomplete":true});
+    equal(isValid, true, "Result " + isValid);
+});
+
+test("thomstark isValid(\"1'2\"\", {mask:\"9'9[9]\"\", greedy:false, skipOptionalPartCharacter: \"\", \"clearIncomplete\":true}", function () {
+    var isValid = $.inputmask.isValid("1'2\"", {mask:"9'9[9]\"", greedy:false, skipOptionalPartCharacter: "", "clearIncomplete":true});
+    equal(isValid, true, "Result " + isValid);
+});
+
+test("thomstark isValid(\"12lbs\", {mask:\"99{1,2}lb\\s\", greedy:false, skipOptionalPartCharacter: \"\", \"clearIncomplete\":true}", function () {
+    var isValid = $.inputmask.isValid("12lbs", { mask: "99{1,2}lb\\s", greedy: false, skipOptionalPartCharacter: "", "clearIncomplete": true });
+    equal(isValid, true, "Result " + isValid);
+});
+
+test("thomstark isValid(\"9'9{1,2}\", {mask:\"9'9[9]\"\", greedy:false, skipOptionalPartCharacter: \"\", \"clearIncomplete\":true}", function () {
+    var isValid = $.inputmask.isValid("1'2\"", { mask: "9'9{1,2}\"", greedy: false, skipOptionalPartCharacter: "", "clearIncomplete": true });
+    equal(isValid, true, "Result " + isValid);
+});

@@ -1010,17 +1010,18 @@
 
                     return isMatch;
                 }
-                var inputValue = nptvl != undefined ? nptvl.slice() : input._valueGet().split('');
+                var inputValue = nptvl != undefined ? nptvl.slice() : input._valueGet().split(''), charCodes = "", initialNdx = 0;
                 resetMaskSet();
                 getMaskSet()["p"] = seekNext(-1);
                 if (writeOut) input._valueSet(""); //initial clear
 
                 var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(''), matches = inputValue.join('').match(new RegExp(escapeRegex(staticInput), "g"));
                 if (matches && matches.length > 0) {
-                    inputValue.splice(0, staticInput.length * matches.length);
+                    inputValue.splice(0, matches.length * staticInput.length);
+                    initialNdx = seekNext(initialNdx);
                 }
 
-                var charCodes = "", initialNdx = 0;
+
                 $.each(inputValue, function (ndx, charCode) {
                     var keypress = $.Event("keypress");
                     keypress.which = charCode.charCodeAt(0);
@@ -1136,15 +1137,13 @@
                 if (opts.repeat == "*") return undefined;
                 var complete = false, lrp = determineLastRequiredPosition(true), aml = seekPrevious(lrp["l"]), lvp = getLastValidPosition();
 
-                if (lvp == aml) {
-                    if (lrp["def"] == undefined || lrp["def"].newBlockMarker || lrp["def"].optionalQuantifier) {
-                        complete = true;
-                        for (var i = 0; i <= aml; i++) {
-                            var mask = isMask(i);
-                            if ((mask && (buffer[i] == undefined || buffer[i] == getPlaceholder(i))) || (!mask && buffer[i] != getPlaceholder(i))) {
-                                complete = false;
-                                break;
-                            }
+                if (lrp["def"] == undefined || lrp["def"].newBlockMarker || lrp["def"].optionalQuantifier) {
+                    complete = true;
+                    for (var i = 0; i <= aml; i++) {
+                        var mask = isMask(i);
+                        if ((mask && (buffer[i] == undefined || buffer[i] == getPlaceholder(i))) || (!mask && buffer[i] != getPlaceholder(i))) {
+                            complete = false;
+                            break;
                         }
                     }
                 }
