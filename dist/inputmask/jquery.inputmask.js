@@ -640,7 +640,7 @@
                 complete = !0;
                 for (var i = 0; aml >= i; i++) {
                     var mask = isMask(i);
-                    if (mask && (void 0 == buffer[i] || buffer[i] == getPlaceholder(i)) || !mask && buffer[i] != getPlaceholder(i)) {
+                    if (mask && void 0 == getMaskSet().validPositions[i] || !mask && buffer[i] != getPlaceholder(i)) {
                         complete = !1;
                         break;
                     }

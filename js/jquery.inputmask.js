@@ -1141,7 +1141,7 @@
                     complete = true;
                     for (var i = 0; i <= aml; i++) {
                         var mask = isMask(i);
-                        if ((mask && (buffer[i] == undefined || buffer[i] == getPlaceholder(i))) || (!mask && buffer[i] != getPlaceholder(i))) {
+                        if ((mask && getMaskSet()["validPositions"][i] == undefined) || (!mask && buffer[i] != getPlaceholder(i))) {
                             complete = false;
                             break;
                         }
