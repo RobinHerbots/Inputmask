@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.59
+* Version: 3.1.60
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery" ], factory) : factory(jQuery);
@@ -639,8 +639,8 @@
             if (void 0 == lrp.def || lrp.def.newBlockMarker || lrp.def.optionalQuantifier) {
                 complete = !0;
                 for (var i = 0; aml >= i; i++) {
-                    var mask = isMask(i);
-                    if (mask && void 0 == getMaskSet().validPositions[i] || !mask && buffer[i] != getPlaceholder(i)) {
+                    var mask = isMask(i), test = getTest(i);
+                    if (mask && void 0 == getMaskSet().validPositions[i] && test.optionality !== !0 && test.optionalQuantifier !== !0 || !mask && buffer[i] != getPlaceholder(i)) {
                         complete = !1;
                         break;
                     }

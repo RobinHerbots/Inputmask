@@ -137,3 +137,55 @@ test("inputmask({ mask: \"99999[-9999]\", greedy: false }) - input 123456", func
 
     $("#testmask").remove();
 });
+
+test("inputmask({ mask: \"9'9{1,2}\"\", greedy: false, skipOptionalPartCharacter: \"\", \"clearIncomplete\": true  }) - input 12 blur - thomstark", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: "9'9{1,2}\"", greedy: false, skipOptionalPartCharacter: "", "clearIncomplete": true });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("12");
+    $("#testmask").blur();
+    equal($("#testmask").val(), "1'2\"", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask({ mask: \"99{1,2}lb\\s\", greedy: false, skipOptionalPartCharacter: \"\", \"clearIncomplete\": true  }) - input 12 blur - thomstark", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: "99{1,2}lb\\s", greedy: false, skipOptionalPartCharacter: "", "clearIncomplete": true });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("12");
+    $("#testmask").blur();
+    equal($("#testmask").val(), "12lbs", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask({ mask: \"9'9[9]\"\", greedy: false, skipOptionalPartCharacter: \"\", \"clearIncomplete\": true  }) - input 12 blur - thomstark", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: "9'9[9]\"", greedy: false, skipOptionalPartCharacter: "", "clearIncomplete": true });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("12");
+    $("#testmask").blur();
+    equal($("#testmask").val(), "1'2\"", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});
+
+test("inputmask({ mask: \"99[9]lb\\s\", greedy: false, skipOptionalPartCharacter: \"\", \"clearIncomplete\": true  }) - input 12 blur - thomstark", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: "99[9]lb\\s", greedy: false, skipOptionalPartCharacter: "", "clearIncomplete": true });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("12");
+    $("#testmask").blur();
+    equal($("#testmask").val(), "12lbs", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});

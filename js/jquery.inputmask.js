@@ -1140,8 +1140,8 @@
                 if (lrp["def"] == undefined || lrp["def"].newBlockMarker || lrp["def"].optionalQuantifier) {
                     complete = true;
                     for (var i = 0; i <= aml; i++) {
-                        var mask = isMask(i);
-                        if ((mask && getMaskSet()["validPositions"][i] == undefined) || (!mask && buffer[i] != getPlaceholder(i))) {
+                        var mask = isMask(i), test = getTest(i);
+                        if ((mask && getMaskSet()["validPositions"][i] == undefined && test.optionality !== true && test.optionalQuantifier !== true) || (!mask && buffer[i] != getPlaceholder(i))) {
                             complete = false;
                             break;
                         }
