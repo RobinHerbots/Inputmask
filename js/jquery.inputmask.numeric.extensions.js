@@ -84,15 +84,26 @@ Optional extensions on the jquery.inputmask base
             min: undefined, //minimum value
             max: undefined, //maximum value
             postFormat: function (buffer, pos, reformatOnly, opts) {  //this needs to be removed // this is crap
+                var suffixStripped = false;
+                if (buffer.length >= opts.suffix.length && buffer.join('').indexOf(opts.suffix) == (buffer.length - opts.suffix.length)) {
+                    buffer.length = buffer.length - opts.suffix.length; //strip suffix
+                    suffixStripped = true;
+                }
                 //position overflow corrections
                 pos = pos >= buffer.length ? buffer.length - 1 : (pos < opts.prefix.length ? opts.prefix.length : pos);
 
                 var needsRefresh = false, charAtPos = buffer[pos];
                 if (opts.groupSeparator == "" ||
-                    ($.inArray(opts.radixPoint, buffer) != -1 && pos >= $.inArray(opts.radixPoint, buffer)) ||
-                    new RegExp('[-\+]').test(charAtPos)
-                    )
+                        ($.inArray(opts.radixPoint, buffer) != -1 && pos >= $.inArray(opts.radixPoint, buffer)) ||
+                        new RegExp('[-\+]').test(charAtPos)
+                ) {
+                    if (suffixStripped) {
+                        for (var i = 0, l = opts.suffix.length; i < l; i++) {
+                            buffer[buffer.length + i] = opts.suffix.charAt(i);
+                        }
+                    }
                     return { pos: pos };
+                }
                 var cbuf = buffer.slice();
                 if (charAtPos == opts.groupSeparator) {
                     cbuf.splice(pos--, 1);
@@ -125,6 +136,11 @@ Optional extensions on the jquery.inputmask base
                 var newPos = $.inArray("?", buffer);
                 if (reformatOnly) buffer[newPos] = charAtPos; else buffer.splice(newPos, 1);
 
+                if (!needsRefresh && suffixStripped) {
+                    for (var i = 0, l = opts.suffix.length; i < l; i++) {
+                        buffer[buffer.length + i] = opts.suffix.charAt(i);
+                    }
+                }
                 return { pos: newPos, "refreshFromBuffer": needsRefresh, "buffer": buffer };
             },
             onBeforeWrite: function (e, buffer, caretPos, opts) {

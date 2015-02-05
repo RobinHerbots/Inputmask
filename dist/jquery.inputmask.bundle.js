@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.60
+* Version: 3.1.61
 */
 !function($) {
     function isInputEventSupported(eventName) {
@@ -1864,11 +1864,16 @@
             min: void 0,
             max: void 0,
             postFormat: function(buffer, pos, reformatOnly, opts) {
-                pos = pos >= buffer.length ? buffer.length - 1 : pos < opts.prefix.length ? opts.prefix.length : pos;
+                var suffixStripped = !1;
+                buffer.length >= opts.suffix.length && buffer.join("").indexOf(opts.suffix) == buffer.length - opts.suffix.length && (buffer.length = buffer.length - opts.suffix.length, 
+                suffixStripped = !0), pos = pos >= buffer.length ? buffer.length - 1 : pos < opts.prefix.length ? opts.prefix.length : pos;
                 var needsRefresh = !1, charAtPos = buffer[pos];
-                if ("" == opts.groupSeparator || -1 != $.inArray(opts.radixPoint, buffer) && pos >= $.inArray(opts.radixPoint, buffer) || new RegExp("[-+]").test(charAtPos)) return {
-                    pos: pos
-                };
+                if ("" == opts.groupSeparator || -1 != $.inArray(opts.radixPoint, buffer) && pos >= $.inArray(opts.radixPoint, buffer) || new RegExp("[-+]").test(charAtPos)) {
+                    if (suffixStripped) for (var i = 0, l = opts.suffix.length; l > i; i++) buffer[buffer.length + i] = opts.suffix.charAt(i);
+                    return {
+                        pos: pos
+                    };
+                }
                 var cbuf = buffer.slice();
                 charAtPos == opts.groupSeparator && (cbuf.splice(pos--, 1), charAtPos = cbuf[pos]), 
                 reformatOnly ? cbuf[pos] = "?" : cbuf.splice(pos, 0, "?");
@@ -1884,7 +1889,8 @@
                 needsRefresh = bufValOrigin != bufVal, buffer.length = bufVal.length;
                 for (var i = 0, l = bufVal.length; l > i; i++) buffer[i] = bufVal.charAt(i);
                 var newPos = $.inArray("?", buffer);
-                return reformatOnly ? buffer[newPos] = charAtPos : buffer.splice(newPos, 1), {
+                if (reformatOnly ? buffer[newPos] = charAtPos : buffer.splice(newPos, 1), !needsRefresh && suffixStripped) for (var i = 0, l = opts.suffix.length; l > i; i++) buffer[buffer.length + i] = opts.suffix.charAt(i);
+                return {
                     pos: newPos,
                     refreshFromBuffer: needsRefresh,
                     buffer: buffer
