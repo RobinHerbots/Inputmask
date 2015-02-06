@@ -1,0 +1,21 @@
+{
+    "name": "jquery_inputmask",
+    "repository": "robinherbots/jquery.inputmask",
+    "description": "jquery.inputmask is a jquery plugin which create an input mask.",
+    "version": "3.1.61",
+    "keywords": [ "jquery", "plugins", "input", "form", "inputmask", "mask" ],
+    "main": "./dist/jquery.inputmask.bundle.js",
+    "scripts": [
+        "./dist/jquery.inputmask.bundle.js",
+        "./dist/inputmask/jquery.inputmask.js",
+        "./dist/inputmask/jquery.inputmask.extensions.js",
+        "./dist/inputmask/jquery.inputmask.date.extensions.js",
+        "./dist/inputmask/jquery.inputmask.numeric.extensions.js",
+        "./dist/inputmask/jquery.inputmask.phone.extensions.js",
+        "./dist/inputmask/jquery.inputmask.regex.extensions.js"
+    ],
+    "dependencies": {
+        "components/jquery": ">=1.7"
+    },
+    "license": "MIT"
+}
