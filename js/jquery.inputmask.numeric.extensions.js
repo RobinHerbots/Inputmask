@@ -138,7 +138,7 @@ Optional extensions on the jquery.inputmask base
 
                 if (!needsRefresh && suffixStripped) {
                     for (var i = 0, l = opts.suffix.length; i < l; i++) {
-                        buffer[buffer.length + i] = opts.suffix.charAt(i);
+                        buffer.push(opts.suffix.charAt(i));
                     }
                 }
                 return { pos: newPos, "refreshFromBuffer": needsRefresh, "buffer": buffer };
@@ -161,7 +161,7 @@ Optional extensions on the jquery.inputmask base
                     var tmpBufSplit = opts.radixPoint != "" ? buffer.join('').split(opts.radixPoint) : [buffer.join('')],
                    matchRslt = tmpBufSplit[0].match(opts.regex.integerPart(opts)),
                    matchRsltDigits = tmpBufSplit.length == 2 ? tmpBufSplit[1].match(opts.regex.integerNPart(opts)) : undefined;
-                    if (matchRslt && matchRslt[0] == "-0" && (matchRsltDigits == undefined || matchRsltDigits[0].match(/^0+$/))) {
+                    if (matchRslt && (matchRslt[0] == opts.negationSymbol.front + "0" || matchRslt[0] == opts.negationSymbol.front || matchRslt[0] == "+") && (matchRsltDigits == undefined || matchRsltDigits[0].match(/^0+$/))) {
                         buffer.splice(matchRslt.index, 1);
                     }
                     var radixPosition = $.inArray(opts.radixPoint, buffer);
@@ -180,7 +180,7 @@ Optional extensions on the jquery.inputmask base
                 }
             },
             regex: {
-                integerPart: function (opts) { return new RegExp('[' + opts.negationSymbol.front + '\+]?\\d+'); },
+                integerPart: function (opts) { return new RegExp('[' + $.inputmask.escapeRegex.call(this, opts.negationSymbol.front) + '\+]?\\d*'); },
                 integerNPart: function (opts) { return new RegExp('[\\d' + $.inputmask.escapeRegex.call(this, opts.groupSeparator) + ']+'); }
             },
             signHandler: function (chrs, maskset, pos, strict, opts) {
@@ -232,7 +232,7 @@ Optional extensions on the jquery.inputmask base
                             pos = matchRslt.index;
                             return { "pos": pos, "remove": matchRslt.index };
                         }
-                    } else if (chrs === "0" && pos <= matchRslt.index) {
+                    } else if (chrs === "0" && pos <= matchRslt.index && matchRslt["0"] != opts.groupSeparator) {
                         return false;
                     }
                 }
