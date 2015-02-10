@@ -99,7 +99,7 @@ Optional extensions on the jquery.inputmask base
                 ) {
                     if (suffixStripped) {
                         for (var i = 0, l = opts.suffix.length; i < l; i++) {
-                            buffer[buffer.length + i] = opts.suffix.charAt(i);
+                            buffer.push(opts.suffix.charAt(i));
                         }
                     }
                     return { pos: pos };

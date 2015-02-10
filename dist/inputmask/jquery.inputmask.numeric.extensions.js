@@ -56,7 +56,7 @@
                 suffixStripped = !0), pos = pos >= buffer.length ? buffer.length - 1 : pos < opts.prefix.length ? opts.prefix.length : pos;
                 var needsRefresh = !1, charAtPos = buffer[pos];
                 if ("" == opts.groupSeparator || -1 != $.inArray(opts.radixPoint, buffer) && pos >= $.inArray(opts.radixPoint, buffer) || new RegExp("[-+]").test(charAtPos)) {
-                    if (suffixStripped) for (var i = 0, l = opts.suffix.length; l > i; i++) buffer[buffer.length + i] = opts.suffix.charAt(i);
+                    if (suffixStripped) for (var i = 0, l = opts.suffix.length; l > i; i++) buffer.push(opts.suffix.charAt(i));
                     return {
                         pos: pos
                     };
@@ -76,7 +76,7 @@
                 needsRefresh = bufValOrigin != bufVal, buffer.length = bufVal.length;
                 for (var i = 0, l = bufVal.length; l > i; i++) buffer[i] = bufVal.charAt(i);
                 var newPos = $.inArray("?", buffer);
-                if (reformatOnly ? buffer[newPos] = charAtPos : buffer.splice(newPos, 1), !needsRefresh && suffixStripped) for (var i = 0, l = opts.suffix.length; l > i; i++) buffer[buffer.length + i] = opts.suffix.charAt(i);
+                if (reformatOnly ? buffer[newPos] = charAtPos : buffer.splice(newPos, 1), !needsRefresh && suffixStripped) for (var i = 0, l = opts.suffix.length; l > i; i++) buffer.push(opts.suffix.charAt(i));
                 return {
                     pos: newPos,
                     refreshFromBuffer: needsRefresh,
@@ -90,7 +90,7 @@
                     processValue = processValue.replace($.inputmask.escapeRegex.call(this, opts.radixPoint), "."), 
                     isFinite(processValue) && isFinite(opts.min) && parseFloat(processValue) < parseFloat(opts.min)) return opts.postFormat((opts.prefix + opts.min).split(""), 0, !0, opts);
                     var tmpBufSplit = "" != opts.radixPoint ? buffer.join("").split(opts.radixPoint) : [ buffer.join("") ], matchRslt = tmpBufSplit[0].match(opts.regex.integerPart(opts)), matchRsltDigits = 2 == tmpBufSplit.length ? tmpBufSplit[1].match(opts.regex.integerNPart(opts)) : void 0;
-                    matchRslt && "-0" == matchRslt[0] && (void 0 == matchRsltDigits || matchRsltDigits[0].match(/^0+$/)) && buffer.splice(matchRslt.index, 1);
+                    !matchRslt || matchRslt[0] != opts.negationSymbol.front + "0" && matchRslt[0] != opts.negationSymbol.front && "+" != matchRslt[0] || void 0 != matchRsltDigits && !matchRsltDigits[0].match(/^0+$/) || buffer.splice(matchRslt.index, 1);
                     var radixPosition = $.inArray(opts.radixPoint, buffer);
                     if (-1 != radixPosition && isFinite(opts.digits) && !opts.digitsOptional) {
                         for (var i = 1; i <= opts.digits; i++) (void 0 == buffer[radixPosition + i] || buffer[radixPosition + i] == opts.placeholder.charAt(0)) && (buffer[radixPosition + i] = "0");
@@ -107,7 +107,7 @@
             },
             regex: {
                 integerPart: function(opts) {
-                    return new RegExp("[" + opts.negationSymbol.front + "+]?\\d+");
+                    return new RegExp("[" + $.inputmask.escapeRegex.call(this, opts.negationSymbol.front) + "+]?\\d*");
                 },
                 integerNPart: function(opts) {
                     return new RegExp("[\\d" + $.inputmask.escapeRegex.call(this, opts.groupSeparator) + "]+");
@@ -164,7 +164,7 @@
                         pos: pos,
                         remove: matchRslt.index
                     };
-                } else if ("0" === chrs && pos <= matchRslt.index) return !1;
+                } else if ("0" === chrs && pos <= matchRslt.index && matchRslt[0] != opts.groupSeparator) return !1;
                 return !0;
             },
             postValidation: function(buffer, opts) {
