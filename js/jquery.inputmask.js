@@ -375,7 +375,7 @@
                 var before = lastValidPosition, after = lastValidPosition;
                 for (var posNdx in valids) {
                     var psNdx = parseInt(posNdx);
-                    if (closestTo == -1 || valids[psNdx]["match"].fn != null) {
+                    if (valids[psNdx]["match"].fn != null) {
                         if (psNdx <= closestTo) before = psNdx;
                         if (psNdx >= closestTo) after = psNdx;
                     }
@@ -653,7 +653,7 @@
                     matches.push({ "match": { fn: null, cardinality: 0, optionality: true, casing: null, def: "" }, "locator": [] });
 
                 getMaskSet()['tests'][pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
-                //console.log(pos + " - " + JSON.stringify(matches));
+                console.log(pos + " - " + JSON.stringify(matches));
                 return getMaskSet()['tests'][pos];
             }
             function getBufferTemplate() {
@@ -737,15 +737,26 @@
                             var elem = rslt.c != undefined ? rslt.c : c;
                             elem = (elem == opts.skipOptionalPartCharacter && test["fn"] === null) ? test["def"] : elem;
 
-                            var validatedPos = position;
-                            if (rslt["remove"] != undefined) { //remove position
-                                stripValidPositions(rslt["remove"], rslt["remove"] + 1, true);
+                            var validatedPos = position,
+                                possibleModifiedBuffer = getBuffer();
+
+                            if (rslt["remove"] != undefined) { //remove position(s)
+                                if (!$.isArray(rslt["remove"])) rslt["remove"] = [rslt["remove"]];
+                                $.each(rslt["remove"].sort(function (a, b) { return b - a; }), function (ndx, lmnt) {
+                                    stripValidPositions(lmnt, lmnt + 1, true);
+                                });
+                            }
+                            if (rslt["insert"] != undefined) { //insert position(s)
+                                if (!$.isArray(rslt["insert"])) rslt["insert"] = [rslt["insert"]];
+                                $.each(rslt["insert"].sort(function (a, b) { return a - b; }), function (ndx, lmnt) {
+                                    isValid(lmnt["pos"], lmnt["c"], true);
+                                });
                             }
 
                             if (rslt["refreshFromBuffer"]) {
                                 var refresh = rslt["refreshFromBuffer"];
                                 strict = true;
-                                refreshFromBuffer(refresh === true ? refresh : refresh["start"], refresh["end"]);
+                                refreshFromBuffer(refresh === true ? refresh : refresh["start"], refresh["end"], possibleModifiedBuffer);
                                 if (rslt.pos == undefined && rslt.c == undefined) {
                                     rslt.pos = getLastValidPosition();
                                     return false;//breakout if refreshFromBuffer && nothing to insert
@@ -1042,7 +1053,7 @@
                 }
             }
             function escapeRegex(str) {
-                return $.inputmask.escapeRegex.call(this, str);
+                return $.inputmask.escapeRegex(str);
             }
             function unmaskedvalue($input) {
                 if ($input.data('_inputmask') && !$input.hasClass('hasDatepicker')) {
@@ -1108,7 +1119,7 @@
                    pos, lvp = getLastValidPosition(), positions = {}, lvTest = getMaskSet()["validPositions"][lvp],
                    ndxIntlzr = lvTest != undefined ? lvTest["locator"].slice() : undefined, testPos;
                 for (pos = lvp + 1; pos < buffer.length; pos++) {
-                    testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
+                    testPos = getMaskSet()["validPositions"][pos] || getTestTemplate(pos, ndxIntlzr, pos - 1);
                     ndxIntlzr = testPos["locator"].slice();
                     positions[pos] = $.extend(true, {}, testPos);
                 }
@@ -1131,13 +1142,15 @@
                     if (isMask(lmib)) break; //fixme ismask is not good enough
                 }
                 buffer.splice(rl, lmib + 1 - rl);
+
+                return buffer
             }
             function isComplete(buffer) { //return true / false / undefined (repeat *)
                 if ($.isFunction(opts.isComplete)) return opts.isComplete.call($el, buffer, opts);
                 if (opts.repeat == "*") return undefined;
                 var complete = false, lrp = determineLastRequiredPosition(true), aml = seekPrevious(lrp["l"]), lvp = getLastValidPosition();
 
-                if (lrp["def"] == undefined || lrp["def"].newBlockMarker || lrp["def"].optionalQuantifier) {
+                if (lrp["def"] == undefined || lrp["def"].newBlockMarker || lrp["def"].optionality || lrp["def"].optionalQuantifier) {
                     complete = true;
                     for (var i = 0; i <= aml; i++) {
                         var mask = isMask(i), test = getTest(i);
