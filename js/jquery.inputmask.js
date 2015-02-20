@@ -375,7 +375,7 @@
                 var before = lastValidPosition, after = lastValidPosition;
                 for (var posNdx in valids) {
                     var psNdx = parseInt(posNdx);
-                    if (valids[psNdx]["match"].fn != null) {
+                    if (valids[psNdx] && valids[psNdx]["match"].fn != null) {
                         if (psNdx <= closestTo) before = psNdx;
                         if (psNdx >= closestTo) after = psNdx;
                     }
@@ -447,27 +447,34 @@
                     } else i++;
                 }
                 //remove radixpoint if needed
-                var lvp = getLastValidPosition();
+                var lvp = getLastValidPosition(), ml = getMaskLength();
                 if (start <= lvp && getMaskSet()["validPositions"][lvp] != undefined && (getMaskSet()["validPositions"][lvp].input == opts.radixPoint))
                     delete getMaskSet()["validPositions"][lvp];
+
+                for (i = lvp + 1; i <= ml; i++) {
+                    if (getMaskSet()["validPositions"][i])
+                        delete getMaskSet()["validPositions"][i];
+                }
 
                 resetMaskSet(true);
             }
             function getTestTemplate(pos, ndxIntlzr, tstPs) {
-                var testPositions = getTests(pos, ndxIntlzr, tstPs),
-                    testPos,
-                    lvp = getLastValidPosition(),
-                    lvTest = getMaskSet()["validPositions"][lvp] || getTests(0)[0],
-                    lvTestAltArr = (lvTest.alternation != undefined) ? lvTest["locator"][lvTest.alternation].split(",") : [];
-                for (var ndx = 0; ndx < testPositions.length; ndx++) {
-                    testPos = testPositions[ndx];
+                var testPos = getMaskSet()["validPositions"][pos];
+                if (testPos == undefined) {
+                    var testPositions = getTests(pos, ndxIntlzr, tstPs),
+                        lvp = getLastValidPosition(),
+                        lvTest = getMaskSet()["validPositions"][lvp] || getTests(0)[0],
+                        lvTestAltArr = (lvTest.alternation != undefined) ? lvTest["locator"][lvTest.alternation].split(",") : [];
+                    for (var ndx = 0; ndx < testPositions.length; ndx++) {
+                        testPos = testPositions[ndx];
 
-                    if (testPos["match"] &&
+                        if (testPos["match"] &&
                         (((opts.greedy && testPos["match"].optionalQuantifier !== true)
-                         || (testPos["match"].optionality === false || testPos["match"].newBlockMarker === false) && testPos["match"].optionalQuantifier !== true) &&
+                            || (testPos["match"].optionality === false || testPos["match"].newBlockMarker === false) && testPos["match"].optionalQuantifier !== true) &&
                         (lvTest.alternation == undefined ||
                         (testPos["locator"][lvTest.alternation] != undefined && checkAlternationMatch(testPos.locator[lvTest.alternation].toString().split(","), lvTestAltArr))))) {
-                        break;
+                            break;
+                        }
                     }
                 }
 
@@ -653,7 +660,7 @@
                     matches.push({ "match": { fn: null, cardinality: 0, optionality: true, casing: null, def: "" }, "locator": [] });
 
                 getMaskSet()['tests'][pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
-                console.log(pos + " - " + JSON.stringify(matches));
+                //console.log(pos + " - " + JSON.stringify(matches));
                 return getMaskSet()['tests'][pos];
             }
             function getBufferTemplate() {
@@ -884,14 +891,14 @@
                 ////fill missing nonmask and valid placeholders
                 pndx++;
                 for (; pndx < pos; pndx++) {
-                    //console.log("missing " + pndx + " " + buffer[pndx] + " ismask " + isMask(pndx) + " plchldr " + getPlaceholder(pndx) + " nrt " + getTests(pndx).len);
+                    console.log("missing " + pndx + " " + buffer[pndx] + " ismask " + isMask(pndx) + " plchldr " + getPlaceholder(pndx) + " nrt " + getTests(pndx).len);
                     if (getMaskSet()["validPositions"][pndx] == undefined
                            && (((!isMask(pndx)
                            || buffer[pndx] != getPlaceholder(pndx))
                            && getTests(pndx).length > 1)
                            || (buffer[pndx] == opts.radixPoint || buffer[pndx] == "0" && $.inArray(opts.radixPoint, buffer) < pndx))) //special case for decimals ~ = placeholder but yet valid input
                     {
-                        //console.log("inject " + pndx + " " + buffer[pndx]);
+                        console.log("inject " + pndx + " " + buffer[pndx]);
                         _isValid(pndx, buffer[pndx], true);
                     }
                 }
@@ -1119,7 +1126,7 @@
                    pos, lvp = getLastValidPosition(), positions = {}, lvTest = getMaskSet()["validPositions"][lvp],
                    ndxIntlzr = lvTest != undefined ? lvTest["locator"].slice() : undefined, testPos;
                 for (pos = lvp + 1; pos < buffer.length; pos++) {
-                    testPos = getMaskSet()["validPositions"][pos] || getTestTemplate(pos, ndxIntlzr, pos - 1);
+                    testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
                     ndxIntlzr = testPos["locator"].slice();
                     positions[pos] = $.extend(true, {}, testPos);
                 }
