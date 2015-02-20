@@ -238,7 +238,11 @@ The return value of a validator can be true,  false or a command object.
 - pos : position to insert
 - c : character to insert
 - caret : position of the caret
-- remove : position to remove
+- remove : position(s) to remove  
+	- pos or [pos1, pos2]
+- insert : position(s) to add :  
+    - { pos : position to insert, c : character to insert }  
+	- [{ pos : position to insert, c : character to insert }, { ...}, ... ]
 - refreshFromBuffer : 
 	- true => refresh validPositions from the complete buffer
 	- { start: , end: } => refresh from start to end

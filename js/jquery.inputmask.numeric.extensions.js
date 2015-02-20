@@ -55,8 +55,8 @@ Optional extensions on the jquery.inputmask base
                         mask += "[" + (opts.decimalProtect ? ":" : opts.radixPoint) + ";{" + opts.digits + "}]";
                     else mask += (opts.decimalProtect ? ":" : opts.radixPoint) + ";{" + opts.digits + "}";
                 }
-
-                mask += "[-]";
+                if (opts.negationSymbol.back != "")
+                    mask += "[-]";
                 mask += autoEscape(opts.suffix);
 
                 opts.greedy = false; //enforce greedy false
@@ -196,19 +196,25 @@ Optional extensions on the jquery.inputmask base
                     if (matchRslt && matchRslt[0].length > 0) {
                         if (maskset.buffer[matchRslt.index] == (chrs === "-" ? "+" : opts.negationSymbol.front)) {
                             if (chrs == "-") {
-                                return { "pos": matchRslt.index, "c": opts.negationSymbol.front, "remove": matchRslt.index, "caret": pos, "insert": { "pos": maskset["buffer"].length - opts.suffix.length - 1, "c": opts.negationSymbol.back } };
+                                if (opts.negationSymbol.back != "")
+                                    return { "pos": matchRslt.index, "c": opts.negationSymbol.front, "remove": matchRslt.index, "caret": pos, "insert": { "pos": maskset["buffer"].length - opts.suffix.length - 1, "c": opts.negationSymbol.back } };
+                                else return { "pos": matchRslt.index, "c": opts.negationSymbol.front, "remove": matchRslt.index, "caret": pos };
                             } else {
-                                return { "pos": matchRslt.index, "c": "+", "remove": [matchRslt.index, maskset["buffer"].length - opts.suffix.length - 1], "caret": pos };
+                                if (opts.negationSymbol.back != "")
+                                    return { "pos": matchRslt.index, "c": "+", "remove": [matchRslt.index, maskset["buffer"].length - opts.suffix.length - 1], "caret": pos };
+                                else return { "pos": matchRslt.index, "c": "+", "remove": matchRslt.index, "caret": pos };
                             }
                         } else if (maskset.buffer[matchRslt.index] == (chrs === "-" ? opts.negationSymbol.front : "+")) {
-                            if (chrs == "-") {
+                            if (chrs == "-" && opts.negationSymbol.back != "") {
                                 return { "remove": [matchRslt.index, maskset["buffer"].length - opts.suffix.length - 1], "caret": pos - 1 };
                             } else {
                                 return { "remove": matchRslt.index, "caret": pos - 1 };
                             }
                         } else {
                             if (chrs == "-") {
-                                return { "pos": matchRslt.index, "c": opts.negationSymbol.front, "caret": pos + 1, "insert": { "pos": maskset["buffer"].length - opts.suffix.length, "c": opts.negationSymbol.back } };
+                                if (opts.negationSymbol.back != "")
+                                    return { "pos": matchRslt.index, "c": opts.negationSymbol.front, "caret": pos + 1, "insert": { "pos": maskset["buffer"].length - opts.suffix.length, "c": opts.negationSymbol.back } };
+                                else return { "pos": matchRslt.index, "c": opts.negationSymbol.front, "caret": pos + 1 };
                             } else {
                                 return { "pos": matchRslt.index, "c": chrs, "caret": pos + 1 };
                             }
@@ -308,7 +314,9 @@ Optional extensions on the jquery.inputmask base
                         var isValid = opts.signHandler(chrs, maskset, pos, strict, opts), nbl;
                         if (!isValid && ((strict && opts.allowMinus && chrs === opts.negationSymbol.front) || (opts.allowMinus && chrs == "-") || (opts.allowPlus && chrs == "+"))) {
                             if (chrs == "-") {
-                                isValid = { "pos": pos, "c": chrs === "-" ? opts.negationSymbol.front : "+", "caret": pos + 1, "insert": { "pos": maskset["buffer"].length, "c": opts.negationSymbol.back } };
+                                if (opts.negationSymbol.back != "")
+                                    isValid = { "pos": pos, "c": chrs === "-" ? opts.negationSymbol.front : "+", "caret": pos + 1, "insert": { "pos": maskset["buffer"].length, "c": opts.negationSymbol.back } };
+                                else isValid = { "pos": pos, "c": chrs === "-" ? opts.negationSymbol.front : "+", "caret": pos + 1 };
                             } else {
                                 isValid = true;
                             }
