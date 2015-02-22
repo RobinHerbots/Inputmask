@@ -85,7 +85,7 @@ Optional extensions on the jquery.inputmask base
             min: undefined, //minimum value
             max: undefined, //maximum value
             postFormat: function (buffer, pos, reformatOnly, opts) {  //this needs to be removed // this is crap
-                console.log("input " + buffer);
+                //console.log("input " + buffer);
                 var negationStrip = false;
 
                 var suffixStripped = false;
@@ -106,7 +106,7 @@ Optional extensions on the jquery.inputmask base
                             buffer.push(opts.suffix.charAt(i));
                         }
                     }
-                    console.log("return input " + buffer);
+                    //console.log("return input " + buffer);
                     return { pos: pos };
                 }
                 var cbuf = buffer.slice();
@@ -146,7 +146,7 @@ Optional extensions on the jquery.inputmask base
                         buffer.push(opts.suffix.charAt(i));
                     }
                 }
-                console.log("formatted " + buffer + " refresh " + needsRefresh);
+                //console.log("formatted " + buffer + " refresh " + needsRefresh);
                 return { pos: newPos, "refreshFromBuffer": needsRefresh, "buffer": buffer };
             },
             onBeforeWrite: function (e, buffer, caretPos, opts) {

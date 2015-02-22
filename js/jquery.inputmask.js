@@ -891,14 +891,14 @@
                 ////fill missing nonmask and valid placeholders
                 pndx++;
                 for (; pndx < pos; pndx++) {
-                    console.log("missing " + pndx + " " + buffer[pndx] + " ismask " + isMask(pndx) + " plchldr " + getPlaceholder(pndx) + " nrt " + getTests(pndx).len);
+                    //console.log("missing " + pndx + " " + buffer[pndx] + " ismask " + isMask(pndx) + " plchldr " + getPlaceholder(pndx) + " nrt " + getTests(pndx).len);
                     if (getMaskSet()["validPositions"][pndx] == undefined
                            && (((!isMask(pndx)
                            || buffer[pndx] != getPlaceholder(pndx))
                            && getTests(pndx).length > 1)
                            || (buffer[pndx] == opts.radixPoint || buffer[pndx] == "0" && $.inArray(opts.radixPoint, buffer) < pndx))) //special case for decimals ~ = placeholder but yet valid input
                     {
-                        console.log("inject " + pndx + " " + buffer[pndx]);
+                        //console.log("inject " + pndx + " " + buffer[pndx]);
                         _isValid(pndx, buffer[pndx], true);
                     }
                 }

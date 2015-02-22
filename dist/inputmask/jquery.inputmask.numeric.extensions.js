@@ -52,14 +52,13 @@
             min: void 0,
             max: void 0,
             postFormat: function(buffer, pos, reformatOnly, opts) {
-                console.log("input " + buffer);
                 var suffixStripped = !1;
                 buffer.length >= opts.suffix.length && buffer.join("").indexOf(opts.suffix) == buffer.length - opts.suffix.length && (buffer.length = buffer.length - opts.suffix.length, 
                 suffixStripped = !0), pos = pos >= buffer.length ? buffer.length - 1 : pos < opts.prefix.length ? opts.prefix.length : pos;
                 var needsRefresh = !1, charAtPos = buffer[pos];
                 if ("" == opts.groupSeparator || -1 != $.inArray(opts.radixPoint, buffer) && pos >= $.inArray(opts.radixPoint, buffer) || new RegExp("[" + $.inputmask.escapeRegex(opts.negationSymbol.front) + "+]").test(charAtPos)) {
                     if (suffixStripped) for (var i = 0, l = opts.suffix.length; l > i; i++) buffer.push(opts.suffix.charAt(i));
-                    return console.log("return input " + buffer), {
+                    return {
                         pos: pos
                     };
                 }
@@ -79,7 +78,7 @@
                 for (var i = 0, l = bufVal.length; l > i; i++) buffer[i] = bufVal.charAt(i);
                 var newPos = $.inArray("?", buffer);
                 if (reformatOnly ? buffer[newPos] = charAtPos : buffer.splice(newPos, 1), !needsRefresh && suffixStripped) for (var i = 0, l = opts.suffix.length; l > i; i++) buffer.push(opts.suffix.charAt(i));
-                return console.log("formatted " + buffer + " refresh " + needsRefresh), {
+                return {
                     pos: newPos,
                     refreshFromBuffer: needsRefresh,
                     buffer: buffer
