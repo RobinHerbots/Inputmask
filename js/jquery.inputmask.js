@@ -2060,7 +2060,7 @@
             function importAttributeOptions(npt, opts, importedOptionsContainer) {
                 var $npt = $(npt);
                 if ($npt.data("inputmask-alias")) {
-                    resolveAlias($npt.data("inputmask-alias"), {}, opts);
+                    resolveAlias($npt.data("inputmask-alias"), $.extend(true, {}, opts), opts);
                 }
                 for (var option in opts) {
                     var optionData = $npt.data("inputmask-" + option.toLowerCase());
@@ -2083,13 +2083,12 @@
             if (typeof fn === "string") {
                 switch (fn) {
                     case "mask":
-                        //resolve possible aliases given by options
                         resolveAlias(opts.alias, options, opts);
-                        maskset = generateMaskSet(opts);
-                        if (maskset == undefined) { return this; }
-
                         return this.each(function () {
-                            maskScope({ "action": "mask", "el": this }, $.extend(true, {}, maskset), importAttributeOptions(this, opts));
+                            importAttributeOptions(this, opts)
+                            maskset = generateMaskSet(opts);
+                            if (maskset == undefined) { return this; }
+                            maskScope({ "action": "mask", "el": this }, maskset, opts);
                         });
                     case "unmaskedvalue":
                         var $input = $(this);
@@ -2127,19 +2126,22 @@
                             //set mask
                             opts.mask = fn;
                         }
-                        maskset = generateMaskSet(opts);
-                        if (maskset == undefined) { return this; }
+
                         return this.each(function () {
-                            maskScope({ "action": "mask", "el": this }, $.extend(true, {}, maskset), importAttributeOptions(this, opts));
+                            importAttributeOptions(this, opts);
+                            maskset = generateMaskSet(opts);
+                            if (maskset == undefined) { return this; }
+                            maskScope({ "action": "mask", "el": this }, maskset, opts);
                         });
                 }
             } else if (typeof fn == "object") {
                 opts = $.extend(true, {}, $.inputmask.defaults, fn);
                 resolveAlias(opts.alias, fn, opts); //resolve aliases
-                maskset = generateMaskSet(opts);
-                if (maskset == undefined) { return this; }
                 return this.each(function () {
-                    maskScope({ "action": "mask", "el": this }, $.extend(true, {}, maskset), importAttributeOptions(this, opts));
+                    importAttributeOptions(this, opts);
+                    maskset = generateMaskSet(opts);
+                    if (maskset == undefined) { return this; }
+                    maskScope({ "action": "mask", "el": this }, maskset, opts);
                 });
             } else if (fn == undefined) {
                 //look for data-inputmask atribute - the attribute should only contain optipns

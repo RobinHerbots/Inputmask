@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.62-3
+* Version: 3.1.62-4
 */
 !function($) {
     function isInputEventSupported(eventName) {
@@ -1189,7 +1189,7 @@
         }, $.fn.inputmask = function(fn, options) {
             function importAttributeOptions(npt, opts, importedOptionsContainer) {
                 var $npt = $(npt);
-                $npt.data("inputmask-alias") && resolveAlias($npt.data("inputmask-alias"), {}, opts);
+                $npt.data("inputmask-alias") && resolveAlias($npt.data("inputmask-alias"), $.extend(!0, {}, opts), opts);
                 for (var option in opts) {
                     var optionData = $npt.data("inputmask-" + option.toLowerCase());
                     void 0 != optionData && ("mask" == option && 0 == optionData.indexOf("[") ? (opts[option] = optionData.replace(/[\s[\]]/g, "").split("','"), 
@@ -1201,12 +1201,11 @@
             var maskset, opts = $.extend(!0, {}, $.inputmask.defaults, options);
             if ("string" == typeof fn) switch (fn) {
               case "mask":
-                return resolveAlias(opts.alias, options, opts), maskset = generateMaskSet(opts), 
-                void 0 == maskset ? this : this.each(function() {
-                    maskScope({
+                return resolveAlias(opts.alias, options, opts), this.each(function() {
+                    return importAttributeOptions(this, opts), maskset = generateMaskSet(opts), void 0 == maskset ? this : void maskScope({
                         action: "mask",
                         el: this
-                    }, $.extend(!0, {}, maskset), importAttributeOptions(this, opts));
+                    }, maskset, opts);
                 });
 
               case "unmaskedvalue":
@@ -1249,19 +1248,19 @@
 
               default:
                 return resolveAlias(opts.alias, options, opts), resolveAlias(fn, options, opts) || (opts.mask = fn), 
-                maskset = generateMaskSet(opts), void 0 == maskset ? this : this.each(function() {
-                    maskScope({
+                this.each(function() {
+                    return importAttributeOptions(this, opts), maskset = generateMaskSet(opts), void 0 == maskset ? this : void maskScope({
                         action: "mask",
                         el: this
-                    }, $.extend(!0, {}, maskset), importAttributeOptions(this, opts));
+                    }, maskset, opts);
                 });
             } else {
                 if ("object" == typeof fn) return opts = $.extend(!0, {}, $.inputmask.defaults, fn), 
-                resolveAlias(opts.alias, fn, opts), maskset = generateMaskSet(opts), void 0 == maskset ? this : this.each(function() {
-                    maskScope({
+                resolveAlias(opts.alias, fn, opts), this.each(function() {
+                    return importAttributeOptions(this, opts), maskset = generateMaskSet(opts), void 0 == maskset ? this : void maskScope({
                         action: "mask",
                         el: this
-                    }, $.extend(!0, {}, maskset), importAttributeOptions(this, opts));
+                    }, maskset, opts);
                 });
                 if (void 0 == fn) return this.each(function() {
                     var attrOptions = $(this).attr("data-inputmask");
