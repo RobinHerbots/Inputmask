@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - Add Component package manager support - component.json 
 
 ### Fixed
+- Mask cache - 2 definitions for same mask #831
 - Adding parentheses as a negative format for Decimal and Integer aliases (100) #451
 - Should not allow "-" or "+" as numbers #815
 - isComplete erroneously returning false when backspacing with an optional mask #824

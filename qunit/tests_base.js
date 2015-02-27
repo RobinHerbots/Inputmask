@@ -454,3 +454,33 @@ asyncTest("creditcard switch - pchelailya", function () {
         $("#testmask").remove();
     }, 0);
 });
+
+test("maskscache - same mask diff definitions - StonesEditeurs", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({
+        mask: "Z{1,*}",
+        definitions: {
+            'Z': {
+                validator: function (chrs, buffer, pos, strict, opts) {
+                    return { pos: pos, c: 'A' };
+                },
+            }
+        }
+    });
+
+    $("#testmask").inputmask({
+        mask: "Z{1,*}", // <= Same mask
+        definitions: {
+            'Z': {
+                validator: function (chrs, buffer, pos, strict, opts) {
+                    return { pos: pos, c: 'B' };  // <= another definition
+                },
+            }
+        }
+    });
+
+    $("#testmask").Type("abcdef");
+    equal(document.getElementById("testmask")._valueGet(), "BBBBBB", "Result " + document.getElementById("testmask")._valueGet());
+    $("#testmask").remove();
+});

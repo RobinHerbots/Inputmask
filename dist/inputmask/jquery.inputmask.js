@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.62-4
+* Version: 3.1.62-6
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery" ], factory) : factory(jQuery);
@@ -26,7 +26,7 @@
         return aliasDefinition ? (aliasDefinition.alias && resolveAlias(aliasDefinition.alias, void 0, opts), 
         $.extend(!0, opts, aliasDefinition), $.extend(!0, opts, options), !0) : !1;
     }
-    function generateMaskSet(opts) {
+    function generateMaskSet(opts, nocache) {
         function analyseMask(mask) {
             function maskToken(isGroup, isOptional, isQuantifier, isAlternator) {
                 this.matches = [], this.isGroup = isGroup || !1, this.isOptional = isOptional || !1, 
@@ -162,7 +162,8 @@
                 var repeatStart = "*" == opts.repeat ? 0 : "+" == opts.repeat ? 1 : opts.repeat;
                 mask = opts.groupmarker.start + mask + opts.groupmarker.end + opts.quantifiermarker.start + repeatStart + "," + opts.repeat + opts.quantifiermarker.end;
             }
-            return void 0 == $.inputmask.masksCache[mask] && ($.inputmask.masksCache[mask] = {
+            var masksetDefinition;
+            return void 0 == $.inputmask.masksCache[mask] || nocache === !0 ? (masksetDefinition = {
                 mask: mask,
                 maskToken: analyseMask(mask),
                 validPositions: {},
@@ -170,7 +171,8 @@
                 buffer: void 0,
                 tests: {},
                 metadata: metadata
-            }), $.extend(!0, {}, $.inputmask.masksCache[mask]);
+            }, nocache !== !0 && ($.inputmask.masksCache[mask] = masksetDefinition)) : masksetDefinition = $.extend(!0, {}, $.inputmask.masksCache[mask]), 
+            masksetDefinition;
         }
         function preProcessMask(mask) {
             if (mask = mask.toString(), opts.numericInput) {
@@ -1179,14 +1181,14 @@
                     action: "format",
                     value: value,
                     metadata: metadata
-                }, generateMaskSet(opts), opts);
+                }, generateMaskSet(opts, options && void 0 !== options.definitions), opts);
             },
             isValid: function(value, options) {
                 var opts = $.extend(!0, {}, $.inputmask.defaults, options);
                 return resolveAlias(opts.alias, options, opts), maskScope({
                     action: "isValid",
                     value: value
-                }, generateMaskSet(opts), opts);
+                }, generateMaskSet(opts, options && void 0 !== options.definitions), opts);
             }
         }, $.fn.inputmask = function(fn, options) {
             function importAttributeOptions(npt, opts, importedOptionsContainer) {
@@ -1204,7 +1206,8 @@
             if ("string" == typeof fn) switch (fn) {
               case "mask":
                 return resolveAlias(opts.alias, options, opts), this.each(function() {
-                    return importAttributeOptions(this, opts), maskset = generateMaskSet(opts), void 0 == maskset ? this : void maskScope({
+                    return importAttributeOptions(this, opts), maskset = generateMaskSet(opts, options && void 0 !== options.definitions), 
+                    void 0 == maskset ? this : void maskScope({
                         action: "mask",
                         el: this
                     }, maskset, opts);
@@ -1251,7 +1254,8 @@
               default:
                 return resolveAlias(opts.alias, options, opts), resolveAlias(fn, options, opts) || (opts.mask = fn), 
                 this.each(function() {
-                    return importAttributeOptions(this, opts), maskset = generateMaskSet(opts), void 0 == maskset ? this : void maskScope({
+                    return importAttributeOptions(this, opts), maskset = generateMaskSet(opts, options && void 0 !== options.definitions), 
+                    void 0 == maskset ? this : void maskScope({
                         action: "mask",
                         el: this
                     }, maskset, opts);
@@ -1259,7 +1263,8 @@
             } else {
                 if ("object" == typeof fn) return opts = $.extend(!0, {}, $.inputmask.defaults, fn), 
                 resolveAlias(opts.alias, fn, opts), this.each(function() {
-                    return importAttributeOptions(this, opts), maskset = generateMaskSet(opts), void 0 == maskset ? this : void maskScope({
+                    return importAttributeOptions(this, opts), maskset = generateMaskSet(opts, fn && void 0 !== fn.definitions), 
+                    void 0 == maskset ? this : void maskScope({
                         action: "mask",
                         el: this
                     }, maskset, opts);
