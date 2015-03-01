@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.62-6
+* Version: 3.1.62-7
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery" ], factory) : factory(jQuery);
@@ -621,7 +621,7 @@
             if (begin = TranslatePosition(begin), end = TranslatePosition(end), end = "number" == typeof end ? end : begin, 
             $(npt).is(":visible")) {
                 var scrollCalc = $(npt).css("font-size").replace("px", "") * end;
-                npt.scrollLeft = scrollCalc > npt.scrollWidth ? scrollCalc : 0, 0 == opts.insertMode && begin == end && end++, 
+                npt.scrollLeft = scrollCalc > npt.scrollWidth ? scrollCalc : 0, androidchrome || 0 != opts.insertMode || begin != end || end++, 
                 npt.setSelectionRange ? (npt.selectionStart = begin, npt.selectionEnd = end) : npt.createTextRange && (range = npt.createTextRange(), 
                 range.collapse(!0), range.moveEnd("character", end), range.moveStart("character", begin), 
                 range.select());
@@ -1064,8 +1064,8 @@
         }
     }
     if (void 0 === $.fn.inputmask) {
-        var ua = navigator.userAgent, iphone = null !== ua.match(new RegExp("iphone", "i")), androidfirefox = (null !== ua.match(new RegExp("android.*safari.*", "i")), 
-        null !== ua.match(new RegExp("android.*chrome.*", "i")), null !== ua.match(new RegExp("android.*firefox.*", "i"))), PasteEventType = (/Kindle/i.test(ua) || /Silk/i.test(ua) || /KFTT/i.test(ua) || /KFOT/i.test(ua) || /KFJWA/i.test(ua) || /KFJWI/i.test(ua) || /KFSOWI/i.test(ua) || /KFTHWA/i.test(ua) || /KFTHWI/i.test(ua) || /KFAPWA/i.test(ua) || /KFAPWI/i.test(ua), 
+        var ua = navigator.userAgent, iphone = null !== ua.match(new RegExp("iphone", "i")), androidchrome = (null !== ua.match(new RegExp("android.*safari.*", "i")), 
+        null !== ua.match(new RegExp("android.*chrome.*", "i"))), androidfirefox = null !== ua.match(new RegExp("android.*firefox.*", "i")), PasteEventType = (/Kindle/i.test(ua) || /Silk/i.test(ua) || /KFTT/i.test(ua) || /KFOT/i.test(ua) || /KFJWA/i.test(ua) || /KFJWI/i.test(ua) || /KFSOWI/i.test(ua) || /KFTHWA/i.test(ua) || /KFTHWI/i.test(ua) || /KFAPWA/i.test(ua) || /KFAPWI/i.test(ua), 
         isInputEventSupported("paste") ? "paste" : isInputEventSupported("input") ? "input" : "propertychange");
         $.inputmask = {
             defaults: {

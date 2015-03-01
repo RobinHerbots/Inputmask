@@ -1102,7 +1102,7 @@
 
                     var scrollCalc = $(npt).css("font-size").replace("px", "") * end;
                     npt.scrollLeft = scrollCalc > npt.scrollWidth ? scrollCalc : 0;
-                    if (opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
+                    if (!androidchrome && opts.insertMode == false && begin == end) end++; //set visualization for insert/overwrite mode
                     if (npt.setSelectionRange) {
                         npt.selectionStart = begin;
                         npt.selectionEnd = end;
