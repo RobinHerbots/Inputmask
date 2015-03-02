@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.62-7
+* Version: 3.1.62-10
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery" ], factory) : factory(jQuery);
@@ -665,7 +665,7 @@
             return isRTL ? begin - end > 1 || begin - end == 1 && opts.insertMode : end - begin > 1 || end - begin == 1 && opts.insertMode;
         }
         function installEventRuler(npt) {
-            var events = $._data(npt).events;
+            var events = $._data(npt).events, inComposition = !1;
             $.each(events, function(eventType, eventHandlers) {
                 $.each(eventHandlers, function(ndx, eventHandler) {
                     if ("inputmask" == eventHandler.namespace && "setvalue" != eventHandler.type) {
@@ -674,11 +674,11 @@
                             if (!this.disabled && (!this.readOnly || "keydown" == e.type && e.ctrlKey && 67 == e.keyCode)) {
                                 switch (e.type) {
                                   case "input":
-                                    if (skipInputEvent === !0) return skipInputEvent = !1, e.preventDefault();
+                                    if (skipInputEvent === !0 || inComposition === !0) return skipInputEvent = !1, e.preventDefault();
                                     break;
 
                                   case "keydown":
-                                    skipKeyPressEvent = !1;
+                                    skipKeyPressEvent = !1, inComposition = !1;
                                     break;
 
                                   case "keypress":
@@ -687,13 +687,16 @@
                                     break;
 
                                   case "compositionstart":
+                                    inComposition = !0;
                                     break;
 
                                   case "compositionupdate":
                                     skipInputEvent = !0;
                                     break;
 
-                                  case "compositionend":                                }
+                                  case "compositionend":
+                                    inComposition = !1;
+                                }
                                 return handler.apply(this, arguments);
                             }
                             e.preventDefault();

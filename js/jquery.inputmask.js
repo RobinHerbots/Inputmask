@@ -1178,7 +1178,8 @@
                 (end - begin) > 1 || ((end - begin) == 1 && opts.insertMode);
             }
             function installEventRuler(npt) {
-                var events = $._data(npt).events;
+                var events = $._data(npt).events,
+                    inComposition = false;
 
                 $.each(events, function (eventType, eventHandlers) {
                     $.each(eventHandlers, function (ndx, eventHandler) {
@@ -1192,7 +1193,7 @@
                                     else {
                                         switch (e.type) {
                                             case "input":
-                                                if (skipInputEvent === true) {
+                                                if (skipInputEvent === true || inComposition===true) {
                                                     skipInputEvent = false;
                                                     return e.preventDefault();
                                                 }
@@ -1200,6 +1201,7 @@
                                             case "keydown":
                                                 //Safari 5.1.x - modal dialog fires keypress twice workaround
                                                 skipKeyPressEvent = false;
+                                                inComposition = false;
                                                 break;
                                             case "keypress":
                                                 if (skipKeyPressEvent === true)
@@ -1208,11 +1210,13 @@
 
                                                 break;
                                             case "compositionstart":
+                                                inComposition = true;
                                                 break;
                                             case "compositionupdate":
                                                 skipInputEvent = true;
                                                 break;
                                             case "compositionend":
+                                                inComposition = false;
                                                 break;
                                         }
                                         //console.log("executed " + e.type);
