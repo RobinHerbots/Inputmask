@@ -156,11 +156,11 @@ Optional extensions on the jquery.inputmask base
                      processValue = maskedValue.replace(opts.prefix, "");
                     processValue = processValue.replace(opts.suffix, "");
                     processValue = processValue.replace(new RegExp($.inputmask.escapeRegex(opts.groupSeparator), "g"), "");
-                    processValue = processValue.replace($.inputmask.escapeRegex(opts.radixPoint), ".");
+                    if (opts.radixPoint === ",") processValue = processValue.replace($.inputmask.escapeRegex(opts.radixPoint), ".");
 
                     if (isFinite(processValue)) {
                         if (isFinite(opts.min) && parseFloat(processValue) < parseFloat(opts.min)) {
-                            return opts.postFormat((opts.prefix + opts.min).split(''), 0, true, opts);
+                            return $.extend(true, { "refreshFromBuffer": true, "buffer": (opts.prefix + opts.min).split('') }, opts.postFormat((opts.prefix + opts.min).split(''), 0, true, opts));
                         }
                     }
 
@@ -269,7 +269,7 @@ Optional extensions on the jquery.inputmask base
                 processValue = maskedValue.replace(opts.prefix, "");
                 processValue = processValue.replace(opts.suffix, "");
                 processValue = processValue.replace(new RegExp($.inputmask.escapeRegex(opts.groupSeparator), "g"), "");
-                processValue = processValue.replace($.inputmask.escapeRegex(opts.radixPoint), ".");
+                if (opts.radixPoint === ",") processValue = processValue.replace($.inputmask.escapeRegex(opts.radixPoint), ".");
                 //handle negation symbol
                 processValue = processValue.replace(new RegExp("^" + $.inputmask.escapeRegex(opts.negationSymbol.front)), "-");
                 processValue = processValue.replace(new RegExp($.inputmask.escapeRegex(opts.negationSymbol.back) + "$"), "");
