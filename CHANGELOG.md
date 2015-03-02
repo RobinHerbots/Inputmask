@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - Add Component package manager support - component.json 
 
 ### Fixed
+- Numeric max filter #837
 - Mask cache - 2 definitions for same mask #831
 - Adding parentheses as a negative format for Decimal and Integer aliases (100) #451
 - Should not allow "-" or "+" as numbers #815

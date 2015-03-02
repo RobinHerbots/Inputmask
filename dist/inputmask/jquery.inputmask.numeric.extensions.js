@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.62-10
+* Version: 3.1.62-11
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery", "./jquery.inputmask" ], factory) : factory(jQuery);
@@ -308,8 +308,9 @@
             canClearPosition: function(maskset, position, lvp, strict, opts) {
                 var positionInput = maskset.validPositions[position].input, canClear = positionInput != opts.radixPoint && isFinite(positionInput) || position == lvp || positionInput == opts.groupSeparator || positionInput == opts.negationSymbol.front || positionInput == opts.negationSymbol.back;
                 if (canClear && isFinite(positionInput)) {
-                    var matchRslt = maskset.buffer.join("").substr(0, position).match(opts.regex.integerNPart(opts));
-                    if (!strict) {
+                    var matchRslt;
+                    if (!strict && maskset.buffer) {
+                        matchRslt = maskset.buffer.join("").substr(0, position).match(opts.regex.integerNPart(opts));
                         var pos = position + 1, isNull = null == matchRslt || 0 == parseInt(matchRslt[0].replace(new RegExp($.inputmask.escapeRegex(opts.groupSeparator), "g"), ""));
                         if (isNull) for (;maskset.validPositions[pos] && (maskset.validPositions[pos].input == opts.groupSeparator || "0" == maskset.validPositions[pos].input); ) delete maskset.validPositions[pos], 
                         pos++;

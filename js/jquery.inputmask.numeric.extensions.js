@@ -418,8 +418,9 @@ Optional extensions on the jquery.inputmask base
                     posOffset = 0;
 
                 if (canClear && isFinite(positionInput)) {
-                    var matchRslt = maskset["buffer"].join('').substr(0, position).match(opts.regex.integerNPart(opts));
-                    if (!strict) {
+                    var matchRslt
+                    if (!strict && maskset["buffer"]) {
+                        matchRslt = maskset["buffer"].join('').substr(0, position).match(opts.regex.integerNPart(opts));
                         var pos = position + 1, isNull = matchRslt == null || parseInt(matchRslt["0"].replace(new RegExp($.inputmask.escapeRegex(opts.groupSeparator), "g"), "")) == 0;
                         if (isNull) {
                             while (maskset["validPositions"][pos] && (maskset["validPositions"][pos].input == opts.groupSeparator || maskset["validPositions"][pos].input == "0")) {
