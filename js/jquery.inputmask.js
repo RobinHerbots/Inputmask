@@ -1135,12 +1135,12 @@
                     positions[pos] = $.extend(true, {}, testPos);
                 }
 
-                var lvTestAltArr = lvTest && lvTest.alternation != undefined ? lvTest["locator"][lvTest.alternation].split(",") : [];
+                var lvTestAlt = lvTest && lvTest.alternation != undefined ? lvTest["locator"][lvTest.alternation] : undefined;
                 for (pos = bl - 1; pos > lvp; pos--) {
                     testPos = positions[pos]["match"];
                     if ((testPos.optionality ||
                         testPos.optionalQuantifier ||
-                        (lvTest && lvTest.alternation != undefined && positions[pos]["locator"][lvTest.alternation] != undefined && $.inArray(positions[pos]["locator"][lvTest.alternation].toString(), lvTestAltArr) != -1))
+                        (lvTestAlt && lvTestAlt != positions[pos]["locator"][lvTest.alternation]))
                         && buffer[pos] == getPlaceholder(pos, testPos)) {
                         bl--;
                     } else break;
@@ -1193,7 +1193,7 @@
                                     else {
                                         switch (e.type) {
                                             case "input":
-                                                if (skipInputEvent === true || inComposition===true) {
+                                                if (skipInputEvent === true || inComposition === true) {
                                                     skipInputEvent = false;
                                                     return e.preventDefault();
                                                 }
@@ -1353,11 +1353,13 @@
                           lastAlt;
                         //find last alternation
                         for (lastAlt = getLastValidPosition() ; lastAlt >= 0; lastAlt--) {
-                            if (getMaskSet()["validPositions"][lastAlt]) {
-                                if (getMaskSet()["validPositions"][lastAlt].alternation != undefined) {
+                            var validPos = getMaskSet()["validPositions"][lastAlt];
+                            if (validPos) {
+                                if (validPos.alternation != undefined) {
                                     break;
                                 }
-                                validInputs.push(getMaskSet()["validPositions"][lastAlt].input);
+                                if (validPos.match.fn != null)
+                                    validInputs.push(validPos.input);
                                 delete getMaskSet()["validPositions"][lastAlt];
                             }
                         }
