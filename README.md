@@ -81,7 +81,11 @@ $(document).ready(function(){
    $("#example2").inputmask("Regex");
 });
 ```
+#### Allowed HTML-elements
 
+- input type="text" 
+- input type="tel"
+- div contenteditable="true" (and all others supported by contenteditable, but not tested)
 
 #### Default masking definitions
 

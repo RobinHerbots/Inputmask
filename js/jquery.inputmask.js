@@ -1091,6 +1091,7 @@
                 }
                 return pos;
             }
+
             function caret(input, begin, end) {
                 var npt = input.jquery && input.length > 0 ? input[0] : input, range;
                 if (typeof begin == 'number') {
@@ -1098,7 +1099,9 @@
                     end = TranslatePosition(end);
                     end = (typeof end == 'number') ? end : begin;
 
-                    if (!$(npt).is(":visible")) { return; }
+                    if (!$(npt).is(":visible")) {
+                        return;
+                    }
 
                     var scrollCalc = $(npt).css("font-size").replace("px", "") * end;
                     npt.scrollLeft = scrollCalc > npt.scrollWidth ? scrollCalc : 0;
@@ -1106,17 +1109,33 @@
                     if (npt.setSelectionRange) {
                         npt.selectionStart = begin;
                         npt.selectionEnd = end;
+                    } else if (window.getSelection()) {
+                        range = document.createRange();
+                        range.setStart(npt.firstChild, begin < npt._valueGet().length ? begin : npt._valueGet().length);
+                        range.setEnd(npt.firstChild, end < npt._valueGet().length ? end : npt._valueGet().length);
+                        range.collapse(true);
+                        var sel = window.getSelection();
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                        //npt.focus();
                     } else if (npt.createTextRange) {
                         range = npt.createTextRange();
                         range.collapse(true);
                         range.moveEnd('character', end);
                         range.moveStart('character', begin);
                         range.select();
+
                     }
                 } else {
                     if (npt.setSelectionRange) {
                         begin = npt.selectionStart;
                         end = npt.selectionEnd;
+                    } else if (window.getSelection()) {
+                        range = window.getSelection().getRangeAt(0);
+                        if (range.commonAncestorContainer.parentNode == npt) {
+                            begin = range.startOffset;
+                            end = range.endOffset;
+                        }
                     } else if (document.selection && document.selection.createRange) {
                         range = document.selection.createRange();
                         begin = 0 - range.duplicate().moveStart('character', -100000);
@@ -1306,10 +1325,20 @@
                 }
 
                 if (!npt._valueGet) {
-                    //var valueProperty;
-                    if (Object.getOwnPropertyDescriptor)
-                        var valueProperty = Object.getOwnPropertyDescriptor(npt, "value");
-                    if (valueProperty && valueProperty.configurable && false) { //experimental for chrome
+                    var valueProperty;
+                    if (Object.getOwnPropertyDescriptor && npt.value == undefined && npt.isContentEditable) {
+                        valueGet = function () {
+                            return this.textContent;
+                        }
+                        valueSet = function (value) {
+                            this.textContent = value;
+                        }
+
+                        Object.defineProperty(npt, "value", {
+                            get: getter,
+                            set: setter
+                        });
+                    } else if ((valueProperty = (Object.getOwnPropertyDescriptor && Object.getOwnPropertyDescriptor(npt, "value"))) && valueProperty.configurable && false) { //experimental for chrome
                         npt._value = valueProperty.value;
                         valueGet = function () {
                             return this._value || "";
@@ -1651,7 +1680,7 @@
             }
             function mask(el) {
                 $el = $(el);
-                if ($el.is(":input") && isInputTypeSupported($el.attr("type"))) {
+                if (($el.is(":input") && isInputTypeSupported($el.attr("type"))) || el.isContentEditable) {
                     //store tests & original buffer in the input element - used to get the unmasked value
                     $el.data('_inputmask', {
                         'maskset': maskset,

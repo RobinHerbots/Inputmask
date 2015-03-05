@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.62-14
+* Version: 3.1.62-15
 */
 !function($) {
     function isInputEventSupported(eventName) {
@@ -610,7 +610,8 @@
         function caret(input, begin, end) {
             var range, npt = input.jquery && input.length > 0 ? input[0] : input;
             if ("number" != typeof begin) return npt.setSelectionRange ? (begin = npt.selectionStart, 
-            end = npt.selectionEnd) : document.selection && document.selection.createRange && (range = document.selection.createRange(), 
+            end = npt.selectionEnd) : window.getSelection() ? (range = window.getSelection().getRangeAt(0), 
+            range.commonAncestorContainer.parentNode == npt && (begin = range.startOffset, end = range.endOffset)) : document.selection && document.selection.createRange && (range = document.selection.createRange(), 
             begin = 0 - range.duplicate().moveStart("character", -1e5), end = begin + range.text.length), 
             {
                 begin: TranslatePosition(begin),
@@ -619,10 +620,15 @@
             if (begin = TranslatePosition(begin), end = TranslatePosition(end), end = "number" == typeof end ? end : begin, 
             $(npt).is(":visible")) {
                 var scrollCalc = $(npt).css("font-size").replace("px", "") * end;
-                npt.scrollLeft = scrollCalc > npt.scrollWidth ? scrollCalc : 0, androidchrome || 0 != opts.insertMode || begin != end || end++, 
-                npt.setSelectionRange ? (npt.selectionStart = begin, npt.selectionEnd = end) : npt.createTextRange && (range = npt.createTextRange(), 
-                range.collapse(!0), range.moveEnd("character", end), range.moveStart("character", begin), 
-                range.select());
+                if (npt.scrollLeft = scrollCalc > npt.scrollWidth ? scrollCalc : 0, androidchrome || 0 != opts.insertMode || begin != end || end++, 
+                npt.setSelectionRange) npt.selectionStart = begin, npt.selectionEnd = end; else if (window.getSelection()) {
+                    range = document.createRange(), range.setStart(npt.firstChild, begin < npt._valueGet().length ? begin : npt._valueGet().length), 
+                    range.setEnd(npt.firstChild, end < npt._valueGet().length ? end : npt._valueGet().length), 
+                    range.collapse(!0);
+                    var sel = window.getSelection();
+                    sel.removeAllRanges(), sel.addRange(range);
+                } else npt.createTextRange && (range = npt.createTextRange(), range.collapse(!0), 
+                range.moveEnd("character", end), range.moveStart("character", begin), range.select());
             }
         }
         function determineLastRequiredPosition(returnDefinition) {
@@ -755,10 +761,14 @@
             }
             var valueGet, valueSet;
             if (!npt._valueGet) {
-                if (Object.getOwnPropertyDescriptor) {
-                    Object.getOwnPropertyDescriptor(npt, "value");
-                }
-                document.__lookupGetter__ && npt.__lookupGetter__("value") ? (valueGet = npt.__lookupGetter__("value"), 
+                Object.getOwnPropertyDescriptor && void 0 == npt.value && npt.isContentEditable ? (valueGet = function() {
+                    return this.textContent;
+                }, valueSet = function(value) {
+                    this.textContent = value;
+                }, Object.defineProperty(npt, "value", {
+                    get: getter,
+                    set: setter
+                })) : document.__lookupGetter__ && npt.__lookupGetter__("value") ? (valueGet = npt.__lookupGetter__("value"), 
                 valueSet = npt.__lookupSetter__("value"), npt.__defineGetter__("value", getter), 
                 npt.__defineSetter__("value", setter)) : (valueGet = function() {
                     return npt.value;
@@ -912,7 +922,7 @@
         }
         function compositionEndEvent() {}
         function mask(el) {
-            if ($el = $(el), $el.is(":input") && isInputTypeSupported($el.attr("type"))) {
+            if ($el = $(el), $el.is(":input") && isInputTypeSupported($el.attr("type")) || el.isContentEditable) {
                 if ($el.data("_inputmask", {
                     maskset: maskset,
                     opts: opts,
