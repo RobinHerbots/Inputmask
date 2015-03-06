@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased][unreleased]
 ### Added
+- enable masking the text content in a div
 - enable contenteditable elements for inputmask
 - Update Command object to handle inserts and allow for multiple removes
 - Add a change log

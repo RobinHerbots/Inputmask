@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.62-16
+* Version: 3.1.62-17
 */
 !function($) {
     function isInputEventSupported(eventName) {
@@ -758,7 +758,7 @@
             }
             var valueGet, valueSet;
             if (!npt._valueGet) {
-                Object.getOwnPropertyDescriptor && void 0 == npt.value && npt.isContentEditable ? (valueGet = function() {
+                Object.getOwnPropertyDescriptor && void 0 == npt.value ? (valueGet = function() {
                     return this.textContent;
                 }, valueSet = function(value) {
                     this.textContent = value;
@@ -919,7 +919,7 @@
         }
         function compositionEndEvent() {}
         function mask(el) {
-            if ($el = $(el), $el.is(":input") && isInputTypeSupported($el.attr("type")) || el.isContentEditable) {
+            if ($el = $(el), $el.is(":input") && isInputTypeSupported($el.attr("type")) || el.isContentEditable || $el.is("div")) {
                 if ($el.data("_inputmask", {
                     maskset: maskset,
                     opts: opts,
@@ -930,7 +930,7 @@
                     var inputData = $el.data("_inputmask");
                     inputData.isRTL = !0, $el.data("_inputmask", inputData), isRTL = !0;
                 }
-                $el.unbind(".inputmask"), $el.closest("form").bind("submit", function() {
+                $el.unbind(".inputmask"), $el.is(":input") && el.isContentEditable && ($el.closest("form").bind("submit", function() {
                     undoValue != getBuffer().join("") && $el.change(), $el[0]._valueGet && $el[0]._valueGet() == getBufferTemplate().join("") && $el[0]._valueSet(""), 
                     opts.removeMaskOnSubmit && $el.inputmask("remove");
                 }).bind("reset", function() {
@@ -976,11 +976,7 @@
                     setTimeout(function() {
                         caret(input, 0, seekNext(getLastValidPosition()));
                     }, 0);
-                }).bind(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", pasteEvent).bind("setvalue.inputmask", function() {
-                    var input = this, value = input._valueGet();
-                    input._valueSet($.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call(input, value, opts) || value : value), 
-                    checkVal(input, !0, !1), undoValue = getBuffer().join(""), (opts.clearMaskOnLostFocus || opts.clearIncomplete) && input._valueGet() == getBufferTemplate().join("") && input._valueSet("");
-                }).bind("cut.inputmask", function(e) {
+                }).bind(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", pasteEvent).bind("cut.inputmask", function(e) {
                     skipInputEvent = !0;
                     var input = this, $input = $(input), pos = caret(input);
                     handleRemove(input, $.inputmask.keyCode.DELETE, pos), writeBuffer(input, getBuffer(), getMaskSet().p, e, undoValue != getBuffer().join("")), 
@@ -989,7 +985,12 @@
                 }).bind("complete.inputmask", opts.oncomplete).bind("incomplete.inputmask", opts.onincomplete).bind("cleared.inputmask", opts.oncleared), 
                 $el.bind("keydown.inputmask", keydownEvent).bind("keypress.inputmask", keypressEvent), 
                 androidfirefox || $el.bind("compositionstart.inputmask", compositionStartEvent).bind("compositionupdate.inputmask", compositionUpdateEvent).bind("compositionend.inputmask", compositionEndEvent), 
-                "paste" === PasteEventType && $el.bind("input.inputmask", inputFallBackEvent), patchValueProperty(el);
+                "paste" === PasteEventType && $el.bind("input.inputmask", inputFallBackEvent)), 
+                $el.bind("setvalue.inputmask", function() {
+                    var input = this, value = input._valueGet();
+                    input._valueSet($.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call(input, value, opts) || value : value), 
+                    checkVal(input, !0, !1), undoValue = getBuffer().join(""), (opts.clearMaskOnLostFocus || opts.clearIncomplete) && input._valueGet() == getBufferTemplate().join("") && input._valueSet("");
+                }), patchValueProperty(el);
                 var initialValue = $.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call(el, el._valueGet(), opts) || el._valueGet() : el._valueGet();
                 checkVal(el, !0, !1, initialValue.split(""));
                 var buffer = getBuffer().slice();
