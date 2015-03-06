@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - Add Component package manager support - component.json 
 
 ### Fixed
+- Form reset doesn't get same value as initial mask #842
 - Numeric extension doesn't seem to support min/max values #830
 - Numeric max filter #837
 - Mask cache - 2 definitions for same mask #831

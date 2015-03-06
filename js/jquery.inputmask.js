@@ -1276,12 +1276,9 @@
                             },
                             set: function (elem, value) {
                                 var $elem = $(elem), inputData = $elem.data('_inputmask'), result;
-                                if (inputData) {
-                                    result = valhookSet(elem, $.isFunction(inputData['opts'].onBeforeMask) ? (inputData['opts'].onBeforeMask.call(el, value, inputData['opts']) || value) : value);
+                                result = valhookSet(elem, value);
+                                if (inputData)
                                     $elem.triggerHandler('setvalue.inputmask');
-                                } else {
-                                    result = valhookSet(elem, value);
-                                }
                                 return result;
                             },
                             inputmaskpatch: true
@@ -1296,20 +1293,15 @@
                 }
                 function setter(value) {
                     var inputData = $(this).data('_inputmask');
-                    if (inputData) {
-                        valueSet.call(this, $.isFunction(inputData['opts'].onBeforeMask) ? (inputData['opts'].onBeforeMask.call(el, value, inputData['opts']) || value) : value);
+                    valueSet.call(this, value);
+                    if (inputData)
                         $(this).triggerHandler('setvalue.inputmask');
-                    } else {
-                        valueSet.call(this, value);
-                    }
                 }
                 function InstallNativeValueSetFallback(npt) {
                     $(npt).bind("mouseenter.inputmask", function (event) {
                         var $input = $(this), input = this, value = input._valueGet();
-                        if (value != "" && value != getBuffer().join('')) {
-                            this._valueSet($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(el, value, opts) || value) : value);
+                        if (value != "" && value != getBuffer().join(''))
                             $input.triggerHandler('setvalue.inputmask');
-                        }
                     });
                     //!! the bound handlers are executed in the order they where bound
                     //reorder the events - the mouseenter event is internally mapped to the mouseover event
@@ -1812,7 +1804,8 @@
                         }, 0);
                     }).bind(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", pasteEvent
                     ).bind('setvalue.inputmask', function () {
-                        var input = this;
+                        var input = this, value = input._valueGet();
+                        input._valueSet($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(input, value, opts) || value) : value);
                         checkVal(input, true, false);
                         undoValue = getBuffer().join('');
                         if ((opts.clearMaskOnLostFocus || opts.clearIncomplete) && input._valueGet() == getBufferTemplate().join(''))
