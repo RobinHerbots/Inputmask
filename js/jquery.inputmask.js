@@ -1700,7 +1700,7 @@
                     //unbind all events - to make sure that no other mask will interfere when re-masking
                     $el.unbind(".inputmask");
 
-                    if ($el.is(":input") && el.isContentEditable) {
+                    if ($el.is(":input") || el.isContentEditable) {
                         //bind events
                         $el.closest('form').bind("submit", function (e) { //trigger change on submit if any
                             if (undoValue != getBuffer().join('')) {

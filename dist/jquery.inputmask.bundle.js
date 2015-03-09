@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.62-17
+* Version: 3.1.62-18
 */
 !function($) {
     function isInputEventSupported(eventName) {
@@ -930,7 +930,7 @@
                     var inputData = $el.data("_inputmask");
                     inputData.isRTL = !0, $el.data("_inputmask", inputData), isRTL = !0;
                 }
-                $el.unbind(".inputmask"), $el.is(":input") && el.isContentEditable && ($el.closest("form").bind("submit", function() {
+                $el.unbind(".inputmask"), ($el.is(":input") || el.isContentEditable) && ($el.closest("form").bind("submit", function() {
                     undoValue != getBuffer().join("") && $el.change(), $el[0]._valueGet && $el[0]._valueGet() == getBufferTemplate().join("") && $el[0]._valueSet(""), 
                     opts.removeMaskOnSubmit && $el.inputmask("remove");
                 }).bind("reset", function() {
