@@ -42,6 +42,10 @@ Optional extensions on the jquery.inputmask base
                         opts.integerDigits = parseInt(opts.integerDigits) + (mod == 0 ? seps - 1 : seps);
                     }
                 }
+
+                //enforce placeholder to single
+                if (opts.placeholder.length > 1)
+                    opts.placeholder = opts.placeholder.charAt(0);
                 //only allow radixfocus when placeholder = 0
                 opts.radixFocus = opts.radixFocus && opts.placeholder == "0";
 
