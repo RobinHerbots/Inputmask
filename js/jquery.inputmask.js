@@ -395,19 +395,25 @@
                         delete getMaskSet()["validPositions"][i];
                     }
                     getMaskSet()["validPositions"][pos] = validTest;
-                    var valid = true, j;
-                    for (i = pos; i <= lvp ; i++) {
+                    var valid = true, j, vps = getMaskSet()["validPositions"];
+                    for (i = (j = pos) ; i <= lvp ; i++) {
                         var t = positionsClone[i];
                         if (t != undefined) {
-                            var vps = getMaskSet()["validPositions"];
-                            if (!opts.keepStatic && vps[i] && (vps[i + 1] != undefined && getTests(i + 1, vps[i].locator.slice(), i).length > 1 || vps[i].alternation != undefined))
-                                j = i + 1;
-                            else
-                                j = seekNext(i);
+                            var posMatch = j;
+                            while (posMatch < getMaskLength()) {
+                                //determine next position
+                                if (t.match.fn == null || (!opts.keepStatic && vps[i] && (vps[i + 1] != undefined && getTests(i + 1, vps[i].locator.slice(), i).length > 1 || vps[i].alternation != undefined)))
+                                    posMatch++;
+                                else
+                                    posMatch = seekNext(j);
 
-                            if (positionCanMatchDefinition(j, t["match"].def)) {
-                                valid = valid && (isValid(j, t["input"], true, true) !== false);
-                            } else valid = t["match"].fn == null;
+                                //does it match
+                                if (positionCanMatchDefinition(posMatch, t["match"].def)) {
+                                    valid = valid && (isValid(posMatch, t["input"], true, true) !== false);
+                                    j = posMatch;
+                                    break;
+                                } else valid = t["match"].fn == null;
+                            }
                         }
                         if (!valid) break;
                     }
@@ -523,8 +529,8 @@
                                     var isFirstMatch = $.inArray(latestMatch, optionalToken.matches) == 0;
                                     if (isFirstMatch) {
                                         insertStop = true; //insert a stop
-                                    }
-                                    testPos = pos; //match the position after the group
+                                        testPos = pos; //match the position after the group
+                                    } else return true;
                                 }
                             } else if (match.isAlternator) {
                                 var alternateToken = match, malternateMatches = [], maltMatches,
@@ -727,6 +733,7 @@
 
                 function _isValid(position, c, strict, fromSetValid) {
                     var rslt = false;
+                    //console.log(JSON.stringify(getTests(position)));
                     $.each(getTests(position), function (ndx, tst) {
                         var test = tst["match"];
                         var loopend = c ? 1 : 0, chrs = '', buffer = getBuffer();
@@ -1318,7 +1325,7 @@
 
                 if (!npt._valueGet) {
                     var valueProperty;
-                    if (Object.getOwnPropertyDescriptor && npt.value == undefined){ // && npt.isContentEditable) {
+                    if (Object.getOwnPropertyDescriptor && npt.value == undefined) { // && npt.isContentEditable) {
                         valueGet = function () {
                             return this.textContent;
                         }

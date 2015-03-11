@@ -247,3 +247,15 @@ test(".inputmask('999-999-9999[ ext 9{1,5}]'); - type 12345678901 backspace isco
 
     $("#testmask").remove();
 });
+
+test("inputmask({ mask: \"9999[ 9999][ 9999]\"}) - input 1234 space space - GMTA", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({ mask: "9999[ 9999][ 9999]"});
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("1234  ");
+    equal($("#testmask").val(), "1234 ____ ____", "Result " + $("#testmask").val());
+
+    $("#testmask").remove();
+});

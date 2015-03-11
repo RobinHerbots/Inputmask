@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - Add Component package manager support - component.json 
 
 ### Fixed
+- Sequentional optional parts do not fully match #699
 - How i fix that number problem? #835
 - Form reset doesn't get same value as initial mask #842
 - Numeric extension doesn't seem to support min/max values #830
