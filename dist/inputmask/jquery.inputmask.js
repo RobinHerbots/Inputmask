@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.62-26
+* Version: 3.1.62-36
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery" ], factory) : factory(jQuery);
@@ -455,7 +455,7 @@
                 }), rslt;
             }
             function alternate(pos, c, strict, fromSetValid) {
-                var lastAlt, alternation, validPsClone = $.extend(!0, {}, getMaskSet().validPositions);
+                var lastAlt, alternation, isValidRslt, validPsClone = $.extend(!0, {}, getMaskSet().validPositions);
                 for (lastAlt = getLastValidPosition(); lastAlt >= 0; lastAlt--) if (getMaskSet().validPositions[lastAlt] && void 0 != getMaskSet().validPositions[lastAlt].alternation) {
                     alternation = getMaskSet().validPositions[lastAlt].alternation;
                     break;
@@ -468,13 +468,17 @@
                             break;
                         }
                         if (decisionTaker != possibilityPos.locator[alternation]) {
-                            for (var buffer = getBuffer().slice(), i = decisionPos; i < getLastValidPosition() + 1; i++) delete getMaskSet().validPositions[i], 
-                            delete getMaskSet().tests[i];
-                            resetMaskSet(!0), opts.keepStatic = !opts.keepStatic;
-                            for (var i = decisionPos; i < buffer.length; i++) buffer[i] != opts.skipOptionalPartCharacter && isValid(getLastValidPosition() + 1, buffer[i], !1, !0);
-                            possibilityPos.locator[alternation] = possibilities;
-                            var isValidRslt = isValid(pos, c, strict, fromSetValid);
-                            if (opts.keepStatic = !opts.keepStatic, isValidRslt) return isValidRslt;
+                            for (var validInputs = [], i = decisionPos; i < getLastValidPosition() + 1; i++) {
+                                var validPos = getMaskSet().validPositions[i];
+                                validPos && null != validPos.match.fn && validInputs.push(validPos.input), delete getMaskSet().validPositions[i], 
+                                delete getMaskSet().tests[i];
+                            }
+                            for (resetMaskSet(!0), opts.keepStatic = !opts.keepStatic, isValidRslt = !0; validInputs.length > 0; ) {
+                                var input = validInputs.shift();
+                                if (input != opts.skipOptionalPartCharacter && !(isValidRslt = isValid(getLastValidPosition() + 1, input, !1, !0))) break;
+                            }
+                            if (possibilityPos.locator[alternation] = possibilities, isValidRslt && (isValidRslt = isValid(pos, c, strict, fromSetValid)), 
+                            opts.keepStatic = !opts.keepStatic, isValidRslt) return isValidRslt;
                             resetMaskSet(), getMaskSet().validPositions = $.extend(!0, {}, validPsClone);
                         }
                     }
@@ -788,11 +792,11 @@
             function generalize() {
                 if (opts.keepStatic) {
                     resetMaskSet(!0);
-                    var lastAlt, validInputs = [];
+                    var lastAlt, validInputs = [], positionsClone = $.extend(!0, {}, getMaskSet().validPositions);
                     for (lastAlt = getLastValidPosition(); lastAlt >= 0; lastAlt--) {
                         var validPos = getMaskSet().validPositions[lastAlt];
                         if (validPos) {
-                            if (void 0 != validPos.alternation) break;
+                            if (void 0 != validPos.alternation && validPos.locator[validPos.alternation] == getTestTemplate(lastAlt).locator[validPos.alternation]) break;
                             null != validPos.match.fn && validInputs.push(validPos.input), delete getMaskSet().validPositions[lastAlt];
                         }
                     }
@@ -800,7 +804,7 @@
                         getMaskSet().p = seekNext(getLastValidPosition());
                         var keypress = $.Event("keypress");
                         keypress.which = validInputs.pop().charCodeAt(0), keypressEvent.call(input, keypress, !0, !1, !1, getMaskSet().p);
-                    }
+                    } else getMaskSet().validPositions = $.extend(!0, {}, positionsClone);
                 }
             }
             if ((opts.numericInput || isRTL) && (k == $.inputmask.keyCode.BACKSPACE ? k = $.inputmask.keyCode.DELETE : k == $.inputmask.keyCode.DELETE && (k = $.inputmask.keyCode.BACKSPACE), 
