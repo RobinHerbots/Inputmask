@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.62-41
+* Version: 3.1.62-42
 */
 !function($) {
     function isInputEventSupported(eventName) {
@@ -307,7 +307,7 @@
                             var maltMatches, alternateToken = match, malternateMatches = [], currentMatches = matches.slice(), loopNdxCnt = loopNdx.length, altIndex = ndxInitializer.length > 0 ? ndxInitializer.shift() : -1;
                             if (-1 == altIndex || "string" == typeof altIndex) {
                                 var altIndexArr, currentPos = testPos, ndxInitializerClone = ndxInitializer.slice();
-                                "string" == typeof altIndex && (altIndexArr = altIndex.split(",")), console.log(alternateToken.matches.length);
+                                "string" == typeof altIndex && (altIndexArr = altIndex.split(","));
                                 for (var amndx = 0; amndx < alternateToken.matches.length; amndx++) {
                                     matches = [], match = handleMatch(alternateToken.matches[amndx], [ amndx ].concat(loopNdx), quantifierRecurse) || match, 
                                     maltMatches = matches.slice(), testPos = currentPos, matches = [];
@@ -379,8 +379,7 @@
                     def: ""
                 },
                 locator: []
-            }), getMaskSet().tests[pos] = $.extend(!0, [], matches), console.log(pos + " - " + JSON.stringify(matches)), 
-            getMaskSet().tests[pos];
+            }), getMaskSet().tests[pos] = $.extend(!0, [], matches), getMaskSet().tests[pos];
         }
         function getBufferTemplate() {
             return void 0 == getMaskSet()._buffer && (getMaskSet()._buffer = getMaskTemplate(!1, 1)), 

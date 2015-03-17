@@ -539,7 +539,7 @@
                                 if (altIndex == -1 || typeof altIndex == "string") {
                                     var currentPos = testPos, ndxInitializerClone = ndxInitializer.slice(), altIndexArr;
                                     if (typeof altIndex == "string") altIndexArr = altIndex.split(",");
-                                    console.log(alternateToken.matches.length);
+                                    //console.log(alternateToken.matches.length);
                                     for (var amndx = 0; amndx < alternateToken.matches.length; amndx++) {
                                         matches = [];
                                         match = handleMatch(alternateToken.matches[amndx], [amndx].concat(loopNdx), quantifierRecurse) || match;
@@ -671,7 +671,7 @@
                     matches.push({ "match": { fn: null, cardinality: 0, optionality: true, casing: null, def: "" }, "locator": [] });
 
                 getMaskSet()['tests'][pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
-                console.log(pos + " - " + JSON.stringify(matches));
+                //console.log(pos + " - " + JSON.stringify(matches));
                 return getMaskSet()['tests'][pos];
             }
             function getBufferTemplate() {
