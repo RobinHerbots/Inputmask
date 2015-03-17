@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.62-36
+* Version: 3.1.62-39
 */
 !function($) {
     function isInputEventSupported(eventName) {
@@ -235,10 +235,10 @@
                 var j, valid = !0, vps = getMaskSet().validPositions;
                 for (i = j = pos; lvp >= i; i++) {
                     var t = positionsClone[i];
-                    if (void 0 != t) for (var posMatch = j; posMatch < getMaskLength(); ) {
+                    if (void 0 != t) for (var posMatch = j; posMatch < getMaskLength() && (null == t.match.fn && vps[i] && (vps[i].match.optionalQuantifier === !0 || vps[i].match.optionality === !0) || null != t.match.fn); ) {
                         if (null == t.match.fn || !opts.keepStatic && vps[i] && (void 0 != vps[i + 1] && getTests(i + 1, vps[i].locator.slice(), i).length > 1 || void 0 != vps[i].alternation) ? posMatch++ : posMatch = seekNext(j), 
                         positionCanMatchDefinition(posMatch, t.match.def)) {
-                            valid = valid && isValid(posMatch, t.input, !0, !0) !== !1, j = posMatch;
+                            valid = isValid(posMatch, t.input, !0, !0) !== !1, j = posMatch;
                             break;
                         }
                         valid = null == t.match.fn;
@@ -462,7 +462,8 @@
                     for (var altPos = getMaskSet().validPositions[decisionPos], decisionTaker = altPos.locator[alternation], altNdxs = getMaskSet().validPositions[lastAlt].locator[alternation].split(","), mndx = 0; mndx < altNdxs.length; mndx++) if (decisionTaker < altNdxs[mndx]) {
                         for (var possibilityPos, possibilities, dp = decisionPos - 1; dp >= 0; dp--) if (possibilityPos = getMaskSet().validPositions[dp], 
                         void 0 != possibilityPos) {
-                            possibilities = possibilityPos.locator[alternation], possibilityPos.locator[alternation] = altNdxs[mndx];
+                            possibilities = possibilityPos.locator[alternation], possibilityPos.alternation = void 0, 
+                            possibilityPos.locator[alternation] = parseInt(altNdxs[mndx]);
                             break;
                         }
                         if (decisionTaker != possibilityPos.locator[alternation]) {
@@ -475,8 +476,9 @@
                                 var input = validInputs.shift();
                                 if (input != opts.skipOptionalPartCharacter && !(isValidRslt = isValid(getLastValidPosition() + 1, input, !1, !0))) break;
                             }
-                            if (possibilityPos.locator[alternation] = possibilities, isValidRslt && (isValidRslt = isValid(pos, c, strict, fromSetValid)), 
-                            opts.keepStatic = !opts.keepStatic, isValidRslt) return isValidRslt;
+                            if (possibilityPos.alternation = alternation, possibilityPos.locator[alternation] = possibilities, 
+                            isValidRslt && (isValidRslt = isValid(pos, c, strict, fromSetValid)), opts.keepStatic = !opts.keepStatic, 
+                            isValidRslt) return isValidRslt;
                             resetMaskSet(), getMaskSet().validPositions = $.extend(!0, {}, validPsClone);
                         }
                     }
@@ -500,7 +502,7 @@
             for (pndx++; pos > pndx; pndx++) void 0 == getMaskSet().validPositions[pndx] && ((!isMask(pndx) || buffer[pndx] != getPlaceholder(pndx)) && getTests(pndx).length > 1 || buffer[pndx] == opts.radixPoint || "0" == buffer[pndx] && $.inArray(opts.radixPoint, buffer) < pndx) && _isValid(pndx, buffer[pndx], !0);
             var maskPos = pos, result = !1, positionsClone = $.extend(!0, {}, getMaskSet().validPositions);
             if (maskPos < getMaskLength() && (result = _isValid(maskPos, c, strict, fromSetValid), 
-            !strict && result === !1)) {
+            (!strict || fromSetValid) && result === !1)) {
                 var currentPosValid = getMaskSet().validPositions[maskPos];
                 if (!currentPosValid || null != currentPosValid.match.fn || currentPosValid.match.def != c && c != opts.skipOptionalPartCharacter) {
                     if ((opts.insertMode || void 0 == getMaskSet().validPositions[seekNext(maskPos)]) && !isMask(maskPos)) for (var nPos = maskPos + 1, snPos = seekNext(maskPos); snPos >= nPos; nPos++) if (result = _isValid(nPos, c, strict, fromSetValid), 

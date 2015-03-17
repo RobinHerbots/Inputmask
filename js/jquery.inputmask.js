@@ -400,7 +400,7 @@
                         var t = positionsClone[i];
                         if (t != undefined) {
                             var posMatch = j;
-                            while (posMatch < getMaskLength()) {
+                            while (posMatch < getMaskLength() && ((t.match.fn == null && vps[i] && (vps[i].match.optionalQuantifier === true || vps[i].match.optionality === true)) || t.match.fn != null)) {
                                 //determine next position
                                 if (t.match.fn == null || (!opts.keepStatic && vps[i] && (vps[i + 1] != undefined && getTests(i + 1, vps[i].locator.slice(), i).length > 1 || vps[i].alternation != undefined)))
                                     posMatch++;
@@ -409,7 +409,7 @@
 
                                 //does it match
                                 if (positionCanMatchDefinition(posMatch, t["match"].def)) {
-                                    valid = valid && (isValid(posMatch, t["input"], true, true) !== false);
+                                    valid = isValid(posMatch, t["input"], true, true) !== false;
                                     j = posMatch;
                                     break;
                                 } else valid = t["match"].fn == null;
@@ -810,7 +810,6 @@
 
                     return rslt;
                 }
-
                 function alternate(pos, c, strict, fromSetValid) {
                     var validPsClone = $.extend(true, {}, getMaskSet()["validPositions"]),
                         lastAlt,
@@ -838,7 +837,8 @@
                                             possibilityPos = getMaskSet()["validPositions"][dp];
                                             if (possibilityPos != undefined) {
                                                 possibilities = possibilityPos.locator[alternation]; //store to reset 
-                                                possibilityPos.locator[alternation] = altNdxs[mndx];
+                                                possibilityPos.alternation = undefined;
+                                                possibilityPos.locator[alternation] = parseInt(altNdxs[mndx]);
                                                 break;
                                             }
                                         }
@@ -866,6 +866,7 @@
                                                 }
                                             }
 
+                                            possibilityPos.alternation = alternation;
                                             possibilityPos.locator[alternation] = possibilities; //reset forceddecision ~ needed for proper delete
                                             if (isValidRslt)
                                                 isValidRslt = isValid(pos, c, strict, fromSetValid);
@@ -938,7 +939,7 @@
                 //}
                 if (maskPos < getMaskLength()) {
                     result = _isValid(maskPos, c, strict, fromSetValid);
-                    if (!strict && result === false) {
+                    if ((!strict || fromSetValid) && result === false) {
                         var currentPosValid = getMaskSet()["validPositions"][maskPos];
                         if (currentPosValid && currentPosValid["match"].fn == null && (currentPosValid["match"].def == c || c == opts.skipOptionalPartCharacter)) {
                             result = { "caret": seekNext(maskPos) };
