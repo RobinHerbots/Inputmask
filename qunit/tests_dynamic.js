@@ -125,6 +125,20 @@ test("email mask - email@subdomain.domain.com - babupca", function () {
     $("#testmask").remove();
 });
 
+asyncTest("email mask - paste test.test@test.com - Kurumas", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("email");
+
+    $("#testmask")[0].focus();
+    $("#testmask").paste("test.test@test.com");
+    setTimeout(function () {
+        equal($("#testmask").val(), "test.test@test.com", "Result " + $("#testmask").val());
+        start();
+        $("#testmask").remove();
+    }, 0);
+});
+
 test("quantifier mask greedy false - FairSite2C", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');

@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.62-39
+* Version: 3.1.62-41
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery" ], factory) : factory(jQuery);
@@ -218,13 +218,13 @@
             maskset.buffer = void 0, maskset.tests = {}, soft !== !0 && (maskset._buffer = void 0, 
             maskset.validPositions = {}, maskset.p = 0);
         }
-        function getLastValidPosition(closestTo) {
+        function getLastValidPosition(closestTo, strict) {
             var maskset = getMaskSet(), lastValidPosition = -1, valids = maskset.validPositions;
             void 0 == closestTo && (closestTo = -1);
             var before = lastValidPosition, after = lastValidPosition;
             for (var posNdx in valids) {
                 var psNdx = parseInt(posNdx);
-                valids[psNdx] && null != valids[psNdx].match.fn && (closestTo >= psNdx && (before = psNdx), 
+                valids[psNdx] && (strict || null != valids[psNdx].match.fn) && (closestTo >= psNdx && (before = psNdx), 
                 psNdx >= closestTo && (after = psNdx));
             }
             return lastValidPosition = -1 != before && closestTo - before > 1 || closestTo > after ? before : after;
@@ -309,7 +309,7 @@
                             var maltMatches, alternateToken = match, malternateMatches = [], currentMatches = matches.slice(), loopNdxCnt = loopNdx.length, altIndex = ndxInitializer.length > 0 ? ndxInitializer.shift() : -1;
                             if (-1 == altIndex || "string" == typeof altIndex) {
                                 var altIndexArr, currentPos = testPos, ndxInitializerClone = ndxInitializer.slice();
-                                "string" == typeof altIndex && (altIndexArr = altIndex.split(","));
+                                "string" == typeof altIndex && (altIndexArr = altIndex.split(",")), console.log(alternateToken.matches.length);
                                 for (var amndx = 0; amndx < alternateToken.matches.length; amndx++) {
                                     matches = [], match = handleMatch(alternateToken.matches[amndx], [ amndx ].concat(loopNdx), quantifierRecurse) || match, 
                                     maltMatches = matches.slice(), testPos = currentPos, matches = [];
@@ -381,7 +381,8 @@
                     def: ""
                 },
                 locator: []
-            }), getMaskSet().tests[pos] = $.extend(!0, [], matches), getMaskSet().tests[pos];
+            }), getMaskSet().tests[pos] = $.extend(!0, [], matches), console.log(pos + " - " + JSON.stringify(matches)), 
+            getMaskSet().tests[pos];
         }
         function getBufferTemplate() {
             return void 0 == getMaskSet()._buffer && (getMaskSet()._buffer = getMaskTemplate(!1, 1)), 
@@ -591,7 +592,7 @@
             initialNdx = seekNext(initialNdx)), $.each(inputValue, function(ndx, charCode) {
                 var keypress = $.Event("keypress");
                 keypress.which = charCode.charCodeAt(0), charCodes += charCode;
-                var lvp = getLastValidPosition(), lvTest = getMaskSet().validPositions[lvp], nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : void 0, lvp);
+                var lvp = getLastValidPosition(void 0, !0), lvTest = getMaskSet().validPositions[lvp], nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : void 0, lvp);
                 if (!isTemplateMatch() || strict) {
                     var pos = strict ? ndx : null == nextTest.match.fn && nextTest.match.optionality && lvp + 1 < getMaskSet().p ? lvp + 1 : getMaskSet().p;
                     keypressEvent.call(input, keypress, !0, !1, strict, pos), initialNdx = pos + 1, 

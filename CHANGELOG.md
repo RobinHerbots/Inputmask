@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 - Add Component package manager support - component.json 
 
 ### Fixed
+- Email with dot - paste not working #847
 - Standard phone numbers in Brazil #836 (Part 1)
 - Sequentional optional parts do not fully match #699
 - How i fix that number problem? #835

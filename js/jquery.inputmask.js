@@ -373,13 +373,13 @@
                     maskset["p"] = 0;
                 }
             }
-            function getLastValidPosition(closestTo) {
+            function getLastValidPosition(closestTo, strict) {
                 var maskset = getMaskSet(), lastValidPosition = -1, valids = maskset["validPositions"];
                 if (closestTo == undefined) closestTo = -1;
                 var before = lastValidPosition, after = lastValidPosition;
                 for (var posNdx in valids) {
                     var psNdx = parseInt(posNdx);
-                    if (valids[psNdx] && valids[psNdx]["match"].fn != null) {
+                    if (valids[psNdx] && (strict || valids[psNdx]["match"].fn != null)) {
                         if (psNdx <= closestTo) before = psNdx;
                         if (psNdx >= closestTo) after = psNdx;
                     }
@@ -539,6 +539,7 @@
                                 if (altIndex == -1 || typeof altIndex == "string") {
                                     var currentPos = testPos, ndxInitializerClone = ndxInitializer.slice(), altIndexArr;
                                     if (typeof altIndex == "string") altIndexArr = altIndex.split(",");
+                                    console.log(alternateToken.matches.length);
                                     for (var amndx = 0; amndx < alternateToken.matches.length; amndx++) {
                                         matches = [];
                                         match = handleMatch(alternateToken.matches[amndx], [amndx].concat(loopNdx), quantifierRecurse) || match;
@@ -638,7 +639,7 @@
                     }
                 }
 
-                //if (disableCache !== true && getMaskSet()['tests'][pos] && !getMaskSet()['validPositions'][pos]) {
+                //if (getMaskSet()['tests'][pos] && !getMaskSet()['validPositions'][pos]) {
                 //    return getMaskSet()['tests'][pos];
                 //}
                 if (ndxIntlzr == undefined) {
@@ -670,7 +671,7 @@
                     matches.push({ "match": { fn: null, cardinality: 0, optionality: true, casing: null, def: "" }, "locator": [] });
 
                 getMaskSet()['tests'][pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
-                //console.log(pos + " - " + JSON.stringify(matches));
+                console.log(pos + " - " + JSON.stringify(matches));
                 return getMaskSet()['tests'][pos];
             }
             function getBufferTemplate() {
@@ -1071,7 +1072,7 @@
                     var keypress = $.Event("keypress");
                     keypress.which = charCode.charCodeAt(0);
                     charCodes += charCode;
-                    var lvp = getLastValidPosition(), lvTest = getMaskSet()["validPositions"][lvp], nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : undefined, lvp);
+                    var lvp = getLastValidPosition(undefined, true), lvTest = getMaskSet()["validPositions"][lvp], nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : undefined, lvp);
                     if (!isTemplateMatch() || strict) {
                         var pos = strict ? ndx : (nextTest["match"].fn == null && nextTest["match"].optionality && (lvp + 1) < getMaskSet()["p"] ? lvp + 1 : getMaskSet()["p"]);
                         keypressEvent.call(input, keypress, true, false, strict, pos);
