@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased][unreleased]
 ### Added
+- Numeric alias: add unmaskAsNumber option
 - import russian phone codes from inputmask-multi
 - enable masking the text content in a div
 - enable contenteditable elements for inputmask

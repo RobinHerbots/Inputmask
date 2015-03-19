@@ -473,7 +473,7 @@
                 if (testPos == undefined) {
                     var testPositions = getTests(pos, ndxIntlzr, tstPs),
                         lvp = getLastValidPosition(),
-                        lvTest = getMaskSet()["validPositions"][lvp] || getTests(0)[0],
+                        lvTest = getMaskSet()["validPositions"][lvp] || getTests(0, undefined, undefined)[0],
                         lvTestAltArr = (lvTest.alternation != undefined) ? lvTest["locator"][lvTest.alternation].split(",") : [];
                     for (var ndx = 0; ndx < testPositions.length; ndx++) {
                         testPos = testPositions[ndx];
@@ -506,7 +506,7 @@
                 }
                 return valid;
             };
-            function getTests(pos, ndxIntlzr, tstPs) {
+            function getTests(pos, ndxIntlzr, tstPs, cacheable) {
                 var maskTokens = getMaskSet()["maskToken"], testPos = ndxIntlzr ? tstPs : 0, ndxInitializer = ndxIntlzr || [0], matches = [], insertStop = false;
                 function ResolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) { //ndxInitilizer contains a set of indexes to speedup searches in the mtokens
                     function handleMatch(match, loopNdx, quantifierRecurse) {
@@ -639,9 +639,9 @@
                     }
                 }
 
-                //if (getMaskSet()['tests'][pos] && !getMaskSet()['validPositions'][pos]) {
-                //    return getMaskSet()['tests'][pos];
-                //}
+                if (false && cacheable !== false && getMaskSet()['tests'][pos] && !getMaskSet()['validPositions'][pos]) {
+                    return getMaskSet()['tests'][pos];
+                }
                 if (ndxIntlzr == undefined) {
                     var previousPos = pos - 1, test;
                     while ((test = getMaskSet()['validPositions'][previousPos]) == undefined && previousPos > -1) {
@@ -981,7 +981,6 @@
                 var maskLength;
                 maxLength = $el.prop('maxLength');
                 if (maxLength == -1) maxLength = undefined; /* FF sets no defined max length to -1 */
-                //if (opts.greedy == false) { //FIXME TODO
                 var pos, lvp = getLastValidPosition(), testPos = getMaskSet()["validPositions"][lvp],
                     ndxIntlzr = testPos != undefined ? testPos["locator"].slice() : undefined;
                 for (pos = lvp + 1; testPos == undefined || (testPos["match"]["fn"] != null || (testPos["match"]["fn"] == null && testPos["match"]["def"] != "")) ; pos++) {
@@ -989,9 +988,6 @@
                     ndxIntlzr = testPos["locator"].slice();
                 }
                 maskLength = pos;
-                //} else
-                //    maskLength = getBuffer().length;
-
                 return (maxLength == undefined || maskLength < maxLength) ? maskLength : maxLength;
             }
             function seekNext(pos) {

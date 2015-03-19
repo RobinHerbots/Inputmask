@@ -362,11 +362,15 @@ Optional extensions on the jquery.inputmask base
             },
             insertMode: true,
             autoUnmask: false,
+            unmaskAsNumber: false,
             onUnMask: function (maskedValue, unmaskedValue, opts) {
                 var processValue = maskedValue.replace(opts.prefix, "");
                 processValue = processValue.replace(opts.suffix, "");
                 processValue = processValue.replace(new RegExp($.inputmask.escapeRegex(opts.groupSeparator), "g"), "");
-                //processValue = processValue.replace($.inputmask.escapeRegex.call(this, opts.radixPoint), ".");
+                if (opts.unmaskAsNumber) {
+                    processValue = processValue.replace($.inputmask.escapeRegex.call(this, opts.radixPoint), ".");
+                    return Number(processValue);
+                }
                 return processValue;
             },
             isComplete: function (buffer, opts) {
