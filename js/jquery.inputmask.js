@@ -1129,7 +1129,7 @@
                     if (npt.setSelectionRange) {
                         npt.selectionStart = begin;
                         npt.selectionEnd = end;
-                    } else if (window.getSelection()) {
+                    } else if (window.getSelection) {
                         range = document.createRange();
                         range.setStart(npt.firstChild, begin < npt._valueGet().length ? begin : npt._valueGet().length);
                         range.setEnd(npt.firstChild, end < npt._valueGet().length ? end : npt._valueGet().length);
@@ -1150,7 +1150,7 @@
                     if (npt.setSelectionRange) {
                         begin = npt.selectionStart;
                         end = npt.selectionEnd;
-                    } else if (window.getSelection()) {
+                    } else if (window.getSelection) {
                         range = window.getSelection().getRangeAt(0);
                         if (range.commonAncestorContainer.parentNode == npt) {
                             begin = range.startOffset;
