@@ -178,7 +178,7 @@
                         default:
                             if (openenings.length > 0) {
                                 currentOpeningToken = openenings[openenings.length - 1];
-                                if (currentOpeningToken.matches.length > 0) {
+                                if (currentOpeningToken.matches.length > 0 && !currentOpeningToken.isAlternator) {
                                     lastMatch = currentOpeningToken.matches[currentOpeningToken.matches.length - 1];
                                     if (lastMatch["isGroup"]) { //this is not a group but a normal mask => convert
                                         lastMatch.isGroup = false;
