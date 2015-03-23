@@ -639,7 +639,7 @@
                     }
                 }
 
-                if (false && cacheable !== false && getMaskSet()['tests'][pos] && !getMaskSet()['validPositions'][pos]) {
+                if (false && cacheable !== false && getMaskSet()['tests'][pos]) {
                     return getMaskSet()['tests'][pos];
                 }
                 if (ndxIntlzr == undefined) {
