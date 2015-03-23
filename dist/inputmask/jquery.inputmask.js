@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.62-47
+* Version: 3.1.62-67
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery" ], factory) : factory(jQuery);
@@ -529,7 +529,12 @@
         }
         function isMask(pos) {
             var test = getTest(pos);
-            return null != test.fn ? test.fn : !1;
+            if (null != test.fn) return test.fn;
+            if (!opts.keepStatic && void 0 == getMaskSet().validPositions[pos]) {
+                var tests = getTests(pos), testsLength = tests.length;
+                return "" == tests[tests.length - 1].match.def && testsLength--, testsLength > 1;
+            }
+            return !1;
         }
         function getMaskLength() {
             var maskLength;

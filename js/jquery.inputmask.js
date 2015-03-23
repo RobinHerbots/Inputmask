@@ -975,7 +975,16 @@
             }
             function isMask(pos) {
                 var test = getTest(pos);
-                return test.fn != null ? test.fn : false;
+                if (test.fn != null)
+                    return test.fn
+                else if (!opts.keepStatic && getMaskSet()["validPositions"][pos] == undefined) {
+                    var tests = getTests(pos), testsLength = tests.length;
+                    if (tests[tests.length - 1].match.def == "")
+                        testsLength--;
+                    return testsLength > 1;
+                }
+
+                return false;
             }
             function getMaskLength() {
                 var maskLength;
