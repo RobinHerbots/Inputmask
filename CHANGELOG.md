@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 - Add Component package manager support - component.json 
 
 ### Fixed
+- $.inputmask.isValid("1A", { mask : "1A" }) returns false #858
 - IE8 doesn't support window.getSelection js error #853
 - Email with dot - paste not working #847
 - Standard phone numbers in Brazil #836 (Part 1)

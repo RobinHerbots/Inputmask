@@ -1096,10 +1096,12 @@
                 getMaskSet()["p"] = seekNext(-1);
                 if (writeOut) input._valueSet(""); //initial clear
 
-                var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(''), matches = inputValue.join('').match(new RegExp(escapeRegex(staticInput), "g"));
-                if (matches && matches.length > 0) {
-                    inputValue.splice(0, matches.length * staticInput.length);
-                    initialNdx = seekNext(initialNdx);
+                if (!strict) {
+                    var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(''), matches = inputValue.join('').match(new RegExp(escapeRegex(staticInput), "g"));
+                    if (matches && matches.length > 0) {
+                        inputValue.splice(0, matches.length * staticInput.length);
+                        initialNdx = seekNext(initialNdx);
+                    }
                 }
 
 
