@@ -91,3 +91,53 @@ test("{ \"keepStatic\": true, greedy: false, mask: \"(99-9)|(99999)\" } - type 1
 
     $("#testmask").remove();
 });
+
+test("7|8 999 99 99 - hiddenman", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("7|8 999 99 99");
+    $("#testmask")[0].focus();
+    equal(document.getElementById("testmask")._valueGet(), "_ ___ __ __", "Result " + document.getElementById("testmask")._valueGet());
+
+    $("#testmask").remove();
+});
+
+test("7|8 999 99 99 type 7 - hiddenman", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("7|8 999 99 99");
+    $("#testmask").Type("7");
+    equal(document.getElementById("testmask")._valueGet(), "7 ___ __ __", "Result " + document.getElementById("testmask")._valueGet());
+
+    $("#testmask").remove();
+});
+
+test("7|8 999 99 99 type 8 - hiddenman", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("7|8 999 99 99");
+    $("#testmask").Type("8");
+    equal(document.getElementById("testmask")._valueGet(), "8 ___ __ __", "Result " + document.getElementById("testmask")._valueGet());
+
+    $("#testmask").remove();
+});
+
+test("(78)|(79) 999 99 99", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("(78)|(79) 999 99 99");
+    $("#testmask")[0].focus();
+    equal(document.getElementById("testmask")._valueGet(), "7_ ___ __ __", "Result " + document.getElementById("testmask")._valueGet());
+
+    $("#testmask").remove();
+});
+
+test("(78)|(74) 999 99 99", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("(78)|(74) 999 99 99");
+    $("#testmask")[0].focus();
+    equal(document.getElementById("testmask")._valueGet(), "7_ ___ __ __", "Result " + document.getElementById("testmask")._valueGet());
+
+    $("#testmask").remove();
+});
