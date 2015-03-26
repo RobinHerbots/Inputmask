@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [Unreleased][unreleased]
+## [3.1.62] - 2015-03-26
 ### Added
 - Numeric alias: add unmaskAsNumber option
 - import russian phone codes from inputmask-multi
