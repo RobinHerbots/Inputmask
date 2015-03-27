@@ -1,6 +1,6 @@
 #jquery.inputmask 3.x
 
-Copyright (c) 2010 - 2014 Robin Herbots
+Copyright (c) 2010 - 2015 Robin Herbots
 Licensed under the MIT license (http://opensource.org/licenses/mit-license.php)
 
 [![devDependency Status](https://david-dm.org/RobinHerbots/jquery.inputmask/dev-status.svg)](https://david-dm.org/RobinHerbots/jquery.inputmask#info=devDependencies) [![peerDependency Status](https://david-dm.org/RobinHerbots/jquery.inputmask/peer-status.svg)](https://david-dm.org/RobinHerbots/jquery.inputmask#info=peerDependencies)
