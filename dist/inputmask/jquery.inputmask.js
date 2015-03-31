@@ -3,10 +3,10 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.62
+* Version: 3.1.63-2
 */
 !function(factory) {
-    "function" == typeof define && define.amd ? define([ "jquery" ], factory) : factory(jQuery);
+    "function" == typeof define && define.amd ? define([ "jquery" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery")) : factory(jQuery);
 }(function($) {
     function isInputEventSupported(eventName) {
         var el = document.createElement("input"), evName = "on" + eventName, isSupported = evName in el;
@@ -204,8 +204,9 @@
                 if (baseOnInput === !0 && getMaskSet().validPositions[pos]) {
                     var validPos = getMaskSet().validPositions[pos];
                     test = validPos.match, ndxIntlzr = validPos.locator.slice(), maskTemplate.push(includeInput === !0 ? validPos.input : getPlaceholder(pos, test));
-                } else testPos = getTestTemplate(pos, ndxIntlzr, pos - 1), test = testPos.match, 
-                ndxIntlzr = testPos.locator.slice(), maskTemplate.push(getPlaceholder(pos, test));
+                } else console.log("getmasktemplate " + pos + " " + JSON.stringify(ndxIntlzr)), 
+                testPos = getTestTemplate(pos, ndxIntlzr, pos - 1), test = testPos.match, ndxIntlzr = testPos.locator.slice(), 
+                maskTemplate.push(getPlaceholder(pos, test));
                 pos++;
             } while ((void 0 == maxLength || maxLength > pos - 1) && null != test.fn || null == test.fn && "" != test.def || minimalPos >= pos);
             return maskTemplate.pop(), maskTemplate;
@@ -273,7 +274,7 @@
         function getTestTemplate(pos, ndxIntlzr, tstPs) {
             var testPos = getMaskSet().validPositions[pos];
             if (void 0 == testPos) for (var testPositions = getTests(pos, ndxIntlzr, tstPs), lvp = getLastValidPosition(), lvTest = getMaskSet().validPositions[lvp] || getTests(0, void 0, void 0)[0], lvTestAltArr = void 0 != lvTest.alternation ? lvTest.locator[lvTest.alternation].toString().split(",") : [], ndx = 0; ndx < testPositions.length && (testPos = testPositions[ndx], 
-            !(testPos.match && (opts.greedy && testPos.match.optionalQuantifier !== !0 || (testPos.match.optionality === !1 || testPos.match.newBlockMarker === !1) && testPos.match.optionalQuantifier !== !0) && (void 0 == lvTest.alternation || void 0 != testPos.locator[lvTest.alternation] && checkAlternationMatch(testPos.locator[lvTest.alternation].toString().split(","), lvTestAltArr)))); ndx++) ;
+            !(testPos.match && (opts.greedy && testPos.match.optionalQuantifier !== !0 || (testPos.match.optionality === !1 || testPos.match.newBlockMarker === !1) && testPos.match.optionalQuantifier !== !0) && (void 0 == lvTest.alternation || lvTest.alternation != testPos.alternation || void 0 != testPos.locator[lvTest.alternation] && checkAlternationMatch(testPos.locator[lvTest.alternation].toString().split(","), lvTestAltArr)))); ndx++) ;
             return testPos;
         }
         function getTest(pos) {
@@ -308,20 +309,27 @@
                         } else if (match.isAlternator) {
                             var maltMatches, alternateToken = match, malternateMatches = [], currentMatches = matches.slice(), loopNdxCnt = loopNdx.length, altIndex = ndxInitializer.length > 0 ? ndxInitializer.shift() : -1;
                             if (-1 == altIndex || "string" == typeof altIndex) {
-                                var altIndexArr, currentPos = testPos, ndxInitializerClone = ndxInitializer.slice();
+                                var currentPos = testPos, ndxInitializerClone = ndxInitializer.slice(), altIndexArr = [];
                                 "string" == typeof altIndex && (altIndexArr = altIndex.split(","));
                                 for (var amndx = 0; amndx < alternateToken.matches.length; amndx++) {
-                                    matches = [], match = handleMatch(alternateToken.matches[amndx], [ amndx ].concat(loopNdx), quantifierRecurse) || match, 
+                                    if (matches = [], match = handleMatch(alternateToken.matches[amndx], [ amndx ].concat(loopNdx), quantifierRecurse) || match, 
+                                    match !== !0) {
+                                        var ntndx = maskToken.matches.indexOf(match) + 1;
+                                        match = handleMatch(maskToken.matches[ntndx], [ ntndx ].concat(loopNdx.slice(1, loopNdx.length)), quantifierRecurse), 
+                                        match && (altIndexArr.push(ntndx.toString()), $.each(matches, function(ndx, lmnt) {
+                                            lmnt.alternation = loopNdx.length - 1;
+                                        }));
+                                    }
                                     maltMatches = matches.slice(), testPos = currentPos, matches = [];
                                     for (var i = 0; i < ndxInitializerClone.length; i++) ndxInitializer[i] = ndxInitializerClone[i];
                                     for (var ndx1 = 0; ndx1 < maltMatches.length; ndx1++) {
                                         var altMatch = maltMatches[ndx1];
-                                        altMatch.alternation = loopNdxCnt;
+                                        altMatch.alternation = altMatch.alternation || loopNdxCnt;
                                         for (var ndx2 = 0; ndx2 < malternateMatches.length; ndx2++) {
                                             var altMatch2 = malternateMatches[ndx2];
-                                            if (altMatch.match.mask == altMatch2.match.mask && ("string" != typeof altIndex || -1 != $.inArray(altMatch.locator[loopNdxCnt].toString(), altIndexArr))) {
-                                                maltMatches.splice(ndx1, 1), altMatch2.locator[loopNdxCnt] = altMatch2.locator[loopNdxCnt] + "," + altMatch.locator[loopNdxCnt], 
-                                                altMatch2.alternation = loopNdxCnt;
+                                            if (altMatch.match.mask == altMatch2.match.mask && ("string" != typeof altIndex || -1 != $.inArray(altMatch.locator[altMatch.alternation].toString(), altIndexArr))) {
+                                                maltMatches.splice(ndx1, 1), altMatch2.locator[altMatch.alternation] = altMatch2.locator[altMatch.alternation] + "," + altMatch.locator[altMatch.alternation], 
+                                                altMatch2.alternation = altMatch.alternation;
                                                 break;
                                             }
                                         }
@@ -330,16 +338,16 @@
                                 }
                                 "string" == typeof altIndex && (malternateMatches = $.map(malternateMatches, function(lmnt, ndx) {
                                     if (isFinite(ndx)) {
-                                        var mamatch, altLocArr = lmnt.locator[loopNdxCnt].toString().split(",");
-                                        lmnt.locator[loopNdxCnt] = void 0, lmnt.alternation = void 0;
+                                        var mamatch, alternation = lmnt.alternation, altLocArr = lmnt.locator[alternation].toString().split(",");
+                                        lmnt.locator[alternation] = void 0, lmnt.alternation = void 0;
                                         for (var alndx = 0; alndx < altLocArr.length; alndx++) mamatch = -1 != $.inArray(altLocArr[alndx], altIndexArr), 
-                                        mamatch && (void 0 != lmnt.locator[loopNdxCnt] ? (lmnt.locator[loopNdxCnt] += ",", 
-                                        lmnt.locator[loopNdxCnt] += altLocArr[alndx]) : lmnt.locator[loopNdxCnt] = parseInt(altLocArr[alndx]), 
-                                        lmnt.alternation = loopNdxCnt);
-                                        if (void 0 != lmnt.locator[loopNdxCnt]) return lmnt;
+                                        mamatch && (void 0 != lmnt.locator[alternation] ? (lmnt.locator[alternation] += ",", 
+                                        lmnt.locator[alternation] += altLocArr[alndx]) : lmnt.locator[alternation] = parseInt(altLocArr[alndx]), 
+                                        lmnt.alternation = alternation);
+                                        if (void 0 != lmnt.locator[alternation]) return lmnt;
                                     }
                                 })), matches = currentMatches.concat(malternateMatches), testPos = pos, insertStop = !0;
-                            } else match = handleMatch(alternateToken.matches[altIndex], [ altIndex ].concat(loopNdx), quantifierRecurse);
+                            } else match = alternateToken.matches[altIndex] ? handleMatch(alternateToken.matches[altIndex], [ altIndex ].concat(loopNdx), quantifierRecurse) : !1;
                             if (match) return !0;
                         } else if (match.isQuantifier && quantifierRecurse !== !0) for (var qt = match, qndx = ndxInitializer.length > 0 && quantifierRecurse !== !0 ? ndxInitializer.shift() : 0; qndx < (isNaN(qt.quantifier.max) ? qndx + 1 : qt.quantifier.max) && pos >= testPos; qndx++) {
                             var tokenGroup = maskToken.matches[$.inArray(qt, maskToken.matches) - 1];
@@ -386,7 +394,8 @@
                     def: ""
                 },
                 locator: []
-            }), getMaskSet().tests[pos] = $.extend(!0, [], matches), getMaskSet().tests[pos];
+            }), getMaskSet().tests[pos] = $.extend(!0, [], matches), console.log(pos + " - " + JSON.stringify(matches)), 
+            getMaskSet().tests[pos];
         }
         function getBufferTemplate() {
             return void 0 == getMaskSet()._buffer && (getMaskSet()._buffer = getMaskTemplate(!1, 1)), 

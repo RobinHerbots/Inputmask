@@ -350,6 +350,7 @@
                         ndxIntlzr = validPos["locator"].slice();
                         maskTemplate.push(includeInput === true ? validPos["input"] : getPlaceholder(pos, test));
                     } else {
+                        console.log("getmasktemplate " + pos + " " + JSON.stringify(ndxIntlzr));
                         testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
                         test = testPos["match"];
                         ndxIntlzr = testPos["locator"].slice();
@@ -468,7 +469,7 @@
 
                 resetMaskSet(true);
             }
-            function getTestTemplate(pos, ndxIntlzr, tstPs) {
+            function getTestTemplate(pos, ndxIntlzr, tstPs) {  //needs FIX TODO
                 var testPos = getMaskSet()["validPositions"][pos];
                 if (testPos == undefined) {
                     var testPositions = getTests(pos, ndxIntlzr, tstPs),
@@ -481,7 +482,7 @@
                         if (testPos["match"] &&
                         (((opts.greedy && testPos["match"].optionalQuantifier !== true)
                             || (testPos["match"].optionality === false || testPos["match"].newBlockMarker === false) && testPos["match"].optionalQuantifier !== true) &&
-                        (lvTest.alternation == undefined ||
+                        ((lvTest.alternation == undefined || lvTest.alternation != testPos.alternation) ||
                         (testPos["locator"][lvTest.alternation] != undefined && checkAlternationMatch(testPos.locator[lvTest.alternation].toString().split(","), lvTestAltArr))))) {
                             break;
                         }
@@ -533,16 +534,28 @@
                                     } else return true;
                                 }
                             } else if (match.isAlternator) {
-                                var alternateToken = match, malternateMatches = [], maltMatches,
-                                    currentMatches = matches.slice(), loopNdxCnt = loopNdx.length;
+                                var alternateToken = match,
+                                    malternateMatches = [],
+                                    maltMatches,
+                                    currentMatches = matches.slice(),
+                                    loopNdxCnt = loopNdx.length;
                                 var altIndex = ndxInitializer.length > 0 ? ndxInitializer.shift() : -1;
                                 if (altIndex == -1 || typeof altIndex == "string") {
-                                    var currentPos = testPos, ndxInitializerClone = ndxInitializer.slice(), altIndexArr;
+                                    var currentPos = testPos, ndxInitializerClone = ndxInitializer.slice(), altIndexArr = [];
                                     if (typeof altIndex == "string") altIndexArr = altIndex.split(",");
-                                    //console.log(alternateToken.matches.length);
                                     for (var amndx = 0; amndx < alternateToken.matches.length; amndx++) {
                                         matches = [];
                                         match = handleMatch(alternateToken.matches[amndx], [amndx].concat(loopNdx), quantifierRecurse) || match;
+                                        if (match !== true) { //no match in the alternations (length mismatch) => look further
+                                            var ntndx = maskToken.matches.indexOf(match) + 1;
+                                            match = handleMatch(maskToken.matches[ntndx], [ntndx].concat(loopNdx.slice(1, loopNdx.length)), quantifierRecurse)
+                                            if (match) {
+                                                altIndexArr.push(ntndx.toString());
+                                                $.each(matches, function (ndx, lmnt) {
+                                                    lmnt.alternation = loopNdx.length - 1;
+                                                });
+                                            }
+                                        }
                                         maltMatches = matches.slice();
                                         testPos = currentPos;
                                         matches = [];
@@ -553,14 +566,14 @@
                                         //fuzzy merge matches
                                         for (var ndx1 = 0; ndx1 < maltMatches.length; ndx1++) {
                                             var altMatch = maltMatches[ndx1];
-                                            altMatch.alternation = loopNdxCnt;
+                                            altMatch.alternation = altMatch.alternation || loopNdxCnt;
                                             for (var ndx2 = 0; ndx2 < malternateMatches.length; ndx2++) {
                                                 var altMatch2 = malternateMatches[ndx2];
                                                 //verify equality
-                                                if (altMatch.match.mask == altMatch2.match.mask && (typeof altIndex != "string" || $.inArray(altMatch.locator[loopNdxCnt].toString(), altIndexArr) != -1)) {
+                                                if (altMatch.match.mask == altMatch2.match.mask && (typeof altIndex != "string" || $.inArray(altMatch.locator[altMatch.alternation].toString(), altIndexArr) != -1)) {
                                                     maltMatches.splice(ndx1, 1);
-                                                    altMatch2.locator[loopNdxCnt] = altMatch2.locator[loopNdxCnt] + "," + altMatch.locator[loopNdxCnt];
-                                                    altMatch2.alternation = loopNdxCnt; //we pass the alternation index => used in determineLastRequiredPosition
+                                                    altMatch2.locator[altMatch.alternation] = altMatch2.locator[altMatch.alternation] + "," + altMatch.locator[altMatch.alternation];
+                                                    altMatch2.alternation = altMatch.alternation; //we pass the alternation index => used in determineLastRequiredPosition
                                                     break;
                                                 }
                                             }
@@ -571,24 +584,24 @@
                                     if (typeof altIndex == "string") { //filter matches
                                         malternateMatches = $.map(malternateMatches, function (lmnt, ndx) {
                                             if (isFinite(ndx)) {
-                                                var altLocArr = lmnt.locator[loopNdxCnt].toString().split(",");
-                                                var mamatch;
-                                                lmnt.locator[loopNdxCnt] = undefined;
+                                                var mamatch,
+                                                alternation = lmnt.alternation,
+                                                altLocArr = lmnt.locator[alternation].toString().split(",");
+                                                lmnt.locator[alternation] = undefined;
                                                 lmnt.alternation = undefined;
                                                 for (var alndx = 0; alndx < altLocArr.length; alndx++) {
                                                     mamatch = $.inArray(altLocArr[alndx], altIndexArr) != -1;
                                                     if (mamatch) { //rebuild the locator with valid entries
-                                                        if (lmnt.locator[loopNdxCnt] != undefined) {
-                                                            lmnt.locator[loopNdxCnt] += ",";
-                                                            //lmnt.alternation = loopNdxCnt; //only define alternation when there is more then 1 possibility
-                                                            lmnt.locator[loopNdxCnt] += altLocArr[alndx];
+                                                        if (lmnt.locator[alternation] != undefined) {
+                                                            lmnt.locator[alternation] += ",";
+                                                            lmnt.locator[alternation] += altLocArr[alndx];
                                                         } else
-                                                            lmnt.locator[loopNdxCnt] = parseInt(altLocArr[alndx]);
+                                                            lmnt.locator[alternation] = parseInt(altLocArr[alndx]);
 
-                                                        lmnt.alternation = loopNdxCnt;
+                                                        lmnt.alternation = alternation;
                                                     }
                                                 }
-                                                if (lmnt.locator[loopNdxCnt] != undefined) return lmnt;
+                                                if (lmnt.locator[alternation] != undefined) return lmnt;
                                             }
                                         });
                                     }
@@ -597,7 +610,9 @@
                                     testPos = pos;
                                     insertStop = true; //insert a stopelemnt when there is an alternate
                                 } else {
-                                    match = handleMatch(alternateToken.matches[altIndex], [altIndex].concat(loopNdx), quantifierRecurse);
+                                    if (alternateToken.matches[altIndex]) { //if not in the initial alternation => look further
+                                        match = handleMatch(alternateToken.matches[altIndex], [altIndex].concat(loopNdx), quantifierRecurse);
+                                    } else match = false;
                                 }
                                 if (match) return true;
                             } else if (match.isQuantifier && quantifierRecurse !== true) {
@@ -674,7 +689,7 @@
                     matches.push({ "match": { fn: null, cardinality: 0, optionality: true, casing: null, def: "" }, "locator": [] });
 
                 getMaskSet()['tests'][pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
-                //console.log(pos + " - " + JSON.stringify(matches));
+                console.log(pos + " - " + JSON.stringify(matches));
                 return getMaskSet()['tests'][pos];
             }
             function getBufferTemplate() {
