@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [unpublished]
+### Added
+- Support for CommonJS (Browserify)
+
 ## [3.1.62] - 2015-03-26
 ### Added
 - Numeric alias: add unmaskAsNumber option

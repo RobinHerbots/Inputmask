@@ -49,10 +49,22 @@ module.exports = function (grunt) {
             return srcFile.replace(new RegExp("\\(jQuery\\).*$"), "");
         }
 
+        function createCommonJsRequires(dependencies) {
+            var res = [];
+
+            dependencies.forEach(function (dep) {
+                res.push("require('" + dep + "')");
+            });
+
+            return res.join(", ");
+        }
+
         var srcFile = grunt.file.read(src),
             dstContent = "(function (factory) {" +
                 "if (typeof define === 'function' && define.amd) {" +
                 "define(" + JSON.stringify(dependencies) + ", factory);" +
+                "} else if (typeof exports === 'object') {" +
+                "module.exports = factory(" + createCommonJsRequires(dependencies) + ");" +
                 "} else {" +
                 "factory(jQuery);" +
                 "}}\n" + stripClosureExecution() + ");";
