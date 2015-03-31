@@ -3,7 +3,7 @@
 Copyright (c) 2010 - 2015 Robin Herbots
 Licensed under the MIT license (http://opensource.org/licenses/mit-license.php)
 
-[![devDependency Status](https://david-dm.org/RobinHerbots/jquery.inputmask/dev-status.svg)](https://david-dm.org/RobinHerbots/jquery.inputmask#info=devDependencies) [![peerDependency Status](https://david-dm.org/RobinHerbots/jquery.inputmask/peer-status.svg)](https://david-dm.org/RobinHerbots/jquery.inputmask#info=peerDependencies)
+[![Dependency Status](https://david-dm.org/RobinHerbots/jquery.inputmask.svg)](https://david-dm.org/RobinHerbots/jquery.inputmask) [![devDependency Status](https://david-dm.org/RobinHerbots/jquery.inputmask/dev-status.svg)](https://david-dm.org/RobinHerbots/jquery.inputmask#info=devDependencies)
 
 jquery.inputmask is a jQuery plugin which create an input mask.
 
@@ -25,7 +25,7 @@ Highlights:
 - dynamic-mask support
 - preprocessing-mask support
 - value formatting / validating without input element
-- AMD support
+- AMD/CommonJS support
 
 Demo page see http://robinherbots.github.io/jquery.inputmask
 
