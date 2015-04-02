@@ -1837,7 +1837,7 @@
                                 var buffer = getBuffer().slice(), nptValue = input._valueGet();
                                 if (!$input.is(":focus") && nptValue != $input.attr("placeholder") && nptValue != '') {
                                     if (nptValue == getBufferTemplate().join(''))
-                                        buffer = [];
+                                        buffer = [$input.attr("placeholder").slice()];
                                     else { //clearout optional tail of the mask
                                         clearOptionalTail(buffer);
                                     }
