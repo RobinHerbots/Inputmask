@@ -338,8 +338,6 @@
                 firstClick = true;
 
             //maskset helperfunctions
-
-
             function getMaskTemplate(baseOnInput, minimalPos, includeInput) {
                 minimalPos = minimalPos || 0;
                 var maskTemplate = [], ndxIntlzr, pos = 0, test, testPos;
@@ -350,7 +348,7 @@
                         ndxIntlzr = validPos["locator"].slice();
                         maskTemplate.push(includeInput === true ? validPos["input"] : getPlaceholder(pos, test));
                     } else {
-                        console.log("getmasktemplate " + pos + " " + JSON.stringify(ndxIntlzr));
+                        //console.log("getmasktemplate " + pos + " " + JSON.stringify(ndxIntlzr));
                         testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
                         test = testPos["match"];
                         ndxIntlzr = testPos["locator"].slice();
@@ -469,12 +467,12 @@
 
                 resetMaskSet(true);
             }
-            function getTestTemplate(pos, ndxIntlzr, tstPs) {  //needs FIX TODO
+            function getTestTemplate(pos, ndxIntlzr, tstPs) {
                 var testPos = getMaskSet()["validPositions"][pos];
                 if (testPos == undefined) {
                     var testPositions = getTests(pos, ndxIntlzr, tstPs),
                         lvp = getLastValidPosition(),
-                        lvTest = getMaskSet()["validPositions"][lvp] || getTests(0, undefined, undefined)[0],
+                        lvTest = getMaskSet()["validPositions"][lvp] || getTests(0)[0],
                         lvTestAltArr = (lvTest.alternation != undefined) ? lvTest["locator"][lvTest.alternation].toString().split(',') : [];
                     for (var ndx = 0; ndx < testPositions.length; ndx++) {
                         testPos = testPositions[ndx];
@@ -543,17 +541,19 @@
                                 if (altIndex == -1 || typeof altIndex == "string") {
                                     var currentPos = testPos, ndxInitializerClone = ndxInitializer.slice(), altIndexArr = [];
                                     if (typeof altIndex == "string") altIndexArr = altIndex.split(",");
-                                    for (var amndx = 0; amndx < alternateToken.matches.length; amndx++) {
+                                    for (var amndx = 0; amndx < alternateToken.matches.length ; amndx++) {
                                         matches = [];
                                         match = handleMatch(alternateToken.matches[amndx], [amndx].concat(loopNdx), quantifierRecurse) || match;
-                                        if (match !== true) { //no match in the alternations (length mismatch) => look further
+                                        if (match !== true && match != undefined && (altIndexArr[altIndexArr.length - 1] < alternateToken.matches.length)) { //no match in the alternations (length mismatch) => look further
                                             var ntndx = maskToken.matches.indexOf(match) + 1;
-                                            match = handleMatch(maskToken.matches[ntndx], [ntndx].concat(loopNdx.slice(1, loopNdx.length)), quantifierRecurse)
-                                            if (match) {
-                                                altIndexArr.push(ntndx.toString());
-                                                $.each(matches, function (ndx, lmnt) {
-                                                    lmnt.alternation = loopNdx.length - 1;
-                                                });
+                                            if (maskToken.matches.length > ntndx) {
+                                                match = handleMatch(maskToken.matches[ntndx], [ntndx].concat(loopNdx.slice(1, loopNdx.length)), quantifierRecurse)
+                                                if (match) {
+                                                    altIndexArr.push(ntndx.toString());
+                                                    $.each(matches, function (ndx, lmnt) {
+                                                        lmnt.alternation = loopNdx.length - 1;
+                                                    });
+                                                }
                                             }
                                         }
                                         maltMatches = matches.slice();
@@ -571,7 +571,7 @@
                                                 var altMatch2 = malternateMatches[ndx2];
                                                 //verify equality
                                                 if (altMatch.match.mask == altMatch2.match.mask && (typeof altIndex != "string" || $.inArray(altMatch.locator[altMatch.alternation].toString(), altIndexArr) != -1)) {
-                                                    maltMatches.splice(ndx1, 1);
+                                                    maltMatches.splice(ndx1, 1); ndx1--;
                                                     altMatch2.locator[altMatch.alternation] = altMatch2.locator[altMatch.alternation] + "," + altMatch.locator[altMatch.alternation];
                                                     altMatch2.alternation = altMatch.alternation; //we pass the alternation index => used in determineLastRequiredPosition
                                                     break;
@@ -608,7 +608,7 @@
 
                                     matches = currentMatches.concat(malternateMatches);
                                     testPos = pos;
-                                    insertStop = true; //insert a stopelemnt when there is an alternate
+                                    insertStop = matches.length > 0; //insert a stopelemnt when there is an alternate
                                 } else {
                                     if (alternateToken.matches[altIndex]) { //if not in the initial alternation => look further
                                         match = handleMatch(alternateToken.matches[altIndex], [altIndex].concat(loopNdx), quantifierRecurse);
@@ -657,7 +657,7 @@
                     }
                 }
 
-                if (false && cacheable !== false && getMaskSet()['tests'][pos]) {
+                if (cacheable === true && getMaskSet()['tests'][pos]) {
                     return getMaskSet()['tests'][pos];
                 }
                 if (ndxIntlzr == undefined) {
@@ -689,7 +689,8 @@
                     matches.push({ "match": { fn: null, cardinality: 0, optionality: true, casing: null, def: "" }, "locator": [] });
 
                 getMaskSet()['tests'][pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
-                console.log(pos + " - " + JSON.stringify(matches));
+
+                //console.log(pos + " - " + JSON.stringify(matches));
                 return getMaskSet()['tests'][pos];
             }
             function getBufferTemplate() {

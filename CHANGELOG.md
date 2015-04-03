@@ -4,7 +4,6 @@ All notable changes to this project will be documented in this file.
 ## [unpublished]
 ### Added
 - Support for CommonJS (Browserify)
->>>>>>> e251ca4897ef891c47ae99ab9b90b2e65ce67e85
 
 ## [3.1.62] - 2015-03-26
 ### Added

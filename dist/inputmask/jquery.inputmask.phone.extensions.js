@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.63-2
+* Version: 3.1.63-7
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery", "./jquery.inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery"), require("./jquery.inputmask")) : factory(jQuery);
@@ -11,21 +11,9 @@
     return $.extend($.inputmask.defaults.aliases, {
         phone: {
             url: "phone-codes/phone-codes.js",
-            maskInit: "+pp(pp)pppppppp",
             countrycode: "",
             mask: function(opts) {
-                opts.definitions = {
-                    p: {
-                        validator: function() {
-                            return !1;
-                        },
-                        cardinality: 1
-                    },
-                    "#": {
-                        validator: "[0-9]",
-                        cardinality: 1
-                    }
-                };
+                opts.definitions["#"] = opts.definitions[9];
                 var maskList = [];
                 return $.ajax({
                     url: opts.url,
@@ -39,9 +27,9 @@
                     }
                 }), maskList = maskList.sort(function(a, b) {
                     return (a.mask || a) < (b.mask || b) ? -1 : 1;
-                }), "" != opts.countrycode && (opts.maskInit = "+" + opts.countrycode + opts.maskInit.substring(3)), 
-                maskList.splice(0, 0, opts.maskInit), maskList;
+                });
             },
+            keepStatic: !1,
             nojumps: !0,
             nojumpsThreshold: 1,
             onBeforeMask: function(value, opts) {

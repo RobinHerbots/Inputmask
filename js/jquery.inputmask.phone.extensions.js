@@ -21,19 +21,9 @@ When using this extension make sure you specify the correct url to get the masks
     $.extend($.inputmask.defaults.aliases, {
         'phone': {
             url: "phone-codes/phone-codes.js",
-            maskInit: "+pp(pp)pppppppp",
             countrycode: "",
             mask: function (opts) {
-                opts.definitions = {
-                    'p': {
-                        validator: function () { return false; },
-                        cardinality: 1
-                    },
-                    '#': {
-                        validator: "[0-9]",
-                        cardinality: 1
-                    }
-                };
+                opts.definitions['#'] = opts.definitions['9'];
                 var maskList = [];
                 $.ajax({
                     url: opts.url,
@@ -51,12 +41,9 @@ When using this extension make sure you specify the correct url to get the masks
                     return (a["mask"] || a) < (b["mask"] || b) ? -1 : 1;
                 });
 
-                if (opts.countrycode != "") {
-                    opts.maskInit = "+" + opts.countrycode + opts.maskInit.substring(3);
-                }
-                maskList.splice(0, 0, opts.maskInit);
                 return maskList;
             },
+            keepStatic: false,
             nojumps: true,
             nojumpsThreshold: 1,
             onBeforeMask: function (value, opts) {
