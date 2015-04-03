@@ -1850,10 +1850,10 @@
                         }).bind("mouseleave.inputmask", function () {
                             var $input = $(this), input = this;
                             if (opts.clearMaskOnLostFocus) {
-                                var buffer = getBuffer().slice(), nptValue = input._valueGet(), htmlPlaceholder = $input.attr("placeholder");
-                                if (!$input.is(":focus") && nptValue != htmlPlaceholder && nptValue != '') {
+                                var buffer = getBuffer().slice(), nptValue = input._valueGet();
+                                if (!$input.is(":focus") && nptValue != $input.attr("placeholder") && nptValue != '') {
                                     if (nptValue == getBufferTemplate().join(''))
-                                        buffer = htmlPlaceholder ? htmlPlaceholder.slice('') : [];
+                                        buffer = [];
                                     else { //clearout optional tail of the mask
                                         clearOptionalTail(buffer);
                                     }

@@ -8,9 +8,6 @@ All notable changes to this project will be documented in this file.
 ### Updates
 - Make alternators correctly handle alternations with different lengths
 
-### Fixed
-- Fix disappearing placeholders in <= IE9 #865
-
 ## [3.1.62] - 2015-03-26
 ### Added
 - Numeric alias: add unmaskAsNumber option
