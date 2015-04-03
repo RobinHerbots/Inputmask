@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.63-7
+* Version: 3.1.63-8
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery")) : factory(jQuery);
@@ -1008,8 +1008,8 @@
                 }).bind("mouseleave.inputmask", function() {
                     var $input = $(this), input = this;
                     if (opts.clearMaskOnLostFocus) {
-                        var buffer = getBuffer().slice(), nptValue = input._valueGet();
-                        $input.is(":focus") || nptValue == $input.attr("placeholder") || "" == nptValue || (nptValue == getBufferTemplate().join("") ? buffer = [] : clearOptionalTail(buffer), 
+                        var buffer = getBuffer().slice(), nptValue = input._valueGet(), htmlPlaceholder = $input.attr("placeholder");
+                        $input.is(":focus") || nptValue == htmlPlaceholder || "" == nptValue || (nptValue == getBufferTemplate().join("") ? buffer = htmlPlaceholder ? htmlPlaceholder.slice("") : [] : clearOptionalTail(buffer), 
                         writeBuffer(input, buffer));
                     }
                 }).bind("click.inputmask", function() {
