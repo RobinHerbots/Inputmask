@@ -1001,7 +1001,7 @@
                 else if (!opts.keepStatic && getMaskSet()["validPositions"][pos] == undefined) {
                     var tests = getTests(pos), staticAlternations = true;
                     for (var i = 0; i < tests.length; i++) {
-                        if (tests[i].match.def != "" && (tests[i].match.fn !== null || (tests[i].alternation == undefined || tests[i].locator[tests[i].alternation].length > 1))) {
+                        if (tests[i].match.def != "" && (/*tests[i].match.fn !== null || */ (tests[i].alternation == undefined || tests[i].locator[tests[i].alternation].length > 1))) {
                             staticAlternations = false;
                             break;
                         }
