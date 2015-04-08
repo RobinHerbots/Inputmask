@@ -8,6 +8,10 @@ All notable changes to this project will be documented in this file.
 ### Updates
 - Make alternators correctly handle alternations with different lengths
 
+### Fixed
+- When two masks specified backspace clears the whole input instead of last char #780
+- Phone extention backspace problem #454
+
 ## [3.1.62] - 2015-03-26
 ### Added
 - Numeric alias: add unmaskAsNumber option

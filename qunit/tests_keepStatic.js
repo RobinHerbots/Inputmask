@@ -12,14 +12,14 @@ test("{ mask: [\"+55-99-9999-9999\", \"+55-99-99999-9999\", ], keepStatic: true 
     $("#testmask").remove();
 });
 
-test("{ mask: \"+55-99-9999|(99)-9999\", keepStatic: true } - type 1212341234", function () {
+test("{ mask: \"+55-99-9999|(99)-9999\", keepStatic: true } - type 12123451234", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask({ mask: "+55-99-9999|(99)-9999", keepStatic: true });
     $("#testmask")[0].focus();
-    $("#testmask").Type("1212341234");
+    $("#testmask").Type("12123451234");
 
-    equal(document.getElementById("testmask")._valueGet(), "+55-12-1234-1234", "Result " + document.getElementById("testmask")._valueGet());
+    equal(document.getElementById("testmask")._valueGet(), "+55-12-12345-1234", "Result " + document.getElementById("testmask")._valueGet());
 
     $("#testmask").remove();
 });
@@ -82,12 +82,12 @@ test("{ mask: [\"99-99999-9\",\"99-999999-9\"] } - type 121234561", function () 
     $("#testmask").remove();
 });
 
-test("{ \"keepStatic\": true, greedy: false, mask: \"(99-9)|(99999)\" } - type 1234", function () {
+test("{ \"keepStatic\": true, greedy: false, mask: \"(99-9)|(99999)\" } - type 12345", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask({ "keepStatic": true, greedy: false, "mask": "(99-9)|(99999)" });
-    $("#testmask").Type("1234");
-    equal(document.getElementById("testmask")._valueGet(), "1234", "Result " + document.getElementById("testmask")._valueGet());
+    $("#testmask").Type("12345");
+    equal(document.getElementById("testmask")._valueGet(), "12345", "Result " + document.getElementById("testmask")._valueGet());
 
     $("#testmask").remove();
 });

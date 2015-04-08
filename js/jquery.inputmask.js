@@ -663,20 +663,14 @@
                 if (ndxIntlzr == undefined) {
                     var previousPos = pos - 1, test;
                     while ((test = getMaskSet()['validPositions'][previousPos]) == undefined && previousPos > -1) {
+                        if (getMaskSet()['tests'][previousPos] && (test = getMaskSet()['tests'][previousPos][0]) != undefined)
+                            break;
                         previousPos--;
+
                     }
                     if (test != undefined && previousPos > -1) {
                         testPos = previousPos;
                         ndxInitializer = test["locator"].slice();
-                    } else {
-                        previousPos = pos - 1;
-                        while ((test = getMaskSet()['tests'][previousPos]) == undefined && previousPos > -1) {
-                            previousPos--;
-                        }
-                        if (test != undefined && previousPos > -1) {
-                            testPos = previousPos;
-                            ndxInitializer = test[0]["locator"].slice();
-                        }
                     }
                 }
                 for (var mtndx = ndxInitializer.shift() ; mtndx < maskTokens.length; mtndx++) {
@@ -848,9 +842,9 @@
                         //find first decision making position
                         for (var decisionPos in getMaskSet()["validPositions"]) {
                             altPos = getMaskSet()["validPositions"][decisionPos];
-                            if (parseInt(decisionPos) > parseInt(lastAlt) && altPos.alternation) {
-                                var decisionTaker = altPos.locator[alternation],
-                                 altNdxs = getMaskSet()["validPositions"][lastAlt].locator[alternation].toString().split(',');
+                            if (parseInt(decisionPos) > parseInt(lastAlt) && altPos.alternation != undefined) {
+                                var altNdxs = getMaskSet()["validPositions"][lastAlt].locator[alternation].toString().split(','),
+                                    decisionTaker = altPos.locator[alternation] || altNdxs[0]; //no match in the alternations (length mismatch)
 
                                 for (var mndx = 0; mndx < altNdxs.length; mndx++) {
                                     if (decisionTaker < altNdxs[mndx]) {
@@ -868,9 +862,10 @@
                                             var validInputs = [];
                                             for (var i = decisionPos; i < getLastValidPosition() + 1; i++) {
                                                 var validPos = getMaskSet()["validPositions"][i];
-                                                if (validPos && validPos.match.fn != null) {
-                                                    //console.log(validPos.input);
-                                                    validInputs.push(validPos.input);
+                                                if (validPos) {
+                                                    if (validPos.match.fn != null) {
+                                                        validInputs.push(validPos.input);
+                                                    } 
                                                 }
                                                 delete getMaskSet()["validPositions"][i];
                                                 delete getMaskSet()["tests"][i];
@@ -890,8 +885,10 @@
 
                                             possibilityPos.alternation = alternation;
                                             possibilityPos.locator[alternation] = possibilities; //reset forceddecision ~ needed for proper delete
-                                            if (isValidRslt)
-                                                isValidRslt = isValid(pos, c, strict, fromSetValid);
+                                            if (isValidRslt) {
+                                                var targetLvp = getLastValidPosition(pos) + 1;
+                                                isValidRslt = isValid(pos > targetLvp ? targetLvp : pos, c, strict, fromSetValid);
+                                            }
                                             opts.keepStatic = !opts.keepStatic; //enable keepStatic on getMaskLength
                                             if (!isValidRslt) {
                                                 resetMaskSet();
@@ -1871,6 +1868,7 @@
                                     } else {
                                         var clickPosition = isRTL ? TranslatePosition(selectedCaret.begin) : selectedCaret.begin,
                                             lastPosition = seekNext(getLastValidPosition(clickPosition));
+
                                         if (clickPosition < lastPosition) {
                                             caret(input, isMask(clickPosition) ? clickPosition : seekNext(clickPosition));
                                         } else {
