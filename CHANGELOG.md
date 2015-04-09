@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [unpublished]
+## [unreleased]
 ### Added
 - Support for CommonJS (Browserify)
 
@@ -9,6 +9,8 @@ All notable changes to this project will be documented in this file.
 - Make alternators correctly handle alternations with different lengths
 
 ### Fixed
+- masking a password field #821 (reenable type=password)
+- email inputmask "isComplete" always returns true #855
 - When two masks specified backspace clears the whole input instead of last char #780
 - Phone extention backspace problem #454
 

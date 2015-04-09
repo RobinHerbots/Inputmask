@@ -23,7 +23,7 @@
         }
 
         function isInputTypeSupported(inputType) {
-            var isSupported = inputType == "text" || inputType == "tel";
+            var isSupported = inputType == "text" || inputType == "tel" || inputType == "password";
             if (!isSupported) {
                 var el = document.createElement('input');
                 el.setAttribute("type", inputType);
@@ -1257,8 +1257,8 @@
                 if (lrp["def"] == undefined || lrp["def"].newBlockMarker || lrp["def"].optionality || lrp["def"].optionalQuantifier) {
                     complete = true;
                     for (var i = 0; i <= aml; i++) {
-                        var mask = isMask(i), test = getTest(i);
-                        if ((mask && getMaskSet()["validPositions"][i] == undefined && test.optionality !== true && test.optionalQuantifier !== true) || (!mask && buffer[i] != getPlaceholder(i))) {
+                        var test = getTestTemplate(i).match;
+                        if ((test.fn != null && getMaskSet()["validPositions"][i] == undefined && test.optionality !== true && test.optionalQuantifier !== true) || (test.fn == null && buffer[i] != getPlaceholder(i, test))) {
                             complete = false;
                             break;
                         }

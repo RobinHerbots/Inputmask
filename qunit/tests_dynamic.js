@@ -162,3 +162,49 @@ test("quantifier mask greedy true - FairSite2C", function () {
 
     $("#testmask").remove();
 });
+
+
+asyncTest("email mask - clearIncomplete - hiddenman", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("email", { clearIncomplete: true });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("akornilov");
+    $("#testmask").blur();
+    setTimeout(function () {
+        equal(document.getElementById("testmask")._valueGet(), "", "Result " + document.getElementById("testmask")._valueGet());
+        start();
+        $("#testmask").remove();
+    }, 0);
+});
+
+asyncTest("email mask - clearIncomplete - hiddenman", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("email", { clearIncomplete: true });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("akornilov@");
+    $("#testmask").blur();
+    setTimeout(function () {
+        equal(document.getElementById("testmask")._valueGet(), "", "Result " + document.getElementById("testmask")._valueGet());
+        start();
+        $("#testmask").remove();
+    }, 0);
+});
+
+asyncTest("email mask - clearIncomplete - hiddenman", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("email", { clearIncomplete: true });
+
+    $("#testmask")[0].focus();
+    $("#testmask").Type("akornilov@gmail.com");
+    $("#testmask").blur();
+    setTimeout(function () {
+        equal(document.getElementById("testmask")._valueGet(), "akornilov@gmail.com", "Result " + document.getElementById("testmask")._valueGet());
+        start();
+        $("#testmask").remove();
+    }, 0);
+});
