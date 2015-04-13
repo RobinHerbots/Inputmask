@@ -441,6 +441,7 @@ Default: false
 #### clearMaskOnLostFocus
 
 Remove the empty mask on blur or when not empty removes the optional trailing part
+Default: true
 
 ```javascript
 $(document).ready(function(){

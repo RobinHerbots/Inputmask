@@ -865,7 +865,7 @@
                                                 if (validPos) {
                                                     if (validPos.match.fn != null) {
                                                         validInputs.push(validPos.input);
-                                                    } 
+                                                    }
                                                 }
                                                 delete getMaskSet()["validPositions"][i];
                                                 delete getMaskSet()["tests"][i];
@@ -1230,11 +1230,12 @@
 
                 var lvTestAlt = lvTest && lvTest.alternation != undefined ? lvTest["locator"][lvTest.alternation] : undefined;
                 for (pos = bl - 1; pos > lvp; pos--) {
-                    testPos = positions[pos]["match"];
-                    if ((testPos.optionality ||
-                        testPos.optionalQuantifier ||
-                        (lvTestAlt && lvTestAlt != positions[pos]["locator"][lvTest.alternation]))
-                        && buffer[pos] == getPlaceholder(pos, testPos)) {
+                    testPos = positions[pos];
+                    if ((testPos.match.optionality ||
+                        testPos.match.optionalQuantifier ||
+                        (lvTestAlt && ((lvTestAlt != positions[pos]["locator"][lvTest.alternation] && testPos.match.fn != null) ||
+                        (testPos.match.fn == null && testPos.locator[lvTest.alternation] && checkAlternationMatch(testPos.locator[lvTest.alternation].toString().split(","), lvTestAlt.split(",")) && getTests(pos)[0].def != ""))))
+                        && buffer[pos] == getPlaceholder(pos, testPos.match)) {
                         bl--;
                     } else break;
                 }
@@ -1866,7 +1867,7 @@
                                         caret(input, $.inArray(opts.radixPoint, getBuffer()));
                                         firstClick = false;
                                     } else {
-                                        var clickPosition = isRTL ? TranslatePosition(selectedCaret.begin) : selectedCaret.begin,
+                                        var clickPosition = TranslatePosition(selectedCaret.begin),
                                             lastPosition = seekNext(getLastValidPosition(clickPosition));
 
                                         if (clickPosition < lastPosition) {

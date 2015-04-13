@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ### Updates
 - Make alternators correctly handle alternations with different lengths
+- better determine the last required position with multiple masks
 
 ### Fixed
 - masking a password field #821 (reenable type=password)
