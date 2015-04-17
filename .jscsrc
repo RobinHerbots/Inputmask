@@ -1,0 +1,18 @@
+{
+  "disallowSpacesInFunction": null,
+  "requireTrailingComma": null,
+  "validateLineBreaks": null,
+  "validateIndentation": 4,
+  "requireSpacesInFunctionExpression": {
+    "beforeOpeningRoundBrace": true,
+    "beforeOpeningCurlyBrace": true
+  },
+  "disallowSpacesInsideArrayBrackets": true,
+  "disallowPaddingNewlinesInBlocks": true,
+  "disallowSpaceBeforePostfixUnaryOperators": true,
+  "disallowMultipleLineStrings": true,
+  "disallowMultipleLineBreaks": true,
+  "disallowMultipleSpaces": true,
+  "requireLineFeedAtFileEnd": true,
+  "requireSemicolons": true
+}
