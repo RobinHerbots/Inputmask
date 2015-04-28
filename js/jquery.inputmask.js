@@ -398,7 +398,7 @@
                     for (i = (j = pos) ; i <= lvp ; i++) {
                         var t = positionsClone[i];
                         if (t != undefined) {
-                            var posMatch = j;
+                            var posMatch = j, prevPosMatch = -1;
                             while (posMatch < getMaskLength() && ((t.match.fn == null && vps[i] && (vps[i].match.optionalQuantifier === true || vps[i].match.optionality === true)) || t.match.fn != null)) {
                                 //determine next position
                                 if (t.match.fn == null || (!opts.keepStatic && vps[i] && (vps[i + 1] != undefined && getTests(i + 1, vps[i].locator.slice(), i).length > 1 || vps[i].alternation != undefined)))
@@ -413,7 +413,8 @@
                                     break;
                                 } else {
                                     valid = t["match"].fn == null;
-                                    if (!valid) break;
+                                    if (prevPosMatch == posMatch) break; //prevent endless loop
+                                    prevPosMatch = posMatch;
                                 }
                             }
                         }
@@ -839,8 +840,9 @@
                         if (altPos && altPos.alternation != undefined) {
                             lastAlt = lAlt;
                             alternation = getMaskSet()["validPositions"][lastAlt].alternation;
-                            if (getTestTemplate(lastAlt).locator[altPos.alternation] = !altPos.locator[altPos.alternation])
+                            if (getTestTemplate(lastAlt).locator[altPos.alternation] != altPos.locator[altPos.alternation]) {
                                 break;
+                            }
                         }
                     }
                     if (alternation != undefined) {
@@ -851,7 +853,7 @@
                                 var altNdxs = getMaskSet()["validPositions"][lastAlt].locator[alternation].toString().split(','),
                                     decisionTaker = altPos.locator[alternation] || altNdxs[0]; //no match in the alternations (length mismatch)
                                 if (decisionTaker.length > 0) { //no decision taken ~ take first one as decider
-                                    decisionTaker = decisionTaker[0];
+                                    decisionTaker = decisionTaker.split(',')[0];
                                 }
 
                                 for (var mndx = 0; mndx < altNdxs.length; mndx++) {

@@ -1233,3 +1233,17 @@ test("currency alias - type -1234 delete -", function () {
     equal($("#testmask")[0]._valueGet(), "$ 1,234.00", "Result " + $("#testmask")[0]._valueGet());
     $("#testmask").remove();
 });
+
+test("decimal alias - type 12345.12 add 6 in front - freeze - DatXN", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("decimal", { integerDigits: 5, digits: 2, allowMinus: false, allowPlus: false });
+
+    $("#testmask")[0].focus();
+    $("#testmask").click();
+    $("#testmask").Type("12345.12");
+    $.caret($("#testmask"), 0);
+    $("#testmask").SendKey("6");
+    equal($("#testmask")[0]._valueGet(), "12345.12", "Result " + $("#testmask")[0]._valueGet());
+    $("#testmask").remove();
+});
