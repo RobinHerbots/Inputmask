@@ -315,12 +315,39 @@ Specify a placeholder for a definition.
 
 ### set defaults
 
+Defaults can be set as below.
+
 ```javascript
 $.extend($.inputmask.defaults, {
     'autoUnmask': true
 });
 ```
+However if the property is defined within an alias you need to set it for the alias definition.
 
+```javascript
+$.extend($.inputmask.defaults.aliases.numeric , {
+    allowPlus: false,
+    allowMinus: false
+});
+```
+
+However the preferred way to alter properties for an alias is by creating a new alias which inherits from the default alias definition.
+
+```javascript
+ $.extend($.inputmask.defaults.aliases, {
+	'myNum': {
+            alias: "numeric",
+ 			placeholder: '',
+    		allowPlus: false,
+    		allowMinus: false
+        }
+});
+```
+
+Once defined, you can call the alias by:  
+```javascript
+ $(selector).inputmask("myNum");
+```
 
 ## Options:
 
