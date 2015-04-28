@@ -10,6 +10,8 @@ All notable changes to this project will be documented in this file.
 - better determine the last required position with multiple masks
 
 ### Fixed
+- Browser hangs after trying to type some additional digits at the start of a date field #876
+- inputmask decimal with integerDigits or digits with maxlength can cause Browser freezed #889
 - masking a password field #821 (reenable type=password)
 - email inputmask "isComplete" always returns true #855
 - When two masks specified backspace clears the whole input instead of last char #780
