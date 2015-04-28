@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 - Support for CommonJS (Browserify)
 
 ### Updates
+- Allow masking the text content of other html-elements (other then div)
 - Make alternators correctly handle alternations with different lengths
 - better determine the last required position with multiple masks
 

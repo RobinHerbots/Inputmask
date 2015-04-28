@@ -849,7 +849,7 @@
                         //find first decision making position
                         for (var decisionPos in getMaskSet()["validPositions"]) {
                             altPos = getMaskSet()["validPositions"][decisionPos];
-                            if (parseInt(decisionPos) > parseInt(lastAlt) && altPos.alternation != undefined && altPos.match.fn != null) {
+                            if (parseInt(decisionPos) > parseInt(lastAlt) && altPos.alternation != undefined) {
                                 var altNdxs = getMaskSet()["validPositions"][lastAlt].locator[alternation].toString().split(','),
                                     decisionTaker = altPos.locator[alternation] || altNdxs[0]; //no match in the alternations (length mismatch)
                                 if (decisionTaker.length > 0) { //no decision taken ~ take first one as decider
@@ -1760,216 +1760,215 @@
             }
             function mask(el) {
                 $el = $(el);
-                if (($el.is(":input") && isInputTypeSupported($el.attr("type"))) || el.isContentEditable || $el.is("div")) {
-                    //store tests & original buffer in the input element - used to get the unmasked value
-                    $el.data('_inputmask', {
-                        'maskset': maskset,
-                        'opts': opts,
-                        'isRTL': false
+
+                //store tests & original buffer in the input element - used to get the unmasked value
+                $el.data('_inputmask', {
+                    'maskset': maskset,
+                    'opts': opts,
+                    'isRTL': false
+                });
+
+                //show tooltip
+                if (opts.showTooltip) {
+                    $el.prop("title", getMaskSet()["mask"]);
+                }
+
+                if (el.dir == "rtl" || opts.rightAlign)
+                    $el.css("text-align", "right");
+
+                if (el.dir == "rtl" || opts.numericInput) {
+                    el.dir = "ltr";
+                    $el.removeAttr("dir");
+                    var inputData = $el.data('_inputmask');
+                    inputData['isRTL'] = true;
+                    $el.data('_inputmask', inputData);
+                    isRTL = true;
+                }
+
+                //unbind all events - to make sure that no other mask will interfere when re-masking
+                $el.unbind(".inputmask");
+
+                if (($el.is(":input") && isInputTypeSupported($el.attr("type"))) || el.isContentEditable) {
+                    //bind events
+                    $el.closest('form').bind("submit", function (e) { //trigger change on submit if any
+                        if (undoValue != getBuffer().join('')) {
+                            $el.change();
+                        }
+                        if ($el[0]._valueGet && $el[0]._valueGet() == getBufferTemplate().join('')) {
+                            $el[0]._valueSet(''); //clear masktemplete on submit and still has focus
+                        }
+                        if (opts.removeMaskOnSubmit) {
+                            $el.inputmask("remove");
+                        }
+                    }).bind('reset', function () {
+                        setTimeout(function () {
+                            $el.triggerHandler('setvalue.inputmask');
+                        }, 0);
                     });
-
-                    //show tooltip
-                    if (opts.showTooltip) {
-                        $el.prop("title", getMaskSet()["mask"]);
-                    }
-
-                    if (el.dir == "rtl" || opts.rightAlign)
-                        $el.css("text-align", "right");
-
-                    if (el.dir == "rtl" || opts.numericInput) {
-                        el.dir = "ltr";
-                        $el.removeAttr("dir");
-                        var inputData = $el.data('_inputmask');
-                        inputData['isRTL'] = true;
-                        $el.data('_inputmask', inputData);
-                        isRTL = true;
-                    }
-
-                    //unbind all events - to make sure that no other mask will interfere when re-masking
-                    $el.unbind(".inputmask");
-
-                    if ($el.is(":input") || el.isContentEditable) {
-                        //bind events
-                        $el.closest('form').bind("submit", function (e) { //trigger change on submit if any
-                            if (undoValue != getBuffer().join('')) {
-                                $el.change();
+                    $el.bind("mouseenter.inputmask", function () {
+                        var $input = $(this), input = this;
+                        if (!$input.is(":focus") && opts.showMaskOnHover) {
+                            if (input._valueGet() != getBuffer().join('')) {
+                                writeBuffer(input, getBuffer());
                             }
-                            if ($el[0]._valueGet && $el[0]._valueGet() == getBufferTemplate().join('')) {
-                                $el[0]._valueSet(''); //clear masktemplete on submit and still has focus
+                        }
+                    }).bind("blur.inputmask", function (e) {
+                        var $input = $(this), input = this;
+                        if ($input.data('_inputmask')) {
+                            var nptValue = input._valueGet(), buffer = getBuffer().slice();
+                            firstClick = true;
+                            if (undoValue != buffer.join('')) {
+                                setTimeout(function () { //change event should be triggered after the other buffer manipulations on blur
+                                    $input.change();
+                                    undoValue = buffer.join('');
+                                }, 0);
                             }
-                            if (opts.removeMaskOnSubmit) {
-                                $el.inputmask("remove");
-                            }
-                        }).bind('reset', function () {
-                            setTimeout(function () {
-                                $el.triggerHandler('setvalue.inputmask');
-                            }, 0);
-                        });
-                        $el.bind("mouseenter.inputmask", function () {
-                            var $input = $(this), input = this;
-                            if (!$input.is(":focus") && opts.showMaskOnHover) {
-                                if (input._valueGet() != getBuffer().join('')) {
-                                    writeBuffer(input, getBuffer());
-                                }
-                            }
-                        }).bind("blur.inputmask", function (e) {
-                            var $input = $(this), input = this;
-                            if ($input.data('_inputmask')) {
-                                var nptValue = input._valueGet(), buffer = getBuffer().slice();
-                                firstClick = true;
-                                if (undoValue != buffer.join('')) {
-                                    setTimeout(function () { //change event should be triggered after the other buffer manipulations on blur
-                                        $input.change();
-                                        undoValue = buffer.join('');
-                                    }, 0);
-                                }
-                                if (nptValue != '') {
-                                    if (opts.clearMaskOnLostFocus) {
-                                        if (nptValue == getBufferTemplate().join(''))
-                                            buffer = [];
-                                        else { //clearout optional tail of the mask
-                                            clearOptionalTail(buffer);
-                                        }
-                                    }
-                                    if (isComplete(buffer) === false) {
-                                        $input.trigger("incomplete");
-                                        if (opts.clearIncomplete) {
-                                            resetMaskSet();
-                                            if (opts.clearMaskOnLostFocus)
-                                                buffer = [];
-                                            else {
-                                                buffer = getBufferTemplate().slice();
-
-                                            }
-                                        }
-                                    }
-
-                                    writeBuffer(input, buffer, undefined, e);
-                                }
-                            }
-                        }).bind("focus.inputmask", function (e) {
-                            var $input = $(this), input = this, nptValue = input._valueGet();
-                            if (opts.showMaskOnFocus && (!opts.showMaskOnHover || (opts.showMaskOnHover && nptValue == ''))) {
-                                if (input._valueGet() != getBuffer().join('')) {
-                                    writeBuffer(input, getBuffer(), seekNext(getLastValidPosition()));
-                                }
-                            }
-                            undoValue = getBuffer().join('');
-                        }).bind("mouseleave.inputmask", function () {
-                            var $input = $(this), input = this;
-                            if (opts.clearMaskOnLostFocus) {
-                                var buffer = getBuffer().slice(), nptValue = input._valueGet();
-                                if (!$input.is(":focus") && nptValue != $input.attr("placeholder") && nptValue != '') {
+                            if (nptValue != '') {
+                                if (opts.clearMaskOnLostFocus) {
                                     if (nptValue == getBufferTemplate().join(''))
                                         buffer = [];
                                     else { //clearout optional tail of the mask
                                         clearOptionalTail(buffer);
                                     }
-                                    writeBuffer(input, buffer);
                                 }
-                            }
-                        }).bind("click.inputmask", function () {
-                            var $input = $(this), input = this;
-                            if ($input.is(":focus")) {
-                                var selectedCaret = caret(input);
-                                if (selectedCaret.begin == selectedCaret.end) {
-                                    if (opts.radixFocus && opts.radixPoint != "" && $.inArray(opts.radixPoint, getBuffer()) != -1 && (firstClick || getBuffer().join('') == getBufferTemplate().join(''))) {
-                                        caret(input, $.inArray(opts.radixPoint, getBuffer()));
-                                        firstClick = false;
-                                    } else {
-                                        var clickPosition = TranslatePosition(selectedCaret.begin),
-                                            lastPosition = seekNext(getLastValidPosition(clickPosition));
+                                if (isComplete(buffer) === false) {
+                                    $input.trigger("incomplete");
+                                    if (opts.clearIncomplete) {
+                                        resetMaskSet();
+                                        if (opts.clearMaskOnLostFocus)
+                                            buffer = [];
+                                        else {
+                                            buffer = getBufferTemplate().slice();
 
-                                        if (clickPosition < lastPosition) {
-                                            caret(input, isMask(clickPosition) ? clickPosition : seekNext(clickPosition));
-                                        } else {
-                                            caret(input, lastPosition);
                                         }
                                     }
                                 }
+
+                                writeBuffer(input, buffer, undefined, e);
                             }
-                        }).bind('dblclick.inputmask', function () {
-                            var input = this;
-                            setTimeout(function () {
-                                caret(input, 0, seekNext(getLastValidPosition()));
-                            }, 0);
-                        }).bind(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", pasteEvent
-                        ).bind('cut.inputmask', function (e) {
-                            skipInputEvent = true; //stop inputFallback
-                            var input = this, $input = $(input), pos = caret(input);
-
-                            handleRemove(input, $.inputmask.keyCode.DELETE, pos);
-                            writeBuffer(input, getBuffer(), getMaskSet()["p"], e, undoValue != getBuffer().join(''));
-
-                            if (input._valueGet() == getBufferTemplate().join(''))
-                                $input.trigger('cleared');
-
-                            if (opts.showTooltip) { //update tooltip
-                                $input.prop("title", getMaskSet()["mask"]);
+                        }
+                    }).bind("focus.inputmask", function (e) {
+                        var $input = $(this), input = this, nptValue = input._valueGet();
+                        if (opts.showMaskOnFocus && (!opts.showMaskOnHover || (opts.showMaskOnHover && nptValue == ''))) {
+                            if (input._valueGet() != getBuffer().join('')) {
+                                writeBuffer(input, getBuffer(), seekNext(getLastValidPosition()));
                             }
-                        }).bind('complete.inputmask', opts.oncomplete
-                        ).bind('incomplete.inputmask', opts.onincomplete
-                        ).bind('cleared.inputmask', opts.oncleared);
-
-                        $el.bind("keydown.inputmask", keydownEvent
-                        ).bind("keypress.inputmask", keypressEvent);
-
-                        if (!androidfirefox) {
-                            $el.bind("compositionstart.inputmask", compositionStartEvent
-                            ).bind("compositionupdate.inputmask", compositionUpdateEvent
-                            ).bind("compositionend.inputmask", compositionEndEvent);
                         }
-
-                        if (PasteEventType === "paste") {
-                            $el.bind("input.inputmask", inputFallBackEvent);
-                        }
-
-                        //if (android || androidfirefox || androidchrome || kindle) {
-                        //    $el.unbind("input.inputmask");
-                        //    $el.bind("input.inputmask", mobileInputEvent);
-                        //}
-                    }
-
-                    $el.bind('setvalue.inputmask', function () {
-                        var input = this, value = input._valueGet();
-                        input._valueSet($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(input, value, opts) || value) : value);
-                        checkVal(input, true, false);
                         undoValue = getBuffer().join('');
-                        if ((opts.clearMaskOnLostFocus || opts.clearIncomplete) && input._valueGet() == getBufferTemplate().join(''))
-                            input._valueSet('');
-                    });
-
-                    patchValueProperty(el);
-
-                    //apply mask
-                    var initialValue = $.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(el, el._valueGet(), opts) || el._valueGet()) : el._valueGet();
-                    checkVal(el, true, false, initialValue.split(''));
-                    var buffer = getBuffer().slice();
-                    undoValue = buffer.join('');
-                    // Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
-                    var activeElement;
-                    try {
-                        activeElement = document.activeElement;
-                    } catch (e) {
-                    }
-                    if (isComplete(buffer) === false) {
-                        if (opts.clearIncomplete)
-                            resetMaskSet();
-                    }
-                    if (opts.clearMaskOnLostFocus) {
-                        if (buffer.join('') == getBufferTemplate().join('')) {
-                            buffer = [];
-                        } else {
-                            clearOptionalTail(buffer);
+                    }).bind("mouseleave.inputmask", function () {
+                        var $input = $(this), input = this;
+                        if (opts.clearMaskOnLostFocus) {
+                            var buffer = getBuffer().slice(), nptValue = input._valueGet();
+                            if (!$input.is(":focus") && nptValue != $input.attr("placeholder") && nptValue != '') {
+                                if (nptValue == getBufferTemplate().join(''))
+                                    buffer = [];
+                                else { //clearout optional tail of the mask
+                                    clearOptionalTail(buffer);
+                                }
+                                writeBuffer(input, buffer);
+                            }
                         }
-                    }
-                    writeBuffer(el, buffer);
-                    if (activeElement === el) { //position the caret when in focus
-                        caret(el, seekNext(getLastValidPosition()));
+                    }).bind("click.inputmask", function () {
+                        var $input = $(this), input = this;
+                        if ($input.is(":focus")) {
+                            var selectedCaret = caret(input);
+                            if (selectedCaret.begin == selectedCaret.end) {
+                                if (opts.radixFocus && opts.radixPoint != "" && $.inArray(opts.radixPoint, getBuffer()) != -1 && (firstClick || getBuffer().join('') == getBufferTemplate().join(''))) {
+                                    caret(input, $.inArray(opts.radixPoint, getBuffer()));
+                                    firstClick = false;
+                                } else {
+                                    var clickPosition = TranslatePosition(selectedCaret.begin),
+                                        lastPosition = seekNext(getLastValidPosition(clickPosition));
+
+                                    if (clickPosition < lastPosition) {
+                                        caret(input, isMask(clickPosition) ? clickPosition : seekNext(clickPosition));
+                                    } else {
+                                        caret(input, lastPosition);
+                                    }
+                                }
+                            }
+                        }
+                    }).bind('dblclick.inputmask', function () {
+                        var input = this;
+                        setTimeout(function () {
+                            caret(input, 0, seekNext(getLastValidPosition()));
+                        }, 0);
+                    }).bind(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", pasteEvent
+                    ).bind('cut.inputmask', function (e) {
+                        skipInputEvent = true; //stop inputFallback
+                        var input = this, $input = $(input), pos = caret(input);
+
+                        handleRemove(input, $.inputmask.keyCode.DELETE, pos);
+                        writeBuffer(input, getBuffer(), getMaskSet()["p"], e, undoValue != getBuffer().join(''));
+
+                        if (input._valueGet() == getBufferTemplate().join(''))
+                            $input.trigger('cleared');
+
+                        if (opts.showTooltip) { //update tooltip
+                            $input.prop("title", getMaskSet()["mask"]);
+                        }
+                    }).bind('complete.inputmask', opts.oncomplete
+                    ).bind('incomplete.inputmask', opts.onincomplete
+                    ).bind('cleared.inputmask', opts.oncleared);
+
+                    $el.bind("keydown.inputmask", keydownEvent
+                    ).bind("keypress.inputmask", keypressEvent);
+
+                    if (!androidfirefox) {
+                        $el.bind("compositionstart.inputmask", compositionStartEvent
+                        ).bind("compositionupdate.inputmask", compositionUpdateEvent
+                        ).bind("compositionend.inputmask", compositionEndEvent);
                     }
 
-                    installEventRuler(el);
+                    if (PasteEventType === "paste") {
+                        $el.bind("input.inputmask", inputFallBackEvent);
+                    }
+
+                    //if (android || androidfirefox || androidchrome || kindle) {
+                    //    $el.unbind("input.inputmask");
+                    //    $el.bind("input.inputmask", mobileInputEvent);
+                    //}
                 }
+
+                $el.bind('setvalue.inputmask', function () {
+                    var input = this, value = input._valueGet();
+                    input._valueSet($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(input, value, opts) || value) : value);
+                    checkVal(input, true, false);
+                    undoValue = getBuffer().join('');
+                    if ((opts.clearMaskOnLostFocus || opts.clearIncomplete) && input._valueGet() == getBufferTemplate().join(''))
+                        input._valueSet('');
+                });
+
+                patchValueProperty(el);
+
+                //apply mask
+                var initialValue = $.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(el, el._valueGet(), opts) || el._valueGet()) : el._valueGet();
+                checkVal(el, true, false, initialValue.split(''));
+                var buffer = getBuffer().slice();
+                undoValue = buffer.join('');
+                // Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
+                var activeElement;
+                try {
+                    activeElement = document.activeElement;
+                } catch (e) {
+                }
+                if (isComplete(buffer) === false) {
+                    if (opts.clearIncomplete)
+                        resetMaskSet();
+                }
+                if (opts.clearMaskOnLostFocus) {
+                    if (buffer.join('') == getBufferTemplate().join('')) {
+                        buffer = [];
+                    } else {
+                        clearOptionalTail(buffer);
+                    }
+                }
+                writeBuffer(el, buffer);
+                if (activeElement === el) { //position the caret when in focus
+                    caret(el, seekNext(getLastValidPosition()));
+                }
+
+                installEventRuler(el);
             }
 
             //action object

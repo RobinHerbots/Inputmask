@@ -86,7 +86,7 @@ $(document).ready(function(){
 - input type="text" 
 - input type="tel"
 - div contenteditable="true" (and all others supported by contenteditable)
-- div (mask text content or set maskedvalue with jQuery.val)
+- any html-element (mask text content or set maskedvalue with jQuery.val)
 
 #### Default masking definitions
 
