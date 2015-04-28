@@ -411,7 +411,10 @@
                                     valid = isValid(posMatch, t["input"], true, true) !== false;
                                     j = posMatch;
                                     break;
-                                } else valid = t["match"].fn == null;
+                                } else {
+                                    valid = t["match"].fn == null;
+                                    if (!valid) break;
+                                }
                             }
                         }
                         if (!valid) break;
@@ -830,21 +833,26 @@
                         alternation,
                         isValidRslt,
                         altPos;
-                    //find last alternation
-                    for (lastAlt = getLastValidPosition() ; lastAlt >= 0; lastAlt--) {
-                        altPos = getMaskSet()["validPositions"][lastAlt];
-                        if (altPos && altPos.alternation != undefined && altPos.locator[altPos.alternation].length > 1) {
+                    //find last modified alternation 
+                    for (var lAlt = getLastValidPosition() ; lAlt >= 0; lAlt--) {
+                        altPos = getMaskSet()["validPositions"][lAlt];
+                        if (altPos && altPos.alternation != undefined) {
+                            lastAlt = lAlt;
                             alternation = getMaskSet()["validPositions"][lastAlt].alternation;
-                            break;
+                            if (getTestTemplate(lastAlt).locator[altPos.alternation] = !altPos.locator[altPos.alternation])
+                                break;
                         }
                     }
                     if (alternation != undefined) {
                         //find first decision making position
                         for (var decisionPos in getMaskSet()["validPositions"]) {
                             altPos = getMaskSet()["validPositions"][decisionPos];
-                            if (parseInt(decisionPos) > parseInt(lastAlt) && altPos.alternation != undefined) {
+                            if (parseInt(decisionPos) > parseInt(lastAlt) && altPos.alternation != undefined && altPos.match.fn != null) {
                                 var altNdxs = getMaskSet()["validPositions"][lastAlt].locator[alternation].toString().split(','),
                                     decisionTaker = altPos.locator[alternation] || altNdxs[0]; //no match in the alternations (length mismatch)
+                                if (decisionTaker.length > 0) { //no decision taken ~ take first one as decider
+                                    decisionTaker = decisionTaker[0];
+                                }
 
                                 for (var mndx = 0; mndx < altNdxs.length; mndx++) {
                                     if (decisionTaker < altNdxs[mndx]) {

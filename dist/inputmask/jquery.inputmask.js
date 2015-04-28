@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.63-29
+* Version: 3.1.63-37
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery")) : factory(jQuery);
@@ -243,7 +243,7 @@
                             valid = isValid(posMatch, t.input, !0, !0) !== !1, j = posMatch;
                             break;
                         }
-                        valid = null == t.match.fn;
+                        if (valid = null == t.match.fn, !valid) break;
                     }
                     if (!valid) break;
                 }
@@ -465,15 +465,14 @@
                 }), rslt;
             }
             function alternate(pos, c, strict, fromSetValid) {
-                var lastAlt, alternation, isValidRslt, altPos, validPsClone = $.extend(!0, {}, getMaskSet().validPositions);
-                for (lastAlt = getLastValidPosition(); lastAlt >= 0; lastAlt--) if (altPos = getMaskSet().validPositions[lastAlt], 
-                altPos && void 0 != altPos.alternation && altPos.locator[altPos.alternation].length > 1) {
-                    alternation = getMaskSet().validPositions[lastAlt].alternation;
-                    break;
-                }
+                for (var lastAlt, alternation, isValidRslt, altPos, validPsClone = $.extend(!0, {}, getMaskSet().validPositions), lAlt = getLastValidPosition(); lAlt >= 0 && (altPos = getMaskSet().validPositions[lAlt], 
+                !(altPos && void 0 != altPos.alternation && (lastAlt = lAlt, alternation = getMaskSet().validPositions[lastAlt].alternation, 
+                getTestTemplate(lastAlt).locator[altPos.alternation] = !altPos.locator[altPos.alternation]))); lAlt--) ;
                 if (void 0 != alternation) for (var decisionPos in getMaskSet().validPositions) if (altPos = getMaskSet().validPositions[decisionPos], 
-                parseInt(decisionPos) > parseInt(lastAlt) && void 0 != altPos.alternation) {
-                    for (var altNdxs = getMaskSet().validPositions[lastAlt].locator[alternation].toString().split(","), decisionTaker = altPos.locator[alternation] || altNdxs[0], mndx = 0; mndx < altNdxs.length; mndx++) if (decisionTaker < altNdxs[mndx]) {
+                parseInt(decisionPos) > parseInt(lastAlt) && void 0 != altPos.alternation && null != altPos.match.fn) {
+                    var altNdxs = getMaskSet().validPositions[lastAlt].locator[alternation].toString().split(","), decisionTaker = altPos.locator[alternation] || altNdxs[0];
+                    decisionTaker.length > 0 && (decisionTaker = decisionTaker[0]);
+                    for (var mndx = 0; mndx < altNdxs.length; mndx++) if (decisionTaker < altNdxs[mndx]) {
                         for (var possibilityPos, possibilities, dp = decisionPos - 1; dp >= 0; dp--) if (possibilityPos = getMaskSet().validPositions[dp], 
                         void 0 != possibilityPos) {
                             possibilities = possibilityPos.locator[alternation], possibilityPos.locator[alternation] = parseInt(altNdxs[mndx]);
