@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.63-44
+* Version: 3.1.63-45
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery")) : factory(jQuery);
@@ -724,7 +724,7 @@
                     if ("inputmask" == eventHandler.namespace && "setvalue" != eventHandler.type) {
                         var handler = eventHandler.handler;
                         eventHandler.handler = function(e) {
-                            if (!this.disabled && (!this.readOnly || "keydown" == e.type && e.ctrlKey && 67 == e.keyCode)) {
+                            if (!(this.disabled || this.readOnly && !("keydown" == e.type && e.ctrlKey && 67 == e.keyCode || e.keyCode == $.inputmask.keyCode.TAB))) {
                                 switch (e.type) {
                                   case "input":
                                     if (skipInputEvent === !0 || inComposition === !0) return skipInputEvent = !1, e.preventDefault();
@@ -794,7 +794,7 @@
                 valueSet.call(this, value), inputData && $(this).triggerHandler("setvalue.inputmask");
             }
             function InstallNativeValueSetFallback(npt) {
-                $(npt).bind("mouseenter.inputmask", function() {
+                $(npt).bind("mouseenter.inputmask", function(event) {
                     var $input = $(this), input = this, value = input._valueGet();
                     "" != value && value != getBuffer().join("") && $input.triggerHandler("setvalue.inputmask");
                 });
@@ -968,7 +968,7 @@
                 writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
             }, 0), compositionData = e.originalEvent.data;
         }
-        function compositionEndEvent() {}
+        function compositionEndEvent(e) {}
         function mask(el) {
             if ($el = $(el), $el.data("_inputmask", {
                 maskset: maskset,
@@ -980,7 +980,7 @@
                 var inputData = $el.data("_inputmask");
                 inputData.isRTL = !0, $el.data("_inputmask", inputData), isRTL = !0;
             }
-            $el.unbind(".inputmask"), ($el.is(":input") && isInputTypeSupported($el.attr("type")) || el.isContentEditable) && ($el.closest("form").bind("submit", function() {
+            $el.unbind(".inputmask"), ($el.is(":input") && isInputTypeSupported($el.attr("type")) || el.isContentEditable) && ($el.closest("form").bind("submit", function(e) {
                 undoValue != getBuffer().join("") && $el.change(), $el[0]._valueGet && $el[0]._valueGet() == getBufferTemplate().join("") && $el[0]._valueSet(""), 
                 opts.removeMaskOnSubmit && $el.inputmask("remove");
             }).bind("reset", function() {
@@ -1000,7 +1000,7 @@
                     isComplete(buffer) === !1 && ($input.trigger("incomplete"), opts.clearIncomplete && (resetMaskSet(), 
                     buffer = opts.clearMaskOnLostFocus ? [] : getBufferTemplate().slice())), writeBuffer(input, buffer, void 0, e));
                 }
-            }).bind("focus.inputmask", function() {
+            }).bind("focus.inputmask", function(e) {
                 var input = ($(this), this), nptValue = input._valueGet();
                 opts.showMaskOnFocus && (!opts.showMaskOnHover || opts.showMaskOnHover && "" == nptValue) && input._valueGet() != getBuffer().join("") && writeBuffer(input, getBuffer(), seekNext(getLastValidPosition())), 
                 undoValue = getBuffer().join("");

@@ -1292,7 +1292,7 @@
                                 var handler = eventHandler.handler;
                                 eventHandler.handler = function (e) {
                                     //console.log("triggered " + e.type);
-                                    if (this.disabled || (this.readOnly && !(e.type == "keydown" && e.ctrlKey && e.keyCode == 67)))
+                                    if (this.disabled || (this.readOnly && !(e.type == "keydown" && (e.ctrlKey && e.keyCode == 67) || e.keyCode == $.inputmask.keyCode.TAB)))
                                         e.preventDefault();
                                     else {
                                         switch (e.type) {

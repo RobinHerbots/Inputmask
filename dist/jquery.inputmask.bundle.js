@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.63-44
+* Version: 3.1.63-45
 */
 !function($) {
     function isInputEventSupported(eventName) {
@@ -722,7 +722,7 @@
                     if ("inputmask" == eventHandler.namespace && "setvalue" != eventHandler.type) {
                         var handler = eventHandler.handler;
                         eventHandler.handler = function(e) {
-                            if (!this.disabled && (!this.readOnly || "keydown" == e.type && e.ctrlKey && 67 == e.keyCode)) {
+                            if (!(this.disabled || this.readOnly && !("keydown" == e.type && e.ctrlKey && 67 == e.keyCode || e.keyCode == $.inputmask.keyCode.TAB))) {
                                 switch (e.type) {
                                   case "input":
                                     if (skipInputEvent === !0 || inComposition === !0) return skipInputEvent = !1, e.preventDefault();
@@ -792,7 +792,7 @@
                 valueSet.call(this, value), inputData && $(this).triggerHandler("setvalue.inputmask");
             }
             function InstallNativeValueSetFallback(npt) {
-                $(npt).bind("mouseenter.inputmask", function() {
+                $(npt).bind("mouseenter.inputmask", function(event) {
                     var $input = $(this), input = this, value = input._valueGet();
                     "" != value && value != getBuffer().join("") && $input.triggerHandler("setvalue.inputmask");
                 });
@@ -966,7 +966,7 @@
                 writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
             }, 0), compositionData = e.originalEvent.data;
         }
-        function compositionEndEvent() {}
+        function compositionEndEvent(e) {}
         function mask(el) {
             if ($el = $(el), $el.data("_inputmask", {
                 maskset: maskset,
@@ -978,7 +978,7 @@
                 var inputData = $el.data("_inputmask");
                 inputData.isRTL = !0, $el.data("_inputmask", inputData), isRTL = !0;
             }
-            $el.unbind(".inputmask"), ($el.is(":input") && isInputTypeSupported($el.attr("type")) || el.isContentEditable) && ($el.closest("form").bind("submit", function() {
+            $el.unbind(".inputmask"), ($el.is(":input") && isInputTypeSupported($el.attr("type")) || el.isContentEditable) && ($el.closest("form").bind("submit", function(e) {
                 undoValue != getBuffer().join("") && $el.change(), $el[0]._valueGet && $el[0]._valueGet() == getBufferTemplate().join("") && $el[0]._valueSet(""), 
                 opts.removeMaskOnSubmit && $el.inputmask("remove");
             }).bind("reset", function() {
@@ -998,7 +998,7 @@
                     isComplete(buffer) === !1 && ($input.trigger("incomplete"), opts.clearIncomplete && (resetMaskSet(), 
                     buffer = opts.clearMaskOnLostFocus ? [] : getBufferTemplate().slice())), writeBuffer(input, buffer, void 0, e));
                 }
-            }).bind("focus.inputmask", function() {
+            }).bind("focus.inputmask", function(e) {
                 var input = ($(this), this), nptValue = input._valueGet();
                 opts.showMaskOnFocus && (!opts.showMaskOnHover || opts.showMaskOnHover && "" == nptValue) && input._valueGet() != getBuffer().join("") && writeBuffer(input, getBuffer(), seekNext(getLastValidPosition())), 
                 undoValue = getBuffer().join("");
@@ -1434,7 +1434,7 @@
                 }
                 return currentyear;
             },
-            onKeyDown: function(e) {
+            onKeyDown: function(e, buffer, caretPos, opts) {
                 var $input = $(this);
                 if (e.ctrlKey && e.keyCode == $.inputmask.keyCode.RIGHT) {
                     var today = new Date();
@@ -1607,7 +1607,7 @@
                 val1: new RegExp("0[1-9]|1[012]")
             },
             leapday: "02/29/",
-            onKeyDown: function(e) {
+            onKeyDown: function(e, buffer, caretPos, opts) {
                 var $input = $(this);
                 if (e.ctrlKey && e.keyCode == $.inputmask.keyCode.RIGHT) {
                     var today = new Date();
@@ -1621,7 +1621,7 @@
             placeholder: "yyyy/mm/dd",
             alias: "mm/dd/yyyy",
             leapday: "/02/29",
-            onKeyDown: function(e) {
+            onKeyDown: function(e, buffer, caretPos, opts) {
                 var $input = $(this);
                 if (e.ctrlKey && e.keyCode == $.inputmask.keyCode.RIGHT) {
                     var today = new Date();
@@ -1830,7 +1830,7 @@
             },
             definitions: {
                 i: {
-                    validator: function() {
+                    validator: function(chrs, maskset, pos, strict, opts) {
                         return !0;
                     },
                     cardinality: 8,
@@ -1873,7 +1873,7 @@
             mask: "i[i[i]].i[i[i]].i[i[i]].i[i[i]]",
             definitions: {
                 i: {
-                    validator: function(chrs, maskset, pos) {
+                    validator: function(chrs, maskset, pos, strict, opts) {
                         return pos - 1 > -1 && "." != maskset.buffer[pos - 1] ? (chrs = maskset.buffer[pos - 1] + chrs, 
                         chrs = pos - 2 > -1 && "." != maskset.buffer[pos - 2] ? maskset.buffer[pos - 2] + chrs : "0" + chrs) : chrs = "00" + chrs, 
                         new RegExp("25[0-5]|2[0-4][0-9]|[01][0-9][0-9]").test(chrs);
@@ -1885,7 +1885,7 @@
         email: {
             mask: "*{1,64}[.*{1,64}][.*{1,64}][.*{1,64}]@*{1,64}[.*{2,64}][.*{2,6}][.*{1,2}]",
             greedy: !1,
-            onBeforePaste: function(pastedValue) {
+            onBeforePaste: function(pastedValue, opts) {
                 return pastedValue = pastedValue.toLowerCase(), pastedValue.replace("mailto:", "");
             },
             definitions: {
@@ -1906,7 +1906,7 @@
                     return escapedTxt;
                 }
                 if (0 !== opts.repeat && isNaN(opts.integerDigits) && (opts.integerDigits = opts.repeat), 
-                opts.repeat = 0, opts.groupSeparator == opts.radixPoint && (opts.groupSeparator = "." == opts.radixPoint ? "," : "," == opts.radixPoint ? "." : ""), 
+                opts.repeat = 0, opts.groupSeparator == opts.radixPoint && ("." == opts.radixPoint ? opts.groupSeparator = "," : "," == opts.radixPoint ? opts.groupSeparator = "." : opts.groupSeparator = ""), 
                 " " === opts.groupSeparator && (opts.skipOptionalPartCharacter = void 0), opts.autoGroup = opts.autoGroup && "" != opts.groupSeparator, 
                 opts.autoGroup && ("string" == typeof opts.groupSize && isFinite(opts.groupSize) && (opts.groupSize = parseInt(opts.groupSize)), 
                 isFinite(opts.integerDigits))) {
