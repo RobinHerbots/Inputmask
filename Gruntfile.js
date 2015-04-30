@@ -96,7 +96,7 @@ module.exports = function (grunt) {
         },
         nugetpack: {
             dist: {
-                src: function () { return process.platform === "linux" ? 'nuget/jquery.inputmask.linux.nuspec' : 'nuget/jquery.inputmask.nuspec'; }(),
+                src: function () { return process.platform === "linux" ? 'nuspecs/jquery.inputmask.linux.nuspec' : 'nuspecs/jquery.inputmask.nuspec'; }(),
                 dest: 'dist/',
                 options: {
                     version: '<%= pkg.version %>'

@@ -1182,7 +1182,6 @@
                     begin = TranslatePosition(begin);
                     end = TranslatePosition(end);
                     end = (typeof end == 'number') ? end : begin;
-
                     if (!$(npt).is(":visible")) {
                         return;
                     }
@@ -1195,6 +1194,10 @@
                         npt.selectionEnd = end;
                     } else if (window.getSelection) {
                         range = document.createRange();
+                        if (npt.firstChild == undefined) {
+                            var textNode = document.createTextNode("");
+                            npt.appendChild(textNode);
+                        }
                         range.setStart(npt.firstChild, begin < npt._valueGet().length ? begin : npt._valueGet().length);
                         range.setEnd(npt.firstChild, end < npt._valueGet().length ? end : npt._valueGet().length);
                         range.collapse(true);
@@ -1216,7 +1219,7 @@
                         end = npt.selectionEnd;
                     } else if (window.getSelection) {
                         range = window.getSelection().getRangeAt(0);
-                        if (range.commonAncestorContainer.parentNode == npt) {
+                        if (range.commonAncestorContainer.parentNode == npt || range.commonAncestorContainer == npt) {
                             begin = range.startOffset;
                             end = range.endOffset;
                         }

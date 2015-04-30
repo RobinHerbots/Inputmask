@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 - better determine the last required position with multiple masks
 
 ### Fixed
+- contenteditable decimal #882
 - Tab out does not work when element is readonly #884
 - Change mask default for allowPlus and allowMinus #896
 - Browser hangs after trying to type some additional digits at the start of a date field #876

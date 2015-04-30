@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.63-45
+* Version: 3.1.63-47
 */
 !function($) {
     function isInputEventSupported(eventName) {
@@ -658,7 +658,8 @@
             var range, npt = input.jquery && input.length > 0 ? input[0] : input;
             if ("number" != typeof begin) return npt.setSelectionRange ? (begin = npt.selectionStart, 
             end = npt.selectionEnd) : window.getSelection ? (range = window.getSelection().getRangeAt(0), 
-            range.commonAncestorContainer.parentNode == npt && (begin = range.startOffset, end = range.endOffset)) : document.selection && document.selection.createRange && (range = document.selection.createRange(), 
+            (range.commonAncestorContainer.parentNode == npt || range.commonAncestorContainer == npt) && (begin = range.startOffset, 
+            end = range.endOffset)) : document.selection && document.selection.createRange && (range = document.selection.createRange(), 
             begin = 0 - range.duplicate().moveStart("character", -1e5), end = begin + range.text.length), 
             {
                 begin: TranslatePosition(begin),
@@ -669,7 +670,11 @@
                 var scrollCalc = $(npt).css("font-size").replace("px", "") * end;
                 if (npt.scrollLeft = scrollCalc > npt.scrollWidth ? scrollCalc : 0, androidchrome || 0 != opts.insertMode || begin != end || end++, 
                 npt.setSelectionRange) npt.selectionStart = begin, npt.selectionEnd = end; else if (window.getSelection) {
-                    range = document.createRange(), range.setStart(npt.firstChild, begin < npt._valueGet().length ? begin : npt._valueGet().length), 
+                    if (range = document.createRange(), void 0 == npt.firstChild) {
+                        var textNode = document.createTextNode("");
+                        npt.appendChild(textNode);
+                    }
+                    range.setStart(npt.firstChild, begin < npt._valueGet().length ? begin : npt._valueGet().length), 
                     range.setEnd(npt.firstChild, end < npt._valueGet().length ? end : npt._valueGet().length), 
                     range.collapse(!0);
                     var sel = window.getSelection();
