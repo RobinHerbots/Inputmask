@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [unreleased]
+## [3.1.63] - 2015-05-04
 ### Added
 - Support for CommonJS (Browserify)
 
