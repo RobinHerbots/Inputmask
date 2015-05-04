@@ -50,6 +50,7 @@ Optional extensions on the jquery.inputmask base
                 opts.radixFocus = opts.radixFocus && opts.placeholder == "0";
 
                 opts.definitions[";"] = opts.definitions["~"]; //clone integer def for decimals
+                opts.definitions[";"].definitionSymbol = "~";
 
                 var mask = autoEscape(opts.prefix);
                 mask += "[+]";
