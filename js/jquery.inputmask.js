@@ -1695,6 +1695,7 @@
                 }
                 checkVal(input, true, false, isRTL ? pasteValue.split('').reverse() : pasteValue.split(''));
                 $input.click();
+                $input.trigger("input");
                 if (isComplete(getBuffer()) === true)
                     $input.trigger("complete");
 

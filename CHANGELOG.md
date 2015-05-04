@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 ### Fixed
+- never trigger 'input' event when paste after invoke inputmask #776
 - Script looping start when add '.' between decimal values #870 ('.' part)
 
 ## [3.1.63] - 2015-05-04

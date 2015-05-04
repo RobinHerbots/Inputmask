@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-0
+* Version: 3.1.64-1
 */
 !function($) {
     function isInputEventSupported(eventName) {
@@ -942,7 +942,8 @@
                 pasteValue || (pasteValue = inputValue);
             }
             return checkVal(input, !0, !1, isRTL ? pasteValue.split("").reverse() : pasteValue.split("")), 
-            $input.click(), isComplete(getBuffer()) === !0 && $input.trigger("complete"), !1;
+            $input.click(), $input.trigger("input"), isComplete(getBuffer()) === !0 && $input.trigger("complete"), 
+            !1;
         }
         function inputFallBackEvent(e) {
             var input = this;
