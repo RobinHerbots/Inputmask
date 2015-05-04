@@ -1120,7 +1120,7 @@
                 if (writeOut) input._valueSet(""); //initial clear
 
                 if (!strict) {
-                    var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(''), matches = inputValue.join('').match(new RegExp(escapeRegex(staticInput), "g"));
+                    var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(''), matches = inputValue.join('').match(new RegExp("^" + escapeRegex(staticInput), "g"));
                     if (matches && matches.length > 0) {
                         inputValue.splice(0, matches.length * staticInput.length);
                         initialNdx = seekNext(initialNdx);
@@ -2193,12 +2193,13 @@
                 for (var option in opts) {
                     var optionData = $npt.data("inputmask-" + option.toLowerCase());
                     if (optionData != undefined) {
+                        optionData = typeof optionData == "boolean" ? optionData : optionData.toString();
                         if (option == "mask" && optionData.indexOf("[") == 0) {
                             opts[option] = optionData.replace(/[\s[\]]/g, "").split("','");
                             opts[option][0] = opts[option][0].replace("'", "");
                             opts[option][opts[option].length - 1] = opts[option][opts[option].length - 1].replace("'", "");
                         } else
-                            opts[option] = typeof optionData == "boolean" ? optionData : optionData.toString();
+                            opts[option] = optionData;
                         if (importedOptionsContainer)
                             importedOptionsContainer[option] = opts[option];
                     }

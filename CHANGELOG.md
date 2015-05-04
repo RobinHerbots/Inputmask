@@ -11,6 +11,8 @@ All notable changes to this project will be documented in this file.
 - better determine the last required position with multiple masks
 
 ### Fixed
+- Edit New issue
+Static masks fails when we set value="2015" for an input field where data-inputmask was "2999" #903
 - contenteditable decimal #882
 - Tab out does not work when element is readonly #884
 - Change mask default for allowPlus and allowMinus #896
