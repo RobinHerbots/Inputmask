@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-1
+* Version: 3.1.64-8
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery")) : factory(jQuery);
@@ -596,11 +596,14 @@
             if (test = test || getTest(pos), void 0 != test.placeholder) return test.placeholder;
             if (null == test.fn) {
                 if (!opts.keepStatic && void 0 == getMaskSet().validPositions[pos]) {
-                    for (var tests = getTests(pos), staticAlternations = !0, i = 0; i < tests.length; i++) if ("" != tests[i].match.def && (null !== tests[i].match.fn || void 0 == tests[i].alternation || tests[i].locator[tests[i].alternation].length > 1)) {
-                        staticAlternations = !1;
-                        break;
+                    for (var prevTest, tests = getTests(pos), hasAlternations = !1, i = 0; i < tests.length; i++) {
+                        if (prevTest && "" != tests[i].match.def && tests[i].match.def != prevTest.match.def && (void 0 == tests[i].alternation || tests[i].alternation == prevTest.alternation)) {
+                            hasAlternations = !0;
+                            break;
+                        }
+                        1 != tests[i].match.optionality && 1 != tests[i].match.optionalQuantifier && (prevTest = tests[i]);
                     }
-                    if (staticAlternations) return opts.placeholder.charAt(pos % opts.placeholder.length);
+                    if (hasAlternations) return opts.placeholder.charAt(pos % opts.placeholder.length);
                 }
                 return test.def;
             }
@@ -943,8 +946,8 @@
                 !1;
                 pasteValue || (pasteValue = inputValue);
             }
-            return checkVal(input, !0, !1, isRTL ? pasteValue.split("").reverse() : pasteValue.split("")), 
-            $input.click(), $input.trigger("input"), isComplete(getBuffer()) === !0 && $input.trigger("complete"), 
+            return checkVal(input, !1, !1, isRTL ? pasteValue.split("").reverse() : pasteValue.split("")), 
+            writeBuffer(input, getBuffer(), void 0, e, !0), $input.click(), isComplete(getBuffer()) === !0 && $input.trigger("complete"), 
             !1;
         }
         function inputFallBackEvent(e) {

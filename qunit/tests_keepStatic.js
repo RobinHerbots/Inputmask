@@ -127,7 +127,7 @@ test("(78)|(79) 999 99 99", function () {
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("(78)|(79) 999 99 99");
     $("#testmask")[0].focus();
-    equal(document.getElementById("testmask")._valueGet(), "78 ___ __ __", "Result " + document.getElementById("testmask")._valueGet());
+    equal(document.getElementById("testmask")._valueGet(), "7_ ___ __ __", "Result " + document.getElementById("testmask")._valueGet());
 
     $("#testmask").remove();
 });

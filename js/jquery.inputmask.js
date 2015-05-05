@@ -1006,15 +1006,15 @@
                 if (test.fn != null)
                     return test.fn
                 else if (!opts.keepStatic && getMaskSet()["validPositions"][pos] == undefined) {
-                    var tests = getTests(pos), staticAlternations = true;
-                    for (var i = 0; i < tests.length; i++) {
-                        if (tests[i].match.def != "" && (/*tests[i].match.fn !== null || */ (tests[i].alternation == undefined || tests[i].locator[tests[i].alternation].length > 1))) {
-                            staticAlternations = false;
-                            break;
+                        var tests = getTests(pos), staticAlternations = true;
+                        for (var i = 0; i < tests.length; i++) {
+                            if (tests[i].match.def != "" && (/*tests[i].match.fn !== null || */ (tests[i].alternation == undefined || tests[i].locator[tests[i].alternation].length > 1))) {
+                                staticAlternations = false;
+                                break;
+                            }
                         }
+                        return staticAlternations;
                     }
-                    return staticAlternations;
-                }
 
                 return false;
             }
@@ -1082,15 +1082,18 @@
                     return test["placeholder"];
                 else if (test["fn"] == null) {
                     if (!opts.keepStatic && getMaskSet()["validPositions"][pos] == undefined) {
-                        var tests = getTests(pos), staticAlternations = true;
+                        var tests = getTests(pos), hasAlternations = false, prevTest;
                         for (var i = 0; i < tests.length; i++) {
-                            if (tests[i].match.def != "" && (tests[i].match.fn !== null || (tests[i].alternation == undefined || tests[i].locator[tests[i].alternation].length > 1))) {
-                                staticAlternations = false;
+                            if (prevTest && tests[i].match.def != "" && (tests[i].match.def != prevTest.match.def && (tests[i].alternation == undefined || tests[i].alternation == prevTest.alternation ))) {
+                                hasAlternations = true;
                                 break;
                             }
+                            
+                            if(tests[i].match.optionality != true && tests[i].match.optionalQuantifier != true)
+                                prevTest = tests[i];
                         }
 
-                        if (staticAlternations)
+                        if (hasAlternations)
                             return opts.placeholder.charAt(pos % opts.placeholder.length);
                     }
                     return test["def"]
@@ -1693,9 +1696,9 @@
                     if (!pasteValue)
                         pasteValue = inputValue;
                 }
-                checkVal(input, true, false, isRTL ? pasteValue.split('').reverse() : pasteValue.split(''));
+                checkVal(input, false, false, isRTL ? pasteValue.split('').reverse() : pasteValue.split(''));
+                writeBuffer(input, getBuffer(), undefined, e, true);
                 $input.click();
-                $input.trigger("input");
                 if (isComplete(getBuffer()) === true)
                     $input.trigger("complete");
 

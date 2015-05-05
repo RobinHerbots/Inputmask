@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+
+### Updates
+- Update placeholder handling
+
 ### Fixed
 - never trigger 'input' event when paste after invoke inputmask #776
 - Script looping start when add '.' between decimal values #870 ('.' part)
