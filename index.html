@@ -1,174 +1,1118 @@
-<!doctype html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Jquery.inputmask by RobinHerbots</title>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Jquery.inputmask by manukeerampanal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Jquery.inputmask</h1>
+      <h2 class="project-tagline">jQuery Input Mask plugin</h2>
+      <a href="https://github.com/manukeerampanal/jquery.inputmask" class="btn">View on GitHub</a>
+      <a href="https://github.com/manukeerampanal/jquery.inputmask/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/manukeerampanal/jquery.inputmask/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-</head>
-<body>
-    <div class="wrapper">
-        <header>
-            <span>
-                <h1>Jquery.inputmask</h1>
-                <p>jQuery Input Mask plugin</p>
-            </span>
-            <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-                <input type="hidden" name="cmd" value="_s-xclick">
-                <input type="hidden" name="hosted_button_id" value="ZNR3EB6JTMMSS">
-                <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-                <img alt="" border="0" src="https://www.paypalobjects.com/nl_NL/i/scr/pixel.gif" width="1" height="1">
-            </form>
-            <ul>
-                <li><a href="https://github.com/RobinHerbots/jquery.inputmask/zipball/3.x">Download <strong>ZIP File</strong></a></li>
-                <li><a href="https://github.com/RobinHerbots/jquery.inputmask/tarball/3.x">Download <strong>TAR Ball</strong></a></li>
-                <li><a href="https://github.com/RobinHerbots/jquery.inputmask">View On <strong>GitHub</strong></a></li>
-                <p style="clear: both; margin: 0;"></p>
-            </ul>
+    <section class="main-content">
+      <h1>
+<a id="jqueryinputmask-3x" class="anchor" href="#jqueryinputmask-3x" aria-hidden="true"><span class="octicon octicon-link"></span></a>jquery.inputmask 3.x</h1>
 
-            <menu>
-                <mi id="main" class="fired"><a href="index.html">Main</a></mi>
-                <mi><a href="https://github.com/RobinHerbots/jquery.inputmask/wiki">Wiki</a></mi>
-                <mi id="demolnk">Demo</mi>
-            </menu>
-        </header>
-        <section>
-            <p>Copyright (c) 2010 - 2013 Robin Herbots Licensed under the <a href="http://www.opensource.org/licenses/mit-license.php">MIT license</a>.</p>
-            <p>jquery.inputmask is a jquery plugin which create an input mask.</p>
-            <p>An inputmask helps the user with the input by ensuring a predefined format. This can be usefull for dates, numerics, phone numbers, ...</p>
-            <p>Highlights:</p>
-            <ul>
-                <li>easy to use</li>
-                <li>optional parts anywere in the mask</li>
-                <li>possibility to define aliases which hide complexity</li>
-                <li>date / datetime masks</li>
-                <li>numeric masks</li>
-                <li>lots of callbacks</li>
-                <li>non-greedy masks</li>
-                <li>many features can be enabled/disabled/configured by options</li>
-                <li>supports readonly/disabled/dir="rtl" attributes</li>
-                <li>support data-inputmask attribute</li>
-                <li>multi-mask support</li>
-            </ul>
+<p>Copyright (c) 2010 - 2015 Robin Herbots
+Licensed under the MIT license (<a href="http://opensource.org/licenses/mit-license.php">http://opensource.org/licenses/mit-license.php</a>)</p>
 
-            <!--  <pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
+<p><a href="https://npmjs.org/package/jquery.inputmask"><img src="https://img.shields.io/npm/v/jquery.inputmask.svg" alt="NPM Version"></a> <a href="https://david-dm.org/RobinHerbots/jquery.inputmask#info=dependencies"><img src="https://img.shields.io/david/RobinHerbots/jquery.inputmask.svg" alt="Dependency Status"></a> <a href="https://david-dm.org/RobinHerbots/jquery.inputmask#info=devDependencies"><img src="https://img.shields.io/david/dev/RobinHerbots/jquery.inputmask.svg" alt="devDependency Status"></a></p>
 
-            <p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<p>jquery.inputmask is a jQuery plugin which create an input mask.</p>
 
-            <h3>Designer Templates</h3>
+<p>An inputmask helps the user with the input by ensuring a predefined format. This can be useful for dates, numerics, phone numbers, ...</p>
 
-            <p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+<p>Highlights:</p>
 
-            <h3>Rather Drive Stick?</h3>
+<ul>
+<li>easy to use</li>
+<li>optional parts anywere in the mask</li>
+<li>possibility to define aliases which hide complexity</li>
+<li>date / datetime masks</li>
+<li>numeric masks</li>
+<li>lots of callbacks</li>
+<li>non-greedy masks</li>
+<li>many features can be enabled/disabled/configured by options</li>
+<li>supports readonly/disabled/dir="rtl" attributes</li>
+<li>support data-inputmask attribute(s)<br>
+</li>
+<li>alternator-mask support</li>
+<li>regex-mask support</li>
+<li>dynamic-mask support</li>
+<li>preprocessing-mask support</li>
+<li>value formatting / validating without input element</li>
+<li>AMD/CommonJS support</li>
+</ul>
 
-            <p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<p>Demo page see <a href="http://robinherbots.github.io/jquery.inputmask">http://robinherbots.github.io/jquery.inputmask</a></p>
 
-            <h3>Authors and Contributors</h3>
+<p><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=ZNR3EB6JTMMSS"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" alt="Donate"></a></p>
 
-            <p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage:</h2>
 
-            <h3>Support or Contact</h3>
+<p>Include the js-files which you can find in the dist-folder. You have the bundled file which contains the main plugin code and also all extensions (date, numerics, other) or if you prefer to only include some parts, use the separate js-files in the dist/min folder.</p>
 
-            <p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>-->
-        </section>
-        <footer>
-            <p>This project is maintained by <a href="https://github.com/RobinHerbots">RobinHerbots</a></p>
-            <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-        </footer>
-    </div>
-    <script src="javascripts/scale.fix.js"></script>
-    <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
-    <script src="javascripts/jquery.catcher.js"></script>
-    <script src="https://rawgit.com/RobinHerbots/jquery.inputmask/3.x/dist/jquery.inputmask.bundle.js"></script>
-    <script language="javascript">
-        $.extend($.catcher.defaults, {
-            "onError": function (e) {
-                alert("There was an error on the page: \n\n" + e.message);
+<p>If you use a module loader like requireJS, use the js-files in dist/inputmask</p>
+
+<p>The minimum to include is the jquery.inputmask.js</p>
+
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">script</span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">"</span>jquery.js<span class="pl-pds">"</span></span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>text/javascript<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;
+&lt;<span class="pl-ent">script</span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">"</span>jquery.inputmask.js<span class="pl-pds">"</span></span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>text/javascript<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;</pre></div>
+
+<p>Define your masks:</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+   $(selector).inputmask(<span class="pl-s"><span class="pl-pds">"</span>99-9999999<span class="pl-pds">"</span></span>);  <span class="pl-c">//static mask</span>
+   $(selector).inputmask(<span class="pl-s"><span class="pl-pds">"</span>mask<span class="pl-pds">"</span></span>, {<span class="pl-s"><span class="pl-pds">"</span>mask<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>(999) 999-9999<span class="pl-pds">"</span></span>}); <span class="pl-c">//specifying fn &amp; options</span>
+   $(selector).inputmask({<span class="pl-s"><span class="pl-pds">"</span>mask<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>99-9999999<span class="pl-pds">"</span></span>}); <span class="pl-c">//specifying options only</span>
+   $(selector).inputmask(<span class="pl-s"><span class="pl-pds">"</span>9-a{1,3}9{1,3}<span class="pl-pds">"</span></span>); <span class="pl-c">//mask with dynamic syntax </span>
+});</pre></div>
+
+<p>or via data-inputmask attribute</p>
+
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">input</span> <span class="pl-e">data-inputmask</span>=<span class="pl-s"><span class="pl-pds">"</span>'alias': 'date'<span class="pl-pds">"</span></span> /&gt;
+&lt;<span class="pl-ent">input</span> <span class="pl-e">data-inputmask</span>=<span class="pl-s"><span class="pl-pds">"</span>'mask': '9', 'repeat': 10, 'greedy' : false<span class="pl-pds">"</span></span> /&gt;
+&lt;<span class="pl-ent">input</span> <span class="pl-e">data-inputmask</span>=<span class="pl-s"><span class="pl-pds">"</span>'mask': '99-9999999'<span class="pl-pds">"</span></span> /&gt;</pre></div>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+    $(<span class="pl-s"><span class="pl-pds">"</span>:input<span class="pl-pds">"</span></span>).inputmask();
+});</pre></div>
+
+<p>Any option can also be passed through the use of a data attribute. Use data-inputmask-&lt;<strong><em>the name op the option</em></strong>&gt;="value"</p>
+
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">input</span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>example1<span class="pl-pds">"</span></span> <span class="pl-e">data-inputmask-clearmaskonlostfocus</span>=<span class="pl-s"><span class="pl-pds">"</span>false<span class="pl-pds">"</span></span> /&gt;
+&lt;<span class="pl-ent">input</span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>example2<span class="pl-pds">"</span></span> <span class="pl-e">data-inputmask-regex</span>=<span class="pl-s"><span class="pl-pds">"</span>[a-za-zA-Z0-9!#$%<span class="pl-ii">&amp;</span>'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%<span class="pl-ii">&amp;</span>'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?<span class="pl-pds">"</span></span> /&gt;</pre></div>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+   $(<span class="pl-s"><span class="pl-pds">"</span>#example1<span class="pl-pds">"</span></span>).inputmask(<span class="pl-s"><span class="pl-pds">"</span>99-9999999<span class="pl-pds">"</span></span>);
+   $(<span class="pl-s"><span class="pl-pds">"</span>#example2<span class="pl-pds">"</span></span>).inputmask(<span class="pl-s"><span class="pl-pds">"</span>Regex<span class="pl-pds">"</span></span>);
+});</pre></div>
+
+<h4>
+<a id="allowed-html-elements" class="anchor" href="#allowed-html-elements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Allowed HTML-elements</h4>
+
+<ul>
+<li>input type="text" </li>
+<li>input type="tel"</li>
+<li>div contenteditable="true" (and all others supported by contenteditable)</li>
+<li>any html-element (mask text content or set maskedvalue with jQuery.val)</li>
+</ul>
+
+<h4>
+<a id="default-masking-definitions" class="anchor" href="#default-masking-definitions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Default masking definitions</h4>
+
+<ul>
+<li>9 : numeric</li>
+<li>a : alphabetical</li>
+<li>* : alphanumeric </li>
+</ul>
+
+<p>There are more definitions defined within the extensions.<br>
+You can find info within the js-files or by further exploring the options.</p>
+
+<h2>
+<a id="masking-types" class="anchor" href="#masking-types" aria-hidden="true"><span class="octicon octicon-link"></span></a>Masking types</h2>
+
+<h3>
+<a id="static-masks" class="anchor" href="#static-masks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Static masks</h3>
+
+<p>These are the very basic of masking.  The mask is defined and will not change during the input.</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+   $(selector).inputmask(<span class="pl-s"><span class="pl-pds">"</span>aa-9999<span class="pl-pds">"</span></span>);  <span class="pl-c">//static mask</span>
+   $(selector).inputmask({mask<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>aa-9999<span class="pl-pds">"</span></span>});  <span class="pl-c">//static mask</span>
+});</pre></div>
+
+<h3>
+<a id="optional-masks" class="anchor" href="#optional-masks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Optional masks</h3>
+
+<p>It is possible to define some parts in the mask as optional.  This is done by using [ ].</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-s"><span class="pl-pds">'</span>#test<span class="pl-pds">'</span></span>).inputmask(<span class="pl-s"><span class="pl-pds">'</span>(99) 9999[9]-9999<span class="pl-pds">'</span></span>);</pre></div>
+
+<p>This mask wil allow input like (99) 99999-9999 or (99) 9999-9999.<br>
+Input =&gt; 12123451234      mask =&gt; (12) 12345-1234    (trigger complete)<br>
+Input =&gt; 121234-1234      mask =&gt; (12) 1234-1234     (trigger complete)<br>
+Input =&gt; 1212341234       mask =&gt; (12) 12341-234_    (trigger incomplete)  </p>
+
+<h4>
+<a id="skipoptionalpartcharacter" class="anchor" href="#skipoptionalpartcharacter" aria-hidden="true"><span class="octicon octicon-link"></span></a>skipOptionalPartCharacter</h4>
+
+<p>As an extra there is another configurable character which is used to skip an optional part in the mask.  </p>
+
+<div class="highlight highlight-javascript"><pre>skipOptionalPartCharacter<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span> <span class="pl-pds">"</span></span>,</pre></div>
+
+<p>Input =&gt; 121234 1234      mask =&gt; (12) 1234-1234     (trigger complete)  </p>
+
+<p>When <code>clearMaskOnLostFocus: true</code> is set in the options (default), the mask will clear out the optional part when it is not filled in and this only in case the optional part is at the end of the mask.</p>
+
+<p>For example, given:</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-s"><span class="pl-pds">'</span>#test<span class="pl-pds">'</span></span>).inputmask(<span class="pl-s"><span class="pl-pds">'</span>999[-AAA]<span class="pl-pds">'</span></span>);</pre></div>
+
+<p>While the field has focus and is blank, users will see the full mask <code>___-___</code>.
+When the required part of the mask is filled and the field loses focus, the user will see <code>123</code>.
+When both the required and optional parts of the mask are filled out and the field loses focus, the user will see <code>123-ABC</code>.</p>
+
+<h4>
+<a id="optional-masks-with-greedy-false" class="anchor" href="#optional-masks-with-greedy-false" aria-hidden="true"><span class="octicon octicon-link"></span></a>Optional masks with greedy false</h4>
+
+<p>When defining an optional mask together with the greedy: false option, the inputmask will show the smallest possible mask as input first.</p>
+
+<div class="highlight highlight-javascript"><pre>$(selector).inputmask({ mask<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>99999[-9999]<span class="pl-pds">"</span></span>, greedy<span class="pl-k">:</span> <span class="pl-c1">false</span> });</pre></div>
+
+<p>The initial mask shown will be "_____" instead of "_____-____". </p>
+
+<h3>
+<a id="dynamic-masks" class="anchor" href="#dynamic-masks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Dynamic masks</h3>
+
+<p>Dynamic masks can change during the input.  To define a dynamic part use { }.</p>
+
+<p>{n} =&gt; n repeats<br>
+{n,m} =&gt; from n to m repeats</p>
+
+<p>Also {+} and {*} is allowed. + start from 1 and * start from 0.</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+   $(selector).inputmask(<span class="pl-s"><span class="pl-pds">"</span>aa-9{4}<span class="pl-pds">"</span></span>);  <span class="pl-c">//static mask with dynamic syntax</span>
+   $(selector).inputmask(<span class="pl-s"><span class="pl-pds">"</span>aa-9{1,4}<span class="pl-pds">"</span></span>);  <span class="pl-c">//dynamic mask ~ the 9 def can be occur 1 to 4 times</span>
+
+   <span class="pl-c">//email mask </span>
+   $(selector).inputmask({
+            mask<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>*{1,20}[.*{1,20}][.*{1,20}][.*{1,20}]@*{1,20}[.*{2,6}][.*{1,2}]<span class="pl-pds">"</span></span>,
+            greedy<span class="pl-k">:</span> <span class="pl-c1">false</span>,
+            <span class="pl-en">onBeforePaste</span>: <span class="pl-k">function</span> (<span class="pl-smi">pastedValue</span>, <span class="pl-smi">opts</span>) {
+                pastedValue <span class="pl-k">=</span> pastedValue.<span class="pl-c1">toLowerCase</span>();
+                <span class="pl-k">return</span> pastedValue.<span class="pl-c1">replace</span>(<span class="pl-s"><span class="pl-pds">"</span>mailto:<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>);
+            },
+            definitions<span class="pl-k">:</span> {
+                <span class="pl-s"><span class="pl-pds">'</span>*<span class="pl-pds">'</span></span><span class="pl-k">:</span> {
+                    validator<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>[0-9A-Za-z!#$%&amp;'*+/=?^_`{|}~<span class="pl-cce">\-</span>]<span class="pl-pds">"</span></span>,
+                    cardinality<span class="pl-k">:</span> <span class="pl-c1">1</span>,
+                    casing<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>lower<span class="pl-pds">"</span></span>
+                }
             }
-        });
-        var defaultScope = new function () {
-            this.ready = function () {
-                $("#demolnk").click(function () {
-                    $("#main").removeClass("fired");
-                    $("#demolnk").addClass("fired");
-                    $.get('demo.html', function (data) {
-                        $('section').html(data);
-                        $(":input").inputmask(undefined, {
-                            oncomplete: function () {
-                                var eventIdenticators = $(this).next().next(".eventIndicator").children("span");
-                                $.each(eventIdenticators, function (ndx, lmnt) {
-                                    var $lmnt = $(lmnt);
-                                    if ($lmnt.hasClass("complete")) {
-                                        $lmnt.addClass("fired");
-                                    } else {
-                                        $lmnt.removeClass("fired");
-                                    }
-                                });
-                            },
-                            onincomplete: function () {
-                                var eventIdenticators = $(this).next().next(".eventIndicator").children("span");
-                                $.each(eventIdenticators, function (ndx, lmnt) {
-                                    var $lmnt = $(lmnt);
-                                    if ($lmnt.hasClass("incomplete")) {
-                                        $lmnt.addClass("fired");
-                                    } else {
-                                        $lmnt.removeClass("fired");
-                                    }
-                                });
-                            }, oncleared: function () {
-                                var eventIdenticators = $(this).next().next(".eventIndicator").children("span");
-                                $.each(eventIdenticators, function (ndx, lmnt) {
-                                    var $lmnt = $(lmnt);
-                                    if ($lmnt.hasClass("cleared")) {
-                                        $lmnt.addClass("fired");
-                                    } else {
-                                        $lmnt.removeClass("fired");
-                                    }
-                                });
-                            }, onKeyValidation: function (result, opts) {
-                                var eventIdenticators = $(this).next().next(".eventIndicator").children("span");
-                                if (this.id == "phone") {
-                                    $(this).next().text($(this).inputmask("getmetadata")["cd"]);
+    });</pre></div>
+
+<h3>
+<a id="alternator-masks" class="anchor" href="#alternator-masks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Alternator masks</h3>
+
+<p>The alternator syntax is like an <strong>OR</strong> statement.  The mask can be one of the 2 choices specified in the alternator.</p>
+
+<p>To define an alternator use the |.<br>
+ex: "a|9" =&gt; a or 9<br>
+    "(aaa)|(999)" =&gt; aaa or 999  </p>
+
+<p>Also make sure to read about the keepStatic option.  </p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-s"><span class="pl-pds">"</span>selector<span class="pl-pds">"</span></span>).inputmask(<span class="pl-s"><span class="pl-pds">"</span>(99.9)|(X)<span class="pl-pds">"</span></span>, {
+                definitions<span class="pl-k">:</span> {
+                    <span class="pl-s"><span class="pl-pds">"</span>X<span class="pl-pds">"</span></span><span class="pl-k">:</span> {
+                        validator<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>[xX]<span class="pl-pds">"</span></span>,
+                        cardinality<span class="pl-k">:</span> <span class="pl-c1">1</span>,
+                        casing<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>upper<span class="pl-pds">"</span></span>
+                    }
+                }
+            });</pre></div>
+
+<p>or</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-s"><span class="pl-pds">"</span>selector<span class="pl-pds">"</span></span>).inputmask({
+                mask<span class="pl-k">:</span> [<span class="pl-s"><span class="pl-pds">"</span>99.9<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>X<span class="pl-pds">"</span></span>],
+                definitions<span class="pl-k">:</span> {
+                    <span class="pl-s"><span class="pl-pds">"</span>X<span class="pl-pds">"</span></span><span class="pl-k">:</span> {
+                        validator<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>[xX]<span class="pl-pds">"</span></span>,
+                        cardinality<span class="pl-k">:</span> <span class="pl-c1">1</span>,
+                        casing<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>upper<span class="pl-pds">"</span></span>
+                    }
+                }
+            });</pre></div>
+
+<h3>
+<a id="preprocessing-masks" class="anchor" href="#preprocessing-masks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Preprocessing masks</h3>
+
+<p>You can define the mask as a function which can allow to preprocess the resulting mask.  Example sorting for multiple masks or retrieving mask definitions dynamically through ajax.
+The preprocessing fn should return a valid mask definition.</p>
+
+<div class="highlight highlight-javascript"><pre>  $(selector).inputmask({ <span class="pl-en">mask</span>: <span class="pl-k">function</span> () { <span class="pl-c">/* do stuff */</span> <span class="pl-k">return</span> [<span class="pl-s"><span class="pl-pds">"</span>[1-]AAA-999<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>[1-]999-AAA<span class="pl-pds">"</span></span>]; }});</pre></div>
+
+<h2>
+<a id="define-custom-definitions" class="anchor" href="#define-custom-definitions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Define custom definitions</h2>
+
+<p>You can define your own definitions to use in your mask.<br>
+Start by choosing a masksymbol. </p>
+
+<h5>
+<a id="validatorchrs-maskset-pos-strict-opts" class="anchor" href="#validatorchrs-maskset-pos-strict-opts" aria-hidden="true"><span class="octicon octicon-link"></span></a>validator(chrs, maskset, pos, strict, opts)</h5>
+
+<p>Next define your validator.  The validator can be a regular expression or a function. </p>
+
+<p>The return value of a validator can be true,  false or a command object.  </p>
+
+<h6>
+<a id="options-of-the-command-object" class="anchor" href="#options-of-the-command-object" aria-hidden="true"><span class="octicon octicon-link"></span></a>Options of the command object</h6>
+
+<ul>
+<li>pos : position to insert</li>
+<li>c : character to insert</li>
+<li>caret : position of the caret</li>
+<li>remove : position(s) to remove<br>
+
+<ul>
+<li>pos or [pos1, pos2]</li>
+</ul>
+</li>
+<li>insert : position(s) to add :<br>
+
+<ul>
+<li>{ pos : position to insert, c : character to insert }<br>
+</li>
+<li>[{ pos : position to insert, c : character to insert }, { ...}, ... ]</li>
+</ul>
+</li>
+<li>refreshFromBuffer : 
+
+<ul>
+<li>true =&gt; refresh validPositions from the complete buffer</li>
+<li>{ start: , end: } =&gt; refresh from start to end</li>
+</ul>
+</li>
+</ul>
+
+<h5>
+<a id="cardinality" class="anchor" href="#cardinality" aria-hidden="true"><span class="octicon octicon-link"></span></a>cardinality</h5>
+
+<p>Cardinality specifies how many characters are represented and validated for the definition.</p>
+
+<h5>
+<a id="prevalidatorchrs-maskset-pos-strict-opts" class="anchor" href="#prevalidatorchrs-maskset-pos-strict-opts" aria-hidden="true"><span class="octicon octicon-link"></span></a>prevalidator(chrs, maskset, pos, strict, opts)</h5>
+
+<p>The prevalidator option is 
+used to validate the characters before the definition cardinality is reached. (see 'j' example)</p>
+
+<h5>
+<a id="definitionsymbol" class="anchor" href="#definitionsymbol" aria-hidden="true"><span class="octicon octicon-link"></span></a>definitionSymbol</h5>
+
+<p>When you insert or delete characters, they are only shifted when the definition type is the same.  This behavior can be overridden
+by giving a definitionSymbol. (see example x, y, z, which can be used for ip-address masking, the validation is different, but it is allowed to shift the characters between the definitions)</p>
+
+<div class="highlight highlight-javascript"><pre>$.extend($.inputmask.defaults.definitions, {
+    <span class="pl-s"><span class="pl-pds">'</span>f<span class="pl-pds">'</span></span><span class="pl-k">:</span> {  <span class="pl-c">//masksymbol</span>
+        <span class="pl-s"><span class="pl-pds">"</span>validator<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>[0-9<span class="pl-cce">\(\)\.\+</span>/ ]<span class="pl-pds">"</span></span>,
+        <span class="pl-s"><span class="pl-pds">"</span>cardinality<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">1</span>,
+        <span class="pl-s"><span class="pl-pds">'</span>prevalidator<span class="pl-pds">'</span></span><span class="pl-k">:</span> <span class="pl-c1">null</span>
+    },
+    <span class="pl-s"><span class="pl-pds">'</span>g<span class="pl-pds">'</span></span><span class="pl-k">:</span> {
+        <span class="pl-s"><span class="pl-pds">"</span><span class="pl-en">validator</span><span class="pl-pds">"</span></span>: <span class="pl-k">function</span> (<span class="pl-smi">chrs</span>, <span class="pl-smi">buffer</span>, <span class="pl-smi">pos</span>, <span class="pl-smi">strict</span>, <span class="pl-smi">opts</span>) { 
+            <span class="pl-c">//do some logic and return true, false, or { "pos": new position, "c": character to place }</span>
+        }       
+        <span class="pl-s"><span class="pl-pds">"</span>cardinality<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">1</span>,
+        <span class="pl-s"><span class="pl-pds">'</span>prevalidator<span class="pl-pds">'</span></span><span class="pl-k">:</span> <span class="pl-c1">null</span>
+    },
+    <span class="pl-s"><span class="pl-pds">'</span>j<span class="pl-pds">'</span></span><span class="pl-k">:</span> { <span class="pl-c">//basic year</span>
+            validator<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>(19|20)<span class="pl-cce">\\</span>d{2}<span class="pl-pds">"</span></span>,
+            cardinality<span class="pl-k">:</span> <span class="pl-c1">4</span>,
+            prevalidator<span class="pl-k">:</span> [
+                        { validator<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>[12]<span class="pl-pds">"</span></span>, cardinality<span class="pl-k">:</span> <span class="pl-c1">1</span> },
+                        { validator<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>(19|20)<span class="pl-pds">"</span></span>, cardinality<span class="pl-k">:</span> <span class="pl-c1">2</span> },
+                        { validator<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>(19|20)<span class="pl-cce">\\</span>d<span class="pl-pds">"</span></span>, cardinality<span class="pl-k">:</span> <span class="pl-c1">3</span> }
+            ]
+     }, 
+     <span class="pl-s"><span class="pl-pds">'</span>x<span class="pl-pds">'</span></span><span class="pl-k">:</span> {
+        validator<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>[0-2]<span class="pl-pds">"</span></span>,
+        cardinality<span class="pl-k">:</span> <span class="pl-c1">1</span>,
+        definitionSymbol<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>i<span class="pl-pds">"</span></span> <span class="pl-c">//this allows shifting values from other definitions, with the same masksymbol or definitionSymbol</span>
+     },
+     <span class="pl-s"><span class="pl-pds">'</span>y<span class="pl-pds">'</span></span><span class="pl-k">:</span> {
+        <span class="pl-en">validator</span>: <span class="pl-k">function</span> (<span class="pl-smi">chrs</span>, <span class="pl-smi">buffer</span>, <span class="pl-smi">pos</span>, <span class="pl-smi">strict</span>, <span class="pl-smi">opts</span>) {
+                        <span class="pl-k">var</span> valExp2 <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">RegExp</span>(<span class="pl-s"><span class="pl-pds">"</span>2[0-5]|[01][0-9]<span class="pl-pds">"</span></span>);
+                        <span class="pl-k">return</span> valExp2.<span class="pl-c1">test</span>(buffer[pos <span class="pl-k">-</span> <span class="pl-c1">1</span>] <span class="pl-k">+</span> chrs);
+                    },
+        cardinality<span class="pl-k">:</span> <span class="pl-c1">1</span>,
+        definitionSymbol<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>i<span class="pl-pds">"</span></span>
+     },
+     <span class="pl-s"><span class="pl-pds">'</span>z<span class="pl-pds">'</span></span><span class="pl-k">:</span> {
+        <span class="pl-en">validator</span>: <span class="pl-k">function</span> (<span class="pl-smi">chrs</span>, <span class="pl-smi">buffer</span>, <span class="pl-smi">pos</span>, <span class="pl-smi">strict</span>, <span class="pl-smi">opts</span>) {
+                       <span class="pl-k">var</span> valExp3 <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">RegExp</span>(<span class="pl-s"><span class="pl-pds">"</span>25[0-5]|2[0-4][0-9]|[01][0-9][0-9]<span class="pl-pds">"</span></span>);
+                        <span class="pl-k">return</span> valExp3.<span class="pl-c1">test</span>(buffer[pos <span class="pl-k">-</span> <span class="pl-c1">2</span>] <span class="pl-k">+</span> buffer[pos <span class="pl-k">-</span> <span class="pl-c1">1</span>] <span class="pl-k">+</span> chrs);
+        },
+        cardinality<span class="pl-k">:</span> <span class="pl-c1">1</span>,
+        definitionSymbol<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>i<span class="pl-pds">"</span></span>
+      }
+});</pre></div>
+
+<h5>
+<a id="placeholder" class="anchor" href="#placeholder" aria-hidden="true"><span class="octicon octicon-link"></span></a>placeholder</h5>
+
+<p>Specify a placeholder for a definition.</p>
+
+<h3>
+<a id="set-defaults" class="anchor" href="#set-defaults" aria-hidden="true"><span class="octicon octicon-link"></span></a>set defaults</h3>
+
+<p>Defaults can be set as below.</p>
+
+<div class="highlight highlight-javascript"><pre>$.extend($.inputmask.defaults, {
+    <span class="pl-s"><span class="pl-pds">'</span>autoUnmask<span class="pl-pds">'</span></span><span class="pl-k">:</span> <span class="pl-c1">true</span>
+});</pre></div>
+
+<p>But if the property is defined within an alias you need to set it for the alias definition.</p>
+
+<div class="highlight highlight-javascript"><pre>$.extend($.inputmask.defaults.aliases.numeric , {
+    allowPlus<span class="pl-k">:</span> <span class="pl-c1">false</span>,
+    allowMinus<span class="pl-k">:</span> <span class="pl-c1">false</span>
+});</pre></div>
+
+<p>However, the preferred way to alter properties for an alias is by creating a new alias which inherits from the default alias definition.</p>
+
+<div class="highlight highlight-javascript"><pre> $.extend($.inputmask.defaults.aliases, {
+    <span class="pl-s"><span class="pl-pds">'</span>myNum<span class="pl-pds">'</span></span><span class="pl-k">:</span> {
+            alias<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>numeric<span class="pl-pds">"</span></span>,
+            placeholder<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span><span class="pl-pds">'</span></span>,
+            allowPlus<span class="pl-k">:</span> <span class="pl-c1">false</span>,
+            allowMinus<span class="pl-k">:</span> <span class="pl-c1">false</span>
+        }
+});</pre></div>
+
+<p>Once defined, you can call the alias by:  </p>
+
+<div class="highlight highlight-javascript"><pre> $(selector).inputmask(<span class="pl-s"><span class="pl-pds">"</span>myNum<span class="pl-pds">"</span></span>);</pre></div>
+
+<h2>
+<a id="options" class="anchor" href="#options" aria-hidden="true"><span class="octicon octicon-link"></span></a>Options:</h2>
+
+<h4>
+<a id="placeholder-1" class="anchor" href="#placeholder-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>placeholder</h4>
+
+<p>Change the mask placeholder</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+   $(<span class="pl-s"><span class="pl-pds">"</span>#date<span class="pl-pds">"</span></span>).inputmask(<span class="pl-s"><span class="pl-pds">"</span>d/m/y<span class="pl-pds">"</span></span>,{ <span class="pl-s"><span class="pl-pds">"</span>placeholder<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>*<span class="pl-pds">"</span></span> });
+});</pre></div>
+
+<p>or a multi-char placeholder</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+   $(<span class="pl-s"><span class="pl-pds">"</span>#date<span class="pl-pds">"</span></span>).inputmask(<span class="pl-s"><span class="pl-pds">"</span>d/m/y<span class="pl-pds">"</span></span>,{ <span class="pl-s"><span class="pl-pds">"</span>placeholder<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>dd/mm/yyyy<span class="pl-pds">"</span></span> });
+});</pre></div>
+
+<h4>
+<a id="optionalmarker" class="anchor" href="#optionalmarker" aria-hidden="true"><span class="octicon octicon-link"></span></a>optionalmarker</h4>
+
+<p>Definition of the symbols used to indicate an optional part in the mask.  </p>
+
+<div class="highlight highlight-javascript"><pre>optionalmarker<span class="pl-k">:</span> { start<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>[<span class="pl-pds">"</span></span>, end<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>]<span class="pl-pds">"</span></span> },</pre></div>
+
+<h4>
+<a id="quantifiermarker" class="anchor" href="#quantifiermarker" aria-hidden="true"><span class="octicon octicon-link"></span></a>quantifiermarker</h4>
+
+<p>Definition of the symbols used to indicate a quantifier in the mask.  </p>
+
+<div class="highlight highlight-javascript"><pre>quantifiermarker<span class="pl-k">:</span> { start<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>{<span class="pl-pds">"</span></span>, end<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>}<span class="pl-pds">"</span></span> },</pre></div>
+
+<h4>
+<a id="groupmarker" class="anchor" href="#groupmarker" aria-hidden="true"><span class="octicon octicon-link"></span></a>groupmarker</h4>
+
+<p>Definition of the symbols used to indicate a group in the mask.  </p>
+
+<div class="highlight highlight-javascript"><pre>groupmarker<span class="pl-k">:</span> { start<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>(<span class="pl-pds">"</span></span>, end<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>)<span class="pl-pds">"</span></span> },</pre></div>
+
+<h4>
+<a id="alternatormarker" class="anchor" href="#alternatormarker" aria-hidden="true"><span class="octicon octicon-link"></span></a>alternatormarker</h4>
+
+<p>Definition of the symbols used to indicate an alternator part in the mask.  </p>
+
+<div class="highlight highlight-javascript"><pre>alternatormarker<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>|<span class="pl-pds">"</span></span>,</pre></div>
+
+<h4>
+<a id="escapechar" class="anchor" href="#escapechar" aria-hidden="true"><span class="octicon octicon-link"></span></a>escapeChar</h4>
+
+<p>Definition of the symbols used to escape a part in the mask.  </p>
+
+<div class="highlight highlight-javascript"><pre>escapeChar<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span><span class="pl-cce">\\</span><span class="pl-pds">"</span></span>,</pre></div>
+
+<p>See <strong>escape special mask chars</strong></p>
+
+<h4>
+<a id="mask" class="anchor" href="#mask" aria-hidden="true"><span class="octicon octicon-link"></span></a>mask</h4>
+
+<p>The mask to use.</p>
+
+<h4>
+<a id="oncomplete" class="anchor" href="#oncomplete" aria-hidden="true"><span class="octicon octicon-link"></span></a>oncomplete</h4>
+
+<p>Execute a function when the mask is completed</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+   $(<span class="pl-s"><span class="pl-pds">"</span><span class="pl-en">#date").inputmask("d/m/y",{ "oncomplete</span><span class="pl-pds">"</span></span>: <span class="pl-k">function</span>(){ <span class="pl-c1">alert</span>(<span class="pl-s"><span class="pl-pds">'</span>inputmask complete<span class="pl-pds">'</span></span>); } });
+});</pre></div>
+
+<h4>
+<a id="onincomplete" class="anchor" href="#onincomplete" aria-hidden="true"><span class="octicon octicon-link"></span></a>onincomplete</h4>
+
+<p>Execute a function when the mask is incomplete.  Executes on blur.</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+   $(<span class="pl-s"><span class="pl-pds">"</span><span class="pl-en">#date").inputmask("d/m/y",{ "onincomplete</span><span class="pl-pds">"</span></span>: <span class="pl-k">function</span>(){ <span class="pl-c1">alert</span>(<span class="pl-s"><span class="pl-pds">'</span>inputmask incomplete<span class="pl-pds">'</span></span>); } });
+});</pre></div>
+
+<h4>
+<a id="oncleared" class="anchor" href="#oncleared" aria-hidden="true"><span class="octicon octicon-link"></span></a>oncleared</h4>
+
+<p>Execute a function when the mask is cleared.</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+   $(<span class="pl-s"><span class="pl-pds">"</span><span class="pl-en">#date").inputmask("d/m/y",{ "oncleared</span><span class="pl-pds">"</span></span>: <span class="pl-k">function</span>(){ <span class="pl-c1">alert</span>(<span class="pl-s"><span class="pl-pds">'</span>inputmask cleared<span class="pl-pds">'</span></span>); } });
+});</pre></div>
+
+<h4>
+<a id="repeat" class="anchor" href="#repeat" aria-hidden="true"><span class="octicon octicon-link"></span></a>repeat</h4>
+
+<p>Mask repeat function. Repeat the mask definition x-times.</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+   $(<span class="pl-s"><span class="pl-pds">"</span>#number<span class="pl-pds">"</span></span>).inputmask({ <span class="pl-s"><span class="pl-pds">"</span>mask<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>9<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>repeat<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">10</span> });  <span class="pl-c">// ~ mask "9999999999"</span>
+});</pre></div>
+
+<h4>
+<a id="greedy" class="anchor" href="#greedy" aria-hidden="true"><span class="octicon octicon-link"></span></a>greedy</h4>
+
+<p>Toggle to allocate as much possible or the opposite.
+Non-greedy repeat function.</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+   $(<span class="pl-s"><span class="pl-pds">"</span>#number<span class="pl-pds">"</span></span>).inputmask({ <span class="pl-s"><span class="pl-pds">"</span>mask<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>9<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>repeat<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">10</span>, <span class="pl-s"><span class="pl-pds">"</span>greedy<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">false</span> });  <span class="pl-c">// ~ mask "9" or mask "99" or ... mask "9999999999"</span>
+});</pre></div>
+
+<p>With the non-greedy option set to false, you can specify * as repeat.  This makes an endless repeat.</p>
+
+<h4>
+<a id="autounmask" class="anchor" href="#autounmask" aria-hidden="true"><span class="octicon octicon-link"></span></a>autoUnmask</h4>
+
+<p>Automatically unmask the value when retrieved.<br>
+Default: false.</p>
+
+<h4>
+<a id="removemaskonsubmit" class="anchor" href="#removemaskonsubmit" aria-hidden="true"><span class="octicon octicon-link"></span></a>removeMaskOnSubmit</h4>
+
+<p>Remove the mask before submitting the form.<br>
+Default: false</p>
+
+<h4>
+<a id="clearmaskonlostfocus" class="anchor" href="#clearmaskonlostfocus" aria-hidden="true"><span class="octicon octicon-link"></span></a>clearMaskOnLostFocus</h4>
+
+<p>Remove the empty mask on blur or when not empty removes the optional trailing part
+Default: true</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+    $(<span class="pl-s"><span class="pl-pds">"</span>#ssn<span class="pl-pds">"</span></span>).inputmask(<span class="pl-s"><span class="pl-pds">"</span>999-99-9999<span class="pl-pds">"</span></span>,{placeholder<span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span> <span class="pl-pds">"</span></span>, clearMaskOnLostFocus<span class="pl-k">:</span> <span class="pl-c1">true</span> }); <span class="pl-c">//default</span>
+});</pre></div>
+
+<h4>
+<a id="insertmode" class="anchor" href="#insertmode" aria-hidden="true"><span class="octicon octicon-link"></span></a>insertMode</h4>
+
+<p>Toggle to insert or overwrite input.<br>
+Default: true.<br>
+This option can be altered by pressing the Insert key.</p>
+
+<h4>
+<a id="clearincomplete" class="anchor" href="#clearincomplete" aria-hidden="true"><span class="octicon octicon-link"></span></a>clearIncomplete</h4>
+
+<p>Clear the incomplete input on blur</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+   $(<span class="pl-s"><span class="pl-pds">"</span>#date<span class="pl-pds">"</span></span>).inputmask(<span class="pl-s"><span class="pl-pds">"</span>d/m/y<span class="pl-pds">"</span></span>,{ <span class="pl-s"><span class="pl-pds">"</span>clearIncomplete<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">true</span> } });
+});</pre></div>
+
+<h4>
+<a id="aliases" class="anchor" href="#aliases" aria-hidden="true"><span class="octicon octicon-link"></span></a>aliases</h4>
+
+<p>Definitions of aliases.</p>
+
+<p>With an alias you can define a complex mask definition and call it by using an alias name.  So this is mainly to simplify the use of your masks.  Some aliases found in the extensions are: email, currency, decimal, integer, date, datetime, dd/mm/yyyy, etc. </p>
+
+<p>First you have to create an alias definition.  The alias definition can contain options for the mask, custom definitions, the mask to use etc. </p>
+
+<p>When you pass in an alias, the alias is first resolved and then the other options are applied.  So you can call an alias and pass another mask to be applied over the alias.
+This also means that you can write aliases which "inherit" from another alias.</p>
+
+<p>Some examples can be found in jquery.inputmask.xxx.extensions.js</p>
+
+<p>use:</p>
+
+<div class="highlight highlight-javascript"><pre>   $(<span class="pl-s"><span class="pl-pds">"</span>#date<span class="pl-pds">"</span></span>).inputmask(<span class="pl-s"><span class="pl-pds">"</span>date<span class="pl-pds">"</span></span>);</pre></div>
+
+<p>or</p>
+
+<div class="highlight highlight-javascript"><pre>   $(<span class="pl-s"><span class="pl-pds">"</span>#date<span class="pl-pds">"</span></span>).inputmask({ alias<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>date<span class="pl-pds">"</span></span>});</pre></div>
+
+<p>You can also call an alias and extend it with some more options</p>
+
+<div class="highlight highlight-javascript"><pre>   $(<span class="pl-s"><span class="pl-pds">"</span>#date<span class="pl-pds">"</span></span>).inputmask(<span class="pl-s"><span class="pl-pds">"</span>date<span class="pl-pds">"</span></span>, { <span class="pl-s"><span class="pl-pds">"</span>clearIncomplete<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">true</span> });</pre></div>
+
+<p>or</p>
+
+<div class="highlight highlight-javascript"><pre>   $(<span class="pl-s"><span class="pl-pds">"</span>#date<span class="pl-pds">"</span></span>).inputmask({ alias<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>date<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>clearIncomplete<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-c1">true</span> });</pre></div>
+
+<h4>
+<a id="alias" class="anchor" href="#alias" aria-hidden="true"><span class="octicon octicon-link"></span></a>alias</h4>
+
+<p>The alias to use.</p>
+
+<div class="highlight highlight-javascript"><pre>   $(<span class="pl-s"><span class="pl-pds">"</span>#date<span class="pl-pds">"</span></span>).inputmask({ alias<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>});</pre></div>
+
+<h4>
+<a id="onkeydown" class="anchor" href="#onkeydown" aria-hidden="true"><span class="octicon octicon-link"></span></a>onKeyDown</h4>
+
+<p>Callback to implement autocomplete on certain keys for example</p>
+
+<p>Function arguments: event, buffer, caretPos, opts<br>
+Function return: </p>
+
+<h4>
+<a id="onbeforemask" class="anchor" href="#onbeforemask" aria-hidden="true"><span class="octicon octicon-link"></span></a>onBeforeMask</h4>
+
+<p>Executes before masking the initial value to allow preprocessing of the initial value.</p>
+
+<p>Function arguments: initialValue, opts<br>
+Function return: processedValue</p>
+
+<div class="highlight highlight-javascript"><pre>$(selector).inputmask({
+                alias<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>phonebe<span class="pl-pds">'</span></span>,
+                <span class="pl-en">onBeforeMask</span>: <span class="pl-k">function</span> (<span class="pl-smi">value</span>, <span class="pl-smi">opts</span>) {
+                                <span class="pl-k">var</span> processedValue <span class="pl-k">=</span> value.<span class="pl-c1">replace</span>(<span class="pl-sr"><span class="pl-pds">/</span><span class="pl-k">^</span>0<span class="pl-pds">/</span>g</span>, <span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>);
+                                <span class="pl-k">if</span> (processedValue.<span class="pl-c1">indexOf</span>(<span class="pl-s"><span class="pl-pds">"</span>32<span class="pl-pds">"</span></span>) <span class="pl-k">&gt;</span> <span class="pl-c1">1</span> <span class="pl-k">||</span>     processedValue.<span class="pl-c1">indexOf</span>(<span class="pl-s"><span class="pl-pds">"</span>32<span class="pl-pds">"</span></span>) <span class="pl-k">==</span> <span class="pl-k">-</span><span class="pl-c1">1</span>) {
+                                    processedValue <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>32<span class="pl-pds">"</span></span> <span class="pl-k">+</span> processedValue;
                                 }
-                                $.each(eventIdenticators, function (ndx, lmnt) {
-                                    var $lmnt = $(lmnt);
-                                    if ($lmnt.hasClass("keyvalidation")) {
-                                        if (result !== false) {
-                                            $lmnt.addClass("fired");
-                                        } else {
-                                            $lmnt.removeClass("fired");
-                                        }
-                                    }
-                                });
+
+                                <span class="pl-k">return</span> processedValue;
                             }
-                        }).on("input", function () {
-                            var eventIdenticators = $(this).next().next(".eventIndicator").children("span");
-                            $.each(eventIdenticators, function (ndx, lmnt) {
-                                var $lmnt = $(lmnt);
-                                if ($lmnt.hasClass("input")) {
-                                    $lmnt.addClass("fired");
-                                    setTimeout(function () {
-                                        $lmnt.removeClass("fired");
-                                    }, 100);
-                                }
-                            });
-                        });
-                    });
-                });
-            };
-        };
-        $(document).ready(function () {
-            $.catcher.wrap(defaultScope).ready();
-        });
-    </script>
-</body>
+            });</pre></div>
+
+<h4>
+<a id="onbeforepaste" class="anchor" href="#onbeforepaste" aria-hidden="true"><span class="octicon octicon-link"></span></a>onBeforePaste</h4>
+
+<p>This callback allows for preprocessing the pasted value before actually handling the value for masking.  This can be usefull for stripping away some characters before processing.</p>
+
+<p>Function arguments: pastedValue, opts<br>
+Function return: processedValue</p>
+
+<div class="highlight highlight-javascript"><pre>$(selector).inputmask({
+                mask<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>9999 9999 9999 9999<span class="pl-pds">'</span></span>,
+                placeholder<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span> <span class="pl-pds">'</span></span>,
+                showMaskOnHover<span class="pl-k">:</span> <span class="pl-c1">false</span>,
+                showMaskOnFocus<span class="pl-k">:</span> <span class="pl-c1">false</span>,
+                <span class="pl-en">onBeforePaste</span>: <span class="pl-k">function</span> (<span class="pl-smi">pastedValue</span>, <span class="pl-smi">opts</span>) { 
+                    <span class="pl-k">var</span> processedValue <span class="pl-k">=</span> pastedValue; 
+
+                    <span class="pl-c">//do something with it</span>
+
+                    <span class="pl-k">return</span> processedValue; 
+                }
+            });</pre></div>
+
+<p>You can also disable pasting a value by returning false in the onBeforePaste call.</p>
+
+<h4>
+<a id="onbeforewrite" class="anchor" href="#onbeforewrite" aria-hidden="true"><span class="octicon octicon-link"></span></a>onBeforeWrite</h4>
+
+<p>Executes before writing to the masked element </p>
+
+<p>Use this to do some extra processing of the input.
+This can be usefull when implementing an alias, ex. decimal alias, autofill the digits when leaving the inputfield.</p>
+
+<p>Function arguments: event, buffer, caretPos, opts<br>
+Function return: command object (see Define custom definitions)</p>
+
+<h4>
+<a id="onunmask" class="anchor" href="#onunmask" aria-hidden="true"><span class="octicon octicon-link"></span></a>onUnMask</h4>
+
+<p>Executes after unmasking to allow post-processing of the unmaskedvalue. </p>
+
+<p>Function arguments: maskedValue, unmaskedValue<br>
+Function return: processedValue</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+   $(<span class="pl-s"><span class="pl-pds">"</span>#number<span class="pl-pds">"</span></span>).inputmask(<span class="pl-s"><span class="pl-pds">"</span>decimal<span class="pl-pds">"</span></span>, { <span class="pl-en">onUnMask</span>: <span class="pl-k">function</span>(<span class="pl-smi">maskedValue</span>, <span class="pl-smi">unmaskedValue</span>) {
+        <span class="pl-c">//do something with the value</span>
+        <span class="pl-k">return</span> unmaskedValue;
+   }});
+});</pre></div>
+
+<h4>
+<a id="showmaskonfocus" class="anchor" href="#showmaskonfocus" aria-hidden="true"><span class="octicon octicon-link"></span></a>showMaskOnFocus</h4>
+
+<p>Shows the mask when the input gets focus. (default = true)</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+    $(<span class="pl-s"><span class="pl-pds">"</span>#ssn<span class="pl-pds">"</span></span>).inputmask(<span class="pl-s"><span class="pl-pds">"</span>999-99-9999<span class="pl-pds">"</span></span>,{ showMaskOnFocus<span class="pl-k">:</span> <span class="pl-c1">true</span> }); <span class="pl-c">//default</span>
+});</pre></div>
+
+<p>To make sure no mask is visible on focus also set the showMaskOnHover to false.  Otherwise hovering with the mouse will set the mask and will stay on focus.</p>
+
+<h4>
+<a id="showmaskonhover" class="anchor" href="#showmaskonhover" aria-hidden="true"><span class="octicon octicon-link"></span></a>showMaskOnHover</h4>
+
+<p>Shows the mask when hovering the mouse. (default = true)</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+    $(<span class="pl-s"><span class="pl-pds">"</span>#ssn<span class="pl-pds">"</span></span>).inputmask(<span class="pl-s"><span class="pl-pds">"</span>999-99-9999<span class="pl-pds">"</span></span>,{ showMaskOnHover<span class="pl-k">:</span> <span class="pl-c1">true</span> }); <span class="pl-c">//default</span>
+});</pre></div>
+
+<h4>
+<a id="onkeyvalidation" class="anchor" href="#onkeyvalidation" aria-hidden="true"><span class="octicon octicon-link"></span></a>onKeyValidation</h4>
+
+<p>Callback function is executed on every keyvalidation with the result as parameter.</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+    $(<span class="pl-s"><span class="pl-pds">"</span>#ssn<span class="pl-pds">"</span></span>).inputmask(<span class="pl-s"><span class="pl-pds">"</span>999-99-9999<span class="pl-pds">"</span></span>,
+            { <span class="pl-en">onKeyValidation</span>: <span class="pl-k">function</span> (<span class="pl-smi">result</span>) {
+                                <span class="pl-en">console</span><span class="pl-c1">.log</span>(result);
+                                } });
+});</pre></div>
+
+<h4>
+<a id="skipoptionalpartcharacter-1" class="anchor" href="#skipoptionalpartcharacter-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>skipOptionalPartCharacter</h4>
+
+<h4>
+<a id="showtooltip" class="anchor" href="#showtooltip" aria-hidden="true"><span class="octicon octicon-link"></span></a>showTooltip</h4>
+
+<p>Show the current mask definition as a tooltip.</p>
+
+<div class="highlight highlight-javascript"><pre>  $(selector).inputmask({ mask<span class="pl-k">:</span> [<span class="pl-s"><span class="pl-pds">"</span>999-999-9999 [x99999]<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>+099 99 99 9999[9]-9999<span class="pl-pds">"</span></span>], showTooltip<span class="pl-k">:</span> <span class="pl-c1">true</span> });</pre></div>
+
+<h4>
+<a id="numericinput" class="anchor" href="#numericinput" aria-hidden="true"><span class="octicon octicon-link"></span></a>numericInput</h4>
+
+<p>Numeric input direction.  Keeps the caret at the end.</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+    $(selector).inputmask(<span class="pl-s"><span class="pl-pds">'</span>€ 999.999.999,99<span class="pl-pds">'</span></span>, { numericInput<span class="pl-k">:</span> <span class="pl-c1">true</span> });    <span class="pl-c">//123456  =&gt;  € ___.__1.234,56</span>
+});</pre></div>
+
+<h4>
+<a id="rightalign" class="anchor" href="#rightalign" aria-hidden="true"><span class="octicon octicon-link"></span></a>rightAlign</h4>
+
+<p>Align the input to the right</p>
+
+<p>By setting the rightAlign you can specify to right align an inputmask. This is only applied in combination op the numericInput option or the dir-attribute. Default is true.  </p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+    $(selector).inputmask(<span class="pl-s"><span class="pl-pds">'</span>decimal<span class="pl-pds">'</span></span>, { rightAlign<span class="pl-k">:</span> <span class="pl-c1">false</span> });  <span class="pl-c">//disables the right alignment of the decimal input</span>
+});</pre></div>
+
+<h4>
+<a id="undoonescape" class="anchor" href="#undoonescape" aria-hidden="true"><span class="octicon octicon-link"></span></a>undoOnEscape</h4>
+
+<p>Make escape behave like undo. (ctrl-Z)<br>
+Pressing escape reverts the value to the value before focus.<br>
+Default: true </p>
+
+<h4>
+<a id="radixpoint" class="anchor" href="#radixpoint" aria-hidden="true"><span class="octicon octicon-link"></span></a>radixPoint</h4>
+
+<p>Define the radixpoint (decimal separator)<br>
+Default: ""</p>
+
+<h4>
+<a id="radixfocus" class="anchor" href="#radixfocus" aria-hidden="true"><span class="octicon octicon-link"></span></a>radixFocus</h4>
+
+<p>Position the caret to the radixpoint on the initial click into the inputfield.<br>
+Default: false</p>
+
+<h4>
+<a id="nojumps" class="anchor" href="#nojumps" aria-hidden="true"><span class="octicon octicon-link"></span></a>nojumps</h4>
+
+<p>Do not jump over fixed parts in the mask.<br>
+Default: false</p>
+
+<h4>
+<a id="nojumpsthreshold" class="anchor" href="#nojumpsthreshold" aria-hidden="true"><span class="octicon octicon-link"></span></a>nojumpsThreshold</h4>
+
+<p>Start nojumps as of<br>
+Default: 0</p>
+
+<h4>
+<a id="keepstatic" class="anchor" href="#keepstatic" aria-hidden="true"><span class="octicon octicon-link"></span></a>keepStatic</h4>
+
+<p>Default: undefined (~false)<br>
+Use in combination with the alternator syntax
+Try to keep the mask static while typing. Decisions to alter the mask will be posponed if possible.</p>
+
+<p>ex.
+$(selector).inputmask({ mask: ["+55-99-9999-9999", "+55-99-99999-9999", ], keepStatic: true });</p>
+
+<p>typing 1212345123 =&gt; should result in +55-12-1234-5123 
+type extra 4 =&gt; switch to +55-12-12345-1234</p>
+
+<p>When passing multiple masks (an array of masks) keepStatic is automatically set to true unless explicitly set through the options.</p>
+
+<h4>
+<a id="definitions" class="anchor" href="#definitions" aria-hidden="true"><span class="octicon octicon-link"></span></a>definitions</h4>
+
+<h4>
+<a id="ignorables" class="anchor" href="#ignorables" aria-hidden="true"><span class="octicon octicon-link"></span></a>ignorables</h4>
+
+<h4>
+<a id="iscomplete" class="anchor" href="#iscomplete" aria-hidden="true"><span class="octicon octicon-link"></span></a>isComplete</h4>
+
+<p>With this call-in (hook) you can override the default implementation of the isComplete function.<br>
+Args =&gt; buffer, opts<br>
+Return =&gt; true|false</p>
+
+<div class="highlight highlight-javascript"><pre>$(selector).inputmask(<span class="pl-s"><span class="pl-pds">"</span>Regex<span class="pl-pds">"</span></span>, { 
+    regex<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>[0-9]*<span class="pl-pds">"</span></span>, 
+    <span class="pl-en">isComplete</span>: <span class="pl-k">function</span>(<span class="pl-smi">buffer</span>, <span class="pl-smi">opts</span>) {
+        <span class="pl-k">return</span> <span class="pl-k">new</span> <span class="pl-en">RegExp</span>(opts.regex).<span class="pl-c1">test</span>(buffer.<span class="pl-c1">join</span>(<span class="pl-s"><span class="pl-pds">'</span><span class="pl-pds">'</span></span>));
+    }
+});</pre></div>
+
+<h4>
+<a id="canclearposition" class="anchor" href="#canclearposition" aria-hidden="true"><span class="octicon octicon-link"></span></a>canClearPosition</h4>
+
+<p>Hook to alter the clear behavior in the stripValidPositions<br>
+Args =&gt; maskset, position, lastValidPosition, opts<br>
+Return =&gt; true|false</p>
+
+<h4>
+<a id="postvalidation" class="anchor" href="#postvalidation" aria-hidden="true"><span class="octicon octicon-link"></span></a>postValidation</h4>
+
+<p>Hook to postValidate the result from isValid.  Usefull for validating the entry as a whole.  Args =&gt; buffer, opts<br>
+Return =&gt; true|false</p>
+
+<h2>
+<a id="functions" class="anchor" href="#functions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Functions</h2>
+
+<h4>
+<a id="mask-1" class="anchor" href="#mask-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>mask</h4>
+
+<h4>
+<a id="unmaskedvalue" class="anchor" href="#unmaskedvalue" aria-hidden="true"><span class="octicon octicon-link"></span></a>unmaskedvalue</h4>
+
+<p>Get the unmaskedvalue</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+   $(selector).inputmask(<span class="pl-s"><span class="pl-pds">'</span>unmaskedvalue<span class="pl-pds">'</span></span>);
+});</pre></div>
+
+<h4>
+<a id="remove" class="anchor" href="#remove" aria-hidden="true"><span class="octicon octicon-link"></span></a>remove</h4>
+
+<p>Remove the inputmask.</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+    $(selector).inputmask(<span class="pl-s"><span class="pl-pds">'</span>remove<span class="pl-pds">'</span></span>);
+});</pre></div>
+
+<h4>
+<a id="getemptymask" class="anchor" href="#getemptymask" aria-hidden="true"><span class="octicon octicon-link"></span></a>getemptymask</h4>
+
+<p>return the default (empty) mask value</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+   $(<span class="pl-s"><span class="pl-pds">"</span>#test<span class="pl-pds">"</span></span>).inputmask(<span class="pl-s"><span class="pl-pds">"</span>999-AAA<span class="pl-pds">"</span></span>);
+   <span class="pl-k">var</span> initialValue <span class="pl-k">=</span> $(<span class="pl-s"><span class="pl-pds">"</span>#test<span class="pl-pds">"</span></span>).inputmask(<span class="pl-s"><span class="pl-pds">"</span>getemptymask<span class="pl-pds">"</span></span>);  <span class="pl-c">// initialValue  =&gt; "___-___"</span>
+});</pre></div>
+
+<h4>
+<a id="hasmaskedvalue" class="anchor" href="#hasmaskedvalue" aria-hidden="true"><span class="octicon octicon-link"></span></a>hasMaskedValue</h4>
+
+<p>Check whether the returned value is masked or not; currently only works reliably when using jquery.val fn to retrieve the value </p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+    <span class="pl-k">function</span> <span class="pl-en">validateMaskedValue</span>(<span class="pl-smi">val</span>){}
+    <span class="pl-k">function</span> <span class="pl-en">validateValue</span>(<span class="pl-smi">val</span>){}
+
+    <span class="pl-k">var</span> val <span class="pl-k">=</span> $(<span class="pl-s"><span class="pl-pds">"</span>#test<span class="pl-pds">"</span></span>).val();
+    <span class="pl-k">if</span>($(<span class="pl-s"><span class="pl-pds">"</span>#test<span class="pl-pds">"</span></span>).inputmask(<span class="pl-s"><span class="pl-pds">"</span>hasMaskedValue<span class="pl-pds">"</span></span>))
+      validateMaskedValue(val); 
+   <span class="pl-k">else</span> validateValue(val); 
+});</pre></div>
+
+<h4>
+<a id="iscomplete-1" class="anchor" href="#iscomplete-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>isComplete</h4>
+
+<p>Verify whether the current value is complete or not.</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+    <span class="pl-k">if</span>($(selector).inputmask(<span class="pl-s"><span class="pl-pds">"</span>isComplete<span class="pl-pds">"</span></span>)){
+        <span class="pl-c">//do something</span>
+    }
+});</pre></div>
+
+<h4>
+<a id="getmetadata" class="anchor" href="#getmetadata" aria-hidden="true"><span class="octicon octicon-link"></span></a>getmetadata</h4>
+
+<p>The metadata of the actual mask provided in the mask definitions can be obtained by calling getmetadata.  If only a mask is provided the mask definition will be returned by the getmetadata.  </p>
+
+<div class="highlight highlight-javascript"><pre>$(selector).inputmask(<span class="pl-s"><span class="pl-pds">"</span>getmetadata<span class="pl-pds">"</span></span>);</pre></div>
+
+<h2>
+<a id="general" class="anchor" href="#general" aria-hidden="true"><span class="octicon octicon-link"></span></a>General</h2>
+
+<h3>
+<a id="set-a-value-and-apply-mask" class="anchor" href="#set-a-value-and-apply-mask" aria-hidden="true"><span class="octicon octicon-link"></span></a>set a value and apply mask</h3>
+
+<p>this can be done with the traditional jquery.val function (all browsers) or JavaScript value property for browsers which implement lookupGetter or getOwnPropertyDescriptor</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+   $(<span class="pl-s"><span class="pl-pds">"</span>#number<span class="pl-pds">"</span></span>).val(<span class="pl-c1">12345</span>);
+
+   <span class="pl-k">var</span> number <span class="pl-k">=</span> <span class="pl-c1">document</span>.<span class="pl-c1">getElementById</span>(<span class="pl-s"><span class="pl-pds">"</span>number<span class="pl-pds">"</span></span>);
+   number.<span class="pl-c1">value</span> <span class="pl-k">=</span> <span class="pl-c1">12345</span>;
+});</pre></div>
+
+<p>with the autoUnmaskoption you can change the return of $.fn.val (or value property) to unmaskedvalue or the maskedvalue</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+    $(<span class="pl-s"><span class="pl-pds">'</span>#&lt;%= tbDate.ClientID%&gt;<span class="pl-pds">'</span></span>).inputmask({ <span class="pl-s"><span class="pl-pds">"</span>mask<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>d/m/y<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">'</span>autoUnmask<span class="pl-pds">'</span></span> <span class="pl-k">:</span> <span class="pl-c1">true</span>}); <span class="pl-c">//  value: 23/03/1973</span>
+    <span class="pl-c1">alert</span>($(<span class="pl-s"><span class="pl-pds">'</span>#&lt;%= tbDate.ClientID%&gt;<span class="pl-pds">'</span></span>).val());   <span class="pl-c">// shows 23031973     (autoUnmask: true)</span>
+
+    <span class="pl-k">var</span> tbDate <span class="pl-k">=</span> <span class="pl-c1">document</span>.<span class="pl-c1">getElementById</span>(<span class="pl-s"><span class="pl-pds">"</span>&lt;%= tbDate.ClientID%&gt;<span class="pl-pds">"</span></span>);
+    <span class="pl-c1">alert</span>(tbDate.<span class="pl-c1">value</span>);    <span class="pl-c">// shows 23031973     (autoUnmask: true)</span>
+});</pre></div>
+
+<h3>
+<a id="escape-special-mask-chars" class="anchor" href="#escape-special-mask-chars" aria-hidden="true"><span class="octicon octicon-link"></span></a>escape special mask chars</h3>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+    $(<span class="pl-s"><span class="pl-pds">"</span>#months<span class="pl-pds">"</span></span>).inputmask(<span class="pl-s"><span class="pl-pds">"</span>m <span class="pl-cce">\\</span>months<span class="pl-pds">"</span></span>);
+});</pre></div>
+
+<h3>
+<a id="auto-upperlower--casing-inputmask" class="anchor" href="#auto-upperlower--casing-inputmask" aria-hidden="true"><span class="octicon octicon-link"></span></a>auto upper/lower- casing inputmask</h3>
+
+<p>You can define within a definition to automatically lowercase or uppercase the entry in an input by giving the casing.<br>
+Casing can be null, "upper" or "lower"</p>
+
+<div class="highlight highlight-javascript"><pre>    $.extend($.inputmask.defaults.definitions, {
+        <span class="pl-s"><span class="pl-pds">'</span>A<span class="pl-pds">'</span></span><span class="pl-k">:</span> { 
+            validator<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>[A-Za-z]<span class="pl-pds">"</span></span>,
+            cardinality<span class="pl-k">:</span> <span class="pl-c1">1</span>,
+            casing<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>upper<span class="pl-pds">"</span></span> <span class="pl-c">//auto uppercasing</span>
+        },
+        <span class="pl-s"><span class="pl-pds">'</span>#<span class="pl-pds">'</span></span><span class="pl-k">:</span> {
+            validator<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>[A-Za-z<span class="pl-cce">\u</span>0410-<span class="pl-cce">\u</span>044F<span class="pl-cce">\u</span>0401<span class="pl-cce">\u</span>04510-9]<span class="pl-pds">"</span></span>,
+            cardinality<span class="pl-k">:</span> <span class="pl-c1">1</span>,
+            casing<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>upper<span class="pl-pds">"</span></span>
+        }
+    });</pre></div>
+
+<p>Include jquery.inputmask.extensions.js for using the A and # definitions.</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+   $(<span class="pl-s"><span class="pl-pds">"</span>#test<span class="pl-pds">"</span></span>).inputmask(<span class="pl-s"><span class="pl-pds">"</span>999-AAA<span class="pl-pds">"</span></span>);    <span class="pl-c">//   =&gt; 123abc ===&gt; 123-ABC</span>
+});</pre></div>
+
+<h2>
+<a id="supported-markup-options" class="anchor" href="#supported-markup-options" aria-hidden="true"><span class="octicon octicon-link"></span></a>Supported markup options</h2>
+
+<h3>
+<a id="rtl-attribute" class="anchor" href="#rtl-attribute" aria-hidden="true"><span class="octicon octicon-link"></span></a>RTL attribute</h3>
+
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">input</span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>test<span class="pl-pds">"</span></span> <span class="pl-e">dir</span>=<span class="pl-s"><span class="pl-pds">"</span>rtl<span class="pl-pds">"</span></span> /&gt;</pre></div>
+
+<h3>
+<a id="readonly-attribute" class="anchor" href="#readonly-attribute" aria-hidden="true"><span class="octicon octicon-link"></span></a>readonly attribute</h3>
+
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">input</span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>test<span class="pl-pds">"</span></span> <span class="pl-e">readonly</span>=<span class="pl-s"><span class="pl-pds">"</span>readonly<span class="pl-pds">"</span></span> /&gt;</pre></div>
+
+<h3>
+<a id="disabled-attribute" class="anchor" href="#disabled-attribute" aria-hidden="true"><span class="octicon octicon-link"></span></a>disabled attribute</h3>
+
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">input</span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>test<span class="pl-pds">"</span></span> <span class="pl-e">disabled</span>=<span class="pl-s"><span class="pl-pds">"</span>disabled<span class="pl-pds">"</span></span> /&gt;</pre></div>
+
+<h3>
+<a id="maxlength-attribute" class="anchor" href="#maxlength-attribute" aria-hidden="true"><span class="octicon octicon-link"></span></a>maxlength attribute</h3>
+
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">input</span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>test<span class="pl-pds">"</span></span> <span class="pl-e">maxlength</span>=<span class="pl-s"><span class="pl-pds">"</span>4<span class="pl-pds">"</span></span> /&gt;</pre></div>
+
+<h3>
+<a id="data-inputmask-attribute" class="anchor" href="#data-inputmask-attribute" aria-hidden="true"><span class="octicon octicon-link"></span></a>data-inputmask attribute</h3>
+
+<p>You can also apply an inputmask by using the data-inputmask attribute.  In the attribute you specify the options wanted for the inputmask.
+This gets parsed with $.parseJSON (for the moment), so be sure to use a well-formed json-string without the {}.</p>
+
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">input</span> <span class="pl-e">data-inputmask</span>=<span class="pl-s"><span class="pl-pds">"</span>'alias': 'date'<span class="pl-pds">"</span></span> /&gt;
+&lt;<span class="pl-ent">input</span> <span class="pl-e">data-inputmask</span>=<span class="pl-s"><span class="pl-pds">"</span>'mask': '9', 'repeat': 10, 'greedy' : false<span class="pl-pds">"</span></span> /&gt;</pre></div>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+    $(<span class="pl-s"><span class="pl-pds">"</span>:input<span class="pl-pds">"</span></span>).inputmask();
+});</pre></div>
+
+<h3>
+<a id="data-inputmask--attribute" class="anchor" href="#data-inputmask--attribute" aria-hidden="true"><span class="octicon octicon-link"></span></a>data-inputmask- attribute</h3>
+
+<p>All options can also be passed through data-attributes. </p>
+
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">input</span> <span class="pl-e">data-inputmask-mask</span>=<span class="pl-s"><span class="pl-pds">"</span>9<span class="pl-pds">"</span></span> <span class="pl-e">data-inputmask-repeat</span>=<span class="pl-s"><span class="pl-pds">"</span>10<span class="pl-pds">"</span></span> <span class="pl-e">data-inputmask-greedy</span>=<span class="pl-s"><span class="pl-pds">"</span>false<span class="pl-pds">"</span></span> /&gt;</pre></div>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+    $(<span class="pl-s"><span class="pl-pds">"</span>:input<span class="pl-pds">"</span></span>).inputmask();
+});</pre></div>
+
+<h2>
+<a id="value-formatting" class="anchor" href="#value-formatting" aria-hidden="true"><span class="octicon octicon-link"></span></a>Value formatting</h2>
+
+<p>Instead of masking an input element it is also possible to use the inputmask for formatting given values.
+Think of formatting values to show in jqGrid or on other elements then inputs.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-k">var</span> formattedDate <span class="pl-k">=</span> $.inputmask.format(<span class="pl-s"><span class="pl-pds">"</span>2331973<span class="pl-pds">"</span></span>, { alias<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>dd/mm/yyyy<span class="pl-pds">"</span></span>});</pre></div>
+
+<h2>
+<a id="value-validating" class="anchor" href="#value-validating" aria-hidden="true"><span class="octicon octicon-link"></span></a>Value validating</h2>
+
+<p>Validate a given value against the mask.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-k">var</span> isValid <span class="pl-k">=</span> $.inputmask.isValid(<span class="pl-s"><span class="pl-pds">"</span>23/03/1973<span class="pl-pds">"</span></span>, { alias<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>dd/mm/yyyy<span class="pl-pds">"</span></span>});</pre></div>
+
+<h2>
+<a id="net-nuget-package-install" class="anchor" href="#net-nuget-package-install" aria-hidden="true"><span class="octicon octicon-link"></span></a>.NET Nuget Package Install</h2>
+
+<div class="highlight highlight-html"><pre>PM&gt; Install-Package jQuery.InputMask</pre></div>
+
+<p>In App_Start, BundleConfig.cs</p>
+
+<div class="highlight highlight-c#"><pre>bundles.Add(<span class="pl-k">new</span> ScriptBundle(<span class="pl-s"><span class="pl-pds">"</span>~/bundles/inputmask<span class="pl-pds">"</span></span>).Include(
+                        <span class="pl-s"><span class="pl-pds">"</span>~/Scripts/jquery.inputmask/jquery.inputmask.js<span class="pl-pds">"</span></span>,
+                        <span class="pl-s"><span class="pl-pds">"</span>~/Scripts/jquery.inputmask/jquery.inputmask.extensions.js<span class="pl-pds">"</span></span>,
+                        <span class="pl-s"><span class="pl-pds">"</span>~/Scripts/jquery.inputmask/jquery.inputmask.date.extensions.js<span class="pl-pds">"</span></span>,
+                        <span class="pl-c">//and other extensions you want to include</span>
+                        <span class="pl-s"><span class="pl-pds">"</span>~/Scripts/jquery.inputmask/jquery.inputmask.numeric.extensions.js<span class="pl-pds">"</span></span>));</pre></div>
+
+<p>In Layout</p>
+
+<div class="highlight highlight-html"><pre>@Scripts.Render("~/bundles/inputmask")</pre></div>
+
+<h1>
+<a id="jqueryinputmask-extensions" class="anchor" href="#jqueryinputmask-extensions" aria-hidden="true"><span class="octicon octicon-link"></span></a>jquery.inputmask extensions</h1>
+
+<h1>
+<a id="-todo-" class="anchor" href="#-todo-" aria-hidden="true"><span class="octicon octicon-link"></span></a>=========== TODO ===========</h1>
+
+<h2>
+<a id="date--datetime-extensions" class="anchor" href="#date--datetime-extensions" aria-hidden="true"><span class="octicon octicon-link"></span></a>date &amp; datetime extensions</h2>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+   $(selector).inputmask(<span class="pl-s"><span class="pl-pds">"</span>dd/mm/yyyy<span class="pl-pds">"</span></span>);
+   $(selector).inputmask(<span class="pl-s"><span class="pl-pds">"</span>mm/dd/yyyy<span class="pl-pds">"</span></span>);
+   $(selector).inputmask(<span class="pl-s"><span class="pl-pds">"</span>date<span class="pl-pds">"</span></span>); <span class="pl-c">// alias for dd/mm/yyyy</span>
+   $(selector).inputmask(<span class="pl-s"><span class="pl-pds">"</span>date<span class="pl-pds">"</span></span>, {yearrange<span class="pl-k">:</span> { minyear<span class="pl-k">:</span> <span class="pl-c1">1900</span>, maxyear<span class="pl-k">:</span> <span class="pl-c1">2099</span> }}); <span class="pl-c">//specify year range</span>
+});</pre></div>
+
+<p>The date aliases take leap years into account.  There is also autocompletion on day, month, year.
+For example:</p>
+
+<p>input:  2/2/2012        result: 02/02/2012<br>
+input:  352012          result: 03/05/2012<br>
+input:  3/530           result: 03/05/2030<br>
+input:  ctrl rightarrow         result: the date from today  </p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+   $(selector).inputmask(<span class="pl-s"><span class="pl-pds">"</span>datetime<span class="pl-pds">"</span></span>); <span class="pl-c">// 24h</span>
+   $(selector).inputmask(<span class="pl-s"><span class="pl-pds">"</span>datetime12<span class="pl-pds">"</span></span>); <span class="pl-c">// am/pm</span>
+});</pre></div>
+
+<h3>
+<a id="jqueryuidatepicker-example" class="anchor" href="#jqueryuidatepicker-example" aria-hidden="true"><span class="octicon octicon-link"></span></a>jqueryui.datepicker example</h3>
+
+<div class="highlight highlight-javascript"><pre>    $(<span class="pl-s"><span class="pl-pds">'</span>#calender<span class="pl-pds">'</span></span>).datepicker({
+                dateFormat<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>dd/mm/yy<span class="pl-pds">'</span></span>,                
+                changeMonth<span class="pl-k">:</span> <span class="pl-c1">true</span>,
+                changeYear<span class="pl-k">:</span> <span class="pl-c1">true</span>
+    }).inputmask(<span class="pl-s"><span class="pl-pds">'</span>dd/mm/yyyy<span class="pl-pds">'</span></span>);</pre></div>
+
+<h2>
+<a id="numeric-extensions" class="anchor" href="#numeric-extensions" aria-hidden="true"><span class="octicon octicon-link"></span></a>numeric extensions</h2>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+   $(selector).inputmask(<span class="pl-s"><span class="pl-pds">"</span>decimal<span class="pl-pds">"</span></span>);
+   $(selector).inputmask(<span class="pl-s"><span class="pl-pds">"</span>decimal<span class="pl-pds">"</span></span>, { allowMinus<span class="pl-k">:</span> <span class="pl-c1">false</span> });
+   $(selector).inputmask(<span class="pl-s"><span class="pl-pds">"</span>integer<span class="pl-pds">"</span></span>);
+});</pre></div>
+
+<p>Define the radixpoint</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+   $(selector).inputmask(<span class="pl-s"><span class="pl-pds">"</span>decimal<span class="pl-pds">"</span></span>, { radixPoint<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>,<span class="pl-pds">"</span></span> });
+});</pre></div>
+
+<p>Define the number of digits after the radixpoint</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+   $(selector).inputmask(<span class="pl-s"><span class="pl-pds">"</span>decimal<span class="pl-pds">"</span></span>, { digits<span class="pl-k">:</span> <span class="pl-c1">3</span> });
+});</pre></div>
+
+<p>When TAB out of the input the digits autocomplate with 0 if the digits option is given a valid number.</p>
+
+<p>Grouping support through:  autoGroup, groupSeparator, groupSize</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+   $(selector).inputmask(<span class="pl-s"><span class="pl-pds">"</span>decimal<span class="pl-pds">"</span></span>, { radixPoint<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>,<span class="pl-pds">"</span></span>, autoGroup<span class="pl-k">:</span> <span class="pl-c1">true</span>, groupSeparator<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>.<span class="pl-pds">"</span></span>, groupSize<span class="pl-k">:</span> <span class="pl-c1">3</span> });
+});</pre></div>
+
+<p>Allow minus and/or plus symbol</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+   $(selector).inputmask(<span class="pl-s"><span class="pl-pds">"</span>decimal<span class="pl-pds">"</span></span>, { allowMinus<span class="pl-k">:</span> <span class="pl-c1">false</span> });
+   $(selector).inputmask(<span class="pl-s"><span class="pl-pds">"</span>integer<span class="pl-pds">"</span></span>, { allowMinus<span class="pl-k">:</span> <span class="pl-c1">false</span>, allowPlus<span class="pl-k">:</span> <span class="pl-c1">true</span> });
+});</pre></div>
+
+<h2>
+<a id="regex-extensions" class="anchor" href="#regex-extensions" aria-hidden="true"><span class="octicon octicon-link"></span></a>regex extensions</h2>
+
+<p>With the regex extension you can use any regular expression as a mask.  Currently this does only input restriction.<br>
+There is no further masking visualization.</p>
+
+<p>Example simple email regex:</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+   $(selector).inputmask(<span class="pl-s"><span class="pl-pds">'</span>Regex<span class="pl-pds">'</span></span>, { regex<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+<span class="pl-cce">\\</span>.[a-zA-Z]{2,4}<span class="pl-pds">"</span></span> });
+});</pre></div>
+
+<h2>
+<a id="phone-extensions" class="anchor" href="#phone-extensions" aria-hidden="true"><span class="octicon octicon-link"></span></a>phone extensions</h2>
+
+<p>Uses the phone mask definitions from <a href="https://github.com/andr-04/inputmask-multi">https://github.com/andr-04/inputmask-multi</a></p>
+
+<div class="highlight highlight-javascript"><pre> $(selector).inputmask(<span class="pl-s"><span class="pl-pds">"</span>phone<span class="pl-pds">"</span></span>, {
+                url<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>Scripts/jquery.inputmask/phone-codes/phone-codes.json<span class="pl-pds">"</span></span>, 
+                <span class="pl-en">onKeyValidation</span>: <span class="pl-k">function</span> () { <span class="pl-c">//show some metadata in the console</span>
+                    <span class="pl-en">console</span><span class="pl-c1">.log</span>($(<span class="pl-v">this</span>).inputmask(<span class="pl-s"><span class="pl-pds">"</span>getmetadata<span class="pl-pds">"</span></span>)[<span class="pl-s"><span class="pl-pds">"</span>name_en<span class="pl-pds">"</span></span>]);
+                } 
+  });</pre></div>
+
+<h2>
+<a id="other-extensions" class="anchor" href="#other-extensions" aria-hidden="true"><span class="octicon octicon-link"></span></a>other extensions</h2>
+
+<p>An ip address alias for entering valid ip-addresses.</p>
+
+<div class="highlight highlight-javascript"><pre>$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+   $(selector).inputmask(<span class="pl-s"><span class="pl-pds">"</span>ip<span class="pl-pds">"</span></span>);
+});</pre></div>
+
+<p>You can find/modify/extend this alias in the jquery.inputmask.extensions.js</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/manukeerampanal/jquery.inputmask">Jquery.inputmask</a> is maintained by <a href="https://github.com/manukeerampanal">manukeerampanal</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
 </html>
+
