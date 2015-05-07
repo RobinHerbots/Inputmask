@@ -162,3 +162,26 @@ test("5-9|(9a)-5 - keepstatic: false", function () {
 
     $("#testmask").remove();
 });
+
+test("['(99) 9999-9999', '(99) 9-9999-9999'] - type 12123412345 - 3m0", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({mask:['(99) 9999-9999', '(99) 9-9999-9999'], removeMaskOnSubmit:false, clearmaskonlostfocus:true});
+    $("#testmask")[0].focus();
+    $("#testmask").Type("12123412345")
+    equal(document.getElementById("testmask")._valueGet(), "(12) 1-2341-2345", "Result " + document.getElementById("testmask")._valueGet());
+
+    $("#testmask").remove();
+});
+
+test("['(99) 9999-9999', '(99) 9-9999-9999'] - type 12123412345 - backspace - 3m0", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask({mask:['(99) 9999-9999', '(99) 9-9999-9999'], removeMaskOnSubmit:false, clearmaskonlostfocus:true});
+    $("#testmask")[0].focus();
+    $("#testmask").Type("12123412345")
+    $("#testmask").SendKey($.inputmask.keyCode.BACKSPACE);
+    equal(document.getElementById("testmask")._valueGet(), "(12) 1234-1234", "Result " + document.getElementById("testmask")._valueGet());
+
+    $("#testmask").remove();
+});
