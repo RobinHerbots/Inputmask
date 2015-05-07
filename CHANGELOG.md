@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - Update placeholder handling
 
 ### Fixed
+- Dynamic masks with {*} and zero repeats #875
 - Mask does not alternate back after deleting digit #905
 - never trigger 'input' event when paste after invoke inputmask #776
 - Script looping start when add '.' between decimal values #870 ('.' part)

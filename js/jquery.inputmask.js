@@ -1811,7 +1811,7 @@
                         if (undoValue != getBuffer().join('')) {
                             $el.change();
                         }
-                        if ($el[0]._valueGet && $el[0]._valueGet() == getBufferTemplate().join('')) {
+                        if (opts.clearMaskOnLostFocus && $el[0]._valueGet && $el[0]._valueGet() == getBufferTemplate().join('')) {
                             $el[0]._valueSet(''); //clear masktemplete on submit and still has focus
                         }
                         if (opts.removeMaskOnSubmit) {
