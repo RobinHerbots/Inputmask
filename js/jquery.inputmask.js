@@ -1076,7 +1076,14 @@
                         caretPos = result.caret || caretPos;
                     }
                 }
-                input._valueSet(buffer.join(''));
+                var valuestr = buffer.join("");
+                if (caretPos) {
+                    input._valueSet(valuestr.substr(0, caretPos));
+                } else if (valuestr === opts.placeholder) {
+                    input._valueSet("");
+                } else {
+                    input._valueSet(valuestr);
+                }
                 if (caretPos != undefined) {
                     caret(input, caretPos);
                 }
