@@ -13,12 +13,12 @@ asyncTest("inputmask(\"+7 (999) 999-99-99\") ~ paste \"+79114041112\"", function
     }, 0);
 
 });
-asyncTest("inputmask(\"+7 (999) 999-99-99\") ~ paste \"+7 (+7 (9114041112___) ___-__-__\"", function () {
+asyncTest("inputmask(\"+7 (999) 999-99-99\") ~ paste \"+7 (9114041112___)\"", function () {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("+7 (999) 999-99-99");
     $("#testmask")[0].focus();
-    $("#testmask").paste("+7 (+7 (9114041112___) ___-__-__");
+    $("#testmask").paste("+7 (9114041112___)");
 
     setTimeout(function () {
         equal($("#testmask").val(), "+7 (911) 404-11-12", "Result " + $("#testmask").val());
