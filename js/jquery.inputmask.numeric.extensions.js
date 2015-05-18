@@ -399,7 +399,7 @@ Optional extensions on the jquery.inputmask base
                         } else if (kommaMatches.length > dotMatches.length) {
                             initialValue = initialValue.replace(/,/g, "");
                             initialValue = initialValue.replace(".", opts.radixPoint);
-                        } else { //equal 
+                        } else { //equal
                             initialValue = initialValue.indexOf(".") < initialValue.indexOf(",") ? initialValue.replace(/\./g, "") : initialValue = initialValue.replace(/,/g, "");
                         }
                     } else {
@@ -451,7 +451,7 @@ Optional extensions on the jquery.inputmask base
                             canClear = matchRslt.index != position || radixPosition == -1;
                         } else {
                             var intPart = parseInt(matchRslt["0"].replace(new RegExp($.inputmask.escapeRegex(opts.groupSeparator), "g"), ""));
-                            if (radixPosition != -1 && intPart < 10 && opts.placeholder.charAt(0) == "0") {
+                            if (radixPosition != -1 && intPart < 10 /*&& opts.placeholder.charAt(0) == "0"*/) {
                                 maskset["validPositions"][position].input = "0";
                                 maskset["p"] = opts.prefix.length + 1;
                                 canClear = false;

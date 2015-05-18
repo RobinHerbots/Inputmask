@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-11
+* Version: 3.1.64-16
 */
 !function($) {
     function isInputEventSupported(eventName) {
@@ -2233,7 +2233,7 @@
                     var radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
                     if (matchRslt && (-1 == radixPosition || radixPosition >= position)) if (0 == matchRslt[0].indexOf("0")) canClear = matchRslt.index != position || -1 == radixPosition; else {
                         var intPart = parseInt(matchRslt[0].replace(new RegExp($.inputmask.escapeRegex(opts.groupSeparator), "g"), ""));
-                        -1 != radixPosition && 10 > intPart && "0" == opts.placeholder.charAt(0) && (maskset.validPositions[position].input = "0", 
+                        -1 != radixPosition && 10 > intPart && (maskset.validPositions[position].input = "0", 
                         maskset.p = opts.prefix.length + 1, canClear = !1);
                     }
                 }

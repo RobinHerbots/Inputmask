@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - Update placeholder handling
 
 ### Fixed
+- decimal : extra number after delete and typing new numbers #904
 - Dynamic masks with {*} and zero repeats #875
 - Mask does not alternate back after deleting digit #905
 - never trigger 'input' event when paste after invoke inputmask #776
@@ -42,7 +43,7 @@ All notable changes to this project will be documented in this file.
 - enable contenteditable elements for inputmask
 - Update Command object to handle inserts and allow for multiple removes
 - Add a change log
-- Add Component package manager support - component.json 
+- Add Component package manager support - component.json
 
 ### Fixed
 - $.inputmask.isValid("1A", { mask : "1A" }) returns false #858
