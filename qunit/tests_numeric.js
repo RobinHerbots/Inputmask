@@ -308,8 +308,8 @@ test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - inp
     $("#testmask").remove();
 });
 
-test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\", decimalProtect: true }\") - input 12345.123 + remove .123", function () {
-    var $fixture = $("#qunit-fixture");
+asyncTest("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\", decimalProtect: true }\") - input 12345.123 + remove .123", function () {
+    var $fixture = $("body");
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("decimal", { autoGroup: true, groupSeparator: ",", decimalProtect: true });
 
@@ -319,10 +319,12 @@ test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\", decimalPr
     $("#testmask").SendKey($.inputmask.keyCode.BACKSPACE);
     $("#testmask").SendKey($.inputmask.keyCode.BACKSPACE);
     $("#testmask").SendKey($.inputmask.keyCode.BACKSPACE);
-    $("#testmask").SendKey($.inputmask.keyCode.BACKSPACE);
-
-    equal($("#testmask").val(), "12,345", "Result " + $("#testmask").val());
-    $("#testmask").remove();
+    $("#testmask").blur();
+    setTimeout(function(){
+      start();
+      equal($("#testmask").val(), "12,345", "Result " + $("#testmask").val());
+      //$("#testmask").remove();
+    }, 0);
 });
 test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - input 12345.123 + replace .123 => .789", function () {
     var $fixture = $("#qunit-fixture");
@@ -1245,5 +1247,34 @@ test("decimal alias - type 12345.12 add 6 in front - freeze - DatXN", function (
     $.caret($("#testmask"), 0);
     $("#testmask").SendKey("6");
     equal($("#testmask")[0]._valueGet(), "12345.12", "Result " + $("#testmask")[0]._valueGet());
+    $("#testmask").remove();
+});
+
+test("decimal alias - type 123456789 - add , before 8 - jpontet", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("decimal", {allowMinus: true, integerDigits: 12, digits: 2, radixPoint: ",", autoGroup: true, groupSeparator: " ", groupSize: 3, rightAlign: false});
+
+    $("#testmask")[0].focus();
+    $("#testmask").click();
+    $("#testmask").Type("123456789");
+    $.caret($("#testmask"), 9);
+    $("#testmask").SendKey(",");
+    equal($("#testmask")[0]._valueGet(), "1 234 567,89", "Result " + $("#testmask")[0]._valueGet());
+    $("#testmask").remove();
+});
+
+test("decimal alias - type 123456789 - add , before 8 - backspace - jpontet", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("decimal", {allowMinus: true, integerDigits: 12, digits: 2, radixPoint: ",", autoGroup: true, groupSeparator: " ", groupSize: 3, rightAlign: false});
+
+    $("#testmask")[0].focus();
+    $("#testmask").click();
+    $("#testmask").Type("123456789");
+    $.caret($("#testmask"), 9);
+    $("#testmask").SendKey(",");
+    $("#testmask").SendKey($.inputmask.keyCode.BACKSPACE);
+    equal($("#testmask")[0]._valueGet(), "123 456,89", "Result " + $("#testmask")[0]._valueGet());
     $("#testmask").remove();
 });

@@ -52,7 +52,7 @@ $(document).ready(function(){
    $(selector).inputmask("99-9999999");  //static mask
    $(selector).inputmask("mask", {"mask": "(999) 999-9999"}); //specifying fn & options
    $(selector).inputmask({"mask": "99-9999999"}); //specifying options only
-   $(selector).inputmask("9-a{1,3}9{1,3}"); //mask with dynamic syntax 
+   $(selector).inputmask("9-a{1,3}9{1,3}"); //mask with dynamic syntax
 });
 ```
 
@@ -83,7 +83,7 @@ $(document).ready(function(){
 ```
 #### Allowed HTML-elements
 
-- input type="text" 
+- input type="text"
 - input type="tel"
 - div contenteditable="true" (and all others supported by contenteditable)
 - any html-element (mask text content or set maskedvalue with jQuery.val)
@@ -92,7 +92,7 @@ $(document).ready(function(){
 
   - 9 : numeric
   - a : alphabetical
-  - * : alphanumeric 
+  - * : alphanumeric
 
 There are more definitions defined within the extensions.  
 You can find info within the js-files or by further exploring the options.
@@ -151,7 +151,7 @@ When defining an optional mask together with the greedy: false option, the input
 $(selector).inputmask({ mask: "99999[-9999]", greedy: false });
 ```
 
-The initial mask shown will be "_____" instead of "_____-____". 
+The initial mask shown will be "_____" instead of "_____-____".
 
 ### Dynamic masks
 
@@ -167,7 +167,7 @@ $(document).ready(function(){
    $(selector).inputmask("aa-9{4}");  //static mask with dynamic syntax
    $(selector).inputmask("aa-9{1,4}");  //dynamic mask ~ the 9 def can be occur 1 to 4 times
 
-   //email mask	
+   //email mask
    $(selector).inputmask({
             mask: "*{1,20}[.*{1,20}][.*{1,20}][.*{1,20}]@*{1,20}[.*{2,6}][.*{1,2}]",
             greedy: false,
@@ -233,10 +233,10 @@ The preprocessing fn should return a valid mask definition.
 ## Define custom definitions
 
 You can define your own definitions to use in your mask.  
-Start by choosing a masksymbol. 
+Start by choosing a masksymbol.
 
 ##### validator(chrs, maskset, pos, strict, opts)
-Next define your validator.  The validator can be a regular expression or a function. 
+Next define your validator.  The validator can be a regular expression or a function.
 
 The return value of a validator can be true,  false or a command object.  
 ###### Options of the command object
@@ -248,7 +248,7 @@ The return value of a validator can be true,  false or a command object.
 - insert : position(s) to add :  
     - { pos : position to insert, c : character to insert }  
 	- [{ pos : position to insert, c : character to insert }, { ...}, ... ]
-- refreshFromBuffer : 
+- refreshFromBuffer :
 	- true => refresh validPositions from the complete buffer
 	- { start: , end: } => refresh from start to end
 
@@ -256,7 +256,7 @@ The return value of a validator can be true,  false or a command object.
 Cardinality specifies how many characters are represented and validated for the definition.
 
 ##### prevalidator(chrs, maskset, pos, strict, opts)
-The prevalidator option is 
+The prevalidator option is
 used to validate the characters before the definition cardinality is reached. (see 'j' example)
 
 ##### definitionSymbol
@@ -271,9 +271,9 @@ $.extend($.inputmask.defaults.definitions, {
         'prevalidator': null
     },
 	'g': {
-        "validator": function (chrs, buffer, pos, strict, opts) { 
+        "validator": function (chrs, buffer, pos, strict, opts) {
 			//do some logic and return true, false, or { "pos": new position, "c": character to place }
-		}		
+		}
         "cardinality": 1,
         'prevalidator': null
     },
@@ -285,7 +285,7 @@ $.extend($.inputmask.defaults.definitions, {
                         { validator: "(19|20)", cardinality: 2 },
                         { validator: "(19|20)\\d", cardinality: 3 }
             ]
-     }, 
+     },
 	 'x': {
         validator: "[0-2]",
         cardinality: 1,
@@ -495,10 +495,10 @@ $(document).ready(function(){
 
 Definitions of aliases.
 
-With an alias you can define a complex mask definition and call it by using an alias name.  So this is mainly to simplify the use of your masks.  Some aliases found in the extensions are: email, currency, decimal, integer, date, datetime, dd/mm/yyyy, etc. 
+With an alias you can define a complex mask definition and call it by using an alias name.  So this is mainly to simplify the use of your masks.  Some aliases found in the extensions are: email, currency, decimal, integer, date, datetime, dd/mm/yyyy, etc.
 
 
-First you have to create an alias definition.  The alias definition can contain options for the mask, custom definitions, the mask to use etc. 
+First you have to create an alias definition.  The alias definition can contain options for the mask, custom definitions, the mask to use etc.
 
 When you pass in an alias, the alias is first resolved and then the other options are applied.  So you can call an alias and pass another mask to be applied over the alias.
 This also means that you can write aliases which "inherit" from another alias.
@@ -536,12 +536,12 @@ The alias to use.
 Callback to implement autocomplete on certain keys for example
 
 Function arguments: event, buffer, caretPos, opts  
-Function return: 
+Function return:
 
 #### onBeforeMask
 
 Executes before masking the initial value to allow preprocessing of the initial value.
-  
+
 Function arguments: initialValue, opts  
 Function return: processedValue
 
@@ -553,7 +553,7 @@ $(selector).inputmask({
                                 if (processedValue.indexOf("32") > 1 || 	processedValue.indexOf("32") == -1) {
                                     processedValue = "32" + processedValue;
                                 }
-                                      
+
                                 return processedValue;
                             }
             });
@@ -573,12 +573,12 @@ $(selector).inputmask({
                 placeholder: ' ',
                 showMaskOnHover: false,
                 showMaskOnFocus: false,
-                onBeforePaste: function (pastedValue, opts) { 
-					var processedValue = pastedValue; 
+                onBeforePaste: function (pastedValue, opts) {
+					var processedValue = pastedValue;
 
 					//do something with it
 
-					return processedValue; 
+					return processedValue;
 				}
             });
 ```
@@ -587,18 +587,18 @@ You can also disable pasting a value by returning false in the onBeforePaste cal
 
 #### onBeforeWrite
 
-Executes before writing to the masked element 
+Executes before writing to the masked element
 
 Use this to do some extra processing of the input.
 This can be usefull when implementing an alias, ex. decimal alias, autofill the digits when leaving the inputfield.
- 
+
 Function arguments: event, buffer, caretPos, opts  
 Function return: command object (see Define custom definitions)
 
 
 #### onUnMask
 
-Executes after unmasking to allow post-processing of the unmaskedvalue. 
+Executes after unmasking to allow post-processing of the unmaskedvalue.
 
 Function arguments: maskedValue, unmaskedValue  
 Function return: processedValue
@@ -679,7 +679,7 @@ $(document).ready(function(){
 #### undoOnEscape
 Make escape behave like undo. (ctrl-Z)  
 Pressing escape reverts the value to the value before focus.  
-Default: true 
+Default: true
 
 #### radixPoint
 
@@ -692,23 +692,23 @@ Position the caret to the radixpoint on the initial click into the inputfield.
 Default: false
 
 #### nojumps
- 
+
 Do not jump over fixed parts in the mask.  
 Default: false
 #### nojumpsThreshold
 
 Start nojumps as of  
 Default: 0
- 
+
 #### keepStatic
-Default: undefined (~false)   
+Default: undefined (~false)
 Use in combination with the alternator syntax
 Try to keep the mask static while typing. Decisions to alter the mask will be posponed if possible.
 
 ex.
 $(selector).inputmask({ mask: ["+55-99-9999-9999", "+55-99-99999-9999", ], keepStatic: true });
 
-typing 1212345123 => should result in +55-12-1234-5123 
+typing 1212345123 => should result in +55-12-1234-5123
 type extra 4 => switch to +55-12-12345-1234
 
 When passing multiple masks (an array of masks) keepStatic is automatically set to true unless explicitly set through the options.
@@ -719,12 +719,12 @@ When passing multiple masks (an array of masks) keepStatic is automatically set 
 #### isComplete
 
 With this call-in (hook) you can override the default implementation of the isComplete function.  
-Args => buffer, opts   
+Args => buffer, opts
 Return => true|false
 
 ```javascript
-$(selector).inputmask("Regex", { 
-	regex: "[0-9]*", 
+$(selector).inputmask("Regex", {
+	regex: "[0-9]*",
 	isComplete: function(buffer, opts) {
 		return new RegExp(opts.regex).test(buffer.join(''));
 	}
@@ -776,7 +776,7 @@ $(document).ready(function(){
 
 #### hasMaskedValue
 
-Check whether the returned value is masked or not; currently only works reliably when using jquery.val fn to retrieve the value 
+Check whether the returned value is masked or not; currently only works reliably when using jquery.val fn to retrieve the value
 
 ```javascript
 $(document).ready(function(){
@@ -785,8 +785,8 @@ $(document).ready(function(){
 
 	var val = $("#test").val();
     if($("#test").inputmask("hasMaskedValue"))
-	  validateMaskedValue(val); 
-   else validateValue(val); 
+	  validateMaskedValue(val);
+   else validateValue(val);
 });
 ```
 
@@ -848,7 +848,7 @@ You can define within a definition to automatically lowercase or uppercase the e
 Casing can be null, "upper" or "lower"
 ```javascript
     $.extend($.inputmask.defaults.definitions, {
-        'A': { 
+        'A': {
             validator: "[A-Za-z]",
             cardinality: 1,
             casing: "upper" //auto uppercasing
@@ -907,7 +907,7 @@ $(document).ready(function(){
 ```
 ### data-inputmask-<option\> attribute
 
-All options can also be passed through data-attributes. 
+All options can also be passed through data-attributes.
 
 
 ```html
@@ -1003,7 +1003,7 @@ $(document).ready(function(){
 ### jqueryui.datepicker example
 ```javascript
     $('#calender').datepicker({
-                dateFormat: 'dd/mm/yy',                
+                dateFormat: 'dd/mm/yy',
                 changeMonth: true,
                 changeYear: true
     }).inputmask('dd/mm/yyyy');
@@ -1067,10 +1067,10 @@ Uses the phone mask definitions from https://github.com/andr-04/inputmask-multi
 
 ```javascript
  $(selector).inputmask("phone", {
-                url: "Scripts/jquery.inputmask/phone-codes/phone-codes.json", 
+                url: "Scripts/jquery.inputmask/phone-codes/phone-codes.json",
                 onKeyValidation: function () { //show some metadata in the console
                     console.log($(this).inputmask("getmetadata")["name_en"]);
-                } 
+                }
   });
 ```
 

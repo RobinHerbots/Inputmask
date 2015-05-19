@@ -103,7 +103,7 @@ Optional extensions on the jquery.inputmask base
 
                 var needsRefresh = false, charAtPos = buffer[pos];
                 if (opts.groupSeparator == "" ||
-                        ($.inArray(opts.radixPoint, buffer) != -1 && pos >= $.inArray(opts.radixPoint, buffer)) ||
+                        ($.inArray(opts.radixPoint, buffer) != -1 && pos > $.inArray(opts.radixPoint, buffer)) ||
                         new RegExp('[' + $.inputmask.escapeRegex(opts.negationSymbol.front) + '\+]').test(charAtPos)
                 ) {
                     if (suffixStripped) {
@@ -114,12 +114,15 @@ Optional extensions on the jquery.inputmask base
                     //console.log("return input " + buffer);
                     return { pos: pos };
                 }
+
                 var cbuf = buffer.slice();
                 if (charAtPos == opts.groupSeparator) {
                     cbuf.splice(pos--, 1);
                     charAtPos = cbuf[pos];
                 }
-                if (reformatOnly) cbuf[pos] = "?"; else cbuf.splice(pos, 0, "?"); //set position indicator
+                if (reformatOnly) {
+                    if(charAtPos != opts.radixPoint) cbuf[pos] = "?";
+                } else cbuf.splice(pos, 0, "?"); //set position indicator
                 var bufVal = cbuf.join(''), bufValOrigin = bufVal;
                 if (bufVal.length > 0 && opts.autoGroup || (reformatOnly && bufVal.indexOf(opts.groupSeparator) != -1)) {
                     var escapedGroupSeparator = $.inputmask.escapeRegex(opts.groupSeparator);
@@ -144,6 +147,7 @@ Optional extensions on the jquery.inputmask base
                     buffer[i] = bufVal.charAt(i);
                 }
                 var newPos = $.inArray("?", buffer);
+                if(newPos == -1) newPos = pos;
                 if (reformatOnly) buffer[newPos] = charAtPos; else buffer.splice(newPos, 1);
 
                 if (!needsRefresh && suffixStripped) {

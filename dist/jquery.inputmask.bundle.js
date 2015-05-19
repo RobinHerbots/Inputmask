@@ -3,9 +3,13 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-16
+* Version: 3.1.64-19
 */
 !function($) {
+    function inputmask(options) {
+        this.opts = $.extend(!0, {}, this.defaults, options), this.noMasksCache = options && void 0 !== options.definitions, 
+        resolveAlias(this.opts.alias, options, this.opts);
+    }
     function isInputEventSupported(eventName) {
         var el = document.createElement("input"), evName = "on" + eventName, isSupported = evName in el;
         return isSupported || (el.setAttribute(evName, "return;"), isSupported = "function" == typeof el[evName]), 
@@ -253,8 +257,7 @@
         }
         function stripValidPositions(start, end, nocheck, strict) {
             var i, startPos = start;
-            getMaskSet().p = start, void 0 != getMaskSet().validPositions[start] && getMaskSet().validPositions[start].input == opts.radixPoint && (end++, 
-            startPos++);
+            getMaskSet().p = start;
             for (i = startPos; end > i; i++) void 0 != getMaskSet().validPositions[i] && (nocheck === !0 || 0 != opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), strict, opts)) && delete getMaskSet().validPositions[i];
             for (resetMaskSet(!0), i = startPos + 1; i <= getLastValidPosition(); ) {
                 for (;void 0 != getMaskSet().validPositions[startPos]; ) startPos++;
@@ -265,7 +268,7 @@
                 i++), startPos++) : i++;
             }
             var lvp = getLastValidPosition(), ml = getMaskLength();
-            for (lvp >= start && void 0 != getMaskSet().validPositions[lvp] && getMaskSet().validPositions[lvp].input == opts.radixPoint && delete getMaskSet().validPositions[lvp], 
+            for (void 0 != getMaskSet().validPositions[lvp] && getMaskSet().validPositions[lvp].input == opts.radixPoint && delete getMaskSet().validPositions[lvp], 
             i = lvp + 1; ml >= i; i++) getMaskSet().validPositions[i] && delete getMaskSet().validPositions[i];
             resetMaskSet(!0);
         }
@@ -863,7 +866,9 @@
                 var pend = pos.end;
                 pos.end = pos.begin, pos.begin = pend;
             }
-            if (k == $.inputmask.keyCode.BACKSPACE && (pos.end - pos.begin < 1 || 0 == opts.insertMode) ? pos.begin = seekPrevious(pos.begin) : k == $.inputmask.keyCode.DELETE && pos.begin == pos.end && (pos.end = isMask(pos.end) ? pos.end + 1 : seekNext(pos.end) + 1), 
+            if (k == $.inputmask.keyCode.BACKSPACE && (pos.end - pos.begin < 1 || 0 == opts.insertMode) ? (pos.begin = seekPrevious(pos.begin), 
+            void 0 != getMaskSet().validPositions[pos.begin] && getMaskSet().validPositions[pos.begin].input == opts.radixPoint && pos.begin--) : k == $.inputmask.keyCode.DELETE && pos.begin == pos.end && (pos.end = isMask(pos.end) ? pos.end + 1 : seekNext(pos.end) + 1, 
+            void 0 != getMaskSet().validPositions[pos.begin] && getMaskSet().validPositions[pos.begin].input == opts.radixPoint && pos.end++), 
             stripValidPositions(pos.begin, pos.end, !1, strict), strict !== !0) {
                 generalize();
                 var lvp = getLastValidPosition(pos.begin);
@@ -1137,10 +1142,7 @@
         }
     }
     if (void 0 === $.fn.inputmask) {
-        var ua = navigator.userAgent, iphone = null !== ua.match(new RegExp("iphone", "i")), androidchrome = (null !== ua.match(new RegExp("android.*safari.*", "i")), 
-        null !== ua.match(new RegExp("android.*chrome.*", "i"))), androidfirefox = null !== ua.match(new RegExp("android.*firefox.*", "i")), PasteEventType = (/Kindle/i.test(ua) || /Silk/i.test(ua) || /KFTT/i.test(ua) || /KFOT/i.test(ua) || /KFJWA/i.test(ua) || /KFJWI/i.test(ua) || /KFSOWI/i.test(ua) || /KFTHWA/i.test(ua) || /KFTHWI/i.test(ua) || /KFAPWA/i.test(ua) || /KFAPWI/i.test(ua), 
-        isInputEventSupported("paste") ? "paste" : isInputEventSupported("input") ? "input" : "propertychange");
-        $.inputmask = {
+        inputmask.prototype = {
             defaults: {
                 placeholder: "_",
                 optionalmarker: {
@@ -1263,7 +1265,11 @@
                     value: value
                 }, generateMaskSet(opts, options && void 0 !== options.definitions), opts);
             }
-        }, $.fn.inputmask = function(fn, options) {
+        };
+        var ua = navigator.userAgent, iphone = null !== ua.match(new RegExp("iphone", "i")), androidchrome = (null !== ua.match(new RegExp("android.*safari.*", "i")), 
+        null !== ua.match(new RegExp("android.*chrome.*", "i"))), androidfirefox = null !== ua.match(new RegExp("android.*firefox.*", "i")), PasteEventType = (/Kindle/i.test(ua) || /Silk/i.test(ua) || /KFTT/i.test(ua) || /KFOT/i.test(ua) || /KFJWA/i.test(ua) || /KFJWI/i.test(ua) || /KFSOWI/i.test(ua) || /KFTHWA/i.test(ua) || /KFTHWI/i.test(ua) || /KFAPWA/i.test(ua) || /KFAPWI/i.test(ua), 
+        isInputEventSupported("paste") ? "paste" : isInputEventSupported("input") ? "input" : "propertychange");
+        $.inputmask = inputmask.prototype, $.fn.inputmask = function(fn, options) {
             function importAttributeOptions(npt, opts, importedOptionsContainer) {
                 var $npt = $(npt);
                 $npt.data("inputmask-alias") && resolveAlias($npt.data("inputmask-alias"), $.extend(!0, {}, opts), opts);
@@ -1962,7 +1968,7 @@
                 buffer.length >= opts.suffix.length && buffer.join("").indexOf(opts.suffix) == buffer.length - opts.suffix.length && (buffer.length = buffer.length - opts.suffix.length, 
                 suffixStripped = !0), pos = pos >= buffer.length ? buffer.length - 1 : pos < opts.prefix.length ? opts.prefix.length : pos;
                 var needsRefresh = !1, charAtPos = buffer[pos];
-                if ("" == opts.groupSeparator || -1 != $.inArray(opts.radixPoint, buffer) && pos >= $.inArray(opts.radixPoint, buffer) || new RegExp("[" + $.inputmask.escapeRegex(opts.negationSymbol.front) + "+]").test(charAtPos)) {
+                if ("" == opts.groupSeparator || -1 != $.inArray(opts.radixPoint, buffer) && pos > $.inArray(opts.radixPoint, buffer) || new RegExp("[" + $.inputmask.escapeRegex(opts.negationSymbol.front) + "+]").test(charAtPos)) {
                     if (suffixStripped) for (var i = 0, l = opts.suffix.length; l > i; i++) buffer.push(opts.suffix.charAt(i));
                     return {
                         pos: pos
@@ -1970,7 +1976,7 @@
                 }
                 var cbuf = buffer.slice();
                 charAtPos == opts.groupSeparator && (cbuf.splice(pos--, 1), charAtPos = cbuf[pos]), 
-                reformatOnly ? cbuf[pos] = "?" : cbuf.splice(pos, 0, "?");
+                reformatOnly ? charAtPos != opts.radixPoint && (cbuf[pos] = "?") : cbuf.splice(pos, 0, "?");
                 var bufVal = cbuf.join(""), bufValOrigin = bufVal;
                 if (bufVal.length > 0 && opts.autoGroup || reformatOnly && -1 != bufVal.indexOf(opts.groupSeparator)) {
                     var escapedGroupSeparator = $.inputmask.escapeRegex(opts.groupSeparator);
@@ -1983,7 +1989,8 @@
                 needsRefresh = bufValOrigin != bufVal, buffer.length = bufVal.length;
                 for (var i = 0, l = bufVal.length; l > i; i++) buffer[i] = bufVal.charAt(i);
                 var newPos = $.inArray("?", buffer);
-                if (reformatOnly ? buffer[newPos] = charAtPos : buffer.splice(newPos, 1), !needsRefresh && suffixStripped) for (var i = 0, l = opts.suffix.length; l > i; i++) buffer.push(opts.suffix.charAt(i));
+                if (-1 == newPos && (newPos = pos), reformatOnly ? buffer[newPos] = charAtPos : buffer.splice(newPos, 1), 
+                !needsRefresh && suffixStripped) for (var i = 0, l = opts.suffix.length; l > i; i++) buffer.push(opts.suffix.charAt(i));
                 return {
                     pos: newPos,
                     refreshFromBuffer: needsRefresh,
