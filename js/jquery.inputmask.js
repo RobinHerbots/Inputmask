@@ -1870,6 +1870,8 @@
                             if (input._valueGet() != getBuffer().join('')) {
                                 writeBuffer(input, getBuffer(), seekNext(getLastValidPosition()));
                             }
+                        } else {
+                          caret(input, seekNext(getLastValidPosition()));
                         }
                         undoValue = getBuffer().join('');
                     }).bind("mouseleave.inputmask", function () {
