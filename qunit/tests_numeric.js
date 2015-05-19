@@ -309,7 +309,7 @@ test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - inp
 });
 
 asyncTest("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\", decimalProtect: true }\") - input 12345.123 + remove .123", function () {
-    var $fixture = $("body");
+    var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("decimal", { autoGroup: true, groupSeparator: ",", decimalProtect: true });
 
@@ -833,7 +833,7 @@ test("inputmask(\"integer\") - -5.000,77 - DrSammyD", function () {
 });
 
 asyncTest("inputmask(\"decimal\ placeholder :\"\" digitsoptional: false) - 123 - loostro", function () {
-    var $fixture = $("body");
+    var $fixture =$("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" value="0,00" />');
     $("#testmask").inputmask("decimal", {
         radixPoint: ",",
@@ -1276,5 +1276,34 @@ test("decimal alias - type 123456789 - add , before 8 - backspace - jpontet", fu
     $("#testmask").SendKey(",");
     $("#testmask").SendKey($.inputmask.keyCode.BACKSPACE);
     equal($("#testmask")[0]._valueGet(), "123 456,89", "Result " + $("#testmask")[0]._valueGet());
+    $("#testmask").remove();
+});
+
+test("decimal alias - type 1234567890 - add , before 9 - jpontet", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("decimal", {allowMinus: true, integerDigits: 12, digits: 2, radixPoint: ",", autoGroup: true, groupSeparator: " ", groupSize: 3, rightAlign: false});
+
+    $("#testmask")[0].focus();
+    $("#testmask").click();
+    $("#testmask").Type("1234567890");
+    $.caret($("#testmask"), 10);
+    $("#testmask").SendKey(",");
+    equal($("#testmask")[0]._valueGet(), "12 345 678,90", "Result " + $("#testmask")[0]._valueGet());
+    $("#testmask").remove();
+});
+
+test("decimal alias - type 1234567890 - add , before 9 - backspace - jpontet", function () {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    $("#testmask").inputmask("decimal", {allowMinus: true, integerDigits: 12, digits: 2, radixPoint: ",", autoGroup: true, groupSeparator: " ", groupSize: 3, rightAlign: false});
+
+    $("#testmask")[0].focus();
+    $("#testmask").click();
+    $("#testmask").Type("1234567890");
+    $.caret($("#testmask"), 10);
+    $("#testmask").SendKey(",");
+    $("#testmask").SendKey($.inputmask.keyCode.BACKSPACE);
+    equal($("#testmask")[0]._valueGet(), "1 234 567,90", "Result " + $("#testmask")[0]._valueGet());
     $("#testmask").remove();
 });

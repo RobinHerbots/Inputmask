@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-20
+* Version: 3.1.64-24
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery")) : factory(jQuery);
@@ -29,6 +29,18 @@
         var aliasDefinition = opts.aliases[aliasStr];
         return aliasDefinition ? (aliasDefinition.alias && resolveAlias(aliasDefinition.alias, void 0, opts), 
         $.extend(!0, opts, aliasDefinition), $.extend(!0, opts, options), !0) : !1;
+    }
+    function importAttributeOptions(npt, opts, importedOptionsContainer) {
+        var $npt = $(npt);
+        $npt.data("inputmask-alias") && resolveAlias($npt.data("inputmask-alias"), $.extend(!0, {}, opts), opts);
+        for (var option in opts) {
+            var optionData = $npt.data("inputmask-" + option.toLowerCase());
+            void 0 != optionData && (optionData = "boolean" == typeof optionData ? optionData : optionData.toString(), 
+            "mask" == option && 0 == optionData.indexOf("[") ? (opts[option] = optionData.replace(/[\s[\]]/g, "").split("','"), 
+            opts[option][0] = opts[option][0].replace("'", ""), opts[option][opts[option].length - 1] = opts[option][opts[option].length - 1].replace("'", "")) : opts[option] = optionData, 
+            importedOptionsContainer && (importedOptionsContainer[option] = opts[option]));
+        }
+        return opts;
     }
     function generateMaskSet(opts, nocache) {
         function analyseMask(mask) {
@@ -270,7 +282,7 @@
                 i++), startPos++) : i++;
             }
             var lvp = getLastValidPosition(), ml = getMaskLength();
-            for (void 0 != getMaskSet().validPositions[lvp] && getMaskSet().validPositions[lvp].input == opts.radixPoint && delete getMaskSet().validPositions[lvp], 
+            for (nocheck !== !0 && void 0 != getMaskSet().validPositions[lvp] && getMaskSet().validPositions[lvp].input == opts.radixPoint && delete getMaskSet().validPositions[lvp], 
             i = lvp + 1; ml >= i; i++) getMaskSet().validPositions[i] && delete getMaskSet().validPositions[i];
             resetMaskSet(!0);
         }
@@ -1266,33 +1278,25 @@
                     action: "isValid",
                     value: value
                 }, generateMaskSet(opts, options && void 0 !== options.definitions), opts);
+            },
+            mask: function(el) {
+                importAttributeOptions(el, this.opts);
+                var maskset = generateMaskSet(this.opts, this.noMasksCache);
+                return void 0 != maskset && maskScope({
+                    action: "mask",
+                    el: el
+                }, maskset, this.opts), el;
             }
         };
         var ua = navigator.userAgent, iphone = null !== ua.match(new RegExp("iphone", "i")), androidchrome = (null !== ua.match(new RegExp("android.*safari.*", "i")), 
         null !== ua.match(new RegExp("android.*chrome.*", "i"))), androidfirefox = null !== ua.match(new RegExp("android.*firefox.*", "i")), PasteEventType = (/Kindle/i.test(ua) || /Silk/i.test(ua) || /KFTT/i.test(ua) || /KFOT/i.test(ua) || /KFJWA/i.test(ua) || /KFJWI/i.test(ua) || /KFSOWI/i.test(ua) || /KFTHWA/i.test(ua) || /KFTHWI/i.test(ua) || /KFAPWA/i.test(ua) || /KFAPWI/i.test(ua), 
         isInputEventSupported("paste") ? "paste" : isInputEventSupported("input") ? "input" : "propertychange");
         $.inputmask = inputmask.prototype, $.fn.inputmask = function(fn, options) {
-            function importAttributeOptions(npt, opts, importedOptionsContainer) {
-                var $npt = $(npt);
-                $npt.data("inputmask-alias") && resolveAlias($npt.data("inputmask-alias"), $.extend(!0, {}, opts), opts);
-                for (var option in opts) {
-                    var optionData = $npt.data("inputmask-" + option.toLowerCase());
-                    void 0 != optionData && (optionData = "boolean" == typeof optionData ? optionData : optionData.toString(), 
-                    "mask" == option && 0 == optionData.indexOf("[") ? (opts[option] = optionData.replace(/[\s[\]]/g, "").split("','"), 
-                    opts[option][0] = opts[option][0].replace("'", ""), opts[option][opts[option].length - 1] = opts[option][opts[option].length - 1].replace("'", "")) : opts[option] = optionData, 
-                    importedOptionsContainer && (importedOptionsContainer[option] = opts[option]));
-                }
-                return opts;
-            }
             var maskset, opts = $.extend(!0, {}, $.inputmask.defaults, options);
             if ("string" == typeof fn) switch (fn) {
               case "mask":
-                return resolveAlias(opts.alias, options, opts), this.each(function() {
-                    return importAttributeOptions(this, opts), maskset = generateMaskSet(opts, options && void 0 !== options.definitions), 
-                    void 0 == maskset ? this : void maskScope({
-                        action: "mask",
-                        el: this
-                    }, maskset, opts);
+                return this.each(function() {
+                    return new inputmask(options).mask(this);
                 });
 
               case "unmaskedvalue":

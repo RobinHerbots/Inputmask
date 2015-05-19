@@ -144,7 +144,17 @@
 					"value": value
 				}, generateMaskSet(opts, options && options.definitions !== undefined), opts);
 			},
-
+			mask: function(el) {
+				importAttributeOptions(el, this.opts);
+				var maskset = generateMaskSet(this.opts, this.noMasksCache);
+				if (maskset != undefined) {
+					maskScope({
+						"action": "mask",
+						"el": el
+					}, maskset, this.opts);
+				}
+				return el;
+			}
 		}
 
 		//helper functions
@@ -180,6 +190,28 @@
 				return true;
 			}
 			return false;
+		}
+
+		function importAttributeOptions(npt, opts, importedOptionsContainer) {
+			var $npt = $(npt);
+			if ($npt.data("inputmask-alias")) {
+				resolveAlias($npt.data("inputmask-alias"), $.extend(true, {}, opts), opts);
+			}
+			for (var option in opts) {
+				var optionData = $npt.data("inputmask-" + option.toLowerCase());
+				if (optionData != undefined) {
+					optionData = typeof optionData == "boolean" ? optionData : optionData.toString();
+					if (option == "mask" && optionData.indexOf("[") == 0) {
+						opts[option] = optionData.replace(/[\s[\]]/g, "").split("','");
+						opts[option][0] = opts[option][0].replace("'", "");
+						opts[option][opts[option].length - 1] = opts[option][opts[option].length - 1].replace("'", "");
+					} else
+						opts[option] = optionData;
+					if (importedOptionsContainer)
+						importedOptionsContainer[option] = opts[option];
+				}
+			}
+			return opts;
 		}
 
 		function generateMaskSet(opts, nocache) {
@@ -652,7 +684,7 @@
 				//remove radixpoint if needed
 				var lvp = getLastValidPosition(),
 					ml = getMaskLength();
-				if (getMaskSet()["validPositions"][lvp] != undefined && getMaskSet()["validPositions"][lvp].input == opts.radixPoint)
+				if (nocheck !== true && getMaskSet()["validPositions"][lvp] != undefined && getMaskSet()["validPositions"][lvp].input == opts.radixPoint)
 					delete getMaskSet()["validPositions"][lvp];
 
 				for (i = lvp + 1; i <= ml; i++) {
@@ -2447,44 +2479,14 @@
 		$.inputmask = inputmask.prototype;
 
 		$.fn.inputmask = function(fn, options) {
-			function importAttributeOptions(npt, opts, importedOptionsContainer) {
-				var $npt = $(npt);
-				if ($npt.data("inputmask-alias")) {
-					resolveAlias($npt.data("inputmask-alias"), $.extend(true, {}, opts), opts);
-				}
-				for (var option in opts) {
-					var optionData = $npt.data("inputmask-" + option.toLowerCase());
-					if (optionData != undefined) {
-						optionData = typeof optionData == "boolean" ? optionData : optionData.toString();
-						if (option == "mask" && optionData.indexOf("[") == 0) {
-							opts[option] = optionData.replace(/[\s[\]]/g, "").split("','");
-							opts[option][0] = opts[option][0].replace("'", "");
-							opts[option][opts[option].length - 1] = opts[option][opts[option].length - 1].replace("'", "");
-						} else
-							opts[option] = optionData;
-						if (importedOptionsContainer)
-							importedOptionsContainer[option] = opts[option];
-					}
-				}
-				return opts;
-			}
 			var opts = $.extend(true, {}, $.inputmask.defaults, options),
 				maskset;
 
 			if (typeof fn === "string") {
 				switch (fn) {
 					case "mask":
-						resolveAlias(opts.alias, options, opts);
 						return this.each(function() {
-							importAttributeOptions(this, opts)
-							maskset = generateMaskSet(opts, options && options.definitions !== undefined);
-							if (maskset == undefined) {
-								return this;
-							}
-							maskScope({
-								"action": "mask",
-								"el": this
-							}, maskset, opts);
+							return new inputmask(options).mask(this);
 						});
 					case "unmaskedvalue":
 						var $input = $(this);

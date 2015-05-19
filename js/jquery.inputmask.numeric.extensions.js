@@ -151,7 +151,7 @@ Optional extensions on the jquery.inputmask base
 					buffer[i] = bufVal.charAt(i);
 				}
 				var newPos = $.inArray("?", buffer);
-				if (newPos == -1) newPos = pos;
+				if (newPos == -1) newPos = $.inArray(opts.radixpoint, buffer);
 				if (reformatOnly) buffer[newPos] = charAtPos;
 				else buffer.splice(newPos, 1);
 
