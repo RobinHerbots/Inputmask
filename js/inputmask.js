@@ -1,5 +1,5 @@
 /*
- * Input Mask plugin core
+ * Input Mask Core
  * http://github.com/RobinHerbots/jquery.inputmask
  * Copyright (c) 2010 -	Robin Herbots
  * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
