@@ -3,10 +3,10 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-24
+* Version: 3.1.64-45
 */
 !function(factory) {
-    "function" == typeof define && define.amd ? define([ "jquery", "./jquery.inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery"), require("./jquery.inputmask")) : factory(jQuery);
+    "function" == typeof define && define.amd ? define([ "jquery", "./inputmask", "./jquery.inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery"), require("./inputmask"), require("./jquery.inputmask")) : factory(jQuery);
 }(function($) {
     return $.extend($.inputmask.defaults.aliases, {
         numeric: {
@@ -79,8 +79,8 @@
                 needsRefresh = bufValOrigin != bufVal, buffer.length = bufVal.length;
                 for (var i = 0, l = bufVal.length; l > i; i++) buffer[i] = bufVal.charAt(i);
                 var newPos = $.inArray("?", buffer);
-                if (-1 == newPos && (newPos = $.inArray(opts.radixpoint, buffer)), reformatOnly ? buffer[newPos] = charAtPos : buffer.splice(newPos, 1), 
-                !needsRefresh && suffixStripped) for (var i = 0, l = opts.suffix.length; l > i; i++) buffer.push(opts.suffix.charAt(i));
+                if (-1 == newPos && charAtPos == opts.radixPoint && (newPos = $.inArray(opts.radixPoint, buffer)), 
+                reformatOnly ? buffer[newPos] = charAtPos : buffer.splice(newPos, 1), !needsRefresh && suffixStripped) for (var i = 0, l = opts.suffix.length; l > i; i++) buffer.push(opts.suffix.charAt(i));
                 return {
                     pos: newPos,
                     refreshFromBuffer: needsRefresh,

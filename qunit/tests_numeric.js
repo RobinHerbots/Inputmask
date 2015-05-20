@@ -1287,7 +1287,7 @@ test("decimal alias - type 1234567890 - add , before 9 - jpontet", function () {
     $("#testmask")[0].focus();
     $("#testmask").click();
     $("#testmask").Type("1234567890");
-    $.caret($("#testmask"), 10);
+    $.caret($("#testmask"), 11);
     $("#testmask").SendKey(",");
     equal($("#testmask")[0]._valueGet(), "12 345 678,90", "Result " + $("#testmask")[0]._valueGet());
     $("#testmask").remove();
@@ -1301,7 +1301,7 @@ test("decimal alias - type 1234567890 - add , before 9 - backspace - jpontet", f
     $("#testmask")[0].focus();
     $("#testmask").click();
     $("#testmask").Type("1234567890");
-    $.caret($("#testmask"), 10);
+    $.caret($("#testmask"), 11);
     $("#testmask").SendKey(",");
     $("#testmask").SendKey($.inputmask.keyCode.BACKSPACE);
     equal($("#testmask")[0]._valueGet(), "1 234 567,90", "Result " + $("#testmask")[0]._valueGet());

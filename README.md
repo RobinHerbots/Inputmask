@@ -38,10 +38,11 @@ Include the js-files which you can find in the dist-folder. You have the bundled
 
 If you use a module loader like requireJS, use the js-files in dist/inputmask
 
-The minimum to include is the jquery.inputmask.js
+The minimum to include is inputmask.js && jquery.inputmask.js
 
 ```html
 <script src="jquery.js" type="text/javascript"></script>
+<script src="inputmask.js" type="text/javascript"></script>
 <script src="jquery.inputmask.js" type="text/javascript"></script>
 ```
 
@@ -944,7 +945,8 @@ PM> Install-Package jQuery.InputMask
 In App_Start, BundleConfig.cs
 ```c#
 bundles.Add(new ScriptBundle("~/bundles/inputmask").Include(
-                        "~/Scripts/jquery.inputmask/jquery.inputmask.js",
+            "~/Scripts/jquery.inputmask/inputmask.js",
+            "~/Scripts/jquery.inputmask/jquery.inputmask.js",
 						"~/Scripts/jquery.inputmask/jquery.inputmask.extensions.js",
 						"~/Scripts/jquery.inputmask/jquery.inputmask.date.extensions.js",
 						//and other extensions you want to include

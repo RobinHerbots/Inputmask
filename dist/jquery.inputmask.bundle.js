@@ -3,12 +3,12 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-24
+* Version: 3.1.64-45
 */
 !function($) {
     function inputmask(options) {
-        this.opts = $.extend(!0, {}, this.defaults, options), this.noMasksCache = options && void 0 !== options.definitions, 
-        resolveAlias(this.opts.alias, options, this.opts);
+        this.el = void 0, this.opts = $.extend(!0, {}, this.defaults, options), this.noMasksCache = options && void 0 !== options.definitions, 
+        this.userOptions = options || {}, resolveAlias(this.opts.alias, options, this.opts);
     }
     function isInputEventSupported(eventName) {
         var el = document.createElement("input"), evName = "on" + eventName, isSupported = evName in el;
@@ -26,19 +26,24 @@
     function resolveAlias(aliasStr, options, opts) {
         var aliasDefinition = opts.aliases[aliasStr];
         return aliasDefinition ? (aliasDefinition.alias && resolveAlias(aliasDefinition.alias, void 0, opts), 
-        $.extend(!0, opts, aliasDefinition), $.extend(!0, opts, options), !0) : !1;
+        $.extend(!0, opts, aliasDefinition), $.extend(!0, opts, options), !0) : (void 0 == opts.mask && (opts.mask = aliasStr), 
+        !1);
     }
-    function importAttributeOptions(npt, opts, importedOptionsContainer) {
-        var $npt = $(npt);
-        $npt.data("inputmask-alias") && resolveAlias($npt.data("inputmask-alias"), $.extend(!0, {}, opts), opts);
+    function importAttributeOptions(npt, opts, userOptions) {
+        var $npt = $(npt), attrOptions = $npt.data("inputmask");
+        if (attrOptions && "" != attrOptions) try {
+            attrOptions = attrOptions.replace(new RegExp("'", "g"), '"');
+            var dataoptions = $.parseJSON("{" + attrOptions + "}");
+            $.extend(!0, userOptions, dataoptions);
+        } catch (ex) {}
         for (var option in opts) {
             var optionData = $npt.data("inputmask-" + option.toLowerCase());
             void 0 != optionData && (optionData = "boolean" == typeof optionData ? optionData : optionData.toString(), 
-            "mask" == option && 0 == optionData.indexOf("[") ? (opts[option] = optionData.replace(/[\s[\]]/g, "").split("','"), 
-            opts[option][0] = opts[option][0].replace("'", ""), opts[option][opts[option].length - 1] = opts[option][opts[option].length - 1].replace("'", "")) : opts[option] = optionData, 
-            importedOptionsContainer && (importedOptionsContainer[option] = opts[option]));
+            "mask" == option && 0 == optionData.indexOf("[") ? (userOptions[option] = optionData.replace(/[\s[\]]/g, "").split("','"), 
+            userOptions[option][0] = userOptions[option][0].replace("'", ""), userOptions[option][userOptions[option].length - 1] = userOptions[option][userOptions[option].length - 1].replace("'", "")) : userOptions[option] = optionData);
         }
-        return opts;
+        return userOptions.alias ? resolveAlias(userOptions.alias, userOptions, opts) : $.extend(!0, opts, userOptions), 
+        opts;
     }
     function generateMaskSet(opts, nocache) {
         function analyseMask(mask) {
@@ -1088,8 +1093,8 @@
             isComplete(actionObj.buffer);
 
           case "unmaskedvalue":
-            return $el = actionObj.$input, maskset = $el.data("_inputmask").maskset, opts = $el.data("_inputmask").opts, 
-            isRTL = actionObj.$input.data("_inputmask").isRTL, unmaskedvalue(actionObj.$input);
+            return $el = $(actionObj.el), maskset = $el.data("_inputmask").maskset, opts = $el.data("_inputmask").opts, 
+            isRTL = $el.data("_inputmask").isRTL, unmaskedvalue($el);
 
           case "mask":
             undoValue = getBuffer().join(""), mask(actionObj.el);
@@ -1153,226 +1158,226 @@
             return maskset.metadata;
         }
     }
-    if (void 0 === $.fn.inputmask) {
-        inputmask.prototype = {
-            defaults: {
-                placeholder: "_",
-                optionalmarker: {
-                    start: "[",
-                    end: "]"
+    inputmask.prototype = {
+        defaults: {
+            placeholder: "_",
+            optionalmarker: {
+                start: "[",
+                end: "]"
+            },
+            quantifiermarker: {
+                start: "{",
+                end: "}"
+            },
+            groupmarker: {
+                start: "(",
+                end: ")"
+            },
+            alternatormarker: "|",
+            escapeChar: "\\",
+            mask: null,
+            oncomplete: $.noop,
+            onincomplete: $.noop,
+            oncleared: $.noop,
+            repeat: 0,
+            greedy: !0,
+            autoUnmask: !1,
+            removeMaskOnSubmit: !1,
+            clearMaskOnLostFocus: !0,
+            insertMode: !0,
+            clearIncomplete: !1,
+            aliases: {},
+            alias: null,
+            onKeyDown: $.noop,
+            onBeforeMask: void 0,
+            onBeforePaste: void 0,
+            onBeforeWrite: void 0,
+            onUnMask: void 0,
+            showMaskOnFocus: !0,
+            showMaskOnHover: !0,
+            onKeyValidation: $.noop,
+            skipOptionalPartCharacter: " ",
+            showTooltip: !1,
+            numericInput: !1,
+            rightAlign: !1,
+            undoOnEscape: !0,
+            radixPoint: "",
+            radixFocus: !1,
+            nojumps: !1,
+            nojumpsThreshold: 0,
+            keepStatic: void 0,
+            definitions: {
+                "9": {
+                    validator: "[0-9]",
+                    cardinality: 1,
+                    definitionSymbol: "*"
                 },
-                quantifiermarker: {
-                    start: "{",
-                    end: "}"
+                a: {
+                    validator: "[A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
+                    cardinality: 1,
+                    definitionSymbol: "*"
                 },
-                groupmarker: {
-                    start: "(",
-                    end: ")"
-                },
-                alternatormarker: "|",
-                escapeChar: "\\",
-                mask: null,
-                oncomplete: $.noop,
-                onincomplete: $.noop,
-                oncleared: $.noop,
-                repeat: 0,
-                greedy: !0,
-                autoUnmask: !1,
-                removeMaskOnSubmit: !1,
-                clearMaskOnLostFocus: !0,
-                insertMode: !0,
-                clearIncomplete: !1,
-                aliases: {},
-                alias: null,
-                onKeyDown: $.noop,
-                onBeforeMask: void 0,
-                onBeforePaste: void 0,
-                onBeforeWrite: void 0,
-                onUnMask: void 0,
-                showMaskOnFocus: !0,
-                showMaskOnHover: !0,
-                onKeyValidation: $.noop,
-                skipOptionalPartCharacter: " ",
-                showTooltip: !1,
-                numericInput: !1,
-                rightAlign: !1,
-                undoOnEscape: !0,
-                radixPoint: "",
-                radixFocus: !1,
-                nojumps: !1,
-                nojumpsThreshold: 0,
-                keepStatic: void 0,
-                definitions: {
-                    "9": {
-                        validator: "[0-9]",
-                        cardinality: 1,
-                        definitionSymbol: "*"
-                    },
-                    a: {
-                        validator: "[A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
-                        cardinality: 1,
-                        definitionSymbol: "*"
-                    },
-                    "*": {
-                        validator: "[0-9A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
-                        cardinality: 1
-                    }
-                },
-                ignorables: [ 8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123 ],
-                isComplete: void 0,
-                canClearPosition: $.noop,
-                postValidation: void 0
+                "*": {
+                    validator: "[0-9A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
+                    cardinality: 1
+                }
             },
-            keyCode: {
-                ALT: 18,
-                BACKSPACE: 8,
-                CAPS_LOCK: 20,
-                COMMA: 188,
-                COMMAND: 91,
-                COMMAND_LEFT: 91,
-                COMMAND_RIGHT: 93,
-                CONTROL: 17,
-                DELETE: 46,
-                DOWN: 40,
-                END: 35,
-                ENTER: 13,
-                ESCAPE: 27,
-                HOME: 36,
-                INSERT: 45,
-                LEFT: 37,
-                MENU: 93,
-                NUMPAD_ADD: 107,
-                NUMPAD_DECIMAL: 110,
-                NUMPAD_DIVIDE: 111,
-                NUMPAD_ENTER: 108,
-                NUMPAD_MULTIPLY: 106,
-                NUMPAD_SUBTRACT: 109,
-                PAGE_DOWN: 34,
-                PAGE_UP: 33,
-                PERIOD: 190,
-                RIGHT: 39,
-                SHIFT: 16,
-                SPACE: 32,
-                TAB: 9,
-                UP: 38,
-                WINDOWS: 91
-            },
-            masksCache: {},
-            escapeRegex: function(str) {
-                var specials = [ "/", ".", "*", "+", "?", "|", "(", ")", "[", "]", "{", "}", "\\", "$", "^" ];
-                return str.replace(new RegExp("(\\" + specials.join("|\\") + ")", "gim"), "\\$1");
-            },
-            format: function(value, options, metadata) {
-                var opts = $.extend(!0, {}, $.inputmask.defaults, options);
-                return resolveAlias(opts.alias, options, opts), maskScope({
-                    action: "format",
-                    value: value,
-                    metadata: metadata
-                }, generateMaskSet(opts, options && void 0 !== options.definitions), opts);
-            },
-            isValid: function(value, options) {
-                var opts = $.extend(!0, {}, $.inputmask.defaults, options);
-                return resolveAlias(opts.alias, options, opts), maskScope({
-                    action: "isValid",
-                    value: value
-                }, generateMaskSet(opts, options && void 0 !== options.definitions), opts);
-            },
-            mask: function(el) {
-                importAttributeOptions(el, this.opts);
-                var maskset = generateMaskSet(this.opts, this.noMasksCache);
-                return void 0 != maskset && maskScope({
-                    action: "mask",
-                    el: el
-                }, maskset, this.opts), el;
-            }
-        };
-        var ua = navigator.userAgent, iphone = null !== ua.match(new RegExp("iphone", "i")), androidchrome = (null !== ua.match(new RegExp("android.*safari.*", "i")), 
-        null !== ua.match(new RegExp("android.*chrome.*", "i"))), androidfirefox = null !== ua.match(new RegExp("android.*firefox.*", "i")), PasteEventType = (/Kindle/i.test(ua) || /Silk/i.test(ua) || /KFTT/i.test(ua) || /KFOT/i.test(ua) || /KFJWA/i.test(ua) || /KFJWI/i.test(ua) || /KFSOWI/i.test(ua) || /KFTHWA/i.test(ua) || /KFTHWI/i.test(ua) || /KFAPWA/i.test(ua) || /KFAPWI/i.test(ua), 
-        isInputEventSupported("paste") ? "paste" : isInputEventSupported("input") ? "input" : "propertychange");
-        $.inputmask = inputmask.prototype, $.fn.inputmask = function(fn, options) {
-            var maskset, opts = $.extend(!0, {}, $.inputmask.defaults, options);
-            if ("string" == typeof fn) switch (fn) {
-              case "mask":
-                return this.each(function() {
-                    return new inputmask(options).mask(this);
-                });
+            ignorables: [ 8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123 ],
+            isComplete: void 0,
+            canClearPosition: $.noop,
+            postValidation: void 0
+        },
+        keyCode: {
+            ALT: 18,
+            BACKSPACE: 8,
+            CAPS_LOCK: 20,
+            COMMA: 188,
+            COMMAND: 91,
+            COMMAND_LEFT: 91,
+            COMMAND_RIGHT: 93,
+            CONTROL: 17,
+            DELETE: 46,
+            DOWN: 40,
+            END: 35,
+            ENTER: 13,
+            ESCAPE: 27,
+            HOME: 36,
+            INSERT: 45,
+            LEFT: 37,
+            MENU: 93,
+            NUMPAD_ADD: 107,
+            NUMPAD_DECIMAL: 110,
+            NUMPAD_DIVIDE: 111,
+            NUMPAD_ENTER: 108,
+            NUMPAD_MULTIPLY: 106,
+            NUMPAD_SUBTRACT: 109,
+            PAGE_DOWN: 34,
+            PAGE_UP: 33,
+            PERIOD: 190,
+            RIGHT: 39,
+            SHIFT: 16,
+            SPACE: 32,
+            TAB: 9,
+            UP: 38,
+            WINDOWS: 91
+        },
+        masksCache: {},
+        escapeRegex: function(str) {
+            var specials = [ "/", ".", "*", "+", "?", "|", "(", ")", "[", "]", "{", "}", "\\", "$", "^" ];
+            return str.replace(new RegExp("(\\" + specials.join("|\\") + ")", "gim"), "\\$1");
+        },
+        format: function(value, options, metadata) {
+            var opts = $.extend(!0, {}, $.inputmask.defaults, options);
+            return resolveAlias(opts.alias, options, opts), maskScope({
+                action: "format",
+                value: value,
+                metadata: metadata
+            }, generateMaskSet(opts, options && void 0 !== options.definitions), opts);
+        },
+        isValid: function(value, options) {
+            var opts = $.extend(!0, {}, $.inputmask.defaults, options);
+            return resolveAlias(opts.alias, options, opts), maskScope({
+                action: "isValid",
+                value: value
+            }, generateMaskSet(opts, options && void 0 !== options.definitions), opts);
+        },
+        mask: function(el) {
+            var input = el.jquery && el.length > 0 ? el[0] : el;
+            importAttributeOptions(el, this.opts, this.userOptions);
+            var maskset = generateMaskSet(this.opts, this.noMasksCache);
+            return void 0 != maskset && maskScope({
+                action: "mask",
+                el: input
+            }, maskset, this.opts), input.inputmask = new inputmask(), input.inputmask.opts = this.opts, 
+            input.inputmask.noMasksCache = this.noMasksCache, input.inputmask.el = input, el;
+        },
+        unmaskedvalue: function() {
+            return this.el ? maskScope({
+                action: "unmaskedvalue",
+                el: this.el
+            }) : void 0;
+        },
+        remove: function() {
+            return this.el ? (maskScope({
+                action: "remove",
+                el: this.el
+            }), this.el.inputmask = void 0, this.el) : void 0;
+        },
+        getemptymask: function() {
+            return this.el ? maskScope({
+                action: "getemptymask",
+                el: this.el
+            }) : void 0;
+        },
+        hasMaskedValue: function() {
+            return !this.opts.autoUnmask;
+        },
+        isComplete: function() {
+            return this.el ? maskScope({
+                action: "isComplete",
+                buffer: this.el._valueGet().split(""),
+                el: this.el
+            }) : void 0;
+        },
+        getmetadata: function() {
+            return this.el ? maskScope({
+                action: "getmetadata",
+                el: this.el
+            }) : void 0;
+        }
+    };
+    var ua = navigator.userAgent, iphone = null !== ua.match(new RegExp("iphone", "i")), androidchrome = (null !== ua.match(new RegExp("android.*safari.*", "i")), 
+    null !== ua.match(new RegExp("android.*chrome.*", "i"))), androidfirefox = null !== ua.match(new RegExp("android.*firefox.*", "i")), PasteEventType = (/Kindle/i.test(ua) || /Silk/i.test(ua) || /KFTT/i.test(ua) || /KFOT/i.test(ua) || /KFJWA/i.test(ua) || /KFJWI/i.test(ua) || /KFSOWI/i.test(ua) || /KFTHWA/i.test(ua) || /KFTHWI/i.test(ua) || /KFAPWA/i.test(ua) || /KFAPWI/i.test(ua), 
+    isInputEventSupported("paste") ? "paste" : isInputEventSupported("input") ? "input" : "propertychange");
+    return window.inputmask = inputmask, inputmask;
+}(jQuery), function($) {
+    return void 0 === $.fn.inputmask && ($.inputmask = inputmask.prototype, $.fn.inputmask = function(fn, options) {
+        var nptmask;
+        if ("string" == typeof fn) switch (fn) {
+          case "mask":
+            return nptmask = new inputmask(options), this.each(function() {
+                nptmask.mask(this);
+            });
 
-              case "unmaskedvalue":
-                var $input = $(this);
-                return $input.data("_inputmask") ? maskScope({
-                    action: "unmaskedvalue",
-                    $input: $input
-                }) : $input.val();
+          case "unmaskedvalue":
+            var input = this.jquery && this.length > 0 ? this[0] : this;
+            return input.inputmask ? input.inputmask.unmaskedvalue() : $(input).val();
 
-              case "remove":
-                return this.each(function() {
-                    var $input = $(this);
-                    $input.data("_inputmask") && maskScope({
-                        action: "remove",
-                        el: this
-                    });
-                });
+          case "remove":
+            return this.each(function() {
+                this.inputmask && this.inputmask.remove();
+            });
 
-              case "getemptymask":
-                return this.data("_inputmask") ? maskScope({
-                    action: "getemptymask",
-                    el: this
-                }) : "";
+          case "getemptymask":
+            var input = this.jquery && this.length > 0 ? this[0] : this;
+            return input.inputmask ? input.inputmask.getemptymask() : "";
 
-              case "hasMaskedValue":
-                return this.data("_inputmask") ? !this.data("_inputmask").opts.autoUnmask : !1;
+          case "hasMaskedValue":
+            var input = this.jquery && this.length > 0 ? this[0] : this;
+            return input.inputmask ? input.inputmask.hasMaskedValue() : !1;
 
-              case "isComplete":
-                return this.data("_inputmask") ? maskScope({
-                    action: "isComplete",
-                    buffer: this[0]._valueGet().split(""),
-                    el: this
-                }) : !0;
+          case "isComplete":
+            var input = this.jquery && this.length > 0 ? this[0] : this;
+            return input.inputmask ? input.inputmask.isComplete() : !0;
 
-              case "getmetadata":
-                return this.data("_inputmask") ? maskScope({
-                    action: "getmetadata",
-                    el: this
-                }) : void 0;
+          case "getmetadata":
+            var input = this.jquery && this.length > 0 ? this[0] : this;
+            return input.inputmask ? input.inputmask.getmetadata() : void 0;
 
-              default:
-                return resolveAlias(opts.alias, options, opts), resolveAlias(fn, options, opts) || (opts.mask = fn), 
-                this.each(function() {
-                    return importAttributeOptions(this, opts), maskset = generateMaskSet(opts, options && void 0 !== options.definitions), 
-                    void 0 == maskset ? this : void maskScope({
-                        action: "mask",
-                        el: this
-                    }, maskset, opts);
-                });
-            } else {
-                if ("object" == typeof fn) return opts = $.extend(!0, {}, $.inputmask.defaults, fn), 
-                resolveAlias(opts.alias, fn, opts), this.each(function() {
-                    return importAttributeOptions(this, opts), maskset = generateMaskSet(opts, fn && void 0 !== fn.definitions), 
-                    void 0 == maskset ? this : void maskScope({
-                        action: "mask",
-                        el: this
-                    }, maskset, opts);
-                });
-                if (void 0 == fn) return this.each(function() {
-                    var attrOptions = $(this).attr("data-inputmask");
-                    if (attrOptions && "" != attrOptions) try {
-                        attrOptions = attrOptions.replace(new RegExp("'", "g"), '"');
-                        var dataoptions = $.parseJSON("{" + attrOptions + "}");
-                        $.extend(!0, dataoptions, options), opts = $.extend(!0, {}, $.inputmask.defaults, dataoptions), 
-                        opts = importAttributeOptions(this, opts), resolveAlias(opts.alias, dataoptions, opts), 
-                        opts.alias = void 0, $(this).inputmask("mask", opts);
-                    } catch (ex) {}
-                    if ($(this).attr("data-inputmask-mask") || $(this).attr("data-inputmask-alias")) {
-                        opts = $.extend(!0, {}, $.inputmask.defaults, {});
-                        var dataOptions = {};
-                        opts = importAttributeOptions(this, opts, dataOptions), resolveAlias(opts.alias, dataOptions, opts), 
-                        opts.alias = void 0, $(this).inputmask("mask", opts);
-                    }
-                });
-            }
-        };
-    }
-    return $.fn.inputmask;
+          default:
+            return options = options || {}, options.alias = fn, nptmask = new inputmask(options), 
+            this.each(function() {
+                nptmask.mask(this);
+            });
+        } else {
+            if ("object" == typeof fn) return nptmask = new inputmask(fn), this.each(function() {
+                nptmask.mask(this);
+            });
+            if (void 0 == fn) return this.each(function() {
+                nptmask = new inputmask(), nptmask.mask(this);
+            });
+        }
+    }), $.fn.inputmask;
 }(jQuery), function($) {
     return $.extend($.inputmask.defaults.definitions, {
         h: {
@@ -1993,8 +1998,8 @@
                 needsRefresh = bufValOrigin != bufVal, buffer.length = bufVal.length;
                 for (var i = 0, l = bufVal.length; l > i; i++) buffer[i] = bufVal.charAt(i);
                 var newPos = $.inArray("?", buffer);
-                if (-1 == newPos && (newPos = $.inArray(opts.radixpoint, buffer)), reformatOnly ? buffer[newPos] = charAtPos : buffer.splice(newPos, 1), 
-                !needsRefresh && suffixStripped) for (var i = 0, l = opts.suffix.length; l > i; i++) buffer.push(opts.suffix.charAt(i));
+                if (-1 == newPos && charAtPos == opts.radixPoint && (newPos = $.inArray(opts.radixPoint, buffer)), 
+                reformatOnly ? buffer[newPos] = charAtPos : buffer.splice(newPos, 1), !needsRefresh && suffixStripped) for (var i = 0, l = opts.suffix.length; l > i; i++) buffer.push(opts.suffix.charAt(i));
                 return {
                     pos: newPos,
                     refreshFromBuffer: needsRefresh,

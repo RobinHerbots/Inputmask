@@ -4,9 +4,11 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Updates
+- separate jquery plugin code from the inputmask core (first step to remove jquery dependency from the inputmask core)
 - Update placeholder handling
 
 ### Fixed
+- Can't delete digits after decimal point on negative numbers #892
 - decimal : extra number after delete and typing new numbers #904
 - Dynamic masks with {*} and zero repeats #875
 - Mask does not alternate back after deleting digit #905
