@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- inputmask class
+- setting defaults / definitions / aliases
+  - inputmask.extendDefaults
+  - inputmask.extendDefinitions
+  - inputmask.extendAliases
+
 ### Updates
 - separate jquery plugin code from the inputmask core (first step to remove jquery dependency from the inputmask core)
 - Update placeholder handling

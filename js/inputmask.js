@@ -211,6 +211,17 @@
     }
   }
 
+  //aply defaults, definitions, aliases
+  inputmask.extendDefaults = function(options) {
+    $.extend(inputmask.prototype.defaults, options);
+  }
+  inputmask.extendDefinitions = function(definition) {
+    $.extend(inputmask.prototype.defaults.definitions, definition);
+  }
+  inputmask.extendAliases = function(alias) {
+    $.extend(inputmask.prototype.defaults.aliases, alias);
+  }
+
   //helper functions
   function isInputEventSupported(eventName) {
     var el = document.createElement('input'),
