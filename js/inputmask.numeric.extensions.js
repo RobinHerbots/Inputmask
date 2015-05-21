@@ -386,7 +386,7 @@ Optional extensions on the jquery.inputmask base
                   if (isValid === true) {
                     //handle overwrite when fixed precision
                     var radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
-                    if (opts.digitsOptional === false && pos > radixPosition && !strict) {
+                    if (radixPosition != -1 && opts.digitsOptional === false && pos > radixPosition && !strict) {
                       isValid = {
                         "pos": pos,
                         "remove": pos
