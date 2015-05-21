@@ -599,5 +599,5 @@ Optional extensions on the jquery.inputmask base
     }
   });
 
-  return $.fn.inputmask;
+  return inputmask;
 })(jQuery);

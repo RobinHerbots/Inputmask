@@ -878,14 +878,14 @@ $(document).ready(function(){
 Instead of masking an input element it is also possible to use the inputmask for formatting given values. Think of formatting values to show in jqGrid or on other elements then inputs.
 
 ```javascript
-var formattedDate = $.inputmask.format("2331973", { alias: "dd/mm/yyyy"});
+var formattedDate = inputmask.format("2331973", { alias: "dd/mm/yyyy"});
 ```
 
 ## Value validating
 Validate a given value against the mask.
 
 ```javascript
-var isValid = $.inputmask.isValid("23/03/1973", { alias: "dd/mm/yyyy"});
+var isValid = inputmask.isValid("23/03/1973", { alias: "dd/mm/yyyy"});
 ```
 
 ## .NET Nuget Package Install

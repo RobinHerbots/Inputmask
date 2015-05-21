@@ -62,5 +62,5 @@ When using this extension make sure you specify the correct url to get the masks
       nojumpsThreshold: 4
     }
   });
-  return $.fn.inputmask;
+  return inputmask;
 })(jQuery);

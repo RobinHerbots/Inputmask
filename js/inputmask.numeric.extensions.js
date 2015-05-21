@@ -591,5 +591,5 @@ Optional extensions on the jquery.inputmask base
       radixPoint: ""
     }
   });
-  return $.fn.inputmask;
+  return inputmask;
 })(jQuery);
