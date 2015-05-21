@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-45
+* Version: 3.1.64-46
 */
 !function($) {
     function inputmask(options) {
@@ -1325,6 +1325,12 @@
                 el: this.el
             }) : void 0;
         }
+    }, inputmask.extendDefaults = function(options) {
+        $.extend(inputmask.prototype.defaults, options);
+    }, inputmask.extendDefinitions = function(definition) {
+        $.extend(inputmask.prototype.defaults.definitions, definition);
+    }, inputmask.extendAliases = function(alias) {
+        $.extend(inputmask.prototype.defaults.aliases, alias);
     };
     var ua = navigator.userAgent, iphone = null !== ua.match(new RegExp("iphone", "i")), androidchrome = (null !== ua.match(new RegExp("android.*safari.*", "i")), 
     null !== ua.match(new RegExp("android.*chrome.*", "i"))), androidfirefox = null !== ua.match(new RegExp("android.*firefox.*", "i")), PasteEventType = (/Kindle/i.test(ua) || /Silk/i.test(ua) || /KFTT/i.test(ua) || /KFOT/i.test(ua) || /KFJWA/i.test(ua) || /KFJWI/i.test(ua) || /KFSOWI/i.test(ua) || /KFTHWA/i.test(ua) || /KFTHWI/i.test(ua) || /KFAPWA/i.test(ua) || /KFAPWI/i.test(ua), 
@@ -1379,7 +1385,7 @@
         }
     }), $.fn.inputmask;
 }(jQuery), function($) {
-    return $.extend($.inputmask.defaults.definitions, {
+    return inputmask.extendDefinitions({
         h: {
             validator: "[01][0-9]|2[0-3]",
             cardinality: 2,
@@ -1426,7 +1432,7 @@
                 cardinality: 3
             } ]
         }
-    }), $.extend($.inputmask.defaults.aliases, {
+    }), inputmask.extendAliases({
         "dd/mm/yyyy": {
             mask: "1/2/y",
             placeholder: "dd/mm/yyyy",
@@ -1830,7 +1836,7 @@
         }
     }), $.fn.inputmask;
 }(jQuery), function($) {
-    return $.extend($.inputmask.defaults.definitions, {
+    return inputmask.extendDefinitions({
         A: {
             validator: "[A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
             cardinality: 1,
@@ -1841,7 +1847,7 @@
             cardinality: 1,
             casing: "upper"
         }
-    }), $.extend($.inputmask.defaults.aliases, {
+    }), inputmask.extendAliases({
         url: {
             mask: "ir",
             placeholder: "",
@@ -1927,7 +1933,7 @@
         }
     }), $.fn.inputmask;
 }(jQuery), function($) {
-    return $.extend($.inputmask.defaults.aliases, {
+    return inputmask.extendAliases({
         numeric: {
             mask: function(opts) {
                 function autoEscape(txt) {
@@ -2276,7 +2282,7 @@
         }
     }), $.fn.inputmask;
 }(jQuery), function($) {
-    return $.extend($.inputmask.defaults.aliases, {
+    return inputmask.extendAliases({
         phone: {
             url: "phone-codes/phone-codes.js",
             countrycode: "",
@@ -2314,7 +2320,7 @@
         }
     }), $.fn.inputmask;
 }(jQuery), function($) {
-    return $.extend($.inputmask.defaults.aliases, {
+    return inputmask.extendAliases({
         Regex: {
             mask: "r",
             greedy: !1,

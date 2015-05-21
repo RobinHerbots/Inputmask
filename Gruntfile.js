@@ -15,7 +15,8 @@ module.exports = function(grunt) {
     for (var srcNdx in srcFiles) {
       var dstFile = srcFiles[srcNdx].replace("js/", ""),
         dstFileMin = dstFile.replace(".js", ".min.js");
-      wrapModuleLoaders(srcFiles[srcNdx], "build/" + dstFile, dstFile.indexOf("jquery") == -1 ? ["jquery"] : (dstFile.indexOf("extension") == -1 ? ["jquery", "./inputmask"] : ["jquery", "./inputmask", "./jquery.inputmask"]));
+      wrapModuleLoaders(srcFiles[srcNdx], "build/" + dstFile, dstFile.indexOf("jquery") == -1 ?
+        (dstFile.indexOf("extension") == -1 ? ["jquery"] : ["jquery", "./inputmask"]) : ["jquery", "./inputmask"]);
       uglifyConfig[dstFile] = {
         dest: 'dist/inputmask/' + dstFile,
         src: "build/" + dstFile,

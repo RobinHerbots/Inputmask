@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-45
+* Version: 3.1.64-46
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery")) : factory(jQuery);
@@ -1327,6 +1327,12 @@
                 el: this.el
             }) : void 0;
         }
+    }, inputmask.extendDefaults = function(options) {
+        $.extend(inputmask.prototype.defaults, options);
+    }, inputmask.extendDefinitions = function(definition) {
+        $.extend(inputmask.prototype.defaults.definitions, definition);
+    }, inputmask.extendAliases = function(alias) {
+        $.extend(inputmask.prototype.defaults.aliases, alias);
     };
     var ua = navigator.userAgent, iphone = null !== ua.match(new RegExp("iphone", "i")), androidchrome = (null !== ua.match(new RegExp("android.*safari.*", "i")), 
     null !== ua.match(new RegExp("android.*chrome.*", "i"))), androidfirefox = null !== ua.match(new RegExp("android.*firefox.*", "i")), PasteEventType = (/Kindle/i.test(ua) || /Silk/i.test(ua) || /KFTT/i.test(ua) || /KFOT/i.test(ua) || /KFJWA/i.test(ua) || /KFJWI/i.test(ua) || /KFSOWI/i.test(ua) || /KFTHWA/i.test(ua) || /KFTHWI/i.test(ua) || /KFAPWA/i.test(ua) || /KFAPWI/i.test(ua), 

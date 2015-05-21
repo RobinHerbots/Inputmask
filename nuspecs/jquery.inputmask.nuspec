@@ -25,16 +25,16 @@
     <tags>jQuery, plugins, input, form, inputmask, mask</tags>
   </metadata>
   <files>
-    <file src="..\dist\inputmask\jquery.inputmask.date.extensions.js"
-      target="content\Scripts\jquery.inputmask\jquery.inputmask.date.extensions.js"/>
-    <file src="..\dist\inputmask\jquery.inputmask.extensions.js"
-      target="content\Scripts\jquery.inputmask\jquery.inputmask.extensions.js"/>
-    <file src="..\dist\inputmask\jquery.inputmask.numeric.extensions.js"
-      target="content\Scripts\jquery.inputmask\jquery.inputmask.numeric.extensions.js"/>
-    <file src="..\dist\inputmask\jquery.inputmask.regex.extensions.js"
-      target="content\Scripts\jquery.inputmask\jquery.inputmask.regex.extensions.js"/>
-    <file src="..\dist\inputmask\jquery.inputmask.phone.extensions.js"
-      target="content\Scripts\jquery.inputmask\jquery.inputmask.phone.extensions.js"/>
+    <file src="..\dist\inputmask\inputmask.date.extensions.js"
+      target="content\Scripts\jquery.inputmask\inputmask.date.extensions.js"/>
+    <file src="..\dist\inputmask\inputmask.extensions.js"
+      target="content\Scripts\jquery.inputmask\inputmask.extensions.js"/>
+    <file src="..\dist\inputmask\inputmask.numeric.extensions.js"
+      target="content\Scripts\jquery.inputmask\inputmask.numeric.extensions.js"/>
+    <file src="..\dist\inputmask\inputmask.regex.extensions.js"
+      target="content\Scripts\jquery.inputmask\inputmask.regex.extensions.js"/>
+    <file src="..\dist\inputmask\inputmask.phone.extensions.js"
+      target="content\Scripts\jquery.inputmask\inputmask.phone.extensions.js"/>
     <file src="..\dist\inputmask\jquery.inputmask.js"
       target="content\Scripts\jquery.inputmask\jquery.inputmask.js"/>
     <file src="..\dist\inputmask\inputmask.js"
