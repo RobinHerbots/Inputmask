@@ -17,7 +17,7 @@ Highlights:
 - non-greedy masks
 - many features can be enabled/disabled/configured by options
 - supports readonly/disabled/dir="rtl" attributes
-- support data-inputmask attribute(s)  
+- support data-inputmask attribute(s)
 - alternator-mask support
 - regex-mask support
 - dynamic-mask support
@@ -114,16 +114,16 @@ Example:
 $('#test').inputmask('(99) 9999[9]-9999');
 ```
 
-This mask wil allow input like (99) 99999-9999 or (99) 9999-9999.<br>Input => 12123451234      mask => (12) 12345-1234    (trigger complete)<br>Input => 121234-1234      mask => (12) 1234-1234     (trigger complete)<br>Input => 1212341234       mask => (12) 12341-234_    (trigger incomplete)  
+This mask wil allow input like (99) 99999-9999 or (99) 9999-9999.<br>Input => 12123451234      mask => (12) 12345-1234    (trigger complete)<br>Input => 121234-1234      mask => (12) 1234-1234     (trigger complete)<br>Input => 1212341234       mask => (12) 12341-234_    (trigger incomplete)
 
 #### skipOptionalPartCharacter
-As an extra there is another configurable character which is used to skip an optional part in the mask.  
+As an extra there is another configurable character which is used to skip an optional part in the mask.
 
 ```javascript
 skipOptionalPartCharacter: " ",
 ```
 
-Input => 121234 1234      mask => (12) 1234-1234     (trigger complete)  
+Input => 121234 1234      mask => (12) 1234-1234     (trigger complete)
 
 When `clearMaskOnLostFocus: true` is set in the options (default), the mask will clear out the optional part when it is not filled in and this only in case the optional part is at the end of the mask.
 
@@ -177,9 +177,9 @@ $(document).ready(function(){
 ### Alternator masks
 The alternator syntax is like an **OR** statement.  The mask can be one of the 2 choices specified in the alternator.
 
-To define an alternator use the |.<br>ex: "a|9" => a or 9<br>    "(aaa)|(999)" => aaa or 999  
+To define an alternator use the |.<br>ex: "a|9" => a or 9<br>    "(aaa)|(999)" => aaa or 999
 
-Also make sure to read about the keepStatic option.  
+Also make sure to read about the keepStatic option.
 
 ```javascript
 $("selector").inputmask("(99.9)|(X)", {
@@ -221,17 +221,17 @@ You can define your own definitions to use in your mask.<br>Start by choosing a 
 ### validator(chrs, maskset, pos, strict, opts)
 Next define your validator.  The validator can be a regular expression or a function.
 
-The return value of a validator can be true,  false or a command object.  
+The return value of a validator can be true,  false or a command object.
 
 #### Options of the command object
 - pos : position to insert
 - c : character to insert
 - caret : position of the caret
-- remove : position(s) to remove  
+- remove : position(s) to remove
   - pos or [pos1, pos2]
 
-- insert : position(s) to add :  
-  - { pos : position to insert, c : character to insert }  
+- insert : position(s) to add :
+  - { pos : position to insert, c : character to insert }
   - [{ pos : position to insert, c : character to insert }, { ...}, ... ]
 
 - refreshFromBuffer :
@@ -348,7 +348,7 @@ inputmask.extendAliases({
 });
 ```
 
-Once defined, you can call the alias by:  
+Once defined, you can call the alias by:
 
 ```javascript
  $(selector).inputmask("myNum");
@@ -373,35 +373,35 @@ $(document).ready(function(){
 ```
 
 ### optionalmarker
-Definition of the symbols used to indicate an optional part in the mask.  
+Definition of the symbols used to indicate an optional part in the mask.
 
 ```javascript
 optionalmarker: { start: "[", end: "]" },
 ```
 
 ### quantifiermarker
-Definition of the symbols used to indicate a quantifier in the mask.  
+Definition of the symbols used to indicate a quantifier in the mask.
 
 ```javascript
 quantifiermarker: { start: "{", end: "}" },
 ```
 
 ### groupmarker
-Definition of the symbols used to indicate a group in the mask.  
+Definition of the symbols used to indicate a group in the mask.
 
 ```javascript
 groupmarker: { start: "(", end: ")" },
 ```
 
 ### alternatormarker
-Definition of the symbols used to indicate an alternator part in the mask.  
+Definition of the symbols used to indicate an alternator part in the mask.
 
 ```javascript
 alternatormarker: "|",
 ```
 
 ### escapeChar
-Definition of the symbols used to escape a part in the mask.  
+Definition of the symbols used to escape a part in the mask.
 
 ```javascript
 escapeChar: "\\",
@@ -648,7 +648,7 @@ $(document).ready(function(){
 ### rightAlign
 Align the input to the right
 
-By setting the rightAlign you can specify to right align an inputmask. This is only applied in combination op the numericInput option or the dir-attribute. Default is true.  
+By setting the rightAlign you can specify to right align an inputmask. This is only applied in combination op the numericInput option or the dir-attribute. Default is true.
 
 ```javascript
 $(document).ready(function(){
@@ -760,7 +760,7 @@ $(document).ready(function(){
 ```
 
 ### getmetadata
-The metadata of the actual mask provided in the mask definitions can be obtained by calling getmetadata.  If only a mask is provided the mask definition will be returned by the getmetadata.  
+The metadata of the actual mask provided in the mask definitions can be obtained by calling getmetadata.  If only a mask is provided the mask definition will be returned by the getmetadata.
 
 ```javascript
 $(selector).inputmask("getmetadata");
@@ -881,14 +881,14 @@ $(document).ready(function(){
 Instead of masking an input element it is also possible to use the inputmask for formatting given values. Think of formatting values to show in jqGrid or on other elements then inputs.
 
 ```javascript
-var formattedDate = inputmask.format("2331973", { alias: "dd/mm/yyyy"});
+var formattedDate = inputmask.format("2331973", { mask: "dd/mm/yyyy"});
 ```
 
 ## Value validating
 Validate a given value against the mask.
 
 ```javascript
-var isValid = inputmask.isValid("23/03/1973", { alias: "dd/mm/yyyy"});
+var isValid = inputmask.isValid("23/03/1973", { mask: "dd/mm/yyyy"});
 ```
 
 ## .NET Nuget Package Install
@@ -930,7 +930,7 @@ $(document).ready(function(){
 
 The date aliases take leap years into account.  There is also autocompletion on day, month, year. For example:
 
-input:    2/2/2012         result: 02/02/2012<br>input:  352012            result: 03/05/2012<br>input:  3/530            result: 03/05/2030<br>input:  ctrl rightarrow            result: the date from today  
+input:    2/2/2012         result: 02/02/2012<br>input:  352012            result: 03/05/2012<br>input:  3/530            result: 03/05/2030<br>input:  ctrl rightarrow            result: the date from today
 
 ```javascript
 $(document).ready(function(){
