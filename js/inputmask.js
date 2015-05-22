@@ -1727,7 +1727,7 @@
             if (eventHandler.type != "setvalue") {
               var handler = eventHandler.handler;
               eventHandler.handler = function(e) {
-                //console.log("triggered " + e.type);
+                // console.log("triggered " + e.type);
                 if (this.disabled || (this.readOnly && !(e.type == "keydown" && (e.ctrlKey && e.keyCode == 67) || e.keyCode == inputmask.keyCode.TAB)))
                   e.preventDefault();
                 else {
@@ -2171,27 +2171,7 @@
 
         return false;
       }
-      //function mobileInputEvent(e) {
-      //		var input = this;
 
-    //		//backspace in chrome32 only fires input event - detect & treat
-    //		var caretPos = caret(input),
-    //				currentValue = input._valueGet();
-
-    //		currentValue = currentValue.replace(new RegExp("(" + escapeRegex(getBufferTemplate().join('')) + ")*"), "");
-    //		//correct caretposition for chrome
-    //		if (caretPos.begin > currentValue.length) {
-    //				caret(input, currentValue.length);
-    //				caretPos = caret(input);
-    //		}
-    //		if ((getBuffer().length - currentValue.length) == 1 && currentValue.charAt(caretPos.begin) != getBuffer()[caretPos.begin]
-    //				&& currentValue.charAt(caretPos.begin + 1) != getBuffer()[caretPos.begin]
-    //				&& !isMask(caretPos.begin)) {
-    //				e.keyCode = inputmask.keyCode.BACKSPACE;
-    //				keydownEvent.call(input, e);
-    //		}
-    //		e.preventDefault();
-    //}
     function inputFallBackEvent(e) { //fallback when keypress & compositionevents fail
       var input = this;
       checkVal(input, true, false);
@@ -2212,13 +2192,10 @@
 
     function compositionUpdateEvent(e) {
       var input = this,
-        caretPos = compositionCaretPos || caret(input);
+        caretPos = caret(input);
       if (e.originalEvent.data.indexOf(compositionData) == 0) {
         resetMaskSet();
-        caretPos = {
-          begin: 0,
-          end: 0
-        };
+        caretPos = compositionCaretPos;
       }
       var newData = e.originalEvent.data;
       caret(input, caretPos.begin, caretPos.end);

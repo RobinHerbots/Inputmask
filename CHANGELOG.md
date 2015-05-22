@@ -17,6 +17,8 @@ All notable changes to this project will be documented in this file.
 - Update placeholder handling
 
 ### Fixed
+- Chinese / Japanese characters are unable to mask #198
+- Infinite Loop on IE (v11) when using Japanese IME Keyboard #749
 - Delete key not working properly #799
 - Selecting and overwriting text will delete the character to the immediate right #914
 - Can't delete digits after decimal point on negative numbers #892

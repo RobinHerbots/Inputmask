@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-59
+* Version: 3.1.64-60
 */
 !function($) {
     function inputmask(options) {
@@ -983,11 +983,8 @@
             undoValue = getBuffer().join(""), ("" == compositionData || 0 != e.originalEvent.data.indexOf(compositionData)) && (compositionCaretPos = caret(input));
         }
         function compositionUpdateEvent(e) {
-            var input = this, caretPos = compositionCaretPos || caret(input);
-            0 == e.originalEvent.data.indexOf(compositionData) && (resetMaskSet(), caretPos = {
-                begin: 0,
-                end: 0
-            });
+            var input = this, caretPos = caret(input);
+            0 == e.originalEvent.data.indexOf(compositionData) && (resetMaskSet(), caretPos = compositionCaretPos);
             var newData = e.originalEvent.data;
             caret(input, caretPos.begin, caretPos.end);
             for (var i = 0; i < newData.length; i++) {
