@@ -53,7 +53,7 @@ test("{ mask: [\"+55-99-9999-9999\", \"+55-99-99999-9999\", ], keepStatic: true 
     $("#testmask").inputmask({ mask: ["+55-99-9999-9999", "+55-99-99999-9999"], keepStatic: true });
     $("#testmask")[0].focus();
     $("#testmask").Type("12123451234");
-    $("#testmask").SendKey($.inputmask.keyCode.BACKSPACE);
+    $("#testmask").SendKey(inputmask.keyCode.BACKSPACE);
 
     equal(document.getElementById("testmask")._valueGet(), "+55-12-1234-5123", "Result " + document.getElementById("testmask")._valueGet());
 
@@ -180,7 +180,7 @@ test("['(99) 9999-9999', '(99) 9-9999-9999'] - type 12123412345 - backspace - 3m
     $("#testmask").inputmask({mask:['(99) 9999-9999', '(99) 9-9999-9999'], removeMaskOnSubmit:false, clearmaskonlostfocus:true});
     $("#testmask")[0].focus();
     $("#testmask").Type("12123412345")
-    $("#testmask").SendKey($.inputmask.keyCode.BACKSPACE);
+    $("#testmask").SendKey(inputmask.keyCode.BACKSPACE);
     equal(document.getElementById("testmask")._valueGet(), "(12) 1234-1234", "Result " + document.getElementById("testmask")._valueGet());
 
     $("#testmask").remove();

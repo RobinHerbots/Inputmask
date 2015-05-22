@@ -9,7 +9,6 @@
 (function($) {
   if ($.fn.inputmask === undefined) {
     //jquery plugin
-    $.inputmask = inputmask.prototype; //needed for legacy until all is reverted to the inputmask object
     $.fn.inputmask = function(fn, options) {
       var nptmask;
       if (typeof fn === "string") {

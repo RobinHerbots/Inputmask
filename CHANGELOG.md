@@ -11,11 +11,13 @@ All notable changes to this project will be documented in this file.
   - inputmask.extendAliases
 
 ### Updates
+- remove $.inputmask in favor of inputmask class
 - remove "jquery." in the naming of the extensions to better reflect their denpendency
 - separate jquery plugin code from the inputmask core (first step to remove jquery dependency from the inputmask core)
 - Update placeholder handling
 
 ### Fixed
+- Delete key not working properly #799
 - Selecting and overwriting text will delete the character to the immediate right #914
 - Can't delete digits after decimal point on negative numbers #892
 - decimal : extra number after delete and typing new numbers #904

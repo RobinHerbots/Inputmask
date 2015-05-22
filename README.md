@@ -659,10 +659,13 @@ $(document).ready(function(){
 ### undoOnEscape
 Make escape behave like undo. (ctrl-Z)<br>Pressing escape reverts the value to the value before focus.<br>Default: true
 
-### radixPoint
+### radixPoint (numerics)
 Define the radixpoint (decimal separator)<br>Default: ""
 
-### radixFocus
+### groupSeparator (numerics)
+Define the groupseparator<br>Default: ""
+
+### radixFocus (numerics)
 Position the caret to the radixpoint on the initial click into the inputfield.<br>Default: false
 
 ### nojumps

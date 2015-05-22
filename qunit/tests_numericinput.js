@@ -9,12 +9,12 @@ asyncTest("inputmask(\"999.999.999\") - delete 2nd with backspace, continue the 
         $("#testmask").SendKey("1");
         $("#testmask").SendKey("2");
         $("#testmask").SendKey("3");
-        $("#testmask").SendKey($.inputmask.keyCode.RIGHT);
-        $("#testmask").SendKey($.inputmask.keyCode.RIGHT);
-        $("#testmask").SendKey($.inputmask.keyCode.RIGHT);
-        $("#testmask").SendKey($.inputmask.keyCode.BACKSPACE);
+        $("#testmask").SendKey(inputmask.keyCode.RIGHT);
+        $("#testmask").SendKey(inputmask.keyCode.RIGHT);
+        $("#testmask").SendKey(inputmask.keyCode.RIGHT);
+        $("#testmask").SendKey(inputmask.keyCode.BACKSPACE);
         $("#testmask").SendKey("4");
-        $("#testmask").SendKey($.inputmask.keyCode.LEFT);
+        $("#testmask").SendKey(inputmask.keyCode.LEFT);
         $("#testmask").SendKey("5");
         $("#testmask").SendKey("6");
         start();
@@ -34,11 +34,11 @@ asyncTest("inputmask(\"999.999.999\") - delete 2nd with delete, continue the mas
         $("#testmask").SendKey("1");
         $("#testmask").SendKey("2");
         $("#testmask").SendKey("3");
-        $("#testmask").SendKey($.inputmask.keyCode.RIGHT);
-        $("#testmask").SendKey($.inputmask.keyCode.RIGHT);
-        $("#testmask").SendKey($.inputmask.keyCode.DELETE);
+        $("#testmask").SendKey(inputmask.keyCode.RIGHT);
+        $("#testmask").SendKey(inputmask.keyCode.RIGHT);
+        $("#testmask").SendKey(inputmask.keyCode.DELETE);
         $("#testmask").SendKey("4");
-        $("#testmask").SendKey($.inputmask.keyCode.LEFT);
+        $("#testmask").SendKey(inputmask.keyCode.LEFT);
         $("#testmask").SendKey("5");
         $("#testmask").SendKey("6");
         start();
@@ -89,7 +89,7 @@ asyncTest("inputmask(\"999-999-999\") - replace selection with backspace", funct
     setTimeout(function () {
         $("#testmask").Type("123456789");
         $.caret($("#testmask"), 4, 7);
-        $("#testmask").SendKey($.inputmask.keyCode.BACKSPACE);
+        $("#testmask").SendKey(inputmask.keyCode.BACKSPACE);
         $("#testmask").Type("5");
         start();
         equal($("#testmask").val(), "__9-875-321", "Result " + $("#testmask").val());
@@ -107,7 +107,7 @@ asyncTest("inputmask(\"999-999-999\") - replace selection - with delete", functi
     setTimeout(function () {
         $("#testmask").Type("123456789");
         $.caret($("#testmask"), 4, 7);
-        $("#testmask").SendKey($.inputmask.keyCode.DELETE);
+        $("#testmask").SendKey(inputmask.keyCode.DELETE);
         $("#testmask").Type("5");
         start();
         equal($("#testmask").val(), "__9-875-321", "Result " + $("#testmask").val());

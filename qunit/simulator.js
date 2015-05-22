@@ -47,7 +47,7 @@
     }
 
     switch (keyCode) {
-      case $.inputmask.keyCode.LEFT:
+      case inputmask.keyCode.LEFT:
         {
           if (modifier == undefined) {
             var pos = $.caret(this);
@@ -55,7 +55,7 @@
             break;
           }
         }
-      case $.inputmask.keyCode.RIGHT:
+      case inputmask.keyCode.RIGHT:
         {
           if (modifier == undefined) {
             var pos = $.caret(this);
@@ -71,18 +71,18 @@
 
           if (!sendDummyKeydown) {
             keydown.keyCode = keyCode;
-            if (modifier == $.inputmask.keyCode.CONTROL)
+            if (modifier == inputmask.keyCode.CONTROL)
               keydown.ctrlKey = true;
           }
           $(this).trigger(keydown);
           if (!keydown.isDefaultPrevented()) {
             keypress.keyCode = keyCode;
-            if (modifier == $.inputmask.keyCode.CONTROL)
+            if (modifier == inputmask.keyCode.CONTROL)
               keypress.ctrlKey = true;
             $(this).trigger(keypress);
             //if (!keypress.isDefaultPrevented()) {
             keyup.keyCode = keyCode;
-            if (modifier == $.inputmask.keyCode.CONTROL)
+            if (modifier == inputmask.keyCode.CONTROL)
               keyup.ctrlKey = true;
             $(this).trigger(keyup);
             //}

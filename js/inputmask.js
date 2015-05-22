@@ -62,6 +62,7 @@
       undoOnEscape: true, //pressing escape reverts the value to the value before focus
       //numeric basic properties
       radixPoint: "", //".", // | ","
+      groupSeparator: "", //",", // | "."
       radixFocus: false, //position caret to radixpoint on initial click
       //numeric basic properties
       nojumps: false, //do not jump over fixed parts in the mask
@@ -124,10 +125,6 @@
       WINDOWS: 91
     },
     masksCache: {},
-    escapeRegex: function(str) {
-      var specials = ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\', '$', '^'];
-      return str.replace(new RegExp('(\\' + specials.join('|\\') + ')', 'gim'), '\\$1');
-    },
     mask: function(el) {
       var input = el.jquery && el.length > 0 ? el[0] : el;
       importAttributeOptions(el, this.opts, this.userOptions);
@@ -208,7 +205,7 @@
     }
     //static fn on inputmask
   inputmask.format = function(value, options, metadata) {
-    var opts = $.extend(true, {}, $.inputmask.defaults, options);
+    var opts = $.extend(true, {}, inputmask.prototype.defaults, options);
     resolveAlias(opts.alias, options, opts);
     return maskScope({
       "action": "format",
@@ -217,12 +214,50 @@
     }, generateMaskSet(opts, options && options.definitions !== undefined), opts);
   }
   inputmask.isValid = function(value, options) {
-    var opts = $.extend(true, {}, $.inputmask.defaults, options);
+    var opts = $.extend(true, {}, inputmask.prototype.defaults, options);
     resolveAlias(opts.alias, options, opts);
     return maskScope({
       "action": "isValid",
       "value": value
     }, generateMaskSet(opts, options && options.definitions !== undefined), opts);
+  }
+  inputmask.escapeRegex = function(str) {
+    var specials = ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\', '$', '^'];
+    return str.replace(new RegExp('(\\' + specials.join('|\\') + ')', 'gim'), '\\$1');
+  }
+  inputmask.keyCode = {
+    ALT: 18,
+    BACKSPACE: 8,
+    CAPS_LOCK: 20,
+    COMMA: 188,
+    COMMAND: 91,
+    COMMAND_LEFT: 91,
+    COMMAND_RIGHT: 93,
+    CONTROL: 17,
+    DELETE: 46,
+    DOWN: 40,
+    END: 35,
+    ENTER: 13,
+    ESCAPE: 27,
+    HOME: 36,
+    INSERT: 45,
+    LEFT: 37,
+    MENU: 93,
+    NUMPAD_ADD: 107,
+    NUMPAD_DECIMAL: 110,
+    NUMPAD_DIVIDE: 111,
+    NUMPAD_ENTER: 108,
+    NUMPAD_MULTIPLY: 106,
+    NUMPAD_SUBTRACT: 109,
+    PAGE_DOWN: 34,
+    PAGE_UP: 33,
+    PERIOD: 190,
+    RIGHT: 39,
+    SHIFT: 16,
+    SPACE: 32,
+    TAB: 9,
+    UP: 38,
+    WINDOWS: 91
   }
 
   //helper functions
@@ -528,7 +563,7 @@
         }
 
         var masksetDefinition;
-        if ($.inputmask.masksCache[mask] == undefined || nocache === true) {
+        if (inputmask.prototype.masksCache[mask] == undefined || nocache === true) {
           masksetDefinition = {
             "mask": mask,
             "maskToken": analyseMask(mask),
@@ -539,8 +574,8 @@
             "metadata": metadata
           };
           if (nocache !== true)
-            $.inputmask.masksCache[mask] = masksetDefinition;
-        } else masksetDefinition = $.extend(true, {}, $.inputmask.masksCache[mask]);
+            inputmask.prototype.masksCache[mask] = masksetDefinition;
+        } else masksetDefinition = $.extend(true, {}, inputmask.prototype.masksCache[mask]);
 
         return masksetDefinition;
       }
@@ -1524,7 +1559,7 @@
     }
 
     function escapeRegex(str) {
-      return $.inputmask.escapeRegex(str);
+      return inputmask.escapeRegex(str);
     }
 
     function unmaskedvalue($input) {
@@ -1693,7 +1728,7 @@
               var handler = eventHandler.handler;
               eventHandler.handler = function(e) {
                 //console.log("triggered " + e.type);
-                if (this.disabled || (this.readOnly && !(e.type == "keydown" && (e.ctrlKey && e.keyCode == 67) || e.keyCode == $.inputmask.keyCode.TAB)))
+                if (this.disabled || (this.readOnly && !(e.type == "keydown" && (e.ctrlKey && e.keyCode == 67) || e.keyCode == inputmask.keyCode.TAB)))
                   e.preventDefault();
                 else {
                   switch (e.type) {
@@ -1899,10 +1934,10 @@
         }
 
         if (opts.numericInput || isRTL) {
-          if (k == $.inputmask.keyCode.BACKSPACE)
-            k = $.inputmask.keyCode.DELETE;
-          else if (k == $.inputmask.keyCode.DELETE)
-            k = $.inputmask.keyCode.BACKSPACE;
+          if (k == inputmask.keyCode.BACKSPACE)
+            k = inputmask.keyCode.DELETE;
+          else if (k == inputmask.keyCode.DELETE)
+            k = inputmask.keyCode.BACKSPACE;
 
           if (isRTL) {
             var pend = pos.end;
@@ -1911,14 +1946,14 @@
           }
         }
 
-        if (k == $.inputmask.keyCode.BACKSPACE && (pos.end - pos.begin < 1 || opts.insertMode == false)) {
+        if (k == inputmask.keyCode.BACKSPACE && (pos.end - pos.begin < 1 || opts.insertMode == false)) {
           pos.begin = seekPrevious(pos.begin);
-          if (getMaskSet()["validPositions"][pos.begin] != undefined && getMaskSet()["validPositions"][pos.begin].input == opts.radixPoint) {
+          if (getMaskSet()["validPositions"][pos.begin] != undefined && (getMaskSet()["validPositions"][pos.begin].input == opts.groupSeparator || getMaskSet()["validPositions"][pos.begin].input == opts.radixPoint)) {
             pos.begin--;
           }
-        } else if (k == $.inputmask.keyCode.DELETE && pos.begin == pos.end) {
+        } else if (k == inputmask.keyCode.DELETE && pos.begin == pos.end) {
           pos.end = isMask(pos.end) ? pos.end + 1 : seekNext(pos.end) + 1;
-          if (getMaskSet()["validPositions"][pos.begin] != undefined && getMaskSet()["validPositions"][pos.begin].input == opts.radixPoint) {
+          if (getMaskSet()["validPositions"][pos.begin] != undefined && (getMaskSet()["validPositions"][pos.begin].input == opts.groupSeparator || getMaskSet()["validPositions"][pos.begin].input == opts.radixPoint)) {
             pos.end++;
           }
         }
@@ -1957,7 +1992,7 @@
         pos = caret(input);
 
       //backspace, delete, and escape get special treatment
-      if (k == $.inputmask.keyCode.BACKSPACE || k == $.inputmask.keyCode.DELETE || (iphone && k == 127) || (e.ctrlKey && k == 88 && !isInputEventSupported("cut"))) { //backspace/delete
+      if (k == inputmask.keyCode.BACKSPACE || k == inputmask.keyCode.DELETE || (iphone && k == 127) || (e.ctrlKey && k == 88 && !isInputEventSupported("cut"))) { //backspace/delete
         e.preventDefault(); //stop default action but allow propagation
         if (k == 88) undoValue = getBuffer().join('');
         handleRemove(input, k, pos);
@@ -1969,27 +2004,27 @@
         if (opts.showTooltip) { //update tooltip
           $input.prop("title", getMaskSet()["mask"]);
         }
-      } else if (k == $.inputmask.keyCode.END || k == $.inputmask.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
+      } else if (k == inputmask.keyCode.END || k == inputmask.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
         setTimeout(function() {
           var caretPos = seekNext(getLastValidPosition());
           if (!opts.insertMode && caretPos == getMaskLength() && !e.shiftKey) caretPos--;
           caret(input, e.shiftKey ? pos.begin : caretPos, caretPos);
         }, 0);
-      } else if ((k == $.inputmask.keyCode.HOME && !e.shiftKey) || k == $.inputmask.keyCode.PAGE_UP) { //Home or page_up
+      } else if ((k == inputmask.keyCode.HOME && !e.shiftKey) || k == inputmask.keyCode.PAGE_UP) { //Home or page_up
         caret(input, 0, e.shiftKey ? pos.begin : 0);
-      } else if (((opts.undoOnEscape && k == $.inputmask.keyCode.ESCAPE) || (k == 90 && e.ctrlKey)) && e.altKey !== true) { //escape && undo && #762
+      } else if (((opts.undoOnEscape && k == inputmask.keyCode.ESCAPE) || (k == 90 && e.ctrlKey)) && e.altKey !== true) { //escape && undo && #762
         checkVal(input, true, false, undoValue.split(''));
         $input.click();
-      } else if (k == $.inputmask.keyCode.INSERT && !(e.shiftKey || e.ctrlKey)) { //insert
+      } else if (k == inputmask.keyCode.INSERT && !(e.shiftKey || e.ctrlKey)) { //insert
         opts.insertMode = !opts.insertMode;
         caret(input, !opts.insertMode && pos.begin == getMaskLength() ? pos.begin - 1 : pos.begin);
       } else if (opts.insertMode == false && !e.shiftKey) {
-        if (k == $.inputmask.keyCode.RIGHT) {
+        if (k == inputmask.keyCode.RIGHT) {
           setTimeout(function() {
             var caretPos = caret(input);
             caret(input, caretPos.begin);
           }, 0);
-        } else if (k == $.inputmask.keyCode.LEFT) {
+        } else if (k == inputmask.keyCode.LEFT) {
           setTimeout(function() {
             var caretPos = caret(input);
             caret(input, isRTL ? caretPos.begin + 1 : caretPos.begin - 1);
@@ -2021,7 +2056,7 @@
           var isSlctn = isSelection(pos.begin, pos.end);
           if (isSlctn) {
             getMaskSet()["undoPositions"] = $.extend(true, {}, getMaskSet()["validPositions"]); //init undobuffer for recovery when not valid
-            handleRemove(input, $.inputmask.keyCode.DELETE, pos, true);
+            handleRemove(input, inputmask.keyCode.DELETE, pos, true);
             pos.begin = getMaskSet()["p"];
             if (!opts.insertMode) { //preserve some space
               opts.insertMode = !opts.insertMode;
@@ -2152,7 +2187,7 @@
     //		if ((getBuffer().length - currentValue.length) == 1 && currentValue.charAt(caretPos.begin) != getBuffer()[caretPos.begin]
     //				&& currentValue.charAt(caretPos.begin + 1) != getBuffer()[caretPos.begin]
     //				&& !isMask(caretPos.begin)) {
-    //				e.keyCode = $.inputmask.keyCode.BACKSPACE;
+    //				e.keyCode = inputmask.keyCode.BACKSPACE;
     //				keydownEvent.call(input, e);
     //		}
     //		e.preventDefault();
@@ -2347,7 +2382,7 @@
             $input = $(input),
             pos = caret(input);
 
-          handleRemove(input, $.inputmask.keyCode.DELETE, pos);
+          handleRemove(input, inputmask.keyCode.DELETE, pos);
           writeBuffer(input, getBuffer(), getMaskSet()["p"], e, undoValue != getBuffer().join(''));
 
           if (input._valueGet() == getBufferTemplate().join(''))
