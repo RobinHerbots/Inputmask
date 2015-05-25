@@ -231,7 +231,7 @@ test("inputmask({ mask: [{ \"mask\": \"###-##-####\" }]) - lynxlive", function (
         greedy: false,
         definitions: { '#': { validator: "[0-9]", cardinality: 1 } }
     });
-   
+
     $("#testmask").Type("123121234");
     equal($("#testmask").val(), "123-12-1234", "Result " + $("#testmask").val());
     $("#testmask").remove();

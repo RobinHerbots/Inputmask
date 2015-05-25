@@ -1,14 +1,14 @@
 /*!
-* jquery.inputmask.regex.extensions.js
+* inputmask.regex.extensions.js
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-11
+* Version: 3.1.64-60
 */
 !function(factory) {
-    "function" == typeof define && define.amd ? define([ "jquery", "./jquery.inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery"), require("./jquery.inputmask")) : factory(jQuery);
+    "function" == typeof define && define.amd ? define([ "jquery", "./inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery"), require("./inputmask")) : factory(jQuery);
 }(function($) {
-    return $.extend($.inputmask.defaults.aliases, {
+    return inputmask.extendAliases({
         Regex: {
             mask: "r",
             greedy: !1,
@@ -120,5 +120,5 @@
                 }
             }
         }
-    }), $.fn.inputmask;
+    }), inputmask;
 });
