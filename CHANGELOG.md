@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file.
 - Update placeholder handling
 
 ### Fixed
+- Numeric inputMask doesn't rounds value #754
 - Chinese / Japanese characters are unable to mask #198
 - Infinite Loop on IE (v11) when using Japanese IME Keyboard #749
 - Delete key not working properly #799

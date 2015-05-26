@@ -523,7 +523,9 @@ Optional extensions on the jquery.inputmask base
           }
         }
 
-        return initialValue;
+        var digitsFactor = Math.pow(10, parseInt(opts.digits));
+        roundedValue = Math.round(parseFloat(initialValue) * digitsFactor) / digitsFactor;
+        return roundedValue.toString();
       },
       canClearPosition: function(maskset, position, lvp, strict, opts) {
         var positionInput = maskset["validPositions"][position].input,
