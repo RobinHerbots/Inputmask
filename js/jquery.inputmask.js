@@ -11,6 +11,7 @@
     //jquery plugin
     $.fn.inputmask = function(fn, options) {
       var nptmask;
+      options = options || {};
       if (typeof fn === "string") {
         switch (fn) {
           case "mask":
@@ -38,7 +39,6 @@
             var input = this.jquery && this.length > 0 ? this[0] : this;
             return input.inputmask ? input.inputmask.getmetadata() : undefined;
           default:
-            options = options || {};
             options.alias = fn;
             nptmask = new inputmask(options);
             return this.each(function() {
@@ -53,7 +53,7 @@
       } else if (fn == undefined) {
         //look for data-inputmask atributes
         return this.each(function() {
-          nptmask = new inputmask();
+          nptmask = new inputmask(options);
           nptmask.mask(this);
         });
       }
