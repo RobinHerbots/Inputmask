@@ -523,9 +523,14 @@ Optional extensions on the jquery.inputmask base
           }
         }
 
-        var digitsFactor = Math.pow(10, parseInt(opts.digits));
-        roundedValue = Math.round(parseFloat(initialValue) * digitsFactor) / digitsFactor;
-        return roundedValue.toString();
+        if (opts.radixPoint != "" && isFinite(opts.digits) && initialValue.indexOf(opts.radixPoint) != -1) {
+          var valueParts = initialValue.split(opts.radixPoint);
+          if (parseInt(opts.digits) < parseInt(valueParts[1]).toString().length) {
+            var digitsFactor = Math.pow(10, parseInt(opts.digits));
+            initialValue = Math.round(parseFloat(initialValue) * digitsFactor) / digitsFactor;
+          }
+        }
+        return initialValue.toString();
       },
       canClearPosition: function(maskset, position, lvp, strict, opts) {
         var positionInput = maskset["validPositions"][position].input,

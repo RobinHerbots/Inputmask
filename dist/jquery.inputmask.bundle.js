@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-63
+* Version: 3.1.64-68
 */
 !function($) {
     function inputmask(options) {
@@ -2250,10 +2250,15 @@
                     initialValue = initialValue.replace(",", opts.radixPoint)) : kommaMatches.length > dotMatches.length ? (initialValue = initialValue.replace(/,/g, ""), 
                     initialValue = initialValue.replace(".", opts.radixPoint)) : initialValue = initialValue.indexOf(".") < initialValue.indexOf(",") ? initialValue.replace(/\./g, "") : initialValue = initialValue.replace(/,/g, "") : initialValue = initialValue.replace(new RegExp(inputmask.escapeRegex(opts.groupSeparator), "g"), "");
                 }
-                0 == opts.digits && (-1 != initialValue.indexOf(".") ? initialValue = initialValue.substring(0, initialValue.indexOf(".")) : -1 != initialValue.indexOf(",") && (initialValue = initialValue.substring(0, initialValue.indexOf(","))));
-                var digitsFactor = Math.pow(10, parseInt(opts.digits));
-                return roundedValue = Math.round(parseFloat(initialValue) * digitsFactor) / digitsFactor, 
-                roundedValue.toString();
+                if (0 == opts.digits && (-1 != initialValue.indexOf(".") ? initialValue = initialValue.substring(0, initialValue.indexOf(".")) : -1 != initialValue.indexOf(",") && (initialValue = initialValue.substring(0, initialValue.indexOf(",")))), 
+                "" != opts.radixPoint && isFinite(opts.digits) && -1 != initialValue.indexOf(opts.radixPoint)) {
+                    var valueParts = initialValue.split(opts.radixPoint);
+                    if (parseInt(opts.digits) < parseInt(valueParts[1]).toString().length) {
+                        var digitsFactor = Math.pow(10, parseInt(opts.digits));
+                        initialValue = Math.round(parseFloat(initialValue) * digitsFactor) / digitsFactor;
+                    }
+                }
+                return initialValue.toString();
             },
             canClearPosition: function(maskset, position, lvp, strict, opts) {
                 var positionInput = maskset.validPositions[position].input, canClear = positionInput != opts.radixPoint && isFinite(positionInput) || position == lvp || positionInput == opts.groupSeparator || positionInput == opts.negationSymbol.front || positionInput == opts.negationSymbol.back;
