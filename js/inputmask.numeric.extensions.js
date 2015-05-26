@@ -88,6 +88,10 @@ Optional extensions on the jquery.inputmask base
       decimalProtect: true, //do not allow assumption of decimals input without entering the radixpoint
       min: undefined, //minimum value
       max: undefined, //maximum value
+      step: 1,
+      insertMode: true,
+      autoUnmask: false,
+      unmaskAsNumber: false,
       postFormat: function(buffer, pos, reformatOnly, opts) { //this needs to be removed // this is crap
         //console.log("input " + buffer);
         var negationStrip = false;
@@ -467,9 +471,6 @@ Optional extensions on the jquery.inputmask base
           }
         }
       },
-      insertMode: true,
-      autoUnmask: false,
-      unmaskAsNumber: false,
       onUnMask: function(maskedValue, unmaskedValue, opts) {
         var processValue = maskedValue.replace(opts.prefix, "");
         processValue = processValue.replace(opts.suffix, "");
@@ -569,7 +570,22 @@ Optional extensions on the jquery.inputmask base
         }
 
         return canClear;
-      }
+      },
+      onKeyDown: function(e, buffer, caretPos, opts) {
+        var $input = $(this);
+        if (e.ctrlKey) {
+          switch (e.keyCode) {
+            case inputmask.keyCode.UP:
+              $input.val(parseInt(this.inputmask.unmaskedvalue()) + parseInt(opts.step));
+              $input.triggerHandler('setvalue.inputmask');
+              break;
+            case inputmask.keyCode.DOWN:
+              $input.val(parseInt(this.inputmask.unmaskedvalue()) - parseInt(opts.step));
+              $input.triggerHandler('setvalue.inputmask');
+              break;
+          }
+        }
+      },
     },
     'currency': {
       prefix: "$ ",
@@ -586,8 +602,20 @@ Optional extensions on the jquery.inputmask base
     },
     'integer': {
       alias: "numeric",
-      digits: "0",
+      digits: 0,
       radixPoint: ""
+    },
+    'percentage': {
+      alias: "numeric",
+      digits: 2,
+      radixPoint: ".",
+      placeholder: "0",
+      autoGroup: false,
+      min: 0,
+      max: 100,
+      suffix: " %",
+      allowPlus: false,
+      allowMinus: false
     }
   });
   return inputmask;

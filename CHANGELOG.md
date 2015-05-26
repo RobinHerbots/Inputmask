@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- percentage alias
 - inputmask class
 - setting defaults / definitions / aliases
   - inputmask.extendDefaults

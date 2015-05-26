@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-60
+* Version: 3.1.64-61
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery", "./inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery"), require("./inputmask")) : factory(jQuery);
@@ -52,6 +52,10 @@
             decimalProtect: !0,
             min: void 0,
             max: void 0,
+            step: 1,
+            insertMode: !0,
+            autoUnmask: !1,
+            unmaskAsNumber: !1,
             postFormat: function(buffer, pos, reformatOnly, opts) {
                 var suffixStripped = !1;
                 buffer.length >= opts.suffix.length && buffer.join("").indexOf(opts.suffix) == buffer.length - opts.suffix.length && (buffer.length = buffer.length - opts.suffix.length, 
@@ -286,9 +290,6 @@
                     }
                 }
             },
-            insertMode: !0,
-            autoUnmask: !1,
-            unmaskAsNumber: !1,
             onUnMask: function(maskedValue, unmaskedValue, opts) {
                 var processValue = maskedValue.replace(opts.prefix, "");
                 return processValue = processValue.replace(opts.suffix, ""), processValue = processValue.replace(new RegExp(inputmask.escapeRegex(opts.groupSeparator), "g"), ""), 
@@ -334,6 +335,17 @@
                     }
                 }
                 return canClear;
+            },
+            onKeyDown: function(e, buffer, caretPos, opts) {
+                var $input = $(this);
+                if (e.ctrlKey) switch (e.keyCode) {
+                  case inputmask.keyCode.UP:
+                    $input.val(parseInt(this.inputmask.unmaskedvalue()) + parseInt(opts.step)), $input.triggerHandler("setvalue.inputmask");
+                    break;
+
+                  case inputmask.keyCode.DOWN:
+                    $input.val(parseInt(this.inputmask.unmaskedvalue()) - parseInt(opts.step)), $input.triggerHandler("setvalue.inputmask");
+                }
             }
         },
         currency: {
@@ -351,8 +363,20 @@
         },
         integer: {
             alias: "numeric",
-            digits: "0",
+            digits: 0,
             radixPoint: ""
+        },
+        percentage: {
+            alias: "numeric",
+            digits: 2,
+            radixPoint: ".",
+            placeholder: "0",
+            autoGroup: !1,
+            min: 0,
+            max: 100,
+            suffix: " %",
+            allowPlus: !1,
+            allowMinus: !1
         }
     }), inputmask;
 });
