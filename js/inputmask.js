@@ -126,13 +126,14 @@
     },
     masksCache: {},
     mask: function(el) {
-      var input = el.jquery && el.length > 0 ? el[0] : el;
-      importAttributeOptions(el, this.opts, this.userOptions);
-      var maskset = generateMaskSet(this.opts, this.noMasksCache);
+      var input = el.jquery && el.length > 0 ? el[0] : el,
+        scopedOpts = $.extend(true, {}, this.opts);
+      importAttributeOptions(el, scopedOpts, $.extend(true, {}, this.userOptions));
+      var maskset = generateMaskSet(scopedOpts, this.noMasksCache);
       if (maskset != undefined) {
         //store inputmask instance on the input with element reference
         input.inputmask = new inputmask();
-        input.inputmask.opts = this.opts;
+        input.inputmask.opts = scopedOpts;
         input.inputmask.noMasksCache = this.noMasksCache;
         input.inputmask.el = input;
         input.inputmask.maskset = maskset;
@@ -141,7 +142,7 @@
         maskScope({
           "action": "mask",
           "el": input
-        }, maskset, this.opts);
+        }, maskset, input.inputmask.opts);
       }
       return el;
     },

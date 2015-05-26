@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-69
+* Version: 3.1.64-70
 */
 !function($) {
     function inputmask(options) {
@@ -1247,15 +1247,15 @@
         },
         masksCache: {},
         mask: function(el) {
-            var input = el.jquery && el.length > 0 ? el[0] : el;
-            importAttributeOptions(el, this.opts, this.userOptions);
-            var maskset = generateMaskSet(this.opts, this.noMasksCache);
-            return void 0 != maskset && (input.inputmask = new inputmask(), input.inputmask.opts = this.opts, 
+            var input = el.jquery && el.length > 0 ? el[0] : el, scopedOpts = $.extend(!0, {}, this.opts);
+            importAttributeOptions(el, scopedOpts, $.extend(!0, {}, this.userOptions));
+            var maskset = generateMaskSet(scopedOpts, this.noMasksCache);
+            return void 0 != maskset && (input.inputmask = new inputmask(), input.inputmask.opts = scopedOpts, 
             input.inputmask.noMasksCache = this.noMasksCache, input.inputmask.el = input, input.inputmask.maskset = maskset, 
             input.inputmask.isRTL = !1, maskScope({
                 action: "mask",
                 el: input
-            }, maskset, this.opts)), el;
+            }, maskset, input.inputmask.opts)), el;
         },
         unmaskedvalue: function() {
             return this.el ? maskScope({
