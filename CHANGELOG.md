@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- numeric alias - increment/decrement by ctrl-up/ctrl-down
 - percentage alias
 - inputmask class
 - setting defaults / definitions / aliases
@@ -18,6 +19,7 @@ All notable changes to this project will be documented in this file.
 - Update placeholder handling
 
 ### Fixed
+- Firefox: cursor jumps to the right when clicking anywhere on the value #921
 - Numeric inputMask doesn't rounds value #754
 - Chinese / Japanese characters are unable to mask #198
 - Infinite Loop on IE (v11) when using Japanese IME Keyboard #749

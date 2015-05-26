@@ -2132,45 +2132,45 @@
     }
 
     function pasteEvent(e) {
-        var input = this,
-          $input = $(input),
-          inputValue = input._valueGet(true),
-          caretPos = caret(input);
-        //paste event for IE8 and lower I guess ;-)
-        if (e.type == "propertychange" && input._valueGet().length <= getMaskLength()) {
-          return true;
-        } else if (e.type == "paste") {
-          var valueBeforeCaret = inputValue.substr(0, caretPos.begin),
-            valueAfterCaret = inputValue.substr(caretPos.end, inputValue.length);
+      var input = this,
+        $input = $(input),
+        inputValue = input._valueGet(true),
+        caretPos = caret(input);
+      //paste event for IE8 and lower I guess ;-)
+      if (e.type == "propertychange" && input._valueGet().length <= getMaskLength()) {
+        return true;
+      } else if (e.type == "paste") {
+        var valueBeforeCaret = inputValue.substr(0, caretPos.begin),
+          valueAfterCaret = inputValue.substr(caretPos.end, inputValue.length);
 
-          if (valueBeforeCaret == getBufferTemplate().slice(0, caretPos.begin).join('')) valueBeforeCaret = "";
-          if (valueAfterCaret == getBufferTemplate().slice(caretPos.end).join('')) valueAfterCaret = "";
+        if (valueBeforeCaret == getBufferTemplate().slice(0, caretPos.begin).join('')) valueBeforeCaret = "";
+        if (valueAfterCaret == getBufferTemplate().slice(caretPos.end).join('')) valueAfterCaret = "";
 
-          if (window.clipboardData && window.clipboardData.getData) { // IE
-            inputValue = valueBeforeCaret + window.clipboardData.getData('Text') + valueAfterCaret;
-          } else if (e.originalEvent && e.originalEvent.clipboardData && e.originalEvent.clipboardData.getData) {
-            inputValue = valueBeforeCaret + e.originalEvent.clipboardData.getData('text/plain') + valueAfterCaret;
-          }
+        if (window.clipboardData && window.clipboardData.getData) { // IE
+          inputValue = valueBeforeCaret + window.clipboardData.getData('Text') + valueAfterCaret;
+        } else if (e.originalEvent && e.originalEvent.clipboardData && e.originalEvent.clipboardData.getData) {
+          inputValue = valueBeforeCaret + e.originalEvent.clipboardData.getData('text/plain') + valueAfterCaret;
         }
-
-        var pasteValue = inputValue;
-        if ($.isFunction(opts.onBeforePaste)) {
-          pasteValue = opts.onBeforePaste.call(input, inputValue, opts);
-          if (pasteValue === false) {
-            e.preventDefault();
-            return false;
-          }
-          if (!pasteValue)
-            pasteValue = inputValue;
-        }
-        checkVal(input, false, false, isRTL ? pasteValue.split('').reverse() : pasteValue.split(''));
-        writeBuffer(input, getBuffer(), undefined, e, true);
-        $input.click();
-        if (isComplete(getBuffer()) === true)
-          $input.trigger("complete");
-
-        return false;
       }
+
+      var pasteValue = inputValue;
+      if ($.isFunction(opts.onBeforePaste)) {
+        pasteValue = opts.onBeforePaste.call(input, inputValue, opts);
+        if (pasteValue === false) {
+          e.preventDefault();
+          return false;
+        }
+        if (!pasteValue)
+          pasteValue = inputValue;
+      }
+      checkVal(input, false, false, isRTL ? pasteValue.split('').reverse() : pasteValue.split(''));
+      writeBuffer(input, getBuffer(), undefined, e, true);
+      $input.click();
+      if (isComplete(getBuffer()) === true)
+        $input.trigger("complete");
+
+      return false;
+    }
 
     function inputFallBackEvent(e) { //fallback when keypress & compositionevents fail
       var input = this;
@@ -2331,22 +2331,24 @@
           var $input = $(this),
             input = this;
           if ($input.is(":focus")) {
-            var selectedCaret = caret(input);
-            if (selectedCaret.begin == selectedCaret.end) {
-              if (opts.radixFocus && opts.radixPoint != "" && $.inArray(opts.radixPoint, getBuffer()) != -1 && (firstClick || getBuffer().join('') == getBufferTemplate().join(''))) {
-                caret(input, $.inArray(opts.radixPoint, getBuffer()));
-                firstClick = false;
-              } else {
-                var clickPosition = TranslatePosition(selectedCaret.begin),
-                  lastPosition = seekNext(getLastValidPosition(clickPosition));
-
-                if (clickPosition < lastPosition) {
-                  caret(input, isMask(clickPosition) ? clickPosition : seekNext(clickPosition));
+            setTimeout(function() { //needed for FF & IE to get the proper caret position
+              var selectedCaret = caret(input);
+              if (selectedCaret.begin == selectedCaret.end) {
+                if (opts.radixFocus && opts.radixPoint != "" && $.inArray(opts.radixPoint, getBuffer()) != -1 && (firstClick || getBuffer().join('') == getBufferTemplate().join(''))) {
+                  caret(input, $.inArray(opts.radixPoint, getBuffer()));
+                  firstClick = false;
                 } else {
-                  caret(input, lastPosition);
+                  var clickPosition = TranslatePosition(selectedCaret.begin),
+                    lastPosition = seekNext(getLastValidPosition(clickPosition));
+
+                  if (clickPosition < lastPosition) {
+                    caret(input, isMask(clickPosition) ? clickPosition : seekNext(clickPosition));
+                  } else {
+                    caret(input, lastPosition);
+                  }
                 }
               }
-            }
+            }, 0);
           }
         }).bind('dblclick.inputmask', function() {
           var input = this;

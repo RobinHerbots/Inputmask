@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-68
+* Version: 3.1.64-69
 */
 !function($) {
     function inputmask(options) {
@@ -1034,14 +1034,14 @@
                 }
             }).bind("click.inputmask", function() {
                 var $input = $(this), input = this;
-                if ($input.is(":focus")) {
+                $input.is(":focus") && setTimeout(function() {
                     var selectedCaret = caret(input);
                     if (selectedCaret.begin == selectedCaret.end) if (opts.radixFocus && "" != opts.radixPoint && -1 != $.inArray(opts.radixPoint, getBuffer()) && (firstClick || getBuffer().join("") == getBufferTemplate().join(""))) caret(input, $.inArray(opts.radixPoint, getBuffer())), 
                     firstClick = !1; else {
                         var clickPosition = TranslatePosition(selectedCaret.begin), lastPosition = seekNext(getLastValidPosition(clickPosition));
                         lastPosition > clickPosition ? caret(input, isMask(clickPosition) ? clickPosition : seekNext(clickPosition)) : caret(input, lastPosition);
                     }
-                }
+                }, 0);
             }).bind("dblclick.inputmask", function() {
                 var input = this;
                 setTimeout(function() {
@@ -2286,11 +2286,11 @@
                 var $input = $(this);
                 if (e.ctrlKey) switch (e.keyCode) {
                   case inputmask.keyCode.UP:
-                    $input.val(parseInt(this.inputmask.unmaskedvalue()) + parseInt(opts.step)), $input.triggerHandler("setvalue.inputmask");
+                    $input.val(parseFloat(this.inputmask.unmaskedvalue()) + parseInt(opts.step)), $input.triggerHandler("setvalue.inputmask");
                     break;
 
                   case inputmask.keyCode.DOWN:
-                    $input.val(parseInt(this.inputmask.unmaskedvalue()) - parseInt(opts.step)), $input.triggerHandler("setvalue.inputmask");
+                    $input.val(parseFloat(this.inputmask.unmaskedvalue()) - parseInt(opts.step)), $input.triggerHandler("setvalue.inputmask");
                 }
             }
         },

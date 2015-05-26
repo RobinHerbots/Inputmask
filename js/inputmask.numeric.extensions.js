@@ -583,11 +583,11 @@ Optional extensions on the jquery.inputmask base
         if (e.ctrlKey) {
           switch (e.keyCode) {
             case inputmask.keyCode.UP:
-              $input.val(parseInt(this.inputmask.unmaskedvalue()) + parseInt(opts.step));
+              $input.val(parseFloat(this.inputmask.unmaskedvalue()) + parseInt(opts.step));
               $input.triggerHandler('setvalue.inputmask');
               break;
             case inputmask.keyCode.DOWN:
-              $input.val(parseInt(this.inputmask.unmaskedvalue()) - parseInt(opts.step));
+              $input.val(parseFloat(this.inputmask.unmaskedvalue()) - parseInt(opts.step));
               $input.triggerHandler('setvalue.inputmask');
               break;
           }
