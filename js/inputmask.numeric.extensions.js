@@ -528,7 +528,10 @@ Optional extensions on the jquery.inputmask base
             decPart = valueParts[1].match(new RegExp("\\d*"))[0];
           if (parseInt(opts.digits) < decPart.toString().length) {
             var digitsFactor = Math.pow(10, parseInt(opts.digits));
+            //make the initialValue a valid javascript number for the parsefloat
+            initialValue = initialValue.replace(inputmask.escapeRegex(opts.radixPoint), ".");
             initialValue = Math.round(parseFloat(initialValue) * digitsFactor) / digitsFactor;
+            initialValue = initialValue.toString().replace(".", opts.radixPoint);
           }
         }
         return initialValue.toString();
