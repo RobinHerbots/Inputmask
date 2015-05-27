@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - numeric alias - increment/decrement by ctrl-up/ctrl-down
+- numeric alias - round values
 - percentage alias
 - inputmask class
 - setting defaults / definitions / aliases
