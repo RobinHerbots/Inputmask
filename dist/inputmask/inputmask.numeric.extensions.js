@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-71
+* Version: 3.1.64-73
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery", "./inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery"), require("./inputmask")) : factory(jQuery);
@@ -313,8 +313,8 @@
                 }
                 if (0 == opts.digits && (-1 != initialValue.indexOf(".") ? initialValue = initialValue.substring(0, initialValue.indexOf(".")) : -1 != initialValue.indexOf(",") && (initialValue = initialValue.substring(0, initialValue.indexOf(",")))), 
                 "" != opts.radixPoint && isFinite(opts.digits) && -1 != initialValue.indexOf(opts.radixPoint)) {
-                    var valueParts = initialValue.split(opts.radixPoint);
-                    if (parseInt(opts.digits) < parseInt(valueParts[1]).toString().length) {
+                    var valueParts = initialValue.split(opts.radixPoint), decPart = valueParts[1].match(new RegExp("\\d*"))[0];
+                    if (parseInt(opts.digits) < decPart.toString().length) {
                         var digitsFactor = Math.pow(10, parseInt(opts.digits));
                         initialValue = Math.round(parseFloat(initialValue) * digitsFactor) / digitsFactor;
                     }

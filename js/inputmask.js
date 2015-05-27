@@ -655,7 +655,7 @@
       compositionValidPos,
       compositionCaretPos,
       compositionData,
-      $el,
+      el, $el,
       skipKeyPressEvent = false, //Safari 5.1.x - modal dialog fires keypress twice workaround
       skipInputEvent = false, //skip when triggered from within inputmask
       ignorable = false,

@@ -524,8 +524,9 @@ Optional extensions on the jquery.inputmask base
         }
 
         if (opts.radixPoint != "" && isFinite(opts.digits) && initialValue.indexOf(opts.radixPoint) != -1) {
-          var valueParts = initialValue.split(opts.radixPoint);
-          if (parseInt(opts.digits) < parseInt(valueParts[1]).toString().length) {
+          var valueParts = initialValue.split(opts.radixPoint),
+            decPart = valueParts[1].match(new RegExp("\\d*"))[0];
+          if (parseInt(opts.digits) < decPart.toString().length) {
             var digitsFactor = Math.pow(10, parseInt(opts.digits));
             initialValue = Math.round(parseFloat(initialValue) * digitsFactor) / digitsFactor;
           }

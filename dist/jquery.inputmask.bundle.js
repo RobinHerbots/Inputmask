@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-71
+* Version: 3.1.64-73
 */
 !function($) {
     function inputmask(options) {
@@ -1074,7 +1074,7 @@
             writeBuffer(el, buffer), activeElement === el && caret(el, seekNext(getLastValidPosition())), 
             installEventRuler(el);
         }
-        var undoValue, compositionCaretPos, compositionData, $el, maxLength, isRTL = !1, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, firstClick = !0, mouseEnter = !0;
+        var undoValue, compositionCaretPos, compositionData, el, $el, maxLength, isRTL = !1, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, firstClick = !0, mouseEnter = !0;
         if (void 0 != actionObj) switch (actionObj.action) {
           case "isComplete":
             return el = actionObj.el, $el = $(el), maskset = el.inputmask.maskset, opts = el.inputmask.opts, 
@@ -2252,8 +2252,8 @@
                 }
                 if (0 == opts.digits && (-1 != initialValue.indexOf(".") ? initialValue = initialValue.substring(0, initialValue.indexOf(".")) : -1 != initialValue.indexOf(",") && (initialValue = initialValue.substring(0, initialValue.indexOf(",")))), 
                 "" != opts.radixPoint && isFinite(opts.digits) && -1 != initialValue.indexOf(opts.radixPoint)) {
-                    var valueParts = initialValue.split(opts.radixPoint);
-                    if (parseInt(opts.digits) < parseInt(valueParts[1]).toString().length) {
+                    var valueParts = initialValue.split(opts.radixPoint), decPart = valueParts[1].match(new RegExp("\\d*"))[0];
+                    if (parseInt(opts.digits) < decPart.toString().length) {
                         var digitsFactor = Math.pow(10, parseInt(opts.digits));
                         initialValue = Math.round(parseFloat(initialValue) * digitsFactor) / digitsFactor;
                     }
