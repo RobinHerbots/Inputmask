@@ -660,7 +660,8 @@
       skipInputEvent = false, //skip when triggered from within inputmask
       ignorable = false,
       maxLength,
-      firstClick = true;
+      firstClick = true,
+      mouseEnter = true;
 
     //maskset helperfunctions
     function getMaskTemplate(baseOnInput, minimalPos, includeInput) {
@@ -2259,6 +2260,7 @@
         $el.bind("mouseenter.inputmask", function() {
           var $input = $(this),
             input = this;
+          mouseEnter = true;
           if (!$input.is(":focus") && opts.showMaskOnHover) {
             if (input._valueGet() != getBuffer().join('')) {
               writeBuffer(input, getBuffer());
@@ -2309,13 +2311,14 @@
             if (input._valueGet() != getBuffer().join('')) {
               writeBuffer(input, getBuffer(), seekNext(getLastValidPosition()));
             }
-          } else {
+          } else if (mouseEnter === false) { //only executed on focus without mouseenter
             caret(input, seekNext(getLastValidPosition()));
           }
           undoValue = getBuffer().join('');
         }).bind("mouseleave.inputmask", function() {
           var $input = $(this),
             input = this;
+          mouseEnter = false;
           if (opts.clearMaskOnLostFocus) {
             var buffer = getBuffer().slice(),
               nptValue = input._valueGet();
@@ -2332,24 +2335,22 @@
           var $input = $(this),
             input = this;
           if ($input.is(":focus")) {
-            setTimeout(function() { //needed for FF & IE to get the proper caret position
-              var selectedCaret = caret(input);
-              if (selectedCaret.begin == selectedCaret.end) {
-                if (opts.radixFocus && opts.radixPoint != "" && $.inArray(opts.radixPoint, getBuffer()) != -1 && (firstClick || getBuffer().join('') == getBufferTemplate().join(''))) {
-                  caret(input, $.inArray(opts.radixPoint, getBuffer()));
-                  firstClick = false;
-                } else {
-                  var clickPosition = TranslatePosition(selectedCaret.begin),
-                    lastPosition = seekNext(getLastValidPosition(clickPosition));
+            var selectedCaret = caret(input);
+            if (selectedCaret.begin == selectedCaret.end) {
+              if (opts.radixFocus && opts.radixPoint != "" && $.inArray(opts.radixPoint, getBuffer()) != -1 && (firstClick || getBuffer().join('') == getBufferTemplate().join(''))) {
+                caret(input, $.inArray(opts.radixPoint, getBuffer()));
+                firstClick = false;
+              } else {
+                var clickPosition = TranslatePosition(selectedCaret.begin),
+                  lastPosition = seekNext(getLastValidPosition(clickPosition));
 
-                  if (clickPosition < lastPosition) {
-                    caret(input, isMask(clickPosition) ? clickPosition : seekNext(clickPosition));
-                  } else {
-                    caret(input, lastPosition);
-                  }
+                if (clickPosition < lastPosition) {
+                  caret(input, isMask(clickPosition) ? clickPosition : seekNext(clickPosition));
+                } else {
+                  caret(input, lastPosition);
                 }
               }
-            }, 0);
+            }
           }
         }).bind('dblclick.inputmask', function() {
           var input = this;

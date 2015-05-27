@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-70
+* Version: 3.1.64-71
 */
 !function($) {
     function inputmask(options) {
@@ -1010,7 +1010,7 @@
                 }, 0);
             }), $el.bind("mouseenter.inputmask", function() {
                 var $input = $(this), input = this;
-                !$input.is(":focus") && opts.showMaskOnHover && input._valueGet() != getBuffer().join("") && writeBuffer(input, getBuffer());
+                mouseEnter = !0, !$input.is(":focus") && opts.showMaskOnHover && input._valueGet() != getBuffer().join("") && writeBuffer(input, getBuffer());
             }).bind("blur.inputmask", function(e) {
                 var $input = $(this), input = this;
                 if (input.inputmask) {
@@ -1023,25 +1023,25 @@
                 }
             }).bind("focus.inputmask", function(e) {
                 var input = ($(this), this), nptValue = input._valueGet();
-                opts.showMaskOnFocus && (!opts.showMaskOnHover || opts.showMaskOnHover && "" == nptValue) ? input._valueGet() != getBuffer().join("") && writeBuffer(input, getBuffer(), seekNext(getLastValidPosition())) : caret(input, seekNext(getLastValidPosition())), 
+                opts.showMaskOnFocus && (!opts.showMaskOnHover || opts.showMaskOnHover && "" == nptValue) ? input._valueGet() != getBuffer().join("") && writeBuffer(input, getBuffer(), seekNext(getLastValidPosition())) : mouseEnter === !1 && caret(input, seekNext(getLastValidPosition())), 
                 undoValue = getBuffer().join("");
             }).bind("mouseleave.inputmask", function() {
                 var $input = $(this), input = this;
-                if (opts.clearMaskOnLostFocus) {
+                if (mouseEnter = !1, opts.clearMaskOnLostFocus) {
                     var buffer = getBuffer().slice(), nptValue = input._valueGet();
                     $input.is(":focus") || nptValue == $input.attr("placeholder") || "" == nptValue || (nptValue == getBufferTemplate().join("") ? buffer = [] : clearOptionalTail(buffer), 
                     writeBuffer(input, buffer));
                 }
             }).bind("click.inputmask", function() {
                 var $input = $(this), input = this;
-                $input.is(":focus") && setTimeout(function() {
+                if ($input.is(":focus")) {
                     var selectedCaret = caret(input);
                     if (selectedCaret.begin == selectedCaret.end) if (opts.radixFocus && "" != opts.radixPoint && -1 != $.inArray(opts.radixPoint, getBuffer()) && (firstClick || getBuffer().join("") == getBufferTemplate().join(""))) caret(input, $.inArray(opts.radixPoint, getBuffer())), 
                     firstClick = !1; else {
                         var clickPosition = TranslatePosition(selectedCaret.begin), lastPosition = seekNext(getLastValidPosition(clickPosition));
                         lastPosition > clickPosition ? caret(input, isMask(clickPosition) ? clickPosition : seekNext(clickPosition)) : caret(input, lastPosition);
                     }
-                }, 0);
+                }
             }).bind("dblclick.inputmask", function() {
                 var input = this;
                 setTimeout(function() {
@@ -1074,7 +1074,7 @@
             writeBuffer(el, buffer), activeElement === el && caret(el, seekNext(getLastValidPosition())), 
             installEventRuler(el);
         }
-        var undoValue, compositionCaretPos, compositionData, $el, maxLength, isRTL = !1, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, firstClick = !0;
+        var undoValue, compositionCaretPos, compositionData, $el, maxLength, isRTL = !1, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, firstClick = !0, mouseEnter = !0;
         if (void 0 != actionObj) switch (actionObj.action) {
           case "isComplete":
             return el = actionObj.el, $el = $(el), maskset = el.inputmask.maskset, opts = el.inputmask.opts, 
