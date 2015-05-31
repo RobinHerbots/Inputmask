@@ -20,6 +20,7 @@ All notable changes to this project will be documented in this file.
 - Update placeholder handling
 
 ### Fixed
+- Is numeric carret position broken? #928
 - Decimal looses digits #924
 - Firefox: cursor jumps to the right when clicking anywhere on the value #921
 - Numeric inputMask doesn't rounds value #754

@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-74
+* Version: 3.1.64-75
 */
 !function($) {
     function inputmask(options) {
@@ -676,14 +676,14 @@
             }
             return $input[0]._valueGet();
         }
-        function TranslatePosition(pos) {
-            if (isRTL && "number" == typeof pos && (!opts.greedy || "" != opts.placeholder)) {
-                var bffrLght = getBuffer().length;
-                pos = bffrLght - pos;
-            }
-            return pos;
-        }
         function caret(input, begin, end) {
+            function TranslatePosition(pos) {
+                if (isRTL && "number" == typeof pos && (!opts.greedy || "" != opts.placeholder)) {
+                    var bffrLght = getBuffer().length;
+                    pos = bffrLght - pos;
+                }
+                return pos;
+            }
             var range, npt = input.jquery && input.length > 0 ? input[0] : input;
             if ("number" != typeof begin) return npt.setSelectionRange ? (begin = npt.selectionStart, 
             end = npt.selectionEnd) : window.getSelection ? (range = window.getSelection().getRangeAt(0), 
@@ -1038,7 +1038,7 @@
                     var selectedCaret = caret(input);
                     if (selectedCaret.begin == selectedCaret.end) if (opts.radixFocus && "" != opts.radixPoint && -1 != $.inArray(opts.radixPoint, getBuffer()) && (firstClick || getBuffer().join("") == getBufferTemplate().join(""))) caret(input, $.inArray(opts.radixPoint, getBuffer())), 
                     firstClick = !1; else {
-                        var clickPosition = TranslatePosition(selectedCaret.begin), lastPosition = seekNext(getLastValidPosition(clickPosition));
+                        var clickPosition = selectedCaret.begin, lastPosition = seekNext(getLastValidPosition(clickPosition));
                         lastPosition > clickPosition ? caret(input, isMask(clickPosition) ? clickPosition : seekNext(clickPosition)) : caret(input, lastPosition);
                     }
                 }
