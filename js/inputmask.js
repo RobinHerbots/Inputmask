@@ -400,6 +400,22 @@
 				}
 			}
 
+			function maskStaticGroupMarker(lastMatch){
+				if (lastMatch["isGroup"]) { //this is not a group but a normal mask => convert
+					lastMatch.isGroup = false;
+					insertTestDefinition(lastMatch, opts.groupmarker.start, 0);
+					insertTestDefinition(lastMatch, opts.groupmarker.end);
+				}
+			}
+
+			function maskCurrentToken(m, currentToken, lastMatch){
+				if (currentToken.matches.length > 0) {
+					lastMatch = currentToken.matches[currentToken.matches.length - 1];
+					maskStaticGroupMarker(lastMatch);
+				}
+				insertTestDefinition(currentToken, m);
+			}
+
 			var currentToken = new maskToken(),
 				match,
 				m,
@@ -412,7 +428,15 @@
 
 			while (match = tokenizer.exec(mask)) {
 				m = match[0];
+				if(escaped){
+					maskCurrentToken(m, currentToken, lastMatch);
+					continue;
+				}
+
 				switch (m.charAt(0)) {
+					case opts.escapeChar:
+						escaped = true;
+						break;
 					case opts.optionalmarker.end:
 						// optional closing
 					case opts.groupmarker.end:
@@ -481,9 +505,6 @@
 							currentToken.matches.push(quantifier);
 						}
 						break;
-					case opts.escapeChar:
-						escaped = true;
-						break;
 					case opts.alternatormarker:
 						if (openenings.length > 0) {
 							currentOpeningToken = openenings[openenings.length - 1];
@@ -504,11 +525,7 @@
 							currentOpeningToken = openenings[openenings.length - 1];
 							if (currentOpeningToken.matches.length > 0 && !currentOpeningToken.isAlternator) {
 								lastMatch = currentOpeningToken.matches[currentOpeningToken.matches.length - 1];
-								if (lastMatch["isGroup"]) { //this is not a group but a normal mask => convert
-									lastMatch.isGroup = false;
-									insertTestDefinition(lastMatch, opts.groupmarker.start, 0);
-									insertTestDefinition(lastMatch, opts.groupmarker.end);
-								}
+								maskStaticGroupMarker(lastMatch);
 							}
 							insertTestDefinition(currentOpeningToken, m);
 							if (currentOpeningToken.isAlternator) { //handle alternator a | b case
@@ -524,26 +541,14 @@
 								}
 							}
 						} else {
-							if (currentToken.matches.length > 0) {
-								lastMatch = currentToken.matches[currentToken.matches.length - 1];
-								if (lastMatch["isGroup"]) { //this is not a group but a normal mask => convert
-									lastMatch.isGroup = false;
-									insertTestDefinition(lastMatch, opts.groupmarker.start, 0);
-									insertTestDefinition(lastMatch, opts.groupmarker.end);
-								}
-							}
-							insertTestDefinition(currentToken, m);
+							maskCurrentToken(m, currentToken, lastMatch);
 						}
 				}
 			}
 
 			if (currentToken.matches.length > 0) {
 				lastMatch = currentToken.matches[currentToken.matches.length - 1];
-				if (lastMatch["isGroup"]) { //this is not a group but a normal mask => convert
-					lastMatch.isGroup = false;
-					insertTestDefinition(lastMatch, opts.groupmarker.start, 0);
-					insertTestDefinition(lastMatch, opts.groupmarker.end);
-				}
+				maskStaticGroupMarker(lastMatch);
 				maskTokens.push(currentToken);
 			}
 

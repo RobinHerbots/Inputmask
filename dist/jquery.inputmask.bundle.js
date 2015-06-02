@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-75
+* Version: 3.1.64-76
 */
 !function($) {
     function inputmask(options) {
@@ -97,8 +97,20 @@
                     mask: element
                 }), escaped = !1;
             }
-            for (var match, m, openingToken, currentOpeningToken, alternator, lastMatch, tokenizer = /(?:[?*+]|\{[0-9\+\*]+(?:,[0-9\+\*]*)?\})\??|[^.?*+^${[]()|\\]+|./g, escaped = !1, currentToken = new maskToken(), openenings = [], maskTokens = []; match = tokenizer.exec(mask); ) switch (m = match[0], 
-            m.charAt(0)) {
+            function maskStaticGroupMarker(lastMatch) {
+                lastMatch.isGroup && (lastMatch.isGroup = !1, insertTestDefinition(lastMatch, opts.groupmarker.start, 0), 
+                insertTestDefinition(lastMatch, opts.groupmarker.end));
+            }
+            function maskCurrentToken(m, currentToken, lastMatch) {
+                currentToken.matches.length > 0 && (lastMatch = currentToken.matches[currentToken.matches.length - 1], 
+                maskStaticGroupMarker(lastMatch)), insertTestDefinition(currentToken, m);
+            }
+            for (var match, m, openingToken, currentOpeningToken, alternator, lastMatch, tokenizer = /(?:[?*+]|\{[0-9\+\*]+(?:,[0-9\+\*]*)?\})\??|[^.?*+^${[]()|\\]+|./g, escaped = !1, currentToken = new maskToken(), openenings = [], maskTokens = []; match = tokenizer.exec(mask); ) if (m = match[0], 
+            escaped) maskCurrentToken(m, currentToken, lastMatch); else switch (m.charAt(0)) {
+              case opts.escapeChar:
+                escaped = !0;
+                break;
+
               case opts.optionalmarker.end:
               case opts.groupmarker.end:
                 if (openingToken = openenings.pop(), openenings.length > 0) {
@@ -143,10 +155,6 @@
                 }
                 break;
 
-              case opts.escapeChar:
-                escaped = !0;
-                break;
-
               case opts.alternatormarker:
                 openenings.length > 0 ? (currentOpeningToken = openenings[openenings.length - 1], 
                 lastMatch = currentOpeningToken.matches.pop()) : lastMatch = currentToken.matches.pop(), 
@@ -157,22 +165,17 @@
               default:
                 if (openenings.length > 0) {
                     if (currentOpeningToken = openenings[openenings.length - 1], currentOpeningToken.matches.length > 0 && !currentOpeningToken.isAlternator && (lastMatch = currentOpeningToken.matches[currentOpeningToken.matches.length - 1], 
-                    lastMatch.isGroup && (lastMatch.isGroup = !1, insertTestDefinition(lastMatch, opts.groupmarker.start, 0), 
-                    insertTestDefinition(lastMatch, opts.groupmarker.end))), insertTestDefinition(currentOpeningToken, m), 
+                    maskStaticGroupMarker(lastMatch)), insertTestDefinition(currentOpeningToken, m), 
                     currentOpeningToken.isAlternator) {
                         alternator = openenings.pop();
                         for (var mndx = 0; mndx < alternator.matches.length; mndx++) alternator.matches[mndx].isGroup = !1;
                         openenings.length > 0 ? (currentOpeningToken = openenings[openenings.length - 1], 
                         currentOpeningToken.matches.push(alternator)) : currentToken.matches.push(alternator);
                     }
-                } else currentToken.matches.length > 0 && (lastMatch = currentToken.matches[currentToken.matches.length - 1], 
-                lastMatch.isGroup && (lastMatch.isGroup = !1, insertTestDefinition(lastMatch, opts.groupmarker.start, 0), 
-                insertTestDefinition(lastMatch, opts.groupmarker.end))), insertTestDefinition(currentToken, m);
+                } else maskCurrentToken(m, currentToken, lastMatch);
             }
             return currentToken.matches.length > 0 && (lastMatch = currentToken.matches[currentToken.matches.length - 1], 
-            lastMatch.isGroup && (lastMatch.isGroup = !1, insertTestDefinition(lastMatch, opts.groupmarker.start, 0), 
-            insertTestDefinition(lastMatch, opts.groupmarker.end)), maskTokens.push(currentToken)), 
-            maskTokens;
+            maskStaticGroupMarker(lastMatch), maskTokens.push(currentToken)), maskTokens;
         }
         function generateMask(mask, metadata) {
             if (void 0 == mask || "" == mask) return void 0;
@@ -730,10 +733,8 @@
         function isComplete(buffer) {
             if ($.isFunction(opts.isComplete)) return opts.isComplete.call($el, buffer, opts);
             if ("*" == opts.repeat) return void 0;
-            {
-                var complete = !1, lrp = determineLastRequiredPosition(!0), aml = seekPrevious(lrp.l);
-                getLastValidPosition();
-            }
+            var complete = !1, lrp = determineLastRequiredPosition(!0), aml = seekPrevious(lrp.l);
+            getLastValidPosition();
             if (void 0 == lrp.def || lrp.def.newBlockMarker || lrp.def.optionality || lrp.def.optionalQuantifier) {
                 complete = !0;
                 for (var i = 0; aml >= i; i++) {
@@ -2325,6 +2326,9 @@
             suffix: " %",
             allowPlus: !1,
             allowMinus: !1
+        },
+        numeric2: {
+            alias: "numeric"
         }
     }), inputmask;
 }(jQuery), function($) {
