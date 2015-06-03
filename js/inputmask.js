@@ -400,7 +400,7 @@
 				}
 			}
 
-			function maskStaticGroupMarker(lastMatch){
+			function verifyGroupMarker(lastMatch) {
 				if (lastMatch["isGroup"]) { //this is not a group but a normal mask => convert
 					lastMatch.isGroup = false;
 					insertTestDefinition(lastMatch, opts.groupmarker.start, 0);
@@ -408,10 +408,10 @@
 				}
 			}
 
-			function maskCurrentToken(m, currentToken, lastMatch){
-				if (currentToken.matches.length > 0) {
+			function maskCurrentToken(m, currentToken, lastMatch, extraCondition) {
+				if (currentToken.matches.length > 0 && (extraCondition == undefined || extraCondition)) {
 					lastMatch = currentToken.matches[currentToken.matches.length - 1];
-					maskStaticGroupMarker(lastMatch);
+					verifyGroupMarker(lastMatch);
 				}
 				insertTestDefinition(currentToken, m);
 			}
@@ -428,7 +428,7 @@
 
 			while (match = tokenizer.exec(mask)) {
 				m = match[0];
-				if(escaped){
+				if (escaped) {
 					maskCurrentToken(m, currentToken, lastMatch);
 					continue;
 				}
@@ -523,11 +523,7 @@
 					default:
 						if (openenings.length > 0) {
 							currentOpeningToken = openenings[openenings.length - 1];
-							if (currentOpeningToken.matches.length > 0 && !currentOpeningToken.isAlternator) {
-								lastMatch = currentOpeningToken.matches[currentOpeningToken.matches.length - 1];
-								maskStaticGroupMarker(lastMatch);
-							}
-							insertTestDefinition(currentOpeningToken, m);
+							maskCurrentToken(m, currentOpeningToken, lastMatch, !currentOpeningToken.isAlternator);
 							if (currentOpeningToken.isAlternator) { //handle alternator a | b case
 								alternator = openenings.pop();
 								for (var mndx = 0; mndx < alternator.matches.length; mndx++) {
@@ -548,7 +544,7 @@
 
 			if (currentToken.matches.length > 0) {
 				lastMatch = currentToken.matches[currentToken.matches.length - 1];
-				maskStaticGroupMarker(lastMatch);
+				verifyGroupMarker(lastMatch);
 				maskTokens.push(currentToken);
 			}
 

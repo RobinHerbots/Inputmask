@@ -20,6 +20,7 @@ All notable changes to this project will be documented in this file.
 - Update placeholder handling
 
 ### Fixed
+- Escape optional marker, quantifiable marker, alternator marker and backslash not working #930
 - Is numeric carret position broken? #928
 - Decimal looses digits #924
 - Firefox: cursor jumps to the right when clicking anywhere on the value #921
