@@ -1549,7 +1549,7 @@
 				if (!isTemplateMatch() || strict) {
 					var pos = strict ? ndx : (nextTest["match"].fn == null && nextTest["match"].optionality && (lvp + 1) < getMaskSet()["p"] ? lvp + 1 : getMaskSet()["p"]);
 					keypressEvent.call(input, keypress, true, false, strict, pos);
-					initialNdx = pos + 1;
+					initialNdx++;
 					charCodes = "";
 				} else {
 					keypressEvent.call(input, keypress, true, false, true, lvp + 1);

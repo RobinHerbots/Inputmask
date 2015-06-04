@@ -12,7 +12,7 @@ test("inputmask(\"999:99\", { placeholder: \"0\"}) value=\"007:20\"", function (
 
 test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"01 650 103 002 0001 DE101 5170\" - wuSam", function () {
     var $fixture = $("#qunit-fixture");
-    $fixture.append('<input type="text" id="testmask" value="01 650 103 002 0001 DE101 5170" />');
+    $fixture.append('<input type="text" id="testmask" value="01 650 103 002 0001 101 5170" />');
     $("#testmask").inputmask("99 999 999 999 9999 \\D\\E*** 9999");
     equal($("#testmask").val(), "01 650 103 002 0001 DE101 5170", "Result " + $("#testmask").val());
 
@@ -21,7 +21,7 @@ test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"01 650 103 002
 
 test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"016501030020001DE1015170\" - wuSam", function () {
     var $fixture = $("#qunit-fixture");
-    $fixture.append('<input type="text" id="testmask" value="016501030020001DE1015170" />');
+    $fixture.append('<input type="text" id="testmask" value="0165010300200011015170" />');
     $("#testmask").inputmask("99 999 999 999 9999 \\D\\E*** 9999");
     equal($("#testmask").val(), "01 650 103 002 0001 DE101 5170", "Result " + $("#testmask").val());
 
@@ -30,7 +30,7 @@ test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"01650103002000
 
 test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"016501030020001DE1015170\" replace 2 with 3 - wuSam", function () {
     var $fixture = $("#qunit-fixture");
-    $fixture.append('<input type="text" id="testmask" value="016501030020001DE1015170" />');
+    $fixture.append('<input type="text" id="testmask" value="0165010300200011015170" />');
     $("#testmask").inputmask("99 999 999 999 9999 \\D\\E*** 9999");
     $.caret($("#testmask"), 13, 14);
     $("#testmask").Type("3");
@@ -41,7 +41,7 @@ test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"01650103002000
 
 test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"016501030020001DE1015170\" replace 002 with 003 - wuSam", function () {
     var $fixture = $("#qunit-fixture");
-    $fixture.append('<input type="text" id="testmask" value="016501030020001DE1015170" />');
+    $fixture.append('<input type="text" id="testmask" value="0165010300200011015170" />');
     $("#testmask").inputmask("99 999 999 999 9999 \\D\\E*** 9999");
     $.caret($("#testmask"), 11, 14);
     $("#testmask").Type("003");
@@ -52,7 +52,7 @@ test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"01650103002000
 
 test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"016501030020001DE1015170\" replace 02 with 01 - wuSam", function () {
     var $fixture = $("#qunit-fixture");
-    $fixture.append('<input type="text" id="testmask" value="016501030020001DE1015170" />');
+    $fixture.append('<input type="text" id="testmask" value="0165010300200011015170" />');
     $("#testmask").inputmask("99 999 999 999 9999 \\D\\E*** 9999");
     $.caret($("#testmask"), 12, 14);
     $("#testmask").Type("01");
@@ -63,7 +63,7 @@ test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"01650103002000
 
 test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\", { greedy: false }) ~ value=\"016501030020001DE1015170\" replace 02 with 01 - wuSam", function () {
     var $fixture = $("#qunit-fixture");
-    $fixture.append('<input type="text" id="testmask" value="016501030020001DE1015170" />');
+    $fixture.append('<input type="text" id="testmask" value="0165010300200011015170" />');
     $("#testmask").inputmask("99 999 999 999 9999 \\D\\E*** 9999", { greedy: false });
     $.caret($("#testmask"), 12, 14);
     $("#testmask").Type("01");
