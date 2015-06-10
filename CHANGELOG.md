@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- numeric alias - increment/decrement by ctrl-up/ctrl-down
+- numeric alias - round values
+- percentage alias
 - inputmask class
 - setting defaults / definitions / aliases
   - inputmask.extendDefaults
@@ -17,6 +20,11 @@ All notable changes to this project will be documented in this file.
 - Update placeholder handling
 
 ### Fixed
+- Escape optional marker, quantifiable marker, alternator marker and backslash not working #930
+- Is numeric carret position broken? #928
+- Decimal looses digits #924
+- Firefox: cursor jumps to the right when clicking anywhere on the value #921
+- Numeric inputMask doesn't rounds value #754
 - Chinese / Japanese characters are unable to mask #198
 - Infinite Loop on IE (v11) when using Japanese IME Keyboard #749
 - Delete key not working properly #799

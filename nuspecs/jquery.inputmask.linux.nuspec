@@ -39,5 +39,6 @@
       target="content/Scripts/jquery.inputmask/jquery.inputmask.js"/>
     <file src="dist/inputmask/inputmask.js"
       target="content/Scripts/jquery.inputmask/inputmask.js"/>
+    <file src="../nuspecs/Readme.txt" target="Readme.txt" />
   </files>
 </package>
