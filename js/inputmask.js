@@ -1530,10 +1530,14 @@
 			if (writeOut) input._valueSet(""); //initial clear
 
 			if (!strict) {
-				var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(''),
-					matches = inputValue.join('').match(new RegExp("^" + escapeRegex(staticInput), "g"));
-				if (matches && matches.length > 0) {
-					inputValue.splice(0, matches.length * staticInput.length);
+				if (opts.autoUnmask != true) {
+					var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(''),
+						matches = inputValue.join('').match(new RegExp("^" + inputmask.escapeRegex(staticInput), "g"));
+					if (matches && matches.length > 0) {
+						inputValue.splice(0, matches.length * staticInput.length);
+						initialNdx = seekNext(initialNdx);
+					}
+				} else {
 					initialNdx = seekNext(initialNdx);
 				}
 			}
@@ -1546,7 +1550,7 @@
 				var lvp = getLastValidPosition(undefined, true),
 					lvTest = getMaskSet()["validPositions"][lvp],
 					nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : undefined, lvp);
-				if (!isTemplateMatch() || strict) {
+				if (!isTemplateMatch() || strict || (opts.autoUnmask && lvp == -1)) {
 					var pos = strict ? ndx : (nextTest["match"].fn == null && nextTest["match"].optionality && (lvp + 1) < getMaskSet()["p"] ? lvp + 1 : getMaskSet()["p"]);
 					keypressEvent.call(input, keypress, true, false, strict, pos);
 					initialNdx = pos + 1;
@@ -1559,10 +1563,6 @@
 			if (writeOut) {
 				writeBuffer(input, getBuffer(), $(input).is(":focus") ? seekNext(getLastValidPosition(0)) : undefined, $.Event("checkval"));
 			}
-		}
-
-		function escapeRegex(str) {
-			return inputmask.escapeRegex(str);
 		}
 
 		function unmaskedvalue($input) {
