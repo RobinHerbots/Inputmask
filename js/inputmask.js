@@ -88,7 +88,8 @@
 			ignorables: [8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123],
 			isComplete: undefined, //override for isComplete - args => buffer, opts - return true || false
 			canClearPosition: $.noop, //hook to alter the clear behavior in the stripValidPositions args => maskset, position, lastValidPosition, opts => return true|false
-			postValidation: undefined //hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, opts => return true/false
+			postValidation: undefined, //hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, opts => return true/false
+			isValueMask: true
 		},
 		keyCode: {
 			ALT: 18,
@@ -1530,10 +1531,15 @@
 			if (writeOut) input._valueSet(""); //initial clear
 
 			if (!strict) {
-				var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(''),
-					matches = inputValue.join('').match(new RegExp("^" + escapeRegex(staticInput), "g"));
-				if (matches && matches.length > 0) {
-					inputValue.splice(0, matches.length * staticInput.length);
+				if(opts.isValueMask){
+					var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(''),
+						matches = inputValue.join('').match(new RegExp("^" + escapeRegex(staticInput), "g"));
+					if (matches && matches.length > 0) {
+						inputValue.splice(0, matches.length * staticInput.length);
+						initialNdx = seekNext(initialNdx);
+					}
+				}
+				else{
 					initialNdx = seekNext(initialNdx);
 				}
 			}
@@ -1549,7 +1555,12 @@
 				if (!isTemplateMatch() || strict) {
 					var pos = strict ? ndx : (nextTest["match"].fn == null && nextTest["match"].optionality && (lvp + 1) < getMaskSet()["p"] ? lvp + 1 : getMaskSet()["p"]);
 					keypressEvent.call(input, keypress, true, false, strict, pos);
-					initialNdx = pos + 1;
+					if(opts.isValueMask){
+						initialNdx = pos + 1;
+					}
+					else{
+						initialNdx = initialNdx + 1;
+					}
 					charCodes = "";
 				} else {
 					keypressEvent.call(input, keypress, true, false, true, lvp + 1);
