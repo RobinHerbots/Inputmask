@@ -85,7 +85,7 @@ test("inputmask(\"9\\?9\")", function() {
 	input.remove();
 });
 
-test("inputmask(\"\\9999\") value not mask", function() {
+test("inputmask(\"\\9999\") escape value at the beginning auto mask", function() {
 	var $fixture = $("#qunit-fixture");
 	$fixture.append('<input type="text" value="999" id="testmask" />');
 	var input = $("#testmask");
@@ -96,6 +96,21 @@ test("inputmask(\"\\9999\") value not mask", function() {
 	input[0].focus();
 
 	equal(input[0]._valueGet(), "9999", "Result " + input[0]._valueGet());
+
+	input.remove();
+});
+
+test("inputmask(\"aaa\\9999\") escape value at the middle auto mask", function() {
+	var $fixture = $("#qunit-fixture");
+	$fixture.append('<input type="text" value="aaa9" id="testmask" />');
+	var input = $("#testmask");
+	input.inputmask("aaa\\9999", {
+		autoUnmask: true
+	});
+
+	input[0].focus();
+
+	equal(input[0]._valueGet(), "aaa99__", "Result " + input[0]._valueGet());
 
 	input.remove();
 });

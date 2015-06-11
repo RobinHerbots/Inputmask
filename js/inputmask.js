@@ -1550,7 +1550,7 @@
 				var lvp = getLastValidPosition(undefined, true),
 					lvTest = getMaskSet()["validPositions"][lvp],
 					nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : undefined, lvp);
-				if (!isTemplateMatch() || strict || (opts.autoUnmask && lvp == -1)) {
+				if (!isTemplateMatch() || strict || opts.autoUnmask) {
 					var pos = strict ? ndx : (nextTest["match"].fn == null && nextTest["match"].optionality && (lvp + 1) < getMaskSet()["p"] ? lvp + 1 : getMaskSet()["p"]);
 					keypressEvent.call(input, keypress, true, false, strict, pos);
 					initialNdx = pos + 1;
