@@ -88,8 +88,7 @@
 			ignorables: [8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123],
 			isComplete: undefined, //override for isComplete - args => buffer, opts - return true || false
 			canClearPosition: $.noop, //hook to alter the clear behavior in the stripValidPositions args => maskset, position, lastValidPosition, opts => return true|false
-			postValidation: undefined, //hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, opts => return true/false
-			isValueMask: true
+			postValidation: undefined //hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, opts => return true/false
 		},
 		keyCode: {
 			ALT: 18,
@@ -1531,15 +1530,14 @@
 			if (writeOut) input._valueSet(""); //initial clear
 
 			if (!strict) {
-				if(opts.isValueMask){
+				if (opts.autoUnmask != true) {
 					var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(''),
-						matches = inputValue.join('').match(new RegExp("^" + escapeRegex(staticInput), "g"));
+						matches = inputValue.join('').match(new RegExp("^" + inputmask.escapeRegex(staticInput), "g"));
 					if (matches && matches.length > 0) {
 						inputValue.splice(0, matches.length * staticInput.length);
 						initialNdx = seekNext(initialNdx);
 					}
-				}
-				else{
+				} else {
 					initialNdx = seekNext(initialNdx);
 				}
 			}
@@ -1552,15 +1550,10 @@
 				var lvp = getLastValidPosition(undefined, true),
 					lvTest = getMaskSet()["validPositions"][lvp],
 					nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : undefined, lvp);
-				if (!isTemplateMatch() || strict) {
+				if (!isTemplateMatch() || strict || (opts.autoUnmask && lvp == -1)) {
 					var pos = strict ? ndx : (nextTest["match"].fn == null && nextTest["match"].optionality && (lvp + 1) < getMaskSet()["p"] ? lvp + 1 : getMaskSet()["p"]);
 					keypressEvent.call(input, keypress, true, false, strict, pos);
-					if(opts.isValueMask){
-						initialNdx = pos + 1;
-					}
-					else{
-						initialNdx = initialNdx + 1;
-					}
+					initialNdx = pos + 1;
 					charCodes = "";
 				} else {
 					keypressEvent.call(input, keypress, true, false, true, lvp + 1);
@@ -1570,10 +1563,6 @@
 			if (writeOut) {
 				writeBuffer(input, getBuffer(), $(input).is(":focus") ? seekNext(getLastValidPosition(0)) : undefined, $.Event("checkval"));
 			}
-		}
-
-		function escapeRegex(str) {
-			return inputmask.escapeRegex(str);
 		}
 
 		function unmaskedvalue($input) {

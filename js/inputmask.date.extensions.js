@@ -596,6 +596,26 @@ Optional extensions on the jquery.inputmask base
       leapday: "donotuse",
       separator: '/',
       alias: "mm/dd/yyyy"
+    },
+	'shamsi': {
+        regex: {
+            val2pre: function (separator) {
+                var escapedSeparator = inputmask.escapeRegex.call(this, separator);
+                return new RegExp("((0[1-9]|1[012])" + escapedSeparator + "[0-3])");
+            },
+            val2: function (separator) {
+                var escapedSeparator = inputmask.escapeRegex.call(this, separator);
+                return new RegExp("((0[1-9]|1[012])" + escapedSeparator + "(0[1-9]|[12][0-9]))|((0[1-9]|1[012])" + escapedSeparator + "30)|((0[1-6])" + escapedSeparator + "31)");
+            },
+            val1pre: new RegExp("[01]"),
+            val1: new RegExp("0[1-9]|1[012]")
+        },
+        yearrange: { minyear: 1300, maxyear: 1499 },
+        mask: "y/1/2",
+        leapday: "/12/30",
+        placeholder: "yyyy/mm/dd",
+        alias: "mm/dd/yyyy",
+        clearIncomplete: true
     }
   });
 
