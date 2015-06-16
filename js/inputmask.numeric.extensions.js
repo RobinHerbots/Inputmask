@@ -372,6 +372,9 @@ Optional extensions on the jquery.inputmask base
 					if (isFinite(opts.max)) {
 						isValid = parseFloat(processValue) <= parseFloat(opts.max);
 					}
+					// if (isValid && isFinite(opts.min)) {
+					// 	isValid = parseFloat(processValue) >= parseFloat(opts.min);
+					// }
 				}
 
 				return isValid;

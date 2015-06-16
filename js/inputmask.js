@@ -2288,7 +2288,9 @@
 								}
 							}
 							if (isComplete(buffer) === false) {
-								$input.trigger("incomplete");
+								setTimeout(function() {
+									$input.trigger("incomplete");
+								}, 0);
 								if (opts.clearIncomplete) {
 									resetMaskSet();
 									if (opts.clearMaskOnLostFocus)
@@ -2363,6 +2365,12 @@
 						$input = $(input),
 						pos = caret(input);
 
+					//correct clipboardData
+					if (isRTL) {
+						var clipboardData = window.clipboardData || e.originalEvent.clipboardData,
+							clipData = clipboardData.getData('text').split('').reverse().join('');
+						clipboardData.setData('text', clipData);
+					}
 					handleRemove(input, inputmask.keyCode.DELETE, pos);
 					writeBuffer(input, getBuffer(), getMaskSet()["p"], e, undoValue != getBuffer().join(''));
 

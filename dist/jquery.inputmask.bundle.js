@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-84
+* Version: 3.1.64-85
 */
 !function($) {
     function inputmask(options) {
@@ -1017,8 +1017,10 @@
                     firstClick = !0, undoValue != buffer.join("") && setTimeout(function() {
                         $input.change(), undoValue = buffer.join("");
                     }, 0), "" != nptValue && (opts.clearMaskOnLostFocus && (nptValue == getBufferTemplate().join("") ? buffer = [] : clearOptionalTail(buffer)), 
-                    isComplete(buffer) === !1 && ($input.trigger("incomplete"), opts.clearIncomplete && (resetMaskSet(), 
-                    buffer = opts.clearMaskOnLostFocus ? [] : getBufferTemplate().slice())), writeBuffer(input, buffer, void 0, e));
+                    isComplete(buffer) === !1 && (setTimeout(function() {
+                        $input.trigger("incomplete");
+                    }, 0), opts.clearIncomplete && (resetMaskSet(), buffer = opts.clearMaskOnLostFocus ? [] : getBufferTemplate().slice())), 
+                    writeBuffer(input, buffer, void 0, e));
                 }
             }).bind("focus.inputmask", function(e) {
                 var input = ($(this), this), nptValue = input._valueGet();
@@ -1049,6 +1051,10 @@
             }).bind(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", pasteEvent).bind("cut.inputmask", function(e) {
                 skipInputEvent = !0;
                 var input = this, $input = $(input), pos = caret(input);
+                if (isRTL) {
+                    var clipboardData = window.clipboardData || e.originalEvent.clipboardData, clipData = clipboardData.getData("text").split("").reverse().join("");
+                    clipboardData.setData("text", clipData);
+                }
                 handleRemove(input, inputmask.keyCode.DELETE, pos), writeBuffer(input, getBuffer(), getMaskSet().p, e, undoValue != getBuffer().join("")), 
                 input._valueGet() == getBufferTemplate().join("") && $input.trigger("cleared"), 
                 opts.showTooltip && $input.prop("title", getMaskSet().mask);
