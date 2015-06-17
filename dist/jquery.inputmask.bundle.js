@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-85
+* Version: 3.1.64-86
 */
 !function($) {
     function inputmask(options) {
@@ -658,7 +658,7 @@
                 var keypress = $.Event("keypress");
                 keypress.which = charCode.charCodeAt(0), charCodes += charCode;
                 var lvp = getLastValidPosition(void 0, !0), lvTest = getMaskSet().validPositions[lvp], nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : void 0, lvp);
-                if (!isTemplateMatch() || strict || opts.autoUnmask && -1 == lvp) {
+                if (!isTemplateMatch() || strict || opts.autoUnmask) {
                     var pos = strict ? ndx : null == nextTest.match.fn && nextTest.match.optionality && lvp + 1 < getMaskSet().p ? lvp + 1 : getMaskSet().p;
                     keypressEvent.call(input, keypress, !0, !1, strict, pos), initialNdx = pos + 1, 
                     charCodes = "";
@@ -729,10 +729,8 @@
         function isComplete(buffer) {
             if ($.isFunction(opts.isComplete)) return opts.isComplete.call($el, buffer, opts);
             if ("*" == opts.repeat) return void 0;
-            {
-                var complete = !1, lrp = determineLastRequiredPosition(!0), aml = seekPrevious(lrp.l);
-                getLastValidPosition();
-            }
+            var complete = !1, lrp = determineLastRequiredPosition(!0), aml = seekPrevious(lrp.l);
+            getLastValidPosition();
             if (void 0 == lrp.def || lrp.def.newBlockMarker || lrp.def.optionality || lrp.def.optionalQuantifier) {
                 complete = !0;
                 for (var i = 0; aml >= i; i++) {
