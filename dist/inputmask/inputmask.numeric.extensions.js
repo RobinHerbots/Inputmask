@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-86
+* Version: 3.1.64-91
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery", "./inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery"), require("./inputmask")) : factory(jQuery);
@@ -217,8 +217,13 @@
                 "," === opts.radixPoint && (processValue = processValue.replace(inputmask.escapeRegex(opts.radixPoint), ".")), 
                 processValue = processValue.replace(new RegExp("^" + inputmask.escapeRegex(opts.negationSymbol.front)), "-"), 
                 processValue = processValue.replace(new RegExp(inputmask.escapeRegex(opts.negationSymbol.back) + "$"), ""), 
-                isFinite(processValue) && isFinite(opts.max) && (isValid = parseFloat(processValue) <= parseFloat(opts.max)), 
-                isValid;
+                processValue = processValue == opts.negationSymbol.front ? processValue + "0" : processValue, 
+                isFinite(processValue) && (isFinite(opts.max) && (isValid = parseFloat(processValue) <= parseFloat(opts.max)), 
+                isValid && isFinite(opts.min) && (0 >= processValue || processValue.toString().length >= opts.min.toString().length) && (isValid = parseFloat(processValue) >= parseFloat(opts.min), 
+                isValid || (isValid = $.extend(!0, {
+                    refreshFromBuffer: !0,
+                    buffer: (opts.prefix + opts.min).split("")
+                }, opts.postFormat((opts.prefix + opts.min).split(""), 0, !0, opts))))), isValid;
             },
             definitions: {
                 "~": {

@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-86
+* Version: 3.1.64-91
 */
 !function($) {
     function inputmask(options) {
@@ -562,8 +562,14 @@
             }), $.isFunction(opts.postValidation) && 0 != result && !strict) {
                 resetMaskSet(!0);
                 var postValidResult = opts.postValidation(getBuffer(), opts);
-                if (!postValidResult) return resetMaskSet(!0), getMaskSet().validPositions = $.extend(!0, {}, positionsClone), 
-                !1;
+                if (postValidResult) {
+                    if (postValidResult.refreshFromBuffer) {
+                        var refresh = postValidResult.refreshFromBuffer;
+                        refreshFromBuffer(refresh === !0 ? refresh : refresh.start, refresh.end, postValidResult.buffer), 
+                        resetMaskSet(!0), result = postValidResult;
+                    }
+                } else resetMaskSet(!0), getMaskSet().validPositions = $.extend(!0, {}, positionsClone), 
+                result = !1;
             }
             return result;
         }
@@ -609,7 +615,7 @@
                 if (result) {
                     if (result.refreshFromBuffer) {
                         var refresh = result.refreshFromBuffer;
-                        refreshFromBuffer(refresh === !0 ? refresh : refresh.start, refresh.end, result.buffer), 
+                        refreshFromBuffer(refresh === !0 ? refresh : refresh.start, refresh.end, result.buffer || buffer), 
                         resetMaskSet(!0), buffer = getBuffer();
                     }
                     caretPos = result.caret || caretPos;
@@ -656,9 +662,9 @@
             } else initialNdx = seekNext(initialNdx);
             $.each(inputValue, function(ndx, charCode) {
                 var keypress = $.Event("keypress");
-                keypress.which = charCode.charCodeAt(0), charCodes += charCode;
-                var lvp = getLastValidPosition(void 0, !0), lvTest = getMaskSet().validPositions[lvp], nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : void 0, lvp);
-                if (!isTemplateMatch() || strict || opts.autoUnmask) {
+                if (keypress.which = charCode.charCodeAt(0), charCodes += charCode, lvp = getLastValidPosition(void 0, !0), 
+                lvTest = getMaskSet().validPositions[lvp], nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : void 0, lvp), 
+                !isTemplateMatch() || strict || opts.autoUnmask) {
                     var pos = strict ? ndx : null == nextTest.match.fn && nextTest.match.optionality && lvp + 1 < getMaskSet().p ? lvp + 1 : getMaskSet().p;
                     keypressEvent.call(input, keypress, !0, !1, strict, pos), initialNdx = pos + 1, 
                     charCodes = "";
@@ -729,8 +735,10 @@
         function isComplete(buffer) {
             if ($.isFunction(opts.isComplete)) return opts.isComplete.call($el, buffer, opts);
             if ("*" == opts.repeat) return void 0;
-            var complete = !1, lrp = determineLastRequiredPosition(!0), aml = seekPrevious(lrp.l);
-            getLastValidPosition();
+            {
+                var complete = !1, lrp = determineLastRequiredPosition(!0), aml = seekPrevious(lrp.l);
+                getLastValidPosition();
+            }
             if (void 0 == lrp.def || lrp.def.newBlockMarker || lrp.def.optionality || lrp.def.optionalQuantifier) {
                 complete = !0;
                 for (var i = 0; aml >= i; i++) {
@@ -948,7 +956,7 @@
                         resetMaskSet(!0), result.caret && (getMaskSet().p = result.caret);
                     }
                 }
-                e.preventDefault();
+                if (e.preventDefault(), checkval) return valResult;
             }
         }
         function pasteEvent(e) {
@@ -2182,8 +2190,13 @@
                 "," === opts.radixPoint && (processValue = processValue.replace(inputmask.escapeRegex(opts.radixPoint), ".")), 
                 processValue = processValue.replace(new RegExp("^" + inputmask.escapeRegex(opts.negationSymbol.front)), "-"), 
                 processValue = processValue.replace(new RegExp(inputmask.escapeRegex(opts.negationSymbol.back) + "$"), ""), 
-                isFinite(processValue) && isFinite(opts.max) && (isValid = parseFloat(processValue) <= parseFloat(opts.max)), 
-                isValid;
+                processValue = processValue == opts.negationSymbol.front ? processValue + "0" : processValue, 
+                isFinite(processValue) && (isFinite(opts.max) && (isValid = parseFloat(processValue) <= parseFloat(opts.max)), 
+                isValid && isFinite(opts.min) && (0 >= processValue || processValue.toString().length >= opts.min.toString().length) && (isValid = parseFloat(processValue) >= parseFloat(opts.min), 
+                isValid || (isValid = $.extend(!0, {
+                    refreshFromBuffer: !0,
+                    buffer: (opts.prefix + opts.min).split("")
+                }, opts.postFormat((opts.prefix + opts.min).split(""), 0, !0, opts))))), isValid;
             },
             definitions: {
                 "~": {

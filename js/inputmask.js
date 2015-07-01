@@ -1389,7 +1389,12 @@
 				if (!postValidResult) {
 					resetMaskSet(true);
 					getMaskSet()["validPositions"] = $.extend(true, {}, positionsClone); //revert validation changes
-					return false;
+					result = false;
+				} else if (postValidResult["refreshFromBuffer"]) {
+					var refresh = postValidResult["refreshFromBuffer"];
+					refreshFromBuffer(refresh === true ? refresh : refresh["start"], refresh["end"], postValidResult["buffer"]);
+					resetMaskSet(true);
+					result = postValidResult;
 				}
 			}
 
@@ -1459,8 +1464,7 @@
 				if (result) {
 					if (result["refreshFromBuffer"]) {
 						var refresh = result["refreshFromBuffer"];
-						refreshFromBuffer(refresh === true ? refresh : refresh["start"], refresh["end"], result["buffer"]);
-
+						refreshFromBuffer(refresh === true ? refresh : refresh["start"], refresh["end"], result["buffer"] || buffer);
 						resetMaskSet(true);
 						buffer = getBuffer();
 					}
@@ -1546,8 +1550,8 @@
 			$.each(inputValue, function(ndx, charCode) {
 				var keypress = $.Event("keypress");
 				keypress.which = charCode.charCodeAt(0);
-				charCodes += charCode;
-				var lvp = getLastValidPosition(undefined, true),
+				charCodes += charCode,
+					lvp = getLastValidPosition(undefined, true),
 					lvTest = getMaskSet()["validPositions"][lvp],
 					nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : undefined, lvp);
 				if (!isTemplateMatch() || strict || opts.autoUnmask) {
@@ -1558,7 +1562,6 @@
 				} else {
 					keypressEvent.call(input, keypress, true, false, true, lvp + 1);
 				}
-
 			});
 			if (writeOut) {
 				writeBuffer(input, getBuffer(), $(input).is(":focus") ? seekNext(getLastValidPosition(0)) : undefined, $.Event("checkval"));
@@ -1973,19 +1976,6 @@
 				}
 			}
 		}
-		//postprocessing of the validpositions according to the buffer manipulations
-		function handleOnKeyResult(input, keyResult, caretPos) {
-			if (keyResult && keyResult["refreshFromBuffer"]) {
-				var refresh = keyResult["refreshFromBuffer"];
-				refreshFromBuffer(refresh === true ? refresh : refresh["start"], refresh["end"], keyResult["buffer"]);
-
-				resetMaskSet(true);
-				if (caretPos != undefined) {
-					writeBuffer(input, getBuffer());
-					caret(input, keyResult.caret || caretPos.begin, keyResult.caret || caretPos.end);
-				}
-			}
-		}
 
 		function keydownEvent(e) {
 			var input = this,
@@ -2121,7 +2111,6 @@
 						if (result && result["refreshFromBuffer"]) {
 							var refresh = result["refreshFromBuffer"];
 							refreshFromBuffer(refresh === true ? refresh : refresh["start"], refresh["end"], result["buffer"]);
-
 							resetMaskSet(true);
 							if (result.caret) {
 								getMaskSet()["p"] = result.caret;
@@ -2129,6 +2118,10 @@
 						}
 					}
 					e.preventDefault();
+
+					if (checkval) {
+						return valResult;
+					}
 				}
 			}
 		}

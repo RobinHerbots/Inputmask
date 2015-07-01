@@ -366,15 +366,21 @@ Optional extensions on the jquery.inputmask base
 				//handle negation symbol
 				processValue = processValue.replace(new RegExp("^" + inputmask.escapeRegex(opts.negationSymbol.front)), "-");
 				processValue = processValue.replace(new RegExp(inputmask.escapeRegex(opts.negationSymbol.back) + "$"), "");
-
+				processValue = processValue == opts.negationSymbol.front ? processValue + "0" : processValue;
 
 				if (isFinite(processValue)) {
 					if (isFinite(opts.max)) {
 						isValid = parseFloat(processValue) <= parseFloat(opts.max);
 					}
-					// if (isValid && isFinite(opts.min)) {
-					// 	isValid = parseFloat(processValue) >= parseFloat(opts.min);
-					// }
+					if (isValid && isFinite(opts.min) && (processValue <= 0 || processValue.toString().length >= opts.min.toString().length)) {
+						isValid = parseFloat(processValue) >= parseFloat(opts.min);
+						if (!isValid) {
+							isValid = $.extend(true, {
+								"refreshFromBuffer": true,
+								"buffer": (opts.prefix + opts.min).split('')
+							}, opts.postFormat((opts.prefix + opts.min).split(''), 0, true, opts));
+						}
+					}
 				}
 
 				return isValid;
