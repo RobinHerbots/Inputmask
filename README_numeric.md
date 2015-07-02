@@ -24,6 +24,14 @@ $(document).ready(function(){
 });
 ```
 
+Define the number of digits before the radixpoint
+
+```javascript
+$(document).ready(function(){
+   $(selector).inputmask("decimal", { integerDigits: 5 });
+});
+```
+
 When TAB out of the input the digits autocomplate with 0 if the digits option is given a valid number.
 
 Grouping support through:  autoGroup, groupSeparator, groupSize
