@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- inputmask.unmask 
 - numeric alias - increment/decrement by ctrl-up/ctrl-down
 - numeric alias - round values
 - percentage alias
@@ -20,6 +21,7 @@ All notable changes to this project will be documented in this file.
 - Update placeholder handling
 
 ### Fixed
+- Provide convenient method to unmask value #929
 - Min value doesn't work with allowMinus #951
 - Escape value is inconsistent after mask #935
 - Escape optional marker, quantifiable marker, alternator marker and backslash not working #930

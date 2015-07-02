@@ -248,7 +248,7 @@ The prevalidator option is used to validate the characters before the definition
 When you insert or delete characters, they are only shifted when the definition type is the same.  This behavior can be overridden by giving a definitionSymbol. (see example x, y, z, which can be used for ip-address masking, the validation is different, but it is allowed to shift the characters between the definitions)
 
 ```javascript
-$.extend($.inputmask.defaults.definitions, {
+inputmask.extendDefinitions({
     'f': {  //masksymbol
         "validator": "[0-9\(\)\.\+/ ]",
         "cardinality": 1,
@@ -805,7 +805,7 @@ $(document).ready(function(){
 You can define within a definition to automatically lowercase or uppercase the entry in an input by giving the casing.<br>Casing can be null, "upper" or "lower"
 
 ```javascript
-    $.extend($.inputmask.defaults.definitions, {
+    inputmask.extendDefinitions({
         'A': {
             validator: "[A-Za-z]",
             cardinality: 1,
@@ -884,6 +884,13 @@ Instead of masking an input element it is also possible to use the inputmask for
 
 ```javascript
 var formattedDate = inputmask.format("2331973", { alias: "dd/mm/yyyy"});
+```
+
+## Value unmasking
+Unmask a given value against the mask.
+
+```javascript
+var unformattedDate = inputmask.unmask("23/03/1973", { alias: "dd/mm/yyyy"}); //23031973
 ```
 
 ## Value validating

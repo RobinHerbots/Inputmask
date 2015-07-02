@@ -214,6 +214,14 @@
 			"metadata": metadata //true/false getmetadata
 		}, generateMaskSet(opts, options && options.definitions !== undefined), opts);
 	}
+	inputmask.unmask = function(value, options) {
+		var opts = $.extend(true, {}, inputmask.prototype.defaults, options);
+		resolveAlias(opts.alias, options, opts);
+		return maskScope({
+			"action": "unmaskedvalue",
+			"value": value
+		}, generateMaskSet(opts, options && options.definitions !== undefined), opts);
+	}
 	inputmask.isValid = function(value, options) {
 		var opts = $.extend(true, {}, inputmask.prototype.defaults, options);
 		resolveAlias(opts.alias, options, opts);
@@ -2443,7 +2451,24 @@
 					return isComplete(actionObj["buffer"]);
 				case "unmaskedvalue":
 					el = actionObj["el"]
-					$el = $(el);
+
+					if (el == undefined) {
+						//store inputmask instance on the input with element reference
+						$el = $({});
+						el = $el[0];
+						el.inputmask = new inputmask();
+						el.inputmask.opts = opts;
+						el.inputmask.el = el;
+						el.inputmask.maskset = maskset;
+						el.inputmask.isRTL = opts.numericInput;
+
+						if (opts.numericInput) {
+							isRTL = true;
+						}
+						var valueBuffer = ($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call($el, actionObj["value"], opts) || actionObj["value"]) : actionObj["value"]).split('');
+						checkVal($el, false, false, isRTL ? valueBuffer.reverse() : valueBuffer);
+						$.isFunction(opts.onBeforeWrite) && opts.onBeforeWrite.call(this, undefined, getBuffer(), 0, opts);
+					} else $el = $(el);
 					maskset = el.inputmask.maskset;
 					opts = el.inputmask.opts;
 					isRTL = el.inputmask.isRTL;

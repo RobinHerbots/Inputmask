@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-91
+* Version: 3.1.64-92
 */
 !function($) {
     function inputmask(options) {
@@ -1092,8 +1092,15 @@
             isComplete(actionObj.buffer);
 
           case "unmaskedvalue":
-            return el = actionObj.el, $el = $(el), maskset = el.inputmask.maskset, opts = el.inputmask.opts, 
-            isRTL = el.inputmask.isRTL, unmaskedvalue($el);
+            if (el = actionObj.el, void 0 == el) {
+                $el = $({}), el = $el[0], el.inputmask = new inputmask(), el.inputmask.opts = opts, 
+                el.inputmask.el = el, el.inputmask.maskset = maskset, el.inputmask.isRTL = opts.numericInput, 
+                opts.numericInput && (isRTL = !0);
+                var valueBuffer = ($.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call($el, actionObj.value, opts) || actionObj.value : actionObj.value).split("");
+                checkVal($el, !1, !1, isRTL ? valueBuffer.reverse() : valueBuffer), $.isFunction(opts.onBeforeWrite) && opts.onBeforeWrite.call(this, void 0, getBuffer(), 0, opts);
+            } else $el = $(el);
+            return maskset = el.inputmask.maskset, opts = el.inputmask.opts, isRTL = el.inputmask.isRTL, 
+            unmaskedvalue($el);
 
           case "mask":
             undoValue = getBuffer().join(""), mask(actionObj.el);
@@ -1314,6 +1321,12 @@
             action: "format",
             value: value,
             metadata: metadata
+        }, generateMaskSet(opts, options && void 0 !== options.definitions), opts);
+    }, inputmask.unmask = function(value, options) {
+        var opts = $.extend(!0, {}, inputmask.prototype.defaults, options);
+        return resolveAlias(opts.alias, options, opts), maskScope({
+            action: "unmaskedvalue",
+            value: value
         }, generateMaskSet(opts, options && void 0 !== options.definitions), opts);
     }, inputmask.isValid = function(value, options) {
         var opts = $.extend(!0, {}, inputmask.prototype.defaults, options);
