@@ -424,6 +424,27 @@
 				insertTestDefinition(currentToken, m);
 			}
 
+			function defaultCase() {
+				if (openenings.length > 0) {
+					currentOpeningToken = openenings[openenings.length - 1];
+					maskCurrentToken(m, currentOpeningToken, lastMatch, !currentOpeningToken.isAlternator);
+					if (currentOpeningToken.isAlternator) { //handle alternator a | b case
+						alternator = openenings.pop();
+						for (var mndx = 0; mndx < alternator.matches.length; mndx++) {
+							alternator.matches[mndx].isGroup = false; //don't mark alternate groups as group
+						}
+						if (openenings.length > 0) {
+							currentOpeningToken = openenings[openenings.length - 1];
+							currentOpeningToken["matches"].push(alternator);
+						} else {
+							currentToken.matches.push(alternator);
+						}
+					}
+				} else {
+					maskCurrentToken(m, currentToken, lastMatch);
+				}
+			}
+
 			var currentToken = new maskToken(),
 				match,
 				m,
@@ -436,11 +457,11 @@
 
 			while (match = tokenizer.exec(mask)) {
 				m = match[0];
+
 				if (escaped) {
-					maskCurrentToken(m, currentToken, lastMatch);
+					defaultCase();
 					continue;
 				}
-
 				switch (m.charAt(0)) {
 					case opts.escapeChar:
 						escaped = true;
@@ -529,24 +550,7 @@
 						}
 						break;
 					default:
-						if (openenings.length > 0) {
-							currentOpeningToken = openenings[openenings.length - 1];
-							maskCurrentToken(m, currentOpeningToken, lastMatch, !currentOpeningToken.isAlternator);
-							if (currentOpeningToken.isAlternator) { //handle alternator a | b case
-								alternator = openenings.pop();
-								for (var mndx = 0; mndx < alternator.matches.length; mndx++) {
-									alternator.matches[mndx].isGroup = false; //don't mark alternate groups as group
-								}
-								if (openenings.length > 0) {
-									currentOpeningToken = openenings[openenings.length - 1];
-									currentOpeningToken["matches"].push(alternator);
-								} else {
-									currentToken.matches.push(alternator);
-								}
-							}
-						} else {
-							maskCurrentToken(m, currentToken, lastMatch);
-						}
+						defaultCase();
 				}
 			}
 
@@ -572,6 +576,7 @@
 					mask = opts.groupmarker.start + mask + opts.groupmarker.end + opts.quantifiermarker.start + repeatStart + "," + opts.repeat + opts.quantifiermarker.end;
 				}
 
+				// console.log(mask);
 				var masksetDefinition;
 				if (inputmask.prototype.masksCache[mask] == undefined || nocache === true) {
 					masksetDefinition = {
@@ -880,7 +885,7 @@
 						});
 						return true;
 					} else if (match.matches != undefined) {
-						if (match.isGroup && quantifierRecurse !== true) { //when a group pass along to the quantifier
+						if (match.isGroup && quantifierRecurse !== match) { //when a group pass along to the quantifier
 							match = handleMatch(maskToken.matches[tndx + 1], loopNdx);
 							if (match) return true;
 						} else if (match.isOptional) {
@@ -981,12 +986,12 @@
 								} else match = false;
 							}
 							if (match) return true;
-						} else if (match.isQuantifier && quantifierRecurse !== true) {
+						} else if (match.isQuantifier && quantifierRecurse !== maskToken.matches[$.inArray(match, maskToken.matches) - 1]) {
 							var qt = match;
-							for (var qndx = (ndxInitializer.length > 0 && quantifierRecurse !== true) ? ndxInitializer.shift() : 0;
+							for (var qndx = (ndxInitializer.length > 0) ? ndxInitializer.shift() : 0;
 								(qndx < (isNaN(qt.quantifier.max) ? qndx + 1 : qt.quantifier.max)) && testPos <= pos; qndx++) {
 								var tokenGroup = maskToken.matches[$.inArray(qt, maskToken.matches) - 1];
-								match = handleMatch(tokenGroup, [qndx].concat(loopNdx), true);
+								match = handleMatch(tokenGroup, [qndx].concat(loopNdx), tokenGroup); //set the tokenGroup as quantifierRecurse marker
 								if (match) {
 									//get latest match
 									var latestMatch = matches[matches.length - 1]["match"];
@@ -1061,7 +1066,7 @@
 
 			getMaskSet()['tests'][pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
 
-			//console.log(pos + " - " + JSON.stringify(matches));
+			// console.log(pos + " - " + JSON.stringify(matches));
 			return getMaskSet()['tests'][pos];
 		}
 

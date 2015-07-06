@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-92
+* Version: 3.1.64-97
 */
 !function($) {
     function inputmask(options) {
@@ -105,8 +105,19 @@
                 currentToken.matches.length > 0 && (void 0 == extraCondition || extraCondition) && (lastMatch = currentToken.matches[currentToken.matches.length - 1], 
                 verifyGroupMarker(lastMatch)), insertTestDefinition(currentToken, m);
             }
+            function defaultCase() {
+                if (openenings.length > 0) {
+                    if (currentOpeningToken = openenings[openenings.length - 1], maskCurrentToken(m, currentOpeningToken, lastMatch, !currentOpeningToken.isAlternator), 
+                    currentOpeningToken.isAlternator) {
+                        alternator = openenings.pop();
+                        for (var mndx = 0; mndx < alternator.matches.length; mndx++) alternator.matches[mndx].isGroup = !1;
+                        openenings.length > 0 ? (currentOpeningToken = openenings[openenings.length - 1], 
+                        currentOpeningToken.matches.push(alternator)) : currentToken.matches.push(alternator);
+                    }
+                } else maskCurrentToken(m, currentToken, lastMatch);
+            }
             for (var match, m, openingToken, currentOpeningToken, alternator, lastMatch, tokenizer = /(?:[?*+]|\{[0-9\+\*]+(?:,[0-9\+\*]*)?\})\??|[^.?*+^${[]()|\\]+|./g, escaped = !1, currentToken = new maskToken(), openenings = [], maskTokens = []; match = tokenizer.exec(mask); ) if (m = match[0], 
-            escaped) maskCurrentToken(m, currentToken, lastMatch); else switch (m.charAt(0)) {
+            escaped) defaultCase(); else switch (m.charAt(0)) {
               case opts.escapeChar:
                 escaped = !0;
                 break;
@@ -163,15 +174,7 @@
                 break;
 
               default:
-                if (openenings.length > 0) {
-                    if (currentOpeningToken = openenings[openenings.length - 1], maskCurrentToken(m, currentOpeningToken, lastMatch, !currentOpeningToken.isAlternator), 
-                    currentOpeningToken.isAlternator) {
-                        alternator = openenings.pop();
-                        for (var mndx = 0; mndx < alternator.matches.length; mndx++) alternator.matches[mndx].isGroup = !1;
-                        openenings.length > 0 ? (currentOpeningToken = openenings[openenings.length - 1], 
-                        currentOpeningToken.matches.push(alternator)) : currentToken.matches.push(alternator);
-                    }
-                } else maskCurrentToken(m, currentToken, lastMatch);
+                defaultCase();
             }
             return currentToken.matches.length > 0 && (lastMatch = currentToken.matches[currentToken.matches.length - 1], 
             verifyGroupMarker(lastMatch), maskTokens.push(currentToken)), maskTokens;
@@ -317,7 +320,7 @@
                         locator: loopNdx.reverse()
                     }), !0;
                     if (void 0 != match.matches) {
-                        if (match.isGroup && quantifierRecurse !== !0) {
+                        if (match.isGroup && quantifierRecurse !== match) {
                             if (match = handleMatch(maskToken.matches[tndx + 1], loopNdx)) return !0;
                         } else if (match.isOptional) {
                             var optionalToken = match;
@@ -369,9 +372,9 @@
                                 })), matches = currentMatches.concat(malternateMatches), testPos = pos, insertStop = matches.length > 0;
                             } else match = alternateToken.matches[altIndex] ? handleMatch(alternateToken.matches[altIndex], [ altIndex ].concat(loopNdx), quantifierRecurse) : !1;
                             if (match) return !0;
-                        } else if (match.isQuantifier && quantifierRecurse !== !0) for (var qt = match, qndx = ndxInitializer.length > 0 && quantifierRecurse !== !0 ? ndxInitializer.shift() : 0; qndx < (isNaN(qt.quantifier.max) ? qndx + 1 : qt.quantifier.max) && pos >= testPos; qndx++) {
+                        } else if (match.isQuantifier && quantifierRecurse !== maskToken.matches[$.inArray(match, maskToken.matches) - 1]) for (var qt = match, qndx = ndxInitializer.length > 0 ? ndxInitializer.shift() : 0; qndx < (isNaN(qt.quantifier.max) ? qndx + 1 : qt.quantifier.max) && pos >= testPos; qndx++) {
                             var tokenGroup = maskToken.matches[$.inArray(qt, maskToken.matches) - 1];
-                            if (match = handleMatch(tokenGroup, [ qndx ].concat(loopNdx), !0)) {
+                            if (match = handleMatch(tokenGroup, [ qndx ].concat(loopNdx), tokenGroup)) {
                                 var latestMatch = matches[matches.length - 1].match;
                                 latestMatch.optionalQuantifier = qndx > qt.quantifier.min - 1;
                                 var isFirstMatch = 0 == $.inArray(latestMatch, tokenGroup.matches);
