@@ -13,7 +13,12 @@
         "./dist/inputmask/inputmask.date.extensions.js",
         "./dist/inputmask/inputmask.numeric.extensions.js",
         "./dist/inputmask/inputmask.phone.extensions.js",
-        "./dist/inputmask/inputmask.regex.extensions.js"
+        "./dist/inputmask/inputmask.regex.extensions.js",
+        "./extra/phone-codes/phone-be.js",
+        "./extra/phone-codes/phone-codes.js",
+        "./extra/phone-codes/phone-nl.js",
+        "./extra/phone-codes/phone-ru.js",
+        "./extra/phone-codes/phone-uk.js"
     ],
     "dependencies": {
         "components/jquery": ">=1.7"
