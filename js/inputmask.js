@@ -309,16 +309,7 @@
 	}
 
 	function importAttributeOptions(npt, opts, userOptions) {
-		var $npt = $(npt);
-		var attrOptions = $npt.data("inputmask");
-		if (attrOptions && attrOptions != "") {
-			try {
-				attrOptions = attrOptions.replace(new RegExp("'", "g"), '"');
-				var dataoptions = $.parseJSON("{" + attrOptions + "}");
-				$.extend(true, userOptions, dataoptions);
-			} catch (ex) {} //need a more relax parseJSON
-		}
-		for (var option in opts) {
+		function importOption(option) {
 			var optionData = $npt.data("inputmask-" + option.toLowerCase());
 			if (optionData != undefined) {
 				optionData = typeof optionData == "boolean" ? optionData : optionData.toString();
@@ -330,9 +321,25 @@
 					userOptions[option] = optionData;
 			}
 		}
-		if (userOptions.alias)
+		var $npt = $(npt);
+		var attrOptions = $npt.data("inputmask");
+		if (attrOptions && attrOptions != "") {
+			try {
+				attrOptions = attrOptions.replace(new RegExp("'", "g"), '"');
+				var dataoptions = $.parseJSON("{" + attrOptions + "}");
+				$.extend(true, userOptions, dataoptions);
+			} catch (ex) {} //need a more relax parseJSON
+		}
+		for (var option in opts) {
+			importOption(option);
+		}
+		if (userOptions.alias) {
 			resolveAlias(userOptions.alias, userOptions, opts);
-		else $.extend(true, opts, userOptions);
+			for (var option in opts) {
+				importOption(option);
+			}
+		}
+		$.extend(true, opts, userOptions);
 		return opts;
 	}
 

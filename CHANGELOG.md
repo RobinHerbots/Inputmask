@@ -21,6 +21,7 @@ All notable changes to this project will be documented in this file.
 - Update placeholder handling
 
 ### Fixed
+- Typing 1000 becomes 1.00 using groupSeparator="." #959
 - phone-codes.js is missing when installing with bower #937
 - Repeat function doesn't work for dynamic masks #960
 - Provide convenient method to unmask value #929

@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-97
+* Version: 3.1.64-98
 */
 !function($) {
     function inputmask(options) {
@@ -30,20 +30,24 @@
         !1);
     }
     function importAttributeOptions(npt, opts, userOptions) {
+        function importOption(option) {
+            var optionData = $npt.data("inputmask-" + option.toLowerCase());
+            void 0 != optionData && (optionData = "boolean" == typeof optionData ? optionData : optionData.toString(), 
+            "mask" == option && 0 == optionData.indexOf("[") ? (userOptions[option] = optionData.replace(/[\s[\]]/g, "").split("','"), 
+            userOptions[option][0] = userOptions[option][0].replace("'", ""), userOptions[option][userOptions[option].length - 1] = userOptions[option][userOptions[option].length - 1].replace("'", "")) : userOptions[option] = optionData);
+        }
         var $npt = $(npt), attrOptions = $npt.data("inputmask");
         if (attrOptions && "" != attrOptions) try {
             attrOptions = attrOptions.replace(new RegExp("'", "g"), '"');
             var dataoptions = $.parseJSON("{" + attrOptions + "}");
             $.extend(!0, userOptions, dataoptions);
         } catch (ex) {}
-        for (var option in opts) {
-            var optionData = $npt.data("inputmask-" + option.toLowerCase());
-            void 0 != optionData && (optionData = "boolean" == typeof optionData ? optionData : optionData.toString(), 
-            "mask" == option && 0 == optionData.indexOf("[") ? (userOptions[option] = optionData.replace(/[\s[\]]/g, "").split("','"), 
-            userOptions[option][0] = userOptions[option][0].replace("'", ""), userOptions[option][userOptions[option].length - 1] = userOptions[option][userOptions[option].length - 1].replace("'", "")) : userOptions[option] = optionData);
+        for (var option in opts) importOption(option);
+        if (userOptions.alias) {
+            resolveAlias(userOptions.alias, userOptions, opts);
+            for (var option in opts) importOption(option);
         }
-        return userOptions.alias ? resolveAlias(userOptions.alias, userOptions, opts) : $.extend(!0, opts, userOptions), 
-        opts;
+        return $.extend(!0, opts, userOptions), opts;
     }
     function generateMaskSet(opts, nocache) {
         function analyseMask(mask) {
