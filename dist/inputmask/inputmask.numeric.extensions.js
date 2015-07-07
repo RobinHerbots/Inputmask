@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-98
+* Version: 3.1.64-99
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery", "./inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery"), require("./inputmask")) : factory(jQuery);
@@ -24,8 +24,7 @@
                     opts.integerDigits = parseInt(opts.integerDigits) + (0 == mod ? seps - 1 : seps);
                 }
                 opts.placeholder.length > 1 && (opts.placeholder = opts.placeholder.charAt(0)), 
-                opts.radixFocus = opts.radixFocus && "0" == opts.placeholder, opts.definitions[";"] = opts.definitions["~"], 
-                opts.definitions[";"].definitionSymbol = "~";
+                opts.definitions[";"] = opts.definitions["~"], opts.definitions[";"].definitionSymbol = "~";
                 var mask = autoEscape(opts.prefix);
                 return mask += "[+]", mask += "~{1," + opts.integerDigits + "}", void 0 != opts.digits && (isNaN(opts.digits) || parseInt(opts.digits) > 0) && (mask += opts.digitsOptional ? "[" + (opts.decimalProtect ? ":" : opts.radixPoint) + ";{" + opts.digits + "}]" : (opts.decimalProtect ? ":" : opts.radixPoint) + ";{" + opts.digits + "}"), 
                 "" != opts.negationSymbol.back && (mask += "[-]"), mask += autoEscape(opts.suffix), 
@@ -177,7 +176,7 @@
                 return !1;
             },
             radixHandler: function(chrs, maskset, pos, strict, opts) {
-                if (!strict && chrs === opts.radixPoint && opts.digits > 0) {
+                if (!strict && chrs === opts.radixPoint && void 0 != opts.digits && (isNaN(opts.digits) || parseInt(opts.digits) > 0)) {
                     var radixPos = $.inArray(opts.radixPoint, maskset.buffer), integerValue = maskset.buffer.join("").match(opts.regex.integerPart(opts));
                     if (-1 != radixPos && maskset.validPositions[radixPos]) return maskset.validPositions[radixPos - 1] ? {
                         caret: radixPos + 1

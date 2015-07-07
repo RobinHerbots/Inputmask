@@ -46,8 +46,8 @@ Optional extensions on the jquery.inputmask base
 				//enforce placeholder to single
 				if (opts.placeholder.length > 1)
 					opts.placeholder = opts.placeholder.charAt(0);
-				//only allow radixfocus when placeholder = 0
-				opts.radixFocus = opts.radixFocus && opts.placeholder == "0";
+				//only allow radixfocus when placeholder = 0  ???? why was this needed????
+				// opts.radixFocus = opts.radixFocus && opts.placeholder == "0";
 
 				opts.definitions[";"] = opts.definitions["~"]; //clone integer def for decimals
 				opts.definitions[";"].definitionSymbol = "~";
@@ -301,7 +301,7 @@ Optional extensions on the jquery.inputmask base
 				return false;
 			},
 			radixHandler: function(chrs, maskset, pos, strict, opts) {
-				if (!strict && chrs === opts.radixPoint && opts.digits > 0) {
+				if (!strict && chrs === opts.radixPoint && (opts.digits != undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0))) {
 					var radixPos = $.inArray(opts.radixPoint, maskset.buffer),
 						integerValue = maskset.buffer.join('').match(opts.regex.integerPart(opts));
 
