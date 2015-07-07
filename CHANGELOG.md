@@ -21,6 +21,7 @@ All notable changes to this project will be documented in this file.
 - Update placeholder handling
 
 ### Fixed
+- Decimal separator conversion #919
 - Entering a period on a blank 'numeric' alias input not allowed #888
 - Typing 1000 becomes 1.00 using groupSeparator="." #959
 - phone-codes.js is missing when installing with bower #937
@@ -33,7 +34,7 @@ All notable changes to this project will be documented in this file.
 - Decimal looses digits #924
 - Firefox: cursor jumps to the right when clicking anywhere on the value #921
 - Numeric inputMask doesn't rounds value #754
-- Chinese / Japanese characters are unable to mask #198
+- <strike>Chinese / Japanese characters are unable to mask #198</strike>
 - Infinite Loop on IE (v11) when using Japanese IME Keyboard #749
 - Delete key not working properly #799
 - Selecting and overwriting text will delete the character to the immediate right #914

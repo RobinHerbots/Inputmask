@@ -301,25 +301,29 @@ Optional extensions on the jquery.inputmask base
 				return false;
 			},
 			radixHandler: function(chrs, maskset, pos, strict, opts) {
-				if (!strict && chrs === opts.radixPoint && (opts.digits != undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0))) {
-					var radixPos = $.inArray(opts.radixPoint, maskset.buffer),
-						integerValue = maskset.buffer.join('').match(opts.regex.integerPart(opts));
+				if (!strict) {
+					if ($.inArray(chrs, [",", "."]) != -1) chrs = opts.radixPoint;
+					if (chrs === opts.radixPoint && (opts.digits != undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0))) {
+						var radixPos = $.inArray(opts.radixPoint, maskset.buffer),
+							integerValue = maskset.buffer.join('').match(opts.regex.integerPart(opts));
 
-					if (radixPos != -1 && maskset["validPositions"][radixPos]) {
-						if (maskset["validPositions"][radixPos - 1])
-							return {
+						if (radixPos != -1 && maskset["validPositions"][radixPos]) {
+							if (maskset["validPositions"][radixPos - 1])
+								return {
+									"caret": radixPos + 1
+								};
+							else return {
+								"pos": integerValue.index,
+								c: integerValue[0],
 								"caret": radixPos + 1
 							};
-						else return {
-							"pos": integerValue.index,
-							c: integerValue[0],
-							"caret": radixPos + 1
-						};
-					} else if (!integerValue || (integerValue["0"] == "0" && (integerValue.index + 1) != pos)) {
-						maskset.buffer[integerValue ? integerValue.index : pos] = "0";
-						return {
-							"pos": (integerValue ? integerValue.index : pos) + 1
-						};
+						} else if (!integerValue || (integerValue["0"] == "0" && (integerValue.index + 1) != pos)) {
+							maskset.buffer[integerValue ? integerValue.index : pos] = "0";
+							return {
+								"pos": (integerValue ? integerValue.index : pos) + 1,
+								c: opts.radixPoint
+							};
+						}
 					}
 				}
 				return false;

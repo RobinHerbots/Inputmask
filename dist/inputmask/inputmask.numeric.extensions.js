@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-99
+* Version: 3.1.64-100
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery", "./inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery"), require("./inputmask")) : factory(jQuery);
@@ -176,7 +176,8 @@
                 return !1;
             },
             radixHandler: function(chrs, maskset, pos, strict, opts) {
-                if (!strict && chrs === opts.radixPoint && void 0 != opts.digits && (isNaN(opts.digits) || parseInt(opts.digits) > 0)) {
+                if (!strict && (-1 != $.inArray(chrs, [ ",", "." ]) && (chrs = opts.radixPoint), 
+                chrs === opts.radixPoint && void 0 != opts.digits && (isNaN(opts.digits) || parseInt(opts.digits) > 0))) {
                     var radixPos = $.inArray(opts.radixPoint, maskset.buffer), integerValue = maskset.buffer.join("").match(opts.regex.integerPart(opts));
                     if (-1 != radixPos && maskset.validPositions[radixPos]) return maskset.validPositions[radixPos - 1] ? {
                         caret: radixPos + 1
@@ -187,7 +188,8 @@
                     };
                     if (!integerValue || "0" == integerValue[0] && integerValue.index + 1 != pos) return maskset.buffer[integerValue ? integerValue.index : pos] = "0", 
                     {
-                        pos: (integerValue ? integerValue.index : pos) + 1
+                        pos: (integerValue ? integerValue.index : pos) + 1,
+                        c: opts.radixPoint
                     };
                 }
                 return !1;

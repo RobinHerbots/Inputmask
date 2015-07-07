@@ -596,12 +596,9 @@ test("inputmask(\"decimal\", { digits: 2 }) - value=\"123\" - RomeroMsk", functi
 	$("#testmask").Type("123");
 	$.caret($("#testmask"), 0, 3);
 	$("#testmask").SendKey(",,..");
-	$("#testmask").SendKey(inputmask.keyCode.RIGHT);
-	$("#testmask").SendKey(inputmask.keyCode.RIGHT); //needed in test
-	$("#testmask").SendKey(inputmask.keyCode.RIGHT); //needed in test
 	$("#testmask").Type("45");
 
-	equal($("#testmask").val(), "12345", "Result " + $("#testmask").val());
+	equal($("#testmask").val(), "0.45", "Result " + $("#testmask").val());
 	$("#testmask").remove();
 });
 
