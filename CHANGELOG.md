@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- positionCaretOnTab option
 - inputmask.unmask
 - numeric alias - increment/decrement by ctrl-up/ctrl-down
 - numeric alias - round values
@@ -21,6 +22,7 @@ All notable changes to this project will be documented in this file.
 - Update placeholder handling
 
 ### Fixed
+- Auto position cursor at end of data on focus #965
 - Decimal separator conversion #919
 - Entering a period on a blank 'numeric' alias input not allowed #888
 - Typing 1000 becomes 1.00 using groupSeparator="." #959
