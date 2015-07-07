@@ -677,13 +677,17 @@ Do not jump over fixed parts in the mask.<br>Default: false
 Start nojumps as of<br>Default: 0
 
 ### keepStatic
-Default: undefined (~false) Use in combination with the alternator syntax Try to keep the mask static while typing. Decisions to alter the mask will be posponed if possible.
+Default: undefined (~false) Use in combination with the alternator syntax Try to keep the mask static while typing. Decisions to alter the mask will be postponed if possible.
 
 ex. $(selector).inputmask({ mask: ["+55-99-9999-9999", "+55-99-99999-9999", ], keepStatic: true });
 
 typing 1212345123 => should result in +55-12-1234-5123 type extra 4 => switch to +55-12-12345-1234
 
 When passing multiple masks (an array of masks) keepStatic is automatically set to true unless explicitly set through the options.
+
+### positionCaretOnTab
+
+When enabled the caret position is set after the latest valid position on TAB
 
 ### definitions
 ### ignorables

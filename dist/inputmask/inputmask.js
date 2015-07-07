@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-100
+* Version: 3.1.64-101
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery")) : factory(jQuery);
@@ -1040,7 +1040,9 @@
             }).bind("focus.inputmask", function(e) {
                 var input = ($(this), this), nptValue = input._valueGet();
                 opts.showMaskOnFocus && (!opts.showMaskOnHover || opts.showMaskOnHover && "" == nptValue) ? input._valueGet() != getBuffer().join("") && writeBuffer(input, getBuffer(), seekNext(getLastValidPosition())) : mouseEnter === !1 && caret(input, seekNext(getLastValidPosition())), 
-                undoValue = getBuffer().join("");
+                opts.positionCaretOnTab === !0 && setTimeout(function() {
+                    caret(input, seekNext(getLastValidPosition()));
+                }, 0), undoValue = getBuffer().join("");
             }).bind("mouseleave.inputmask", function() {
                 var $input = $(this), input = this;
                 if (mouseEnter = !1, opts.clearMaskOnLostFocus) {
@@ -1217,6 +1219,7 @@
             nojumps: !1,
             nojumpsThreshold: 0,
             keepStatic: void 0,
+            positionCaretOnTab: !1,
             definitions: {
                 "9": {
                     validator: "[0-9]",
@@ -1237,40 +1240,6 @@
             isComplete: void 0,
             canClearPosition: $.noop,
             postValidation: void 0
-        },
-        keyCode: {
-            ALT: 18,
-            BACKSPACE: 8,
-            CAPS_LOCK: 20,
-            COMMA: 188,
-            COMMAND: 91,
-            COMMAND_LEFT: 91,
-            COMMAND_RIGHT: 93,
-            CONTROL: 17,
-            DELETE: 46,
-            DOWN: 40,
-            END: 35,
-            ENTER: 13,
-            ESCAPE: 27,
-            HOME: 36,
-            INSERT: 45,
-            LEFT: 37,
-            MENU: 93,
-            NUMPAD_ADD: 107,
-            NUMPAD_DECIMAL: 110,
-            NUMPAD_DIVIDE: 111,
-            NUMPAD_ENTER: 108,
-            NUMPAD_MULTIPLY: 106,
-            NUMPAD_SUBTRACT: 109,
-            PAGE_DOWN: 34,
-            PAGE_UP: 33,
-            PERIOD: 190,
-            RIGHT: 39,
-            SHIFT: 16,
-            SPACE: 32,
-            TAB: 9,
-            UP: 38,
-            WINDOWS: 91
         },
         masksCache: {},
         mask: function(el) {

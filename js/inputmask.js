@@ -68,6 +68,7 @@
 			nojumps: false, //do not jump over fixed parts in the mask
 			nojumpsThreshold: 0, //start nojumps as of
 			keepStatic: undefined, //try to keep the mask static while typing. Decisions to alter the mask will be posponed if possible - undefined see auto selection for multi masks
+			positionCaretOnTab: false, //when enabled the caret position is set after the latest valid position on TAB
 			definitions: {
 				'9': {
 					validator: "[0-9]",
@@ -89,40 +90,6 @@
 			isComplete: undefined, //override for isComplete - args => buffer, opts - return true || false
 			canClearPosition: $.noop, //hook to alter the clear behavior in the stripValidPositions args => maskset, position, lastValidPosition, opts => return true|false
 			postValidation: undefined //hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, opts => return true/false
-		},
-		keyCode: {
-			ALT: 18,
-			BACKSPACE: 8,
-			CAPS_LOCK: 20,
-			COMMA: 188,
-			COMMAND: 91,
-			COMMAND_LEFT: 91,
-			COMMAND_RIGHT: 93,
-			CONTROL: 17,
-			DELETE: 46,
-			DOWN: 40,
-			END: 35,
-			ENTER: 13,
-			ESCAPE: 27,
-			HOME: 36,
-			INSERT: 45,
-			LEFT: 37,
-			MENU: 93,
-			NUMPAD_ADD: 107,
-			NUMPAD_DECIMAL: 110,
-			NUMPAD_DIVIDE: 111,
-			NUMPAD_ENTER: 108,
-			NUMPAD_MULTIPLY: 106,
-			NUMPAD_SUBTRACT: 109,
-			PAGE_DOWN: 34,
-			PAGE_UP: 33,
-			PERIOD: 190,
-			RIGHT: 39,
-			SHIFT: 16,
-			SPACE: 32,
-			TAB: 9,
-			UP: 38,
-			WINDOWS: 91
 		},
 		masksCache: {},
 		mask: function(el) {
@@ -2328,6 +2295,11 @@
 						}
 					} else if (mouseEnter === false) { //only executed on focus without mouseenter
 						caret(input, seekNext(getLastValidPosition()));
+					}
+					if (opts.positionCaretOnTab === true) {
+						setTimeout(function() {
+							caret(input, seekNext(getLastValidPosition()));
+						}, 0);
 					}
 					undoValue = getBuffer().join('');
 				}).bind("mouseleave.inputmask", function() {
