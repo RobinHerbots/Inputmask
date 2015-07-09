@@ -467,7 +467,7 @@ Optional extensions on the jquery.inputmask base
 					validator: function(chrs, maskset, pos, strict, opts) {
 						var isValid = opts.signHandler(chrs, maskset, pos, strict, opts);
 						if (!isValid) {
-							var radix = "[" + inputmask.escapeRegex(opts.radixPoint) + "]";
+							var radix = "[" + inputmask.escapeRegex(opts.radixPoint) + ",\\." + "]";
 							isValid = new RegExp(radix).test(chrs);
 							if (isValid && maskset["validPositions"][pos] && maskset["validPositions"][pos]["match"].placeholder == opts.radixPoint) {
 								isValid = {
@@ -475,7 +475,9 @@ Optional extensions on the jquery.inputmask base
 								};
 							}
 						}
-						return isValid;
+						return isValid ? {
+							c: opts.radixPoint
+						} : isValid;
 					},
 					cardinality: 1,
 					prevalidator: null,

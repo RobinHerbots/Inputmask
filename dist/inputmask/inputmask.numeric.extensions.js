@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-101
+* Version: 3.1.64-110
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery", "./inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery"), require("./inputmask")) : factory(jQuery);
@@ -282,12 +282,14 @@
                     validator: function(chrs, maskset, pos, strict, opts) {
                         var isValid = opts.signHandler(chrs, maskset, pos, strict, opts);
                         if (!isValid) {
-                            var radix = "[" + inputmask.escapeRegex(opts.radixPoint) + "]";
+                            var radix = "[" + inputmask.escapeRegex(opts.radixPoint) + ",\\.]";
                             isValid = new RegExp(radix).test(chrs), isValid && maskset.validPositions[pos] && maskset.validPositions[pos].match.placeholder == opts.radixPoint && (isValid = {
                                 caret: pos + 1
                             });
                         }
-                        return isValid;
+                        return isValid ? {
+                            c: opts.radixPoint
+                        } : isValid;
                     },
                     cardinality: 1,
                     prevalidator: null,

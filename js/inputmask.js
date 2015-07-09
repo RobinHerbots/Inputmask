@@ -382,11 +382,12 @@
 				}
 			}
 
-			function verifyGroupMarker(lastMatch) {
+			function verifyGroupMarker(lastMatch, isOpenGroup) {
 				if (lastMatch["isGroup"]) { //this is not a group but a normal mask => convert
 					lastMatch.isGroup = false;
 					insertTestDefinition(lastMatch, opts.groupmarker.start, 0);
-					insertTestDefinition(lastMatch, opts.groupmarker.end);
+					if (isOpenGroup !== true)
+						insertTestDefinition(lastMatch, opts.groupmarker.end);
 				}
 			}
 
@@ -419,6 +420,38 @@
 				}
 			}
 
+			function reverseTokens(maskToken) {
+				function reverseStatic(st) {
+					if (st == opts.optionalmarker.start)
+						st = opts.optionalmarker.end;
+					else if (st == opts.optionalmarker.end)
+						st = opts.optionalmarker.start;
+					else if (st == opts.groupmarker.start)
+						st = opts.groupmarker.end;
+					else if (st == opts.groupmarker.end)
+						st = opts.groupmarker.start;
+
+					return st;
+				}
+
+				maskToken.matches = maskToken.matches.reverse();
+				for (var match in maskToken.matches) {
+					var intMatch = parseInt(match);
+					if (maskToken.matches[match].isQuantifier && maskToken.matches[intMatch + 1] && maskToken.matches[intMatch + 1].isGroup) { //reposition quantifier
+						var qt = maskToken.matches[match];
+						maskToken.matches.splice(match, 1);
+						maskToken.matches.splice(intMatch + 1, 0, qt);
+					}
+					if (maskToken.matches[match].matches != undefined) {
+						maskToken.matches[match] = reverseTokens(maskToken.matches[match]);
+					} else {
+						maskToken.matches[match] = reverseStatic(maskToken.matches[match]);
+					}
+				}
+
+				return maskToken;
+			}
+
 			var currentToken = new maskToken(),
 				match,
 				m,
@@ -445,24 +478,26 @@
 					case opts.groupmarker.end:
 						// Group closing
 						openingToken = openenings.pop();
-						if (openenings.length > 0) {
-							currentOpeningToken = openenings[openenings.length - 1];
-							currentOpeningToken["matches"].push(openingToken);
-							if (currentOpeningToken.isAlternator) { //handle alternator (a) | (b) case
-								alternator = openenings.pop();
-								for (var mndx = 0; mndx < alternator.matches.length; mndx++) {
-									alternator.matches[mndx].isGroup = false; //don't mark alternate groups as group
+						if (openingToken != undefined) {
+							if (openenings.length > 0) {
+								currentOpeningToken = openenings[openenings.length - 1];
+								currentOpeningToken["matches"].push(openingToken);
+								if (currentOpeningToken.isAlternator) { //handle alternator (a) | (b) case
+									alternator = openenings.pop();
+									for (var mndx = 0; mndx < alternator.matches.length; mndx++) {
+										alternator.matches[mndx].isGroup = false; //don't mark alternate groups as group
+									}
+									if (openenings.length > 0) {
+										currentOpeningToken = openenings[openenings.length - 1];
+										currentOpeningToken["matches"].push(alternator);
+									} else {
+										currentToken.matches.push(alternator);
+									}
 								}
-								if (openenings.length > 0) {
-									currentOpeningToken = openenings[openenings.length - 1];
-									currentOpeningToken["matches"].push(alternator);
-								} else {
-									currentToken.matches.push(alternator);
-								}
+							} else {
+								currentToken.matches.push(openingToken);
 							}
-						} else {
-							currentToken.matches.push(openingToken);
-						}
+						} else defaultCase();
 						break;
 					case opts.optionalmarker.start:
 						// optional opening
@@ -528,12 +563,20 @@
 				}
 			}
 
+			while (openenings.length > 0) {
+				openingToken = openenings.pop();
+				verifyGroupMarker(openingToken, true);
+				currentToken.matches.push(openingToken);
+			}
 			if (currentToken.matches.length > 0) {
 				lastMatch = currentToken.matches[currentToken.matches.length - 1];
 				verifyGroupMarker(lastMatch);
 				maskTokens.push(currentToken);
 			}
 
+			if (opts.numericInput) {
+				reverseTokens(maskTokens[0]);
+			}
 			//console.log(JSON.stringify(maskTokens));
 			return maskTokens;
 		}
@@ -563,7 +606,7 @@
 						"metadata": metadata
 					};
 					if (nocache !== true)
-						inputmask.prototype.masksCache[mask] = masksetDefinition;
+						inputmask.prototype.masksCache[opts.numericInput ? mask.split('').reverse().join('') : mask] = masksetDefinition;
 				} else masksetDefinition = $.extend(true, {}, inputmask.prototype.masksCache[mask]);
 
 				return masksetDefinition;
@@ -572,20 +615,10 @@
 
 		function preProcessMask(mask) {
 			mask = mask.toString();
-			if (opts.numericInput) { //TODO FIX FOR DYNAMIC MASKS WITH QUANTIFIERS
-				mask = mask.split('').reverse();
-				for (var ndx = 0; ndx < mask.length; ndx++) {
-					if (mask[ndx] == opts.optionalmarker.start)
-						mask[ndx] = opts.optionalmarker.end;
-					else if (mask[ndx] == opts.optionalmarker.end)
-						mask[ndx] = opts.optionalmarker.start;
-					else if (mask[ndx] == opts.groupmarker.start)
-						mask[ndx] = opts.groupmarker.end;
-					else if (mask[ndx] == opts.groupmarker.end)
-						mask[ndx] = opts.groupmarker.start;
-				}
-				mask = mask.join('');
-			}
+			// if (opts.numericInput) {
+			// 	mask = mask.split('').reverse();
+			// 	mask = mask.join('');
+			// }
 			return mask;
 		}
 
@@ -596,7 +629,7 @@
 			if (opts.mask.length > 1) {
 				opts.keepStatic = opts.keepStatic == undefined ? true : opts.keepStatic; //enable by default when passing multiple masks when the option is not explicitly specified
 				var altMask = "(";
-				$.each(opts.mask, function(ndx, msk) {
+				$.each(opts.numericInput ? opts.mask.reverse() : opts.mask, function(ndx, msk) {
 					if (altMask.length > 1)
 						altMask += ")|(";
 					if (msk["mask"] != undefined && !$.isFunction(msk["mask"])) {
@@ -1537,8 +1570,8 @@
 			$.each(inputValue, function(ndx, charCode) {
 				var keypress = $.Event("keypress");
 				keypress.which = charCode.charCodeAt(0);
-				charCodes += charCode,
-					lvp = getLastValidPosition(undefined, true),
+				charCodes += charCode;
+				var lvp = getLastValidPosition(undefined, true),
 					lvTest = getMaskSet()["validPositions"][lvp],
 					nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : undefined, lvp);
 				if (!isTemplateMatch() || strict || opts.autoUnmask) {
@@ -1662,7 +1695,7 @@
 				if ((testPos.match.optionality ||
 						testPos.match.optionalQuantifier ||
 						(lvTestAlt && ((lvTestAlt != positions[pos]["locator"][lvTest.alternation] && testPos.match.fn != null) ||
-							(testPos.match.fn == null && testPos.locator[lvTest.alternation] && checkAlternationMatch(testPos.locator[lvTest.alternation].toString().split(","), lvTestAlt.split(",")) && getTests(pos)[0].def != "")))) && buffer[pos] == getPlaceholder(pos, testPos.match)) {
+							(testPos.match.fn == null && testPos.locator[lvTest.alternation] && checkAlternationMatch(testPos.locator[lvTest.alternation].toString().split(","), lvTestAlt.toString().split(",")) && getTests(pos)[0].def != "")))) && buffer[pos] == getPlaceholder(pos, testPos.match)) {
 					bl--;
 				} else break;
 			}
