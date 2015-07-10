@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-113
+* Version: 3.1.64-114
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery", "./inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery"), require("./inputmask")) : factory(jQuery);
@@ -59,7 +59,7 @@
             autoUnmask: !1,
             unmaskAsNumber: !1,
             postFormat: function(buffer, pos, reformatOnly, opts) {
-                opts.numericInput === !0 && (buffer = buffer.reverse());
+                opts.numericInput === !0 && (buffer = buffer.reverse(), pos = buffer.length - 1 - pos);
                 var suffixStripped = !1;
                 buffer.length >= opts.suffix.length && buffer.join("").indexOf(opts.suffix) == buffer.length - opts.suffix.length && (buffer.length = buffer.length - opts.suffix.length, 
                 suffixStripped = !0), pos = pos >= buffer.length ? buffer.length - 1 : pos < opts.prefix.length ? opts.prefix.length : pos;
@@ -88,7 +88,7 @@
                 if (-1 == newPos && charAtPos == opts.radixPoint && (newPos = $.inArray(opts.radixPoint, buffer)), 
                 reformatOnly ? buffer[newPos] = charAtPos : buffer.splice(newPos, 1), !needsRefresh && suffixStripped) for (var i = 0, l = opts.suffix.length; l > i; i++) buffer.push(opts.suffix.charAt(i));
                 return {
-                    pos: newPos,
+                    pos: buffer.length - 1 - newPos,
                     refreshFromBuffer: needsRefresh,
                     buffer: opts.numericInput === !0 ? buffer.reverse() : buffer
                 };

@@ -104,6 +104,7 @@ Optional extensions on the jquery.inputmask base
 				//console.log("input " + buffer);
 				if (opts.numericInput === true) {
 					buffer = buffer.reverse();
+					pos = buffer.length - 1 - pos;
 				}
 				var negationStrip = false;
 				var suffixStripped = false;
@@ -174,7 +175,7 @@ Optional extensions on the jquery.inputmask base
 				}
 				//console.log("formatted " + buffer + " refresh " + needsRefresh);
 				return {
-					pos: newPos,
+					pos: buffer.length - 1 - newPos,
 					"refreshFromBuffer": needsRefresh,
 					"buffer": opts.numericInput === true ? buffer.reverse() : buffer
 				};
