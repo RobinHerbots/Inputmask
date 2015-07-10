@@ -81,7 +81,7 @@ Optional extensions on the jquery.inputmask base
 			radixPoint: ".",
 			radixFocus: true,
 			groupSize: 3,
-			groupSeparator: ",",
+			groupSeparator: "",
 			autoGroup: false,
 			allowPlus: true,
 			allowMinus: true,
@@ -401,6 +401,7 @@ Optional extensions on the jquery.inputmask base
 								"refreshFromBuffer": true,
 								"buffer": (opts.prefix + opts.min).split('')
 							}, opts.postFormat((opts.prefix + opts.min).split(''), 0, true, opts));
+							isValid.refreshFromBuffer = true; //enforce refresh
 						}
 					}
 				}

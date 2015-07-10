@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-111
+* Version: 3.1.64-113
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery", "./inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery"), require("./inputmask")) : factory(jQuery);
@@ -39,7 +39,7 @@
             radixPoint: ".",
             radixFocus: !0,
             groupSize: 3,
-            groupSeparator: ",",
+            groupSeparator: "",
             autoGroup: !1,
             allowPlus: !0,
             allowMinus: !0,
@@ -237,7 +237,8 @@
                 isValid || (isValid = $.extend(!0, {
                     refreshFromBuffer: !0,
                     buffer: (opts.prefix + opts.min).split("")
-                }, opts.postFormat((opts.prefix + opts.min).split(""), 0, !0, opts))))), isValid;
+                }, opts.postFormat((opts.prefix + opts.min).split(""), 0, !0, opts)), isValid.refreshFromBuffer = !0))), 
+                isValid;
             },
             definitions: {
                 "~": {
