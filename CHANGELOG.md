@@ -39,7 +39,7 @@ All notable changes to this project will be documented in this file.
 - Firefox: cursor jumps to the right when clicking anywhere on the value #921
 - Numeric inputMask doesn't rounds value #754
 - <strike>Chinese / Japanese characters are unable to mask #198</strike>
-- Infinite Loop on IE (v11) when using Japanese IME Keyboard #749
+- <strike>Infinite Loop on IE (v11) when using Japanese IME Keyboard #749</strike>
 - Delete key not working properly #799
 - Selecting and overwriting text will delete the character to the immediate right #914
 - Can't delete digits after decimal point on negative numbers #892
