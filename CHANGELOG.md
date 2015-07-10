@@ -23,6 +23,7 @@ All notable changes to this project will be documented in this file.
 - Update placeholder handling
 
 ### Fixed
+- Make numericInput work with complex masks #963
 - Auto position cursor at end of data on focus #965
 - Decimal separator conversion #919
 - Entering a period on a blank 'numeric' alias input not allowed #888
