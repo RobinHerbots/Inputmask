@@ -15,8 +15,13 @@ Optional extensions on the jquery.inputmask base
       cardinality: 1,
       casing: "upper" //auto uppercasing
     },
-    '#': {
+    '+': { //alfanumeric uppercasing
       validator: "[0-9A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
+      cardinality: 1,
+      casing: "upper"
+    },
+    '#': { //hexadecimal
+      validator: "[0-9A-Fa-f]",
       cardinality: 1,
       casing: "upper"
     }

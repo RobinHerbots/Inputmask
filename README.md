@@ -310,7 +310,7 @@ inputmask.extendDefinitions({
     cardinality: 1,
     casing: "upper" //auto uppercasing
   },
-  '#': {
+  '+': {
     validator: "[0-9A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
     cardinality: 1,
     casing: "upper"
@@ -815,7 +815,7 @@ You can define within a definition to automatically lowercase or uppercase the e
             cardinality: 1,
             casing: "upper" //auto uppercasing
         },
-        '#': {
+        '+': {
             validator: "[A-Za-z\u0410-\u044F\u0401\u04510-9]",
             cardinality: 1,
             casing: "upper"

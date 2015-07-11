@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- hexadecimal definition (# in inputmask.extensions.js)
 - positionCaretOnTab option
 - inputmask.unmask
 - numeric alias - increment/decrement by ctrl-up/ctrl-down
@@ -16,6 +17,7 @@ All notable changes to this project will be documented in this file.
   - inputmask.extendAliases
 
 ### Updates
+- change alfanumeric uppercase definition from # to +
 - numericInput option also possible on dynamic-masks
 - remove $.inputmask in favor of inputmask class
 - remove "jquery." in the naming of the extensions to better reflect their denpendency
