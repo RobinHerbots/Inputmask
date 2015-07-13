@@ -809,7 +809,7 @@
 				var s = getMaskSet()["validPositions"][startPos];
 				if (i < startPos) i = startPos + 1;
 				var t = getMaskSet()["validPositions"][i];
-				if (t != undefined && s == undefined) {
+				if (t != undefined && isMask(i) && s == undefined) {
 					if (positionCanMatchDefinition(startPos, t.match.def) && isValid(startPos, t["input"], true) !== false) {
 						delete getMaskSet()["validPositions"][i];
 						i++;
