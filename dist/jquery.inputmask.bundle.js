@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-114
+* Version: 3.1.64-116
 */
 !function($) {
     function inputmask(options) {
@@ -1069,7 +1069,7 @@
                     if (selectedCaret.begin == selectedCaret.end) if (opts.radixFocus && "" != opts.radixPoint && -1 != $.inArray(opts.radixPoint, getBuffer()) && (firstClick || getBuffer().join("") == getBufferTemplate().join(""))) caret(input, $.inArray(opts.radixPoint, getBuffer())), 
                     firstClick = !1; else {
                         var clickPosition = selectedCaret.begin, lastPosition = seekNext(getLastValidPosition(clickPosition));
-                        lastPosition > clickPosition ? caret(input, isMask(clickPosition) ? clickPosition : seekNext(clickPosition)) : caret(input, lastPosition);
+                        lastPosition > clickPosition ? caret(input, isMask(clickPosition) ? clickPosition : seekNext(clickPosition)) : caret(input, opts.numericInput ? 0 : lastPosition);
                     }
                 }
             }).bind("dblclick.inputmask", function() {
@@ -1893,8 +1893,13 @@
             cardinality: 1,
             casing: "upper"
         },
-        "#": {
+        "&": {
             validator: "[0-9A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
+            cardinality: 1,
+            casing: "upper"
+        },
+        "#": {
+            validator: "[0-9A-Fa-f]",
             cardinality: 1,
             casing: "upper"
         }
@@ -2064,7 +2069,7 @@
                 if (-1 == newPos && charAtPos == opts.radixPoint && (newPos = $.inArray(opts.radixPoint, buffer)), 
                 reformatOnly ? buffer[newPos] = charAtPos : buffer.splice(newPos, 1), !needsRefresh && suffixStripped) for (var i = 0, l = opts.suffix.length; l > i; i++) buffer.push(opts.suffix.charAt(i));
                 return {
-                    pos: buffer.length - 1 - newPos,
+                    pos: opts.numericInput ? buffer.length - 1 - newPos : newPos,
                     refreshFromBuffer: needsRefresh,
                     buffer: opts.numericInput === !0 ? buffer.reverse() : buffer
                 };

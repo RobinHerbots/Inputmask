@@ -2367,7 +2367,7 @@
 								if (clickPosition < lastPosition) {
 									caret(input, isMask(clickPosition) ? clickPosition : seekNext(clickPosition));
 								} else {
-									caret(input, lastPosition);
+									caret(input, opts.numericInput ? 0 : lastPosition);
 								}
 							}
 						}

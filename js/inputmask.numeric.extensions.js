@@ -175,7 +175,7 @@ Optional extensions on the jquery.inputmask base
 				}
 				//console.log("formatted " + buffer + " refresh " + needsRefresh);
 				return {
-					pos: buffer.length - 1 - newPos,
+					pos: opts.numericInput ? buffer.length - 1 - newPos : newPos,
 					"refreshFromBuffer": needsRefresh,
 					"buffer": opts.numericInput === true ? buffer.reverse() : buffer
 				};
