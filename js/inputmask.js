@@ -1488,7 +1488,7 @@
 						resetMaskSet(true);
 						buffer = getBuffer();
 					}
-					caretPos = result.caret || caretPos;
+					caretPos = result.caret != undefined ? result.caret : caretPos;
 				}
 			}
 			input._valueSet(buffer.join(''));
@@ -1611,7 +1611,7 @@
 		function caret(input, begin, end) {
 			function TranslatePosition(pos) {
 				if (isRTL && typeof pos == 'number' && (!opts.greedy || opts.placeholder != "")) {
-					var bffrLght = getBuffer().length;
+					var bffrLght = getBuffer().join('').length; //join is needed because sometimes we get an empty buffer element which must not be counted for the caret position (numeric alias)
 					pos = bffrLght - pos;
 				}
 				return pos;

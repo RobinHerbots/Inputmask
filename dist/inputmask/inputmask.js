@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-117
+* Version: 3.1.64-118
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery")) : factory(jQuery);
@@ -641,7 +641,7 @@
                         refreshFromBuffer(refresh === !0 ? refresh : refresh.start, refresh.end, result.buffer || buffer), 
                         resetMaskSet(!0), buffer = getBuffer();
                     }
-                    caretPos = result.caret || caretPos;
+                    caretPos = void 0 != result.caret ? result.caret : caretPos;
                 }
             }
             input._valueSet(buffer.join("")), void 0 != caretPos && caret(input, caretPos), 
@@ -707,7 +707,7 @@
         function caret(input, begin, end) {
             function TranslatePosition(pos) {
                 if (isRTL && "number" == typeof pos && (!opts.greedy || "" != opts.placeholder)) {
-                    var bffrLght = getBuffer().length;
+                    var bffrLght = getBuffer().join("").length;
                     pos = bffrLght - pos;
                 }
                 return pos;

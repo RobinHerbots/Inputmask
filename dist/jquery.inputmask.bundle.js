@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-117
+* Version: 3.1.64-118
 */
 !function($) {
     function inputmask(options) {
@@ -639,7 +639,7 @@
                         refreshFromBuffer(refresh === !0 ? refresh : refresh.start, refresh.end, result.buffer || buffer), 
                         resetMaskSet(!0), buffer = getBuffer();
                     }
-                    caretPos = result.caret || caretPos;
+                    caretPos = void 0 != result.caret ? result.caret : caretPos;
                 }
             }
             input._valueSet(buffer.join("")), void 0 != caretPos && caret(input, caretPos), 
@@ -705,7 +705,7 @@
         function caret(input, begin, end) {
             function TranslatePosition(pos) {
                 if (isRTL && "number" == typeof pos && (!opts.greedy || "" != opts.placeholder)) {
-                    var bffrLght = getBuffer().length;
+                    var bffrLght = getBuffer().join("").length;
                     pos = bffrLght - pos;
                 }
                 return pos;
@@ -2040,7 +2040,7 @@
             autoUnmask: !1,
             unmaskAsNumber: !1,
             postFormat: function(buffer, pos, reformatOnly, opts) {
-                opts.numericInput === !0 && (buffer = buffer.reverse(), pos = buffer.length - 1 - pos);
+                opts.numericInput === !0 && (buffer = buffer.reverse(), isFinite(pos) && (pos = buffer.join("").length - pos - 1));
                 var suffixStripped = !1;
                 buffer.length >= opts.suffix.length && buffer.join("").indexOf(opts.suffix) == buffer.length - opts.suffix.length && (buffer.length = buffer.length - opts.suffix.length, 
                 suffixStripped = !0), pos = pos >= buffer.length ? buffer.length - 1 : pos < opts.prefix.length ? opts.prefix.length : pos;
@@ -2069,7 +2069,7 @@
                 if (-1 == newPos && charAtPos == opts.radixPoint && (newPos = $.inArray(opts.radixPoint, buffer)), 
                 reformatOnly ? buffer[newPos] = charAtPos : buffer.splice(newPos, 1), !needsRefresh && suffixStripped) for (var i = 0, l = opts.suffix.length; l > i; i++) buffer.push(opts.suffix.charAt(i));
                 return {
-                    pos: opts.numericInput ? buffer.length - 1 - newPos : newPos,
+                    pos: opts.numericInput && isFinite(pos) ? buffer.join("").length - newPos - 1 : newPos,
                     refreshFromBuffer: needsRefresh,
                     buffer: opts.numericInput === !0 ? buffer.reverse() : buffer
                 };
@@ -2183,9 +2183,9 @@
             },
             leadingZeroHandler: function(chrs, maskset, pos, strict, opts) {
                 if (1 == opts.numericInput) {
-                    if ("0" == maskset.buffer[maskset.buffer.length - 1]) return {
+                    if ("0" == maskset.buffer[maskset.buffer.length - opts.prefix.length - 1]) return {
                         pos: pos,
-                        remove: maskset.buffer.length - 1
+                        remove: maskset.buffer.length - opts.prefix.length - 1
                     };
                 } else {
                     var matchRslt = maskset.buffer.join("").match(opts.regex.integerNPart(opts)), radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
@@ -2338,6 +2338,7 @@
                     }
                     var buffer = [];
                     for (var vp in maskset.validPositions) buffer.push(maskset.validPositions[vp].input);
+                    1 == opts.numericInput && (position = buffer.join("").length - position, buffer.reverse()), 
                     matchRslt = buffer.join("").match(opts.regex.integerNPart(opts));
                     var radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
                     if (matchRslt && (-1 == radixPosition || radixPosition >= position)) if (0 == matchRslt[0].indexOf("0")) canClear = matchRslt.index != position || -1 == radixPosition; else {

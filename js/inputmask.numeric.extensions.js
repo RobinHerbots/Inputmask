@@ -101,10 +101,10 @@ Optional extensions on the jquery.inputmask base
 			autoUnmask: false,
 			unmaskAsNumber: false,
 			postFormat: function(buffer, pos, reformatOnly, opts) { //this needs to be removed // this is crap
-				//console.log("input " + buffer);
 				if (opts.numericInput === true) {
 					buffer = buffer.reverse();
-					pos = buffer.length - 1 - pos;
+					if (isFinite(pos))
+						pos = buffer.join('').length - pos - 1;
 				}
 				var negationStrip = false;
 				var suffixStripped = false;
@@ -175,7 +175,7 @@ Optional extensions on the jquery.inputmask base
 				}
 				//console.log("formatted " + buffer + " refresh " + needsRefresh);
 				return {
-					pos: opts.numericInput ? buffer.length - 1 - newPos : newPos,
+					pos: (opts.numericInput && isFinite(pos)) ? buffer.join('').length - newPos - 1 : newPos,
 					"refreshFromBuffer": needsRefresh,
 					"buffer": opts.numericInput === true ? buffer.reverse() : buffer
 				};
@@ -341,10 +341,10 @@ Optional extensions on the jquery.inputmask base
 			},
 			leadingZeroHandler: function(chrs, maskset, pos, strict, opts) {
 				if (opts.numericInput == true) {
-					if (maskset.buffer[maskset.buffer.length - 1] == "0")
+					if (maskset.buffer[maskset.buffer.length - opts.prefix.length - 1] == "0")
 						return {
 							"pos": pos,
-							"remove": maskset.buffer.length - 1
+							"remove": maskset.buffer.length - opts.prefix.length - 1
 						};
 				} else {
 					var matchRslt = maskset.buffer.join('').match(opts.regex.integerNPart(opts)),
@@ -598,6 +598,10 @@ Optional extensions on the jquery.inputmask base
 					//build new buffer from validPositions
 					for (var vp in maskset.validPositions) {
 						buffer.push(maskset.validPositions[vp].input);
+					}
+					if (opts.numericInput == true) {
+						position = buffer.join('').length - position;
+						buffer.reverse();
 					}
 					matchRslt = buffer.join('').match(opts.regex.integerNPart(opts));
 					var radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
