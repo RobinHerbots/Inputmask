@@ -101,6 +101,7 @@ Optional extensions on the jquery.inputmask base
 			autoUnmask: false,
 			unmaskAsNumber: false,
 			postFormat: function(buffer, pos, reformatOnly, opts) { //this needs to be removed // this is crap
+				// console.log(buffer);
 				if (opts.numericInput === true) {
 					buffer = buffer.reverse();
 					if (isFinite(pos))
@@ -205,14 +206,22 @@ Optional extensions on the jquery.inputmask base
 							buffer.splice(matchRslt.index, 1);
 						}
 						var radixPosition = $.inArray(opts.radixPoint, buffer);
-						if (radixPosition != -1 && isFinite(opts.digits) && !opts.digitsOptional) {
-							for (var i = 1; i <= opts.digits; i++) {
-								if (buffer[radixPosition + i] == undefined || buffer[radixPosition + i] == opts.placeholder.charAt(0)) buffer[radixPosition + i] = "0";
+						if (radixPosition != -1) {
+							if (isFinite(opts.digits) && !opts.digitsOptional) {
+								for (var i = 1; i <= opts.digits; i++) {
+									if (buffer[radixPosition + i] == undefined || buffer[radixPosition + i] == opts.placeholder.charAt(0)) buffer[radixPosition + i] = "0";
+								}
+								return {
+									"refreshFromBuffer": true,
+									"buffer": buffer
+								};
+							} else if (radixPosition == buffer.length - opts.suffix.length - 1) {
+								buffer.splice(radixPosition, 1);
+								return {
+									"refreshFromBuffer": true,
+									"buffer": buffer
+								};
 							}
-							return {
-								"refreshFromBuffer": true,
-								"buffer": buffer
-							};
 						}
 					}
 				}
@@ -573,7 +582,7 @@ Optional extensions on the jquery.inputmask base
 			},
 			canClearPosition: function(maskset, position, lvp, strict, opts) {
 				var positionInput = maskset["validPositions"][position].input,
-					canClear = (positionInput != opts.radixPoint && isFinite(positionInput)) ||
+					canClear = ((positionInput != opts.radixPoint || (maskset["validPositions"][position].match.fn != null && opts.decimalProtect == false)) || isFinite(positionInput)) ||
 					position == lvp ||
 					positionInput == opts.groupSeparator ||
 					positionInput == opts.negationSymbol.front ||
@@ -610,7 +619,7 @@ Optional extensions on the jquery.inputmask base
 							canClear = matchRslt.index != position || radixPosition == -1;
 						} else {
 							var intPart = parseInt(matchRslt["0"].replace(new RegExp(inputmask.escapeRegex(opts.groupSeparator), "g"), ""));
-							if (radixPosition != -1 && intPart < 10 /*&& opts.placeholder.charAt(0) == "0"*/ ) {
+							if (radixPosition != -1 && intPart < 10 && maskset["validPositions"][position]) {
 								maskset["validPositions"][position].input = "0";
 								maskset["p"] = opts.prefix.length + 1;
 								canClear = false;

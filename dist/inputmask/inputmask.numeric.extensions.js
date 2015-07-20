@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-118
+* Version: 3.1.64-124
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery", "./inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery"), require("./inputmask")) : factory(jQuery);
@@ -106,9 +106,16 @@
                         var tmpBufSplit = "" != opts.radixPoint ? buffer.join("").split(opts.radixPoint) : [ buffer.join("") ], matchRslt = tmpBufSplit[0].match(opts.regex.integerPart(opts)), matchRsltDigits = 2 == tmpBufSplit.length ? tmpBufSplit[1].match(opts.regex.integerNPart(opts)) : void 0;
                         !matchRslt || matchRslt[0] != opts.negationSymbol.front + "0" && matchRslt[0] != opts.negationSymbol.front && "+" != matchRslt[0] || void 0 != matchRsltDigits && !matchRsltDigits[0].match(/^0+$/) || buffer.splice(matchRslt.index, 1);
                         var radixPosition = $.inArray(opts.radixPoint, buffer);
-                        if (-1 != radixPosition && isFinite(opts.digits) && !opts.digitsOptional) {
-                            for (var i = 1; i <= opts.digits; i++) (void 0 == buffer[radixPosition + i] || buffer[radixPosition + i] == opts.placeholder.charAt(0)) && (buffer[radixPosition + i] = "0");
-                            return {
+                        if (-1 != radixPosition) {
+                            if (isFinite(opts.digits) && !opts.digitsOptional) {
+                                for (var i = 1; i <= opts.digits; i++) (void 0 == buffer[radixPosition + i] || buffer[radixPosition + i] == opts.placeholder.charAt(0)) && (buffer[radixPosition + i] = "0");
+                                return {
+                                    refreshFromBuffer: !0,
+                                    buffer: buffer
+                                };
+                            }
+                            if (radixPosition == buffer.length - opts.suffix.length - 1) return buffer.splice(radixPosition, 1), 
+                            {
                                 refreshFromBuffer: !0,
                                 buffer: buffer
                             };
@@ -346,7 +353,7 @@
                 return initialValue.toString();
             },
             canClearPosition: function(maskset, position, lvp, strict, opts) {
-                var positionInput = maskset.validPositions[position].input, canClear = positionInput != opts.radixPoint && isFinite(positionInput) || position == lvp || positionInput == opts.groupSeparator || positionInput == opts.negationSymbol.front || positionInput == opts.negationSymbol.back;
+                var positionInput = maskset.validPositions[position].input, canClear = positionInput != opts.radixPoint || null != maskset.validPositions[position].match.fn && 0 == opts.decimalProtect || isFinite(positionInput) || position == lvp || positionInput == opts.groupSeparator || positionInput == opts.negationSymbol.front || positionInput == opts.negationSymbol.back;
                 if (canClear && isFinite(positionInput)) {
                     var matchRslt;
                     if (!strict && maskset.buffer) {
@@ -362,7 +369,7 @@
                     var radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
                     if (matchRslt && (-1 == radixPosition || radixPosition >= position)) if (0 == matchRslt[0].indexOf("0")) canClear = matchRslt.index != position || -1 == radixPosition; else {
                         var intPart = parseInt(matchRslt[0].replace(new RegExp(inputmask.escapeRegex(opts.groupSeparator), "g"), ""));
-                        -1 != radixPosition && 10 > intPart && (maskset.validPositions[position].input = "0", 
+                        -1 != radixPosition && 10 > intPart && maskset.validPositions[position] && (maskset.validPositions[position].input = "0", 
                         maskset.p = opts.prefix.length + 1, canClear = !1);
                     }
                 }

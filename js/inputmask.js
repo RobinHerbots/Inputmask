@@ -808,6 +808,7 @@
 				while (getMaskSet()["validPositions"][startPos] != undefined) startPos++;
 				var s = getMaskSet()["validPositions"][startPos];
 				if (i < startPos) i = startPos + 1;
+				// while (getMaskSet()["validPositions"][i] == undefined) i++;
 				var t = getMaskSet()["validPositions"][i];
 				if (t != undefined && isMask(i) && s == undefined) {
 					if (positionCanMatchDefinition(startPos, t.match.def) && isValid(startPos, t["input"], true) !== false) {
@@ -820,7 +821,7 @@
 			//remove radixpoint if needed
 			var lvp = getLastValidPosition(),
 				ml = getMaskLength();
-			if (nocheck !== true && getMaskSet()["validPositions"][lvp] != undefined && getMaskSet()["validPositions"][lvp].input == opts.radixPoint)
+			if (strict !== true && nocheck !== true && getMaskSet()["validPositions"][lvp] != undefined && getMaskSet()["validPositions"][lvp].input == opts.radixPoint)
 				delete getMaskSet()["validPositions"][lvp];
 
 			for (i = lvp + 1; i <= ml; i++) {
@@ -1984,16 +1985,15 @@
 			}
 
 			stripValidPositions(pos.begin, pos.end, false, strict);
-			if (strict !== true) {
+			if (strict !== true)
 				generalize(); //revert the alternation
 
-				var lvp = getLastValidPosition(pos.begin);
-				if (lvp < pos.begin) {
-					if (lvp == -1) resetMaskSet();
-					getMaskSet()["p"] = seekNext(lvp);
-				} else {
-					getMaskSet()["p"] = pos.begin;
-				}
+			var lvp = getLastValidPosition(pos.begin);
+			if (lvp < pos.begin) {
+				if (lvp == -1) resetMaskSet();
+				getMaskSet()["p"] = seekNext(lvp);
+			} else if (strict !== true) {
+				getMaskSet()["p"] = pos.begin;
 			}
 		}
 

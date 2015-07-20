@@ -1453,3 +1453,18 @@ test("numeric alias - value=\"-1000\" minvalue = -1000", function() {
 	equal($("#testmask")[0]._valueGet(), "-1000", "Result " + $("#testmask")[0]._valueGet());
 	$("#testmask").remove();
 });
+
+test("decimal alias - overwrite decimal value - shahvaiz", function() {
+	var $fixture = $("#qunit-fixture");
+	$fixture.append('<input type="text" id="testmask" />');
+	$("#testmask").inputmask("decimal", {
+		autoGroup: true,
+		groupSeparator: ",",
+		suffix: '%'
+	});
+	$("#testmask").Type("123.123");
+	$.caret($("#testmask"), 4, 7);
+	$("#testmask").Type("4");
+	equal($("#testmask")[0]._valueGet(), "123.4%", "Result " + $("#testmask")[0]._valueGet());
+	$("#testmask").remove();
+});

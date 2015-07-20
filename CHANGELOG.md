@@ -25,6 +25,8 @@ All notable changes to this project will be documented in this file.
 - Update placeholder handling
 
 ### Fixed
+- Cannot overwrite characters when highlighting the characters to the right of the decimal #974
+- Decimal mask accepts "123,456." (RadixPoint with no number after it) #973
 - Make numericInput work with complex masks #963
 - Auto position cursor at end of data on focus #965
 - Decimal separator conversion #919
