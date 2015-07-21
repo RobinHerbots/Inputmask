@@ -99,6 +99,19 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
     uglify: createUglifyConfig("js"),
     clean: ["dist"],
+    jshint: {
+      files: ['js/**/*.js', 'qunit/*.js', 'Gruntfile.js'],
+      options: {
+        jshintrc: true,
+        reporter: require('jshint-stylish')
+      }
+    },
+    jscs: {
+      src: ['js/**/*.js', 'qunit/*.js', 'Gruntfile.js'],
+      options: {
+        config: '.jscsrc'
+      }
+    },
     qunit: {
       files: ['qunit/qunit.html']
     },
@@ -149,6 +162,8 @@ module.exports = function(grunt) {
   // Load the plugin that provides the tasks.
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-jscs');
   grunt.loadNpmTasks('grunt-contrib-qunit');
   grunt.loadNpmTasks('grunt-bump');
   grunt.loadNpmTasks('grunt-release');
@@ -158,6 +173,9 @@ module.exports = function(grunt) {
   grunt.registerTask('publish:patch', ['clean', 'bump:patch', 'uglify', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
   grunt.registerTask('publish:minor', ['clean', 'bump:minor', 'uglify', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
   grunt.registerTask('publish:major', ['clean', 'bump:major', 'uglify', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
+
+  grunt.registerTask('test', ['jshint', 'jscs', 'qunit']);
+
 
   // Default task(s).
   grunt.registerTask('default', ['bump:prerelease', 'clean', 'uglify']);
