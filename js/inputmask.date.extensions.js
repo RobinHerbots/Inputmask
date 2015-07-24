@@ -9,7 +9,7 @@ Optional extensions on the jquery.inputmask base
 */
 (function($) {
   //date & time aliases
-  inputmask.extendDefinitions({
+  Inputmask.extendDefinitions({
     'h': { //hours
       validator: "[01][0-9]|2[0-3]",
       cardinality: 2,
@@ -57,7 +57,7 @@ Optional extensions on the jquery.inputmask base
       }]
     }
   });
-  inputmask.extendAliases({
+  Inputmask.extendAliases({
     'dd/mm/yyyy': {
       mask: "1/2/y",
       placeholder: "dd/mm/yyyy",
@@ -65,11 +65,11 @@ Optional extensions on the jquery.inputmask base
         val1pre: new RegExp("[0-3]"), //daypre
         val1: new RegExp("0[1-9]|[12][0-9]|3[01]"), //day
         val2pre: function(separator) {
-          var escapedSeparator = inputmask.escapeRegex.call(this, separator);
+          var escapedSeparator = Inputmask.escapeRegex.call(this, separator);
           return new RegExp("((0[1-9]|[12][0-9]|3[01])" + escapedSeparator + "[01])");
         }, //monthpre
         val2: function(separator) {
-            var escapedSeparator = inputmask.escapeRegex.call(this, separator);
+            var escapedSeparator = Inputmask.escapeRegex.call(this, separator);
             return new RegExp("((0[1-9]|[12][0-9])" + escapedSeparator + "(0[1-9]|1[012]))|(30" + escapedSeparator + "(0[13-9]|1[012]))|(31" + escapedSeparator + "(0[13578]|1[02]))");
           } //month
       },
@@ -103,7 +103,7 @@ Optional extensions on the jquery.inputmask base
       },
       onKeyDown: function(e, buffer, caretPos, opts) {
         var $input = $(this);
-        if (e.ctrlKey && e.keyCode == inputmask.keyCode.RIGHT) {
+        if (e.ctrlKey && e.keyCode == Inputmask.keyCode.RIGHT) {
           var today = new Date();
           $input.val(today.getDate().toString() + (today.getMonth() + 1).toString() + today.getFullYear().toString());
           $input.triggerHandler('setvalue.inputmask');
@@ -346,11 +346,11 @@ Optional extensions on the jquery.inputmask base
       alias: "dd/mm/yyyy", //reuse functionality of dd/mm/yyyy alias
       regex: {
         val2pre: function(separator) {
-          var escapedSeparator = inputmask.escapeRegex.call(this, separator);
+          var escapedSeparator = Inputmask.escapeRegex.call(this, separator);
           return new RegExp("((0[13-9]|1[012])" + escapedSeparator + "[0-3])|(02" + escapedSeparator + "[0-2])");
         }, //daypre
         val2: function(separator) {
-          var escapedSeparator = inputmask.escapeRegex.call(this, separator);
+          var escapedSeparator = Inputmask.escapeRegex.call(this, separator);
           return new RegExp("((0[1-9]|1[012])" + escapedSeparator + "(0[1-9]|[12][0-9]))|((0[13-9]|1[012])" + escapedSeparator + "30)|((0[13578]|1[02])" + escapedSeparator + "31)");
         }, //day
         val1pre: new RegExp("[01]"), //monthpre
@@ -359,7 +359,7 @@ Optional extensions on the jquery.inputmask base
       leapday: "02/29/",
       onKeyDown: function(e, buffer, caretPos, opts) {
         var $input = $(this);
-        if (e.ctrlKey && e.keyCode == inputmask.keyCode.RIGHT) {
+        if (e.ctrlKey && e.keyCode == Inputmask.keyCode.RIGHT) {
           var today = new Date();
           $input.val((today.getMonth() + 1).toString() + today.getDate().toString() + today.getFullYear().toString());
           $input.triggerHandler('setvalue.inputmask');
@@ -373,7 +373,7 @@ Optional extensions on the jquery.inputmask base
       leapday: "/02/29",
       onKeyDown: function(e, buffer, caretPos, opts) {
         var $input = $(this);
-        if (e.ctrlKey && e.keyCode == inputmask.keyCode.RIGHT) {
+        if (e.ctrlKey && e.keyCode == Inputmask.keyCode.RIGHT) {
           var today = new Date();
           $input.val(today.getFullYear().toString() + (today.getMonth() + 1).toString() + today.getDate().toString());
           $input.triggerHandler('setvalue.inputmask');
@@ -600,11 +600,11 @@ Optional extensions on the jquery.inputmask base
 	'shamsi': {
         regex: {
             val2pre: function (separator) {
-                var escapedSeparator = inputmask.escapeRegex.call(this, separator);
+                var escapedSeparator = Inputmask.escapeRegex.call(this, separator);
                 return new RegExp("((0[1-9]|1[012])" + escapedSeparator + "[0-3])");
             },
             val2: function (separator) {
-                var escapedSeparator = inputmask.escapeRegex.call(this, separator);
+                var escapedSeparator = Inputmask.escapeRegex.call(this, separator);
                 return new RegExp("((0[1-9]|1[012])" + escapedSeparator + "(0[1-9]|[12][0-9]))|((0[1-9]|1[012])" + escapedSeparator + "30)|((0[1-6])" + escapedSeparator + "31)");
             },
             val1pre: new RegExp("[01]"),
@@ -619,5 +619,5 @@ Optional extensions on the jquery.inputmask base
     }
   });
 
-  return inputmask;
+  return Inputmask;
 })(jQuery);

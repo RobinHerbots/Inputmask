@@ -9,7 +9,7 @@ Optional extensions on the jquery.inputmask base
 */
 (function($) {
   //extra definitions
-  inputmask.extendDefinitions({
+  Inputmask.extendDefinitions({
     'A': {
       validator: "[A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
       cardinality: 1,
@@ -26,7 +26,7 @@ Optional extensions on the jquery.inputmask base
       casing: "upper"
     }
   });
-  inputmask.extendAliases({
+  Inputmask.extendAliases({
     'url': {
       mask: "ir",
       placeholder: "",
@@ -130,5 +130,5 @@ Optional extensions on the jquery.inputmask base
       }
     }
   });
-  return inputmask;
+  return Inputmask;
 })(jQuery);

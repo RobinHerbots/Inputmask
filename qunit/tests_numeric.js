@@ -63,7 +63,7 @@ test("numeric -placeholder 0 type 00000 - Webunity", function() {
 	$("#testmask")[0].focus();
 	$("#testmask").Type("00000");
 
-	equal($("#testmask")[0]._valueGet(), "0", "Result " + $("#testmask").val());
+	equal($("#testmask")[0].inputmask._valueGet(), "0", "Result " + $("#testmask").val());
 	$("#testmask").remove();
 });
 
@@ -96,7 +96,7 @@ test("numeric placeholder 0 prefix € type 0.123 - backspace - Webunity", funct
 
 	$("#testmask")[0].focus();
 	$("#testmask").Type("0.123");
-	$("#testmask").SendKey(inputmask.keyCode.BACKSPACE);
+	$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
 
 	equal($("#testmask").val(), "€ 0.12", "Result " + $("#testmask").val());
 	$("#testmask").remove();
@@ -325,9 +325,9 @@ asyncTest("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\", deci
 	$("#testmask")[0].focus();
 
 	$("#testmask").Type("12345.123");
-	$("#testmask").SendKey(inputmask.keyCode.BACKSPACE);
-	$("#testmask").SendKey(inputmask.keyCode.BACKSPACE);
-	$("#testmask").SendKey(inputmask.keyCode.BACKSPACE);
+	$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
+	$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
+	$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
 	$("#testmask").blur();
 	setTimeout(function() {
 		start();
@@ -346,12 +346,12 @@ test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - inp
 	$("#testmask")[0].focus();
 
 	$("#testmask").Type("12345.123");
-	$("#testmask").SendKey(inputmask.keyCode.LEFT);
-	$("#testmask").SendKey(inputmask.keyCode.LEFT);
-	$("#testmask").SendKey(inputmask.keyCode.LEFT);
-	$("#testmask").SendKey(inputmask.keyCode.DELETE);
-	$("#testmask").SendKey(inputmask.keyCode.DELETE);
-	$("#testmask").SendKey(inputmask.keyCode.DELETE);
+	$("#testmask").SendKey(Inputmask.keyCode.LEFT);
+	$("#testmask").SendKey(Inputmask.keyCode.LEFT);
+	$("#testmask").SendKey(Inputmask.keyCode.LEFT);
+	$("#testmask").SendKey(Inputmask.keyCode.DELETE);
+	$("#testmask").SendKey(Inputmask.keyCode.DELETE);
+	$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 	$("#testmask").Type(".789");
 
 	equal($("#testmask").val(), "12,345.789", "Result " + $("#testmask").val());
@@ -388,14 +388,14 @@ test("inputmask(\"decimal\", { autoGroup: false, groupSeparator: \",\", decimalP
 
 	$("#testmask").Type("12345.123");
 	//$("#testmask").click();
-	$("#testmask").SendKey(inputmask.keyCode.LEFT);
-	$("#testmask").SendKey(inputmask.keyCode.LEFT);
-	$("#testmask").SendKey(inputmask.keyCode.LEFT);
-	$("#testmask").SendKey(inputmask.keyCode.LEFT);
-	$("#testmask").SendKey(inputmask.keyCode.DELETE);
-	$("#testmask").SendKey(inputmask.keyCode.DELETE);
-	$("#testmask").SendKey(inputmask.keyCode.DELETE);
-	$("#testmask").SendKey(inputmask.keyCode.DELETE);
+	$("#testmask").SendKey(Inputmask.keyCode.LEFT);
+	$("#testmask").SendKey(Inputmask.keyCode.LEFT);
+	$("#testmask").SendKey(Inputmask.keyCode.LEFT);
+	$("#testmask").SendKey(Inputmask.keyCode.LEFT);
+	$("#testmask").SendKey(Inputmask.keyCode.DELETE);
+	$("#testmask").SendKey(Inputmask.keyCode.DELETE);
+	$("#testmask").SendKey(Inputmask.keyCode.DELETE);
+	$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 
 	equal($("#testmask").val(), "12345", "Result " + $("#testmask").val());
 	$("#testmask").remove();
@@ -413,14 +413,14 @@ test("inputmask(\"decimal\", { autoGroup: false, groupSeparator: \",\", decimalP
 
 	$("#testmask").Type("12345.123");
 	//$("#testmask").click();
-	$("#testmask").SendKey(inputmask.keyCode.LEFT);
-	$("#testmask").SendKey(inputmask.keyCode.LEFT);
-	$("#testmask").SendKey(inputmask.keyCode.LEFT);
-	$("#testmask").SendKey(inputmask.keyCode.LEFT);
-	$("#testmask").SendKey(inputmask.keyCode.DELETE);
-	$("#testmask").SendKey(inputmask.keyCode.DELETE);
-	$("#testmask").SendKey(inputmask.keyCode.DELETE);
-	$("#testmask").SendKey(inputmask.keyCode.DELETE);
+	$("#testmask").SendKey(Inputmask.keyCode.LEFT);
+	$("#testmask").SendKey(Inputmask.keyCode.LEFT);
+	$("#testmask").SendKey(Inputmask.keyCode.LEFT);
+	$("#testmask").SendKey(Inputmask.keyCode.LEFT);
+	$("#testmask").SendKey(Inputmask.keyCode.DELETE);
+	$("#testmask").SendKey(Inputmask.keyCode.DELETE);
+	$("#testmask").SendKey(Inputmask.keyCode.DELETE);
+	$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 
 	equal($("#testmask").val(), "12345", "Result " + $("#testmask").val());
 	$("#testmask").remove();
@@ -437,14 +437,14 @@ test("inputmask(\"decimal\", { autoGroup: false, groupSeparator: \",\", decimalP
 	$("#testmask")[0].focus();
 
 	$("#testmask").Type("12345.123");
-	$("#testmask").SendKey(inputmask.keyCode.LEFT);
-	$("#testmask").SendKey(inputmask.keyCode.LEFT);
-	$("#testmask").SendKey(inputmask.keyCode.LEFT);
-	$("#testmask").SendKey(inputmask.keyCode.LEFT);
-	$("#testmask").SendKey(inputmask.keyCode.DELETE);
-	$("#testmask").SendKey(inputmask.keyCode.DELETE);
-	$("#testmask").SendKey(inputmask.keyCode.DELETE);
-	$("#testmask").SendKey(inputmask.keyCode.DELETE);
+	$("#testmask").SendKey(Inputmask.keyCode.LEFT);
+	$("#testmask").SendKey(Inputmask.keyCode.LEFT);
+	$("#testmask").SendKey(Inputmask.keyCode.LEFT);
+	$("#testmask").SendKey(Inputmask.keyCode.LEFT);
+	$("#testmask").SendKey(Inputmask.keyCode.DELETE);
+	$("#testmask").SendKey(Inputmask.keyCode.DELETE);
+	$("#testmask").SendKey(Inputmask.keyCode.DELETE);
+	$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 	$("#testmask").Type(".789");
 
 	equal($("#testmask").val(), "12345.789", "Result " + $("#testmask").val());
@@ -638,7 +638,7 @@ test("decimal alias with groupseparator delete - YoussefTaghlabi", function() {
 	$("#testmask")[0].focus();
 	$("#testmask").Type("1234567");
 	$.caret($("#testmask"), 0);
-	$("#testmask").SendKey(inputmask.keyCode.DELETE);
+	$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 
 	equal($("#testmask").val(), "234,567", "Result " + $("#testmask").val());
 	$("#testmask").remove();
@@ -660,7 +660,7 @@ test("decimal alias with groupseparator backspace - YoussefTaghlabi", function()
 	$("#testmask")[0].focus();
 	$("#testmask").Type("1234567");
 	$.caret($("#testmask"), 1);
-	$("#testmask").SendKey(inputmask.keyCode.BACKSPACE);
+	$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
 
 	equal($("#testmask").val(), "234,567", "Result " + $("#testmask").val());
 	$("#testmask").remove();
@@ -1050,7 +1050,7 @@ test("inputmask(\"decimal\") - 123456   78 - babupca", function() {
 	$.caret($("#testmask"), 8);
 	$("#testmask").Type("78");
 	$.caret($("#testmask"), 5);
-	$("#testmask").SendKey(inputmask.keyCode.BACKSPACE);
+	$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
 	equal($("#testmask").val(), "12346.078", "Result " + $("#testmask").val());
 	$("#testmask").remove();
 });
@@ -1065,7 +1065,7 @@ asyncTest("currency alias - 1234 => del 1", function() {
 	setTimeout(function() {
 		$("#testmask").Type("1234");
 		$.caret($("#testmask"), 3);
-		$("#testmask").SendKey(inputmask.keyCode.BACKSPACE);
+		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
 		start();
 		equal($("#testmask").val(), "$ 234.00", "Result " + $("#testmask").val());
 		$("#testmask").remove();
@@ -1116,7 +1116,7 @@ asyncTest("currency alias - 1.23 => del 1 in integer part", function() {
 	setTimeout(function() {
 		$("#testmask").Type("1.23");
 		$.caret($("#testmask"), 3);
-		$("#testmask").SendKey(inputmask.keyCode.BACKSPACE);
+		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
 		start();
 		equal($("#testmask").val(), "$ 0.23", "Result " + $("#testmask").val());
 		$("#testmask").remove();
@@ -1133,9 +1133,9 @@ asyncTest("currency alias - 1234.56 => delete all", function() {
 	setTimeout(function() {
 		$("#testmask").Type("1234.56");
 		$.caret($("#testmask"), 0, 10);
-		$("#testmask").SendKey(inputmask.keyCode.BACKSPACE);
+		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
 		start();
-		equal($("#testmask")[0]._valueGet(), "$ 0.00", "Result " + $("#testmask")[0]._valueGet());
+		equal($("#testmask")[0].inputmask._valueGet(), "$ 0.00", "Result " + $("#testmask")[0].inputmask._valueGet());
 		$("#testmask").remove();
 	}, 5);
 });
@@ -1173,7 +1173,7 @@ asyncTest("currency alias - 1234.56 => select integer press 1 - babupca", functi
 		$.caret($("#testmask"), 0, 7);
 		$("#testmask").SendKey("1");
 		start();
-		equal($("#testmask")[0]._valueGet(), "$ 1.56", "Result " + $("#testmask")[0]._valueGet());
+		equal($("#testmask")[0].inputmask._valueGet(), "$ 1.56", "Result " + $("#testmask")[0].inputmask._valueGet());
 		$("#testmask").remove();
 	}, 5);
 });
@@ -1190,7 +1190,7 @@ asyncTest("currency alias - 123.56 => select integer press 1 - babupca", functio
 		$.caret($("#testmask"), 0, 5);
 		$("#testmask").SendKey("1");
 		start();
-		equal($("#testmask")[0]._valueGet(), "$ 1.56", "Result " + $("#testmask")[0]._valueGet());
+		equal($("#testmask")[0].inputmask._valueGet(), "$ 1.56", "Result " + $("#testmask")[0].inputmask._valueGet());
 		$("#testmask").remove();
 	}, 5);
 });
@@ -1209,7 +1209,7 @@ asyncTest("currency alias - 123.56 => select integer press 1 - babupca", functio
 		$.caret($("#testmask"), 0, 4);
 		$("#testmask").SendKey("1");
 		start();
-		equal($("#testmask")[0]._valueGet(), "$1.56", "Result " + $("#testmask")[0]._valueGet());
+		equal($("#testmask")[0].inputmask._valueGet(), "$1.56", "Result " + $("#testmask")[0].inputmask._valueGet());
 		$("#testmask").remove();
 	}, 5);
 });
@@ -1225,7 +1225,7 @@ asyncTest("currency alias - min 1000", function() {
 	$("#testmask").blur();
 	setTimeout(function() {
 		start();
-		equal($("#testmask")[0]._valueGet(), "$ 1,000.00", "Result " + $("#testmask")[0]._valueGet());
+		equal($("#testmask")[0].inputmask._valueGet(), "$ 1,000.00", "Result " + $("#testmask")[0].inputmask._valueGet());
 		$("#testmask").remove();
 	}, 5);
 });
@@ -1242,7 +1242,7 @@ asyncTest("currency alias - max 1000 - type 1234", function() {
 	setTimeout(function() {
 		$("#testmask").Type("1234");
 		start();
-		equal($("#testmask")[0]._valueGet(), "$ 123.00", "Result " + $("#testmask")[0]._valueGet());
+		equal($("#testmask")[0].inputmask._valueGet(), "$ 123.00", "Result " + $("#testmask")[0].inputmask._valueGet());
 		$("#testmask").remove();
 	}, 5);
 });
@@ -1256,8 +1256,8 @@ test("currency alias - type 1010 delete first 1 - FilipeZhou", function() {
 	$("#testmask").click();
 	$("#testmask").Type("1010");
 	$.caret($("#testmask"), 3);
-	$("#testmask").SendKey(inputmask.keyCode.BACKSPACE);
-	equal($("#testmask")[0]._valueGet(), "$ 10.00", "Result " + $("#testmask")[0]._valueGet());
+	$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
+	equal($("#testmask")[0].inputmask._valueGet(), "$ 10.00", "Result " + $("#testmask")[0].inputmask._valueGet());
 	$("#testmask").remove();
 });
 
@@ -1270,8 +1270,8 @@ test("currency alias - type 1010 delete middle 1 - FilipeZhou", function() {
 	$("#testmask").click();
 	$("#testmask").Type("1010");
 	$.caret($("#testmask"), 6);
-	$("#testmask").SendKey(inputmask.keyCode.BACKSPACE);
-	equal($("#testmask")[0]._valueGet(), "$ 100.00", "Result " + $("#testmask")[0]._valueGet());
+	$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
+	equal($("#testmask")[0].inputmask._valueGet(), "$ 100.00", "Result " + $("#testmask")[0].inputmask._valueGet());
 	$("#testmask").remove();
 });
 
@@ -1284,8 +1284,8 @@ test("currency alias - type -1234 delete -", function() {
 	$("#testmask").click();
 	$("#testmask").Type("-1234");
 	$.caret($("#testmask"), 0);
-	$("#testmask").SendKey(inputmask.keyCode.DELETE);
-	equal($("#testmask")[0]._valueGet(), "$ 1,234.00", "Result " + $("#testmask")[0]._valueGet());
+	$("#testmask").SendKey(Inputmask.keyCode.DELETE);
+	equal($("#testmask")[0].inputmask._valueGet(), "$ 1,234.00", "Result " + $("#testmask")[0].inputmask._valueGet());
 	$("#testmask").remove();
 });
 
@@ -1304,7 +1304,7 @@ test("decimal alias - type 12345.12 add 6 in front - freeze - DatXN", function()
 	$("#testmask").Type("12345.12");
 	$.caret($("#testmask"), 0);
 	$("#testmask").SendKey("6");
-	equal($("#testmask")[0]._valueGet(), "12345.12", "Result " + $("#testmask")[0]._valueGet());
+	equal($("#testmask")[0].inputmask._valueGet(), "12345.12", "Result " + $("#testmask")[0].inputmask._valueGet());
 	$("#testmask").remove();
 });
 
@@ -1327,7 +1327,7 @@ test("decimal alias - type 123456789 - add , before 8 - jpontet", function() {
 	$("#testmask").Type("123456789");
 	$.caret($("#testmask"), 9);
 	$("#testmask").SendKey(",");
-	equal($("#testmask")[0]._valueGet(), "1 234 567,89", "Result " + $("#testmask")[0]._valueGet());
+	equal($("#testmask")[0].inputmask._valueGet(), "1 234 567,89", "Result " + $("#testmask")[0].inputmask._valueGet());
 	$("#testmask").remove();
 });
 
@@ -1350,8 +1350,8 @@ test("decimal alias - type 123456789 - add , before 8 - backspace - jpontet", fu
 	$("#testmask").Type("123456789");
 	$.caret($("#testmask"), 9);
 	$("#testmask").SendKey(",");
-	$("#testmask").SendKey(inputmask.keyCode.BACKSPACE);
-	equal($("#testmask")[0]._valueGet(), "123 456,89", "Result " + $("#testmask")[0]._valueGet());
+	$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
+	equal($("#testmask")[0].inputmask._valueGet(), "123 456,89", "Result " + $("#testmask")[0].inputmask._valueGet());
 	$("#testmask").remove();
 });
 
@@ -1374,7 +1374,7 @@ test("decimal alias - type 1234567890 - add , before 9 - jpontet", function() {
 	$("#testmask").Type("1234567890");
 	$.caret($("#testmask"), 11);
 	$("#testmask").SendKey(",");
-	equal($("#testmask")[0]._valueGet(), "12 345 678,90", "Result " + $("#testmask")[0]._valueGet());
+	equal($("#testmask")[0].inputmask._valueGet(), "12 345 678,90", "Result " + $("#testmask")[0].inputmask._valueGet());
 	$("#testmask").remove();
 });
 
@@ -1397,8 +1397,8 @@ test("decimal alias - type 1234567890 - add , before 9 - backspace - jpontet", f
 	$("#testmask").Type("1234567890");
 	$.caret($("#testmask"), 11);
 	$("#testmask").SendKey(",");
-	$("#testmask").SendKey(inputmask.keyCode.BACKSPACE);
-	equal($("#testmask")[0]._valueGet(), "1 234 567,90", "Result " + $("#testmask")[0]._valueGet());
+	$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
+	equal($("#testmask")[0].inputmask._valueGet(), "1 234 567,90", "Result " + $("#testmask")[0].inputmask._valueGet());
 	$("#testmask").remove();
 });
 
@@ -1411,7 +1411,7 @@ test("numeric alias - value=\"-1234\" minvalue = 1000", function() {
 		max: 3000
 	});
 
-	equal($("#testmask")[0]._valueGet(), "1000", "Result " + $("#testmask")[0]._valueGet());
+	equal($("#testmask")[0].inputmask._valueGet(), "1000", "Result " + $("#testmask")[0].inputmask._valueGet());
 	$("#testmask").remove();
 });
 
@@ -1424,7 +1424,7 @@ test("numeric alias - value=\"-1234\" minvalue = -1000", function() {
 		max: 3000
 	});
 
-	equal($("#testmask")[0]._valueGet(), "-1000", "Result " + $("#testmask")[0]._valueGet());
+	equal($("#testmask")[0].inputmask._valueGet(), "-1000", "Result " + $("#testmask")[0].inputmask._valueGet());
 	$("#testmask").remove();
 });
 
@@ -1437,7 +1437,7 @@ test("numeric alias - value=\"1000\" minvalue = 1000", function() {
 		max: 3000
 	});
 
-	equal($("#testmask")[0]._valueGet(), "1000", "Result " + $("#testmask")[0]._valueGet());
+	equal($("#testmask")[0].inputmask._valueGet(), "1000", "Result " + $("#testmask")[0].inputmask._valueGet());
 	$("#testmask").remove();
 });
 
@@ -1450,7 +1450,7 @@ test("numeric alias - value=\"-1000\" minvalue = -1000", function() {
 		max: 3000
 	});
 
-	equal($("#testmask")[0]._valueGet(), "-1000", "Result " + $("#testmask")[0]._valueGet());
+	equal($("#testmask")[0].inputmask._valueGet(), "-1000", "Result " + $("#testmask")[0].inputmask._valueGet());
 	$("#testmask").remove();
 });
 
@@ -1465,6 +1465,6 @@ test("decimal alias - overwrite decimal value - shahvaiz", function() {
 	$("#testmask").Type("123.123");
 	$.caret($("#testmask"), 4, 7);
 	$("#testmask").Type("4");
-	equal($("#testmask")[0]._valueGet(), "123.4%", "Result " + $("#testmask")[0]._valueGet());
+	equal($("#testmask")[0].inputmask._valueGet(), "123.4%", "Result " + $("#testmask")[0].inputmask._valueGet());
 	$("#testmask").remove();
 });

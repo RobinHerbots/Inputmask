@@ -1,0 +1,26 @@
+{
+  "rules": {
+    "curly": [1, "multi"],
+    "eqeqeq": [2, "smart"],
+    "indent": [
+      1,
+      "tab"
+    ],
+    "quotes": [
+      1,
+      "double",
+      "avoid-escape"
+    ],
+    "no-loop-func": [0],
+    "no-underscore-dangle": [0],
+    "no-use-before-define": [
+      2,
+      "nofunc"
+    ],
+    "no-shadow": [0],
+    "strict": [0]
+  },
+  "env": {
+    "browser": true
+  }
+}

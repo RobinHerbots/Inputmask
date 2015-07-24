@@ -9,7 +9,7 @@ Optional extensions on the jquery.inputmask base
 */
 (function($) {
 	//number aliases
-	inputmask.extendAliases({
+	Inputmask.extendAliases({
 		'numeric': {
 			mask: function(opts) {
 				function autoEscape(txt) {
@@ -40,6 +40,9 @@ Optional extensions on the jquery.inputmask base
 						var seps = Math.floor(opts.integerDigits / opts.groupSize);
 						var mod = opts.integerDigits % opts.groupSize;
 						opts.integerDigits = parseInt(opts.integerDigits) + (mod == 0 ? seps - 1 : seps);
+						if (opts.integerDigits < 1) {
+							opts.integerDigits = "*";
+						}
 					}
 				}
 
@@ -120,7 +123,7 @@ Optional extensions on the jquery.inputmask base
 					charAtPos = buffer[pos];
 				if (opts.groupSeparator == "" || (opts.numericInput !== true &&
 						($.inArray(opts.radixPoint, buffer) != -1 && pos > $.inArray(opts.radixPoint, buffer)) ||
-						new RegExp('[' + inputmask.escapeRegex(opts.negationSymbol.front) + '\+]').test(charAtPos))) {
+						new RegExp('[' + Inputmask.escapeRegex(opts.negationSymbol.front) + '\+]').test(charAtPos))) {
 					if (suffixStripped) {
 						for (var i = 0, l = opts.suffix.length; i < l; i++) {
 							buffer.push(opts.suffix.charAt(i));
@@ -143,7 +146,7 @@ Optional extensions on the jquery.inputmask base
 				var bufVal = cbuf.join(''),
 					bufValOrigin = bufVal;
 				if (bufVal.length > 0 && opts.autoGroup || (reformatOnly && bufVal.indexOf(opts.groupSeparator) != -1)) {
-					var escapedGroupSeparator = inputmask.escapeRegex(opts.groupSeparator);
+					var escapedGroupSeparator = Inputmask.escapeRegex(opts.groupSeparator);
 					needsRefresh = bufVal.indexOf(opts.groupSeparator) == 0;
 					bufVal = bufVal.replace(new RegExp(escapedGroupSeparator, "g"), '');
 					var radixSplit = bufVal.split(opts.radixPoint);
@@ -187,8 +190,8 @@ Optional extensions on the jquery.inputmask base
 					var maskedValue = buffer.join(''),
 						processValue = maskedValue.replace(opts.prefix, "");
 					processValue = processValue.replace(opts.suffix, "");
-					processValue = processValue.replace(new RegExp(inputmask.escapeRegex(opts.groupSeparator), "g"), "");
-					if (opts.radixPoint === ",") processValue = processValue.replace(inputmask.escapeRegex(opts.radixPoint), ".");
+					processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "");
+					if (opts.radixPoint === ",") processValue = processValue.replace(Inputmask.escapeRegex(opts.radixPoint), ".");
 
 					if (isFinite(processValue)) {
 						if (isFinite(opts.min) && parseFloat(processValue) < parseFloat(opts.min)) {
@@ -234,10 +237,10 @@ Optional extensions on the jquery.inputmask base
 			},
 			regex: {
 				integerPart: function(opts) {
-					return new RegExp('[' + inputmask.escapeRegex(opts.negationSymbol.front) + '\+]?\\d+');
+					return new RegExp('[' + Inputmask.escapeRegex(opts.negationSymbol.front) + '\+]?\\d+');
 				},
 				integerNPart: function(opts) {
-					return new RegExp('[\\d' + inputmask.escapeRegex(opts.groupSeparator) + ']+');
+					return new RegExp('[\\d' + Inputmask.escapeRegex(opts.groupSeparator) + ']+');
 				}
 			},
 			signHandler: function(chrs, maskset, pos, strict, opts) {
@@ -393,11 +396,11 @@ Optional extensions on the jquery.inputmask base
 					maskedValue = buffer.join(''),
 					processValue = maskedValue.replace(opts.prefix, "");
 				processValue = processValue.replace(opts.suffix, "");
-				processValue = processValue.replace(new RegExp(inputmask.escapeRegex(opts.groupSeparator), "g"), "");
-				if (opts.radixPoint === ",") processValue = processValue.replace(inputmask.escapeRegex(opts.radixPoint), ".");
+				processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "");
+				if (opts.radixPoint === ",") processValue = processValue.replace(Inputmask.escapeRegex(opts.radixPoint), ".");
 				//handle negation symbol
-				processValue = processValue.replace(new RegExp("^" + inputmask.escapeRegex(opts.negationSymbol.front)), "-");
-				processValue = processValue.replace(new RegExp(inputmask.escapeRegex(opts.negationSymbol.back) + "$"), "");
+				processValue = processValue.replace(new RegExp("^" + Inputmask.escapeRegex(opts.negationSymbol.front)), "-");
+				processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.negationSymbol.back) + "$"), "");
 				processValue = processValue == opts.negationSymbol.front ? processValue + "0" : processValue;
 
 				if (isFinite(processValue)) {
@@ -425,7 +428,7 @@ Optional extensions on the jquery.inputmask base
 						if (!isValid) {
 							isValid = opts.radixHandler(chrs, maskset, pos, strict, opts);
 							if (!isValid) {
-								isValid = strict ? new RegExp("[0-9" + inputmask.escapeRegex(opts.groupSeparator) + "]").test(chrs) : new RegExp("[0-9]").test(chrs);
+								isValid = strict ? new RegExp("[0-9" + Inputmask.escapeRegex(opts.groupSeparator) + "]").test(chrs) : new RegExp("[0-9]").test(chrs);
 								if (isValid === true) {
 									isValid = opts.leadingZeroHandler(chrs, maskset, pos, strict, opts);
 									if (isValid === true) {
@@ -496,7 +499,7 @@ Optional extensions on the jquery.inputmask base
 					validator: function(chrs, maskset, pos, strict, opts) {
 						var isValid = opts.signHandler(chrs, maskset, pos, strict, opts);
 						if (!isValid) {
-							var radix = "[" + inputmask.escapeRegex(opts.radixPoint) + ",\\." + "]";
+							var radix = "[" + Inputmask.escapeRegex(opts.radixPoint) + ",\\." + "]";
 							isValid = new RegExp(radix).test(chrs);
 							if (isValid && maskset["validPositions"][pos] && maskset["validPositions"][pos]["match"].placeholder == opts.radixPoint) {
 								isValid = {
@@ -518,9 +521,9 @@ Optional extensions on the jquery.inputmask base
 			onUnMask: function(maskedValue, unmaskedValue, opts) {
 				var processValue = maskedValue.replace(opts.prefix, "");
 				processValue = processValue.replace(opts.suffix, "");
-				processValue = processValue.replace(new RegExp(inputmask.escapeRegex(opts.groupSeparator), "g"), "");
+				processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "");
 				if (opts.unmaskAsNumber) {
-					processValue = processValue.replace(inputmask.escapeRegex.call(this, opts.radixPoint), ".");
+					processValue = processValue.replace(Inputmask.escapeRegex.call(this, opts.radixPoint), ".");
 					return Number(processValue);
 				}
 				return processValue;
@@ -534,8 +537,8 @@ Optional extensions on the jquery.inputmask base
 
 				var processValue = maskedValue.replace(opts.prefix, "");
 				processValue = processValue.replace(opts.suffix, "");
-				processValue = processValue.replace(new RegExp(inputmask.escapeRegex(opts.groupSeparator), "g"), "");
-				if (opts.radixPoint === ",") processValue = processValue.replace(inputmask.escapeRegex(opts.radixPoint), ".");
+				processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "");
+				if (opts.radixPoint === ",") processValue = processValue.replace(Inputmask.escapeRegex(opts.radixPoint), ".");
 				return isFinite(processValue);
 			},
 			onBeforeMask: function(initialValue, opts) {
@@ -555,7 +558,7 @@ Optional extensions on the jquery.inputmask base
 							initialValue = initialValue.indexOf(".") < initialValue.indexOf(",") ? initialValue.replace(/\./g, "") : initialValue = initialValue.replace(/,/g, "");
 						}
 					} else {
-						initialValue = initialValue.replace(new RegExp(inputmask.escapeRegex(opts.groupSeparator), "g"), "");
+						initialValue = initialValue.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "");
 					}
 				}
 
@@ -573,7 +576,7 @@ Optional extensions on the jquery.inputmask base
 					if (parseInt(opts.digits) < decPart.toString().length) {
 						var digitsFactor = Math.pow(10, parseInt(opts.digits));
 						//make the initialValue a valid javascript number for the parsefloat
-						initialValue = initialValue.replace(inputmask.escapeRegex(opts.radixPoint), ".");
+						initialValue = initialValue.replace(Inputmask.escapeRegex(opts.radixPoint), ".");
 						initialValue = Math.round(parseFloat(initialValue) * digitsFactor) / digitsFactor;
 						initialValue = initialValue.toString().replace(".", opts.radixPoint);
 					}
@@ -594,7 +597,7 @@ Optional extensions on the jquery.inputmask base
 					if (!strict && maskset["buffer"]) {
 						matchRslt = maskset["buffer"].join('').substr(0, position).match(opts.regex.integerNPart(opts));
 						var pos = position + 1,
-							isNull = matchRslt == null || parseInt(matchRslt["0"].replace(new RegExp(inputmask.escapeRegex(opts.groupSeparator), "g"), "")) == 0;
+							isNull = matchRslt == null || parseInt(matchRslt["0"].replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "")) == 0;
 						if (isNull) {
 							while (maskset["validPositions"][pos] && (maskset["validPositions"][pos].input == opts.groupSeparator || maskset["validPositions"][pos].input == "0")) {
 								delete maskset["validPositions"][pos];
@@ -618,7 +621,7 @@ Optional extensions on the jquery.inputmask base
 						if (matchRslt["0"].indexOf("0") == 0) {
 							canClear = matchRslt.index != position || radixPosition == -1;
 						} else {
-							var intPart = parseInt(matchRslt["0"].replace(new RegExp(inputmask.escapeRegex(opts.groupSeparator), "g"), ""));
+							var intPart = parseInt(matchRslt["0"].replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), ""));
 							if (radixPosition != -1 && intPart < 10 && maskset["validPositions"][position]) {
 								maskset["validPositions"][position].input = "0";
 								maskset["p"] = opts.prefix.length + 1;
@@ -680,5 +683,5 @@ Optional extensions on the jquery.inputmask base
 			alias: "numeric"
 		},
 	});
-	return inputmask;
+	return Inputmask;
 })(jQuery);

@@ -280,7 +280,7 @@ test("inputmask(\"Regex\", {regex: \"[а-яА-Я\\s]*\"}) - type space - SilentI
     $("#testmask").inputmask("Regex", { regex: "[а-яА-Я\\s]*" });
 
     $("#testmask")[0].focus();
-    $("#testmask").SendKey(inputmask.keyCode.SPACE);
+    $("#testmask").SendKey(Inputmask.keyCode.SPACE);
 
     equal($("#testmask").val(), " ", "Result " + $("#testmask").val());
 

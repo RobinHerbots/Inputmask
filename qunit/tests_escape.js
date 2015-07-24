@@ -95,7 +95,7 @@ test("inputmask(\"\\9999\") value not mask", function() {
 
 	input[0].focus();
 
-	equal(input[0]._valueGet(), "9999", "Result " + input[0]._valueGet());
+	equal(input[0].inputmask._valueGet(), "9999", "Result " + input[0].inputmask._valueGet());
 
 	input.remove();
 });

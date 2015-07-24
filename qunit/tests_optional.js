@@ -91,7 +91,7 @@ test("inputmask(\"9[9][9] 999[9] 9999\") - input 123123 space 1234 - vipink70", 
 
     $("#testmask")[0].focus();
     $("#testmask").Type("123123");
-    $("#testmask").SendKey(inputmask.keyCode.SPACE);
+    $("#testmask").SendKey(Inputmask.keyCode.SPACE);
     $("#testmask").Type("1234");
     equal($("#testmask").val(), "123 123 1234", "Result " + $("#testmask").val());
 
@@ -198,7 +198,7 @@ test(".inputmask(\"99999[-9999]\", { greedy: false }); - type 123456 backspace i
 
     $("#testmask")[0].focus();
     $("#testmask").Type("123456");
-    $("#testmask").SendKey(inputmask.keyCode.BACKSPACE);
+    $("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
     equal($("#testmask").inputmask("isComplete"), true, "Result " + $("#testmask").inputmask("isComplete"));
 
     $("#testmask").remove();
@@ -211,11 +211,11 @@ asyncTest(".inputmask(\"99999[-9999]\", { greedy: false }); type 123456 backspac
 
     $("#testmask")[0].focus();
     $("#testmask").Type("123456");
-    $("#testmask").SendKey(inputmask.keyCode.BACKSPACE);
+    $("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
     $("#testmask").blur();
     setTimeout(function () {
         start();
-        equal($("#testmask")[0]._valueGet(), "12345", "Result " + $("#testmask")[0]._valueGet());
+        equal($("#testmask")[0].inputmask._valueGet(), "12345", "Result " + $("#testmask")[0].inputmask._valueGet());
         $("#testmask").remove();
     }, 0);
 });
@@ -227,7 +227,7 @@ asyncTest(".inputmask(\"99999[-9999]\", { greedy: false, autoUnmask: true }); ty
 
     $("#testmask")[0].focus();
     $("#testmask").Type("123456");
-    $("#testmask").SendKey(inputmask.keyCode.BACKSPACE);
+    $("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
     setTimeout(function () {
         start();
         equal($("#testmask").val(), "12345", "Result " + $("#testmask").val());
@@ -242,7 +242,7 @@ test(".inputmask('999-999-9999[ ext 9{1,5}]'); - type 12345678901 backspace isco
 
     $("#testmask")[0].focus();
     $("#testmask").Type("12345678901");
-    $("#testmask").SendKey(inputmask.keyCode.BACKSPACE);
+    $("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
     equal($("#testmask").inputmask("isComplete"), true, "Result " + $("#testmask").inputmask("isComplete"));
 
     $("#testmask").remove();

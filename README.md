@@ -248,7 +248,7 @@ The prevalidator option is used to validate the characters before the definition
 When you insert or delete characters, they are only shifted when the definition type is the same.  This behavior can be overridden by giving a definitionSymbol. (see example x, y, z, which can be used for ip-address masking, the validation is different, but it is allowed to shift the characters between the definitions)
 
 ```javascript
-inputmask.extendDefinitions({
+Inputmask.extendDefinitions({
     'f': {  //masksymbol
         "validator": "[0-9\(\)\.\+/ ]",
         "cardinality": 1,
@@ -301,10 +301,10 @@ Specify a placeholder for a definition.
 Defaults can be set as below.
 
 ```javascript
-inputmask.extendDefaults({
+Inputmask.extendDefaults({
     'autoUnmask': true
 });
-inputmask.extendDefinitions({
+Inputmask.extendDefinitions({
   'A': {
     validator: "[A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
     cardinality: 1,
@@ -316,7 +316,7 @@ inputmask.extendDefinitions({
     casing: "upper"
   }
 });
-inputmask.extendAliases({
+Inputmask.extendAliases({
   'Regex': {
     mask: "r",
     greedy: false,
@@ -328,7 +328,7 @@ inputmask.extendAliases({
 But if the property is defined within an alias you need to set it for the alias definition.
 
 ```javascript
-inputmask.extendAliases({
+Inputmask.extendAliases({
   'numeric' : {
     allowPlus: false,
     allowMinus: false
@@ -338,7 +338,7 @@ inputmask.extendAliases({
 However, the preferred way to alter properties for an alias is by creating a new alias which inherits from the default alias definition.
 
 ```javascript
-inputmask.extendAliases({
+Inputmask.extendAliases({
     'myNum': {
             alias: "numeric",
             placeholder: '',
@@ -771,6 +771,9 @@ The metadata of the actual mask provided in the mask definitions can be obtained
 ```javascript
 $(selector).inputmask("getmetadata");
 ```
+### setvalue
+The setvalue functionality is to set a value to the inputmask like you would do with jQuery.val, BUT it will trigger the internal event used by the inputmask always, whatever the case.
+This is particular usefull when cloning an inputmask with jQuery.clone.  Cloning an inputmask is not a fully funtional clone.  On the first event (mouseenter, focus, ...) the inputmask can detect if it where cloned an can reactivate the masking.  However when setting the value with jQuery.val there is none of the events triggered.  The setvalue functionality does this for you.
 
 ## General
 ### set a value and apply mask
@@ -809,7 +812,7 @@ $(document).ready(function(){
 You can define within a definition to automatically lowercase or uppercase the entry in an input by giving the casing.<br>Casing can be null, "upper" or "lower"
 
 ```javascript
-    inputmask.extendDefinitions({
+   Inputmask.extendDefinitions({
         'A': {
             validator: "[A-Za-z]",
             cardinality: 1,
@@ -887,22 +890,27 @@ $(document).ready(function(){
 Instead of masking an input element it is also possible to use the inputmask for formatting given values. Think of formatting values to show in jqGrid or on other elements then inputs.
 
 ```javascript
-var formattedDate = inputmask.format("2331973", { alias: "dd/mm/yyyy"});
+var formattedDate =Inputmask.format("2331973", { alias: "dd/mm/yyyy"});
 ```
 
 ## Value unmasking
 Unmask a given value against the mask.
 
 ```javascript
-var unformattedDate = inputmask.unmask("23/03/1973", { alias: "dd/mm/yyyy"}); //23031973
+var unformattedDate =Inputmask.unmask("23/03/1973", { alias: "dd/mm/yyyy"}); //23031973
 ```
 
 ## Value validating
 Validate a given value against the mask.
 
 ```javascript
-var isValid = inputmask.isValid("23/03/1973", { alias: "dd/mm/yyyy"});
+var isValid =Inputmask.isValid("23/03/1973", { alias: "dd/mm/yyyy"});
 ```
+
+## jQuery.clone
+
+When cloning a inputmask, the inputmask reactivates on the first event (mouseenter, focus, ...) that happens to the input.
+If you want to set a value on the cloned inputmask and you want to directly reactivate the masking you have to use $(input).inputmask("setvalue", value)
 
 # jquery.inputmask extensions
 

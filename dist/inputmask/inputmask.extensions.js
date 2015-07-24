@@ -3,12 +3,12 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-124
+* Version: 3.1.64-142
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery", "./inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery"), require("./inputmask")) : factory(jQuery);
 }(function($) {
-    return inputmask.extendDefinitions({
+    return Inputmask.extendDefinitions({
         A: {
             validator: "[A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
             cardinality: 1,
@@ -24,7 +24,7 @@
             cardinality: 1,
             casing: "upper"
         }
-    }), inputmask.extendAliases({
+    }), Inputmask.extendAliases({
         url: {
             mask: "ir",
             placeholder: "",
@@ -108,5 +108,5 @@
                 }
             }
         }
-    }), inputmask;
+    }), Inputmask;
 });

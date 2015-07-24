@@ -123,7 +123,7 @@ test("inputmask(\"6703 9999 9999 9999 9\") ~ type \"6703 1234 5678 9012 3\" + ba
     $("#testmask").inputmask("6703 9999 9999 9999 9");
     $("#testmask")[0].focus();
     $("#testmask").Type("1234567890123");
-    $("#testmask").SendKey(inputmask.keyCode.BACKSPACE);
+    $("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
 
     equal($("#testmask").val(), "6703 1234 5678 9012 _", "Result " + $("#testmask").val());
 
@@ -138,7 +138,7 @@ asyncTest("inputmask(\"6703 9999 9999 9999 9\") ~ type \"6703670367036\" + backs
     $("#testmask").click();
     setTimeout(function () {
         $("#testmask").Type("6703670367036");
-        $("#testmask").SendKey(inputmask.keyCode.BACKSPACE);
+        $("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
         equal($("#testmask").val(), "6703 6703 6703 6703 _", "Result " + $("#testmask").val());
         start();
         $("#testmask").remove();

@@ -3,12 +3,12 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-124
+* Version: 3.1.64-142
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery", "./inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery"), require("./inputmask")) : factory(jQuery);
 }(function($) {
-    return inputmask.extendAliases({
+    return Inputmask.extendAliases({
         Regex: {
             mask: "r",
             greedy: !1,
@@ -120,5 +120,5 @@
                 }
             }
         }
-    }), inputmask;
+    }), Inputmask;
 });

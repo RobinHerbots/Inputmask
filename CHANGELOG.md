@@ -4,27 +4,32 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- eslint testing in grunt validate task
+- $.fn.inputmask("setvalue", value)
+- jquery.clone support (also see $.fn.inputmask("setvalue", value))
 - hexadecimal definition (# in inputmask.extensions.js)
 - positionCaretOnTab option
-- inputmask.unmask
+- Inputmask.unmask
 - numeric alias - increment/decrement by ctrl-up/ctrl-down
 - numeric alias - round values
 - percentage alias
-- inputmask class
+- Inputmask class
 - setting defaults / definitions / aliases
-  - inputmask.extendDefaults
-  - inputmask.extendDefinitions
-  - inputmask.extendAliases
+  - Inputmask.extendDefaults
+  - Inputmask.extendDefinitions
+  - Inputmask.extendAliases
 
 ### Updates
 - change alfanumeric uppercase definition from # to &
 - numericInput option also possible on dynamic-masks
-- remove $.inputmask in favor of inputmask class
+- remove $.inputmask in favor of Inputmask class
 - remove "jquery." in the naming of the extensions to better reflect their denpendency
 - separate jquery plugin code from the inputmask core (first step to remove jquery dependency from the inputmask core)
 - Update placeholder handling
 
 ### Fixed
+- Add JSHint and JSCS #879 => used eslint instead
+- On google chrome, cannot use jquery to clone the inputmask control with data and events #713
 - Cannot overwrite characters when highlighting the characters to the right of the decimal #974
 - Decimal mask accepts "123,456." (RadixPoint with no number after it) #973
 - Make numericInput work with complex masks #963

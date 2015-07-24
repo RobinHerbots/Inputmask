@@ -1,6 +1,6 @@
 {
   "name": "jquery.inputmask",
-  "version": "3.1.64-124",
+  "version": "3.1.64-142",
   "description": "jquery.inputmask is a jquery plugin which create an input mask.",
   "main": "./dist/inputmask/jquery.inputmask.js",
   "files": [
@@ -18,7 +18,7 @@
     "./extra/phone-codes/phone-uk.js"
   ],
   "scripts": {
-    "test": "grunt qunit"
+    "test": "grunt validate"
   },
   "repository": {
     "type": "git",
@@ -50,8 +50,10 @@
     "grunt-contrib-clean": "^0.6.0",
     "grunt-contrib-qunit": "^0.7.0",
     "grunt-contrib-uglify": "^0.9.1",
+    "grunt-eslint": "^16.0.0",
     "grunt-nuget": "^0.1.4",
     "grunt-release": "^0.12.0",
-    "grunt-shell": "^1.1.2"
+    "grunt-shell": "^1.1.2",
+    "load-grunt-tasks": "^3.2.0"
   }
 }

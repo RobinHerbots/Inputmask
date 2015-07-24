@@ -187,7 +187,7 @@ asyncTest("email mask - clearIncomplete - hiddenman", function() {
 	$("#testmask").Type("akornilov");
 	$("#testmask").blur();
 	setTimeout(function() {
-		equal(document.getElementById("testmask")._valueGet(), "", "Result " + document.getElementById("testmask")._valueGet());
+		equal(document.getElementById("testmask").inputmask._valueGet(), "", "Result " + document.getElementById("testmask").inputmask._valueGet());
 		start();
 		$("#testmask").remove();
 	}, 0);
@@ -204,7 +204,7 @@ asyncTest("email mask - clearIncomplete - hiddenman", function() {
 	$("#testmask").Type("akornilov@");
 	$("#testmask").blur();
 	setTimeout(function() {
-		equal(document.getElementById("testmask")._valueGet(), "", "Result " + document.getElementById("testmask")._valueGet());
+		equal(document.getElementById("testmask").inputmask._valueGet(), "", "Result " + document.getElementById("testmask").inputmask._valueGet());
 		start();
 		$("#testmask").remove();
 	}, 0);
@@ -221,7 +221,7 @@ asyncTest("email mask - clearIncomplete - hiddenman", function() {
 	$("#testmask").Type("akornilov@gmail.com");
 	$("#testmask").blur();
 	setTimeout(function() {
-		equal(document.getElementById("testmask")._valueGet(), "akornilov@gmail.com", "Result " + document.getElementById("testmask")._valueGet());
+		equal(document.getElementById("testmask").inputmask._valueGet(), "akornilov@gmail.com", "Result " + document.getElementById("testmask").inputmask._valueGet());
 		start();
 		$("#testmask").remove();
 	}, 0);
@@ -237,6 +237,6 @@ test("mask: '\\\\a{*}', repeat: 5 - voidmain02", function() {
 
 	$("#testmask")[0].focus();
 	$("#testmask").Type("abcd abcd abcd abcd abcd");
-	equal(document.getElementById("testmask")._valueGet(), "\\abcd\\abcd\\abcd\\abcd\\abcd", "Result " + document.getElementById("testmask")._valueGet());
+	equal(document.getElementById("testmask").inputmask._valueGet(), "\\abcd\\abcd\\abcd\\abcd\\abcd", "Result " + document.getElementById("testmask").inputmask._valueGet());
 	$("#testmask").remove();
 });
