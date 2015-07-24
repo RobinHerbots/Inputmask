@@ -96,7 +96,7 @@ module.exports = function(grunt) {
 
 	// Project configuration.
 	grunt.initConfig({
-		pkg: grunt.file.readJSON('package.json'),
+		pkg: grunt.file.readJSON("package.json"),
 		uglify: createUglifyConfig("js"),
 		clean: ["dist"],
 		karma: {
@@ -106,7 +106,7 @@ module.exports = function(grunt) {
 			unit: {
 				runnerPort: 9999,
 				singleRun: true,
-				// browsers: ['PhantomJS'], // The tests fail...
+				browsers: ["Chrome"], //will later add extra test targets
 				logLevel: 'ERROR'
 			}
 		},
