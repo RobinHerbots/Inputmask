@@ -90,7 +90,7 @@ $(document).ready(function(){
 ### Default masking definitions
 - 9 : numeric
 - a : alphabetical
-- * : alphanumeric
+  - : alphanumeric
 
 There are more definitions defined within the extensions.<br>You can find info within the js-files or by further exploring the options.
 
@@ -686,7 +686,6 @@ typing 1212345123 => should result in +55-12-1234-5123 type extra 4 => switch to
 When passing multiple masks (an array of masks) keepStatic is automatically set to true unless explicitly set through the options.
 
 ### positionCaretOnTab
-
 When enabled the caret position is set after the latest valid position on TAB
 
 ### definitions
@@ -711,6 +710,14 @@ Hook to postValidate the result from isValid.  Usefull for validating the entry 
 
 ## Functions
 ### mask
+Create a mask for the input.
+
+```javascript
+$(document).ready(function(){
+   $(selector).inputmask('mask', { mask: "99-999-99"});
+});
+```
+
 ### unmaskedvalue
 Get the unmaskedvalue
 
@@ -771,9 +778,9 @@ The metadata of the actual mask provided in the mask definitions can be obtained
 ```javascript
 $(selector).inputmask("getmetadata");
 ```
+
 ### setvalue
-The setvalue functionality is to set a value to the inputmask like you would do with jQuery.val, BUT it will trigger the internal event used by the inputmask always, whatever the case.
-This is particular usefull when cloning an inputmask with jQuery.clone.  Cloning an inputmask is not a fully funtional clone.  On the first event (mouseenter, focus, ...) the inputmask can detect if it where cloned an can reactivate the masking.  However when setting the value with jQuery.val there is none of the events triggered.  The setvalue functionality does this for you.
+The setvalue functionality is to set a value to the inputmask like you would do with jQuery.val, BUT it will trigger the internal event used by the inputmask always, whatever the case. This is particular usefull when cloning an inputmask with jQuery.clone.  Cloning an inputmask is not a fully functional clone.  On the first event (mouseenter, focus, ...) the inputmask can detect if it where cloned an can reactivate the masking.  However when setting the value with jQuery.val there is none of the events triggered.  The setvalue functionality does this for you.
 
 ## General
 ### set a value and apply mask
@@ -908,17 +915,14 @@ var isValid =Inputmask.isValid("23/03/1973", { alias: "dd/mm/yyyy"});
 ```
 
 ## jQuery.clone
-
-When cloning a inputmask, the inputmask reactivates on the first event (mouseenter, focus, ...) that happens to the input.
-If you want to set a value on the cloned inputmask and you want to directly reactivate the masking you have to use $(input).inputmask("setvalue", value)
+When cloning a inputmask, the inputmask reactivates on the first event (mouseenter, focus, ...) that happens to the input. If you want to set a value on the cloned inputmask and you want to directly reactivate the masking you have to use $(input).inputmask("setvalue", value)
 
 # jquery.inputmask extensions
-
-###[date & datetime extensions](README_date.md)
-###[numeric extensions](README_numeric.md)
-###[regex extensions](README_regex.md)
-###[phone extensions](README_phone.md)
-###[other extensions](README_other.md)
+## [date & datetime extensions](README_date.md)
+## [numeric extensions](README_numeric.md)
+## [regex extensions](README_regex.md)
+## [phone extensions](README_phone.md)
+## [other extensions](README_other.md)
 
 [npm-url]: https://npmjs.org/package/jquery.inputmask
 [npm-image]: https://img.shields.io/npm/v/jquery.inputmask.svg
