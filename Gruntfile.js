@@ -99,8 +99,16 @@ module.exports = function(grunt) {
 		pkg: grunt.file.readJSON('package.json'),
 		uglify: createUglifyConfig("js"),
 		clean: ["dist"],
-		qunit: {
-			files: ['qunit/qunit.html']
+		karma: {
+			options: {
+				configFile: 'karma.conf.js'
+			},
+			unit: {
+				runnerPort: 9999,
+				singleRun: true,
+				// browsers: ['PhantomJS'], // The tests fail...
+				logLevel: 'ERROR'
+			}
 		},
 		bump: {
 			options: {
@@ -155,7 +163,7 @@ module.exports = function(grunt) {
 	grunt.registerTask('publish:patch', ['clean', 'bump:patch', 'uglify', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
 	grunt.registerTask('publish:minor', ['clean', 'bump:minor', 'uglify', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
 	grunt.registerTask('publish:major', ['clean', 'bump:major', 'uglify', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
-	grunt.registerTask('validate', ['eslint', 'qunit']);
+	grunt.registerTask('validate', ['eslint', 'karma']);
 
 	// Default task(s).
 	grunt.registerTask('default', ['bump:prerelease', 'clean', 'uglify']);
