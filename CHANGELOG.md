@@ -28,6 +28,7 @@ All notable changes to this project will be documented in this file.
 - Update placeholder handling
 
 ### Fixed
+- Numeric inputs with default value are setted to blank when submit the form #983
 - Default Enter key function getting lost on an input mask text field #938
 - Add JSHint and JSCS #879 => used eslint instead
 - On google chrome, cannot use jquery to clone the inputmask control with data and events #713

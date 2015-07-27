@@ -10,7 +10,7 @@ Optional extensions on the jquery.inputmask base
 (function($) {
 	//number aliases
 	Inputmask.extendAliases({
-		'numeric': {
+		"numeric": {
 			mask: function(opts) {
 				function autoEscape(txt) {
 					var escapedTxt = "";
@@ -23,23 +23,23 @@ Optional extensions on the jquery.inputmask base
 					opts.integerDigits = opts.repeat;
 				}
 				opts.repeat = 0;
-				if (opts.groupSeparator == opts.radixPoint) { //treat equal separator and radixpoint
-					if (opts.radixPoint == ".")
+				if (opts.groupSeparator === opts.radixPoint) { //treat equal separator and radixpoint
+					if (opts.radixPoint === ".")
 						opts.groupSeparator = ",";
-					else if (opts.radixPoint == ",")
+					else if (opts.radixPoint === ",")
 						opts.groupSeparator = ".";
 					else opts.groupSeparator = "";
 				}
 				if (opts.groupSeparator === " ") { //prevent conflict with default skipOptionalPartCharacter
 					opts.skipOptionalPartCharacter = undefined;
 				}
-				opts.autoGroup = opts.autoGroup && opts.groupSeparator != "";
+				opts.autoGroup = opts.autoGroup && opts.groupSeparator !== "";
 				if (opts.autoGroup) {
 					if (typeof opts.groupSize == "string" && isFinite(opts.groupSize)) opts.groupSize = parseInt(opts.groupSize);
 					if (isFinite(opts.integerDigits)) {
 						var seps = Math.floor(opts.integerDigits / opts.groupSize);
 						var mod = opts.integerDigits % opts.groupSize;
-						opts.integerDigits = parseInt(opts.integerDigits) + (mod == 0 ? seps - 1 : seps);
+						opts.integerDigits = parseInt(opts.integerDigits) + (mod === 0 ? seps - 1 : seps);
 						if (opts.integerDigits < 1) {
 							opts.integerDigits = "*";
 						}
@@ -55,7 +55,7 @@ Optional extensions on the jquery.inputmask base
 				opts.definitions[";"] = opts.definitions["~"]; //clone integer def for decimals
 				opts.definitions[";"].definitionSymbol = "~";
 
-				if (opts.numericInput == true) { //finance people input style
+				if (opts.numericInput === true) { //finance people input style
 					opts.radixFocus = false;
 					opts.digitsOptional = false;
 					if (isNaN(opts.digits)) opts.digits = 2;
@@ -65,12 +65,12 @@ Optional extensions on the jquery.inputmask base
 				var mask = autoEscape(opts.prefix);
 				mask += "[+]";
 				mask += "~{1," + opts.integerDigits + "}";
-				if (opts.digits != undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0)) {
+				if (opts.digits !== undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0)) {
 					if (opts.digitsOptional)
 						mask += "[" + (opts.decimalProtect ? ":" : opts.radixPoint) + ";{" + opts.digits + "}]";
 					else mask += (opts.decimalProtect ? ":" : opts.radixPoint) + ";{" + opts.digits + "}";
 				}
-				if (opts.negationSymbol.back != "")
+				if (opts.negationSymbol.back !== "")
 					mask += "[-]";
 				mask += autoEscape(opts.suffix);
 
@@ -112,7 +112,7 @@ Optional extensions on the jquery.inputmask base
 				}
 				var negationStrip = false;
 				var suffixStripped = false;
-				if (buffer.length >= opts.suffix.length && buffer.join('').indexOf(opts.suffix) == (buffer.length - opts.suffix.length)) {
+				if (buffer.length >= opts.suffix.length && buffer.join("").indexOf(opts.suffix) === (buffer.length - opts.suffix.length)) {
 					buffer.length = buffer.length - opts.suffix.length; //strip suffix
 					suffixStripped = true;
 				}
@@ -121,9 +121,9 @@ Optional extensions on the jquery.inputmask base
 
 				var needsRefresh = false,
 					charAtPos = buffer[pos];
-				if (opts.groupSeparator == "" || (opts.numericInput !== true &&
-						($.inArray(opts.radixPoint, buffer) != -1 && pos > $.inArray(opts.radixPoint, buffer)) ||
-						new RegExp('[' + Inputmask.escapeRegex(opts.negationSymbol.front) + '\+]').test(charAtPos))) {
+				if (opts.groupSeparator === "" || (opts.numericInput !== true &&
+						($.inArray(opts.radixPoint, buffer) !== -1 && pos > $.inArray(opts.radixPoint, buffer)) ||
+						new RegExp("[" + Inputmask.escapeRegex(opts.negationSymbol.front) + "\+]").test(charAtPos))) {
 					if (suffixStripped) {
 						for (var i = 0, l = opts.suffix.length; i < l; i++) {
 							buffer.push(opts.suffix.charAt(i));
@@ -136,22 +136,22 @@ Optional extensions on the jquery.inputmask base
 				}
 
 				var cbuf = buffer.slice();
-				if (charAtPos == opts.groupSeparator) {
+				if (charAtPos === opts.groupSeparator) {
 					cbuf.splice(pos--, 1);
 					charAtPos = cbuf[pos];
 				}
 				if (reformatOnly) {
-					if (charAtPos != opts.radixPoint) cbuf[pos] = "?";
+					if (charAtPos !== opts.radixPoint) cbuf[pos] = "?";
 				} else cbuf.splice(pos, 0, "?"); //set position indicator
 				var bufVal = cbuf.join(''),
 					bufValOrigin = bufVal;
-				if (bufVal.length > 0 && opts.autoGroup || (reformatOnly && bufVal.indexOf(opts.groupSeparator) != -1)) {
+				if (bufVal.length > 0 && opts.autoGroup || (reformatOnly && bufVal.indexOf(opts.groupSeparator) !== -1)) {
 					var escapedGroupSeparator = Inputmask.escapeRegex(opts.groupSeparator);
-					needsRefresh = bufVal.indexOf(opts.groupSeparator) == 0;
+					needsRefresh = bufVal.indexOf(opts.groupSeparator) === 0;
 					bufVal = bufVal.replace(new RegExp(escapedGroupSeparator, "g"), '');
 					var radixSplit = bufVal.split(opts.radixPoint);
-					bufVal = opts.radixPoint == "" ? bufVal : radixSplit[0];
-					if (bufVal != (opts.prefix + "?0") && bufVal.length >= (opts.groupSize + opts.prefix.length)) {
+					bufVal = opts.radixPoint === "" ? bufVal : radixSplit[0];
+					if (bufVal !== (opts.prefix + "?0") && bufVal.length >= (opts.groupSize + opts.prefix.length)) {
 						//needsRefresh = true;
 						var reg = new RegExp('([-\+]?[\\d\?]+)([\\d\?]{' + opts.groupSize + '})');
 						while (reg.test(bufVal)) {
@@ -159,16 +159,16 @@ Optional extensions on the jquery.inputmask base
 							bufVal = bufVal.replace(opts.groupSeparator + opts.groupSeparator, opts.groupSeparator);
 						}
 					}
-					if (opts.radixPoint != "" && radixSplit.length > 1)
+					if (opts.radixPoint !== "" && radixSplit.length > 1)
 						bufVal += opts.radixPoint + radixSplit[1];
 				}
-				needsRefresh = bufValOrigin != bufVal;
+				needsRefresh = bufValOrigin !== bufVal;
 				buffer.length = bufVal.length; //align the length
 				for (var i = 0, l = bufVal.length; i < l; i++) {
 					buffer[i] = bufVal.charAt(i);
 				}
 				var newPos = $.inArray("?", buffer);
-				if (newPos == -1 && charAtPos == opts.radixPoint) newPos = $.inArray(opts.radixPoint, buffer);
+				if (newPos === -1 && charAtPos === opts.radixPoint) newPos = $.inArray(opts.radixPoint, buffer);
 				if (reformatOnly) buffer[newPos] = charAtPos;
 				else buffer.splice(newPos, 1);
 
@@ -533,7 +533,7 @@ Optional extensions on the jquery.inputmask base
 					bufClone = buffer.slice();
 				//verify separator positions
 				opts.postFormat(bufClone, 0, true, opts);
-				if (bufClone.join('') != maskedValue) return false;
+				if (bufClone.join('') !== maskedValue) return false;
 
 				var processValue = maskedValue.replace(opts.prefix, "");
 				processValue = processValue.replace(opts.suffix, "");
@@ -542,7 +542,7 @@ Optional extensions on the jquery.inputmask base
 				return isFinite(processValue);
 			},
 			onBeforeMask: function(initialValue, opts) {
-				if (opts.radixPoint != "" && isFinite(initialValue)) {
+				if (opts.radixPoint !== "" && isFinite(initialValue)) {
 					initialValue = initialValue.toString().replace(".", opts.radixPoint);
 				} else {
 					var kommaMatches = initialValue.match(/,/g);
@@ -563,14 +563,14 @@ Optional extensions on the jquery.inputmask base
 				}
 
 				if (opts.digits == 0) {
-					if (initialValue.indexOf(".") != -1) {
+					if (initialValue.indexOf(".") !== -1) {
 						initialValue = initialValue.substring(0, initialValue.indexOf("."));
-					} else if (initialValue.indexOf(",") != -1) {
+					} else if (initialValue.indexOf(",") !== -1) {
 						initialValue = initialValue.substring(0, initialValue.indexOf(","));
 					}
 				}
 
-				if (opts.radixPoint != "" && isFinite(opts.digits) && initialValue.indexOf(opts.radixPoint) != -1) {
+				if (opts.radixPoint !== "" && isFinite(opts.digits) && initialValue.indexOf(opts.radixPoint) !== -1) {
 					var valueParts = initialValue.split(opts.radixPoint),
 						decPart = valueParts[1].match(new RegExp("\\d*"))[0];
 					if (parseInt(opts.digits) < decPart.toString().length) {
@@ -584,12 +584,12 @@ Optional extensions on the jquery.inputmask base
 				return initialValue.toString();
 			},
 			canClearPosition: function(maskset, position, lvp, strict, opts) {
-				var positionInput = maskset["validPositions"][position].input,
-					canClear = ((positionInput != opts.radixPoint || (maskset["validPositions"][position].match.fn != null && opts.decimalProtect == false)) || isFinite(positionInput)) ||
-					position == lvp ||
-					positionInput == opts.groupSeparator ||
-					positionInput == opts.negationSymbol.front ||
-					positionInput == opts.negationSymbol.back,
+				var positionInput = maskset.validPositions[position].input,
+					canClear = ((positionInput != opts.radixPoint || (maskset.validPositions[position].match.fn != null && opts.decimalProtect == false)) || isFinite(positionInput)) ||
+					position === lvp ||
+					positionInput === opts.groupSeparator ||
+					positionInput === opts.negationSymbol.front ||
+					positionInput === opts.negationSymbol.back,
 					posOffset = 0;
 
 				if (canClear && isFinite(positionInput)) {

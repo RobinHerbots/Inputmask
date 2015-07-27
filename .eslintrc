@@ -28,5 +28,9 @@
   },
   "env": {
     "browser": true
-  }
+  },
+  "globals": {
+     "Inputmask": true,
+     "jQuery": false
+ }
 }

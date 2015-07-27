@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-145
+* Version: 3.1.64-146
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery")) : factory(jQuery);
@@ -1025,7 +1025,7 @@
             $el = $(el), opts.showTooltip && $el.prop("title", getMaskSet().mask), ("rtl" === el.dir || opts.rightAlign) && $el.css("text-align", "right"), 
             ("rtl" === el.dir || opts.numericInput) && (el.dir = "ltr", $el.removeAttr("dir"), 
             el.inputmask.isRTL = !0, isRTL = !0), $el.unbind(".inputmask"), ($el.is(":input") && isInputTypeSupported($el.attr("type")) || el.isContentEditable) && ($el.closest("form").bind("submit", function() {
-                undoValue !== getBuffer().join("") && $el.change(), opts.clearMaskOnLostFocus && $el[0].inputmask._valueGet && $el[0].inputmask._valueGet() === getBufferTemplate().join("") && $el[0].inputmask._valueSet(""), 
+                undoValue !== getBuffer().join("") && $el.change(), opts.clearMaskOnLostFocus && -1 === getLastValidPosition() && $el[0].inputmask._valueGet && $el[0].inputmask._valueGet() === getBufferTemplate().join("") && $el[0].inputmask._valueSet(""), 
                 opts.removeMaskOnSubmit && $el.inputmask("remove");
             }).bind("reset", function() {
                 setTimeout(function() {
@@ -1040,7 +1040,7 @@
                     var nptValue = input.inputmask._valueGet(), buffer = getBuffer().slice();
                     firstClick = !0, undoValue !== buffer.join("") && setTimeout(function() {
                         $input.change(), undoValue = buffer.join("");
-                    }, 0), "" !== nptValue && (opts.clearMaskOnLostFocus && (nptValue == getBufferTemplate().join("") ? buffer = [] : clearOptionalTail(buffer)), 
+                    }, 0), "" !== nptValue && (opts.clearMaskOnLostFocus && (-1 === getLastValidPosition() && nptValue === getBufferTemplate().join("") ? buffer = [] : clearOptionalTail(buffer)), 
                     isComplete(buffer) === !1 && (setTimeout(function() {
                         $input.trigger("incomplete");
                     }, 0), opts.clearIncomplete && (resetMaskSet(), buffer = opts.clearMaskOnLostFocus ? [] : getBufferTemplate().slice())), 
@@ -1056,7 +1056,7 @@
                 var $input = $(this), input = this;
                 if (mouseEnter = !1, opts.clearMaskOnLostFocus) {
                     var buffer = getBuffer().slice(), nptValue = input.inputmask._valueGet();
-                    $input.is(":focus") || nptValue == $input.attr("placeholder") || "" == nptValue || (nptValue == getBufferTemplate().join("") ? buffer = [] : clearOptionalTail(buffer), 
+                    $input.is(":focus") || nptValue == $input.attr("placeholder") || "" == nptValue || (-1 === getLastValidPosition() && nptValue === getBufferTemplate().join("") ? buffer = [] : clearOptionalTail(buffer), 
                     writeBuffer(input, buffer));
                 }
             }).bind("click.inputmask", function() {

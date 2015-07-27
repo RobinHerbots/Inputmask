@@ -1590,12 +1590,12 @@
 		}
 
 		function unmaskedvalue($input) {
-			if ($input[0].inputmask && !$input.hasClass('hasDatepicker')) {
+			if ($input[0].inputmask && !$input.hasClass("hasDatepicker")) {
 				var umValue = [],
-					vps = getMaskSet()["validPositions"];
+					vps = getMaskSet().validPositions;
 				for (var pndx in vps) {
-					if (vps[pndx]["match"] && vps[pndx]["match"].fn != null) {
-						umValue.push(vps[pndx]["input"]);
+					if (vps[pndx].match && vps[pndx].match.fn != null) {
+						umValue.push(vps[pndx].input);
 					}
 				}
 				var unmaskedValue = (isRTL ? umValue.reverse() : umValue).join('');
@@ -2261,7 +2261,7 @@
 				$el.closest("form").bind("submit", function() { //trigger change on submit if any
 					if (undoValue !== getBuffer().join(""))
 						$el.change();
-					if (opts.clearMaskOnLostFocus && $el[0].inputmask._valueGet && $el[0].inputmask._valueGet() === getBufferTemplate().join(""))
+					if (opts.clearMaskOnLostFocus && getLastValidPosition() === -1 && $el[0].inputmask._valueGet && $el[0].inputmask._valueGet() === getBufferTemplate().join(""))
 						$el[0].inputmask._valueSet(""); //clear masktemplete on submit and still has focus
 
 					if (opts.removeMaskOnSubmit)
@@ -2293,7 +2293,7 @@
 						}
 						if (nptValue !== "") {
 							if (opts.clearMaskOnLostFocus) {
-								if (nptValue == getBufferTemplate().join(""))
+								if (getLastValidPosition() === -1 && nptValue === getBufferTemplate().join(""))
 									buffer = [];
 								else { //clearout optional tail of the mask
 									clearOptionalTail(buffer);
@@ -2342,7 +2342,7 @@
 						var buffer = getBuffer().slice(),
 							nptValue = input.inputmask._valueGet();
 						if (!$input.is(":focus") && nptValue != $input.attr("placeholder") && nptValue != '') {
-							if (nptValue == getBufferTemplate().join(''))
+							if (getLastValidPosition() === -1 && nptValue === getBufferTemplate().join(''))
 								buffer = [];
 							else { //clearout optional tail of the mask
 								clearOptionalTail(buffer);
