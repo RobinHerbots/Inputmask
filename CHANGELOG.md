@@ -28,6 +28,7 @@ All notable changes to this project will be documented in this file.
 - Update placeholder handling
 
 ### Fixed
+- Default Enter key function getting lost on an input mask text field #938
 - Add JSHint and JSCS #879 => used eslint instead
 - On google chrome, cannot use jquery to clone the inputmask control with data and events #713
 - Cannot overwrite characters when highlighting the characters to the right of the decimal #974

@@ -1,5 +1,6 @@
 {
   "rules": {
+    "consistent-return": [1],
     "curly": [1, "multi"],
     "eqeqeq": [2, "smart"],
     "indent": [
@@ -11,8 +12,13 @@
       "double",
       "avoid-escape"
     ],
+    "no-cond-assign": [
+      1,
+      "except-parens"
+    ],
     "no-loop-func": [0],
     "no-underscore-dangle": [0],
+    "no-unused-vars": [1],
     "no-use-before-define": [
       2,
       "nofunc"
