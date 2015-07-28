@@ -16,6 +16,7 @@
       1,
       "except-parens"
     ],
+    "no-empty": [0],
     "no-loop-func": [0],
     "no-underscore-dangle": [0],
     "no-unused-vars": [1],
@@ -24,13 +25,14 @@
       "nofunc"
     ],
     "no-shadow": [0],
+    "semi-spacing": [1],
     "strict": [0]
   },
   "env": {
     "browser": true
   },
   "globals": {
-     "Inputmask": true,
-     "jQuery": false
- }
+    "Inputmask": true,
+    "jQuery": false
+  }
 }

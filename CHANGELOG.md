@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- tabThrough option - Tab and autoselect mask parts #433
 - eslint testing in grunt validate task
 - $.fn.inputmask("setvalue", value)
 - jquery.clone support (also see $.fn.inputmask("setvalue", value))
