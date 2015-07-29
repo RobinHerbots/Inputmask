@@ -1463,7 +1463,7 @@
 			var maskL = getMaskLength();
 			if (pos >= maskL) return maskL;
 			var position = pos;
-			while (++position < maskL && ((newBlock === true && getTest(position).newBlockMarker !== true || !isMask(position)) || (newBlock !== true && !isMask(position) && (opts.nojumps !== true || opts.nojumpsThreshold > position)))) {}
+			while (++position < maskL && ((newBlock === true && (getTest(position).newBlockMarker !== true || !isMask(position))) || (newBlock !== true && !isMask(position) && (opts.nojumps !== true || opts.nojumpsThreshold > position)))) {}
 			return position;
 		}
 

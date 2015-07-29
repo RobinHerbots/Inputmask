@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-147
+* Version: 3.1.64-148
 */
 !function($) {
     function Inputmask(options) {
@@ -613,7 +613,7 @@
         function seekNext(pos, newBlock) {
             var maskL = getMaskLength();
             if (pos >= maskL) return maskL;
-            for (var position = pos; ++position < maskL && (newBlock === !0 && getTest(position).newBlockMarker !== !0 || !isMask(position) || newBlock !== !0 && !isMask(position) && (opts.nojumps !== !0 || opts.nojumpsThreshold > position)); ) ;
+            for (var position = pos; ++position < maskL && (newBlock === !0 && (getTest(position).newBlockMarker !== !0 || !isMask(position)) || newBlock !== !0 && !isMask(position) && (opts.nojumps !== !0 || opts.nojumpsThreshold > position)); ) ;
             return position;
         }
         function seekPrevious(pos, newBlock) {
