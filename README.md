@@ -687,6 +687,11 @@ When passing multiple masks (an array of masks) keepStatic is automatically set 
 
 ### positionCaretOnTab
 When enabled the caret position is set after the latest valid position on TAB
+Default: false
+
+### tabThrough
+Allows for tabbing through the different parts of the masked field.  
+Default: false
 
 ### definitions
 ### ignorables
@@ -707,10 +712,6 @@ Hook to alter the clear behavior in the stripValidPositions<br>Args => maskset, 
 
 ### postValidation
 Hook to postValidate the result from isValid.  Usefull for validating the entry as a whole.  Args => buffer, opts<br>Return => true|false
-
-### tabThrough
-Allows for tabbing through the different parts of the masked field.  
-Default: false
 
 ## Functions
 ### mask

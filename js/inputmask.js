@@ -350,6 +350,7 @@
 					maskdef.placeholder = $.isFunction(maskdef.placeholder) ? maskdef.placeholder.call(this, opts) : maskdef.placeholder;
 					var prevalidators = maskdef.prevalidator,
 						prevalidatorsL = prevalidators ? prevalidators.length : 0;
+					//handle prevalidators
 					for (var i = 1; i < maskdef.cardinality; i++) {
 						var prevalidator = prevalidatorsL >= i ? prevalidators[i - 1] : [],
 							validator = prevalidator.validator,
@@ -366,6 +367,7 @@
 							placeholder: maskdef.placeholder,
 							mask: element
 						});
+						prevMatch = mtoken.matches[position - 1];
 					}
 					mtoken.matches.splice(position++, 0, {
 						fn: maskdef.validator ? typeof maskdef.validator == "string" ? new RegExp(maskdef.validator) : new function() {
