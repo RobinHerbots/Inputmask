@@ -128,6 +128,9 @@ Optional extensions on the jquery.inputmask base
           casing: "lower"
         }
       }
+    },
+    "mac": {
+      mask: "##:##:##:##:##:##"
     }
   });
   return Inputmask;

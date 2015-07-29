@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-149
+* Version: 3.1.64-150
 */
 !function($) {
     function Inputmask(options) {
@@ -1983,6 +1983,9 @@
                     casing: "lower"
                 }
             }
+        },
+        mac: {
+            mask: "##:##:##:##:##:##"
         }
     }), Inputmask;
 }(jQuery), function($) {
