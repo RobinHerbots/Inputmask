@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-153
+* Version: 3.1.64-154
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery")) : factory(jQuery);
@@ -636,7 +636,7 @@
                     caretPos = void 0 !== result.caret ? result.caret : caretPos;
                 }
             }
-            input.inputmask._valueSet(buffer.join("")), void 0 !== caretPos && caret(input, caretPos), 
+            input.inputmask._valueSet(buffer.join("")), void 0 === caretPos || void 0 !== event && "blur" === event.type || caret(input, caretPos), 
             triggerInputEvent === !0 && (skipInputEvent = !0, $(input).trigger("input"));
         }
         function getPlaceholder(pos, test) {
@@ -776,7 +776,7 @@
                     if ("inputmask" === eventHandler.namespace) {
                         var handler = eventHandler.handler;
                         eventHandler.handler = function(e) {
-                            if (void 0 === this.inputmask) {
+                            if (console.log("triggered " + e.type), void 0 === this.inputmask) {
                                 var imOpts = $(this).data("_inputmask_opts");
                                 imOpts ? new Inputmask(imOpts).mask(this) : $(this).unbind(".inputmask");
                             } else {

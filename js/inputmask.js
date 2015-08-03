@@ -1501,7 +1501,7 @@
 				}
 			}
 			input.inputmask._valueSet(buffer.join(''));
-			if (caretPos !== undefined) {
+			if (caretPos !== undefined && (event === undefined || event.type !== "blur")) {
 				caret(input, caretPos);
 			}
 			if (triggerInputEvent === true) {
@@ -1762,7 +1762,7 @@
 					if (eventHandler.namespace === "inputmask") {
 						var handler = eventHandler.handler;
 						eventHandler.handler = function(e) {
-							// console.log("triggered " + e.type);
+							console.log("triggered " + e.type);
 							if (this.inputmask === undefined) { //happens when cloning an object with jquery.clone
 								var imOpts = $(this).data("_inputmask_opts");
 								if (imOpts)

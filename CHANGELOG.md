@@ -30,6 +30,7 @@ All notable changes to this project will be documented in this file.
 - Update placeholder handling
 
 ### Fixed
+- Focus loop on IE9 with numeric.extensions #989
 - Numeric inputs with default value are setted to blank when submit the form #983
 - Default Enter key function getting lost on an input mask text field #938
 - Add JSHint and JSCS #879 => used eslint instead
