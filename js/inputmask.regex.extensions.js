@@ -10,7 +10,7 @@ Allows for using regular expressions as a mask
 */
 (function($) {
 	Inputmask.extendAliases({ // $(selector).inputmask("Regex", { regex: "[0-9]*"}
-		'Regex': {
+		"Regex": {
 			mask: "r",
 			greedy: false,
 			repeat: "*",
@@ -20,12 +20,18 @@ Allows for using regular expressions as a mask
 			tokenizer: /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?[:=!]?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g,
 			quantifierFilter: /[0-9]+[^,]/,
 			isComplete: function(buffer, opts) {
-				return new RegExp(opts.regex).test(buffer.join(''));
+				return new RegExp(opts.regex).test(buffer.join(""));
 			},
 			definitions: {
-				'r': {
+				"r": {
 					validator: function(chrs, maskset, pos, strict, opts) {
-						function regexToken(isGroup, isQuantifier) {
+						var cbuffer = maskset.buffer.slice(),
+							regexPart = "",
+							isValid = false,
+							openGroupCount = 0,
+							groupToken;
+
+						function RegexToken(isGroup, isQuantifier) {
 							this.matches = [];
 							this.isGroup = isGroup || false;
 							this.isQuantifier = isQuantifier || false;
@@ -37,7 +43,7 @@ Allows for using regular expressions as a mask
 						}
 
 						function analyseRegex() {
-							var currentToken = new regexToken(),
+							var currentToken = new RegexToken(),
 								match, m, opengroups = [];
 
 							opts.regexTokens = [];
@@ -47,33 +53,33 @@ Allows for using regular expressions as a mask
 								m = match[0];
 								switch (m.charAt(0)) {
 									case "(": // Group opening
-										opengroups.push(new regexToken(true));
+										opengroups.push(new RegexToken(true));
 										break;
 									case ")": // Group closing
-										var groupToken = opengroups.pop();
-										if (opengroups.length > 0) {
-											opengroups[opengroups.length - 1]["matches"].push(groupToken);
-										} else {
+										groupToken = opengroups.pop();
+										if (opengroups.length > 0)
+											opengroups[opengroups.length - 1].matches.push(groupToken);
+										else
 											currentToken.matches.push(groupToken);
-										}
+
 										break;
 									case "{":
 									case "+":
 									case "*": //Quantifier
-										var quantifierToken = new regexToken(false, true);
+										var quantifierToken = new RegexToken(false, true);
 										m = m.replace(/[{}]/g, "");
 										var mq = m.split(","),
 											mq0 = isNaN(mq[0]) ? mq[0] : parseInt(mq[0]),
-											mq1 = mq.length == 1 ? mq0 : (isNaN(mq[1]) ? mq[1] : parseInt(mq[1]));
+											mq1 = mq.length === 1 ? mq0 : (isNaN(mq[1]) ? mq[1] : parseInt(mq[1]));
 										quantifierToken.quantifier = {
 											min: mq0,
 											max: mq1
 										};
 										if (opengroups.length > 0) {
-											var matches = opengroups[opengroups.length - 1]["matches"];
+											var matches = opengroups[opengroups.length - 1].matches;
 											match = matches.pop();
-											if (!match["isGroup"]) {
-												var groupToken = new regexToken(true);
+											if (!match.isGroup) {
+												groupToken = new RegexToken(true);
 												groupToken.matches.push(match);
 												match = groupToken;
 											}
@@ -81,8 +87,8 @@ Allows for using regular expressions as a mask
 											matches.push(quantifierToken);
 										} else {
 											match = currentToken.matches.pop();
-											if (!match["isGroup"]) {
-												var groupToken = new regexToken(true);
+											if (!match.isGroup) {
+												groupToken = new RegexToken(true);
 												groupToken.matches.push(match);
 												match = groupToken;
 											}
@@ -92,7 +98,7 @@ Allows for using regular expressions as a mask
 										break;
 									default:
 										if (opengroups.length > 0) {
-											opengroups[opengroups.length - 1]["matches"].push(m);
+											opengroups[opengroups.length - 1].matches.push(m);
 										} else {
 											currentToken.matches.push(m);
 										}
@@ -102,7 +108,7 @@ Allows for using regular expressions as a mask
 
 							if (currentToken.matches.length > 0)
 								opts.regexTokens.push(currentToken);
-						};
+						}
 
 						function validateRegexToken(token, fromGroup) {
 							var isvalid = false;
@@ -110,21 +116,21 @@ Allows for using regular expressions as a mask
 								regexPart += "(";
 								openGroupCount++;
 							}
-							for (var mndx = 0; mndx < token["matches"].length; mndx++) {
-								var matchToken = token["matches"][mndx];
-								if (matchToken["isGroup"] == true) {
+							for (var mndx = 0; mndx < token.matches.length; mndx++) {
+								var matchToken = token.matches[mndx];
+								if (matchToken.isGroup === true) {
 									isvalid = validateRegexToken(matchToken, true);
-								} else if (matchToken["isQuantifier"] == true) {
-									var crrntndx = $.inArray(matchToken, token["matches"]),
-										matchGroup = token["matches"][crrntndx - 1];
+								} else if (matchToken.isQuantifier === true) {
+									var crrntndx = $.inArray(matchToken, token.matches),
+										matchGroup = token.matches[crrntndx - 1];
 									var regexPartBak = regexPart;
 									if (isNaN(matchToken.quantifier.max)) {
-										while (matchToken["repeaterPart"] && matchToken["repeaterPart"] != regexPart && matchToken["repeaterPart"].length > regexPart.length) {
+										while (matchToken.repeaterPart && matchToken.repeaterPart !== regexPart && matchToken.repeaterPart.length > regexPart.length) {
 											isvalid = validateRegexToken(matchGroup, true);
 											if (isvalid) break;
 										}
 										isvalid = isvalid || validateRegexToken(matchGroup, true);
-										if (isvalid) matchToken["repeaterPart"] = regexPart;
+										if (isvalid) matchToken.repeaterPart = regexPart;
 										regexPart = regexPartBak + matchToken.quantifier.max;
 									} else {
 										for (var i = 0, qm = matchToken.quantifier.max - 1; i < qm; i++) {
@@ -133,7 +139,7 @@ Allows for using regular expressions as a mask
 										}
 										regexPart = regexPartBak + "{" + matchToken.quantifier.min + "," + matchToken.quantifier.max + "}";
 									}
-								} else if (matchToken["matches"] != undefined) {
+								} else if (matchToken.matches !== undefined) {
 									for (var k = 0; k < matchToken.length; k++) {
 										isvalid = validateRegexToken(matchToken[k], fromGroup);
 										if (isvalid) break;
@@ -150,7 +156,7 @@ Allows for using regular expressions as a mask
 										isvalid = exp.test(bufferStr);
 									} else {
 										for (var l = 0, tl = matchToken.length; l < tl; l++) {
-											if (matchToken.charAt(l) == "\\") continue;
+											if (matchToken.charAt(l) === "\\") continue;
 											testExp = regexPart;
 											testExp += matchToken.substr(0, l + 1);
 											testExp = testExp.replace(/\|$/, "");
@@ -175,20 +181,15 @@ Allows for using regular expressions as a mask
 							return isvalid;
 						}
 
-
-						if (opts.regexTokens == null) {
+						if (opts.regexTokens === null)
 							analyseRegex();
-						}
 
-						var cbuffer = maskset.buffer.slice(),
-							regexPart = "",
-							isValid = false,
-							openGroupCount = 0;
+
 						cbuffer.splice(pos, 0, chrs);
-						var bufferStr = cbuffer.join('');
+						var bufferStr = cbuffer.join("");
 						for (var i = 0; i < opts.regexTokens.length; i++) {
 							var regexToken = opts.regexTokens[i];
-							isValid = validateRegexToken(regexToken, regexToken["isGroup"]);
+							isValid = validateRegexToken(regexToken, regexToken.isGroup);
 							if (isValid) break;
 						}
 

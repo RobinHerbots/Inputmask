@@ -19,16 +19,16 @@ When using this extension make sure you specify the correct url to get the masks
 */
 (function($) {
 	Inputmask.extendAliases({
-		'phone': {
+		"phone": {
 			url: "phone-codes/phone-codes.js",
 			countrycode: "",
 			mask: function(opts) {
-				opts.definitions['#'] = opts.definitions['9'];
+				opts.definitions["#"] = opts.definitions["9"];
 				var maskList = [];
 				$.ajax({
 					url: opts.url,
 					async: false,
-					dataType: 'json',
+					dataType: "json",
 					success: function(response) {
 						maskList = response;
 					},
@@ -38,7 +38,7 @@ When using this extension make sure you specify the correct url to get the masks
 				});
 
 				maskList = maskList.sort(function(a, b) {
-					return (a["mask"] || a) < (b["mask"] || b) ? -1 : 1;
+					return (a.mask || a) < (b.mask || b) ? -1 : 1;
 				});
 
 				return maskList;
@@ -48,14 +48,13 @@ When using this extension make sure you specify the correct url to get the masks
 			nojumpsThreshold: 1,
 			onBeforeMask: function(value, opts) {
 				var processedValue = value.replace(/^0/g, "");
-				if (processedValue.indexOf(opts.countrycode) > 1 || processedValue.indexOf(opts.countrycode) == -1) {
+				if (processedValue.indexOf(opts.countrycode) > 1 || processedValue.indexOf(opts.countrycode) === -1)
 					processedValue = "+" + opts.countrycode + processedValue;
-				}
 
 				return processedValue;
 			}
 		},
-		'phonebe': {
+		"phonebe": {
 			alias: "phone",
 			url: "phone-codes/phone-be.js",
 			countrycode: "32",

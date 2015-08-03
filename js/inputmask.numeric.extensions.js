@@ -24,11 +24,11 @@ Optional extensions on the jquery.inputmask base
 				}
 				opts.repeat = 0;
 				if (opts.groupSeparator === opts.radixPoint) { //treat equal separator and radixpoint
-					if (opts.radixPoint === ".")
+					if (opts.radixPoint === ".") {
 						opts.groupSeparator = ",";
-					else if (opts.radixPoint === ",")
+					} else if (opts.radixPoint === ",") {
 						opts.groupSeparator = ".";
-					else opts.groupSeparator = "";
+					} else opts.groupSeparator = "";
 				}
 				if (opts.groupSeparator === " ") { //prevent conflict with default skipOptionalPartCharacter
 					opts.skipOptionalPartCharacter = undefined;
@@ -47,8 +47,9 @@ Optional extensions on the jquery.inputmask base
 				}
 
 				//enforce placeholder to single
-				if (opts.placeholder.length > 1)
+				if (opts.placeholder.length > 1) {
 					opts.placeholder = opts.placeholder.charAt(0);
+				}
 				//only allow radixfocus when placeholder = 0  ???? why was this needed????
 				// opts.radixFocus = opts.radixFocus && opts.placeholder == "0";
 
@@ -177,7 +178,7 @@ Optional extensions on the jquery.inputmask base
 						buffer.push(opts.suffix.charAt(i));
 					}
 				}
-				//console.log("formatted " + buffer + " refresh " + needsRefresh);
+				// console.log("formatted " + buffer + " refresh " + needsRefresh);
 				return {
 					pos: (opts.numericInput && isFinite(pos)) ? buffer.join('').length - newPos - 1 : newPos,
 					"refreshFromBuffer": needsRefresh,

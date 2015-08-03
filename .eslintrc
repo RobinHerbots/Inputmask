@@ -1,7 +1,8 @@
 {
   "rules": {
     "consistent-return": [1],
-    "curly": [1, "multi"],
+    "curly": [2, "multi-line"],
+    "eol-last": [0],
     "eqeqeq": [2, "smart"],
     "indent": [
       1,
@@ -19,7 +20,10 @@
     "no-empty": [0],
     "no-loop-func": [0],
     "no-underscore-dangle": [0],
-    "no-unused-vars": [1],
+    "no-unused-vars": [2, {
+      "vars": "all",
+      "args": "none"
+    }],
     "no-use-before-define": [
       2,
       "nofunc"
