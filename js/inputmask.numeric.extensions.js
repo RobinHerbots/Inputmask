@@ -50,8 +50,8 @@ Optional extensions on the jquery.inputmask base
 				if (opts.placeholder.length > 1) {
 					opts.placeholder = opts.placeholder.charAt(0);
 				}
-				//only allow radixfocus when placeholder = 0  ???? why was this needed????
-				// opts.radixFocus = opts.radixFocus && opts.placeholder == "0";
+				//only allow radixfocus when placeholder = 0
+				opts.radixFocus = opts.radixFocus && opts.placeholder !== "";
 
 				opts.definitions[";"] = opts.definitions["~"]; //clone integer def for decimals
 				opts.definitions[";"].definitionSymbol = "~";
@@ -67,12 +67,13 @@ Optional extensions on the jquery.inputmask base
 				mask += "[+]";
 				mask += "~{1," + opts.integerDigits + "}";
 				if (opts.digits !== undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0)) {
-					if (opts.digitsOptional)
+					if (opts.digitsOptional) {
 						mask += "[" + (opts.decimalProtect ? ":" : opts.radixPoint) + ";{" + opts.digits + "}]";
-					else mask += (opts.decimalProtect ? ":" : opts.radixPoint) + ";{" + opts.digits + "}";
+					} else mask += (opts.decimalProtect ? ":" : opts.radixPoint) + ";{" + opts.digits + "}";
 				}
-				if (opts.negationSymbol.back !== "")
+				if (opts.negationSymbol.back !== "") {
 					mask += "[-]";
+				}
 				mask += autoEscape(opts.suffix);
 
 				opts.greedy = false; //enforce greedy false
@@ -679,10 +680,7 @@ Optional extensions on the jquery.inputmask base
 			suffix: " %",
 			allowPlus: false,
 			allowMinus: false
-		},
-		'numeric2': {
-			alias: "numeric"
-		},
+		}
 	});
 	return Inputmask;
 })(jQuery);

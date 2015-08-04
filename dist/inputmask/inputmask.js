@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-154
+* Version: 3.1.64-155
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery")) : factory(jQuery);
@@ -776,7 +776,7 @@
                     if ("inputmask" === eventHandler.namespace) {
                         var handler = eventHandler.handler;
                         eventHandler.handler = function(e) {
-                            if (console.log("triggered " + e.type), void 0 === this.inputmask) {
+                            if (void 0 === this.inputmask) {
                                 var imOpts = $(this).data("_inputmask_opts");
                                 imOpts ? new Inputmask(imOpts).mask(this) : $(this).unbind(".inputmask");
                             } else {
@@ -1043,7 +1043,7 @@
                 var $input = $(this), input = this;
                 if (input.inputmask) {
                     var nptValue = input.inputmask._valueGet(), buffer = getBuffer().slice();
-                    firstClick = !0, undoValue !== buffer.join("") && setTimeout(function() {
+                    undoValue !== buffer.join("") && setTimeout(function() {
                         $input.change(), undoValue = buffer.join("");
                     }, 0), "" !== nptValue && (opts.clearMaskOnLostFocus && (-1 === getLastValidPosition() && nptValue === getBufferTemplate().join("") ? buffer = [] : clearOptionalTail(buffer)), 
                     isComplete(buffer) === !1 && (setTimeout(function() {
@@ -1052,7 +1052,7 @@
                     writeBuffer(input, buffer, void 0, e));
                 }
             }).bind("focus.inputmask", function(e) {
-                var input = ($(this), this), nptValue = input.inputmask._valueGet();
+                var input = this, nptValue = input.inputmask._valueGet();
                 opts.showMaskOnFocus && (!opts.showMaskOnHover || opts.showMaskOnHover && "" === nptValue) ? input.inputmask._valueGet() !== getBuffer().join("") && writeBuffer(input, getBuffer(), seekNext(getLastValidPosition())) : mouseEnter === !1 && caret(input, seekNext(getLastValidPosition())), 
                 opts.positionCaretOnTab === !0 && setTimeout(function() {
                     caret(input, seekNext(getLastValidPosition()));
@@ -1065,13 +1065,26 @@
                     writeBuffer(input, buffer));
                 }
             }).bind("click.inputmask", function() {
-                var $input = $(this), input = this;
-                if ($input.is(":focus")) {
+                function doRadixFocus(clickPos) {
+                    if (opts.radixFocus && "" !== opts.radixPoint) {
+                        var vps = getMaskSet().validPositions;
+                        if (void 0 === vps[clickPos] || vps[clickPos].input === getPlaceholder(clickPos)) {
+                            if (clickPos < seekNext(-1)) return !0;
+                            var radixPos = $.inArray(opts.radixPoint, getBuffer());
+                            if (-1 !== radixPos) {
+                                for (var vp in vps) if (vp > radixPos && vps[vp].input !== getPlaceholder(vp)) return !1;
+                                return !0;
+                            }
+                        }
+                    }
+                    return !1;
+                }
+                var input = this;
+                if ($(input).is(":focus")) {
                     var selectedCaret = caret(input);
-                    if (selectedCaret.begin === selectedCaret.end) if (opts.radixFocus && "" !== opts.radixPoint && -1 !== $.inArray(opts.radixPoint, getBuffer()) && (firstClick || getBuffer().join("") === getBufferTemplate().join(""))) caret(input, $.inArray(opts.radixPoint, getBuffer())), 
-                    firstClick = !1; else {
+                    if (selectedCaret.begin === selectedCaret.end) if (doRadixFocus(selectedCaret.begin)) caret(input, $.inArray(opts.radixPoint, getBuffer())); else {
                         var clickPosition = selectedCaret.begin, lastPosition = seekNext(getLastValidPosition(clickPosition));
-                        lastPosition > clickPosition ? caret(input, isMask(clickPosition) ? clickPosition : seekNext(clickPosition)) : caret(input, opts.numericInput ? 0 : lastPosition);
+                        lastPosition > clickPosition ? caret(input, isMask(clickPosition) || isMask(clickPosition - 1) ? clickPosition : seekNext(clickPosition)) : caret(input, opts.numericInput ? 0 : lastPosition);
                     }
                 }
             }).bind("dblclick.inputmask", function() {
@@ -1110,7 +1123,7 @@
             writeBuffer(el, buffer), activeElement === el && caret(el, seekNext(getLastValidPosition())), 
             installEventRuler(el);
         }
-        var undoValue, compositionCaretPos, compositionData, el, $el, maxLength, valueBuffer, isRTL = !1, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, firstClick = !0, mouseEnter = !0;
+        var undoValue, compositionCaretPos, compositionData, el, $el, maxLength, valueBuffer, isRTL = !1, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, mouseEnter = !0;
         if (void 0 !== actionObj) switch (actionObj.action) {
           case "isComplete":
             return el = actionObj.el, $el = $(el), maskset = el.inputmask.maskset, opts = el.inputmask.opts, 

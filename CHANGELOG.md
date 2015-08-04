@@ -22,6 +22,7 @@ All notable changes to this project will be documented in this file.
   - Inputmask.extendAliases
 
 ### Updates
+- enhance caret positioning behavior & radicFocus
 - change alfanumeric uppercase definition from # to &
 - numericInput option also possible on dynamic-masks
 - remove $.inputmask in favor of Inputmask class
