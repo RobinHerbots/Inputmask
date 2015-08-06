@@ -109,11 +109,12 @@ Optional extensions on the jquery.inputmask base
 				// console.log(buffer);
 				if (opts.numericInput === true) {
 					buffer = buffer.reverse();
-					if (isFinite(pos))
-						pos = buffer.join('').length - pos - 1;
+					if (isFinite(pos)) {
+						pos = buffer.join("").length - pos - 1;
+					}
 				}
-				var negationStrip = false;
-				var suffixStripped = false;
+				var suffixStripped = false,
+					i;
 				if (buffer.length >= opts.suffix.length && buffer.join("").indexOf(opts.suffix) === (buffer.length - opts.suffix.length)) {
 					buffer.length = buffer.length - opts.suffix.length; //strip suffix
 					suffixStripped = true;
@@ -161,12 +162,13 @@ Optional extensions on the jquery.inputmask base
 							bufVal = bufVal.replace(opts.groupSeparator + opts.groupSeparator, opts.groupSeparator);
 						}
 					}
-					if (opts.radixPoint !== "" && radixSplit.length > 1)
+					if (opts.radixPoint !== "" && radixSplit.length > 1) {
 						bufVal += opts.radixPoint + radixSplit[1];
+					}
 				}
 				needsRefresh = bufValOrigin !== bufVal;
 				buffer.length = bufVal.length; //align the length
-				for (var i = 0, l = bufVal.length; i < l; i++) {
+				for (i = 0, l = bufVal.length; i < l; i++) {
 					buffer[i] = bufVal.charAt(i);
 				}
 				var newPos = $.inArray("?", buffer);
@@ -175,19 +177,19 @@ Optional extensions on the jquery.inputmask base
 				else buffer.splice(newPos, 1);
 
 				if (!needsRefresh && suffixStripped) {
-					for (var i = 0, l = opts.suffix.length; i < l; i++) {
+					for (i = 0, l = opts.suffix.length; i < l; i++) {
 						buffer.push(opts.suffix.charAt(i));
 					}
 				}
 				// console.log("formatted " + buffer + " refresh " + needsRefresh);
 				return {
-					pos: (opts.numericInput && isFinite(pos)) ? buffer.join('').length - newPos - 1 : newPos,
+					pos: (opts.numericInput && isFinite(pos)) ? buffer.join("").length - newPos - 1 : newPos,
 					"refreshFromBuffer": needsRefresh,
 					"buffer": opts.numericInput === true ? buffer.reverse() : buffer
 				};
 			},
 			onBeforeWrite: function(e, buffer, caretPos, opts) {
-				if (e && e.type == "blur") {
+				if (e && e.type === "blur") {
 					//handle minvalue
 					var maskedValue = buffer.join(''),
 						processValue = maskedValue.replace(opts.prefix, "");
@@ -204,23 +206,23 @@ Optional extensions on the jquery.inputmask base
 						}
 					}
 					if (opts.numericInput !== true) {
-						var tmpBufSplit = opts.radixPoint != "" ? buffer.join('').split(opts.radixPoint) : [buffer.join('')],
+						var tmpBufSplit = opts.radixPoint !== "" ? buffer.join("").split(opts.radixPoint) : [buffer.join("")],
 							matchRslt = tmpBufSplit[0].match(opts.regex.integerPart(opts)),
-							matchRsltDigits = tmpBufSplit.length == 2 ? tmpBufSplit[1].match(opts.regex.integerNPart(opts)) : undefined;
-						if (matchRslt && (matchRslt[0] == opts.negationSymbol.front + "0" || matchRslt[0] == opts.negationSymbol.front || matchRslt[0] == "+") && (matchRsltDigits == undefined || matchRsltDigits[0].match(/^0+$/))) {
+							matchRsltDigits = tmpBufSplit.length === 2 ? tmpBufSplit[1].match(opts.regex.integerNPart(opts)) : undefined;
+						if (matchRslt && (matchRslt[0] === opts.negationSymbol.front + "0" || matchRslt[0] === opts.negationSymbol.front || matchRslt[0] === "+") && (matchRsltDigits === undefined || matchRsltDigits[0].match(/^0+$/))) {
 							buffer.splice(matchRslt.index, 1);
 						}
 						var radixPosition = $.inArray(opts.radixPoint, buffer);
-						if (radixPosition != -1) {
+						if (radixPosition !== -1) {
 							if (isFinite(opts.digits) && !opts.digitsOptional) {
 								for (var i = 1; i <= opts.digits; i++) {
-									if (buffer[radixPosition + i] == undefined || buffer[radixPosition + i] == opts.placeholder.charAt(0)) buffer[radixPosition + i] = "0";
+									if (buffer[radixPosition + i] === undefined || buffer[radixPosition + i] === opts.placeholder.charAt(0)) buffer[radixPosition + i] = "0";
 								}
 								return {
 									"refreshFromBuffer": true,
 									"buffer": buffer
 								};
-							} else if (radixPosition == buffer.length - opts.suffix.length - 1) {
+							} else if (radixPosition === buffer.length - opts.suffix.length - 1) {
 								buffer.splice(radixPosition, 1);
 								return {
 									"refreshFromBuffer": true,
@@ -239,55 +241,59 @@ Optional extensions on the jquery.inputmask base
 			},
 			regex: {
 				integerPart: function(opts) {
-					return new RegExp('[' + Inputmask.escapeRegex(opts.negationSymbol.front) + '\+]?\\d+');
+					return new RegExp("[" + Inputmask.escapeRegex(opts.negationSymbol.front) + "\+]?\\d+");
 				},
 				integerNPart: function(opts) {
-					return new RegExp('[\\d' + Inputmask.escapeRegex(opts.groupSeparator) + ']+');
+					return new RegExp("[\\d" + Inputmask.escapeRegex(opts.groupSeparator) + "]+");
 				}
 			},
 			signHandler: function(chrs, maskset, pos, strict, opts) {
 				if (!strict && (opts.allowMinus && chrs === "-") || (opts.allowPlus && chrs === "+")) {
-					var matchRslt = maskset.buffer.join('').match(opts.regex.integerPart(opts));
+					var matchRslt = maskset.buffer.join("").match(opts.regex.integerPart(opts));
 
 					if (matchRslt && matchRslt[0].length > 0) {
-						if (maskset.buffer[matchRslt.index] == (chrs === "-" ? "+" : opts.negationSymbol.front)) {
-							if (chrs == "-") {
-								if (opts.negationSymbol.back != "")
+						if (maskset.buffer[matchRslt.index] === (chrs === "-" ? "+" : opts.negationSymbol.front)) {
+							if (chrs === "-") {
+								if (opts.negationSymbol.back !== "") {
 									return {
 										"pos": matchRslt.index,
 										"c": opts.negationSymbol.front,
 										"remove": matchRslt.index,
 										"caret": pos,
 										"insert": {
-											"pos": maskset["buffer"].length - opts.suffix.length - 1,
+											"pos": maskset.buffer.length - opts.suffix.length - 1,
 											"c": opts.negationSymbol.back
 										}
 									};
-								else return {
-									"pos": matchRslt.index,
-									"c": opts.negationSymbol.front,
-									"remove": matchRslt.index,
-									"caret": pos
-								};
+								} else {
+									return {
+										"pos": matchRslt.index,
+										"c": opts.negationSymbol.front,
+										"remove": matchRslt.index,
+										"caret": pos
+									};
+								}
 							} else {
-								if (opts.negationSymbol.back != "")
+								if (opts.negationSymbol.back !== "") {
 									return {
 										"pos": matchRslt.index,
 										"c": "+",
-										"remove": [matchRslt.index, maskset["buffer"].length - opts.suffix.length - 1],
+										"remove": [matchRslt.index, maskset.buffer.length - opts.suffix.length - 1],
 										"caret": pos
 									};
-								else return {
-									"pos": matchRslt.index,
-									"c": "+",
-									"remove": matchRslt.index,
-									"caret": pos
-								};
+								} else {
+									return {
+										"pos": matchRslt.index,
+										"c": "+",
+										"remove": matchRslt.index,
+										"caret": pos
+									};
+								}
 							}
-						} else if (maskset.buffer[matchRslt.index] == (chrs === "-" ? opts.negationSymbol.front : "+")) {
-							if (chrs == "-" && opts.negationSymbol.back != "") {
+						} else if (maskset.buffer[matchRslt.index] === (chrs === "-" ? opts.negationSymbol.front : "+")) {
+							if (chrs === "-" && opts.negationSymbol.back !== "") {
 								return {
-									"remove": [matchRslt.index, maskset["buffer"].length - opts.suffix.length - 1],
+									"remove": [matchRslt.index, maskset.buffer.length - opts.suffix.length - 1],
 									"caret": pos - 1
 								};
 							} else {
@@ -297,22 +303,24 @@ Optional extensions on the jquery.inputmask base
 								};
 							}
 						} else {
-							if (chrs == "-") {
-								if (opts.negationSymbol.back != "")
+							if (chrs === "-") {
+								if (opts.negationSymbol.back !== "") {
 									return {
 										"pos": matchRslt.index,
 										"c": opts.negationSymbol.front,
 										"caret": pos + 1,
 										"insert": {
-											"pos": maskset["buffer"].length - opts.suffix.length,
+											"pos": maskset.buffer.length - opts.suffix.length,
 											"c": opts.negationSymbol.back
 										}
 									};
-								else return {
-									"pos": matchRslt.index,
-									"c": opts.negationSymbol.front,
-									"caret": pos + 1
-								};
+								} else {
+									return {
+										"pos": matchRslt.index,
+										"c": opts.negationSymbol.front,
+										"caret": pos + 1
+									};
+								}
 							} else {
 								return {
 									"pos": matchRslt.index,
@@ -485,7 +493,7 @@ Optional extensions on the jquery.inputmask base
 					prevalidator: null,
 					placeholder: ''
 				},
-				'-': {
+				"-": {
 					validator: function(chrs, maskset, pos, strict, opts) {
 						var isValid = opts.signHandler(chrs, maskset, pos, strict, opts);
 						if (!isValid && strict && opts.allowMinus && chrs === opts.negationSymbol.back) {
@@ -497,7 +505,7 @@ Optional extensions on the jquery.inputmask base
 					prevalidator: null,
 					placeholder: ''
 				},
-				':': {
+				":": {
 					validator: function(chrs, maskset, pos, strict, opts) {
 						var isValid = opts.signHandler(chrs, maskset, pos, strict, opts);
 						if (!isValid) {
@@ -587,22 +595,32 @@ Optional extensions on the jquery.inputmask base
 			},
 			canClearPosition: function(maskset, position, lvp, strict, opts) {
 				var positionInput = maskset.validPositions[position].input,
-					canClear = ((positionInput != opts.radixPoint || (maskset.validPositions[position].match.fn != null && opts.decimalProtect == false)) || isFinite(positionInput)) ||
+					canClear = ((positionInput !== opts.radixPoint || (maskset.validPositions[position].match.fn !== null && opts.decimalProtect === false)) || isFinite(positionInput)) ||
 					position === lvp ||
 					positionInput === opts.groupSeparator ||
 					positionInput === opts.negationSymbol.front ||
-					positionInput === opts.negationSymbol.back,
-					posOffset = 0;
+					positionInput === opts.negationSymbol.back;
 
 				if (canClear && isFinite(positionInput)) {
-					var matchRslt
-					if (!strict && maskset["buffer"]) {
-						matchRslt = maskset["buffer"].join('').substr(0, position).match(opts.regex.integerNPart(opts));
+					var matchRslt,
+						radixPos = $.inArray(opts.radixPoint, maskset.buffer);
+
+					//inject radixpoint
+					var radixInjection = false;
+					if (maskset.validPositions[radixPos] === undefined) {
+						maskset.validPositions[radixPos] = {
+							input: opts.radixPoint
+						};
+						radixInjection = true;
+					}
+
+					if (!strict && maskset.buffer) {
+						matchRslt = maskset.buffer.join("").substr(0, position).match(opts.regex.integerNPart(opts));
 						var pos = position + 1,
-							isNull = matchRslt == null || parseInt(matchRslt["0"].replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "")) == 0;
+							isNull = matchRslt == null || parseInt(matchRslt["0"].replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "")) === 0;
 						if (isNull) {
-							while (maskset["validPositions"][pos] && (maskset["validPositions"][pos].input == opts.groupSeparator || maskset["validPositions"][pos].input == "0")) {
-								delete maskset["validPositions"][pos];
+							while (maskset.validPositions[pos] && (maskset.validPositions[pos].input === opts.groupSeparator || maskset.validPositions[pos].input === "0")) {
+								delete maskset.validPositions[pos];
 								pos++;
 							}
 						}
@@ -613,20 +631,24 @@ Optional extensions on the jquery.inputmask base
 					for (var vp in maskset.validPositions) {
 						buffer.push(maskset.validPositions[vp].input);
 					}
-					if (opts.numericInput == true) {
-						position = buffer.join('').length - position;
+					//remove radix Injection
+					if (radixInjection) {
+						delete maskset.validPositions[radixPos];
+					}
+					if (opts.numericInput === true) {
+						position = buffer.join("").length - position;
 						buffer.reverse();
 					}
-					matchRslt = buffer.join('').match(opts.regex.integerNPart(opts));
+					matchRslt = buffer.join("").match(opts.regex.integerNPart(opts));
 					var radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
-					if (matchRslt && (radixPosition == -1 || position <= radixPosition)) {
-						if (matchRslt["0"].indexOf("0") == 0) {
-							canClear = matchRslt.index != position || radixPosition == -1;
+					if (matchRslt && (radixPosition === -1 || position <= radixPosition || opts.numericInput)) {
+						if (matchRslt["0"].indexOf("0") === 0) {
+							canClear = matchRslt.index !== position || radixPosition === -1;
 						} else {
 							var intPart = parseInt(matchRslt["0"].replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), ""));
-							if (radixPosition != -1 && intPart < 10 && maskset["validPositions"][position]) {
-								maskset["validPositions"][position].input = "0";
-								maskset["p"] = opts.prefix.length + 1;
+							if (radixPosition !== -1 && intPart < 10 && maskset.validPositions[position]) {
+								maskset.validPositions[position].input = "0";
+								maskset.p = opts.prefix.length + 1;
 								canClear = false;
 							}
 						}
@@ -639,19 +661,19 @@ Optional extensions on the jquery.inputmask base
 				var $input = $(this);
 				if (e.ctrlKey) {
 					switch (e.keyCode) {
-						case inputmask.keyCode.UP:
+						case Inputmask.keyCode.UP:
 							$input.val(parseFloat(this.inputmask.unmaskedvalue()) + parseInt(opts.step));
-							$input.triggerHandler('setvalue.inputmask');
+							$input.triggerHandler("setvalue.inputmask");
 							break;
-						case inputmask.keyCode.DOWN:
+						case Inputmask.keyCode.DOWN:
 							$input.val(parseFloat(this.inputmask.unmaskedvalue()) - parseInt(opts.step));
-							$input.triggerHandler('setvalue.inputmask');
+							$input.triggerHandler("setvalue.inputmask");
 							break;
 					}
 				}
 			},
 		},
-		'currency': {
+		"currency": {
 			prefix: "$ ",
 			groupSeparator: ",",
 			alias: "numeric",
@@ -661,15 +683,15 @@ Optional extensions on the jquery.inputmask base
 			digitsOptional: false,
 			clearMaskOnLostFocus: false
 		},
-		'decimal': {
+		"decimal": {
 			alias: "numeric"
 		},
-		'integer': {
+		"integer": {
 			alias: "numeric",
 			digits: 0,
 			radixPoint: ""
 		},
-		'percentage': {
+		"percentage": {
 			alias: "numeric",
 			digits: 2,
 			radixPoint: ".",

@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-155
+* Version: 3.1.64-156
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery")) : factory(jQuery);
@@ -294,8 +294,7 @@
         }
         function stripValidPositions(start, end, nocheck, strict) {
             var i, startPos = start;
-            getMaskSet().p = start;
-            for (i = startPos; end > i; i++) void 0 !== getMaskSet().validPositions[i] && (nocheck === !0 || opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), strict, opts) !== !1) && delete getMaskSet().validPositions[i];
+            for (getMaskSet().p = start, i = startPos; end > i; i++) void 0 !== getMaskSet().validPositions[i] && (nocheck === !0 || opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), strict, opts) !== !1) && delete getMaskSet().validPositions[i];
             for (resetMaskSet(!0), i = startPos + 1; i <= getLastValidPosition(); ) {
                 for (;void 0 !== getMaskSet().validPositions[startPos]; ) startPos++;
                 var s = getMaskSet().validPositions[startPos];
@@ -467,7 +466,7 @@
             function _isValid(position, c, strict, fromSetValid) {
                 var rslt = !1;
                 return $.each(getTests(position), function(ndx, tst) {
-                    for (var test = tst.match, loopend = c ? 1 : 0, chrs = "", i = (getBuffer(), test.cardinality); i > loopend; i--) chrs += getBufferElement(position - (i - 1));
+                    for (var test = tst.match, loopend = c ? 1 : 0, chrs = "", i = test.cardinality; i > loopend; i--) chrs += getBufferElement(position - (i - 1));
                     if (c && (chrs += c), rslt = null != test.fn ? test.fn.test(chrs, getMaskSet(), position, strict, opts) : c !== test.def && c !== opts.skipOptionalPartCharacter || "" === test.def ? !1 : {
                         c: test.def,
                         pos: position
@@ -558,7 +557,7 @@
             for (var buffer = getBuffer(), pndx = pos - 1; pndx > -1 && !getMaskSet().validPositions[pndx]; pndx--) ;
             for (pndx++; pos > pndx; pndx++) void 0 === getMaskSet().validPositions[pndx] && ((!isMask(pndx) || buffer[pndx] !== getPlaceholder(pndx)) && getTests(pndx).length > 1 || buffer[pndx] === opts.radixPoint || "0" === buffer[pndx] && $.inArray(opts.radixPoint, buffer) < pndx) && _isValid(pndx, buffer[pndx], !0);
             var maskPos = pos, result = !1, positionsClone = $.extend(!0, {}, getMaskSet().validPositions);
-            if (maskPos < getMaskLength() && (result = _isValid(maskPos, c, strict, fromSetValid), 
+            if (maskPos < getMaskLength() && (getBuffer(), result = _isValid(maskPos, c, strict, fromSetValid), 
             (!strict || fromSetValid) && result === !1)) {
                 var currentPosValid = getMaskSet().validPositions[maskPos];
                 if (!currentPosValid || null !== currentPosValid.match.fn || currentPosValid.match.def !== c && c !== opts.skipOptionalPartCharacter) {
@@ -825,7 +824,6 @@
                     };
                     $.valHooks[type] = {
                         get: function(elem) {
-                            $(elem);
                             if (elem.inputmask) {
                                 if (elem.inputmask.opts.autoUnmask) return elem.inputmask.unmaskedvalue();
                                 var result = valhookGet(elem), maskset = elem.inputmask.maskset, bufferTemplate = maskset._buffer;
@@ -861,29 +859,25 @@
                 }
             }
             var valueGet, valueSet;
-            if (!npt.inputmask.__valueGet) {
-                var valueProperty;
-                Object.getOwnPropertyDescriptor && void 0 === npt.value ? (valueGet = function() {
-                    return this.textContent;
-                }, valueSet = function(value) {
-                    this.textContent = value;
-                }, Object.defineProperty(npt, "value", {
-                    get: getter,
-                    set: setter
-                })) : ((valueProperty = Object.getOwnPropertyDescriptor && Object.getOwnPropertyDescriptor(npt, "value")) && valueProperty.configurable, 
-                document.__lookupGetter__ && npt.__lookupGetter__("value") ? (valueGet = npt.__lookupGetter__("value"), 
-                valueSet = npt.__lookupSetter__("value"), npt.__defineGetter__("value", getter), 
-                npt.__defineSetter__("value", setter)) : (valueGet = function() {
-                    return npt.value;
-                }, valueSet = function(value) {
-                    npt.value = value;
-                }, patchValhook(npt.type), installNativeValueSetFallback(npt))), npt.inputmask.__valueGet = valueGet, 
-                npt.inputmask._valueGet = function(overruleRTL) {
-                    return isRTL && overruleRTL !== !0 ? valueGet.call(this.el).split("").reverse().join("") : valueGet.call(this.el);
-                }, npt.inputmask.__valueSet = valueSet, npt.inputmask._valueSet = function(value) {
-                    valueSet.call(this.el, isRTL ? value.split("").reverse().join("") : value);
-                };
-            }
+            npt.inputmask.__valueGet || (Object.getOwnPropertyDescriptor && void 0 === npt.value ? (valueGet = function() {
+                return this.textContent;
+            }, valueSet = function(value) {
+                this.textContent = value;
+            }, Object.defineProperty(npt, "value", {
+                get: getter,
+                set: setter
+            })) : document.__lookupGetter__ && npt.__lookupGetter__("value") ? (valueGet = npt.__lookupGetter__("value"), 
+            valueSet = npt.__lookupSetter__("value"), npt.__defineGetter__("value", getter), 
+            npt.__defineSetter__("value", setter)) : (valueGet = function() {
+                return npt.value;
+            }, valueSet = function(value) {
+                npt.value = value;
+            }, patchValhook(npt.type), installNativeValueSetFallback(npt)), npt.inputmask.__valueGet = valueGet, 
+            npt.inputmask._valueGet = function(overruleRTL) {
+                return isRTL && overruleRTL !== !0 ? valueGet.call(this.el).split("").reverse().join("") : valueGet.call(this.el);
+            }, npt.inputmask.__valueSet = valueSet, npt.inputmask._valueSet = function(value) {
+                valueSet.call(this.el, isRTL ? value.split("").reverse().join("") : value);
+            });
         }
         function handleRemove(input, k, pos, strict) {
             function generalize() {
