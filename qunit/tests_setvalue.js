@@ -110,7 +110,7 @@ test(".inputmask(\"mask\", {\"mask\": \"+375 (99) 999-99-99\"}); - \"+375 (37) 9
 });
 
 asyncTest(".inputmask(\"mask\", {\"mask\": \"+7(999)999-99-99\"}); - '7771231234' + '' - moongrate", function () {
-    var $fixture = $("body");
+    var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     $("#testmask").inputmask("mask", { "mask": "+7(999)999-99-99" });
     $("#testmask")[0].focus();

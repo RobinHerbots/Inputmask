@@ -807,6 +807,7 @@
 			}
 
 			resetMaskSet(true);
+
 			for (i = startPos + 1; i <= getLastValidPosition();) {
 				while (getMaskSet().validPositions[startPos] !== undefined) startPos++;
 				var s = getMaskSet().validPositions[startPos];
@@ -1956,10 +1957,11 @@
 			}
 
 			if (opts.numericInput || isRTL) {
-				if (k === Inputmask.keyCode.BACKSPACE)
+				if (k === Inputmask.keyCode.BACKSPACE) {
 					k = Inputmask.keyCode.DELETE;
-				else if (k === Inputmask.keyCode.DELETE)
+				} else if (k === Inputmask.keyCode.DELETE) {
 					k = Inputmask.keyCode.BACKSPACE;
+				}
 
 				if (isRTL) {
 					var pend = pos.end;

@@ -1468,3 +1468,22 @@ test("decimal alias - overwrite decimal value - shahvaiz", function() {
 	equal($("#testmask")[0].inputmask._valueGet(), "123.4%", "Result " + $("#testmask")[0].inputmask._valueGet());
 	$("#testmask").remove();
 });
+
+asyncTest("numeric alias - placeholder: \"_\" - lucafik", function() {
+	var $fixture = $("#qunit-fixture");
+	$fixture.append('<input type="text" id="testmask" />');
+	$("#testmask").inputmask("numeric", {
+		integerDigits: 2,
+		digits: 2,
+		placeholder: "_",
+		digitsOptional: false
+	});
+	$("#testmask")[0].focus();
+	$("#testmask").click();
+	setTimeout(function() {
+		$("#testmask").Type("12");
+		start();
+		equal($("#testmask")[0].inputmask._valueGet(), "12.__", "Result " + $("#testmask")[0].inputmask._valueGet());
+		$("#testmask").remove();
+	}, 0);
+});
