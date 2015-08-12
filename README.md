@@ -67,7 +67,7 @@ $(document).ready(function(){
 });
 ```
 
-Any option can also be passed through the use of a data attribute. Use data-inputmask-<**_the name op the option_**>="value"
+Any option can also be passed through the use of a data attribute. Use data-inputmask-<**_the name of the option_**>="value"
 
 ```html
 <input id="example1" data-inputmask-clearmaskonlostfocus="false" />
