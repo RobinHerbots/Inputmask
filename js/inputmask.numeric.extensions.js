@@ -221,10 +221,12 @@ Optional extensions on the jquery.inputmask base
 							if (radixPosition !== -1) {
 								if (isFinite(opts.digits) && !opts.digitsOptional) {
 									for (var i = 1; i <= opts.digits; i++) {
-										if (buffer[radixPosition + i] === undefined || buffer[radixPosition + i] === opts.placeholder.charAt(0)) buffer[radixPosition + i] = "0";
+										if (buffer[radixPosition + i] === undefined || buffer[radixPosition + i] === opts.placeholder.charAt(0)) {
+											buffer[radixPosition + i] = "0";
+										}
 									}
 									return {
-										"refreshFromBuffer": true,
+										"refreshFromBuffer": maskedValue !== buffer.join(""),
 										"buffer": buffer
 									};
 								} else if (radixPosition === buffer.length - opts.suffix.length - 1) {

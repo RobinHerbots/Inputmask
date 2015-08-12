@@ -1261,10 +1261,10 @@
 						decisionPos = parseInt(decisionPos);
 						altPos = getMaskSet().validPositions[decisionPos];
 						if (decisionPos >= lastAlt && altPos.alternation !== undefined) {
-							var altNdxs = getMaskSet().validPositions[lastAlt].locator[alternation].toString().split(','),
+							var altNdxs = getMaskSet().validPositions[lastAlt].locator[alternation].toString().split(","),
 								decisionTaker = altPos.locator[alternation] || altNdxs[0]; //no match in the alternations (length mismatch)
 							if (decisionTaker.length > 0) { //no decision taken ~ take first one as decider
-								decisionTaker = decisionTaker.split(',')[0];
+								decisionTaker = decisionTaker.split(",")[0];
 							}
 
 							for (var mndx = 0; mndx < altNdxs.length; mndx++) {
@@ -1501,7 +1501,7 @@
 					caretPos = result.caret !== undefined ? result.caret : caretPos;
 				}
 			}
-			input.inputmask._valueSet(buffer.join(''));
+			input.inputmask._valueSet(buffer.join(""));
 			if (caretPos !== undefined && (event === undefined || event.type !== "blur")) {
 				caret(input, caretPos);
 			}
@@ -1568,8 +1568,8 @@
 
 			if (!strict) {
 				if (opts.autoUnmask !== true) {
-					var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(''),
-						matches = inputValue.join('').match(new RegExp("^" + Inputmask.escapeRegex(staticInput), "g"));
+					var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(""),
+						matches = inputValue.join("").match(new RegExp("^" + Inputmask.escapeRegex(staticInput), "g"));
 					if (matches && matches.length > 0) {
 						inputValue.splice(0, matches.length * staticInput.length);
 						initialNdx = seekNext(initialNdx);
@@ -1786,8 +1786,9 @@
 										inComposition = false;
 										break;
 									case "keypress":
-										if (skipKeyPressEvent === true)
+										if (skipKeyPressEvent === true) {
 											return e.preventDefault();
+										}
 										skipKeyPressEvent = true;
 
 										break;
@@ -2106,14 +2107,13 @@
 							c = valResult.c !== undefined ? valResult.c : c; //set new char from isValid
 						}
 						resetMaskSet(true);
-						if (valResult.caret !== undefined)
+						if (valResult.caret !== undefined) {
 							forwardPosition = valResult.caret;
-						else {
+						} else {
 							var vps = getMaskSet().validPositions;
-							if (!opts.keepStatic && (vps[p + 1] !== undefined && getTests(p + 1, vps[p].locator.slice(), p).length > 1 || vps[p].alternation !== undefined))
+							if (!opts.keepStatic && (vps[p + 1] !== undefined && getTests(p + 1, vps[p].locator.slice(), p).length > 1 || vps[p].alternation !== undefined)) {
 								forwardPosition = p + 1;
-							else
-								forwardPosition = seekNext(p);
+							} else forwardPosition = seekNext(p);
 						}
 						getMaskSet().p = forwardPosition; //needed for checkval
 					}
@@ -2128,8 +2128,7 @@
 							writeBuffer(input, buffer, checkval ? undefined : opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition, e, checkval !== true);
 							if (checkval !== true) {
 								setTimeout(function() { //timeout needed for IE
-									if (isComplete(buffer) === true)
-										$input.trigger("complete");
+									if (isComplete(buffer) === true) $input.trigger("complete");
 								}, 0);
 							}
 						} else if (isSlctn) {
@@ -2181,9 +2180,9 @@
 				if (valueAfterCaret === getBufferTemplate().slice(caretPos.end).join("")) valueAfterCaret = "";
 
 				if (window.clipboardData && window.clipboardData.getData) { // IE
-					inputValue = valueBeforeCaret + window.clipboardData.getData('Text') + valueAfterCaret;
+					inputValue = valueBeforeCaret + window.clipboardData.getData("Text") + valueAfterCaret;
 				} else if (e.originalEvent && e.originalEvent.clipboardData && e.originalEvent.clipboardData.getData) {
-					inputValue = valueBeforeCaret + e.originalEvent.clipboardData.getData('text/plain') + valueAfterCaret;
+					inputValue = valueBeforeCaret + e.originalEvent.clipboardData.getData("text/plain") + valueAfterCaret;
 				}
 			}
 
@@ -2194,14 +2193,16 @@
 					e.preventDefault();
 					return false;
 				}
-				if (!pasteValue)
+				if (!pasteValue) {
 					pasteValue = inputValue;
+				}
 			}
 			checkVal(input, false, false, isRTL ? pasteValue.split('').reverse() : pasteValue.split(''));
 			writeBuffer(input, getBuffer(), undefined, e, true);
 			$input.click();
-			if (isComplete(getBuffer()) === true)
+			if (isComplete(getBuffer()) === true) {
 				$input.trigger("complete");
+			}
 
 			return false;
 		}

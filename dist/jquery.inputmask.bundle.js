@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-162
+* Version: 3.1.64-163
 */
 !function($) {
     function Inputmask(options) {
@@ -2096,7 +2096,7 @@
                                 if (isFinite(opts.digits) && !opts.digitsOptional) {
                                     for (var i = 1; i <= opts.digits; i++) (void 0 === buffer[radixPosition + i] || buffer[radixPosition + i] === opts.placeholder.charAt(0)) && (buffer[radixPosition + i] = "0");
                                     return {
-                                        refreshFromBuffer: !0,
+                                        refreshFromBuffer: maskedValue !== buffer.join(""),
                                         buffer: buffer
                                     };
                                 }
