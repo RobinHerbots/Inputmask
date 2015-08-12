@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-163
+* Version: 3.1.64-165
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery", "./inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery"), require("./inputmask")) : factory(jQuery);
@@ -373,9 +373,9 @@
                     var buffer = [];
                     for (var vp in maskset.validPositions) void 0 !== maskset.validPositions[vp].input && buffer.push(maskset.validPositions[vp].input);
                     if (radixInjection && delete maskset.validPositions[radixPos], radixPos > 0 && (matchRslt = buffer.join("").match(opts.regex.integerNPart(opts)), 
-                    matchRslt && radixPos >= position)) if (0 === matchRslt[0].indexOf("0")) canClear = matchRslt.index !== position; else {
+                    matchRslt && radixPos >= position)) if (0 === matchRslt[0].indexOf("0")) canClear = matchRslt.index !== position || "0" === opts.placeholder; else {
                         var intPart = parseInt(matchRslt[0].replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), ""));
-                        10 > intPart && maskset.validPositions[position] && (maskset.validPositions[position].input = "0", 
+                        10 > intPart && maskset.validPositions[position] && "0" !== opts.placeholder && (maskset.validPositions[position].input = "0", 
                         maskset.p = opts.prefix.length + 1, canClear = !1);
                     }
                 }
