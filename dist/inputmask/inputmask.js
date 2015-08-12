@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-159
+* Version: 3.1.64-162
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery")) : factory(jQuery);
@@ -442,7 +442,7 @@
             if (buffer = buffer || getBuffer().slice(), start === !0) resetMaskSet(), start = 0, 
             end = buffer.length; else for (i = start; end > i; i++) delete getMaskSet().validPositions[i], 
             delete getMaskSet().tests[i];
-            for (i = start; end > i; i++) buffer[i] !== opts.skipOptionalPartCharacter && isValid(i, buffer[i], !0, !0);
+            for (i = start; end > i; i++) resetMaskSet(!0), buffer[i] !== opts.skipOptionalPartCharacter && isValid(i, buffer[i], !0, !0);
         }
         function casing(elem, test) {
             switch (test.casing) {
@@ -1231,6 +1231,7 @@
             keepStatic: void 0,
             positionCaretOnTab: !1,
             tabThrough: !1,
+            supportsInputType: [],
             definitions: {
                 "9": {
                     validator: "[0-9]",

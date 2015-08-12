@@ -1,6 +1,6 @@
 module("Numeric.Extensions");
 
-test("€ Currency precision 2", function() {
+asyncTest("€ Currency precision 2", function() {
 	var $fixture = $("#qunit-fixture");
 	$fixture.append('<input type="text" id="testmask" />');
 	$("#testmask").inputmask("numeric", {
@@ -13,9 +13,13 @@ test("€ Currency precision 2", function() {
 	});
 
 	$("#testmask")[0].focus();
-	$("#testmask").Type("1234");
-	equal($("#testmask").val(), "€ 1,234.00", "Result " + $("#testmask").val());
-	$("#testmask").remove();
+	$("#testmask").click();
+	setTimeout(function() {
+		start();
+		$("#testmask").Type("1234");
+		equal($("#testmask").val(), "€ 1,234.00", "Result " + $("#testmask").val());
+		$("#testmask").remove();
+	}, 0);
 });
 
 
@@ -1034,7 +1038,7 @@ test("inputmask(\"decimal\") - 810000.00 - ManRueda", function() {
 });
 
 
-test("inputmask(\"decimal\") - 123456   78 - babupca", function() {
+asyncTest("inputmask(\"decimal\") - 123456   78 - babupca", function() {
 	var $fixture = $("#qunit-fixture");
 	$fixture.append('<input type="text" id="testmask" />');
 	$("#testmask").inputmask({
@@ -1046,13 +1050,17 @@ test("inputmask(\"decimal\") - 123456   78 - babupca", function() {
 		placeholder: "0"
 	});
 	$("#testmask")[0].focus();
-	$("#testmask").Type("123456");
-	$.caret($("#testmask"), 8);
-	$("#testmask").Type("78");
-	$.caret($("#testmask"), 5);
-	$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
-	equal($("#testmask").val(), "12346.078", "Result " + $("#testmask").val());
-	$("#testmask").remove();
+	$("#testmask").click();
+	setTimeout(function() {
+		start();
+		$("#testmask").Type("123456");
+		$.caret($("#testmask"), 8);
+		$("#testmask").Type("78");
+		$.caret($("#testmask"), 5);
+		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
+		equal($("#testmask").val(), "12346.078", "Result " + $("#testmask").val());
+		$("#testmask").remove();
+	}, 0);
 });
 
 asyncTest("currency alias - 1234 => del 1", function() {

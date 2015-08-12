@@ -298,7 +298,7 @@ asyncTest("inputmask({ mask: \"['$9.99', '$99.99', '$999.99', '$9,999.99', '$99,
 	}, 0);
 });
 
-asyncTest("cuurency - numericInput: true - 123456 backspace everything", function() {
+asyncTest("cuurency - numericInput: true - 123456 backspace x4", function() {
 	var $fixture = $("#qunit-fixture");
 	$fixture.append('<input type="text" id="testmask" />');
 	$("#testmask").inputmask("currency", {

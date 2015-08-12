@@ -70,6 +70,7 @@
 			keepStatic: undefined, //try to keep the mask static while typing. Decisions to alter the mask will be posponed if possible - undefined see auto selection for multi masks
 			positionCaretOnTab: false, //when enabled the caret position is set after the latest valid position on TAB
 			tabThrough: false, //allows for tabbing through the different parts of the masked field
+			supportsInputType: [], //allow extra inputtypes for masking, ex. number can be allowed for numeric alias without pre-/suffix and standard radixpoint, groupSeparator
 			definitions: {
 				"9": {
 					validator: "[0-9]",
@@ -1112,8 +1113,8 @@
 					delete getMaskSet().tests[i];
 				}
 			}
-
 			for (i = start; i < end; i++) {
+				resetMaskSet(true); //prevents clobber from the buffer
 				if (buffer[i] !== opts.skipOptionalPartCharacter) {
 					isValid(i, buffer[i], true, true);
 				}
@@ -1150,7 +1151,6 @@
 
 			function _isValid(position, c, strict, fromSetValid) {
 				var rslt = false;
-				//console.log(JSON.stringify(getTests(position)));
 				$.each(getTests(position), function(ndx, tst) {
 					var test = tst.match;
 					var loopend = c ? 1 : 0,
@@ -1297,7 +1297,6 @@
 										isValidRslt = true;
 										while (validInputs.length > 0) {
 											var input = validInputs.shift();
-											//console.log(input);
 											if (input !== opts.skipOptionalPartCharacter) {
 												if (!(isValidRslt = isValid(getLastValidPosition() + 1, input, false, true))) {
 													break;

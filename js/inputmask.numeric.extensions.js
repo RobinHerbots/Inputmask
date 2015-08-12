@@ -79,6 +79,7 @@ Optional extensions on the jquery.inputmask base
 				mask += autoEscape(opts.suffix);
 
 				opts.greedy = false; //enforce greedy false
+
 				return mask;
 			},
 			placeholder: "",
