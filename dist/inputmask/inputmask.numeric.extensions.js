@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-165
+* Version: 3.1.64-166
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery", "./inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery"), require("./inputmask")) : factory(jQuery);
@@ -25,9 +25,10 @@
                     opts.integerDigits < 1 && (opts.integerDigits = "*");
                 }
                 opts.placeholder.length > 1 && (opts.placeholder = opts.placeholder.charAt(0)), 
-                opts.radixFocus = opts.radixFocus && "" !== opts.placeholder, opts.definitions[";"] = opts.definitions["~"], 
-                opts.definitions[";"].definitionSymbol = "~", opts.numericInput === !0 && (opts.radixFocus = !1, 
-                opts.digitsOptional = !1, isNaN(opts.digits) && (opts.digits = 2), opts.decimalProtect = !1);
+                opts.radixFocus = opts.radixFocus && "" !== opts.placeholder && opts.integerOptional === !0, 
+                opts.definitions[";"] = opts.definitions["~"], opts.definitions[";"].definitionSymbol = "~", 
+                opts.numericInput === !0 && (opts.radixFocus = !1, opts.digitsOptional = !1, isNaN(opts.digits) && (opts.digits = 2), 
+                opts.decimalProtect = !1);
                 var mask = autoEscape(opts.prefix);
                 return mask += "[+]", mask += opts.integerOptional === !0 ? "~{1," + opts.integerDigits + "}" : "~{" + opts.integerDigits + "}", 
                 void 0 !== opts.digits && (isNaN(opts.digits) || parseInt(opts.digits) > 0) && (mask += opts.digitsOptional ? "[" + (opts.decimalProtect ? ":" : opts.radixPoint) + ";{" + opts.digits + "}]" : (opts.decimalProtect ? ":" : opts.radixPoint) + ";{" + opts.digits + "}"), 

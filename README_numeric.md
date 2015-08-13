@@ -1,52 +1,59 @@
-## numeric extensions
+# numeric extensions
+## aliases
 
-```javascript
-$(document).ready(function(){
-   $(selector).inputmask("decimal");
-   $(selector).inputmask("decimal", { allowMinus: false });
-   $(selector).inputmask("integer");
-});
-```
+## Options
+### digits
+Number of fractionalDigits  
+Default: "*"
 
-Define the radixpoint
+### digitsOptional
+Default: true
 
-```javascript
-$(document).ready(function(){
-   $(selector).inputmask("decimal", { radixPoint: "," });
-});
-```
+### groupSize
+Default: 3
 
-Define the number of digits after the radixpoint
+### autoGroup
+Default: false
 
-```javascript
-$(document).ready(function(){
-   $(selector).inputmask("decimal", { digits: 3 });
-});
-```
+### allowPlus
+Default: true
 
-Define the number of digits before the radixpoint
+### allowMinus
+Default: true
 
-```javascript
-$(document).ready(function(){
-   $(selector).inputmask("decimal", { integerDigits: 5 });
-});
-```
+### negationSymbol
+Default: {  
+  front: "-", //"("  
+  back: "" //")"  
+}
 
-When TAB out of the input the digits autocomplate with 0 if the digits option is given a valid number.
+### integerDigits
+Number of integerDigits  
+Default: "+"
 
-Grouping support through:  autoGroup, groupSeparator, groupSize
+### integerOptional
+Default: true
 
-```javascript
-$(document).ready(function(){
-   $(selector).inputmask("decimal", { radixPoint: ",", autoGroup: true, groupSeparator: ".", groupSize: 3 });
-});
-```
+### prefix
+Default: ""
 
-Allow minus and/or plus symbol
+### suffix
+Default: ""
 
-```javascript
-$(document).ready(function(){
-   $(selector).inputmask("decimal", { allowMinus: false });
-   $(selector).inputmask("integer", { allowMinus: false, allowPlus: true });
-});
-```
+### decimalProtect
+Do not allow assumption of decimals input without entering the radixpoint.  
+Default: true
+
+### min
+Minimum value
+Default: undefined
+
+### max
+Maximum value
+Default: undefined
+
+### step
+Default: 1
+
+### unmaskAsNumber
+Default: false

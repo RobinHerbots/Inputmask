@@ -154,6 +154,15 @@ module.exports = function(grunt) {
 		},
 		eslint: {
 			target: grunt.file.expand("js/*.js")
+		},
+		availabletasks: {
+			tasks: {
+				options: {
+					filter: 'exclude',
+					tasks: ['availabletasks', 'default'],
+					showTasks: ['user']
+				}
+			}
 		}
 	});
 
@@ -164,8 +173,7 @@ module.exports = function(grunt) {
 	grunt.registerTask('publish:minor', ['clean', 'bump:minor', 'uglify', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
 	grunt.registerTask('publish:major', ['clean', 'bump:major', 'uglify', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
 	grunt.registerTask('validate', ['eslint', 'karma']);
-
-	// Default task(s).
-	grunt.registerTask('default', ['bump:prerelease', 'clean', 'uglify']);
+	grunt.registerTask('build', ['bump:prerelease', 'clean', 'uglify']);
+	grunt.registerTask('default', ["availabletasks"]);
 
 };
