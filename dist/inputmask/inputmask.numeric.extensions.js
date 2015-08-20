@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-166
+* Version: 3.1.64-169
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery", "./inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery"), require("./inputmask")) : factory(jQuery);
@@ -43,6 +43,7 @@
             radixFocus: !0,
             groupSize: 3,
             groupSeparator: "",
+            skipGroupSeparatorOnPaste: !1,
             autoGroup: !1,
             allowPlus: !0,
             allowMinus: !0,
@@ -392,6 +393,13 @@
                   case Inputmask.keyCode.DOWN:
                     $input.val(parseFloat(this.inputmask.unmaskedvalue()) - parseInt(opts.step)), $input.triggerHandler("setvalue.inputmask");
                 }
+            },
+            onBeforePaste: function(pastedText, opts) {
+                if (opts.skipGroupSeparatorOnPaste && opts.groupSeparator) for (;;) {
+                    var old = pastedText;
+                    if (pastedText = pastedText.replace(opts.groupSeparator, ""), old === pastedText) break;
+                }
+                return pastedText;
             }
         },
         currency: {
