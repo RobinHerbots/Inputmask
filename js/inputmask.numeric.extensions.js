@@ -90,6 +90,7 @@ Optional extensions on the jquery.inputmask base
 			radixFocus: true,
 			groupSize: 3,
 			groupSeparator: "",
+			skipGroupSeparatorOnPaste: false,
 			autoGroup: false,
 			allowPlus: true,
 			allowMinus: true,
@@ -683,6 +684,18 @@ Optional extensions on the jquery.inputmask base
 							break;
 					}
 				}
+			},
+			onBeforePaste: function (pastedText, opts) {
+				if (opts.skipGroupSeparatorOnPaste && opts.groupSeparator) {
+					while (true) {
+						var old = pastedText;
+						pastedText = pastedText.replace(opts.groupSeparator, '');
+						if (old === pastedText) {
+							break;
+						}
+					}
+				}
+				return pastedText;
 			}
 		},
 		"currency": {
