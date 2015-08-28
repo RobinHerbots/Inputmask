@@ -7,7 +7,16 @@ Version: 0.0.0-dev
 
 Optional extensions on the jquery.inputmask base
 */
-(function($) {
+(function(factory) {
+		if (typeof define === "function" && define.amd) {
+			define(["jQuery", "inputmask"], factory);
+		} else if (typeof exports === "object") {
+			module.exports = factory(require("jQuery"), require("inputmask"));
+		} else {
+			factory(jQuery, window.Inputmask);
+		}
+	}
+	(function($, Inputmask) {
 	//number aliases
 	Inputmask.extendAliases({
 		"numeric": {
@@ -717,4 +726,4 @@ Optional extensions on the jquery.inputmask base
 		}
 	});
 	return Inputmask;
-})(jQuery);
+}));

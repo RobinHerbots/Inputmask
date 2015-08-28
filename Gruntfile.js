@@ -15,8 +15,6 @@ module.exports = function(grunt) {
 		for (var srcNdx in srcFiles) {
 			var dstFile = srcFiles[srcNdx].replace("js/", ""),
 				dstFileMin = dstFile.replace(".js", ".min.js");
-			wrapModuleLoaders(srcFiles[srcNdx], "build/" + dstFile, dstFile.indexOf("jquery") == -1 ?
-				(dstFile.indexOf("extension") == -1 ? ["jquery"] : ["jquery", "./inputmask"]) : ["jquery", "./inputmask"]);
 			uglifyConfig[dstFile] = {
 				dest: 'dist/inputmask/' + dstFile,
 				src: "build/" + dstFile,
@@ -29,7 +27,7 @@ module.exports = function(grunt) {
 				}
 			};
 			uglifyConfig[dstFileMin] = {
-				dest: "dist/inputmask/" + dstFileMin,
+				dest: "dist/min/inputmask/" + dstFileMin,
 				src: "build/" + dstFile,
 				options: {
 					banner: createBanner(dstFileMin),
@@ -56,7 +54,7 @@ module.exports = function(grunt) {
 		}
 		uglifyConfig["inputmaskbundlemin"] = {
 			files: {
-				'dist/<%= pkg.name %>.bundle.min.js': srcFiles
+				'dist/min/<%= pkg.name %>.bundle.min.js': srcFiles
 			},
 			options: {
 				banner: createBanner('<%= pkg.name %>.bundle'),
@@ -65,33 +63,6 @@ module.exports = function(grunt) {
 			}
 		}
 		return uglifyConfig;
-	}
-
-	function wrapModuleLoaders(src, dst, dependencies) {
-		function stripClosureExecution() {
-			return srcFile.replace(new RegExp("\\(jQuery\\)[\\s\\S]*$"), "");
-		}
-
-		function createCommonJsRequires(dependencies) {
-			var res = [];
-
-			dependencies.forEach(function(dep) {
-				res.push("require('" + dep + "')");
-			});
-
-			return res.join(", ");
-		}
-
-		var srcFile = grunt.file.read(src),
-			dstContent = "(function (factory) {" +
-			"if (typeof define === 'function' && define.amd) {" +
-			"define(" + JSON.stringify(dependencies) + ", factory);" +
-			"} else if (typeof exports === 'object') {" +
-			"module.exports = factory(" + createCommonJsRequires(dependencies) + ");" +
-			"} else {" +
-			"factory(jQuery);" +
-			"}}\n" + stripClosureExecution() + ");";
-		grunt.file.write(dst, dstContent);
 	}
 
 	// Project configuration.

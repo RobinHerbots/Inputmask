@@ -3,9 +3,11 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-166
+* Version: 3.1.64-168
 */
-!function($) {
+!function(factory) {
+    "function" == typeof define && define.amd ? define([ "dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("dependencyLib")) : factory(window.dependencyLib || jQuery);
+}(function($) {
     function Inputmask(options) {
         this.el = void 0, this.opts = $.extend(!0, {}, this.defaults, options), this.noMasksCache = options && void 0 !== options.definitions, 
         this.userOptions = options || {}, resolveAlias(this.opts.alias, options, this.opts);
@@ -1362,7 +1364,9 @@
     };
     var ua = navigator.userAgent, iphone = null !== ua.match(new RegExp("iphone", "i")), androidchrome = null !== ua.match(new RegExp("android.*chrome.*", "i")), androidfirefox = null !== ua.match(new RegExp("android.*firefox.*", "i")), PasteEventType = isInputEventSupported("paste") ? "paste" : isInputEventSupported("input") ? "input" : "propertychange";
     return window.Inputmask = Inputmask, Inputmask;
-}(jQuery), function($) {
+}), function(factory) {
+    "function" == typeof define && define.amd ? define([ "jQuery", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jQuery"), require("inputmask")) : factory(jQuery, window.Inputmask);
+}(function($, Inputmask) {
     return void 0 === $.fn.inputmask && ($.fn.inputmask = function(fn, options) {
         var nptmask, input;
         if (options = options || {}, "string" == typeof fn) switch (fn) {
@@ -1409,7 +1413,9 @@
             });
         }
     }), $.fn.inputmask;
-}(jQuery), function($) {
+}), function(factory) {
+    "function" == typeof define && define.amd ? define([ "jQuery", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jQuery"), require("inputmask")) : factory(jQuery, window.Inputmask);
+}(function($, Inputmask) {
     return Inputmask.extendDefinitions({
         h: {
             validator: "[01][0-9]|2[0-3]",
@@ -1883,7 +1889,9 @@
             clearIncomplete: !0
         }
     }), Inputmask;
-}(jQuery), function($) {
+}), function(factory) {
+    "function" == typeof define && define.amd ? define([ "jQuery", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jQuery"), require("inputmask")) : factory(jQuery, window.Inputmask);
+}(function($, Inputmask) {
     return Inputmask.extendDefinitions({
         A: {
             validator: "[A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
@@ -1988,7 +1996,9 @@
             mask: "##:##:##:##:##:##"
         }
     }), Inputmask;
-}(jQuery), function($) {
+}), function(factory) {
+    "function" == typeof define && define.amd ? define([ "jQuery", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jQuery"), require("inputmask")) : factory(jQuery, window.Inputmask);
+}(function($, Inputmask) {
     return Inputmask.extendAliases({
         numeric: {
             mask: function(opts) {
@@ -2406,7 +2416,9 @@
             allowMinus: !1
         }
     }), Inputmask;
-}(jQuery), function($) {
+}), function(factory) {
+    "function" == typeof define && define.amd ? define([ "jQuery", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jQuery"), require("inputmask")) : factory(jQuery, window.Inputmask);
+}(function($, Inputmask) {
     return Inputmask.extendAliases({
         phone: {
             url: "phone-codes/phone-codes.js",
@@ -2444,7 +2456,9 @@
             nojumpsThreshold: 4
         }
     }), Inputmask;
-}(jQuery), function($) {
+}), function(factory) {
+    "function" == typeof define && define.amd ? define([ "jQuery", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jQuery"), require("inputmask")) : factory(jQuery, window.Inputmask);
+}(function($, Inputmask) {
     return Inputmask.extendAliases({
         Regex: {
             mask: "r",
@@ -2549,4 +2563,4 @@
             }
         }
     }), Inputmask;
-}(jQuery);
+});

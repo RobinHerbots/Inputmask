@@ -8,7 +8,16 @@ Version: 0.0.0-dev
 Regex extensions on the jquery.inputmask base
 Allows for using regular expressions as a mask
 */
-(function($) {
+(function(factory) {
+		if (typeof define === "function" && define.amd) {
+			define(["jQuery", "inputmask"], factory);
+		} else if (typeof exports === "object") {
+			module.exports = factory(require("jQuery"), require("inputmask"));
+		} else {
+			factory(jQuery, window.Inputmask);
+		}
+	}
+	(function($, Inputmask) {
 	Inputmask.extendAliases({ // $(selector).inputmask("Regex", { regex: "[0-9]*"}
 		"Regex": {
 			mask: "r",
@@ -201,4 +210,4 @@ Allows for using regular expressions as a mask
 		}
 	});
 	return Inputmask;
-})(jQuery);
+}));

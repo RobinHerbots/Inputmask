@@ -37,6 +37,9 @@
   },
   "globals": {
     "Inputmask": true,
-    "jQuery": false
+    "jQuery": false,
+    "module": false,
+    "require": false,
+    "define": false
   }
 }
