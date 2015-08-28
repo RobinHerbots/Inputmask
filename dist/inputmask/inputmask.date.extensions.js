@@ -3,11 +3,11 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-168
+* Version: 3.1.64-171
 */
 !function(factory) {
-    "function" == typeof define && define.amd ? define([ "jquery", "./inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery"), require("./inputmask")) : factory(jQuery);
-}(function($) {
+    "function" == typeof define && define.amd ? define([ "jQuery", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jQuery"), require("inputmask")) : factory(jQuery, window.Inputmask);
+}(function($, Inputmask) {
     return Inputmask.extendDefinitions({
         h: {
             validator: "[01][0-9]|2[0-3]",

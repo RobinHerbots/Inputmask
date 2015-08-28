@@ -17,7 +17,7 @@ module.exports = function(grunt) {
 				dstFileMin = dstFile.replace(".js", ".min.js");
 			uglifyConfig[dstFile] = {
 				dest: 'dist/inputmask/' + dstFile,
-				src: "build/" + dstFile,
+				src: srcFiles[srcNdx],
 				options: {
 					banner: createBanner(dstFile),
 					beautify: true,
@@ -28,7 +28,7 @@ module.exports = function(grunt) {
 			};
 			uglifyConfig[dstFileMin] = {
 				dest: "dist/min/inputmask/" + dstFileMin,
-				src: "build/" + dstFile,
+				src: srcFiles[srcNdx],
 				options: {
 					banner: createBanner(dstFileMin),
 					preserveComments: "some",
@@ -40,6 +40,7 @@ module.exports = function(grunt) {
 		srcFiles = grunt.file.expand(path + "/*.extensions.js");
 		srcFiles.splice(0, 0, "js/jquery.inputmask.js");
 		srcFiles.splice(0, 0, "js/inputmask.js");
+		srcFiles.splice(0, 0, "js/dependencyLib.js");
 		uglifyConfig["inputmaskbundle"] = {
 			files: {
 				'dist/<%= pkg.name %>.bundle.js': srcFiles
