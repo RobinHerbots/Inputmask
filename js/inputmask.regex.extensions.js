@@ -10,9 +10,9 @@ Allows for using regular expressions as a mask
 */
 (function(factory) {
 		if (typeof define === "function" && define.amd) {
-			define(["jQuery", "inputmask"], factory);
+			define(["jquery", "inputmask"], factory);
 		} else if (typeof exports === "object") {
-			module.exports = factory(require("jQuery"), require("inputmask"));
+			module.exports = factory(require("jquery"), require("inputmask"));
 		} else {
 			factory(jQuery, window.Inputmask);
 		}
