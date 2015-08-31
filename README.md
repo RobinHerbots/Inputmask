@@ -677,7 +677,7 @@ Do not jump over fixed parts in the mask.<br>Default: false
 Start nojumps as of<br>Default: 0
 
 ### keepStatic
-Default: undefined (~false) Use in combination with the alternator syntax Try to keep the mask static while typing. Decisions to alter the mask will be postponed if possible.
+Default: null (~false) Use in combination with the alternator syntax Try to keep the mask static while typing. Decisions to alter the mask will be postponed if possible.
 
 ex. $(selector).inputmask({ mask: ["+55-99-9999-9999", "+55-99-99999-9999", ], keepStatic: true });
 
@@ -786,6 +786,18 @@ $(selector).inputmask("getmetadata");
 
 ### setvalue
 The setvalue functionality is to set a value to the inputmask like you would do with jQuery.val, BUT it will trigger the internal event used by the inputmask always, whatever the case. This is particular usefull when cloning an inputmask with jQuery.clone.  Cloning an inputmask is not a fully functional clone.  On the first event (mouseenter, focus, ...) the inputmask can detect if it where cloned an can reactivate the masking.  However when setting the value with jQuery.val there is none of the events triggered.  The setvalue functionality does this for you.
+
+### option
+Get or set an option on an existing inputmask.
+
+```javascript
+$("#CellPhone").inputmask("option", {
+  onBeforePaste: function (pastedValue, opts) {
+      return phoneNumOnPaste(pastedValue, opts);
+  }
+})
+$("#CellPhone").inputmask("option", "onBeforePaste")
+```
 
 ## General
 ### set a value and apply mask

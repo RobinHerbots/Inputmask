@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-172
+* Version: 3.1.64-174
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jQuery", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jQuery"), require("inputmask")) : factory(jQuery, window.Inputmask);
@@ -38,7 +38,14 @@
 
           case "setvalue":
             input = this.jquery && this.length > 0 ? this[0] : this, $(input).val(options), 
-            void 0 === input.Inputmask && $(input).triggerHandler("setvalue.inputmask");
+            void 0 !== input.inputmask && $(input).triggerHandler("setvalue.inputmask");
+            break;
+
+          case "option":
+            if ("string" != typeof options) return this.each(function() {
+                return void 0 !== this.inputmask ? this.inputmask.option(options) : void 0;
+            });
+            if (input = this.jquery && this.length > 0 ? this[0] : this, void 0 !== input.inputmask) return input.inputmask.option(options);
             break;
 
           default:
@@ -46,9 +53,11 @@
                 nptmask.mask(this);
             });
         } else {
-            if ("object" == typeof fn) return nptmask = new Inputmask(fn), this.each(function() {
+            if ("object" == typeof fn) return void 0 === fn.mask && void 0 === fn.alias ? this.each(function() {
+                return void 0 !== this.inputmask ? this.inputmask.option(fn) : void 0;
+            }) : (nptmask = new Inputmask(fn), this.each(function() {
                 nptmask.mask(this);
-            });
+            }));
             if (void 0 === fn) return this.each(function() {
                 nptmask = new Inputmask(options), nptmask.mask(this);
             });

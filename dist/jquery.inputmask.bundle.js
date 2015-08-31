@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-172
+* Version: 3.1.64-174
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery")) : factory(jQuery);
@@ -33,13 +33,14 @@
     function resolveAlias(aliasStr, options, opts) {
         var aliasDefinition = opts.aliases[aliasStr];
         return aliasDefinition ? (aliasDefinition.alias && resolveAlias(aliasDefinition.alias, void 0, opts), 
-        $.extend(!0, opts, aliasDefinition), $.extend(!0, opts, options), !0) : (void 0 === opts.mask && (opts.mask = aliasStr), 
+        $.extend(!0, opts, aliasDefinition), $.extend(!0, opts, options), !0) : (null === opts.mask && (opts.mask = aliasStr), 
         !1);
     }
     function importAttributeOptions(npt, opts, userOptions) {
         function importOption(option) {
             var optionData = $npt.data("inputmask-" + option.toLowerCase());
             void 0 !== optionData && (optionData = "boolean" == typeof optionData ? optionData : optionData.toString(), 
+            "string" == typeof optionData && 0 === option.indexOf("on") && (optionData = eval("(" + optionData + ")")), 
             "mask" === option && 0 === optionData.indexOf("[") ? (userOptions[option] = optionData.replace(/[\s[\]]/g, "").split(","), 
             userOptions[option][0] = userOptions[option][0].replace("'", ""), userOptions[option][userOptions[option].length - 1] = userOptions[option][userOptions[option].length - 1].replace("'", "")) : userOptions[option] = optionData);
         }
@@ -205,7 +206,7 @@
             maskTokens;
         }
         function generateMask(mask, metadata) {
-            if (void 0 === mask || "" === mask) return void 0;
+            if (null === mask || "" === mask) return void 0;
             if (1 === mask.length && opts.greedy === !1 && 0 !== opts.repeat && (opts.placeholder = ""), 
             opts.repeat > 0 || "*" === opts.repeat || "+" === opts.repeat) {
                 var repeatStart = "*" === opts.repeat ? 0 : "+" === opts.repeat ? 1 : opts.repeat;
@@ -229,7 +230,7 @@
         var ms;
         if ($.isFunction(opts.mask) && (opts.mask = opts.mask.call(this, opts)), $.isArray(opts.mask)) {
             if (opts.mask.length > 1) {
-                opts.keepStatic = void 0 === opts.keepStatic ? !0 : opts.keepStatic;
+                opts.keepStatic = null === opts.keepStatic ? !0 : opts.keepStatic;
                 var altMask = "(";
                 return $.each(opts.numericInput ? opts.mask.reverse() : opts.mask, function(ndx, msk) {
                     altMask.length > 1 && (altMask += ")|("), altMask += preProcessMask(void 0 === msk.mask || $.isFunction(msk.mask) ? msk : msk.mask);
@@ -332,8 +333,7 @@
         function getTests(pos, ndxIntlzr, tstPs, cacheable) {
             function resolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) {
                 function handleMatch(match, loopNdx, quantifierRecurse) {
-                    if (testPos > 1e4) return alert("jquery.inputmask: There is probably an error in your mask definition or in the code. Create an issue on github with an example of the mask you are using. " + getMaskSet().mask), 
-                    !0;
+                    if (testPos > 1e4) throw "Inputmask: There is probably an error in your mask definition or in the code. Create an issue on github with an example of the mask you are using. " + getMaskSet().mask;
                     if (testPos === pos && void 0 === match.matches) return matches.push({
                         match: match,
                         locator: loopNdx.reverse()
@@ -996,7 +996,7 @@
                 !1;
                 pasteValue || (pasteValue = inputValue);
             }
-            return checkVal(input, !1, !1, isRTL ? pasteValue.split("").reverse() : pasteValue.split("")), 
+            return checkVal(input, !1, !1, isRTL ? pasteValue.split("").reverse() : pasteValue.toString().split("")), 
             writeBuffer(input, getBuffer(), void 0, e, !0), $input.click(), isComplete(getBuffer()) === !0 && $input.trigger("complete"), 
             !1;
         }
@@ -1202,7 +1202,7 @@
             },
             alternatormarker: "|",
             escapeChar: "\\",
-            mask: void 0,
+            mask: null,
             oncomplete: $.noop,
             onincomplete: $.noop,
             oncleared: $.noop,
@@ -1214,12 +1214,12 @@
             insertMode: !0,
             clearIncomplete: !1,
             aliases: {},
-            alias: void 0,
+            alias: null,
             onKeyDown: $.noop,
-            onBeforeMask: void 0,
-            onBeforePaste: void 0,
-            onBeforeWrite: void 0,
-            onUnMask: void 0,
+            onBeforeMask: null,
+            onBeforePaste: null,
+            onBeforeWrite: null,
+            onUnMask: null,
             showMaskOnFocus: !0,
             showMaskOnHover: !0,
             onKeyValidation: $.noop,
@@ -1233,7 +1233,7 @@
             radixFocus: !1,
             nojumps: !1,
             nojumpsThreshold: 0,
-            keepStatic: void 0,
+            keepStatic: null,
             positionCaretOnTab: !1,
             tabThrough: !1,
             supportsInputType: [],
@@ -1254,9 +1254,9 @@
                 }
             },
             ignorables: [ 8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123 ],
-            isComplete: void 0,
+            isComplete: null,
             canClearPosition: $.noop,
-            postValidation: void 0
+            postValidation: null
         },
         masksCache: {},
         mask: function(el) {
@@ -1265,11 +1265,16 @@
             var maskset = generateMaskSet(scopedOpts, this.noMasksCache);
             return void 0 !== maskset && (input.inputmask = input.inputmask || new Inputmask(), 
             input.inputmask.opts = scopedOpts, input.inputmask.noMasksCache = this.noMasksCache, 
-            input.inputmask.el = input, input.inputmask.maskset = maskset, input.inputmask.isRTL = !1, 
-            $(input).data("_inputmask_opts", scopedOpts), maskScope({
+            input.inputmask.userOptions = $.extend(!0, {}, this.userOptions), input.inputmask.el = input, 
+            input.inputmask.maskset = maskset, input.inputmask.isRTL = !1, $(input).data("_inputmask_opts", scopedOpts), 
+            maskScope({
                 action: "mask",
                 el: input
             }, maskset, input.inputmask.opts)), el;
+        },
+        option: function(options) {
+            return "string" == typeof options ? this.opts[options] : "object" == typeof options ? ($.extend(this.opts, options), 
+            $.extend(this.userOptions, options), this) : void 0;
         },
         unmaskedvalue: function() {
             return this.el ? maskScope({
@@ -1402,7 +1407,14 @@
 
           case "setvalue":
             input = this.jquery && this.length > 0 ? this[0] : this, $(input).val(options), 
-            void 0 === input.Inputmask && $(input).triggerHandler("setvalue.inputmask");
+            void 0 !== input.inputmask && $(input).triggerHandler("setvalue.inputmask");
+            break;
+
+          case "option":
+            if ("string" != typeof options) return this.each(function() {
+                return void 0 !== this.inputmask ? this.inputmask.option(options) : void 0;
+            });
+            if (input = this.jquery && this.length > 0 ? this[0] : this, void 0 !== input.inputmask) return input.inputmask.option(options);
             break;
 
           default:
@@ -1410,9 +1422,11 @@
                 nptmask.mask(this);
             });
         } else {
-            if ("object" == typeof fn) return nptmask = new Inputmask(fn), this.each(function() {
+            if ("object" == typeof fn) return void 0 === fn.mask && void 0 === fn.alias ? this.each(function() {
+                return void 0 !== this.inputmask ? this.inputmask.option(fn) : void 0;
+            }) : (nptmask = new Inputmask(fn), this.each(function() {
                 nptmask.mask(this);
-            });
+            }));
             if (void 0 === fn) return this.each(function() {
                 nptmask = new Inputmask(options), nptmask.mask(this);
             });

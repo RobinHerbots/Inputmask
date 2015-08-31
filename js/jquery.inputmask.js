@@ -50,8 +50,22 @@
 						case "setvalue":
 							input = this.jquery && this.length > 0 ? this[0] : this;
 							$(input).val(options);
-							if (input.Inputmask === undefined) {
+							if (input.inputmask !== undefined) {
 								$(input).triggerHandler("setvalue.inputmask");
+							}
+							break;
+						case "option":
+							if (typeof options === "string") {
+								input = this.jquery && this.length > 0 ? this[0] : this;
+								if (input.inputmask !== undefined) {
+									return input.inputmask.option(options);
+								}
+							} else {
+								return this.each(function() {
+									if (this.inputmask !== undefined) {
+										return this.inputmask.option(options);
+									}
+								});
 							}
 							break;
 						default:
@@ -62,10 +76,18 @@
 							});
 					}
 				} else if (typeof fn == "object") {
-					nptmask = new Inputmask(fn);
-					return this.each(function() {
-						nptmask.mask(this);
-					});
+					if (fn.mask === undefined && fn.alias === undefined) {
+						return this.each(function() {
+							if (this.inputmask !== undefined) {
+								return this.inputmask.option(fn);
+							}
+						});
+					} else {
+						nptmask = new Inputmask(fn);
+						return this.each(function() {
+							nptmask.mask(this);
+						});
+					}
 				} else if (fn === undefined) {
 					//look for data-inputmask atributes
 					return this.each(function() {

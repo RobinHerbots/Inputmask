@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- add option command to set and retrieve options on an inputmask
 - dependencyLib wrapper around needed jQuery functionality
 - mac address alias #986
 - tabThrough option - Tab and autoselect mask parts #433
@@ -32,6 +33,8 @@ All notable changes to this project will be documented in this file.
 - Update placeholder handling
 
 ### Fixed
+- Issue using datamask-input attributes and event handlers #992
+- Set specific inputmask option on already initialized control #949
 - Money question #644
 - Decimal numbers with fixed decimal part #990
 - Focus loop on IE9 with numeric.extensions #989
