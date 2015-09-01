@@ -660,13 +660,15 @@ Optional extensions on the jquery.inputmask base
 						}
 
 						if (radixPos > 0) {
-							matchRslt = buffer.join("").match(opts.regex.integerNPart(opts));
+							var bufVal = buffer.join("");
+							matchRslt = bufVal.match(opts.regex.integerNPart(opts));
 							if (matchRslt && position <= radixPos) {
 								if (matchRslt["0"].indexOf("0") === 0) {
 									canClear = matchRslt.index !== position || opts.placeholder === "0";
 								} else {
-									var intPart = parseInt(matchRslt["0"].replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), ""));
-									if (intPart < 10 && maskset.validPositions[position] && opts.placeholder !== "0") {
+									var intPart = parseInt(matchRslt["0"].replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "")),
+										radixPart = parseInt(bufVal.split(opts.radixPoint)[1]);
+									if (intPart < 10 && maskset.validPositions[position] && (opts.placeholder !== "0" || radixPart > 0)) {
 										maskset.validPositions[position].input = "0";
 										maskset.p = opts.prefix.length + 1;
 										canClear = false;

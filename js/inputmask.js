@@ -1383,6 +1383,7 @@
 				}
 				//Check for a nonmask before the pos
 				var buffer = getBuffer();
+
 				//find previous valid
 				for (var pndx = pos - 1; pndx > -1; pndx--) {
 					if (getMaskSet().validPositions[pndx]) {
