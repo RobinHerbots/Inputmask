@@ -24,7 +24,7 @@ Optional extensions on the jquery.inputmask base
 					function autoEscape(txt) {
 						var escapedTxt = "";
 						for (var i = 0; i < txt.length; i++) {
-							escapedTxt += opts.definitions[txt[i]] ? "\\" + txt[i] : txt[i];
+							escapedTxt += opts.definitions[txt.charAt(i)] ? "\\" + txt.charAt(i) : txt.charAt(i);
 						}
 						return escapedTxt;
 					}
@@ -615,6 +615,9 @@ Optional extensions on the jquery.inputmask base
 						}
 					}
 					return initialValue.toString();
+				},
+				onBeforePaste: function(pastedValue, opts) {
+					return opts.onBeforeMask(pastedValue, opts);
 				},
 				canClearPosition: function(maskset, position, lvp, strict, opts) {
 					var positionInput = maskset.validPositions[position].input,

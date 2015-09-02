@@ -344,7 +344,7 @@
 			var ms;
 
 			function analyseMask(mask) {
-				var tokenizer = /(?:[?*+]|\{[0-9\+\*]+(?:,[0-9\+\*]*)?\})\??|[^.?*+^${[]()|\\]+|./g,
+				var tokenizer = /(?:[?*+]|\{[0-9\+\*]+(?:,[0-9\+\*]*)?\})|[^.?*+^${[]()|\\]+|./g,
 					escaped = false,
 					currentToken = new MaskToken(),
 					match,
@@ -605,7 +605,7 @@
 				if (opts.numericInput) {
 					reverseTokens(maskTokens[0]);
 				}
-				//console.log(JSON.stringify(maskTokens));
+				// console.log(JSON.stringify(maskTokens));
 				return maskTokens;
 			}
 
