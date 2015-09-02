@@ -33,6 +33,7 @@ All notable changes to this project will be documented in this file.
 - Update placeholder handling
 
 ### Fixed
+- extra zeros in currency alias #1008
 - masks parsing generate a Maximum call stack size exceeded #1007
 - Issue using datamask-input attributes and event handlers #992
 - Set specific inputmask option on already initialized control #949

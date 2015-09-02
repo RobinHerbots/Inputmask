@@ -79,7 +79,7 @@ Optional extensions on the jquery.inputmask base
 					} else mask += "~{" + opts.integerDigits + "}";
 					if (opts.digits !== undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0)) {
 						if (opts.digitsOptional) {
-							mask += "[" + (opts.decimalProtect ? ":" : opts.radixPoint) + ";{" + opts.digits + "}]";
+							mask += "[" + (opts.decimalProtect ? ":" : opts.radixPoint) + ";{1," + opts.digits + "}]";
 						} else mask += (opts.decimalProtect ? ":" : opts.radixPoint) + ";{" + opts.digits + "}";
 					}
 					if (opts.negationSymbol.back !== "") {
