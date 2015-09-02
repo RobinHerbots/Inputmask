@@ -573,6 +573,32 @@ Optional extensions on the jquery.inputmask base
 				alias: "datetime",
 				hourFormat: "12"
 			},
+			"mm/dd/yyyy hh:mm xm": {
+				mask: "1/2/y h:s t\\m",
+				placeholder: "mm/dd/yyyy hh:mm xm",
+				alias: "datetime12",
+				regex: {
+					val2pre: function (separator) {
+					var escapedSeparator = Inputmask.escapeRegex.call(this, separator);
+					return new RegExp("((0[13-9]|1[012])" + escapedSeparator + "[0-3])|(02" + escapedSeparator + "[0-2])");
+				},
+				val2: function (separator) {
+					var escapedSeparator = Inputmask.escapeRegex.call(this, separator);
+					return new RegExp("((0[1-9]|1[012])" + escapedSeparator + "(0[1-9]|[12][0-9]))|((0[13-9]|1[012])" + escapedSeparator + "30)|((0[13578]|1[02])" + escapedSeparator + "31)");
+				},
+				val1pre: new RegExp("[01]"),
+				val1: new RegExp("0[1-9]|1[012]")
+				},
+				leapday: "02/29/",
+				onKeyDown: function (e, buffer, caretPos, opts) {
+					var $input = $(this);
+					if (e.ctrlKey && e.keyCode === Inputmask.keyCode.RIGHT) {
+						var today = new Date();
+						$input.val((today.getMonth() + 1).toString() + today.getDate().toString() + today.getFullYear().toString()),
+						$input.triggerHandler("setvalue.inputmask");
+					}
+				}
+  			},
 			"hh:mm t": {
 				mask: "h:s t\\m",
 				placeholder: "hh:mm xm",
