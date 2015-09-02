@@ -76,14 +76,14 @@
 							});
 					}
 				} else if (typeof fn == "object") {
+					nptmask = new Inputmask(fn);
 					if (fn.mask === undefined && fn.alias === undefined) {
 						return this.each(function() {
 							if (this.inputmask !== undefined) {
 								return this.inputmask.option(fn);
-							}
+							} else nptmask.mask(this);
 						});
 					} else {
-						nptmask = new Inputmask(fn);
 						return this.each(function() {
 							nptmask.mask(this);
 						});
