@@ -7,21 +7,27 @@ Number of fractionalDigits
 Default: "*"
 
 ### digitsOptional
+Specify wheter the digits are optional.  
 Default: true
 
 ### groupSize
+Define the grouping of the integer part.  
 Default: 3
 
 ### autoGroup
+Enable grouping of the integer part.  
 Default: false
 
 ### allowPlus
+Allow to enter +.  
 Default: true
 
 ### allowMinus
+Allow to enter -.  
 Default: true
 
 ### negationSymbol
+Define your negationSymbol.  
 Default: {  
   front: "-", //"("  
   back: "" //")"  
@@ -32,12 +38,15 @@ Number of integerDigits
 Default: "+"
 
 ### integerOptional
+Specify wheter the integerdigits are optional.
 Default: true
 
 ### prefix
+Define a prefix.  
 Default: ""
 
 ### suffix
+Define a suffix.  
 Default: ""
 
 ### decimalProtect
@@ -53,7 +62,9 @@ Maximum value
 Default: undefined
 
 ### step
+Define the step the ctrl-up & ctrl-down must take.
 Default: 1
 
 ### unmaskAsNumber
+Make unmasking returning a number instead of a string.  
 Default: false
