@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-180
+* Version: 3.1.64-183
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery")) : factory(jQuery);
@@ -2128,10 +2128,12 @@
                 if (-1 === newPos && charAtPos === opts.radixPoint && (newPos = $.inArray(opts.radixPoint, buffer)), 
                 reformatOnly ? buffer[newPos] = charAtPos : buffer.splice(newPos, 1), !needsRefresh && suffixStripped) for (i = 0, 
                 l = opts.suffix.length; l > i; i++) buffer.push(opts.suffix.charAt(i));
-                return {
-                    pos: opts.numericInput && isFinite(pos) ? buffer.join("").length - newPos - 1 : newPos,
+                return newPos = opts.numericInput && isFinite(pos) ? buffer.join("").length - newPos - 1 : newPos, 
+                opts.numericInput && (buffer = buffer.reverse(), $.inArray(opts.radixPoint, buffer) < newPos && buffer.join("").length - opts.suffix.length !== newPos && (newPos -= 1)), 
+                {
+                    pos: newPos,
                     refreshFromBuffer: needsRefresh,
-                    buffer: opts.numericInput === !0 ? buffer.reverse() : buffer
+                    buffer: buffer
                 };
             },
             onBeforeWrite: function(e, buffer, caretPos, opts) {
@@ -2166,7 +2168,7 @@
                     }
                 }
                 if (opts.autoGroup) {
-                    var rslt = opts.postFormat(buffer, caretPos - 1, !0, opts);
+                    var rslt = opts.postFormat(buffer, opts.numericInput ? caretPos : caretPos - 1, !0, opts);
                     return rslt.caret = caretPos <= opts.prefix.length ? rslt.pos : rslt.pos + 1, rslt;
                 }
             },
@@ -2299,7 +2301,7 @@
                         isValid === !0 && (isValid = opts.leadingZeroHandler(chrs, maskset, pos, strict, opts), 
                         isValid === !0)))) {
                             var radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
-                            isValid = -1 !== radixPosition && opts.digitsOptional === !1 && pos > radixPosition && !strict ? {
+                            isValid = -1 !== radixPosition && opts.digitsOptional === !1 && opts.numericInput !== !0 && pos > radixPosition && !strict ? {
                                 pos: pos,
                                 remove: pos
                             } : {

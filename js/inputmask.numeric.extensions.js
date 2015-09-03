@@ -195,10 +195,17 @@ Optional extensions on the jquery.inputmask base
 						}
 					}
 					// console.log("formatted " + buffer + " refresh " + needsRefresh);
+					newPos = (opts.numericInput && isFinite(pos)) ? buffer.join("").length - newPos - 1 : newPos;
+					if (opts.numericInput) {
+						buffer = buffer.reverse();
+						if ($.inArray(opts.radixPoint, buffer) < newPos && (buffer.join("").length - opts.suffix.length) !== newPos) {
+							newPos = newPos - 1;
+						}
+					}
 					return {
-						pos: (opts.numericInput && isFinite(pos)) ? buffer.join("").length - newPos - 1 : newPos,
+						pos: newPos,
 						"refreshFromBuffer": needsRefresh,
-						"buffer": opts.numericInput === true ? buffer.reverse() : buffer
+						"buffer": buffer
 					};
 				},
 				onBeforeWrite: function(e, buffer, caretPos, opts) {
@@ -251,7 +258,7 @@ Optional extensions on the jquery.inputmask base
 					}
 
 					if (opts.autoGroup) {
-						var rslt = opts.postFormat(buffer, caretPos - 1, true, opts);
+						var rslt = opts.postFormat(buffer, opts.numericInput ? caretPos : caretPos - 1, true, opts);
 						rslt.caret = caretPos <= opts.prefix.length ? rslt.pos : rslt.pos + 1;
 						return rslt;
 					}
@@ -464,7 +471,7 @@ Optional extensions on the jquery.inputmask base
 										if (isValid === true) {
 											//handle overwrite when fixed precision
 											var radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
-											if (radixPosition !== -1 && opts.digitsOptional === false && pos > radixPosition && !strict) {
+											if (radixPosition !== -1 && opts.digitsOptional === false && opts.numericInput !== true && pos > radixPosition && !strict) {
 												isValid = {
 													"pos": pos,
 													"remove": pos
