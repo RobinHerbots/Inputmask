@@ -1948,8 +1948,8 @@
 						return isRTL && overruleRTL !== true ? valueGet.call(this.el).split("").reverse().join("") : valueGet.call(this.el);
 					};
 					npt.inputmask.__valueSet = valueSet; //store native property setter
-					npt.inputmask._valueSet = function(value) {
-						valueSet.call(this.el, isRTL ? value.split("").reverse().join("") : value);
+					npt.inputmask._valueSet = function(value, overruleRTL) {
+						valueSet.call(this.el, (overruleRTL !== true && isRTL) ? value.split("").reverse().join("") : value);
 					};
 				}
 			}
@@ -2313,10 +2313,13 @@
 							$el.change();
 						}
 						if (opts.clearMaskOnLostFocus && getLastValidPosition() === -1 && $el[0].inputmask._valueGet && $el[0].inputmask._valueGet() === getBufferTemplate().join("")) {
-							$el[0].inputmask._valueSet(""); //clear masktemplete on submit and still has focus
+							el.inputmask._valueSet(""); //clear masktemplete on submit and still has focus
 						}
 						if (opts.removeMaskOnSubmit) {
-							$el.inputmask("remove");
+							el.inputmask._valueSet(el.inputmask.unmaskedvalue(), true);
+							setTimeout(function() {
+								writeBuffer(el, getBuffer());
+							}, 0);
 						}
 					}).bind("reset", function() {
 						setTimeout(function() {

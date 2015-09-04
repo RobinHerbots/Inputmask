@@ -33,6 +33,7 @@ All notable changes to this project will be documented in this file.
 - Update placeholder handling
 
 ### Fixed
+- Mask cleared on ajax submit or jquery unobtrusive validation error #1020
 - Update readme for numerics #994
 - extra zeros in currency alias #1008
 - masks parsing generate a Maximum call stack size exceeded #1007

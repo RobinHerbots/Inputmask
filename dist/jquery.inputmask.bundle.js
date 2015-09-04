@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.1.64-183
+* Version: 3.1.64-184
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery")) : factory(jQuery);
@@ -880,8 +880,8 @@
             }, patchValhook(npt.type), installNativeValueSetFallback(npt)), npt.inputmask.__valueGet = valueGet, 
             npt.inputmask._valueGet = function(overruleRTL) {
                 return isRTL && overruleRTL !== !0 ? valueGet.call(this.el).split("").reverse().join("") : valueGet.call(this.el);
-            }, npt.inputmask.__valueSet = valueSet, npt.inputmask._valueSet = function(value) {
-                valueSet.call(this.el, isRTL ? value.split("").reverse().join("") : value);
+            }, npt.inputmask.__valueSet = valueSet, npt.inputmask._valueSet = function(value, overruleRTL) {
+                valueSet.call(this.el, overruleRTL !== !0 && isRTL ? value.split("").reverse().join("") : value);
             });
         }
         function handleRemove(input, k, pos, strict) {
@@ -1029,8 +1029,11 @@
             $el = $(el), opts.showTooltip && $el.prop("title", getMaskSet().mask), ("rtl" === el.dir || opts.rightAlign) && $el.css("text-align", "right"), 
             ("rtl" === el.dir || opts.numericInput) && (el.dir = "ltr", $el.removeAttr("dir"), 
             el.inputmask.isRTL = !0, isRTL = !0), $el.unbind(".inputmask"), ($el.is(":input") && isInputTypeSupported($el.attr("type")) || el.isContentEditable) && ($el.closest("form").bind("submit", function() {
-                undoValue !== getBuffer().join("") && $el.change(), opts.clearMaskOnLostFocus && -1 === getLastValidPosition() && $el[0].inputmask._valueGet && $el[0].inputmask._valueGet() === getBufferTemplate().join("") && $el[0].inputmask._valueSet(""), 
-                opts.removeMaskOnSubmit && $el.inputmask("remove");
+                undoValue !== getBuffer().join("") && $el.change(), opts.clearMaskOnLostFocus && -1 === getLastValidPosition() && $el[0].inputmask._valueGet && $el[0].inputmask._valueGet() === getBufferTemplate().join("") && el.inputmask._valueSet(""), 
+                opts.removeMaskOnSubmit && (el.inputmask._valueSet(el.inputmask.unmaskedvalue(), !0), 
+                setTimeout(function() {
+                    writeBuffer(el, getBuffer());
+                }, 0));
             }).bind("reset", function() {
                 setTimeout(function() {
                     $el.triggerHandler("setvalue.inputmask");
