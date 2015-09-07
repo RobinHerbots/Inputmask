@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [3.2.0] - 2015-09-04
 
 ### Added
 - add option command to set and retrieve options on an inputmask
