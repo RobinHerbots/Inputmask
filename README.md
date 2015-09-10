@@ -139,7 +139,7 @@ While the field has focus and is blank, users will see the full mask `___-___`. 
 When defining an optional mask together with the greedy: false option, the inputmask will show the smallest possible mask as input first.
 
 ```javascript
-$(selector).inputmask({ mask: "99999[-9999]", greedy: false });
+$(selector).inputmask({ mask: "9[-9999]", greedy: false });
 ```
 
 The initial mask shown will be "**_**" instead of "**_**-____".
