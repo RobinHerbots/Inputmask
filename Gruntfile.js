@@ -55,6 +55,11 @@ module.exports = function(grunt) {
 				logLevel: 'ERROR'
 			}
 		},
+		shell: {
+	    target: {
+        command: 'node ./bundle-test/test.js'
+	    }
+		},
 		bump: {
 			options: {
 				files: ['package.json', 'bower.json', 'composer.json', 'component.json'],
@@ -118,6 +123,7 @@ module.exports = function(grunt) {
 	grunt.registerTask('publish:minor', ['clean', 'bump:minor', 'uglify', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
 	grunt.registerTask('publish:major', ['clean', 'bump:major', 'uglify', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
 	grunt.registerTask('validate', ['eslint', 'karma']);
+	grunt.registerTask('bundle-test', ['shell']);
 	grunt.registerTask('build', ['bump:prerelease', 'clean', 'uglify']);
 	grunt.registerTask('default', ["availabletasks"]);
 
