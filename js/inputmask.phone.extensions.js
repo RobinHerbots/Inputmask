@@ -21,7 +21,7 @@ When using this extension make sure you specify the correct url to get the masks
 		if (typeof define === "function" && define.amd) {
 			define(["jquery", "inputmask"], factory);
 		} else if (typeof exports === "object") {
-			module.exports = factory(require("jquery"), require("inputmask"));
+			module.exports = factory(require("jquery"), require("./inputmask"));
 		} else {
 			factory(jQuery, window.Inputmask);
 		}

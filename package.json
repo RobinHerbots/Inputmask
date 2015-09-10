@@ -1,6 +1,6 @@
 {
   "name": "jquery.inputmask",
-  "version": "3.2.0",
+  "version": "3.2.1-13",
   "description": "jquery.inputmask is a jquery plugin which create an input mask.",
   "main": "./dist/inputmask/jquery.inputmask.js",
   "files": [
@@ -52,6 +52,7 @@
     "karma-phantomjs-launcher": "^0.2.0",
     "karma-qunit": "^0.1.5",
     "load-grunt-tasks": "^3.2.0",
-    "qunitjs": "^1.18.0"
+    "qunitjs": "^1.19.0",
+    "requirejs": "^2.1.20"
   }
 }

@@ -9,7 +9,7 @@
 		if (typeof define === "function" && define.amd) {
 			define(["dependencyLib"], factory);
 		} else if (typeof exports === "object") {
-			module.exports = factory(require("dependencyLib"));
+			module.exports = factory(require("./dependencyLib"));
 		} else {
 			factory(window.dependencyLib || jQuery);
 		}
@@ -103,26 +103,25 @@
 			},
 			masksCache: {},
 			mask: function(el) {
-				var input = el.jquery && el.length > 0 ? el[0] : el,
-					scopedOpts = $.extend(true, {}, this.opts);
+				var scopedOpts = $.extend(true, {}, this.opts);
 				importAttributeOptions(el, scopedOpts, $.extend(true, {}, this.userOptions));
 				var maskset = generateMaskSet(scopedOpts, this.noMasksCache);
 				if (maskset !== undefined) {
 					//store inputmask instance on the input with element reference
-					input.inputmask = input.inputmask || new Inputmask(); //in case of remasking reuse the inputmask object
-					input.inputmask.opts = scopedOpts;
-					input.inputmask.noMasksCache = this.noMasksCache;
-					input.inputmask.userOptions = $.extend(true, {}, this.userOptions);
-					input.inputmask.el = input;
-					input.inputmask.maskset = maskset;
-					input.inputmask.isRTL = false;
+					el.inputmask = el.inputmask || new Inputmask(); //in case of remasking reuse the inputmask object
+					el.inputmask.opts = scopedOpts;
+					el.inputmask.noMasksCache = this.noMasksCache;
+					el.inputmask.userOptions = $.extend(true, {}, this.userOptions);
+					el.inputmask.el = el;
+					el.inputmask.maskset = maskset;
+					el.inputmask.isRTL = false;
 
-					$(input).data("_inputmask_opts", scopedOpts);
+					$.data(el, "_inputmask_opts", scopedOpts);
 
 					maskScope({
 						"action": "mask",
-						"el": input
-					}, maskset, input.inputmask.opts);
+						"el": el
+					}, maskset, el.inputmask.opts);
 				}
 				return el;
 			},
@@ -298,12 +297,11 @@
 		}
 
 		function importAttributeOptions(npt, opts, userOptions) {
-			var $npt = $(npt),
-				attrOptions = $npt.data("inputmask");
+			var attrOptions = npt.getAttribute("data-inputmask");
 
 			function importOption(option) {
-				var optionData = $npt.data("inputmask-" + option.toLowerCase());
-				if (optionData !== undefined) {
+				var optionData = npt.getAttribute("data-inputmask-" + option.toLowerCase());
+				if (optionData !== null) {
 					optionData = typeof optionData == "boolean" ? optionData : optionData.toString();
 					/*eslint-disable no-eval */
 					if (typeof optionData === "string" && option.indexOf("on") === 0) {
@@ -1621,7 +1619,7 @@
 					}
 				});
 				if (writeOut) {
-					writeBuffer(input, getBuffer(), $(input).is(":focus") ? seekNext(getLastValidPosition(0)) : undefined, $.Event("checkval"));
+					writeBuffer(input, getBuffer(), document.activeElement === input ? seekNext(getLastValidPosition(0)) : undefined, $.Event("checkval"));
 				}
 			}
 
@@ -1655,37 +1653,36 @@
 					}
 					return pos;
 				}
-				var npt = input.jquery && input.length > 0 ? input[0] : input,
-					range;
+				var range;
 				if (typeof begin === "number") {
 					begin = translatePosition(begin);
 					end = translatePosition(end);
 					end = (typeof end == "number") ? end : begin;
-					if (!$(npt).is(":visible")) {
+					if (!$(input).is(":visible")) {
 						return;
 					}
 
-					var scrollCalc = $(npt).css("font-size").replace("px", "") * end;
-					npt.scrollLeft = scrollCalc > npt.scrollWidth ? scrollCalc : 0;
+					var scrollCalc = input.style.fontSize.replace("px", "") * end;
+					input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0;
 					if (!androidchrome && opts.insertMode === false && begin === end) end++; //set visualization for insert/overwrite mode
-					if (npt.setSelectionRange) {
-						npt.selectionStart = begin;
-						npt.selectionEnd = end;
+					if (input.setSelectionRange) {
+						input.selectionStart = begin;
+						input.selectionEnd = end;
 					} else if (window.getSelection) {
 						range = document.createRange();
-						if (npt.firstChild === undefined) {
+						if (input.firstChild === undefined) {
 							var textNode = document.createTextNode("");
-							npt.appendChild(textNode);
+							input.appendChild(textNode);
 						}
-						range.setStart(npt.firstChild, begin < npt.inputmask._valueGet().length ? begin : npt.inputmask._valueGet().length);
-						range.setEnd(npt.firstChild, end < npt.inputmask._valueGet().length ? end : npt.inputmask._valueGet().length);
+						range.setStart(input.firstChild, begin < input.inputmask._valueGet().length ? begin : input.inputmask._valueGet().length);
+						range.setEnd(input.firstChild, end < input.inputmask._valueGet().length ? end : input.inputmask._valueGet().length);
 						range.collapse(true);
 						var sel = window.getSelection();
 						sel.removeAllRanges();
 						sel.addRange(range);
-						//npt.focus();
-					} else if (npt.createTextRange) {
-						range = npt.createTextRange();
+						//input.focus();
+					} else if (input.createTextRange) {
+						range = input.createTextRange();
 						range.collapse(true);
 						range.moveEnd("character", end);
 						range.moveStart("character", begin);
@@ -1693,12 +1690,12 @@
 
 					}
 				} else {
-					if (npt.setSelectionRange) {
-						begin = npt.selectionStart;
-						end = npt.selectionEnd;
+					if (input.setSelectionRange) {
+						begin = input.selectionStart;
+						end = input.selectionEnd;
 					} else if (window.getSelection) {
 						range = window.getSelection().getRangeAt(0);
-						if (range.commonAncestorContainer.parentNode === npt || range.commonAncestorContainer === npt) {
+						if (range.commonAncestorContainer.parentNode === input || range.commonAncestorContainer === input) {
 							begin = range.startOffset;
 							end = range.endOffset;
 						}
@@ -1793,7 +1790,7 @@
 							eventHandler.handler = function(e) {
 								// console.log("triggered " + e.type);
 								if (this.inputmask === undefined) { //happens when cloning an object with jquery.clone
-									var imOpts = $(this).data("_inputmask_opts");
+									var imOpts = $.data(this, "_inputmask_opts");
 									if (imOpts)(new Inputmask(imOpts)).mask(this);
 									else $(this).unbind(".inputmask");
 								} else if (e.type !== "setvalue" && (this.disabled || (this.readOnly && !(e.type === "keydown" && (e.ctrlKey && e.keyCode === 67) || (opts.tabThrough === false && e.keyCode === Inputmask.keyCode.TAB))))) {
@@ -1842,7 +1839,7 @@
 				var valueSet;
 
 				function patchValhook(type) {
-					if ($.valHooks[type] === undefined || $.valHooks[type].inputmaskpatch !== true) {
+					if ($.valHooks && $.valHooks[type] === undefined || $.valHooks[type].inputmaskpatch !== true) {
 						var valhookGet = $.valHooks[type] && $.valHooks[type].get ? $.valHooks[type].get : function(elem) {
 							return elem.value;
 						};
@@ -2284,6 +2281,172 @@
 				//pickup by inputfallback
 			}
 
+			function setValueEvent(e) {
+				var input = this,
+					value = input.inputmask._valueGet();
+				input.inputmask._valueSet($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(input, value, opts) || value) : value);
+				checkVal(input, true, false);
+				undoValue = getBuffer().join("");
+				if ((opts.clearMaskOnLostFocus || opts.clearIncomplete) && input.inputmask._valueGet() === getBufferTemplate().join("")) {
+					input.inputmask._valueSet("");
+				}
+			}
+
+			function focusEvent(e) {
+				var input = this,
+					nptValue = input.inputmask._valueGet();
+				if (opts.showMaskOnFocus && (!opts.showMaskOnHover || (opts.showMaskOnHover && nptValue === ""))) {
+					if (input.inputmask._valueGet() !== getBuffer().join("")) {
+						writeBuffer(input, getBuffer(), seekNext(getLastValidPosition()));
+					}
+				} else if (mouseEnter === false) { //only executed on focus without mouseenter
+					caret(input, seekNext(getLastValidPosition()));
+				}
+				if (opts.positionCaretOnTab === true) {
+					setTimeout(function() {
+						caret(input, seekNext(getLastValidPosition()));
+					}, 0);
+				}
+				undoValue = getBuffer().join("");
+			}
+
+			function mouseleaveEvent(e) {
+				var $input = $(this),
+					input = this;
+				mouseEnter = false;
+				if (opts.clearMaskOnLostFocus) {
+					var buffer = getBuffer().slice(),
+						nptValue = input.inputmask._valueGet();
+					if (document.activeElement !== input && nptValue !== $input.attr("placeholder") && nptValue !== "") {
+						if (getLastValidPosition() === -1 && nptValue === getBufferTemplate().join("")) {
+							buffer = [];
+						} else { //clearout optional tail of the mask
+							clearOptionalTail(buffer);
+						}
+						writeBuffer(input, buffer);
+					}
+				}
+			}
+
+			function clickEvent(e) {
+				function doRadixFocus(clickPos) {
+					if (opts.radixFocus && opts.radixPoint !== "") {
+						var vps = getMaskSet().validPositions;
+						if (vps[clickPos] === undefined || (vps[clickPos].input === getPlaceholder(clickPos))) {
+							if (clickPos < seekNext(-1)) return true;
+							var radixPos = $.inArray(opts.radixPoint, getBuffer());
+							if (radixPos !== -1) {
+								for (var vp in vps) {
+									if (radixPos < vp && vps[vp].input !== getPlaceholder(vp)) {
+										return false;
+									}
+								}
+								return true;
+							}
+						}
+					}
+					return false;
+				}
+				var input = this;
+				if (document.activeElement === input) {
+					var selectedCaret = caret(input);
+					if (selectedCaret.begin === selectedCaret.end) {
+						if (doRadixFocus(selectedCaret.begin)) {
+							caret(input, $.inArray(opts.radixPoint, getBuffer()));
+						} else {
+							var clickPosition = selectedCaret.begin,
+								lastPosition = seekNext(getLastValidPosition(clickPosition));
+
+							if (clickPosition < lastPosition) {
+								caret(input, !isMask(clickPosition) && !isMask(clickPosition - 1) ? seekNext(clickPosition) : clickPosition);
+							} else {
+								caret(input, opts.numericInput ? 0 : lastPosition);
+							}
+						}
+					}
+				}
+			}
+
+			function dblclickEvent(e) {
+				var input = this;
+				setTimeout(function() {
+					caret(input, 0, seekNext(getLastValidPosition()));
+				}, 0);
+			}
+
+			function cutEvent(e) {
+				skipInputEvent = true; //stop inputFallback
+				var input = this,
+					$input = $(input),
+					pos = caret(input);
+
+				//correct clipboardData
+				if (isRTL) {
+					var clipboardData = window.clipboardData || e.originalEvent.clipboardData,
+						clipData = clipboardData.getData("text").split("").reverse().join("");
+					clipboardData.setData("text", clipData);
+				}
+				handleRemove(input, Inputmask.keyCode.DELETE, pos);
+				writeBuffer(input, getBuffer(), getMaskSet().p, e, undoValue !== getBuffer().join(""));
+
+				if (input.inputmask._valueGet() === getBufferTemplate().join("")) {
+					$input.trigger("cleared");
+				}
+
+				if (opts.showTooltip) { //update tooltip
+					input.title = getMaskSet().mask;
+				}
+			}
+
+			function blurEvent(e) {
+				var $input = $(this),
+					input = this;
+				if (input.inputmask) {
+					var nptValue = input.inputmask._valueGet(),
+						buffer = getBuffer().slice();
+					if (undoValue !== buffer.join("")) {
+						setTimeout(function() { //change event should be triggered after the other buffer manipulations on blur
+							$input.change();
+							undoValue = buffer.join("");
+						}, 0);
+					}
+					if (nptValue !== "") {
+						if (opts.clearMaskOnLostFocus) {
+							if (getLastValidPosition() === -1 && nptValue === getBufferTemplate().join("")) {
+								buffer = [];
+							} else { //clearout optional tail of the mask
+								clearOptionalTail(buffer);
+							}
+						}
+						if (isComplete(buffer) === false) {
+							setTimeout(function() {
+								$input.trigger("incomplete");
+							}, 0);
+							if (opts.clearIncomplete) {
+								resetMaskSet();
+								if (opts.clearMaskOnLostFocus) {
+									buffer = [];
+								} else {
+									buffer = getBufferTemplate().slice();
+								}
+							}
+						}
+
+						writeBuffer(input, buffer, undefined, e);
+					}
+				}
+			}
+
+			function mouseenterEvent(e) {
+				var input = this;
+				mouseEnter = true;
+				if (document.activeElement !== input && opts.showMaskOnHover) {
+					if (input.inputmask._valueGet() !== getBuffer().join("")) {
+						writeBuffer(input, getBuffer());
+					}
+				}
+			}
+
 			function mask(el) {
 				$el = $(el);
 
@@ -2293,12 +2456,12 @@
 				}
 
 				if (el.dir === "rtl" || opts.rightAlign) {
-					$el.css("text-align", "right");
+					el.style.textAlign = "right";
 				}
 
 				if (el.dir === "rtl" || opts.numericInput) {
 					el.dir = "ltr";
-					$el.removeAttr("dir");
+					el.removeAttribute("dir");
 					el.inputmask.isRTL = true;
 					isRTL = true;
 				}
@@ -2306,13 +2469,13 @@
 				//unbind all events - to make sure that no other mask will interfere when re-masking
 				$el.unbind(".inputmask");
 
-				if (($el.is(":input") && isInputTypeSupported($el.attr("type"))) || el.isContentEditable) {
+				if ((el.tagName === "INPUT" && isInputTypeSupported(el.getAttribute("type"))) || el.isContentEditable) {
 					//bind events
 					$el.closest("form").bind("submit", function() { //trigger change on submit if any
 						if (undoValue !== getBuffer().join("")) {
 							$el.change();
 						}
-						if (opts.clearMaskOnLostFocus && getLastValidPosition() === -1 && $el[0].inputmask._valueGet && $el[0].inputmask._valueGet() === getBufferTemplate().join("")) {
+						if (opts.clearMaskOnLostFocus && getLastValidPosition() === -1 && el.inputmask._valueGet && el.inputmask._valueGet() === getBufferTemplate().join("")) {
 							el.inputmask._valueSet(""); //clear masktemplete on submit and still has focus
 						}
 						if (opts.removeMaskOnSubmit) {
@@ -2326,151 +2489,21 @@
 							$el.triggerHandler("setvalue.inputmask");
 						}, 0);
 					});
-					$el.bind("mouseenter.inputmask", function() {
-						var $input = $(this),
-							input = this;
-						mouseEnter = true;
-						if (!$input.is(":focus") && opts.showMaskOnHover) {
-							if (input.inputmask._valueGet() !== getBuffer().join("")) {
-								writeBuffer(input, getBuffer());
-							}
-						}
-					}).bind("blur.inputmask", function(e) {
-						var $input = $(this),
-							input = this;
-						if (input.inputmask) {
-							var nptValue = input.inputmask._valueGet(),
-								buffer = getBuffer().slice();
-							if (undoValue !== buffer.join("")) {
-								setTimeout(function() { //change event should be triggered after the other buffer manipulations on blur
-									$input.change();
-									undoValue = buffer.join("");
-								}, 0);
-							}
-							if (nptValue !== "") {
-								if (opts.clearMaskOnLostFocus) {
-									if (getLastValidPosition() === -1 && nptValue === getBufferTemplate().join("")) {
-										buffer = [];
-									} else { //clearout optional tail of the mask
-										clearOptionalTail(buffer);
-									}
-								}
-								if (isComplete(buffer) === false) {
-									setTimeout(function() {
-										$input.trigger("incomplete");
-									}, 0);
-									if (opts.clearIncomplete) {
-										resetMaskSet();
-										if (opts.clearMaskOnLostFocus) {
-											buffer = [];
-										} else {
-											buffer = getBufferTemplate().slice();
-										}
-									}
-								}
 
-								writeBuffer(input, buffer, undefined, e);
-							}
-						}
-					}).bind("focus.inputmask", function(e) {
-						var input = this,
-							nptValue = input.inputmask._valueGet();
-						if (opts.showMaskOnFocus && (!opts.showMaskOnHover || (opts.showMaskOnHover && nptValue === ""))) {
-							if (input.inputmask._valueGet() !== getBuffer().join("")) {
-								writeBuffer(input, getBuffer(), seekNext(getLastValidPosition()));
-							}
-						} else if (mouseEnter === false) { //only executed on focus without mouseenter
-							caret(input, seekNext(getLastValidPosition()));
-						}
-						if (opts.positionCaretOnTab === true) {
-							setTimeout(function() {
-								caret(input, seekNext(getLastValidPosition()));
-							}, 0);
-						}
-						undoValue = getBuffer().join("");
-					}).bind("mouseleave.inputmask", function() {
-						var $input = $(this),
-							input = this;
-						mouseEnter = false;
-						if (opts.clearMaskOnLostFocus) {
-							var buffer = getBuffer().slice(),
-								nptValue = input.inputmask._valueGet();
-							if (!$input.is(":focus") && nptValue !== $input.attr("placeholder") && nptValue !== "") {
-								if (getLastValidPosition() === -1 && nptValue === getBufferTemplate().join("")) {
-									buffer = [];
-								} else { //clearout optional tail of the mask
-									clearOptionalTail(buffer);
-								}
-								writeBuffer(input, buffer);
-							}
-						}
-					}).bind("click.inputmask", function() {
-						function doRadixFocus(clickPos) {
-							if (opts.radixFocus && opts.radixPoint !== "") {
-								var vps = getMaskSet().validPositions;
-								if (vps[clickPos] === undefined || (vps[clickPos].input === getPlaceholder(clickPos))) {
-									if (clickPos < seekNext(-1)) return true;
-									var radixPos = $.inArray(opts.radixPoint, getBuffer());
-									if (radixPos !== -1) {
-										for (var vp in vps) {
-											if (radixPos < vp && vps[vp].input !== getPlaceholder(vp)) {
-												return false;
-											}
-										}
-										return true;
-									}
-								}
-							}
-							return false;
-						}
-						var input = this;
-						if ($(input).is(":focus")) {
-							var selectedCaret = caret(input);
-							if (selectedCaret.begin === selectedCaret.end) {
-								if (doRadixFocus(selectedCaret.begin)) {
-									caret(input, $.inArray(opts.radixPoint, getBuffer()));
-								} else {
-									var clickPosition = selectedCaret.begin,
-										lastPosition = seekNext(getLastValidPosition(clickPosition));
+					$el.bind("mouseenter.inputmask", mouseenterEvent)
+						.bind("blur.inputmask", blurEvent)
+						.bind("focus.inputmask", focusEvent)
+						.bind("mouseleave.inputmask", mouseleaveEvent)
+						.bind("click.inputmask", clickEvent)
+						.bind("dblclick.inputmask", dblclickEvent)
+						.bind(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", pasteEvent)
+						.bind("cut.inputmask", cutEvent)
+						.bind("complete.inputmask", opts.oncomplete)
+						.bind("incomplete.inputmask", opts.onincomplete)
+						.bind("cleared.inputmask", opts.oncleared)
+						.bind("keydown.inputmask", keydownEvent)
+						.bind("keypress.inputmask", keypressEvent);
 
-									if (clickPosition < lastPosition) {
-										caret(input, !isMask(clickPosition) && !isMask(clickPosition - 1) ? seekNext(clickPosition) : clickPosition);
-									} else {
-										caret(input, opts.numericInput ? 0 : lastPosition);
-									}
-								}
-							}
-						}
-					}).bind("dblclick.inputmask", function() {
-						var input = this;
-						setTimeout(function() {
-							caret(input, 0, seekNext(getLastValidPosition()));
-						}, 0);
-					}).bind(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", pasteEvent).bind("cut.inputmask", function(e) {
-						skipInputEvent = true; //stop inputFallback
-						var input = this,
-							$input = $(input),
-							pos = caret(input);
-
-						//correct clipboardData
-						if (isRTL) {
-							var clipboardData = window.clipboardData || e.originalEvent.clipboardData,
-								clipData = clipboardData.getData("text").split("").reverse().join("");
-							clipboardData.setData("text", clipData);
-						}
-						handleRemove(input, Inputmask.keyCode.DELETE, pos);
-						writeBuffer(input, getBuffer(), getMaskSet().p, e, undoValue !== getBuffer().join(""));
-
-						if (input.inputmask._valueGet() === getBufferTemplate().join("")) {
-							$input.trigger("cleared");
-						}
-
-						if (opts.showTooltip) { //update tooltip
-							$input.prop("title", getMaskSet().mask);
-						}
-					}).bind("complete.inputmask", opts.oncomplete).bind("incomplete.inputmask", opts.onincomplete).bind("cleared.inputmask", opts.oncleared);
-
-					$el.bind("keydown.inputmask", keydownEvent).bind("keypress.inputmask", keypressEvent);
 
 					if (!androidfirefox) {
 						$el.bind("compositionstart.inputmask", compositionStartEvent).bind("compositionupdate.inputmask", compositionUpdateEvent).bind("compositionend.inputmask", compositionEndEvent);
@@ -2484,18 +2517,7 @@
 					//		$el.bind("input.inputmask", mobileInputEvent);
 					//}
 				}
-
-				$el.bind("setvalue.inputmask", function() {
-					var input = this,
-						value = input.inputmask._valueGet();
-					input.inputmask._valueSet($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(input, value, opts) || value) : value);
-					checkVal(input, true, false);
-					undoValue = getBuffer().join("");
-					if ((opts.clearMaskOnLostFocus || opts.clearIncomplete) && input.inputmask._valueGet() === getBufferTemplate().join("")) {
-						input.inputmask._valueSet("");
-					}
-				});
-
+				$el.bind("setvalue.inputmask", setValueEvent);
 				patchValueProperty(el);
 
 				//apply mask

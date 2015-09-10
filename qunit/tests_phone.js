@@ -1,4 +1,4 @@
-module("Phone masks")
+module("Phone masks");
 
 asyncTest("inputmask(\"phone be\") - type \"473890428\"", 1, function () {
     var $fixture = $("#qunit-fixture");

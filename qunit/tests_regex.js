@@ -1,4 +1,4 @@
-module("Regex masks")
+module("Regex masks");
 
 test("inputmask(\"Regex\", { regex: \"[0-9]*\"});", function () {
     var $fixture = $("#qunit-fixture");

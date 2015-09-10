@@ -36,33 +36,6 @@ module.exports = function(grunt) {
 				}
 			};
 		}
-
-		srcFiles = grunt.file.expand(path + "/*.extensions.js");
-		srcFiles.splice(0, 0, "js/jquery.inputmask.js");
-		srcFiles.splice(0, 0, "js/inputmask.js");
-		srcFiles.splice(0, 0, "js/dependencyLib.js");
-		uglifyConfig["inputmaskbundle"] = {
-			files: {
-				'dist/<%= pkg.name %>.bundle.js': srcFiles
-			},
-			options: {
-				banner: createBanner('<%= pkg.name %>.bundle'),
-				beautify: true,
-				mangle: false,
-				preserveComments: "some",
-				ASCIIOnly: true
-			}
-		}
-		uglifyConfig["inputmaskbundlemin"] = {
-			files: {
-				'dist/min/<%= pkg.name %>.bundle.min.js': srcFiles
-			},
-			options: {
-				banner: createBanner('<%= pkg.name %>.bundle'),
-				preserveComments: "some",
-				ASCIIOnly: true
-			}
-		}
 		return uglifyConfig;
 	}
 
@@ -70,7 +43,7 @@ module.exports = function(grunt) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON("package.json"),
 		uglify: createUglifyConfig("js"),
-		clean: ["dist"],
+		clean: ["dist", "build"],
 		karma: {
 			options: {
 				configFile: 'karma.conf.js'
