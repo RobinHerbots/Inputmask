@@ -149,7 +149,7 @@ Dynamic masks can change during the input.  To define a dynamic part use { }.
 
 {n} => n repeats<br>{n,m} => from n to m repeats
 
-Also {+} and {_} is allowed. + start from 1 and _ start from 0.
+Also {+} and {*} is allowed. + start from 1 and * start from 0.
 
 ```javascript
 $(document).ready(function(){
