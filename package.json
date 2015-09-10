@@ -53,6 +53,7 @@
     "karma-qunit": "^0.1.5",
     "load-grunt-tasks": "^3.2.0",
     "qunitjs": "^1.19.0",
-    "requirejs": "^2.1.20"
+    "requirejs": "^2.1.20",
+    "browserify": "~11.0.1"
   }
 }

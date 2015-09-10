@@ -11,3 +11,6 @@ browserify({
   process.exit(1);
 })
 .pipe(fs.createWriteStream(path.resolve(__dirname, './tmp/output.js')))
+.on('finish', function(){
+  console.log("successfully bundled source");
+});
