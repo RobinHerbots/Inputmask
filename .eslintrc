@@ -40,6 +40,7 @@
     "jQuery": false,
     "module": false,
     "require": false,
+    "requirejs": false,
     "define": false
   }
 }

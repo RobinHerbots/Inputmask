@@ -32,14 +32,23 @@ Demo page see [http://robinherbots.github.io/jquery.inputmask](http://robinherbo
 ## Usage:
 Include the js-files which you can find in the dist-folder.
 
-If you use a module loader like requireJS, use the js-files in dist/inputmask
-
 The minimum to include is inputmask.js && jquery.inputmask.js
 
 ```html
 <script src="jquery.js" type="text/javascript"></script>
 <script src="inputmask.js" type="text/javascript"></script>
 <script src="jquery.inputmask.js" type="text/javascript"></script>
+```
+
+If you use a module loader like requireJS, use the js-files in dist/inputmask
+
+```javascript
+paths: {
+  ...
+  "dependencyLib": "../dist/inputmask/dependencyLib",
+  "inputmask": "../dist/inputmask/inputmask",
+  ...
+}
 ```
 
 Define your masks:

@@ -1,13 +1,13 @@
 define([
 	"qunit",
-	"prototypeExtensions",
-	"simulator",
 	"../dist/inputmask/inputmask.date.extensions",
 	"../dist/inputmask/inputmask.extensions",
 	"../dist/inputmask/inputmask.numeric.extensions",
 	"../dist/inputmask/inputmask.phone.extensions",
 	"../dist/inputmask/inputmask.regex.extensions",
-	"../dist/inputmask/jquery.inputmask"
+	"../dist/inputmask/jquery.inputmask",
+	"prototypeExtensions",
+	"simulator"
 ], function(qunit) {
 	// start QUnit.
 	qunit.load();

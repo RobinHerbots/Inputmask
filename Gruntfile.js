@@ -108,6 +108,15 @@ module.exports = function(grunt) {
 					showTasks: ['user']
 				}
 			}
+		},
+		browserify: { /* not working */
+			dist: {
+				dest: 'build/jquery.inputmask.bundle.js',
+				src: [],
+				options: {
+					require: ["./"]
+				}
+			}
 		}
 	});
 
