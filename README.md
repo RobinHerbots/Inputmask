@@ -148,7 +148,7 @@ While the field has focus and is blank, users will see the full mask `___-___`. 
 When defining an optional mask together with the greedy: false option, the inputmask will show the smallest possible mask as input first.
 
 ```javascript
-$(selector).inputmask({ mask: "99999[-9999]", greedy: false });
+$(selector).inputmask({ mask: "9[-9999]", greedy: false });
 ```
 
 The initial mask shown will be "**_**" instead of "**_**-____".
@@ -158,7 +158,7 @@ Dynamic masks can change during the input.  To define a dynamic part use { }.
 
 {n} => n repeats<br>{n,m} => from n to m repeats
 
-Also {+} and {_} is allowed. + start from 1 and _ start from 0.
+Also {+} and {*} is allowed. + start from 1 and * start from 0.
 
 ```javascript
 $(document).ready(function(){

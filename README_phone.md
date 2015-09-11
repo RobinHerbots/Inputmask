@@ -1,5 +1,4 @@
 ## phone extensions
-Uses the phone mask definitions from [https://github.com/andr-04/inputmask-multi](https://github.com/andr-04/inputmask-multi)
 
 ```javascript
  $(selector).inputmask("phone", {
