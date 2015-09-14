@@ -12,10 +12,10 @@ module.exports = function(grunt) {
 	function createUglifyConfig(path) {
 		function stripModuleLoaders(src, dst) {
 			var srcFile = grunt.file.read(src);
-			srcFile = srcFile.replace(new RegExp("!function[\\s\\S]*\\}\\(function\\("), "(function(");
-			if (src.indexOf("extensions") === -1) {
-				srcFile = srcFile.replace(new RegExp(";$"), "(jQuery);");
-			} else srcFile = srcFile.replace(new RegExp(";$"), "(jQuery, Inputmask);");
+			srcFile = srcFile.replace(new RegExp("\\(function\\(factory\\)[\\s\\S]*\\(function\\(\\$"), "(function($");
+			if (src.indexOf("extensions") === -1 && src.indexOf("jquery.inputmask") === -1) {
+				srcFile = srcFile.replace(new RegExp("\\}\\)\\);[\\s\\S]*$"), "})(jQuery);");
+			} else srcFile = srcFile.replace(new RegExp("\\}\\)\\);[\\s\\S]*$"), "})(jQuery, Inputmask);");
 			grunt.file.write(dst, srcFile);
 		}
 		var uglifyConfig = {};
@@ -44,11 +44,11 @@ module.exports = function(grunt) {
 				}
 			};
 
-			stripModuleLoaders("dist/inputmask/" + dstFile, "build/" + dstFile);
+			stripModuleLoaders("js/" + dstFile, "build/" + dstFile);
 		}
-		srcFiles = grunt.file.expand(path + "/*.extensions.js");
-		srcFiles.splice(0, 0, "js/jquery.inputmask.js");
-		srcFiles.splice(0, 0, "js/inputmask.js");
+		srcFiles = grunt.file.expand("build/*.extensions.js");
+		srcFiles.splice(0, 0, "build/jquery.inputmask.js");
+		srcFiles.splice(0, 0, "build/inputmask.js");
 		uglifyConfig["bundle"] = {
 			dest: "dist/jquery.inputmask.bundle.js",
 			src: srcFiles,
@@ -68,7 +68,7 @@ module.exports = function(grunt) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON("package.json"),
 		uglify: createUglifyConfig("js"),
-		clean: ["dist", "build"],
+		clean: ["dist"],
 		karma: {
 			options: {
 				configFile: 'karma.conf.js'
