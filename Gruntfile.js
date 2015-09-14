@@ -10,6 +10,14 @@ module.exports = function(grunt) {
 	}
 
 	function createUglifyConfig(path) {
+		function stripModuleLoaders(src, dst) {
+			var srcFile = grunt.file.read(src);
+			srcFile = srcFile.replace(new RegExp("!function[\\s\\S]*\\}\\(function\\("), "(function(");
+			if (src.indexOf("extensions") === -1) {
+				srcFile = srcFile.replace(new RegExp(";$"), "(jQuery);");
+			} else srcFile = srcFile.replace(new RegExp(";$"), "(jQuery, Inputmask);");
+			grunt.file.write(dst, srcFile);
+		}
 		var uglifyConfig = {};
 		var srcFiles = grunt.file.expand(path + "/*.js");
 		for (var srcNdx in srcFiles) {
@@ -35,7 +43,24 @@ module.exports = function(grunt) {
 					ASCIIOnly: true
 				}
 			};
+
+			stripModuleLoaders("dist/inputmask/" + dstFile, "build/" + dstFile);
 		}
+		srcFiles = grunt.file.expand(path + "/*.extensions.js");
+		srcFiles.splice(0, 0, "js/jquery.inputmask.js");
+		srcFiles.splice(0, 0, "js/inputmask.js");
+		uglifyConfig["bundle"] = {
+			dest: "dist/jquery.inputmask.bundle.js",
+			src: srcFiles,
+			options: {
+				banner: createBanner("jquery.inputmask.bundle.js"),
+				beautify: true,
+				mangle: false,
+				preserveComments: "some",
+				ASCIIOnly: true
+			}
+		};
+
 		return uglifyConfig;
 	}
 

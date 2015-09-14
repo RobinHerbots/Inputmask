@@ -4,9 +4,9 @@ All notable changes to this project will be documented in this file.
 ## [UNRELEASED]
 
 ### Updates
+- fix jquery.inputmask.bundle.js
 - fix dependency paths for browserify
 - update files to be included for package.json, bower.json, component.json
-- remove jquery.inputmask.bundle.js
 
 ### Fixed
 - Browserify error: `Error: Cannot find module 'inputmask' from '/Users/.../node_modules/jquery.inputmask/dist/inputmask` #1030
