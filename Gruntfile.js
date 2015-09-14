@@ -120,6 +120,9 @@ module.exports = function(grunt) {
 					'git reset -- package.json',
 					'git commit -m "jquery.inputmask <%= pkg.version %>"'
 				].join('&&')
+			},
+			bundletest: {
+				command: 'node ./bundle-test/test.js'
 			}
 		},
 		eslint: {
@@ -151,7 +154,7 @@ module.exports = function(grunt) {
 	grunt.registerTask('publish:patch', ['clean', 'bump:patch', 'uglify', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
 	grunt.registerTask('publish:minor', ['clean', 'bump:minor', 'uglify', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
 	grunt.registerTask('publish:major', ['clean', 'bump:major', 'uglify', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
-	grunt.registerTask('validate', ['eslint', 'karma']);
+	grunt.registerTask('validate', ['eslint', 'karma', 'shell:bundletest']);
 	grunt.registerTask('build', ['bump:prerelease', 'clean', 'uglify']);
 	grunt.registerTask('default', ["availabletasks"]);
 
