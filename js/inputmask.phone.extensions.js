@@ -57,8 +57,9 @@ When using this extension make sure you specify the correct url to get the masks
 				nojumpsThreshold: 1,
 				onBeforeMask: function(value, opts) {
 					var processedValue = value.replace(/^0/g, "");
-					if (processedValue.indexOf(opts.countrycode) > 1 || processedValue.indexOf(opts.countrycode) === -1)
+					if (processedValue.indexOf(opts.countrycode) > 1 || processedValue.indexOf(opts.countrycode) === -1) {
 						processedValue = "+" + opts.countrycode + processedValue;
+					}
 
 					return processedValue;
 				}

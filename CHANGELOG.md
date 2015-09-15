@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - update files to be included for package.json, bower.json, component.json
 
 ### Fixed
+- 3.2.0 Error extendDefinitions and extendAliases not functions #1024
 - Browserify error: `Error: Cannot find module 'inputmask' from '/Users/.../node_modules/jquery.inputmask/dist/inputmask` #1030
 - Invalid JSON phone-uk.js #1025
 

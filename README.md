@@ -586,6 +586,8 @@ $(selector).inputmask({
 
 You can also disable pasting a value by returning false in the onBeforePaste call.
 
+Default: Calls the onBeforeMask
+
 ### onBeforeWrite
 Executes before writing to the masked element
 

@@ -1,5 +1,10 @@
-## other extensions
+# other extensions
+## Definitions
+- A   :     alphabetical uppercasing
+- &   :     alfanumeric uppercasing
+- \#  :     hexadecimal
 
+## Aliases
 ### URL
 An URL mask for entering valid FTP, HTTP or HTTPS addresses.
 
@@ -36,4 +41,4 @@ $(document).ready(function(){
 });
 ```
 
-You can find/modify/extend these alias in the jquery.inputmask.extensions.js
+You can find/modify/extend these aliases in the inputmask.extensions.js

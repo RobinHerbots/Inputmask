@@ -1,26 +1,50 @@
-## date & datetime extensions
+# date & datetime extensions
 
-```javascript
-$(document).ready(function(){
-   $(selector).inputmask("dd/mm/yyyy");
-   $(selector).inputmask("mm/dd/yyyy");
-   $(selector).inputmask("date"); // alias for dd/mm/yyyy
-   $(selector).inputmask("date", {yearrange: { minyear: 1900, maxyear: 2099 }}); //specify year range
-});
-```
+Date & Time masks.  Includes autocompletion, yearranges, leapyeares, etc.
 
-The date aliases take leap years into account.  There is also autocompletion on day, month, year. For example:
+This extension will be updated in milestone 3.4.  
+All aliases will be replaced by 1 generic datetime alias which can accept a specifier for the desired datetime format.
 
-input:    2/2/2012         result: 02/02/2012<br>input:  352012            result: 03/05/2012<br>input:  3/530            result: 03/05/2030<br>input:  ctrl rightarrow            result: the date from today  
+## Definitions
 
-```javascript
-$(document).ready(function(){
-   $(selector).inputmask("datetime"); // 24h
-   $(selector).inputmask("datetime12"); // am/pm
-});
-```
+- h   :   hours  
+- s   :   seconds / minutes  
+- d   :   simple day  
+- m   :   simple month  
+- y   :   simple year   
 
-### jqueryui.datepicker example
+## Aliases
+
+- dd/mm/yyyy  
+- mm/dd/yyyy
+- yyyy/mm/dd  
+- dd.mm.yyyy  
+- dd-mm-yyyy  
+- mm.dd.yyyy  
+- mm-dd-yyyy  
+- yyyy.mm.dd  
+- yyyy-mm-dd  
+- datetime  
+- datetime12  
+- mm/dd/yyyy hh:mm xm  
+- hh:mm t  
+- h:s t  
+- hh:mm:ss  
+- hh:mm  
+- date  
+- mm/yyyy  
+- shamsi
+
+## Options
+### yearrange
+Define a yearrange.  
+
+yearrange: {
+  minyear: 1900,
+  maxyear: 2099
+}
+
+## jqueryui.datepicker example
 
 ```javascript
     $('#calender').datepicker({

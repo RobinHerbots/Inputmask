@@ -1,5 +1,5 @@
-## regex extensions
-With the regex extension you can use any regular expression as a mask.  Currently this does only input restriction.<br>There is no further masking visualization.
+# regex extensions
+With the regex extension you can use any regular expression as a mask.  Currently this does only input restriction.  There is no further masking visualization.
 
 Example simple email regex:
 

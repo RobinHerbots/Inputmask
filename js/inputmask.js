@@ -57,7 +57,9 @@
 				alias: null,
 				onKeyDown: $.noop, //callback to implement autocomplete on certain keys for example. args => event, buffer, caretPos, opts
 				onBeforeMask: null, //executes before masking the initial value to allow preprocessing of the initial value.	args => initialValue, opts => return processedValue
-				onBeforePaste: null, //executes before masking the pasted value to allow preprocessing of the pasted value.	args => pastedValue, opts => return processedValue
+				onBeforePaste: function(pastedValue, opts) {
+					return $.isFunction(opts.onBeforeMask) ? opts.onBeforeMask(pastedValue, opts) : pastedValue;
+				}, //executes before masking the pasted value to allow preprocessing of the pasted value.	args => pastedValue, opts => return processedValue
 				onBeforeWrite: null, //executes before writing to the masked element. args => event, opts
 				onUnMask: null, //executes after unmasking to allow postprocessing of the unmaskedvalue.	args => maskedValue, unmaskedValue, opts
 				showMaskOnFocus: true, //show the mask-placeholder when the input has focus
@@ -1474,7 +1476,7 @@
 
 			function getMaskLength() {
 				var maskLength;
-				maxLength = $el.prop("maxLength");
+				maxLength = el.maxLength;
 				if (maxLength === -1) maxLength = undefined; /* FF sets no defined max length to -1 */
 				var pos, lvp = getLastValidPosition(),
 					testPos = getMaskSet().validPositions[lvp],
@@ -1755,7 +1757,7 @@
 			}
 
 			function isComplete(buffer) { //return true / false / undefined (repeat *)
-				if ($.isFunction(opts.isComplete)) return opts.isComplete.call($el, buffer, opts);
+				if ($.isFunction(opts.isComplete)) return opts.isComplete.call(el, buffer, opts);
 				if (opts.repeat === "*") return undefined;
 				var complete = false,
 					lrp = determineLastRequiredPosition(true),
@@ -2452,7 +2454,7 @@
 
 				//show tooltip
 				if (opts.showTooltip) {
-					$el.prop("title", getMaskSet().mask);
+					el.title = getMaskSet().mask;
 				}
 
 				if (el.dir === "rtl" || opts.rightAlign) {

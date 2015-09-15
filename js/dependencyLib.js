@@ -41,7 +41,6 @@
 			Event: $.Event, //needs to be replaced
 			_data: $._data, //needs to be replaced
 			data: $.data //needs to be replaced
-
 		}
 		dependencyLib = $; //todo split out needed functionality
 		window.dependencyLib = dependencyLib;

@@ -1,5 +1,11 @@
 # numeric extensions
-## aliases
+## Aliases
+
+- numeric  
+- currency  
+- decimal  
+- integer  
+- percentage  
 
 ## Options
 ### digits

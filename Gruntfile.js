@@ -134,9 +134,9 @@ module.exports = function(grunt) {
 				}
 			}
 		},
-		browserify: { /* not working */
+		browserify: {
 			dist: {
-				dest: 'build/jquery.inputmask.bundle.js',
+				dest: 'build/browserify.bundle.js',
 				src: [],
 				options: {
 					require: ["./"]
@@ -151,7 +151,7 @@ module.exports = function(grunt) {
 	grunt.registerTask('publish:patch', ['clean', 'bump:patch', 'uglify', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
 	grunt.registerTask('publish:minor', ['clean', 'bump:minor', 'uglify', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
 	grunt.registerTask('publish:major', ['clean', 'bump:major', 'uglify', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
-	grunt.registerTask('validate', ['eslint', 'karma']);
+	grunt.registerTask('validate', ['eslint', 'browserify', 'karma']);
 	grunt.registerTask('build', ['bump:prerelease', 'clean', 'uglify']);
 	grunt.registerTask('default', ["availabletasks"]);
 

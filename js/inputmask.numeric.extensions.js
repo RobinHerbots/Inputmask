@@ -623,9 +623,6 @@ Optional extensions on the jquery.inputmask base
 					}
 					return initialValue.toString();
 				},
-				onBeforePaste: function(pastedValue, opts) {
-					return opts.onBeforeMask(pastedValue, opts);
-				},
 				canClearPosition: function(maskset, position, lvp, strict, opts) {
 					var positionInput = maskset.validPositions[position].input,
 						canClear = ((positionInput !== opts.radixPoint || (maskset.validPositions[position].match.fn !== null && opts.decimalProtect === false)) || isFinite(positionInput)) ||
