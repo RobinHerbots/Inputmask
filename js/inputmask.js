@@ -1476,7 +1476,7 @@
 
 			function getMaskLength() {
 				var maskLength;
-				maxLength = el.maxLength;
+				maxLength = el !== undefined ? el.maxLength : undefined;
 				if (maxLength === -1) maxLength = undefined; /* FF sets no defined max length to -1 */
 				var pos, lvp = getLastValidPosition(),
 					testPos = getMaskSet().validPositions[lvp],
@@ -1625,26 +1625,27 @@
 				}
 			}
 
-			function unmaskedvalue($input) {
-				if ($input[0].inputmask && !$input.hasClass("hasDatepicker")) {
-					var umValue = [],
-						vps = getMaskSet().validPositions;
-					for (var pndx in vps) {
-						if (vps[pndx].match && vps[pndx].match.fn != null) {
-							umValue.push(vps[pndx].input);
+			function unmaskedvalue(input) {
+				if (input.inputmask) {
+					if (input.className === undefined || input.className.indexOf("hasDatepicker") === -1) {
+						var umValue = [],
+							vps = getMaskSet().validPositions;
+						for (var pndx in vps) {
+							if (vps[pndx].match && vps[pndx].match.fn != null) {
+								umValue.push(vps[pndx].input);
+							}
 						}
-					}
-					var unmaskedValue = umValue.length === 0 ? null : (isRTL ? umValue.reverse() : umValue).join("");
-					if (unmaskedValue !== null) {
-						var bufferValue = (isRTL ? getBuffer().slice().reverse() : getBuffer()).join("");
-						if ($.isFunction(opts.onUnMask)) {
-							unmaskedValue = (opts.onUnMask.call($input, bufferValue, unmaskedValue, opts) || unmaskedValue);
+						var unmaskedValue = umValue.length === 0 ? null : (isRTL ? umValue.reverse() : umValue).join("");
+						if (unmaskedValue !== null) {
+							var bufferValue = (isRTL ? getBuffer().slice().reverse() : getBuffer()).join("");
+							if ($.isFunction(opts.onUnMask)) {
+								unmaskedValue = (opts.onUnMask.call($input, bufferValue, unmaskedValue, opts) || unmaskedValue);
+							}
 						}
-					}
-					return unmaskedValue;
-				} else {
-					return $input[0].inputmask._valueGet();
+						return unmaskedValue;
+					} else return input.inputmask._valueGet();
 				}
+				return input.value;
 			}
 
 			function caret(input, begin, end) {
@@ -1660,9 +1661,9 @@
 					begin = translatePosition(begin);
 					end = translatePosition(end);
 					end = (typeof end == "number") ? end : begin;
-					if (!$(input).is(":visible")) {
-						return;
-					}
+					// if (!$(input).is(":visible")) {
+					// 	return;
+					// }
 
 					var scrollCalc = input.style.fontSize.replace("px", "") * end;
 					input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0;
@@ -1794,7 +1795,7 @@
 								if (this.inputmask === undefined) { //happens when cloning an object with jquery.clone
 									var imOpts = $.data(this, "_inputmask_opts");
 									if (imOpts)(new Inputmask(imOpts)).mask(this);
-									else $(this).unbind(".inputmask");
+									else $(this).off(".inputmask");
 								} else if (e.type !== "setvalue" && (this.disabled || (this.readOnly && !(e.type === "keydown" && (e.ctrlKey && e.keyCode === 67) || (opts.tabThrough === false && e.keyCode === Inputmask.keyCode.TAB))))) {
 									e.preventDefault();
 								} else {
@@ -1892,7 +1893,7 @@
 				}
 
 				function installNativeValueSetFallback(npt) {
-					$(npt).bind("mouseenter.inputmask", function(event) {
+					$(npt).on("mouseenter.inputmask", function(event) {
 						var $input = $(this),
 							input = this,
 							value = input.inputmask._valueGet();
@@ -2054,7 +2055,7 @@
 					caret(input, 0, e.shiftKey ? pos.begin : 0);
 				} else if (((opts.undoOnEscape && k === Inputmask.keyCode.ESCAPE) || (k === 90 && e.ctrlKey)) && e.altKey !== true) { //escape && undo && #762
 					checkVal(input, true, false, undoValue.split(""));
-					$input.click();
+					$input.trigger("click");
 				} else if (k === Inputmask.keyCode.INSERT && !(e.shiftKey || e.ctrlKey)) { //insert
 					opts.insertMode = !opts.insertMode;
 					caret(input, !opts.insertMode && pos.begin === getMaskLength() ? pos.begin - 1 : pos.begin);
@@ -2099,7 +2100,7 @@
 				if (checkval !== true && (!(e.ctrlKey && e.altKey) && (e.ctrlKey || e.metaKey || ignorable))) {
 					if (k === Inputmask.keyCode.ENTER && undoValue !== getBuffer().join("")) {
 						setTimeout(function() {
-							$input.change();
+							$input.trigger("change");
 							undoValue = getBuffer().join("");
 						}, 0);
 					}
@@ -2229,7 +2230,7 @@
 				}
 				checkVal(input, false, false, isRTL ? pasteValue.split("").reverse() : pasteValue.toString().split(""));
 				writeBuffer(input, getBuffer(), undefined, e, true);
-				$input.click();
+				$input.trigger("click");
 				if (isComplete(getBuffer()) === true) {
 					$input.trigger("complete");
 				}
@@ -2313,13 +2314,12 @@
 			}
 
 			function mouseleaveEvent(e) {
-				var $input = $(this),
-					input = this;
+				var input = this;
 				mouseEnter = false;
 				if (opts.clearMaskOnLostFocus) {
 					var buffer = getBuffer().slice(),
 						nptValue = input.inputmask._valueGet();
-					if (document.activeElement !== input && nptValue !== $input.attr("placeholder") && nptValue !== "") {
+					if (document.activeElement !== input && nptValue !== input.getAttribute("placeholder") && nptValue !== "") {
 						if (getLastValidPosition() === -1 && nptValue === getBufferTemplate().join("")) {
 							buffer = [];
 						} else { //clearout optional tail of the mask
@@ -2408,7 +2408,7 @@
 						buffer = getBuffer().slice();
 					if (undoValue !== buffer.join("")) {
 						setTimeout(function() { //change event should be triggered after the other buffer manipulations on blur
-							$input.change();
+							$input.trigger("change");
 							undoValue = buffer.join("");
 						}, 0);
 					}
@@ -2449,7 +2449,8 @@
 				}
 			}
 
-			function mask(el) {
+			function mask(elem) {
+				el = elem;
 				$el = $(el);
 
 				//show tooltip
@@ -2469,13 +2470,13 @@
 				}
 
 				//unbind all events - to make sure that no other mask will interfere when re-masking
-				$el.unbind(".inputmask");
+				$el.off(".inputmask");
 
 				if ((el.tagName === "INPUT" && isInputTypeSupported(el.getAttribute("type"))) || el.isContentEditable) {
 					//bind events
-					$el.closest("form").bind("submit", function() { //trigger change on submit if any
+					$(el.form).on("submit", function() { //trigger change on submit if any
 						if (undoValue !== getBuffer().join("")) {
-							$el.change();
+							$el.trigger("change");
 						}
 						if (opts.clearMaskOnLostFocus && getLastValidPosition() === -1 && el.inputmask._valueGet && el.inputmask._valueGet() === getBufferTemplate().join("")) {
 							el.inputmask._valueSet(""); //clear masktemplete on submit and still has focus
@@ -2486,40 +2487,40 @@
 								writeBuffer(el, getBuffer());
 							}, 0);
 						}
-					}).bind("reset", function() {
+					}).on("reset", function() {
 						setTimeout(function() {
 							$el.triggerHandler("setvalue.inputmask");
 						}, 0);
 					});
 
-					$el.bind("mouseenter.inputmask", mouseenterEvent)
-						.bind("blur.inputmask", blurEvent)
-						.bind("focus.inputmask", focusEvent)
-						.bind("mouseleave.inputmask", mouseleaveEvent)
-						.bind("click.inputmask", clickEvent)
-						.bind("dblclick.inputmask", dblclickEvent)
-						.bind(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", pasteEvent)
-						.bind("cut.inputmask", cutEvent)
-						.bind("complete.inputmask", opts.oncomplete)
-						.bind("incomplete.inputmask", opts.onincomplete)
-						.bind("cleared.inputmask", opts.oncleared)
-						.bind("keydown.inputmask", keydownEvent)
-						.bind("keypress.inputmask", keypressEvent);
+					$el.on("mouseenter.inputmask", mouseenterEvent)
+						.on("blur.inputmask", blurEvent)
+						.on("focus.inputmask", focusEvent)
+						.on("mouseleave.inputmask", mouseleaveEvent)
+						.on("click.inputmask", clickEvent)
+						.on("dblclick.inputmask", dblclickEvent)
+						.on(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", pasteEvent)
+						.on("cut.inputmask", cutEvent)
+						.on("complete.inputmask", opts.oncomplete)
+						.on("incomplete.inputmask", opts.onincomplete)
+						.on("cleared.inputmask", opts.oncleared)
+						.on("keydown.inputmask", keydownEvent)
+						.on("keypress.inputmask", keypressEvent);
 
 
 					if (!androidfirefox) {
-						$el.bind("compositionstart.inputmask", compositionStartEvent).bind("compositionupdate.inputmask", compositionUpdateEvent).bind("compositionend.inputmask", compositionEndEvent);
+						$el.on("compositionstart.inputmask", compositionStartEvent).on("compositionupdate.inputmask", compositionUpdateEvent).on("compositionend.inputmask", compositionEndEvent);
 					}
 
 					if (PasteEventType === "paste") {
-						$el.bind("input.inputmask", inputFallBackEvent);
+						$el.on("input.inputmask", inputFallBackEvent);
 					}
 					//if (android || androidfirefox || androidchrome || kindle) {
-					//		$el.unbind("input.inputmask");
-					//		$el.bind("input.inputmask", mobileInputEvent);
+					//		$el.off("input.inputmask");
+					//		$el.on("input.inputmask", mobileInputEvent);
 					//}
 				}
-				$el.bind("setvalue.inputmask", setValueEvent);
+				$el.on("setvalue.inputmask", setValueEvent);
 				patchValueProperty(el);
 
 				//apply mask
@@ -2579,13 +2580,13 @@
 								isRTL = true;
 							}
 							valueBuffer = ($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call($el, actionObj.value, opts) || actionObj.value) : actionObj.value).split("");
-							checkVal($el, false, false, isRTL ? valueBuffer.reverse() : valueBuffer);
+							checkVal(el, false, false, isRTL ? valueBuffer.reverse() : valueBuffer);
 							if ($.isFunction(opts.onBeforeWrite)) opts.onBeforeWrite.call(this, undefined, getBuffer(), 0, opts);
 						} else $el = $(el);
 						maskset = el.inputmask.maskset;
 						opts = el.inputmask.opts;
 						isRTL = el.inputmask.isRTL;
-						return unmaskedvalue($el);
+						return unmaskedvalue(el);
 					case "mask":
 						undoValue = getBuffer().join("");
 						mask(actionObj.el);
@@ -2603,7 +2604,7 @@
 							isRTL = true;
 						}
 						valueBuffer = ($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call($el, actionObj.value, opts) || actionObj.value) : actionObj.value).split("");
-						checkVal($el, false, false, isRTL ? valueBuffer.reverse() : valueBuffer);
+						checkVal(el, false, false, isRTL ? valueBuffer.reverse() : valueBuffer);
 						if ($.isFunction(opts.onBeforeWrite)) opts.onBeforeWrite.call(this, undefined, getBuffer(), 0, opts);
 
 						if (actionObj.metadata) {
@@ -2627,7 +2628,7 @@
 							isRTL = true;
 						}
 						valueBuffer = actionObj.value.split("");
-						checkVal($el, false, true, isRTL ? valueBuffer.reverse() : valueBuffer);
+						checkVal(el, false, true, isRTL ? valueBuffer.reverse() : valueBuffer);
 						var buffer = getBuffer();
 						var rl = determineLastRequiredPosition(),
 							lmib = buffer.length - 1;
@@ -2651,7 +2652,7 @@
 						//writeout the unmaskedvalue
 						el.inputmask._valueSet(unmaskedvalue($el));
 						//unbind all events
-						$el.unbind(".inputmask");
+						$el.off(".inputmask");
 						//restore the value property
 						var valueProperty;
 						if (Object.getOwnPropertyDescriptor) {
