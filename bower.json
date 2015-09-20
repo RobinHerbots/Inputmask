@@ -2,7 +2,7 @@
   "name": "jquery.inputmask",
   "version": "3.2.1-55",
   "main": [
-    "./dist/inputmask/dependencyLib.js"
+    "./dist/inputmask/dependencyLib.js",
     "./dist/inputmask/inputmask.js",
     "./dist/inputmask/inputmask.extensions.js",
     "./dist/inputmask/inputmask.date.extensions.js",
