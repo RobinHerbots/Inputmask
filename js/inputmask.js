@@ -1639,7 +1639,7 @@
 						if (unmaskedValue !== null) {
 							var bufferValue = (isRTL ? getBuffer().slice().reverse() : getBuffer()).join("");
 							if ($.isFunction(opts.onUnMask)) {
-								unmaskedValue = (opts.onUnMask.call($input, bufferValue, unmaskedValue, opts) || unmaskedValue);
+								unmaskedValue = (opts.onUnMask.call(input, bufferValue, unmaskedValue, opts) || unmaskedValue);
 							}
 						}
 						return unmaskedValue;
