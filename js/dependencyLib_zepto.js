@@ -1,52 +1,13 @@
 (function(factory) {
 		if (typeof define === "function" && define.amd) {
-			define(["jqlite"], factory);
+			define(["zepto", "zepto_data", "zepto_event"], factory);
 		} else if (typeof exports === "object") {
-			module.exports = factory(require("jqlite"));
+			module.exports = factory(require("zepto"), require("zepto_data"), require("zepto_event"));
 		} else {
-			factory(jQuery);
+			factory(Zepto); //requires a zepto build with data & event
 		}
 	}
 	(function($) {
-		var class2type = {},
-			classTypes = "Boolean Number String Function Array Date RegExp Object Error".split(" ");
-		for (var nameNdx = 0; nameNdx < classTypes.length; nameNdx++) {
-			class2type["[object " + classTypes[nameNdx] + "]"] = classTypes[nameNdx].toLowerCase();
-		}
-
-		function type(obj) {
-			if (obj == null) {
-				return obj + "";
-			}
-			// Support: Android<4.0, iOS<6 (functionish RegExp)
-			return typeof obj === "object" || typeof obj === "function" ?
-				class2type[class2type.toString.call(obj)] || "object" :
-				typeof obj;
-		}
-		$.isFunction = function(obj) {
-			return type(obj) === "function";
-		};
-		$.isArray = Array.isArray;
-		$.isWindow = function(obj) {
-			return obj != null && obj === obj.window;
-		};
-		$.isPlainObject = function(obj) {
-			// Not plain objects:
-			// - Any object or value whose internal [[Class]] property is not "[object Object]"
-			// - DOM nodes
-			// - window
-			if (type(obj) !== "object" || obj.nodeType || $.isWindow(obj)) {
-				return false;
-			}
-
-			if (obj.constructor && !class2type.hasOwnProperty.call(obj.constructor.prototype, "isPrototypeOf")) {
-				return false;
-			}
-
-			// If the function hasn't returned already, we're confident that
-			// |obj| is a plain object, created by {} or constructed with new Object
-			return true;
-		};
 		$.extend = function() {
 			var options, name, src, copy, copyIsArray, clone,
 				target = arguments[0] || {},
@@ -114,7 +75,6 @@
 		$.data = function(elem, name, data) {
 			return $(elem).data(name, data);
 		};
-
 		window.dependencyLib = $;
 		return $;
 	}));

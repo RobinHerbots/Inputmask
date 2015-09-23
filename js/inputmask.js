@@ -7,7 +7,7 @@
  */
 (function(factory) {
 		if (typeof define === "function" && define.amd) {
-			define(["dependencyLib"], factory);
+			define(["./dependencyLib"], factory);
 		} else if (typeof exports === "object") {
 			module.exports = factory(require("./dependencyLib"));
 		} else {
@@ -109,8 +109,11 @@
 				importAttributeOptions(el, scopedOpts, $.extend(true, {}, this.userOptions));
 				var maskset = generateMaskSet(scopedOpts, this.noMasksCache);
 				if (maskset !== undefined) {
+					if (el.inputmask !== undefined) {
+						el.inputmask.remove();
+					}
 					//store inputmask instance on the input with element reference
-					el.inputmask = el.inputmask || new Inputmask(); //in case of remasking reuse the inputmask object
+					el.inputmask = new Inputmask();
 					el.inputmask.opts = scopedOpts;
 					el.inputmask.noMasksCache = this.noMasksCache;
 					el.inputmask.userOptions = $.extend(true, {}, this.userOptions);
@@ -184,7 +187,7 @@
 			}
 		};
 
-		//aply defaults, definitions, aliases
+		//apply defaults, definitions, aliases
 		Inputmask.extendDefaults = function(options) {
 			$.extend(Inputmask.prototype.defaults, options);
 		};
@@ -1782,59 +1785,50 @@
 					(end - begin) > 1 || ((end - begin) === 1 && opts.insertMode);
 			}
 
-			function installEventRuler(npt) {
-				var events = $._data(npt).events,
-					inComposition = false;
-
-				$.each(events, function(eventType, eventHandlers) {
-					$.each(eventHandlers, function(ndx, eventHandler) {
-						if (eventHandler.namespace === "inputmask") {
-							var handler = eventHandler.handler;
-							eventHandler.handler = function(e) {
-								// console.log("triggered " + e.type);
-								if (this.inputmask === undefined) { //happens when cloning an object with jquery.clone
-									var imOpts = $.data(this, "_inputmask_opts");
-									if (imOpts)(new Inputmask(imOpts)).mask(this);
-									else $(this).off(".inputmask");
-								} else if (e.type !== "setvalue" && (this.disabled || (this.readOnly && !(e.type === "keydown" && (e.ctrlKey && e.keyCode === 67) || (opts.tabThrough === false && e.keyCode === Inputmask.keyCode.TAB))))) {
-									e.preventDefault();
-								} else {
-									switch (e.type) {
-										case "input":
-											if (skipInputEvent === true || inComposition === true) {
-												skipInputEvent = false;
-												return e.preventDefault();
-											}
-											break;
-										case "keydown":
-											//Safari 5.1.x - modal dialog fires keypress twice workaround
-											skipKeyPressEvent = false;
-											inComposition = false;
-											break;
-										case "keypress":
-											if (skipKeyPressEvent === true) {
-												return e.preventDefault();
-											}
-											skipKeyPressEvent = true;
-
-											break;
-										case "compositionstart":
-											inComposition = true;
-											break;
-										case "compositionupdate":
-											skipInputEvent = true;
-											break;
-										case "compositionend":
-											inComposition = false;
-											break;
-									}
-									//console.log("executed " + e.type);
-									return handler.apply(this, arguments);
+			function wrapEvent(eventHandler) {
+				return function(e) {
+					// console.log("triggered " + e.type);
+					var inComposition = false;
+					if (this.inputmask === undefined) { //happens when cloning an object with jquery.clone
+						var imOpts = $.data(this, "_inputmask_opts");
+						if (imOpts)(new Inputmask(imOpts)).mask(this);
+						else $(this).off(".inputmask");
+					} else if (e.type !== "setvalue" && (this.disabled || (this.readOnly && !(e.type === "keydown" && (e.ctrlKey && e.keyCode === 67) || (opts.tabThrough === false && e.keyCode === Inputmask.keyCode.TAB))))) {
+						e.preventDefault();
+					} else {
+						switch (e.type) {
+							case "input":
+								if (skipInputEvent === true || inComposition === true) {
+									skipInputEvent = false;
+									return e.preventDefault();
 								}
-							};
+								break;
+							case "keydown":
+								//Safari 5.1.x - modal dialog fires keypress twice workaround
+								skipKeyPressEvent = false;
+								inComposition = false;
+								break;
+							case "keypress":
+								if (skipKeyPressEvent === true) {
+									return e.preventDefault();
+								}
+								skipKeyPressEvent = true;
+
+								break;
+							case "compositionstart":
+								inComposition = true;
+								break;
+							case "compositionupdate":
+								skipInputEvent = true;
+								break;
+							case "compositionend":
+								inComposition = false;
+								break;
 						}
-					});
-				});
+						//console.log("executed " + e.type);
+						return eventHandler.apply(this, arguments);
+					}
+				};
 			}
 
 			function patchValueProperty(npt) {
@@ -1893,25 +1887,25 @@
 				}
 
 				function installNativeValueSetFallback(npt) {
-					$(npt).on("mouseenter.inputmask", function(event) {
+					$(npt).on("mouseenter.inputmask", wrapEvent(function(event) {
 						var $input = $(this),
 							input = this,
 							value = input.inputmask._valueGet();
 						if (value !== "" && value !== getBuffer().join("")) {
 							$input.triggerHandler("setvalue.inputmask");
 						}
-					});
-					//!! the bound handlers are executed in the order they where bound
-					//reorder the events - the mouseenter event is internally mapped to the mouseover event
-					var events = $._data(npt).events;
-					var handlers = events.mouseover;
-					if (handlers) {
-						var ourHandler = handlers[handlers.length - 1];
-						for (var i = handlers.length - 1; i > 0; i--) {
-							handlers[i] = handlers[i - 1];
-						}
-						handlers[0] = ourHandler;
-					}
+					}));
+					// //!! the bound handlers are executed in the order they where bound
+					// //reorder the events - the mouseenter event is internally mapped to the mouseover event
+					// var events = $._data(npt).events;
+					// var handlers = events.mouseover;
+					// if (handlers) {
+					// 	var ourHandler = handlers[handlers.length - 1];
+					// 	for (var i = handlers.length - 1; i > 0; i--) {
+					// 		handlers[i] = handlers[i - 1];
+					// 	}
+					// 	handlers[0] = ourHandler;
+					// }
 				}
 
 				if (!npt.inputmask.__valueGet) {
@@ -1949,7 +1943,7 @@
 					};
 					npt.inputmask.__valueSet = valueSet; //store native property setter
 					npt.inputmask._valueSet = function(value, overruleRTL) {
-						valueSet.call(this.el, (overruleRTL !== true && isRTL) ? value.split("").reverse().join("") : value);
+						valueSet.call(this.el, (overruleRTL !== true && isRTL && value !== null && value !== undefined) ? value.split("").reverse().join("") : value);
 					};
 				}
 			}
@@ -2471,7 +2465,7 @@
 
 				//unbind all events - to make sure that no other mask will interfere when re-masking
 				$el.off(".inputmask");
-
+				patchValueProperty(el);
 				if ((el.tagName === "INPUT" && isInputTypeSupported(el.getAttribute("type"))) || el.isContentEditable) {
 					//bind events
 					$(el.form).on("submit", function() { //trigger change on submit if any
@@ -2493,35 +2487,36 @@
 						}, 0);
 					});
 
-					$el.on("mouseenter.inputmask", mouseenterEvent)
-						.on("blur.inputmask", blurEvent)
-						.on("focus.inputmask", focusEvent)
-						.on("mouseleave.inputmask", mouseleaveEvent)
-						.on("click.inputmask", clickEvent)
-						.on("dblclick.inputmask", dblclickEvent)
-						.on(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", pasteEvent)
-						.on("cut.inputmask", cutEvent)
-						.on("complete.inputmask", opts.oncomplete)
-						.on("incomplete.inputmask", opts.onincomplete)
-						.on("cleared.inputmask", opts.oncleared)
-						.on("keydown.inputmask", keydownEvent)
-						.on("keypress.inputmask", keypressEvent);
+					$el.on("mouseenter.inputmask", wrapEvent(mouseenterEvent))
+						.on("blur.inputmask", wrapEvent(blurEvent))
+						.on("focus.inputmask", wrapEvent(focusEvent))
+						.on("mouseleave.inputmask", wrapEvent(mouseleaveEvent))
+						.on("click.inputmask", wrapEvent(clickEvent))
+						.on("dblclick.inputmask", wrapEvent(dblclickEvent))
+						.on(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", wrapEvent(pasteEvent))
+						.on("cut.inputmask", wrapEvent(cutEvent))
+						.on("complete.inputmask", wrapEvent(opts.oncomplete))
+						.on("incomplete.inputmask", wrapEvent(opts.onincomplete))
+						.on("cleared.inputmask", wrapEvent(opts.oncleared))
+						.on("keydown.inputmask", wrapEvent(keydownEvent))
+						.on("keypress.inputmask", wrapEvent(keypressEvent));
 
 
 					if (!androidfirefox) {
-						$el.on("compositionstart.inputmask", compositionStartEvent).on("compositionupdate.inputmask", compositionUpdateEvent).on("compositionend.inputmask", compositionEndEvent);
+						$el.on("compositionstart.inputmask", wrapEvent(compositionStartEvent))
+							.on("compositionupdate.inputmask", wrapEvent(compositionUpdateEvent))
+							.on("compositionend.inputmask", wrapEvent(compositionEndEvent));
 					}
 
 					if (PasteEventType === "paste") {
-						$el.on("input.inputmask", inputFallBackEvent);
+						$el.on("input.inputmask", wrapEvent(inputFallBackEvent));
 					}
 					//if (android || androidfirefox || androidchrome || kindle) {
 					//		$el.off("input.inputmask");
 					//		$el.on("input.inputmask", mobileInputEvent);
 					//}
 				}
-				$el.on("setvalue.inputmask", setValueEvent);
-				patchValueProperty(el);
+				$el.on("setvalue.inputmask", wrapEvent(setValueEvent));
 
 				//apply mask
 				var initialValue = $.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(el, el.inputmask._valueGet(), opts) || el.inputmask._valueGet()) : el.inputmask._valueGet();
@@ -2549,8 +2544,6 @@
 				if (activeElement === el) { //position the caret when in focus
 					caret(el, seekNext(getLastValidPosition()));
 				}
-
-				installEventRuler(el);
 			}
 
 			//action object
@@ -2650,7 +2643,7 @@
 						maskset = el.inputmask.maskset;
 						opts = el.inputmask.opts;
 						//writeout the unmaskedvalue
-						el.inputmask._valueSet(unmaskedvalue($el));
+						el.inputmask._valueSet(unmaskedvalue(el));
 						//unbind all events
 						$el.off(".inputmask");
 						//restore the value property

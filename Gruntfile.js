@@ -14,8 +14,8 @@ module.exports = function(grunt) {
 			var srcFile = grunt.file.read(src);
 			srcFile = srcFile.replace(new RegExp("\\(function\\(factory\\)[\\s\\S]*\\(function\\(\\$"), "(function($");
 			if (src.indexOf("extensions") === -1 && src.indexOf("jquery.inputmask") === -1) {
-				srcFile = srcFile.replace(new RegExp("\\}\\)\\);[\\s\\S]*$"), "})(jQuery);");
-			} else srcFile = srcFile.replace(new RegExp("\\}\\)\\);[\\s\\S]*$"), "})(jQuery, Inputmask);");
+				srcFile = srcFile.replace(new RegExp("\\}\\)\\);[\\s]*$"), "})(jQuery);");
+			} else srcFile = srcFile.replace(new RegExp("\\}\\)\\);[\\s]*$"), "})(jQuery, Inputmask);");
 			grunt.file.write(dst, srcFile);
 		}
 		var uglifyConfig = {};
