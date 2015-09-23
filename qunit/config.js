@@ -7,7 +7,7 @@ requirejs.config({
 		"zepto_event": "../node_modules/zepto-component/src/event",
 		"zepto_data": "../node_modules/zepto-component/src/data",
 		"qunit": "../node_modules/qunitjs/qunit/qunit",
-		"dependencyLib": "../dist/inputmask/dependencyLib",
+		"inputmask.dependencyLib": "../dist/inputmask/inputmask.dependencyLib",
 		"inputmask": "../dist/inputmask/inputmask"
 	},
 	shim: {

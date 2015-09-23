@@ -3,7 +3,13 @@ All notable changes to this project will be documented in this file.
 
 ## [UNRELEASED]
 
+### Added
+- inputmask.dependencyLib.jquery
+- inputmask.dependencyLib.jqlite
+- inputmask.dependencyLib.zepto
+
 ### Updates
+- namespace dependencyLib => inputmask.dependencyLib
 - fix jquery.inputmask.bundle.js
 - fix dependency paths for browserify
 - update files to be included for package.json, bower.json, component.json

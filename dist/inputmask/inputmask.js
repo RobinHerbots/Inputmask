@@ -3,10 +3,10 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.1-85
+* Version: 3.2.1-86
 */
 !function(factory) {
-    "function" == typeof define && define.amd ? define([ "./dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./dependencyLib")) : factory(window.dependencyLib || jQuery);
+    "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib")) : factory(window.dependencyLib || jQuery);
 }(function($) {
     function Inputmask(options) {
         this.el = void 0, this.opts = $.extend(!0, {}, this.defaults, options), this.noMasksCache = options && void 0 !== options.definitions, 
