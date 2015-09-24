@@ -75,12 +75,10 @@
 
 
 		function DependencyLib(elem) {
-			this[0] = elem;
 			if (!(this instanceof DependencyLib)) {
-				return new DependencyLib(elem);
+				return new Event(elem);
 			}
 		}
-		DependencyLib.prototype = Event.prototype;
 
 		//static
 		DependencyLib.isFunction = function(obj) {
