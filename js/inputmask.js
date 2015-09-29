@@ -1787,7 +1787,7 @@
 
 			function wrapEvent(eventHandler) {
 				return function(e) {
-					console.log("triggered " + e.type);
+					// console.log("triggered " + e.type);
 					var inComposition = false;
 					if (this.inputmask === undefined) { //happens when cloning an object with jquery.clone
 						var imOpts = $.data(this, "_inputmask_opts");

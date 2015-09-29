@@ -45,7 +45,7 @@ If you use a module loader like requireJS, use the js-files in dist/inputmask
 ```javascript
 paths: {
   ...
-  "inputmask.dependencyLib": "../dist/inputmask/inputmask.dependencyLib",
+  "inputmask.dependencyLib": "../dist/inputmask/inputmask.dependencyLib.jquery",
   "inputmask": "../dist/inputmask/inputmask",
   ...
 }
