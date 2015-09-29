@@ -52,7 +52,7 @@ paths: {
 ```
 
 As dependencyLib you can choose between the supported libraries.
-- inputmask.dependencyLib (vanilla) (WIP)
+- inputmask.dependencyLib (vanilla)
 - inputmask.dependencyLib.jquery
 - inputmask.dependencyLib.jqlite (WIP)
 - inputmask.dependencyLib.zepto (WIP)

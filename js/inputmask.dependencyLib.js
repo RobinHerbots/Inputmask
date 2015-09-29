@@ -1,13 +1,13 @@
 (function(factory) {
 		if (typeof define === "function" && define.amd) {
-			define(["jquery"], factory);
+			define(factory);
 		} else if (typeof exports === "object") {
-			module.exports = factory(require("jquery"));
+			module.exports = factory();
 		} else {
-			factory(jQuery);
+			factory();
 		}
 	}
-	(function($) {
+	(function() {
 
 		//helper functions
 
@@ -40,39 +40,151 @@
 				typeof obj;
 		}
 
-		//micro event lib
-		function Event(elem) {
-			this[0] = elem;
+		function isArraylike(obj) {
+			// Support: iOS 8.2 (not reproducible in simulator)
+			// `in` check used to prevent JIT error (gh-2145)
+			// hasOwn isn't used here due to false negatives
+			// regarding Nodelist length in IE
+			var length = "length" in obj && obj.length,
+				type = jQuery.type(obj);
+
+			if (type === "function" || jQuery.isWindow(obj)) {
+				return false;
+			}
+
+			if (obj.nodeType === 1 && length) {
+				return true;
+			}
+
+			return type === "array" || length === 0 ||
+				typeof length === "number" && length > 0 && (length - 1) in obj;
 		}
 
-		Event.prototype = {
-			on: function() {
-				$.fn.on.apply($(this[0]), arguments);
-				return this;
-			},
-			off: function() {
-				$.fn.off.apply($(this[0]), arguments);
-				return this;
-			},
-			trigger: function() {
-				$.fn.trigger.apply($(this[0]), arguments);
-				return this;
-			},
-			triggerHandler: function() {
-				$.fn.triggerHandler.apply($(this[0]), arguments);
-				return this;
-			}
-		};
-
-		function getDomEvents() {
+		//micro event lib
+		var domEvents = function() {
 			var domEvents = [];
 			for (var i in document) {
 				if (i.substring(0, 2) === "on" && (document[i] === null || typeof document[i] === 'function'))
-					domEvents.push(i);
+					domEvents.push(i.substring(2));
 			}
 			return domEvents;
-		};
+		}();
 
+		function Event(elem) {
+			if (elem !== undefined && elem !== null) {
+				this[0] = elem;
+				this[0].eventRegistry = this[0].eventRegistry || {};
+			}
+		}
+
+		Event.prototype = {
+			on: function(events, handler) {
+				if (this[0] !== undefined) {
+					var eventRegistry = this[0].eventRegistry,
+						elem = this[0];
+
+					function addEvent(ev, namespace) {
+						if (domEvents.indexOf(ev) !== -1 && namespace === "global") {
+							//register domevent
+							if (elem.addEventListener) { // all browsers except IE before version 9
+								elem.addEventListener(ev, handler, false);
+							} else if (elem.attachEvent) { // IE before version 9
+								elem.attachEvent("on" + ev, handler);
+							}
+						}
+						eventRegistry[ev] = eventRegistry[ev] || {};
+						eventRegistry[ev][namespace] = eventRegistry[ev][namespace] || [];
+						eventRegistry[ev][namespace].push(handler);
+					}
+					var _events = events.split(" ");
+					for (var endx = 0; endx < _events.length; endx++) {
+						var nsEvent = _events[endx].split("."),
+							ev = nsEvent[0],
+							namespace = nsEvent[1] || "global";
+						addEvent(ev, namespace);
+						if (namespace !== "global") {
+							addEvent(ev, "global");
+						}
+					}
+				}
+				return this;
+			},
+			off: function(events, handler) {
+				if (this[0] !== undefined) {
+					var eventRegistry = this[0].eventRegistry,
+						elem = this[0];
+
+					function removeEvent(ev, namespace) {
+						if (ev in eventRegistry === true) {
+							if (domEvents.indexOf(ev) !== -1) {
+								//unbind to dom events
+								if (elem.removeEventListener) { // all browsers except IE before version 9
+									elem.removeEventListener(ev, handler, false);
+								} else if (elem.detachEvent) { // IE before version 9
+									elem.detachEvent("on" + ev, handler);
+								}
+							}
+							eventRegistry[ev][namespace].splice(eventRegistry[ev][namespace].indexOf(handler), 1);
+							if (namespace !== "global") {
+								eventRegistry[ev].global.splice(eventRegistry[ev].global.indexOf(handler), 1);
+							}
+						}
+					}
+
+					function resolveNamespace(ev, namespace) {
+						var evts = [];
+						evts.push({
+							ev: ev,
+							namespace: namespace
+						});
+
+						return evts;
+					}
+
+					var _events = events.split(" ");
+					for (var endx = 0; endx < _events.length; endx++) {
+						var nsEvent = _events[endx].split("."),
+							offEvents = resolveNamespace(nsEvent[0], nsEvent[1]);
+						for (var i = 0, offEventsL = offEvents.length; i < offEventsL; i++) {
+							removeEvent(offEvents[i].ev, offEvents[i].namespace);
+						}
+					}
+				}
+				return this;
+			},
+			trigger: function(events /* , args... */ ) {
+				if (this[0] !== undefined) {
+					var eventRegistry = this[0].eventRegistry,
+						elem = this[0];
+					var _events = events.split(" ");
+					for (var endx = 0; endx < _events.length; endx++) {
+						var nsEvent = _events[endx].split("."),
+							ev = nsEvent[0],
+							namespace = nsEvent[1] || "global";
+						if (domEvents.indexOf(ev) !== -1 && namespace === "global") {
+							//trigger domevent
+							var evnt; // The custom event that will be created
+							if (document.createEvent) {
+								evnt = new CustomEvent(ev, {
+									detail: Array.prototype.slice.call(arguments, 1)
+								});
+								elem.dispatchEvent(evnt);
+							} else {
+								evnt = document.createEventObject();
+								evnt.eventType = ev;
+								elem.fireEvent("on" + evnt.eventType, evnt);
+							}
+						} else if (eventRegistry[ev] !== undefined) {
+							for (var i = 0; i < eventRegistry[ev][namespace].length; i++) {
+								arguments[0] = arguments[0].type ? arguments[0] : DependencyLib.Event(arguments[0]);
+								eventRegistry[ev][namespace][i].apply(this, arguments);
+							}
+						}
+					}
+				}
+				return this;
+			}
+		};
 
 		function DependencyLib(elem) {
 			if (!(this instanceof DependencyLib)) {
@@ -92,7 +204,7 @@
 		DependencyLib.inArray = function(elem, arr, i) {
 			return arr == null ? -1 : indexOf(arr, elem, i);
 		};
-		DependencyLib.valHooks = $.valHooks;
+		DependencyLib.valHooks = undefined;
 		DependencyLib.isWindow = function(obj) {
 			return obj != null && obj === obj.window;
 		};
@@ -179,10 +291,83 @@
 			return target;
 		};
 
-		DependencyLib.each = $.each;
-		DependencyLib.map = $.map;
-		DependencyLib.Event = $.Event; //needs to be replaced
-		DependencyLib.data = $.data; //needs to be replaced
+		DependencyLib.each = function(obj, callback) {
+			var value, i = 0;
+
+			if (isArraylike(obj)) {
+				for (var length = obj.length; i < length; i++) {
+					value = callback.call(obj[i], i, obj[i]);
+					if (value === false) {
+						break;
+					}
+				}
+			} else {
+				for (i in obj) {
+					value = callback.call(obj[i], i, obj[i]);
+					if (value === false) {
+						break;
+					}
+				}
+			}
+
+			return obj;
+		};
+		DependencyLib.map = function(elems, callback) {
+			var value,
+				i = 0,
+				length = elems.length,
+				isArray = isArraylike(elems),
+				ret = [];
+
+			// Go through the array, translating each of the items to their new values
+			if (isArray) {
+				for (; i < length; i++) {
+					value = callback(elems[i], i);
+
+					if (value != null) {
+						ret.push(value);
+					}
+				}
+
+				// Go through every key on the object,
+			} else {
+				for (i in elems) {
+					value = callback(elems[i], i);
+
+					if (value != null) {
+						ret.push(value);
+					}
+				}
+			}
+
+			// Flatten any nested arrays
+			return [].concat(ret);
+		};
+
+		//only usefull within inputmask
+		DependencyLib.Event = function(type) {
+			return {
+				preventDefault: DependencyLib.noop,
+				altKey: false,
+				charCode: 0,
+				ctrlKey: false,
+				currentTarget: null,
+				keyCode: 0,
+				metaKey: false,
+				shiftKey: false,
+				target: null,
+				type: type,
+				which: 0
+			};
+		}
+		DependencyLib.data = function(owner, key, value) {
+			if (value === undefined) {
+				return owner.__data ? owner.__data[key] : null;
+			} else {
+				owner.__data = owner.__data || {};
+				owner.__data[key] = value;
+			}
+		};
 
 		window.dependencyLib = DependencyLib;
 		return DependencyLib;

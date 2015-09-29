@@ -1787,7 +1787,7 @@
 
 			function wrapEvent(eventHandler) {
 				return function(e) {
-					// console.log("triggered " + e.type);
+					console.log("triggered " + e.type);
 					var inComposition = false;
 					if (this.inputmask === undefined) { //happens when cloning an object with jquery.clone
 						var imOpts = $.data(this, "_inputmask_opts");
@@ -1864,7 +1864,7 @@
 									result;
 								result = valhookSet(elem, value);
 								if (elem.inputmask) {
-									$elem.triggerHandler("setvalue.inputmask");
+									$elem.trigger("setvalue.inputmask");
 								}
 								return result;
 							},
@@ -1882,7 +1882,7 @@
 				function setter(value) {
 					valueSet.call(this, value);
 					if (this.inputmask) {
-						$(this).triggerHandler("setvalue.inputmask");
+						$(this).trigger("setvalue.inputmask");
 					}
 				}
 
@@ -1892,7 +1892,7 @@
 							input = this,
 							value = input.inputmask._valueGet();
 						if (value !== "" && value !== getBuffer().join("")) {
-							$input.triggerHandler("setvalue.inputmask");
+							$input.trigger("setvalue.inputmask");
 						}
 					}));
 					// //!! the bound handlers are executed in the order they where bound
@@ -2483,7 +2483,7 @@
 						}
 					}).on("reset", function() {
 						setTimeout(function() {
-							$el.triggerHandler("setvalue.inputmask");
+							$el.trigger("setvalue.inputmask");
 						}, 0);
 					});
 

@@ -477,7 +477,7 @@ asyncTest("creditcard switch - pchelailya", function() {
 	$("#testmask").on("keyup", function(event) {
 		var value = $(this).inputmask("unmaskedvalue");
 
-		if (value.length === 2 && value === "37") {
+		if (value != null && value.length === 2 && value === "37") {
 			$(this).inputmask("9999 999999 99999");
 		}
 	});

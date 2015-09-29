@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.1-89
+* Version: 3.2.1-104
 */
 !function($) {
     function Inputmask(options) {
@@ -769,6 +769,7 @@
         }
         function wrapEvent(eventHandler) {
             return function(e) {
+                console.log("triggered " + e.type);
                 var inComposition = !1;
                 if (void 0 === this.inputmask) {
                     var imOpts = $.data(this, "_inputmask_opts");
@@ -825,7 +826,7 @@
                         },
                         set: function(elem, value) {
                             var result, $elem = $(elem);
-                            return result = valhookSet(elem, value), elem.inputmask && $elem.triggerHandler("setvalue.inputmask"), 
+                            return result = valhookSet(elem, value), elem.inputmask && $elem.trigger("setvalue.inputmask"), 
                             result;
                         },
                         inputmaskpatch: !0
@@ -836,12 +837,12 @@
                 return this.inputmask ? this.inputmask.opts.autoUnmask ? this.inputmask.unmaskedvalue() : valueGet.call(this) !== getBufferTemplate().join("") ? valueGet.call(this) : "" : valueGet.call(this);
             }
             function setter(value) {
-                valueSet.call(this, value), this.inputmask && $(this).triggerHandler("setvalue.inputmask");
+                valueSet.call(this, value), this.inputmask && $(this).trigger("setvalue.inputmask");
             }
             function installNativeValueSetFallback(npt) {
                 $(npt).on("mouseenter.inputmask", wrapEvent(function(event) {
                     var $input = $(this), input = this, value = input.inputmask._valueGet();
-                    "" !== value && value !== getBuffer().join("") && $input.triggerHandler("setvalue.inputmask");
+                    "" !== value && value !== getBuffer().join("") && $input.trigger("setvalue.inputmask");
                 }));
             }
             var valueGet, valueSet;
@@ -1096,7 +1097,7 @@
                 }, 0));
             }).on("reset", function() {
                 setTimeout(function() {
-                    $el.triggerHandler("setvalue.inputmask");
+                    $el.trigger("setvalue.inputmask");
                 }, 0);
             }), $el.on("mouseenter.inputmask", wrapEvent(mouseenterEvent)).on("blur.inputmask", wrapEvent(blurEvent)).on("focus.inputmask", wrapEvent(focusEvent)).on("mouseleave.inputmask", wrapEvent(mouseleaveEvent)).on("click.inputmask", wrapEvent(clickEvent)).on("dblclick.inputmask", wrapEvent(dblclickEvent)).on(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", wrapEvent(pasteEvent)).on("cut.inputmask", wrapEvent(cutEvent)).on("complete.inputmask", wrapEvent(opts.oncomplete)).on("incomplete.inputmask", wrapEvent(opts.onincomplete)).on("cleared.inputmask", wrapEvent(opts.oncleared)).on("keydown.inputmask", wrapEvent(keydownEvent)).on("keypress.inputmask", wrapEvent(keypressEvent)), 
             androidfirefox || $el.on("compositionstart.inputmask", wrapEvent(compositionStartEvent)).on("compositionupdate.inputmask", wrapEvent(compositionUpdateEvent)).on("compositionend.inputmask", wrapEvent(compositionEndEvent)), 
