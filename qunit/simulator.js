@@ -1,44 +1,64 @@
-(function($) {
+define([
+	"inputmask.dependencyLib",
+	"inputmask"
+], function($, Inputmask) {
 	$.caret = function(input, begin, end) {
-		var npt = input.jquery && input.length > 0 ? input[0] : input,
-			range;
-		if (typeof begin == 'number') {
-			if (!$(input).is(':visible')) {
-				return;
-			}
-			end = (typeof end == 'number') ? end : begin;
-			if (npt.setSelectionRange) {
-				npt.selectionStart = begin;
-				npt.selectionEnd = end;
+		input = input.nodeName ? input : input[0];
+		var range;
+		if (typeof begin === "number") {
+			end = (typeof end == "number") ? end : begin;
+			// if (!$(input).is(":visible")) {
+			// 	return;
+			// }
 
-			} else if (npt.createTextRange) {
-				range = npt.createTextRange();
+			if (input.setSelectionRange) {
+				input.selectionStart = begin;
+				input.selectionEnd = end;
+			} else if (window.getSelection) {
+				range = document.createRange();
+				if (input.firstChild === undefined) {
+					var textNode = document.createTextNode("");
+					input.appendChild(textNode);
+				}
+				range.setStart(input.firstChild, begin < input.value.length ? begin : input.value.length);
+				range.setEnd(input.firstChild, end < input.value.length ? end : input.value.length);
 				range.collapse(true);
-				range.moveEnd('character', end);
-				range.moveStart('character', begin);
+				var sel = window.getSelection();
+				sel.removeAllRanges();
+				sel.addRange(range);
+				//input.focus();
+			} else if (input.createTextRange) {
+				range = input.createTextRange();
+				range.collapse(true);
+				range.moveEnd("character", end);
+				range.moveStart("character", begin);
 				range.select();
+
 			}
 		} else {
-			if (!$(input).is(':visible')) {
-				return {
-					"begin": 0,
-					"end": 0
-				};
-			}
-			if (npt.setSelectionRange) {
-				begin = npt.selectionStart;
-				end = npt.selectionEnd;
+			if (input.setSelectionRange) {
+				begin = input.selectionStart;
+				end = input.selectionEnd;
+			} else if (window.getSelection) {
+				range = window.getSelection().getRangeAt(0);
+				if (range.commonAncestorContainer.parentNode === input || range.commonAncestorContainer === input) {
+					begin = range.startOffset;
+					end = range.endOffset;
+				}
 			} else if (document.selection && document.selection.createRange) {
 				range = document.selection.createRange();
-				begin = 0 - range.duplicate().moveStart('character', -100000);
+				begin = 0 - range.duplicate().moveStart("character", -100000);
 				end = begin + range.text.length;
 			}
+			/*eslint-disable consistent-return */
 			return {
 				"begin": begin,
 				"end": end
 			};
+			/*eslint-enable consistent-return */
 		}
 	};
+	$.fn = $.prototype;
 	$.fn.SendKey = function(keyCode, modifier) {
 		var sendDummyKeydown = false;
 		if (Object.prototype.toString.call(keyCode) == '[object String]') {
@@ -90,17 +110,31 @@
 				}
 		}
 	}
+	if (!('append' in $.fn)) {
+		$.fn.append = function(child) {
+			var input = this.nodeName ? this : this[0];
+			input.insertAdjacentHTML('beforeend', child);
+		};
+	}
+	if (!('remove' in $.fn)) {
+		$.fn.remove = function() {
+			var input = this.nodeName ? this : this[0];
+			input.parentElement.removeChild(input);
+		};
+	}
+
 	$.fn.Type = function(inputStr) {
-		var $input = $(this);
+		var input = this.nodeName ? this : this[0],
+			$input = $(input);
 		$.each(inputStr.split(''), function(ndx, lmnt) {
 			$input.SendKey(lmnt);
 		});
 	}
 	$.fn.paste = function(inputStr) {
-		var input = this.jquery && this.length > 0 ? this[0] : this,
+		var input = this.nodeName ? this : this[0],
 			$input = $(input),
 			isRTL = input.inputmask.isRTL;
 		window.clipboardData ? window.clipboardData.setData("Text", inputStr) : $input[0].inputmask._valueSet(isRTL ? inputStr.split('').reverse().join('') : inputStr);
 		$input.trigger('paste');
 	}
-})(jQuery);
+});

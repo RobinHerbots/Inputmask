@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.1-104
+* Version: 3.2.1-113
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "zepto", "zepto_data", "zepto_event" ], factory) : "object" == typeof exports ? module.exports = factory(require("zepto"), require("zepto_data"), require("zepto_event")) : factory(Zepto);

@@ -3,12 +3,14 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.1-104
+* Version: 3.2.1-113
 */
 !function($) {
-    function Inputmask(options) {
-        this.el = void 0, this.opts = $.extend(!0, {}, this.defaults, options), this.noMasksCache = options && void 0 !== options.definitions, 
-        this.userOptions = options || {}, resolveAlias(this.opts.alias, options, this.opts);
+    function Inputmask(alias, options) {
+        return this instanceof Inputmask ? ("object" == typeof alias ? options = alias : (options = options || {}, 
+        options.alias = alias), this.el = void 0, this.opts = $.extend(!0, {}, this.defaults, options), 
+        this.noMasksCache = options && void 0 !== options.definitions, this.userOptions = options || {}, 
+        void resolveAlias(this.opts.alias, options, this.opts)) : new Inputmask(alias, options);
     }
     function isInputEventSupported(eventName) {
         var el = document.createElement("input"), evName = "on" + eventName, isSupported = evName in el;
@@ -769,7 +771,6 @@
         }
         function wrapEvent(eventHandler) {
             return function(e) {
-                console.log("triggered " + e.type);
                 var inComposition = !1;
                 if (void 0 === this.inputmask) {
                     var imOpts = $.data(this, "_inputmask_opts");

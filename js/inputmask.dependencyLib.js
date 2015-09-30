@@ -72,7 +72,7 @@
 
 		function Event(elem) {
 			if (elem !== undefined && elem !== null) {
-				this[0] = elem;
+				this[0] = elem.nodeName ? elem : document.querySelector(elem);
 				this[0].eventRegistry = this[0].eventRegistry || {};
 			}
 		}
@@ -84,7 +84,7 @@
 						elem = this[0];
 
 					function addEvent(ev, namespace) {
-						if (domEvents.indexOf(ev) !== -1 && namespace === "global") {
+						if (domEvents.indexOf(ev) !== -1) {
 							//register domevent
 							if (elem.addEventListener) { // all browsers except IE before version 9
 								elem.addEventListener(ev, handler, false);
@@ -102,9 +102,6 @@
 							ev = nsEvent[0],
 							namespace = nsEvent[1] || "global";
 						addEvent(ev, namespace);
-						if (namespace !== "global") {
-							addEvent(ev, "global");
-						}
 					}
 				}
 				return this;
@@ -114,7 +111,7 @@
 					var eventRegistry = this[0].eventRegistry,
 						elem = this[0];
 
-					function removeEvent(ev, namespace) {
+					function removeEvent(ev, namespace, handler) {
 						if (ev in eventRegistry === true) {
 							if (domEvents.indexOf(ev) !== -1) {
 								//unbind to dom events
@@ -124,19 +121,57 @@
 									elem.detachEvent("on" + ev, handler);
 								}
 							}
-							eventRegistry[ev][namespace].splice(eventRegistry[ev][namespace].indexOf(handler), 1);
-							if (namespace !== "global") {
-								eventRegistry[ev].global.splice(eventRegistry[ev].global.indexOf(handler), 1);
+							if (namespace === "global") {
+								for (var nmsp in eventRegistry[ev]) {
+									eventRegistry[ev][nmsp].splice(eventRegistry[ev][nmsp].indexOf(handler), 1);
+								}
+							} else {
+								eventRegistry[ev][namespace].splice(eventRegistry[ev][namespace].indexOf(handler), 1);
 							}
 						}
 					}
 
 					function resolveNamespace(ev, namespace) {
 						var evts = [];
-						evts.push({
-							ev: ev,
-							namespace: namespace
-						});
+						if (ev.length > 0) {
+							if (handler === undefined) {
+								for (var hndx = 0, hndL = eventRegistry[ev][namespace].length; hndx < hndL; hndx++) {
+									evts.push({
+										ev: ev,
+										namespace: namespace.length > 0 ? namespace : "global",
+										handler: eventRegistry[ev][namespace][hndx]
+									});
+								}
+							} else {
+								evts.push({
+									ev: ev,
+									namespace: namespace.length > 0 ? namespace : "global",
+									handler: handler
+								});
+							}
+						} else if (namespace.length > 0) {
+							for (var evNdx in eventRegistry) {
+								for (var nmsp in eventRegistry[evNdx]) {
+									if (nmsp === namespace) {
+										if (handler === undefined) {
+											for (var hndx = 0, hndL = eventRegistry[evNdx][nmsp].length; hndx < hndL; hndx++) {
+												evts.push({
+													ev: evNdx,
+													namespace: nmsp,
+													handler: eventRegistry[evNdx][nmsp][hndx]
+												});
+											}
+										} else {
+											evts.push({
+												ev: evNdx,
+												namespace: nmsp,
+												handler: handler
+											});
+										}
+									}
+								}
+							}
+						}
 
 						return evts;
 					}
@@ -146,7 +181,7 @@
 						var nsEvent = _events[endx].split("."),
 							offEvents = resolveNamespace(nsEvent[0], nsEvent[1]);
 						for (var i = 0, offEventsL = offEvents.length; i < offEventsL; i++) {
-							removeEvent(offEvents[i].ev, offEvents[i].namespace);
+							removeEvent(offEvents[i].ev, offEvents[i].namespace, offEvents[i].handler);
 						}
 					}
 				}
@@ -175,9 +210,17 @@
 								elem.fireEvent("on" + evnt.eventType, evnt);
 							}
 						} else if (eventRegistry[ev] !== undefined) {
-							for (var i = 0; i < eventRegistry[ev][namespace].length; i++) {
-								arguments[0] = arguments[0].type ? arguments[0] : DependencyLib.Event(arguments[0]);
-								eventRegistry[ev][namespace][i].apply(this, arguments);
+							arguments[0] = arguments[0].type ? arguments[0] : DependencyLib.Event(arguments[0]);
+							if (namespace === "global") {
+								for (var nmsp in eventRegistry[ev]) {
+									for (var i = 0; i < eventRegistry[ev][nmsp].length; i++) {
+										eventRegistry[ev][nmsp][i].apply(elem, arguments);
+									}
+								}
+							} else {
+								for (var i = 0; i < eventRegistry[ev][namespace].length; i++) {
+									eventRegistry[ev][namespace][i].apply(elem, arguments);
+								}
 							}
 						}
 					}
@@ -187,11 +230,16 @@
 		};
 
 		function DependencyLib(elem) {
+			if (elem !== undefined && elem !== null) {
+				this[0] = elem.nodeName ? elem : document.querySelector(elem);
+				this[0].eventRegistry = this[0].eventRegistry || {};
+			}
 			if (!(this instanceof DependencyLib)) {
-				return new Event(elem);
+				return new DependencyLib(elem);
 			}
 		}
 
+		DependencyLib.prototype = Event.prototype;
 		//static
 		DependencyLib.isFunction = function(obj) {
 			return type(obj) === "function";

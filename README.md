@@ -60,6 +60,17 @@ As dependencyLib you can choose between the supported libraries.
 
 Define your masks:
 
+via Inputmask class
+```javascript
+   var selector = document.getElementById("selector");
+
+   var im = new Inputmask("99-9999999");
+   im.mask(selector);
+
+   Inputmask({"mask": "(999) 999-9999"}).mask(selector);
+```
+
+via jquery plugin
 ```javascript
 $(document).ready(function(){
    $(selector).inputmask("99-9999999");  //static mask
@@ -68,8 +79,7 @@ $(document).ready(function(){
    $(selector).inputmask("9-a{1,3}9{1,3}"); //mask with dynamic syntax
 });
 ```
-
-or via data-inputmask attribute
+via data-inputmask attribute
 
 ```html
 <input data-inputmask="'alias': 'date'" />

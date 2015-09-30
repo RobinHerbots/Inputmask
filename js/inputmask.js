@@ -15,7 +15,19 @@
 		}
 	}
 	(function($) {
-		function Inputmask(options) {
+		function Inputmask(alias, options) {
+			//allow instanciating without new
+			if (!(this instanceof Inputmask)) {
+				return new Inputmask(alias, options);
+			}
+
+			if (typeof alias === "object") {
+				options = alias;
+			} else {
+				options = options || {};
+				options.alias = alias;
+			}
+
 			this.el = undefined;
 			//init options
 			this.opts = $.extend(true, {}, this.defaults, options);

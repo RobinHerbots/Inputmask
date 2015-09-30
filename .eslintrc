@@ -17,6 +17,7 @@
       1,
       "except-parens"
     ],
+    "new-cap": [1],
     "no-empty": [0],
     "no-loop-func": [0],
     "no-underscore-dangle": [0],
@@ -38,6 +39,7 @@
   "globals": {
     "Inputmask": true,
     "jQuery": false,
+    "jBone": false,
     "module": false,
     "require": false,
     "requirejs": false,
