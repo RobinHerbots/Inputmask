@@ -72,15 +72,15 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask("999.999.999", {
+		Inputmask("999.999.999", {
 			oncomplete: function() {
-				equal($("#testmask").val(), "123.456.789", "Result " + $("#testmask").val());
+				equal(testmask.value, "123.456.789", "Result " + testmask.value);
 				start();
 				$("#testmask").remove();
 			}
-		});
+		}).mask(testmask);
 
-		$("#testmask")[0].focus();
+		testmask.focus();
 		$("#testmask").Type("123456789");
 	});
 
@@ -88,16 +88,19 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask("9-AAA.999").change(function() {
+
+		$("#testmask").on("change", function() {
 			ok(true, "Change triggered");
 			start();
 			$("#testmask").remove();
 		});
 
-		$("#testmask")[0].focus();
+		Inputmask("9-AAA.999").mask(testmask);
+
+		testmask.focus();
 		setTimeout(function() {
 			$("#testmask").Type("1abc12");
-			$("#testmask").blur();
+			testmask.blur();
 		}, 0);
 	});
 
@@ -105,18 +108,18 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask("9-AAA.999", {
+		Inputmask("9-AAA.999", {
 			onincomplete: function() {
-				equal($("#testmask").val(), "1-ABC.12_", "Result " + $("#testmask").val());
+				equal(testmask.value, "1-ABC.12_", "Result " + testmask.value);
 				start();
 				$("#testmask").remove();
 			}
-		});
+		}).mask(testmask);
 
-		$("#testmask")[0].focus();
+		testmask.focus();
 		setTimeout(function() {
 			$("#testmask").Type("1abc12");
-			$("#testmask").blur();
+			testmask.blur();
 		}, 0);
 	});
 
@@ -124,9 +127,9 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask("999.999.999");
+		Inputmask("999.999.999").mask(testmask);
 
-		$("#testmask")[0].focus();
+		testmask.focus();
 
 		$("#testmask").Type("123");
 		$("#testmask").SendKey(Inputmask.keyCode.LEFT);
@@ -136,18 +139,18 @@ define([
 		$("#testmask").SendKey(Inputmask.keyCode.RIGHT);
 		$("#testmask").Type("56");
 
-		equal($("#testmask").val(), "143.56_.___", "Result " + $("#testmask").val());
+		equal(testmask.value, "143.56_.___", "Result " + testmask.value);
 
-		//$("#testmask").remove();
+		$("#testmask").remove();
 	});
 
 	test("inputmask(\"999.999.999\") - delete 2nd with delete, continue the mask", function() {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask("999.999.999");
+		Inputmask("999.999.999").mask(testmask);
 
-		$("#testmask")[0].focus();
+		testmask.focus();
 
 		$("#testmask").SendKey(49);
 		$("#testmask").SendKey(50);
@@ -161,7 +164,7 @@ define([
 		$("#testmask").SendKey(53);
 		$("#testmask").SendKey(54);
 
-		equal($("#testmask").val(), "143.56_.___", "Result " + $("#testmask").val());
+		equal(testmask.value, "143.56_.___", "Result " + testmask.value);
 
 		$("#testmask").remove();
 	});
@@ -170,15 +173,15 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask("999.999.999");
+		Inputmask("999.999.999").mask(testmask);
 
-		$("#testmask")[0].focus();
+		testmask.focus();
 
 		$("#testmask").Type("123456789");
-		$.caret($("#testmask"), 3, 7);
+		$.caret(testmask, 3, 7);
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 
-		equal($("#testmask").val(), "123.789.___", "Result " + $("#testmask").val());
+		equal(testmask.value, "123.789.___", "Result " + testmask.value);
 
 		$("#testmask").remove();
 	});
@@ -187,15 +190,15 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask("999.999.999");
+		Inputmask("999.999.999").mask(testmask);
 
-		$("#testmask")[0].focus();
+		testmask.focus();
 
 		$("#testmask").Type("123456789");
-		$.caret($("#testmask"), 3, 7);
+		$.caret(testmask, 3, 7);
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 
-		equal($("#testmask").val(), "123.789.___", "Result " + $("#testmask").val());
+		equal(testmask.value, "123.789.___", "Result " + testmask.value);
 
 		$("#testmask").remove();
 	});
@@ -204,15 +207,15 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask("999.999.999");
+		Inputmask("999.999.999").mask(testmask);
 
-		$("#testmask")[0].focus();
+		testmask.focus();
 
 		$("#testmask").Type("123456789");
-		$.caret($("#testmask"), 3, 7);
+		$.caret(testmask, 3, 7);
 		$("#testmask").Type("1");
 
-		equal($("#testmask").val(), "123.178.9__", "Result " + $("#testmask").val());
+		equal(testmask.value, "123.178.9__", "Result " + testmask.value);
 
 		$("#testmask").remove();
 	});
@@ -221,15 +224,15 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask("*****");
+		Inputmask("*****").mask(testmask);
 
-		$("#testmask")[0].focus();
+		testmask.focus();
 
 		$("#testmask").Type("abe");
 		$("#testmask").SendKey(Inputmask.keyCode.LEFT);
 		$("#testmask").Type("cd");
 
-		equal($("#testmask").val(), "abcde", "Result " + $("#testmask").val());
+		equal(testmask.value, "abcde", "Result " + testmask.value);
 
 		$("#testmask").remove();
 	});
@@ -238,15 +241,15 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask("d/m/y");
+		Inputmask("d/m/y").mask(testmask);
 
-		$("#testmask")[0].focus();
+		testmask.focus();
 
 		$("#testmask").Type("23031973");
-		$.caret($("#testmask"), 5);
+		$.caret(testmask, 5);
 		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
 
-		equal($("#testmask").val(), "23/0_/1973", "Result " + $("#testmask").val());
+		equal(testmask.value, "23/0_/1973", "Result " + testmask.value);
 
 		$("#testmask").remove();
 	});
@@ -255,30 +258,30 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask("(999)999-9999");
+		Inputmask("(999)999-9999").mask(testmask);
 
-		$("#testmask")[0].focus();
+		testmask.focus();
 
-		$("#testmask").val("9999999999");
-		$.caret($("#testmask"), 4, 5);
+		testmask.value = "9999999999";
+		$.caret(testmask, 4, 5);
 		$("#testmask").Type("7");
-		equal($("#testmask").val(), "(999)999-9999", "Result " + $("#testmask").val());
+		equal(testmask.value, "(999)999-9999", "Result " + testmask.value);
 		$("#testmask").remove();
 	});
 	test("inputmask(\"(999)999-9999\") - insert false - ruslanfedoseenko mask", function() {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask("(999)999-9999", {
+		Inputmask("(999)999-9999", {
 			insertMode: false
-		});
+		}).mask(testmask);
 
-		$("#testmask")[0].focus();
+		testmask.focus();
 
-		$("#testmask").val("9999999999");
-		$.caret($("#testmask"), 4, 5);
+		testmask.value = "9999999999";
+		$.caret(testmask, 4, 5);
 		$("#testmask").Type("7");
-		equal($("#testmask").val(), "(999)999-9999", "Result " + $("#testmask").val());
+		equal(testmask.value, "(999)999-9999", "Result " + testmask.value);
 		$("#testmask").remove();
 	});
 
@@ -286,11 +289,11 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask("");
+		Inputmask("").mask(testmask);
 
-		$("#testmask")[0].focus();
+		testmask.focus();
 		$("#testmask").val("123");
-		equal($("#testmask").val(), "123", "Result " + $("#testmask").val());
+		equal(testmask.value, "123", "Result " + testmask.value);
 
 		$("#testmask").remove();
 	});
@@ -299,14 +302,14 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask("dd/mm/yyyy");
+		Inputmask("dd/mm/yyyy").mask(testmask);
 
-		$("#testmask")[0].focus();
+		testmask.focus();
 		$("#testmask").Type("23314");
 
-		$.caret($("#testmask"), 4, 7);
+		$.caret(testmask, 4, 7);
 		$("#testmask").SendKey("6");
-		equal($("#testmask").val(), "23/06/y014", "Result " + $("#testmask").val());
+		equal(testmask.value, "23/06/y014", "Result " + testmask.value);
 
 		$("#testmask").remove();
 	});
@@ -315,14 +318,14 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask("(999)999-9999");
+		Inputmask("(999)999-9999").mask(testmask);
 
-		$("#testmask")[0].focus();
+		testmask.focus();
 		$("#testmask").Type("9999999999");
 
-		$.caret($("#testmask"), 8, 11);
+		$.caret(testmask, 8, 11);
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
-		equal($("#testmask").val(), "(999)999-99__", "Result " + $("#testmask").val());
+		equal(testmask.value, "(999)999-99__", "Result " + testmask.value);
 
 		$("#testmask").remove();
 	});
@@ -331,14 +334,14 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask("999 99 99 999");
+		Inputmask("999 99 99 999").mask(testmask);
 
-		$("#testmask")[0].focus();
+		testmask.focus();
 		$("#testmask").Type("1234567890");
 
-		$.caret($("#testmask"), 2, 3);
+		$.caret(testmask, 2, 3);
 		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
-		equal($("#testmask").val(), "124 56 78 90_", "Result " + $("#testmask").val());
+		equal(testmask.value, "124 56 78 90_", "Result " + testmask.value);
 
 		$("#testmask").remove();
 	});
@@ -349,17 +352,17 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask("*", {
+		Inputmask("*", {
 			greedy: false,
 			repeat: "*"
-		});
+		}).mask(testmask);
 
-		$("#testmask")[0].focus();
+		testmask.focus();
 
 		$("#testmask").Type("abcdef");
-		$.caret($("#testmask"), 2, 4);
+		$.caret(testmask, 2, 4);
 		$("#testmask").SendKey("1");
-		equal($("#testmask").val(), "ab1ef", "Result " + $("#testmask").val());
+		equal(testmask.value, "ab1ef", "Result " + testmask.value);
 
 		$("#testmask").remove();
 	});
@@ -368,16 +371,16 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask("*", {
+		Inputmask("*", {
 			greedy: false,
 			repeat: "*"
-		});
+		}).mask(testmask);
 
-		$("#testmask")[0].focus();
+		testmask.focus();
 
 		$("#testmask").Type("abcdef");
 
-		equal($("#testmask").val(), "abcdef", "Result " + $("#testmask").val());
+		equal(testmask.value, "abcdef", "Result " + testmask.value);
 
 		$("#testmask").remove();
 	});
@@ -386,15 +389,15 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask("A.", {
+		Inputmask("A.", {
 			repeat: "*"
-		});
+		}).mask(testmask);
 
-		$("#testmask")[0].focus();
+		testmask.focus();
 
 		$("#testmask").Type("abc");
 
-		equal($("#testmask").val(), "A.B.C.", "Result " + $("#testmask").val());
+		equal(testmask.value, "A.B.C.", "Result " + testmask.value);
 
 		$("#testmask").remove();
 	});
@@ -403,17 +406,17 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask({
+		Inputmask({
 			mask: "A",
 			placeholder: "",
 			repeat: 16
-		});
+		}).mask(testmask);
 
-		$("#testmask")[0].focus();
+		testmask.focus();
 
 		$("#testmask").Type("testtest");
 
-		equal($("#testmask").val(), "TESTTEST", "Result " + $("#testmask").val());
+		equal(testmask.value, "TESTTEST", "Result " + testmask.value);
 
 		$("#testmask").remove();
 	});
@@ -422,17 +425,17 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask({
+		Inputmask({
 			mask: "A",
 			repeat: 16,
 			greedy: false
-		});
+		}).mask(testmask);
 
-		$("#testmask")[0].focus();
+		testmask.focus();
 
 		$("#testmask").Type("testtest");
 
-		equal($("#testmask").val(), "TESTTEST", "Result " + $("#testmask").val());
+		equal(testmask.value, "TESTTEST", "Result " + testmask.value);
 
 		$("#testmask").remove();
 	});
@@ -442,13 +445,13 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask("*", {
+		Inputmask("*", {
 			greedy: true,
 			repeat: 10,
 			clearMaskOnLostFocus: false
-		});
+		}).mask(testmask);
 
-		$("#testmask")[0].focus();
+		testmask.focus();
 		equal($("#testmask")[0].inputmask._valueGet(), "__________", "Result " + $("#testmask")[0].inputmask._valueGet());
 
 		$("#testmask").remove();
@@ -457,16 +460,16 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask("*", {
+		Inputmask("*", {
 			greedy: true,
 			repeat: 10
-		});
+		}).mask(testmask);
 
-		$("#testmask")[0].focus();
+		testmask.focus();
 
 		$("#testmask").Type("12345678901234567890");
 
-		equal($("#testmask").val(), "1234567890", "Result " + $("#testmask").val());
+		equal(testmask.value, "1234567890", "Result " + testmask.value);
 
 		$("#testmask").remove();
 	});
@@ -475,16 +478,16 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask("9,99", {
+		Inputmask("9,99", {
 			greedy: true,
 			repeat: 5
-		});
+		}).mask(testmask);
 
-		$("#testmask")[0].focus();
+		testmask.focus();
 
 		$("#testmask").Type("12345678901234567890");
 
-		equal($("#testmask").val(), "1,234,567,890,123,45", "Result " + $("#testmask").val());
+		equal(testmask.value, "1,234,567,890,123,45", "Result " + testmask.value);
 
 		$("#testmask").remove();
 	});
@@ -493,18 +496,18 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask({
+		Inputmask({
 			"mask": "9",
 			repeat: 10,
 			placeholder: "",
 			numericInput: true
-		});
+		}).mask(testmask);
 
-		$("#testmask")[0].focus();
+		testmask.focus();
 
 		$("#testmask").Type("12345");
 
-		equal($("#testmask").val(), "12345", "Result " + $("#testmask").val());
+		equal(testmask.value, "12345", "Result " + testmask.value);
 
 		$("#testmask").remove();
 	});
@@ -513,20 +516,20 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask("9999 9999 9999 9999");
+		Inputmask("9999 9999 9999 9999").mask(testmask);
 		$("#testmask").on("keyup", function(event) {
-			var value = $(this).inputmask("unmaskedvalue");
+			var value = this.inputmask.unmaskedvalue();
 
 			if (value != null && value.length === 2 && value === "37") {
-				$(this).inputmask("9999 999999 99999");
+				Inputmask("9999 999999 99999").mask(this);
 			}
 		});
-		$("#testmask")[0].focus();
+		testmask.focus();
 		$("#testmask").Type("37");
 		setTimeout(function() {
 			$("#testmask").Type("12");
 			start();
-			equal($("#testmask").val(), "3712 ______ _____", "Result " + $("#testmask").val());
+			equal(testmask.value, "3712 ______ _____", "Result " + testmask.value);
 
 			$("#testmask").remove();
 		}, 0);
@@ -536,7 +539,7 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		$("#testmask").inputmask({
+		Inputmask({
 			mask: "Z{1,*}",
 			definitions: {
 				'Z': {
@@ -548,9 +551,9 @@ define([
 					},
 				}
 			}
-		});
+		}).mask(testmask);
 
-		$("#testmask").inputmask({
+		Inputmask({
 			mask: "Z{1,*}", // <= Same mask
 			definitions: {
 				'Z': {
@@ -562,7 +565,7 @@ define([
 					},
 				}
 			}
-		});
+		}).mask(testmask);
 
 		$("#testmask").Type("abcdef");
 		equal(document.getElementById("testmask").inputmask._valueGet(), "BBBBBB", "Result " + document.getElementById("testmask").inputmask._valueGet());

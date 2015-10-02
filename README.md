@@ -55,22 +55,25 @@ As dependencyLib you can choose between the supported libraries.
 - inputmask.dependencyLib (vanilla)
 - inputmask.dependencyLib.jquery
 - inputmask.dependencyLib.jqlite (WIP)
-- inputmask.dependencyLib.zepto (WIP)
-- .... (others will come)
+- .... (others are welcome)
 
 Define your masks:
 
 via Inputmask class
+
 ```javascript
    var selector = document.getElementById("selector");
 
    var im = new Inputmask("99-9999999");
    im.mask(selector);
 
-   Inputmask({"mask": "(999) 999-9999"}).mask(selector);
+   Inputmask({"mask": "(999) 999-9999", .... other options .....}).mask(selector);
+   Inputmask("9-a{1,3}9{1,3}").mask(selector);
+   Inputmask("9", { repeat: 10 }).mask(selector);
 ```
 
 via jquery plugin
+
 ```javascript
 $(document).ready(function(){
    $(selector).inputmask("99-9999999");  //static mask
@@ -79,6 +82,7 @@ $(document).ready(function(){
    $(selector).inputmask("9-a{1,3}9{1,3}"); //mask with dynamic syntax
 });
 ```
+
 via data-inputmask attribute
 
 ```html
@@ -116,7 +120,7 @@ $(document).ready(function(){
 ### Default masking definitions
 - 9 : numeric
 - a : alphabetical
-- * : alphanumeric
+  - : alphanumeric
 
 There are more definitions defined within the extensions.<br>You can find info within the js-files or by further exploring the options.
 
@@ -175,7 +179,7 @@ Dynamic masks can change during the input.  To define a dynamic part use { }.
 
 {n} => n repeats<br>{n,m} => from n to m repeats
 
-Also {+} and {*} is allowed. + start from 1 and * start from 0.
+Also {+} and {_} is allowed. + start from 1 and _ start from 0.
 
 ```javascript
 $(document).ready(function(){
@@ -714,12 +718,10 @@ typing 1212345123 => should result in +55-12-1234-5123 type extra 4 => switch to
 When passing multiple masks (an array of masks) keepStatic is automatically set to true unless explicitly set through the options.
 
 ### positionCaretOnTab
-When enabled the caret position is set after the latest valid position on TAB
-Default: false
+When enabled the caret position is set after the latest valid position on TAB Default: false
 
 ### tabThrough
-Allows for tabbing through the different parts of the masked field.  
-Default: false
+Allows for tabbing through the different parts of the masked field.<br>Default: false
 
 ### definitions
 ### ignorables
@@ -956,7 +958,7 @@ var unformattedDate =Inputmask.unmask("23/03/1973", { alias: "dd/mm/yyyy"}); //2
 Validate a given value against the mask.
 
 ```javascript
-var isValid =Inputmask.isValid("23/03/1973", { alias: "dd/mm/yyyy"});
+var isValid = Inputmask.isValid("23/03/1973", { alias: "dd/mm/yyyy"});
 ```
 
 ## jQuery.clone

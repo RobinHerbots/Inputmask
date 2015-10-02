@@ -58,7 +58,7 @@ define([
 			/*eslint-enable consistent-return */
 		}
 	};
-	$.fn = $.prototype;
+	$.fn = $.fn || $.prototype;
 	$.fn.SendKey = function(keyCode, modifier) {
 		var sendDummyKeydown = false;
 		if (Object.prototype.toString.call(keyCode) == '[object String]') {
@@ -119,7 +119,23 @@ define([
 	if (!('remove' in $.fn)) {
 		$.fn.remove = function() {
 			var input = this.nodeName ? this : this[0];
-			input.parentElement.removeChild(input);
+			if (input !== undefined && input !== null) {
+				input.parentElement.removeChild(input);
+				input = undefined;
+			}
+		};
+	}
+	if (!('val' in $.fn)) {
+		$.fn.val = function(value) {
+			var input = this.nodeName ? this : this[0];
+			if (value !== undefined) {
+				if (input.inputmask) {
+					input.inputmask._valueSet(value);
+					$(input).trigger("setvalue");
+				} else input.value = value;
+			}
+
+			return input.value;
 		};
 	}
 

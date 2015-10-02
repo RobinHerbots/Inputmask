@@ -70,16 +70,25 @@
 			return domEvents;
 		}();
 
+		function isValidElement(elem) {
+			return elem !== undefined && elem !== null && document.getElementById(elem.id);
+		}
+
 		function Event(elem) {
-			if (elem !== undefined && elem !== null) {
-				this[0] = elem.nodeName ? elem : document.querySelector(elem);
-				this[0].eventRegistry = this[0].eventRegistry || {};
+			if (elem instanceof Event) {
+				return elem;
+			}
+			if (elem !== undefined && elem !== null && elem !== window) {
+				this[0] = elem.nodeName ? elem : (elem[0] !== undefined && elem[0].nodeName ? elem[0] : document.querySelector(elem));
+				if (this[0] !== undefined && this[0] !== null) {
+					this[0].eventRegistry = this[0].eventRegistry || {};
+				}
 			}
 		}
 
 		Event.prototype = {
 			on: function(events, handler) {
-				if (this[0] !== undefined) {
+				if (isValidElement(this[0])) {
 					var eventRegistry = this[0].eventRegistry,
 						elem = this[0];
 
@@ -107,7 +116,7 @@
 				return this;
 			},
 			off: function(events, handler) {
-				if (this[0] !== undefined) {
+				if (isValidElement(this[0])) {
 					var eventRegistry = this[0].eventRegistry,
 						elem = this[0];
 
@@ -188,10 +197,10 @@
 				return this;
 			},
 			trigger: function(events /* , args... */ ) {
-				if (this[0] !== undefined) {
+				if (isValidElement(this[0])) {
 					var eventRegistry = this[0].eventRegistry,
 						elem = this[0];
-					var _events = events.split(" ");
+					var _events = typeof events === "string" ? events.split(" ") : [events.type];
 					for (var endx = 0; endx < _events.length; endx++) {
 						var nsEvent = _events[endx].split("."),
 							ev = nsEvent[0],
@@ -203,10 +212,12 @@
 								evnt = new CustomEvent(ev, {
 									detail: Array.prototype.slice.call(arguments, 1)
 								});
+								if (events.type) DependencyLib.extend(evnt, events);
 								elem.dispatchEvent(evnt);
 							} else {
 								evnt = document.createEventObject();
 								evnt.eventType = ev;
+								if (events.type) DependencyLib.extend(evnt, events);
 								elem.fireEvent("on" + evnt.eventType, evnt);
 							}
 						} else if (eventRegistry[ev] !== undefined) {
@@ -230,12 +241,17 @@
 		};
 
 		function DependencyLib(elem) {
-			if (elem !== undefined && elem !== null) {
-				this[0] = elem.nodeName ? elem : document.querySelector(elem);
-				this[0].eventRegistry = this[0].eventRegistry || {};
+			if (elem instanceof DependencyLib) {
+				return elem;
 			}
 			if (!(this instanceof DependencyLib)) {
 				return new DependencyLib(elem);
+			}
+			if (elem !== undefined && elem !== null && elem !== window) {
+				this[0] = elem.nodeName ? elem : (elem[0] !== undefined && elem[0].nodeName ? elem[0] : document.querySelector(elem));
+				if (this[0] !== undefined && this[0] !== null) {
+					this[0].eventRegistry = this[0].eventRegistry || {};
+				}
 			}
 		}
 
@@ -394,8 +410,14 @@
 
 		//only usefull within inputmask
 		DependencyLib.Event = function(type) {
+			var _defaultPrevented = false;
 			return {
-				preventDefault: DependencyLib.noop,
+				preventDefault: function() {
+					_defaultPrevented = true;
+				},
+				isDefaultPrevented: function() {
+					return _defaultPrevented;
+				},
 				altKey: false,
 				charCode: 0,
 				ctrlKey: false,

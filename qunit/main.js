@@ -8,6 +8,7 @@ define([
 	"prototypeExtensions",
 	"simulator"
 ], function(qunit) {
+	jQuery.noConflict();
 	// start QUnit.
 	qunit.load();
 	qunit.start();
@@ -27,7 +28,8 @@ define([
 		"tests_numericinput",
 		"tests_optional",
 		"tests_phone",
-		"tests_regex",
-		"tests_escape"
+		"tests_regex", "tests_escape"
 	]);
+
+
 });

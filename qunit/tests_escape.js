@@ -1,101 +1,110 @@
-module("Escape character");
+define([
+	"qunit",
+	"inputmask.dependencyLib",
+	"inputmask"
+], function(qunit, $, Inputmask) {
+	module("Escape character");
 
-test("inputmask(\"9\\|9\")", function() {
-	var $fixture = $("#qunit-fixture");
-	$fixture.append('<input type="text" id="testmask" />');
-	var input = $("#testmask");
-	input.inputmask("9\\|9");
+	test("inputmask(\"9\\|9\")", function() {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		var input = $("#testmask");
+		Inputmask("9\\|9").mask(testmask);
 
-	input[0].focus();
+		testmask.focus();
 
-	input.Type("23");
-	equal(input.val(), "2|3", "Result " + input.val());
+		$("#testmask").Type("23");
+		equal(testmask.value, "2|3", "Result " + testmask.value);
 
-	input.remove();
-});
-
-test("inputmask(\"9\\[9\\]\")", function() {
-	var $fixture = $("#qunit-fixture");
-	$fixture.append('<input type="text" id="testmask" />');
-	var input = $("#testmask");
-	input.inputmask("9\\[9\\]");
-
-	input[0].focus();
-
-	input.Type("23");
-	equal(input.val(), "2[3]", "Result " + input.val());
-
-	input.remove();
-});
-
-test("inputmask(\"9\\\\9\")", function() {
-	var $fixture = $("#qunit-fixture");
-	$fixture.append('<input type="text" id="testmask" />');
-	var input = $("#testmask");
-	input.inputmask("9\\\\9");
-
-	input[0].focus();
-
-	input.Type("23");
-	equal(input.val(), "2\\3", "Result " + input.val());
-
-	input.remove();
-});
-
-test("inputmask(\"9\\{9\\}\")", function() {
-	var $fixture = $("#qunit-fixture");
-	$fixture.append('<input type="text" id="testmask" />');
-	var input = $("#testmask");
-	input.inputmask("9\\{9\\}");
-
-	input[0].focus();
-
-	input.Type("23");
-	equal(input.val(), "2{3}", "Result " + input.val());
-
-	input.remove();
-});
-
-test("inputmask(\"9\\(9\\)\")", function() {
-	var $fixture = $("#qunit-fixture");
-	$fixture.append('<input type="text" id="testmask" />');
-	var input = $("#testmask");
-	input.inputmask("9\\(9\\)");
-
-	input[0].focus();
-
-	input.Type("23");
-	equal(input.val(), "2(3)", "Result " + input.val());
-
-	input.remove();
-});
-
-
-test("inputmask(\"9\\?9\")", function() {
-	var $fixture = $("#qunit-fixture");
-	$fixture.append('<input type="text" id="testmask" />');
-	var input = $("#testmask");
-	input.inputmask("9\\?9");
-
-	input[0].focus();
-
-	input.Type("23");
-	equal(input.val(), "2?3", "Result " + input.val());
-
-	input.remove();
-});
-
-test("inputmask(\"\\9999\") value not mask", function() {
-	var $fixture = $("#qunit-fixture");
-	$fixture.append('<input type="text" value="999" id="testmask" />');
-	var input = $("#testmask");
-	input.inputmask("\\9999", {
-		autoUnmask: true
+		$("#testmask").remove();
 	});
 
-	input[0].focus();
+	test("inputmask(\"9\\[9\\]\")", function() {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		var input = $("#testmask");
+		Inputmask("9\\[9\\]").mask(testmask);
 
-	equal(input[0].inputmask._valueGet(), "9999", "Result " + input[0].inputmask._valueGet());
+		testmask.focus();
 
-	input.remove();
+		$("#testmask").Type("23");
+		equal(testmask.value, "2[3]", "Result " + testmask.value);
+
+		$("#testmask").remove();
+	});
+
+	test("inputmask(\"9\\\\9\")", function() {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		var input = $("#testmask");
+		Inputmask("9\\\\9").mask(testmask);
+
+		testmask.focus();
+
+		$("#testmask").Type("23");
+		equal(testmask.value, "2\\3", "Result " + testmask.value);
+
+		$("#testmask").remove();
+	});
+
+	test("inputmask(\"9\\{9\\}\")", function() {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("9\\{9\\}").mask(testmask);
+
+		testmask.focus();
+
+		$("#testmask").Type("23");
+		equal(testmask.value, "2{3}", "Result " + testmask.value);
+
+		$("#testmask").remove();
+	});
+
+	test("inputmask(\"9\\(9\\)\")", function() {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("9\\(9\\)").mask(testmask);
+
+		testmask.focus();
+
+		$("#testmask").Type("23");
+		equal(testmask.value, "2(3)", "Result " + testmask.value);
+
+		$("#testmask").remove();
+	});
+
+
+	test("inputmask(\"9\\?9\")", function() {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("9\\?9").mask(testmask);
+
+		testmask.focus();
+
+		$("#testmask").Type("23");
+		equal(testmask.value, "2?3", "Result " + testmask.value);
+
+		$("#testmask").remove();
+	});
+
+	test("inputmask(\"\\9999\") value not mask", function() {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" value="999" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("\\9999", {
+			autoUnmask: true
+		}).mask(testmask);
+
+		testmask.focus();
+
+		equal(testmask.inputmask._valueGet(), "9999", "Result " + testmask.inputmask._valueGet());
+
+		$("#testmask").remove();
+	});
 });

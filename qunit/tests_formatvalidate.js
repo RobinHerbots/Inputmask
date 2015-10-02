@@ -1,3 +1,8 @@
+define([
+	"qunit",
+	"inputmask.dependencyLib",
+	"inputmask"
+], function(qunit, $, Inputmask) {
 module("Value formatting");
 test("Inputmask.format(\"2331973\", { alias: \"date\"})", function () {
     var formattedValue = Inputmask.format("2331973", { alias: "date" });
@@ -148,4 +153,5 @@ module("Value unmasking");
 test("inputmask.unmask(\"23/03/1973\", { alias: \"dd/mm/yyyy\" })", function () {
     var unmasked = Inputmask.unmask("23/03/1973", { alias: "dd/mm/yyyy" });
     equal(unmasked, "23031973", "Result " + unmasked);
+});
 });

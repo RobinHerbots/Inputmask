@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.1-113
+* Version: 3.2.1-131
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define(factory) : "object" == typeof exports ? module.exports = factory() : factory();
@@ -19,13 +19,16 @@
         var length = "length" in obj && obj.length, type = jQuery.type(obj);
         return "function" === type || jQuery.isWindow(obj) ? !1 : 1 === obj.nodeType && length ? !0 : "array" === type || 0 === length || "number" == typeof length && length > 0 && length - 1 in obj;
     }
+    function isValidElement(elem) {
+        return void 0 !== elem && null !== elem && document.getElementById(elem.id);
+    }
     function Event(elem) {
-        void 0 !== elem && null !== elem && (this[0] = elem.nodeName ? elem : document.querySelector(elem), 
-        this[0].eventRegistry = this[0].eventRegistry || {});
+        return elem instanceof Event ? elem : void (void 0 !== elem && null !== elem && elem !== window && (this[0] = elem.nodeName ? elem : void 0 !== elem[0] && elem[0].nodeName ? elem[0] : document.querySelector(elem), 
+        void 0 !== this[0] && null !== this[0] && (this[0].eventRegistry = this[0].eventRegistry || {})));
     }
     function DependencyLib(elem) {
-        return void 0 !== elem && null !== elem && (this[0] = elem.nodeName ? elem : document.querySelector(elem), 
-        this[0].eventRegistry = this[0].eventRegistry || {}), this instanceof DependencyLib ? void 0 : new DependencyLib(elem);
+        return elem instanceof DependencyLib ? elem : this instanceof DependencyLib ? void (void 0 !== elem && null !== elem && elem !== window && (this[0] = elem.nodeName ? elem : void 0 !== elem[0] && elem[0].nodeName ? elem[0] : document.querySelector(elem), 
+        void 0 !== this[0] && null !== this[0] && (this[0].eventRegistry = this[0].eventRegistry || {}))) : new DependencyLib(elem);
     }
     for (var class2type = {}, classTypes = "Boolean Number String Function Array Date RegExp Object Error".split(" "), nameNdx = 0; nameNdx < classTypes.length; nameNdx++) class2type["[object " + classTypes[nameNdx] + "]"] = classTypes[nameNdx].toLowerCase();
     var domEvents = function() {
@@ -40,7 +43,7 @@
                 eventRegistry[ev] = eventRegistry[ev] || {}, eventRegistry[ev][namespace] = eventRegistry[ev][namespace] || [], 
                 eventRegistry[ev][namespace].push(handler);
             }
-            if (void 0 !== this[0]) for (var eventRegistry = this[0].eventRegistry, elem = this[0], _events = events.split(" "), endx = 0; endx < _events.length; endx++) {
+            if (isValidElement(this[0])) for (var eventRegistry = this[0].eventRegistry, elem = this[0], _events = events.split(" "), endx = 0; endx < _events.length; endx++) {
                 var nsEvent = _events[endx].split("."), ev = nsEvent[0], namespace = nsEvent[1] || "global";
                 addEvent(ev, namespace);
             }
@@ -72,18 +75,18 @@
                 });
                 return evts;
             }
-            if (void 0 !== this[0]) for (var eventRegistry = this[0].eventRegistry, elem = this[0], _events = events.split(" "), endx = 0; endx < _events.length; endx++) for (var nsEvent = _events[endx].split("."), offEvents = resolveNamespace(nsEvent[0], nsEvent[1]), i = 0, offEventsL = offEvents.length; offEventsL > i; i++) removeEvent(offEvents[i].ev, offEvents[i].namespace, offEvents[i].handler);
+            if (isValidElement(this[0])) for (var eventRegistry = this[0].eventRegistry, elem = this[0], _events = events.split(" "), endx = 0; endx < _events.length; endx++) for (var nsEvent = _events[endx].split("."), offEvents = resolveNamespace(nsEvent[0], nsEvent[1]), i = 0, offEventsL = offEvents.length; offEventsL > i; i++) removeEvent(offEvents[i].ev, offEvents[i].namespace, offEvents[i].handler);
             return this;
         },
         trigger: function(events) {
-            if (void 0 !== this[0]) for (var eventRegistry = this[0].eventRegistry, elem = this[0], _events = events.split(" "), endx = 0; endx < _events.length; endx++) {
+            if (isValidElement(this[0])) for (var eventRegistry = this[0].eventRegistry, elem = this[0], _events = "string" == typeof events ? events.split(" ") : [ events.type ], endx = 0; endx < _events.length; endx++) {
                 var nsEvent = _events[endx].split("."), ev = nsEvent[0], namespace = nsEvent[1] || "global";
                 if (-1 !== domEvents.indexOf(ev) && "global" === namespace) {
                     var evnt;
                     document.createEvent ? (evnt = new CustomEvent(ev, {
                         detail: Array.prototype.slice.call(arguments, 1)
-                    }), elem.dispatchEvent(evnt)) : (evnt = document.createEventObject(), evnt.eventType = ev, 
-                    elem.fireEvent("on" + evnt.eventType, evnt));
+                    }), events.type && DependencyLib.extend(evnt, events), elem.dispatchEvent(evnt)) : (evnt = document.createEventObject(), 
+                    evnt.eventType = ev, events.type && DependencyLib.extend(evnt, events), elem.fireEvent("on" + evnt.eventType, evnt));
                 } else if (void 0 !== eventRegistry[ev]) if (arguments[0] = arguments[0].type ? arguments[0] : DependencyLib.Event(arguments[0]), 
                 "global" === namespace) for (var nmsp in eventRegistry[ev]) for (var i = 0; i < eventRegistry[ev][nmsp].length; i++) eventRegistry[ev][nmsp][i].apply(elem, arguments); else for (var i = 0; i < eventRegistry[ev][namespace].length; i++) eventRegistry[ev][namespace][i].apply(elem, arguments);
             }
@@ -120,8 +123,14 @@
         null != value && ret.push(value);
         return [].concat(ret);
     }, DependencyLib.Event = function(type) {
+        var _defaultPrevented = !1;
         return {
-            preventDefault: DependencyLib.noop,
+            preventDefault: function() {
+                _defaultPrevented = !0;
+            },
+            isDefaultPrevented: function() {
+                return _defaultPrevented;
+            },
             altKey: !1,
             charCode: 0,
             ctrlKey: !1,

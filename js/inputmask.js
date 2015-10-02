@@ -151,13 +151,12 @@
 					return this;
 				}
 			},
-			unmaskedvalue: function() {
-				if (this.el) {
-					return maskScope({
-						"action": "unmaskedvalue",
-						"el": this.el
-					});
-				}
+			unmaskedvalue: function(value) {
+				return maskScope({
+					"action": "unmaskedvalue",
+					"el": this.el,
+					"value": value
+				}, this.el && this.el.inputmask ? this.el.inputmask.maskset : generateMaskSet(this.opts, this.noMasksCache), this.opts);
 			},
 			remove: function() {
 				if (this.el) {
@@ -196,6 +195,19 @@
 						"el": this.el
 					});
 				}
+			},
+			isValid: function(value) {
+				return maskScope({
+					"action": "isValid",
+					"value": value
+				}, generateMaskSet(this.opts, this.noMasksCache), this.opts);
+			},
+			format: function(value, metadata) {
+				return maskScope({
+					"action": "format",
+					"value": value,
+					"metadata": metadata //true/false getmetadata
+				}, generateMaskSet(this.opts, this.noMasksCache), this.opts);
 			}
 		};
 
@@ -211,29 +223,13 @@
 		};
 		//static fn on inputmask
 		Inputmask.format = function(value, options, metadata) {
-			var opts = $.extend(true, {}, Inputmask.prototype.defaults, options);
-			resolveAlias(opts.alias, options, opts);
-			return maskScope({
-				"action": "format",
-				"value": value,
-				"metadata": metadata //true/false getmetadata
-			}, generateMaskSet(opts, options && options.definitions !== undefined), opts);
+			return Inputmask(options).format(value, metadata);
 		};
 		Inputmask.unmask = function(value, options) {
-			var opts = $.extend(true, {}, Inputmask.prototype.defaults, options);
-			resolveAlias(opts.alias, options, opts);
-			return maskScope({
-				"action": "unmaskedvalue",
-				"value": value
-			}, generateMaskSet(opts, options && options.definitions !== undefined), opts);
+			return Inputmask(options).unmaskedvalue(value);
 		};
 		Inputmask.isValid = function(value, options) {
-			var opts = $.extend(true, {}, Inputmask.prototype.defaults, options);
-			resolveAlias(opts.alias, options, opts);
-			return maskScope({
-				"action": "isValid",
-				"value": value
-			}, generateMaskSet(opts, options && options.definitions !== undefined), opts);
+			return Inputmask(options).isValid(value);
 		};
 		Inputmask.escapeRegex = function(str) {
 			var specials = ["/", ".", "*", "+", "?", "|", "(", ")", "[", "]", "{", "}", "\\", "$", "^"];
@@ -1581,7 +1577,7 @@
 			}
 
 			function checkVal(input, writeOut, strict, nptvl) {
-				var inputValue = nptvl !== undefined ? nptvl.slice() : input.inputmask._valueGet().split(""),
+				var inputValue = nptvl.slice(),
 					charCodes = "",
 					initialNdx = 0;
 
@@ -1641,26 +1637,25 @@
 			}
 
 			function unmaskedvalue(input) {
-				if (input.inputmask) {
-					if (input.className === undefined || input.className.indexOf("hasDatepicker") === -1) {
-						var umValue = [],
-							vps = getMaskSet().validPositions;
-						for (var pndx in vps) {
-							if (vps[pndx].match && vps[pndx].match.fn != null) {
-								umValue.push(vps[pndx].input);
-							}
-						}
-						var unmaskedValue = umValue.length === 0 ? null : (isRTL ? umValue.reverse() : umValue).join("");
-						if (unmaskedValue !== null) {
-							var bufferValue = (isRTL ? getBuffer().slice().reverse() : getBuffer()).join("");
-							if ($.isFunction(opts.onUnMask)) {
-								unmaskedValue = (opts.onUnMask.call(input, bufferValue, unmaskedValue, opts) || unmaskedValue);
-							}
-						}
-						return unmaskedValue;
-					} else return input.inputmask._valueGet();
+				if (input && input.inputmask === undefined) {
+					return input.value;
 				}
-				return input.value;
+
+				var umValue = [],
+					vps = getMaskSet().validPositions;
+				for (var pndx in vps) {
+					if (vps[pndx].match && vps[pndx].match.fn != null) {
+						umValue.push(vps[pndx].input);
+					}
+				}
+				var unmaskedValue = umValue.length === 0 ? null : (isRTL ? umValue.reverse() : umValue).join("");
+				if (unmaskedValue !== null) {
+					var bufferValue = (isRTL ? getBuffer().slice().reverse() : getBuffer()).join("");
+					if ($.isFunction(opts.onUnMask)) {
+						unmaskedValue = (opts.onUnMask.call(input, bufferValue, unmaskedValue, opts) || unmaskedValue);
+					}
+				}
+				return unmaskedValue;
 			}
 
 			function caret(input, begin, end) {
@@ -2246,7 +2241,7 @@
 
 			function inputFallBackEvent(e) { //fallback when keypress & compositionevents fail
 				var input = this;
-				checkVal(input, true, false);
+				checkVal(input, true, false, input.inputmask._valueGet().split(''));
 
 				if (isComplete(getBuffer()) === true) {
 					$(input).trigger("complete");
@@ -2293,8 +2288,7 @@
 			function setValueEvent(e) {
 				var input = this,
 					value = input.inputmask._valueGet();
-				input.inputmask._valueSet($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(input, value, opts) || value) : value);
-				checkVal(input, true, false);
+				checkVal(input, true, false, ($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(input, value, opts) || value) : value).split(""));
 				undoValue = getBuffer().join("");
 				if ((opts.clearMaskOnLostFocus || opts.clearIncomplete) && input.inputmask._valueGet() === getBufferTemplate().join("")) {
 					input.inputmask._valueSet("");
@@ -2571,45 +2565,32 @@
 					case "unmaskedvalue":
 						el = actionObj.el;
 
-						if (el === undefined) {
-							//store inputmask instance on the input with element reference
-							$el = $({});
-							el = $el[0];
-							el.inputmask = new Inputmask();
-							el.inputmask.opts = opts;
-							el.inputmask.el = el;
-							el.inputmask.maskset = maskset;
-							el.inputmask.isRTL = opts.numericInput;
+						if (el !== undefined && el.inputmask !== undefined) {
+							maskset = el.inputmask.maskset;
+							opts = el.inputmask.opts;
+							isRTL = el.inputmask.isRTL;
+							valueBuffer = isRTL ? el.inputmask._valueGet().split("").reverse().join("") : el.inputmask._valueGet();
+						} else valueBuffer = actionObj.value;
 
-							if (opts.numericInput) {
-								isRTL = true;
-							}
-							valueBuffer = ($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call($el, actionObj.value, opts) || actionObj.value) : actionObj.value).split("");
-							checkVal(el, false, false, isRTL ? valueBuffer.reverse() : valueBuffer);
-							if ($.isFunction(opts.onBeforeWrite)) opts.onBeforeWrite.call(this, undefined, getBuffer(), 0, opts);
-						} else $el = $(el);
-						maskset = el.inputmask.maskset;
-						opts = el.inputmask.opts;
-						isRTL = el.inputmask.isRTL;
+						if (opts.numericInput) {
+							isRTL = true;
+						}
+
+						valueBuffer = ($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call($el, valueBuffer, opts) || valueBuffer) : valueBuffer).split("");
+						checkVal(undefined, false, false, isRTL ? valueBuffer.reverse() : valueBuffer);
+						if ($.isFunction(opts.onBeforeWrite)) opts.onBeforeWrite.call(this, undefined, getBuffer(), 0, opts);
+
 						return unmaskedvalue(el);
 					case "mask":
 						undoValue = getBuffer().join("");
 						mask(actionObj.el);
 						break;
 					case "format":
-						$el = $({});
-						//store inputmask instance on the input with element reference
-						$el[0].inputmask = new Inputmask();
-						$el[0].inputmask.opts = opts;
-						$el[0].inputmask.el = $el[0];
-						$el[0].inputmask.maskset = maskset;
-						$el[0].inputmask.isRTL = opts.numericInput;
-
 						if (opts.numericInput) {
 							isRTL = true;
 						}
 						valueBuffer = ($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call($el, actionObj.value, opts) || actionObj.value) : actionObj.value).split("");
-						checkVal(el, false, false, isRTL ? valueBuffer.reverse() : valueBuffer);
+						checkVal(undefined, false, false, isRTL ? valueBuffer.reverse() : valueBuffer);
 						if ($.isFunction(opts.onBeforeWrite)) opts.onBeforeWrite.call(this, undefined, getBuffer(), 0, opts);
 
 						if (actionObj.metadata) {
@@ -2621,19 +2602,11 @@
 
 						return isRTL ? getBuffer().slice().reverse().join("") : getBuffer().join("");
 					case "isValid":
-						$el = $({});
-						//store inputmask instance on the input with element reference
-						$el[0].inputmask = new Inputmask();
-						$el[0].inputmask.opts = opts;
-						$el[0].inputmask.el = $el[0];
-						$el[0].inputmask.maskset = maskset;
-						$el[0].inputmask.isRTL = opts.numericInput;
-
 						if (opts.numericInput) {
 							isRTL = true;
 						}
 						valueBuffer = actionObj.value.split("");
-						checkVal(el, false, true, isRTL ? valueBuffer.reverse() : valueBuffer);
+						checkVal(undefined, false, true, isRTL ? valueBuffer.reverse() : valueBuffer);
 						var buffer = getBuffer();
 						var rl = determineLastRequiredPosition(),
 							lmib = buffer.length - 1;

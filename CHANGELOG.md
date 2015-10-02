@@ -6,7 +6,6 @@ All notable changes to this project will be documented in this file.
 ### Added
 - inputmask.dependencyLib.jquery
 - inputmask.dependencyLib.jqlite
-- inputmask.dependencyLib.zepto
 
 ### Updates
 - namespace dependencyLib => inputmask.dependencyLib
