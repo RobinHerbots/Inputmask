@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.1-133
+* Version: 3.2.1-134
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib")) : factory(window.dependencyLib || jQuery);
@@ -592,7 +592,7 @@
         function isMask(pos) {
             var test = getTest(pos);
             if (null != test.fn) return test.fn;
-            if (!opts.keepStatic && void 0 === getMaskSet().validPositions[pos]) {
+            if (pos > -1 && !opts.keepStatic && void 0 === getMaskSet().validPositions[pos]) {
                 for (var tests = getTests(pos), staticAlternations = !0, i = 0; i < tests.length; i++) if ("" !== tests[i].match.def && (void 0 === tests[i].alternation || tests[i].locator[tests[i].alternation].length > 1)) {
                     staticAlternations = !1;
                     break;
@@ -634,7 +634,7 @@
                         refreshFromBuffer(refresh === !0 ? refresh : refresh.start, refresh.end, result.buffer || buffer), 
                         resetMaskSet(!0), buffer = getBuffer();
                     }
-                    caretPos = void 0 !== result.caret ? result.caret : caretPos;
+                    void 0 !== caretPos && (caretPos = void 0 !== result.caret ? result.caret : caretPos);
                 }
             }
             input.inputmask._valueSet(buffer.join("")), void 0 === caretPos || void 0 !== event && "blur" === event.type || caret(input, caretPos), 
@@ -643,7 +643,7 @@
         function getPlaceholder(pos, test) {
             if (test = test || getTest(pos), void 0 !== test.placeholder) return test.placeholder;
             if (null === test.fn) {
-                if (!opts.keepStatic && void 0 === getMaskSet().validPositions[pos]) {
+                if (pos > -1 && !opts.keepStatic && void 0 === getMaskSet().validPositions[pos]) {
                     for (var prevTest, tests = getTests(pos), hasAlternations = !1, i = 0; i < tests.length; i++) {
                         if (prevTest && "" !== tests[i].match.def && tests[i].match.def !== prevTest.match.def && (void 0 === tests[i].alternation || tests[i].alternation === prevTest.alternation)) {
                             hasAlternations = !0;
@@ -670,8 +670,7 @@
                 return isMatch;
             }
             var inputValue = nptvl.slice(), charCodes = "", initialNdx = 0;
-            if (resetMaskSet(), getMaskSet().p = seekNext(-1), writeOut && input.inputmask._valueSet(""), 
-            !strict) if (opts.autoUnmask !== !0) {
+            if (resetMaskSet(), getMaskSet().p = seekNext(-1), !strict) if (opts.autoUnmask !== !0) {
                 var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(""), matches = inputValue.join("").match(new RegExp("^" + Inputmask.escapeRegex(staticInput), "g"));
                 matches && matches.length > 0 && (inputValue.splice(0, matches.length * staticInput.length), 
                 initialNdx = seekNext(initialNdx));
@@ -1044,7 +1043,7 @@
             if (document.activeElement === input) {
                 var selectedCaret = caret(input);
                 if (selectedCaret.begin === selectedCaret.end) if (doRadixFocus(selectedCaret.begin)) caret(input, $.inArray(opts.radixPoint, getBuffer())); else {
-                    var clickPosition = selectedCaret.begin, lastPosition = seekNext(getLastValidPosition(clickPosition));
+                    var clickPosition = selectedCaret.begin, lvclickPosition = getLastValidPosition(clickPosition), lastPosition = seekNext(lvclickPosition);
                     lastPosition > clickPosition ? caret(input, isMask(clickPosition) || isMask(clickPosition - 1) ? clickPosition : seekNext(clickPosition)) : caret(input, opts.numericInput ? 0 : lastPosition);
                 }
             }

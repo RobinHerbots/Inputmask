@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.1-133
+* Version: 3.2.1-134
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery"), require("./inputmask")) : factory(jQuery, window.Inputmask);
@@ -331,7 +331,7 @@
             onUnMask: function(maskedValue, unmaskedValue, opts) {
                 var processValue = maskedValue.replace(opts.prefix, "");
                 return processValue = processValue.replace(opts.suffix, ""), processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), ""), 
-                opts.unmaskAsNumber ? (processValue = processValue.replace(Inputmask.escapeRegex.call(this, opts.radixPoint), "."), 
+                opts.unmaskAsNumber ? ("" !== opts.radixPoint && -1 !== processValue.indexOf(opts.radixPoint) && (processValue = processValue.replace(Inputmask.escapeRegex.call(this, opts.radixPoint), ".")), 
                 Number(processValue)) : processValue;
             },
             isComplete: function(buffer, opts) {

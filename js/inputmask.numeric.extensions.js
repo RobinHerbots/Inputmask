@@ -563,7 +563,7 @@ Optional extensions on the jquery.inputmask base
 					processValue = processValue.replace(opts.suffix, "");
 					processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "");
 					if (opts.unmaskAsNumber) {
-						processValue = processValue.replace(Inputmask.escapeRegex.call(this, opts.radixPoint), ".");
+						if (opts.radixPoint !== "" && processValue.indexOf(opts.radixPoint) !== -1) processValue = processValue.replace(Inputmask.escapeRegex.call(this, opts.radixPoint), ".");
 						return Number(processValue);
 					}
 					return processValue;

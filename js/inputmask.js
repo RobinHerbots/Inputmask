@@ -1470,7 +1470,7 @@
 				var test = getTest(pos);
 				if (test.fn != null) {
 					return test.fn;
-				} else if (!opts.keepStatic && getMaskSet().validPositions[pos] === undefined) {
+				} else if (pos > -1 && !opts.keepStatic && getMaskSet().validPositions[pos] === undefined) {
 					var tests = getTests(pos),
 						staticAlternations = true;
 					for (var i = 0; i < tests.length; i++) {
@@ -1533,7 +1533,8 @@
 							resetMaskSet(true);
 							buffer = getBuffer();
 						}
-						caretPos = result.caret !== undefined ? result.caret : caretPos;
+						//only alter when intented !== undefined
+						if (caretPos !== undefined) caretPos = result.caret !== undefined ? result.caret : caretPos;
 					}
 				}
 				input.inputmask._valueSet(buffer.join(""));
@@ -1551,7 +1552,7 @@
 				if (test.placeholder !== undefined) {
 					return test.placeholder;
 				} else if (test.fn === null) {
-					if (!opts.keepStatic && getMaskSet().validPositions[pos] === undefined) {
+					if (pos > -1 && !opts.keepStatic && getMaskSet().validPositions[pos] === undefined) {
 						var tests = getTests(pos),
 							hasAlternations = false,
 							prevTest;
@@ -1599,7 +1600,7 @@
 				}
 				resetMaskSet();
 				getMaskSet().p = seekNext(-1);
-				if (writeOut) input.inputmask._valueSet(""); //initial clear
+				// if (writeOut) input.inputmask._valueSet(""); //initial clear
 
 				if (!strict) {
 					if (opts.autoUnmask !== true) {
@@ -2357,7 +2358,8 @@
 							caret(input, $.inArray(opts.radixPoint, getBuffer()));
 						} else {
 							var clickPosition = selectedCaret.begin,
-								lastPosition = seekNext(getLastValidPosition(clickPosition));
+								lvclickPosition = getLastValidPosition(clickPosition),
+								lastPosition = seekNext(lvclickPosition);
 
 							if (clickPosition < lastPosition) {
 								caret(input, !isMask(clickPosition) && !isMask(clickPosition - 1) ? seekNext(clickPosition) : clickPosition);
