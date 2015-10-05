@@ -1675,7 +1675,7 @@
 					// 	return;
 					// }
 
-					var scrollCalc = input.style.fontSize.replace("px", "") * end;
+					var scrollCalc = (input.ownerDocument.defaultView || window).getComputedStyle(input, null).fontSize.replace("px", "") * end;
 					input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0;
 					if (!androidchrome && opts.insertMode === false && begin === end) end++; //set visualization for insert/overwrite mode
 					if (input.setSelectionRange) {

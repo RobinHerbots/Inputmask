@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 - update files to be included for package.json, bower.json, component.json
 
 ### Fixed
+- field input width characters cropped while writing #1060 (regression fix)
 - DependencyLib error in Internet Explorer #1047
 - Dynamically switching mask in same input box not functioning as expected #1016
 - 3.2.0 Error extendDefinitions and extendAliases not functions #1024

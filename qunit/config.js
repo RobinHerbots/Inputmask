@@ -9,8 +9,8 @@ requirejs.config({
 		"zepto_data": "../node_modules/zepto-component/src/data",
 		"qunit": "../node_modules/qunitjs/qunit/qunit",
 		"inputmask.dependencyLib": "../dist/inputmask/inputmask.dependencyLib.jquery",
-		// "inputmask.dependencyLib": "../dist/inputmask/inputmask.dependencyLib",
-		// "inputmask.dependencyLib": "../dist/inputmask/inputmask.dependencyLib.jqlite",
+		// "inputmask.dependencyLib": "../extra/dependencyLibs/inputmask.dependencyLib",
+		// "inputmask.dependencyLib": "../extra/dependencyLibs/inputmask.dependencyLib.jqlite",
 		"inputmask": "../dist/inputmask/inputmask"
 	},
 	shim: {

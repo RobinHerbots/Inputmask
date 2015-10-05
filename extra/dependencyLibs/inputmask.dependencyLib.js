@@ -93,7 +93,7 @@
 						elem = this[0];
 
 					function addEvent(ev, namespace) {
-						if (domEvents.indexOf(ev) !== -1) {
+						if (document !== undefined) {
 							//register domevent
 							if (elem.addEventListener) { // all browsers except IE before version 9
 								elem.addEventListener(ev, handler, false);
@@ -122,7 +122,7 @@
 
 					function removeEvent(ev, namespace, handler) {
 						if (ev in eventRegistry === true) {
-							if (domEvents.indexOf(ev) !== -1) {
+							if (document !== undefined) {
 								//unbind to dom events
 								if (elem.removeEventListener) { // all browsers except IE before version 9
 									elem.removeEventListener(ev, handler, false);
@@ -141,10 +141,11 @@
 					}
 
 					function resolveNamespace(ev, namespace) {
-						var evts = [];
+						var evts = [],
+							hndx, hndL;
 						if (ev.length > 0) {
 							if (handler === undefined) {
-								for (var hndx = 0, hndL = eventRegistry[ev][namespace].length; hndx < hndL; hndx++) {
+								for (hndx = 0, hndL = eventRegistry[ev][namespace].length; hndx < hndL; hndx++) {
 									evts.push({
 										ev: ev,
 										namespace: namespace.length > 0 ? namespace : "global",
@@ -163,7 +164,7 @@
 								for (var nmsp in eventRegistry[evNdx]) {
 									if (nmsp === namespace) {
 										if (handler === undefined) {
-											for (var hndx = 0, hndL = eventRegistry[evNdx][nmsp].length; hndx < hndL; hndx++) {
+											for (hndx = 0, hndL = eventRegistry[evNdx][nmsp].length; hndx < hndL; hndx++) {
 												evts.push({
 													ev: evNdx,
 													namespace: nmsp,
@@ -205,9 +206,9 @@
 						var nsEvent = _events[endx].split("."),
 							ev = nsEvent[0],
 							namespace = nsEvent[1] || "global";
-						if (domEvents.indexOf(ev) !== -1 && namespace === "global") {
+						if (document !== undefined && namespace === "global") {
 							//trigger domevent
-							var evnt; // The custom event that will be created
+							var evnt, i; // The custom event that will be created
 							if (document.createEvent) {
 								evnt = new CustomEvent(ev, {
 									detail: Array.prototype.slice.call(arguments, 1)
@@ -224,12 +225,12 @@
 							arguments[0] = arguments[0].type ? arguments[0] : DependencyLib.Event(arguments[0]);
 							if (namespace === "global") {
 								for (var nmsp in eventRegistry[ev]) {
-									for (var i = 0; i < eventRegistry[ev][nmsp].length; i++) {
+									for (i = 0; i < eventRegistry[ev][nmsp].length; i++) {
 										eventRegistry[ev][nmsp][i].apply(elem, arguments);
 									}
 								}
 							} else {
-								for (var i = 0; i < eventRegistry[ev][namespace].length; i++) {
+								for (i = 0; i < eventRegistry[ev][namespace].length; i++) {
 									eventRegistry[ev][namespace][i].apply(elem, arguments);
 								}
 							}
