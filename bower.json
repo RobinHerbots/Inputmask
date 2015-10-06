@@ -1,6 +1,6 @@
 {
   "name": "jquery.inputmask",
-  "version": "3.2.1-137",
+  "version": "3.2.1-138",
   "main": [
     "./dist/inputmask/inputmask.dependencyLib.jquery.js",
     "./dist/inputmask/inputmask.js",
@@ -10,6 +10,9 @@
     "./dist/inputmask/inputmask.phone.extensions.js",
     "./dist/inputmask/inputmask.regex.extensions.js",
     "./dist/inputmask/jquery.inputmask.js",
+    "./dist/jquery.inputmask.bundle.js",
+    "./extra/dependencyLibs/inputmask.dependencyLib.jqlite.js"
+    "./extra/dependencyLibs/inputmask.dependencyLib.js"
     "./extra/phone-codes/phone-be.js",
     "./extra/phone-codes/phone-codes.js",
     "./extra/phone-codes/phone-nl.js",
