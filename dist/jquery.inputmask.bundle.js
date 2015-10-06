@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.1-134
+* Version: 3.2.1-137
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -1505,7 +1505,7 @@
                 if (e.ctrlKey && e.keyCode === Inputmask.keyCode.RIGHT) {
                     var today = new Date();
                     $input.val(today.getDate().toString() + (today.getMonth() + 1).toString() + today.getFullYear().toString()), 
-                    $input.triggerHandler("setvalue.inputmask");
+                    $input.trigger("setvalue.inputmask");
                 }
             },
             getFrontValue: function(mask, buffer, opts) {
@@ -1678,7 +1678,7 @@
                 if (e.ctrlKey && e.keyCode === Inputmask.keyCode.RIGHT) {
                     var today = new Date();
                     $input.val((today.getMonth() + 1).toString() + today.getDate().toString() + today.getFullYear().toString()), 
-                    $input.triggerHandler("setvalue.inputmask");
+                    $input.trigger("setvalue.inputmask");
                 }
             }
         },
@@ -1692,7 +1692,7 @@
                 if (e.ctrlKey && e.keyCode === Inputmask.keyCode.RIGHT) {
                     var today = new Date();
                     $input.val(today.getFullYear().toString() + (today.getMonth() + 1).toString() + today.getDate().toString()), 
-                    $input.triggerHandler("setvalue.inputmask");
+                    $input.trigger("setvalue.inputmask");
                 }
             }
         },
@@ -1853,7 +1853,7 @@
                 if (e.ctrlKey && e.keyCode === Inputmask.keyCode.RIGHT) {
                     var today = new Date();
                     $input.val((today.getMonth() + 1).toString() + today.getDate().toString() + today.getFullYear().toString()), 
-                    $input.triggerHandler("setvalue.inputmask");
+                    $input.trigger("setvalue.inputmask");
                 }
             }
         },
@@ -2403,11 +2403,11 @@
                 var $input = $(this);
                 if (e.ctrlKey) switch (e.keyCode) {
                   case Inputmask.keyCode.UP:
-                    $input.val(parseFloat(this.inputmask.unmaskedvalue()) + parseInt(opts.step)), $input.triggerHandler("setvalue.inputmask");
+                    $input.val(parseFloat(this.inputmask.unmaskedvalue()) + parseInt(opts.step)), $input.trigger("setvalue.inputmask");
                     break;
 
                   case Inputmask.keyCode.DOWN:
-                    $input.val(parseFloat(this.inputmask.unmaskedvalue()) - parseInt(opts.step)), $input.triggerHandler("setvalue.inputmask");
+                    $input.val(parseFloat(this.inputmask.unmaskedvalue()) - parseInt(opts.step)), $input.trigger("setvalue.inputmask");
                 }
             }
         },

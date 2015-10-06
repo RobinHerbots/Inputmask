@@ -9,7 +9,7 @@
 		if (typeof define === "function" && define.amd) {
 			define(["inputmask.dependencyLib"], factory);
 		} else if (typeof exports === "object") {
-			module.exports = factory(require("./inputmask.dependencyLib"));
+			module.exports = factory(require("./inputmask.dependencyLib.jquery"));
 		} else {
 			factory(window.dependencyLib || jQuery);
 		}

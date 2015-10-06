@@ -9,9 +9,9 @@ Optional extensions on the jquery.inputmask base
 */
 (function(factory) {
 		if (typeof define === "function" && define.amd) {
-			define(["jquery", "inputmask"], factory);
+			define(["inputmask.dependencyLib", "inputmask"], factory);
 		} else if (typeof exports === "object") {
-			module.exports = factory(require("jquery"), require("./inputmask"));
+			module.exports = factory(require("./inputmask.dependencyLib.jquery"), require("./inputmask"));
 		} else {
 			factory(jQuery, window.Inputmask);
 		}
@@ -115,7 +115,7 @@ Optional extensions on the jquery.inputmask base
 					if (e.ctrlKey && e.keyCode === Inputmask.keyCode.RIGHT) {
 						var today = new Date();
 						$input.val(today.getDate().toString() + (today.getMonth() + 1).toString() + today.getFullYear().toString());
-						$input.triggerHandler("setvalue.inputmask");
+						$input.trigger("setvalue.inputmask");
 					}
 				},
 				getFrontValue: function(mask, buffer, opts) {
@@ -372,7 +372,7 @@ Optional extensions on the jquery.inputmask base
 					if (e.ctrlKey && e.keyCode === Inputmask.keyCode.RIGHT) {
 						var today = new Date();
 						$input.val((today.getMonth() + 1).toString() + today.getDate().toString() + today.getFullYear().toString());
-						$input.triggerHandler("setvalue.inputmask");
+						$input.trigger("setvalue.inputmask");
 					}
 				}
 			},
@@ -386,7 +386,7 @@ Optional extensions on the jquery.inputmask base
 					if (e.ctrlKey && e.keyCode === Inputmask.keyCode.RIGHT) {
 						var today = new Date();
 						$input.val(today.getFullYear().toString() + (today.getMonth() + 1).toString() + today.getDate().toString());
-						$input.triggerHandler("setvalue.inputmask");
+						$input.trigger("setvalue.inputmask");
 					}
 				}
 			},
@@ -595,7 +595,7 @@ Optional extensions on the jquery.inputmask base
 					if (e.ctrlKey && e.keyCode === Inputmask.keyCode.RIGHT) {
 						var today = new Date();
 						$input.val((today.getMonth() + 1).toString() + today.getDate().toString() + today.getFullYear().toString()),
-						$input.triggerHandler("setvalue.inputmask");
+						$input.trigger("setvalue.inputmask");
 					}
 				}
   			},

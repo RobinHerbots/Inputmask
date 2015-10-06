@@ -40,15 +40,19 @@
 				typeof obj;
 		}
 
+		function isWindow(obj) {
+			return obj != null && obj === obj.window;
+		}
+
 		function isArraylike(obj) {
 			// Support: iOS 8.2 (not reproducible in simulator)
 			// `in` check used to prevent JIT error (gh-2145)
 			// hasOwn isn't used here due to false negatives
 			// regarding Nodelist length in IE
 			var length = "length" in obj && obj.length,
-				type = jQuery.type(obj);
+				ltype = type(obj);
 
-			if (type === "function" || jQuery.isWindow(obj)) {
+			if (ltype === "function" || isWindow(obj)) {
 				return false;
 			}
 
@@ -56,7 +60,7 @@
 				return true;
 			}
 
-			return type === "array" || length === 0 ||
+			return ltype === "array" || length === 0 ||
 				typeof length === "number" && length > 0 && (length - 1) in obj;
 		}
 
@@ -270,15 +274,14 @@
 			return arr == null ? -1 : indexOf(arr, elem, i);
 		};
 		DependencyLib.valHooks = undefined;
-		DependencyLib.isWindow = function(obj) {
-			return obj != null && obj === obj.window;
-		};
+
+
 		DependencyLib.isPlainObject = function(obj) {
 			// Not plain objects:
 			// - Any object or value whose internal [[Class]] property is not "[object Object]"
 			// - DOM nodes
 			// - window
-			if (type(obj) !== "object" || obj.nodeType || DependencyLib.isWindow(obj)) {
+			if (type(obj) !== "object" || obj.nodeType || isWindow(obj)) {
 				return false;
 			}
 

@@ -8,7 +8,6 @@ define([
 	"prototypeExtensions",
 	"simulator"
 ], function(qunit) {
-	jQuery.noConflict();
 	// start QUnit.
 	qunit.load();
 	qunit.start();

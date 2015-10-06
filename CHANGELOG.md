@@ -14,6 +14,8 @@ All notable changes to this project will be documented in this file.
 - update files to be included for package.json, bower.json, component.json
 
 ### Fixed
+- IsValid on Optional Mask returning false #1055
+- Focus loop on IE9 with numeric.extensions #989
 - Currency with autogroup and no digits not working #1062
 - field input width characters cropped while writing #1060 (regression fix)
 - DependencyLib error in Internet Explorer #1047
