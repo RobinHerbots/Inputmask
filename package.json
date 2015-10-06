@@ -5,7 +5,8 @@
   "main": "./dist/inputmask/jquery.inputmask.js",
   "files": [
     "dist/inputmask/",
-    "extra/phone-codes/"
+    "extra/phone-codes/",
+    "jquery.inputmask.bundle.js"
   ],
   "scripts": {
     "test": "grunt validate"
