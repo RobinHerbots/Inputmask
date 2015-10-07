@@ -25,13 +25,14 @@
   "ignore": [
     "**/.*",
     "qunit/",
-    "nuget/",
+    "nuspecs/",
     "tools/",
     "js/",
     "*.md",
-    "build.properties",
-    "build.xml",
-    "jquery.inputmask.jquery.json"
+    "package.json",
+    "component.json",
+    "composer.json",
+    "*.js"
   ],
   "dependencies": {
     "jquery": ">=1.7"

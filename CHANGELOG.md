@@ -1,6 +1,19 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [UNRELEASED]
+
+### Added
+
+### Updates
+
+### Fixed
+
+## [3.2.2] - 2015-09-04
+
+### Fixed
+- Missing comma in bower.json and component.json #1064
+
 ## [3.2.1] - 2015-09-04
 
 ### Added
