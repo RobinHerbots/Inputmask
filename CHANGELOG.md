@@ -14,6 +14,9 @@ All notable changes to this project will be documented in this file.
 - update files to be included for package.json, bower.json, component.json
 
 ### Fixed
+- oncomplete not called when set with option function #1033
+- oncompleate set value incorrect action #1039
+- JQuery dependency #517
 - IsValid on Optional Mask returning false #1055
 - Focus loop on IE9 with numeric.extensions #989
 - Currency with autogroup and no digits not working #1062

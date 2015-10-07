@@ -138,9 +138,9 @@
 					maskScope({
 						"action": "mask",
 						"el": el
-					}, maskset, el.inputmask.opts);
+					});
 				}
-				return el;
+				return el.inputmask || this;
 			},
 			option: function(options) { //set extra options || retrieve value of a current option
 				if (typeof options === "string") {
@@ -148,6 +148,18 @@
 				} else if (typeof options === "object") {
 					$.extend(this.opts, options);
 					$.extend(this.userOptions, options); //user passed options
+					//remask
+					if (this.el) {
+						if (options.mask !== undefined || options.alias !== undefined) {
+							this.mask(this.el);
+						} else {
+							$.data(this.el, "_inputmask_opts", this.opts);
+							maskScope({
+								"action": "mask",
+								"el": this.el
+							});
+						}
+					}
 					return this;
 				}
 			},
@@ -2584,8 +2596,12 @@
 
 						return unmaskedvalue(el);
 					case "mask":
+						el = actionObj.el;
+						maskset = el.inputmask.maskset;
+						opts = el.inputmask.opts;
+						isRTL = el.inputmask.isRTL;
 						undoValue = getBuffer().join("");
-						mask(actionObj.el);
+						mask(el);
 						break;
 					case "format":
 						if (opts.numericInput) {

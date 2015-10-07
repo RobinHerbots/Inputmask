@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.1-138
+* Version: 3.2.1-139
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -1125,7 +1125,8 @@
             unmaskedvalue(el);
 
           case "mask":
-            undoValue = getBuffer().join(""), mask(actionObj.el);
+            el = actionObj.el, maskset = el.inputmask.maskset, opts = el.inputmask.opts, isRTL = el.inputmask.isRTL, 
+            undoValue = getBuffer().join(""), mask(el);
             break;
 
           case "format":
@@ -1256,11 +1257,15 @@
             maskScope({
                 action: "mask",
                 el: el
-            }, maskset, el.inputmask.opts)), el;
+            })), el.inputmask || this;
         },
         option: function(options) {
             return "string" == typeof options ? this.opts[options] : "object" == typeof options ? ($.extend(this.opts, options), 
-            $.extend(this.userOptions, options), this) : void 0;
+            $.extend(this.userOptions, options), this.el && (void 0 !== options.mask || void 0 !== options.alias ? this.mask(this.el) : ($.data(this.el, "_inputmask_opts", this.opts), 
+            maskScope({
+                action: "mask",
+                el: this.el
+            }))), this) : void 0;
         },
         unmaskedvalue: function(value) {
             return maskScope({
