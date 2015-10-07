@@ -108,7 +108,10 @@ module.exports = function(grunt) {
 		},
 		nugetpush: {
 			dist: {
-				src: 'dist/jQuery.InputMask.<%= pkg.version %>.nupkg'
+				src: 'dist/jQuery.InputMask.<%= pkg.version %>.nupkg',
+				options: {
+						source: "https://www.nuget.org"
+				}
 			}
 		},
 		shell: {
