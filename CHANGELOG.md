@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [UNRELEASED]
+## [3.2.1] - 2015-09-04
 
 ### Added
 - inputmask.dependencyLib.jquery
