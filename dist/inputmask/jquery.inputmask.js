@@ -37,7 +37,7 @@
             return input = this.jquery && this.length > 0 ? this[0] : this, input.inputmask ? input.inputmask.getmetadata() : void 0;
 
           case "setvalue":
-            input = this.jquery && this.length > 0 ? this[0] : this, $(input).val(options), 
+            input = this.jquery && this.length > 0 ? this[0] : this, $(input).val(options),
             void 0 !== input.inputmask && $(input).triggerHandler("setvalue.inputmask");
             break;
 

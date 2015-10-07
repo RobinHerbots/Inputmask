@@ -11,8 +11,8 @@
     "./dist/inputmask/inputmask.regex.extensions.js",
     "./dist/inputmask/jquery.inputmask.js",
     "./dist/jquery.inputmask.bundle.js",
-    "./extra/dependencyLibs/inputmask.dependencyLib.jqlite.js"
-    "./extra/dependencyLibs/inputmask.dependencyLib.js"
+    "./extra/dependencyLibs/inputmask.dependencyLib.jqlite.js",
+    "./extra/dependencyLibs/inputmask.dependencyLib.js",
     "./extra/phone-codes/phone-be.js",
     "./extra/phone-codes/phone-codes.js",
     "./extra/phone-codes/phone-nl.js",
