@@ -181,45 +181,36 @@
 				}
 			},
 			getemptymask: function() { //return the default (empty) mask value, usefull for setting the default value in validation
-				if (this.el) {
-					return maskScope({
-						"action": "getemptymask",
-						"el": this.el
-					});
-				}
+				return maskScope({
+					"action": "getemptymask"
+				}, this.maskset || generateMaskSet(this.opts, this.noMasksCache), this.opts);
 			},
 			hasMaskedValue: function() { //check wheter the returned value is masked or not; currently only works reliable when using jquery.val fn to retrieve the value
 				return !this.opts.autoUnmask;
 			},
 			isComplete: function() {
-				if (this.el) {
-					return maskScope({
-						"action": "isComplete",
-						"buffer": this.el.inputmask._valueGet().split(""),
-						"el": this.el
-					});
-				}
+				return maskScope({
+					"action": "isComplete",
+					"el": this.el //optional
+				}, this.maskset || generateMaskSet(this.opts, this.noMasksCache), this.opts);
 			},
 			getmetadata: function() { //return mask metadata if exists
-				if (this.el) {
-					return maskScope({
-						"action": "getmetadata",
-						"el": this.el
-					});
-				}
+				return maskScope({
+					"action": "getmetadata"
+				}, this.maskset || generateMaskSet(this.opts, this.noMasksCache), this.opts);
 			},
 			isValid: function(value) {
 				return maskScope({
 					"action": "isValid",
 					"value": value
-				}, generateMaskSet(this.opts, this.noMasksCache), this.opts);
+				}, this.maskset || generateMaskSet(this.opts, this.noMasksCache), this.opts);
 			},
 			format: function(value, metadata) {
 				return maskScope({
 					"action": "format",
 					"value": value,
 					"metadata": metadata //true/false getmetadata
-				}, generateMaskSet(this.opts, this.noMasksCache), this.opts);
+				}, this.maskset || generateMaskSet(this.opts, this.noMasksCache), this.opts);
 			}
 		};
 
@@ -397,7 +388,7 @@
 					position = position !== undefined ? position : mtoken.matches.length;
 					var prevMatch = mtoken.matches[position - 1];
 					if (maskdef && !escaped) {
-						maskdef.placeholder = $.isFunction(maskdef.placeholder) ? maskdef.placeholder.call(this, opts) : maskdef.placeholder;
+						maskdef.placeholder = $.isFunction(maskdef.placeholder) ? maskdef.placeholder(opts) : maskdef.placeholder;
 						var prevalidators = maskdef.prevalidator,
 							prevalidatorsL = prevalidators ? prevalidators.length : 0;
 						//handle prevalidators
@@ -675,7 +666,7 @@
 			}
 
 			if ($.isFunction(opts.mask)) { //allow mask to be a preprocessing fn - should return a valid mask
-				opts.mask = opts.mask.call(this, opts);
+				opts.mask = opts.mask(opts);
 			}
 			if ($.isArray(opts.mask)) {
 				if (opts.mask.length > 1) {
@@ -2102,7 +2093,7 @@
 						}, 0);
 					}
 				}
-				opts.onKeyDown.call(this, e, getBuffer(), caret(input).begin, opts);
+				opts.onKeyDown(e, getBuffer(), caret(input).begin, opts);
 				ignorable = $.inArray(k, opts.ignorables) !== -1;
 			}
 
@@ -2190,7 +2181,7 @@
 						}
 
 						if (checkval && $.isFunction(opts.onBeforeWrite)) {
-							var result = opts.onBeforeWrite.call(this, e, getBuffer(), forwardPosition, opts);
+							var result = opts.onBeforeWrite(e, getBuffer(), forwardPosition, opts);
 							if (result && result.refreshFromBuffer) {
 								var refresh = result.refreshFromBuffer;
 								refreshFromBuffer(refresh === true ? refresh : refresh.start, refresh.end, result.buffer);
@@ -2572,10 +2563,7 @@
 				switch (actionObj.action) {
 					case "isComplete":
 						el = actionObj.el;
-						$el = $(el);
-						maskset = el.inputmask.maskset;
-						opts = el.inputmask.opts;
-						return isComplete(actionObj.buffer);
+						return isComplete(getBuffer());
 					case "unmaskedvalue":
 						el = actionObj.el;
 
@@ -2590,9 +2578,9 @@
 							isRTL = true;
 						}
 
-						valueBuffer = ($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call($el, valueBuffer, opts) || valueBuffer) : valueBuffer).split("");
+						valueBuffer = ($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask(valueBuffer, opts) || valueBuffer) : valueBuffer).split("");
 						checkVal(undefined, false, false, isRTL ? valueBuffer.reverse() : valueBuffer);
-						if ($.isFunction(opts.onBeforeWrite)) opts.onBeforeWrite.call(this, undefined, getBuffer(), 0, opts);
+						if ($.isFunction(opts.onBeforeWrite)) opts.onBeforeWrite(undefined, getBuffer(), 0, opts);
 
 						return unmaskedvalue(el);
 					case "mask":
@@ -2607,14 +2595,16 @@
 						if (opts.numericInput) {
 							isRTL = true;
 						}
-						valueBuffer = ($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call($el, actionObj.value, opts) || actionObj.value) : actionObj.value).split("");
+						valueBuffer = ($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask(actionObj.value, opts) || actionObj.value) : actionObj.value).split("");
 						checkVal(undefined, false, false, isRTL ? valueBuffer.reverse() : valueBuffer);
-						if ($.isFunction(opts.onBeforeWrite)) opts.onBeforeWrite.call(this, undefined, getBuffer(), 0, opts);
+						if ($.isFunction(opts.onBeforeWrite)) opts.onBeforeWrite(undefined, getBuffer(), 0, opts);
 
 						if (actionObj.metadata) {
 							return {
 								value: isRTL ? getBuffer().slice().reverse().join("") : getBuffer().join(""),
-								metadata: $el.inputmask("getmetadata")
+								metadata: maskScope({
+									"action": "getmetadata"
+								}, maskset, opts)
 							};
 						}
 
@@ -2635,10 +2625,6 @@
 
 						return isComplete(buffer) && actionObj.value === buffer.join("");
 					case "getemptymask":
-						el = actionObj.el;
-						$el = $(el);
-						maskset = el.inputmask.maskset;
-						opts = el.inputmask.opts;
 						return getBufferTemplate();
 					case "remove":
 						el = actionObj.el;
@@ -2671,10 +2657,6 @@
 						el.inputmask = undefined;
 						break;
 					case "getmetadata":
-						el = actionObj.el;
-						$el = $(el);
-						maskset = el.inputmask.maskset;
-						opts = el.inputmask.opts;
 						if ($.isArray(maskset.metadata)) {
 							//find last alternation
 							var alternation, lvp = getLastValidPosition();
