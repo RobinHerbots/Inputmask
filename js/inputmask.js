@@ -1796,7 +1796,7 @@
 					(end - begin) > 1 || ((end - begin) === 1 && opts.insertMode);
 			}
 
-			function wrapEvent(eventHandler) {
+			function wrapEventRuler(eventHandler) {
 				return function(e) {
 					// console.log("triggered " + e.type);
 					var inComposition = false;
@@ -1886,7 +1886,8 @@
 
 				function getter() {
 					if (this.inputmask) {
-						return this.inputmask.opts.autoUnmask ? this.inputmask.unmaskedvalue() : (valueGet.call(this) !== getBufferTemplate().join("") ? valueGet.call(this) : "");
+						return this.inputmask.opts.autoUnmask ? this.inputmask.unmaskedvalue() : (valueGet.call(this) !== getBufferTemplate().join("") ?
+							(this.inputmask.opts.clearMaskOnLostFocus ? clearOptionalTail(getBuffer()).join("") : valueGet.call(this)) : "");
 					} else return valueGet.call(this);
 				}
 
@@ -1898,7 +1899,7 @@
 				}
 
 				function installNativeValueSetFallback(npt) {
-					$(npt).on("mouseenter.inputmask", wrapEvent(function(event) {
+					$(npt).on("mouseenter.inputmask", wrapEventRuler(function(event) {
 						var $input = $(this),
 							input = this,
 							value = input.inputmask._valueGet();
@@ -1906,17 +1907,6 @@
 							$input.trigger("setvalue.inputmask");
 						}
 					}));
-					// //!! the bound handlers are executed in the order they where bound
-					// //reorder the events - the mouseenter event is internally mapped to the mouseover event
-					// var events = $._data(npt).events;
-					// var handlers = events.mouseover;
-					// if (handlers) {
-					// 	var ourHandler = handlers[handlers.length - 1];
-					// 	for (var i = handlers.length - 1; i > 0; i--) {
-					// 		handlers[i] = handlers[i - 1];
-					// 	}
-					// 	handlers[0] = ourHandler;
-					// }
 				}
 
 				if (!npt.inputmask.__valueGet) {
@@ -2498,36 +2488,36 @@
 						}, 0);
 					});
 
-					$el.on("mouseenter.inputmask", wrapEvent(mouseenterEvent))
-						.on("blur.inputmask", wrapEvent(blurEvent))
-						.on("focus.inputmask", wrapEvent(focusEvent))
-						.on("mouseleave.inputmask", wrapEvent(mouseleaveEvent))
-						.on("click.inputmask", wrapEvent(clickEvent))
-						.on("dblclick.inputmask", wrapEvent(dblclickEvent))
-						.on(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", wrapEvent(pasteEvent))
-						.on("cut.inputmask", wrapEvent(cutEvent))
-						.on("complete.inputmask", wrapEvent(opts.oncomplete))
-						.on("incomplete.inputmask", wrapEvent(opts.onincomplete))
-						.on("cleared.inputmask", wrapEvent(opts.oncleared))
-						.on("keydown.inputmask", wrapEvent(keydownEvent))
-						.on("keypress.inputmask", wrapEvent(keypressEvent));
+					$el.on("mouseenter.inputmask", wrapEventRuler(mouseenterEvent))
+						.on("blur.inputmask", wrapEventRuler(blurEvent))
+						.on("focus.inputmask", wrapEventRuler(focusEvent))
+						.on("mouseleave.inputmask", wrapEventRuler(mouseleaveEvent))
+						.on("click.inputmask", wrapEventRuler(clickEvent))
+						.on("dblclick.inputmask", wrapEventRuler(dblclickEvent))
+						.on(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", wrapEventRuler(pasteEvent))
+						.on("cut.inputmask", wrapEventRuler(cutEvent))
+						.on("complete.inputmask", wrapEventRuler(opts.oncomplete))
+						.on("incomplete.inputmask", wrapEventRuler(opts.onincomplete))
+						.on("cleared.inputmask", wrapEventRuler(opts.oncleared))
+						.on("keydown.inputmask", wrapEventRuler(keydownEvent))
+						.on("keypress.inputmask", wrapEventRuler(keypressEvent));
 
 
 					if (!androidfirefox) {
-						$el.on("compositionstart.inputmask", wrapEvent(compositionStartEvent))
-							.on("compositionupdate.inputmask", wrapEvent(compositionUpdateEvent))
-							.on("compositionend.inputmask", wrapEvent(compositionEndEvent));
+						$el.on("compositionstart.inputmask", wrapEventRuler(compositionStartEvent))
+							.on("compositionupdate.inputmask", wrapEventRuler(compositionUpdateEvent))
+							.on("compositionend.inputmask", wrapEventRuler(compositionEndEvent));
 					}
 
 					if (PasteEventType === "paste") {
-						$el.on("input.inputmask", wrapEvent(inputFallBackEvent));
+						$el.on("input.inputmask", wrapEventRuler(inputFallBackEvent));
 					}
 					//if (android || androidfirefox || androidchrome || kindle) {
 					//		$el.off("input.inputmask");
 					//		$el.on("input.inputmask", mobileInputEvent);
 					//}
 				}
-				$el.on("setvalue.inputmask", wrapEvent(setValueEvent));
+				$el.on("setvalue.inputmask", wrapEventRuler(setValueEvent));
 
 				//apply mask
 				var initialValue = $.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(el, el.inputmask._valueGet(), opts) || el.inputmask._valueGet()) : el.inputmask._valueGet();
