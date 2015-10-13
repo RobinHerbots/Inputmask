@@ -1886,8 +1886,13 @@
 
 				function getter() {
 					if (this.inputmask) {
-						return this.inputmask.opts.autoUnmask ? this.inputmask.unmaskedvalue() : (valueGet.call(this) !== getBufferTemplate().join("") ?
-							(this.inputmask.opts.clearMaskOnLostFocus ? clearOptionalTail(getBuffer()).join("") : valueGet.call(this)) : "");
+						return this.inputmask.opts.autoUnmask ?
+							this.inputmask.unmaskedvalue() :
+							(valueGet.call(this) !== getBufferTemplate().join("") ?
+								(document.activeElement === this && opts.clearMaskOnLostFocus ?
+									(isRTL ? clearOptionalTail(getBuffer()).reverse() : clearOptionalTail(getBuffer())).join("") :
+									valueGet.call(this)) :
+								"");
 					} else return valueGet.call(this);
 				}
 

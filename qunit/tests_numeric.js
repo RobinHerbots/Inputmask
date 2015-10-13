@@ -1571,4 +1571,16 @@ define([
 			$("#testmask").remove();
 		}, 0);
 	});
+
+	test("numeric alias - type 123.123 - delete all - ivodopyanov", function() {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("numeric").mask(testmask);
+		$("#testmask").Type("123.123");
+		$.caret(testmask, 0, testmask.value.length);
+		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
+		equal($("#testmask")[0].inputmask._valueGet(), "", "Result " + $("#testmask")[0].inputmask._valueGet());
+		$("#testmask").remove();
+	});
 });

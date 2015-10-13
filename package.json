@@ -1,6 +1,6 @@
 {
   "name": "jquery.inputmask",
-  "version": "3.2.3-3",
+  "version": "3.2.3-5",
   "description": "jquery.inputmask is a jquery plugin which create an input mask.",
   "main": "./dist/inputmask/jquery.inputmask.js",
   "files": [
@@ -43,7 +43,7 @@
     "grunt": "^0.4.5",
     "grunt-available-tasks": "^0.6.0",
     "grunt-browserify": "^4.0.1",
-    "grunt-bump": "^0.3.0",
+    "grunt-bump": "^0.3.4",
     "grunt-cli": "^0.1.13",
     "grunt-contrib-clean": "^0.6.0",
     "grunt-contrib-uglify": "^0.9.1",
@@ -53,7 +53,7 @@
     "grunt-release": "^0.13.0",
     "grunt-shell": "^1.1.2",
     "jqlite": "^0.2.19",
-    "karma": "^0.13.3",
+    "karma": "^0.13.10",
     "karma-chrome-launcher": "^0.2.0",
     "karma-firefox-launcher": "^0.1.6",
     "karma-phantomjs-launcher": "^0.2.0",

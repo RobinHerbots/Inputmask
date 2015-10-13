@@ -42,7 +42,7 @@ test("inputmask({ mask: \"99999[-9999]\", greedy: true }) - input 123", function
 
 	testmask.focus();
 	$("#testmask").Type("123");
-	equal(testmask.value, "123__-____", "Result " + testmask.value);
+	equal(testmask.value, "123__", "Result " + testmask.value);
 
 	$("#testmask").remove();
 });
@@ -90,7 +90,7 @@ test("inputmask({ mask: \"99999[-9999]\", greedy: false }) - input 123456", func
 
 	testmask.focus();
 	$("#testmask").Type("123456");
-	equal(testmask.value, "12345-6___", "Result " + testmask.value);
+	equal(testmask.value, "12345-6", "Result " + testmask.value);
 
 	$("#testmask").remove();
 });
@@ -327,7 +327,7 @@ test("inputmask({ mask: \"9999[ 9999][ 9999]\"}) - input 1234 space space - GMTA
 
 	testmask.focus();
 	$("#testmask").Type("1234  ");
-	equal(testmask.value, "1234 ____ ____", "Result " + testmask.value);
+	equal(testmask.value, "1234", "Result " + testmask.value);
 
 	$("#testmask").remove();
 });

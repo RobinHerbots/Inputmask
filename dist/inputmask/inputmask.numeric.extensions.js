@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.3-3
+* Version: 3.2.3-5
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery"), require("./inputmask")) : factory(jQuery, window.Inputmask);
@@ -377,11 +377,12 @@
                     for (var vp in maskset.validPositions) void 0 !== maskset.validPositions[vp].input && buffer.push(maskset.validPositions[vp].input);
                     if (radixInjection && delete maskset.validPositions[radixPos], radixPos > 0) {
                         var bufVal = buffer.join("");
-                        if (matchRslt = bufVal.match(opts.regex.integerNPart(opts)), matchRslt && radixPos >= position) if (0 === matchRslt[0].indexOf("0")) canClear = matchRslt.index !== position || "0" === opts.placeholder; else {
+                        if (matchRslt = bufVal.match(opts.regex.integerNPart(opts))) if (radixPos >= position) if (0 === matchRslt[0].indexOf("0")) canClear = matchRslt.index !== position || "0" === opts.placeholder; else {
                             var intPart = parseInt(matchRslt[0].replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "")), radixPart = parseInt(bufVal.split(opts.radixPoint)[1]);
                             10 > intPart && maskset.validPositions[position] && ("0" !== opts.placeholder || radixPart > 0) && (maskset.validPositions[position].input = "0", 
                             maskset.p = opts.prefix.length + 1, canClear = !1);
-                        }
+                        } else 0 === matchRslt[0].indexOf("0") && 3 === bufVal.length && (maskset.validPositions = {}, 
+                        canClear = !1);
                     }
                 }
                 return canClear;

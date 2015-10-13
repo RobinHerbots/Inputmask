@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.3-3
+* Version: 3.2.3-5
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -765,7 +765,7 @@
         function isSelection(begin, end) {
             return isRTL ? begin - end > 1 || begin - end === 1 && opts.insertMode : end - begin > 1 || end - begin === 1 && opts.insertMode;
         }
-        function wrapEvent(eventHandler) {
+        function wrapEventRuler(eventHandler) {
             return function(e) {
                 var inComposition = !1;
                 if (void 0 === this.inputmask) {
@@ -831,13 +831,13 @@
                 }
             }
             function getter() {
-                return this.inputmask ? this.inputmask.opts.autoUnmask ? this.inputmask.unmaskedvalue() : valueGet.call(this) !== getBufferTemplate().join("") ? valueGet.call(this) : "" : valueGet.call(this);
+                return this.inputmask ? this.inputmask.opts.autoUnmask ? this.inputmask.unmaskedvalue() : valueGet.call(this) !== getBufferTemplate().join("") ? document.activeElement === this && opts.clearMaskOnLostFocus ? (isRTL ? clearOptionalTail(getBuffer()).reverse() : clearOptionalTail(getBuffer())).join("") : valueGet.call(this) : "" : valueGet.call(this);
             }
             function setter(value) {
                 valueSet.call(this, value), this.inputmask && $(this).trigger("setvalue.inputmask");
             }
             function installNativeValueSetFallback(npt) {
-                $(npt).on("mouseenter.inputmask", wrapEvent(function(event) {
+                $(npt).on("mouseenter.inputmask", wrapEventRuler(function(event) {
                     var $input = $(this), input = this, value = input.inputmask._valueGet();
                     "" !== value && value !== getBuffer().join("") && $input.trigger("setvalue.inputmask");
                 }));
@@ -1096,10 +1096,10 @@
                 setTimeout(function() {
                     $el.trigger("setvalue.inputmask");
                 }, 0);
-            }), $el.on("mouseenter.inputmask", wrapEvent(mouseenterEvent)).on("blur.inputmask", wrapEvent(blurEvent)).on("focus.inputmask", wrapEvent(focusEvent)).on("mouseleave.inputmask", wrapEvent(mouseleaveEvent)).on("click.inputmask", wrapEvent(clickEvent)).on("dblclick.inputmask", wrapEvent(dblclickEvent)).on(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", wrapEvent(pasteEvent)).on("cut.inputmask", wrapEvent(cutEvent)).on("complete.inputmask", wrapEvent(opts.oncomplete)).on("incomplete.inputmask", wrapEvent(opts.onincomplete)).on("cleared.inputmask", wrapEvent(opts.oncleared)).on("keydown.inputmask", wrapEvent(keydownEvent)).on("keypress.inputmask", wrapEvent(keypressEvent)), 
-            androidfirefox || $el.on("compositionstart.inputmask", wrapEvent(compositionStartEvent)).on("compositionupdate.inputmask", wrapEvent(compositionUpdateEvent)).on("compositionend.inputmask", wrapEvent(compositionEndEvent)), 
-            "paste" === PasteEventType && $el.on("input.inputmask", wrapEvent(inputFallBackEvent))), 
-            $el.on("setvalue.inputmask", wrapEvent(setValueEvent));
+            }), $el.on("mouseenter.inputmask", wrapEventRuler(mouseenterEvent)).on("blur.inputmask", wrapEventRuler(blurEvent)).on("focus.inputmask", wrapEventRuler(focusEvent)).on("mouseleave.inputmask", wrapEventRuler(mouseleaveEvent)).on("click.inputmask", wrapEventRuler(clickEvent)).on("dblclick.inputmask", wrapEventRuler(dblclickEvent)).on(PasteEventType + ".inputmask dragdrop.inputmask drop.inputmask", wrapEventRuler(pasteEvent)).on("cut.inputmask", wrapEventRuler(cutEvent)).on("complete.inputmask", wrapEventRuler(opts.oncomplete)).on("incomplete.inputmask", wrapEventRuler(opts.onincomplete)).on("cleared.inputmask", wrapEventRuler(opts.oncleared)).on("keydown.inputmask", wrapEventRuler(keydownEvent)).on("keypress.inputmask", wrapEventRuler(keypressEvent)), 
+            androidfirefox || $el.on("compositionstart.inputmask", wrapEventRuler(compositionStartEvent)).on("compositionupdate.inputmask", wrapEventRuler(compositionUpdateEvent)).on("compositionend.inputmask", wrapEventRuler(compositionEndEvent)), 
+            "paste" === PasteEventType && $el.on("input.inputmask", wrapEventRuler(inputFallBackEvent))), 
+            $el.on("setvalue.inputmask", wrapEventRuler(setValueEvent));
             var initialValue = $.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call(el, el.inputmask._valueGet(), opts) || el.inputmask._valueGet() : el.inputmask._valueGet();
             checkVal(el, !0, !1, initialValue.split(""));
             var buffer = getBuffer().slice();

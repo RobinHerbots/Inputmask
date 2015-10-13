@@ -397,7 +397,7 @@ define([
 
 		$("#testmask").Type("abc");
 
-		equal(testmask.value, "A.B.C.", "Result " + testmask.value);
+		equal(testmask.value, "A.B.C", "Result " + testmask.value);
 
 		$("#testmask").remove();
 	});
