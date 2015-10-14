@@ -79,6 +79,7 @@
 				onKeyValidation: $.noop, //executes on every key-press with the result of isValid. Params: result, opts
 				skipOptionalPartCharacter: " ", //a character which can be used to skip an optional part of a mask
 				showTooltip: false, //show the activemask as tooltip
+				tooltip: undefined, //tooltip to show
 				numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
 				rightAlign: false, //align to the right
 				undoOnEscape: true, //pressing escape reverts the value to the value before focus
@@ -2043,7 +2044,7 @@
 						$input.trigger("complete");
 					}
 					if (opts.showTooltip) { //update tooltip
-						$input.prop("title", getMaskSet().mask);
+						$input.prop("title", opts.tooltip || getMaskSet().mask);
 					}
 				} else if (k === Inputmask.keyCode.END || k === Inputmask.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
 					setTimeout(function() {
@@ -2172,7 +2173,7 @@
 						}
 
 						if (opts.showTooltip) { //update tooltip
-							$input.prop("title", getMaskSet().mask);
+							$input.prop("title", opts.tooltip || getMaskSet().mask);
 						}
 
 						if (checkval && $.isFunction(opts.onBeforeWrite)) {
@@ -2396,7 +2397,7 @@
 				}
 
 				if (opts.showTooltip) { //update tooltip
-					input.title = getMaskSet().mask;
+					input.title = opts.tooltip || getMaskSet().mask;
 				}
 			}
 
@@ -2455,7 +2456,7 @@
 
 				//show tooltip
 				if (opts.showTooltip) {
-					el.title = getMaskSet().mask;
+					el.title = opts.tooltip || getMaskSet().mask;
 				}
 
 				if (el.dir === "rtl" || opts.rightAlign) {

@@ -670,6 +670,10 @@ Show the current mask definition as a tooltip.
   $(selector).inputmask({ mask: ["999-999-9999 [x99999]", "+099 99 99 9999[9]-9999"], showTooltip: true });
 ```
 
+### tooltip
+
+Specify the tooltip to show.  By default the mask definition will be taken.
+
 ### numericInput
 Numeric input direction.  Keeps the caret at the end.
 
