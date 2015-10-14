@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - Add tooltip option
 
 ### Updates
+- improve extendAliases, extendDefinitions, extendDefaults
 
 ### Fixed
 - extra tooltip property #1071

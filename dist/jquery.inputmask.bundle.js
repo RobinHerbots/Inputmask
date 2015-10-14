@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.3-7
+* Version: 3.2.3-8
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -1312,11 +1312,11 @@
             }, this.maskset || generateMaskSet(this.opts, this.noMasksCache), this.opts);
         }
     }, Inputmask.extendDefaults = function(options) {
-        $.extend(Inputmask.prototype.defaults, options);
+        $.extend(!0, Inputmask.prototype.defaults, options);
     }, Inputmask.extendDefinitions = function(definition) {
-        $.extend(Inputmask.prototype.defaults.definitions, definition);
+        $.extend(!0, Inputmask.prototype.defaults.definitions, definition);
     }, Inputmask.extendAliases = function(alias) {
-        $.extend(Inputmask.prototype.defaults.aliases, alias);
+        $.extend(!0, Inputmask.prototype.defaults.aliases, alias);
     }, Inputmask.format = function(value, options, metadata) {
         return Inputmask(options).format(value, metadata);
     }, Inputmask.unmask = function(value, options) {

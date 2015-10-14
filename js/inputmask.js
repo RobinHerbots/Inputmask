@@ -217,13 +217,13 @@
 
 		//apply defaults, definitions, aliases
 		Inputmask.extendDefaults = function(options) {
-			$.extend(Inputmask.prototype.defaults, options);
+			$.extend(true, Inputmask.prototype.defaults, options);
 		};
 		Inputmask.extendDefinitions = function(definition) {
-			$.extend(Inputmask.prototype.defaults.definitions, definition);
+			$.extend(true, Inputmask.prototype.defaults.definitions, definition);
 		};
 		Inputmask.extendAliases = function(alias) {
-			$.extend(Inputmask.prototype.defaults.aliases, alias);
+			$.extend(true, Inputmask.prototype.defaults.aliases, alias);
 		};
 		//static fn on inputmask
 		Inputmask.format = function(value, options, metadata) {
