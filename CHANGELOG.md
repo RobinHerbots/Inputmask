@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 ### Updates
 
 ### Fixed
+- extra tooltip property #1071
 - Numeric aliases insert '0' in input after clearing if there was fraction part #1067
 - Clear optional tail in getvalue. See #1055 #1065
 
