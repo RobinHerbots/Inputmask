@@ -1800,7 +1800,8 @@
 			function wrapEventRuler(eventHandler) {
 				return function(e) {
 					// console.log("triggered " + e.type);
-					var inComposition = false;
+					var inComposition = false,
+						keydownPressed = false;
 					if (this.inputmask === undefined) { //happens when cloning an object with jquery.clone
 						var imOpts = $.data(this, "_inputmask_opts");
 						if (imOpts)(new Inputmask(imOpts)).mask(this);
@@ -1814,11 +1815,13 @@
 									skipInputEvent = false;
 									return e.preventDefault();
 								}
+								keydownPressed = false;
 								break;
 							case "keydown":
 								//Safari 5.1.x - modal dialog fires keypress twice workaround
 								skipKeyPressEvent = false;
 								inComposition = false;
+								keydownPressed = true;
 								break;
 							case "keypress":
 								if (skipKeyPressEvent === true) {
@@ -1831,10 +1834,11 @@
 								inComposition = true;
 								break;
 							case "compositionupdate":
-								skipInputEvent = true;
+								skipInputEvent = keydownPressed;
 								break;
 							case "compositionend":
 								inComposition = false;
+								keydownPressed = false;
 								break;
 						}
 						//console.log("executed " + e.type);
@@ -2254,7 +2258,7 @@
 				var input = this;
 				undoValue = getBuffer().join("");
 				if (compositionData === "" || e.originalEvent.data.indexOf(compositionData) !== 0) {
-					compositionCaretPos = caret(input);
+					// compositionCaretPos = caret(input);
 				}
 			}
 
@@ -2263,16 +2267,18 @@
 					caretPos = caret(input);
 				if (e.originalEvent.data.indexOf(compositionData) === 0) {
 					resetMaskSet();
-					caretPos = compositionCaretPos;
+					getMaskSet().p = seekNext(-1); //needs check
+					skipInputEvent = true;
+					// caretPos = compositionCaretPos;
 				}
 				var newData = e.originalEvent.data;
-				caret(input, caretPos.begin, caretPos.end);
+				// caret(input, caretPos.begin, caretPos.end);
 				for (var i = 0; i < newData.length; i++) {
 					var keypress = $.Event("keypress");
 					keypress.which = newData.charCodeAt(i);
 					skipKeyPressEvent = false;
 					ignorable = false;
-					keypressEvent.call(input, keypress); //needs update
+					keypressEvent.call(input, keypress, true, false, false, getMaskSet().p); //needs check
 				}
 				setTimeout(function() {
 					var forwardPosition = getMaskSet().p;

@@ -7,9 +7,11 @@ All notable changes to this project will be documented in this file.
 - Add tooltip option
 
 ### Updates
+- Improve handling of compositionevents
 - improve extendAliases, extendDefinitions, extendDefaults
 
 ### Fixed
+- Each character repeats on Mobile #912
 - extra tooltip property #1071
 - Numeric aliases insert '0' in input after clearing if there was fraction part #1067
 - Clear optional tail in getvalue. See #1055 #1065

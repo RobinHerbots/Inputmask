@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.3-8
+* Version: 3.2.3-9
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -767,7 +767,7 @@
         }
         function wrapEventRuler(eventHandler) {
             return function(e) {
-                var inComposition = !1;
+                var inComposition = !1, keydownPressed = !1;
                 if (void 0 === this.inputmask) {
                     var imOpts = $.data(this, "_inputmask_opts");
                     imOpts ? new Inputmask(imOpts).mask(this) : $(this).off(".inputmask");
@@ -776,10 +776,11 @@
                         switch (e.type) {
                           case "input":
                             if (skipInputEvent === !0 || inComposition === !0) return skipInputEvent = !1, e.preventDefault();
+                            keydownPressed = !1;
                             break;
 
                           case "keydown":
-                            skipKeyPressEvent = !1, inComposition = !1;
+                            skipKeyPressEvent = !1, inComposition = !1, keydownPressed = !0;
                             break;
 
                           case "keypress":
@@ -792,11 +793,11 @@
                             break;
 
                           case "compositionupdate":
-                            skipInputEvent = !0;
+                            skipInputEvent = keydownPressed;
                             break;
 
                           case "compositionend":
-                            inComposition = !1;
+                            inComposition = !1, keydownPressed = !1;
                         }
                         return eventHandler.apply(this, arguments);
                     }
@@ -986,18 +987,17 @@
             e.preventDefault();
         }
         function compositionStartEvent(e) {
-            var input = this;
-            undoValue = getBuffer().join(""), ("" === compositionData || 0 !== e.originalEvent.data.indexOf(compositionData)) && (compositionCaretPos = caret(input));
+            undoValue = getBuffer().join(""), "" === compositionData || 0 !== e.originalEvent.data.indexOf(compositionData);
         }
         function compositionUpdateEvent(e) {
-            var input = this, caretPos = caret(input);
-            0 === e.originalEvent.data.indexOf(compositionData) && (resetMaskSet(), caretPos = compositionCaretPos);
-            var newData = e.originalEvent.data;
-            caret(input, caretPos.begin, caretPos.end);
-            for (var i = 0; i < newData.length; i++) {
+            var input = this;
+            caret(input);
+            0 === e.originalEvent.data.indexOf(compositionData) && (resetMaskSet(), getMaskSet().p = seekNext(-1), 
+            skipInputEvent = !0);
+            for (var newData = e.originalEvent.data, i = 0; i < newData.length; i++) {
                 var keypress = $.Event("keypress");
                 keypress.which = newData.charCodeAt(i), skipKeyPressEvent = !1, ignorable = !1, 
-                keypressEvent.call(input, keypress);
+                keypressEvent.call(input, keypress, !0, !1, !1, getMaskSet().p);
             }
             setTimeout(function() {
                 var forwardPosition = getMaskSet().p;
@@ -1112,7 +1112,7 @@
             isComplete(buffer) === !1 && opts.clearIncomplete && resetMaskSet(), opts.clearMaskOnLostFocus && (buffer.join("") === getBufferTemplate().join("") ? buffer = [] : clearOptionalTail(buffer)), 
             writeBuffer(el, buffer), activeElement === el && caret(el, seekNext(getLastValidPosition()));
         }
-        var undoValue, compositionCaretPos, compositionData, el, $el, maxLength, valueBuffer, isRTL = !1, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, mouseEnter = !0;
+        var undoValue, compositionData, el, $el, maxLength, valueBuffer, isRTL = !1, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, mouseEnter = !0;
         if (void 0 !== actionObj) switch (actionObj.action) {
           case "isComplete":
             return el = actionObj.el, isComplete(getBuffer());
