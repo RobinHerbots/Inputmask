@@ -1680,7 +1680,7 @@
 					// 	return;
 					// }
 
-					var scrollCalc = (input.ownerDocument.defaultView || window).getComputedStyle(input, null).fontSize.replace("px", "") * end;
+					var scrollCalc = parseInt(((input.ownerDocument.defaultView || window).getComputedStyle ? (input.ownerDocument.defaultView || window).getComputedStyle(input, null) : input.currentStyle).fontSize) * end;
 					input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0;
 					if (!androidchrome && opts.insertMode === false && begin === end) end++; //set visualization for insert/overwrite mode
 					if (input.setSelectionRange) {
@@ -1799,7 +1799,7 @@
 
 			function wrapEventRuler(eventHandler) {
 				return function(e) {
-					// console.log("triggered " + e.type);
+					console.log("triggered " + e.type);
 					var inComposition = false,
 						keydownPressed = false;
 					if (this.inputmask === undefined) { //happens when cloning an object with jquery.clone
@@ -1852,7 +1852,7 @@
 				var valueSet;
 
 				function patchValhook(type) {
-					if ($.valHooks && $.valHooks[type] === undefined || $.valHooks[type].inputmaskpatch !== true) {
+					if ($.valHooks && ($.valHooks[type] === undefined || $.valHooks[type].inputmaskpatch !== true)) {
 						var valhookGet = $.valHooks[type] && $.valHooks[type].get ? $.valHooks[type].get : function(elem) {
 							return elem.value;
 						};
@@ -2048,7 +2048,7 @@
 						$input.trigger("complete");
 					}
 					if (opts.showTooltip) { //update tooltip
-						$input.prop("title", opts.tooltip || getMaskSet().mask);
+						input.title = opts.tooltip || getMaskSet().mask;
 					}
 				} else if (k === Inputmask.keyCode.END || k === Inputmask.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
 					setTimeout(function() {
@@ -2177,7 +2177,7 @@
 						}
 
 						if (opts.showTooltip) { //update tooltip
-							$input.prop("title", opts.tooltip || getMaskSet().mask);
+							input.title = opts.tooltip || getMaskSet().mask;
 						}
 
 						if (checkval && $.isFunction(opts.onBeforeWrite)) {
@@ -2202,6 +2202,7 @@
 
 			function pasteEvent(e) {
 				var input = this,
+					ev = e.originalEvent || e,
 					$input = $(input),
 					inputValue = input.inputmask._valueGet(true),
 					caretPos = caret(input);
@@ -2217,8 +2218,8 @@
 
 					if (window.clipboardData && window.clipboardData.getData) { // IE
 						inputValue = valueBeforeCaret + window.clipboardData.getData("Text") + valueAfterCaret;
-					} else if (e.originalEvent && e.originalEvent.clipboardData && e.originalEvent.clipboardData.getData) {
-						inputValue = valueBeforeCaret + e.originalEvent.clipboardData.getData("text/plain") + valueAfterCaret;
+					} else if (ev.clipboardData && ev.clipboardData.getData) {
+						inputValue = valueBeforeCaret + ev.clipboardData.getData("text/plain") + valueAfterCaret;
 					}
 				}
 
@@ -2245,7 +2246,7 @@
 
 			function inputFallBackEvent(e) { //fallback when keypress & compositionevents fail
 				var input = this;
-				checkVal(input, true, false, input.inputmask._valueGet().split(''));
+				checkVal(input, true, false, input.inputmask._valueGet().split(""));
 
 				if (isComplete(getBuffer()) === true) {
 					$(input).trigger("complete");
@@ -2255,23 +2256,24 @@
 			}
 
 			function compositionStartEvent(e) {
-				var input = this;
+				var ev = e.originalEvent || e;
 				undoValue = getBuffer().join("");
-				if (compositionData === "" || e.originalEvent.data.indexOf(compositionData) !== 0) {
+				if (compositionData === "" || ev.data.indexOf(compositionData) !== 0) {
 					// compositionCaretPos = caret(input);
 				}
 			}
 
 			function compositionUpdateEvent(e) {
 				var input = this,
+					ev = e.originalEvent || e,
 					caretPos = caret(input);
-				if (e.originalEvent.data.indexOf(compositionData) === 0) {
+				if (ev.data.indexOf(compositionData) === 0) {
 					resetMaskSet();
 					getMaskSet().p = seekNext(-1); //needs check
 					skipInputEvent = true;
 					// caretPos = compositionCaretPos;
 				}
-				var newData = e.originalEvent.data;
+				var newData = ev.data;
 				// caret(input, caretPos.begin, caretPos.end);
 				for (var i = 0; i < newData.length; i++) {
 					var keypress = $.Event("keypress");
@@ -2284,7 +2286,7 @@
 					var forwardPosition = getMaskSet().p;
 					writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
 				}, 0);
-				compositionData = e.originalEvent.data;
+				compositionData = evt.data;
 			}
 
 			function compositionEndEvent(e) {
@@ -2387,11 +2389,12 @@
 				skipInputEvent = true; //stop inputFallback
 				var input = this,
 					$input = $(input),
-					pos = caret(input);
+					pos = caret(input),
+					ev = e.originalEvent || e;
 
 				//correct clipboardData
 				if (isRTL) {
-					var clipboardData = window.clipboardData || e.originalEvent.clipboardData,
+					var clipboardData = window.clipboardData || ev.clipboardData,
 						clipData = clipboardData.getData("text").split("").reverse().join("");
 					clipboardData.setData("text", clipData);
 				}

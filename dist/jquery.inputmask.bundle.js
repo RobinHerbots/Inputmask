@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.3-9
+* Version: 3.2.3-13
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -714,7 +714,7 @@
                 end: translatePosition(end)
             };
             begin = translatePosition(begin), end = translatePosition(end), end = "number" == typeof end ? end : begin;
-            var scrollCalc = (input.ownerDocument.defaultView || window).getComputedStyle(input, null).fontSize.replace("px", "") * end;
+            var scrollCalc = parseInt(((input.ownerDocument.defaultView || window).getComputedStyle ? (input.ownerDocument.defaultView || window).getComputedStyle(input, null) : input.currentStyle).fontSize) * end;
             if (input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0, androidchrome || opts.insertMode !== !1 || begin !== end || end++, 
             input.setSelectionRange) input.selectionStart = begin, input.selectionEnd = end; else if (window.getSelection) {
                 if (range = document.createRange(), void 0 === input.firstChild) {
@@ -765,6 +765,7 @@
         }
         function wrapEventRuler(eventHandler) {
             return function(e) {
+                console.log("triggered " + e.type);
                 var inComposition = !1, keydownPressed = !1;
                 if (void 0 === this.inputmask) {
                     var imOpts = $.data(this, "_inputmask_opts");
@@ -805,7 +806,7 @@
         }
         function patchValueProperty(npt) {
             function patchValhook(type) {
-                if ($.valHooks && void 0 === $.valHooks[type] || $.valHooks[type].inputmaskpatch !== !0) {
+                if ($.valHooks && (void 0 === $.valHooks[type] || $.valHooks[type].inputmaskpatch !== !0)) {
                     var valhookGet = $.valHooks[type] && $.valHooks[type].get ? $.valHooks[type].get : function(elem) {
                         return elem.value;
                     }, valhookSet = $.valHooks[type] && $.valHooks[type].set ? $.valHooks[type].set : function(elem, value) {
@@ -896,7 +897,7 @@
             k === Inputmask.keyCode.BACKSPACE || k === Inputmask.keyCode.DELETE || iphone && 127 === k || e.ctrlKey && 88 === k && !isInputEventSupported("cut") ? (e.preventDefault(), 
             88 === k && (undoValue = getBuffer().join("")), handleRemove(input, k, pos), writeBuffer(input, getBuffer(), getMaskSet().p, e, undoValue !== getBuffer().join("")), 
             input.inputmask._valueGet() === getBufferTemplate().join("") ? $input.trigger("cleared") : isComplete(getBuffer()) === !0 && $input.trigger("complete"), 
-            opts.showTooltip && $input.prop("title", opts.tooltip || getMaskSet().mask)) : k === Inputmask.keyCode.END || k === Inputmask.keyCode.PAGE_DOWN ? setTimeout(function() {
+            opts.showTooltip && (input.title = opts.tooltip || getMaskSet().mask)) : k === Inputmask.keyCode.END || k === Inputmask.keyCode.PAGE_DOWN ? setTimeout(function() {
                 var caretPos = seekNext(getLastValidPosition());
                 opts.insertMode || caretPos !== getMaskLength() || e.shiftKey || caretPos--, caret(input, e.shiftKey ? pos.begin : caretPos, caretPos);
             }, 0) : k === Inputmask.keyCode.HOME && !e.shiftKey || k === Inputmask.keyCode.PAGE_UP ? caret(input, 0, e.shiftKey ? pos.begin : 0) : (opts.undoOnEscape && k === Inputmask.keyCode.ESCAPE || 90 === k && e.ctrlKey) && e.altKey !== !0 ? (checkVal(input, !0, !1, undoValue.split("")), 
@@ -948,8 +949,7 @@
                         }, 0);
                     } else isSlctn && (getMaskSet().buffer = void 0, getMaskSet().validPositions = getMaskSet().undoPositions);
                 } else isSlctn && (getMaskSet().buffer = void 0, getMaskSet().validPositions = getMaskSet().undoPositions);
-                if (opts.showTooltip && $input.prop("title", opts.tooltip || getMaskSet().mask), 
-                checkval && $.isFunction(opts.onBeforeWrite)) {
+                if (opts.showTooltip && (input.title = opts.tooltip || getMaskSet().mask), checkval && $.isFunction(opts.onBeforeWrite)) {
                     var result = opts.onBeforeWrite(e, getBuffer(), forwardPosition, opts);
                     if (result && result.refreshFromBuffer) {
                         var refresh = result.refreshFromBuffer;
@@ -961,13 +961,13 @@
             }
         }
         function pasteEvent(e) {
-            var input = this, $input = $(input), inputValue = input.inputmask._valueGet(!0), caretPos = caret(input);
+            var input = this, ev = e.originalEvent || e, $input = $(input), inputValue = input.inputmask._valueGet(!0), caretPos = caret(input);
             if ("propertychange" === e.type && input.inputmask._valueGet().length <= getMaskLength()) return !0;
             if ("paste" === e.type) {
                 var valueBeforeCaret = inputValue.substr(0, caretPos.begin), valueAfterCaret = inputValue.substr(caretPos.end, inputValue.length);
                 valueBeforeCaret === getBufferTemplate().slice(0, caretPos.begin).join("") && (valueBeforeCaret = ""), 
                 valueAfterCaret === getBufferTemplate().slice(caretPos.end).join("") && (valueAfterCaret = ""), 
-                window.clipboardData && window.clipboardData.getData ? inputValue = valueBeforeCaret + window.clipboardData.getData("Text") + valueAfterCaret : e.originalEvent && e.originalEvent.clipboardData && e.originalEvent.clipboardData.getData && (inputValue = valueBeforeCaret + e.originalEvent.clipboardData.getData("text/plain") + valueAfterCaret);
+                window.clipboardData && window.clipboardData.getData ? inputValue = valueBeforeCaret + window.clipboardData.getData("Text") + valueAfterCaret : ev.clipboardData && ev.clipboardData.getData && (inputValue = valueBeforeCaret + ev.clipboardData.getData("text/plain") + valueAfterCaret);
             }
             var pasteValue = inputValue;
             if ($.isFunction(opts.onBeforePaste)) {
@@ -985,14 +985,15 @@
             e.preventDefault();
         }
         function compositionStartEvent(e) {
-            undoValue = getBuffer().join(""), "" === compositionData || 0 !== e.originalEvent.data.indexOf(compositionData);
+            var ev = e.originalEvent || e;
+            undoValue = getBuffer().join(""), "" === compositionData || 0 !== ev.data.indexOf(compositionData);
         }
         function compositionUpdateEvent(e) {
-            var input = this;
+            var input = this, ev = e.originalEvent || e;
             caret(input);
-            0 === e.originalEvent.data.indexOf(compositionData) && (resetMaskSet(), getMaskSet().p = seekNext(-1), 
+            0 === ev.data.indexOf(compositionData) && (resetMaskSet(), getMaskSet().p = seekNext(-1), 
             skipInputEvent = !0);
-            for (var newData = e.originalEvent.data, i = 0; i < newData.length; i++) {
+            for (var newData = ev.data, i = 0; i < newData.length; i++) {
                 var keypress = $.Event("keypress");
                 keypress.which = newData.charCodeAt(i), skipKeyPressEvent = !1, ignorable = !1, 
                 keypressEvent.call(input, keypress, !0, !1, !1, getMaskSet().p);
@@ -1000,7 +1001,7 @@
             setTimeout(function() {
                 var forwardPosition = getMaskSet().p;
                 writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
-            }, 0), compositionData = e.originalEvent.data;
+            }, 0), compositionData = evt.data;
         }
         function compositionEndEvent(e) {}
         function setValueEvent(e) {
@@ -1055,9 +1056,9 @@
         }
         function cutEvent(e) {
             skipInputEvent = !0;
-            var input = this, $input = $(input), pos = caret(input);
+            var input = this, $input = $(input), pos = caret(input), ev = e.originalEvent || e;
             if (isRTL) {
-                var clipboardData = window.clipboardData || e.originalEvent.clipboardData, clipData = clipboardData.getData("text").split("").reverse().join("");
+                var clipboardData = window.clipboardData || ev.clipboardData, clipData = clipboardData.getData("text").split("").reverse().join("");
                 clipboardData.setData("text", clipData);
             }
             handleRemove(input, Inputmask.keyCode.DELETE, pos), writeBuffer(input, getBuffer(), getMaskSet().p, e, undoValue !== getBuffer().join("")), 

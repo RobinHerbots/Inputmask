@@ -10,7 +10,7 @@ define([
 ], function(qunit) {
 	// start QUnit.
 	qunit.load();
-	qunit.start();
+
 
 	require([
 		"tests_base",
@@ -30,5 +30,5 @@ define([
 		"tests_regex", "tests_escape"
 	]);
 
-
+	qunit.start();
 });

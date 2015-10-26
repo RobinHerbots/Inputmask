@@ -212,11 +212,19 @@
 							namespace = nsEvent[1] || "global";
 						if (document !== undefined && namespace === "global") {
 							//trigger domevent
-							var evnt, i; // The custom event that will be created
+							var evnt, i, params = {
+								bubbles: false,
+								cancelable: true,
+								detail: Array.prototype.slice.call(arguments, 1)
+							};
+							// The custom event that will be created
 							if (document.createEvent) {
-								evnt = new CustomEvent(ev, {
-									detail: Array.prototype.slice.call(arguments, 1)
-								});
+								try {
+									evnt = new CustomEvent(ev, params);
+								} catch (e) {
+									evnt = document.createEvent('CustomEvent');
+									evnt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+								}
 								if (events.type) DependencyLib.extend(evnt, events);
 								elem.dispatchEvent(evnt);
 							} else {

@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 - improve extendAliases, extendDefinitions, extendDefaults
 
 ### Fixed
+- IE8 Null values after submit #1076
 - Each character repeats on Mobile #912
 - extra tooltip property #1071
 - Numeric aliases insert '0' in input after clearing if there was fraction part #1067
