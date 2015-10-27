@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.3-13
+* Version: 3.2.3-15
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -765,7 +765,6 @@
         }
         function wrapEventRuler(eventHandler) {
             return function(e) {
-                console.log("triggered " + e.type);
                 var inComposition = !1, keydownPressed = !1;
                 if (void 0 === this.inputmask) {
                     var imOpts = $.data(this, "_inputmask_opts");
@@ -990,7 +989,6 @@
         }
         function compositionUpdateEvent(e) {
             var input = this, ev = e.originalEvent || e;
-            caret(input);
             0 === ev.data.indexOf(compositionData) && (resetMaskSet(), getMaskSet().p = seekNext(-1), 
             skipInputEvent = !0);
             for (var newData = ev.data, i = 0; i < newData.length; i++) {
@@ -1001,7 +999,7 @@
             setTimeout(function() {
                 var forwardPosition = getMaskSet().p;
                 writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
-            }, 0), compositionData = evt.data;
+            }, 0), compositionData = ev.data;
         }
         function compositionEndEvent(e) {}
         function setValueEvent(e) {
@@ -2004,6 +2002,9 @@
                     },
                     cardinality: 1
                 }
+            },
+            onUnMask: function(maskedValue, unmaskedValue, opts) {
+                return maskedValue;
             }
         },
         email: {
@@ -2018,6 +2019,9 @@
                     cardinality: 1,
                     casing: "lower"
                 }
+            },
+            onUnMask: function(maskedValue, unmaskedValue, opts) {
+                return maskedValue;
             }
         },
         mac: {

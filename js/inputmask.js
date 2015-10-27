@@ -718,8 +718,6 @@
 		function maskScope(actionObj, maskset, opts) {
 			var isRTL = false,
 				undoValue,
-				// compositionValidPos,
-				compositionCaretPos,
 				compositionData,
 				el, $el,
 				skipKeyPressEvent = false, //Safari 5.1.x - modal dialog fires keypress twice workaround
@@ -1799,7 +1797,7 @@
 
 			function wrapEventRuler(eventHandler) {
 				return function(e) {
-					console.log("triggered " + e.type);
+					// console.log("triggered " + e.type);
 					var inComposition = false,
 						keydownPressed = false;
 					if (this.inputmask === undefined) { //happens when cloning an object with jquery.clone
@@ -2265,16 +2263,13 @@
 
 			function compositionUpdateEvent(e) {
 				var input = this,
-					ev = e.originalEvent || e,
-					caretPos = caret(input);
+					ev = e.originalEvent || e;
 				if (ev.data.indexOf(compositionData) === 0) {
 					resetMaskSet();
 					getMaskSet().p = seekNext(-1); //needs check
 					skipInputEvent = true;
-					// caretPos = compositionCaretPos;
 				}
 				var newData = ev.data;
-				// caret(input, caretPos.begin, caretPos.end);
 				for (var i = 0; i < newData.length; i++) {
 					var keypress = $.Event("keypress");
 					keypress.which = newData.charCodeAt(i);
@@ -2286,7 +2281,7 @@
 					var forwardPosition = getMaskSet().p;
 					writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
 				}, 0);
-				compositionData = evt.data;
+				compositionData = ev.data;
 			}
 
 			function compositionEndEvent(e) {

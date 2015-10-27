@@ -102,7 +102,7 @@
     { "mask": "+31-497-###-###", "cc": "NL", "cd": "Netherlands", "city": "Eersel" },
     { "mask": "+31-499-###-###", "cc": "NL", "cd": "Netherlands", "city": "Best" },
     { "mask": "+31-50-###-####", "cc": "NL", "cd": "Netherlands", "city": "Groningen" },
-    { "mask": "+31-511-###-###", "cc": "NL", "cd": "Netherlands", "city": "Feanwâlden" },
+    { "mask": "+31-511-###-###", "cc": "NL", "cd": "Netherlands", "city": "Feanwï¿½lden" },
     { "mask": "+31-512-###-###", "cc": "NL", "cd": "Netherlands", "city": "Drachten" },
     { "mask": "+31-513-###-###", "cc": "NL", "cd": "Netherlands", "city": "Heerenveen" },
     { "mask": "+31-514-###-###", "cc": "NL", "cd": "Netherlands", "city": "Balk" },

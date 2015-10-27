@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [UNRELEASED]
 
 ### Added
+- inputmask.binding => automated inputmask binding for html attributes
 - Add tooltip option
 
 ### Updates

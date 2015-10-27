@@ -32,34 +32,13 @@ Demo page see [http://robinherbots.github.io/jquery.inputmask](http://robinherbo
 ## Usage:
 Include the js-files which you can find in the dist-folder.
 
-The minimum to include is inputmask.js && jquery.inputmask.js
+via Inputmask class
 
 ```html
 <script src="jquery.js" type="text/javascript"></script>
 <script src="inputmask.js" type="text/javascript"></script>
-<script src="jquery.inputmask.js" type="text/javascript"></script>
+<script src="inputmask.???.Extensions.js" type="text/javascript"></script>
 ```
-
-If you use a module loader like requireJS, use the js-files in dist/inputmask
-
-```javascript
-paths: {
-  ...
-  "inputmask.dependencyLib": "../dist/inputmask/inputmask.dependencyLib.jquery",
-  "inputmask": "../dist/inputmask/inputmask",
-  ...
-}
-```
-
-As dependencyLib you can choose between the supported libraries.
-- inputmask.dependencyLib (vanilla)
-- inputmask.dependencyLib.jquery
-- inputmask.dependencyLib.jqlite (WIP)
-- .... (others are welcome)
-
-Define your masks:
-
-via Inputmask class
 
 ```javascript
    var selector = document.getElementById("selector");
@@ -73,6 +52,19 @@ via Inputmask class
 ```
 
 via jquery plugin
+
+```html
+<script src="jquery.js" type="text/javascript"></script>
+<script src="inputmask.js" type="text/javascript"></script>
+<script src="inputmask.???.Extensions.js" type="text/javascript"></script>
+<script src="jquery.inputmask.js" type="text/javascript"></script>
+```
+or with the bundled version
+```html
+<script src="jquery.js" type="text/javascript"></script>
+<script src="jquery.inputmask.bundle.js" type="text/javascript"></script>
+```
+
 
 ```javascript
 $(document).ready(function(){
@@ -110,6 +102,33 @@ $(document).ready(function(){
    $("#example2").inputmask("Regex");
 });
 ```
+
+If you like to automatically bind the inputmask to the inputs marked with the data-inputmask- ... attributes you may also want to include the inputmask.binding.js
+
+```html
+...
+<script src="inputmask.binding.js" type="text/javascript"></script>
+...
+```
+
+If you use a module loader like requireJS
+
+Add in your config.js
+
+```javascript
+paths: {
+  ...
+  "inputmask.dependencyLib": "../dist/inputmask/inputmask.dependencyLib.jquery",
+  "inputmask": "../dist/inputmask/inputmask",
+  ...
+}
+```
+
+As dependencyLib you can choose between the supported libraries.
+- inputmask.dependencyLib (vanilla)
+- inputmask.dependencyLib.jquery
+- inputmask.dependencyLib.jqlite (WIP)
+- .... (others are welcome)
 
 ### Allowed HTML-elements
 - input type="text"
