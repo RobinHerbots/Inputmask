@@ -1951,8 +1951,8 @@
 						return isRTL && overruleRTL !== true ? valueGet.call(this.el).split("").reverse().join("") : valueGet.call(this.el);
 					};
 					npt.inputmask.__valueSet = valueSet; //store native property setter
-					npt.inputmask._valueSet = function(value, overruleRTL) {
-						valueSet.call(this.el, (overruleRTL !== true && isRTL && value !== null && value !== undefined) ? value.split("").reverse().join("") : value);
+					npt.inputmask._valueSet = function(value, overruleRTL) { //null check is needed for IE8 => otherwise converts to "null"
+						valueSet.call(this.el, (value === null || value === undefined) ? "" : ((overruleRTL !== true && isRTL) ? value.split("").reverse().join("") : value));
 					};
 				}
 			}

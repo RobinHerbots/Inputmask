@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.3-15
+* Version: 3.2.3-16
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -859,7 +859,7 @@
             npt.inputmask._valueGet = function(overruleRTL) {
                 return isRTL && overruleRTL !== !0 ? valueGet.call(this.el).split("").reverse().join("") : valueGet.call(this.el);
             }, npt.inputmask.__valueSet = valueSet, npt.inputmask._valueSet = function(value, overruleRTL) {
-                valueSet.call(this.el, overruleRTL !== !0 && isRTL && null !== value && void 0 !== value ? value.split("").reverse().join("") : value);
+                valueSet.call(this.el, null === value || void 0 === value ? "" : overruleRTL !== !0 && isRTL ? value.split("").reverse().join("") : value);
             });
         }
         function handleRemove(input, k, pos, strict) {

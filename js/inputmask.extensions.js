@@ -69,7 +69,7 @@ Optional extensions on the jquery.inputmask base
 												var tmp = chrs,
 													k;
 												if (((j + 1) - chrs.length) > 0) {
-													tmp = maskset.buffer.join('').substring(0, ((j + 1) - chrs.length)) + "" + tmp;
+													tmp = maskset.buffer.join("").substring(0, ((j + 1) - chrs.length)) + "" + tmp;
 												}
 												var isValid = opts.regex["urlpre" + (j + 1)].test(tmp);
 												if (!strict && !isValid) {
