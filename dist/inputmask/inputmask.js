@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.3-16
+* Version: 3.2.3-17
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -34,20 +34,27 @@
         !1);
     }
     function importAttributeOptions(npt, opts, userOptions) {
-        function importOption(option) {
-            var optionData = npt.getAttribute("data-inputmask-" + option.toLowerCase());
+        function importOption(option, optionData) {
+            optionData = void 0 !== optionData ? optionData : npt.getAttribute("data-inputmask-" + option), 
             null !== optionData && (optionData = "boolean" == typeof optionData ? optionData : optionData.toString(), 
-            "string" == typeof optionData && 0 === option.indexOf("on") && (optionData = eval("(" + optionData + ")")), 
+            "string" != typeof optionData || 0 !== option.indexOf("on") && "false" !== optionData && "true" !== optionData || (optionData = eval("(" + optionData + ")")), 
             "mask" === option && 0 === optionData.indexOf("[") ? (userOptions[option] = optionData.replace(/[\s[\]]/g, "").split(","), 
             userOptions[option][0] = userOptions[option][0].replace("'", ""), userOptions[option][userOptions[option].length - 1] = userOptions[option][userOptions[option].length - 1].replace("'", "")) : userOptions[option] = optionData);
         }
-        var attrOptions = npt.getAttribute("data-inputmask");
+        var attrOptions = npt.getAttribute("data-inputmask"), option, dataoptions, optionData;
         if (attrOptions && "" !== attrOptions) try {
-            attrOptions = attrOptions.replace(new RegExp("'", "g"), '"');
-            var dataoptions = $.parseJSON("{" + attrOptions + "}");
-            $.extend(!0, userOptions, dataoptions);
+            attrOptions = attrOptions.replace(new RegExp("'", "g"), '"'), dataoptions = $.parseJSON("{" + attrOptions + "}");
         } catch (ex) {}
-        for (var option in opts) importOption(option);
+        for (option in opts) {
+            if (dataoptions) {
+                optionData = void 0;
+                for (var p in dataoptions) if (p.toLowerCase() === option.toLowerCase()) {
+                    optionData = dataoptions[p];
+                    break;
+                }
+            }
+            importOption(option, optionData);
+        }
         if (userOptions.alias) {
             resolveAlias(userOptions.alias, userOptions, opts);
             for (option in opts) importOption(option);
@@ -1246,18 +1253,20 @@
             postValidation: null
         },
         masksCache: {},
-        mask: function(el) {
-            var scopedOpts = $.extend(!0, {}, this.opts);
-            importAttributeOptions(el, scopedOpts, $.extend(!0, {}, this.userOptions));
-            var maskset = generateMaskSet(scopedOpts, this.noMasksCache);
-            return void 0 !== maskset && (void 0 !== el.inputmask && el.inputmask.remove(), 
-            el.inputmask = new Inputmask(), el.inputmask.opts = scopedOpts, el.inputmask.noMasksCache = this.noMasksCache, 
-            el.inputmask.userOptions = $.extend(!0, {}, this.userOptions), el.inputmask.el = el, 
-            el.inputmask.maskset = maskset, el.inputmask.isRTL = !1, $.data(el, "_inputmask_opts", scopedOpts), 
-            maskScope({
-                action: "mask",
-                el: el
-            })), el.inputmask || this;
+        mask: function(elems) {
+            var that = this;
+            return elems = void 0 === elems.length ? [ elems ] : elems, $.each(elems, function(ndx, el) {
+                var scopedOpts = $.extend(!0, {}, that.opts);
+                importAttributeOptions(el, scopedOpts, $.extend(!0, {}, that.userOptions));
+                var maskset = generateMaskSet(scopedOpts, that.noMasksCache);
+                void 0 !== maskset && (void 0 !== el.inputmask && el.inputmask.remove(), el.inputmask = new Inputmask(), 
+                el.inputmask.opts = scopedOpts, el.inputmask.noMasksCache = that.noMasksCache, el.inputmask.userOptions = $.extend(!0, {}, that.userOptions), 
+                el.inputmask.el = el, el.inputmask.maskset = maskset, el.inputmask.isRTL = !1, $.data(el, "_inputmask_opts", scopedOpts), 
+                maskScope({
+                    action: "mask",
+                    el: el
+                }));
+            }), elems ? elems[0].inputmask || this : this;
         },
         option: function(options) {
             return "string" == typeof options ? this.opts[options] : "object" == typeof options ? ($.extend(this.opts, options), 

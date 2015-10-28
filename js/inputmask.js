@@ -117,31 +117,35 @@
 				postValidation: null //hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, opts => return true/false
 			},
 			masksCache: {},
-			mask: function(el) {
-				var scopedOpts = $.extend(true, {}, this.opts);
-				importAttributeOptions(el, scopedOpts, $.extend(true, {}, this.userOptions));
-				var maskset = generateMaskSet(scopedOpts, this.noMasksCache);
-				if (maskset !== undefined) {
-					if (el.inputmask !== undefined) {
-						el.inputmask.remove();
+			mask: function(elems) {
+				var that = this;
+				elems = elems.length === undefined ? [elems] : elems;
+				$.each(elems, function(ndx, el) {
+					var scopedOpts = $.extend(true, {}, that.opts);
+					importAttributeOptions(el, scopedOpts, $.extend(true, {}, that.userOptions));
+					var maskset = generateMaskSet(scopedOpts, that.noMasksCache);
+					if (maskset !== undefined) {
+						if (el.inputmask !== undefined) {
+							el.inputmask.remove();
+						}
+						//store inputmask instance on the input with element reference
+						el.inputmask = new Inputmask();
+						el.inputmask.opts = scopedOpts;
+						el.inputmask.noMasksCache = that.noMasksCache;
+						el.inputmask.userOptions = $.extend(true, {}, that.userOptions);
+						el.inputmask.el = el;
+						el.inputmask.maskset = maskset;
+						el.inputmask.isRTL = false;
+
+						$.data(el, "_inputmask_opts", scopedOpts);
+
+						maskScope({
+							"action": "mask",
+							"el": el
+						});
 					}
-					//store inputmask instance on the input with element reference
-					el.inputmask = new Inputmask();
-					el.inputmask.opts = scopedOpts;
-					el.inputmask.noMasksCache = this.noMasksCache;
-					el.inputmask.userOptions = $.extend(true, {}, this.userOptions);
-					el.inputmask.el = el;
-					el.inputmask.maskset = maskset;
-					el.inputmask.isRTL = false;
-
-					$.data(el, "_inputmask_opts", scopedOpts);
-
-					maskScope({
-						"action": "mask",
-						"el": el
-					});
-				}
-				return el.inputmask || this;
+				});
+				return elems ? (elems[0].inputmask || this) : this;
 			},
 			option: function(options) { //set extra options || retrieve value of a current option
 				if (typeof options === "string") {
@@ -314,14 +318,15 @@
 		}
 
 		function importAttributeOptions(npt, opts, userOptions) {
-			var attrOptions = npt.getAttribute("data-inputmask");
+			var attrOptions = npt.getAttribute("data-inputmask"),
+				option, dataoptions, optionData;
 
-			function importOption(option) {
-				var optionData = npt.getAttribute("data-inputmask-" + option.toLowerCase());
+			function importOption(option, optionData) {
+				optionData = optionData !== undefined ? optionData : npt.getAttribute("data-inputmask-" + option);
 				if (optionData !== null) {
 					optionData = typeof optionData == "boolean" ? optionData : optionData.toString();
 					/*eslint-disable no-eval */
-					if (typeof optionData === "string" && option.indexOf("on") === 0) {
+					if (typeof optionData === "string" && (option.indexOf("on") === 0 || optionData === "false" || optionData === "true")) {
 						optionData = eval("(" + optionData + ")");
 					}
 					/*eslint-enable no-eval */
@@ -336,14 +341,22 @@
 			if (attrOptions && attrOptions !== "") {
 				try {
 					attrOptions = attrOptions.replace(new RegExp("'", "g"), '"');
-					var dataoptions = $.parseJSON("{" + attrOptions + "}");
-					$.extend(true, userOptions, dataoptions);
+					dataoptions = $.parseJSON("{" + attrOptions + "}");
 				} catch (ex) {
-
-				} //need a more relax parseJSON
+					//need a more relax parseJSON
+				}
 			}
-			for (var option in opts) {
-				importOption(option);
+			for (option in opts) {
+				if (dataoptions) {
+					optionData = undefined;
+					for (var p in dataoptions) {
+						if (p.toLowerCase() === option.toLowerCase()) {
+							optionData = dataoptions[p];
+							break;
+						}
+					}
+				}
+				importOption(option, optionData);
 			}
 			if (userOptions.alias) {
 				resolveAlias(userOptions.alias, userOptions, opts);

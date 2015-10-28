@@ -1,3 +1,9 @@
+/*
+Input Mask plugin dependencyLib
+http://github.com/RobinHerbots/jquery.inputmask
+Copyright (c) 2010 -  Robin Herbots
+Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
+*/
 (function(factory) {
 		if (typeof define === "function" && define.amd) {
 			define(["jqlite"], factory);

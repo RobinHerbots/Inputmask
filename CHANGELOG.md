@@ -8,10 +8,12 @@ All notable changes to this project will be documented in this file.
 - Add tooltip option
 
 ### Updates
+- allow passing multiple inputs to mask function
 - Improve handling of compositionevents
 - improve extendAliases, extendDefinitions, extendDefaults
 
 ### Fixed
+- upper/lower case handling in data-inputmask-* #1079
 - IE8 Null values after submit #1076
 - Each character repeats on Mobile #912
 - extra tooltip property #1071
