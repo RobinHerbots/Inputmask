@@ -2115,9 +2115,10 @@
 
 				if (checkval !== true && (!(e.ctrlKey && e.altKey) && (e.ctrlKey || e.metaKey || ignorable))) {
 					if (k === Inputmask.keyCode.ENTER && undoValue !== getBuffer().join("")) {
+						undoValue = getBuffer().join("");
+						e.preventDefault();
 						setTimeout(function() {
 							$input.trigger("change");
-							undoValue = getBuffer().join("");
 						}, 0);
 					}
 					return true;

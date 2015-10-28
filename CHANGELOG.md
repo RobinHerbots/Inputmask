@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 - improve extendAliases, extendDefinitions, extendDefaults
 
 ### Fixed
+- Double "Change" action when pressing Enter in Firefox #1070
 - upper/lower case handling in data-inputmask-* #1079
 - IE8 Null values after submit #1076
 - Each character repeats on Mobile #912

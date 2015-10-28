@@ -520,7 +520,7 @@ $("#CellPhone").inputmask("option", "onBeforePaste")
 Instead of masking an input element it is also possible to use the inputmask for formatting given values. Think of formatting values to show in jqGrid or on other elements then inputs.
 
 ```javascript
-var formattedDate =Inputmask.format("2331973", { alias: "dd/mm/yyyy"});
+var formattedDate = Inputmask.format("2331973", { alias: "dd/mm/yyyy"});
 ```
 ### isValid
 Validate a given value against the mask.
