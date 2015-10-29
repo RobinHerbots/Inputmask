@@ -141,7 +141,7 @@ As dependencyLib you can choose between the supported libraries.
 ### Default masking definitions
 - 9 : numeric
 - a : alphabetical
-  - : alphanumeric
+  - * : alphanumeric
 
 There are more definitions defined within the extensions.<br>You can find info within the js-files or by further exploring the options.
 
