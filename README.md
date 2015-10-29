@@ -637,7 +637,7 @@ With the non-greedy option set to false, you can specify * as repeat.  This make
 ### autoUnmask
 Automatically unmask the value when retrieved.<br>Default: false.
 
-When setting this option to true the plugin also expects the initial value from the server to be unmasked.
+**When setting this option to true the plugin also expects the initial value from the server to be unmasked.**
 
 ### removeMaskOnSubmit
 Remove the mask before submitting the form.<br>Default: false
