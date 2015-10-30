@@ -1,6 +1,6 @@
 {
   "name": "jquery.inputmask",
-  "version": "3.2.3-18",
+  "version": "3.2.3-20",
   "description": "jquery.inputmask is a jquery plugin which create an input mask.",
   "main": "./dist/inputmask/jquery.inputmask.js",
   "files": [
@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "browserify": "^11.1.0",
-    "browserify-shim": "^3.8.10",
+    "browserify-shim": "^3.8.11",
     "grunt": "^0.4.5",
     "grunt-available-tasks": "^0.6.0",
     "grunt-browserify": "^4.0.1",
@@ -47,19 +47,21 @@
     "grunt-cli": "^0.1.13",
     "grunt-contrib-clean": "^0.6.0",
     "grunt-contrib-uglify": "^0.9.1",
-    "grunt-eslint": "^17.0.0",
+    "grunt-eslint": "^17.3.1",
     "grunt-karma": "^0.12.0",
-    "grunt-nuget": "^0.1.4",
+    "grunt-nuget": "^0.1.5",
     "grunt-release": "^0.13.0",
     "grunt-shell": "^1.1.2",
-    "jqlite": "^0.2.19",
-    "karma": "^0.13.10",
+    "jqlite": "^0.2.25",
+    "karma": "^0.13.14",
     "karma-chrome-launcher": "^0.2.0",
     "karma-firefox-launcher": "^0.1.6",
+    "karma-ie-launcher": "^0.2.0",
     "karma-phantomjs-launcher": "^0.2.0",
-    "karma-qunit": "^0.1.5",
+    "karma-qunit": "^0.1.7",
+    "karma-requirejs": "^0.2.2",
     "load-grunt-tasks": "^3.2.0",
-    "qunitjs": "^1.19.0",
+    "qunitjs": "^1.20.0",
     "requirejs": "^2.1.20"
   }
 }

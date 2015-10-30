@@ -1,7 +1,11 @@
-define([
-	"inputmask.dependencyLib",
-	"inputmask"
-], function($, Inputmask) {
+(function(factory) {
+		if (typeof define === "function" && define.amd) {
+			define(["inputmask.dependencyLib", "inputmask"], factory);
+		} else {
+			factory(window.dependencyLib || jQuery, window.Inputmask);
+		}
+	}
+(function($, Inputmask) {
 	$.caret = function(input, begin, end) {
 		input = input.nodeName ? input : input[0];
 		var range;
@@ -153,4 +157,4 @@ define([
 		window.clipboardData ? window.clipboardData.setData("Text", inputStr) : $input[0].inputmask._valueSet(isRTL ? inputStr.split('').reverse().join('') : inputStr);
 		$input.trigger('paste');
 	}
-});
+}));

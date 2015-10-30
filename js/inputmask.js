@@ -324,7 +324,7 @@
 			function importOption(option, optionData) {
 				optionData = optionData !== undefined ? optionData : npt.getAttribute("data-inputmask-" + option);
 				if (optionData !== null) {
-					optionData = typeof optionData == "boolean" ? optionData : optionData.toString();
+					// optionData = typeof optionData == "boolean" ? optionData : optionData.toString();
 					/*eslint-disable no-eval */
 					if (typeof optionData === "string" && (option.indexOf("on") === 0 || optionData === "false" || optionData === "true")) {
 						optionData = eval("(" + optionData + ")");
@@ -1851,6 +1851,9 @@
 								inComposition = false;
 								keydownPressed = false;
 								break;
+							case "cut":
+								skipInputEvent = true;
+								break;
 						}
 						//console.log("executed " + e.type);
 						return eventHandler.apply(this, arguments);
@@ -2395,18 +2398,17 @@
 			}
 
 			function cutEvent(e) {
-				skipInputEvent = true; //stop inputFallback
 				var input = this,
 					$input = $(input),
 					pos = caret(input),
 					ev = e.originalEvent || e;
 
 				//correct clipboardData
-				if (isRTL) {
-					var clipboardData = window.clipboardData || ev.clipboardData,
-						clipData = clipboardData.getData("text").split("").reverse().join("");
-					clipboardData.setData("text", clipData);
-				}
+				var clipboardData = window.clipboardData || ev.clipboardData,
+					clipData = isRTL ? getBuffer().slice(pos.end, pos.begin) : getBuffer().slice(pos.begin, pos.end);
+				clipboardData.setData("text", isRTL ? clipData.reverse().join("") : clipData.join(""));
+				if(document.execCommand) document.execCommand("copy"); // copy selected content to system clipbaord
+
 				handleRemove(input, Inputmask.keyCode.DELETE, pos);
 				writeBuffer(input, getBuffer(), getMaskSet().p, e, undoValue !== getBuffer().join(""));
 

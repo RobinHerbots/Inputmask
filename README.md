@@ -59,12 +59,13 @@ via jquery plugin
 <script src="inputmask.???.Extensions.js" type="text/javascript"></script>
 <script src="jquery.inputmask.js" type="text/javascript"></script>
 ```
+
 or with the bundled version
+
 ```html
 <script src="jquery.js" type="text/javascript"></script>
 <script src="jquery.inputmask.bundle.js" type="text/javascript"></script>
 ```
-
 
 ```javascript
 $(document).ready(function(){
@@ -412,15 +413,21 @@ Create a mask for the input.
 ```javascript
    $(selector).inputmask('mask', { mask: "99-999-99"});
 ```
+
    or
+
 ```javascript
    Inputmask({ mask: "99-999-99"}).mask(document.querySelectorAll(selector));
 ```
+
    or
+
 ```javascript
    Inputmask("99-999-99").mask(document.querySelectorAll(selector));
 ```
+
 or
+
 ```javascript
 var im : new Inputmask("99-999-99");
 im.mask(document.querySelectorAll(selector));
@@ -432,18 +439,20 @@ Get the unmaskedvalue
 ```javascript
    $(selector).inputmask('unmaskedvalue');
 ```
+
 or
+
 ```javascript
 var input = document.getElementById(selector);
 if(input.inputmask)
   input.inputmask.unmaskedvalue()
 ```
+
 #### Value unmasking
 Unmask a given value against the mask.
 
 ```javascript
-var unformattedDate = Inputmask.unmask("23/03/1973", { alias: "dd/mm/yyyy"}); //23031973  
-
+var unformattedDate = Inputmask.unmask("23/03/1973", { alias: "dd/mm/yyyy"}); //23031973
 ```
 
 ### remove
@@ -452,7 +461,9 @@ Remove the inputmask.
 ```javascript
     $(selector).inputmask('remove');
 ```
+
 or
+
 ```javascript
 var input = document.getElementById(selector);
 if(input.inputmask)
@@ -516,12 +527,14 @@ $("#CellPhone").inputmask("option", {
 })
 $("#CellPhone").inputmask("option", "onBeforePaste")
 ```
+
 ### format
 Instead of masking an input element it is also possible to use the inputmask for formatting given values. Think of formatting values to show in jqGrid or on other elements then inputs.
 
 ```javascript
 var formattedDate = Inputmask.format("2331973", { alias: "dd/mm/yyyy"});
 ```
+
 ### isValid
 Validate a given value against the mask.
 
@@ -816,7 +829,6 @@ Show the current mask definition as a tooltip.
 ```
 
 ### tooltip
-
 Specify the tooltip to show.  By default the mask definition will be taken.
 
 ### numericInput

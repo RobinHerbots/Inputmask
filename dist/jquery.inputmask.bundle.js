@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.3-18
+* Version: 3.2.3-20
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -34,8 +34,7 @@
     function importAttributeOptions(npt, opts, userOptions) {
         function importOption(option, optionData) {
             optionData = void 0 !== optionData ? optionData : npt.getAttribute("data-inputmask-" + option), 
-            null !== optionData && (optionData = "boolean" == typeof optionData ? optionData : optionData.toString(), 
-            "string" != typeof optionData || 0 !== option.indexOf("on") && "false" !== optionData && "true" !== optionData || (optionData = eval("(" + optionData + ")")), 
+            null !== optionData && ("string" != typeof optionData || 0 !== option.indexOf("on") && "false" !== optionData && "true" !== optionData || (optionData = eval("(" + optionData + ")")), 
             "mask" === option && 0 === optionData.indexOf("[") ? (userOptions[option] = optionData.replace(/[\s[\]]/g, "").split(","), 
             userOptions[option][0] = userOptions[option][0].replace("'", ""), userOptions[option][userOptions[option].length - 1] = userOptions[option][userOptions[option].length - 1].replace("'", "")) : userOptions[option] = optionData);
         }
@@ -803,6 +802,10 @@
 
                           case "compositionend":
                             inComposition = !1, keydownPressed = !1;
+                            break;
+
+                          case "cut":
+                            skipInputEvent = !0;
                         }
                         return eventHandler.apply(this, arguments);
                     }
@@ -1061,13 +1064,10 @@
             }, 0);
         }
         function cutEvent(e) {
-            skipInputEvent = !0;
-            var input = this, $input = $(input), pos = caret(input), ev = e.originalEvent || e;
-            if (isRTL) {
-                var clipboardData = window.clipboardData || ev.clipboardData, clipData = clipboardData.getData("text").split("").reverse().join("");
-                clipboardData.setData("text", clipData);
-            }
-            handleRemove(input, Inputmask.keyCode.DELETE, pos), writeBuffer(input, getBuffer(), getMaskSet().p, e, undoValue !== getBuffer().join("")), 
+            var input = this, $input = $(input), pos = caret(input), ev = e.originalEvent || e, clipboardData = window.clipboardData || ev.clipboardData, clipData = isRTL ? getBuffer().slice(pos.end, pos.begin) : getBuffer().slice(pos.begin, pos.end);
+            clipboardData.setData("text", isRTL ? clipData.reverse().join("") : clipData.join("")), 
+            document.execCommand && document.execCommand("copy"), handleRemove(input, Inputmask.keyCode.DELETE, pos), 
+            writeBuffer(input, getBuffer(), getMaskSet().p, e, undoValue !== getBuffer().join("")), 
             input.inputmask._valueGet() === getBufferTemplate().join("") && $input.trigger("cleared"), 
             opts.showTooltip && (input.title = opts.tooltip || getMaskSet().mask);
         }

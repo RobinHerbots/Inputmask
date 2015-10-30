@@ -1,4 +1,4 @@
-requirejs.config({
+require.config({
 	baseUrl: "./",
 	paths: {
 		"jquery": "../node_modules/jquery/dist/jquery",
@@ -12,14 +12,5 @@ requirejs.config({
 		// "inputmask.dependencyLib": "../extra/dependencyLibs/inputmask.dependencyLib",
 		// "inputmask.dependencyLib": "../extra/dependencyLibs/inputmask.dependencyLib.jqlite",
 		"inputmask": "../dist/inputmask/inputmask"
-	},
-	shim: {
-		'qunit': {
-			exports: 'QUnit',
-			init: function() {
-				QUnit.config.autoload = false;
-				QUnit.config.autostart = false;
-			}
-		}
 	}
 });
