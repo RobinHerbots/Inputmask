@@ -2277,13 +2277,13 @@
 				var caretPos = caret(input),
 					currentValue = input._valueGet();
 
-				currentValue = currentValue.replace(new RegExp("(" + escapeRegex(getBufferTemplate().join("")) + ")*"), "");
+				currentValue = currentValue.replace(new RegExp("(" + Inputmask.escapeRegex(getBufferTemplate().join("")) + ")*"), "");
 				//correct caretposition for chrome
 				if (caretPos.begin > currentValue.length) {
 					caret(input, currentValue.length);
 					caretPos = caret(input);
 				}
-				if ((getBuffer().length - currentValue.length) == 1 && currentValue.charAt(caretPos.begin) != getBuffer()[caretPos.begin] && currentValue.charAt(caretPos.begin + 1) != getBuffer()[caretPos.begin] && !isMask(caretPos.begin)) {
+				if ((getBuffer().length - currentValue.length) === 1 && currentValue.charAt(caretPos.begin) !== getBuffer()[caretPos.begin] && currentValue.charAt(caretPos.begin + 1) !== getBuffer()[caretPos.begin] && !isMask(caretPos.begin)) {
 					e.keyCode = opts.keyCode.BACKSPACE;
 					keydownEvent.call(input, e);
 				} else {

@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.3-21
+* Version: 3.2.3-22
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -998,9 +998,9 @@
         }
         function mobileInputEvent(e) {
             var input = this, caretPos = caret(input), currentValue = input._valueGet();
-            currentValue = currentValue.replace(new RegExp("(" + escapeRegex(getBufferTemplate().join("")) + ")*"), ""), 
+            currentValue = currentValue.replace(new RegExp("(" + Inputmask.escapeRegex(getBufferTemplate().join("")) + ")*"), ""), 
             caretPos.begin > currentValue.length && (caret(input, currentValue.length), caretPos = caret(input)), 
-            getBuffer().length - currentValue.length != 1 || currentValue.charAt(caretPos.begin) == getBuffer()[caretPos.begin] || currentValue.charAt(caretPos.begin + 1) == getBuffer()[caretPos.begin] || isMask(caretPos.begin) ? inputFallBackEvent.call(this, e) : (e.keyCode = opts.keyCode.BACKSPACE, 
+            getBuffer().length - currentValue.length !== 1 || currentValue.charAt(caretPos.begin) === getBuffer()[caretPos.begin] || currentValue.charAt(caretPos.begin + 1) === getBuffer()[caretPos.begin] || isMask(caretPos.begin) ? inputFallBackEvent.call(this, e) : (e.keyCode = opts.keyCode.BACKSPACE, 
             keydownEvent.call(input, e)), e.preventDefault();
         }
         function compositionStartEvent(e) {
