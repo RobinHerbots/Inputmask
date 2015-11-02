@@ -714,10 +714,10 @@
 
 		var ua = navigator.userAgent,
 			iphone = ua.match(new RegExp("iphone", "i")) !== null,
-			// android = ua.match(new RegExp("android.*safari.*", "i")) !== null,
+			android = ua.match(new RegExp("android.*safari.*", "i")) !== null,
 			androidchrome = ua.match(new RegExp("android.*chrome.*", "i")) !== null,
 			androidfirefox = ua.match(new RegExp("android.*firefox.*", "i")) !== null,
-			// kindle = /Kindle/i.test(ua) || /Silk/i.test(ua) || /KFTT/i.test(ua) || /KFOT/i.test(ua) || /KFJWA/i.test(ua) || /KFJWI/i.test(ua) || /KFSOWI/i.test(ua) || /KFTHWA/i.test(ua) || /KFTHWI/i.test(ua) || /KFAPWA/i.test(ua) || /KFAPWI/i.test(ua),
+			kindle = /Kindle/i.test(ua) || /Silk/i.test(ua) || /KFTT/i.test(ua) || /KFOT/i.test(ua) || /KFJWA/i.test(ua) || /KFJWI/i.test(ua) || /KFSOWI/i.test(ua) || /KFTHWA/i.test(ua) || /KFTHWI/i.test(ua) || /KFAPWA/i.test(ua) || /KFAPWI/i.test(ua),
 			PasteEventType = isInputEventSupported("paste") ? "paste" : isInputEventSupported("input") ? "input" : "propertychange";
 
 		//if (androidchrome) {
@@ -2270,6 +2270,28 @@
 				e.preventDefault();
 			}
 
+			function mobileInputEvent(e) {
+				var input = this;
+
+				//backspace in chrome32 only fires input event - detect & treat
+				var caretPos = caret(input),
+					currentValue = input._valueGet();
+
+				currentValue = currentValue.replace(new RegExp("(" + escapeRegex(getBufferTemplate().join("")) + ")*"), "");
+				//correct caretposition for chrome
+				if (caretPos.begin > currentValue.length) {
+					caret(input, currentValue.length);
+					caretPos = caret(input);
+				}
+				if ((getBuffer().length - currentValue.length) == 1 && currentValue.charAt(caretPos.begin) != getBuffer()[caretPos.begin] && currentValue.charAt(caretPos.begin + 1) != getBuffer()[caretPos.begin] && !isMask(caretPos.begin)) {
+					e.keyCode = opts.keyCode.BACKSPACE;
+					keydownEvent.call(input, e);
+				} else {
+					inputFallBackEvent.call(this, e);
+				}
+				e.preventDefault();
+			}
+
 			function compositionStartEvent(e) {
 				var ev = e.originalEvent || e;
 				undoValue = getBuffer().join("");
@@ -2407,7 +2429,7 @@
 				var clipboardData = window.clipboardData || ev.clipboardData,
 					clipData = isRTL ? getBuffer().slice(pos.end, pos.begin) : getBuffer().slice(pos.begin, pos.end);
 				clipboardData.setData("text", isRTL ? clipData.reverse().join("") : clipData.join(""));
-				if(document.execCommand) document.execCommand("copy"); // copy selected content to system clipbaord
+				if (document.execCommand) document.execCommand("copy"); // copy selected content to system clipbaord
 
 				handleRemove(input, Inputmask.keyCode.DELETE, pos);
 				writeBuffer(input, getBuffer(), getMaskSet().p, e, undoValue !== getBuffer().join(""));
@@ -2538,10 +2560,10 @@
 					if (PasteEventType === "paste") {
 						$el.on("input.inputmask", wrapEventRuler(inputFallBackEvent));
 					}
-					//if (android || androidfirefox || androidchrome || kindle) {
-					//		$el.off("input.inputmask");
-					//		$el.on("input.inputmask", mobileInputEvent);
-					//}
+					if (android || androidfirefox || androidchrome || kindle) {
+						$el.off("input.inputmask");
+						$el.on("input.inputmask", wrapEventRuler(mobileInputEvent));
+					}
 				}
 				$el.on("setvalue.inputmask", wrapEventRuler(setValueEvent));
 

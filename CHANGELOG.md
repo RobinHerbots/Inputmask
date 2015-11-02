@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 - improve extendAliases, extendDefinitions, extendDefaults
 
 ### Fixed
+- Cannot erase input value throw mask symbols (Android 4.4, Android 4.2) #1090
 - CTRL-x / Cut issue #948
 - Double "Change" action when pressing Enter in Firefox #1070
 - upper/lower case handling in data-inputmask-* #1079
