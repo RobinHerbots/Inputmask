@@ -469,6 +469,12 @@ var input = document.getElementById(selector);
 if(input.inputmask)
   input.inputmask.remove()
 ```
+or
+
+```javascript
+Inputmask.remove(document.getElementById(selector));
+```
+
 
 ### getemptymask
 return the default (empty) mask value

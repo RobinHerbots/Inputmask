@@ -60,6 +60,15 @@ module.exports = function(grunt) {
 				ASCIIOnly: true
 			}
 		};
+		uglifyConfig["bundlemin"] = {
+			dest: "dist/min/jquery.inputmask.bundle.min.js",
+			src: srcFiles,
+			options: {
+				banner: createBanner("jquery.inputmask.bundle.js"),
+				preserveComments: "some",
+				ASCIIOnly: true
+			}
+		};
 
 		return uglifyConfig;
 	}
@@ -110,7 +119,7 @@ module.exports = function(grunt) {
 			dist: {
 				src: 'dist/jQuery.InputMask.<%= pkg.version %>.nupkg',
 				options: {
-						source: "https://www.nuget.org"
+					source: "https://www.nuget.org"
 				}
 			}
 		},

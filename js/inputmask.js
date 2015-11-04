@@ -239,6 +239,11 @@
 		Inputmask.isValid = function(value, options) {
 			return Inputmask(options).isValid(value);
 		};
+		Inputmask.remove = function(elems) {
+			$.each(elems, function(ndx, el) {
+				if (el.inputmask) el.inputmask.remove();
+			});
+		};
 		Inputmask.escapeRegex = function(str) {
 			var specials = ["/", ".", "*", "+", "?", "|", "(", ")", "[", "]", "{", "}", "\\", "$", "^"];
 			return str.replace(new RegExp("(\\" + specials.join("|\\") + ")", "gim"), "\\$1");
@@ -324,12 +329,11 @@
 			function importOption(option, optionData) {
 				optionData = optionData !== undefined ? optionData : npt.getAttribute("data-inputmask-" + option);
 				if (optionData !== null) {
-					// optionData = typeof optionData == "boolean" ? optionData : optionData.toString();
-					/*eslint-disable no-eval */
-					if (typeof optionData === "string" && (option.indexOf("on") === 0 || optionData === "false" || optionData === "true")) {
-						optionData = eval("(" + optionData + ")");
+					if (typeof optionData === "string") {
+						if (option.indexOf("on") === 0) optionData = window[optionData]; //get function definition
+						else if (optionData === "false") optionData = false;
+						else if (optionData === "true") optionData = true;
 					}
-					/*eslint-enable no-eval */
 					if (option === "mask" && optionData.indexOf("[") === 0) {
 						userOptions[option] = optionData.replace(/[\s[\]]/g, "").split(",");
 						userOptions[option][0] = userOptions[option][0].replace("'", "");
@@ -339,12 +343,8 @@
 			}
 
 			if (attrOptions && attrOptions !== "") {
-				try {
-					attrOptions = attrOptions.replace(new RegExp("'", "g"), '"');
-					dataoptions = $.parseJSON("{" + attrOptions + "}");
-				} catch (ex) {
-					//need a more relax parseJSON
-				}
+				attrOptions = attrOptions.replace(new RegExp("'", "g"), '"');
+				dataoptions = JSON.parse("{" + attrOptions + "}");
 			}
 			for (option in opts) {
 				if (dataoptions) {
@@ -2568,30 +2568,28 @@
 				$el.on("setvalue.inputmask", wrapEventRuler(setValueEvent));
 
 				//apply mask
-				var initialValue = $.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(el, el.inputmask._valueGet(), opts) || el.inputmask._valueGet()) : el.inputmask._valueGet();
-				checkVal(el, true, false, initialValue.split(""));
-				var buffer = getBuffer().slice();
-				undoValue = buffer.join("");
-				// Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
-				var activeElement;
-				try {
-					activeElement = document.activeElement;
-				} catch (e) {}
-				if (isComplete(buffer) === false) {
-					if (opts.clearIncomplete) {
-						resetMaskSet();
+				if (el.inputmask._valueGet() !== "" || opts.clearMaskOnLostFocus === false) {
+					var initialValue = $.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(el, el.inputmask._valueGet(), opts) || el.inputmask._valueGet()) : el.inputmask._valueGet();
+					checkVal(el, true, false, initialValue.split(""));
+					var buffer = getBuffer().slice();
+					undoValue = buffer.join("");
+					// Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
+					if (isComplete(buffer) === false) {
+						if (opts.clearIncomplete) {
+							resetMaskSet();
+						}
 					}
-				}
-				if (opts.clearMaskOnLostFocus) {
-					if (buffer.join("") === getBufferTemplate().join("")) {
-						buffer = [];
-					} else {
-						clearOptionalTail(buffer);
+					if (opts.clearMaskOnLostFocus) {
+						if (buffer.join("") === getBufferTemplate().join("")) {
+							buffer = [];
+						} else {
+							clearOptionalTail(buffer);
+						}
 					}
-				}
-				writeBuffer(el, buffer);
-				if (activeElement === el) { //position the caret when in focus
-					caret(el, seekNext(getLastValidPosition()));
+					writeBuffer(el, buffer);
+					if (document.activeElement === el) { //position the caret when in focus
+						caret(el, seekNext(getLastValidPosition()));
+					}
 				}
 			}
 

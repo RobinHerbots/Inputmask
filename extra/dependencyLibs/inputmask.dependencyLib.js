@@ -280,9 +280,6 @@ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.p
 			return type(obj) === "function";
 		};
 		DependencyLib.noop = function() {};
-		DependencyLib.parseJSON = function(data) {
-			return JSON.parse(data + "");
-		};
 		DependencyLib.isArray = Array.isArray;
 		DependencyLib.inArray = function(elem, arr, i) {
 			return arr == null ? -1 : indexOf(arr, elem, i);
@@ -447,7 +444,7 @@ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.p
 				type: type,
 				which: 0
 			};
-		}
+		};
 		DependencyLib.data = function(owner, key, value) {
 			if (value === undefined) {
 				return owner.__data ? owner.__data[key] : null;
