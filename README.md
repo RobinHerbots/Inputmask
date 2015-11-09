@@ -3,7 +3,7 @@ Copyright (c) 2010 - 2015 Robin Herbots Licensed under the MIT license ([http://
 
 [![NPM Version][npm-image]][npm-url] [![Dependency Status][david-image]][david-url] [![devDependency Status][david-dev-image]][david-dev-url]
 
-jquery.inputmask is a jQuery plugin which create an input mask.
+jquery.inputmask is a jQuery plugin which creates an input mask.
 
 An inputmask helps the user with the input by ensuring a predefined format. This can be useful for dates, numerics, phone numbers, ...
 
@@ -30,7 +30,7 @@ Demo page see [http://robinherbots.github.io/jquery.inputmask](http://robinherbo
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZNR3EB6JTMMSS)
 
 ## Usage:
-Include the js-files which you can find in the dist-folder.
+Include the js-files which you can find in the `dist` folder.
 
 via Inputmask class
 
@@ -134,15 +134,15 @@ As dependencyLib you can choose between the supported libraries.
 - .... (others are welcome)
 
 ### Allowed HTML-elements
-- input type="text"
-- input type="tel"
-- div contenteditable="true" (and all others supported by contenteditable)
+- `<input type="text">`
+- `<input type="tel">`
+- `<div contenteditable="true">` (and all others supported by contenteditable)
 - any html-element (mask text content or set maskedvalue with jQuery.val)
 
 ### Default masking definitions
-- 9 : numeric
-- a : alphabetical
-- * : alphanumeric
+- `9` : numeric
+- `a` : alphabetical
+- `*` : alphanumeric
 
 There are more definitions defined within the extensions.<br>You can find info within the js-files or by further exploring the options.
 
@@ -166,7 +166,7 @@ Example:
 $('#test').inputmask('(99) 9999[9]-9999');
 ```
 
-This mask wil allow input like (99) 99999-9999 or (99) 9999-9999.<br>Input => 12123451234      mask => (12) 12345-1234    (trigger complete)<br>Input => 121234-1234      mask => (12) 1234-1234     (trigger complete)<br>Input => 1212341234       mask => (12) 12341-234_    (trigger incomplete)  
+This mask wil allow input like `(99) 99999-9999` or `(99) 9999-9999`.<br>Input => 12123451234      mask => (12) 12345-1234    (trigger complete)<br>Input => 121234-1234      mask => (12) 1234-1234     (trigger complete)<br>Input => 1212341234       mask => (12) 12341-234_    (trigger incomplete)  
 
 #### skipOptionalPartCharacter
 As an extra there is another configurable character which is used to skip an optional part in the mask.  
@@ -434,7 +434,7 @@ im.mask(document.querySelectorAll(selector));
 ```
 
 ### unmaskedvalue
-Get the unmaskedvalue
+Get the `unmaskedvalue`
 
 ```javascript
    $(selector).inputmask('unmaskedvalue');
@@ -456,7 +456,7 @@ var unformattedDate = Inputmask.unmask("23/03/1973", { alias: "dd/mm/yyyy"}); //
 ```
 
 ### remove
-Remove the inputmask.
+Remove the `inputmask`.
 
 ```javascript
     $(selector).inputmask('remove');
