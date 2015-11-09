@@ -663,8 +663,9 @@
 						};
 						if (nocache !== true) {
 							Inputmask.prototype.masksCache[opts.numericInput ? mask.split("").reverse().join("") : mask] = masksetDefinition;
+							masksetDefinition = $.extend(true, {}, Inputmask.prototype.masksCache[opts.numericInput ? mask.split("").reverse().join("") : mask]);
 						}
-					} else masksetDefinition = $.extend(true, {}, Inputmask.prototype.masksCache[mask]);
+					} else masksetDefinition = $.extend(true, {}, Inputmask.prototype.masksCache[opts.numericInput ? mask.split("").reverse().join("") : mask]);
 
 					return masksetDefinition;
 				}

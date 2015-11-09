@@ -1,9 +1,17 @@
 define([
 	"qunit",
 	"inputmask.dependencyLib",
-	"inputmask"
+	"inputmask",
+	"../dist/inputmask/inputmask.date.extensions",
+	"../dist/inputmask/inputmask.extensions",
+	"../dist/inputmask/inputmask.numeric.extensions",
+	"../dist/inputmask/inputmask.phone.extensions",
+	"../dist/inputmask/inputmask.regex.extensions",
+	"prototypeExtensions",
+	"simulator"
 ], function(qunit, $, Inputmask) {
-module("Regex masks");
+
+qunit.module("Regex masks");
 
 test("inputmask(\"Regex\", { regex: \"[0-9]*\"});", function() {
 	var $fixture = $("#qunit-fixture");
@@ -356,4 +364,5 @@ test("inputmask(\"Regex\", {regex: \"[а-яА-Я\\s]*\"}) - type space - SilentI
 
 	$("#testmask").remove();
 });
+
 });

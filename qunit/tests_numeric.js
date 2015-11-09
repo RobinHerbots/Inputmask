@@ -1,9 +1,17 @@
 define([
 	"qunit",
 	"inputmask.dependencyLib",
-	"inputmask"
+	"inputmask",
+	"../dist/inputmask/inputmask.date.extensions",
+	"../dist/inputmask/inputmask.extensions",
+	"../dist/inputmask/inputmask.numeric.extensions",
+	"../dist/inputmask/inputmask.phone.extensions",
+	"../dist/inputmask/inputmask.regex.extensions",
+	"prototypeExtensions",
+	"simulator"
 ], function(qunit, $, Inputmask) {
-	module("Numeric.Extensions");
+
+	qunit.module("Numeric.Extensions");
 
 	asyncTest("€ Currency precision 2", function() {
 		var $fixture = $("#qunit-fixture");
@@ -1583,4 +1591,5 @@ define([
 		equal($("#testmask")[0].inputmask._valueGet(), "", "Result " + $("#testmask")[0].inputmask._valueGet());
 		$("#testmask").remove();
 	});
+
 });

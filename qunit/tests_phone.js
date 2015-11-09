@@ -1,9 +1,17 @@
 define([
 	"qunit",
 	"inputmask.dependencyLib",
-	"inputmask"
+	"inputmask",
+	"../dist/inputmask/inputmask.date.extensions",
+	"../dist/inputmask/inputmask.extensions",
+	"../dist/inputmask/inputmask.numeric.extensions",
+	"../dist/inputmask/inputmask.phone.extensions",
+	"../dist/inputmask/inputmask.regex.extensions",
+	"prototypeExtensions",
+	"simulator"
 ], function(qunit, $, Inputmask) {
-module("Phone masks");
+
+qunit.module("Phone masks");
 
 asyncTest("inputmask(\"phone be\") - type \"473890428\"", 1, function() {
 	var $fixture = $("#qunit-fixture");
@@ -115,4 +123,5 @@ asyncTest("inputmask(\"phone\") - Brazil switch", 1, function() {
 		$("#testmask").remove();
 	}, 0);
 });
+
 });

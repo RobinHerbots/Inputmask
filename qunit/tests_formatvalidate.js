@@ -1,9 +1,16 @@
 define([
 	"qunit",
 	"inputmask.dependencyLib",
-	"inputmask"
+	"inputmask",
+	"../dist/inputmask/inputmask.date.extensions",
+	"../dist/inputmask/inputmask.extensions",
+	"../dist/inputmask/inputmask.numeric.extensions",
+	"../dist/inputmask/inputmask.phone.extensions",
+	"../dist/inputmask/inputmask.regex.extensions",
+	"prototypeExtensions",
+	"simulator"
 ], function(qunit, $, Inputmask) {
-	module("Value formatting");
+	qunit.module("Value formatting");
 	test("Inputmask.format(\"2331973\", { alias: \"date\"})", function() {
 		var formattedValue = Inputmask.format("2331973", {
 			alias: "date"
@@ -50,7 +57,7 @@ define([
 	});
 
 
-	module("Value Validating");
+	qunit.module("Value Validating");
 	test("Inputmask.isValid(\"23/03/1973\", { alias: \"date\"})", function() {
 		var isValid = Inputmask.isValid("23/03/1973", {
 			alias: "date"
@@ -214,7 +221,7 @@ define([
 		equal(isValid, true, "Result " + isValid);
 	});
 
-	module("Value unmasking");
+	qunit.module("Value unmasking");
 	test("inputmask.unmask(\"23/03/1973\", { alias: \"dd/mm/yyyy\" })", function() {
 		var unmasked = Inputmask.unmask("23/03/1973", {
 			alias: "dd/mm/yyyy"

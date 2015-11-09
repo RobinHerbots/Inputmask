@@ -1,9 +1,17 @@
 define([
 	"qunit",
 	"inputmask.dependencyLib",
-	"inputmask"
+	"inputmask",
+	"../dist/inputmask/inputmask.date.extensions",
+	"../dist/inputmask/inputmask.extensions",
+	"../dist/inputmask/inputmask.numeric.extensions",
+	"../dist/inputmask/inputmask.phone.extensions",
+	"../dist/inputmask/inputmask.regex.extensions",
+	"prototypeExtensions",
+	"simulator"
 ], function(qunit, $, Inputmask) {
-module("multi masks");
+
+qunit.module("multi masks");
 asyncTest("inputmask({ mask: [\"99-99\", \"999-99\"]}) - input 12345", function() {
 	var $fixture = $("#qunit-fixture");
 	$fixture.append('<input type="text" id="testmask" />');
@@ -299,4 +307,5 @@ test("inputmask({ mask: [{ \"mask\": \"###-##-####\" }]) - lynxlive", function()
 	equal(testmask.value, "123-12-1234", "Result " + testmask.value);
 	$("#testmask").remove();
 });
+
 });

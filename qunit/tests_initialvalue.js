@@ -1,9 +1,17 @@
 define([
 	"qunit",
 	"inputmask.dependencyLib",
-	"inputmask"
+	"inputmask",
+	"../dist/inputmask/inputmask.date.extensions",
+	"../dist/inputmask/inputmask.extensions",
+	"../dist/inputmask/inputmask.numeric.extensions",
+	"../dist/inputmask/inputmask.phone.extensions",
+	"../dist/inputmask/inputmask.regex.extensions",
+	"prototypeExtensions",
+	"simulator"
 ], function(qunit, $, Inputmask) {
-module("Initial value setting");
+
+qunit.module("Initial value setting");
 
 test("inputmask(\"999:99\", { placeholder: \"0\"}) value=\"007:20\"", function() {
 	var $fixture = $("#qunit-fixture");

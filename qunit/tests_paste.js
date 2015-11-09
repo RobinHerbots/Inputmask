@@ -1,9 +1,17 @@
 define([
 	"qunit",
 	"inputmask.dependencyLib",
-	"inputmask"
+	"inputmask",
+	"../dist/inputmask/inputmask.date.extensions",
+	"../dist/inputmask/inputmask.extensions",
+	"../dist/inputmask/inputmask.numeric.extensions",
+	"../dist/inputmask/inputmask.phone.extensions",
+	"../dist/inputmask/inputmask.regex.extensions",
+	"prototypeExtensions",
+	"simulator"
 ], function(qunit, $, Inputmask) {
-module("Paste value");
+
+qunit.module("Paste value");
 asyncTest("inputmask(\"+7 (999) 999-99-99\") ~ paste \"+79114041112\"", function() {
 	var $fixture = $("#qunit-fixture");
 	$fixture.append('<input type="text" id="testmask" />');
@@ -279,4 +287,5 @@ asyncTest("02.999.999 ~ paste 02.024.900 - tnavarra", function() {
 		$("#testmask").remove();
 	}, 0);
 });
+
 });

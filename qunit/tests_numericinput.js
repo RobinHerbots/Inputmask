@@ -1,9 +1,17 @@
 define([
 	"qunit",
 	"inputmask.dependencyLib",
-	"inputmask"
+	"inputmask",
+	"../dist/inputmask/inputmask.date.extensions",
+	"../dist/inputmask/inputmask.extensions",
+	"../dist/inputmask/inputmask.numeric.extensions",
+	"../dist/inputmask/inputmask.phone.extensions",
+	"../dist/inputmask/inputmask.regex.extensions",
+	"prototypeExtensions",
+	"simulator"
 ], function(qunit, $, Inputmask) {
-	module("Direction RTL");
+
+	qunit.module("Direction RTL");
 	asyncTest("inputmask(\"999.999.999\") - delete 2nd with backspace, continue the mask", function() {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" dir="rtl" />');
@@ -127,7 +135,7 @@ define([
 		}, 0);
 	});
 
-	module("Numeric Input");
+	qunit.module("Numeric Input");
 	asyncTest("inputmask({ mask: \"9\", numericInput: true, repeat: 10, greedy: true }); - 1234567890", function() {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
@@ -341,4 +349,5 @@ define([
 			$("#testmask").remove();
 		}, 0);
 	});
+
 });

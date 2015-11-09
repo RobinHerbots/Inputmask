@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [UNRELEASED]
+## [3.2.3] - 2015-11-09
 
 ### Added
 - Inputmask.remove
@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - Add tooltip option
 
 ### Updates
+- fix bug in maskscache - context mixing
 - allow passing multiple inputs to mask function
 - Improve handling of compositionevents
 - improve extendAliases, extendDefinitions, extendDefaults

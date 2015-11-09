@@ -1,9 +1,17 @@
 define([
 	"qunit",
 	"inputmask.dependencyLib",
-	"inputmask"
+	"inputmask",
+	"../dist/inputmask/inputmask.date.extensions",
+	"../dist/inputmask/inputmask.extensions",
+	"../dist/inputmask/inputmask.numeric.extensions",
+	"../dist/inputmask/inputmask.phone.extensions",
+	"../dist/inputmask/inputmask.regex.extensions",
+	"prototypeExtensions",
+	"simulator"
 ], function(qunit, $, Inputmask) {
-module("Optional");
+
+qunit.module("Optional");
 test("inputmask(\"(99) 9999[9]-99999\") - input 121234-12345", function() {
 	var $fixture = $("#qunit-fixture");
 	$fixture.append('<input type="text" id="testmask" />');
@@ -331,4 +339,5 @@ test("inputmask({ mask: \"9999[ 9999][ 9999]\"}) - input 1234 space space - GMTA
 
 	$("#testmask").remove();
 });
+
 });
