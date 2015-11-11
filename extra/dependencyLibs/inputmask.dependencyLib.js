@@ -81,7 +81,7 @@ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.p
 		}();
 
 		function isValidElement(elem) {
-			return elem !== undefined && elem !== null && document.getElementById(elem.id);
+			return elem instanceof Element;
 		}
 
 		function Event(elem) {
