@@ -8,3 +8,10 @@ $(document).ready(function(){
    $(selector).inputmask('Regex', { regex: "[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}" });
 });
 ```
+Example turkish words regex (utf8):
+
+```javascript
+$(document).ready(function(){
+   $(selector).inputmask('Regex', { regex: "[a-zA-Z-9şŞıİçÇöÖüÜĞğ\-]+" });
+});
+```
