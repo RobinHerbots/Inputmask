@@ -119,7 +119,10 @@
 			masksCache: {},
 			mask: function(elems) {
 				var that = this;
-				elems = elems.length === undefined ? [elems] : elems;
+				if (typeof elems === "string") {
+					elems = document.querySelectorAll(elems);
+				}
+				elems = elems.nodeName ? [elems] : elems;
 				$.each(elems, function(ndx, el) {
 					var scopedOpts = $.extend(true, {}, that.opts);
 					importAttributeOptions(el, scopedOpts, $.extend(true, {}, that.userOptions));
@@ -838,10 +841,12 @@
 
 					if (!valid) {
 						getMaskSet().validPositions = $.extend(true, {}, positionsClone);
+						resetMaskSet(true);
 						return false;
 					}
 				} else getMaskSet().validPositions[pos] = validTest;
 
+				resetMaskSet(true);
 				return true;
 			}
 
@@ -857,7 +862,6 @@
 					}
 				}
 
-				resetMaskSet(true);
 				/*eslint-disable semi-spacing */
 				for (i = startPos + 1; i <= getLastValidPosition();) {
 					/*eslint-disable semi-spacing */
@@ -865,11 +869,16 @@
 					var s = getMaskSet().validPositions[startPos];
 					if (i < startPos) i = startPos + 1;
 					// while (getMaskSet().validPositions[i] == undefined) i++;
-					var t = getMaskSet().validPositions[i];
-					if (t !== undefined && isMask(i) && s === undefined) {
-						if (positionCanMatchDefinition(startPos, t.match.def) && isValid(startPos, t.input, true) !== false) {
-							delete getMaskSet().validPositions[i];
+					if ((getMaskSet().validPositions[i] !== undefined || !isMask(i)) && s === undefined) {
+						var t = getTestTemplate(i);
+						if (positionCanMatchDefinition(startPos, t.match.def)) {
+							if (isValid(startPos, t.input || getPlaceholder(i), true) !== false) {
+								delete getMaskSet().validPositions[i];
+								i++;
+							}
+						} else if (!isMask(i)) {
 							i++;
+							startPos--;
 						}
 						startPos++;
 					} else i++;
@@ -1131,7 +1140,7 @@
 				}
 				getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
 
-				// console.log(pos + " - " + JSON.stringify(matches));
+				console.log(pos + " - " + JSON.stringify(matches));
 				return getMaskSet().tests[pos];
 			}
 
@@ -1143,8 +1152,9 @@
 				return getMaskSet()._buffer;
 			}
 
-			function getBuffer() {
-				if (getMaskSet().buffer === undefined) {
+			function getBuffer(noCache) {
+				if (getMaskSet().buffer === undefined || noCache === true) {
+					if (noCache === true) getMaskSet().test = {};
 					getMaskSet().buffer = getMaskTemplate(true, getLastValidPosition(), true);
 				}
 				return getMaskSet().buffer;
@@ -1152,7 +1162,7 @@
 
 			function refreshFromBuffer(start, end, buffer) {
 				var i;
-				buffer = buffer || getBuffer().slice(); //pass or work on clone
+				buffer = buffer;
 				if (start === true) {
 					resetMaskSet();
 					start = 0;
@@ -1212,6 +1222,8 @@
 							chrs += c;
 						}
 
+						//make sure the buffer is set and correct
+						getBuffer(true);
 						//return is false or a json object => { pos: ??, c: ??} or true
 						rslt = test.fn != null ?
 							test.fn.test(chrs, getMaskSet(), position, strict, opts) : (c === test.def || c === opts.skipOptionalPartCharacter) && test.def !== "" ? //non mask
@@ -1260,7 +1272,7 @@
 
 							} else if (rslt !== true && rslt.pos !== undefined && rslt.pos !== position) { //their is a position offset
 								validatedPos = rslt.pos;
-								refreshFromBuffer(position, validatedPos);
+								refreshFromBuffer(position, validatedPos, getBuffer().slice());
 								if (validatedPos !== position) {
 									rslt = $.extend(rslt, isValid(validatedPos, elem, true)); //revalidate new position strict
 									return false;
@@ -1436,7 +1448,6 @@
 				//		resetMaskSet(true); //masklenght can be altered on the process => reset to get the actual length
 				//}
 				if (maskPos < getMaskLength()) {
-					getBuffer(); //make sure the buffer
 					result = _isValid(maskPos, c, strict, fromSetValid);
 					if ((!strict || fromSetValid) && result === false) {
 						var currentPosValid = getMaskSet().validPositions[maskPos];
@@ -1465,8 +1476,7 @@
 					};
 				}
 				if ($.isFunction(opts.postValidation) && result !== false && !strict) {
-					resetMaskSet(true);
-					var postValidResult = opts.postValidation(getBuffer(), opts);
+					var postValidResult = opts.postValidation(getBuffer(true), opts);
 					if (!postValidResult) {
 						resetMaskSet(true);
 						getMaskSet().validPositions = $.extend(true, {}, positionsClone); //revert validation changes
@@ -1546,8 +1556,7 @@
 						if (result.refreshFromBuffer) {
 							var refresh = result.refreshFromBuffer;
 							refreshFromBuffer(refresh === true ? refresh : refresh.start, refresh.end, result.buffer || buffer);
-							resetMaskSet(true);
-							buffer = getBuffer();
+							buffer = getBuffer(true);
 						}
 						//only alter when intented !== undefined
 						if (caretPos !== undefined) caretPos = result.caret !== undefined ? result.caret : caretPos;

@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.3
+* Version: 3.2.4-13
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -297,20 +297,21 @@
                     if (!valid) break;
                 }
                 if (!valid) return getMaskSet().validPositions = $.extend(!0, {}, positionsClone), 
-                !1;
+                resetMaskSet(!0), !1;
             } else getMaskSet().validPositions[pos] = validTest;
-            return !0;
+            return resetMaskSet(!0), !0;
         }
         function stripValidPositions(start, end, nocheck, strict) {
             var i, startPos = start;
             for (getMaskSet().p = start, i = startPos; end > i; i++) void 0 !== getMaskSet().validPositions[i] && (nocheck === !0 || opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), strict, opts) !== !1) && delete getMaskSet().validPositions[i];
-            for (resetMaskSet(!0), i = startPos + 1; i <= getLastValidPosition(); ) {
+            for (i = startPos + 1; i <= getLastValidPosition(); ) {
                 for (;void 0 !== getMaskSet().validPositions[startPos]; ) startPos++;
                 var s = getMaskSet().validPositions[startPos];
-                startPos > i && (i = startPos + 1);
-                var t = getMaskSet().validPositions[i];
-                void 0 !== t && isMask(i) && void 0 === s ? (positionCanMatchDefinition(startPos, t.match.def) && isValid(startPos, t.input, !0) !== !1 && (delete getMaskSet().validPositions[i], 
-                i++), startPos++) : i++;
+                if (startPos > i && (i = startPos + 1), void 0 === getMaskSet().validPositions[i] && isMask(i) || void 0 !== s) i++; else {
+                    var t = getTestTemplate(i);
+                    positionCanMatchDefinition(startPos, t.match.def) ? isValid(startPos, t.input || getPlaceholder(i), !0) !== !1 && (delete getMaskSet().validPositions[i], 
+                    i++) : isMask(i) || (i++, startPos--), startPos++;
+                }
             }
             var lvp = getLastValidPosition(), ml = getMaskLength();
             for (strict !== !0 && nocheck !== !0 && void 0 !== getMaskSet().validPositions[lvp] && getMaskSet().validPositions[lvp].input === opts.radixPoint && delete getMaskSet().validPositions[lvp], 
@@ -441,14 +442,13 @@
             return void 0 === getMaskSet()._buffer && (getMaskSet()._buffer = getMaskTemplate(!1, 1)), 
             getMaskSet()._buffer;
         }
-        function getBuffer() {
-            return void 0 === getMaskSet().buffer && (getMaskSet().buffer = getMaskTemplate(!0, getLastValidPosition(), !0)), 
-            getMaskSet().buffer;
+        function getBuffer(noCache) {
+            return (void 0 === getMaskSet().buffer || noCache === !0) && (noCache === !0 && (getMaskSet().test = {}), 
+            getMaskSet().buffer = getMaskTemplate(!0, getLastValidPosition(), !0)), getMaskSet().buffer;
         }
         function refreshFromBuffer(start, end, buffer) {
             var i;
-            if (buffer = buffer || getBuffer().slice(), start === !0) resetMaskSet(), start = 0, 
-            end = buffer.length; else for (i = start; end > i; i++) delete getMaskSet().validPositions[i], 
+            if (buffer = buffer, start === !0) resetMaskSet(), start = 0, end = buffer.length; else for (i = start; end > i; i++) delete getMaskSet().validPositions[i], 
             delete getMaskSet().tests[i];
             for (i = start; end > i; i++) resetMaskSet(!0), buffer[i] !== opts.skipOptionalPartCharacter && isValid(i, buffer[i], !0, !0);
         }
@@ -475,7 +475,7 @@
                 var rslt = !1;
                 return $.each(getTests(position), function(ndx, tst) {
                     for (var test = tst.match, loopend = c ? 1 : 0, chrs = "", i = test.cardinality; i > loopend; i--) chrs += getBufferElement(position - (i - 1));
-                    if (c && (chrs += c), rslt = null != test.fn ? test.fn.test(chrs, getMaskSet(), position, strict, opts) : c !== test.def && c !== opts.skipOptionalPartCharacter || "" === test.def ? !1 : {
+                    if (c && (chrs += c), getBuffer(!0), rslt = null != test.fn ? test.fn.test(chrs, getMaskSet(), position, strict, opts) : c !== test.def && c !== opts.skipOptionalPartCharacter || "" === test.def ? !1 : {
                         c: test.def,
                         pos: position
                     }, rslt !== !1) {
@@ -500,7 +500,7 @@
                             if (validatedPos = void 0 !== rslt.pos ? rslt.pos : position, validatedPos !== position) return rslt = $.extend(rslt, isValid(validatedPos, elem, !0)), 
                             !1;
                         } else if (rslt !== !0 && void 0 !== rslt.pos && rslt.pos !== position && (validatedPos = rslt.pos, 
-                        refreshFromBuffer(position, validatedPos), validatedPos !== position)) return rslt = $.extend(rslt, isValid(validatedPos, elem, !0)), 
+                        refreshFromBuffer(position, validatedPos, getBuffer().slice()), validatedPos !== position)) return rslt = $.extend(rslt, isValid(validatedPos, elem, !0)), 
                         !1;
                         return rslt !== !0 && void 0 === rslt.pos && void 0 === rslt.c ? !1 : (ndx > 0 && resetMaskSet(!0), 
                         setValidPosition(validatedPos, $.extend({}, tst, {
@@ -565,7 +565,7 @@
             for (var buffer = getBuffer(), pndx = pos - 1; pndx > -1 && !getMaskSet().validPositions[pndx]; pndx--) ;
             for (pndx++; pos > pndx; pndx++) void 0 === getMaskSet().validPositions[pndx] && ((!isMask(pndx) || buffer[pndx] !== getPlaceholder(pndx)) && getTests(pndx).length > 1 || buffer[pndx] === opts.radixPoint || "0" === buffer[pndx] && $.inArray(opts.radixPoint, buffer) < pndx) && _isValid(pndx, buffer[pndx], !0);
             var maskPos = pos, result = !1, positionsClone = $.extend(!0, {}, getMaskSet().validPositions);
-            if (maskPos < getMaskLength() && (getBuffer(), result = _isValid(maskPos, c, strict, fromSetValid), 
+            if (maskPos < getMaskLength() && (result = _isValid(maskPos, c, strict, fromSetValid), 
             (!strict || fromSetValid) && result === !1)) {
                 var currentPosValid = getMaskSet().validPositions[maskPos];
                 if (!currentPosValid || null !== currentPosValid.match.fn || currentPosValid.match.def !== c && c !== opts.skipOptionalPartCharacter) {
@@ -582,8 +582,7 @@
             result === !0 && (result = {
                 pos: maskPos
             }), $.isFunction(opts.postValidation) && result !== !1 && !strict) {
-                resetMaskSet(!0);
-                var postValidResult = opts.postValidation(getBuffer(), opts);
+                var postValidResult = opts.postValidation(getBuffer(!0), opts);
                 if (postValidResult) {
                     if (postValidResult.refreshFromBuffer) {
                         var refresh = postValidResult.refreshFromBuffer;
@@ -638,7 +637,7 @@
                     if (result.refreshFromBuffer) {
                         var refresh = result.refreshFromBuffer;
                         refreshFromBuffer(refresh === !0 ? refresh : refresh.start, refresh.end, result.buffer || buffer), 
-                        resetMaskSet(!0), buffer = getBuffer();
+                        buffer = getBuffer(!0);
                     }
                     void 0 !== caretPos && (caretPos = void 0 !== result.caret ? result.caret : caretPos);
                 }
@@ -1262,7 +1261,8 @@
         masksCache: {},
         mask: function(elems) {
             var that = this;
-            return elems = void 0 === elems.length ? [ elems ] : elems, $.each(elems, function(ndx, el) {
+            return "string" == typeof elems && (elems = document.querySelectorAll(elems)), elems = elems.nodeName ? [ elems ] : elems, 
+            $.each(elems, function(ndx, el) {
                 var scopedOpts = $.extend(!0, {}, that.opts);
                 importAttributeOptions(el, scopedOpts, $.extend(!0, {}, that.userOptions));
                 var maskset = generateMaskSet(scopedOpts, that.noMasksCache);

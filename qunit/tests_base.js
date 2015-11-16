@@ -2,11 +2,7 @@ define([
 	"qunit",
 	"inputmask.dependencyLib",
 	"inputmask",
-	"../dist/inputmask/inputmask.date.extensions",
 	"../dist/inputmask/inputmask.extensions",
-	"../dist/inputmask/inputmask.numeric.extensions",
-	"../dist/inputmask/inputmask.phone.extensions",
-	"../dist/inputmask/inputmask.regex.extensions",
 	"prototypeExtensions",
 	"simulator"
 ], function(qunit, $, Inputmask) {

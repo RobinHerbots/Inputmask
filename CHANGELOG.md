@@ -1,6 +1,20 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## UNRELEASED
+
+### Added
+
+### Updates
+- allow passing a selector to the mask function
+- fix for bower package
+
+### Fixed
+- Definition {_} throws an exception #1106 => update readme
+- Uncaught TypeError for "percentage" alias #1108
+- Wrong behavior for symbol delete in ip alias #1092
+- fix element validation for the vanilla dependencyLib #1104
+
 ## [3.2.3] - 2015-11-09
 
 ### Added
@@ -25,12 +39,12 @@ All notable changes to this project will be documented in this file.
 - Numeric aliases insert '0' in input after clearing if there was fraction part #1067
 - Clear optional tail in getvalue. See #1055 #1065
 
-## [3.2.2] - 2015-09-04
+## [3.2.2] - 2015-10-07
 
 ### Fixed
 - Missing comma in bower.json and component.json #1064
 
-## [3.2.1] - 2015-09-04
+## [3.2.1] - 2015-10-07
 
 ### Added
 - inputmask.dependencyLib.jquery

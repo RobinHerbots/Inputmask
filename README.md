@@ -201,7 +201,7 @@ Dynamic masks can change during the input.  To define a dynamic part use { }.
 
 {n} => n repeats<br>{n,m} => from n to m repeats
 
-Also {+} and {_} is allowed. + start from 1 and _ start from 0.
+Also {+} and {*} is allowed. + start from 1 and * start from 0.
 
 ```javascript
 $(document).ready(function(){
@@ -433,6 +433,12 @@ var im : new Inputmask("99-999-99");
 im.mask(document.querySelectorAll(selector));
 ```
 
+or
+
+```javascript
+Inputmask("99-999-99").mask(selector);
+```
+
 ### unmaskedvalue
 Get the `unmaskedvalue`
 
@@ -469,12 +475,12 @@ var input = document.getElementById(selector);
 if(input.inputmask)
   input.inputmask.remove()
 ```
+
 or
 
 ```javascript
 Inputmask.remove(document.getElementById(selector));
 ```
-
 
 ### getemptymask
 return the default (empty) mask value
