@@ -1015,9 +1015,13 @@
 											for (var ndx2 = 0; ndx2 < malternateMatches.length; ndx2++) {
 												var altMatch2 = malternateMatches[ndx2];
 												//verify equality
-												if (altMatch.match.mask === altMatch2.match.mask && (typeof altIndex !== "string" || $.inArray(altMatch.locator[altMatch.alternation].toString(), altIndexArr) !== -1)) {
-													maltMatches.splice(ndx1, 1);
-													ndx1--;
+												if (altMatch.match.def === altMatch2.match.def && (typeof altIndex !== "string" || $.inArray(altMatch.locator[altMatch.alternation].toString(), altIndexArr) !== -1)) {
+													if (altMatch.match.mask === altMatch2.match.mask) {
+														maltMatches.splice(ndx1, 1);
+														ndx1--;
+													} else {
+														altMatch.locator[altMatch.alternation] = altMatch2.locator[altMatch.alternation] + "," + altMatch.locator[altMatch.alternation];
+													}
 													altMatch2.locator[altMatch.alternation] = altMatch2.locator[altMatch.alternation] + "," + altMatch.locator[altMatch.alternation];
 													altMatch2.alternation = altMatch.alternation; //we pass the alternation index => used in determineLastRequiredPosition
 													break;
@@ -1140,7 +1144,7 @@
 				}
 				getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
 
-				// console.log(pos + " - " + JSON.stringify(matches));
+				console.log(pos + " - " + JSON.stringify(matches));
 				return getMaskSet().tests[pos];
 			}
 
@@ -1154,7 +1158,7 @@
 
 			function getBuffer(noCache) {
 				if (getMaskSet().buffer === undefined || noCache === true) {
-					if (noCache === true) getMaskSet().test = {};
+					if (noCache === true) getMaskSet().tests = {};
 					getMaskSet().buffer = getMaskTemplate(true, getLastValidPosition(), true);
 				}
 				return getMaskSet().buffer;
@@ -1919,7 +1923,7 @@
 							this.inputmask.unmaskedvalue() :
 							(valueGet.call(this) !== getBufferTemplate().join("") ?
 								(document.activeElement === this && opts.clearMaskOnLostFocus ?
-									(isRTL ? clearOptionalTail(getBuffer()).reverse() : clearOptionalTail(getBuffer())).join("") :
+									(isRTL ? clearOptionalTail(getBuffer().slice()).reverse() : clearOptionalTail(getBuffer().slice())).join("") :
 									valueGet.call(this)) :
 								"");
 					} else return valueGet.call(this);
@@ -2617,17 +2621,17 @@
 							maskset = el.inputmask.maskset;
 							opts = el.inputmask.opts;
 							isRTL = el.inputmask.isRTL;
-							valueBuffer = isRTL ? el.inputmask._valueGet().split("").reverse().join("") : el.inputmask._valueGet();
-						} else valueBuffer = actionObj.value;
+						} else {
+							valueBuffer = actionObj.value;
 
-						if (opts.numericInput) {
-							isRTL = true;
+							if (opts.numericInput) {
+								isRTL = true;
+							}
+
+							valueBuffer = ($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask(valueBuffer, opts) || valueBuffer) : valueBuffer).split("");
+							checkVal(undefined, false, false, isRTL ? valueBuffer.reverse() : valueBuffer);
+							if ($.isFunction(opts.onBeforeWrite)) opts.onBeforeWrite(undefined, getBuffer(), 0, opts);
 						}
-
-						valueBuffer = ($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask(valueBuffer, opts) || valueBuffer) : valueBuffer).split("");
-						checkVal(undefined, false, false, isRTL ? valueBuffer.reverse() : valueBuffer);
-						if ($.isFunction(opts.onBeforeWrite)) opts.onBeforeWrite(undefined, getBuffer(), 0, opts);
-
 						return unmaskedvalue(el);
 					case "mask":
 						el = actionObj.el;

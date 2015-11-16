@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - fix for bower package
 
 ### Fixed
+- autoUnmask not work in newest release #1109
 - Definition {_} throws an exception #1106 => update readme
 - Uncaught TypeError for "percentage" alias #1108
 - Wrong behavior for symbol delete in ip alias #1092
