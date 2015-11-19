@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 ### Updates
+- allow passing an element id to the mask function
 - allow passing a selector to the mask function
 - fix for bower package
 
