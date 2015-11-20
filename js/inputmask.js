@@ -76,7 +76,7 @@
 				onUnMask: null, //executes after unmasking to allow postprocessing of the unmaskedvalue.	args => maskedValue, unmaskedValue, opts
 				showMaskOnFocus: true, //show the mask-placeholder when the input has focus
 				showMaskOnHover: true, //show the mask-placeholder when hovering the empty input
-				onKeyValidation: $.noop, //executes on every key-press with the result of isValid. Params: result, opts
+				onKeyValidation: $.noop, //executes on every key-press with the result of isValid. Params: key, result, opts
 				skipOptionalPartCharacter: " ", //a character which can be used to skip an optional part of a mask
 				showTooltip: false, //show the activemask as tooltip
 				tooltip: undefined, //tooltip to show
@@ -2200,7 +2200,7 @@
 						if (writeOut !== false) {
 							var self = this;
 							setTimeout(function() {
-								opts.onKeyValidation.call(self, valResult, opts);
+								opts.onKeyValidation.call(self, k, valResult, opts);
 							}, 0);
 							if (getMaskSet().writeOutBuffer && valResult !== false) {
 								var buffer = getBuffer();
@@ -2545,7 +2545,7 @@
 				patchValueProperty(el);
 				if ((el.tagName === "INPUT" && isInputTypeSupported(el.getAttribute("type"))) || el.isContentEditable) {
 					//bind events
-					$(el.form).on("submit", function() { //trigger change on submit if any
+					$(el.form).on("submit.inputmask", function() { //trigger change on submit if any
 						if (undoValue !== getBuffer().join("")) {
 							$el.trigger("change");
 						}
@@ -2558,7 +2558,7 @@
 								writeBuffer(el, getBuffer());
 							}, 0);
 						}
-					}).on("reset", function() {
+					}).on("reset.inputmask", function() {
 						setTimeout(function() {
 							$el.trigger("setvalue.inputmask");
 						}, 0);

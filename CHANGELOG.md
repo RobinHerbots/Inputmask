@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 - fix for bower package
 
 ### Fixed
+- get the pressed key onKeyValidation #1114
 - write a global function for onKeyValidation #1111
 - NumericInput Causes err #856
 - Certain phones not inputable #758

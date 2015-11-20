@@ -410,7 +410,7 @@ All callbacks are implemented as options.  This means that you can set general i
 
 ```javascript
 Inputmask.extendDefaults({
-    onKeyValidation: function(result){
+    onKeyValidation: function(key, result){
                         if (!result){
                             alert('Your input is not valid')
                           }
@@ -833,13 +833,13 @@ $(document).ready(function(){
 ```
 
 ### onKeyValidation
-Callback function is executed on every keyvalidation with the result as parameter.
+Callback function is executed on every keyvalidation with the key & result as parameter.
 
 ```javascript
 $(document).ready(function(){
     $("#ssn").inputmask("999-99-9999",
-            { onKeyValidation: function (result) {
-                                console.log(result);
+            { onKeyValidation: function (key, result) {
+                                console.log(key + " - " + result);
                                 } });
 });
 ```
