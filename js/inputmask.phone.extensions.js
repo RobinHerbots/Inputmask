@@ -23,7 +23,7 @@ When using this extension make sure you specify the correct url to get the masks
 		} else if (typeof exports === "object") {
 			module.exports = factory(require("jquery"), require("./inputmask"));
 		} else {
-			factory(jQuery, window.Inputmask);
+			factory(window.dependencyLib || jQuery, window.Inputmask);
 		}
 	}
 	(function($, Inputmask) {

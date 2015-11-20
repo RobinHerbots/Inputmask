@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## UNRELEASED
+
+### Fixed
+- Numeric extensions don't supported with vanilla DependencyLib #1116
+
 ## [3.2.4] - 2015-11-20
 
 ### Updates

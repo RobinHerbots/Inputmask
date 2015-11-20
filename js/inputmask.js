@@ -2135,7 +2135,7 @@
 						}, 0);
 					}
 				}
-				opts.onKeyDown(e, getBuffer(), caret(input).begin, opts);
+				opts.onKeyDown.call(this, e, getBuffer(), caret(input).begin, opts); //this is needed in onKeyDown
 				ignorable = $.inArray(k, opts.ignorables) !== -1;
 			}
 

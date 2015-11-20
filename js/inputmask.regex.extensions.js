@@ -14,7 +14,7 @@ Allows for using regular expressions as a mask
 		} else if (typeof exports === "object") {
 			module.exports = factory(require("./inputmask.dependencyLib.jquery"), require("./inputmask"));
 		} else {
-			factory(jQuery, window.Inputmask);
+			factory(window.dependencyLib || jQuery, window.Inputmask);
 		}
 	}
 	(function($, Inputmask) {
