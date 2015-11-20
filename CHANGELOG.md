@@ -11,6 +11,11 @@ All notable changes to this project will be documented in this file.
 - fix for bower package
 
 ### Fixed
+- write a global function for onKeyValidation #1111
+- NumericInput Causes err #856
+- Certain phones not inputable #758
+- I have a problems with mask input, I can't input Ukraine phone +380(XX)XXX-XX-XX #1050
+- you can't write ukraine number to phone field +380999999999 #1019
 - autoUnmask not work in newest release #1109
 - Definition {_} throws an exception #1106 => update readme
 - Uncaught TypeError for "percentage" alias #1108

@@ -406,6 +406,18 @@ Once defined, you can call the alias by:
  $(selector).inputmask("myNum");
 ```
 
+All callbacks are implemented as options.  This means that you can set general implementations for the callbacks by setting a default.
+
+```javascript
+Inputmask.extendDefaults({
+    onKeyValidation: function(result){
+                        if (!result){
+                            alert('Your input is not valid')
+                          }
+                    }
+});
+```
+
 ## Methods:
 ### mask
 Create a mask for the input.
