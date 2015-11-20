@@ -1,9 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## UNRELEASED
-
-### Added
+## [3.2.4] - 2015-11-20
 
 ### Updates
 - allow passing an element id to the mask function

@@ -2520,6 +2520,27 @@
 				}
 			}
 
+			function submitEvent(e) { //trigger change on submit if any
+				if (undoValue !== getBuffer().join("")) {
+					$el.trigger("change");
+				}
+				if (opts.clearMaskOnLostFocus && getLastValidPosition() === -1 && el.inputmask._valueGet && el.inputmask._valueGet() === getBufferTemplate().join("")) {
+					el.inputmask._valueSet(""); //clear masktemplete on submit and still has focus
+				}
+				if (opts.removeMaskOnSubmit) {
+					el.inputmask._valueSet(el.inputmask.unmaskedvalue(), true);
+					setTimeout(function() {
+						writeBuffer(el, getBuffer());
+					}, 0);
+				}
+			}
+
+			function resetEvent(e) {
+				setTimeout(function() {
+					$el.trigger("setvalue.inputmask");
+				}, 0);
+			}
+
 			function mask(elem) {
 				el = elem;
 				$el = $(el);
@@ -2545,24 +2566,7 @@
 				patchValueProperty(el);
 				if ((el.tagName === "INPUT" && isInputTypeSupported(el.getAttribute("type"))) || el.isContentEditable) {
 					//bind events
-					$(el.form).on("submit.inputmask", function() { //trigger change on submit if any
-						if (undoValue !== getBuffer().join("")) {
-							$el.trigger("change");
-						}
-						if (opts.clearMaskOnLostFocus && getLastValidPosition() === -1 && el.inputmask._valueGet && el.inputmask._valueGet() === getBufferTemplate().join("")) {
-							el.inputmask._valueSet(""); //clear masktemplete on submit and still has focus
-						}
-						if (opts.removeMaskOnSubmit) {
-							el.inputmask._valueSet(el.inputmask.unmaskedvalue(), true);
-							setTimeout(function() {
-								writeBuffer(el, getBuffer());
-							}, 0);
-						}
-					}).on("reset.inputmask", function() {
-						setTimeout(function() {
-							$el.trigger("setvalue.inputmask");
-						}, 0);
-					});
+					$(el.form).on("submit.inputmask", submitEvent).on("reset.inputmask", resetEvent);
 
 					$el.on("mouseenter.inputmask", wrapEventRuler(mouseenterEvent))
 						.on("blur.inputmask", wrapEventRuler(blurEvent))
