@@ -15,7 +15,8 @@ define([
 	"tests_optional",
 	"tests_phone",
 	"tests_regex",
-	"tests_escape"
+	"tests_escape",
+	"tests_attributes"
 ], function(qunit) {
 	qunit.load();
 	qunit.start();

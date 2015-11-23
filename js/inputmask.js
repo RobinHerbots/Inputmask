@@ -327,7 +327,7 @@
 
 		function importAttributeOptions(npt, opts, userOptions) {
 			var attrOptions = npt.getAttribute("data-inputmask"),
-				option, dataoptions, optionData;
+				option, dataoptions, optionData, p;
 
 			function importOption(option, optionData) {
 				optionData = optionData !== undefined ? optionData : npt.getAttribute("data-inputmask-" + option);
@@ -349,10 +349,26 @@
 				attrOptions = attrOptions.replace(new RegExp("'", "g"), '"');
 				dataoptions = JSON.parse("{" + attrOptions + "}");
 			}
+
+			//resolve aliases
+			if (dataoptions) { //pickup alias from data-inputmask
+				optionData = undefined;
+				for (p in dataoptions) {
+					if (p.toLowerCase() === "alias") {
+						optionData = dataoptions[p];
+						break;
+					}
+				}
+			}
+			importOption("alias", optionData); //pickup alias from data-inputmask-alias
+			if (userOptions.alias) {
+				resolveAlias(userOptions.alias, userOptions, opts);
+			}
+
 			for (option in opts) {
 				if (dataoptions) {
 					optionData = undefined;
-					for (var p in dataoptions) {
+					for (p in dataoptions) {
 						if (p.toLowerCase() === option.toLowerCase()) {
 							optionData = dataoptions[p];
 							break;
@@ -361,12 +377,7 @@
 				}
 				importOption(option, optionData);
 			}
-			if (userOptions.alias) {
-				resolveAlias(userOptions.alias, userOptions, opts);
-				for (option in opts) {
-					importOption(option);
-				}
-			}
+
 			$.extend(true, opts, userOptions);
 			return opts;
 		}
@@ -1570,7 +1581,7 @@
 
 			function writeBuffer(input, buffer, caretPos, event, triggerInputEvent) {
 				if (event && $.isFunction(opts.onBeforeWrite)) {
-					var result = opts.onBeforeWrite.call(input, event, buffer, caretPos, opts);
+					var result = opts.onBeforeWrite(event, buffer, caretPos, opts);
 					if (result) {
 						if (result.refreshFromBuffer) {
 							var refresh = result.refreshFromBuffer;
@@ -1696,7 +1707,7 @@
 				if (unmaskedValue !== null) {
 					var bufferValue = (isRTL ? getBuffer().slice().reverse() : getBuffer()).join("");
 					if ($.isFunction(opts.onUnMask)) {
-						unmaskedValue = (opts.onUnMask.call(input, bufferValue, unmaskedValue, opts) || unmaskedValue);
+						unmaskedValue = (opts.onUnMask(bufferValue, unmaskedValue, opts) || unmaskedValue);
 					}
 				}
 				return unmaskedValue;
@@ -1812,7 +1823,7 @@
 			}
 
 			function isComplete(buffer) { //return true / false / undefined (repeat *)
-				if ($.isFunction(opts.isComplete)) return opts.isComplete.call(el, buffer, opts);
+				if ($.isFunction(opts.isComplete)) return opts.isComplete(buffer, opts);
 				if (opts.repeat === "*") return undefined;
 				var complete = false,
 					lrp = determineLastRequiredPosition(true),
@@ -2135,7 +2146,7 @@
 						}, 0);
 					}
 				}
-				opts.onKeyDown.call(this, e, getBuffer(), caret(input).begin, opts); //this is needed in onKeyDown
+				opts.onKeyDown.call(this, e, getBuffer(), caret(input).begin, opts);
 				ignorable = $.inArray(k, opts.ignorables) !== -1;
 			}
 
@@ -2268,7 +2279,7 @@
 
 				var pasteValue = inputValue;
 				if ($.isFunction(opts.onBeforePaste)) {
-					pasteValue = opts.onBeforePaste.call(input, inputValue, opts);
+					pasteValue = opts.onBeforePaste(inputValue, opts);
 					if (pasteValue === false) {
 						e.preventDefault();
 						return false;
@@ -2358,7 +2369,7 @@
 			function setValueEvent(e) {
 				var input = this,
 					value = input.inputmask._valueGet();
-				checkVal(input, true, false, ($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(input, value, opts) || value) : value).split(""));
+				checkVal(input, true, false, ($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask(value, opts) || value) : value).split(""));
 				undoValue = getBuffer().join("");
 				if ((opts.clearMaskOnLostFocus || opts.clearIncomplete) && input.inputmask._valueGet() === getBufferTemplate().join("")) {
 					input.inputmask._valueSet("");
@@ -2601,7 +2612,7 @@
 
 				//apply mask
 				if (el.inputmask._valueGet() !== "" || opts.clearMaskOnLostFocus === false) {
-					var initialValue = $.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(el, el.inputmask._valueGet(), opts) || el.inputmask._valueGet()) : el.inputmask._valueGet();
+					var initialValue = $.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask(el.inputmask._valueGet(), opts) || el.inputmask._valueGet()) : el.inputmask._valueGet();
 					checkVal(el, true, false, initialValue.split(""));
 					var buffer = getBuffer().slice();
 					undoValue = buffer.join("");
