@@ -286,4 +286,25 @@ define([
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 		assert.equal(document.getElementById("testmask").inputmask._valueGet(), "ab-1234", "Result " + document.getElementById("testmask").inputmask._valueGet());
 	});
+
+	qunit.test("email mask - mouseclick to domain part - hiddenman", function(assert) {
+		var done = assert.async(),
+			$fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("email").mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("akornilov");
+
+		//fake click in position
+		$.caret(testmask, 10);
+		$("#testmask").trigger("click");
+
+		$("#testmask").Type("gmail.com");
+		setTimeout(function() {
+			assert.equal(document.getElementById("testmask").inputmask._valueGet(), "akornilov@gmail.com", "Result " + document.getElementById("testmask").inputmask._valueGet());
+			done();
+		}, 0);
+	});
 });

@@ -2444,6 +2444,9 @@
 							if (clickPosition < lastPosition) {
 								caret(input, !isMask(clickPosition) && !isMask(clickPosition - 1) ? seekNext(clickPosition) : clickPosition);
 							} else {
+								if (getBuffer()[lastPosition] !== getPlaceholder(lastPosition)) {
+									lastPosition = seekNext(lastPosition);
+								}
 								caret(input, opts.numericInput ? 0 : lastPosition);
 							}
 						}

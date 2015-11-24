@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 
 ### Fixed
+- Email mask doesn't allow to go to the domain part by mouse #885
+- alias options from 'data-inputmask' is not used anymore #1113
 - Numeric extensions don't supported with vanilla DependencyLib #1116
 
 ## [3.2.4] - 2015-11-20
@@ -15,7 +17,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - get the pressed key onKeyValidation #1114
-- write a global function for onKeyValidation #1111
+- write a global function for onKeyValidation #1111 => update readme
 - NumericInput Causes err #856
 - Certain phones not inputable #758
 - I have a problems with mask input, I can't input Ukraine phone +380(XX)XXX-XX-XX #1050
