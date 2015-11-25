@@ -1406,24 +1406,24 @@
             });
 
           case "unmaskedvalue":
-            return input = this.jquery && this.length > 0 ? this[0] : this, input.inputmask ? input.inputmask.unmaskedvalue() : $(input).val();
+            return input = this.jquery && this.length > 0 ? this[0] : this, input.length > 0 && input.inputmask ? input.inputmask.unmaskedvalue() : $(input).val();
 
           case "remove":
             return this.each(function() {
-                this.inputmask && this.inputmask.remove();
+                this.length > 0 && this.inputmask && this.inputmask.remove();
             });
 
           case "getemptymask":
-            return input = this.jquery && this.length > 0 ? this[0] : this, input.inputmask ? input.inputmask.getemptymask() : "";
+            return input = this.jquery && this.length > 0 ? this[0] : this, input.length > 0 && input.inputmask ? input.inputmask.getemptymask() : "";
 
           case "hasMaskedValue":
-            return input = this.jquery && this.length > 0 ? this[0] : this, input.inputmask ? input.inputmask.hasMaskedValue() : !1;
+            return input = this.jquery && this.length > 0 ? this[0] : this, input.length > 0 && input.inputmask ? input.inputmask.hasMaskedValue() : !1;
 
           case "isComplete":
-            return input = this.jquery && this.length > 0 ? this[0] : this, input.inputmask ? input.inputmask.isComplete() : !0;
+            return input = this.jquery && this.length > 0 ? this[0] : this, input.length > 0 && input.inputmask ? input.inputmask.isComplete() : !0;
 
           case "getmetadata":
-            return input = this.jquery && this.length > 0 ? this[0] : this, input.inputmask ? input.inputmask.getmetadata() : void 0;
+            return input = this.jquery && this.length > 0 ? this[0] : this, input.length > 0 && input.inputmask ? input.inputmask.getmetadata() : void 0;
 
           case "setvalue":
             input = this.jquery && this.length > 0 ? this[0] : this, $(input).val(options), 
