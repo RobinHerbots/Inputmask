@@ -30,39 +30,39 @@
 							});
 						case "unmaskedvalue":
 							input = this.jquery && this.length > 0 ? this[0] : this;
-							return input.inputmask ? input.inputmask.unmaskedvalue() : $(input).val();
+							return input.length > 0 && input.inputmask? input.inputmask.unmaskedvalue() : $(input).val();
 						case "remove":
 							return this.each(function() {
-								if (this.inputmask) this.inputmask.remove();
+								if (this.length > 0 && this.inputmask) this.inputmask.remove();
 							});
 						case "getemptymask":
 							input = this.jquery && this.length > 0 ? this[0] : this;
-							return input.inputmask ? input.inputmask.getemptymask() : "";
+							return input.length > 0 && input.inputmask ? input.inputmask.getemptymask() : "";
 						case "hasMaskedValue": //check wheter the returned value is masked or not; currently only works reliable when using jquery.val fn to retrieve the value
 							input = this.jquery && this.length > 0 ? this[0] : this;
-							return input.inputmask ? input.inputmask.hasMaskedValue() : false;
+							return input.length > 0 && input.inputmask ? input.inputmask.hasMaskedValue() : false;
 						case "isComplete":
 							input = this.jquery && this.length > 0 ? this[0] : this;
-							return input.inputmask ? input.inputmask.isComplete() : true;
+							return input.length > 0 && input.inputmask ? input.inputmask.isComplete() : true;
 						case "getmetadata": //return mask metadata if exists
 							input = this.jquery && this.length > 0 ? this[0] : this;
-							return input.inputmask ? input.inputmask.getmetadata() : undefined;
+							return input.length > 0 && input.inputmask ? input.inputmask.getmetadata() : undefined;
 						case "setvalue":
 							input = this.jquery && this.length > 0 ? this[0] : this;
 							$(input).val(options);
-							if (input.inputmask !== undefined) {
+							if (input.inputmask !== undefined && input.length > 0) {
 								$(input).triggerHandler("setvalue.inputmask");
 							}
 							break;
 						case "option":
 							if (typeof options === "string") {
 								input = this.jquery && this.length > 0 ? this[0] : this;
-								if (input.inputmask !== undefined) {
+								if (input.inputmask !== undefined && input.length > 0) {
 									return input.inputmask.option(options);
 								}
 							} else {
 								return this.each(function() {
-									if (this.inputmask !== undefined) {
+									if (this.inputmask !== undefined && input.length > 0) {
 										return this.inputmask.option(options);
 									}
 								});
