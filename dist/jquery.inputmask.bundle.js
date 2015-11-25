@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.5-2
+* Version: 3.2.5-3
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -35,8 +35,7 @@
         function importOption(option, optionData) {
             optionData = void 0 !== optionData ? optionData : npt.getAttribute("data-inputmask-" + option), 
             null !== optionData && ("string" == typeof optionData && (0 === option.indexOf("on") ? optionData = window[optionData] : "false" === optionData ? optionData = !1 : "true" === optionData && (optionData = !0)), 
-            "mask" === option && 0 === optionData.indexOf("[") ? (userOptions[option] = optionData.replace(/[\s[\]]/g, "").split(","), 
-            userOptions[option][0] = userOptions[option][0].replace("'", ""), userOptions[option][userOptions[option].length - 1] = userOptions[option][userOptions[option].length - 1].replace("'", "")) : userOptions[option] = optionData);
+            userOptions[option] = optionData);
         }
         var option, dataoptions, optionData, p, attrOptions = npt.getAttribute("data-inputmask");
         if (attrOptions && "" !== attrOptions && (attrOptions = attrOptions.replace(new RegExp("'", "g"), '"'), 
@@ -447,7 +446,8 @@
                         def: ""
                     },
                     locator: []
-                }), getMaskSet().tests[pos] = $.extend(!0, [], matches), getMaskSet().tests[pos];
+                }), getMaskSet().tests[pos] = $.extend(!0, [], matches), console.log(pos + " - " + JSON.stringify(matches)), 
+                getMaskSet().tests[pos];
             }
         }
         function getBufferTemplate() {

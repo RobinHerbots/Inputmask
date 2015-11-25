@@ -337,11 +337,7 @@
 						else if (optionData === "false") optionData = false;
 						else if (optionData === "true") optionData = true;
 					}
-					if (option === "mask" && optionData.indexOf("[") === 0) {
-						userOptions[option] = optionData.replace(/[\s[\]]/g, "").split(",");
-						userOptions[option][0] = userOptions[option][0].replace("'", "");
-						userOptions[option][userOptions[option].length - 1] = userOptions[option][userOptions[option].length - 1].replace("'", "");
-					} else userOptions[option] = optionData;
+					userOptions[option] = optionData;
 				}
 			}
 
@@ -1179,7 +1175,7 @@
 						});
 					}
 					getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
-					// console.log(pos + " - " + JSON.stringify(matches));
+					console.log(pos + " - " + JSON.stringify(matches));
 					return getMaskSet().tests[pos];
 				}
 			}
@@ -1505,7 +1501,7 @@
 						}
 					}
 				}
-				if (result === false && opts.keepStatic && isComplete(buffer)) { //try fuzzy alternator logic
+				if (result === false && opts.keepStatic) { //try fuzzy alternator logic
 					result = alternate(pos, c, strict, fromSetValid);
 				}
 				if (result === true) {

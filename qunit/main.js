@@ -16,7 +16,8 @@ define([
 	"tests_phone",
 	"tests_regex",
 	"tests_escape",
-	"tests_attributes"
+	"tests_attributes",
+	"tests_jquery_inputmask"
 ], function(qunit) {
 	qunit.load();
 	qunit.start();
