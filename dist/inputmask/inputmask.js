@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.5-3
+* Version: 3.2.5-5
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -448,8 +448,7 @@
                         def: ""
                     },
                     locator: []
-                }), getMaskSet().tests[pos] = $.extend(!0, [], matches), console.log(pos + " - " + JSON.stringify(matches)), 
-                getMaskSet().tests[pos];
+                }), getMaskSet().tests[pos] = $.extend(!0, [], matches), getMaskSet().tests[pos];
             }
         }
         function getBufferTemplate() {
@@ -592,7 +591,7 @@
                     caret: seekNext(maskPos)
                 };
             }
-            if (result === !1 && opts.keepStatic && isComplete(buffer) && (result = alternate(pos, c, strict, fromSetValid)), 
+            if (result === !1 && opts.keepStatic && (result = alternate(pos, c, strict, fromSetValid)), 
             result === !0 && (result = {
                 pos: maskPos
             }), $.isFunction(opts.postValidation) && result !== !1 && !strict) {

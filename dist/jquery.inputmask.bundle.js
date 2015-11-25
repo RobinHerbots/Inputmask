@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.5-3
+* Version: 3.2.5-5
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -446,8 +446,7 @@
                         def: ""
                     },
                     locator: []
-                }), getMaskSet().tests[pos] = $.extend(!0, [], matches), console.log(pos + " - " + JSON.stringify(matches)), 
-                getMaskSet().tests[pos];
+                }), getMaskSet().tests[pos] = $.extend(!0, [], matches), getMaskSet().tests[pos];
             }
         }
         function getBufferTemplate() {
@@ -590,7 +589,7 @@
                     caret: seekNext(maskPos)
                 };
             }
-            if (result === !1 && opts.keepStatic && isComplete(buffer) && (result = alternate(pos, c, strict, fromSetValid)), 
+            if (result === !1 && opts.keepStatic && (result = alternate(pos, c, strict, fromSetValid)), 
             result === !0 && (result = {
                 pos: maskPos
             }), $.isFunction(opts.postValidation) && result !== !1 && !strict) {
@@ -1398,15 +1397,10 @@
     return window.Inputmask = Inputmask, Inputmask;
 }(jQuery), function($, Inputmask) {
     return void 0 === $.fn.inputmask && ($.fn.inputmask = function(fn, options) {
-        var nptmask, input;
+        var nptmask, input = this[0];
         if (options = options || {}, "string" == typeof fn) switch (fn) {
-          case "mask":
-            return nptmask = new Inputmask(options), this.each(function() {
-                nptmask.mask(this);
-            });
-
           case "unmaskedvalue":
-            return input = this.jquery && this.length > 0 ? this[0] : this, input.inputmask ? input.inputmask.unmaskedvalue() : $(input).val();
+            return input && input.inputmask ? input.inputmask.unmaskedvalue() : $(input).val();
 
           case "remove":
             return this.each(function() {
@@ -1414,27 +1408,26 @@
             });
 
           case "getemptymask":
-            return input = this.jquery && this.length > 0 ? this[0] : this, input.inputmask ? input.inputmask.getemptymask() : "";
+            return input && input.inputmask ? input.inputmask.getemptymask() : "";
 
           case "hasMaskedValue":
-            return input = this.jquery && this.length > 0 ? this[0] : this, input.inputmask ? input.inputmask.hasMaskedValue() : !1;
+            return input && input.inputmask ? input.inputmask.hasMaskedValue() : !1;
 
           case "isComplete":
-            return input = this.jquery && this.length > 0 ? this[0] : this, input.inputmask ? input.inputmask.isComplete() : !0;
+            return input && input.inputmask ? input.inputmask.isComplete() : !0;
 
           case "getmetadata":
-            return input = this.jquery && this.length > 0 ? this[0] : this, input.inputmask ? input.inputmask.getmetadata() : void 0;
+            return input && input.inputmask ? input.inputmask.getmetadata() : void 0;
 
           case "setvalue":
-            input = this.jquery && this.length > 0 ? this[0] : this, $(input).val(options), 
-            void 0 !== input.inputmask && $(input).triggerHandler("setvalue.inputmask");
+            $(input).val(options), input && void 0 !== input.inputmask && $(input).triggerHandler("setvalue.inputmask");
             break;
 
           case "option":
             if ("string" != typeof options) return this.each(function() {
                 return void 0 !== this.inputmask ? this.inputmask.option(options) : void 0;
             });
-            if (input = this.jquery && this.length > 0 ? this[0] : this, void 0 !== input.inputmask) return input.inputmask.option(options);
+            if (input && void 0 !== input.inputmask) return input.inputmask.option(options);
             break;
 
           default:
