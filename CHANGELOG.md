@@ -1,9 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## UNRELEASED
+## [3.2.5] - 2015-11-27
 
 ### Updates
+- improve cursor positioning and placeholder handling
 - remove $("selector").inputmask("mask", { mask: "99-999 ..." }) format from plugin
 
 ### Fixed

@@ -1436,7 +1436,7 @@
 						tll = targetLocator.length;
 
 					for (var ps = originalPos; ps < newPos; ps++) {
-						if (!isMask(ps)) {
+						if (!isMask(ps, true)) {
 							var tests = getTests(ps),
 								bestMatch = tests[0],
 								equality = -1;
@@ -1489,7 +1489,7 @@
 							result = {
 								"caret": seekNext(maskPos)
 							};
-						} else if ((opts.insertMode || getMaskSet().validPositions[seekNext(maskPos)] === undefined) && !isMask(maskPos)) { //does the input match on a further position?
+						} else if ((opts.insertMode || getMaskSet().validPositions[seekNext(maskPos)] === undefined) && !isMask(maskPos, true)) { //does the input match on a further position?
 							for (var nPos = maskPos + 1, snPos = seekNext(maskPos); nPos <= snPos; nPos++) {
 								result = _isValid(nPos, c, strict, fromSetValid);
 								if (result !== false) {
@@ -1526,11 +1526,11 @@
 				return result;
 			}
 
-			function isMask(pos) {
+			function isMask(pos, strict) {
 				var test = getTest(pos);
 				if (test.fn != null) {
 					return test.fn;
-				} else if (pos > -1 && !opts.keepStatic && getMaskSet().validPositions[pos] === undefined) {
+				} else if (strict !== true && pos > -1 && !opts.keepStatic && getMaskSet().validPositions[pos] === undefined) {
 					var tests = getTests(pos, undefined, undefined, true);
 					return tests.length > 2;
 				}
@@ -1605,21 +1605,17 @@
 				} else if (test.fn === null) {
 					if (pos > -1 && !opts.keepStatic && getMaskSet().validPositions[pos] === undefined) {
 						var tests = getTests(pos),
-							hasAlternations = false,
+							staticAlternations = 0,
 							prevTest;
-						for (var i = 0; i < tests.length; i++) {
-							if (prevTest && tests[i].match.def !== "" && (tests[i].match.def !== prevTest.match.def && (tests[i].alternation === undefined || tests[i].alternation === prevTest.alternation))) {
-								hasAlternations = true;
-								break;
+						if (tests.length > 2) {
+							for (var i = 0; i < tests.length; i++) {
+								if (tests[i].match.optionality !== true && tests[i].match.optionalQuantifier !== true &&
+									(tests[i].match.fn === null || (prevTest === undefined || tests[i].match.fn.test(prevTest.match.def, getMaskSet(), pos, true, opts) !== false))) {
+									staticAlternations++;
+									if (tests[i].match.fn === null) prevTest = tests[i];
+									if (staticAlternations > 1) return opts.placeholder.charAt(pos % opts.placeholder.length);
+								}
 							}
-
-							if (tests[i].match.optionality !== true && tests[i].match.optionalQuantifier !== true) {
-								prevTest = tests[i];
-							}
-						}
-
-						if (hasAlternations) {
-							return opts.placeholder.charAt(pos % opts.placeholder.length);
 						}
 					}
 					return test.def;
@@ -2440,7 +2436,7 @@
 							if (clickPosition < lastPosition) {
 								caret(input, !isMask(clickPosition) && !isMask(clickPosition - 1) ? seekNext(clickPosition) : clickPosition);
 							} else {
-								if (getBuffer()[lastPosition] !== getPlaceholder(lastPosition)) {
+								if (getBuffer()[lastPosition] !== getPlaceholder(lastPosition) || (!isMask(lastPosition, true) && getTest(lastPosition).def === getPlaceholder(lastPosition))) {
 									lastPosition = seekNext(lastPosition);
 								}
 								caret(input, opts.numericInput ? 0 : lastPosition);
