@@ -1592,4 +1592,22 @@ define([
 
 	});
 
+	qunit.test("currency alias - 123 - isvalid - ivodopyanov", function(assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("currency").mask(testmask);
+		$("#testmask").Type("123");
+		var isValid  =Inputmask("currency").isValid(testmask.value);
+		assert.equal(isValid, true, "Result " + isValid);
+	});
+	qunit.test("currency alias - $ 99,999,999.00 - isvalid - ivodopyanov", function(assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("currency").mask(testmask);
+		$("#testmask").Type("$ 99,999,999.00");
+		var isValid  =Inputmask("currency").isValid(testmask.value);
+		assert.equal(isValid, true, "Result " + isValid);
+	});
 });

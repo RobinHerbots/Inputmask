@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - remove $("selector").inputmask("mask", { mask: "99-999 ..." }) format from plugin
 
 ### Fixed
+- Currency validator gives false negative if number of digits in integer part is not multiplier of groupSize #1122
 - data-inputmask => mask with optionals not parsed correctly #1119
 - Email mask doesn't allow to go to the domain part by mouse #885
 - alias options from 'data-inputmask' is not used anymore #1113

@@ -2691,8 +2691,12 @@
 						if (opts.numericInput) {
 							isRTL = true;
 						}
-						valueBuffer = actionObj.value.split("");
-						checkVal(undefined, false, true, isRTL ? valueBuffer.reverse() : valueBuffer);
+						if (actionObj.value) {
+							valueBuffer = actionObj.value.split("");
+							checkVal(undefined, false, true, isRTL ? valueBuffer.reverse() : valueBuffer);
+						} else {
+							actionObj.value = getBuffer().join("");
+						}
 						var buffer = getBuffer();
 						var rl = determineLastRequiredPosition(),
 							lmib = buffer.length - 1;
@@ -2701,7 +2705,7 @@
 						}
 						buffer.splice(rl, lmib + 1 - rl);
 
-						return isComplete(buffer) && actionObj.value === buffer.join("");
+						return isComplete(buffer) && actionObj.value === getBuffer().join("");
 					case "getemptymask":
 						return getBufferTemplate();
 					case "remove":
