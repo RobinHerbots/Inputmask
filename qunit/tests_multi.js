@@ -321,5 +321,60 @@ define([
 		assert.equal(testmask.value, "123-12-1234", "Result " + testmask.value);
 
 	});
+	qunit.test("'[9-]AAA-999', '999999' - type 1A - dekdegiv", function(assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask({
+			"mask": ['[9-]AAA-999', '999999'],
+			keepStatic: false
+		}).mask(testmask);
 
+		$("#testmask").Type("1a");
+		assert.equal(testmask.value, "1-A__-___", "Result " + testmask.value);
+
+	});
+
+	qunit.test("(99 99 999999)|(*{+}) - 12abc - dekdegiv", function(assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("(99 99 999999)|(*{+})").mask(testmask);
+
+		$("#testmask").Type("12abc");
+		assert.equal(testmask.value, "12abc", "Result " + testmask.value);
+	});
+
+	qunit.test("(99 99 999999)|(*{+}) - 12 34 delete ' 34' + 2abc", function(assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("(99 99 999999)|(*{+})").mask(testmask);
+
+		$("#testmask").Type("12 34");
+		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
+		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
+		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
+		$("#testmask").Type("2abc");
+		assert.equal(testmask.value, "12abc", "Result " + testmask.value);
+	});
+
+	qunit.test("(99 99 999999)|(i{+}) - 12 3abc - dekdegiv", function(assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("(99 99 999999)|(i{+})", {
+			definitions: {
+				"i": {
+					validator: ".",
+					cardinality: 1,
+					definitionSymbol: "*"
+				}
+			},
+			staticDefinitionSymbol: "*"
+		}).mask(testmask);
+
+		$("#testmask").Type("12 3abc");
+		assert.equal(testmask.value, "12 3abc", "Result " + testmask.value);
+	});
 });

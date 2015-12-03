@@ -37,7 +37,13 @@ Optional extensions on the jquery.inputmask base
 		});
 		Inputmask.extendAliases({
 			"url": {
-				mask: "(\\http://)|(\\http\\s://)|(ftp://)|(ftp\\s://)*{+}",
+				definitions: {
+					"i": {
+						validator: ".",
+						cardinality: 1
+					}
+				},
+				mask: "(\\http://)|(\\http\\s://)|(ftp://)|(ftp\\s://)i{+}",
 				insertMode: false,
 				autoUnmask: false
 			},

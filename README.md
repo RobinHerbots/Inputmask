@@ -927,6 +927,24 @@ Hook to alter the clear behavior in the stripValidPositions<br>Args => maskset, 
 ### postValidation
 Hook to postValidate the result from isValid.  Usefull for validating the entry as a whole.  Args => buffer, opts<br>Return => true|false
 
+### staticDefinitionSymbol
+The staticDefinitionSymbol option is used to indicate that the static entries in the mask can match a certain definition.  Especially usefull with alternators so that static element in the mask can match another alternation.  
+
+In the example below we mark the spaces as a possible match for the "i" definition.  By doing so the mask can alternate to the second mask even when we typed already "12 3".
+
+```javaScript
+Inputmask("(99 99 999999)|(i{+})", {
+  definitions: {
+    "i": {
+      validator: ".",
+      cardinality: 1,
+      definitionSymbol: "*"
+    }
+  },
+  staticDefinitionSymbol: "*"
+}).mask(selector);
+```
+
 ## General
 ### set a value and apply mask
 this can be done with the traditional jquery.val function (all browsers) or JavaScript value property for browsers which implement lookupGetter or getOwnPropertyDescriptor

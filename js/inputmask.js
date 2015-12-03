@@ -114,7 +114,8 @@
 				ignorables: [8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123],
 				isComplete: null, //override for isComplete - args => buffer, opts - return true || false
 				canClearPosition: $.noop, //hook to alter the clear behavior in the stripValidPositions args => maskset, position, lastValidPosition, opts => return true|false
-				postValidation: null //hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, opts => return true/false
+				postValidation: null, //hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, opts => return true/false
+				staticDefinitionSymbol: undefined //specify a definitionSymbol for static content, used to make matches for alternators
 			},
 			masksCache: {},
 			mask: function(elems) {
@@ -453,8 +454,8 @@
 							optionality: mtoken.isOptional,
 							newBlockMarker: prevMatch === undefined || prevMatch.def !== element,
 							casing: null,
-							def: element,
-							placeholder: undefined,
+							def: opts.staticDefinitionSymbol || element,
+							placeholder: opts.staticDefinitionSymbol !== undefined ? element : undefined,
 							mask: element
 						});
 						escaped = false;
@@ -782,8 +783,8 @@
 			function resetMaskSet(soft) {
 				var maskset = getMaskSet();
 				maskset.buffer = undefined;
-				maskset.tests = {};
 				if (soft !== true) {
+					maskset.tests = {};
 					maskset._buffer = undefined;
 					maskset.validPositions = {};
 					maskset.p = 0;
@@ -958,16 +959,15 @@
 				function resolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) { //ndxInitializer contains a set of indexes to speedup searches in the mtokens
 					function handleMatch(match, loopNdx, quantifierRecurse) {
 						function resolveNdxInitializer(pos, alternateNdx) {
-							var previousMatch = getMaskSet().validPositions[pos];
-							if (previousMatch === undefined) {
-								if (getMaskSet().tests[pos]) {
-									$.each(getMaskSet().tests[pos], function(ndx, lmnt) {
-										if (lmnt.alternation && lmnt.locator[lmnt.alternation].toString().indexOf(alternateNdx) !== -1) {
-											previousMatch = lmnt;
-											return false;
-										}
-									});
-								}
+							var previousMatch, indexPos;
+							if (getMaskSet().tests[pos] || getMaskSet().validPositions[pos]) {
+								$.each(getMaskSet().tests[pos] || [getMaskSet().validPositions[pos]], function(ndx, lmnt) {
+									var ndxPos = lmnt.alternation ? lmnt.locator[lmnt.alternation].toString().indexOf(alternateNdx) : -1;
+									if (indexPos === undefined || (ndxPos < indexPos && ndxPos !== -1)) {
+										previousMatch = lmnt;
+										indexPos = ndxPos;
+									}
+								});
 							}
 							return previousMatch ? previousMatch.locator.slice(previousMatch.alternation + 1) : [];
 						}
@@ -1190,7 +1190,13 @@
 
 			function getBuffer(noCache) {
 				if (getMaskSet().buffer === undefined || noCache === true) {
-					if (noCache === true) getMaskSet().tests = {};
+					if (noCache === true) {
+						for (var testNdx in getMaskSet().tests) {
+							if (getMaskSet().validPositions[testNdx] === undefined) {
+								delete getMaskSet().tests[testNdx];
+							}
+						}
+					}
 					getMaskSet().buffer = getMaskTemplate(true, getLastValidPosition(), true);
 				}
 				return getMaskSet().buffer;
@@ -1264,13 +1270,13 @@
 						rslt = test.fn != null ?
 							test.fn.test(chrs, getMaskSet(), position, strict, opts) : (c === test.def || c === opts.skipOptionalPartCharacter) && test.def !== "" ? //non mask
 							{
-								c: test.def,
+								c: test.placeholder || test.def,
 								pos: position
 							} : false;
 
 						if (rslt !== false) {
 							var elem = rslt.c !== undefined ? rslt.c : c;
-							elem = (elem === opts.skipOptionalPartCharacter && test.fn === null) ? test.def : elem;
+							elem = (elem === opts.skipOptionalPartCharacter && test.fn === null) ? (test.placeholder || test.def) : elem;
 
 							var validatedPos = position,
 								possibleModifiedBuffer = getBuffer();
@@ -1440,12 +1446,14 @@
 							var tests = getTests(ps),
 								bestMatch = tests[0],
 								equality = -1;
-							$.each(tests, function(ndx, tst) {
+							$.each(tests, function(ndx, tst) { //find best matching
 								for (var i = 0; i < tll; i++) {
-									if (tst.locator[i] && checkAlternationMatch(tst.locator[i].toString().split(","), targetLocator[i].toString().split(",")) && equality < i) {
-										equality = i;
-										bestMatch = tst;
-									}
+									if (tst.locator[i] !== undefined && checkAlternationMatch(tst.locator[i].toString().split(","), targetLocator[i].toString().split(","))) {
+										if (equality < i) {
+											equality = i;
+											bestMatch = tst;
+										}
+									} else break;
 								}
 							});
 							setValidPosition(ps, $.extend({}, bestMatch, {
@@ -2570,7 +2578,7 @@
 				//unbind all events - to make sure that no other mask will interfere when re-masking
 				$el.off(".inputmask");
 				patchValueProperty(el);
-				if ((el.tagName === "INPUT" && isInputTypeSupported(el.getAttribute("type"))) || el.isContentEditable) {
+				if ((el.tagName === "INPUT" && isInputTypeSupported(el.getAttribute("type"))) || el.isContentEditable || el.tagName === "TEXTAREA") {
 					//bind events
 					$(el.form).on("submit.inputmask", submitEvent).on("reset.inputmask", resetEvent);
 

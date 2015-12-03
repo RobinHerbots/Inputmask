@@ -1,6 +1,18 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [UNRELEASED]
+### Added
+- staticDefinitionSymbol (see readme)
+- include textarea as a valid masking element
+
+### Updates
+- update alternation logic
+
+### Fixed
+- No-strict mask #1084
+- Inputmask not work with textarea #1128
+
 ## [3.2.5] - 2015-11-27
 
 ### Updates

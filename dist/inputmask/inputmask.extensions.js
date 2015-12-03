@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.5
+* Version: 3.2.6-1
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery"), require("./inputmask")) : factory(window.dependencyLib || jQuery, window.Inputmask);
@@ -26,7 +26,13 @@
         }
     }), Inputmask.extendAliases({
         url: {
-            mask: "(\\http://)|(\\http\\s://)|(ftp://)|(ftp\\s://)*{+}",
+            definitions: {
+                i: {
+                    validator: ".",
+                    cardinality: 1
+                }
+            },
+            mask: "(\\http://)|(\\http\\s://)|(ftp://)|(ftp\\s://)i{+}",
             insertMode: !1,
             autoUnmask: !1
         },
