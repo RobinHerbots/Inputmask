@@ -2314,7 +2314,7 @@
 
 				//backspace in chrome32 only fires input event - detect & treat
 				var caretPos = caret(input),
-					currentValue = input._valueGet();
+					currentValue = input.inputmask._valueGet();
 
 				currentValue = currentValue.replace(new RegExp("(" + Inputmask.escapeRegex(getBufferTemplate().join("")) + ")*"), "");
 				//correct caretposition for chrome
