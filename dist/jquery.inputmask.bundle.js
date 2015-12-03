@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.6-3
+* Version: 3.2.6-7
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -1003,7 +1003,7 @@
             e.preventDefault();
         }
         function mobileInputEvent(e) {
-            var input = this, caretPos = caret(input), currentValue = input._valueGet();
+            var input = this, caretPos = caret(input), currentValue = input.inputmask._valueGet();
             currentValue = currentValue.replace(new RegExp("(" + Inputmask.escapeRegex(getBufferTemplate().join("")) + ")*"), ""), 
             caretPos.begin > currentValue.length && (caret(input, currentValue.length), caretPos = caret(input)), 
             getBuffer().length - currentValue.length !== 1 || currentValue.charAt(caretPos.begin) === getBuffer()[caretPos.begin] || currentValue.charAt(caretPos.begin + 1) === getBuffer()[caretPos.begin] || isMask(caretPos.begin) ? inputFallBackEvent.call(this, e) : (e.keyCode = opts.keyCode.BACKSPACE, 
