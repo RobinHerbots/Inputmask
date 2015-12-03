@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - update alternation logic
 
 ### Fixed
+- Cursor shifted to the RIGHT align any way. #1088
 - No-strict mask #1084
 - Inputmask not work with textarea #1128
 

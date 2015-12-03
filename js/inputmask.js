@@ -2447,7 +2447,7 @@
 								if (getBuffer()[lastPosition] !== getPlaceholder(lastPosition) || (!isMask(lastPosition, true) && getTest(lastPosition).def === getPlaceholder(lastPosition))) {
 									lastPosition = seekNext(lastPosition);
 								}
-								caret(input, opts.numericInput ? 0 : lastPosition);
+								caret(input, lastPosition);
 							}
 						}
 					}
