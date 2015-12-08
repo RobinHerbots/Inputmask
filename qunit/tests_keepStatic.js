@@ -303,4 +303,38 @@ define([
 		$("#testmask").Type("abcde");
 		assert.equal(document.getElementById("testmask").inputmask._valueGet(), "abcde", "Result " + document.getElementById("testmask").inputmask._valueGet());
 	});
+
+	qunit.test("[\"9+9\", \"(99)+99+99\"] keepStatic true - type 123 - ishytow", function(assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask(["9+9", "(99)+99+99"], {
+			keepStatic: true
+		}).mask(testmask);
+
+		$("#testmask").Type("123");
+		assert.equal(testmask.value, "(12)+3_+__", "Result " + testmask.value);
+	});
+	qunit.test("[\"9+9\", \"99+99\", \"(99)+99+99\"] keepStatic true - type 12345 - ishytow", function(assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask(["9+9", "99+99", "(99)+99+99"], {
+			keepStatic: true
+		}).mask(testmask);
+
+		$("#testmask").Type("12345");
+		assert.equal(testmask.value, "(12)+34+5_", "Result " + testmask.value);
+	});
+	qunit.test("[\"9+9\", \"99+99\", \"(99)+99+99\"] keepStatic true - type 1234 - ishytow", function(assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask(["9+9", "99+99", "(99)+99+99"], {
+			keepStatic: true
+		}).mask(testmask);
+
+		$("#testmask").Type("1234");
+		assert.equal(testmask.value, "12+34", "Result " + testmask.value);
+	});
 });
