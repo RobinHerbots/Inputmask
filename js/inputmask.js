@@ -149,7 +149,7 @@
 						});
 					}
 				});
-				return elems ? (elems[0].inputmask || this) : this;
+				return elems && elems[0] ? (elems[0].inputmask || this) : this;
 			},
 			option: function(options) { //set extra options || retrieve value of a current option
 				if (typeof options === "string") {
@@ -1920,7 +1920,7 @@
 								skipInputEvent = true;
 								break;
 						}
-						//console.log("executed " + e.type);
+						// console.log("executed " + e.type);
 						return eventHandler.apply(this, arguments);
 					}
 				};
@@ -2184,7 +2184,7 @@
 				if (checkval !== true && (!(e.ctrlKey && e.altKey) && (e.ctrlKey || e.metaKey || ignorable))) {
 					if (k === Inputmask.keyCode.ENTER && undoValue !== getBuffer().join("")) {
 						undoValue = getBuffer().join("");
-						e.preventDefault();
+						// e.preventDefault();
 						setTimeout(function() {
 							$input.trigger("change");
 						}, 0);
