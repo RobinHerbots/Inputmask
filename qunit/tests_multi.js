@@ -377,4 +377,16 @@ define([
 		$("#testmask").Type("12 3abc");
 		assert.equal(testmask.value, "12 3abc", "Result " + testmask.value);
 	});
+	qunit.test("[\"(99) 9999-9999\",\"(99) 99999-9999\"] - 12123451234 - click front - asyncerror", function(assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask(["(99) 9999-9999","(99) 99999-9999"]).mask(testmask);
+
+		$("#testmask").Type("12123451234");
+			$.caret(testmask, 0);
+			testmask.focus();
+			$("#testmask").trigger("click");
+		assert.equal(testmask.value, "(12) 12345-1234", "Result " + testmask.value);
+	});
 });

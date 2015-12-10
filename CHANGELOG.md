@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - update alternation logic
 
 ### Fixed
+- Multiple Mask Click Focus Error #1133
 - Double enter for submit #1131
 - Multiple masks #760
 - Cursor shifted to the RIGHT align any way. #1088

@@ -1167,22 +1167,22 @@
 							break;
 						}
 					}
-					if (matches.length === 0 || insertStop) {
-						matches.push({
-							"match": {
-								fn: null,
-								cardinality: 0,
-								optionality: true,
-								casing: null,
-								def: ""
-							},
-							"locator": []
-						});
-					}
-					getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
-					// console.log(pos + " - " + JSON.stringify(matches));
-					return getMaskSet().tests[pos];
 				}
+				if (matches.length === 0 || insertStop) {
+					matches.push({
+						"match": {
+							fn: null,
+							cardinality: 0,
+							optionality: true,
+							casing: null,
+							def: ""
+						},
+						"locator": []
+					});
+				}
+				getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
+				// console.log(pos + " - " + JSON.stringify(matches));
+				return getMaskSet().tests[pos];
 			}
 
 			function getBufferTemplate() {
