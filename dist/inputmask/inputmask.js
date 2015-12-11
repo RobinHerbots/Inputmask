@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.6-16
+* Version: 3.2.6-17
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -1157,13 +1157,17 @@
                 -1 != [ "submit", "reset" ].indexOf(eventName) ? null != input.form && $(input.form).on(eventName, ev) : $(input).on(eventName, ev);
             },
             off: function(input, event) {
-                input.inputmask && input.inputmask.events && $.each(event ? [ event ] : input.inputmask.events, function(eventName, evArr) {
-                    for (;evArr.length > 0; ) {
-                        var ev = evArr.pop();
-                        -1 != [ "submit", "reset" ].indexOf(eventName) ? null != input.form && $(input.form).off(eventName, ev) : $(input).off(eventName, ev);
-                    }
-                    delete input.inputmask.events[eventName];
-                });
+                if (input.inputmask && input.inputmask.events) {
+                    var events;
+                    event ? (events = [], events[event] = input.inputmask.events[event]) : events = input.inputmask.events, 
+                    $.each(events, function(eventName, evArr) {
+                        for (;evArr.length > 0; ) {
+                            var ev = evArr.pop();
+                            -1 !== [ "submit", "reset" ].indexOf(eventName) ? null != input.form && $(input.form).off(eventName, ev) : $(input).off(eventName, ev);
+                        }
+                        delete input.inputmask.events[eventName];
+                    });
+                }
             }
         };
         if (void 0 !== actionObj) switch (actionObj.action) {

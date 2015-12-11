@@ -1938,10 +1938,15 @@
 				},
 				off: function(input, event) {
 					if (input.inputmask && input.inputmask.events) {
-						$.each(event ? [event] : input.inputmask.events, function(eventName, evArr) {
+						var events;
+						if (event) {
+							events = [];
+							events[event] = input.inputmask.events[event]
+						} else events = input.inputmask.events;
+						$.each(events, function(eventName, evArr) {
 							while (evArr.length > 0) {
 								var ev = evArr.pop();
-								if (["submit", "reset"].indexOf(eventName) != -1) {
+								if (["submit", "reset"].indexOf(eventName) !== -1) {
 									if (input.form != null) $(input.form).off(eventName, ev);
 								} else {
 									$(input).off(eventName, ev);
