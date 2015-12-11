@@ -700,11 +700,11 @@ Optional extensions on the jquery.inputmask base
 						switch (e.keyCode) {
 							case Inputmask.keyCode.UP:
 								$input.val(parseFloat(this.inputmask.unmaskedvalue()) + parseInt(opts.step));
-								$input.trigger("setvalue.inputmask");
+								$input.trigger("setvalue");
 								break;
 							case Inputmask.keyCode.DOWN:
 								$input.val(parseFloat(this.inputmask.unmaskedvalue()) - parseInt(opts.step));
-								$input.trigger("setvalue.inputmask");
+								$input.trigger("setvalue");
 								break;
 						}
 					}

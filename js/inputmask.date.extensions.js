@@ -115,7 +115,7 @@ Optional extensions on the jquery.inputmask base
 					if (e.ctrlKey && e.keyCode === Inputmask.keyCode.RIGHT) {
 						var today = new Date();
 						$input.val(today.getDate().toString() + (today.getMonth() + 1).toString() + today.getFullYear().toString());
-						$input.trigger("setvalue.inputmask");
+						$input.trigger("setvalue");
 					}
 				},
 				getFrontValue: function(mask, buffer, opts) {
@@ -372,7 +372,7 @@ Optional extensions on the jquery.inputmask base
 					if (e.ctrlKey && e.keyCode === Inputmask.keyCode.RIGHT) {
 						var today = new Date();
 						$input.val((today.getMonth() + 1).toString() + today.getDate().toString() + today.getFullYear().toString());
-						$input.trigger("setvalue.inputmask");
+						$input.trigger("setvalue");
 					}
 				}
 			},
@@ -386,7 +386,7 @@ Optional extensions on the jquery.inputmask base
 					if (e.ctrlKey && e.keyCode === Inputmask.keyCode.RIGHT) {
 						var today = new Date();
 						$input.val(today.getFullYear().toString() + (today.getMonth() + 1).toString() + today.getDate().toString());
-						$input.trigger("setvalue.inputmask");
+						$input.trigger("setvalue");
 					}
 				}
 			},
@@ -595,7 +595,7 @@ Optional extensions on the jquery.inputmask base
 					if (e.ctrlKey && e.keyCode === Inputmask.keyCode.RIGHT) {
 						var today = new Date();
 						$input.val((today.getMonth() + 1).toString() + today.getDate().toString() + today.getFullYear().toString()),
-						$input.trigger("setvalue.inputmask");
+						$input.trigger("setvalue");
 					}
 				}
   			},

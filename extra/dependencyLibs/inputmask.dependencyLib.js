@@ -158,14 +158,14 @@ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.p
 								for (hndx = 0, hndL = eventRegistry[ev][namespace].length; hndx < hndL; hndx++) {
 									evts.push({
 										ev: ev,
-										namespace: namespace.length > 0 ? namespace : "global",
+										namespace: namespace && namespace.length > 0 ? namespace : "global",
 										handler: eventRegistry[ev][namespace][hndx]
 									});
 								}
 							} else {
 								evts.push({
 									ev: ev,
-									namespace: namespace.length > 0 ? namespace : "global",
+									namespace: namespace && namespace.length > 0 ? namespace : "global",
 									handler: handler
 								});
 							}
@@ -423,28 +423,6 @@ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.p
 			return [].concat(ret);
 		};
 
-		//only usefull within inputmask
-		DependencyLib.Event = function(type) {
-			var _defaultPrevented = false;
-			return {
-				preventDefault: function() {
-					_defaultPrevented = true;
-				},
-				isDefaultPrevented: function() {
-					return _defaultPrevented;
-				},
-				altKey: false,
-				charCode: 0,
-				ctrlKey: false,
-				currentTarget: null,
-				keyCode: 0,
-				metaKey: false,
-				shiftKey: false,
-				target: null,
-				type: type,
-				which: 0
-			};
-		};
 		DependencyLib.data = function(owner, key, value) {
 			if (value === undefined) {
 				return owner.__data ? owner.__data[key] : null;

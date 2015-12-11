@@ -129,7 +129,7 @@ paths: {
 As dependencyLib you can choose between the supported libraries.
 - inputmask.dependencyLib (vanilla)
 - inputmask.dependencyLib.jquery
-- inputmask.dependencyLib.jqlite (WIP)
+- inputmask.dependencyLib.jqlite
 - .... (others are welcome)
 
 ### Allowed HTML-elements

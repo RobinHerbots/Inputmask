@@ -40,7 +40,7 @@
 						case "setvalue":
 							$(input).val(options);
 							if (input && input.inputmask !== undefined) {
-								$(input).triggerHandler("setvalue.inputmask");
+								$(input).triggerHandler("setvalue");
 							}
 							break;
 						case "option":

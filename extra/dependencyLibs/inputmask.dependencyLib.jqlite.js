@@ -14,6 +14,18 @@ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.p
 		}
 	}
 	(function($) {
+		// Use a stripped-down indexOf as it's faster than native
+		// http://jsperf.com/thor-indexof-vs-for/5
+		function indexOf(list, elem) {
+			var i = 0,
+				len = list.length;
+			for (; i < len; i++) {
+				if (list[i] === elem) {
+					return i;
+				}
+			}
+			return -1;
+		}
 		var class2type = {},
 			classTypes = "Boolean Number String Function Array Date RegExp Object Error".split(" ");
 		for (var nameNdx = 0; nameNdx < classTypes.length; nameNdx++) {
@@ -29,19 +41,43 @@ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.p
 				class2type[class2type.toString.call(obj)] || "object" :
 				typeof obj;
 		}
+
+		function isWindow(obj) {
+			return obj != null && obj === obj.window;
+		}
+
+		function isArraylike(obj) {
+			// Support: iOS 8.2 (not reproducible in simulator)
+			// `in` check used to prevent JIT error (gh-2145)
+			// hasOwn isn't used here due to false negatives
+			// regarding Nodelist length in IE
+			var length = "length" in obj && obj.length,
+				ltype = type(obj);
+
+			if (ltype === "function" || isWindow(obj)) {
+				return false;
+			}
+
+			if (obj.nodeType === 1 && length) {
+				return true;
+			}
+
+			return ltype === "array" || length === 0 ||
+				typeof length === "number" && length > 0 && (length - 1) in obj;
+		}
+		$.inArray = function(elem, arr, i) {
+			return arr == null ? -1 : indexOf(arr, elem, i);
+		};
 		$.isFunction = function(obj) {
 			return type(obj) === "function";
 		};
 		$.isArray = Array.isArray;
-		$.isWindow = function(obj) {
-			return obj != null && obj === obj.window;
-		};
 		$.isPlainObject = function(obj) {
 			// Not plain objects:
 			// - Any object or value whose internal [[Class]] property is not "[object Object]"
 			// - DOM nodes
 			// - window
-			if (type(obj) !== "object" || obj.nodeType || $.isWindow(obj)) {
+			if (type(obj) !== "object" || obj.nodeType || isWindow(obj)) {
 				return false;
 			}
 
