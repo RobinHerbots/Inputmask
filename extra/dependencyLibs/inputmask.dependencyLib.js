@@ -84,9 +84,12 @@ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.p
 			return elem instanceof Element;
 		}
 
-		function Event(elem) {
-			if (elem instanceof Event) {
+		function DependencyLib(elem) {
+			if (elem instanceof DependencyLib) {
 				return elem;
+			}
+			if (!(this instanceof DependencyLib)) {
+				return new DependencyLib(elem);
 			}
 			if (elem !== undefined && elem !== null && elem !== window) {
 				this[0] = elem.nodeName ? elem : (elem[0] !== undefined && elem[0].nodeName ? elem[0] : document.querySelector(elem));
@@ -96,7 +99,7 @@ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.p
 			}
 		}
 
-		Event.prototype = {
+		DependencyLib.prototype = {
 			on: function(events, handler) {
 				if (isValidElement(this[0])) {
 					var eventRegistry = this[0].eventRegistry,
@@ -259,22 +262,6 @@ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.p
 			}
 		};
 
-		function DependencyLib(elem) {
-			if (elem instanceof DependencyLib) {
-				return elem;
-			}
-			if (!(this instanceof DependencyLib)) {
-				return new DependencyLib(elem);
-			}
-			if (elem !== undefined && elem !== null && elem !== window) {
-				this[0] = elem.nodeName ? elem : (elem[0] !== undefined && elem[0].nodeName ? elem[0] : document.querySelector(elem));
-				if (this[0] !== undefined && this[0] !== null) {
-					this[0].eventRegistry = this[0].eventRegistry || {};
-				}
-			}
-		}
-
-		DependencyLib.prototype = Event.prototype;
 		//static
 		DependencyLib.isFunction = function(obj) {
 			return type(obj) === "function";
@@ -431,6 +418,18 @@ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.p
 				owner.__data[key] = value;
 			}
 		};
+
+		DependencyLib.Event = function CustomEvent(event, params) {
+			params = params || {
+				bubbles: false,
+				cancelable: false,
+				detail: undefined
+			};
+			var evt = document.createEvent('CustomEvent');
+			evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+			return evt;
+		}
+		DependencyLib.Event.prototype = window.Event.prototype;
 
 		window.dependencyLib = DependencyLib;
 		return DependencyLib;

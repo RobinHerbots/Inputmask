@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 - update alternation logic
 
 ### Fixed
+- IE9 SCRIPT445: Object does not support this action #1135
 - Multiple Mask Click Focus Error #1133
 - Double enter for submit #1131
 - Multiple masks #760

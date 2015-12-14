@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.6-17
+* Version: 3.2.6-21
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -703,7 +703,7 @@
                 initialNdx = seekNext(initialNdx));
             } else initialNdx = seekNext(initialNdx);
             $.each(inputValue, function(ndx, charCode) {
-                var keypress = new Event("keypress");
+                var keypress = new $.Event("keypress");
                 keypress.which = charCode.charCodeAt(0), charCodes += charCode;
                 var lvp = getLastValidPosition(void 0, !0), lvTest = getMaskSet().validPositions[lvp], nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : void 0, lvp);
                 if (!isTemplateMatch() || strict || opts.autoUnmask) {
@@ -711,7 +711,7 @@
                     keypressEvent.call(input, keypress, !0, !1, strict, pos), initialNdx = pos + 1, 
                     charCodes = "";
                 } else keypressEvent.call(input, keypress, !0, !1, !0, lvp + 1);
-            }), writeOut && writeBuffer(input, getBuffer(), document.activeElement === input ? seekNext(getLastValidPosition(0)) : void 0, new Event("checkval"));
+            }), writeOut && writeBuffer(input, getBuffer(), document.activeElement === input ? seekNext(getLastValidPosition(0)) : void 0, new $.Event("checkval"));
         }
         function unmaskedvalue(input) {
             if (input && void 0 === input.inputmask) return input.value;
@@ -863,7 +863,7 @@
                     }
                     if (lastAlt > -1) for (;validInputs.length > 0; ) {
                         getMaskSet().p = seekNext(getLastValidPosition());
-                        var keypress = new Event("keypress");
+                        var keypress = new $.Event("keypress");
                         keypress.which = validInputs.pop().charCodeAt(0), keypressEvent.call(input, keypress, !0, !1, !1, getMaskSet().p);
                     } else getMaskSet().validPositions = $.extend(!0, {}, positionsClone);
                 }
@@ -969,9 +969,9 @@
             !1;
         }
         function inputFallBackEvent(e) {
-            var input = this;
-            checkVal(input, !0, !1, input.inputmask._valueGet().split("")), isComplete(getBuffer()) === !0 && $(input).trigger("complete"), 
-            e.preventDefault();
+            var input = this, inputValue = input.inputmask._valueGet();
+            getBuffer().join("") !== inputValue && (checkVal(input, !0, !1, inputValue.split("")), 
+            isComplete(getBuffer()) === !0 && $(input).trigger("complete"), e.preventDefault());
         }
         function mobileInputEvent(e) {
             var input = this, caretPos = caret(input), currentValue = input.inputmask._valueGet();
@@ -989,7 +989,7 @@
             0 === ev.data.indexOf(compositionData) && (resetMaskSet(), getMaskSet().p = seekNext(-1), 
             skipInputEvent = !0);
             for (var newData = ev.data, i = 0; i < newData.length; i++) {
-                var keypress = new Event("keypress");
+                var keypress = new $.Event("keypress");
                 keypress.which = newData.charCodeAt(i), skipKeyPressEvent = !1, ignorable = !1, 
                 keypressEvent.call(input, keypress, !0, !1, !1, getMaskSet().p);
             }

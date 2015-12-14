@@ -1698,7 +1698,7 @@
 
 
 				$.each(inputValue, function(ndx, charCode) {
-					var keypress = new Event("keypress");
+					var keypress = new $.Event("keypress");
 					keypress.which = charCode.charCodeAt(0);
 					charCodes += charCode;
 					var lvp = getLastValidPosition(undefined, true),
@@ -1714,7 +1714,7 @@
 					}
 				});
 				if (writeOut) {
-					writeBuffer(input, getBuffer(), document.activeElement === input ? seekNext(getLastValidPosition(0)) : undefined, new Event("checkval"));
+					writeBuffer(input, getBuffer(), document.activeElement === input ? seekNext(getLastValidPosition(0)) : undefined, new $.Event("checkval"));
 				}
 			}
 
@@ -1939,10 +1939,7 @@
 				off: function(input, event) {
 					if (input.inputmask && input.inputmask.events) {
 						var events;
-						if (event) {
-							events = [];
-							events[event] = input.inputmask.events[event]
-						} else events = input.inputmask.events;
+						event ? (events = [], events[event] = input.inputmask.events[event]) : events = input.inputmask.events;
 						$.each(events, function(eventName, evArr) {
 							while (evArr.length > 0) {
 								var ev = evArr.pop();
@@ -2093,7 +2090,7 @@
 						if (lastAlt > -1) {
 							while (validInputs.length > 0) {
 								getMaskSet().p = seekNext(getLastValidPosition());
-								var keypress = new Event("keypress");
+								var keypress = new $.Event("keypress");
 								keypress.which = validInputs.pop().charCodeAt(0);
 								keypressEvent.call(input, keypress, true, false, false, getMaskSet().p);
 							}
@@ -2357,14 +2354,16 @@
 			}
 
 			function inputFallBackEvent(e) { //fallback when keypress & compositionevents fail
-				var input = this;
-				checkVal(input, true, false, input.inputmask._valueGet().split(""));
+				var input = this,
+					inputValue = input.inputmask._valueGet();
+				if (getBuffer().join('') !== inputValue) {
+					checkVal(input, true, false, inputValue.split(""));
 
-				if (isComplete(getBuffer()) === true) {
-					$(input).trigger("complete");
+					if (isComplete(getBuffer()) === true) {
+						$(input).trigger("complete");
+					}
+					e.preventDefault();
 				}
-
-				e.preventDefault();
 			}
 
 			function mobileInputEvent(e) {
@@ -2407,7 +2406,7 @@
 				}
 				var newData = ev.data;
 				for (var i = 0; i < newData.length; i++) {
-					var keypress = new Event("keypress");
+					var keypress = new $.Event("keypress");
 					keypress.which = newData.charCodeAt(i);
 					skipKeyPressEvent = false;
 					ignorable = false;

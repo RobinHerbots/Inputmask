@@ -208,6 +208,17 @@ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.p
 		$.data = function(elem, name, data) {
 			return $(elem).data(name, data);
 		};
+		$.Event = function CustomEvent(event, params) {
+			params = params || {
+				bubbles: false,
+				cancelable: false,
+				detail: undefined
+			};
+			var evt = document.createEvent('CustomEvent');
+			evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+			return evt;
+		}
+		$.Event.prototype = window.Event.prototype;
 
 		window.dependencyLib = $;
 		return $;

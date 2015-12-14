@@ -65,10 +65,14 @@
 		$.fn = $.fn || $.prototype;
 		$.fn.SendKey = function(keyCode, modifier) {
 			function trigger(elem, evnt) {
-				if (document.createEvent) {
-					elem.dispatchEvent(evnt);
+				if ($ === jQuery) {
+					$(elem).trigger(evnt);
 				} else {
-					elem.fireEvent("on" + evnt.eventType, evnt);
+					if (document.createEvent) {
+						elem.dispatchEvent(evnt);
+					} else {
+						elem.fireEvent("on" + evnt.eventType, evnt);
+					}
 				}
 			}
 			var sendDummyKeydown = false;
@@ -96,9 +100,9 @@
 					}
 				default:
 					{
-						var keydown = new Event("keydown"),
-							keypress = new Event("keypress"),
-							keyup = new Event("keyup");
+						var keydown = new $.Event("keydown"),
+							keypress = new $.Event("keypress"),
+							keyup = new $.Event("keyup");
 
 						if (!sendDummyKeydown) {
 							keydown.keyCode = keyCode;
