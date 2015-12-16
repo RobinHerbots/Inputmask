@@ -140,7 +140,7 @@ As dependencyLib you can choose between the supported libraries.
 - `<textarea>`
 - any html-element (mask text content or set maskedvalue with jQuery.val)
 
-The allowed input types are defined in the supportsInputType option.  You may add extra types as you which, ex: number, be aware that those input types will not always work as they restrict the input already. ([input-type-ref])
+The allowed input types are defined in the supportsInputType option. Also see ([input-type-ref])
 
 ### Default masking definitions
 - `9` : numeric
