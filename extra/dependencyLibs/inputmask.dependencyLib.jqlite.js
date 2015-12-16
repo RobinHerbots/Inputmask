@@ -208,7 +208,7 @@ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.p
 		$.data = function(elem, name, data) {
 			return $(elem).data(name, data);
 		};
-		$.Event = function CustomEvent(event, params) {
+		$.Event = $.Event || function CustomEvent(event, params) {
 			params = params || {
 				bubbles: false,
 				cancelable: false,

@@ -135,8 +135,12 @@ As dependencyLib you can choose between the supported libraries.
 ### Allowed HTML-elements
 - `<input type="text">`
 - `<input type="tel">`
+- `<input type="password">`
 - `<div contenteditable="true">` (and all others supported by contenteditable)
+- `<textarea>`
 - any html-element (mask text content or set maskedvalue with jQuery.val)
+
+The allowed input types are defined in the supportsInputType option.  You may add extra types as you which, ex: number, be aware that those input types will not always work as they restrict the input already. ([input-type-ref])
 
 ### Default masking definitions
 - `9` : numeric
@@ -1072,3 +1076,4 @@ When cloning a inputmask, the inputmask reactivates on the first event (mouseent
 [david-image]: https://img.shields.io/david/RobinHerbots/jquery.inputmask.svg
 [david-dev-url]: https://david-dm.org/RobinHerbots/jquery.inputmask#info=devDependencies
 [david-dev-image]: https://img.shields.io/david/dev/RobinHerbots/jquery.inputmask.svg
+[input-type-ref]: https://html.spec.whatwg.org/multipage/forms.html#do-not-apply

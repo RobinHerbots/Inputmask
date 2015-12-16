@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.6-21
+* Version: 3.2.6-22
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -19,11 +19,11 @@
         return isSupported || (el.setAttribute(evName, "return;"), isSupported = "function" == typeof el[evName]), 
         el = null, isSupported;
     }
-    function isInputTypeSupported(inputType) {
-        var isSupported = "text" === inputType || "tel" === inputType || "password" === inputType;
+    function isElementTypeSupported(input, opts) {
+        var elementType = input.getAttribute("type"), isSupported = "INPUT" === input.tagName && -1 !== opts.supportsInputType.indexOf(elementType) || input.isContentEditable || "TEXTAREA" === input.tagName;
         if (!isSupported) {
             var el = document.createElement("input");
-            el.setAttribute("type", inputType), isSupported = "text" === el.type, el = null;
+            el.setAttribute("type", elementType), isSupported = "text" === el.type, el = null;
         }
         return isSupported;
     }
@@ -1088,7 +1088,7 @@
             if (el = elem, $el = $(el), opts.showTooltip && (el.title = opts.tooltip || getMaskSet().mask), 
             ("rtl" === el.dir || opts.rightAlign) && (el.style.textAlign = "right"), ("rtl" === el.dir || opts.numericInput) && (el.dir = "ltr", 
             el.removeAttribute("dir"), el.inputmask.isRTL = !0, isRTL = !0), EventRuler.off(el), 
-            patchValueProperty(el), ("INPUT" === el.tagName && isInputTypeSupported(el.getAttribute("type")) || el.isContentEditable || "TEXTAREA" === el.tagName) && (EventRuler.on(el, "submit", submitEvent), 
+            patchValueProperty(el), isElementTypeSupported(el, opts) && (EventRuler.on(el, "submit", submitEvent), 
             EventRuler.on(el, "reset", submitEvent), EventRuler.on(el, "mouseenter", mouseenterEvent), 
             EventRuler.on(el, "blur", blurEvent), EventRuler.on(el, "focus", focusEvent), EventRuler.on(el, "mouseleave", mouseleaveEvent), 
             EventRuler.on(el, "click", clickEvent), EventRuler.on(el, "dblclick", dblclickEvent), 
@@ -1282,7 +1282,7 @@
             keepStatic: null,
             positionCaretOnTab: !1,
             tabThrough: !1,
-            supportsInputType: [],
+            supportsInputType: [ "text", "tel", "password" ],
             definitions: {
                 "9": {
                     validator: "[0-9]",

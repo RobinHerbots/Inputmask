@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [UNRELEASED]
 ### Added
+- supportsInputType option
 - staticDefinitionSymbol (see readme)
 - include textarea as a valid masking element
 
@@ -12,6 +13,7 @@ All notable changes to this project will be documented in this file.
 - update alternation logic
 
 ### Fixed
+- Input mask can't be applied on other HTML5 input types #828
 - IE9 SCRIPT445: Object does not support this action #1135
 - Multiple Mask Click Focus Error #1133
 - Double enter for submit #1131

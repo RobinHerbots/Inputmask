@@ -307,4 +307,28 @@ define([
 			done();
 		}, 0);
 	});
+	qunit.test("I{1,3}-ZZ - ivodopyanov", function(assert) {
+		var done = assert.async(),
+			$fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" value="VAA" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask({
+			"mask": "I{1,3}-ZZ",
+			definitions: {
+				'Z': {
+					"validator": "[A-Za-z]",
+					cardinality: 1
+				},
+				'I': {
+					"validator": "[ivxlcdmIVXLCDM]",
+					cardinality: 1
+				}
+			}
+		}).mask(testmask);
+		$("#testmask").blur();
+		setTimeout(function() {
+			assert.equal(document.getElementById("testmask").inputmask._valueGet(), "V-AA", "Result " + document.getElementById("testmask").inputmask._valueGet());
+			done();
+		}, 0);
+	});
 });

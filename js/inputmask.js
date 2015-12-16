@@ -94,7 +94,7 @@
 				keepStatic: null, //try to keep the mask static while typing. Decisions to alter the mask will be posponed if possible - null see auto selection for multi masks
 				positionCaretOnTab: false, //when enabled the caret position is set after the latest valid position on TAB
 				tabThrough: false, //allows for tabbing through the different parts of the masked field
-				supportsInputType: [], //allow extra inputtypes for masking, ex. number can be allowed for numeric alias without pre-/suffix and standard radixpoint, groupSeparator
+				supportsInputType: ["text", "tel", "password"], //list with the supported input types
 				definitions: {
 					"9": {
 						validator: "[0-9]",
@@ -301,11 +301,12 @@
 			return isSupported;
 		}
 
-		function isInputTypeSupported(inputType) {
-			var isSupported = inputType === "text" || inputType === "tel" || inputType === "password";
+		function isElementTypeSupported(input, opts) {
+			var elementType = input.getAttribute("type");
+			var isSupported = (input.tagName === "INPUT" && opts.supportsInputType.indexOf(elementType) !== -1) || input.isContentEditable || input.tagName === "TEXTAREA";
 			if (!isSupported) {
 				var el = document.createElement("input");
-				el.setAttribute("type", inputType);
+				el.setAttribute("type", elementType);
 				isSupported = el.type === "text"; //apply mask only if the type is not natively supported
 				el = null;
 			}
@@ -2635,7 +2636,7 @@
 				//unbind all events - to make sure that no other mask will interfere when re-masking
 				EventRuler.off(el);
 				patchValueProperty(el);
-				if ((el.tagName === "INPUT" && isInputTypeSupported(el.getAttribute("type"))) || el.isContentEditable || el.tagName === "TEXTAREA") {
+				if (isElementTypeSupported(el, opts)) {
 					//bind events
 					EventRuler.on(el, "submit", submitEvent);
 					EventRuler.on(el, "reset", submitEvent);
