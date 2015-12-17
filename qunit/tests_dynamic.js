@@ -307,7 +307,7 @@ define([
 			done();
 		}, 0);
 	});
-	qunit.test("I{1,3}-ZZ - ivodopyanov", function(assert) {
+	qunit.test("I{1,3}-ZZ - rgafaric", function(assert) {
 		var done = assert.async(),
 			$fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" value="VAA" />');

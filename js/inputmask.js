@@ -1470,7 +1470,7 @@
 						tll = targetLocator.length;
 
 					for (var ps = originalPos; ps < newPos; ps++) {
-						if (!isMask(ps, true)) {
+						if (getMaskSet().validPositions[ps] === undefined && !isMask(ps, true)) {
 							var tests = getTests(ps),
 								bestMatch = tests[0],
 								equality = -1;
@@ -1485,7 +1485,7 @@
 								}
 							});
 							setValidPosition(ps, $.extend({}, bestMatch, {
-								"input": bestMatch.match.def
+								"input": bestMatch.match.placeholder || bestMatch.match.def
 							}), true);
 						}
 					}
@@ -1526,6 +1526,9 @@
 								"caret": seekNext(maskPos)
 							};
 						} else if ((opts.insertMode || getMaskSet().validPositions[seekNext(maskPos)] === undefined) && !isMask(maskPos, true)) { //does the input match on a further position?
+							var staticChar = getTestTemplate(maskPos).match,
+								staticChar = staticChar.placeholder || staticChar.def;
+							_isValid(maskPos, staticChar, strict, fromSetValid);
 							for (var nPos = maskPos + 1, snPos = seekNext(maskPos); nPos <= snPos; nPos++) {
 								result = _isValid(nPos, c, strict, fromSetValid);
 								if (result !== false) {
@@ -1563,7 +1566,12 @@
 			}
 
 			function isMask(pos, strict) {
-				var test = getTest(pos);
+				var test;
+				if (strict) {
+					test = getTestTemplate(pos).match;
+					if (test.def == "") test = getTest(pos);
+				} else test = getTest(pos);
+
 				if (test.fn != null) {
 					return test.fn;
 				} else if (strict !== true && pos > -1 && !opts.keepStatic && getMaskSet().validPositions[pos] === undefined) {
