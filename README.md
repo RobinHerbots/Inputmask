@@ -18,12 +18,14 @@ Highlights:
 - many features can be enabled/disabled/configured by options
 - supports readonly/disabled/dir="rtl" attributes
 - support data-inputmask attribute(s)  
-- alternator-mask support
-- regex-mask support
-- dynamic-mask support
-- preprocessing-mask support
+- alternator-mask
+- regex-mask
+- dynamic-mask
+- preprocessing-mask
+- JIT-masking
 - value formatting / validating without input element
 - AMD/CommonJS support
+- dependencyLibs: vanilla javascript, jQuery, jqlite
 
 Demo page see [http://robinherbots.github.io/jquery.inputmask](http://robinherbots.github.io/jquery.inputmask)
 
@@ -268,6 +270,13 @@ You can define the mask as a function which can allow to preprocess the resultin
 
 ```javascript
   $(selector).inputmask({ mask: function () { /* do stuff */ return ["[1-]AAA-999", "[1-]999-AAA"]; }});
+```
+
+### JIT Masking
+Just in time masking.  With the jitMasking option you can enable jit masking.  The mask will only be visible for the user entered characters.
+
+```javascript
+   Inputmask("date", { jitMasking: true }).mask(selector);
 ```
 
 ## Define custom definitions

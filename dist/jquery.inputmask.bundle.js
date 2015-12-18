@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.6-23
+* Version: 3.2.6-24
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -247,16 +247,16 @@
     function maskScope(actionObj, maskset, opts) {
         function getMaskTemplate(baseOnInput, minimalPos, includeInput) {
             minimalPos = minimalPos || 0;
-            var ndxIntlzr, test, testPos, maskTemplate = [], pos = 0;
+            var ndxIntlzr, test, testPos, maskTemplate = [], pos = 0, lvp = getLastValidPosition();
             do {
                 if (baseOnInput === !0 && getMaskSet().validPositions[pos]) {
                     var validPos = getMaskSet().validPositions[pos];
                     test = validPos.match, ndxIntlzr = validPos.locator.slice(), maskTemplate.push(includeInput === !0 ? validPos.input : getPlaceholder(pos, test));
                 } else testPos = getTestTemplate(pos, ndxIntlzr, pos - 1), test = testPos.match, 
-                ndxIntlzr = testPos.locator.slice(), maskTemplate.push(getPlaceholder(pos, test));
+                ndxIntlzr = testPos.locator.slice(), (opts.jitMasking !== !0 || lvp > pos) && maskTemplate.push(getPlaceholder(pos, test));
                 pos++;
             } while ((void 0 === maxLength || maxLength > pos - 1) && null !== test.fn || null === test.fn && "" !== test.def || minimalPos >= pos);
-            return maskTemplate.pop(), maskTemplate;
+            return "" === maskTemplate[maskTemplate.length - 1] && maskTemplate.pop(), maskTemplate;
         }
         function getMaskSet() {
             return maskset;
@@ -1306,7 +1306,8 @@
             isComplete: null,
             canClearPosition: $.noop,
             postValidation: null,
-            staticDefinitionSymbol: void 0
+            staticDefinitionSymbol: void 0,
+            jitMasking: !1
         },
         masksCache: {},
         mask: function(elems) {

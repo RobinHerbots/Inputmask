@@ -116,7 +116,8 @@
 				isComplete: null, //override for isComplete - args => buffer, opts - return true || false
 				canClearPosition: $.noop, //hook to alter the clear behavior in the stripValidPositions args => maskset, position, lastValidPosition, opts => return true|false
 				postValidation: null, //hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, opts => return true/false
-				staticDefinitionSymbol: undefined //specify a definitionSymbol for static content, used to make matches for alternators
+				staticDefinitionSymbol: undefined, //specify a definitionSymbol for static content, used to make matches for alternators
+				jitMasking: false, //just in time masking ~ only mask while typing
 			},
 			masksCache: {},
 			mask: function(elems) {
@@ -758,7 +759,7 @@
 				minimalPos = minimalPos || 0;
 				var maskTemplate = [],
 					ndxIntlzr, pos = 0,
-					test, testPos;
+					test, testPos, lvp = getLastValidPosition();
 				do {
 					if (baseOnInput === true && getMaskSet().validPositions[pos]) {
 						var validPos = getMaskSet().validPositions[pos];
@@ -770,11 +771,15 @@
 						testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
 						test = testPos.match;
 						ndxIntlzr = testPos.locator.slice();
-						maskTemplate.push(getPlaceholder(pos, test));
+						if (opts.jitMasking !== true || pos < lvp) {
+							maskTemplate.push(getPlaceholder(pos, test));
+						}
 					}
 					pos++;
 				} while ((maxLength === undefined || pos - 1 < maxLength) && test.fn !== null || (test.fn === null && test.def !== "") || minimalPos >= pos);
-				maskTemplate.pop(); //drop the last one which is empty
+				if (maskTemplate[maskTemplate.length - 1] === "") {
+					maskTemplate.pop(); //drop the last one which is empty
+				}
 				return maskTemplate;
 			}
 
