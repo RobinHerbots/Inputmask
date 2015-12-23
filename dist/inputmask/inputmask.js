@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2015 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.6-24
+* Version: 3.2.6-25
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -255,7 +255,7 @@
                     var validPos = getMaskSet().validPositions[pos];
                     test = validPos.match, ndxIntlzr = validPos.locator.slice(), maskTemplate.push(includeInput === !0 ? validPos.input : getPlaceholder(pos, test));
                 } else testPos = getTestTemplate(pos, ndxIntlzr, pos - 1), test = testPos.match, 
-                ndxIntlzr = testPos.locator.slice(), (opts.jitMasking !== !0 || lvp > pos) && maskTemplate.push(getPlaceholder(pos, test));
+                ndxIntlzr = testPos.locator.slice(), (opts.jitMasking === !1 || lvp > pos || isFinite(opts.jitMasking) && opts.jitMasking > pos) && maskTemplate.push(getPlaceholder(pos, test));
                 pos++;
             } while ((void 0 === maxLength || maxLength > pos - 1) && null !== test.fn || null === test.fn && "" !== test.def || minimalPos >= pos);
             return "" === maskTemplate[maskTemplate.length - 1] && maskTemplate.pop(), maskTemplate;
@@ -347,6 +347,12 @@
         function getTests(pos, ndxIntlzr, tstPs, cacheable) {
             function resolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) {
                 function handleMatch(match, loopNdx, quantifierRecurse) {
+                    function isFirstMatch(latestMatch, tokenGroup) {
+                        var firstMatch = 0 === $.inArray(latestMatch, tokenGroup.matches);
+                        return firstMatch || $.each(tokenGroup.matches, function(ndx, match) {
+                            return match.isQuantifier === !0 && (firstMatch = isFirstMatch(latestMatch, tokenGroup.matches[ndx - 1])) ? !1 : void 0;
+                        }), firstMatch;
+                    }
                     function resolveNdxInitializer(pos, alternateNdx) {
                         var bestMatch = selectBestMatch(pos, alternateNdx);
                         return bestMatch ? bestMatch.locator.slice(bestMatch.alternation + 1) : [];
@@ -362,8 +368,7 @@
                         } else if (match.isOptional) {
                             var optionalToken = match;
                             if (match = resolveTestFromToken(match, ndxInitializer, loopNdx, quantifierRecurse)) {
-                                if (latestMatch = matches[matches.length - 1].match, isFirstMatch = 0 === $.inArray(latestMatch, optionalToken.matches), 
-                                !isFirstMatch) return !0;
+                                if (latestMatch = matches[matches.length - 1].match, !isFirstMatch(latestMatch, optionalToken)) return !0;
                                 insertStop = !0, testPos = pos;
                             }
                         } else if (match.isAlternator) {
@@ -415,7 +420,7 @@
                             var tokenGroup = maskToken.matches[$.inArray(qt, maskToken.matches) - 1];
                             if (match = handleMatch(tokenGroup, [ qndx ].concat(loopNdx), tokenGroup)) {
                                 if (latestMatch = matches[matches.length - 1].match, latestMatch.optionalQuantifier = qndx > qt.quantifier.min - 1, 
-                                isFirstMatch = 0 === $.inArray(latestMatch, tokenGroup.matches)) {
+                                isFirstMatch(latestMatch, tokenGroup)) {
                                     if (qndx > qt.quantifier.min - 1) {
                                         insertStop = !0, testPos = pos;
                                         break;
@@ -433,7 +438,7 @@
                     if (testPos > pos) break;
                 }
             }
-            var latestMatch, isFirstMatch, maskTokens = getMaskSet().maskToken, testPos = ndxIntlzr ? tstPs : 0, ndxInitializer = ndxIntlzr || [ 0 ], matches = [], insertStop = !1;
+            var latestMatch, maskTokens = getMaskSet().maskToken, testPos = ndxIntlzr ? tstPs : 0, ndxInitializer = ndxIntlzr || [ 0 ], matches = [], insertStop = !1;
             if (pos > -1) {
                 if (cacheable === !0 && getMaskSet().tests[pos]) return getMaskSet().tests[pos];
                 if (void 0 === ndxIntlzr) {
@@ -834,7 +839,7 @@
             function installNativeValueSetFallback(npt) {
                 EventRuler.on(npt, "mouseenter", function(event) {
                     var $input = $(this), input = this, value = input.inputmask._valueGet();
-                    "" !== value && value !== getBuffer().join("") && $input.trigger("setvalue");
+                    value !== getBuffer().join("") && getLastValidPosition() > 0 && $input.trigger("setvalue");
                 });
             }
             var valueGet, valueSet;
@@ -1044,7 +1049,7 @@
             var input = this;
             if (document.activeElement === input) {
                 var selectedCaret = caret(input);
-                if (selectedCaret.begin === selectedCaret.end) if (doRadixFocus(selectedCaret.begin)) caret(input, $.inArray(opts.radixPoint, getBuffer())); else {
+                if (selectedCaret.begin === selectedCaret.end) if (doRadixFocus(selectedCaret.begin)) caret(input, opts.numericInput ? seekNext($.inArray(opts.radixPoint, getBuffer())) : $.inArray(opts.radixPoint, getBuffer())); else {
                     var clickPosition = selectedCaret.begin, lvclickPosition = getLastValidPosition(clickPosition), lastPosition = seekNext(lvclickPosition);
                     lastPosition > clickPosition ? caret(input, isMask(clickPosition) || isMask(clickPosition - 1) ? clickPosition : seekNext(clickPosition)) : ((getBuffer()[lastPosition] !== getPlaceholder(lastPosition) || !isMask(lastPosition, !0) && getTest(lastPosition).def === getPlaceholder(lastPosition)) && (lastPosition = seekNext(lastPosition)), 
                     caret(input, lastPosition));

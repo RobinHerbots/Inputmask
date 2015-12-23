@@ -117,7 +117,7 @@
 				canClearPosition: $.noop, //hook to alter the clear behavior in the stripValidPositions args => maskset, position, lastValidPosition, opts => return true|false
 				postValidation: null, //hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, opts => return true/false
 				staticDefinitionSymbol: undefined, //specify a definitionSymbol for static content, used to make matches for alternators
-				jitMasking: false, //just in time masking ~ only mask while typing
+				jitMasking: false, //just in time masking ~ only mask while typing, can n (number), true or false
 			},
 			masksCache: {},
 			mask: function(elems) {
@@ -771,7 +771,7 @@
 						testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
 						test = testPos.match;
 						ndxIntlzr = testPos.locator.slice();
-						if (opts.jitMasking !== true || pos < lvp) {
+						if (opts.jitMasking === false || pos < lvp || (isFinite(opts.jitMasking) && opts.jitMasking > pos)) {
 							maskTemplate.push(getPlaceholder(pos, test));
 						}
 					}
@@ -975,10 +975,23 @@
 					ndxInitializer = ndxIntlzr || [0],
 					matches = [],
 					insertStop = false,
-					latestMatch, isFirstMatch;
+					latestMatch;
 
 				function resolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) { //ndxInitializer contains a set of indexes to speedup searches in the mtokens
 					function handleMatch(match, loopNdx, quantifierRecurse) {
+						function isFirstMatch(latestMatch, tokenGroup) {
+							var firstMatch = $.inArray(latestMatch, tokenGroup.matches) === 0;
+							if (!firstMatch) {
+								$.each(tokenGroup.matches, function(ndx, match) {
+									if (match.isQuantifier === true) {
+										firstMatch = isFirstMatch(latestMatch, tokenGroup.matches[ndx - 1]);
+										if (firstMatch) return false;
+									}
+								});
+							}
+							return firstMatch;
+						}
+
 						function resolveNdxInitializer(pos, alternateNdx) {
 							var bestMatch = selectBestMatch(pos, alternateNdx);
 							return bestMatch ? bestMatch.locator.slice(bestMatch.alternation + 1) : [];
@@ -1001,8 +1014,7 @@
 								match = resolveTestFromToken(match, ndxInitializer, loopNdx, quantifierRecurse);
 								if (match) {
 									latestMatch = matches[matches.length - 1].match;
-									isFirstMatch = $.inArray(latestMatch, optionalToken.matches) === 0;
-									if (isFirstMatch) {
+									if (isFirstMatch(latestMatch, optionalToken)) {
 										insertStop = true; //insert a stop
 										testPos = pos; //match the position after the group
 									} else return true;
@@ -1117,9 +1129,7 @@
 										//get latest match
 										latestMatch = matches[matches.length - 1].match;
 										latestMatch.optionalQuantifier = qndx > (qt.quantifier.min - 1);
-										isFirstMatch = $.inArray(latestMatch, tokenGroup.matches) === 0;
-
-										if (isFirstMatch) { //search for next possible match
+										if (isFirstMatch(latestMatch, tokenGroup)) { //search for next possible match
 											if (qndx > (qt.quantifier.min - 1)) {
 												insertStop = true;
 												testPos = pos; //match the position after the group
@@ -2035,7 +2045,7 @@
 						var $input = $(this),
 							input = this,
 							value = input.inputmask._valueGet();
-						if (value !== "" && value !== getBuffer().join("")) {
+						if (value !== getBuffer().join("") && getLastValidPosition() > 0) {
 							$input.trigger("setvalue");
 						}
 					});
@@ -2506,7 +2516,7 @@
 					var selectedCaret = caret(input);
 					if (selectedCaret.begin === selectedCaret.end) {
 						if (doRadixFocus(selectedCaret.begin)) {
-							caret(input, $.inArray(opts.radixPoint, getBuffer()));
+							caret(input, opts.numericInput ? seekNext($.inArray(opts.radixPoint, getBuffer())) : $.inArray(opts.radixPoint, getBuffer()));
 						} else {
 							var clickPosition = selectedCaret.begin,
 								lvclickPosition = getLastValidPosition(clickPosition),

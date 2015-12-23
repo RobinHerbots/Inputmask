@@ -274,6 +274,9 @@ You can define the mask as a function which can allow to preprocess the resultin
 
 ### JIT Masking
 Just in time masking.  With the jitMasking option you can enable jit masking.  The mask will only be visible for the user entered characters.
+Default: false
+
+Value can be true or a threshold number or false. 
 
 ```javascript
    Inputmask("date", { jitMasking: true }).mask(selector);
