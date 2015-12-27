@@ -117,7 +117,7 @@
 				canClearPosition: $.noop, //hook to alter the clear behavior in the stripValidPositions args => maskset, position, lastValidPosition, opts => return true|false
 				postValidation: null, //hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, opts => return true/false
 				staticDefinitionSymbol: undefined, //specify a definitionSymbol for static content, used to make matches for alternators
-				jitMasking: false, //just in time masking ~ only mask while typing, can n (number), true or false
+				jitMasking: false //just in time masking ~ only mask while typing, can n (number), true or false
 			},
 			masksCache: {},
 			mask: function(elems) {
@@ -1904,7 +1904,7 @@
 						// console.log("triggered " + e.type);
 						var inComposition = false,
 							keydownPressed = false;
-						if (this.inputmask === undefined) { //happens when cloning an object with jquery.clone
+						if (this.inputmask === undefined && this.nodeName !== "FORM") { //happens when cloning an object with jquery.clone
 							var imOpts = $.data(this, "_inputmask_opts");
 							if (imOpts)(new Inputmask(imOpts)).mask(this);
 							else EventRuler.off(this);
