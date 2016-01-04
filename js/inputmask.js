@@ -2385,7 +2385,7 @@
 					inputValue = inputValue.split("");
 					for (var i = inputValue.length; i > 0; i--) {
 						if (inputValue[i] === getPlaceholder(i))
-							del inputValue[i];
+							delete inputValue[i];
 					}
 
 					checkVal(input, true, false, inputValue);
