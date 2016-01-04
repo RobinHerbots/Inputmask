@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [UNRELEASED]
 ### Added
+- add jitMasking option
 - supportsInputType option
 - staticDefinitionSymbol (see readme)
 - include textarea as a valid masking element
@@ -13,6 +14,9 @@ All notable changes to this project will be documented in this file.
 - update alternation logic
 
 ### Fixed
+- IE11 clear not working in emulated IE9 mode #1144
+- Show placeholder as user types #1141
+- Initial value like VAA gets truncated to V-__ with mask like "I{1,3}-ZZ" #1134
 - Input mask can't be applied on other HTML5 input types #828
 - IE9 SCRIPT445: Object does not support this action #1135
 - Multiple Mask Click Focus Error #1133

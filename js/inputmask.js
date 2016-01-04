@@ -116,7 +116,8 @@
 				isComplete: null, //override for isComplete - args => buffer, opts - return true || false
 				canClearPosition: $.noop, //hook to alter the clear behavior in the stripValidPositions args => maskset, position, lastValidPosition, opts => return true|false
 				postValidation: null, //hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, opts => return true/false
-				staticDefinitionSymbol: undefined //specify a definitionSymbol for static content, used to make matches for alternators
+				staticDefinitionSymbol: undefined, //specify a definitionSymbol for static content, used to make matches for alternators
+				jitMasking: false //just in time masking ~ only mask while typing, can n (number), true or false
 			},
 			masksCache: {},
 			mask: function(elems) {
@@ -759,7 +760,7 @@
 				minimalPos = minimalPos || 0;
 				var maskTemplate = [],
 					ndxIntlzr, pos = 0,
-					test, testPos;
+					test, testPos, lvp = getLastValidPosition();
 				do {
 					if (baseOnInput === true && getMaskSet().validPositions[pos]) {
 						var validPos = getMaskSet().validPositions[pos];
@@ -771,11 +772,15 @@
 						testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
 						test = testPos.match;
 						ndxIntlzr = testPos.locator.slice();
-						maskTemplate.push(getPlaceholder(pos, test));
+						if (opts.jitMasking === false || pos < lvp || (isFinite(opts.jitMasking) && opts.jitMasking > pos)) {
+							maskTemplate.push(getPlaceholder(pos, test));
+						}
 					}
 					pos++;
 				} while ((maxLength === undefined || pos - 1 < maxLength) && test.fn !== null || (test.fn === null && test.def !== "") || minimalPos >= pos);
-				maskTemplate.pop(); //drop the last one which is empty
+				if (maskTemplate[maskTemplate.length - 1] === "") {
+					maskTemplate.pop(); //drop the last one which is empty
+				}
 				return maskTemplate;
 			}
 
@@ -971,10 +976,23 @@
 					ndxInitializer = ndxIntlzr || [0],
 					matches = [],
 					insertStop = false,
-					latestMatch, isFirstMatch;
+					latestMatch;
 
 				function resolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) { //ndxInitializer contains a set of indexes to speedup searches in the mtokens
 					function handleMatch(match, loopNdx, quantifierRecurse) {
+						function isFirstMatch(latestMatch, tokenGroup) {
+							var firstMatch = $.inArray(latestMatch, tokenGroup.matches) === 0;
+							if (!firstMatch) {
+								$.each(tokenGroup.matches, function(ndx, match) {
+									if (match.isQuantifier === true) {
+										firstMatch = isFirstMatch(latestMatch, tokenGroup.matches[ndx - 1]);
+										if (firstMatch) return false;
+									}
+								});
+							}
+							return firstMatch;
+						}
+
 						function resolveNdxInitializer(pos, alternateNdx) {
 							var bestMatch = selectBestMatch(pos, alternateNdx);
 							return bestMatch ? bestMatch.locator.slice(bestMatch.alternation + 1) : [];
@@ -997,8 +1015,7 @@
 								match = resolveTestFromToken(match, ndxInitializer, loopNdx, quantifierRecurse);
 								if (match) {
 									latestMatch = matches[matches.length - 1].match;
-									isFirstMatch = $.inArray(latestMatch, optionalToken.matches) === 0;
-									if (isFirstMatch) {
+									if (isFirstMatch(latestMatch, optionalToken)) {
 										insertStop = true; //insert a stop
 										testPos = pos; //match the position after the group
 									} else return true;
@@ -1113,9 +1130,7 @@
 										//get latest match
 										latestMatch = matches[matches.length - 1].match;
 										latestMatch.optionalQuantifier = qndx > (qt.quantifier.min - 1);
-										isFirstMatch = $.inArray(latestMatch, tokenGroup.matches) === 0;
-
-										if (isFirstMatch) { //search for next possible match
+										if (isFirstMatch(latestMatch, tokenGroup)) { //search for next possible match
 											if (qndx > (qt.quantifier.min - 1)) {
 												insertStop = true;
 												testPos = pos; //match the position after the group
@@ -1471,7 +1486,7 @@
 						tll = targetLocator.length;
 
 					for (var ps = originalPos; ps < newPos; ps++) {
-						if (!isMask(ps, true)) {
+						if (getMaskSet().validPositions[ps] === undefined && !isMask(ps, true)) {
 							var tests = getTests(ps),
 								bestMatch = tests[0],
 								equality = -1;
@@ -1486,7 +1501,7 @@
 								}
 							});
 							setValidPosition(ps, $.extend({}, bestMatch, {
-								"input": bestMatch.match.def
+								"input": bestMatch.match.placeholder || bestMatch.match.def
 							}), true);
 						}
 					}
@@ -1527,6 +1542,9 @@
 								"caret": seekNext(maskPos)
 							};
 						} else if ((opts.insertMode || getMaskSet().validPositions[seekNext(maskPos)] === undefined) && !isMask(maskPos, true)) { //does the input match on a further position?
+							var staticChar = getTestTemplate(maskPos).match,
+								staticChar = staticChar.placeholder || staticChar.def;
+							_isValid(maskPos, staticChar, strict, fromSetValid);
 							for (var nPos = maskPos + 1, snPos = seekNext(maskPos); nPos <= snPos; nPos++) {
 								result = _isValid(nPos, c, strict, fromSetValid);
 								if (result !== false) {
@@ -1564,7 +1582,12 @@
 			}
 
 			function isMask(pos, strict) {
-				var test = getTest(pos);
+				var test;
+				if (strict) {
+					test = getTestTemplate(pos).match;
+					if (test.def == "") test = getTest(pos);
+				} else test = getTest(pos);
+
 				if (test.fn != null) {
 					return test.fn;
 				} else if (strict !== true && pos > -1 && !opts.keepStatic && getMaskSet().validPositions[pos] === undefined) {
@@ -1882,7 +1905,7 @@
 						// console.log("triggered " + e.type);
 						var inComposition = false,
 							keydownPressed = false;
-						if (this.inputmask === undefined) { //happens when cloning an object with jquery.clone
+						if (this.inputmask === undefined && this.nodeName !== "FORM") { //happens when cloning an object with jquery.clone
 							var imOpts = $.data(this, "_inputmask_opts");
 							if (imOpts)(new Inputmask(imOpts)).mask(this);
 							else EventRuler.off(this);
@@ -2023,7 +2046,7 @@
 						var $input = $(this),
 							input = this,
 							value = input.inputmask._valueGet();
-						if (value !== "" && value !== getBuffer().join("")) {
+						if (value !== getBuffer().join("") && getLastValidPosition() > 0) {
 							$input.trigger("setvalue");
 						}
 					});
@@ -2494,7 +2517,7 @@
 					var selectedCaret = caret(input);
 					if (selectedCaret.begin === selectedCaret.end) {
 						if (doRadixFocus(selectedCaret.begin)) {
-							caret(input, $.inArray(opts.radixPoint, getBuffer()));
+							caret(input, opts.numericInput ? seekNext($.inArray(opts.radixPoint, getBuffer())) : $.inArray(opts.radixPoint, getBuffer()));
 						} else {
 							var clickPosition = selectedCaret.begin,
 								lvclickPosition = getLastValidPosition(clickPosition),
