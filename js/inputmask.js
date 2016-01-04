@@ -728,7 +728,8 @@
 
 		var ua = navigator.userAgent,
 			iphone = ua.match(new RegExp("iphone", "i")) !== null,
-			android = ua.match(new RegExp("android.*safari.*", "i")) !== null,
+			iemobile = ua.match(new RegExp("iemobile", "i")) !== null,
+			android = (ua.match(new RegExp("android.*safari.*", "i")) !== null) && !iemobile,
 			androidchrome = ua.match(new RegExp("android.*chrome.*", "i")) !== null,
 			androidfirefox = ua.match(new RegExp("android.*firefox.*", "i")) !== null,
 			kindle = /Kindle/i.test(ua) || /Silk/i.test(ua) || /KFTT/i.test(ua) || /KFOT/i.test(ua) || /KFJWA/i.test(ua) || /KFJWI/i.test(ua) || /KFSOWI/i.test(ua) || /KFTHWA/i.test(ua) || /KFTHWI/i.test(ua) || /KFAPWA/i.test(ua) || /KFAPWI/i.test(ua),
@@ -1766,7 +1767,7 @@
 						input.selectionEnd = end;
 					} else if (window.getSelection) {
 						range = document.createRange();
-						if (input.firstChild === undefined) {
+						if (input.firstChild === undefined || input.firstChild === null) {
 							var textNode = document.createTextNode("");
 							input.appendChild(textNode);
 						}
@@ -2271,7 +2272,7 @@
 							}, 0);
 							if (getMaskSet().writeOutBuffer && valResult !== false) {
 								var buffer = getBuffer();
-								writeBuffer(input, buffer, checkval ? undefined : opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition, e, checkval !== true);
+								writeBuffer(input, buffer, checkval ? undefined : (opts.numericInput && valResult.caret === undefined) ? seekPrevious(forwardPosition) : forwardPosition, e, checkval !== true);
 								if (checkval !== true) {
 									setTimeout(function() { //timeout needed for IE
 										if (isComplete(buffer) === true) $input.trigger("complete");
@@ -2455,10 +2456,10 @@
 			function mouseleaveEvent(e) {
 				var input = this;
 				mouseEnter = false;
-				if (opts.clearMaskOnLostFocus) {
+				if (opts.clearMaskOnLostFocus && document.activeElement !== input) {
 					var buffer = getBuffer().slice(),
 						nptValue = input.inputmask._valueGet();
-					if (document.activeElement !== input && nptValue !== input.getAttribute("placeholder") && nptValue !== "") {
+					if (nptValue !== input.getAttribute("placeholder") && nptValue !== "") {
 						if (getLastValidPosition() === -1 && nptValue === getBufferTemplate().join("")) {
 							buffer = [];
 						} else { //clearout optional tail of the mask
