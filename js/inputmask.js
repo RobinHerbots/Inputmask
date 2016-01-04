@@ -728,8 +728,8 @@
 		}
 
 		var ua = navigator.userAgent,
-			iphone = ua.match(new RegExp("iphone", "i")) !== null,
 			iemobile = ua.match(new RegExp("iemobile", "i")) !== null,
+			iphone = (ua.match(new RegExp("iphone", "i")) !== null) && !iemobile,
 			android = (ua.match(new RegExp("android.*safari.*", "i")) !== null) && !iemobile,
 			androidchrome = ua.match(new RegExp("android.*chrome.*", "i")) !== null,
 			androidfirefox = ua.match(new RegExp("android.*firefox.*", "i")) !== null,
@@ -2382,7 +2382,13 @@
 				var input = this,
 					inputValue = input.inputmask._valueGet();
 				if (getBuffer().join('') !== inputValue) {
-					checkVal(input, true, false, inputValue.split(""));
+					inputValue = inputValue.split("");
+					for (var i = inputValue.length; i > 0; i--) {
+						if (inputValue[i] === getPlaceholder(i))
+							del inputValue[i];
+					}
+
+					checkVal(input, true, false, inputValue);
 
 					if (isComplete(getBuffer()) === true) {
 						$(input).trigger("complete");
