@@ -1,4 +1,5 @@
 # jquery.inputmask 3.x
+
 Copyright (c) 2010 - 2015 Robin Herbots Licensed under the MIT license ([http://opensource.org/licenses/mit-license.php](http://opensource.org/licenses/mit-license.php))
 
 [![NPM Version][npm-image]][npm-url] [![Dependency Status][david-image]][david-url] [![devDependency Status][david-dev-image]][david-dev-url]
@@ -29,7 +30,7 @@ Highlights:
 
 Demo page see [http://robinherbots.github.io/jquery.inputmask](http://robinherbots.github.io/jquery.inputmask)
 
-[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZNR3EB6JTMMSS)
+[![donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZNR3EB6JTMMSS)
 
 ## Usage:
 Include the js-files which you can find in the `dist` folder.
@@ -276,7 +277,7 @@ You can define the mask as a function which can allow to preprocess the resultin
 Just in time masking.  With the jitMasking option you can enable jit masking.  The mask will only be visible for the user entered characters.
 Default: false
 
-Value can be true or a threshold number or false. 
+Value can be true or a threshold number or false.
 
 ```javascript
    Inputmask("date", { jitMasking: true }).mask(selector);

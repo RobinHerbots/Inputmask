@@ -842,8 +842,9 @@
 
 								//does it match
 								if (positionCanMatchDefinition(posMatch, t.match.def)) {
-									valid = isValid(posMatch, t.input, true, true) !== false;
-									j = posMatch;
+									var result = isValid(posMatch, t.input, true, true)
+									valid = result !== false;
+									j = (result.caret || result.insert) ? getLastValidPosition() : posMatch;
 									break;
 								} else {
 									valid = t.match.fn == null;
@@ -1317,7 +1318,7 @@
 								$.each(rslt.insert.sort(function(a, b) {
 									return a - b;
 								}), function(ndx, lmnt) {
-									isValid(lmnt.pos, lmnt.c, true);
+									isValid(lmnt.pos, lmnt.c);
 								});
 							}
 
@@ -1765,9 +1766,9 @@
 				return unmaskedValue;
 			}
 
-			function caret(input, begin, end) {
+			function caret(input, begin, end, notranslate) {
 				function translatePosition(pos) {
-					if (isRTL && typeof pos === "number" && (!opts.greedy || opts.placeholder !== "")) {
+					if (notranslate !== true && isRTL && typeof pos === "number" && (!opts.greedy || opts.placeholder !== "")) {
 						var bffrLght = getBuffer().join("").length; //join is needed because sometimes we get an empty buffer element which must not be counted for the caret position (numeric alias)
 						pos = bffrLght - pos;
 					}
@@ -1902,7 +1903,7 @@
 			var EventRuler = {
 				on: function(input, eventName, eventHandler) {
 					var ev = function(e) {
-						// console.log("triggered " + e.type);
+						console.log("triggered " + e.type);
 						var inComposition = false,
 							keydownPressed = false;
 						if (this.inputmask === undefined && this.nodeName !== "FORM") { //happens when cloning an object with jquery.clone
@@ -2184,13 +2185,13 @@
 						input.title = opts.tooltip || getMaskSet().mask;
 					}
 				} else if (k === Inputmask.keyCode.END || k === Inputmask.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
-					setTimeout(function() {
-						var caretPos = seekNext(getLastValidPosition());
-						if (!opts.insertMode && caretPos === getMaskLength() && !e.shiftKey) caretPos--;
-						caret(input, e.shiftKey ? pos.begin : caretPos, caretPos);
-					}, 0);
+					e.preventDefault();
+					var caretPos = seekNext(getLastValidPosition());
+					if (!opts.insertMode && caretPos === getMaskLength() && !e.shiftKey) caretPos--;
+					caret(input, e.shiftKey ? pos.begin : caretPos, caretPos, true);
 				} else if ((k === Inputmask.keyCode.HOME && !e.shiftKey) || k === Inputmask.keyCode.PAGE_UP) { //Home or page_up
-					caret(input, 0, e.shiftKey ? pos.begin : 0);
+					e.preventDefault();
+					caret(input, 0, e.shiftKey ? pos.begin : 0, true);
 				} else if (((opts.undoOnEscape && k === Inputmask.keyCode.ESCAPE) || (k === 90 && e.ctrlKey)) && e.altKey !== true) { //escape && undo && #762
 					checkVal(input, true, false, undoValue.split(""));
 					$input.trigger("click");
@@ -2277,6 +2278,7 @@
 								c = valResult.c !== undefined ? valResult.c : c; //set new char from isValid
 							}
 							resetMaskSet(true);
+							console.log(valResult);
 							if (valResult.caret !== undefined) {
 								forwardPosition = valResult.caret;
 							} else {
