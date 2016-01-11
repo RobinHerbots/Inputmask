@@ -1903,7 +1903,7 @@
 			var EventRuler = {
 				on: function(input, eventName, eventHandler) {
 					var ev = function(e) {
-						console.log("triggered " + e.type);
+						// console.log("triggered " + e.type);
 						var inComposition = false,
 							keydownPressed = false;
 						if (this.inputmask === undefined && this.nodeName !== "FORM") { //happens when cloning an object with jquery.clone
@@ -2278,7 +2278,6 @@
 								c = valResult.c !== undefined ? valResult.c : c; //set new char from isValid
 							}
 							resetMaskSet(true);
-							console.log(valResult);
 							if (valResult.caret !== undefined) {
 								forwardPosition = valResult.caret;
 							} else {
