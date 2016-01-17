@@ -2382,11 +2382,12 @@
 			function inputFallBackEvent(e) { //fallback when keypress & compositionevents fail
 				var input = this,
 					inputValue = input.inputmask._valueGet();
-				if (getBuffer().join('') !== inputValue) {
+				if (getBuffer().join("") !== inputValue) {
 					inputValue = inputValue.split("");
 					for (var i = inputValue.length; i > 0; i--) {
-						if (inputValue[i] === getPlaceholder(i))
+						if (inputValue[i] === getPlaceholder(i)) {
 							delete inputValue[i];
+						}
 					}
 
 					checkVal(input, true, false, inputValue);
@@ -2636,12 +2637,6 @@
 						writeBuffer(el, getBuffer());
 					}, 0);
 				}
-			}
-
-			function resetEvent(e) {
-				setTimeout(function() {
-					$el.trigger("setvalue");
-				}, 0);
 			}
 
 			function mask(elem) {

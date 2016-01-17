@@ -214,7 +214,7 @@ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.p
 				cancelable: false,
 				detail: undefined
 			};
-			var evt = document.createEvent('CustomEvent');
+			var evt = document.createEvent("CustomEvent");
 			evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
 			return evt;
 		}

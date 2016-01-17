@@ -66,11 +66,11 @@ Allows for using regular expressions as a mask
 										break;
 									case ")": // Group closing
 										groupToken = opengroups.pop();
-										if (opengroups.length > 0)
+										if (opengroups.length > 0) {
 											opengroups[opengroups.length - 1].matches.push(groupToken);
-										else
+										} else {
 											currentToken.matches.push(groupToken);
-
+										}
 										break;
 									case "{":
 									case "+":
@@ -115,12 +115,14 @@ Allows for using regular expressions as a mask
 								}
 							}
 
-							if (currentToken.matches.length > 0)
+							if (currentToken.matches.length > 0) {
 								opts.regexTokens.push(currentToken);
+							}
 						}
 
 						function validateRegexToken(token, fromGroup) {
-							var isvalid = false;
+							var isvalid = false,
+								bufferStr;
 							if (fromGroup) {
 								regexPart += "(";
 								openGroupCount++;
@@ -190,12 +192,12 @@ Allows for using regular expressions as a mask
 							return isvalid;
 						}
 
-						if (opts.regexTokens === null)
+						if (opts.regexTokens === null) {
 							analyseRegex();
-
+						}
 
 						cbuffer.splice(pos, 0, chrs);
-						var bufferStr = cbuffer.join("");
+						bufferStr = cbuffer.join("");
 						for (var i = 0; i < opts.regexTokens.length; i++) {
 							var regexToken = opts.regexTokens[i];
 							isValid = validateRegexToken(regexToken, regexToken.isGroup);

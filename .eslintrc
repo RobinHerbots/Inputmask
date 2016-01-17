@@ -6,7 +6,9 @@
     "eqeqeq": [2, "smart"],
     "indent": [
       1,
-      "tab"
+      "tab", {
+        "SwitchCase": 1
+      }
     ],
     "quotes": [
       1,
