@@ -115,7 +115,7 @@
 				ignorables: [8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123],
 				isComplete: null, //override for isComplete - args => buffer, opts - return true || false
 				canClearPosition: $.noop, //hook to alter the clear behavior in the stripValidPositions args => maskset, position, lastValidPosition, opts => return true|false
-				postValidation: null, //hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, opts => return true/false
+				postValidation: null, //hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, currentResult, opts => return true/false/refresh command
 				staticDefinitionSymbol: undefined, //specify a definitionSymbol for static content, used to make matches for alternators
 				jitMasking: false //just in time masking ~ only mask while typing, can n (number), true or false
 			},
@@ -1566,7 +1566,7 @@
 					};
 				}
 				if ($.isFunction(opts.postValidation) && result !== false && !strict) {
-					var postValidResult = opts.postValidation(getBuffer(true), opts);
+					var postValidResult = opts.postValidation(getBuffer(true), result, opts);
 					if (!postValidResult) {
 						resetMaskSet(true);
 						getMaskSet().validPositions = $.extend(true, {}, positionsClone); //revert validation changes
@@ -2670,7 +2670,7 @@
 				if (isElementTypeSupported(el, opts)) {
 					//bind events
 					EventRuler.on(el, "submit", submitEvent);
-					EventRuler.on(el, "reset", submitEvent);
+					EventRuler.on(el, "reset", resetEvent);
 
 					EventRuler.on(el, "mouseenter", mouseenterEvent);
 					EventRuler.on(el, "blur", blurEvent);

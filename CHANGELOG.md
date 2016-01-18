@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 - update alternation logic
 
 ### Fixed
+- Issue with reset of inputmask field #1157
 - IE11 clear not working in emulated IE9 mode #1144
 - Show placeholder as user types #1141
 - Initial value like VAA gets truncated to V-__ with mask like "I{1,3}-ZZ" #1134

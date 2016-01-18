@@ -942,7 +942,7 @@ $(selector).inputmask("Regex", {
 Hook to alter the clear behavior in the stripValidPositions<br>Args => maskset, position, lastValidPosition, opts<br>Return => true|false
 
 ### postValidation
-Hook to postValidate the result from isValid.  Usefull for validating the entry as a whole.  Args => buffer, opts<br>Return => true|false
+Hook to postValidate the result from isValid.  Usefull for validating the entry as a whole.  Args => buffer, currentResult, opts<br>Return => true|false/refresh command
 
 ### staticDefinitionSymbol
 The staticDefinitionSymbol option is used to indicate that the static entries in the mask can match a certain definition.  Especially usefull with alternators so that static element in the mask can match another alternation.  
