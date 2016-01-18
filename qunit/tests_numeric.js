@@ -1324,7 +1324,7 @@ define([
 		$("#testmask").trigger("click");
 		setTimeout(function() {
 			$("#testmask").Type("1234");
-			assert.equal($("#testmask")[0].inputmask._valueGet(), "$ 123.00", "Result " + $("#testmask")[0].inputmask._valueGet());
+			assert.equal($("#testmask")[0].inputmask._valueGet(), "$ 1,000.00", "Result " + $("#testmask")[0].inputmask._valueGet());
 			done();
 		}, 5);
 	});

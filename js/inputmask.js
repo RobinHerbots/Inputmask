@@ -800,12 +800,10 @@
 			}
 
 			function getLastValidPosition(closestTo, strict) {
-				var maskset = getMaskSet(),
-					lastValidPosition = -1,
-					valids = maskset.validPositions;
+				var before = -1,
+					after = -1;
+				valids = getMaskSet().validPositions;
 				if (closestTo === undefined) closestTo = -1;
-				var before = lastValidPosition,
-					after = lastValidPosition;
 				for (var posNdx in valids) {
 					var psNdx = parseInt(posNdx);
 					if (valids[psNdx] && (strict || valids[psNdx].match.fn !== null)) {
@@ -813,8 +811,7 @@
 						if (psNdx >= closestTo) after = psNdx;
 					}
 				}
-				lastValidPosition = (before !== -1 && (closestTo - before) > 1) || after < closestTo ? before : after;
-				return lastValidPosition;
+				return (before !== -1 && (closestTo - before) > 1) || after < closestTo ? before : after;
 			}
 
 			function setValidPosition(pos, validTest, fromSetValid) {
@@ -842,7 +839,7 @@
 
 								//does it match
 								if (positionCanMatchDefinition(posMatch, t.match.def)) {
-									var result = isValid(posMatch, t.input, true, true)
+									var result = isValid(posMatch, t.input, true, true);
 									valid = result !== false;
 									j = (result.caret || result.insert) ? getLastValidPosition() : posMatch;
 									break;
@@ -1318,7 +1315,7 @@
 								$.each(rslt.insert.sort(function(a, b) {
 									return a - b;
 								}), function(ndx, lmnt) {
-									isValid(lmnt.pos, lmnt.c);
+									isValid(lmnt.pos, lmnt.c, false, fromSetValid);
 								});
 							}
 
@@ -1332,7 +1329,7 @@
 								}
 								validatedPos = rslt.pos !== undefined ? rslt.pos : position;
 								if (validatedPos !== position) {
-									rslt = $.extend(rslt, isValid(validatedPos, elem, true)); //revalidate new position strict
+									rslt = $.extend(rslt, isValid(validatedPos, elem, true, fromSetValid)); //revalidate new position strict
 									return false;
 								}
 
@@ -1445,7 +1442,7 @@
 											while (validInputs.length > 0) {
 												var input = validInputs.shift();
 												if (input !== opts.skipOptionalPartCharacter) {
-													if (!(isValidRslt = isValid(getLastValidPosition(undefined, true) + 1, input, false, true))) {
+													if (!(isValidRslt = isValid(getLastValidPosition(undefined, true) + 1, input, false, fromSetValid))) {
 														break;
 													}
 												}
@@ -1523,7 +1520,7 @@
 					if (getMaskSet().validPositions[pndx] === undefined && (((!isMask(pndx) || buffer[pndx] !== getPlaceholder(pndx)) && getTests(pndx).length > 1) || (buffer[pndx] === opts.radixPoint || buffer[pndx] === "0" && $.inArray(opts.radixPoint, buffer) < pndx))) //special case for decimals ~ = placeholder but yet valid input
 					{
 						//console.log("inject " + pndx + " " + buffer[pndx]);
-						_isValid(pndx, buffer[pndx], true);
+						_isValid(pndx, buffer[pndx], true, fromSetValid);
 					}
 				}
 
@@ -1536,7 +1533,7 @@
 				//}
 				if (maskPos < getMaskLength()) {
 					result = _isValid(maskPos, c, strict, fromSetValid);
-					if ((!strict || fromSetValid) && result === false) {
+					if ((!strict || fromSetValid === true) && result === false) {
 						var currentPosValid = getMaskSet().validPositions[maskPos];
 						if (currentPosValid && currentPosValid.match.fn === null && (currentPosValid.match.def === c || c === opts.skipOptionalPartCharacter)) {
 							result = {
@@ -1565,7 +1562,7 @@
 						"pos": maskPos
 					};
 				}
-				if ($.isFunction(opts.postValidation) && result !== false && !strict) {
+				if ($.isFunction(opts.postValidation) && result !== false && !strict && fromSetValid !== true) {
 					var postValidResult = opts.postValidation(getBuffer(true), result, opts);
 					if (!postValidResult) {
 						resetMaskSet(true);
@@ -2637,6 +2634,12 @@
 						writeBuffer(el, getBuffer());
 					}, 0);
 				}
+			}
+
+			function resetEvent(e) {
+				setTimeout(function() {
+					$el.trigger("setvalue");
+				}, 0);
 			}
 
 			function mask(elem) {

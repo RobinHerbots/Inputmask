@@ -35,6 +35,7 @@ Allows for using regular expressions as a mask
 				"r": {
 					validator: function(chrs, maskset, pos, strict, opts) {
 						var cbuffer = maskset.buffer.slice(),
+							bufferStr,
 							regexPart = "",
 							isValid = false,
 							openGroupCount = 0,
@@ -121,8 +122,7 @@ Allows for using regular expressions as a mask
 						}
 
 						function validateRegexToken(token, fromGroup) {
-							var isvalid = false,
-								bufferStr;
+							var isvalid = false;
 							if (fromGroup) {
 								regexPart += "(";
 								openGroupCount++;

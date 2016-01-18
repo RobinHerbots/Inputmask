@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.6-29
+* Version: 3.2.6-30
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -269,15 +269,14 @@
             maskset.validPositions = {}, maskset.p = 0);
         }
         function getLastValidPosition(closestTo, strict) {
-            var maskset = getMaskSet(), lastValidPosition = -1, valids = maskset.validPositions;
-            void 0 === closestTo && (closestTo = -1);
-            var before = lastValidPosition, after = lastValidPosition;
+            var before = -1, after = -1;
+            valids = getMaskSet().validPositions, void 0 === closestTo && (closestTo = -1);
             for (var posNdx in valids) {
                 var psNdx = parseInt(posNdx);
                 valids[psNdx] && (strict || null !== valids[psNdx].match.fn) && (closestTo >= psNdx && (before = psNdx), 
                 psNdx >= closestTo && (after = psNdx));
             }
-            return lastValidPosition = -1 !== before && closestTo - before > 1 || closestTo > after ? before : after;
+            return -1 !== before && closestTo - before > 1 || closestTo > after ? before : after;
         }
         function setValidPosition(pos, validTest, fromSetValid) {
             if (opts.insertMode && void 0 !== getMaskSet().validPositions[pos] && void 0 === fromSetValid) {
@@ -518,13 +517,13 @@
                         $.each(rslt.insert.sort(function(a, b) {
                             return a - b;
                         }), function(ndx, lmnt) {
-                            isValid(lmnt.pos, lmnt.c);
+                            isValid(lmnt.pos, lmnt.c, !1, fromSetValid);
                         })), rslt.refreshFromBuffer) {
                             var refresh = rslt.refreshFromBuffer;
                             if (strict = !0, refreshFromBuffer(refresh === !0 ? refresh : refresh.start, refresh.end, possibleModifiedBuffer), 
                             void 0 === rslt.pos && void 0 === rslt.c) return rslt.pos = getLastValidPosition(), 
                             !1;
-                            if (validatedPos = void 0 !== rslt.pos ? rslt.pos : position, validatedPos !== position) return rslt = $.extend(rslt, isValid(validatedPos, elem, !0)), 
+                            if (validatedPos = void 0 !== rslt.pos ? rslt.pos : position, validatedPos !== position) return rslt = $.extend(rslt, isValid(validatedPos, elem, !0, fromSetValid)), 
                             !1;
                         } else if (rslt !== !0 && void 0 !== rslt.pos && rslt.pos !== position && (validatedPos = rslt.pos, 
                         refreshFromBuffer(position, validatedPos, getBuffer().slice()), validatedPos !== position)) return rslt = $.extend(rslt, isValid(validatedPos, elem, !0)), 
@@ -569,7 +568,7 @@
                                     delete getMaskSet().validPositions[i], delete getMaskSet().tests[i];
                                     for (resetMaskSet(!0), opts.keepStatic = !opts.keepStatic, isValidRslt = !0; validInputs.length > 0; ) {
                                         var input = validInputs.shift();
-                                        if (input !== opts.skipOptionalPartCharacter && !(isValidRslt = isValid(getLastValidPosition(void 0, !0) + 1, input, !1, !0))) break;
+                                        if (input !== opts.skipOptionalPartCharacter && !(isValidRslt = isValid(getLastValidPosition(void 0, !0) + 1, input, !1, fromSetValid))) break;
                                     }
                                     if (possibilityPos.alternation = alternation, possibilityPos.locator[alternation] = possibilities, 
                                     isValidRslt) {
@@ -601,10 +600,10 @@
             }
             strict = strict === !0;
             for (var buffer = getBuffer(), pndx = pos - 1; pndx > -1 && !getMaskSet().validPositions[pndx]; pndx--) ;
-            for (pndx++; pos > pndx; pndx++) void 0 === getMaskSet().validPositions[pndx] && ((!isMask(pndx) || buffer[pndx] !== getPlaceholder(pndx)) && getTests(pndx).length > 1 || buffer[pndx] === opts.radixPoint || "0" === buffer[pndx] && $.inArray(opts.radixPoint, buffer) < pndx) && _isValid(pndx, buffer[pndx], !0);
+            for (pndx++; pos > pndx; pndx++) void 0 === getMaskSet().validPositions[pndx] && ((!isMask(pndx) || buffer[pndx] !== getPlaceholder(pndx)) && getTests(pndx).length > 1 || buffer[pndx] === opts.radixPoint || "0" === buffer[pndx] && $.inArray(opts.radixPoint, buffer) < pndx) && _isValid(pndx, buffer[pndx], !0, fromSetValid);
             var maskPos = pos, result = !1, positionsClone = $.extend(!0, {}, getMaskSet().validPositions);
             if (maskPos < getMaskLength() && (result = _isValid(maskPos, c, strict, fromSetValid), 
-            (!strict || fromSetValid) && result === !1)) {
+            (!strict || fromSetValid === !0) && result === !1)) {
                 var currentPosValid = getMaskSet().validPositions[maskPos];
                 if (!currentPosValid || null !== currentPosValid.match.fn || currentPosValid.match.def !== c && c !== opts.skipOptionalPartCharacter) {
                     if ((opts.insertMode || void 0 === getMaskSet().validPositions[seekNext(maskPos)]) && !isMask(maskPos, !0)) {
@@ -623,8 +622,8 @@
             if (result === !1 && opts.keepStatic && (result = alternate(pos, c, strict, fromSetValid)), 
             result === !0 && (result = {
                 pos: maskPos
-            }), $.isFunction(opts.postValidation) && result !== !1 && !strict) {
-                var postValidResult = opts.postValidation(getBuffer(!0), opts);
+            }), $.isFunction(opts.postValidation) && result !== !1 && !strict && fromSetValid !== !0) {
+                var postValidResult = opts.postValidation(getBuffer(!0), result, opts);
                 if (postValidResult) {
                     if (postValidResult.refreshFromBuffer) {
                         var refresh = postValidResult.refreshFromBuffer;
@@ -935,7 +934,7 @@
                 var p = isRTL && !isSlctn ? pos.end : pos.begin, valResult = isValid(p, c, strict);
                 if (valResult !== !1) {
                     if (valResult !== !0 && (p = void 0 !== valResult.pos ? valResult.pos : p, c = void 0 !== valResult.c ? valResult.c : c), 
-                    resetMaskSet(!0), console.log(valResult), void 0 !== valResult.caret) forwardPosition = valResult.caret; else {
+                    resetMaskSet(!0), void 0 !== valResult.caret) forwardPosition = valResult.caret; else {
                         var vps = getMaskSet().validPositions;
                         forwardPosition = !opts.keepStatic && (void 0 !== vps[p + 1] && getTests(p + 1, vps[p].locator.slice(), p).length > 1 || void 0 !== vps[p].alternation) ? p + 1 : seekNext(p);
                     }
@@ -1101,12 +1100,17 @@
                 writeBuffer(el, getBuffer());
             }, 0));
         }
+        function resetEvent(e) {
+            setTimeout(function() {
+                $el.trigger("setvalue");
+            }, 0);
+        }
         function mask(elem) {
             if (el = elem, $el = $(el), opts.showTooltip && (el.title = opts.tooltip || getMaskSet().mask), 
             ("rtl" === el.dir || opts.rightAlign) && (el.style.textAlign = "right"), ("rtl" === el.dir || opts.numericInput) && (el.dir = "ltr", 
             el.removeAttribute("dir"), el.inputmask.isRTL = !0, isRTL = !0), EventRuler.off(el), 
             patchValueProperty(el), isElementTypeSupported(el, opts) && (EventRuler.on(el, "submit", submitEvent), 
-            EventRuler.on(el, "reset", submitEvent), EventRuler.on(el, "mouseenter", mouseenterEvent), 
+            EventRuler.on(el, "reset", resetEvent), EventRuler.on(el, "mouseenter", mouseenterEvent), 
             EventRuler.on(el, "blur", blurEvent), EventRuler.on(el, "focus", focusEvent), EventRuler.on(el, "mouseleave", mouseleaveEvent), 
             EventRuler.on(el, "click", clickEvent), EventRuler.on(el, "dblclick", dblclickEvent), 
             EventRuler.on(el, PasteEventType, pasteEvent), EventRuler.on(el, "dragdrop", pasteEvent), 
@@ -1129,7 +1133,6 @@
         var undoValue, compositionData, el, $el, maxLength, valueBuffer, isRTL = !1, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, mouseEnter = !0, EventRuler = {
             on: function(input, eventName, eventHandler) {
                 var ev = function(e) {
-                    console.log("triggered " + e.type);
                     var inComposition = !1, keydownPressed = !1;
                     if (void 0 === this.inputmask && "FORM" !== this.nodeName) {
                         var imOpts = $.data(this, "_inputmask_opts");
@@ -1447,6 +1450,6 @@
         UP: 38,
         WINDOWS: 91
     };
-    var ua = navigator.userAgent, iemobile = null !== ua.match(new RegExp("iemobile", "i")), iphone = null !== ua.match(new RegExp("iphone", "i")) && !iemobile, android = null !== ua.match(new RegExp("android.*safari.*", "i")) && !iemobile, androidchrome = null !== ua.match(new RegExp("android.*chrome.*", "i")), androidfirefox = null !== ua.match(new RegExp("android.*firefox.*", "i")), kindle = /Kindle/i.test(ua) || /Silk/i.test(ua) || /KFTT/i.test(ua) || /KFOT/i.test(ua) || /KFJWA/i.test(ua) || /KFJWI/i.test(ua) || /KFSOWI/i.test(ua) || /KFTHWA/i.test(ua) || /KFTHWI/i.test(ua) || /KFAPWA/i.test(ua) || /KFAPWI/i.test(ua), PasteEventType = isInputEventSupported("paste") ? "paste" : isInputEventSupported("input") ? "input" : "propertychange";
+    var ua = navigator.userAgent, iemobile = /iemobile/i.test(ua), iphone = /iphone/i.test(ua) && !iemobile, android = /android.*safari.*/i.test(ua) && !iemobile, androidchrome = /android.*chrome.*/i.test(ua), androidfirefox = /android.*firefox.*/i.test(ua), kindle = /Kindle/i.test(ua) || /Silk/i.test(ua) || /KFTT/i.test(ua) || /KFOT/i.test(ua) || /KFJWA/i.test(ua) || /KFJWI/i.test(ua) || /KFSOWI/i.test(ua) || /KFTHWA/i.test(ua) || /KFTHWI/i.test(ua) || /KFAPWA/i.test(ua) || /KFAPWI/i.test(ua), PasteEventType = isInputEventSupported("paste") ? "paste" : isInputEventSupported("input") ? "input" : "propertychange";
     return window.Inputmask = Inputmask, Inputmask;
 });
