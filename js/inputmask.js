@@ -728,11 +728,11 @@
 		}
 
 		var ua = navigator.userAgent,
-			iemobile = ua.match(new RegExp("iemobile", "i")) !== null,
-			iphone = (ua.match(new RegExp("iphone", "i")) !== null) && !iemobile,
-			android = (ua.match(new RegExp("android.*safari.*", "i")) !== null) && !iemobile,
-			androidchrome = ua.match(new RegExp("android.*chrome.*", "i")) !== null,
-			androidfirefox = ua.match(new RegExp("android.*firefox.*", "i")) !== null,
+			iemobile = /iemobile/i.test(ua),
+			iphone = /iphone/i.test(ua) && !iemobile,
+			android = /android.*safari.*/i.test(ua) && !iemobile,
+			androidchrome = /android.*chrome.*/i.test(ua),
+			androidfirefox = /android.*firefox.*/i.test(ua),
 			kindle = /Kindle/i.test(ua) || /Silk/i.test(ua) || /KFTT/i.test(ua) || /KFOT/i.test(ua) || /KFJWA/i.test(ua) || /KFJWI/i.test(ua) || /KFSOWI/i.test(ua) || /KFTHWA/i.test(ua) || /KFTHWI/i.test(ua) || /KFAPWA/i.test(ua) || /KFAPWI/i.test(ua),
 			PasteEventType = isInputEventSupported("paste") ? "paste" : isInputEventSupported("input") ? "input" : "propertychange";
 
@@ -2382,11 +2382,12 @@
 			function inputFallBackEvent(e) { //fallback when keypress & compositionevents fail
 				var input = this,
 					inputValue = input.inputmask._valueGet();
-				if (getBuffer().join('') !== inputValue) {
+				if (getBuffer().join("") !== inputValue) {
 					inputValue = inputValue.split("");
 					for (var i = inputValue.length; i > 0; i--) {
-						if (inputValue[i] === getPlaceholder(i))
+						if (inputValue[i] === getPlaceholder(i)) {
 							delete inputValue[i];
+						}
 					}
 
 					checkVal(input, true, false, inputValue);
@@ -2636,12 +2637,6 @@
 						writeBuffer(el, getBuffer());
 					}, 0);
 				}
-			}
-
-			function resetEvent(e) {
-				setTimeout(function() {
-					$el.trigger("setvalue");
-				}, 0);
 			}
 
 			function mask(elem) {

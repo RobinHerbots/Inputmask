@@ -135,7 +135,7 @@ module.exports = function(grunt) {
 			}
 		},
 		eslint: {
-			target: grunt.file.expand("js/*.js")
+			target: "{extra/*,js}/*.js"
 		},
 		availabletasks: {
 			tasks: {

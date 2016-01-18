@@ -70,16 +70,6 @@ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.p
 				typeof length === "number" && length > 0 && (length - 1) in obj;
 		}
 
-		//micro event lib
-		var domEvents = function() {
-			var domEvents = [];
-			for (var i in document) {
-				if (i.substring(0, 2) === "on" && (document[i] === null || typeof document[i] === 'function'))
-					domEvents.push(i.substring(2));
-			}
-			return domEvents;
-		}();
-
 		function isValidElement(elem) {
 			return elem instanceof Element;
 		}
@@ -231,7 +221,7 @@ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.p
 								try {
 									evnt = new CustomEvent(ev, params);
 								} catch (e) {
-									evnt = document.createEvent('CustomEvent');
+									evnt = document.createEvent("CustomEvent");
 									evnt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
 								}
 								if (events.type) DependencyLib.extend(evnt, events);
@@ -425,7 +415,7 @@ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.p
 				cancelable: false,
 				detail: undefined
 			};
-			var evt = document.createEvent('CustomEvent');
+			var evt = document.createEvent("CustomEvent");
 			evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
 			return evt;
 		}
