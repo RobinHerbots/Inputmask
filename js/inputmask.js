@@ -117,7 +117,8 @@
 				canClearPosition: $.noop, //hook to alter the clear behavior in the stripValidPositions args => maskset, position, lastValidPosition, opts => return true|false
 				postValidation: null, //hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, currentResult, opts => return true/false/refresh command
 				staticDefinitionSymbol: undefined, //specify a definitionSymbol for static content, used to make matches for alternators
-				jitMasking: false //just in time masking ~ only mask while typing, can n (number), true or false
+				jitMasking: false, //just in time masking ~ only mask while typing, can n (number), true or false
+				disableCache: false //testing purposes
 			},
 			masksCache: {},
 			mask: function(elems) {
@@ -916,7 +917,7 @@
 			function getTestTemplate(pos, ndxIntlzr, tstPs) {
 				var testPos = getMaskSet().validPositions[pos];
 				if (testPos === undefined) {
-					var testPositions = getTests(pos, ndxIntlzr, tstPs),
+					var testPositions = getTests(pos, ndxIntlzr, tstPs, true),
 						lvp = getLastValidPosition(),
 						lvTest = getMaskSet().validPositions[lvp] || getTests(0)[0],
 						lvTestAltArr = (lvTest.alternation !== undefined) ? lvTest.locator[lvTest.alternation].toString().split(",") : [];
@@ -944,7 +945,7 @@
 
 			function positionCanMatchDefinition(pos, def) {
 				var valid = false,
-					tests = getTests(pos);
+					tests = getTests(pos, undefined, undefined, true);
 				for (var tndx = 0; tndx < tests.length; tndx++) {
 					if (tests[tndx].match && tests[tndx].match.def === def) {
 						valid = true;
@@ -968,7 +969,7 @@
 				return bestMatch;
 			}
 
-			function getTests(pos, ndxIntlzr, tstPs, cacheable) {
+			function getTests(pos, ndxIntlzr, tstPs, validateCache) {
 				var maskTokens = getMaskSet().maskToken,
 					testPos = ndxIntlzr ? tstPs : 0,
 					ndxInitializer = ndxIntlzr || [0],
@@ -1159,8 +1160,12 @@
 				}
 
 				if (pos > -1) {
-					if (cacheable === true && getMaskSet().tests[pos]) {
-						return getMaskSet().tests[pos];
+					if (opts.disableCache !== true) {
+						if (validateCache !== true && getMaskSet().tests[pos]) {
+							return getMaskSet().tests[pos];
+						} else {
+
+						}
 					}
 					if (ndxIntlzr === undefined) {
 						var previousPos = pos - 1,
@@ -1589,7 +1594,7 @@
 				if (test.fn != null) {
 					return test.fn;
 				} else if (strict !== true && pos > -1 && !opts.keepStatic && getMaskSet().validPositions[pos] === undefined) {
-					var tests = getTests(pos, undefined, undefined, true);
+					var tests = getTests(pos);
 					return tests.length > 2;
 				}
 				return false;
@@ -1657,7 +1662,7 @@
 			}
 
 			function getPlaceholder(pos, test) {
-				test = test || getTest(pos);
+				test = test || getTest(pos, undefined, undefined, true);
 				if (test.placeholder !== undefined) {
 					return test.placeholder;
 				} else if (test.fn === null) {
