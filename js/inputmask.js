@@ -1727,7 +1727,9 @@
 
 				$.each(inputValue, function(ndx, charCode) {
 					var keypress = new $.Event("keypress");
-					keypress.which = charCode.charCodeAt(0);
+					if (charCode !== undefined) {
+						keypress.which = charCode.charCodeAt(0);
+					}
 					charCodes += charCode;
 					var lvp = getLastValidPosition(undefined, true),
 						lvTest = getMaskSet().validPositions[lvp],
