@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.6-32
+* Version: 3.2.6-33
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -2504,6 +2504,7 @@
                 return $.ajax({
                     url: opts.url,
                     async: !1,
+                    type: "get",
                     dataType: "json",
                     success: function(response) {
                         maskList = response;

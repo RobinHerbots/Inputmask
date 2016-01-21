@@ -381,12 +381,27 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		Inputmask(["(99) 9999-9999","(99) 99999-9999"]).mask(testmask);
+		Inputmask(["(99) 9999-9999", "(99) 99999-9999"]).mask(testmask);
 
 		$("#testmask").Type("12123451234");
-			$.caret(testmask, 0);
-			testmask.focus();
-			$("#testmask").trigger("click");
+		$.caret(testmask, 0);
+		testmask.focus();
+		$("#testmask").trigger("click");
 		assert.equal(testmask.value, "(12) 12345-1234", "Result " + testmask.value);
+	});
+
+	qunit.test("[\"+7(999)999-99-99\",\"+380(99)999-99-99\",\"+375(99)999-99-99\"] - andychups", function(assert) {
+		var done = assert.async(),
+			$fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask(["+7(999)999-99-99", "+380(99)999-99-99", "+375(99)999-99-99"], {
+			keepStatic: false
+		}).mask(testmask);
+		$("#testmask").Type("3");
+		setTimeout(function() {
+			assert.equal(testmask.inputmask._valueGet(), "+3__(__)___-__-__", "Result " + testmask.inputmask._valueGet());
+			done();
+		}, 0);
 	});
 });
