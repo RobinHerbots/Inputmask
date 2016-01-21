@@ -117,8 +117,7 @@
 				canClearPosition: $.noop, //hook to alter the clear behavior in the stripValidPositions args => maskset, position, lastValidPosition, opts => return true|false
 				postValidation: null, //hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, currentResult, opts => return true/false/refresh command
 				staticDefinitionSymbol: undefined, //specify a definitionSymbol for static content, used to make matches for alternators
-				jitMasking: false, //just in time masking ~ only mask while typing, can n (number), true or false
-				disableCache: false //testing purposes
+				jitMasking: false //just in time masking ~ only mask while typing, can n (number), true or false
 			},
 			masksCache: {},
 			mask: function(elems) {
@@ -769,7 +768,6 @@
 						ndxIntlzr = validPos.locator.slice();
 						maskTemplate.push(includeInput === true ? validPos.input : getPlaceholder(pos, test));
 					} else {
-						//console.log("getmasktemplate " + pos + " " + JSON.stringify(ndxIntlzr));
 						testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
 						test = testPos.match;
 						ndxIntlzr = testPos.locator.slice();
@@ -917,7 +915,7 @@
 			function getTestTemplate(pos, ndxIntlzr, tstPs) {
 				var testPos = getMaskSet().validPositions[pos];
 				if (testPos === undefined) {
-					var testPositions = getTests(pos, ndxIntlzr, tstPs, true),
+					var testPositions = getTests(pos, ndxIntlzr, tstPs),
 						lvp = getLastValidPosition(),
 						lvTest = getMaskSet().validPositions[lvp] || getTests(0)[0],
 						lvTestAltArr = (lvTest.alternation !== undefined) ? lvTest.locator[lvTest.alternation].toString().split(",") : [];
@@ -945,7 +943,7 @@
 
 			function positionCanMatchDefinition(pos, def) {
 				var valid = false,
-					tests = getTests(pos, undefined, undefined, true);
+					tests = getTests(pos);
 				for (var tndx = 0; tndx < tests.length; tndx++) {
 					if (tests[tndx].match && tests[tndx].match.def === def) {
 						valid = true;
@@ -969,13 +967,14 @@
 				return bestMatch;
 			}
 
-			function getTests(pos, ndxIntlzr, tstPs, validateCache) {
+			function getTests(pos, ndxIntlzr, tstPs) {
 				var maskTokens = getMaskSet().maskToken,
 					testPos = ndxIntlzr ? tstPs : 0,
 					ndxInitializer = ndxIntlzr || [0],
 					matches = [],
 					insertStop = false,
-					latestMatch;
+					latestMatch,
+					cacheDependency = ndxIntlzr ? ndxIntlzr.join('') : "";
 
 				function resolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) { //ndxInitializer contains a set of indexes to speedup searches in the mtokens
 					function handleMatch(match, loopNdx, quantifierRecurse) {
@@ -1002,7 +1001,8 @@
 						if (testPos === pos && match.matches === undefined) {
 							matches.push({
 								"match": match,
-								"locator": loopNdx.reverse()
+								"locator": loopNdx.reverse(),
+								"cd": cacheDependency
 							});
 							return true;
 						} else if (match.matches !== undefined) {
@@ -1159,29 +1159,28 @@
 					}
 				}
 
+				function mergeLocators(tests) { //todo
+					var test = tests[0] || tests;
+					return test.locator.slice();
+				}
 				if (pos > -1) {
-					if (opts.disableCache !== true) {
-						if (validateCache !== true && getMaskSet().tests[pos]) {
-							return getMaskSet().tests[pos];
-						} else {
-
-						}
-					}
 					if (ndxIntlzr === undefined) {
 						var previousPos = pos - 1,
 							test;
-						while ((test = getMaskSet().validPositions[previousPos]) === undefined && previousPos > -1) {
-							if (getMaskSet().tests[previousPos] && (test = getMaskSet().tests[previousPos][0]) !== undefined) {
-								break;
-							}
+						while ((test = getMaskSet().validPositions[previousPos] || getMaskSet().tests[previousPos]) === undefined && previousPos > -1) {
 							previousPos--;
-
 						}
 						if (test !== undefined && previousPos > -1) {
+							ndxInitializer = mergeLocators(test);
+							cacheDependency = ndxInitializer.join('')
+							test = test[0] || test;
 							testPos = previousPos;
-							ndxInitializer = test.locator.slice();
 						}
 					}
+					if (getMaskSet().tests[pos] && getMaskSet().tests[pos][0].cd === cacheDependency) { //cacheDependency is set on all tests, just check on the first
+						return getMaskSet().tests[pos];
+					}
+
 					for (var mtndx = ndxInitializer.shift(); mtndx < maskTokens.length; mtndx++) {
 						var match = resolveTestFromToken(maskTokens[mtndx], ndxInitializer, [mtndx]);
 						if ((match && testPos === pos) || testPos > pos) {
@@ -1662,7 +1661,7 @@
 			}
 
 			function getPlaceholder(pos, test) {
-				test = test || getTest(pos, undefined, undefined, true);
+				test = test || getTest(pos);
 				if (test.placeholder !== undefined) {
 					return test.placeholder;
 				} else if (test.fn === null) {

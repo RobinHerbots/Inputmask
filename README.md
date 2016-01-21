@@ -970,10 +970,6 @@ Inputmask("(99 99 999999)|(i{+})", {
 }).mask(selector);
 ```
 
-### disableCache
-Disabling caching for the getTests engine.  Should only be used for debugging purposes.
-Default: false
-
 ## General
 ### set a value and apply mask
 this can be done with the traditional jquery.val function (all browsers) or JavaScript value property for browsers which implement lookupGetter or getOwnPropertyDescriptor

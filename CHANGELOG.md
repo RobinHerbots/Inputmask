@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 - include textarea as a valid masking element
 
 ### Updates
-- enable simple caching in the getTests fn
+- caching with cache-dependency check in the getTests fn
 - implement missing parts in the jqlite DependencyLib
 - Remove namespaces for events (simplifies implementing other dependencyLibs, besides jquery)
 - update alternation logic

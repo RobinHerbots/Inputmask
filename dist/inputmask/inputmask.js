@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.6-31
+* Version: 3.2.6-32
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -322,7 +322,7 @@
         }
         function getTestTemplate(pos, ndxIntlzr, tstPs) {
             var testPos = getMaskSet().validPositions[pos];
-            if (void 0 === testPos) for (var testPositions = getTests(pos, ndxIntlzr, tstPs, !0), lvp = getLastValidPosition(), lvTest = getMaskSet().validPositions[lvp] || getTests(0)[0], lvTestAltArr = void 0 !== lvTest.alternation ? lvTest.locator[lvTest.alternation].toString().split(",") : [], ndx = 0; ndx < testPositions.length && (testPos = testPositions[ndx], 
+            if (void 0 === testPos) for (var testPositions = getTests(pos, ndxIntlzr, tstPs), lvp = getLastValidPosition(), lvTest = getMaskSet().validPositions[lvp] || getTests(0)[0], lvTestAltArr = void 0 !== lvTest.alternation ? lvTest.locator[lvTest.alternation].toString().split(",") : [], ndx = 0; ndx < testPositions.length && (testPos = testPositions[ndx], 
             !(testPos.match && (opts.greedy && testPos.match.optionalQuantifier !== !0 || (testPos.match.optionality === !1 || testPos.match.newBlockMarker === !1) && testPos.match.optionalQuantifier !== !0) && (void 0 === lvTest.alternation || lvTest.alternation !== testPos.alternation || void 0 !== testPos.locator[lvTest.alternation] && checkAlternationMatch(testPos.locator[lvTest.alternation].toString().split(","), lvTestAltArr)))); ndx++) ;
             return testPos;
         }
@@ -330,7 +330,7 @@
             return getMaskSet().validPositions[pos] ? getMaskSet().validPositions[pos].match : getTests(pos)[0].match;
         }
         function positionCanMatchDefinition(pos, def) {
-            for (var valid = !1, tests = getTests(pos, void 0, void 0, !0), tndx = 0; tndx < tests.length; tndx++) if (tests[tndx].match && tests[tndx].match.def === def) {
+            for (var valid = !1, tests = getTests(pos), tndx = 0; tndx < tests.length; tndx++) if (tests[tndx].match && tests[tndx].match.def === def) {
                 valid = !0;
                 break;
             }
@@ -344,7 +344,7 @@
                 indexPos = ndxPos);
             }), bestMatch;
         }
-        function getTests(pos, ndxIntlzr, tstPs, validateCache) {
+        function getTests(pos, ndxIntlzr, tstPs) {
             function resolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) {
                 function handleMatch(match, loopNdx, quantifierRecurse) {
                     function isFirstMatch(latestMatch, tokenGroup) {
@@ -360,7 +360,8 @@
                     if (testPos > 1e4) throw "Inputmask: There is probably an error in your mask definition or in the code. Create an issue on github with an example of the mask you are using. " + getMaskSet().mask;
                     if (testPos === pos && void 0 === match.matches) return matches.push({
                         match: match,
-                        locator: loopNdx.reverse()
+                        locator: loopNdx.reverse(),
+                        cd: cacheDependency
                     }), !0;
                     if (void 0 !== match.matches) {
                         if (match.isGroup && quantifierRecurse !== match) {
@@ -438,13 +439,18 @@
                     if (testPos > pos) break;
                 }
             }
-            var latestMatch, maskTokens = getMaskSet().maskToken, testPos = ndxIntlzr ? tstPs : 0, ndxInitializer = ndxIntlzr || [ 0 ], matches = [], insertStop = !1;
+            function mergeLocators(tests) {
+                var test = tests[0] || tests;
+                return test.locator.slice();
+            }
+            var latestMatch, maskTokens = getMaskSet().maskToken, testPos = ndxIntlzr ? tstPs : 0, ndxInitializer = ndxIntlzr || [ 0 ], matches = [], insertStop = !1, cacheDependency = ndxIntlzr ? ndxIntlzr.join("") : "";
             if (pos > -1) {
-                if (opts.disableCache !== !0 && validateCache !== !0 && getMaskSet().tests[pos]) return getMaskSet().tests[pos];
                 if (void 0 === ndxIntlzr) {
-                    for (var test, previousPos = pos - 1; void 0 === (test = getMaskSet().validPositions[previousPos]) && previousPos > -1 && (!getMaskSet().tests[previousPos] || void 0 === (test = getMaskSet().tests[previousPos][0])); ) previousPos--;
-                    void 0 !== test && previousPos > -1 && (testPos = previousPos, ndxInitializer = test.locator.slice());
+                    for (var test, previousPos = pos - 1; void 0 === (test = getMaskSet().validPositions[previousPos] || getMaskSet().tests[previousPos]) && previousPos > -1; ) previousPos--;
+                    void 0 !== test && previousPos > -1 && (ndxInitializer = mergeLocators(test), cacheDependency = ndxInitializer.join(""), 
+                    test = test[0] || test, testPos = previousPos);
                 }
+                if (getMaskSet().tests[pos] && getMaskSet().tests[pos][0].cd === cacheDependency) return getMaskSet().tests[pos];
                 for (var mtndx = ndxInitializer.shift(); mtndx < maskTokens.length; mtndx++) {
                     var match = resolveTestFromToken(maskTokens[mtndx], ndxInitializer, [ mtndx ]);
                     if (match && testPos === pos || testPos > pos) break;
@@ -685,7 +691,7 @@
             triggerInputEvent === !0 && (skipInputEvent = !0, $(input).trigger("input"));
         }
         function getPlaceholder(pos, test) {
-            if (test = test || getTest(pos, void 0, void 0, !0), void 0 !== test.placeholder) return test.placeholder;
+            if (test = test || getTest(pos), void 0 !== test.placeholder) return test.placeholder;
             if (null === test.fn) {
                 if (pos > -1 && !opts.keepStatic && void 0 === getMaskSet().validPositions[pos]) {
                     var prevTest, tests = getTests(pos), staticAlternations = 0;
@@ -1325,8 +1331,7 @@
             canClearPosition: $.noop,
             postValidation: null,
             staticDefinitionSymbol: void 0,
-            jitMasking: !1,
-            disableCache: !1
+            jitMasking: !1
         },
         masksCache: {},
         mask: function(elems) {
