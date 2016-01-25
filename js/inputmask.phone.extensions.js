@@ -31,33 +31,34 @@ When using this extension make sure you specify the correct url to get the masks
 			"phone": {
 				url: "phone-codes/phone-codes.js",
 				countrycode: "",
+				phoneCodeCache: {},
 				mask: function(opts) {
-					opts.definitions["#"] = opts.definitions["9"];
-					var maskList = [];
-					$.ajax({
-						url: opts.url,
-						async: false,
-						type: "get",
-						dataType: "json",
-						success: function(response) {
-							maskList = response;
-						},
-						error: function(xhr, ajaxOptions, thrownError) {
-							alert(thrownError + " - " + opts.url);
-						}
-					});
+					if (opts.phoneCodeCache[opts.url] === undefined) {
+						opts.definitions["#"] = opts.definitions["9"];
+						$.ajax({
+							url: opts.url,
+							async: false,
+							type: "get",
+							dataType: "json",
+							success: function(response) {
+								maskList = response;
+							},
+							error: function(xhr, ajaxOptions, thrownError) {
+								alert(thrownError + " - " + opts.url);
+							}
+						});
 
-					maskList = maskList.sort(function(a, b) {
-						return (a.mask || a) < (b.mask || b) ? -1 : 1;
-					});
-
-					return maskList;
+						opts.phoneCodeCache[opts.url] = maskList.sort(function(a, b) {
+							return (a.mask || a) < (b.mask || b) ? -1 : 1;
+						});
+					}
+					return opts.phoneCodeCache[opts.url];
 				},
 				keepStatic: false,
 				nojumps: true,
 				nojumpsThreshold: 1,
 				onBeforeMask: function(value, opts) {
-					var processedValue = value.replace(/^0/g, "");
+					var processedValue = value.replace(/^0{1,2}/, "").replace(/[\s]/g, "");
 					if (processedValue.indexOf(opts.countrycode) > 1 || processedValue.indexOf(opts.countrycode) === -1) {
 						processedValue = "+" + opts.countrycode + processedValue;
 					}

@@ -304,7 +304,7 @@
 
 		function isElementTypeSupported(input, opts) {
 			var elementType = input.getAttribute("type");
-			var isSupported = (input.tagName === "INPUT" && opts.supportsInputType.indexOf(elementType) !== -1) || input.isContentEditable || input.tagName === "TEXTAREA";
+			var isSupported = (input.tagName === "INPUT" && $.inArray(elementType, opts.supportsInputType) !== -1) || input.isContentEditable || input.tagName === "TEXTAREA";
 			if (!isSupported) {
 				var el = document.createElement("input");
 				el.setAttribute("type", elementType);
@@ -732,15 +732,7 @@
 			iphone = /iphone/i.test(ua) && !iemobile,
 			android = /android.*safari.*/i.test(ua) && !iemobile,
 			androidchrome = /android.*chrome.*/i.test(ua),
-			androidfirefox = /android.*firefox.*/i.test(ua),
-			kindle = /Kindle/i.test(ua) || /Silk/i.test(ua) || /KFTT/i.test(ua) || /KFOT/i.test(ua) || /KFJWA/i.test(ua) || /KFJWI/i.test(ua) || /KFSOWI/i.test(ua) || /KFTHWA/i.test(ua) || /KFTHWI/i.test(ua) || /KFAPWA/i.test(ua) || /KFAPWI/i.test(ua),
-			PasteEventType = isInputEventSupported("paste") ? "paste" : isInputEventSupported("input") ? "input" : "propertychange";
-
-		//if (androidchrome) {
-		//		var browser = navigator.userAgent.match(new RegExp("chrome.*", "i")),
-		//				version = parseInt(new RegExp(/[0-9]+/).exec(browser));
-		//		androidchrome32 = (version == 32);
-		//}
+			androidfirefox = /android.*firefox.*/i.test(ua);
 
 		//masking scope
 		//actionObj definition see below
@@ -1045,7 +1037,7 @@
 										ndxInitializer = resolveNdxInitializer(testPos, amndx);
 										match = handleMatch(alternateToken.matches[amndx] || maskToken.matches[amndx], [amndx].concat(loopNdx), quantifierRecurse) || match;
 										if (match !== true && match !== undefined && (altIndexArr[altIndexArr.length - 1] < alternateToken.matches.length)) { //no match in the alternations (length mismatch) => look further
-											var ntndx = maskToken.matches.indexOf(match) + 1;
+											var ntndx = $.inArray(match, maskToken.matches) + 1;
 											if (maskToken.matches.length > ntndx) {
 												match = handleMatch(maskToken.matches[ntndx], [ntndx].concat(loopNdx.slice(1, loopNdx.length)), quantifierRecurse);
 												if (match) {
@@ -1725,21 +1717,21 @@
 
 
 				$.each(inputValue, function(ndx, charCode) {
-					var keypress = new $.Event("keypress");
-					if (charCode !== undefined) {
+					if (charCode !== undefined) { //inputfallback strips some elements out of the inputarray.  $.each logically presents them as undefined
+						var keypress = new $.Event("keypress");
 						keypress.which = charCode.charCodeAt(0);
-					}
-					charCodes += charCode;
-					var lvp = getLastValidPosition(undefined, true),
-						lvTest = getMaskSet().validPositions[lvp],
-						nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : undefined, lvp);
-					if (!isTemplateMatch() || strict || opts.autoUnmask) {
-						var pos = strict ? ndx : (nextTest.match.fn == null && nextTest.match.optionality && (lvp + 1) < getMaskSet().p ? lvp + 1 : getMaskSet().p);
-						keypressEvent.call(input, keypress, true, false, strict, pos);
-						initialNdx = pos + 1;
-						charCodes = "";
-					} else {
-						keypressEvent.call(input, keypress, true, false, true, lvp + 1);
+						charCodes += charCode;
+						var lvp = getLastValidPosition(undefined, true),
+							lvTest = getMaskSet().validPositions[lvp],
+							nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : undefined, lvp);
+						if (!isTemplateMatch() || strict || opts.autoUnmask) {
+							var pos = strict ? ndx : (nextTest.match.fn == null && nextTest.match.optionality && (lvp + 1) < getMaskSet().p ? lvp + 1 : getMaskSet().p);
+							keypressEvent.call(input, keypress, true, false, strict, pos);
+							initialNdx = pos + 1;
+							charCodes = "";
+						} else {
+							keypressEvent.call(input, keypress, true, false, true, lvp + 1);
+						}
 					}
 				});
 				if (writeOut) {
@@ -1959,7 +1951,7 @@
 					input.inputmask.events[eventName] = input.inputmask.events[eventName] || [];
 					input.inputmask.events[eventName].push(ev);
 
-					if (["submit", "reset"].indexOf(eventName) != -1) {
+					if ($.inArray(eventName, ["submit", "reset"]) !== -1) {
 						if (input.form != null) $(input.form).on(eventName, ev);
 					} else {
 						$(input).on(eventName, ev);
@@ -1972,7 +1964,7 @@
 						$.each(events, function(eventName, evArr) {
 							while (evArr.length > 0) {
 								var ev = evArr.pop();
-								if (["submit", "reset"].indexOf(eventName) !== -1) {
+								if ($.inArray(eventName, ["submit", "reset"]) !== -1) {
 									if (input.form != null) $(input.form).off(eventName, ev);
 								} else {
 									$(input).off(eventName, ev);
@@ -2344,21 +2336,17 @@
 					$input = $(input),
 					inputValue = input.inputmask._valueGet(true),
 					caretPos = caret(input);
-				//paste event for IE8 and lower I guess ;-)
-				if (e.type === "propertychange" && input.inputmask._valueGet().length <= getMaskLength()) {
-					return true;
-				} else if (e.type === "paste") {
-					var valueBeforeCaret = inputValue.substr(0, caretPos.begin),
-						valueAfterCaret = inputValue.substr(caretPos.end, inputValue.length);
 
-					if (valueBeforeCaret === getBufferTemplate().slice(0, caretPos.begin).join("")) valueBeforeCaret = "";
-					if (valueAfterCaret === getBufferTemplate().slice(caretPos.end).join("")) valueAfterCaret = "";
+				var valueBeforeCaret = inputValue.substr(0, caretPos.begin),
+					valueAfterCaret = inputValue.substr(caretPos.end, inputValue.length);
 
-					if (window.clipboardData && window.clipboardData.getData) { // IE
-						inputValue = valueBeforeCaret + window.clipboardData.getData("Text") + valueAfterCaret;
-					} else if (ev.clipboardData && ev.clipboardData.getData) {
-						inputValue = valueBeforeCaret + ev.clipboardData.getData("text/plain") + valueAfterCaret;
-					}
+				if (valueBeforeCaret === getBufferTemplate().slice(0, caretPos.begin).join("")) valueBeforeCaret = "";
+				if (valueAfterCaret === getBufferTemplate().slice(caretPos.end).join("")) valueAfterCaret = "";
+
+				if (window.clipboardData && window.clipboardData.getData) { // IE
+					inputValue = valueBeforeCaret + window.clipboardData.getData("Text") + valueAfterCaret;
+				} else if (ev.clipboardData && ev.clipboardData.getData) {
+					inputValue = valueBeforeCaret + ev.clipboardData.getData("text/plain") + valueAfterCaret;
 				}
 
 				var pasteValue = inputValue;
@@ -2385,43 +2373,35 @@
 			function inputFallBackEvent(e) { //fallback when keypress & compositionevents fail
 				var input = this,
 					inputValue = input.inputmask._valueGet();
+
 				if (getBuffer().join("") !== inputValue) {
-					inputValue = inputValue.split("");
-					for (var i = inputValue.length; i > 0; i--) {
-						if (inputValue[i] === getPlaceholder(i)) {
-							delete inputValue[i];
-						}
+					var caretPos = caret(input);
+					inputValue = inputValue.replace(new RegExp("(" + Inputmask.escapeRegex(getBufferTemplate().join("")) + ")*"), "");
+					if (caretPos.begin > inputValue.length) {
+						caret(input, inputValue.length);
+						caretPos = caret(input);
 					}
+					//detect & treat possible backspace
+					if ((getBuffer().length - inputValue.length) === 1 && inputValue.charAt(caretPos.begin) !== getBuffer()[caretPos.begin] && inputValue.charAt(caretPos.begin + 1) !== getBuffer()[caretPos.begin] && !isMask(caretPos.begin)) {
+						e.keyCode = Inputmask.keyCode.BACKSPACE;
+						keydownEvent.call(input, e);
+					} else {
+						var lvp = getLastValidPosition() + 1;
+						var bufferTemplate = getBuffer().slice(lvp).join('');
+						while (inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$") === null) {
+							bufferTemplate = bufferTemplate.slice(1);
+						}
+						inputValue = inputValue.replace(bufferTemplate, "");
+						inputValue = inputValue.split("");
 
-					checkVal(input, true, false, inputValue);
+						checkVal(input, true, false, inputValue);
 
-					if (isComplete(getBuffer()) === true) {
-						$(input).trigger("complete");
+						if (isComplete(getBuffer()) === true) {
+							$(input).trigger("complete");
+						}
 					}
 					e.preventDefault();
 				}
-			}
-
-			function mobileInputEvent(e) {
-				var input = this;
-
-				//backspace in chrome32 only fires input event - detect & treat
-				var caretPos = caret(input),
-					currentValue = input.inputmask._valueGet();
-
-				currentValue = currentValue.replace(new RegExp("(" + Inputmask.escapeRegex(getBufferTemplate().join("")) + ")*"), "");
-				//correct caretposition for chrome
-				if (caretPos.begin > currentValue.length) {
-					caret(input, currentValue.length);
-					caretPos = caret(input);
-				}
-				if ((getBuffer().length - currentValue.length) === 1 && currentValue.charAt(caretPos.begin) !== getBuffer()[caretPos.begin] && currentValue.charAt(caretPos.begin + 1) !== getBuffer()[caretPos.begin] && !isMask(caretPos.begin)) {
-					e.keyCode = opts.keyCode.BACKSPACE;
-					keydownEvent.call(input, e);
-				} else {
-					inputFallBackEvent.call(this, e);
-				}
-				e.preventDefault();
 			}
 
 			function compositionStartEvent(e) {
@@ -2682,7 +2662,7 @@
 					EventRuler.on(el, "mouseleave", mouseleaveEvent);
 					EventRuler.on(el, "click", clickEvent);
 					EventRuler.on(el, "dblclick", dblclickEvent);
-					EventRuler.on(el, PasteEventType, pasteEvent);
+					EventRuler.on(el, "paste", pasteEvent);
 					EventRuler.on(el, "dragdrop", pasteEvent);
 					EventRuler.on(el, "drop", pasteEvent);
 					EventRuler.on(el, "cut", cutEvent);
@@ -2691,7 +2671,7 @@
 					EventRuler.on(el, "cleared", opts.oncleared);
 					EventRuler.on(el, "keydown", keydownEvent);
 					EventRuler.on(el, "keypress", keypressEvent);
-
+					EventRuler.on(el, "input", inputFallBackEvent);
 
 					if (!androidfirefox) {
 						EventRuler.on(el, "compositionstart", compositionStartEvent);
@@ -2699,13 +2679,7 @@
 						EventRuler.on(el, "compositionend", compositionEndEvent);
 					}
 
-					if (PasteEventType === "paste") {
-						EventRuler.on(el, "input", inputFallBackEvent);
-					}
-					if (android || androidfirefox || androidchrome || kindle) {
-						EventRuler.off(el, "input");
-						EventRuler.on(el, "input", mobileInputEvent);
-					}
+
 				}
 				EventRuler.on(el, "setvalue", setValueEvent);
 

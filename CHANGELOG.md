@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [UNRELEASED]
+## [3.2.6] - 2016-01-25
 ### Added
 - add jitMasking option
 - supportsInputType option
@@ -9,12 +9,14 @@ All notable changes to this project will be documented in this file.
 - include textarea as a valid masking element
 
 ### Updates
+- enhance inputfallback ~ merge mobileinputevent
 - caching with cache-dependency check in the getTests fn
 - implement missing parts in the jqlite DependencyLib
 - Remove namespaces for events (simplifies implementing other dependencyLibs, besides jquery)
 - update alternation logic
 
 ### Fixed
+- Windows Phone User unable to set Date #993
 - '405 not allowed' error on loading phone-codes.js on certain Ajax configuration. #1156
 - Issue with reset of inputmask field #1157
 - IE11 clear not working in emulated IE9 mode #1144
