@@ -791,11 +791,9 @@
 			}
 
 			function getLastValidPosition(closestTo, strict) {
-				var
-					before = -1,
+				var before = -1,
 					after = -1,
-					valids;
-				valids = getMaskSet().validPositions;
+					valids = getMaskSet().validPositions;
 				if (closestTo === undefined) closestTo = -1;
 				for (var posNdx in valids) {
 					var psNdx = parseInt(posNdx);
@@ -2379,6 +2377,17 @@
 				if (getBuffer().join("") !== inputValue) {
 					var caretPos = caret(input);
 					inputValue = inputValue.replace(new RegExp("(" + Inputmask.escapeRegex(getBufferTemplate().join("")) + ")*"), "");
+
+					if (iemobile) {
+						var inputChar = inputValue.replace(getBuffer().join(""), "");
+						if (inputChar.length === 1) {
+							var keypress = new $.Event("keypress");
+							keypress.which = inputChar.charCodeAt(0);
+							keypressEvent.call(input, keypress, true, true, false, seekPrevious(caretPos.begin));
+							return false;
+						}
+					}
+
 					if (caretPos.begin > inputValue.length) {
 						caret(input, inputValue.length);
 						caretPos = caret(input);
