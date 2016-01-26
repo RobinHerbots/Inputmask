@@ -3,7 +3,7 @@
 * http://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.6
+* Version: 3.2.7-2
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -267,8 +267,8 @@
             maskset.validPositions = {}, maskset.p = 0);
         }
         function getLastValidPosition(closestTo, strict) {
-            var before = -1, after = -1;
-            valids = getMaskSet().validPositions, void 0 === closestTo && (closestTo = -1);
+            var before = -1, after = -1, valids = getMaskSet().validPositions;
+            void 0 === closestTo && (closestTo = -1);
             for (var posNdx in valids) {
                 var psNdx = parseInt(posNdx);
                 valids[psNdx] && (strict || null !== valids[psNdx].match.fn) && (closestTo >= psNdx && (before = psNdx), 
@@ -952,7 +952,7 @@
                         opts.onKeyValidation.call(self, k, valResult, opts);
                     }, 0), getMaskSet().writeOutBuffer && valResult !== !1) {
                         var buffer = getBuffer();
-                        writeBuffer(input, buffer, checkval ? void 0 : opts.numericInput && void 0 === valResult.caret ? seekPrevious(forwardPosition) : forwardPosition, e, checkval !== !0), 
+                        writeBuffer(input, buffer, opts.numericInput && void 0 === valResult.caret ? seekPrevious(forwardPosition) : forwardPosition, e, checkval !== !0), 
                         checkval !== !0 && setTimeout(function() {
                             isComplete(buffer) === !0 && $input.trigger("complete");
                         }, 0);
@@ -989,7 +989,15 @@
             if (getBuffer().join("") !== inputValue) {
                 var caretPos = caret(input);
                 if (inputValue = inputValue.replace(new RegExp("(" + Inputmask.escapeRegex(getBufferTemplate().join("")) + ")*"), ""), 
-                caretPos.begin > inputValue.length && (caret(input, inputValue.length), caretPos = caret(input)), 
+                iemobile) {
+                    var inputChar = inputValue.replace(getBuffer().join(""), "");
+                    if (1 === inputChar.length) {
+                        var keypress = new $.Event("keypress");
+                        return keypress.which = inputChar.charCodeAt(0), keypressEvent.call(input, keypress, !0, !0, !1, getMaskSet().validPositions[caretPos.begin - 1] ? caretPos.begin : caretPos.begin - 1), 
+                        !1;
+                    }
+                }
+                if (caretPos.begin > inputValue.length && (caret(input, inputValue.length), caretPos = caret(input)), 
                 getBuffer().length - inputValue.length !== 1 || inputValue.charAt(caretPos.begin) === getBuffer()[caretPos.begin] || inputValue.charAt(caretPos.begin + 1) === getBuffer()[caretPos.begin] || isMask(caretPos.begin)) {
                     for (var lvp = getLastValidPosition() + 1, bufferTemplate = getBuffer().slice(lvp).join(""); null === inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$"); ) bufferTemplate = bufferTemplate.slice(1);
                     inputValue = inputValue.replace(bufferTemplate, ""), inputValue = inputValue.split(""), 
@@ -1166,6 +1174,15 @@
 
                               case "cut":
                                 skipInputEvent = !0;
+                                break;
+
+                              case "click":
+                                if (iemobile) {
+                                    var that = this;
+                                    return setTimeout(function() {
+                                        eventHandler.apply(that, arguments);
+                                    }, 0), !1;
+                                }
                             }
                             return eventHandler.apply(this, arguments);
                         }
@@ -2495,21 +2512,24 @@
             countrycode: "",
             phoneCodeCache: {},
             mask: function(opts) {
-                return void 0 === opts.phoneCodeCache[opts.url] && (opts.definitions["#"] = opts.definitions[9], 
-                $.ajax({
-                    url: opts.url,
-                    async: !1,
-                    type: "get",
-                    dataType: "json",
-                    success: function(response) {
-                        maskList = response;
-                    },
-                    error: function(xhr, ajaxOptions, thrownError) {
-                        alert(thrownError + " - " + opts.url);
-                    }
-                }), opts.phoneCodeCache[opts.url] = maskList.sort(function(a, b) {
-                    return (a.mask || a) < (b.mask || b) ? -1 : 1;
-                })), opts.phoneCodeCache[opts.url];
+                if (void 0 === opts.phoneCodeCache[opts.url]) {
+                    var maskList = [];
+                    opts.definitions["#"] = opts.definitions[9], $.ajax({
+                        url: opts.url,
+                        async: !1,
+                        type: "get",
+                        dataType: "json",
+                        success: function(response) {
+                            maskList = response;
+                        },
+                        error: function(xhr, ajaxOptions, thrownError) {
+                            alert(thrownError + " - " + opts.url);
+                        }
+                    }), opts.phoneCodeCache[opts.url] = maskList.sort(function(a, b) {
+                        return (a.mask || a) < (b.mask || b) ? -1 : 1;
+                    });
+                }
+                return opts.phoneCodeCache[opts.url];
             },
             keepStatic: !1,
             nojumps: !0,

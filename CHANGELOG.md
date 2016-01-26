@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [UNRELEASED]
+### Updates
+- IEMobile fixes
+
+### Fixed
+- fixed "valids is not defined" error #1166
+
 ## [3.2.6] - 2016-01-25
 ### Added
 - add jitMasking option

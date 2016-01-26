@@ -1942,6 +1942,15 @@
 								case "cut":
 									skipInputEvent = true;
 									break;
+								case "click":
+									if (iemobile) {
+										var that = this;
+										setTimeout(function() {
+											eventHandler.apply(that, arguments);
+										}, 0);
+										return false;
+									}
+									break;
 							}
 							// console.log("executed " + e.type);
 							return eventHandler.apply(this, arguments);
@@ -2291,7 +2300,7 @@
 							}, 0);
 							if (getMaskSet().writeOutBuffer && valResult !== false) {
 								var buffer = getBuffer();
-								writeBuffer(input, buffer, checkval ? undefined : (opts.numericInput && valResult.caret === undefined) ? seekPrevious(forwardPosition) : forwardPosition, e, checkval !== true);
+								writeBuffer(input, buffer, (opts.numericInput && valResult.caret === undefined) ? seekPrevious(forwardPosition) : forwardPosition, e, checkval !== true);
 								if (checkval !== true) {
 									setTimeout(function() { //timeout needed for IE
 										if (isComplete(buffer) === true) $input.trigger("complete");
@@ -2378,12 +2387,12 @@
 					var caretPos = caret(input);
 					inputValue = inputValue.replace(new RegExp("(" + Inputmask.escapeRegex(getBufferTemplate().join("")) + ")*"), "");
 
-					if (iemobile) {
+					if (iemobile) { //iemobile just set the character at the end althought the caret position is correctly set
 						var inputChar = inputValue.replace(getBuffer().join(""), "");
 						if (inputChar.length === 1) {
 							var keypress = new $.Event("keypress");
 							keypress.which = inputChar.charCodeAt(0);
-							keypressEvent.call(input, keypress, true, true, false, seekPrevious(caretPos.begin));
+							keypressEvent.call(input, keypress, true, true, false, getMaskSet().validPositions[caretPos.begin - 1] ? caretPos.begin : caretPos.begin - 1);
 							return false;
 						}
 					}

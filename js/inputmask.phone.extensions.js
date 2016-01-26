@@ -34,6 +34,7 @@ When using this extension make sure you specify the correct url to get the masks
 				phoneCodeCache: {},
 				mask: function(opts) {
 					if (opts.phoneCodeCache[opts.url] === undefined) {
+						var maskList = [];
 						opts.definitions["#"] = opts.definitions["9"];
 						$.ajax({
 							url: opts.url,
