@@ -791,8 +791,10 @@
 			}
 
 			function getLastValidPosition(closestTo, strict) {
-				var before = -1,
-					after = -1;
+				var
+					before = -1,
+					after = -1,
+					valids;
 				valids = getMaskSet().validPositions;
 				if (closestTo === undefined) closestTo = -1;
 				for (var posNdx in valids) {
