@@ -728,11 +728,10 @@
 		}
 
 		var ua = navigator.userAgent,
+			mobile = /mobile/i.test(ua),
 			iemobile = /iemobile/i.test(ua),
 			iphone = /iphone/i.test(ua) && !iemobile,
-			android = /android.*safari.*/i.test(ua) && !iemobile,
-			androidchrome = /android.*chrome.*/i.test(ua),
-			androidfirefox = /android.*firefox.*/i.test(ua);
+			android = /android.*safari.*/i.test(ua) && !iemobile;
 
 		//masking scope
 		//actionObj definition see below
@@ -1780,7 +1779,7 @@
 
 					var scrollCalc = parseInt(((input.ownerDocument.defaultView || window).getComputedStyle ? (input.ownerDocument.defaultView || window).getComputedStyle(input, null) : input.currentStyle).fontSize) * end;
 					input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0;
-					if (!androidchrome && opts.insertMode === false && begin === end) end++; //set visualization for insert/overwrite mode
+					if (!mobile && opts.insertMode === false && begin === end) end++; //set visualization for insert/overwrite mode
 					if (input.setSelectionRange) {
 						input.selectionStart = begin;
 						input.selectionEnd = end;
@@ -1895,12 +1894,11 @@
 					(end - begin) > 1 || ((end - begin) === 1 && opts.insertMode);
 			}
 
+			var inComposition = false;
 			var EventRuler = {
 				on: function(input, eventName, eventHandler) {
 					var ev = function(e) {
 						// console.log("triggered " + e.type);
-						var inComposition = false,
-							keydownPressed = false;
 						if (this.inputmask === undefined && this.nodeName !== "FORM") { //happens when cloning an object with jquery.clone
 							var imOpts = $.data(this, "_inputmask_opts");
 							if (imOpts)(new Inputmask(imOpts)).mask(this);
@@ -1911,16 +1909,15 @@
 							switch (e.type) {
 								case "input":
 									if (skipInputEvent === true || inComposition === true) {
-										skipInputEvent = false;
+										skipInputEvent = inComposition;
 										return e.preventDefault();
 									}
-									keydownPressed = false;
 									break;
 								case "keydown":
 									//Safari 5.1.x - modal dialog fires keypress twice workaround
 									skipKeyPressEvent = false;
+									skipInputEvent = false;
 									inComposition = false;
-									keydownPressed = true;
 									break;
 								case "keypress":
 									if (skipKeyPressEvent === true) {
@@ -1933,11 +1930,10 @@
 									inComposition = true;
 									break;
 								case "compositionupdate":
-									skipInputEvent = keydownPressed;
+									skipInputEvent = true;
 									break;
 								case "compositionend":
 									inComposition = false;
-									keydownPressed = false;
 									break;
 								case "cut":
 									skipInputEvent = true;
@@ -2434,11 +2430,11 @@
 
 			function compositionUpdateEvent(e) {
 				var input = this,
-					ev = e.originalEvent || e;
+					ev = e.originalEvent || e,
+					inputBuffer = getBuffer().join("");
 				if (ev.data.indexOf(compositionData) === 0) {
 					resetMaskSet();
 					getMaskSet().p = seekNext(-1); //needs check
-					skipInputEvent = true;
 				}
 				var newData = ev.data;
 				for (var i = 0; i < newData.length; i++) {
@@ -2448,10 +2444,12 @@
 					ignorable = false;
 					keypressEvent.call(input, keypress, true, false, false, getMaskSet().p); //needs check
 				}
-				setTimeout(function() {
-					var forwardPosition = getMaskSet().p;
-					writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
-				}, 0);
+				if (inputBuffer !== getBuffer().join("")) {
+					setTimeout(function() {
+						var forwardPosition = getMaskSet().p;
+						writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
+					}, 0);
+				}
 				compositionData = ev.data;
 			}
 
@@ -2692,14 +2690,11 @@
 					EventRuler.on(el, "keydown", keydownEvent);
 					EventRuler.on(el, "keypress", keypressEvent);
 					EventRuler.on(el, "input", inputFallBackEvent);
-
-					if (!androidfirefox) {
+					if (!mobile) {
 						EventRuler.on(el, "compositionstart", compositionStartEvent);
 						EventRuler.on(el, "compositionupdate", compositionUpdateEvent);
 						EventRuler.on(el, "compositionend", compositionEndEvent);
 					}
-
-
 				}
 				EventRuler.on(el, "setvalue", setValueEvent);
 
