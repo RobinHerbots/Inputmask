@@ -1,11 +1,25 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [UNRELEASED]
+## [3.2.7] - 2016-01-28 
 ### Updates
-- IEMobile fixes
+- favor inputfallback for android
+- enable IEMobile
 
 ### Fixed
+- Issue in Android (Samsung GALAXY S5) #825
+- time mask, backspace behavior on android chrome #817
+- Android Chrome Browser #867
+- Mask issue in Android with Swype Keyboard #692
+- Pasting to masked input not working on Android #1061
+- Decimal point/comma not working on Android 4.4 #1041
+- Doesn't work on Android #1073
+- numeric input in mobile #897
+- Support for Android default browser #368
+- Repeating a character and a number On Mobile #898
+- Inputs are ignored on FF 39 on Android 5.0.2 #982
+- Phone input mask duplicates each character on Samsung Android tablet #834
+- Support for Android default browser #368
 - fixed "valids is not defined" error #1166
 
 ## [3.2.6] - 2016-01-25
