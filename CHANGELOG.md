@@ -1,12 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [3.2.7] - 2016-01-28 
+## [3.2.7] - 2016-01-28
 ### Updates
 - favor inputfallback for android
 - enable IEMobile
 
 ### Fixed
+- Firefox, Android - cursor jumps to the left in numeric mask #1138
 - Issue in Android (Samsung GALAXY S5) #825
 - time mask, backspace behavior on android chrome #817
 - Android Chrome Browser #867
