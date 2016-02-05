@@ -10,7 +10,7 @@ An URL mask for entering valid FTP, HTTP or HTTPS addresses.
 
 ```javascript
 $(document).ready(function(){
-   $(selector).inputmask("url");
+  $(selector).inputmask("url");
 });
 ```
 
@@ -19,7 +19,7 @@ An IP address alias for entering valid IP addresses.
 
 ```javascript
 $(document).ready(function(){
-   $(selector).inputmask("ip");
+  $(selector).inputmask("ip");
 });
 ```
 
@@ -28,7 +28,7 @@ An email mask for entering valid email addresses.
 
 ```javascript
 $(document).ready(function(){
-   $(selector).inputmask("email");
+  $(selector).inputmask("email");
 });
 ```
 
@@ -37,7 +37,7 @@ An MAC mask for entering valid MAC addresses.
 
 ```javascript
 $(document).ready(function(){
-   $(selector).inputmask("mac");
+  $(selector).inputmask("mac");
 });
 ```
 
