@@ -2,7 +2,7 @@ module.exports = function(grunt) {
 	function createBanner(fileName) {
 		return "/*!\n" +
 			"* " + fileName + "\n" +
-			"* http://github.com/RobinHerbots/jquery.inputmask\n" +
+			"* <%= pkg.homepage %>\n" +
 			"* Copyright (c) 2010 - <%= grunt.template.today('yyyy') %> <%= pkg.author.name %>\n" +
 			"* Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)\n" +
 			"* Version: <%= pkg.version %>\n" +
