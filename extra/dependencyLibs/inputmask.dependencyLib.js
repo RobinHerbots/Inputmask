@@ -96,13 +96,11 @@ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.p
 						elem = this[0];
 
 					function addEvent(ev, namespace) {
-						if (document !== undefined) {
-							//register domevent
-							if (elem.addEventListener) { // all browsers except IE before version 9
-								elem.addEventListener(ev, handler, false);
-							} else if (elem.attachEvent) { // IE before version 9
-								elem.attachEvent("on" + ev, handler);
-							}
+						//register domevent
+						if (elem.addEventListener) { // all browsers except IE before version 9
+							elem.addEventListener(ev, handler, false);
+						} else if (elem.attachEvent) { // IE before version 9
+							elem.attachEvent("on" + ev, handler);
 						}
 						eventRegistry[ev] = eventRegistry[ev] || {};
 						eventRegistry[ev][namespace] = eventRegistry[ev][namespace] || [];
@@ -125,13 +123,11 @@ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.p
 
 					function removeEvent(ev, namespace, handler) {
 						if (ev in eventRegistry === true) {
-							if (document !== undefined) {
-								//unbind to dom events
-								if (elem.removeEventListener) { // all browsers except IE before version 9
-									elem.removeEventListener(ev, handler, false);
-								} else if (elem.detachEvent) { // IE before version 9
-									elem.detachEvent("on" + ev, handler);
-								}
+							//unbind to dom events
+							if (elem.removeEventListener) { // all browsers except IE before version 9
+								elem.removeEventListener(ev, handler, false);
+							} else if (elem.detachEvent) { // IE before version 9
+								elem.detachEvent("on" + ev, handler);
 							}
 							if (namespace === "global") {
 								for (var nmsp in eventRegistry[ev]) {

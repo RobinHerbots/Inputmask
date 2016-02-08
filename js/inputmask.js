@@ -257,6 +257,7 @@
 		Inputmask.keyCode = {
 			ALT: 18,
 			BACKSPACE: 8,
+			BACKSPACE_SAFARI: 127,
 			CAPS_LOCK: 20,
 			COMMA: 188,
 			COMMAND: 91,
@@ -286,7 +287,8 @@
 			SPACE: 32,
 			TAB: 9,
 			UP: 38,
-			WINDOWS: 91
+			WINDOWS: 91,
+			X: 88
 		};
 
 		//helper functions
@@ -305,7 +307,7 @@
 		function isElementTypeSupported(input, opts) {
 			var elementType = input.getAttribute("type");
 			var isSupported = (input.tagName === "INPUT" && $.inArray(elementType, opts.supportsInputType) !== -1) || input.isContentEditable || input.tagName === "TEXTAREA";
-			if (!isSupported) {
+			if (!isSupported && input.tagName === "INPUT") {
 				var el = document.createElement("input");
 				el.setAttribute("type", elementType);
 				isSupported = el.type === "text"; //apply mask only if the type is not natively supported
@@ -738,7 +740,6 @@
 		function maskScope(actionObj, maskset, opts) {
 			var isRTL = false,
 				undoValue,
-				compositionData,
 				el, $el,
 				skipKeyPressEvent = false, //Safari 5.1.x - modal dialog fires keypress twice workaround
 				skipInputEvent = false, //skip when triggered from within inputmask
@@ -1779,6 +1780,7 @@
 
 					var scrollCalc = parseInt(((input.ownerDocument.defaultView || window).getComputedStyle ? (input.ownerDocument.defaultView || window).getComputedStyle(input, null) : input.currentStyle).fontSize) * end;
 					input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0;
+
 					if (!mobile && opts.insertMode === false && begin === end) end++; //set visualization for insert/overwrite mode
 					if (input.setSelectionRange) {
 						input.selectionStart = begin;
@@ -1816,7 +1818,7 @@
 						}
 					} else if (document.selection && document.selection.createRange) {
 						range = document.selection.createRange();
-						begin = 0 - range.duplicate().moveStart("character", -100000);
+						begin = 0 - range.duplicate().moveStart("character", -input.inputmask._valueGet().length);
 						end = begin + range.text.length;
 					}
 					/*eslint-disable consistent-return */
@@ -1894,7 +1896,6 @@
 					(end - begin) > 1 || ((end - begin) === 1 && opts.insertMode);
 			}
 
-			var inComposition = false;
 			var EventRuler = {
 				on: function(input, eventName, eventHandler) {
 					var ev = function(e) {
@@ -1908,8 +1909,8 @@
 						} else {
 							switch (e.type) {
 								case "input":
-									if (skipInputEvent === true || inComposition === true) {
-										skipInputEvent = inComposition;
+									if (skipInputEvent === true) {
+										skipInputEvent = false;
 										return e.preventDefault();
 									}
 									break;
@@ -1917,26 +1918,12 @@
 									//Safari 5.1.x - modal dialog fires keypress twice workaround
 									skipKeyPressEvent = false;
 									skipInputEvent = false;
-									inComposition = false;
 									break;
 								case "keypress":
 									if (skipKeyPressEvent === true) {
 										return e.preventDefault();
 									}
 									skipKeyPressEvent = true;
-
-									break;
-								case "compositionstart":
-									inComposition = true;
-									break;
-								case "compositionupdate":
-									skipInputEvent = true;
-									break;
-								case "compositionend":
-									inComposition = false;
-									break;
-								case "cut":
-									skipInputEvent = true;
 									break;
 								case "click":
 									if (iemobile) {
@@ -1949,7 +1936,12 @@
 									break;
 							}
 							// console.log("executed " + e.type);
-							return eventHandler.apply(this, arguments);
+							var returnVal = eventHandler.apply(this, arguments);
+							if (returnVal === false) {
+								e.preventDefault();
+								e.stopPropagation();
+							}
+							return returnVal;
 						}
 					};
 					//keep instance of the event
@@ -2171,9 +2163,8 @@
 					pos = caret(input);
 
 				//backspace, delete, and escape get special treatment
-				if (k === Inputmask.keyCode.BACKSPACE || k === Inputmask.keyCode.DELETE || (iphone && k === 127) || (e.ctrlKey && k === 88 && !isInputEventSupported("cut"))) { //backspace/delete
+				if (k === Inputmask.keyCode.BACKSPACE || k === Inputmask.keyCode.DELETE || (iphone && k === Inputmask.keyCode.BACKSPACE_SAFARI) || (e.ctrlKey && k === Inputmask.keyCode.X && !isInputEventSupported("cut"))) { //backspace/delete
 					e.preventDefault(); //stop default action but allow propagation
-					if (k === 88) undoValue = getBuffer().join("");
 					handleRemove(input, k, pos);
 					writeBuffer(input, getBuffer(), getMaskSet().p, e, undoValue !== getBuffer().join(""));
 					if (input.inputmask._valueGet() === getBufferTemplate().join("")) {
@@ -2358,24 +2349,22 @@
 				if ($.isFunction(opts.onBeforePaste)) {
 					pasteValue = opts.onBeforePaste(inputValue, opts);
 					if (pasteValue === false) {
-						e.preventDefault();
-						return false;
+						return e.preventDefault();
 					}
 					if (!pasteValue) {
 						pasteValue = inputValue;
 					}
 				}
 				checkVal(input, false, false, isRTL ? pasteValue.split("").reverse() : pasteValue.toString().split(""));
-				writeBuffer(input, getBuffer(), undefined, e, true);
-				$input.trigger("click");
+				writeBuffer(input, getBuffer(), seekNext(getLastValidPosition()), e, true);
 				if (isComplete(getBuffer()) === true) {
 					$input.trigger("complete");
 				}
 
-				return false;
+				return e.preventDefault();
 			}
 
-			function inputFallBackEvent(e) { //fallback when keypress & compositionevents fail
+			function inputFallBackEvent(e) { //fallback when keypress fails
 				var input = this,
 					inputValue = input.inputmask._valueGet();
 
@@ -2418,43 +2407,6 @@
 					}
 					e.preventDefault();
 				}
-			}
-
-			function compositionStartEvent(e) {
-				var ev = e.originalEvent || e;
-				undoValue = getBuffer().join("");
-				if (compositionData === "" || ev.data.indexOf(compositionData) !== 0) {
-					// compositionCaretPos = caret(input);
-				}
-			}
-
-			function compositionUpdateEvent(e) {
-				var input = this,
-					ev = e.originalEvent || e,
-					inputBuffer = getBuffer().join("");
-				if (ev.data.indexOf(compositionData) === 0) {
-					resetMaskSet();
-					getMaskSet().p = seekNext(-1); //needs check
-				}
-				var newData = ev.data;
-				for (var i = 0; i < newData.length; i++) {
-					var keypress = new $.Event("keypress");
-					keypress.which = newData.charCodeAt(i);
-					skipKeyPressEvent = false;
-					ignorable = false;
-					keypressEvent.call(input, keypress, true, false, false, getMaskSet().p); //needs check
-				}
-				if (inputBuffer !== getBuffer().join("")) {
-					setTimeout(function() {
-						var forwardPosition = getMaskSet().p;
-						writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
-					}, 0);
-				}
-				compositionData = ev.data;
-			}
-
-			function compositionEndEvent(e) {
-				//pickup by inputfallback
 			}
 
 			function setValueEvent(e) {
@@ -2690,11 +2642,6 @@
 					EventRuler.on(el, "keydown", keydownEvent);
 					EventRuler.on(el, "keypress", keypressEvent);
 					EventRuler.on(el, "input", inputFallBackEvent);
-					if (!mobile) {
-						EventRuler.on(el, "compositionstart", compositionStartEvent);
-						EventRuler.on(el, "compositionupdate", compositionUpdateEvent);
-						EventRuler.on(el, "compositionend", compositionEndEvent);
-					}
 				}
 				EventRuler.on(el, "setvalue", setValueEvent);
 

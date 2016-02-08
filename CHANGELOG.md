@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## UNRELEASED
+
+## Fixed
+- Fix some events like paste & cut for Vanilla dependencyLib #1072
+
 ## [3.2.7] - 2016-01-28
 ### Updates
 - favor inputfallback for android
