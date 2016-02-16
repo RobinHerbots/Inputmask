@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 
 ## Fixed
+- Email mask not accepting valid emails #971
+- Deleting character from input with 'email' alias shifts all data #1052
 - Fix some events like paste & cut for Vanilla dependencyLib #1072
 
 ## [3.2.7] - 2016-01-28

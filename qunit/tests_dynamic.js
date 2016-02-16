@@ -331,4 +331,16 @@ define([
 			done();
 		}, 0);
 	});
+
+	qunit.test("email mask - johnsmith@ma.us.delta-corp.com - ResidualEnvy", function(assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("email").mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("johnsmith@ma.us.delta-corp.com");
+		testmask.blur();
+		assert.equal(testmask.value, "johnsmith@ma.us.delta-corp.com", "Result " + testmask.value);
+	});
 });

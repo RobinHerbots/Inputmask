@@ -1,9 +1,9 @@
 /*!
 * jquery.inputmask.bundle.js
-* http://github.com/RobinHerbots/jquery.inputmask
+* https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.7
+* Version: 3.2.8-2
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -19,7 +19,7 @@
     }
     function isElementTypeSupported(input, opts) {
         var elementType = input.getAttribute("type"), isSupported = "INPUT" === input.tagName && -1 !== $.inArray(elementType, opts.supportsInputType) || input.isContentEditable || "TEXTAREA" === input.tagName;
-        if (!isSupported) {
+        if (!isSupported && "INPUT" === input.tagName) {
             var el = document.createElement("input");
             el.setAttribute("type", elementType), isSupported = "text" === el.type, el = null;
         }
@@ -302,8 +302,16 @@
             return resetMaskSet(!0), !0;
         }
         function stripValidPositions(start, end, nocheck, strict) {
+            function IsEnclosedStatic(pos) {
+                var posMatch = getMaskSet().validPositions[pos];
+                if (void 0 !== posMatch && null === posMatch.match.fn) {
+                    var prevMatch = getMaskSet().validPositions[pos - 1], nextMatch = getMaskSet().validPositions[pos + 1];
+                    return void 0 !== prevMatch && void 0 !== nextMatch;
+                }
+                return !1;
+            }
             var i, startPos = start;
-            for (getMaskSet().p = start, i = startPos; end > i; i++) void 0 !== getMaskSet().validPositions[i] && (nocheck === !0 || opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), strict, opts) !== !1) && delete getMaskSet().validPositions[i];
+            for (getMaskSet().p = start, i = startPos; end > i; i++) void 0 !== getMaskSet().validPositions[i] && (nocheck === !0 || !IsEnclosedStatic(i) && opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), strict, opts) !== !1) && delete getMaskSet().validPositions[i];
             for (i = startPos + 1; i <= getLastValidPosition(); ) {
                 for (;void 0 !== getMaskSet().validPositions[startPos]; ) startPos++;
                 var s = getMaskSet().validPositions[startPos];
@@ -755,8 +763,8 @@
             end = input.selectionEnd) : window.getSelection ? (range = window.getSelection().getRangeAt(0), 
             (range.commonAncestorContainer.parentNode === input || range.commonAncestorContainer === input) && (begin = range.startOffset, 
             end = range.endOffset)) : document.selection && document.selection.createRange && (range = document.selection.createRange(), 
-            begin = 0 - range.duplicate().moveStart("character", -1e5), end = begin + range.text.length), 
-            {
+            begin = 0 - range.duplicate().moveStart("character", -input.inputmask._valueGet().length), 
+            end = begin + range.text.length), {
                 begin: translatePosition(begin),
                 end: translatePosition(end)
             };
@@ -900,8 +908,8 @@
         }
         function keydownEvent(e) {
             var input = this, $input = $(input), k = e.keyCode, pos = caret(input);
-            if (k === Inputmask.keyCode.BACKSPACE || k === Inputmask.keyCode.DELETE || iphone && 127 === k || e.ctrlKey && 88 === k && !isInputEventSupported("cut")) e.preventDefault(), 
-            88 === k && (undoValue = getBuffer().join("")), handleRemove(input, k, pos), writeBuffer(input, getBuffer(), getMaskSet().p, e, undoValue !== getBuffer().join("")), 
+            if (k === Inputmask.keyCode.BACKSPACE || k === Inputmask.keyCode.DELETE || iphone && k === Inputmask.keyCode.BACKSPACE_SAFARI || e.ctrlKey && k === Inputmask.keyCode.X && !isInputEventSupported("cut")) e.preventDefault(), 
+            handleRemove(input, k, pos), writeBuffer(input, getBuffer(), getMaskSet().p, e, undoValue !== getBuffer().join("")), 
             input.inputmask._valueGet() === getBufferTemplate().join("") ? $input.trigger("cleared") : isComplete(getBuffer()) === !0 && $input.trigger("complete"), 
             opts.showTooltip && (input.title = opts.tooltip || getMaskSet().mask); else if (k === Inputmask.keyCode.END || k === Inputmask.keyCode.PAGE_DOWN) {
                 e.preventDefault();
@@ -976,13 +984,12 @@
             window.clipboardData && window.clipboardData.getData ? inputValue = valueBeforeCaret + window.clipboardData.getData("Text") + valueAfterCaret : ev.clipboardData && ev.clipboardData.getData && (inputValue = valueBeforeCaret + ev.clipboardData.getData("text/plain") + valueAfterCaret);
             var pasteValue = inputValue;
             if ($.isFunction(opts.onBeforePaste)) {
-                if (pasteValue = opts.onBeforePaste(inputValue, opts), pasteValue === !1) return e.preventDefault(), 
-                !1;
+                if (pasteValue = opts.onBeforePaste(inputValue, opts), pasteValue === !1) return e.preventDefault();
                 pasteValue || (pasteValue = inputValue);
             }
             return checkVal(input, !1, !1, isRTL ? pasteValue.split("").reverse() : pasteValue.toString().split("")), 
-            writeBuffer(input, getBuffer(), void 0, e, !0), $input.trigger("click"), isComplete(getBuffer()) === !0 && $input.trigger("complete"), 
-            !1;
+            writeBuffer(input, getBuffer(), seekNext(getLastValidPosition()), e, !0), isComplete(getBuffer()) === !0 && $input.trigger("complete"), 
+            e.preventDefault();
         }
         function inputFallBackEvent(e) {
             var input = this, inputValue = input.inputmask._valueGet();
@@ -1006,24 +1013,6 @@
                 e.preventDefault();
             }
         }
-        function compositionStartEvent(e) {
-            var ev = e.originalEvent || e;
-            undoValue = getBuffer().join(""), "" === compositionData || 0 !== ev.data.indexOf(compositionData);
-        }
-        function compositionUpdateEvent(e) {
-            var input = this, ev = e.originalEvent || e, inputBuffer = getBuffer().join("");
-            0 === ev.data.indexOf(compositionData) && (resetMaskSet(), getMaskSet().p = seekNext(-1));
-            for (var newData = ev.data, i = 0; i < newData.length; i++) {
-                var keypress = new $.Event("keypress");
-                keypress.which = newData.charCodeAt(i), skipKeyPressEvent = !1, ignorable = !1, 
-                keypressEvent.call(input, keypress, !0, !1, !1, getMaskSet().p);
-            }
-            inputBuffer !== getBuffer().join("") && setTimeout(function() {
-                var forwardPosition = getMaskSet().p;
-                writeBuffer(input, getBuffer(), opts.numericInput ? seekPrevious(forwardPosition) : forwardPosition);
-            }, 0), compositionData = ev.data;
-        }
-        function compositionEndEvent(e) {}
         function setValueEvent(e) {
             var input = this, value = input.inputmask._valueGet();
             checkVal(input, !0, !1, ($.isFunction(opts.onBeforeMask) ? opts.onBeforeMask(value, opts) || value : value).split("")), 
@@ -1124,9 +1113,8 @@
             EventRuler.on(el, "drop", pasteEvent), EventRuler.on(el, "cut", cutEvent), EventRuler.on(el, "complete", opts.oncomplete), 
             EventRuler.on(el, "incomplete", opts.onincomplete), EventRuler.on(el, "cleared", opts.oncleared), 
             EventRuler.on(el, "keydown", keydownEvent), EventRuler.on(el, "keypress", keypressEvent), 
-            EventRuler.on(el, "input", inputFallBackEvent), mobile || (EventRuler.on(el, "compositionstart", compositionStartEvent), 
-            EventRuler.on(el, "compositionupdate", compositionUpdateEvent), EventRuler.on(el, "compositionend", compositionEndEvent))), 
-            EventRuler.on(el, "setvalue", setValueEvent), "" !== el.inputmask._valueGet() || opts.clearMaskOnLostFocus === !1) {
+            EventRuler.on(el, "input", inputFallBackEvent)), EventRuler.on(el, "setvalue", setValueEvent), 
+            "" !== el.inputmask._valueGet() || opts.clearMaskOnLostFocus === !1) {
                 var initialValue = $.isFunction(opts.onBeforeMask) ? opts.onBeforeMask(el.inputmask._valueGet(), opts) || el.inputmask._valueGet() : el.inputmask._valueGet();
                 checkVal(el, !0, !1, initialValue.split(""));
                 var buffer = getBuffer().slice();
@@ -1135,7 +1123,7 @@
                 writeBuffer(el, buffer), document.activeElement === el && caret(el, seekNext(getLastValidPosition()));
             }
         }
-        var undoValue, compositionData, el, $el, maxLength, valueBuffer, isRTL = !1, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, mouseEnter = !0, inComposition = !1, EventRuler = {
+        var undoValue, el, $el, maxLength, valueBuffer, isRTL = !1, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, mouseEnter = !0, EventRuler = {
             on: function(input, eventName, eventHandler) {
                 var ev = function(e) {
                     if (void 0 === this.inputmask && "FORM" !== this.nodeName) {
@@ -1145,33 +1133,16 @@
                         if ("setvalue" === e.type || !(this.disabled || this.readOnly && !("keydown" === e.type && e.ctrlKey && 67 === e.keyCode || opts.tabThrough === !1 && e.keyCode === Inputmask.keyCode.TAB))) {
                             switch (e.type) {
                               case "input":
-                                if (skipInputEvent === !0 || inComposition === !0) return skipInputEvent = inComposition, 
-                                e.preventDefault();
+                                if (skipInputEvent === !0) return skipInputEvent = !1, e.preventDefault();
                                 break;
 
                               case "keydown":
-                                skipKeyPressEvent = !1, skipInputEvent = !1, inComposition = !1;
+                                skipKeyPressEvent = !1, skipInputEvent = !1;
                                 break;
 
                               case "keypress":
                                 if (skipKeyPressEvent === !0) return e.preventDefault();
                                 skipKeyPressEvent = !0;
-                                break;
-
-                              case "compositionstart":
-                                inComposition = !0;
-                                break;
-
-                              case "compositionupdate":
-                                skipInputEvent = !0;
-                                break;
-
-                              case "compositionend":
-                                inComposition = !1;
-                                break;
-
-                              case "cut":
-                                skipInputEvent = !0;
                                 break;
 
                               case "click":
@@ -1182,7 +1153,8 @@
                                     }, 0), !1;
                                 }
                             }
-                            return eventHandler.apply(this, arguments);
+                            var returnVal = eventHandler.apply(this, arguments);
+                            return returnVal === !1 && (e.preventDefault(), e.stopPropagation()), returnVal;
                         }
                         e.preventDefault();
                     }
@@ -1432,6 +1404,7 @@
     }, Inputmask.keyCode = {
         ALT: 18,
         BACKSPACE: 8,
+        BACKSPACE_SAFARI: 127,
         CAPS_LOCK: 20,
         COMMA: 188,
         COMMAND: 91,
@@ -1461,7 +1434,8 @@
         SPACE: 32,
         TAB: 9,
         UP: 38,
-        WINDOWS: 91
+        WINDOWS: 91,
+        X: 88
     };
     var ua = navigator.userAgent, mobile = /mobile/i.test(ua), iemobile = /iemobile/i.test(ua), iphone = /iphone/i.test(ua) && !iemobile;
     /android.*safari.*/i.test(ua) && !iemobile;
@@ -2062,7 +2036,7 @@
             }
         },
         email: {
-            mask: "*{1,64}[.*{1,64}][.*{1,64}][.*{1,64}]@*{1,64}[.*{2,64}][.*{2,6}][.*{1,2}]",
+            mask: "*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@*{1,63}[.*{1,63}][.*{1,63}][.*{1,63}]",
             greedy: !1,
             onBeforePaste: function(pastedValue, opts) {
                 return pastedValue = pastedValue.toLowerCase(), pastedValue.replace("mailto:", "");

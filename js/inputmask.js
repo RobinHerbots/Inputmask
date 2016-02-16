@@ -856,12 +856,21 @@
 			}
 
 			function stripValidPositions(start, end, nocheck, strict) {
+				function IsEnclosedStatic(pos) {
+					var posMatch = getMaskSet().validPositions[pos];
+					if (posMatch !== undefined && posMatch.match.fn === null) {
+						var prevMatch = getMaskSet().validPositions[pos - 1],
+							nextMatch = getMaskSet().validPositions[pos + 1];
+						return prevMatch !== undefined && nextMatch !== undefined;
+					}
+					return false;
+				}
 				var i, startPos = start;
 				getMaskSet().p = start; //needed for alternated position after overtype selection
 
 				for (i = startPos; i < end; i++) { //clear selection
 					if (getMaskSet().validPositions[i] !== undefined) {
-						if (nocheck === true || opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), strict, opts) !== false) {
+						if (nocheck === true || !IsEnclosedStatic(i) && opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), strict, opts) !== false) {
 							delete getMaskSet().validPositions[i];
 						}
 					}

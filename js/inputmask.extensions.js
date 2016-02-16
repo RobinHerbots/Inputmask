@@ -68,7 +68,9 @@ Optional extensions on the jquery.inputmask base
 				}
 			},
 			"email": {
-				mask: "*{1,64}[.*{1,64}][.*{1,64}][.*{1,64}]@*{1,64}[.*{2,64}][.*{2,6}][.*{1,2}]",
+			  //https://en.wikipedia.org/wiki/Domain_name#Domain_name_space
+				//should be extended with the toplevel domains at the end
+				mask: "*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@*{1,63}[.*{1,63}][.*{1,63}][.*{1,63}]",
 				greedy: false,
 				onBeforePaste: function(pastedValue, opts) {
 					pastedValue = pastedValue.toLowerCase();
