@@ -5,6 +5,7 @@
   "main": "./dist/inputmask/jquery.inputmask.js",
   "files": [
     "dist/inputmask/",
+    "extra/bindings",
     "extra/dependencyLibs/",
     "extra/phone-codes/",
     "dist/jquery.inputmask.bundle.js"
