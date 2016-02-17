@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.8-2
+* Version: 3.2.8-3
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -857,25 +857,35 @@
                 });
             }
             var valueGet, valueSet;
-            npt.inputmask.__valueGet || (Object.getOwnPropertyDescriptor && void 0 === npt.value ? (valueGet = function() {
-                return this.textContent;
-            }, valueSet = function(value) {
-                this.textContent = value;
-            }, Object.defineProperty(npt, "value", {
-                get: getter,
-                set: setter
-            })) : document.__lookupGetter__ && npt.__lookupGetter__("value") ? (valueGet = npt.__lookupGetter__("value"), 
-            valueSet = npt.__lookupSetter__("value"), npt.__defineGetter__("value", getter), 
-            npt.__defineSetter__("value", setter)) : (valueGet = function() {
-                return npt.value;
-            }, valueSet = function(value) {
-                npt.value = value;
-            }, patchValhook(npt.type), installNativeValueSetFallback(npt)), npt.inputmask.__valueGet = valueGet, 
-            npt.inputmask._valueGet = function(overruleRTL) {
-                return isRTL && overruleRTL !== !0 ? valueGet.call(this.el).split("").reverse().join("") : valueGet.call(this.el);
-            }, npt.inputmask.__valueSet = valueSet, npt.inputmask._valueSet = function(value, overruleRTL) {
-                valueSet.call(this.el, null === value || void 0 === value ? "" : overruleRTL !== !0 && isRTL ? value.split("").reverse().join("") : value);
-            });
+            if (!npt.inputmask.__valueGet) {
+                if (Object.getOwnPropertyDescriptor) if (void 0 === npt.value) valueGet = function() {
+                    return this.textContent;
+                }, valueSet = function(value) {
+                    this.textContent = value;
+                }, Object.defineProperty(npt, "value", {
+                    get: getter,
+                    set: setter,
+                    configurable: !0
+                }); else {
+                    var valueProperty = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(npt), "value");
+                    valueProperty && (valueGet = valueProperty.get, valueSet = valueProperty.set, Object.defineProperty(npt, "value", {
+                        get: getter,
+                        set: setter,
+                        configurable: !0
+                    }));
+                } else document.__lookupGetter__ && npt.__lookupGetter__("value") ? (valueGet = npt.__lookupGetter__("value"), 
+                valueSet = npt.__lookupSetter__("value"), npt.__defineGetter__("value", getter), 
+                npt.__defineSetter__("value", setter)) : (valueGet = function() {
+                    return npt.value;
+                }, valueSet = function(value) {
+                    npt.value = value;
+                }, patchValhook(npt.type), installNativeValueSetFallback(npt));
+                npt.inputmask.__valueGet = valueGet, npt.inputmask._valueGet = function(overruleRTL) {
+                    return isRTL && overruleRTL !== !0 ? valueGet.call(this.el).split("").reverse().join("") : valueGet.call(this.el);
+                }, npt.inputmask.__valueSet = valueSet, npt.inputmask._valueSet = function(value, overruleRTL) {
+                    valueSet.call(this.el, null === value || void 0 === value ? "" : overruleRTL !== !0 && isRTL ? value.split("").reverse().join("") : value);
+                };
+            }
         }
         function handleRemove(input, k, pos, strict) {
             function generalize() {
@@ -1215,11 +1225,12 @@
             el = actionObj.el, $el = $(el), maskset = el.inputmask.maskset, opts = el.inputmask.opts, 
             el.inputmask._valueSet(unmaskedvalue(el)), EventRuler.off(el);
             var valueProperty;
-            Object.getOwnPropertyDescriptor && (valueProperty = Object.getOwnPropertyDescriptor(el, "value")), 
-            valueProperty && valueProperty.get ? el.inputmask.__valueGet && Object.defineProperty(el, "value", {
+            Object.getOwnPropertyDescriptor ? (valueProperty = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), "value"), 
+            valueProperty && el.inputmask.__valueGet && Object.defineProperty(el, "value", {
                 get: el.inputmask.__valueGet,
-                set: el.inputmask.__valueSet
-            }) : document.__lookupGetter__ && el.__lookupGetter__("value") && el.inputmask.__valueGet && (el.__defineGetter__("value", el.inputmask.__valueGet), 
+                set: el.inputmask.__valueSet,
+                configurable: !0
+            })) : document.__lookupGetter__ && el.__lookupGetter__("value") && el.inputmask.__valueGet && (el.__defineGetter__("value", el.inputmask.__valueGet), 
             el.__defineSetter__("value", el.inputmask.__valueSet)), el.inputmask = void 0;
             break;
 

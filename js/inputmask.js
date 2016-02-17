@@ -2055,18 +2055,31 @@
 				}
 
 				if (!npt.inputmask.__valueGet) {
-					if (Object.getOwnPropertyDescriptor && npt.value === undefined) { // && npt.isContentEditable) {
-						valueGet = function() {
-							return this.textContent;
-						};
-						valueSet = function(value) {
-							this.textContent = value;
-						};
-
-						Object.defineProperty(npt, "value", {
-							get: getter,
-							set: setter
-						});
+					if (Object.getOwnPropertyDescriptor) {
+						if (npt.value === undefined) {
+							valueGet = function() {
+								return this.textContent;
+							};
+							valueSet = function(value) {
+								this.textContent = value;
+							};
+							Object.defineProperty(npt, "value", {
+								get: getter,
+								set: setter,
+								configurable: true
+							});
+						} else {
+							var valueProperty = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(npt), "value");
+							if (valueProperty) {
+								valueGet = valueProperty.get;
+								valueSet = valueProperty.set;
+								Object.defineProperty(npt, "value", {
+									get: getter,
+									set: setter,
+									configurable: true
+								});
+							}
+						}
 					} else if (document.__lookupGetter__ && npt.__lookupGetter__("value")) {
 						valueGet = npt.__lookupGetter__("value");
 						valueSet = npt.__lookupSetter__("value");
@@ -2765,14 +2778,15 @@
 						//restore the value property
 						var valueProperty;
 						if (Object.getOwnPropertyDescriptor) {
-							valueProperty = Object.getOwnPropertyDescriptor(el, "value");
-						}
-						if (valueProperty && valueProperty.get) {
-							if (el.inputmask.__valueGet) {
-								Object.defineProperty(el, "value", {
-									get: el.inputmask.__valueGet,
-									set: el.inputmask.__valueSet
-								});
+							valueProperty = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), "value");
+							if (valueProperty) {
+								if (el.inputmask.__valueGet) {
+									Object.defineProperty(el, "value", {
+										get: el.inputmask.__valueGet,
+										set: el.inputmask.__valueSet,
+										configurable: true
+									});
+								}
 							}
 						} else if (document.__lookupGetter__ && el.__lookupGetter__("value")) {
 							if (el.inputmask.__valueGet) {

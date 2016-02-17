@@ -2,8 +2,11 @@
 All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
+### Updates
+- patchValueProperty - enable native value property patch on IE10/IE11
 
 ## Fixed
+- AutoUnmask not working on IE11 #1187
 - Email mask not accepting valid emails #971
 - Deleting character from input with 'email' alias shifts all data #1052
 - Fix some events like paste & cut for Vanilla dependencyLib #1072
