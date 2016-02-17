@@ -876,6 +876,8 @@
 					}
 				}
 
+				//clear buffer 
+				resetMaskSet(true);
 				/*eslint-disable semi-spacing */
 				for (i = startPos + 1; i <= getLastValidPosition();) {
 					/*eslint-disable semi-spacing */
