@@ -876,7 +876,7 @@
 					}
 				}
 
-				//clear buffer 
+				//clear buffer
 				resetMaskSet(true);
 				/*eslint-disable semi-spacing */
 				for (i = startPos + 1; i <= getLastValidPosition();) {
@@ -2058,23 +2058,23 @@
 
 				if (!npt.inputmask.__valueGet) {
 					if (Object.getOwnPropertyDescriptor) {
-						if (npt.value === undefined) {
-							valueGet = function() {
-								return this.textContent;
-							};
-							valueSet = function(value) {
-								this.textContent = value;
-							};
+						var valueProperty = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(npt), "value");
+						if (valueProperty && valueProperty.get && valueProperty.set) {
+							valueGet = valueProperty.get;
+							valueSet = valueProperty.set;
 							Object.defineProperty(npt, "value", {
 								get: getter,
 								set: setter,
 								configurable: true
 							});
 						} else {
-							var valueProperty = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(npt), "value");
-							if (valueProperty) {
-								valueGet = valueProperty.get;
-								valueSet = valueProperty.set;
+							if (npt.tagName !== "INPUT") {
+								valueGet = function() {
+									return this.textContent;
+								};
+								valueSet = function(value) {
+									this.textContent = value;
+								};
 								Object.defineProperty(npt, "value", {
 									get: getter,
 									set: setter,
@@ -2088,7 +2088,8 @@
 
 						npt.__defineGetter__("value", getter);
 						npt.__defineSetter__("value", setter);
-					} else { //jquery.val
+					}
+					if (valueGet === undefined) { //jquery.val
 						valueGet = function() {
 							return npt.value;
 						};

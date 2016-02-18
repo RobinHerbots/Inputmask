@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.8-6
+* Version: 3.2.8-7
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -860,29 +860,31 @@
             }
             var valueGet, valueSet;
             if (!npt.inputmask.__valueGet) {
-                if (Object.getOwnPropertyDescriptor) if (void 0 === npt.value) valueGet = function() {
-                    return this.textContent;
-                }, valueSet = function(value) {
-                    this.textContent = value;
-                }, Object.defineProperty(npt, "value", {
-                    get: getter,
-                    set: setter,
-                    configurable: !0
-                }); else {
+                if (Object.getOwnPropertyDescriptor) {
                     var valueProperty = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(npt), "value");
-                    valueProperty && (valueGet = valueProperty.get, valueSet = valueProperty.set, Object.defineProperty(npt, "value", {
+                    valueProperty && valueProperty.get && valueProperty.set ? (valueGet = valueProperty.get, 
+                    valueSet = valueProperty.set, Object.defineProperty(npt, "value", {
+                        get: getter,
+                        set: setter,
+                        configurable: !0
+                    })) : "INPUT" !== npt.tagName && (valueGet = function() {
+                        return this.textContent;
+                    }, valueSet = function(value) {
+                        this.textContent = value;
+                    }, Object.defineProperty(npt, "value", {
                         get: getter,
                         set: setter,
                         configurable: !0
                     }));
-                } else document.__lookupGetter__ && npt.__lookupGetter__("value") ? (valueGet = npt.__lookupGetter__("value"), 
+                } else document.__lookupGetter__ && npt.__lookupGetter__("value") && (valueGet = npt.__lookupGetter__("value"), 
                 valueSet = npt.__lookupSetter__("value"), npt.__defineGetter__("value", getter), 
-                npt.__defineSetter__("value", setter)) : (valueGet = function() {
+                npt.__defineSetter__("value", setter));
+                void 0 === valueGet && (valueGet = function() {
                     return npt.value;
                 }, valueSet = function(value) {
                     npt.value = value;
-                }, patchValhook(npt.type), installNativeValueSetFallback(npt));
-                npt.inputmask.__valueGet = valueGet, npt.inputmask._valueGet = function(overruleRTL) {
+                }, patchValhook(npt.type), installNativeValueSetFallback(npt)), npt.inputmask.__valueGet = valueGet, 
+                npt.inputmask._valueGet = function(overruleRTL) {
                     return isRTL && overruleRTL !== !0 ? valueGet.call(this.el).split("").reverse().join("") : valueGet.call(this.el);
                 }, npt.inputmask.__valueSet = valueSet, npt.inputmask._valueSet = function(value, overruleRTL) {
                     valueSet.call(this.el, null === value || void 0 === value ? "" : overruleRTL !== !0 && isRTL ? value.split("").reverse().join("") : value);
