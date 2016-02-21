@@ -2768,7 +2768,7 @@
 
 						return isComplete(buffer) && actionObj.value === getBuffer().join("");
 					case "getemptymask":
-						return getBufferTemplate();
+						return getBufferTemplate().join("");
 					case "remove":
 						el = actionObj.el;
 						$el = $(el);
