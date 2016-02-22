@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 ### Updates
 - patchValueProperty - enable native value property patch on IE10/IE11
 
-## Fixed
+### Fixed
 - error occurs in safari 9.0.3 (11601.4.4) #1191
 - Can not clear value when select all and press BACKSPACE in some circumstance #1179
 - Email mask incorrectly including underscore #868 => allowed as not typed => result invalid

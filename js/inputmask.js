@@ -2050,7 +2050,7 @@
 						var $input = $(this),
 							input = this,
 							value = input.inputmask._valueGet();
-						if (value !== getBuffer().join("") && getLastValidPosition() > 0) {
+						if (value !== getBuffer().join("") /*&& getLastValidPosition() > 0*/) {
 							$input.trigger("setvalue");
 						}
 					});
