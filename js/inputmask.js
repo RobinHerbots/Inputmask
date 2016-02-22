@@ -2671,7 +2671,7 @@
 				EventRuler.on(el, "setvalue", setValueEvent);
 
 				//apply mask
-				if (el.inputmask._valueGet() !== "" || opts.clearMaskOnLostFocus === false) {
+				if (el.inputmask._valueGet() !== "" || opts.clearMaskOnLostFocus === false || document.activeElement === el) {
 					var initialValue = $.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask(el.inputmask._valueGet(), opts) || el.inputmask._valueGet()) : el.inputmask._valueGet();
 					checkVal(el, true, false, initialValue.split(""));
 					var buffer = getBuffer().slice();
@@ -2682,7 +2682,7 @@
 							resetMaskSet();
 						}
 					}
-					if (opts.clearMaskOnLostFocus) {
+					if (opts.clearMaskOnLostFocus && document.activeElement !== el) {
 						if (buffer.join("") === getBufferTemplate().join("")) {
 							buffer = [];
 						} else {
@@ -2768,7 +2768,7 @@
 
 						return isComplete(buffer) && actionObj.value === getBuffer().join("");
 					case "getemptymask":
-						return getBufferTemplate();
+						return getBufferTemplate().join("");
 					case "remove":
 						el = actionObj.el;
 						$el = $(el);
