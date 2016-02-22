@@ -2050,7 +2050,7 @@
 						var $input = $(this),
 							input = this,
 							value = input.inputmask._valueGet();
-						if (value !== getBuffer().join("") /*&& getLastValidPosition() > 0*/) {
+						if (value !== getBuffer().join("") /*&& getLastValidPosition() > 0*/ ) {
 							$input.trigger("setvalue");
 						}
 					});
@@ -2356,13 +2356,25 @@
 					ev = e.originalEvent || e,
 					$input = $(input),
 					inputValue = input.inputmask._valueGet(true),
-					caretPos = caret(input);
+					caretPos = caret(input),
+					tempValue;
+
+				if (isRTL) {
+					tempValue = caretPos.end;
+					caretPos.end = caretPos.begin;
+					caretPos.begin = tempValue;
+				}
 
 				var valueBeforeCaret = inputValue.substr(0, caretPos.begin),
 					valueAfterCaret = inputValue.substr(caretPos.end, inputValue.length);
 
-				if (valueBeforeCaret === getBufferTemplate().slice(0, caretPos.begin).join("")) valueBeforeCaret = "";
-				if (valueAfterCaret === getBufferTemplate().slice(caretPos.end).join("")) valueAfterCaret = "";
+				if (valueBeforeCaret === (isRTL ? getBufferTemplate().reverse() : getBufferTemplate()).slice(0, caretPos.begin).join("")) valueBeforeCaret = "";
+				if (valueAfterCaret === (isRTL ? getBufferTemplate().reverse() : getBufferTemplate()).slice(caretPos.end).join("")) valueAfterCaret = "";
+				if (isRTL) {
+					tempValue = valueBeforeCaret;
+					valueBeforeCaret = valueAfterCaret;
+					valueAfterCaret = tempValue;
+				}
 
 				if (window.clipboardData && window.clipboardData.getData) { // IE
 					inputValue = valueBeforeCaret + window.clipboardData.getData("Text") + valueAfterCaret;
