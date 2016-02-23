@@ -2518,7 +2518,7 @@
 							caret(input, opts.numericInput ? seekNext($.inArray(opts.radixPoint, getBuffer())) : $.inArray(opts.radixPoint, getBuffer()));
 						} else {
 							var clickPosition = selectedCaret.begin,
-								lvclickPosition = getLastValidPosition(clickPosition),
+								lvclickPosition = getLastValidPosition(clickPosition, true),
 								lastPosition = seekNext(lvclickPosition);
 
 							if (clickPosition < lastPosition) {
@@ -2815,16 +2815,14 @@
 					case "getmetadata":
 						if ($.isArray(maskset.metadata)) {
 							//find last alternation
-							var alternation, lvp = getLastValidPosition();
+							var alternation, lvp = getLastValidPosition(undefined, true);
 							for (var firstAlt = lvp; firstAlt >= 0; firstAlt--) {
 								if (getMaskSet().validPositions[firstAlt] && getMaskSet().validPositions[firstAlt].alternation !== undefined) {
 									alternation = getMaskSet().validPositions[firstAlt].alternation;
 									break;
 								}
 							}
-							if (alternation !== undefined) {
-								return maskset.metadata[getMaskSet().validPositions[lvp].locator[alternation]];
-							} else return maskset.metadata[0];
+							return alternation !== undefined ? maskset.metadata[getMaskSet().validPositions[firstAlt].locator[alternation]] : [];
 						}
 
 						return maskset.metadata;
