@@ -442,12 +442,7 @@ Optional extensions on the jquery.inputmask base
 
 					if (isFinite(processValue)) {
 						if (opts.max !== null && isFinite(opts.max)) {
-							processValue = parseFloat(processValue) > parseFloat(opts.max) ? opts.max : processValue;
-							isValid = opts.postFormat((opts.prefix + processValue).split(""), 0, true, opts);
-						}
-						if (opts.min !== null && isFinite(opts.min)) {
-							processValue = parseFloat(processValue) < parseFloat(opts.min) ? opts.min : processValue;
-							isValid = opts.postFormat((opts.prefix + processValue).split(""), 0, true, opts);
+							isValid = parseFloat(processValue) <= parseFloat(opts.max);
 						}
 					}
 
@@ -626,6 +621,7 @@ Optional extensions on the jquery.inputmask base
 						positionInput === opts.negationSymbol.front ||
 						positionInput === opts.negationSymbol.back;
 
+					return canClear;
 					if (canClear && isFinite(positionInput)) {
 						var matchRslt,
 							radixPos = $.inArray(opts.radixPoint, maskset.buffer);
