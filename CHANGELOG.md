@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
+
+### Added
+- VIN mask #1199
+
 ### Updates
 - improve getmetadata
 - patchValueProperty - enable native value property patch on IE10/IE11

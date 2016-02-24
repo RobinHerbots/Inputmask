@@ -68,7 +68,7 @@ Optional extensions on the jquery.inputmask base
 				}
 			},
 			"email": {
-			  //https://en.wikipedia.org/wiki/Domain_name#Domain_name_space
+				//https://en.wikipedia.org/wiki/Domain_name#Domain_name_space
 				//https://en.wikipedia.org/wiki/Hostname#Restrictions_on_valid_host_names
 				//should be extended with the toplevel domains at the end
 				mask: "*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@-{1,63}[.-{1,63}][.-{1,63}][.-{1,63}]",
@@ -95,6 +95,25 @@ Optional extensions on the jquery.inputmask base
 			},
 			"mac": {
 				mask: "##:##:##:##:##:##"
+			},
+			"vin": {
+				//https://en.wikipedia.org/wiki/Vehicle_identification_number
+				// see issue #1199
+				mask: "V{8}vV{4}9{4}",
+				definitions: {
+					'V': {
+						validator: "[A-HJ-NPR-Za-hj-npr-z\\d]",
+						cardinality: 1,
+						casing: "upper"
+					},
+					'v': {
+						validator: "[Xx\\d]",
+						cardinality: 1,
+						casing: "upper"
+					}
+				},
+				clearIncomplete: true,
+				autoUnmask: true
 			}
 		});
 		return Inputmask;
