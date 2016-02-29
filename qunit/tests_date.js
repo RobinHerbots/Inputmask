@@ -304,4 +304,89 @@ define([
 
 
 	});
+
+	qunit.test("inputmask(\"dd/mm/yyyy\", { yearrange: { minyear: 1900, maxyear: 2016 } })", function(assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("dd/mm/yyyy", {
+			yearrange: {
+				minyear: 1900,
+				maxyear: 2016
+			}
+		}).mask(testmask);
+
+		testmask.focus();
+
+		$("#testmask").Type("23373");
+		assert.equal(testmask.value, "23/03/1973", "Result " + testmask.value);
+	});
+
+	qunit.test("inputmask(\"dd/mm/yyyy\", { yearrange: { minyear: 1900, maxyear: 2017 } })", function(assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("dd/mm/yyyy", {
+			yearrange: {
+				minyear: 1900,
+				maxyear: 2017
+			}
+		}).mask(testmask);
+
+		testmask.focus();
+
+		$("#testmask").Type("23373");
+		assert.equal(testmask.value, "23/03/1973", "Result " + testmask.value);
+	});
+
+	qunit.test("inputmask(\"dd/mm/yyyy\", { yearrange: { minyear: 1900, maxyear: 2018 } })", function(assert) {
+			var $fixture = $("#qunit-fixture");
+			$fixture.append('<input type="text" id="testmask" />');
+			var testmask = document.getElementById("testmask");
+			Inputmask("dd/mm/yyyy", {
+				yearrange: {
+					minyear: 1900,
+					maxyear: 2018
+				}
+			}).mask(testmask);
+
+			testmask.focus();
+
+			$("#testmask").Type("23373");
+			assert.equal(testmask.value, "23/03/1973", "Result " + testmask.value);
+	});
+
+	qunit.test("inputmask(\"dd/mm/yyyy\", { yearrange: { minyear: 1900, maxyear: 2019 } })", function(assert) {
+			var $fixture = $("#qunit-fixture");
+			$fixture.append('<input type="text" id="testmask" />');
+			var testmask = document.getElementById("testmask");
+			Inputmask("dd/mm/yyyy", {
+				yearrange: {
+					minyear: 1900,
+					maxyear: 2019
+				}
+			}).mask(testmask);
+
+			testmask.focus();
+
+			$("#testmask").Type("23373");
+			assert.equal(testmask.value, "23/03/1973", "Result " + testmask.value);
+	});
+
+	qunit.test("inputmask(\"dd/mm/yyyy\", { yearrange: { minyear: 1900, maxyear: 2018 } }) -- 2012", function(assert) {
+			var $fixture = $("#qunit-fixture");
+			$fixture.append('<input type="text" id="testmask" />');
+			var testmask = document.getElementById("testmask");
+			Inputmask("dd/mm/yyyy", {
+				yearrange: {
+					minyear: 1900,
+					maxyear: 2018
+				}
+			}).mask(testmask);
+
+			testmask.focus();
+
+			$("#testmask").Type("23312");
+			assert.equal(testmask.value, "23/03/2012", "Result " + testmask.value);
+	});
 });

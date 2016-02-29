@@ -107,7 +107,14 @@ Optional extensions on the jquery.inputmask base
 						var maxxYear = maxYearPrefix + maxYearPostfix;
 						return minyear > maxxYear ? minyear : maxxYear;
 					}
-
+					if (minyear <= currentyear && currentyear <= maxyear) {
+						var currentYearPrefix = currentyear.toString().slice(0, 2);
+						while (maxyear < currentYearPrefix + hint) {
+							currentYearPrefix--;
+						}
+						var currentYearAndHint = currentYearPrefix + hint;
+						return currentYearAndHint < minyear ? minyear : currentYearAndHint;
+					}
 					return currentyear;
 				},
 				onKeyDown: function(e, buffer, caretPos, opts) {
