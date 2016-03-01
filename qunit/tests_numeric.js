@@ -364,7 +364,7 @@ define([
 		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
 		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
 		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
-		testmask.blur();
+		$(testmask).trigger("blur");
 		setTimeout(function() {
 			assert.equal(testmask.value, "12,345", "Result " + testmask.value);
 			done();
@@ -393,7 +393,7 @@ define([
 		assert.equal(testmask.value, "12,345.789", "Result " + testmask.value);
 
 	});
-	qunit.test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - input 12345.123 + replace .123 => .789", function(assert) {
+	qunit.test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - input 12345.123 + select replace .123 => .789", function(assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
@@ -808,7 +808,7 @@ define([
 
 		testmask.focus();
 		$("#testmask").Type("123.1");
-		testmask.blur();
+		$(testmask).trigger("blur");
 		setTimeout(function() {
 			assert.equal(testmask.value, "123.1", "Result " + testmask.value);
 			done();
@@ -827,7 +827,7 @@ define([
 
 		testmask.focus();
 		$("#testmask").Type("123.1");
-		testmask.blur();
+		$(testmask).trigger("blur");
 		setTimeout(function() {
 			assert.equal(testmask.value, "123.100", "Result " + testmask.value);
 			done();
@@ -863,7 +863,7 @@ define([
 
 		testmask.focus();
 		$("#testmask").Type("-0");
-		testmask.blur();
+		$(testmask).trigger("blur");
 		setTimeout(function() {
 			assert.equal(testmask.value, "", "Result " + testmask.value);
 			done();
@@ -905,7 +905,8 @@ define([
 	});
 
 	qunit.test("inputmask(\"decimal\") - -0 - ManRueda", function(assert) {
-		var $fixture = $("#qunit-fixture");
+		var done = assert.async(),
+			$fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
 		Inputmask('decimal', {
@@ -918,10 +919,11 @@ define([
 		}).mask(testmask);
 
 		$("#testmask").val("-0");
-		testmask.blur();
-
-		assert.equal(testmask.value, "0", "Result " + testmask.value);
-
+		$(testmask).trigger("blur");
+		setTimeout(function() {
+			assert.equal(testmask.value, "0", "Result " + testmask.value);
+			done();
+		}, 0);
 	});
 
 	qunit.test("inputmask(\"integer\") - -5.000,77 - DrSammyD", function(assert) {
@@ -933,7 +935,7 @@ define([
 		}).mask(testmask);
 
 		$("#testmask").val("-5.000,77");
-		testmask.blur();
+		$(testmask).trigger("blur");
 
 		assert.equal(testmask.value, "-5000", "Result " + testmask.value);
 
@@ -1074,7 +1076,7 @@ define([
 		}).mask(testmask);
 
 		$("#testmask").val(8100000.00);
-		testmask.blur();
+		$(testmask).trigger("blur");
 
 		assert.equal(testmask.value, "810.000,00", "Result " + testmask.value);
 
@@ -1304,7 +1306,7 @@ define([
 		}).mask(testmask);
 
 		testmask.focus();
-		testmask.blur();
+		$(testmask).trigger("blur");
 		setTimeout(function() {
 			assert.equal($("#testmask")[0].inputmask._valueGet(), "$ 1,000.00", "Result " + $("#testmask")[0].inputmask._valueGet());
 			done();
@@ -1321,11 +1323,14 @@ define([
 		}).mask(testmask);
 
 		testmask.focus();
-		$("#testmask").trigger("click");
+		$("#testmask").click();
 		setTimeout(function() {
 			$("#testmask").Type("1234");
-			assert.equal($("#testmask")[0].inputmask._valueGet(), "$ 1,000.00", "Result " + $("#testmask")[0].inputmask._valueGet());
-			done();
+			$("#testmask").trigger("blur");
+			setTimeout(function() {
+				assert.equal($("#testmask")[0].inputmask._valueGet(), "$ 1,000.00", "Result " + $("#testmask")[0].inputmask._valueGet());
+				done();
+			}, 0);
 		}, 5);
 	});
 
@@ -1598,7 +1603,7 @@ define([
 		var testmask = document.getElementById("testmask");
 		Inputmask("currency").mask(testmask);
 		$("#testmask").Type("123");
-		var isValid  =Inputmask("currency").isValid(testmask.value);
+		var isValid = Inputmask("currency").isValid(testmask.value);
 		assert.equal(isValid, true, "Result " + isValid);
 	});
 	qunit.test("currency alias - $ 99,999,999.00 - isvalid - ivodopyanov", function(assert) {
@@ -1607,7 +1612,20 @@ define([
 		var testmask = document.getElementById("testmask");
 		Inputmask("currency").mask(testmask);
 		$("#testmask").Type("$ 99,999,999.00");
-		var isValid  =Inputmask("currency").isValid(testmask.value);
+		var isValid = Inputmask("currency").isValid(testmask.value);
 		assert.equal(isValid, true, "Result " + isValid);
+	});
+
+	qunit.test("numeric alias - digits 2 type 0.12 - gharlan", function(assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("numeric", {
+			digits: 2
+		}).mask(testmask);
+		$("#testmask").Type("0.12");
+		$.caret(testmask, 0, 1);
+		$("#testmask").Type("1");
+		assert.equal($("#testmask")[0].inputmask._valueGet(), "1.12", "Result " + $("#testmask")[0].inputmask._valueGet());
 	});
 });

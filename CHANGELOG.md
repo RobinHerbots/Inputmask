@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - VIN mask #1199
 
 ### Updates
+- Can not change integer part when it is "0" #1192
 - change funtionality of postValidation => result may be true|false
 - improve getmetadata
 - patchValueProperty - enable native value property patch on IE10/IE11

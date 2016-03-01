@@ -805,8 +805,8 @@
 				return (before !== -1 && (closestTo - before) > 1) || after < closestTo ? before : after;
 			}
 
-			function setValidPosition(pos, validTest, fromSetValid) {
-				if (opts.insertMode && getMaskSet().validPositions[pos] !== undefined && fromSetValid === undefined) {
+			function setValidPosition(pos, validTest, fromSetValid, isSelection) {
+				if (isSelection || (opts.insertMode && getMaskSet().validPositions[pos] !== undefined && fromSetValid === undefined)) {
 					//reposition & revalidate others
 					var positionsClone = $.extend(true, {}, getMaskSet().validPositions),
 						lvp = getLastValidPosition(),
@@ -1277,7 +1277,16 @@
 			}
 
 			function isValid(pos, c, strict, fromSetValid) { //strict true ~ no correction or autofill
+				function isSelection(posObj) {
+					return isRTL ? (posObj.begin - posObj.end) > 1 || ((posObj.begin - posObj.end) === 1 && opts.insertMode) :
+						(posObj.end - posObj.begin) > 1 || ((posObj.end - posObj.begin) === 1 && opts.insertMode);
+				}
 				strict = strict === true; //always set a value to strict to prevent possible strange behavior in the extensions
+
+				var maskPos = pos;
+				if (pos.begin != undefined) { //position was a position object - used to handle a delete by typing over a selection
+					maskPos = isRTL && !isSelection(pos) ? pos.end : pos.begin;
+				}
 
 				function _isValid(position, c, strict, fromSetValid) {
 					var rslt = false;
@@ -1359,7 +1368,7 @@
 
 							if (!setValidPosition(validatedPos, $.extend({}, tst, {
 									"input": casing(elem, test)
-								}), fromSetValid)) {
+								}), fromSetValid, isSelection(pos))) {
 								rslt = false;
 							}
 							return false; //break from $.each
@@ -1515,14 +1524,14 @@
 				var buffer = getBuffer();
 
 				//find previous valid
-				for (var pndx = pos - 1; pndx > -1; pndx--) {
+				for (var pndx = maskPos - 1; pndx > -1; pndx--) {
 					if (getMaskSet().validPositions[pndx]) {
 						break;
 					}
 				}
 				////fill missing nonmask and valid placeholders
 				pndx++;
-				for (; pndx < pos; pndx++) {
+				for (; pndx < maskPos; pndx++) {
 					//console.log("missing " + pndx + " " + buffer[pndx] + " ismask " + isMask(pndx) + " plchldr " + getPlaceholder(pndx) + " nrt " + getTests(pndx).len);
 					if (getMaskSet().validPositions[pndx] === undefined && (((!isMask(pndx) || buffer[pndx] !== getPlaceholder(pndx)) && getTests(pndx).length > 1) || (buffer[pndx] === opts.radixPoint || buffer[pndx] === "0" && $.inArray(opts.radixPoint, buffer) < pndx))) //special case for decimals ~ = placeholder but yet valid input
 					{
@@ -1531,13 +1540,14 @@
 					}
 				}
 
-				var maskPos = pos,
-					result = false,
+				var result = false,
 					positionsClone = $.extend(true, {}, getMaskSet().validPositions); //clone the currentPositions
 
-				//if (fromSetValid && maskPos >= getMaskLength()) {
-				//		resetMaskSet(true); //masklenght can be altered on the process => reset to get the actual length
-				//}
+				if (isSelection(pos)) {
+					handleRemove(undefined, Inputmask.keyCode.DELETE, pos, true);
+					maskPos = getMaskSet().p;
+				}
+
 				if (maskPos < getMaskLength()) {
 					result = _isValid(maskPos, c, strict, fromSetValid);
 					if ((!strict || fromSetValid === true) && result === false) {
@@ -1562,7 +1572,7 @@
 					}
 				}
 				if (result === false && opts.keepStatic) { //try fuzzy alternator logic
-					result = alternate(pos, c, strict, fromSetValid);
+					result = alternate(maskPos, c, strict, fromSetValid);
 				}
 				if (result === true) {
 					result = {
@@ -1571,6 +1581,10 @@
 				}
 				if ($.isFunction(opts.postValidation) && result !== false && !strict && fromSetValid !== true) {
 					result = opts.postValidation(getBuffer(true), result, opts) ? result : false;
+				}
+
+				if (result.pos === undefined) {
+					result.pos = maskPos;
 				}
 
 				if (result === false) {
@@ -1895,11 +1909,6 @@
 					}
 				}
 				return complete;
-			}
-
-			function isSelection(begin, end) {
-				return isRTL ? (begin - end) > 1 || ((begin - end) === 1 && opts.insertMode) :
-					(end - begin) > 1 || ((end - begin) === 1 && opts.insertMode);
 			}
 
 			var EventRuler = {
@@ -2266,28 +2275,10 @@
 							} : caret(input),
 							forwardPosition, c = String.fromCharCode(k);
 
-						//should we clear a possible selection??
-						var isSlctn = isSelection(pos.begin, pos.end);
-						if (isSlctn) {
-							getMaskSet().undoPositions = $.extend(true, {}, getMaskSet().validPositions); //init undobuffer for recovery when not valid
-							handleRemove(input, Inputmask.keyCode.DELETE, pos, true);
-							pos.begin = getMaskSet().p;
-							if (!opts.insertMode) { //preserve some space
-								opts.insertMode = !opts.insertMode;
-								setValidPosition(pos.begin, strict);
-								opts.insertMode = !opts.insertMode;
-							}
-							isSlctn = !opts.multi;
-						}
-
 						getMaskSet().writeOutBuffer = true;
-						var p = isRTL && !isSlctn ? pos.end : pos.begin;
-						var valResult = isValid(p, c, strict);
+						var valResult = isValid(pos, c, strict);
 						if (valResult !== false) {
-							if (valResult !== true) {
-								p = valResult.pos !== undefined ? valResult.pos : p; //set new position from isValid
-								c = valResult.c !== undefined ? valResult.c : c; //set new char from isValid
-							}
+							var p = valResult.pos; //set new position from isValid
 							resetMaskSet(true);
 							if (valResult.caret !== undefined) {
 								forwardPosition = valResult.caret;
@@ -2313,13 +2304,7 @@
 										if (isComplete(buffer) === true) $input.trigger("complete");
 									}, 0);
 								}
-							} else if (isSlctn) {
-								getMaskSet().buffer = undefined;
-								getMaskSet().validPositions = getMaskSet().undoPositions;
 							}
-						} else if (isSlctn) {
-							getMaskSet().buffer = undefined;
-							getMaskSet().validPositions = getMaskSet().undoPositions;
 						}
 
 						if (opts.showTooltip) { //update tooltip
