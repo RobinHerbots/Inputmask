@@ -78,6 +78,7 @@ Optional extensions on the jquery.inputmask base
 						mask += "~{1," + opts.integerDigits + "}";
 					} else mask += "~{" + opts.integerDigits + "}";
 					if (opts.digits !== undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0)) {
+						if(opts.decimalProtect) opts.radixPointDefinitionSymbol = ":";
 						if (opts.digitsOptional) {
 							mask += "[" + (opts.decimalProtect ? ":" : opts.radixPoint) + ";{1," + opts.digits + "}]";
 						} else mask += (opts.decimalProtect ? ":" : opts.radixPoint) + ";{" + opts.digits + "}";

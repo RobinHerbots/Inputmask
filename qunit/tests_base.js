@@ -278,6 +278,7 @@ define([
 		assert.equal(testmask.value, "123", "Result " + testmask.value);
 	});
 
+
 	qunit.test("Intergroup selection - dhilt", function(assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
@@ -288,6 +289,19 @@ define([
 		$("#testmask").Type("23314");
 
 		$.caret(testmask, 4, 7);
+		$("#testmask").SendKey("6");
+		assert.equal(testmask.value, "23/03/2014", "Result " + testmask.value);
+	});
+	qunit.test("Intergroup selection - dhilt", function(assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("dd/mm/yyyy").mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("23314");
+
+		$.caret(testmask, 4, 6);
 		$("#testmask").SendKey("6");
 		assert.equal(testmask.value, "23/06/y014", "Result " + testmask.value);
 	});

@@ -20,7 +20,7 @@
 			//jquery plugin
 			$.fn.inputmask = function(fn, options) {
 				var nptmask, input = this[0];
-				options = options || {};
+				if (options === undefined) options = {};
 				if (typeof fn === "string") {
 					switch (fn) {
 						case "unmaskedvalue":

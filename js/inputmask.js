@@ -86,6 +86,7 @@
 				undoOnEscape: true, //pressing escape reverts the value to the value before focus
 				//numeric basic properties
 				radixPoint: "", //".", // | ","
+				radixPointDefinitionSymbol: undefined, //set the radixPoint definitionSymbol ~ used for awareness of the radixpoint
 				groupSeparator: "", //",", // | "."
 				radixFocus: false, //position caret to radixpoint on initial click
 				//numeric basic properties
@@ -833,7 +834,7 @@
 									var result = isValid(posMatch, t.input, true, true);
 									valid = result !== false;
 									j = (result.caret || result.insert) ? getLastValidPosition() : posMatch;
-									break;
+									if (valid) break;
 								} else {
 									valid = t.match.fn == null;
 									if (prevPosMatch === posMatch) break; //prevent endless loop
@@ -911,7 +912,6 @@
 						delete getMaskSet().validPositions[i];
 					}
 				}
-
 				resetMaskSet(true);
 			}
 
@@ -1521,8 +1521,6 @@
 					}
 				}
 				//Check for a nonmask before the pos
-				var buffer = getBuffer();
-
 				//find previous valid
 				for (var pndx = maskPos - 1; pndx > -1; pndx--) {
 					if (getMaskSet().validPositions[pndx]) {
@@ -1531,12 +1529,12 @@
 				}
 				////fill missing nonmask and valid placeholders
 				pndx++;
+				var testTemplate;
 				for (; pndx < maskPos; pndx++) {
-					//console.log("missing " + pndx + " " + buffer[pndx] + " ismask " + isMask(pndx) + " plchldr " + getPlaceholder(pndx) + " nrt " + getTests(pndx).len);
-					if (getMaskSet().validPositions[pndx] === undefined && (((!isMask(pndx) || buffer[pndx] !== getPlaceholder(pndx)) && getTests(pndx).length > 1) || (buffer[pndx] === opts.radixPoint || buffer[pndx] === "0" && $.inArray(opts.radixPoint, buffer) < pndx))) //special case for decimals ~ = placeholder but yet valid input
-					{
-						//console.log("inject " + pndx + " " + buffer[pndx]);
-						_isValid(pndx, buffer[pndx], true, fromSetValid);
+					getBuffer();
+					if (getMaskSet().validPositions[pndx] === undefined && ((testTemplate = getTestTemplate(pndx)).match.def == opts.radixPointDefinitionSymbol || !isMask(pndx, true) ||
+							($.inArray(opts.radixPoint, getBuffer()) < pndx && testTemplate.match.fn && testTemplate.match.fn.test(getPlaceholder(pndx), getMaskSet(), pndx, false, opts)))) {
+						_isValid(pndx, testTemplate.match.placeholder || (testTemplate.match.fn == null ? testTemplate.match.def : getPlaceholder(pndx)), true, fromSetValid);
 					}
 				}
 
@@ -1544,7 +1542,7 @@
 					positionsClone = $.extend(true, {}, getMaskSet().validPositions); //clone the currentPositions
 
 				if (isSelection(pos)) {
-					handleRemove(undefined, Inputmask.keyCode.DELETE, pos, true);
+					handleRemove(undefined, Inputmask.keyCode.DELETE, pos);
 					maskPos = getMaskSet().p;
 				}
 

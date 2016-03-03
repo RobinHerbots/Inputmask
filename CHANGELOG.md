@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 - patchValueProperty - enable native value property patch on IE10/IE11
 
 ### Fixed
+- "[object Object]" value after `$element.inputmask('setvalue', '')` call #1208
 - Paste does not work properly when using numericInput #1195
 - error occurs in safari 9.0.3 (11601.4.4) #1191
 - Can not clear value when select all and press BACKSPACE in some circumstance #1179

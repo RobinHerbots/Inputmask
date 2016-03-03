@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.8-9
+* Version: 3.2.8-11
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery"), require("./inputmask")) : factory(window.dependencyLib || jQuery, window.Inputmask);
@@ -76,6 +76,23 @@
         },
         mac: {
             mask: "##:##:##:##:##:##"
+        },
+        vin: {
+            mask: "V{8}vV{4}9{4}",
+            definitions: {
+                V: {
+                    validator: "[A-HJ-NPR-Za-hj-npr-z\\d]",
+                    cardinality: 1,
+                    casing: "upper"
+                },
+                v: {
+                    validator: "[Xx\\d]",
+                    cardinality: 1,
+                    casing: "upper"
+                }
+            },
+            clearIncomplete: !0,
+            autoUnmask: !0
         }
     }), Inputmask;
 });
