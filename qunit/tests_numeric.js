@@ -84,7 +84,6 @@ define([
 
 		testmask.focus();
 		$("#testmask").Type("00000");
-		$(testmask).trigger("blur");
 		assert.equal($("#testmask")[0].inputmask._valueGet(), "0", "Result " + testmask.value);
 
 	});
@@ -1668,5 +1667,23 @@ define([
 		$.caret(testmask, 0, 1);
 		$("#testmask").Type("5");
 		assert.equal($("#testmask")[0].inputmask._valueGet(), "50,00", "Result " + $("#testmask")[0].inputmask._valueGet());
+	});
+	qunit.test("currency numericInput true - type 10020 - jaisonerick", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("currency", {
+			allowPlus: false,
+			allowMinus: false,
+			rightAlign: false,
+			groupSeparator: '.',
+			radixPoint: ',',
+			numericInput: true,
+			digits: 2,
+			prefix: 'R$ ',
+			unmaskAsNumber: false
+		}).mask(testmask);
+		$("#testmask").Type("10020");
+		assert.equal($(testmask).val(), "R$ 100,20", "Result " + $(testmask).val());
 	});
 });

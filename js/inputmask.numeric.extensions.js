@@ -363,7 +363,7 @@
 				return false;
 			},
 			radixHandler: function (chrs, maskset, pos, strict, opts) {
-				if (!strict) {
+				if (!strict && opts.numericInput !== true) {
 					if ($.inArray(chrs, [",", "."]) !== -1) chrs = opts.radixPoint;
 					if (chrs === opts.radixPoint && (opts.digits !== undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0))) {
 						var radixPos = $.inArray(opts.radixPoint, maskset.buffer),
@@ -393,26 +393,30 @@
 				return false;
 			},
 			leadingZeroHandler: function (chrs, maskset, pos, strict, opts) {
-				if (opts.numericInput === true) {
-					if (maskset.buffer[maskset.buffer.length - opts.prefix.length - 1] === "0") {
-						return {
-							"pos": pos,
-							"remove": maskset.buffer.length - opts.prefix.length - 1
-						};
-					}
-				} else {
-					var radixPosition = $.inArray(opts.radixPoint, maskset.buffer),
-						matchRslt = maskset.buffer.slice(0, radixPosition !== -1 ? radixPosition : undefined).join("").match(opts.regex.integerNPart(opts));
-					if (matchRslt && !strict && (radixPosition === -1 || pos <= radixPosition)) {
-						if (matchRslt["0"].indexOf(opts.placeholder !== "" ? opts.placeholder.charAt(0) : "0") === 0 && matchRslt.index + 1 === pos) {
-							maskset.buffer.splice(matchRslt.index, 1);
-							pos = matchRslt.index;
+				if (!strict) {
+					if (opts.numericInput === true) {
+						var buffer = maskset.buffer.slice("").reverse();
+						var char = buffer[opts.prefix.length];
+						if (char === "0") {
 							return {
 								"pos": pos,
-								"remove": matchRslt.index
+								"remove": buffer.length - opts.prefix.length - 1
 							};
-						} else if (chrs === "0" && pos <= matchRslt.index && matchRslt["0"] !== opts.groupSeparator) {
-							return false;
+						}
+					} else {
+						var radixPosition = $.inArray(opts.radixPoint, maskset.buffer),
+							matchRslt = maskset.buffer.slice(0, radixPosition !== -1 ? radixPosition : undefined).join("").match(opts.regex.integerNPart(opts));
+						if (matchRslt && (radixPosition === -1 || pos <= radixPosition)) {
+							if (matchRslt["0"].indexOf(opts.placeholder !== "" ? opts.placeholder.charAt(0) : "0") === 0 && matchRslt.index + 1 === pos) {
+								maskset.buffer.splice(matchRslt.index, 1);
+								pos = matchRslt.index;
+								return {
+									"pos": pos,
+									"remove": matchRslt.index
+								};
+							} else if (chrs === "0" && pos <= matchRslt.index && matchRslt["0"] !== opts.groupSeparator) {
+								return false;
+							}
 						}
 					}
 				}

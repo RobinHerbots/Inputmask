@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.8-16
+* Version: 3.2.8-17
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery"), require("./inputmask")) : factory(window.dependencyLib || jQuery, window.Inputmask);
@@ -186,7 +186,7 @@
                 return !1;
             },
             radixHandler: function(chrs, maskset, pos, strict, opts) {
-                if (!strict && (-1 !== $.inArray(chrs, [ ",", "." ]) && (chrs = opts.radixPoint), 
+                if (!strict && opts.numericInput !== !0 && (-1 !== $.inArray(chrs, [ ",", "." ]) && (chrs = opts.radixPoint), 
                 chrs === opts.radixPoint && void 0 !== opts.digits && (isNaN(opts.digits) || parseInt(opts.digits) > 0))) {
                     var radixPos = $.inArray(opts.radixPoint, maskset.buffer), integerValue = maskset.buffer.join("").match(opts.regex.integerPart(opts));
                     if (-1 !== radixPos && maskset.validPositions[radixPos]) return maskset.validPositions[radixPos - 1] ? {
@@ -205,14 +205,15 @@
                 return !1;
             },
             leadingZeroHandler: function(chrs, maskset, pos, strict, opts) {
-                if (opts.numericInput === !0) {
-                    if ("0" === maskset.buffer[maskset.buffer.length - opts.prefix.length - 1]) return {
+                if (!strict) if (opts.numericInput === !0) {
+                    var buffer = maskset.buffer.slice("").reverse(), char = buffer[opts.prefix.length];
+                    if ("0" === char) return {
                         pos: pos,
-                        remove: maskset.buffer.length - opts.prefix.length - 1
+                        remove: buffer.length - opts.prefix.length - 1
                     };
                 } else {
                     var radixPosition = $.inArray(opts.radixPoint, maskset.buffer), matchRslt = maskset.buffer.slice(0, -1 !== radixPosition ? radixPosition : void 0).join("").match(opts.regex.integerNPart(opts));
-                    if (matchRslt && !strict && (-1 === radixPosition || radixPosition >= pos)) {
+                    if (matchRslt && (-1 === radixPosition || radixPosition >= pos)) {
                         if (0 === matchRslt[0].indexOf("" !== opts.placeholder ? opts.placeholder.charAt(0) : "0") && matchRslt.index + 1 === pos) return maskset.buffer.splice(matchRslt.index, 1), 
                         pos = matchRslt.index, {
                             pos: pos,
