@@ -37,7 +37,7 @@ Inputmask("mac").mask(selector);
 An VIN mask for entering valid VIN codes.
 
 ```javascript
-  Inputmask("vin").mask(selector);
+Inputmask("vin").mask(selector);
 ```
 
 You can find/modify/extend these aliases in the inputmask.extensions.js
