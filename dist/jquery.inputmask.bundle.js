@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.8-15
+* Version: 3.2.8-16
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -1121,7 +1121,7 @@
                 checkVal(el, !0, !1, initialValue.split(""));
                 var buffer = getBuffer().slice();
                 undoValue = buffer.join(""), isComplete(buffer) === !1 && opts.clearIncomplete && resetMaskSet(), 
-                opts.clearMaskOnLostFocus && document.activeElement !== el && (buffer.join("") === getBufferTemplate().join("") ? buffer = [] : clearOptionalTail(buffer)), 
+                opts.clearMaskOnLostFocus && document.activeElement !== el && (-1 == getLastValidPosition() ? buffer = [] : clearOptionalTail(buffer)), 
                 writeBuffer(el, buffer), document.activeElement === el && caret(el, seekNext(getLastValidPosition()));
             }
         }
@@ -2183,7 +2183,7 @@
                     if (isNegative = null !== isNegative && 1 === isNegative.length, processValue = processValue.replace(new RegExp("[-" + Inputmask.escapeRegex(opts.negationSymbol.front) + "]", "g"), ""), 
                     processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.negationSymbol.back) + "$"), ""), 
                     processValue = processValue === opts.negationSymbol.front ? processValue + "0" : processValue, 
-                    isFinite(processValue)) {
+                    "" !== processValue && isFinite(processValue)) {
                         var floatValue = parseFloat(processValue), signedFloatValue = isNegative ? -1 * floatValue : floatValue;
                         if (null !== opts.min && isFinite(opts.min) && signedFloatValue < parseFloat(opts.min) && (floatValue = Math.abs(opts.min), 
                         isNegative = opts.min < 0, minmaxed = !0), !minmaxed && null !== opts.max && isFinite(opts.max) && signedFloatValue > parseFloat(opts.max) && (floatValue = Math.abs(opts.max), 

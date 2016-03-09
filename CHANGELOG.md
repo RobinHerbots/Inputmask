@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 - patchValueProperty - enable native value property patch on IE10/IE11
 
 ### Fixed
+- "0.00" not displayed if "clearMaskOnLostFocus: true" #1171
 - Lost zero while replacing a digit in group #1202
 - RadixFocus problem #686
 - Can not change integer part when it is "0" #1192

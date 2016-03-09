@@ -210,7 +210,7 @@
 					processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.negationSymbol.back) + "$"), "");
 					processValue = processValue === opts.negationSymbol.front ? processValue + "0" : processValue;
 
-					if (isFinite(processValue)) {
+					if (processValue !== "" && isFinite(processValue)) {
 						var floatValue = parseFloat(processValue),
 							signedFloatValue = isNegative ? floatValue * -1 : floatValue;
 						if (opts.min !== null && isFinite(opts.min)) {

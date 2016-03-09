@@ -2679,7 +2679,7 @@
 					}
 				}
 				if (opts.clearMaskOnLostFocus && document.activeElement !== el) {
-					if (buffer.join("") === getBufferTemplate().join("")) {
+					if (getLastValidPosition() == -1) {
 						buffer = [];
 					} else {
 						clearOptionalTail(buffer);
