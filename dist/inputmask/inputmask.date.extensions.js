@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.8-11
+* Version: 3.2.8-15
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery"), require("./inputmask")) : factory(window.dependencyLib || jQuery, window.Inputmask);
@@ -89,6 +89,11 @@
                     for (var maxYearPrefix = maxyear.toString().slice(0, 2), maxYearPostfix = maxyear.toString().slice(2, 4); maxYearPrefix + hint > maxyear; ) maxYearPrefix--;
                     var maxxYear = maxYearPrefix + maxYearPostfix;
                     return minyear > maxxYear ? minyear : maxxYear;
+                }
+                if (currentyear >= minyear && maxyear >= currentyear) {
+                    for (var currentYearPrefix = currentyear.toString().slice(0, 2); currentYearPrefix + hint > maxyear; ) currentYearPrefix--;
+                    var currentYearAndHint = currentYearPrefix + hint;
+                    return minyear > currentYearAndHint ? minyear : currentYearAndHint;
                 }
                 return currentyear;
             },

@@ -12,7 +12,7 @@ module.exports = function(grunt) {
 	function createUglifyConfig(path) {
 		function stripModuleLoaders(src, dst) {
 			var srcFile = grunt.file.read(src);
-			srcFile = srcFile.replace(new RegExp("\\(function\\(factory\\)[\\s\\S]*\\(function\\(\\$"), "(function($");
+			srcFile = srcFile.replace(new RegExp("\\(function\\s?\\(factory\\)[\\s\\S]*\\(function\\s?\\(\\$"), "(function ($");
 			if (src.indexOf("extensions") === -1 && src.indexOf("jquery.inputmask") === -1) {
 				srcFile = srcFile.replace(new RegExp("\\}\\)\\);[\\s]*$"), "})(jQuery);");
 			} else srcFile = srcFile.replace(new RegExp("\\}\\)\\);[\\s]*$"), "})(jQuery, Inputmask);");

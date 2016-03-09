@@ -13,6 +13,9 @@ All notable changes to this project will be documented in this file.
 - patchValueProperty - enable native value property patch on IE10/IE11
 
 ### Fixed
+- Lost zero while replacing a digit in group #1202
+- RadixFocus problem #686
+- Can not change integer part when it is "0" #1192
 - "[object Object]" value after `$element.inputmask('setvalue', '')` call #1208
 - Paste does not work properly when using numericInput #1195
 - error occurs in safari 9.0.3 (11601.4.4) #1191

@@ -591,7 +591,8 @@ var isValid = Inputmask.isValid("23/03/1973", { alias: "dd/mm/yyyy"});
 
 ## Options:
 ### placeholder
-Change the mask placeholder
+Change the mask placeholder.
+Default: "_"
 
 ```javascript
 $(document).ready(function(){
@@ -891,7 +892,7 @@ $(document).ready(function(){
 ### rightAlign
 Align the input to the right
 
-By setting the rightAlign you can specify to right align an inputmask. This is only applied in combination op the numericInput option or the dir-attribute. Default is true.  
+By setting the rightAlign you can specify to right align an inputmask. This is only applied in combination op the numericInput option or the dir-attribute. Default is true.
 
 ```javascript
 $(document).ready(function(){
@@ -953,7 +954,7 @@ Hook to alter the clear behavior in the stripValidPositions<br>Args => maskset, 
 Hook to postValidate the result from isValid.  Usefull for validating the entry as a whole.  Args => buffer, currentResult, opts<br>Return => true|false
 
 ### staticDefinitionSymbol
-The staticDefinitionSymbol option is used to indicate that the static entries in the mask can match a certain definition.  Especially usefull with alternators so that static element in the mask can match another alternation.  
+The staticDefinitionSymbol option is used to indicate that the static entries in the mask can match a certain definition.  Especially usefull with alternators so that static element in the mask can match another alternation.
 
 In the example below we mark the spaces as a possible match for the "i" definition.  By doing so the mask can alternate to the second mask even when we typed already "12 3".
 

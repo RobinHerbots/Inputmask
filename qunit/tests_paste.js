@@ -267,6 +267,7 @@ define([
 		$("#testmask").paste("000.02");
 
 		setTimeout(function() {
+			$(testmask).trigger("blur");
 			equal(testmask.value, "$ 0.02", "Result " + testmask.value);
 			start();
 			$("#testmask").remove();

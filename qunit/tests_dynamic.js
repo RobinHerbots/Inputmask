@@ -325,22 +325,23 @@ define([
 				}
 			}
 		}).mask(testmask);
-		$("#testmask").blur();
+		testmask.blur();
 		setTimeout(function() {
 			assert.equal(document.getElementById("testmask").inputmask._valueGet(), "V-AA", "Result " + document.getElementById("testmask").inputmask._valueGet());
 			done();
 		}, 0);
 	});
 
-	qunit.test("email mask - johnsmith@ma.us.delta-corp.com - ResidualEnvy", function(assert) {
+	qunit.test("email mask - some.body@mail.com - delete before @", function(assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
 		Inputmask("email").mask(testmask);
 
 		testmask.focus();
-		$("#testmask").Type("johnsmith@ma.us.delta-corp.com");
-		testmask.blur();
-		assert.equal(testmask.value, "johnsmith@ma.us.delta-corp.com", "Result " + testmask.value);
+		$("#testmask").Type("some.body@mail.com");
+		$.caret(testmask, 9);
+		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
+		assert.equal(testmask.value, "some.body@ail.com", "Result " + testmask.value);
 	});
 });
