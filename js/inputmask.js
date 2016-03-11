@@ -2065,7 +2065,7 @@
 
 			if (!npt.inputmask.__valueGet) {
 				if (Object.getOwnPropertyDescriptor) {
-					var valueProperty = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(npt), "value");
+					var valueProperty = Object.getPrototypeOf ? Object.getOwnPropertyDescriptor(Object.getPrototypeOf(npt), "value") : undefined;
 					if (valueProperty && valueProperty.get && valueProperty.set) {
 						valueGet = valueProperty.get;
 						valueSet = valueProperty.set;
@@ -2776,7 +2776,7 @@
 					EventRuler.off(el);
 					//restore the value property
 					var valueProperty;
-					if (Object.getOwnPropertyDescriptor) {
+					if (Object.getOwnPropertyDescriptor && Object.getPrototypeOf) {
 						valueProperty = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), "value");
 						if (valueProperty) {
 							if (el.inputmask.__valueGet) {

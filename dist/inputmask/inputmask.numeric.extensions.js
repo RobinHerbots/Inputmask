@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.8-17
+* Version: 3.2.8-19
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery"), require("./inputmask")) : factory(window.dependencyLib || jQuery, window.Inputmask);
@@ -27,7 +27,7 @@
                 opts.placeholder.length > 1 && (opts.placeholder = opts.placeholder.charAt(0)), 
                 opts.radixFocus = opts.radixFocus && "" !== opts.placeholder && opts.integerOptional === !0, 
                 opts.definitions[";"] = opts.definitions["~"], opts.definitions[";"].definitionSymbol = "~", 
-                1 == opts.numericInput && (opts.radixFocus = !1, opts.digitsOptional = !1, isNaN(opts.digits) && (opts.digits = 2), 
+                opts.numericInput === !0 && (opts.radixFocus = !1, opts.digitsOptional = !1, isNaN(opts.digits) && (opts.digits = 2), 
                 opts.decimalProtect = !1);
                 var mask = autoEscape(opts.prefix);
                 return mask += "[+]", mask += opts.integerOptional === !0 ? "~{1," + opts.integerDigits + "}" : "~{" + opts.integerDigits + "}", 
@@ -248,7 +248,7 @@
                 "+": {
                     validator: function(chrs, maskset, pos, strict, opts) {
                         var isValid = opts.signHandler(chrs, maskset, pos, strict, opts);
-                        return !isValid && (strict && opts.allowMinus && chrs === opts.negationSymbol.front || opts.allowMinus && "-" === chrs || opts.allowPlus && "+" === chrs) && (isValid = "-" === chrs ? "" !== opts.negationSymbol.back ? {
+                        return !isValid && (strict && opts.allowMinus && chrs === opts.negationSymbol.front || opts.allowMinus && "-" === chrs || opts.allowPlus && "+" === chrs) && (isValid = strict || "-" !== chrs ? !0 : "" !== opts.negationSymbol.back ? {
                             pos: pos,
                             c: "-" === chrs ? opts.negationSymbol.front : "+",
                             caret: pos + 1,
@@ -260,7 +260,7 @@
                             pos: pos,
                             c: "-" === chrs ? opts.negationSymbol.front : "+",
                             caret: pos + 1
-                        } : !0), isValid;
+                        }), isValid;
                     },
                     cardinality: 1,
                     prevalidator: null,

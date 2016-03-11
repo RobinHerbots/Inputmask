@@ -13,6 +13,8 @@ All notable changes to this project will be documented in this file.
 - patchValueProperty - enable native value property patch on IE10/IE11
 
 ### Fixed
+- IE8 error: Object doesn't support this property or method #1217
+- update negation handling for numeric alias
 - NumericInput option can't handle 100.00 #1162
 - "0.00" not displayed if "clearMaskOnLostFocus: true" #1171
 - Lost zero while replacing a digit in group #1202

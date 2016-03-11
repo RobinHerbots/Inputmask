@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.8-17
+* Version: 3.2.8-19
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -851,7 +851,7 @@
             var valueGet, valueSet;
             if (!npt.inputmask.__valueGet) {
                 if (Object.getOwnPropertyDescriptor) {
-                    var valueProperty = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(npt), "value");
+                    var valueProperty = Object.getPrototypeOf ? Object.getOwnPropertyDescriptor(Object.getPrototypeOf(npt), "value") : void 0;
                     valueProperty && valueProperty.get && valueProperty.set ? (valueGet = valueProperty.get, 
                     valueSet = valueProperty.set, Object.defineProperty(npt, "value", {
                         get: getter,
@@ -1219,7 +1219,7 @@
             el = actionObj.el, $el = $(el), maskset = el.inputmask.maskset, opts = el.inputmask.opts, 
             el.inputmask._valueSet(unmaskedvalue(el)), EventRuler.off(el);
             var valueProperty;
-            Object.getOwnPropertyDescriptor ? (valueProperty = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), "value"), 
+            Object.getOwnPropertyDescriptor && Object.getPrototypeOf ? (valueProperty = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), "value"), 
             valueProperty && el.inputmask.__valueGet && Object.defineProperty(el, "value", {
                 get: el.inputmask.__valueGet,
                 set: el.inputmask.__valueSet,

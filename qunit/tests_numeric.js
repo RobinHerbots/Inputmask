@@ -1669,7 +1669,8 @@ define([
 		assert.equal($("#testmask")[0].inputmask._valueGet(), "50,00", "Result " + $("#testmask")[0].inputmask._valueGet());
 	});
 	qunit.test("currency numericInput true - type 10020 - jaisonerick", function (assert) {
-		var $fixture = $("#qunit-fixture");
+		var done = assert.async(),
+			$fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
 		Inputmask("currency", {
@@ -1683,7 +1684,32 @@ define([
 			prefix: 'R$ ',
 			unmaskAsNumber: false
 		}).mask(testmask);
-		$("#testmask").Type("10020");
-		assert.equal($(testmask).val(), "R$ 100,20", "Result " + $(testmask).val());
+		testmask.focus();
+		$("#testmask").trigger("click");
+		setTimeout(function () {
+			$("#testmask").Type("10020");
+			assert.equal($(testmask).val(), "R$ 100,20", "Result " + $(testmask).val());
+			done();
+		},0);
+	});
+
+	qunit.test("numeric - type 978-3498064365 - andreasba", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("numeric").mask(testmask);
+		$("#testmask").Type("978-3498064365");
+		assert.equal($(testmask).val(), "-9783498064365", "Result " + $(testmask).val());
+	});
+	qunit.test("numeric - type 978-3498064365 - andreasba", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("numeric", {
+			allowMinus: false
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("978-3498064365");
+		assert.equal($(testmask).val(), "9783498064365", "Result " + $(testmask).val());
 	});
 });

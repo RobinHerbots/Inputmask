@@ -66,7 +66,7 @@
 				opts.definitions[";"] = opts.definitions["~"]; //clone integer def for decimals
 				opts.definitions[";"].definitionSymbol = "~";
 
-				if (opts.numericInput == true) { //finance people input style
+				if (opts.numericInput === true) { //finance people input style
 					opts.radixFocus = false;
 					opts.digitsOptional = false;
 					if (isNaN(opts.digits)) opts.digits = 2;
@@ -459,7 +459,7 @@
 					validator: function (chrs, maskset, pos, strict, opts) {
 						var isValid = opts.signHandler(chrs, maskset, pos, strict, opts);
 						if (!isValid && ((strict && opts.allowMinus && chrs === opts.negationSymbol.front) || (opts.allowMinus && chrs === "-") || (opts.allowPlus && chrs === "+"))) {
-							if (chrs === "-") {
+							if (!strict && chrs === "-") {
 								if (opts.negationSymbol.back !== "") {
 									isValid = {
 										"pos": pos,
