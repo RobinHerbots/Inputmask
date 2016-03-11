@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.8-19
+* Version: 3.2.8-20
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -1057,8 +1057,11 @@
                 var selectedCaret = caret(input);
                 if (selectedCaret.begin === selectedCaret.end) if (doRadixFocus(selectedCaret.begin)) caret(input, opts.numericInput ? seekNext($.inArray(opts.radixPoint, getBuffer())) : $.inArray(opts.radixPoint, getBuffer())); else {
                     var clickPosition = selectedCaret.begin, lvclickPosition = getLastValidPosition(clickPosition, !0), lastPosition = seekNext(lvclickPosition);
-                    lastPosition > clickPosition ? caret(input, isMask(clickPosition) || isMask(clickPosition - 1) ? clickPosition : seekNext(clickPosition)) : ((getBuffer()[lastPosition] !== getPlaceholder(lastPosition) || !isMask(lastPosition, !0) && getTest(lastPosition).def === getPlaceholder(lastPosition)) && (lastPosition = seekNext(lastPosition)), 
-                    caret(input, lastPosition));
+                    if (lastPosition > clickPosition) caret(input, isMask(clickPosition) || isMask(clickPosition - 1) ? clickPosition : seekNext(clickPosition)); else {
+                        var placeholder = getPlaceholder(lastPosition);
+                        ("" !== placeholder && getBuffer()[lastPosition] !== placeholder || !isMask(lastPosition, !0) && getTest(lastPosition).def === placeholder) && (lastPosition = seekNext(lastPosition)), 
+                        caret(input, lastPosition);
+                    }
                 }
             }
         }

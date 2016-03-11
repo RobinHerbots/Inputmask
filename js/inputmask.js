@@ -2508,7 +2508,8 @@
 						if (clickPosition < lastPosition) {
 							caret(input, !isMask(clickPosition) && !isMask(clickPosition - 1) ? seekNext(clickPosition) : clickPosition);
 						} else {
-							if (getBuffer()[lastPosition] !== getPlaceholder(lastPosition) || (!isMask(lastPosition, true) && getTest(lastPosition).def === getPlaceholder(lastPosition))) {
+							var placeholder = getPlaceholder(lastPosition);
+							if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder) || (!isMask(lastPosition, true) && getTest(lastPosition).def === placeholder)) {
 								lastPosition = seekNext(lastPosition);
 							}
 							caret(input, lastPosition);

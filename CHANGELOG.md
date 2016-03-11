@@ -7,12 +7,15 @@ All notable changes to this project will be documented in this file.
 - VIN mask #1199
 
 ### Updates
+- also escape []{}() in the prefix and suffix for decimals
 - Can not change integer part when it is "0" #1192
 - change funtionality of postValidation => result may be true|false
 - improve getmetadata
 - patchValueProperty - enable native value property patch on IE10/IE11
 
 ### Fixed
+- Caret Positioned After Last Decimal Digit Disallows Sign Input When digits Option Set #1139
+- numeric alias produces "0.00" instead of null when cleared out. #902
 - IE8 error: Object doesn't support this property or method #1217
 - update negation handling for numeric alias
 - NumericInput option can't handle 100.00 #1162

@@ -24,7 +24,16 @@
 				function autoEscape(txt) {
 					var escapedTxt = "";
 					for (var i = 0; i < txt.length; i++) {
-						escapedTxt += opts.definitions[txt.charAt(i)] ? "\\" + txt.charAt(i) : txt.charAt(i);
+						if (opts.definitions[txt.charAt(i)] ||
+							opts.optionalmarker.start === txt.charAt(i) ||
+							opts.optionalmarker.end === txt.charAt(i) ||
+							opts.quantifiermarker.start === txt.charAt(i) ||
+							opts.quantifiermarker.end === txt.charAt(i) ||
+							opts.groupmarker.start === txt.charAt(i) ||
+							opts.groupmarker.end === txt.charAt(i) ||
+							opts.alternatormarker === txt.charAt(i))
+							escapedTxt += "\\" + txt.charAt(i)
+						else escapedTxt += txt.charAt(i);
 					}
 					return escapedTxt;
 				}
@@ -84,10 +93,8 @@
 						mask += "[" + (opts.decimalProtect ? ":" : opts.radixPoint) + ";{1," + opts.digits + "}]";
 					} else mask += (opts.decimalProtect ? ":" : opts.radixPoint) + ";{" + opts.digits + "}";
 				}
-				if (opts.negationSymbol.back !== "") {
-					mask += "[-]";
-				}
-				mask += autoEscape(opts.suffix);
+				mask += "[-]";
+				mask += "[" + autoEscape(opts.suffix) + "]";
 
 				opts.greedy = false; //enforce greedy false
 
@@ -445,8 +452,7 @@
 
 						return isValid;
 					},
-					cardinality: 1,
-					prevalidator: null
+					cardinality: 1
 				},
 				"+": {
 					validator: function (chrs, maskset, pos, strict, opts) {
@@ -477,7 +483,6 @@
 						return isValid;
 					},
 					cardinality: 1,
-					prevalidator: null,
 					placeholder: ""
 				},
 				"-": {
@@ -489,7 +494,6 @@
 						return isValid;
 					},
 					cardinality: 1,
-					prevalidator: null,
 					placeholder: ""
 				},
 				":": {
@@ -509,7 +513,6 @@
 						} : isValid;
 					},
 					cardinality: 1,
-					prevalidator: null,
 					placeholder: function (opts) {
 						return opts.radixPoint;
 					}
