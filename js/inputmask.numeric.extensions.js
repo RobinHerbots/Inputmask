@@ -1,7 +1,7 @@
 /*
  Input Mask plugin extensions
  http://github.com/RobinHerbots/jquery.inputmask
- Copyright (c) 2010 -  Robin Herbots
+ Copyright (c) 2010 - Robin Herbots
  Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
  Version: 0.0.0-dev
 
@@ -198,8 +198,7 @@
 				var rslt;
 				if (e && (e.type === "blur" || e.type === "checkval" || e.type === "keydown")) {
 					var maskedValue = opts.numericInput ? buffer.slice().reverse().join("") : buffer.join(""),
-						processValue = maskedValue.replace(opts.prefix, ""),
-						minmaxed = false;
+						processValue = maskedValue.replace(opts.prefix, "");
 					processValue = processValue.replace(opts.suffix, "");
 					processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "");
 					if (opts.radixPoint === ",") processValue = processValue.replace(opts.radixPoint, ".");
@@ -213,19 +212,13 @@
 					if (processValue !== "" && isFinite(processValue)) {
 						var floatValue = parseFloat(processValue),
 							signedFloatValue = isNegative ? floatValue * -1 : floatValue;
-						if (opts.min !== null && isFinite(opts.min)) {
-							if (signedFloatValue < parseFloat(opts.min)) {
-								floatValue = Math.abs(opts.min);
-								isNegative = opts.min < 0;
-								minmaxed = true;
-							}
+						if (opts.min !== null && isFinite(opts.min) && signedFloatValue < parseFloat(opts.min)) {
+							floatValue = Math.abs(opts.min);
+							isNegative = opts.min < 0;
 						}
-						if (!minmaxed && opts.max !== null && isFinite(opts.max)) {
-							if (signedFloatValue > parseFloat(opts.max)) {
-								floatValue = Math.abs(opts.max);
-								isNegative = opts.max < 0;
-								minmaxed = true;
-							}
+						else if (opts.max !== null && isFinite(opts.max) && signedFloatValue > parseFloat(opts.max)) {
+							floatValue = Math.abs(opts.max);
+							isNegative = opts.max < 0;
 						}
 
 						processValue = floatValue.toString().replace(".", opts.radixPoint).split('');
