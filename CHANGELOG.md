@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 - patchValueProperty - enable native value property patch on IE10/IE11
 
 ### Fixed
+- Clicking on a highlighted masked field does not set the caret to the first valid position (Chrome) #1218
 - Caret Positioned After Last Decimal Digit Disallows Sign Input When digits Option Set #1139
 - numeric alias produces "0.00" instead of null when cleared out. #902
 - IE8 error: Object doesn't support this property or method #1217

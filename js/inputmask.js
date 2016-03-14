@@ -2493,28 +2493,30 @@
 			}
 
 			var input = this;
-			if (document.activeElement === input) {
-				var selectedCaret = caret(input);
-				if (selectedCaret.begin === selectedCaret.end) {
-					if (doRadixFocus(selectedCaret.begin)) {
-						caret(input, opts.numericInput ? seekNext($.inArray(opts.radixPoint, getBuffer())) : $.inArray(opts.radixPoint, getBuffer()));
-					} else {
-						var clickPosition = selectedCaret.begin,
-							lvclickPosition = getLastValidPosition(clickPosition, true),
-							lastPosition = seekNext(lvclickPosition);
-
-						if (clickPosition < lastPosition) {
-							caret(input, !isMask(clickPosition) && !isMask(clickPosition - 1) ? seekNext(clickPosition) : clickPosition);
+			setTimeout(function () { //needed for Chrome ~ initial selection clears after the clickevent
+				if (document.activeElement === input) {
+					var selectedCaret = caret(input);
+					if (selectedCaret.begin === selectedCaret.end) {
+						if (doRadixFocus(selectedCaret.begin)) {
+							caret(input, opts.numericInput ? seekNext($.inArray(opts.radixPoint, getBuffer())) : $.inArray(opts.radixPoint, getBuffer()));
 						} else {
-							var placeholder = getPlaceholder(lastPosition);
-							if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder) || (!isMask(lastPosition, true) && getTest(lastPosition).def === placeholder)) {
-								lastPosition = seekNext(lastPosition);
+							var clickPosition = selectedCaret.begin,
+								lvclickPosition = getLastValidPosition(clickPosition, true),
+								lastPosition = seekNext(lvclickPosition);
+
+							if (clickPosition < lastPosition) {
+								caret(input, !isMask(clickPosition) && !isMask(clickPosition - 1) ? seekNext(clickPosition) : clickPosition);
+							} else {
+								var placeholder = getPlaceholder(lastPosition);
+								if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder) || (!isMask(lastPosition, true) && getTest(lastPosition).def === placeholder)) {
+									lastPosition = seekNext(lastPosition);
+								}
+								caret(input, lastPosition);
 							}
-							caret(input, lastPosition);
 						}
 					}
 				}
-			}
+			}, 0);
 		}
 
 		function dblclickEvent(e) {
