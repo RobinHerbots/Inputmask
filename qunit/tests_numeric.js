@@ -1344,48 +1344,57 @@ define([
 	});
 
 	qunit.test("currency alias - type 1010 delete first 1 - FilipeZhou", function (assert) {
-		var $fixture = $("#qunit-fixture");
+		var done = assert.async(),
+			$fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
 		Inputmask("currency").mask(testmask);
 
 		testmask.focus();
 		$("#testmask").trigger("click");
-		$("#testmask").Type("1010");
-		$.caret(testmask, 3);
-		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
-		assert.equal($("#testmask")[0].inputmask._valueGet(), "$ 10.00", "Result " + $("#testmask")[0].inputmask._valueGet());
-
+		setTimeout(function () {
+			$("#testmask").Type("1010");
+			$.caret(testmask, 3);
+			$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
+			assert.equal($("#testmask")[0].inputmask._valueGet(), "$ 10.00", "Result " + $("#testmask")[0].inputmask._valueGet());
+			done();
+		}, 0);
 	});
 
 	qunit.test("currency alias - type 1010 delete middle 1 - FilipeZhou", function (assert) {
-		var $fixture = $("#qunit-fixture");
+		var done = assert.async(),
+			$fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
 		Inputmask("currency").mask(testmask);
 
 		testmask.focus();
 		$("#testmask").trigger("click");
-		$("#testmask").Type("1010");
-		$.caret(testmask, 6);
-		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
-		assert.equal($("#testmask")[0].inputmask._valueGet(), "$ 100.00", "Result " + $("#testmask")[0].inputmask._valueGet());
-
+		setTimeout(function () {
+			$("#testmask").Type("1010");
+			$.caret(testmask, 6);
+			$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
+			assert.equal($("#testmask")[0].inputmask._valueGet(), "$ 100.00", "Result " + $("#testmask")[0].inputmask._valueGet());
+			done();
+		}, 0);
 	});
 
 	qunit.test("currency alias - type -1234 delete -", function (assert) {
-		var $fixture = $("#qunit-fixture");
+		var done = assert.async(),
+			$fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
 		Inputmask("currency").mask(testmask);
 
 		testmask.focus();
 		$("#testmask").trigger("click");
-		$("#testmask").Type("-1234");
-		$.caret(testmask, 0);
-		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
-		assert.equal($("#testmask")[0].inputmask._valueGet(), "$ 1,234.00", "Result " + $("#testmask")[0].inputmask._valueGet());
-
+		setTimeout(function () {
+			$("#testmask").Type("-1234");
+			$.caret(testmask, 0);
+			$("#testmask").SendKey(Inputmask.keyCode.DELETE);
+			assert.equal($("#testmask")[0].inputmask._valueGet(), "$ 1,234.00", "Result " + $("#testmask")[0].inputmask._valueGet());
+			done();
+		}, 0);
 	});
 
 	qunit.test("decimal alias - type 12345.12 add 6 in front - freeze - DatXN", function (assert) {
@@ -1690,7 +1699,7 @@ define([
 			$("#testmask").Type("10020");
 			assert.equal($(testmask).val(), "R$ 100,20", "Result " + $(testmask).val());
 			done();
-		},0);
+		}, 0);
 	});
 
 	qunit.test("numeric - type 978-3498064365 - andreasba", function (assert) {
