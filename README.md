@@ -197,6 +197,10 @@ $('#test').inputmask('999[-AAA]');
 
 While the field has focus and is blank, users will see the full mask `___-___`. When the required part of the mask is filled and the field loses focus, the user will see `123`. When both the required and optional parts of the mask are filled out and the field loses focus, the user will see `123-ABC`.
 
+### Changing the mask default character
+Instead of "_", you can change the unfilled characters mask as you like, simply by adding the `placeholder` option.<br>
+For example, `placeholder: " "` will change the default autofill with empty values
+
 #### Optional masks with greedy false
 When defining an optional mask together with the greedy: false option, the inputmask will show the smallest possible mask as input first.
 
