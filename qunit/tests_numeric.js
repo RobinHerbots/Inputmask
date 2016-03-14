@@ -1616,26 +1616,26 @@ define([
 		$.caret(testmask, 0, testmask.value.length);
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 		assert.equal($("#testmask")[0].inputmask._valueGet(), "", "Result " + $("#testmask")[0].inputmask._valueGet());
-
 	});
 
-	qunit.test("currency alias - 123 - isvalid - ivodopyanov", function (assert) {
-		var $fixture = $("#qunit-fixture");
+	qunit.test("currency alias - isvalid - ivodopyanov", function (assert) {
+		var done = assert.async(),
+			$fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
 		Inputmask("currency").mask(testmask);
-		$("#testmask").Type("123");
-		var isValid = Inputmask("currency").isValid(testmask.value);
-		assert.equal(isValid, true, "Result " + isValid);
-	});
-	qunit.test("currency alias - $ 99,999,999.00 - isvalid - ivodopyanov", function (assert) {
-		var $fixture = $("#qunit-fixture");
-		$fixture.append('<input type="text" id="testmask" />');
-		var testmask = document.getElementById("testmask");
-		Inputmask("currency").mask(testmask);
-		$("#testmask").Type("$ 99,999,999.00");
-		var isValid = Inputmask("currency").isValid(testmask.value);
-		assert.equal(isValid, true, "Result " + isValid);
+
+		testmask.focus();
+		$("#testmask").trigger("click");
+		setTimeout(function () {
+			var i, isValid;
+			for (i = 0; i < 10; i++) {
+				$("#testmask").Type("9");
+				isValid = Inputmask("currency").isValid(testmask.value);
+				assert.equal(isValid, true, "Value: \"" + testmask.value + "\"; isValid: " + isValid);
+			}
+			done();
+		}, 0);
 	});
 
 	qunit.test("numeric alias - digits 2 type 0.12 - gharlan", function (assert) {
