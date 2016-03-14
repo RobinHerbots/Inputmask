@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.8-26
+* Version: 3.2.8-27
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery"), require("./inputmask")) : factory(window.dependencyLib || jQuery, window.Inputmask);
@@ -202,7 +202,7 @@
                 }
                 return !1;
             },
-            leadingZeroHandler: function(chrs, maskset, pos, strict, opts) {
+            leadingZeroHandler: function(chrs, maskset, pos, strict, opts, isSelection) {
                 if (!strict) if (opts.numericInput === !0) {
                     var buffer = maskset.buffer.slice("").reverse(), char = buffer[opts.prefix.length];
                     if ("0" === char) return {
@@ -212,7 +212,7 @@
                 } else {
                     var radixPosition = $.inArray(opts.radixPoint, maskset.buffer), matchRslt = maskset.buffer.slice(0, -1 !== radixPosition ? radixPosition : void 0).join("").match(opts.regex.integerNPart(opts));
                     if (matchRslt && (-1 === radixPosition || radixPosition >= pos)) {
-                        if (0 === matchRslt[0].indexOf("" !== opts.placeholder ? opts.placeholder.charAt(0) : "0") && matchRslt.index + 1 === pos) return maskset.buffer.splice(matchRslt.index, 1), 
+                        if (0 === matchRslt[0].indexOf("" !== opts.placeholder ? opts.placeholder.charAt(0) : "0") && isSelection !== !0) return maskset.buffer.splice(matchRslt.index, 1), 
                         pos = matchRslt.index, {
                             pos: pos,
                             remove: matchRslt.index
@@ -224,11 +224,11 @@
             },
             definitions: {
                 "~": {
-                    validator: function(chrs, maskset, pos, strict, opts) {
+                    validator: function(chrs, maskset, pos, strict, opts, isSelection) {
                         var isValid = opts.signHandler(chrs, maskset, pos, strict, opts);
                         if (!isValid && (isValid = opts.radixHandler(chrs, maskset, pos, strict, opts), 
                         !isValid && (isValid = strict ? new RegExp("[0-9" + Inputmask.escapeRegex(opts.groupSeparator) + "]").test(chrs) : new RegExp("[0-9]").test(chrs), 
-                        isValid === !0 && (isValid = opts.leadingZeroHandler(chrs, maskset, pos, strict, opts), 
+                        isValid === !0 && (isValid = opts.leadingZeroHandler(chrs, maskset, pos, strict, opts, isSelection), 
                         isValid === !0)))) {
                             var radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
                             isValid = -1 !== radixPosition && (opts.digitsOptional === !1 || maskset.validPositions[pos]) && opts.numericInput !== !0 && pos > radixPosition && !strict ? {

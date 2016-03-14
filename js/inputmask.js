@@ -1297,7 +1297,7 @@
 					getBuffer(true);
 					//return is false or a json object => { pos: ??, c: ??} or true
 					rslt = test.fn != null ?
-						test.fn.test(chrs, getMaskSet(), position, strict, opts) : (c === test.def || c === opts.skipOptionalPartCharacter) && test.def !== "" ? //non mask
+						test.fn.test(chrs, getMaskSet(), position, strict, opts, isSelection(pos)) : (c === test.def || c === opts.skipOptionalPartCharacter) && test.def !== "" ? //non mask
 					{
 						c: test.placeholder || test.def,
 						pos: position

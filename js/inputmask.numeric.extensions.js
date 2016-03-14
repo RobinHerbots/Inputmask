@@ -392,7 +392,7 @@
 				}
 				return false;
 			},
-			leadingZeroHandler: function (chrs, maskset, pos, strict, opts) {
+			leadingZeroHandler: function (chrs, maskset, pos, strict, opts, isSelection) {
 				if (!strict) {
 					if (opts.numericInput === true) {
 						var buffer = maskset.buffer.slice("").reverse();
@@ -407,7 +407,7 @@
 						var radixPosition = $.inArray(opts.radixPoint, maskset.buffer),
 							matchRslt = maskset.buffer.slice(0, radixPosition !== -1 ? radixPosition : undefined).join("").match(opts.regex.integerNPart(opts));
 						if (matchRslt && (radixPosition === -1 || pos <= radixPosition)) {
-							if (matchRslt["0"].indexOf(opts.placeholder !== "" ? opts.placeholder.charAt(0) : "0") === 0 && matchRslt.index + 1 === pos) {
+							if (matchRslt["0"].indexOf(opts.placeholder !== "" ? opts.placeholder.charAt(0) : "0") === 0 && isSelection !== true) {
 								maskset.buffer.splice(matchRslt.index, 1);
 								pos = matchRslt.index;
 								return {
@@ -424,14 +424,14 @@
 			},
 			definitions: {
 				"~": {
-					validator: function (chrs, maskset, pos, strict, opts) {
+					validator: function (chrs, maskset, pos, strict, opts, isSelection) {
 						var isValid = opts.signHandler(chrs, maskset, pos, strict, opts);
 						if (!isValid) {
 							isValid = opts.radixHandler(chrs, maskset, pos, strict, opts);
 							if (!isValid) {
 								isValid = strict ? new RegExp("[0-9" + Inputmask.escapeRegex(opts.groupSeparator) + "]").test(chrs) : new RegExp("[0-9]").test(chrs);
 								if (isValid === true) {
-									isValid = opts.leadingZeroHandler(chrs, maskset, pos, strict, opts);
+									isValid = opts.leadingZeroHandler(chrs, maskset, pos, strict, opts, isSelection);
 									if (isValid === true) {
 										//handle overwrite when fixed precision
 										var radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
