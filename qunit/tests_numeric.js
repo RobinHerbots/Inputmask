@@ -647,7 +647,7 @@ define([
 		testmask.focus();
 		$("#testmask").Type("123");
 		$.caret(testmask, 0, 3);
-		$("#testmask").SendKey(",,..");
+		$("#testmask").Type(",,..");
 		$("#testmask").Type("45");
 
 		assert.equal(testmask.value, "0.45", "Result " + testmask.value);
@@ -1608,34 +1608,44 @@ define([
 	});
 
 	qunit.test("numeric alias - type 123.123 - delete all - ivodopyanov", function (assert) {
-		var $fixture = $("#qunit-fixture");
+		var done = assert.async(),
+			$fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
 		Inputmask("numeric").mask(testmask);
-		$("#testmask").Type("123.123");
-		$.caret(testmask, 0, testmask.value.length);
-		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
-		assert.equal($("#testmask")[0].inputmask._valueGet(), "", "Result " + $("#testmask")[0].inputmask._valueGet());
-
+		$("#testmask").trigger("click");
+		setTimeout(function () {
+			$("#testmask").Type("123.123");
+			$.caret(testmask, 0, testmask.value.length);
+			$("#testmask").SendKey(Inputmask.keyCode.DELETE);
+			assert.equal($("#testmask")[0].inputmask._valueGet(), "", "Result " + $("#testmask")[0].inputmask._valueGet());
+			done();
+		}, 0);
 	});
 
 	qunit.test("currency alias - 123 - isvalid - ivodopyanov", function (assert) {
-		var $fixture = $("#qunit-fixture");
+		var done = assert.async(),
+			$fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
 		Inputmask("currency").mask(testmask);
-		$("#testmask").Type("123");
-		var isValid = Inputmask("currency").isValid(testmask.value);
-		assert.equal(isValid, true, "Result " + isValid);
+		$("#testmask").trigger("click");
+		setTimeout(function () {
+			$("#testmask").Type("123");
+			var isValid = Inputmask("currency").isValid(testmask.value);
+			assert.equal(isValid, true, "Result " + $(testmask).val() + " : " + isValid);
+			done();
+		}, 0);
 	});
 	qunit.test("currency alias - $ 99,999,999.00 - isvalid - ivodopyanov", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
 		Inputmask("currency").mask(testmask);
+
 		$("#testmask").Type("$ 99,999,999.00");
 		var isValid = Inputmask("currency").isValid(testmask.value);
-		assert.equal(isValid, true, "Result " + isValid);
+		assert.equal(isValid, true, "Result " + $(testmask).val() + " : " + isValid);
 	});
 
 	qunit.test("numeric alias - digits 2 type 0.12 - gharlan", function (assert) {

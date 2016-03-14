@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.8-25
+* Version: 3.2.8-26
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -2269,8 +2269,7 @@
                 return !1;
             },
             radixHandler: function(chrs, maskset, pos, strict, opts) {
-                if (!strict && opts.numericInput !== !0 && (-1 !== $.inArray(chrs, [ ",", "." ]) && (chrs = opts.radixPoint), 
-                chrs === opts.radixPoint && void 0 !== opts.digits && (isNaN(opts.digits) || parseInt(opts.digits) > 0))) {
+                if (!strict && opts.numericInput !== !0 && chrs === opts.radixPoint && void 0 !== opts.digits && (isNaN(opts.digits) || parseInt(opts.digits) > 0)) {
                     var radixPos = $.inArray(opts.radixPoint, maskset.buffer), integerValue = maskset.buffer.join("").match(opts.regex.integerPart(opts));
                     if (-1 !== radixPos && maskset.validPositions[radixPos]) return maskset.validPositions[radixPos - 1] ? {
                         caret: radixPos + 1
@@ -2360,7 +2359,7 @@
                     validator: function(chrs, maskset, pos, strict, opts) {
                         var isValid = opts.signHandler(chrs, maskset, pos, strict, opts);
                         if (!isValid) {
-                            var radix = "[" + Inputmask.escapeRegex(opts.radixPoint) + ",\\.]";
+                            var radix = "[" + Inputmask.escapeRegex(opts.radixPoint) + "]";
                             isValid = new RegExp(radix).test(chrs), isValid && maskset.validPositions[pos] && maskset.validPositions[pos].match.placeholder === opts.radixPoint && (isValid = {
                                 caret: pos + 1
                             });

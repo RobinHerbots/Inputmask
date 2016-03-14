@@ -65,6 +65,7 @@
 		$.fn = $.fn || $.prototype;
 		$.fn.SendKey = function(keyCode, modifier) {
 			function trigger(elem, evnt) {
+				elem.focus();
 				if ($ === jQuery) {
 					$(elem).trigger(evnt);
 				} else {

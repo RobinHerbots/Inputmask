@@ -364,7 +364,7 @@
 			},
 			radixHandler: function (chrs, maskset, pos, strict, opts) {
 				if (!strict && opts.numericInput !== true) {
-					if ($.inArray(chrs, [",", "."]) !== -1) chrs = opts.radixPoint;
+					//if ($.inArray(chrs, [",", "."]) !== -1) chrs = opts.radixPoint;
 					if (chrs === opts.radixPoint && (opts.digits !== undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0))) {
 						var radixPos = $.inArray(opts.radixPoint, maskset.buffer),
 							integerValue = maskset.buffer.join("").match(opts.regex.integerPart(opts));
@@ -500,7 +500,7 @@
 					validator: function (chrs, maskset, pos, strict, opts) {
 						var isValid = opts.signHandler(chrs, maskset, pos, strict, opts);
 						if (!isValid) {
-							var radix = "[" + Inputmask.escapeRegex(opts.radixPoint) + ",\\." + "]";
+							var radix = "[" + Inputmask.escapeRegex(opts.radixPoint) + "]";
 							isValid = new RegExp(radix).test(chrs);
 							if (isValid && maskset.validPositions[pos] && maskset.validPositions[pos].match.placeholder === opts.radixPoint) {
 								isValid = {
