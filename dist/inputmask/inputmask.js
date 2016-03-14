@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.8-20
+* Version: 3.2.8-21
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -715,7 +715,7 @@
                 }
                 return isMatch;
             }
-            var inputValue = nptvl.slice(), charCodes = "", initialNdx = 0;
+            var result, inputValue = nptvl.slice(), charCodes = "", initialNdx = 0;
             if (resetMaskSet(), getMaskSet().p = seekNext(-1), !strict) if (opts.autoUnmask !== !0) {
                 var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(""), matches = inputValue.join("").match(new RegExp("^" + Inputmask.escapeRegex(staticInput), "g"));
                 matches && matches.length > 0 && (inputValue.splice(0, matches.length * staticInput.length), 
@@ -728,9 +728,15 @@
                     var lvp = getLastValidPosition(void 0, !0), lvTest = getMaskSet().validPositions[lvp], nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : void 0, lvp);
                     if (!isTemplateMatch() || strict || opts.autoUnmask) {
                         var pos = strict ? ndx : null == nextTest.match.fn && nextTest.match.optionality && lvp + 1 < getMaskSet().p ? lvp + 1 : getMaskSet().p;
-                        keypressEvent.call(input, keypress, !0, !1, strict, pos), initialNdx = pos + 1, 
+                        result = keypressEvent.call(input, keypress, !0, !1, strict, pos), initialNdx = pos + 1, 
                         charCodes = "";
-                    } else keypressEvent.call(input, keypress, !0, !1, !0, lvp + 1);
+                    } else result = keypressEvent.call(input, keypress, !0, !1, !0, lvp + 1);
+                    if (!strict && $.isFunction(opts.onBeforeWrite) && (result = opts.onBeforeWrite(keypress, getBuffer(), result.forwardPosition, opts), 
+                    result && result.refreshFromBuffer)) {
+                        var refresh = result.refreshFromBuffer;
+                        refreshFromBuffer(refresh === !0 ? refresh : refresh.start, refresh.end, result.buffer), 
+                        resetMaskSet(!0), result.caret && (getMaskSet().p = result.caret);
+                    }
                 }
             }), writeOut && writeBuffer(input, getBuffer(), document.activeElement === input ? seekNext(getLastValidPosition(0)) : void 0, new $.Event("checkval"));
         }
@@ -822,8 +828,8 @@
                         get: function(elem) {
                             if (elem.inputmask) {
                                 if (elem.inputmask.opts.autoUnmask) return elem.inputmask.unmaskedvalue();
-                                var result = valhookGet(elem), maskset = elem.inputmask.maskset, bufferTemplate = maskset._buffer;
-                                return bufferTemplate = bufferTemplate ? bufferTemplate.join("") : "", result !== bufferTemplate ? result : "";
+                                var result = valhookGet(elem);
+                                return -1 !== getLastValidPosition() ? result : "";
                             }
                             return valhookGet(elem);
                         },
@@ -837,7 +843,7 @@
                 }
             }
             function getter() {
-                return this.inputmask ? this.inputmask.opts.autoUnmask ? this.inputmask.unmaskedvalue() : valueGet.call(this) !== getBufferTemplate().join("") ? document.activeElement === this && opts.clearMaskOnLostFocus ? (isRTL ? clearOptionalTail(getBuffer().slice()).reverse() : clearOptionalTail(getBuffer().slice())).join("") : valueGet.call(this) : "" : valueGet.call(this);
+                return this.inputmask ? this.inputmask.opts.autoUnmask ? this.inputmask.unmaskedvalue() : -1 !== getLastValidPosition() ? document.activeElement === this && opts.clearMaskOnLostFocus ? (isRTL ? clearOptionalTail(getBuffer().slice()).reverse() : clearOptionalTail(getBuffer().slice())).join("") : valueGet.call(this) : "" : valueGet.call(this);
             }
             function setter(value) {
                 valueSet.call(this, value), this.inputmask && $(this).trigger("setvalue");
@@ -967,15 +973,8 @@
                         }, 0);
                     }
                 }
-                if (opts.showTooltip && (input.title = opts.tooltip || getMaskSet().mask), checkval && $.isFunction(opts.onBeforeWrite)) {
-                    var result = opts.onBeforeWrite(e, getBuffer(), forwardPosition, opts);
-                    if (result && result.refreshFromBuffer) {
-                        var refresh = result.refreshFromBuffer;
-                        refreshFromBuffer(refresh === !0 ? refresh : refresh.start, refresh.end, result.buffer), 
-                        resetMaskSet(!0), result.caret && (getMaskSet().p = result.caret);
-                    }
-                }
-                if (e.preventDefault(), checkval) return valResult;
+                if (opts.showTooltip && (input.title = opts.tooltip || getMaskSet().mask), e.preventDefault(), 
+                checkval) return valResult.forwardPosition = forwardPosition, valResult;
             }
         }
         function pasteEvent(e) {
@@ -1126,7 +1125,7 @@
                 checkVal(el, !0, !1, initialValue.split(""));
                 var buffer = getBuffer().slice();
                 undoValue = buffer.join(""), isComplete(buffer) === !1 && opts.clearIncomplete && resetMaskSet(), 
-                opts.clearMaskOnLostFocus && document.activeElement !== el && (-1 == getLastValidPosition() ? buffer = [] : clearOptionalTail(buffer)), 
+                opts.clearMaskOnLostFocus && document.activeElement !== el && (-1 === getLastValidPosition() ? buffer = [] : clearOptionalTail(buffer)), 
                 writeBuffer(el, buffer), document.activeElement === el && caret(el, seekNext(getLastValidPosition()));
             }
         }

@@ -94,7 +94,7 @@
 					} else mask += (opts.decimalProtect ? ":" : opts.radixPoint) + ";{" + opts.digits + "}";
 				}
 				mask += "[-]";
-				mask += "[" + autoEscape(opts.suffix) + "]";
+				mask += autoEscape(opts.suffix);
 
 				opts.greedy = false; //enforce greedy false
 

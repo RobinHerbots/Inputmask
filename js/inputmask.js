@@ -1696,7 +1696,7 @@
 		function checkVal(input, writeOut, strict, nptvl) {
 			var inputValue = nptvl.slice(),
 				charCodes = "",
-				initialNdx = 0;
+				initialNdx = 0, result;
 
 			function isTemplateMatch() {
 				var isMatch = false;
@@ -1743,11 +1743,22 @@
 						nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : undefined, lvp);
 					if (!isTemplateMatch() || strict || opts.autoUnmask) {
 						var pos = strict ? ndx : (nextTest.match.fn == null && nextTest.match.optionality && (lvp + 1) < getMaskSet().p ? lvp + 1 : getMaskSet().p);
-						keypressEvent.call(input, keypress, true, false, strict, pos);
+						result = keypressEvent.call(input, keypress, true, false, strict, pos);
 						initialNdx = pos + 1;
 						charCodes = "";
 					} else {
-						keypressEvent.call(input, keypress, true, false, true, lvp + 1);
+						result = keypressEvent.call(input, keypress, true, false, true, lvp + 1);
+					}
+					if (!strict && $.isFunction(opts.onBeforeWrite)) {
+						result = opts.onBeforeWrite(keypress, getBuffer(), result.forwardPosition, opts);
+						if (result && result.refreshFromBuffer) {
+							var refresh = result.refreshFromBuffer;
+							refreshFromBuffer(refresh === true ? refresh : refresh.start, refresh.end, result.buffer);
+							resetMaskSet(true);
+							if (result.caret) {
+								getMaskSet().p = result.caret;
+							}
+						}
 					}
 				}
 			});
@@ -2011,11 +2022,8 @@
 								if (elem.inputmask.opts.autoUnmask) {
 									return elem.inputmask.unmaskedvalue();
 								} else {
-									var result = valhookGet(elem),
-										maskset = elem.inputmask.maskset,
-										bufferTemplate = maskset._buffer;
-									bufferTemplate = bufferTemplate ? bufferTemplate.join("") : "";
-									return result !== bufferTemplate ? result : "";
+									var result = valhookGet(elem);
+									return getLastValidPosition() !== -1 ? result : "";
 								}
 							} else return valhookGet(elem);
 						},
@@ -2037,7 +2045,7 @@
 				if (this.inputmask) {
 					return this.inputmask.opts.autoUnmask ?
 						this.inputmask.unmaskedvalue() :
-						(valueGet.call(this) !== getBufferTemplate().join("") ?
+						(getLastValidPosition() !== -1 ?
 							(document.activeElement === this && opts.clearMaskOnLostFocus ?
 								(isRTL ? clearOptionalTail(getBuffer().slice()).reverse() : clearOptionalTail(getBuffer().slice())).join("") :
 								valueGet.call(this)) :
@@ -2314,20 +2322,10 @@
 						input.title = opts.tooltip || getMaskSet().mask;
 					}
 
-					if (checkval && $.isFunction(opts.onBeforeWrite)) {
-						var result = opts.onBeforeWrite(e, getBuffer(), forwardPosition, opts);
-						if (result && result.refreshFromBuffer) {
-							var refresh = result.refreshFromBuffer;
-							refreshFromBuffer(refresh === true ? refresh : refresh.start, refresh.end, result.buffer);
-							resetMaskSet(true);
-							if (result.caret) {
-								getMaskSet().p = result.caret;
-							}
-						}
-					}
 					e.preventDefault();
 
 					if (checkval) {
+						valResult.forwardPosition = forwardPosition;
 						return valResult;
 					}
 				}
@@ -2680,7 +2678,7 @@
 					}
 				}
 				if (opts.clearMaskOnLostFocus && document.activeElement !== el) {
-					if (getLastValidPosition() == -1) {
+					if (getLastValidPosition() === -1) {
 						buffer = [];
 					} else {
 						clearOptionalTail(buffer);

@@ -873,7 +873,7 @@ define([
 		$("#testmask").Type("-0");
 		$(testmask).trigger("blur");
 		setTimeout(function () {
-			assert.equal(testmask.value, "", "Result " + testmask.value);
+			assert.equal(testmask.value, "0", "Result " + testmask.value);
 			done();
 		}, 0);
 	});
@@ -1711,5 +1711,24 @@ define([
 		testmask.focus();
 		$("#testmask").Type("978-3498064365");
 		assert.equal($(testmask).val(), "9783498064365", "Result " + $(testmask).val());
+	});
+	qunit.test("currency alias - isvalid - ivodopyanov - htmlmasta", function (assert) {
+		var done = assert.async(),
+			$fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("currency").mask(testmask);
+
+		testmask.focus();
+		$("#testmask").trigger("click");
+		setTimeout(function () {
+			var i, isValid;
+			for (i = 0; i < 10; i++) {
+				$("#testmask").Type("9");
+				isValid = Inputmask("currency").isValid(testmask.value);
+				assert.equal(isValid, true, "Value: \"" + testmask.value + "\"; isValid: " + isValid);
+			}
+			done();
+		}, 0);
 	});
 });
