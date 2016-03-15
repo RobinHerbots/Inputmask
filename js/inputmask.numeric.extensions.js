@@ -407,7 +407,9 @@
 						var radixPosition = $.inArray(opts.radixPoint, maskset.buffer),
 							matchRslt = maskset.buffer.slice(0, radixPosition !== -1 ? radixPosition : undefined).join("").match(opts.regex.integerNPart(opts));
 						if (matchRslt && (radixPosition === -1 || pos <= radixPosition)) {
-							if (matchRslt["0"].indexOf(opts.placeholder !== "" ? opts.placeholder.charAt(0) : "0") === 0 && isSelection !== true) {
+							var decimalPart = radixPosition === -1 ? 0 : parseInt(maskset.buffer.slice(radixPosition + 1).join(""));
+							if (matchRslt["0"].indexOf(opts.placeholder !== "" ? opts.placeholder.charAt(0) : "0") === 0 &&
+								(matchRslt.index + 1 === pos || (isSelection !== true && decimalPart === 0))) {
 								maskset.buffer.splice(matchRslt.index, 1);
 								pos = matchRslt.index;
 								return {
