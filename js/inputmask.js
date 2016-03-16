@@ -1520,18 +1520,16 @@
 			//Check for a nonmask before the pos
 			//find previous valid
 			for (var pndx = maskPos - 1; pndx > -1; pndx--) {
-				if (getMaskSet().validPositions[pndx]) {
-					break;
-				}
+				if (getMaskSet().validPositions[pndx]) break;
 			}
 			////fill missing nonmask and valid placeholders
-			pndx++;
 			var testTemplate;
-			for (; pndx < maskPos; pndx++) {
-				getBuffer();
-				if (getMaskSet().validPositions[pndx] === undefined && ((testTemplate = getTestTemplate(pndx)).match.def === opts.radixPointDefinitionSymbol || !isMask(pndx, true) ||
+			for (pndx++; pndx < maskPos; pndx++) {
+				if (getMaskSet().validPositions[pndx] === undefined &&
+					((testTemplate = getTestTemplate(pndx)).match.def === opts.radixPointDefinitionSymbol || !isMask(pndx, true) ||
+					(getBuffer()[pndx] === "0" && opts.radixPoint !== "") ||
 					($.inArray(opts.radixPoint, getBuffer()) < pndx && testTemplate.match.fn && testTemplate.match.fn.test(getPlaceholder(pndx), getMaskSet(), pndx, false, opts)))) {
-					_isValid(pndx, testTemplate.match.placeholder || (testTemplate.match.fn == null ? testTemplate.match.def : getPlaceholder(pndx)), true, fromSetValid);
+					_isValid(pndx, testTemplate.match.placeholder || (testTemplate.match.fn == null ? testTemplate.match.def : (getPlaceholder(pndx) !== "" ? getPlaceholder(pndx) : getBuffer()[pndx])), true, fromSetValid);
 				}
 			}
 

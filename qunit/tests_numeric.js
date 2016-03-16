@@ -1750,4 +1750,14 @@ define([
 			done();
 		}, 0);
 	});
+	qunit.test("currency - goto last decimal place type 2", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("currency").mask(testmask);
+		testmask.focus();
+		$.caret(testmask, 5);
+		$("#testmask").Type("2");
+		assert.equal($(testmask).val(), "$ 0.02", "Result " + $(testmask).val());
+	});
 });
