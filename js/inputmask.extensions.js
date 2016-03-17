@@ -96,18 +96,13 @@
 		"mac": {
 			mask: "##:##:##:##:##:##"
 		},
+		//https://en.wikipedia.org/wiki/Vehicle_identification_number
+		// see issue #1199
 		"vin": {
-			//https://en.wikipedia.org/wiki/Vehicle_identification_number
-			// see issue #1199
-			mask: "V{8}vV{4}9{4}",
+			mask: "V{13}9{4}",
 			definitions: {
 				'V': {
 					validator: "[A-HJ-NPR-Za-hj-npr-z\\d]",
-					cardinality: 1,
-					casing: "upper"
-				},
-				'v': {
-					validator: "[Xx\\d]",
 					cardinality: 1,
 					casing: "upper"
 				}
