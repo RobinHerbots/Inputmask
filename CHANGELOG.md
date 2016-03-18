@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 
 ### Added
+- nullable option => switch to return the placeholder or null when nothing is entered
 - VIN mask #1199
 
 ### Updates
@@ -14,6 +15,7 @@ All notable changes to this project will be documented in this file.
 - patchValueProperty - enable native value property patch on IE10/IE11
 
 ### Fixed
+- Distinguish empty value and '$ 0.00' value for currency alias #1053
 - 'alias': 'numeric', zero value #1221
 - Clicking on a highlighted masked field does not set the caret to the first valid position (Chrome) #1218
 - Caret Positioned After Last Decimal Digit Disallows Sign Input When digits Option Set #1139

@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.8-31
+* Version: 3.2.8-32
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -827,7 +827,7 @@
                             if (elem.inputmask) {
                                 if (elem.inputmask.opts.autoUnmask) return elem.inputmask.unmaskedvalue();
                                 var result = valhookGet(elem);
-                                return -1 !== getLastValidPosition() ? result : "";
+                                return -1 !== getLastValidPosition() || opts.nullable !== !0 ? result : "";
                             }
                             return valhookGet(elem);
                         },
@@ -841,7 +841,7 @@
                 }
             }
             function getter() {
-                return this.inputmask ? this.inputmask.opts.autoUnmask ? this.inputmask.unmaskedvalue() : -1 !== getLastValidPosition() ? document.activeElement === this && opts.clearMaskOnLostFocus ? (isRTL ? clearOptionalTail(getBuffer().slice()).reverse() : clearOptionalTail(getBuffer().slice())).join("") : valueGet.call(this) : "" : valueGet.call(this);
+                return this.inputmask ? this.inputmask.opts.autoUnmask ? this.inputmask.unmaskedvalue() : -1 !== getLastValidPosition() || opts.nullable !== !0 ? document.activeElement === this && opts.clearMaskOnLostFocus ? (isRTL ? clearOptionalTail(getBuffer().slice()).reverse() : clearOptionalTail(getBuffer().slice())).join("") : valueGet.call(this) : "" : valueGet.call(this);
             }
             function setter(value) {
                 valueSet.call(this, value), this.inputmask && $(this).trigger("setvalue");
@@ -1318,7 +1318,8 @@
             canClearPosition: $.noop,
             postValidation: null,
             staticDefinitionSymbol: void 0,
-            jitMasking: !1
+            jitMasking: !1,
+            nullable: !0
         },
         masksCache: {},
         mask: function(elems) {

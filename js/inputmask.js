@@ -118,7 +118,8 @@
 			canClearPosition: $.noop, //hook to alter the clear behavior in the stripValidPositions args => maskset, position, lastValidPosition, opts => return true|false
 			postValidation: null, //hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, currentResult, opts => return true/false
 			staticDefinitionSymbol: undefined, //specify a definitionSymbol for static content, used to make matches for alternators
-			jitMasking: false //just in time masking ~ only mask while typing, can n (number), true or false
+			jitMasking: false, //just in time masking ~ only mask while typing, can n (number), true or false
+			nullable: true //return nothing instead of the buffertemplate when nothing is returned.
 		},
 		masksCache: {},
 		mask: function (elems) {
@@ -2020,7 +2021,7 @@
 									return elem.inputmask.unmaskedvalue();
 								} else {
 									var result = valhookGet(elem);
-									return getLastValidPosition() !== -1 ? result : "";
+									return getLastValidPosition() !== -1 || opts.nullable !== true ? result : "";
 								}
 							} else return valhookGet(elem);
 						},
@@ -2042,7 +2043,7 @@
 				if (this.inputmask) {
 					return this.inputmask.opts.autoUnmask ?
 						this.inputmask.unmaskedvalue() :
-						(getLastValidPosition() !== -1 ?
+						(getLastValidPosition() !== -1 || opts.nullable !== true ?
 							(document.activeElement === this && opts.clearMaskOnLostFocus ?
 								(isRTL ? clearOptionalTail(getBuffer().slice()).reverse() : clearOptionalTail(getBuffer().slice())).join("") :
 								valueGet.call(this)) :

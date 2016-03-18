@@ -974,6 +974,10 @@ Inputmask("(99 99 999999)|(i{+})", {
 }).mask(selector);
 ```
 
+### nullable
+Return nothing when the user hasn't entered anything.
+Default: true
+
 ## General
 ### set a value and apply mask
 this can be done with the traditional jquery.val function (all browsers) or JavaScript value property for browsers which implement lookupGetter or getOwnPropertyDescriptor
