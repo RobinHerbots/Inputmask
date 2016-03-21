@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 - patchValueProperty - enable native value property patch on IE10/IE11
 
 ### Fixed
+- validate regular expression for indian vehicle registration number #1223
 - Distinguish empty value and '$ 0.00' value for currency alias #1053
 - 'alias': 'numeric', zero value #1221
 - Clicking on a highlighted masked field does not set the caret to the first valid position (Chrome) #1218
