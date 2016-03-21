@@ -1527,6 +1527,7 @@
 			var testTemplate;
 			for (pndx++; pndx < maskPos; pndx++) {
 				if (getMaskSet().validPositions[pndx] === undefined &&
+					(opts.jitMasking === false || opts.jitMasking > pndx) &&
 					((testTemplate = getTestTemplate(pndx)).match.def === opts.radixPointDefinitionSymbol || !isMask(pndx, true) ||
 					($.inArray(opts.radixPoint, getBuffer()) < pndx && testTemplate.match.fn && testTemplate.match.fn.test(getPlaceholder(pndx), getMaskSet(), pndx, false, opts)))) {
 					_isValid(getLastValidPosition(pndx, true) + 1, testTemplate.match.placeholder || (testTemplate.match.fn == null ? testTemplate.match.def : (getPlaceholder(pndx) !== "" ? getPlaceholder(pndx) : getBuffer()[pndx])), true, fromSetValid);
