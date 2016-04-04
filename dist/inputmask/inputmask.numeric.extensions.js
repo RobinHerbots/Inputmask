@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.8-36
+* Version: 3.2.8-37
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery"), require("./inputmask")) : factory(window.dependencyLib || jQuery, window.Inputmask);
@@ -205,7 +205,7 @@
             leadingZeroHandler: function(chrs, maskset, pos, strict, opts, isSelection) {
                 if (!strict) if (opts.numericInput === !0) {
                     var buffer = maskset.buffer.slice("").reverse(), char = buffer[opts.prefix.length];
-                    if ("0" === char) return {
+                    if ("0" === char && void 0 === maskset.validPositions[pos - 1]) return {
                         pos: pos,
                         remove: buffer.length - opts.prefix.length - 1
                     };
@@ -214,8 +214,8 @@
                     if (matchRslt && (-1 === radixPosition || radixPosition >= pos)) {
                         var decimalPart = -1 === radixPosition ? 0 : parseInt(maskset.buffer.slice(radixPosition + 1).join(""));
                         if (0 === matchRslt[0].indexOf("" !== opts.placeholder ? opts.placeholder.charAt(0) : "0") && (matchRslt.index + 1 === pos || isSelection !== !0 && 0 === decimalPart)) return maskset.buffer.splice(matchRslt.index, 1), 
-                        pos = matchRslt.index, {
-                            pos: pos,
+                        {
+                            pos: matchRslt.index,
                             remove: matchRslt.index
                         };
                         if ("0" === chrs && pos <= matchRslt.index && matchRslt[0] !== opts.groupSeparator) return !1;

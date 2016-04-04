@@ -397,7 +397,7 @@
 					if (opts.numericInput === true) {
 						var buffer = maskset.buffer.slice("").reverse();
 						var char = buffer[opts.prefix.length];
-						if (char === "0") {
+						if (char === "0" && maskset.validPositions[pos - 1] === undefined) {
 							return {
 								"pos": pos,
 								"remove": buffer.length - opts.prefix.length - 1
@@ -411,9 +411,8 @@
 							if (matchRslt["0"].indexOf(opts.placeholder !== "" ? opts.placeholder.charAt(0) : "0") === 0 &&
 								(matchRslt.index + 1 === pos || (isSelection !== true && decimalPart === 0))) {
 								maskset.buffer.splice(matchRslt.index, 1);
-								pos = matchRslt.index;
 								return {
-									"pos": pos,
+									"pos": matchRslt.index,
 									"remove": matchRslt.index
 								};
 							} else if (chrs === "0" && pos <= matchRslt.index && matchRslt["0"] !== opts.groupSeparator) {
