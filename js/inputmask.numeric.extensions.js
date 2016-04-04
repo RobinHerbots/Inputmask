@@ -98,6 +98,15 @@
 
 				opts.greedy = false; //enforce greedy false
 
+				//convert min and max options
+				if (opts.min !== null) {
+					opts.min = opts.min.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "");
+					if (opts.radixPoint === ",") opts.min = opts.min.replace(opts.radixPoint, ".");
+				}
+				if (opts.max !== null) {
+					opts.max = opts.max.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "");
+					if (opts.radixPoint === ",") opts.max = opts.max.replace(opts.radixPoint, ".");
+				}
 				return mask;
 			},
 			placeholder: "",
@@ -222,10 +231,12 @@
 						if (opts.min !== null && isFinite(opts.min) && signedFloatValue < parseFloat(opts.min)) {
 							floatValue = Math.abs(opts.min);
 							isNegative = opts.min < 0;
+							maskedValue = undefined;
 						}
 						else if (opts.max !== null && isFinite(opts.max) && signedFloatValue > parseFloat(opts.max)) {
 							floatValue = Math.abs(opts.max);
 							isNegative = opts.max < 0;
+							maskedValue = undefined;
 						}
 
 						processValue = floatValue.toString().replace(".", opts.radixPoint).split('');

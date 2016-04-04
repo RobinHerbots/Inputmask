@@ -1760,4 +1760,22 @@ define([
 		$("#testmask").Type("2");
 		assert.equal($(testmask).val(), "$ 0.02", "Result " + $(testmask).val());
 	});
+
+	qunit.test("decimal minvalue 0,3 - enter 0,2 - Aifz", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask({
+			'alias': 'decimal',
+			'radixPoint': ',',
+			'digits': '2',
+			'min': '0,3',
+			'max': '5',
+			'allowMinus': false
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("0,2");
+		testmask.blur();
+		assert.equal($(testmask).val(), "0,3", "Result " + $(testmask).val());
+	});
 });
