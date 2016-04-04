@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 - patchValueProperty - enable native value property patch on IE10/IE11
 
 ### Fixed
+- min value issue #1177
 - min value for decimal isn't working #1178
 - InputMask remove a 0 in left side. (numericInput: true) #1238
 - validate regular expression for indian vehicle registration number #1223

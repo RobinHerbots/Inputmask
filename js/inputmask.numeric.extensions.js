@@ -100,11 +100,11 @@
 
 				//convert min and max options
 				if (opts.min !== null) {
-					opts.min = opts.min.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "");
+					opts.min = opts.min.toString().replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "");
 					if (opts.radixPoint === ",") opts.min = opts.min.replace(opts.radixPoint, ".");
 				}
 				if (opts.max !== null) {
-					opts.max = opts.max.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "");
+					opts.max = opts.max.toString().replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "");
 					if (opts.radixPoint === ",") opts.max = opts.max.replace(opts.radixPoint, ".");
 				}
 				return mask;
