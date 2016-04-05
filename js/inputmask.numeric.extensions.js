@@ -223,6 +223,10 @@
 					isNegative = isNegative !== null && isNegative.length === 1;
 					processValue = processValue.replace(new RegExp("[-" + Inputmask.escapeRegex(opts.negationSymbol.front) + "]", "g"), "");
 					processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.negationSymbol.back) + "$"), "");
+					//strip placeholder at the end
+					if (isNaN(opts.placeholder)) {
+						processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.placeholder), "g"), "");
+					}
 					processValue = processValue === opts.negationSymbol.front ? processValue + "0" : processValue;
 
 					if (processValue !== "" && isFinite(processValue)) {

@@ -1778,4 +1778,19 @@ define([
 		testmask.blur();
 		assert.equal($(testmask).val(), "0,3", "Result " + $(testmask).val());
 	});
+
+	qunit.test("currency max = 100 - type 200 - zigtechjs", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("percentage", {
+			placeholder: "_",
+			digitsOptional: false,
+			max: 100,
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("200");
+		testmask.blur();
+		assert.equal($(testmask).val(), "100.00 %", "Result " + $(testmask).val());
+	});
 });
