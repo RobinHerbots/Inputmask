@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## UNRELEASED
+## [3.3.0] - 2016-04-05
 
 ### Added
 - nullable option => switch to return the placeholder or null when nothing is entered
