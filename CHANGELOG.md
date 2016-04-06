@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [UNRELEASED]
+
+### Fixed
+- Safari Error: RangeError: Maximum call stack size exceeded #1241
+- Safari Maximum call stack size exceeded when inputmask bound twice #1226
+
 ## [3.3.0] - 2016-04-05
 
 ### Added

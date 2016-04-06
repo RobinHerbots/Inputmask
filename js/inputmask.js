@@ -2103,16 +2103,6 @@
 					npt.__defineGetter__("value", getter);
 					npt.__defineSetter__("value", setter);
 				}
-				if (valueGet === undefined) { //jquery.val
-					valueGet = function () {
-						return npt.value;
-					};
-					valueSet = function (value) {
-						npt.value = value;
-					};
-					patchValhook(npt.type);
-					installNativeValueSetFallback(npt);
-				}
 				npt.inputmask.__valueGet = valueGet; //store native property getter
 				npt.inputmask._valueGet = function (overruleRTL) {
 					return isRTL && overruleRTL !== true ? valueGet.call(this.el).split("").reverse().join("") : valueGet.call(this.el);
@@ -2121,6 +2111,17 @@
 				npt.inputmask._valueSet = function (value, overruleRTL) { //null check is needed for IE8 => otherwise converts to "null"
 					valueSet.call(this.el, (value === null || value === undefined) ? "" : ((overruleRTL !== true && isRTL) ? value.split("").reverse().join("") : value));
 				};
+
+				if (valueGet === undefined) { //jquery.val fallback
+					valueGet = function () {
+						return this.value;
+					};
+					valueSet = function (value) {
+						this.value = value;
+					};
+					patchValhook(npt.type);
+					installNativeValueSetFallback(npt);
+				}
 			}
 		}
 

@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.0
+* Version: 3.3.1-0
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -873,16 +873,15 @@
                 } else document.__lookupGetter__ && npt.__lookupGetter__("value") && (valueGet = npt.__lookupGetter__("value"), 
                 valueSet = npt.__lookupSetter__("value"), npt.__defineGetter__("value", getter), 
                 npt.__defineSetter__("value", setter));
-                void 0 === valueGet && (valueGet = function() {
-                    return npt.value;
-                }, valueSet = function(value) {
-                    npt.value = value;
-                }, patchValhook(npt.type), installNativeValueSetFallback(npt)), npt.inputmask.__valueGet = valueGet, 
-                npt.inputmask._valueGet = function(overruleRTL) {
+                npt.inputmask.__valueGet = valueGet, npt.inputmask._valueGet = function(overruleRTL) {
                     return isRTL && overruleRTL !== !0 ? valueGet.call(this.el).split("").reverse().join("") : valueGet.call(this.el);
                 }, npt.inputmask.__valueSet = valueSet, npt.inputmask._valueSet = function(value, overruleRTL) {
                     valueSet.call(this.el, null === value || void 0 === value ? "" : overruleRTL !== !0 && isRTL ? value.split("").reverse().join("") : value);
-                };
+                }, void 0 === valueGet && (valueGet = function() {
+                    return this.value;
+                }, valueSet = function(value) {
+                    this.value = value;
+                }, patchValhook(npt.type), installNativeValueSetFallback(npt));
             }
         }
         function handleRemove(input, k, pos, strict) {
