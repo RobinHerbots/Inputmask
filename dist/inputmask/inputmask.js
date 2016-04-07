@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.1-1
+* Version: 3.3.1-2
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -1339,9 +1339,9 @@
                 }));
             }), elems && elems[0] ? elems[0].inputmask || this : this;
         },
-        option: function(options) {
+        option: function(options, noremask) {
             return "string" == typeof options ? this.opts[options] : "object" == typeof options ? ($.extend(this.userOptions, options), 
-            this.el && this.mask(this.el), this) : void 0;
+            this.el && noremask !== !0 && this.mask(this.el), this) : void 0;
         },
         unmaskedvalue: function(value) {
             return maskScope({

@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [UNRELEASED]
 
+### Updates
+- adding extra options though option method => auto apply the mask + add noremask option
+
 ### Fixed
 - Safari Error: RangeError: Maximum call stack size exceeded #1241
 - Safari Maximum call stack size exceeded when inputmask bound twice #1226

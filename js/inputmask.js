@@ -155,13 +155,13 @@
 			});
 			return elems && elems[0] ? (elems[0].inputmask || this) : this;
 		},
-		option: function (options) { //set extra options || retrieve value of a current option
+		option: function (options, noremask) { //set extra options || retrieve value of a current option
 			if (typeof options === "string") {
 				return this.opts[options];
 			} else if (typeof options === "object") {
 				$.extend(this.userOptions, options); //user passed options
 				//remask
-				if (this.el) {
+				if (this.el && noremask !== true) {
 					this.mask(this.el);
 				}
 				return this;
