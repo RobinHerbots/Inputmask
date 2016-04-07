@@ -565,6 +565,7 @@ The setvalue functionality is to set a value to the inputmask like you would do 
 
 ### option
 Get or set an option on an existing inputmask.
+The option method is intented for adding extra options like callbacks, etc at a later time to the mask.
 
 ```javascript
 $("#CellPhone").inputmask("option", {

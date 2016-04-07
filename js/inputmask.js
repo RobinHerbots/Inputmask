@@ -159,19 +159,10 @@
 			if (typeof options === "string") {
 				return this.opts[options];
 			} else if (typeof options === "object") {
-				$.extend(this.opts, options);
 				$.extend(this.userOptions, options); //user passed options
 				//remask
 				if (this.el) {
-					if (options.mask !== undefined || options.alias !== undefined) {
-						this.mask(this.el);
-					} else {
-						$.data(this.el, "_inputmask_opts", this.opts);
-						maskScope({
-							"action": "mask",
-							"el": this.el
-						});
-					}
+					this.mask(this.el);
 				}
 				return this;
 			}

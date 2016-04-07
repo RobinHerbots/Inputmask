@@ -19,7 +19,8 @@ define([
 	"tests_attributes",
 	"tests_alternations",
 	"tests_jitmasking",
-	"tests_jquery_inputmask"
+	"tests_jquery_inputmask",
+	"tests_option"
 ], function(qunit) {
 	qunit.load();
 	qunit.start();
