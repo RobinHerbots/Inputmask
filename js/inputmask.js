@@ -810,7 +810,7 @@
 				}
 				getMaskSet().validPositions[pos] = validTest;
 				var valid = true,
-					j, vps = getMaskSet().validPositions;
+					j, vps = getMaskSet().validPositions, needsValidation = false;
 				for (i = (j = pos); i <= lvp; i++) {
 					var t = positionsClone[i];
 					if (t !== undefined) {
@@ -822,11 +822,17 @@
 								posMatch++;
 							} else posMatch = seekNext(j);
 
-							//does it match
-							if (positionCanMatchDefinition(posMatch, t.match.def)) {
+							if (needsValidation === false && positionsClone[posMatch] && positionsClone[posMatch].match.def === t.match.def) { //obvious match
+								getMaskSet().validPositions[posMatch] = $.extend(true, {}, positionsClone[posMatch]);
+								getMaskSet().validPositions[posMatch].input = t.input;
+								j = posMatch;
+								valid = true;
+								break;
+							} else if (positionCanMatchDefinition(posMatch, t.match.def)) { //validated match
 								var result = isValid(posMatch, t.input, true, true);
 								valid = result !== false;
 								j = (result.caret || result.insert) ? getLastValidPosition() : posMatch;
+								needsValidation = true;
 								if (valid) break;
 							} else {
 								valid = t.match.fn == null;
@@ -860,7 +866,8 @@
 				return false;
 			}
 
-			var i, startPos = start;
+			var i, startPos = start,
+				positionsClone = $.extend(true, {}, getMaskSet().validPositions), needsValidation = false;
 			getMaskSet().p = start; //needed for alternated position after overtype selection
 
 			for (i = end - 1; i >= startPos; i--) { //clear selection
@@ -881,10 +888,16 @@
 				// while (getMaskSet().validPositions[i] == undefined) i++;
 				if ((getMaskSet().validPositions[i] !== undefined || !isMask(i)) && s === undefined) {
 					var t = getTestTemplate(i);
-					if (positionCanMatchDefinition(startPos, t.match.def)) {
+					if (needsValidation === false && positionsClone[startPos] && positionsClone[startPos].match.def === t.match.def) { //obvious match
+						getMaskSet().validPositions[startPos] = $.extend(true, {}, positionsClone[startPos]);
+						getMaskSet().validPositions[startPos].input = t.input;
+						delete getMaskSet().validPositions[i];
+						i++;
+					} else if (positionCanMatchDefinition(startPos, t.match.def)) {
 						if (isValid(startPos, t.input || getPlaceholder(i), true) !== false) {
 							delete getMaskSet().validPositions[i];
 							i++;
+							needsValidation = true;
 						}
 					} else if (!isMask(i)) {
 						i++;

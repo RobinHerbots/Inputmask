@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [UNRELEASED]
 
 ### Updates
+- speedup insert and delete from characters
 - adding extra options though option method => auto apply the mask + add noremask option
 
 ### Fixed
