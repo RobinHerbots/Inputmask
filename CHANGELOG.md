@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - adding extra options though option method => auto apply the mask + add noremask option
 
 ### Fixed
+- Email alias _@_ => _@_._ #1245
 - Safari Error: RangeError: Maximum call stack size exceeded #1241
 - Safari Maximum call stack size exceeded when inputmask bound twice #1226
 
