@@ -110,8 +110,7 @@ define([
 		testmask.focus();
 		$("#testmask").Type("some.");
 		testmask.blur();
-		assert.equal(testmask.value, "some.@_._
-
+		assert.equal(testmask.value, "some.@_._", "Result " + testmask.value);
 	});
 
 	qunit.test("email mask - partial input 2", function(assert) {

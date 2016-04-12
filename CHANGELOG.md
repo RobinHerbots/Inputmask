@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ### Updates
 - speedup insert and delete from characters
-- adding extra options though option method => auto apply the mask + add noremask option
+- adding extra options through option method => auto apply the mask + add noremask option
 
 ### Fixed
 - Email alias _@_ => _@_._ #1245
