@@ -2076,6 +2076,14 @@
 
 			if (!npt.inputmask.__valueGet) {
 				if (Object.getOwnPropertyDescriptor) {
+					if (typeof Object.getPrototypeOf !== "function") {
+						Object.getPrototypeOf = typeof "test".__proto__ === "object" ? function (object) {
+							return object.__proto__;
+						} : function (object) {
+							return object.constructor.prototype;
+						};
+					}
+
 					var valueProperty = Object.getPrototypeOf ? Object.getOwnPropertyDescriptor(Object.getPrototypeOf(npt), "value") : undefined;
 					if (valueProperty && valueProperty.get && valueProperty.set) {
 						valueGet = valueProperty.get;
