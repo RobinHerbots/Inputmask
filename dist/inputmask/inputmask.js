@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.1-9
+* Version: 3.3.1-19
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -453,15 +453,17 @@
                 }
             }
             function mergeLocators(tests) {
-                var test = tests[0] || tests;
-                return test.locator.slice();
+                var locator = [];
+                return $.isArray(tests) || (tests = [ tests ]), void 0 === tests[0].alternation ? locator = tests[0].locator.slice() : $.each(tests, function(ndx, tst) {
+                    if ("" !== tst.def) if (0 === locator.length) locator = tst.locator.slice(); else for (var i = 0; i < locator.length; i++) tst.locator[i] && -1 === locator[i].toString().indexOf(tst.locator[i]) && (locator[i] += "," + tst.locator[i]);
+                }), locator;
             }
             var latestMatch, maskTokens = getMaskSet().maskToken, testPos = ndxIntlzr ? tstPs : 0, ndxInitializer = ndxIntlzr || [ 0 ], matches = [], insertStop = !1, cacheDependency = ndxIntlzr ? ndxIntlzr.join("") : "";
             if (pos > -1) {
                 if (void 0 === ndxIntlzr) {
                     for (var test, previousPos = pos - 1; void 0 === (test = getMaskSet().validPositions[previousPos] || getMaskSet().tests[previousPos]) && previousPos > -1; ) previousPos--;
                     void 0 !== test && previousPos > -1 && (ndxInitializer = mergeLocators(test), cacheDependency = ndxInitializer.join(""), 
-                    test = test[0] || test, testPos = previousPos);
+                    testPos = previousPos);
                 }
                 if (getMaskSet().tests[pos] && getMaskSet().tests[pos][0].cd === cacheDependency) return getMaskSet().tests[pos];
                 for (var mtndx = ndxInitializer.shift(); mtndx < maskTokens.length; mtndx++) {
@@ -704,9 +706,9 @@
             if (test = test || getTest(pos), void 0 !== test.placeholder) return test.placeholder;
             if (null === test.fn) {
                 if (pos > -1 && !opts.keepStatic && void 0 === getMaskSet().validPositions[pos]) {
-                    var prevTest, tests = getTests(pos), staticAlternations = 0;
-                    if (tests.length > 2) for (var i = 0; i < tests.length; i++) if (tests[i].match.optionality !== !0 && tests[i].match.optionalQuantifier !== !0 && (null === tests[i].match.fn || void 0 === prevTest || tests[i].match.fn.test(prevTest.match.def, getMaskSet(), pos, !0, opts) !== !1) && (staticAlternations++, 
-                    null === tests[i].match.fn && (prevTest = tests[i]), staticAlternations > 1)) return opts.placeholder.charAt(pos % opts.placeholder.length);
+                    var prevTest, tests = getTests(pos), staticAlternations = [];
+                    if (tests.length > 2) for (var i = 0; i < tests.length; i++) if (tests[i].match.optionality !== !0 && tests[i].match.optionalQuantifier !== !0 && (null === tests[i].match.fn || void 0 === prevTest || tests[i].match.fn.test(prevTest.match.def, getMaskSet(), pos, !0, opts) !== !1) && (staticAlternations.push(tests[i]), 
+                    null === tests[i].match.fn && (prevTest = tests[i]), staticAlternations.length > 1)) return opts.placeholder.charAt(pos % opts.placeholder.length);
                 }
                 return test.def;
             }
@@ -866,6 +868,11 @@
             var valueGet, valueSet;
             if (!npt.inputmask.__valueGet) {
                 if (Object.getOwnPropertyDescriptor) {
+                    "function" != typeof Object.getPrototypeOf && (Object.getPrototypeOf = "object" == typeof "test".__proto__ ? function(object) {
+                        return object.__proto__;
+                    } : function(object) {
+                        return object.constructor.prototype;
+                    });
                     var valueProperty = Object.getPrototypeOf ? Object.getOwnPropertyDescriptor(Object.getPrototypeOf(npt), "value") : void 0;
                     valueProperty && valueProperty.get && valueProperty.set ? (valueGet = valueProperty.get, 
                     valueSet = valueProperty.set, Object.defineProperty(npt, "value", {

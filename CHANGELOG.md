@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [UNRELEASED]
 
 ### Updates
+- better handle alternator logic by merging the locators
 - patchValueProperty - enable native value property patch on IE8/IE9
 - speedup insert and delete from characters
 - adding extra options through option method => auto apply the mask + add noremask option
