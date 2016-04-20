@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - adding extra options through option method => auto apply the mask + add noremask option
 
 ### Fixed
+- Safari date mask - Context switch when jquery.valhook fallback is used #1255
 - Email alias _@_ => _@_._ #1245
 - Safari Error: RangeError: Maximum call stack size exceeded #1241
 - Safari Maximum call stack size exceeded when inputmask bound twice #1226

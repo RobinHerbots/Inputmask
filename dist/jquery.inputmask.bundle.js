@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.1-19
+* Version: 3.3.1-21
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -266,8 +266,8 @@
             maskset.buffer = void 0, soft !== !0 && (maskset.tests = {}, maskset._buffer = void 0, 
             maskset.validPositions = {}, maskset.p = 0);
         }
-        function getLastValidPosition(closestTo, strict) {
-            var before = -1, after = -1, valids = getMaskSet().validPositions;
+        function getLastValidPosition(closestTo, strict, validPositions) {
+            var before = -1, after = -1, valids = validPositions || getMaskSet().validPositions;
             void 0 === closestTo && (closestTo = -1);
             for (var posNdx in valids) {
                 var psNdx = parseInt(posNdx);
@@ -838,7 +838,7 @@
                             if (elem.inputmask) {
                                 if (elem.inputmask.opts.autoUnmask) return elem.inputmask.unmaskedvalue();
                                 var result = valhookGet(elem);
-                                return -1 !== getLastValidPosition() || opts.nullable !== !0 ? result : "";
+                                return -1 !== getLastValidPosition(void 0, void 0, elem.inputmask.maskset.validPositions) || opts.nullable !== !0 ? result : "";
                             }
                             return valhookGet(elem);
                         },

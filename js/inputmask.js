@@ -784,10 +784,10 @@
 			}
 		}
 
-		function getLastValidPosition(closestTo, strict) {
+		function getLastValidPosition(closestTo, strict, validPositions) {
 			var before = -1,
 				after = -1,
-				valids = getMaskSet().validPositions;
+				valids = validPositions || getMaskSet().validPositions; //for use in valhook ~ context switch
 			if (closestTo === undefined) closestTo = -1;
 			for (var posNdx in valids) {
 				var psNdx = parseInt(posNdx);
@@ -2044,7 +2044,7 @@
 									return elem.inputmask.unmaskedvalue();
 								} else {
 									var result = valhookGet(elem);
-									return getLastValidPosition() !== -1 || opts.nullable !== true ? result : "";
+									return getLastValidPosition(undefined, undefined, elem.inputmask.maskset.validPositions) !== -1 || opts.nullable !== true ? result : "";
 								}
 							} else return valhookGet(elem);
 						},
