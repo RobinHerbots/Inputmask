@@ -56,10 +56,11 @@
     "karma-chrome-launcher": "^0.2.0",
     "karma-firefox-launcher": "^0.1.6",
     "karma-ie-launcher": "^0.2.0",
-    "karma-phantomjs-launcher": "^0.2.0",
+    "karma-phantomjs-launcher": "^1.0.0",
     "karma-qunit": "^0.1.7",
     "karma-requirejs": "^0.2.2",
     "load-grunt-tasks": "^3.2.0",
+    "phantomjs-prebuilt": "^2.1.7",
     "qunitjs": "^1.20.0",
     "requirejs": "^2.1.20"
   }
