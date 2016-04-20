@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [UNRELEASED]
+## [3.3.1] - 2016-04-20
 
 ### Updates
 - better handle alternator logic by merging the locators
