@@ -972,7 +972,7 @@
 				matches = [],
 				insertStop = false,
 				latestMatch,
-				cacheDependency = ndxIntlzr ? ndxIntlzr.join('') : "";
+				cacheDependency = ndxIntlzr ? ndxIntlzr.join("") : "";
 
 			function resolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) { //ndxInitializer contains a set of indexes to speedup searches in the mtokens
 				function handleMatch(match, loopNdx, quantifierRecurse) {
@@ -1182,7 +1182,7 @@
 			}
 
 			if (pos > -1) {
-				if (ndxIntlzr === undefined) {
+				if (ndxIntlzr === undefined) { //determine index initializer
 					var previousPos = pos - 1,
 						test;
 					while ((test = getMaskSet().validPositions[previousPos] || getMaskSet().tests[previousPos]) === undefined && previousPos > -1) {
@@ -1197,7 +1197,6 @@
 				if (getMaskSet().tests[pos] && getMaskSet().tests[pos][0].cd === cacheDependency) { //cacheDependency is set on all tests, just check on the first
 					return getMaskSet().tests[pos];
 				}
-
 				for (var mtndx = ndxInitializer.shift(); mtndx < maskTokens.length; mtndx++) {
 					var match = resolveTestFromToken(maskTokens[mtndx], ndxInitializer, [mtndx]);
 					if ((match && testPos === pos) || testPos > pos) {
@@ -1207,14 +1206,15 @@
 			}
 			if (matches.length === 0 || insertStop) {
 				matches.push({
-					"match": {
+					match: {
 						fn: null,
 						cardinality: 0,
 						optionality: true,
 						casing: null,
 						def: ""
 					},
-					"locator": []
+					locator: [],
+					cd: cacheDependency
 				});
 			}
 			getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
