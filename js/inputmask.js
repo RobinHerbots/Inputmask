@@ -747,6 +747,8 @@
 			var maskTemplate = [],
 				ndxIntlzr, pos = 0,
 				test, testPos, lvp = getLastValidPosition();
+			maxLength = el !== undefined ? el.maxLength : undefined;
+			if (maxLength === -1) maxLength = undefined;
 			do {
 				if (baseOnInput === true && getMaskSet().validPositions[pos]) {
 					var validPos = getMaskSet().validPositions[pos];
@@ -762,10 +764,12 @@
 					}
 				}
 				pos++;
-			} while ((maxLength === undefined || pos - 1 < maxLength) && test.fn !== null || (test.fn === null && test.def !== "") || minimalPos >= pos);
+			} while ((maxLength === undefined || pos < maxLength) && (test.fn !== null || test.def !== "") || minimalPos > pos);
 			if (maskTemplate[maskTemplate.length - 1] === "") {
 				maskTemplate.pop(); //drop the last one which is empty
 			}
+
+			getMaskSet().maskLength = pos + 1;
 			return maskTemplate;
 		}
 
@@ -816,7 +820,7 @@
 					if (t !== undefined) {
 						var posMatch = j,
 							prevPosMatch = -1;
-						while (posMatch < getMaskLength() && ((t.match.fn == null && vps[i] && (vps[i].match.optionalQuantifier === true || vps[i].match.optionality === true)) || t.match.fn != null)) {
+						while (posMatch < getMaskSet().maskLength && ((t.match.fn == null && vps[i] && (vps[i].match.optionalQuantifier === true || vps[i].match.optionality === true)) || t.match.fn != null)) {
 							//determine next position
 							if (t.match.fn === null || (!opts.keepStatic && vps[i] && (vps[i + 1] !== undefined && getTests(i + 1, vps[i].locator.slice(), i).length > 1 || vps[i].alternation !== undefined))) {
 								posMatch++;
@@ -1562,7 +1566,7 @@
 				maskPos = getMaskSet().p;
 			}
 
-			if (maskPos < getMaskLength()) {
+			if (maskPos < getMaskSet().maskLength) {
 				result = _isValid(maskPos, c, strict, fromSetValid);
 				if ((!strict || fromSetValid === true) && result === false) {
 					var currentPosValid = getMaskSet().validPositions[maskPos];
@@ -1625,26 +1629,8 @@
 			return false;
 		}
 
-		function getMaskLength() {
-			var maskLength;
-			maxLength = el !== undefined ? el.maxLength : undefined;
-			if (maxLength === -1) maxLength = undefined;
-			/* FF sets no defined max length to -1 */
-			var pos, lvp = getLastValidPosition(),
-				testPos = getMaskSet().validPositions[lvp],
-				ndxIntlzr = testPos !== undefined ? testPos.locator.slice() : undefined;
-			for (pos = lvp + 1; testPos === undefined || (testPos.match.fn !== null || (testPos.match.fn === null && testPos.match.def !== "")); pos++) {
-				testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
-				ndxIntlzr = testPos.locator.slice();
-			}
-
-			var lastTest = getTest(pos - 1);
-			maskLength = (lastTest.def !== "") ? pos : pos - 1;
-			return (maxLength === undefined || maskLength < maxLength) ? maskLength : maxLength;
-		}
-
 		function seekNext(pos, newBlock) {
-			var maskL = getMaskLength();
+			var maskL = getMaskSet().maskLength;
 			if (pos >= maskL) return maskL;
 			var position = pos;
 			while (++position < maskL && ((newBlock === true && (getTest(position).newBlockMarker !== true || !isMask(position))) || (newBlock !== true && !isMask(position) && (opts.nojumps !== true || opts.nojumpsThreshold > position)))) {
@@ -2246,7 +2232,7 @@
 			} else if (k === Inputmask.keyCode.END || k === Inputmask.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
 				e.preventDefault();
 				var caretPos = seekNext(getLastValidPosition());
-				if (!opts.insertMode && caretPos === getMaskLength() && !e.shiftKey) caretPos--;
+				if (!opts.insertMode && caretPos === getMaskSet().maskLength && !e.shiftKey) caretPos--;
 				caret(input, e.shiftKey ? pos.begin : caretPos, caretPos, true);
 			} else if ((k === Inputmask.keyCode.HOME && !e.shiftKey) || k === Inputmask.keyCode.PAGE_UP) { //Home or page_up
 				e.preventDefault();
@@ -2256,7 +2242,7 @@
 				$input.trigger("click");
 			} else if (k === Inputmask.keyCode.INSERT && !(e.shiftKey || e.ctrlKey)) { //insert
 				opts.insertMode = !opts.insertMode;
-				caret(input, !opts.insertMode && pos.begin === getMaskLength() ? pos.begin - 1 : pos.begin);
+				caret(input, !opts.insertMode && pos.begin === getMaskSet().maskLength ? pos.begin - 1 : pos.begin);
 			} else if (opts.tabThrough === true && k === Inputmask.keyCode.TAB) {
 				if (e.shiftKey === true) {
 					if (getTest(pos.begin).fn === null) {
@@ -2267,9 +2253,9 @@
 				} else {
 					pos.begin = seekNext(pos.begin, true);
 					pos.end = seekNext(pos.begin, true);
-					if (pos.end < getMaskLength()) pos.end--;
+					if (pos.end < getMaskSet().maskLength) pos.end--;
 				}
-				if (pos.begin < getMaskLength()) {
+				if (pos.begin < getMaskSet().maskLength) {
 					e.preventDefault();
 					caret(input, pos.begin, pos.end);
 				}

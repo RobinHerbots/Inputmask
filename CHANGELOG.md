@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [UNRELEASED]
+
+### Updates
+- performance updates
+	- getmasklength
+
 ## [3.3.1] - 2016-04-20
 
 ### Updates
