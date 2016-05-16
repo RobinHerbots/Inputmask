@@ -120,7 +120,8 @@
 			staticDefinitionSymbol: undefined, //specify a definitionSymbol for static content, used to make matches for alternators
 			jitMasking: false, //just in time masking ~ only mask while typing, can n (number), true or false
 			nullable: true, //return nothing instead of the buffertemplate when nothing is returned.
-			inputEventOnly: false //testing inputfallback behavior
+			inputEventOnly: false, //testing inputfallback behavior
+			noPropertyPatching: false // don't attempt to redefine standart/native properties (e.g. `input.value`)
 		},
 		masksCache: {},
 		mask: function (elems) {
@@ -2116,43 +2117,45 @@
 			}
 
 			if (!npt.inputmask.__valueGet) {
-				if (Object.getOwnPropertyDescriptor) {
-					if (typeof Object.getPrototypeOf !== "function") {
-						Object.getPrototypeOf = typeof "test".__proto__ === "object" ? function (object) {
-							return object.__proto__;
-						} : function (object) {
-							return object.constructor.prototype;
-						};
-					}
+				if (!npt.inputmask.opts.noPropertyPatching) {
+					if (Object.getOwnPropertyDescriptor) {
+						if (typeof Object.getPrototypeOf !== "function") {
+							Object.getPrototypeOf = typeof "test".__proto__ === "object" ? function (object) {
+								return object.__proto__;
+							} : function (object) {
+								return object.constructor.prototype;
+							};
+						}
 
-					var valueProperty = Object.getPrototypeOf ? Object.getOwnPropertyDescriptor(Object.getPrototypeOf(npt), "value") : undefined;
-					if (valueProperty && valueProperty.get && valueProperty.set) {
-						valueGet = valueProperty.get;
-						valueSet = valueProperty.set;
-						Object.defineProperty(npt, "value", {
-							get: getter,
-							set: setter,
-							configurable: true
-						});
-					} else if (npt.tagName !== "INPUT") {
-						valueGet = function () {
-							return this.textContent;
-						};
-						valueSet = function (value) {
-							this.textContent = value;
-						};
-						Object.defineProperty(npt, "value", {
-							get: getter,
-							set: setter,
-							configurable: true
-						});
-					}
-				} else if (document.__lookupGetter__ && npt.__lookupGetter__("value")) {
-					valueGet = npt.__lookupGetter__("value");
-					valueSet = npt.__lookupSetter__("value");
+						var valueProperty = Object.getPrototypeOf ? Object.getOwnPropertyDescriptor(Object.getPrototypeOf(npt), "value") : undefined;
+						if (valueProperty && valueProperty.get && valueProperty.set) {
+							valueGet = valueProperty.get;
+							valueSet = valueProperty.set;
+							Object.defineProperty(npt, "value", {
+								get: getter,
+								set: setter,
+								configurable: true
+							});
+						} else if (npt.tagName !== "INPUT") {
+							valueGet = function () {
+								return this.textContent;
+							};
+							valueSet = function (value) {
+								this.textContent = value;
+							};
+							Object.defineProperty(npt, "value", {
+								get: getter,
+								set: setter,
+								configurable: true
+							});
+						}
+					} else if (document.__lookupGetter__ && npt.__lookupGetter__("value")) {
+						valueGet = npt.__lookupGetter__("value");
+						valueSet = npt.__lookupSetter__("value");
 
-					npt.__defineGetter__("value", getter);
-					npt.__defineSetter__("value", setter);
+						npt.__defineGetter__("value", getter);
+						npt.__defineSetter__("value", setter);
+					}
 				}
 				npt.inputmask.__valueGet = valueGet; //store native property getter
 				npt.inputmask._valueGet = function (overruleRTL) {
@@ -2830,21 +2833,23 @@
 					EventRuler.off(el);
 					//restore the value property
 					var valueProperty;
-					if (Object.getOwnPropertyDescriptor && Object.getPrototypeOf) {
-						valueProperty = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), "value");
-						if (valueProperty) {
-							if (el.inputmask.__valueGet) {
-								Object.defineProperty(el, "value", {
-									get: el.inputmask.__valueGet,
-									set: el.inputmask.__valueSet,
-									configurable: true
-								});
+					if (!el.inputmask.opts.noPropertyPatching) {
+						if (Object.getOwnPropertyDescriptor && Object.getPrototypeOf) {
+							valueProperty = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), "value");
+							if (valueProperty) {
+								if (el.inputmask.__valueGet) {
+									Object.defineProperty(el, "value", {
+										get: el.inputmask.__valueGet,
+										set: el.inputmask.__valueSet,
+										configurable: true
+									});
+								}
 							}
-						}
-					} else if (document.__lookupGetter__ && el.__lookupGetter__("value")) {
-						if (el.inputmask.__valueGet) {
-							el.__defineGetter__("value", el.inputmask.__valueGet);
-							el.__defineSetter__("value", el.inputmask.__valueSet);
+						} else if (document.__lookupGetter__ && el.__lookupGetter__("value")) {
+							if (el.inputmask.__valueGet) {
+								el.__defineGetter__("value", el.inputmask.__valueGet);
+								el.__defineSetter__("value", el.inputmask.__valueSet);
+							}
 						}
 					}
 					//clear data
