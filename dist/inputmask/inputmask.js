@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.2-0
+* Version: 3.3.2-1
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -505,7 +505,7 @@
             delete getMaskSet().tests[i];
             for (i = start; end > i; i++) resetMaskSet(!0), buffer[i] !== opts.skipOptionalPartCharacter && isValid(i, buffer[i], !0, !0);
         }
-        function casing(elem, test) {
+        function casing(elem, test, pos) {
             switch (test.casing) {
               case "upper":
                 elem = elem.toUpperCase();
@@ -513,6 +513,11 @@
 
               case "lower":
                 elem = elem.toLowerCase();
+                break;
+
+              case "title":
+                var posBefore = getMaskSet().validPositions[pos - 1];
+                elem = 0 === pos || posBefore && posBefore.input === String.fromCharCode(Inputmask.keyCode.SPACE) ? elem.toUpperCase() : elem.toLowerCase();
             }
             return elem;
         }
@@ -560,7 +565,7 @@
                         !1;
                         return rslt !== !0 && void 0 === rslt.pos && void 0 === rslt.c ? !1 : (ndx > 0 && resetMaskSet(!0), 
                         setValidPosition(validatedPos, $.extend({}, tst, {
-                            input: casing(elem, test)
+                            input: casing(elem, test, validatedPos)
                         }), fromSetValid, isSelection(pos)) || (rslt = !1), !1);
                     }
                 }), rslt;

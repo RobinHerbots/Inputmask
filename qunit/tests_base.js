@@ -557,4 +557,22 @@ define([
 
 		assert.equal(document.getElementById("testmask").inputmask._valueGet(), "+7 922 684-51-86", "Result " + document.getElementById("testmask").inputmask._valueGet());
 	});
+
+	qunit.test("Title Case - Especially", function(assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("p{1,10}", {
+			definitions: {
+				"p": {
+					validator: "[A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5 ]",
+					cardinality: 1,
+					casing: "title" //auto uppercasing
+				}
+			},
+		}).mask(testmask);
+		$(testmask).val("title case");
+
+		assert.equal(document.getElementById("testmask").inputmask._valueGet(), "Title Case", "Result " + document.getElementById("testmask").inputmask._valueGet());
+	});
 });

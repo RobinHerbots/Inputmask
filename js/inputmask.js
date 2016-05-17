@@ -1306,13 +1306,21 @@
 			}
 		}
 
-		function casing(elem, test) {
+		function casing(elem, test, pos) {
 			switch (test.casing) {
 				case "upper":
 					elem = elem.toUpperCase();
 					break;
 				case "lower":
 					elem = elem.toLowerCase();
+					break;
+				case "title":
+					var posBefore = getMaskSet().validPositions[pos - 1];
+					if (pos === 0 || posBefore && posBefore.input === String.fromCharCode(Inputmask.keyCode.SPACE)) {
+						elem = elem.toUpperCase();
+					} else {
+						elem = elem.toLowerCase();
+					}
 					break;
 			}
 
@@ -1423,7 +1431,7 @@
 						}
 
 						if (!setValidPosition(validatedPos, $.extend({}, tst, {
-								"input": casing(elem, test)
+								"input": casing(elem, test, validatedPos)
 							}), fromSetValid, isSelection(pos))) {
 							rslt = false;
 						}
