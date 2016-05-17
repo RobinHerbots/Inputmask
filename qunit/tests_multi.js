@@ -414,7 +414,7 @@ define([
 		}).mask(testmask);
 		testmask.focus();
 		$("#testmask").trigger("click");
-		assert.equal(testmask.inputmask._valueGet(), "+7(___)___-__-__", "Result " + testmask.inputmask._valueGet());
+		assert.equal(testmask.inputmask._valueGet(), "+_(___)___-__-__", "Result " + testmask.inputmask._valueGet());
 
 	});
 });

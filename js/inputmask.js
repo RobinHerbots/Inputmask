@@ -119,7 +119,8 @@
 			postValidation: null, //hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, currentResult, opts => return true/false
 			staticDefinitionSymbol: undefined, //specify a definitionSymbol for static content, used to make matches for alternators
 			jitMasking: false, //just in time masking ~ only mask while typing, can n (number), true or false
-			nullable: true //return nothing instead of the buffertemplate when nothing is returned.
+			nullable: true, //return nothing instead of the buffertemplate when nothing is returned.
+			inputEventOnly: false //testing inputfallback behavior
 		},
 		masksCache: {},
 		mask: function (elems) {
@@ -726,8 +727,8 @@
 	var ua = navigator.userAgent,
 		mobile = /mobile/i.test(ua),
 		iemobile = /iemobile/i.test(ua),
-		iphone = /iphone/i.test(ua) && !iemobile,
-		android = /android.*safari.*/i.test(ua) && !iemobile;
+		iphone = /iphone/i.test(ua) && !iemobile;
+	//android = /android.*safari.*/i.test(ua) && !iemobile;
 
 	//masking scope
 	//actionObj definition see below
@@ -917,7 +918,7 @@
 		function getTestTemplate(pos, ndxIntlzr, tstPs) {
 			var testPos = getMaskSet().validPositions[pos];
 			if (testPos === undefined) {
-				var testPositions = getTests(pos, ndxIntlzr, tstPs),
+				var testPositions = getTests(pos, ndxIntlzr ? ndxIntlzr.slice() : ndxIntlzr, tstPs),
 					lvp = getLastValidPosition(),
 					lvTest = getMaskSet().validPositions[lvp] || getTests(0)[0],
 					lvTestAltArr = (lvTest.alternation !== undefined) ? lvTest.locator[lvTest.alternation].toString().split(",") : [];
@@ -972,7 +973,7 @@
 		function getTests(pos, ndxIntlzr, tstPs) {
 			var maskTokens = getMaskSet().maskToken,
 				testPos = ndxIntlzr ? tstPs : 0,
-				ndxInitializer = ndxIntlzr || [0],
+				ndxInitializer = ndxIntlzr ? ndxIntlzr.slice() : [0],
 				matches = [],
 				insertStop = false,
 				latestMatch,
@@ -1097,6 +1098,7 @@
 												altLocArr = lmnt.locator[alternation].toString().split(",");
 											lmnt.locator[alternation] = undefined;
 											lmnt.alternation = undefined;
+
 											for (var alndx = 0; alndx < altLocArr.length; alndx++) {
 												mamatch = $.inArray(altLocArr[alndx], altIndexArr) !== -1;
 												if (mamatch) { //rebuild the locator with valid entries
@@ -1108,6 +1110,7 @@
 													lmnt.alternation = alternation;
 												}
 											}
+
 											if (lmnt.locator[alternation] !== undefined) return lmnt;
 										}
 									});
@@ -1185,6 +1188,31 @@
 				return locator;
 			}
 
+			function filterTests(tests) {
+				if (false && ndxIntlzr !== undefined) {
+					var temp = $.map(tests, function (test) {
+						var match = true;
+						for (var i = 0, ndxtl = tests.length, ndxil = ndxIntlzr ? ndxIntlzr.length : 0; i < ndxil; i++) {
+							if ((typeof test.locator[i] === "string" && !checkAlternationMatch(test.locator[i].split(","), ndxIntlzr[i].toString().split(","))) ||
+								(typeof test.locator[i] !== "string" && (test.locator[i] < ndxIntlzr[i] && (i !== ndxil - 1 || i !== ndxtl - 1 )))) {
+								match = false;
+								break;
+							}
+						}
+						if (match) {
+							return test;
+						}
+					});
+
+					if (temp.length == 0) {
+						console.log(JSON.stringify(tests));
+					}
+
+					return temp;
+				}
+				return tests;
+			}
+
 			if (pos > -1) {
 				if (ndxIntlzr === undefined) { //determine index initializer
 					var previousPos = pos - 1,
@@ -1199,7 +1227,15 @@
 					}
 				}
 				if (getMaskSet().tests[pos] && getMaskSet().tests[pos][0].cd === cacheDependency) { //cacheDependency is set on all tests, just check on the first
-					return getMaskSet().tests[pos];
+					//console.log("cache hit " + pos + " - " + ndxIntlzr);
+					return filterTests(getMaskSet().tests[pos]);
+				} else {
+					//console.log("cache mis " + pos + " - " + ndxIntlzr);
+					//if (ndxIntlzr !== undefined) { //initially faster load
+					//	testPos = ndxIntlzr ? tstPs : 0;
+					//	ndxInitializer = ndxIntlzr || [0];
+					//	cacheDependency = ndxIntlzr ? ndxIntlzr.join("") : "";
+					//}
 				}
 				for (var mtndx = ndxInitializer.shift(); mtndx < maskTokens.length; mtndx++) {
 					var match = resolveTestFromToken(maskTokens[mtndx], ndxInitializer, [mtndx]);
@@ -1221,6 +1257,7 @@
 					cd: cacheDependency
 				});
 			}
+
 			getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
 			//console.log(pos + " - " + JSON.stringify(matches));
 			return getMaskSet().tests[pos];
@@ -2675,8 +2712,10 @@
 				EventRuler.on(el, "complete", opts.oncomplete);
 				EventRuler.on(el, "incomplete", opts.onincomplete);
 				EventRuler.on(el, "cleared", opts.oncleared);
-				EventRuler.on(el, "keydown", keydownEvent);
-				EventRuler.on(el, "keypress", keypressEvent);
+				if (opts.inputEventOnly !== true) {
+					EventRuler.on(el, "keydown", keydownEvent);
+					EventRuler.on(el, "keypress", keypressEvent);
+				}
 				EventRuler.on(el, "input", inputFallBackEvent);
 			}
 			EventRuler.on(el, "setvalue", setValueEvent);
