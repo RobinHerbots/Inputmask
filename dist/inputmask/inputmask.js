@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.2-1
+* Version: 3.3.2-2
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -590,7 +590,7 @@
                                 for (var possibilityPos, possibilities, dp = decisionPos; dp >= 0; dp--) if (possibilityPos = getMaskSet().validPositions[dp], 
                                 void 0 !== possibilityPos) {
                                     var bestMatch = selectBestMatch(dp, altNdxs[mndx]);
-                                    getMaskSet().validPositions[dp].match.def !== bestMatch.match.def && (validInputs.push(getMaskSet().validPositions[dp].input), 
+                                    getMaskSet().validPositions[dp].match.def !== bestMatch.match.def && (getMaskSet().validPositions[dp].generatedInput !== !0 && validInputs.push(getMaskSet().validPositions[dp].input), 
                                     getMaskSet().validPositions[dp] = bestMatch, getMaskSet().validPositions[dp].input = getPlaceholder(dp), 
                                     null === getMaskSet().validPositions[dp].match.fn && staticInputsBeforePosAlternate++, 
                                     possibilityPos = bestMatch), possibilities = possibilityPos.locator[alternation], 
@@ -637,8 +637,10 @@
             var maskPos = pos;
             void 0 !== pos.begin && (maskPos = isRTL && !isSelection(pos) ? pos.end : pos.begin);
             for (var result = !1, positionsClone = $.extend(!0, {}, getMaskSet().validPositions), pndx = maskPos - 1; pndx > -1 && !getMaskSet().validPositions[pndx]; pndx--) ;
-            var testTemplate;
-            for (pndx++; maskPos > pndx; pndx++) void 0 === getMaskSet().validPositions[pndx] && (opts.jitMasking === !1 || opts.jitMasking > pndx) && ((testTemplate = getTestTemplate(pndx)).match.def === opts.radixPointDefinitionSymbol || !isMask(pndx, !0) || $.inArray(opts.radixPoint, getBuffer()) < pndx && testTemplate.match.fn && testTemplate.match.fn.test(getPlaceholder(pndx), getMaskSet(), pndx, !1, opts)) && _isValid(getLastValidPosition(pndx, !0) + 1, testTemplate.match.placeholder || (null == testTemplate.match.fn ? testTemplate.match.def : "" !== getPlaceholder(pndx) ? getPlaceholder(pndx) : getBuffer()[pndx]), !0, fromSetValid);
+            var testTemplate, generatedPos;
+            for (pndx++; maskPos > pndx; pndx++) void 0 === getMaskSet().validPositions[pndx] && (opts.jitMasking === !1 || opts.jitMasking > pndx) && ((testTemplate = getTestTemplate(pndx)).match.def === opts.radixPointDefinitionSymbol || !isMask(pndx, !0) || $.inArray(opts.radixPoint, getBuffer()) < pndx && testTemplate.match.fn && testTemplate.match.fn.test(getPlaceholder(pndx), getMaskSet(), pndx, !1, opts)) && (generatedPos = getLastValidPosition(pndx, !0) + 1, 
+            result = _isValid(generatedPos, testTemplate.match.placeholder || (null == testTemplate.match.fn ? testTemplate.match.def : "" !== getPlaceholder(pndx) ? getPlaceholder(pndx) : getBuffer()[pndx]), !0, fromSetValid), 
+            result !== !1 && (getMaskSet().validPositions[result.pos || generatedPos].generatedInput = !0));
             if (isSelection(pos) && (handleRemove(void 0, Inputmask.keyCode.DELETE, pos), maskPos = getMaskSet().p), 
             maskPos < getMaskSet().maskLength && (result = _isValid(maskPos, c, strict, fromSetValid), 
             (!strict || fromSetValid === !0) && result === !1)) {

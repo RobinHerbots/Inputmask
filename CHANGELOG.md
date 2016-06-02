@@ -10,6 +10,10 @@ All notable changes to this project will be documented in this file.
 - performance updates
 	- getmasklength
 
+### Fixed
+
+- How to implement mask for these numbers? #840 (alternator)
+
 ## [3.3.1] - 2016-04-20
 
 ### Updates

@@ -1494,7 +1494,9 @@
 										if (possibilityPos !== undefined) {
 											var bestMatch = selectBestMatch(dp, altNdxs[mndx]);
 											if (getMaskSet().validPositions[dp].match.def !== bestMatch.match.def) {
-												validInputs.push(getMaskSet().validPositions[dp].input);
+												if (getMaskSet().validPositions[dp].generatedInput !== true) {
+													validInputs.push(getMaskSet().validPositions[dp].input);
+												}
 												getMaskSet().validPositions[dp] = bestMatch;
 												getMaskSet().validPositions[dp].input = getPlaceholder(dp);
 												if (getMaskSet().validPositions[dp].match.fn === null) {
@@ -1595,13 +1597,17 @@
 				if (getMaskSet().validPositions[pndx]) break;
 			}
 			////fill missing nonmask and valid placeholders
-			var testTemplate;
+			var testTemplate, generatedPos;
 			for (pndx++; pndx < maskPos; pndx++) {
 				if (getMaskSet().validPositions[pndx] === undefined &&
 					(opts.jitMasking === false || opts.jitMasking > pndx) &&
 					((testTemplate = getTestTemplate(pndx)).match.def === opts.radixPointDefinitionSymbol || !isMask(pndx, true) ||
 					($.inArray(opts.radixPoint, getBuffer()) < pndx && testTemplate.match.fn && testTemplate.match.fn.test(getPlaceholder(pndx), getMaskSet(), pndx, false, opts)))) {
-					_isValid(getLastValidPosition(pndx, true) + 1, testTemplate.match.placeholder || (testTemplate.match.fn == null ? testTemplate.match.def : (getPlaceholder(pndx) !== "" ? getPlaceholder(pndx) : getBuffer()[pndx])), true, fromSetValid);
+					generatedPos = getLastValidPosition(pndx, true) + 1;
+					result = _isValid(generatedPos, testTemplate.match.placeholder || (testTemplate.match.fn == null ? testTemplate.match.def : (getPlaceholder(pndx) !== "" ? getPlaceholder(pndx) : getBuffer()[pndx])), true, fromSetValid);
+					if (result !== false) {
+						getMaskSet().validPositions[result.pos || generatedPos].generatedInput = true;
+					}
 				}
 			}
 

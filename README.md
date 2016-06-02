@@ -1023,8 +1023,8 @@ $(document).ready(function(){
 });
 ```
 
-### auto upper/lower- casing inputmask
-You can define within a definition to automatically lowercase or uppercase the entry in an input by giving the casing.<br>Casing can be null, "upper" or "lower"
+### auto-casing inputmask
+You can define within a definition to automatically apply some casing on the entry in an input by giving the casing.<br>Casing can be null, "upper", "lower" or "title".
 
 ```javascript
 Inputmask.extendDefinitions({
