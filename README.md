@@ -924,9 +924,6 @@ Define the radixpoint (decimal separator)<br>Default: ""
 ### groupSeparator (numerics)
 Define the groupseparator<br>Default: ""
 
-### radixFocus (numerics)
-Position the caret to the radixpoint on the initial click into the inputfield.<br>Default: false
-
 ### nojumps
 Do not jump over fixed parts in the mask.<br>Default: false
 
@@ -989,6 +986,10 @@ Inputmask("(99 99 999999)|(i{+})", {
 ### nullable
 Return nothing when the user hasn't entered anything.
 Default: true
+
+### positionCaretOnClick
+Positioning of the caret on click.  Options none, lvp (based on the last valid position (default), radixFocus (position caret to radixpoint on initial click)
+Default: "lvp"
 
 ## General
 ### set a value and apply mask

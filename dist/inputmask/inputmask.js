@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.2-5
+* Version: 3.3.2-6
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -1058,7 +1058,7 @@
         }
         function clickEvent(e) {
             function doRadixFocus(clickPos) {
-                if (opts.radixFocus && "" !== opts.radixPoint) {
+                if ("" !== opts.radixPoint) {
                     var vps = getMaskSet().validPositions;
                     if (void 0 === vps[clickPos] || vps[clickPos].input === getPlaceholder(clickPos)) {
                         if (clickPos < seekNext(-1)) return !0;
@@ -1075,7 +1075,17 @@
             setTimeout(function() {
                 if (document.activeElement === input) {
                     var selectedCaret = caret(input);
-                    if (selectedCaret.begin === selectedCaret.end) if (doRadixFocus(selectedCaret.begin)) caret(input, opts.numericInput ? seekNext($.inArray(opts.radixPoint, getBuffer())) : $.inArray(opts.radixPoint, getBuffer())); else {
+                    if (selectedCaret.begin === selectedCaret.end) switch (opts.positionCaretOnClick) {
+                      case "none":
+                        break;
+
+                      case "radixFocus":
+                        if (doRadixFocus(selectedCaret.begin)) {
+                            caret(input, opts.numericInput ? seekNext($.inArray(opts.radixPoint, getBuffer())) : $.inArray(opts.radixPoint, getBuffer()));
+                            break;
+                        }
+
+                      default:
                         var clickPosition = selectedCaret.begin, lvclickPosition = getLastValidPosition(clickPosition, !0), lastPosition = seekNext(lvclickPosition);
                         if (lastPosition > clickPosition) caret(input, isMask(clickPosition) || isMask(clickPosition - 1) ? clickPosition : seekNext(clickPosition)); else {
                             var placeholder = getPlaceholder(lastPosition);
@@ -1312,7 +1322,6 @@
             radixPoint: "",
             radixPointDefinitionSymbol: void 0,
             groupSeparator: "",
-            radixFocus: !1,
             nojumps: !1,
             nojumpsThreshold: 0,
             keepStatic: null,
@@ -1342,7 +1351,8 @@
             staticDefinitionSymbol: void 0,
             jitMasking: !1,
             nullable: !0,
-            inputEventOnly: !1
+            inputEventOnly: !1,
+            positionCaretOnClick: "lvp"
         },
         masksCache: {},
         mask: function(elems) {

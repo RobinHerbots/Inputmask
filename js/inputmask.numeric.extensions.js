@@ -70,13 +70,14 @@
 					opts.placeholder = opts.placeholder.charAt(0);
 				}
 				//only allow radixfocus when placeholder = 0
-				opts.radixFocus = opts.radixFocus && opts.placeholder !== "" && opts.integerOptional === true;
-
+				if (opts.positionCaretOnClick === "radixFocus" && (opts.placeholder === "" && opts.integerOptional === false)) {
+					opts.positionCaretOnClick = "lvp";
+				}
 				opts.definitions[";"] = opts.definitions["~"]; //clone integer def for decimals
 				opts.definitions[";"].definitionSymbol = "~";
 
 				if (opts.numericInput === true) { //finance people input style
-					opts.radixFocus = false;
+					opts.positionCaretOnClick = opts.positionCaretOnClick === "radixFocus" ? "lvp" : opts.positionCaretOnClick;
 					opts.digitsOptional = false;
 					if (isNaN(opts.digits)) opts.digits = 2;
 					opts.decimalProtect = false;
@@ -114,7 +115,7 @@
 			digits: "*", //number of fractionalDigits
 			digitsOptional: true,
 			radixPoint: ".",
-			radixFocus: true,
+			positionCaretOnClick: "radixFocus",
 			groupSize: 3,
 			groupSeparator: "",
 			autoGroup: false,

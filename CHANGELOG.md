@@ -7,11 +7,12 @@ All notable changes to this project will be documented in this file.
 - 'casing': 'title' #1277
 
 ### Updates
+- replaced radixFocus option by positionCaretOnClick.  Allows choice for behavior of the caret on click. (none, lvp (default), radixFocus)
 - performance updates
 	- getmasklength
 
 ### Fixed
-
+- How Can I have caret position on decimal digit(after decimal point) for currency inputmask ? #1282
 - How to implement mask for these numbers? #840 (alternator)
 - 'setvalue' on mask with a suffix results in suffix being doubled, while `$.fn.val` works fine #1267
 

@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.2-5
+* Version: 3.3.2-6
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -1056,7 +1056,7 @@
         }
         function clickEvent(e) {
             function doRadixFocus(clickPos) {
-                if (opts.radixFocus && "" !== opts.radixPoint) {
+                if ("" !== opts.radixPoint) {
                     var vps = getMaskSet().validPositions;
                     if (void 0 === vps[clickPos] || vps[clickPos].input === getPlaceholder(clickPos)) {
                         if (clickPos < seekNext(-1)) return !0;
@@ -1073,7 +1073,17 @@
             setTimeout(function() {
                 if (document.activeElement === input) {
                     var selectedCaret = caret(input);
-                    if (selectedCaret.begin === selectedCaret.end) if (doRadixFocus(selectedCaret.begin)) caret(input, opts.numericInput ? seekNext($.inArray(opts.radixPoint, getBuffer())) : $.inArray(opts.radixPoint, getBuffer())); else {
+                    if (selectedCaret.begin === selectedCaret.end) switch (opts.positionCaretOnClick) {
+                      case "none":
+                        break;
+
+                      case "radixFocus":
+                        if (doRadixFocus(selectedCaret.begin)) {
+                            caret(input, opts.numericInput ? seekNext($.inArray(opts.radixPoint, getBuffer())) : $.inArray(opts.radixPoint, getBuffer()));
+                            break;
+                        }
+
+                      default:
                         var clickPosition = selectedCaret.begin, lvclickPosition = getLastValidPosition(clickPosition, !0), lastPosition = seekNext(lvclickPosition);
                         if (lastPosition > clickPosition) caret(input, isMask(clickPosition) || isMask(clickPosition - 1) ? clickPosition : seekNext(clickPosition)); else {
                             var placeholder = getPlaceholder(lastPosition);
@@ -1310,7 +1320,6 @@
             radixPoint: "",
             radixPointDefinitionSymbol: void 0,
             groupSeparator: "",
-            radixFocus: !1,
             nojumps: !1,
             nojumpsThreshold: 0,
             keepStatic: null,
@@ -1340,7 +1349,8 @@
             staticDefinitionSymbol: void 0,
             jitMasking: !1,
             nullable: !0,
-            inputEventOnly: !1
+            inputEventOnly: !1,
+            positionCaretOnClick: "lvp"
         },
         masksCache: {},
         mask: function(elems) {
@@ -2121,10 +2131,10 @@
                     opts.integerDigits < 1 && (opts.integerDigits = "*");
                 }
                 opts.placeholder.length > 1 && (opts.placeholder = opts.placeholder.charAt(0)), 
-                opts.radixFocus = opts.radixFocus && "" !== opts.placeholder && opts.integerOptional === !0, 
+                "radixFocus" === opts.positionCaretOnClick && "" === opts.placeholder && opts.integerOptional === !1 && (opts.positionCaretOnClick = "lvp"), 
                 opts.definitions[";"] = opts.definitions["~"], opts.definitions[";"].definitionSymbol = "~", 
-                opts.numericInput === !0 && (opts.radixFocus = !1, opts.digitsOptional = !1, isNaN(opts.digits) && (opts.digits = 2), 
-                opts.decimalProtect = !1);
+                opts.numericInput === !0 && (opts.positionCaretOnClick = "radixFocus" === opts.positionCaretOnClick ? "lvp" : opts.positionCaretOnClick, 
+                opts.digitsOptional = !1, isNaN(opts.digits) && (opts.digits = 2), opts.decimalProtect = !1);
                 var mask = autoEscape(opts.prefix);
                 return mask += "[+]", mask += opts.integerOptional === !0 ? "~{1," + opts.integerDigits + "}" : "~{" + opts.integerDigits + "}", 
                 void 0 !== opts.digits && (isNaN(opts.digits) || parseInt(opts.digits) > 0) && (opts.decimalProtect && (opts.radixPointDefinitionSymbol = ":"), 
@@ -2140,7 +2150,7 @@
             digits: "*",
             digitsOptional: !0,
             radixPoint: ".",
-            radixFocus: !0,
+            positionCaretOnClick: "radixFocus",
             groupSize: 3,
             groupSeparator: "",
             autoGroup: !1,

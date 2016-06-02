@@ -88,7 +88,6 @@
 			radixPoint: "", //".", // | ","
 			radixPointDefinitionSymbol: undefined, //set the radixPoint definitionSymbol ~ used for awareness of the radixpoint
 			groupSeparator: "", //",", // | "."
-			radixFocus: false, //position caret to radixpoint on initial click
 			//numeric basic properties
 			nojumps: false, //do not jump over fixed parts in the mask
 			nojumpsThreshold: 0, //start nojumps as of
@@ -120,7 +119,8 @@
 			staticDefinitionSymbol: undefined, //specify a definitionSymbol for static content, used to make matches for alternators
 			jitMasking: false, //just in time masking ~ only mask while typing, can n (number), true or false
 			nullable: true, //return nothing instead of the buffertemplate when nothing is returned.
-			inputEventOnly: false //testing inputfallback behavior
+			inputEventOnly: false, //testing inputfallback behavior
+			positionCaretOnClick: "lvp" //none, lvp (based on the last valid position (default), radixFocus (position caret to radixpoint on initial click)
 		},
 		masksCache: {},
 		mask: function (elems) {
@@ -2539,7 +2539,7 @@
 
 		function clickEvent(e) {
 			function doRadixFocus(clickPos) {
-				if (opts.radixFocus && opts.radixPoint !== "") {
+				if (opts.radixPoint !== "") {
 					var vps = getMaskSet().validPositions;
 					if (vps[clickPos] === undefined || (vps[clickPos].input === getPlaceholder(clickPos))) {
 						if (clickPos < seekNext(-1)) return true;
@@ -2562,22 +2562,29 @@
 				if (document.activeElement === input) {
 					var selectedCaret = caret(input);
 					if (selectedCaret.begin === selectedCaret.end) {
-						if (doRadixFocus(selectedCaret.begin)) {
-							caret(input, opts.numericInput ? seekNext($.inArray(opts.radixPoint, getBuffer())) : $.inArray(opts.radixPoint, getBuffer()));
-						} else {
-							var clickPosition = selectedCaret.begin,
-								lvclickPosition = getLastValidPosition(clickPosition, true),
-								lastPosition = seekNext(lvclickPosition);
-
-							if (clickPosition < lastPosition) {
-								caret(input, !isMask(clickPosition) && !isMask(clickPosition - 1) ? seekNext(clickPosition) : clickPosition);
-							} else {
-								var placeholder = getPlaceholder(lastPosition);
-								if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder) || (!isMask(lastPosition, true) && getTest(lastPosition).def === placeholder)) {
-									lastPosition = seekNext(lastPosition);
+						switch (opts.positionCaretOnClick) {
+							case "none":
+								break;
+							case "radixFocus":
+								if (doRadixFocus(selectedCaret.begin)) {
+									caret(input, opts.numericInput ? seekNext($.inArray(opts.radixPoint, getBuffer())) : $.inArray(opts.radixPoint, getBuffer()));
+									break;
 								}
-								caret(input, lastPosition);
-							}
+							default: //lvp:
+								var clickPosition = selectedCaret.begin,
+									lvclickPosition = getLastValidPosition(clickPosition, true),
+									lastPosition = seekNext(lvclickPosition);
+
+								if (clickPosition < lastPosition) {
+									caret(input, !isMask(clickPosition) && !isMask(clickPosition - 1) ? seekNext(clickPosition) : clickPosition);
+								} else {
+									var placeholder = getPlaceholder(lastPosition);
+									if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder) || (!isMask(lastPosition, true) && getTest(lastPosition).def === placeholder)) {
+										lastPosition = seekNext(lastPosition);
+									}
+									caret(input, lastPosition);
+								}
+								break;
 						}
 					}
 				}
