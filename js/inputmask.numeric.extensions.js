@@ -411,8 +411,8 @@
 				if (!strict) {
 					if (opts.numericInput === true) {
 						var buffer = maskset.buffer.slice("").reverse();
-						var char = buffer[opts.prefix.length];
-						if (char === "0" && maskset.validPositions[pos - 1] === undefined) {
+						var bufferChar = buffer[opts.prefix.length];
+						if (bufferChar === "0" && maskset.validPositions[pos - 1] === undefined) {
 							return {
 								"pos": pos,
 								"remove": buffer.length - opts.prefix.length - 1

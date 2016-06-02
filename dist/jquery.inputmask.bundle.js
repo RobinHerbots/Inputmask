@@ -2305,8 +2305,8 @@
             },
             leadingZeroHandler: function(chrs, maskset, pos, strict, opts, isSelection) {
                 if (!strict) if (opts.numericInput === !0) {
-                    var buffer = maskset.buffer.slice("").reverse(), char = buffer[opts.prefix.length];
-                    if ("0" === char && void 0 === maskset.validPositions[pos - 1]) return {
+                    var buffer = maskset.buffer.slice("").reverse(), bufferChar = buffer[opts.prefix.length];
+                    if ("0" === bufferChar && void 0 === maskset.validPositions[pos - 1]) return {
                         pos: pos,
                         remove: buffer.length - opts.prefix.length - 1
                     };
