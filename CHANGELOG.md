@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 - How to implement mask for these numbers? #840 (alternator)
+- 'setvalue' on mask with a suffix results in suffix being doubled, while `$.fn.val` works fine #1267
 
 ## [3.3.1] - 2016-04-20
 

@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.2-4
+* Version: 3.3.2-5
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -1490,7 +1490,7 @@
             return input && input.inputmask ? input.inputmask.getmetadata() : void 0;
 
           case "setvalue":
-            $(input).val(options), input && void 0 !== input.inputmask && $(input).triggerHandler("setvalue");
+            $(input).val(options), input && void 0 === input.inputmask && $(input).triggerHandler("setvalue");
             break;
 
           case "option":
