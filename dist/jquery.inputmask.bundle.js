@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.2-6
+* Version: 3.3.2-9
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -757,10 +757,10 @@
             if (input && void 0 === input.inputmask) return input.value;
             var umValue = [], vps = getMaskSet().validPositions;
             for (var pndx in vps) vps[pndx].match && null != vps[pndx].match.fn && umValue.push(vps[pndx].input);
-            var unmaskedValue = 0 === umValue.length ? null : (isRTL ? umValue.reverse() : umValue).join("");
-            if (null !== unmaskedValue) {
+            var unmaskedValue = 0 === umValue.length ? "" : (isRTL ? umValue.reverse() : umValue).join("");
+            if ($.isFunction(opts.onUnMask)) {
                 var bufferValue = (isRTL ? getBuffer().slice().reverse() : getBuffer()).join("");
-                $.isFunction(opts.onUnMask) && (unmaskedValue = opts.onUnMask(bufferValue, unmaskedValue, opts) || unmaskedValue);
+                unmaskedValue = opts.onUnMask(bufferValue, unmaskedValue, opts) || unmaskedValue;
             }
             return unmaskedValue;
         }
@@ -2403,6 +2403,7 @@
                 }
             },
             onUnMask: function(maskedValue, unmaskedValue, opts) {
+                if ("" === unmaskedValue && opts.nullable === !0) return unmaskedValue;
                 var processValue = maskedValue.replace(opts.prefix, "");
                 return processValue = processValue.replace(opts.suffix, ""), processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), ""), 
                 opts.unmaskAsNumber ? ("" !== opts.radixPoint && -1 !== processValue.indexOf(opts.radixPoint) && (processValue = processValue.replace(Inputmask.escapeRegex.call(this, opts.radixPoint), ".")), 

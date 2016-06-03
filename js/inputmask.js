@@ -118,7 +118,7 @@
 			postValidation: null, //hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, currentResult, opts => return true/false
 			staticDefinitionSymbol: undefined, //specify a definitionSymbol for static content, used to make matches for alternators
 			jitMasking: false, //just in time masking ~ only mask while typing, can n (number), true or false
-			nullable: true, //return nothing instead of the buffertemplate when nothing is returned.
+			nullable: true, //return nothing instead of the buffertemplate when the user hasn't entered anything.
 			inputEventOnly: false, //testing inputfallback behavior
 			positionCaretOnClick: "lvp" //none, lvp (based on the last valid position (default), radixFocus (position caret to radixpoint on initial click)
 		},
@@ -1837,12 +1837,10 @@
 					umValue.push(vps[pndx].input);
 				}
 			}
-			var unmaskedValue = umValue.length === 0 ? null : (isRTL ? umValue.reverse() : umValue).join("");
-			if (unmaskedValue !== null) {
+			var unmaskedValue = umValue.length === 0 ? "" : (isRTL ? umValue.reverse() : umValue).join("");
+			if ($.isFunction(opts.onUnMask)) {
 				var bufferValue = (isRTL ? getBuffer().slice().reverse() : getBuffer()).join("");
-				if ($.isFunction(opts.onUnMask)) {
-					unmaskedValue = (opts.onUnMask(bufferValue, unmaskedValue, opts) || unmaskedValue);
-				}
+				unmaskedValue = (opts.onUnMask(bufferValue, unmaskedValue, opts) || unmaskedValue);
 			}
 			return unmaskedValue;
 		}

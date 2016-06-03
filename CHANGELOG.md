@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 	- getmasklength
 
 ### Fixed
+- onUnMask is not being called #1291
 - How Can I have caret position on decimal digit(after decimal point) for currency inputmask ? #1282
 - How to implement mask for these numbers? #840 (alternator)
 - 'setvalue' on mask with a suffix results in suffix being doubled, while `$.fn.val` works fine #1267

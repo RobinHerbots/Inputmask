@@ -536,6 +536,9 @@
 				}
 			},
 			onUnMask: function (maskedValue, unmaskedValue, opts) {
+				if (unmaskedValue === "" && opts.nullable === true) {
+					return unmaskedValue;
+				}
 				var processValue = maskedValue.replace(opts.prefix, "");
 				processValue = processValue.replace(opts.suffix, "");
 				processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "");
