@@ -74,3 +74,5 @@ Default: 1
 ### unmaskAsNumber
 Make unmasking returning a number instead of a string.
 Default: false
+
+Be warned that using the unmaskAsNumber option together with jQuery.serialize will fail as serialize expects a string. (See issue #1288)

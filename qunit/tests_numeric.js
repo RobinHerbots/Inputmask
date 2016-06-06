@@ -1793,4 +1793,24 @@ define([
 		testmask.blur();
 		assert.equal($(testmask).val(), "100.00 %", "Result " + $(testmask).val());
 	});
+
+	qunit.test("Numbers get swapped when cursor near suffix. #1278 - xklepio", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask('decimal', {
+			radixPoint: ',',
+			groupSeparator: '.',
+			autoGroup: true,
+			repeat: 10,
+			digits: '2',
+			autoUnmask: true,
+			suffix: ' €'
+		}).mask(testmask);
+		testmask.focus();
+		$.caret(testmask, 1);
+		$("#testmask").Type("52");
+		assert.equal($("#testmask")[0].inputmask._valueGet(), "52 €", "Result " + $("#testmask")[0].inputmask._valueGet());
+	});
+
 });
