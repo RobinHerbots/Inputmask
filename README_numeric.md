@@ -75,4 +75,7 @@ Default: 1
 Make unmasking returning a number instead of a string.
 Default: false
 
-Be warned that using the unmaskAsNumber option together with jQuery.serialize will fail as serialize expects a string. (See issue #1288)
+Be warned that using the unmaskAsNumber option together with jQuery.serialize will fail as serialize expects a string. (See issue [#1288])
+
+
+[#1288]: https://github.com/RobinHerbots/jquery.inputmask/issues/1288
