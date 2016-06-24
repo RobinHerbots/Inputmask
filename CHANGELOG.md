@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - replaced radixFocus option by positionCaretOnClick.  Allows choice for behavior of the caret on click. (none, lvp (default), radixFocus)
 - performance updates
 	- getmasklength
+	- set selective caching in getTests
 
 ### Fixed
 - Bug when typing after a fixed character #1299

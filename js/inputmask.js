@@ -1071,16 +1071,13 @@
 									}
 									//fuzzy merge matches
 									for (var ndx1 = 0; ndx1 < maltMatches.length; ndx1++) {
-										var altMatch = maltMatches[ndx1];
+										var altMatch = maltMatches[ndx1], hasMatch = false;
 										altMatch.alternation = altMatch.alternation || loopNdxCnt;
 										for (var ndx2 = 0; ndx2 < malternateMatches.length; ndx2++) {
 											var altMatch2 = malternateMatches[ndx2];
 											//verify equality
 											if (altMatch.match.def === altMatch2.match.def && (typeof altIndex !== "string" || $.inArray(altMatch.locator[altMatch.alternation].toString(), altIndexArr) !== -1)) {
-												if (altMatch.match.mask === altMatch2.match.mask) {
-													maltMatches.splice(ndx1, 1);
-													ndx1--;
-												}
+												hasMatch = altMatch.match.mask === altMatch2.match.mask;
 												if (altMatch2.locator[altMatch.alternation].toString().indexOf(altMatch.locator[altMatch.alternation]) === -1) {
 													altMatch2.locator[altMatch.alternation] = altMatch2.locator[altMatch.alternation] + "," + altMatch.locator[altMatch.alternation];
 													altMatch2.alternation = altMatch.alternation; //we pass the alternation index => used in determineLastRequiredPosition
@@ -1088,10 +1085,11 @@
 												break;
 											}
 										}
+										if (!hasMatch) {
+											malternateMatches.push(altMatch);
+										}
 									}
-									malternateMatches = malternateMatches.concat(maltMatches);
 								}
-
 								if (typeof altIndex == "string") { //filter matches
 									malternateMatches = $.map(malternateMatches, function (lmnt, ndx) {
 										if (isFinite(ndx)) {
@@ -1214,6 +1212,7 @@
 
 					return temp;
 				}
+
 				return tests;
 			}
 
@@ -1255,13 +1254,17 @@
 						cardinality: 0,
 						optionality: true,
 						casing: null,
-						def: ""
+						def: "",
+						placeholder: ""
 					},
 					locator: [],
 					cd: cacheDependency
 				});
 			}
 
+			if (ndxIntlzr !== undefined && getMaskSet().tests[pos]) { //prioritize full tests for caching
+				return $.extend(true, [], matches);
+			}
 			getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
 			//console.log(pos + " - " + JSON.stringify(matches));
 			return getMaskSet().tests[pos];
@@ -1271,19 +1274,15 @@
 			if (getMaskSet()._buffer === undefined) {
 				//generate template
 				getMaskSet()._buffer = getMaskTemplate(false, 1);
+				if (getMaskSet().buffer === undefined) {
+					getMaskSet()._buffer.slice();
+				}
 			}
 			return getMaskSet()._buffer;
 		}
 
 		function getBuffer(noCache) {
 			if (getMaskSet().buffer === undefined || noCache === true) {
-				if (noCache === true) {
-					for (var testNdx in getMaskSet().tests) {
-						if (getMaskSet().validPositions[testNdx] === undefined) {
-							delete getMaskSet().tests[testNdx];
-						}
-					}
-				}
 				getMaskSet().buffer = getMaskTemplate(true, getLastValidPosition(), true);
 			}
 			return getMaskSet().buffer;
@@ -1291,7 +1290,6 @@
 
 		function refreshFromBuffer(start, end, buffer) {
 			var i;
-			buffer = buffer;
 			if (start === true) {
 				resetMaskSet();
 				start = 0;
@@ -1357,92 +1355,92 @@
 			}
 
 			function _isValid(position, c, strict, fromSetValid) {
-				var rslt = false;
+				var rslt = false, validatedDefs = {};
 				$.each(getTests(position), function (ndx, tst) {
-					var test = tst.match;
-					var loopend = c ? 1 : 0,
-						chrs = "";
-					for (var i = test.cardinality; i > loopend; i--) {
-						chrs += getBufferElement(position - (i - 1));
-					}
-					if (c) {
-						chrs += c;
-					}
-
-					//make sure the buffer is set and correct
-					getBuffer(true);
-					//return is false or a json object => { pos: ??, c: ??} or true
-					rslt = test.fn != null ?
-						test.fn.test(chrs, getMaskSet(), position, strict, opts, isSelection(pos)) : (c === test.def || c === opts.skipOptionalPartCharacter) && test.def !== "" ? //non mask
-					{
-						c: test.placeholder || test.def,
-						pos: position
-					} : false;
-
-					if (rslt !== false) {
-						var elem = rslt.c !== undefined ? rslt.c : c;
-						elem = (elem === opts.skipOptionalPartCharacter && test.fn === null) ? (test.placeholder || test.def) : elem;
-
-						var validatedPos = position,
-							possibleModifiedBuffer = getBuffer();
-
-						if (rslt.remove !== undefined) { //remove position(s)
-							if (!$.isArray(rslt.remove)) rslt.remove = [rslt.remove];
-							$.each(rslt.remove.sort(function (a, b) {
-								return b - a;
-							}), function (ndx, lmnt) {
-								stripValidPositions(lmnt, lmnt + 1, true);
-							});
+						var test = tst.match,
+							loopend = c ? 1 : 0,
+							chrs = "";
+						for (var i = test.cardinality; i > loopend; i--) {
+							chrs += getBufferElement(position - (i - 1));
 						}
-						if (rslt.insert !== undefined) { //insert position(s)
-							if (!$.isArray(rslt.insert)) rslt.insert = [rslt.insert];
-							$.each(rslt.insert.sort(function (a, b) {
-								return a - b;
-							}), function (ndx, lmnt) {
-								isValid(lmnt.pos, lmnt.c, false, fromSetValid);
-							});
+						if (c) {
+							chrs += c;
 						}
 
-						if (rslt.refreshFromBuffer) {
-							var refresh = rslt.refreshFromBuffer;
-							strict = true;
-							refreshFromBuffer(refresh === true ? refresh : refresh.start, refresh.end, possibleModifiedBuffer);
-							if (rslt.pos === undefined && rslt.c === undefined) {
-								rslt.pos = getLastValidPosition();
-								return false; //breakout if refreshFromBuffer && nothing to insert
+						//make sure the buffer is set and correct
+						getBuffer(true);
+						//return is false or a json object => { pos: ??, c: ??} or true
+						rslt = test.fn != null ?
+							test.fn.test(chrs, getMaskSet(), position, strict, opts, isSelection(pos)) : (c === test.def || c === opts.skipOptionalPartCharacter) && test.def !== "" ? //non mask
+						{
+							c: test.placeholder || test.def,
+							pos: position
+						} : false;
+
+						if (rslt !== false) {
+							var elem = rslt.c !== undefined ? rslt.c : c;
+							elem = (elem === opts.skipOptionalPartCharacter && test.fn === null) ? (test.placeholder || test.def) : elem;
+
+							var validatedPos = position,
+								possibleModifiedBuffer = getBuffer();
+
+							if (rslt.remove !== undefined) { //remove position(s)
+								if (!$.isArray(rslt.remove)) rslt.remove = [rslt.remove];
+								$.each(rslt.remove.sort(function (a, b) {
+									return b - a;
+								}), function (ndx, lmnt) {
+									stripValidPositions(lmnt, lmnt + 1, true);
+								});
 							}
-							validatedPos = rslt.pos !== undefined ? rslt.pos : position;
-							if (validatedPos !== position) {
-								rslt = $.extend(rslt, isValid(validatedPos, elem, true, fromSetValid)); //revalidate new position strict
-								return false;
+							if (rslt.insert !== undefined) { //insert position(s)
+								if (!$.isArray(rslt.insert)) rslt.insert = [rslt.insert];
+								$.each(rslt.insert.sort(function (a, b) {
+									return a - b;
+								}), function (ndx, lmnt) {
+									isValid(lmnt.pos, lmnt.c, false, fromSetValid);
+								});
 							}
 
-						} else if (rslt !== true && rslt.pos !== undefined && rslt.pos !== position) { //their is a position offset
-							validatedPos = rslt.pos;
-							refreshFromBuffer(position, validatedPos, getBuffer().slice());
-							if (validatedPos !== position) {
-								rslt = $.extend(rslt, isValid(validatedPos, elem, true)); //revalidate new position strict
-								return false;
+							if (rslt.refreshFromBuffer) {
+								var refresh = rslt.refreshFromBuffer;
+								strict = true;
+								refreshFromBuffer(refresh === true ? refresh : refresh.start, refresh.end, possibleModifiedBuffer);
+								if (rslt.pos === undefined && rslt.c === undefined) {
+									rslt.pos = getLastValidPosition();
+									return false; //breakout if refreshFromBuffer && nothing to insert
+								}
+								validatedPos = rslt.pos !== undefined ? rslt.pos : position;
+								if (validatedPos !== position) {
+									rslt = $.extend(rslt, isValid(validatedPos, elem, true, fromSetValid)); //revalidate new position strict
+									return false;
+								}
+
+							} else if (rslt !== true && rslt.pos !== undefined && rslt.pos !== position) { //their is a position offset
+								validatedPos = rslt.pos;
+								refreshFromBuffer(position, validatedPos, getBuffer().slice());
+								if (validatedPos !== position) {
+									rslt = $.extend(rslt, isValid(validatedPos, elem, true)); //revalidate new position strict
+									return false;
+								}
 							}
-						}
 
-						if (rslt !== true && rslt.pos === undefined && rslt.c === undefined) {
-							return false; //breakout if nothing to insert
-						}
+							if (rslt !== true && rslt.pos === undefined && rslt.c === undefined) {
+								return false; //breakout if nothing to insert
+							}
 
-						if (ndx > 0) {
-							resetMaskSet(true);
-						}
+							if (ndx > 0) {
+								resetMaskSet(true);
+							}
 
-						if (!setValidPosition(validatedPos, $.extend({}, tst, {
-								"input": casing(elem, test, validatedPos)
-							}), fromSetValid, isSelection(pos))) {
-							rslt = false;
+							if (!setValidPosition(validatedPos, $.extend({}, tst, {
+									"input": casing(elem, test, validatedPos)
+								}), fromSetValid, isSelection(pos))) {
+								rslt = false;
+							}
+							return false; //break from $.each
 						}
-						return false; //break from $.each
 					}
-				});
-
+				);
 				return rslt;
 			}
 
@@ -1563,7 +1561,7 @@
 				return false;
 			}
 
-			//set alternator choice on previous skipped placeholder positions
+//set alternator choice on previous skipped placeholder positions
 			function trackbackAlternations(originalPos, newPos) {
 				var vp = getMaskSet().validPositions[newPos],
 					targetLocator = vp.locator,
@@ -1591,16 +1589,15 @@
 				}
 			}
 
-
 			var result = false,
 				positionsClone = $.extend(true, {}, getMaskSet().validPositions); //clone the currentPositions
 
-			//Check for a nonmask before the pos
-			//find previous valid
+//Check for a nonmask before the pos
+//find previous valid
 			for (var pndx = maskPos - 1; pndx > -1; pndx--) {
 				if (getMaskSet().validPositions[pndx]) break;
 			}
-			////fill missing nonmask and valid placeholders
+////fill missing nonmask and valid placeholders
 			var testTemplate, generatedPos;
 			for (pndx++; pndx < maskPos; pndx++) {
 				if (getMaskSet().validPositions[pndx] === undefined &&
@@ -1629,7 +1626,7 @@
 							"caret": seekNext(maskPos)
 						};
 					} else if ((opts.insertMode || getMaskSet().validPositions[seekNext(maskPos)] === undefined) && !isMask(maskPos, true)) { //does the input match on a further position?
-						var testsFromPos = getTests(maskPos);
+						var testsFromPos = getTests(maskPos).slice();
 						if (testsFromPos[testsFromPos.length - 1].match.def === "") testsFromPos.pop();
 						var staticChar = determineTestTemplate(testsFromPos, true);
 						if (staticChar) {

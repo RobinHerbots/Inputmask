@@ -108,6 +108,7 @@
 					opts.max = opts.max.toString().replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "");
 					if (opts.radixPoint === ",") opts.max = opts.max.replace(opts.radixPoint, ".");
 				}
+
 				return mask;
 			},
 			placeholder: "",
