@@ -18,6 +18,6 @@ define([
 
 		$("#testmask").inputmask({"mask": "99-9999-99"});
 		$("#testmask").focus();
-		assert.equal(testmask.inputmask._valueGet(), "__-____-__", "Result " + testmask.inputmask._valueGet());
+		assert.equal($("#testmask")[0].inputmask._valueGet(), "__-____-__", "Result " + $("#testmask")[0].inputmask._valueGet());
 	});
 });

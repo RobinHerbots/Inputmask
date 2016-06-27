@@ -1355,7 +1355,7 @@
 			}
 
 			function _isValid(position, c, strict, fromSetValid) {
-				var rslt = false, validatedDefs = {};
+				var rslt = false;
 				$.each(getTests(position), function (ndx, tst) {
 						var test = tst.match,
 							loopend = c ? 1 : 0,

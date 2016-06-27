@@ -1,4 +1,28 @@
-[
+/*
+ Input Mask plugin extensions
+ http://github.com/RobinHerbots/jquery.inputmask
+ Copyright (c) 2010 -  Robin Herbots
+ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
+ Version: 0.0.0-dev
+
+ Netherlands Phone extension.
+ */
+(function (factory) {
+	if (typeof define === "function" && define.amd) {
+		define(["inputmask"], factory);
+	} else if (typeof exports === "object") {
+		module.exports = factory(require("./inputmask"));
+	} else {
+		factory(window.Inputmask);
+	}
+}
+(function (Inputmask) {
+	Inputmask.extendAliases({
+		"phonenl": {
+			alias: "abstractphone",
+			countrycode: "31",
+			nojumpsThreshold: 4,
+			phoneCodes: [
 	{"mask": "+31-10-###-####", "cc": "NL", "cd": "Netherlands", "city": "Rotterdam"},
 	{"mask": "+31-111-###-###", "cc": "NL", "cd": "Netherlands", "city": "Zierikzee"},
 	{"mask": "+31-113-###-###", "cc": "NL", "cd": "Netherlands", "city": "Goes"},
@@ -186,4 +210,9 @@
 		"cd": "Netherlands",
 		"city": "Plaatsonafhankelijk netnummer, geschikt voor beeldtelefonie of lijnen met verhoogde kwaliteit"
 	}
-]
+]}
+	});
+
+	return Inputmask;
+}));
+

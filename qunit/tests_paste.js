@@ -160,7 +160,7 @@ define([
 	});
 
 	qunit.test("currency ~ $123.22 - sjk07", function(assert) {
-		var done = assert.async(), $fixture = $("body");
+		var done = assert.async(), $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
 		Inputmask('currency').mask(testmask);

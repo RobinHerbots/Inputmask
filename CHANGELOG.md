@@ -7,10 +7,11 @@ All notable changes to this project will be documented in this file.
 - 'casing': 'title' #1277
 
 ### Updates
+- update phone alias implementation
 - replaced radixFocus option by positionCaretOnClick.  Allows choice for behavior of the caret on click. (none, lvp (default), radixFocus)
 - performance updates
 	- getmasklength
-	- set selective caching in getTests
+	- use selective caching in getTests
 
 ### Fixed
 - Bug when typing after a fixed character #1299
