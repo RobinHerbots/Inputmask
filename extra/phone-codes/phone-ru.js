@@ -21,7 +21,6 @@
 		"phoneru": {
 			alias: "abstractphone",
 			countrycode: "7",
-			nojumpsThreshold: 3,
 			phoneCodes: [
 	{ "mask": "+7(301)###-##-##", "cc": "RU", "cd": "Russia", "region": "Бурятия", "city": "", "operator": "", "desc": "" },
 	{ "mask": "+7(3012)##-##-##", "cc": "RU", "cd": "Russia", "region": "Бурятия", "city": "Улан-Удэ", "operator": "", "desc": "" },

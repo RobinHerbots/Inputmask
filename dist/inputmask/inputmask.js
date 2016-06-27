@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.2-19
+* Version: 3.3.2-20
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -682,7 +682,7 @@
         function seekNext(pos, newBlock) {
             var maskL = getMaskSet().maskLength;
             if (pos >= maskL) return maskL;
-            for (var position = pos; ++position < maskL && (newBlock === !0 && (getTest(position).match.newBlockMarker !== !0 || !isMask(position)) || newBlock !== !0 && !isMask(position) && (opts.nojumps !== !0 || opts.nojumpsThreshold > position)); ) ;
+            for (var position = pos; ++position < maskL && (newBlock === !0 && (getTest(position).match.newBlockMarker !== !0 || !isMask(position)) || newBlock !== !0 && !isMask(position)); ) ;
             return position;
         }
         function seekPrevious(pos, newBlock) {
@@ -1325,8 +1325,6 @@
             radixPoint: "",
             radixPointDefinitionSymbol: void 0,
             groupSeparator: "",
-            nojumps: !1,
-            nojumpsThreshold: 0,
             keepStatic: null,
             positionCaretOnTab: !1,
             tabThrough: !1,

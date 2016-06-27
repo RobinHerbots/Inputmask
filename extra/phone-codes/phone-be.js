@@ -21,7 +21,6 @@
 		"phonebe": {
 			alias: "abstractphone",
 			countrycode: "32",
-			nojumpsThreshold: 4,
 			phoneCodes: [
 				{"mask": "+32(53)##-##-##", "cc": "BE", "cd": "Belgium", "city": "Aalst (Alost)"},
 				{"mask": "+32(3)###-##-##", "cc": "BE", "cd": "Belgium", "city": "Antwerpen (Anvers)"},

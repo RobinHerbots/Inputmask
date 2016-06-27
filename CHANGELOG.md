@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - 'casing': 'title' #1277
 
 ### Updates
+- removed nojumps option
 - update phone alias implementation
 - replaced radixFocus option by positionCaretOnClick.  Allows choice for behavior of the caret on click. (none, lvp (default), radixFocus)
 - performance updates

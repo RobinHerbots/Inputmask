@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.2-19
+* Version: 3.3.2-20
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -680,7 +680,7 @@
         function seekNext(pos, newBlock) {
             var maskL = getMaskSet().maskLength;
             if (pos >= maskL) return maskL;
-            for (var position = pos; ++position < maskL && (newBlock === !0 && (getTest(position).match.newBlockMarker !== !0 || !isMask(position)) || newBlock !== !0 && !isMask(position) && (opts.nojumps !== !0 || opts.nojumpsThreshold > position)); ) ;
+            for (var position = pos; ++position < maskL && (newBlock === !0 && (getTest(position).match.newBlockMarker !== !0 || !isMask(position)) || newBlock !== !0 && !isMask(position)); ) ;
             return position;
         }
         function seekPrevious(pos, newBlock) {
@@ -1323,8 +1323,6 @@
             radixPoint: "",
             radixPointDefinitionSymbol: void 0,
             groupSeparator: "",
-            nojumps: !1,
-            nojumpsThreshold: 0,
             keepStatic: null,
             positionCaretOnTab: !1,
             tabThrough: !1,
@@ -2492,13 +2490,11 @@
             countrycode: "",
             phoneCodes: [],
             mask: function(opts) {
-                return opts.phoneCodes.sort(function(a, b) {
+                return opts.definitions["#"] = opts.definitions[9], opts.phoneCodes.sort(function(a, b) {
                     return (a.mask || a) < (b.mask || b) ? -1 : 1;
                 });
             },
             keepStatic: !1,
-            nojumps: !0,
-            nojumpsThreshold: 1,
             onBeforeMask: function(value, opts) {
                 var processedValue = value.replace(/^0{1,2}/, "").replace(/[\s]/g, "");
                 return (processedValue.indexOf(opts.countrycode) > 1 || -1 === processedValue.indexOf(opts.countrycode)) && (processedValue = "+" + opts.countrycode + processedValue), 

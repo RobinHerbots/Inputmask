@@ -89,8 +89,6 @@
 			radixPointDefinitionSymbol: undefined, //set the radixPoint definitionSymbol ~ used for awareness of the radixpoint
 			groupSeparator: "", //",", // | "."
 			//numeric basic properties
-			nojumps: false, //do not jump over fixed parts in the mask
-			nojumpsThreshold: 0, //start nojumps as of
 			keepStatic: null, //try to keep the mask static while typing. Decisions to alter the mask will be posponed if possible - null see auto selection for multi masks
 			positionCaretOnTab: false, //when enabled the caret position is set after the latest valid position on TAB
 			tabThrough: false, //allows for tabbing through the different parts of the masked field
@@ -1688,7 +1686,7 @@
 			var maskL = getMaskSet().maskLength;
 			if (pos >= maskL) return maskL;
 			var position = pos;
-			while (++position < maskL && ((newBlock === true && (getTest(position).match.newBlockMarker !== true || !isMask(position))) || (newBlock !== true && !isMask(position) && (opts.nojumps !== true || opts.nojumpsThreshold > position)))) {
+			while (++position < maskL && ((newBlock === true && (getTest(position).match.newBlockMarker !== true || !isMask(position))) || (newBlock !== true && !isMask(position)))) {
 			}
 			return position;
 		}

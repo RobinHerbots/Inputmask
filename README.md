@@ -924,12 +924,6 @@ Define the radixpoint (decimal separator)<br>Default: ""
 ### groupSeparator (numerics)
 Define the groupseparator<br>Default: ""
 
-### nojumps
-Do not jump over fixed parts in the mask.<br>Default: false
-
-### nojumpsThreshold
-Start nojumps as of<br>Default: 0
-
 ### keepStatic
 Default: null (~false) Use in combination with the alternator syntax Try to keep the mask static while typing. Decisions to alter the mask will be postponed if possible.
 

@@ -25,7 +25,6 @@
 		"phoneuk": {
 			alias: "abstractphone",
 			countrycode: "44",
-			nojumpsThreshold: 4,
 			phoneCodes: [
     { "mask": "+44(113)-###-####", "cc": "UK", "cd": "United Kingdom", "city": "Leeds" },
     { "mask": "+44(114)-###-####", "cc": "UK", "cd": "United Kingdom", "city": "Sheffield" },

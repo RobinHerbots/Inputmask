@@ -20,7 +20,6 @@
 	Inputmask.extendAliases({
 		"phone": {
 			alias: "abstractphone",
-			nojumpsThreshold: 1,
 			phoneCodes: [
 				{ "mask": "+247-####", "cc": "AC", "cd": "Ascension", "desc_en": "", "name_ru": "Остров Вознесения", "desc_ru": "" },
 				{ "mask": "+376-###-###", "cc": "AD", "cd": "Andorra", "desc_en": "", "name_ru": "Андорра", "desc_ru": "" },

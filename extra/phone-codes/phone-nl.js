@@ -21,7 +21,6 @@
 		"phonenl": {
 			alias: "abstractphone",
 			countrycode: "31",
-			nojumpsThreshold: 4,
 			phoneCodes: [
 	{"mask": "+31-10-###-####", "cc": "NL", "cd": "Netherlands", "city": "Rotterdam"},
 	{"mask": "+31-111-###-###", "cc": "NL", "cd": "Netherlands", "city": "Zierikzee"},
