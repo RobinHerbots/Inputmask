@@ -23,7 +23,7 @@
 			countrycode: "",
 			phoneCodes: [],
 			mask: function (opts) {
-				opts.definitions["#"] = opts.definitions["9"];
+				opts.definitions = {"#": opts.definitions["9"]};
 				return opts.phoneCodes.sort(function (a, b) {
 					return (a.mask || a) < (b.mask || b) ? -1 : 1;
 				});
