@@ -356,7 +356,7 @@ define([
 		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
 		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
 		$("#testmask").Type("2abc");
-		assert.equal(testmask.value, "12abc", "Result " + testmask.value);
+		assert.equal(testmask.value, "122abc", "Result " + testmask.value);
 	});
 
 	qunit.test("(99 99 999999)|(i{+}) - 12 3abc - dekdegiv", function (assert) {

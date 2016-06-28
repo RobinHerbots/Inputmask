@@ -780,7 +780,6 @@
 			var maskset = getMaskSet();
 			maskset.buffer = undefined;
 			if (soft !== true) {
-				maskset.tests = {};
 				maskset._buffer = undefined;
 				maskset.validPositions = {};
 				maskset.p = 0;
@@ -1295,7 +1294,6 @@
 			} else {
 				for (i = start; i < end; i++) {
 					delete getMaskSet().validPositions[i];
-					delete getMaskSet().tests[i];
 				}
 			}
 			for (i = start; i < end; i++) {
@@ -1444,7 +1442,6 @@
 
 			function alternate(pos, c, strict, fromSetValid) {
 				var validPsClone = $.extend(true, {}, getMaskSet().validPositions),
-					testsClone = $.extend(true, {}, getMaskSet().tests),
 					lastAlt,
 					alternation,
 					isValidRslt,
@@ -1516,7 +1513,6 @@
 												validInputs.push(validPos.input);
 											} else if (i < pos) staticInputsBeforePos++;
 											delete getMaskSet().validPositions[i];
-											delete getMaskSet().tests[i];
 										}
 										resetMaskSet(true); //clear getbuffer
 										opts.keepStatic = !opts.keepStatic; //disable keepStatic on getMaskLength
@@ -1547,7 +1543,6 @@
 										if (!isValidRslt) {
 											resetMaskSet();
 											getMaskSet().validPositions = $.extend(true, {}, validPsClone);
-											getMaskSet().tests = $.extend(true, {}, testsClone);
 										} else return isValidRslt;
 									}
 								}
@@ -1686,7 +1681,9 @@
 			var maskL = getMaskSet().maskLength;
 			if (pos >= maskL) return maskL;
 			var position = pos;
-			while (++position < maskL && ((newBlock === true && (getTest(position).match.newBlockMarker !== true || !isMask(position))) || (newBlock !== true && !isMask(position)))) {
+			while (++position < maskL &&
+			((newBlock === true && (getTest(position).match.newBlockMarker !== true || !isMask(position))) ||
+			(newBlock !== true && !isMask(position)))) {
 			}
 			return position;
 		}
@@ -1695,7 +1692,9 @@
 			var position = pos;
 			if (position <= 0) return 0;
 
-			while (--position > 0 && ((newBlock === true && getTest(position).match.newBlockMarker !== true) || (newBlock !== true && !isMask(position)))) {
+			while (--position > 0 &&
+			((newBlock === true && getTest(position).match.newBlockMarker !== true) ||
+			(newBlock !== true && !isMask(position) && getTests(position).length < 2))) {
 			}
 
 			return position;
@@ -2254,7 +2253,7 @@
 			}
 			var lvp = getLastValidPosition(pos.begin);
 			if (lvp < pos.begin) {
-				if (lvp === -1) resetMaskSet();
+				//if (lvp === -1) resetMaskSet();
 				getMaskSet().p = seekNext(lvp);
 			} else if (strict !== true) {
 				getMaskSet().p = pos.begin;
