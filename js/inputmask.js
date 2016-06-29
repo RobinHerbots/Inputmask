@@ -1742,13 +1742,18 @@
 								(tests[i].match.fn === null || (prevTest === undefined || tests[i].match.fn.test(prevTest.match.def, getMaskSet(), pos, true, opts) !== false))) {
 								staticAlternations.push(tests[i]);
 								if (tests[i].match.fn === null) prevTest = tests[i];
-								if (staticAlternations.length > 1) return opts.placeholder.charAt(pos % opts.placeholder.length);
+								if (staticAlternations.length > 1) {
+									if (new RegExp("[0-9a-bA-Z]").test(staticAlternations[0].match.def)) {
+										return opts.placeholder.charAt(pos % opts.placeholder.length);
+									}
+								}
 							}
 						}
 					}
 				}
 				return test.def;
 			}
+
 			return opts.placeholder.charAt(pos % opts.placeholder.length);
 		}
 

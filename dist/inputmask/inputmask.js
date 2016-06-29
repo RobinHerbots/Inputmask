@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.2-25
+* Version: 3.3.2-27
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -714,7 +714,7 @@
                 if (pos > -1 && !opts.keepStatic && void 0 === getMaskSet().validPositions[pos]) {
                     var prevTest, tests = getTests(pos), staticAlternations = [];
                     if (tests.length > 2) for (var i = 0; i < tests.length; i++) if (tests[i].match.optionality !== !0 && tests[i].match.optionalQuantifier !== !0 && (null === tests[i].match.fn || void 0 === prevTest || tests[i].match.fn.test(prevTest.match.def, getMaskSet(), pos, !0, opts) !== !1) && (staticAlternations.push(tests[i]), 
-                    null === tests[i].match.fn && (prevTest = tests[i]), staticAlternations.length > 1)) return opts.placeholder.charAt(pos % opts.placeholder.length);
+                    null === tests[i].match.fn && (prevTest = tests[i]), staticAlternations.length > 1 && new RegExp("[0-9a-bA-Z]").test(staticAlternations[0].match.def))) return opts.placeholder.charAt(pos % opts.placeholder.length);
                 }
                 return test.def;
             }

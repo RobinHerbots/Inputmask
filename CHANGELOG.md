@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 	- use selective caching in getTests
 
 ### Fixed
+- Hide mask's items that have multiple options #678
 - Bug when typing after a fixed character #1299
 - onUnMask is not being called #1291
 - How Can I have caret position on decimal digit(after decimal point) for currency inputmask ? #1282
