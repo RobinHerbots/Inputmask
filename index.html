@@ -135,7 +135,7 @@ $ git checkout gh-pages
               },
               onKeyValidation: function(result, opts) {
                 var eventIdenticators = $(this).next().next(".eventIndicator").children("span");
-                if (this.id == "phone") {
+                if (this.id == "phone" && $(this).inputmask("getmetadata")) {
                   $(this).next().text($(this).inputmask("getmetadata")["cd"]);
                 }
                 $.each(eventIdenticators, function(ndx, lmnt) {
