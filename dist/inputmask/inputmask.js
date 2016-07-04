@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.2-27
+* Version: 3.3.2-34
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -685,9 +685,10 @@
             return position;
         }
         function seekPrevious(pos, newBlock) {
-            var position = pos;
+            var tests, position = pos;
             if (0 >= position) return 0;
-            for (;--position > 0 && (newBlock === !0 && getTest(position).match.newBlockMarker !== !0 || newBlock !== !0 && !isMask(position) && getTests(position).length < 2); ) ;
+            for (;--position > 0 && (newBlock === !0 && getTest(position).match.newBlockMarker !== !0 || newBlock !== !0 && !isMask(position) && (tests = getTests(position), 
+            tests.length < 2 || 2 === tests.length && "" === tests[1].match.def)); ) ;
             return position;
         }
         function getBufferElement(position) {

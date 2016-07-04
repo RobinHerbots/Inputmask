@@ -146,58 +146,56 @@
 						pos = buffer.join("").length - pos - 1;
 					}
 				}
-				var suffixStripped = false,
-					i, l;
-				if (buffer.length >= opts.suffix.length && buffer.join("").indexOf(opts.suffix) === (buffer.length - opts.suffix.length)) {
-					buffer.length = buffer.length - opts.suffix.length; //strip suffix
-					suffixStripped = true;
-				}
+				var i, l;
+
 				//position overflow corrections
 				pos = pos >= buffer.length ? buffer.length - 1 : (pos < opts.prefix.length ? opts.prefix.length : pos);
 
-				var needsRefresh = false,
-					charAtPos = buffer[pos];
+				var charAtPos = buffer[pos];
 
 				var cbuf = buffer.slice();
 				if (charAtPos === opts.groupSeparator) {
 					cbuf.splice(pos--, 1);
 					charAtPos = cbuf[pos];
 				}
-				if (charAtPos !== opts.radixPoint && charAtPos !== opts.negationSymbol.front && charAtPos !== opts.negationSymbol.back) cbuf[pos] = "?";
-				var bufVal = cbuf.join(""),
-					bufValOrigin = bufVal;
+				//mark current pos
+				cbuf[pos] = "!";
+				var bufVal = cbuf.join(""), bufValOrigin = bufVal;
+
+				bufVal = bufVal.replace(new RegExp(Inputmask.escapeRegex(opts.suffix) + "$"), "");
+				bufVal = bufVal.replace(new RegExp("^" + Inputmask.escapeRegex(opts.prefix)), "");
 				if (bufVal.length > 0 && opts.autoGroup || bufVal.indexOf(opts.groupSeparator) !== -1) {
 					var escapedGroupSeparator = Inputmask.escapeRegex(opts.groupSeparator);
-					needsRefresh = bufVal.indexOf(opts.groupSeparator) === 0;
 					bufVal = bufVal.replace(new RegExp(escapedGroupSeparator, "g"), "");
-					var radixSplit = bufVal.split(opts.radixPoint);
+					var radixSplit = bufVal.split(charAtPos === opts.radixPoint ? "!" : opts.radixPoint);
 					bufVal = opts.radixPoint === "" ? bufVal : radixSplit[0];
-					if (bufVal !== (opts.prefix + "?0") && bufVal.length >= (opts.groupSize + opts.prefix.length)) {
-						//needsRefresh = true;
+					if (charAtPos !== opts.negationSymbol.front) bufVal = bufVal.replace("!", "?");
+					if (bufVal.length > opts.groupSize) {
 						var reg = new RegExp("([-\+]?[\\d\?]+)([\\d\?]{" + opts.groupSize + "})");
 						while (reg.test(bufVal) && opts.groupSeparator !== "") {
 							bufVal = bufVal.replace(reg, "$1" + opts.groupSeparator + "$2");
 							bufVal = bufVal.replace(opts.groupSeparator + opts.groupSeparator, opts.groupSeparator);
 						}
 					}
+					bufVal = bufVal.replace("?", "!");
 					if (opts.radixPoint !== "" && radixSplit.length > 1) {
-						bufVal += opts.radixPoint + radixSplit[1];
+						bufVal += (charAtPos === opts.radixPoint ? "!" : opts.radixPoint) + radixSplit[1];
 					}
 				}
-				needsRefresh = bufValOrigin !== bufVal;
-				buffer.length = bufVal.length; //align the length
-				for (i = 0, l = bufVal.length; i < l; i++) {
-					buffer[i] = bufVal.charAt(i);
+
+				bufVal = opts.prefix + bufVal + opts.suffix;
+
+
+				var needsRefresh = bufValOrigin !== bufVal;
+				if (needsRefresh) {
+					buffer.length = bufVal.length; //align the length
+					for (i = 0, l = bufVal.length; i < l; i++) {
+						buffer[i] = bufVal.charAt(i);
+					}
 				}
-				var newPos = $.inArray("?", buffer);
-				if (newPos === -1) newPos = $.inArray(charAtPos, buffer);
+				var newPos = $.inArray("!", bufVal);
 				buffer[newPos] = charAtPos;
 
-				if (!needsRefresh && suffixStripped) {
-					for (i = 0, l = opts.suffix.length; i < l; i++) {
-						buffer.push(opts.suffix.charAt(i));
-					}
-				}
 				// console.log("formatted " + buffer + " refresh " + needsRefresh);
 				newPos = (opts.numericInput && isFinite(pos)) ? buffer.join("").length - newPos - 1 : newPos;
 				if (opts.numericInput) {
@@ -411,26 +409,30 @@
 			},
 			leadingZeroHandler: function (chrs, maskset, pos, strict, opts, isSelection) {
 				if (!strict) {
+					var buffer = maskset.buffer.slice("");
+					buffer.splice(0, opts.prefix.length);
+					buffer.splice(buffer.length - opts.suffix.length, opts.suffix.length);
 					if (opts.numericInput === true) {
-						var buffer = maskset.buffer.slice("").reverse();
-						var bufferChar = buffer[opts.prefix.length];
+						var buffer = buffer.reverse();
+						var bufferChar = buffer[0];
 						if (bufferChar === "0" && maskset.validPositions[pos - 1] === undefined) {
 							return {
 								"pos": pos,
-								"remove": buffer.length - opts.prefix.length - 1
+								"remove": buffer.length - 1
 							};
 						}
 					} else {
-						var radixPosition = $.inArray(opts.radixPoint, maskset.buffer),
-							matchRslt = maskset.buffer.slice(0, radixPosition !== -1 ? radixPosition : undefined).join("").match(opts.regex.integerNPart(opts));
+						pos = pos - opts.prefix.length;
+						var radixPosition = $.inArray(opts.radixPoint, buffer),
+							matchRslt = buffer.slice(0, radixPosition !== -1 ? radixPosition : undefined).join("").match(opts.regex.integerNPart(opts));
 						if (matchRslt && (radixPosition === -1 || pos <= radixPosition)) {
-							var decimalPart = radixPosition === -1 ? 0 : parseInt(maskset.buffer.slice(radixPosition + 1).join(""));
+							var decimalPart = radixPosition === -1 ? 0 : parseInt(buffer.slice(radixPosition + 1).join(""));
 							if (matchRslt["0"].indexOf(opts.placeholder !== "" ? opts.placeholder.charAt(0) : "0") === 0 &&
 								(matchRslt.index + 1 === pos || (isSelection !== true && decimalPart === 0))) {
-								maskset.buffer.splice(matchRslt.index, 1);
+								maskset.buffer.splice(matchRslt.index + opts.prefix.length, 1);
 								return {
-									"pos": matchRslt.index,
-									"remove": matchRslt.index
+									"pos": matchRslt.index + opts.prefix.length,
+									"remove": matchRslt.index + opts.prefix.length
 								};
 							} else if (chrs === "0" && pos <= matchRslt.index && matchRslt["0"] !== opts.groupSeparator) {
 								return false;

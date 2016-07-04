@@ -19,7 +19,7 @@ define([
 	qunit.module("Phone masks");
 
 	qunit.test("inputmask(\"phone be\") - type \"473890428\"", 1, function (assert) {
-		var done = assert.async(), $fixture =$("#qunit-fixture");
+		var done = assert.async(), $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
 
@@ -34,7 +34,7 @@ define([
 	});
 
 	qunit.test("inputmask(\"phone be\") - value \"+32473890428\"", 1, function (assert) {
-		var done = assert.async(), $fixture =$("#qunit-fixture");
+		var done = assert.async(), $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" value="+32473890428" />');
 		Inputmask("phonebe").mask(testmask);
 		testmask.focus();
@@ -45,7 +45,7 @@ define([
 	});
 
 	qunit.test("inputmask(\"phone\") - value=\"+32(473)890-428\"", 1, function (assert) {
-		var done = assert.async(), $fixture =$("#qunit-fixture");
+		var done = assert.async(), $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" value="+32(473)890-428" />');
 		Inputmask("phone").mask(testmask);
 
@@ -56,7 +56,7 @@ define([
 	});
 
 	qunit.test("inputmask(\"phone\") - value=\"32473890428\"", 1, function (assert) {
-		var done = assert.async(), $fixture =$("#qunit-fixture");
+		var done = assert.async(), $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" value="32473890428" />');
 		Inputmask("phone").mask(testmask);
 
@@ -67,7 +67,7 @@ define([
 	});
 
 	qunit.test("inputmask(\"phone\") - Brazil new", 1, function (assert) {
-		var done = assert.async(), $fixture =$("#qunit-fixture");
+		var done = assert.async(), $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" value="5512123451234" />');
 		Inputmask("phone").mask(testmask);
 
@@ -78,7 +78,7 @@ define([
 	});
 
 	qunit.test("inputmask(\"phone\") - Brazil old", 1, function (assert) {
-		var done = assert.async(), $fixture =$("#qunit-fixture");
+		var done = assert.async(), $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" value="55121234-1234" />');
 		Inputmask("phone").mask(testmask);
 
@@ -89,7 +89,7 @@ define([
 	});
 
 	qunit.test("inputmask(\"phone\") - Brazil switch", 1, function (assert) {
-		var done = assert.async(), $fixture =$("#qunit-fixture");
+		var done = assert.async(), $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" value="55121234-1234" />');
 		Inputmask("phone").mask(testmask);
 
@@ -104,6 +104,22 @@ define([
 		$("#testmask").Type("451234");
 		setTimeout(function () {
 			equal(testmask.value, "+55-12-12345-1234", "Result " + testmask.value);
+			done();
+		}, 0);
+	});
+
+	qunit.test("inputmask(\"phone\") - russian backspace", 1, function (assert) {
+		var done = assert.async(), $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		Inputmask("phone", { nullable: false }).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("71");
+		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
+		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
+
+		setTimeout(function () {
+			equal(testmask.value, "+_(___)___-____", "Result " + testmask.value);
 			done();
 		}, 0);
 	});
