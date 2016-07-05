@@ -995,7 +995,7 @@
 
 					function resolveNdxInitializer(pos, alternateNdx) {
 						var bestMatch = selectBestMatch(pos, alternateNdx);
-						return bestMatch ? bestMatch.locator.slice(bestMatch.alternation + 1) : [];
+						return bestMatch ? bestMatch.locator.slice(bestMatch.alternation + 1) : undefined;
 					}
 
 					if (testPos > 10000) {
@@ -1028,6 +1028,7 @@
 								maltMatches,
 								currentMatches = matches.slice(),
 								loopNdxCnt = loopNdx.length;
+							//console.log("before " + ndxInitializer);
 							var altIndex = ndxInitializer.length > 0 ? ndxInitializer.shift() : -1;
 							if (altIndex === -1 || typeof altIndex === "string") {
 								var currentPos = testPos,
@@ -1045,7 +1046,8 @@
 									amndx = parseInt(altIndexArr[ndx]);
 									matches = [];
 									//set the correct ndxInitializer
-									ndxInitializer = resolveNdxInitializer(testPos, amndx);
+									ndxInitializer = resolveNdxInitializer(testPos, amndx) || ndxInitializerClone.slice();
+									//console.log("resolved " + ndxInitializerClone + " vs " + resolveNdxInitializer(testPos, amndx));
 									match = handleMatch(alternateToken.matches[amndx] || maskToken.matches[amndx], [amndx].concat(loopNdx), quantifierRecurse) || match;
 									if (match !== true && match !== undefined && (altIndexArr[altIndexArr.length - 1] < alternateToken.matches.length)) { //no match in the alternations (length mismatch) => look further
 										var ntndx = $.inArray(match, maskToken.matches) + 1;
@@ -1062,10 +1064,7 @@
 									maltMatches = matches.slice();
 									testPos = currentPos;
 									matches = [];
-									//cloneback
-									for (var i = 0; i < ndxInitializerClone.length; i++) {
-										ndxInitializer[i] = ndxInitializerClone[i];
-									}
+
 									//fuzzy merge matches
 									for (var ndx1 = 0; ndx1 < maltMatches.length; ndx1++) {
 										var altMatch = maltMatches[ndx1], hasMatch = false;
@@ -1116,6 +1115,9 @@
 								matches = currentMatches.concat(malternateMatches);
 								testPos = pos;
 								insertStop = matches.length > 0; //insert a stopelemnt when there is an alternate - needed for non-greedy option
+
+								//cloneback
+								ndxInitializer = ndxInitializerClone.slice();
 							} else {
 								// if (alternateToken.matches[altIndex]) { //if not in the initial alternation => look further
 								match = handleMatch(alternateToken.matches[altIndex] || maskToken.matches[altIndex], [altIndex].concat(loopNdx), quantifierRecurse);

@@ -111,7 +111,7 @@ define([
 	qunit.test("inputmask(\"phone\") - russian backspace", 1, function (assert) {
 		var done = assert.async(), $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
-		Inputmask("phone", { nullable: false }).mask(testmask);
+		Inputmask("phone", {nullable: false}).mask(testmask);
 
 		testmask.focus();
 		$("#testmask").Type("71");

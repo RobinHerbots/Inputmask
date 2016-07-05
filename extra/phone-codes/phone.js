@@ -54,7 +54,8 @@
 				{ "mask": "+1(441)###-####", "cc": "BM", "cd": "Bermuda", "desc_en": "", "name_ru": "Бермудские острова", "desc_ru": "" },
 				{ "mask": "+673-###-####", "cc": "BN", "cd": "Brunei Darussalam", "desc_en": "", "name_ru": "Бруней-Даруссалам", "desc_ru": "" },
 				{ "mask": "+591-#-###-####", "cc": "BO", "cd": "Bolivia", "desc_en": "", "name_ru": "Боливия", "desc_ru": "" },
-				{ "mask": "+55-##-####[#]-####", "cc": "BR", "cd": "Brazil", "desc_en": "", "name_ru": "Бразилия", "desc_ru": "" },
+				{ "mask": "+55-##-####-####", "cc": "BR", "cd": "Brazil", "desc_en": "", "name_ru": "Бразилия", "desc_ru": "" },
+				{ "mask": "+55-##-#####-####", "cc": "BR", "cd": "Brazil", "desc_en": "", "name_ru": "Бразилия", "desc_ru": "" },
 				{ "mask": "+1(242)###-####", "cc": "BS", "cd": "Bahamas", "desc_en": "", "name_ru": "Багамские Острова", "desc_ru": "" },
 				{ "mask": "+975-17-###-###", "cc": "BT", "cd": "Bhutan", "desc_en": "", "name_ru": "Бутан", "desc_ru": "" },
 				{ "mask": "+975-#-###-###", "cc": "BT", "cd": "Bhutan", "desc_en": "", "name_ru": "Бутан", "desc_ru": "" },
@@ -312,9 +313,10 @@
 				{ "mask": "+27-##-###-####", "cc": "ZA", "cd": "South Africa", "desc_en": "", "name_ru": "Южно-Африканская Респ.", "desc_ru": "" },
 				{ "mask": "+260-##-###-####", "cc": "ZM", "cd": "Zambia", "desc_en": "", "name_ru": "Замбия", "desc_ru": "" },
 				{ "mask": "+263-#-######", "cc": "ZW", "cd": "Zimbabwe", "desc_en": "", "name_ru": "Зимбабве", "desc_ru": "" },
-				{ "mask": "+1(###)###-####", "cc": ["US", "CA"], "cd": "USA and Canada", "desc_en": "", "name_ru": "США и Канада", "desc_ru": "" }]
+				{ "mask": "+1(###)###-####", "cc": ["US", "CA"], "cd": "USA and Canada", "desc_en": "", "name_ru": "США и Канада", "desc_ru": "" }
+			 ]
 		}
 	});
 
-	return Inputmask;
+    return Inputmask;
 }));

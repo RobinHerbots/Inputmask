@@ -7,8 +7,10 @@ All notable changes to this project will be documented in this file.
 - 'casing': 'title' #1277
 
 ### Updates
+- improve alternation selection
 - removed nojumps option
 - update phone alias implementation
+	- add unit tests for phonecodes
 - replaced radixFocus option by positionCaretOnClick.  Allows choice for behavior of the caret on click. (none, lvp (default), radixFocus)
 - performance updates
 	- getmasklength
