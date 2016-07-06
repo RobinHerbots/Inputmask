@@ -998,6 +998,13 @@
 						return bestMatch ? bestMatch.locator.slice(bestMatch.alternation + 1) : undefined;
 					}
 
+					function staticCanMatchDefinition(source, target){
+						if(source.match.fn === null && target.match.fn !== null){
+							return target.match.fn.test(source.match.def, getMaskSet(), pos, false, opts, false);
+						}
+						return false;
+					}
+
 					if (testPos > 10000) {
 						throw "Inputmask: There is probably an error in your mask definition or in the code. Create an issue on github with an example of the mask you are using. " + getMaskSet().mask;
 					}
@@ -1072,13 +1079,15 @@
 										for (var ndx2 = 0; ndx2 < malternateMatches.length; ndx2++) {
 											var altMatch2 = malternateMatches[ndx2];
 											//verify equality
-											if (altMatch.match.def === altMatch2.match.def && (typeof altIndex !== "string" || $.inArray(altMatch.locator[altMatch.alternation].toString(), altIndexArr) !== -1)) {
-												hasMatch = altMatch.match.mask === altMatch2.match.mask;
-												if (altMatch2.locator[altMatch.alternation].toString().indexOf(altMatch.locator[altMatch.alternation]) === -1) {
-													altMatch2.locator[altMatch.alternation] = altMatch2.locator[altMatch.alternation] + "," + altMatch.locator[altMatch.alternation];
-													altMatch2.alternation = altMatch.alternation; //we pass the alternation index => used in determineLastRequiredPosition
+											if (typeof altIndex !== "string" || $.inArray(altMatch.locator[altMatch.alternation].toString(), altIndexArr) !== -1) {
+												if (altMatch.match.def === altMatch2.match.def || staticCanMatchDefinition(altMatch, altMatch2)) {
+													hasMatch = altMatch.match.mask === altMatch2.match.mask;
+													if (altMatch2.locator[altMatch.alternation].toString().indexOf(altMatch.locator[altMatch.alternation]) === -1) {
+														altMatch2.locator[altMatch.alternation] = altMatch2.locator[altMatch.alternation] + "," + altMatch.locator[altMatch.alternation];
+														altMatch2.alternation = altMatch.alternation; //we pass the alternation index => used in determineLastRequiredPosition
+													}
+													break;
 												}
-												break;
 											}
 										}
 										if (!hasMatch) {
@@ -1148,7 +1157,10 @@
 							match = resolveTestFromToken(match, ndxInitializer, loopNdx, quantifierRecurse);
 							if (match) return true;
 						}
-					} else testPos++;
+					}
+
+					else
+						testPos++;
 				}
 
 				for (var tndx = (ndxInitializer.length > 0 ? ndxInitializer.shift() : 0); tndx < maskToken.matches.length; tndx++) {
