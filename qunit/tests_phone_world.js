@@ -21,6 +21,7 @@ define([
 	qunit.test("inputmask(\"phone\")", 293, function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
 		Inputmask("phone", {nullable: false}).mask(testmask);
 
 		testmask.focus();

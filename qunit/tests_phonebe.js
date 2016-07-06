@@ -16,11 +16,12 @@ define([
 	"simulator"
 ], function (qunit, $, Inputmask) {
 
-	qunit.module("Phone masks");
+	qunit.module("Phonebe masks");
 
 	qunit.test("inputmask(\"phonebe\")", 45, function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
 		Inputmask("phonebe", {nullable: false}).mask(testmask);
 
 		testmask.focus();
