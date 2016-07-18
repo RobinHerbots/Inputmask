@@ -21,7 +21,7 @@ define([
 		$("#testmask").paste("+79114041112");
 
 		setTimeout(function () {
-			equal(testmask.value, "+7 (911) 404-11-12", "Result " + testmask.value);
+			assert.equal(testmask.value, "+7 (911) 404-11-12", "Result " + testmask.value);
 			done();
 		}, 0);
 
@@ -35,7 +35,7 @@ define([
 		$("#testmask").paste("+7 (9114041112___)");
 
 		setTimeout(function () {
-			equal(testmask.value, "+7 (911) 404-11-12", "Result " + testmask.value);
+			assert.equal(testmask.value, "+7 (911) 404-11-12", "Result " + testmask.value);
 			done();
 		}, 0);
 
@@ -56,7 +56,7 @@ define([
 		$("#testmask").paste("0079114041112");
 
 		setTimeout(function () {
-			equal(testmask.value, "+7 (911) 404-11-12", "Result " + testmask.value);
+			assert.equal(testmask.value, "+7 (911) 404-11-12", "Result " + testmask.value);
 			done();
 		}, 0);
 
@@ -71,7 +71,7 @@ define([
 		$("#testmask").paste("3112345678");
 
 		setTimeout(function () {
-			equal(testmask.value, "+31 3112345678", "Result " + testmask.value);
+			assert.equal(testmask.value, "+31 3112345678", "Result " + testmask.value);
 			done();
 		}, 0);
 	});
@@ -85,7 +85,7 @@ define([
 		$("#testmask").paste("+3112345678");
 
 		setTimeout(function () {
-			equal(testmask.value, "+31 12345678__", "Result " + testmask.value);
+			assert.equal(testmask.value, "+31 12345678__", "Result " + testmask.value);
 			done();
 		}, 0);
 	});
@@ -102,7 +102,7 @@ define([
 		$("#testmask").paste("__-____/..__79100085302751__-____/..__");
 
 		setTimeout(function () {
-			equal(testmask.value, "79.100.085/3027-51", "Result " + testmask.value);
+			assert.equal(testmask.value, "79.100.085/3027-51", "Result " + testmask.value);
 			done();
 		}, 0);
 	});
@@ -116,7 +116,7 @@ define([
 		$("#testmask").paste("$123.22");
 
 		setTimeout(function () {
-			equal(testmask.value, "$ 123.22", "Result " + testmask.value);
+			assert.equal(testmask.value, "$ 123.22", "Result " + testmask.value);
 			done();
 		}, 0);
 	});
@@ -130,7 +130,7 @@ define([
 		$("#testmask").paste("$-123.22");
 
 		setTimeout(function () {
-			equal(testmask.value, "$ -123.22", "Result " + testmask.value);
+			assert.equal(testmask.value, "$ -123.22", "Result " + testmask.value);
 			done();
 		}, 0);
 	});
@@ -144,7 +144,7 @@ define([
 		$("#testmask").paste("1000.00");
 
 		setTimeout(function () {
-			equal(testmask.value, "$ 1,000.00", "Result " + testmask.value);
+			assert.equal(testmask.value, "$ 1,000.00", "Result " + testmask.value);
 			done();
 		}, 0);
 	});
@@ -158,7 +158,7 @@ define([
 		$("#testmask").paste("-1000.00");
 
 		setTimeout(function () {
-			equal(testmask.value, "$ -1,000.00", "Result " + testmask.value);
+			assert.equal(testmask.value, "$ -1,000.00", "Result " + testmask.value);
 			done();
 		}, 0);
 	});
@@ -172,7 +172,7 @@ define([
 		$("#testmask").paste("$1000.00");
 
 		setTimeout(function () {
-			equal(testmask.value, "$ 1,000.00", "Result " + testmask.value);
+			assert.equal(testmask.value, "$ 1,000.00", "Result " + testmask.value);
 			done();
 		}, 0);
 	});
@@ -186,7 +186,7 @@ define([
 		$("#testmask").paste("$-1000.00");
 
 		setTimeout(function () {
-			equal(testmask.value, "$ -1,000.00", "Result " + testmask.value);
+			assert.equal(testmask.value, "$ -1,000.00", "Result " + testmask.value);
 			done();
 		}, 0);
 	});
@@ -201,7 +201,7 @@ define([
 
 		setTimeout(function () {
 			$(testmask).trigger("blur");
-			equal(testmask.value, "$ 0.02", "Result " + testmask.value);
+			assert.equal(testmask.value, "$ 0.02", "Result " + testmask.value);
 			done();
 		}, 0);
 	});
@@ -215,7 +215,7 @@ define([
 		$("#testmask").paste("02.024.900");
 
 		setTimeout(function () {
-			equal(testmask.value, "02.024.900", "Result " + testmask.value);
+			assert.equal(testmask.value, "02.024.900", "Result " + testmask.value);
 			done();
 		}, 0);
 	});
@@ -233,7 +233,7 @@ define([
 		$("#testmask").paste("1234567890");
 
 		setTimeout(function () {
-			equal(testmask.value, "R1234567890", "Result " + testmask.value);
+			assert.equal(testmask.value, "R1234567890", "Result " + testmask.value);
 			done();
 		}, 0);
 	});

@@ -18,7 +18,7 @@ define([
 
 	qunit.module("Phonenl masks");
 
-	qunit.test("inputmask(\"phonenl\")", 181, function (assert) {
+	qunit.test("inputmask(\"phonenl\")", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
@@ -27,9 +27,14 @@ define([
 		testmask.focus();
 
 		$.each(Inputmask.prototype.defaults.aliases.phonenl.phoneCodes, function (ndx, lmnt) {
-			var input = lmnt.mask.replace(/#/g, "0");
+			var expected = lmnt.mask.replace(/#/g, "0"), input = expected;
+			//input = input.replace(/\+/g, "");
+			input = input.replace(/\(/g, "");
+			input = input.replace(/\)/g, "");
+			input = input.replace(/-/g, "");
+
 			$(testmask).val(input);
-			equal(testmask.value, input, "Result " + testmask.value);
+			assert.equal(testmask.value, expected, "Result " + testmask.value);
 		});
 
 	});

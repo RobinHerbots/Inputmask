@@ -22,8 +22,6 @@ define([
 		}).mask(testmask);
 
 		assert.equal(testmask.value, "007:20", "Result " + testmask.value);
-
-		$("#testmask").remove();
 	});
 
 	qunit.test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"01 650 103 002 0001 DE101 5170\" - wuSam", function(assert) {
@@ -32,8 +30,6 @@ define([
 		var testmask = document.getElementById("testmask");
 		Inputmask("99 999 999 999 9999 \\D\\E*** 9999").mask(testmask);
 		assert.equal(testmask.value, "01 650 103 002 0001 DE101 5170", "Result " + testmask.value);
-
-		$("#testmask").remove();
 	});
 
 	qunit.test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"016501030020001DE1015170\" - wuSam", function(assert) {
@@ -42,8 +38,6 @@ define([
 		var testmask = document.getElementById("testmask");
 		Inputmask("99 999 999 999 9999 \\D\\E*** 9999").mask(testmask);
 		assert.equal(testmask.value, "01 650 103 002 0001 DE101 5170", "Result " + testmask.value);
-
-		$("#testmask").remove();
 	});
 
 	qunit.test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"016501030020001DE1015170\" replace 2 with 3 - wuSam", function(assert) {
@@ -54,8 +48,6 @@ define([
 		$.caret(testmask, 13, 14);
 		$("#testmask").Type("3");
 		assert.equal(testmask.value, "01 650 103 003 0001 DE101 5170", "Result " + testmask.value);
-
-		$("#testmask").remove();
 	});
 
 	qunit.test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"016501030020001DE1015170\" replace 002 with 003 - wuSam", function(assert) {
@@ -66,8 +58,6 @@ define([
 		$.caret(testmask, 11, 14);
 		$("#testmask").Type("003");
 		assert.equal(testmask.value, "01 650 103 003 0001 DE101 5170", "Result " + testmask.value);
-
-		$("#testmask").remove();
 	});
 
 	qunit.test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\") ~ value=\"016501030020001DE1015170\" replace 02 with 01 - wuSam", function(assert) {
@@ -78,8 +68,6 @@ define([
 		$.caret(testmask, 12, 14);
 		$("#testmask").Type("01");
 		assert.equal(testmask.value, "01 650 103 001 0001 DE101 5170", "Result " + testmask.value);
-
-		$("#testmask").remove();
 	});
 
 	qunit.test("inputmask(\"99 999 999 999 9999 \\D\\E*** 9999\", { greedy: false }) ~ value=\"016501030020001DE1015170\" replace 02 with 01 - wuSam", function(assert) {
@@ -92,8 +80,6 @@ define([
 		$.caret(testmask, 12, 14);
 		$("#testmask").Type("01");
 		assert.equal(testmask.value, "01 650 103 001 0001 DE101 5170", "Result " + testmask.value);
-
-		$("#testmask").remove();
 	});
 
 
@@ -103,8 +89,6 @@ define([
 		var testmask = document.getElementById("testmask");
 		Inputmask("\\D\\E***").mask(testmask);
 		assert.equal(testmask.value, "DE001", "Result " + testmask.value);
-
-		$("#testmask").remove();
 	});
 
 	qunit.test("inputmask(\"decimal\") ~ value=\"123.45\"", function(assert) {
@@ -113,8 +97,6 @@ define([
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal").mask(testmask);
 		assert.equal(testmask.value, "123.45", "Result " + testmask.value);
-
-		$("#testmask").remove();
 	});
 
 	qunit.test("inputmask(\"decimal\") ~ value=\"123.45\" - disabled input", function(assert) {
@@ -123,8 +105,6 @@ define([
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal").mask(testmask);
 		assert.equal(testmask.value, "123.45", "Result " + testmask.value);
-
-		$("#testmask").remove();
 	});
 
 	qunit.test("inputmask(\"mm/yyyy\") ~ value=\"031973\" - disabled input", function(assert) {
@@ -133,8 +113,6 @@ define([
 		var testmask = document.getElementById("testmask");
 		Inputmask("mm/yyyy").mask(testmask);
 		assert.equal(testmask.value, "03/1973", "Result " + testmask.value);
-
-		$("#testmask").remove();
 	});
 
 	qunit.test("inputmask(\"6703 9999 9999 9999 9\") ~ value=\"6703 1234 5678 9012 3\" - FransVdb", function(assert) {
@@ -142,7 +120,6 @@ define([
 		$fixture.append('<input type="text" id="testmask" value="6703 1234 5678 9012 3" />');
 		Inputmask("6703 9999 9999 9999 9");
 		assert.equal(testmask.value, "6703 1234 5678 9012 3", "Result " + testmask.value);
-		$("#testmask").remove();
 	});
 
 	qunit.test("inputmask(\"6703 9999 9999 9999 9\") ~ type \"6703 1234 5678 9012 3\" + backspace - FransVdb", function(assert) {
@@ -155,8 +132,6 @@ define([
 		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
 
 		assert.equal(testmask.value, "6703 1234 5678 9012 _", "Result " + testmask.value);
-
-		$("#testmask").remove();
 	});
 
 	qunit.test("inputmask(\"6703 9999 9999 9999 9\") ~ type \"6703670367036\" + backspace - FransVdb", function(assert) {

@@ -3,11 +3,19 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.2-43
+* Version: 3.3.2-63
 */
+/*
+ * Input Mask plugin for jquery
+ * http://github.com/RobinHerbots/jquery.inputmask
+ * Copyright (c) 2010 -	Robin Herbots
+ * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
+ * Version: 0.0.0-dev
+ */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jquery", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("jquery"), require("./inputmask")) : factory(jQuery, window.Inputmask);
 }(function($, Inputmask) {
+    //jquery plugin
     return void 0 === $.fn.inputmask && ($.fn.inputmask = function(fn, options) {
         var nptmask, input = this[0];
         if (void 0 === options && (options = {}), "string" == typeof fn) switch (fn) {
@@ -23,21 +31,24 @@
             return input && input.inputmask ? input.inputmask.getemptymask() : "";
 
           case "hasMaskedValue":
-            return input && input.inputmask ? input.inputmask.hasMaskedValue() : !1;
+            //check wheter the returned value is masked or not; currently only works reliable when using jquery.val fn to retrieve the value
+            return !(!input || !input.inputmask) && input.inputmask.hasMaskedValue();
 
           case "isComplete":
-            return input && input.inputmask ? input.inputmask.isComplete() : !0;
+            return !input || !input.inputmask || input.inputmask.isComplete();
 
           case "getmetadata":
+            //return mask metadata if exists
             return input && input.inputmask ? input.inputmask.getmetadata() : void 0;
 
           case "setvalue":
-            $(input).val(options), input && void 0 === input.inputmask && $(input).triggerHandler("setvalue");
+            $(input).val(options), input && void 0 === input.inputmask && //reactivate jquery.clone
+            $(input).triggerHandler("setvalue");
             break;
 
           case "option":
             if ("string" != typeof options) return this.each(function() {
-                return void 0 !== this.inputmask ? this.inputmask.option(options) : void 0;
+                if (void 0 !== this.inputmask) return this.inputmask.option(options);
             });
             if (input && void 0 !== input.inputmask) return input.inputmask.option(options);
             break;
@@ -52,7 +63,8 @@
             }) : this.each(function() {
                 nptmask.mask(this);
             });
-            if (void 0 === fn) return this.each(function() {
+            if (void 0 === fn) //look for data-inputmask atributes
+            return this.each(function() {
                 nptmask = new Inputmask(options), nptmask.mask(this);
             });
         }

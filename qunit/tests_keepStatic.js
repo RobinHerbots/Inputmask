@@ -326,6 +326,7 @@ define([
 		$("#testmask").Type("12345");
 		assert.equal(testmask.value, "(12)+34+5_", "Result " + testmask.value);
 	});
+
 	qunit.test("[\"9+9\", \"99+99\", \"(99)+99+99\"] keepStatic true - type 1234 - ishytow", function(assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');

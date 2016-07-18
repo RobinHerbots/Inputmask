@@ -3,8 +3,18 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.2-43
+* Version: 3.3.2-63
 */
+/*
+ Input Mask plugin extensions
+ http://github.com/RobinHerbots/jquery.inputmask
+ Copyright (c) 2010 -  Robin Herbots
+ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
+ Version: 0.0.0-dev
+
+ Phone extension.
+
+ */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery"), require("./inputmask")) : factory(window.dependencyLib || jQuery, window.Inputmask);
 }(function($, Inputmask) {
@@ -13,17 +23,24 @@
             countrycode: "",
             phoneCodes: [],
             mask: function(opts) {
-                return opts.definitions = {
+                opts.definitions = {
                     "#": opts.definitions[9]
-                }, opts.phoneCodes.sort(function(a, b) {
-                    return (a.mask || a) < (b.mask || b) ? -1 : 1;
+                };
+                var masks = opts.phoneCodes.sort(function(a, b) {
+                    var maska = (a.mask || a).replace(/[\+\(\)#-]/g, ""), maskb = (b.mask || b).replace(/[\+\(\)#-]/g, "");
+                    return maska < maskb ? -1 : 1;
                 });
+                return masks;
             },
-            keepStatic: !1,
+            keepStatic: !0,
             onBeforeMask: function(value, opts) {
                 var processedValue = value.replace(/^0{1,2}/, "").replace(/[\s]/g, "");
-                return (processedValue.indexOf(opts.countrycode) > 1 || -1 === processedValue.indexOf(opts.countrycode)) && (processedValue = "+" + opts.countrycode + processedValue), 
+                return (processedValue.indexOf(opts.countrycode) > 1 || processedValue.indexOf(opts.countrycode) === -1) && (processedValue = "+" + opts.countrycode + processedValue), 
                 processedValue;
+            },
+            onUnMask: function(maskedValue, unmaskedValue, opts) {
+                //implement me
+                return unmaskedValue;
             }
         }
     }), Inputmask;

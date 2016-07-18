@@ -24,11 +24,15 @@
 			phoneCodes: [],
 			mask: function (opts) {
 				opts.definitions = {"#": opts.definitions["9"]};
-				return opts.phoneCodes.sort(function (a, b) {
-					return (a.mask || a) < (b.mask || b) ? -1 : 1;
+				var masks = opts.phoneCodes.sort(function (a, b) {
+					var maska = (a.mask || a).replace(/[\+\(\)#-]/g, ""),
+						maskb = (b.mask || b).replace(/[\+\(\)#-]/g, "");
+
+					return maska < maskb ? -1 : 1;
 				});
+				return masks;
 			},
-			keepStatic: false,
+			keepStatic: true,
 			onBeforeMask: function (value, opts) {
 				var processedValue = value.replace(/^0{1,2}/, "").replace(/[\s]/g, "");
 				if (processedValue.indexOf(opts.countrycode) > 1 || processedValue.indexOf(opts.countrycode) === -1) {
@@ -36,6 +40,10 @@
 				}
 
 				return processedValue;
+			},
+			onUnMask: function (maskedValue, unmaskedValue, opts) {
+				//implement me
+				return unmaskedValue;
 			}
 		}
 	});
