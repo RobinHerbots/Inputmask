@@ -3,21 +3,11 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.2-63
+* Version: 3.3.2-65
 */
-/*
- Input Mask plugin extensions
- http://github.com/RobinHerbots/jquery.inputmask
- Copyright (c) 2010 -  Robin Herbots
- Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
- Version: 0.0.0-dev
-
- Optional extensions on the jquery.inputmask base
- */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery"), require("./inputmask")) : factory(window.dependencyLib || jQuery, window.Inputmask);
 }(function($, Inputmask) {
-    //extra definitions
     return Inputmask.extendDefinitions({
         A: {
             validator: "[A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
@@ -25,13 +15,11 @@
             casing: "upper"
         },
         "&": {
-            //alfanumeric uppercasing
             validator: "[0-9A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
             cardinality: 1,
             casing: "upper"
         },
         "#": {
-            //hexadecimal
             validator: "[0-9A-Fa-f]",
             cardinality: 1,
             casing: "upper"
@@ -49,7 +37,6 @@
             autoUnmask: !1
         },
         ip: {
-            //ip-address mask
             mask: "i[i[i]].i[i[i]].i[i[i]].i[i[i]]",
             definitions: {
                 i: {
@@ -66,9 +53,6 @@
             }
         },
         email: {
-            //https://en.wikipedia.org/wiki/Domain_name#Domain_name_space
-            //https://en.wikipedia.org/wiki/Hostname#Restrictions_on_valid_host_names
-            //should be extended with the toplevel domains at the end
             mask: "*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@-{1,63}.-{1,63}[.-{1,63}][.-{1,63}]",
             greedy: !1,
             onBeforePaste: function(pastedValue, opts) {
@@ -93,8 +77,6 @@
         mac: {
             mask: "##:##:##:##:##:##"
         },
-        //https://en.wikipedia.org/wiki/Vehicle_identification_number
-        // see issue #1199
         vin: {
             mask: "V{13}9{4}",
             definitions: {

@@ -1,4 +1,4 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 	function createBanner(fileName) {
 		return "/*!\n" +
 			"* " + fileName + "\n" +
@@ -18,6 +18,7 @@ module.exports = function(grunt) {
 			} else srcFile = srcFile.replace(new RegExp("\\}\\)\\);[\\s]*$"), "})(jQuery, Inputmask);");
 			grunt.file.write(dst, srcFile);
 		}
+
 		var uglifyConfig = {};
 		var srcFiles = grunt.file.expand(path + "/*.js");
 		for (var srcNdx in srcFiles) {
@@ -30,7 +31,7 @@ module.exports = function(grunt) {
 					banner: createBanner(dstFile),
 					beautify: true,
 					mangle: false,
-					preserveComments: "some",
+					preserveComments: false,
 					ASCIIOnly: true
 				}
 			};
@@ -56,7 +57,7 @@ module.exports = function(grunt) {
 				banner: createBanner("jquery.inputmask.bundle.js"),
 				beautify: true,
 				mangle: false,
-				preserveComments: "some",
+				preserveComments: false,
 				ASCIIOnly: true
 			}
 		};
@@ -106,7 +107,7 @@ module.exports = function(grunt) {
 		},
 		nugetpack: {
 			dist: {
-				src: function() {
+				src: function () {
 					return process.platform === "linux" ? 'nuspecs/jquery.inputmask.linux.nuspec' : 'nuspecs/jquery.inputmask.nuspec';
 				}(),
 				dest: 'dist/',

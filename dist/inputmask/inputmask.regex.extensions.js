@@ -3,30 +3,18 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.2-63
+* Version: 3.3.2-65
 */
-/*
- Input Mask plugin extensions
- http://github.com/RobinHerbots/jquery.inputmask
- Copyright (c) 2010 -  Robin Herbots
- Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
- Version: 0.0.0-dev
-
- Regex extensions on the jquery.inputmask base
- Allows for using regular expressions as a mask
- */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery"), require("./inputmask")) : factory(window.dependencyLib || jQuery, window.Inputmask);
 }(function($, Inputmask) {
     return Inputmask.extendAliases({
-        // $(selector).inputmask("Regex", { regex: "[0-9]*"}
         Regex: {
             mask: "r",
             greedy: !1,
             repeat: "*",
             regex: null,
             regexTokens: null,
-            //Thx to https://github.com/slevithan/regex-colorizer for the tokenizer regex
             tokenizer: /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?[:=!]?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g,
             quantifierFilter: /[0-9]+[^,]/,
             isComplete: function(buffer, opts) {
@@ -44,23 +32,19 @@
                         }
                         function analyseRegex() {
                             var match, m, currentToken = new RegexToken(), opengroups = [];
-                            // The tokenizer regex does most of the tokenization grunt work
                             for (opts.regexTokens = []; match = opts.tokenizer.exec(opts.regex); ) switch (m = match[0], 
                             m.charAt(0)) {
                               case "(":
-                                // Group opening
                                 opengroups.push(new RegexToken((!0)));
                                 break;
 
                               case ")":
-                                // Group closing
                                 groupToken = opengroups.pop(), opengroups.length > 0 ? opengroups[opengroups.length - 1].matches.push(groupToken) : currentToken.matches.push(groupToken);
                                 break;
 
                               case "{":
                               case "+":
                               case "*":
-                                //Quantifier
                                 var quantifierToken = new RegexToken((!1), (!0));
                                 m = m.replace(/[{}]/g, "");
                                 var mq = m.split(","), mq0 = isNaN(mq[0]) ? mq[0] : parseInt(mq[0]), mq1 = 1 === mq.length ? mq0 : isNaN(mq[1]) ? mq[1] : parseInt(mq[1]);

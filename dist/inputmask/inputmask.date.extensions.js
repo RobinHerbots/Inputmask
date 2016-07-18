@@ -3,24 +3,13 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.2-63
+* Version: 3.3.2-65
 */
-/*
- Input Mask plugin extensions
- http://github.com/RobinHerbots/jquery.inputmask
- Copyright (c) 2010 -  Robin Herbots
- Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
- Version: 0.0.0-dev
-
- Optional extensions on the jquery.inputmask base
- */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery"), require("./inputmask")) : factory(window.dependencyLib || jQuery, window.Inputmask);
 }(function($, Inputmask) {
-    //date & time aliases
     return Inputmask.extendDefinitions({
         h: {
-            //hours
             validator: "[01][0-9]|2[0-3]",
             cardinality: 2,
             prevalidator: [ {
@@ -29,7 +18,6 @@
             } ]
         },
         s: {
-            //seconds || minutes
             validator: "[0-5][0-9]",
             cardinality: 2,
             prevalidator: [ {
@@ -38,7 +26,6 @@
             } ]
         },
         d: {
-            //basic day
             validator: "0[1-9]|[12][0-9]|3[01]",
             cardinality: 2,
             prevalidator: [ {
@@ -47,7 +34,6 @@
             } ]
         },
         m: {
-            //basic month
             validator: "0[1-9]|1[012]",
             cardinality: 2,
             prevalidator: [ {
@@ -56,7 +42,6 @@
             } ]
         },
         y: {
-            //basic year
             validator: "(19|20)\\d{2}",
             cardinality: 4,
             prevalidator: [ {
@@ -76,14 +61,11 @@
             placeholder: "dd/mm/yyyy",
             regex: {
                 val1pre: new RegExp("[0-3]"),
-                //daypre
                 val1: new RegExp("0[1-9]|[12][0-9]|3[01]"),
-                //day
                 val2pre: function(separator) {
                     var escapedSeparator = Inputmask.escapeRegex.call(this, separator);
                     return new RegExp("((0[1-9]|[12][0-9]|3[01])" + escapedSeparator + "[01])");
                 },
-                //monthpre
                 val2: function(separator) {
                     var escapedSeparator = Inputmask.escapeRegex.call(this, separator);
                     return new RegExp("((0[1-9]|[12][0-9])" + escapedSeparator + "(0[1-9]|1[012]))|(30" + escapedSeparator + "(0[13-9]|1[012]))|(31" + escapedSeparator + "(0[13578]|1[02]))");
@@ -132,7 +114,6 @@
             },
             definitions: {
                 "1": {
-                    //val1 ~ day or month
                     validator: function(chrs, maskset, pos, strict, opts) {
                         var isValid = opts.regex.val1.test(chrs);
                         return strict || isValid || chrs.charAt(1) !== opts.separator && "-./".indexOf(chrs.charAt(1)) === -1 || !(isValid = opts.regex.val1.test("0" + chrs.charAt(0))) ? isValid : (maskset.buffer[pos - 1] = "0", 
@@ -168,7 +149,6 @@
                     } ]
                 },
                 "2": {
-                    //val2 ~ day or month
                     validator: function(chrs, maskset, pos, strict, opts) {
                         var frontValue = opts.getFrontValue(maskset.mask, maskset.buffer, opts);
                         frontValue.indexOf(opts.placeholder[0]) !== -1 && (frontValue = "01" + opts.separator);
@@ -182,13 +162,10 @@
                             pos: pos,
                             c: chrs.charAt(0)
                         };
-                        //check leap yeap
                         if (opts.mask.indexOf("2") === opts.mask.length - 1 && isValid) {
                             var dayMonthValue = maskset.buffer.join("").substr(4, 4) + chrs;
                             if (dayMonthValue !== opts.leapday) return !0;
                             var year = parseInt(maskset.buffer.join("").substr(0, 4), 10);
-                            //detect leap year
-                            //detect leap year
                             return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
                         }
                         return isValid;
@@ -209,14 +186,11 @@
                     } ]
                 },
                 y: {
-                    //year
                     validator: function(chrs, maskset, pos, strict, opts) {
                         if (opts.isInYearRange(chrs, opts.yearrange.minyear, opts.yearrange.maxyear)) {
                             var dayMonthValue = maskset.buffer.join("").substr(0, 6);
                             if (dayMonthValue !== opts.leapday) return !0;
                             var year = parseInt(chrs, 10);
-                            //detect leap year
-                            //detect leap year
                             return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
                         }
                         return !1;
@@ -254,7 +228,6 @@
                                     var dayMonthValue = maskset.buffer.join("").substr(0, 6);
                                     if (dayMonthValue !== opts.leapday) isValid = !0; else {
                                         var year = parseInt(chrs, 10);
-                                        //detect leap year
                                         isValid = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
                                     }
                                 } else isValid = !1;
@@ -284,20 +257,16 @@
         "mm/dd/yyyy": {
             placeholder: "mm/dd/yyyy",
             alias: "dd/mm/yyyy",
-            //reuse functionality of dd/mm/yyyy alias
             regex: {
                 val2pre: function(separator) {
                     var escapedSeparator = Inputmask.escapeRegex.call(this, separator);
                     return new RegExp("((0[13-9]|1[012])" + escapedSeparator + "[0-3])|(02" + escapedSeparator + "[0-2])");
                 },
-                //daypre
                 val2: function(separator) {
                     var escapedSeparator = Inputmask.escapeRegex.call(this, separator);
                     return new RegExp("((0[1-9]|1[012])" + escapedSeparator + "(0[1-9]|[12][0-9]))|((0[13-9]|1[012])" + escapedSeparator + "30)|((0[13578]|1[02])" + escapedSeparator + "31)");
                 },
-                //day
                 val1pre: new RegExp("[01]"),
-                //monthpre
                 val1: new RegExp("0[1-9]|1[012]")
             },
             leapday: "02/29/",
@@ -372,21 +341,16 @@
             alias: "dd/mm/yyyy",
             regex: {
                 hrspre: new RegExp("[012]"),
-                //hours pre
                 hrs24: new RegExp("2[0-4]|1[3-9]"),
                 hrs: new RegExp("[01][0-9]|2[0-4]"),
-                //hours
                 ampm: new RegExp("^[a|p|A|P][m|M]"),
                 mspre: new RegExp("[0-5]"),
-                //minutes/seconds pre
                 ms: new RegExp("[0-5][0-9]")
             },
             timeseparator: ":",
             hourFormat: "24",
-            // or 12
             definitions: {
                 h: {
-                    //hours
                     validator: function(chrs, maskset, pos, strict, opts) {
                         if ("24" === opts.hourFormat && 24 === parseInt(chrs, 10)) return maskset.buffer[pos - 1] = "0", 
                         maskset.buffer[pos] = "0", {
@@ -434,7 +398,6 @@
                     } ]
                 },
                 s: {
-                    //seconds || minutes
                     validator: "[0-5][0-9]",
                     cardinality: 2,
                     prevalidator: [ {
@@ -449,7 +412,6 @@
                     } ]
                 },
                 t: {
-                    //am/pm
                     validator: function(chrs, maskset, pos, strict, opts) {
                         return opts.regex.ampm.test(chrs + "m");
                     },
