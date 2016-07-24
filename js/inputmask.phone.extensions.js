@@ -25,8 +25,8 @@
 			mask: function (opts) {
 				opts.definitions = {"#": opts.definitions["9"]};
 				var masks = opts.phoneCodes.sort(function (a, b) {
-					var maska = (a.mask || a).replace(/[\+\(\)#-]/g, ""),
-						maskb = (b.mask || b).replace(/[\+\(\)#-]/g, "");
+					var maska = (a.mask || a).replace(/#/g, "0").replace(/[\+\(\)#-]/g, ""),
+						maskb = (b.mask || b).replace(/#/g, "0").replace(/[\+\(\)#-]/g, "");
 
 					return maska < maskb ? -1 : 1;
 				});
