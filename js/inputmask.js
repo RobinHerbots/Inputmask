@@ -1732,7 +1732,7 @@
 			return opts.placeholder.charAt(pos % opts.placeholder.length);
 		}
 
-		function checkVal(input, writeOut, strict, nptvl) {
+		function checkVal(input, writeOut, strict, nptvl, initiatingEvent) {
 			var inputValue = nptvl.slice(),
 				charCodes = "",
 				initialNdx = 0, result;
@@ -1802,7 +1802,9 @@
 				}
 			});
 			if (writeOut) {
-				writeBuffer(input, getBuffer(), document.activeElement === input ? seekNext(getLastValidPosition(0)) : undefined, new $.Event("checkval"));
+				var caretPos = document.activeElement === input ? (initiatingEvent ? caret(input).begin : result.forwardPosition) : undefined,
+				offset = getBuffer().length - input.inputmask._valueGet().length;
+				writeBuffer(input, getBuffer(), caretPos + offset, initiatingEvent || new $.Event("checkval"));
 			}
 		}
 
@@ -2453,7 +2455,7 @@
 					inputValue = inputValue.replace(bufferTemplate, "");
 					inputValue = inputValue.split("");
 
-					checkVal(input, true, false, inputValue);
+					checkVal(input, true, false, inputValue, e);
 
 					if (isComplete(getBuffer()) === true) {
 						$(input).trigger("complete");

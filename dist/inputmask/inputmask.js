@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.2-76
+* Version: 3.3.2-80
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -717,7 +717,7 @@
             }
             return opts.placeholder.charAt(pos % opts.placeholder.length);
         }
-        function checkVal(input, writeOut, strict, nptvl) {
+        function checkVal(input, writeOut, strict, nptvl, initiatingEvent) {
             function isTemplateMatch() {
                 var isMatch = !1, charCodeNdx = getBufferTemplate().slice(initialNdx, seekNext(initialNdx)).join("").indexOf(charCodes);
                 if (charCodeNdx !== -1 && !isMask(initialNdx)) {
@@ -735,7 +735,7 @@
                 matches && matches.length > 0 && (inputValue.splice(0, matches.length * staticInput.length), 
                 initialNdx = seekNext(initialNdx));
             } else initialNdx = seekNext(initialNdx);
-            $.each(inputValue, function(ndx, charCode) {
+            if ($.each(inputValue, function(ndx, charCode) {
                 if (void 0 !== charCode) {
                     var keypress = new $.Event("keypress");
                     keypress.which = charCode.charCodeAt(0), charCodes += charCode;
@@ -752,7 +752,10 @@
                         resetMaskSet(!0), result.caret && (getMaskSet().p = result.caret);
                     }
                 }
-            }), writeOut && writeBuffer(input, getBuffer(), document.activeElement === input ? seekNext(getLastValidPosition(0)) : void 0, new $.Event("checkval"));
+            }), writeOut) {
+                var caretPos = document.activeElement === input ? initiatingEvent ? caret(input).begin : result.forwardPosition : void 0, offset = getBuffer().length - input.inputmask._valueGet().length;
+                writeBuffer(input, getBuffer(), caretPos + offset, initiatingEvent || new $.Event("checkval"));
+            }
         }
         function unmaskedvalue(input) {
             if (input && void 0 === input.inputmask) return input.value;
@@ -1024,7 +1027,7 @@
                 getBuffer().length - inputValue.length !== 1 || inputValue.charAt(caretPos.begin) === getBuffer()[caretPos.begin] || inputValue.charAt(caretPos.begin + 1) === getBuffer()[caretPos.begin] || isMask(caretPos.begin)) {
                     for (var lvp = getLastValidPosition() + 1, bufferTemplate = getBuffer().slice(lvp).join(""); null === inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$"); ) bufferTemplate = bufferTemplate.slice(1);
                     inputValue = inputValue.replace(bufferTemplate, ""), inputValue = inputValue.split(""), 
-                    checkVal(input, !0, !1, inputValue), isComplete(getBuffer()) === !0 && $(input).trigger("complete");
+                    checkVal(input, !0, !1, inputValue, e), isComplete(getBuffer()) === !0 && $(input).trigger("complete");
                 } else e.keyCode = Inputmask.keyCode.BACKSPACE, keydownEvent.call(input, e);
                 e.preventDefault();
             }
