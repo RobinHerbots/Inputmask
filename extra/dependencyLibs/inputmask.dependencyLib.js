@@ -219,7 +219,7 @@
 								evnt = new CustomEvent(ev, params);
 							} catch (e) {
 								evnt = document.createEvent("CustomEvent");
-								evnt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+								evnt.initCustomEvent(ev, params.bubbles, params.cancelable, params.detail);
 							}
 							if (events.type) DependencyLib.extend(evnt, events);
 							elem.dispatchEvent(evnt);
