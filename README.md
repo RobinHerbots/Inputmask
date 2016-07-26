@@ -735,7 +735,7 @@ Clear the incomplete input on blur
 
 ```javascript
 $(document).ready(function(){
-  $("#date").inputmask("d/m/y",{ "clearIncomplete": true } });
+  $("#date").inputmask("d/m/y",{ "clearIncomplete": true });
 });
 ```
 
