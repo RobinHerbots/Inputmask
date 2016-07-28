@@ -90,7 +90,7 @@
 			groupSeparator: "", //",", // | "."
 			//numeric basic properties
 			keepStatic: null, //try to keep the mask static while typing. Decisions to alter the mask will be posponed if possible - null see auto selection for multi masks
-			positionCaretOnTab: false, //when enabled the caret position is set after the latest valid position on TAB
+			positionCaretOnTab: true, //when enabled the caret position is set after the latest valid position on TAB
 			tabThrough: false, //allows for tabbing through the different parts of the masked field
 			supportsInputType: ["text", "tel", "password"], //list with the supported input types
 			definitions: {

@@ -934,7 +934,7 @@ typing 1212345123 => should result in +55-12-1234-5123 type extra 4 => switch to
 When passing multiple masks (an array of masks) keepStatic is automatically set to true unless explicitly set through the options.
 
 ### positionCaretOnTab
-When enabled the caret position is set after the latest valid position on TAB Default: false
+When enabled the caret position is set after the latest valid position on TAB Default: true
 
 ### tabThrough
 Allows for tabbing through the different parts of the masked field.<br>Default: false

@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.2-89
+* Version: 3.3.2-90
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -1320,7 +1320,7 @@
             radixPointDefinitionSymbol: void 0,
             groupSeparator: "",
             keepStatic: null,
-            positionCaretOnTab: !1,
+            positionCaretOnTab: !0,
             tabThrough: !1,
             supportsInputType: [ "text", "tel", "password" ],
             definitions: {
