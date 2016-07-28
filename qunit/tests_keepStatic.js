@@ -338,4 +338,32 @@ define([
 		$("#testmask").Type("1234");
 		assert.equal(testmask.value, "12+34", "Result " + testmask.value);
 	});
+
+	qunit.test("[\"999-9999\", \"(999) 999-9999\", \"1-(999) 999-9999\"] - 999-9999 - carylewis", function(assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask(["999-9999", "(999) 999-9999", "1-(999) 999-9999"]).mask(testmask);
+
+		$("#testmask").Type("1231234");
+		assert.equal(testmask.value, "123-1234", "Result " + testmask.value);
+	});
+	qunit.test("[\"999-9999\", \"(999) 999-9999\", \"1-(999) 999-9999\"] - (999) 999-9999 - carylewis", function(assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask(["999-9999", "(999) 999-9999", "1-(999) 999-9999"]).mask(testmask);
+
+		$("#testmask").Type("1231231234");
+		assert.equal(testmask.value, "(123) 123-1234", "Result " + testmask.value);
+	});
+	qunit.test("[\"999-9999\", \"(999) 999-9999\", \"1-(999) 999-9999\"] - 1-(999) 999-9999 - carylewis", function(assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask(["999-9999", "(999) 999-9999", "1-(999) 999-9999"]).mask(testmask);
+
+		$("#testmask").Type("11231231234");
+		assert.equal(testmask.value, "1-(123) 123-1234", "Result " + testmask.value);
+	});
 });

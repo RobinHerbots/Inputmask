@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
 	- use selective caching in getTests
 
 ### Fixed
+- Dynamically changing mask based on number of entered characters #1336
 - change addEventListener not fired in IE11 #1310 - inputmask.dependencyLib.js
 - Hide mask's items that have multiple options #678
 - Bug when typing after a fixed character #1299

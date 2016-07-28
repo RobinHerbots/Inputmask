@@ -1084,7 +1084,8 @@
 											var altMatch2 = malternateMatches[ndx2];
 											//verify equality
 											if (typeof altIndex !== "string" || $.inArray(altMatch.locator[altMatch.alternation].toString(), altIndexArr) !== -1) {
-												if (altMatch.match.def === altMatch2.match.def || staticCanMatchDefinition(altMatch, altMatch2)) {
+												//there is no use to generalize the static definition to a mask definition when using keepStatic ~ prevents proper alternating
+												if (altMatch.match.def === altMatch2.match.def || (opts.keepStatic !== true && staticCanMatchDefinition(altMatch, altMatch2))) {
 													hasMatch = altMatch.match.mask === altMatch2.match.mask;
 													if (altMatch2.locator[altMatch.alternation].toString().indexOf(altMatch.locator[altMatch.alternation]) === -1) {
 														altMatch2.locator[altMatch.alternation] = altMatch2.locator[altMatch.alternation] + "," + altMatch.locator[altMatch.alternation];
@@ -1263,7 +1264,6 @@
 			}
 			getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
 			//console.log(pos + " - " + JSON.stringify(matches));
-			//keepstatic as from first mask element
 			return filterTests(getMaskSet().tests[pos]);
 		}
 
@@ -1470,16 +1470,21 @@
 						altNdxs = test.locator[alternation] ? test.locator[alternation].toString().split(",") : [];
 						for (var mndx = 0; mndx < altNdxs.length; mndx++) {
 							var validInputs = [],
-								staticInputsAfterPos = 0,
-								staticInputsAfterPosAlternate = 0;
+								staticInputsBeforePos = 0,
+								staticInputsBeforePosAlternate = 0,
+								verifyValidInput = false;
 							if (decisionTaker < altNdxs[mndx]) {
 								getMaskSet().validPositions[decisionPos] = $.extend(true, {}, test);
 								var possibilities = getMaskSet().validPositions[decisionPos].locator;
 								getMaskSet().validPositions[decisionPos].locator[alternation] = parseInt(altNdxs[mndx]); //set forced decision
 								if (test.match.fn == null) {
-									if (possibilityPos.input !== test.match.def)
-										validInputs.push(possibilityPos.input);
-									staticInputsAfterPosAlternate++;
+									if (possibilityPos.input !== test.match.def) {
+										verifyValidInput = true; //verify that the new definition matches the input
+										if (possibilityPos.generatedInput !== true) {
+											validInputs.push(possibilityPos.input);
+										}
+									}
+									staticInputsBeforePosAlternate++;
 									getMaskSet().validPositions[decisionPos].generatedInput = true;
 									getMaskSet().validPositions[decisionPos].input = test.match.def;
 								} else {
@@ -1489,10 +1494,12 @@
 									validPos = getMaskSet().validPositions[i];
 									if (validPos && validPos.generatedInput !== true && /[0-9a-bA-Z]/.test(validPos.input)) {
 										validInputs.push(validPos.input);
-									} else if (i < pos) staticInputsAfterPos++;
+									} else if (i < pos) staticInputsBeforePos++;
 									delete getMaskSet().validPositions[i];
 								}
-
+								if (verifyValidInput && validInputs[0] === test.match.def) {
+									validInputs.shift();
+								}
 								resetMaskSet(true); //clear getbuffer
 								isValidRslt = true;
 								while (validInputs.length > 0) {
@@ -1509,11 +1516,11 @@
 									var targetLvp = getLastValidPosition(pos) + 1;
 									for (i = decisionPos + 1; i < getLastValidPosition() + 1; i++) {
 										validPos = getMaskSet().validPositions[i];
-										if ((validPos === undefined || validPos.match.fn == null) && i < pos) {
-											staticInputsAfterPosAlternate++;
+										if ((validPos === undefined || validPos.match.fn == null) && i < (pos + (staticInputsBeforePosAlternate - staticInputsBeforePos))) {
+											staticInputsBeforePosAlternate++;
 										}
 									}
-									pos = pos + (staticInputsAfterPosAlternate - staticInputsAfterPos);
+									pos = pos + (staticInputsBeforePosAlternate - staticInputsBeforePos);
 									isValidRslt = isValid(pos > targetLvp ? targetLvp : pos, c, strict, fromSetValid, true);
 								}
 								if (!isValidRslt) {
@@ -1803,7 +1810,7 @@
 			});
 			if (writeOut) {
 				var caretPos = document.activeElement === input ? (initiatingEvent ? caret(input).begin : result.forwardPosition) : undefined,
-				offset = getBuffer().length - input.inputmask._valueGet().length;
+					offset = getBuffer().length - input.inputmask._valueGet().length;
 				writeBuffer(input, getBuffer(), caretPos + offset, initiatingEvent || new $.Event("checkval"));
 			}
 		}
