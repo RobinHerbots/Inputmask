@@ -3,7 +3,7 @@ define([
 	"tests_phone_world",
 	"tests_phonebe",
 	"tests_phonenl",
-	//"tests_phoneru"
+	"tests_phoneru"
 ], function(qunit) {
 	qunit.load();
 	qunit.start();

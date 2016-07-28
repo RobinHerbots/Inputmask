@@ -27,7 +27,12 @@ define([
 		testmask.focus();
 
 		$.each(Inputmask.prototype.defaults.aliases.phonenl.phoneCodes, function (ndx, lmnt) {
-			var expected = lmnt.mask.replace(/#/g, "0"), input = expected;
+			var ndx = 1, input, expected = lmnt.mask;
+			while (expected.match(/#/)) {
+				expected = expected.replace(/#/, ndx++);
+				if (ndx > 9) ndx = 1;
+			}
+			input = expected;
 			//input = input.replace(/\+/g, "");
 			input = input.replace(/\(/g, "");
 			input = input.replace(/\)/g, "");

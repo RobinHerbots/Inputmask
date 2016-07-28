@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - 'casing': 'title' #1277
 
 ### Updates
+- better filter for input targets in inputmask.binder.js
 - improve alternation selection
 - removed nojumps option
 - update phone alias implementation

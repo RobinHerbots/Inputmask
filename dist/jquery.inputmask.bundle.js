@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.2-82
+* Version: 3.3.2-88
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -2495,7 +2495,7 @@
                     "#": opts.definitions[9]
                 };
                 var masks = opts.phoneCodes.sort(function(a, b) {
-                    var maska = (a.mask || a).replace(/#/g, "0").replace(/[\+\(\)#-]/g, ""), maskb = (b.mask || b).replace(/#/g, "0").replace(/[\+\(\)#-]/g, "");
+                    var maska = (a.mask || a).replace(/#/g, "9").replace(/[\+\(\)#-]/g, ""), maskb = (b.mask || b).replace(/#/g, "9").replace(/[\+\(\)#-]/g, "");
                     return maska < maskb ? -1 : 1;
                 });
                 return masks;

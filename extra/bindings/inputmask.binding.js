@@ -16,14 +16,14 @@ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.p
 	(function($, Inputmask) {
 		$(document).ajaxComplete(function(event, xmlHttpRequest, ajaxOptions) {
 			if ($.inArray("html", ajaxOptions.dataTypes) !== -1) {
-				$(":input").each(function(ndx, lmnt) {
+				$(".inputmask, [data-inputmask]").each(function(ndx, lmnt) {
 					if (lmnt.inputmask === undefined) {
 						Inputmask().mask(lmnt);
 					}
 				});
 			}
 		}).ready(function() {
-			$(":input").each(function(ndx, lmnt) {
+			$(".inputmask, [data-inputmask]").each(function(ndx, lmnt) {
 				if (lmnt.inputmask === undefined) {
 					Inputmask().mask(lmnt);
 				}
