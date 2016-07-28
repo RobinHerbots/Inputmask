@@ -28,6 +28,20 @@
       target="content\Scripts\jquery.inputmask\jquery.inputmask.js"/>
     <file src="..\dist\inputmask\inputmask.js"
       target="content\Scripts\jquery.inputmask\inputmask.js"/>
+    <file src="..\dist\min\inputmask\inputmask.date.extensions.min.js"
+      target="content\Scripts\jquery.inputmask\inputmask.date.extensions.min.js"/>
+    <file src="..\dist\min\inputmask\inputmask.extensions.min.js"
+      target="content\Scripts\jquery.inputmask\inputmask.extensions.min.js"/>
+    <file src="..\dist\min\inputmask\inputmask.numeric.extensions.min.js"
+      target="content\Scripts\jquery.inputmask\inputmask.numeric.extensions.min.js"/>
+    <file src="..\dist\min\inputmask\inputmask.regex.extensions.min.js"
+      target="content\Scripts\jquery.inputmask\inputmask.regex.extensions.min.js"/>
+    <file src="..\dist\min\inputmask\inputmask.phone.extensions.min.js"
+      target="content\Scripts\jquery.inputmask\inputmask.phone.extensions.min.js"/>
+    <file src="..\dist\min\inputmask\jquery.inputmask.min.js"
+      target="content\Scripts\jquery.inputmask\jquery.inputmask.min.js"/>
+    <file src="..\dist\min\inputmask\inputmask.min.js"
+      target="content\Scripts\jquery.inputmask\inputmask.min.js"/>
     <file src="..\nuspecs\Readme.txt" target="Readme.txt" />
   </files>
 </package>

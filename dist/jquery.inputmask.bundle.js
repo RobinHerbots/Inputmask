@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.2-88
+* Version: 3.3.2-89
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -411,9 +411,10 @@
                                         altMatch.alternation = altMatch.alternation || loopNdxCnt;
                                         for (var ndx2 = 0; ndx2 < malternateMatches.length; ndx2++) {
                                             var altMatch2 = malternateMatches[ndx2];
-                                            if (("string" != typeof altIndex || $.inArray(altMatch.locator[altMatch.alternation].toString(), altIndexArr) !== -1) && (altMatch.match.def === altMatch2.match.def || opts.keepStatic !== !0 && staticCanMatchDefinition(altMatch, altMatch2))) {
+                                            if (("string" != typeof altIndex || $.inArray(altMatch.locator[altMatch.alternation].toString(), altIndexArr) !== -1) && (altMatch.match.def === altMatch2.match.def || staticCanMatchDefinition(altMatch, altMatch2))) {
                                                 hasMatch = altMatch.match.mask === altMatch2.match.mask, altMatch2.locator[altMatch.alternation].toString().indexOf(altMatch.locator[altMatch.alternation]) === -1 && (altMatch2.locator[altMatch.alternation] = altMatch2.locator[altMatch.alternation] + "," + altMatch.locator[altMatch.alternation], 
-                                                altMatch2.alternation = altMatch.alternation);
+                                                altMatch2.alternation = altMatch.alternation, null == altMatch.match.fn && (altMatch2.na = altMatch2.na || altMatch.locator[altMatch.alternation].toString(), 
+                                                altMatch2.na.indexOf(altMatch.locator[altMatch.alternation]) === -1 && (altMatch2.na = altMatch2.na + "," + altMatch.locator[altMatch.alternation])));
                                                 break;
                                             }
                                         }
@@ -588,13 +589,13 @@
                         altNdxs = test.locator[alternation] ? test.locator[alternation].toString().split(",") : [];
                         for (var mndx = 0; mndx < altNdxs.length; mndx++) {
                             var validInputs = [], staticInputsBeforePos = 0, staticInputsBeforePosAlternate = 0, verifyValidInput = !1;
-                            if (decisionTaker < altNdxs[mndx]) {
+                            if (decisionTaker < altNdxs[mndx] && (void 0 === test.na || $.inArray(altNdxs[mndx], test.na.split(",")) === -1)) {
                                 getMaskSet().validPositions[decisionPos] = $.extend(!0, {}, test);
                                 var possibilities = getMaskSet().validPositions[decisionPos].locator;
                                 for (getMaskSet().validPositions[decisionPos].locator[alternation] = parseInt(altNdxs[mndx]), 
                                 null == test.match.fn ? (possibilityPos.input !== test.match.def && (verifyValidInput = !0, 
                                 possibilityPos.generatedInput !== !0 && validInputs.push(possibilityPos.input)), 
-                                staticInputsBeforePosAlternate++, getMaskSet().validPositions[decisionPos].generatedInput = !0, 
+                                staticInputsBeforePosAlternate++, getMaskSet().validPositions[decisionPos].generatedInput = !/[0-9a-bA-Z]/.test(test.match.def), 
                                 getMaskSet().validPositions[decisionPos].input = test.match.def) : getMaskSet().validPositions[decisionPos].input = possibilityPos.input, 
                                 i = decisionPos + 1; i < getLastValidPosition(void 0, !0) + 1; i++) validPos = getMaskSet().validPositions[i], 
                                 validPos && validPos.generatedInput !== !0 && /[0-9a-bA-Z]/.test(validPos.input) ? validInputs.push(validPos.input) : i < pos && staticInputsBeforePos++, 

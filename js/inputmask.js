@@ -1084,12 +1084,16 @@
 											var altMatch2 = malternateMatches[ndx2];
 											//verify equality
 											if (typeof altIndex !== "string" || $.inArray(altMatch.locator[altMatch.alternation].toString(), altIndexArr) !== -1) {
-												//there is no use to generalize the static definition to a mask definition when using keepStatic ~ prevents proper alternating
-												if (altMatch.match.def === altMatch2.match.def || (opts.keepStatic !== true && staticCanMatchDefinition(altMatch, altMatch2))) {
+												if (altMatch.match.def === altMatch2.match.def || staticCanMatchDefinition(altMatch, altMatch2)) {
 													hasMatch = altMatch.match.mask === altMatch2.match.mask;
 													if (altMatch2.locator[altMatch.alternation].toString().indexOf(altMatch.locator[altMatch.alternation]) === -1) {
 														altMatch2.locator[altMatch.alternation] = altMatch2.locator[altMatch.alternation] + "," + altMatch.locator[altMatch.alternation];
 														altMatch2.alternation = altMatch.alternation; //we pass the alternation index => used in determineLastRequiredPosition
+														if (altMatch.match.fn == null) { //staticCanMatchDefinition => set no alternate on match
+															altMatch2.na = altMatch2.na || altMatch.locator[altMatch.alternation].toString();
+															if (altMatch2.na.indexOf(altMatch.locator[altMatch.alternation]) === -1)
+																altMatch2.na = altMatch2.na + "," + altMatch.locator[altMatch.alternation];
+														}
 													}
 													break;
 												}
@@ -1473,7 +1477,7 @@
 								staticInputsBeforePos = 0,
 								staticInputsBeforePosAlternate = 0,
 								verifyValidInput = false;
-							if (decisionTaker < altNdxs[mndx]) {
+							if (decisionTaker < altNdxs[mndx] && (test.na === undefined || $.inArray(altNdxs[mndx], test.na.split(",")) === -1)) {
 								getMaskSet().validPositions[decisionPos] = $.extend(true, {}, test);
 								var possibilities = getMaskSet().validPositions[decisionPos].locator;
 								getMaskSet().validPositions[decisionPos].locator[alternation] = parseInt(altNdxs[mndx]); //set forced decision
@@ -1485,7 +1489,7 @@
 										}
 									}
 									staticInputsBeforePosAlternate++;
-									getMaskSet().validPositions[decisionPos].generatedInput = true;
+									getMaskSet().validPositions[decisionPos].generatedInput = !/[0-9a-bA-Z]/.test(test.match.def);
 									getMaskSet().validPositions[decisionPos].input = test.match.def;
 								} else {
 									getMaskSet().validPositions[decisionPos].input = possibilityPos.input;
