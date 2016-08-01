@@ -1267,7 +1267,7 @@
 				return filterTests($.extend(true, [], matches));
 			}
 			getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
-			//console.log(pos + " - " + JSON.stringify(matches));
+			console.log(pos + " - " + JSON.stringify(matches));
 			return filterTests(getMaskSet().tests[pos]);
 		}
 
@@ -2498,7 +2498,7 @@
 			}
 			if (opts.positionCaretOnTab === true) {
 				setTimeout(function () {
-					caret(input, seekNext(getLastValidPosition()));
+					clickEvent.apply(this, [e]);
 				}, 0);
 			}
 			undoValue = getBuffer().join("");

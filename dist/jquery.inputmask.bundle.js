@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.2-90
+* Version: 3.3.2-91
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -492,7 +492,7 @@
                 locator: [],
                 cd: cacheDependency
             }), void 0 !== ndxIntlzr && getMaskSet().tests[pos] ? filterTests($.extend(!0, [], matches)) : (getMaskSet().tests[pos] = $.extend(!0, [], matches), 
-            filterTests(getMaskSet().tests[pos]));
+            console.log(pos + " - " + JSON.stringify(matches)), filterTests(getMaskSet().tests[pos]));
         }
         function getBufferTemplate() {
             return void 0 === getMaskSet()._buffer && (getMaskSet()._buffer = getMaskTemplate(!1, 1), 
@@ -1042,7 +1042,7 @@
             var input = this, nptValue = input.inputmask._valueGet();
             opts.showMaskOnFocus && (!opts.showMaskOnHover || opts.showMaskOnHover && "" === nptValue) ? input.inputmask._valueGet() !== getBuffer().join("") && writeBuffer(input, getBuffer(), seekNext(getLastValidPosition())) : mouseEnter === !1 && caret(input, seekNext(getLastValidPosition())), 
             opts.positionCaretOnTab === !0 && setTimeout(function() {
-                caret(input, seekNext(getLastValidPosition()));
+                clickEvent.apply(this, [ e ]);
             }, 0), undoValue = getBuffer().join("");
         }
         function mouseleaveEvent(e) {
