@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.2-91
+* Version: 3.3.2-103
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -224,7 +224,8 @@
                     _buffer: void 0,
                     buffer: void 0,
                     tests: {},
-                    metadata: metadata
+                    metadata: metadata,
+                    maskLength: void 0
                 }, nocache !== !0 && (Inputmask.prototype.masksCache[opts.numericInput ? mask.split("").reverse().join("") : mask] = masksetDefinition, 
                 masksetDefinition = $.extend(!0, {}, Inputmask.prototype.masksCache[opts.numericInput ? mask.split("").reverse().join("") : mask]))) : masksetDefinition = $.extend(!0, {}, Inputmask.prototype.masksCache[opts.numericInput ? mask.split("").reverse().join("") : mask]), 
                 masksetDefinition;
@@ -494,7 +495,7 @@
                 locator: [],
                 cd: cacheDependency
             }), void 0 !== ndxIntlzr && getMaskSet().tests[pos] ? filterTests($.extend(!0, [], matches)) : (getMaskSet().tests[pos] = $.extend(!0, [], matches), 
-            console.log(pos + " - " + JSON.stringify(matches)), filterTests(getMaskSet().tests[pos]));
+            filterTests(getMaskSet().tests[pos]));
         }
         function getBufferTemplate() {
             return void 0 === getMaskSet()._buffer && (getMaskSet()._buffer = getMaskTemplate(!1, 1), 
@@ -944,7 +945,7 @@
         function keydownEvent(e) {
             var input = this, $input = $(input), k = e.keyCode, pos = caret(input);
             if (k === Inputmask.keyCode.BACKSPACE || k === Inputmask.keyCode.DELETE || iphone && k === Inputmask.keyCode.BACKSPACE_SAFARI || e.ctrlKey && k === Inputmask.keyCode.X && !isInputEventSupported("cut")) e.preventDefault(), 
-            handleRemove(input, k, pos), writeBuffer(input, getBuffer(!0), getMaskSet().p, e, undoValue !== getBuffer().join("")), 
+            handleRemove(input, k, pos), writeBuffer(input, getBuffer(!0), getMaskSet().p, e, !0), 
             input.inputmask._valueGet() === getBufferTemplate().join("") ? $input.trigger("cleared") : isComplete(getBuffer()) === !0 && $input.trigger("complete"), 
             opts.showTooltip && (input.title = opts.tooltip || getMaskSet().mask); else if (k === Inputmask.keyCode.END || k === Inputmask.keyCode.PAGE_DOWN) {
                 e.preventDefault();
@@ -1010,8 +1011,8 @@
                 pasteValue || (pasteValue = inputValue);
             }
             return checkVal(input, !1, !1, isRTL ? pasteValue.split("").reverse() : pasteValue.toString().split("")), 
-            writeBuffer(input, getBuffer(), seekNext(getLastValidPosition()), e, !0), isComplete(getBuffer()) === !0 && $input.trigger("complete"), 
-            e.preventDefault();
+            writeBuffer(input, getBuffer(), seekNext(getLastValidPosition()), e, undoValue !== getBuffer().join("")), 
+            isComplete(getBuffer()) === !0 && $input.trigger("complete"), e.preventDefault();
         }
         function inputFallBackEvent(e) {
             var input = this, inputValue = input.inputmask._valueGet();
@@ -1151,7 +1152,7 @@
             EventRuler.on(el, "incomplete", opts.onincomplete), EventRuler.on(el, "cleared", opts.oncleared), 
             opts.inputEventOnly !== !0 && (EventRuler.on(el, "keydown", keydownEvent), EventRuler.on(el, "keypress", keypressEvent)), 
             EventRuler.on(el, "input", inputFallBackEvent)), EventRuler.on(el, "setvalue", setValueEvent), 
-            "" !== el.inputmask._valueGet() || opts.clearMaskOnLostFocus === !1 || document.activeElement === el) {
+            getBufferTemplate(), "" !== el.inputmask._valueGet() || opts.clearMaskOnLostFocus === !1 || document.activeElement === el) {
                 var initialValue = $.isFunction(opts.onBeforeMask) ? opts.onBeforeMask(el.inputmask._valueGet(), opts) || el.inputmask._valueGet() : el.inputmask._valueGet();
                 checkVal(el, !0, !1, initialValue.split(""));
                 var buffer = getBuffer().slice();
@@ -1226,7 +1227,7 @@
 
           case "mask":
             el = actionObj.el, maskset = el.inputmask.maskset, opts = el.inputmask.opts, isRTL = el.inputmask.isRTL, 
-            undoValue = getBuffer().join(""), mask(el);
+            mask(el);
             break;
 
           case "format":

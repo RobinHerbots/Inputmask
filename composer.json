@@ -1,7 +1,7 @@
 {
   "name": "robinherbots/jquery.inputmask",
   "description": "jquery.inputmask is a jquery plugin which create an input mask.",
-  "version": "3.3.2-91",
+  "version": "3.3.2-103",
   "type": "library",
   "keywords": ["jquery", "plugins", "input", "form", "inputmask", "mask"],
   "homepage": "http://robinherbots.github.io/jquery.inputmask",

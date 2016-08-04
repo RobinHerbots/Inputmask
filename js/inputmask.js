@@ -668,7 +668,8 @@
 						"_buffer": undefined,
 						"buffer": undefined,
 						"tests": {},
-						"metadata": metadata
+						"metadata": metadata,
+						maskLength: undefined
 					};
 					if (nocache !== true) {
 						Inputmask.prototype.masksCache[opts.numericInput ? mask.split("").reverse().join("") : mask] = masksetDefinition;
@@ -1267,7 +1268,7 @@
 				return filterTests($.extend(true, [], matches));
 			}
 			getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
-			console.log(pos + " - " + JSON.stringify(matches));
+			//console.log(pos + " - " + JSON.stringify(matches));
 			return filterTests(getMaskSet().tests[pos]);
 		}
 
@@ -2263,7 +2264,7 @@
 			if (k === Inputmask.keyCode.BACKSPACE || k === Inputmask.keyCode.DELETE || (iphone && k === Inputmask.keyCode.BACKSPACE_SAFARI) || (e.ctrlKey && k === Inputmask.keyCode.X && !isInputEventSupported("cut"))) { //backspace/delete
 				e.preventDefault(); //stop default action but allow propagation
 				handleRemove(input, k, pos);
-				writeBuffer(input, getBuffer(true), getMaskSet().p, e, undoValue !== getBuffer().join(""));
+				writeBuffer(input, getBuffer(true), getMaskSet().p, e, true);
 				if (input.inputmask._valueGet() === getBufferTemplate().join("")) {
 					$input.trigger("cleared");
 				} else if (isComplete(getBuffer()) === true) {
@@ -2423,7 +2424,7 @@
 				}
 			}
 			checkVal(input, false, false, isRTL ? pasteValue.split("").reverse() : pasteValue.toString().split(""));
-			writeBuffer(input, getBuffer(), seekNext(getLastValidPosition()), e, true);
+			writeBuffer(input, getBuffer(), seekNext(getLastValidPosition()), e, undoValue !== getBuffer().join(""));
 			if (isComplete(getBuffer()) === true) {
 				$input.trigger("complete");
 			}
@@ -2726,6 +2727,7 @@
 			EventRuler.on(el, "setvalue", setValueEvent);
 
 			//apply mask
+			getBufferTemplate(); //initialize the buffer and getmasklength
 			if (el.inputmask._valueGet() !== "" || opts.clearMaskOnLostFocus === false || document.activeElement === el) {
 				var initialValue = $.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask(el.inputmask._valueGet(), opts) || el.inputmask._valueGet()) : el.inputmask._valueGet();
 				checkVal(el, true, false, initialValue.split(""));
@@ -2782,7 +2784,6 @@
 					maskset = el.inputmask.maskset;
 					opts = el.inputmask.opts;
 					isRTL = el.inputmask.isRTL;
-					undoValue = getBuffer().join("");
 					mask(el);
 					break;
 				case "format":
