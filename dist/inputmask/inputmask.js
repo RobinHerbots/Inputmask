@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.2-104
+* Version: 3.3.2-105
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -733,7 +733,7 @@
                 }
                 return isMatch;
             }
-            var result, inputValue = nptvl.slice(), charCodes = "", initialNdx = 0;
+            var inputValue = nptvl.slice(), charCodes = "", initialNdx = 0, result = void 0;
             if (resetMaskSet(), getMaskSet().p = seekNext(-1), !strict) if (opts.autoUnmask !== !0) {
                 var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(""), matches = inputValue.join("").match(new RegExp("^" + Inputmask.escapeRegex(staticInput), "g"));
                 matches && matches.length > 0 && (inputValue.splice(0, matches.length * staticInput.length), 
@@ -757,7 +757,7 @@
                     }
                 }
             }), writeOut) {
-                var caretPos = document.activeElement === input ? initiatingEvent ? caret(input).begin : result.forwardPosition : void 0, offset = getBuffer().length - input.inputmask._valueGet().length;
+                var caretPos = document.activeElement === input && (initiatingEvent || result) ? initiatingEvent ? caret(input).begin : result.forwardPosition : void 0, offset = getBuffer().length - input.inputmask._valueGet().length;
                 writeBuffer(input, getBuffer(), caretPos + offset, initiatingEvent || new $.Event("checkval"));
             }
         }

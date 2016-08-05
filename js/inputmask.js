@@ -1747,7 +1747,7 @@
 		function checkVal(input, writeOut, strict, nptvl, initiatingEvent) {
 			var inputValue = nptvl.slice(),
 				charCodes = "",
-				initialNdx = 0, result;
+				initialNdx = 0, result = undefined;
 
 			function isTemplateMatch() {
 				var isMatch = false;
@@ -1814,7 +1814,7 @@
 				}
 			});
 			if (writeOut) {
-				var caretPos = document.activeElement === input ? (initiatingEvent ? caret(input).begin : result.forwardPosition) : undefined,
+				var caretPos = (document.activeElement === input && (initiatingEvent || result)) ? (initiatingEvent ? caret(input).begin : result.forwardPosition) : undefined,
 					offset = getBuffer().length - input.inputmask._valueGet().length;
 				writeBuffer(input, getBuffer(), caretPos + offset, initiatingEvent || new $.Event("checkval"));
 			}

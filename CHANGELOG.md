@@ -20,6 +20,7 @@ All notable changes to this project will be documented in this file.
 	- use selective caching in getTests
 
 ### Fixed
+- Unable to get property 'forwardPosition' of undefined or null reference IE11 #1342
 - Input event doesn't fire in IE #1287
 - Dynamically changing mask based on number of entered characters #1336
 - change addEventListener not fired in IE11 #1310 - inputmask.dependencyLib.js
