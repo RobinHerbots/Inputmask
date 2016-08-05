@@ -2564,7 +2564,7 @@
 									caret(input, !isMask(clickPosition) && !isMask(clickPosition - 1) ? seekNext(clickPosition) : clickPosition);
 								} else {
 									var placeholder = getPlaceholder(lastPosition);
-									if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder) || (!isMask(lastPosition, true) && getTest(lastPosition).match.def === placeholder)) {
+									if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder && getTest(lastPosition).match.optionalQuantifier !== true) || (!isMask(lastPosition, true) && getTest(lastPosition).match.def === placeholder)) {
 										lastPosition = seekNext(lastPosition);
 									}
 									caret(input, lastPosition);
