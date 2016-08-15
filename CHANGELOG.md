@@ -4,17 +4,203 @@ All notable changes to this project will be documented in this file.
 ## [UNRELEASED]
 
 ### Added
+- 'casing': 'title' #1277
 
 ### Updates
+- change default of positionCaretOnTab to true
+- include min files in nuspecs
+- better filter for input targets in inputmask.binder.js
+- improve alternation selection
+- removed nojumps option
+- update phone alias implementation
+	- add unit tests for phonecodes
+- replaced radixFocus option by positionCaretOnClick.  Allows choice for behavior of the caret on click. (none, lvp (default), radixFocus)
+- performance updates
+	- getmasklength
+	- use selective caching in getTests
 
 ### Fixed
+- Unable to get property 'forwardPosition' of undefined or null reference IE11 #1342
+- Input event doesn't fire in IE #1287
+- Dynamically changing mask based on number of entered characters #1336
+- change addEventListener not fired in IE11 #1310 - inputmask.dependencyLib.js
+- Hide mask's items that have multiple options #678
+- Bug when typing after a fixed character #1299
+- onUnMask is not being called #1291
+- How Can I have caret position on decimal digit(after decimal point) for currency inputmask ? #1282
+- How to implement mask for these numbers? #840 (alternator)
+- 'setvalue' on mask with a suffix results in suffix being doubled, while `$.fn.val` works fine #1267
 
-## [3.2.2] - 2015-09-04
+## [3.3.1] - 2016-04-20
+
+### Updates
+- better handle alternator logic by merging the locators
+- patchValueProperty - enable native value property patch on IE8/IE9
+- speedup insert and delete from characters
+- adding extra options through option method => auto apply the mask + add noremask option
+
+### Fixed
+- Safari date mask - Context switch when jquery.valhook fallback is used #1255
+- Email alias _@_ => _@_._ #1245
+- Safari Error: RangeError: Maximum call stack size exceeded #1241
+- Safari Maximum call stack size exceeded when inputmask bound twice #1226
+
+## [3.3.0] - 2016-04-05
+
+### Added
+- nullable option => switch to return the placeholder or null when nothing is entered
+- VIN mask #1199
+
+### Updates
+- also escape []{}() in the prefix and suffix for decimals
+- Can not change integer part when it is "0" #1192
+- change funtionality of postValidation => result may be true|false
+- improve getmetadata
+- patchValueProperty - enable native value property patch on IE10/IE11
+
+### Fixed
+- PostValidation function fails when using placeholder and digitsOptional is false #1240
+- min value issue #1177
+- min value for decimal isn't working #1178
+- InputMask remove a 0 in left side. (numericInput: true) #1238
+- validate regular expression for indian vehicle registration number #1223
+- Distinguish empty value and '$ 0.00' value for currency alias #1053
+- 'alias': 'numeric', zero value #1221
+- Clicking on a highlighted masked field does not set the caret to the first valid position (Chrome) #1218
+- Caret Positioned After Last Decimal Digit Disallows Sign Input When digits Option Set #1139
+- numeric alias produces "0.00" instead of null when cleared out. #902
+- IE8 error: Object doesn't support this property or method #1217
+- update negation handling for numeric alias
+- NumericInput option can't handle 100.00 #1162
+- "0.00" not displayed if "clearMaskOnLostFocus: true" #1171
+- Lost zero while replacing a digit in group #1202
+- RadixFocus problem #686
+- Can not change integer part when it is "0" #1192
+- "[object Object]" value after `$element.inputmask('setvalue', '')` call #1208
+- Paste does not work properly when using numericInput #1195
+- error occurs in safari 9.0.3 (11601.4.4) #1191
+- Can not clear value when select all and press BACKSPACE in some circumstance #1179
+- Email mask incorrectly including underscore #868 => allowed as not typed => result invalid
+- AutoUnmask not working on IE11 #1187
+- Email mask not accepting valid emails #971
+- Deleting character from input with 'email' alias shifts all data #1052
+- Fix some events like paste & cut for Vanilla dependencyLib #1072
+
+## [3.2.7] - 2016-01-28
+### Updates
+- favor inputfallback for android
+- enable IEMobile
+
+### Fixed
+- Firefox, Android - cursor jumps to the left in numeric mask #1138
+- Issue in Android (Samsung GALAXY S5) #825
+- time mask, backspace behavior on android chrome #817
+- Android Chrome Browser #867
+- Mask issue in Android with Swype Keyboard #692
+- Pasting to masked input not working on Android #1061
+- Decimal point/comma not working on Android 4.4 #1041
+- Doesn't work on Android #1073
+- numeric input in mobile #897
+- Support for Android default browser #368
+- Repeating a character and a number On Mobile #898
+- Inputs are ignored on FF 39 on Android 5.0.2 #982
+- Phone input mask duplicates each character on Samsung Android tablet #834
+- Support for Android default browser #368
+- fixed "valids is not defined" error #1166
+
+## [3.2.6] - 2016-01-25
+### Added
+- add jitMasking option
+- supportsInputType option
+- staticDefinitionSymbol (see readme)
+- include textarea as a valid masking element
+
+### Updates
+- enhance inputfallback ~ merge mobileinputevent
+- caching with cache-dependency check in the getTests fn
+- implement missing parts in the jqlite DependencyLib
+- Remove namespaces for events (simplifies implementing other dependencyLibs, besides jquery)
+- update alternation logic
+
+### Fixed
+- Windows Phone User unable to set Date #993
+- '405 not allowed' error on loading phone-codes.js on certain Ajax configuration. #1156
+- Issue with reset of inputmask field #1157
+- IE11 clear not working in emulated IE9 mode #1144
+- Show placeholder as user types #1141
+- Initial value like VAA gets truncated to V-__ with mask like "I{1,3}-ZZ" #1134
+- Input mask can't be applied on other HTML5 input types #828
+- IE9 SCRIPT445: Object does not support this action #1135
+- Multiple Mask Click Focus Error #1133
+- Double enter for submit #1131
+- Multiple masks #760
+- Cursor shifted to the RIGHT align any way. #1088
+- No-strict mask #1084
+- Inputmask not work with textarea #1128
+
+## [3.2.5] - 2015-11-27
+
+### Updates
+- improve cursor positioning and placeholder handling
+- remove $("selector").inputmask("mask", { mask: "99-999 ..." }) format from plugin
+
+### Fixed
+- Currency validator gives false negative if number of digits in integer part is not multiplier of groupSize #1122
+- data-inputmask => mask with optionals not parsed correctly #1119
+- Email mask doesn't allow to go to the domain part by mouse #885
+- alias options from 'data-inputmask' is not used anymore #1113
+- Numeric extensions don't supported with vanilla DependencyLib #1116
+
+## [3.2.4] - 2015-11-20
+
+### Updates
+- allow passing an element id to the mask function
+- allow passing a selector to the mask function
+- fix for bower package
+
+### Fixed
+- get the pressed key onKeyValidation #1114
+- write a global function for onKeyValidation #1111 => update readme
+- NumericInput Causes err #856
+- Certain phones not inputable #758
+- I have a problems with mask input, I can't input Ukraine phone +380(XX)XXX-XX-XX #1050
+- you can't write ukraine number to phone field +380999999999 #1019
+- autoUnmask not work in newest release #1109
+- Definition {_} throws an exception #1106 => update readme
+- Uncaught TypeError for "percentage" alias #1108
+- Wrong behavior for symbol delete in ip alias #1092
+- fix element validation for the vanilla dependencyLib #1104
+
+## [3.2.3] - 2015-11-09
+
+### Added
+- Inputmask.remove
+- inputmask.binding => automated inputmask binding for html attributes
+- Add tooltip option
+
+### Updates
+- fix bug in maskscache - context mixing
+- allow passing multiple inputs to mask function
+- Improve handling of compositionevents
+- improve extendAliases, extendDefinitions, extendDefaults
+
+### Fixed
+- Cannot erase input value throw mask symbols (Android 4.4, Android 4.2) #1090
+- CTRL-x / Cut issue #948
+- Double "Change" action when pressing Enter in Firefox #1070
+- upper/lower case handling in data-inputmask-* #1079
+- IE8 Null values after submit #1076
+- Each character repeats on Mobile #912
+- extra tooltip property #1071
+- Numeric aliases insert '0' in input after clearing if there was fraction part #1067
+- Clear optional tail in getvalue. See #1055 #1065
+
+## [3.2.2] - 2015-10-07
 
 ### Fixed
 - Missing comma in bower.json and component.json #1064
 
-## [3.2.1] - 2015-09-04
+## [3.2.1] - 2015-10-07
 
 ### Added
 - inputmask.dependencyLib.jquery

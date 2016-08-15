@@ -1,22 +1,22 @@
 /*
-Input Mask plugin extensions
-http://github.com/RobinHerbots/jquery.inputmask
-Copyright (c) 2010 -  Robin Herbots
-Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.0.0-dev
+ Input Mask plugin extensions
+ http://github.com/RobinHerbots/jquery.inputmask
+ Copyright (c) 2010 -  Robin Herbots
+ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
+ Version: 0.0.0-dev
 
-Optional extensions on the jquery.inputmask base
-*/
-(function(factory) {
-		if (typeof define === "function" && define.amd) {
-			define(["inputmask.dependencyLib", "inputmask"], factory);
-		} else if (typeof exports === "object") {
-			module.exports = factory(require("./inputmask.dependencyLib.jquery"), require("./inputmask"));
-		} else {
-			factory(jQuery, window.Inputmask);
-		}
+ Optional extensions on the jquery.inputmask base
+ */
+(function (factory) {
+	if (typeof define === "function" && define.amd) {
+		define(["inputmask.dependencyLib", "inputmask"], factory);
+	} else if (typeof exports === "object") {
+		module.exports = factory(require("./inputmask.dependencyLib.jquery"), require("./inputmask"));
+	} else {
+		factory(window.dependencyLib || jQuery, window.Inputmask);
 	}
-	(function($, Inputmask) {
+}
+(function ($, Inputmask) {
 	//extra definitions
 	Inputmask.extendDefinitions({
 		"A": {
@@ -37,72 +37,13 @@ Optional extensions on the jquery.inputmask base
 	});
 	Inputmask.extendAliases({
 		"url": {
-			mask: "ir",
-			placeholder: "",
-			separator: "",
-			defaultPrefix: "http://",
-			regex: {
-				urlpre1: new RegExp("[fh]"),
-				urlpre2: new RegExp("(ft|ht)"),
-				urlpre3: new RegExp("(ftp|htt)"),
-				urlpre4: new RegExp("(ftp:|http|ftps)"),
-				urlpre5: new RegExp("(ftp:/|ftps:|http:|https)"),
-				urlpre6: new RegExp("(ftp://|ftps:/|http:/|https:)"),
-				urlpre7: new RegExp("(ftp://|ftps://|http://|https:/)"),
-				urlpre8: new RegExp("(ftp://|ftps://|http://|https://)")
-			},
 			definitions: {
 				"i": {
-					validator: function(chrs, maskset, pos, strict, opts) {
-						return true;
-					},
-					cardinality: 8,
-					prevalidator: (function() {
-						var result = [],
-							prefixLimit = 8;
-						for (var i = 0; i < prefixLimit; i++) {
-							result[i] = (function() {
-								var j = i;
-								return {
-									validator: function(chrs, maskset, pos, strict, opts) {
-										if (opts.regex["urlpre" + (j + 1)]) {
-											var tmp = chrs,
-												k;
-											if (((j + 1) - chrs.length) > 0) {
-												tmp = maskset.buffer.join('').substring(0, ((j + 1) - chrs.length)) + "" + tmp;
-											}
-											var isValid = opts.regex["urlpre" + (j + 1)].test(tmp);
-											if (!strict && !isValid) {
-												pos = pos - j;
-												for (k = 0; k < opts.defaultPrefix.length; k++) {
-													maskset.buffer[pos] = opts.defaultPrefix[k];
-													pos++;
-												}
-												for (k = 0; k < tmp.length - 1; k++) {
-													maskset.buffer[pos] = tmp[k];
-													pos++;
-												}
-												return {
-													"pos": pos
-												};
-											}
-											return isValid;
-										} else {
-											return false;
-										}
-									},
-									cardinality: j
-								};
-							})();
-						}
-						return result;
-					})()
-				},
-				"r": {
 					validator: ".",
-					cardinality: 50
+					cardinality: 1
 				}
 			},
+			mask: "(\\http://)|(\\http\\s://)|(ftp://)|(ftp\\s://)i{+}",
 			insertMode: false,
 			autoUnmask: false
 		},
@@ -110,7 +51,7 @@ Optional extensions on the jquery.inputmask base
 			mask: "i[i[i]].i[i[i]].i[i[i]].i[i[i]]",
 			definitions: {
 				"i": {
-					validator: function(chrs, maskset, pos, strict, opts) {
+					validator: function (chrs, maskset, pos, strict, opts) {
 						if (pos - 1 > -1 && maskset.buffer[pos - 1] !== ".") {
 							chrs = maskset.buffer[pos - 1] + chrs;
 							if (pos - 2 > -1 && maskset.buffer[pos - 2] !== ".") {
@@ -121,12 +62,18 @@ Optional extensions on the jquery.inputmask base
 					},
 					cardinality: 1
 				}
+			},
+			onUnMask: function (maskedValue, unmaskedValue, opts) {
+				return maskedValue;
 			}
 		},
 		"email": {
-			mask: "*{1,64}[.*{1,64}][.*{1,64}][.*{1,64}]@*{1,64}[.*{2,64}][.*{2,6}][.*{1,2}]",
+			//https://en.wikipedia.org/wiki/Domain_name#Domain_name_space
+			//https://en.wikipedia.org/wiki/Hostname#Restrictions_on_valid_host_names
+			//should be extended with the toplevel domains at the end
+			mask: "*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@-{1,63}.-{1,63}[.-{1,63}][.-{1,63}]",
 			greedy: false,
-			onBeforePaste: function(pastedValue, opts) {
+			onBeforePaste: function (pastedValue, opts) {
 				pastedValue = pastedValue.toLowerCase();
 				return pastedValue.replace("mailto:", "");
 			},
@@ -135,11 +82,33 @@ Optional extensions on the jquery.inputmask base
 					validator: "[0-9A-Za-z!#$%&'*+/=?^_`{|}~\-]",
 					cardinality: 1,
 					casing: "lower"
+				},
+				"-": {
+					validator: "[0-9A-Za-z\-]",
+					cardinality: 1,
+					casing: "lower"
 				}
+			},
+			onUnMask: function (maskedValue, unmaskedValue, opts) {
+				return maskedValue;
 			}
 		},
 		"mac": {
 			mask: "##:##:##:##:##:##"
+		},
+		//https://en.wikipedia.org/wiki/Vehicle_identification_number
+		// see issue #1199
+		"vin": {
+			mask: "V{13}9{4}",
+			definitions: {
+				'V': {
+					validator: "[A-HJ-NPR-Za-hj-npr-z\\d]",
+					cardinality: 1,
+					casing: "upper"
+				}
+			},
+			clearIncomplete: true,
+			autoUnmask: true
 		}
 	});
 	return Inputmask;

@@ -1,4 +1,27 @@
-[
+/*
+ Input Mask plugin extensions
+ http://github.com/RobinHerbots/jquery.inputmask
+ Copyright (c) 2010 -  Robin Herbots
+ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
+ Version: 0.0.0-dev
+
+ Russian Phone extension.
+ */
+(function (factory) {
+	if (typeof define === "function" && define.amd) {
+		define(["inputmask"], factory);
+	} else if (typeof exports === "object") {
+		module.exports = factory(require("./inputmask"));
+	} else {
+		factory(window.Inputmask);
+	}
+}
+(function (Inputmask) {
+	Inputmask.extendAliases({
+		"phoneru": {
+			alias: "abstractphone",
+			countrycode: "7",
+			phoneCodes: [
 	{ "mask": "+7(301)###-##-##", "cc": "RU", "cd": "Russia", "region": "Бурятия", "city": "", "operator": "", "desc": "" },
 	{ "mask": "+7(3012)##-##-##", "cc": "RU", "cd": "Russia", "region": "Бурятия", "city": "Улан-Удэ", "operator": "", "desc": "" },
 	{ "mask": "+7(30130)#-##-##", "cc": "RU", "cd": "Russia", "region": "Бурятия", "city": ["Нижнеангарск", "Северобайкальск"], "operator": "", "desc": "" },
@@ -2403,3 +2426,9 @@
 	{ "mask": "+7(87964)#-##-##", "cc": "RU", "cd": "Russia", "region": "Ставропольский край", "city": "Курская", "operator": "", "desc": "" },
 	{ "mask": "+7(9##)###-##-##", "cc": "RU", "cd": "Russia", "type": "mobile" }
 ]
+}
+});
+
+return Inputmask;
+}));
+

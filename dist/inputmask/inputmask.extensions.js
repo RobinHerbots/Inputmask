@@ -1,12 +1,12 @@
 /*!
 * inputmask.extensions.js
-* http://github.com/RobinHerbots/jquery.inputmask
-* Copyright (c) 2010 - 2015 Robin Herbots
+* https://github.com/RobinHerbots/jquery.inputmask
+* Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.3-3
+* Version: 3.3.2-106
 */
 !function(factory) {
-    "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery"), require("./inputmask")) : factory(jQuery, window.Inputmask);
+    "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery"), require("./inputmask")) : factory(window.dependencyLib || jQuery, window.Inputmask);
 }(function($, Inputmask) {
     return Inputmask.extendDefinitions({
         A: {
@@ -26,58 +26,13 @@
         }
     }), Inputmask.extendAliases({
         url: {
-            mask: "ir",
-            placeholder: "",
-            separator: "",
-            defaultPrefix: "http://",
-            regex: {
-                urlpre1: new RegExp("[fh]"),
-                urlpre2: new RegExp("(ft|ht)"),
-                urlpre3: new RegExp("(ftp|htt)"),
-                urlpre4: new RegExp("(ftp:|http|ftps)"),
-                urlpre5: new RegExp("(ftp:/|ftps:|http:|https)"),
-                urlpre6: new RegExp("(ftp://|ftps:/|http:/|https:)"),
-                urlpre7: new RegExp("(ftp://|ftps://|http://|https:/)"),
-                urlpre8: new RegExp("(ftp://|ftps://|http://|https://)")
-            },
             definitions: {
                 i: {
-                    validator: function(chrs, maskset, pos, strict, opts) {
-                        return !0;
-                    },
-                    cardinality: 8,
-                    prevalidator: function() {
-                        for (var result = [], prefixLimit = 8, i = 0; prefixLimit > i; i++) result[i] = function() {
-                            var j = i;
-                            return {
-                                validator: function(chrs, maskset, pos, strict, opts) {
-                                    if (opts.regex["urlpre" + (j + 1)]) {
-                                        var k, tmp = chrs;
-                                        j + 1 - chrs.length > 0 && (tmp = maskset.buffer.join("").substring(0, j + 1 - chrs.length) + "" + tmp);
-                                        var isValid = opts.regex["urlpre" + (j + 1)].test(tmp);
-                                        if (!strict && !isValid) {
-                                            for (pos -= j, k = 0; k < opts.defaultPrefix.length; k++) maskset.buffer[pos] = opts.defaultPrefix[k], 
-                                            pos++;
-                                            for (k = 0; k < tmp.length - 1; k++) maskset.buffer[pos] = tmp[k], pos++;
-                                            return {
-                                                pos: pos
-                                            };
-                                        }
-                                        return isValid;
-                                    }
-                                    return !1;
-                                },
-                                cardinality: j
-                            };
-                        }();
-                        return result;
-                    }()
-                },
-                r: {
                     validator: ".",
-                    cardinality: 50
+                    cardinality: 1
                 }
             },
+            mask: "(\\http://)|(\\http\\s://)|(ftp://)|(ftp\\s://)i{+}",
             insertMode: !1,
             autoUnmask: !1
         },
@@ -92,10 +47,13 @@
                     },
                     cardinality: 1
                 }
+            },
+            onUnMask: function(maskedValue, unmaskedValue, opts) {
+                return maskedValue;
             }
         },
         email: {
-            mask: "*{1,64}[.*{1,64}][.*{1,64}][.*{1,64}]@*{1,64}[.*{2,64}][.*{2,6}][.*{1,2}]",
+            mask: "*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@-{1,63}.-{1,63}[.-{1,63}][.-{1,63}]",
             greedy: !1,
             onBeforePaste: function(pastedValue, opts) {
                 return pastedValue = pastedValue.toLowerCase(), pastedValue.replace("mailto:", "");
@@ -105,11 +63,31 @@
                     validator: "[0-9A-Za-z!#$%&'*+/=?^_`{|}~-]",
                     cardinality: 1,
                     casing: "lower"
+                },
+                "-": {
+                    validator: "[0-9A-Za-z-]",
+                    cardinality: 1,
+                    casing: "lower"
                 }
+            },
+            onUnMask: function(maskedValue, unmaskedValue, opts) {
+                return maskedValue;
             }
         },
         mac: {
             mask: "##:##:##:##:##:##"
+        },
+        vin: {
+            mask: "V{13}9{4}",
+            definitions: {
+                V: {
+                    validator: "[A-HJ-NPR-Za-hj-npr-z\\d]",
+                    cardinality: 1,
+                    casing: "upper"
+                }
+            },
+            clearIncomplete: !0,
+            autoUnmask: !0
         }
     }), Inputmask;
 });

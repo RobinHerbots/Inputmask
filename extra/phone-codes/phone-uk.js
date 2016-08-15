@@ -1,4 +1,31 @@
-[
+/*
+ Input Mask plugin extensions
+ http://github.com/RobinHerbots/jquery.inputmask
+ Copyright (c) 2010 -  Robin Herbots
+ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
+ Version: 0.0.0-dev
+
+ United Kingdom Phone extension.
+
+
+ //TODO finished phone codes see below
+
+ */
+(function (factory) {
+	if (typeof define === "function" && define.amd) {
+		define(["inputmask"], factory);
+	} else if (typeof exports === "object") {
+		module.exports = factory(require("./inputmask"));
+	} else {
+		factory(window.Inputmask);
+	}
+}
+(function (Inputmask) {
+	Inputmask.extendAliases({
+		"phoneuk": {
+			alias: "abstractphone",
+			countrycode: "44",
+			phoneCodes: [
     { "mask": "+44(113)-###-####", "cc": "UK", "cd": "United Kingdom", "city": "Leeds" },
     { "mask": "+44(114)-###-####", "cc": "UK", "cd": "United Kingdom", "city": "Sheffield" },
     { "mask": "+44(115)-###-####", "cc": "UK", "cd": "United Kingdom", "city": "Nottingham" },
@@ -615,3 +642,8 @@
 //
 
 ]
+		}
+	});
+
+	return Inputmask;
+}));

@@ -1,12 +1,12 @@
 /*!
 * inputmask.regex.extensions.js
-* http://github.com/RobinHerbots/jquery.inputmask
-* Copyright (c) 2010 - 2015 Robin Herbots
+* https://github.com/RobinHerbots/jquery.inputmask
+* Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.2.3-3
+* Version: 3.3.2-106
 */
 !function(factory) {
-    "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery"), require("./inputmask")) : factory(jQuery, window.Inputmask);
+    "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery"), require("./inputmask")) : factory(window.dependencyLib || jQuery, window.Inputmask);
 }(function($, Inputmask) {
     return Inputmask.extendAliases({
         Regex: {
@@ -35,7 +35,7 @@
                             for (opts.regexTokens = []; match = opts.tokenizer.exec(opts.regex); ) switch (m = match[0], 
                             m.charAt(0)) {
                               case "(":
-                                opengroups.push(new RegexToken(!0));
+                                opengroups.push(new RegexToken((!0)));
                                 break;
 
                               case ")":
@@ -45,7 +45,7 @@
                               case "{":
                               case "+":
                               case "*":
-                                var quantifierToken = new RegexToken(!1, !0);
+                                var quantifierToken = new RegexToken((!1), (!0));
                                 m = m.replace(/[{}]/g, "");
                                 var mq = m.split(","), mq0 = isNaN(mq[0]) ? mq[0] : parseInt(mq[0]), mq1 = 1 === mq.length ? mq0 : isNaN(mq[1]) ? mq[1] : parseInt(mq[1]);
                                 if (quantifierToken.quantifier = {
@@ -53,9 +53,9 @@
                                     max: mq1
                                 }, opengroups.length > 0) {
                                     var matches = opengroups[opengroups.length - 1].matches;
-                                    match = matches.pop(), match.isGroup || (groupToken = new RegexToken(!0), groupToken.matches.push(match), 
+                                    match = matches.pop(), match.isGroup || (groupToken = new RegexToken((!0)), groupToken.matches.push(match), 
                                     match = groupToken), matches.push(match), matches.push(quantifierToken);
-                                } else match = currentToken.matches.pop(), match.isGroup || (groupToken = new RegexToken(!0), 
+                                } else match = currentToken.matches.pop(), match.isGroup || (groupToken = new RegexToken((!0)), 
                                 groupToken.matches.push(match), match = groupToken), currentToken.matches.push(match), 
                                 currentToken.matches.push(quantifierToken);
                                 break;
@@ -77,19 +77,19 @@
                                         isvalid = isvalid || validateRegexToken(matchGroup, !0), isvalid && (matchToken.repeaterPart = regexPart), 
                                         regexPart = regexPartBak + matchToken.quantifier.max;
                                     } else {
-                                        for (var i = 0, qm = matchToken.quantifier.max - 1; qm > i && !(isvalid = validateRegexToken(matchGroup, !0)); i++) ;
+                                        for (var i = 0, qm = matchToken.quantifier.max - 1; i < qm && !(isvalid = validateRegexToken(matchGroup, !0)); i++) ;
                                         regexPart = regexPartBak + "{" + matchToken.quantifier.min + "," + matchToken.quantifier.max + "}";
                                     }
                                 } else if (void 0 !== matchToken.matches) for (var k = 0; k < matchToken.length && !(isvalid = validateRegexToken(matchToken[k], fromGroup)); k++) ; else {
                                     var testExp;
                                     if ("[" == matchToken.charAt(0)) {
                                         testExp = regexPart, testExp += matchToken;
-                                        for (var j = 0; openGroupCount > j; j++) testExp += ")";
+                                        for (var j = 0; j < openGroupCount; j++) testExp += ")";
                                         var exp = new RegExp("^(" + testExp + ")$");
                                         isvalid = exp.test(bufferStr);
-                                    } else for (var l = 0, tl = matchToken.length; tl > l; l++) if ("\\" !== matchToken.charAt(l)) {
+                                    } else for (var l = 0, tl = matchToken.length; l < tl; l++) if ("\\" !== matchToken.charAt(l)) {
                                         testExp = regexPart, testExp += matchToken.substr(0, l + 1), testExp = testExp.replace(/\|$/, "");
-                                        for (var j = 0; openGroupCount > j; j++) testExp += ")";
+                                        for (var j = 0; j < openGroupCount; j++) testExp += ")";
                                         var exp = new RegExp("^(" + testExp + ")$");
                                         if (isvalid = exp.test(bufferStr)) break;
                                     }
@@ -99,9 +99,9 @@
                             }
                             return fromGroup && (regexPart += ")", openGroupCount--), isvalid;
                         }
-                        var groupToken, cbuffer = maskset.buffer.slice(), regexPart = "", isValid = !1, openGroupCount = 0;
-                        null === opts.regexTokens && analyseRegex(), cbuffer.splice(pos, 0, chrs);
-                        for (var bufferStr = cbuffer.join(""), i = 0; i < opts.regexTokens.length; i++) {
+                        var bufferStr, groupToken, cbuffer = maskset.buffer.slice(), regexPart = "", isValid = !1, openGroupCount = 0;
+                        null === opts.regexTokens && analyseRegex(), cbuffer.splice(pos, 0, chrs), bufferStr = cbuffer.join("");
+                        for (var i = 0; i < opts.regexTokens.length; i++) {
                             var regexToken = opts.regexTokens[i];
                             if (isValid = validateRegexToken(regexToken, regexToken.isGroup)) break;
                         }

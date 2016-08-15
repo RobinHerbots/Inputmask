@@ -1,8 +1,8 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 	function createBanner(fileName) {
 		return "/*!\n" +
 			"* " + fileName + "\n" +
-			"* http://github.com/RobinHerbots/jquery.inputmask\n" +
+			"* <%= pkg.homepage %>\n" +
 			"* Copyright (c) 2010 - <%= grunt.template.today('yyyy') %> <%= pkg.author.name %>\n" +
 			"* Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)\n" +
 			"* Version: <%= pkg.version %>\n" +
@@ -12,12 +12,13 @@ module.exports = function(grunt) {
 	function createUglifyConfig(path) {
 		function stripModuleLoaders(src, dst) {
 			var srcFile = grunt.file.read(src);
-			srcFile = srcFile.replace(new RegExp("\\(function\\(factory\\)[\\s\\S]*\\(function\\(\\$"), "(function($");
+			srcFile = srcFile.replace(new RegExp("\\(function\\s?\\(factory\\)[\\s\\S]*\\(function\\s?\\(\\$"), "(function ($");
 			if (src.indexOf("extensions") === -1 && src.indexOf("jquery.inputmask") === -1) {
 				srcFile = srcFile.replace(new RegExp("\\}\\)\\);[\\s]*$"), "})(jQuery);");
 			} else srcFile = srcFile.replace(new RegExp("\\}\\)\\);[\\s]*$"), "})(jQuery, Inputmask);");
 			grunt.file.write(dst, srcFile);
 		}
+
 		var uglifyConfig = {};
 		var srcFiles = grunt.file.expand(path + "/*.js");
 		for (var srcNdx in srcFiles) {
@@ -30,7 +31,7 @@ module.exports = function(grunt) {
 					banner: createBanner(dstFile),
 					beautify: true,
 					mangle: false,
-					preserveComments: "some",
+					preserveComments: false,
 					ASCIIOnly: true
 				}
 			};
@@ -56,6 +57,15 @@ module.exports = function(grunt) {
 				banner: createBanner("jquery.inputmask.bundle.js"),
 				beautify: true,
 				mangle: false,
+				preserveComments: false,
+				ASCIIOnly: true
+			}
+		};
+		uglifyConfig["bundlemin"] = {
+			dest: "dist/min/jquery.inputmask.bundle.min.js",
+			src: srcFiles,
+			options: {
+				banner: createBanner("jquery.inputmask.bundle.js"),
 				preserveComments: "some",
 				ASCIIOnly: true
 			}
@@ -97,7 +107,7 @@ module.exports = function(grunt) {
 		},
 		nugetpack: {
 			dist: {
-				src: function() {
+				src: function () {
 					return process.platform === "linux" ? 'nuspecs/jquery.inputmask.linux.nuspec' : 'nuspecs/jquery.inputmask.nuspec';
 				}(),
 				dest: 'dist/',
@@ -110,7 +120,7 @@ module.exports = function(grunt) {
 			dist: {
 				src: 'dist/jQuery.InputMask.<%= pkg.version %>.nupkg',
 				options: {
-						source: "https://www.nuget.org"
+					source: "https://www.nuget.org"
 				}
 			}
 		},
@@ -126,7 +136,7 @@ module.exports = function(grunt) {
 			}
 		},
 		eslint: {
-			target: grunt.file.expand("js/*.js")
+			target: "{extra/*,js}/*.js"
 		},
 		availabletasks: {
 			tasks: {

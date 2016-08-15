@@ -1,23 +1,23 @@
 /*
-Input Mask plugin extensions
-http://github.com/RobinHerbots/jquery.inputmask
-Copyright (c) 2010 -  Robin Herbots
-Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-Version: 0.0.0-dev
+ Input Mask plugin extensions
+ http://github.com/RobinHerbots/jquery.inputmask
+ Copyright (c) 2010 -  Robin Herbots
+ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
+ Version: 0.0.0-dev
 
-Regex extensions on the jquery.inputmask base
-Allows for using regular expressions as a mask
-*/
-(function(factory) {
-		if (typeof define === "function" && define.amd) {
-			define(["inputmask.dependencyLib", "inputmask"], factory);
-		} else if (typeof exports === "object") {
-			module.exports = factory(require("./inputmask.dependencyLib.jquery"), require("./inputmask"));
-		} else {
-			factory(jQuery, window.Inputmask);
-		}
+ Regex extensions on the jquery.inputmask base
+ Allows for using regular expressions as a mask
+ */
+(function (factory) {
+	if (typeof define === "function" && define.amd) {
+		define(["inputmask.dependencyLib", "inputmask"], factory);
+	} else if (typeof exports === "object") {
+		module.exports = factory(require("./inputmask.dependencyLib.jquery"), require("./inputmask"));
+	} else {
+		factory(window.dependencyLib || jQuery, window.Inputmask);
 	}
-	(function($, Inputmask) {
+}
+(function ($, Inputmask) {
 	Inputmask.extendAliases({ // $(selector).inputmask("Regex", { regex: "[0-9]*"}
 		"Regex": {
 			mask: "r",
@@ -28,13 +28,14 @@ Allows for using regular expressions as a mask
 			//Thx to https://github.com/slevithan/regex-colorizer for the tokenizer regex
 			tokenizer: /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?[:=!]?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g,
 			quantifierFilter: /[0-9]+[^,]/,
-			isComplete: function(buffer, opts) {
+			isComplete: function (buffer, opts) {
 				return new RegExp(opts.regex).test(buffer.join(""));
 			},
 			definitions: {
 				"r": {
-					validator: function(chrs, maskset, pos, strict, opts) {
+					validator: function (chrs, maskset, pos, strict, opts) {
 						var cbuffer = maskset.buffer.slice(),
+							bufferStr,
 							regexPart = "",
 							isValid = false,
 							openGroupCount = 0,
@@ -66,11 +67,11 @@ Allows for using regular expressions as a mask
 										break;
 									case ")": // Group closing
 										groupToken = opengroups.pop();
-										if (opengroups.length > 0)
+										if (opengroups.length > 0) {
 											opengroups[opengroups.length - 1].matches.push(groupToken);
-										else
+										} else {
 											currentToken.matches.push(groupToken);
-
+										}
 										break;
 									case "{":
 									case "+":
@@ -115,8 +116,9 @@ Allows for using regular expressions as a mask
 								}
 							}
 
-							if (currentToken.matches.length > 0)
+							if (currentToken.matches.length > 0) {
 								opts.regexTokens.push(currentToken);
+							}
 						}
 
 						function validateRegexToken(token, fromGroup) {
@@ -190,12 +192,12 @@ Allows for using regular expressions as a mask
 							return isvalid;
 						}
 
-						if (opts.regexTokens === null)
+						if (opts.regexTokens === null) {
 							analyseRegex();
-
+						}
 
 						cbuffer.splice(pos, 0, chrs);
-						var bufferStr = cbuffer.join("");
+						bufferStr = cbuffer.join("");
 						for (var i = 0; i < opts.regexTokens.length; i++) {
 							var regexToken = opts.regexTokens[i];
 							isValid = validateRegexToken(regexToken, regexToken.isGroup);

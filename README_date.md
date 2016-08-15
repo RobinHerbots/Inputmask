@@ -47,9 +47,9 @@ yearrange: {
 ## jqueryui.datepicker example
 
 ```javascript
-    $('#calender').datepicker({
-                dateFormat: 'dd/mm/yy',
-                changeMonth: true,
-                changeYear: true
-    }).inputmask('dd/mm/yyyy');
+$('#calender').datepicker({
+  dateFormat: 'dd/mm/yy',
+  changeMonth: true,
+  changeYear: true
+}).inputmask('dd/mm/yyyy');
 ```
