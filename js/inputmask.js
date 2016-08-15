@@ -2422,6 +2422,9 @@
 				if (!pasteValue) {
 					pasteValue = inputValue;
 				}
+				if (!pasteValue) {
+					return true;
+                }
 			}
 			checkVal(input, false, false, isRTL ? pasteValue.split("").reverse() : pasteValue.toString().split(""));
 			writeBuffer(input, getBuffer(), seekNext(getLastValidPosition()), e, undoValue !== getBuffer().join(""));
