@@ -985,6 +985,11 @@ Default: true
 Positioning of the caret on click.  Options none, lvp (based on the last valid position (default), radixFocus (position caret to radixpoint on initial click)
 Default: "lvp"
 
+### casing
+Apply casing at the mask-level.
+Options: null, "upper", "lower" or "title"
+Default: null
+
 ## General
 ### set a value and apply mask
 this can be done with the traditional jquery.val function (all browsers) or JavaScript value property for browsers which implement lookupGetter or getOwnPropertyDescriptor

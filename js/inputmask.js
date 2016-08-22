@@ -118,7 +118,8 @@
 			jitMasking: false, //just in time masking ~ only mask while typing, can n (number), true or false
 			nullable: true, //return nothing instead of the buffertemplate when the user hasn't entered anything.
 			inputEventOnly: false, //testing inputfallback behavior
-			positionCaretOnClick: "lvp" //none, lvp (based on the last valid position (default), radixFocus (position caret to radixpoint on initial click)
+			positionCaretOnClick: "lvp", //none, lvp (based on the last valid position (default), radixFocus (position caret to radixpoint on initial click)
+			casing: null //mask-level casing. Options: null, "upper", "lower" or "title"
 		},
 		masksCache: {},
 		mask: function (elems) {
@@ -1217,7 +1218,7 @@
 						if (tests[0].match.optionality !== true &&
 							tests[0].match.optionalQuantifier !== true &&
 							tests[0].match.fn === null && !/[0-9a-bA-Z]/.test(tests[0].match.def)) {
-							return [determineTestTemplate(tests)]
+							return [determineTestTemplate(tests)];
 						}
 					}
 				}
@@ -1310,7 +1311,7 @@
 		}
 
 		function casing(elem, test, pos) {
-			switch (test.casing) {
+			switch (opts.casing || test.casing) {
 				case "upper":
 					elem = elem.toUpperCase();
 					break;

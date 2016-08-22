@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [UNRELEASED]
 
 ### Added
+- mask-level casing => #1352
 - 'casing': 'title' #1277
 
 ### Updates
