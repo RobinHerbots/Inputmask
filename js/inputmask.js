@@ -2412,7 +2412,7 @@
 				inputValue = valueBeforeCaret + window.clipboardData.getData("Text") + valueAfterCaret;
 			} else if (ev.clipboardData && ev.clipboardData.getData) {
 				inputValue = valueBeforeCaret + ev.clipboardData.getData("text/plain") + valueAfterCaret;
-			}
+			} else return true; //allow native paste event as fallback ~ masking will continue by inputfallback
 
 			var pasteValue = inputValue;
 			if ($.isFunction(opts.onBeforePaste)) {
@@ -2423,9 +2423,6 @@
 				if (!pasteValue) {
 					pasteValue = inputValue;
 				}
-				if (!pasteValue) {
-					return true;
-                }
 			}
 			checkVal(input, false, false, isRTL ? pasteValue.split("").reverse() : pasteValue.toString().split(""));
 			writeBuffer(input, getBuffer(), seekNext(getLastValidPosition()), e, undoValue !== getBuffer().join(""));

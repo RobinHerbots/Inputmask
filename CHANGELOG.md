@@ -21,6 +21,7 @@ All notable changes to this project will be documented in this file.
 	- use selective caching in getTests
 
 ### Fixed
+- Pasting to masked input not working on Android #1061
 - Unable to get property 'forwardPosition' of undefined or null reference IE11 #1342
 - Input event doesn't fire in IE #1287
 - Dynamically changing mask based on number of entered characters #1336
