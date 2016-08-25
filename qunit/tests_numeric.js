@@ -1813,14 +1813,20 @@ define([
 		assert.equal($("#testmask")[0].inputmask._valueGet(), "52 €", "Result " + $("#testmask")[0].inputmask._valueGet());
 	});
 
-	qunit.test("currency + groupSeparator \" \"", function (assert) {
+	qunit.test("numeric + numericInput #1328 - douglasdtc", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		Inputmask('currency', {
-			groupSeparator: ' '
+		Inputmask("numeric", {
+			'groupSeparator': '.',
+			'groupSize': 3,
+			'radixPoint': ',',
+			'numericInput': true,
+			'digits': 2
 		}).mask(testmask);
 		testmask.focus();
-		assert.equal($("#testmask")[0].inputmask._valueGet(), "$ 0.00", "Result " + $("#testmask")[0].inputmask._valueGet());
+		$("#testmask").val("237,38");
+
+		assert.equal(testmask.value, "237,38", "Result " + testmask.value);
 	});
 });

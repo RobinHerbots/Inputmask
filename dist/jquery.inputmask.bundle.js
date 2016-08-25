@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.2-108
+* Version: 3.3.2-109
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -2426,7 +2426,8 @@
                 isFinite(processValue);
             },
             onBeforeMask: function(initialValue, opts) {
-                if ("" !== opts.radixPoint && isFinite(initialValue)) initialValue = initialValue.toString().replace(".", opts.radixPoint); else {
+                if (opts.numericInput === !0 && (initialValue = initialValue.split("").reverse().join("")), 
+                "" !== opts.radixPoint && isFinite(initialValue)) initialValue = initialValue.toString().replace(".", opts.radixPoint); else {
                     var kommaMatches = initialValue.match(/,/g), dotMatches = initialValue.match(/\./g);
                     dotMatches && kommaMatches ? dotMatches.length > kommaMatches.length ? (initialValue = initialValue.replace(/\./g, ""), 
                     initialValue = initialValue.replace(",", opts.radixPoint)) : kommaMatches.length > dotMatches.length ? (initialValue = initialValue.replace(/,/g, ""), 
@@ -2442,7 +2443,8 @@
                         initialValue = initialValue.toString().replace(".", opts.radixPoint);
                     }
                 }
-                return initialValue.toString();
+                return opts.numericInput === !0 && (initialValue = initialValue.split("").reverse().join("")), 
+                initialValue.toString();
             },
             canClearPosition: function(maskset, position, lvp, strict, opts) {
                 var positionInput = maskset.validPositions[position].input, canClear = positionInput !== opts.radixPoint || null !== maskset.validPositions[position].match.fn && opts.decimalProtect === !1 || isFinite(positionInput) || position === lvp || positionInput === opts.groupSeparator || positionInput === opts.negationSymbol.front || positionInput === opts.negationSymbol.back;

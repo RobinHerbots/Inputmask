@@ -565,6 +565,9 @@
 				return isFinite(processValue);
 			},
 			onBeforeMask: function (initialValue, opts) {
+				if (opts.numericInput === true) {
+					initialValue = initialValue.split("").reverse().join("");
+				}
 				if (opts.radixPoint !== "" && isFinite(initialValue)) {
 					initialValue = initialValue.toString().replace(".", opts.radixPoint);
 				} else {
@@ -603,6 +606,10 @@
 						initialValue = Math.round(parseFloat(initialValue) * digitsFactor) / digitsFactor;
 						initialValue = initialValue.toString().replace(".", opts.radixPoint);
 					}
+				}
+
+				if (opts.numericInput === true) {
+					initialValue = initialValue.split("").reverse().join("");
 				}
 				return initialValue.toString();
 			},
