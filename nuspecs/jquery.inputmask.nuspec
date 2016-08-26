@@ -14,6 +14,8 @@
     <tags>jQuery, plugins, input, form, inputmask, mask</tags>
   </metadata>
   <files>
+    <file src="..\dist\jquery.inputmask.bundle.js"
+          target="content\Scripts\jquery.inputmask\jquery.inputmask.bundle.js"/>
     <file src="..\dist\inputmask\inputmask.date.extensions.js"
       target="content\Scripts\jquery.inputmask\inputmask.date.extensions.js"/>
     <file src="..\dist\inputmask\inputmask.extensions.js"

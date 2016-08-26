@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - 'casing': 'title' #1277
 
 ### Updates
+- add bundle in nuget package
 - change default of positionCaretOnTab to true
 - include min files in nuspecs
 - better filter for input targets in inputmask.binder.js
