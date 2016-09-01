@@ -26,7 +26,7 @@ define([
 
 		testmask.focus();
 
-		$.each(Inputmask.prototype.defaults.aliases.phoneru.phoneCodes.slice(0,10), function (ndx, lmnt) {
+		$.each(Inputmask.prototype.defaults.aliases.phoneru.phoneCodes.slice(0,25), function (ndx, lmnt) {
 			var ndx = 1, input, expected = lmnt.mask;
 			while (expected.match(/#/)) {
 				expected = expected.replace(/#/, ndx++);

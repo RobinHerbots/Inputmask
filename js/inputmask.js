@@ -643,7 +643,7 @@
 			if (opts.numericInput) {
 				reverseTokens(maskTokens[0]);
 			}
-			// console.log(JSON.stringify(maskTokens));
+			//console.log(JSON.stringify(maskTokens));
 			return maskTokens;
 		}
 
@@ -918,9 +918,9 @@
 			resetMaskSet(true);
 		}
 
-		function determineTestTemplate(tests, ignoreGreedy) {
-			var testPos;
-			var testPositions = tests,
+		function determineTestTemplate(tests, guessNextBest) {
+			var testPos,
+				testPositions = tests,
 				lvp = getLastValidPosition(),
 				lvTest = getMaskSet().validPositions[lvp] || getTests(0)[0],
 				lvTestAltArr = (lvTest.alternation !== undefined) ? lvTest.locator[lvTest.alternation].toString().split(",") : [];
@@ -928,10 +928,12 @@
 				testPos = testPositions[ndx];
 
 				if (testPos.match &&
-					((((opts.greedy || ignoreGreedy) && testPos.match.optionalQuantifier !== true) || (testPos.match.optionality === false || testPos.match.newBlockMarker === false) && testPos.match.optionalQuantifier !== true) &&
+					(((opts.greedy && testPos.match.optionalQuantifier !== true) || (testPos.match.optionality === false || testPos.match.newBlockMarker === false) && testPos.match.optionalQuantifier !== true) &&
 					((lvTest.alternation === undefined || lvTest.alternation !== testPos.alternation) ||
 					(testPos.locator[lvTest.alternation] !== undefined && checkAlternationMatch(testPos.locator[lvTest.alternation].toString().split(","), lvTestAltArr))))) {
-					break;
+
+					if (guessNextBest !== true || (testPos.match.fn === null && !/[0-9a-bA-Z]/.test(testPos.match.def)))
+						break;
 				}
 			}
 
@@ -1745,7 +1747,7 @@
 			return opts.placeholder.charAt(pos % opts.placeholder.length);
 		}
 
-		function checkVal(input, writeOut, strict, nptvl, initiatingEvent) {
+		function checkVal(input, writeOut, strict, nptvl, initiatingEvent, stickyCaret) {
 			var inputValue = nptvl.slice(),
 				charCodes = "",
 				initialNdx = 0, result = undefined;
@@ -1815,9 +1817,13 @@
 				}
 			});
 			if (writeOut) {
-				var caretPos = (document.activeElement === input && (initiatingEvent || result)) ? (initiatingEvent ? caret(input).begin : result.forwardPosition) : undefined,
-					offset = getBuffer().length - input.inputmask._valueGet().length;
-				writeBuffer(input, getBuffer(), caretPos + offset, initiatingEvent || new $.Event("checkval"));
+				var caretPos = undefined, lvp = getLastValidPosition();
+				if (document.activeElement === input && (initiatingEvent || result)) {
+					caretPos = caret(input).begin - (stickyCaret === true ? 1 : 0);
+					if (result && stickyCaret !== true && (caretPos < lvp + 1 || lvp === -1))
+						caretPos = (opts.numericInput && result.caret === undefined) ? seekPrevious(result.forwardPosition) : result.forwardPosition;
+				}
+				writeBuffer(input, getBuffer(), caretPos, initiatingEvent || new $.Event("checkval"));
 			}
 		}
 
@@ -2194,7 +2200,7 @@
 					for (; lastAlt >= 0; lastAlt--) {
 						var altPos = getMaskSet().validPositions[lastAlt];
 						if (altPos) {
-							if (/*altPos.generatedInput !== true &&*/ /[0-9a-bA-Z]/.test(altPos.input)) {
+							if (altPos.generatedInput !== true && /[0-9a-bA-Z]/.test(altPos.input)) {
 								validInputs.push(altPos.input);
 							}
 							delete getMaskSet().validPositions[lastAlt];
@@ -2468,7 +2474,7 @@
 					inputValue = inputValue.replace(bufferTemplate, "");
 					inputValue = inputValue.split("");
 
-					checkVal(input, true, false, inputValue, e);
+					checkVal(input, true, false, inputValue, e, caretPos.begin < lvp);
 
 					if (isComplete(getBuffer()) === true) {
 						$(input).trigger("complete");

@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.2-109
+* Version: 3.3.2-115
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -336,9 +336,9 @@
             }
             resetMaskSet(!0);
         }
-        function determineTestTemplate(tests, ignoreGreedy) {
+        function determineTestTemplate(tests, guessNextBest) {
             for (var testPos, testPositions = tests, lvp = getLastValidPosition(), lvTest = getMaskSet().validPositions[lvp] || getTests(0)[0], lvTestAltArr = void 0 !== lvTest.alternation ? lvTest.locator[lvTest.alternation].toString().split(",") : [], ndx = 0; ndx < testPositions.length && (testPos = testPositions[ndx], 
-            !testPos.match || (!opts.greedy && !ignoreGreedy || testPos.match.optionalQuantifier === !0) && (testPos.match.optionality !== !1 && testPos.match.newBlockMarker !== !1 || testPos.match.optionalQuantifier === !0) || !(void 0 === lvTest.alternation || lvTest.alternation !== testPos.alternation || void 0 !== testPos.locator[lvTest.alternation] && checkAlternationMatch(testPos.locator[lvTest.alternation].toString().split(","), lvTestAltArr))); ndx++) ;
+            !(testPos.match && (opts.greedy && testPos.match.optionalQuantifier !== !0 || (testPos.match.optionality === !1 || testPos.match.newBlockMarker === !1) && testPos.match.optionalQuantifier !== !0) && (void 0 === lvTest.alternation || lvTest.alternation !== testPos.alternation || void 0 !== testPos.locator[lvTest.alternation] && checkAlternationMatch(testPos.locator[lvTest.alternation].toString().split(","), lvTestAltArr))) || guessNextBest === !0 && (null !== testPos.match.fn || /[0-9a-bA-Z]/.test(testPos.match.def))); ndx++) ;
             return testPos;
         }
         function getTestTemplate(pos, ndxIntlzr, tstPs) {
@@ -721,7 +721,7 @@
             }
             return opts.placeholder.charAt(pos % opts.placeholder.length);
         }
-        function checkVal(input, writeOut, strict, nptvl, initiatingEvent) {
+        function checkVal(input, writeOut, strict, nptvl, initiatingEvent, stickyCaret) {
             function isTemplateMatch() {
                 var isMatch = !1, charCodeNdx = getBufferTemplate().slice(initialNdx, seekNext(initialNdx)).join("").indexOf(charCodes);
                 if (charCodeNdx !== -1 && !isMask(initialNdx)) {
@@ -757,8 +757,10 @@
                     }
                 }
             }), writeOut) {
-                var caretPos = document.activeElement === input && (initiatingEvent || result) ? initiatingEvent ? caret(input).begin : result.forwardPosition : void 0, offset = getBuffer().length - input.inputmask._valueGet().length;
-                writeBuffer(input, getBuffer(), caretPos + offset, initiatingEvent || new $.Event("checkval"));
+                var caretPos = void 0, lvp = getLastValidPosition();
+                document.activeElement === input && (initiatingEvent || result) && (caretPos = caret(input).begin - (stickyCaret === !0 ? 1 : 0), 
+                result && stickyCaret !== !0 && (caretPos < lvp + 1 || lvp === -1) && (caretPos = opts.numericInput && void 0 === result.caret ? seekPrevious(result.forwardPosition) : result.forwardPosition)), 
+                writeBuffer(input, getBuffer(), caretPos, initiatingEvent || new $.Event("checkval"));
             }
         }
         function unmaskedvalue(input) {
@@ -919,8 +921,8 @@
                     for (var validInputs = [], lastAlt = getLastValidPosition(-1, !0), positionsClone = $.extend(!0, {}, getMaskSet().validPositions), prevAltPos = getMaskSet().validPositions[lastAlt]; lastAlt >= 0; lastAlt--) {
                         var altPos = getMaskSet().validPositions[lastAlt];
                         if (altPos) {
-                            if (/[0-9a-bA-Z]/.test(altPos.input) && validInputs.push(altPos.input), delete getMaskSet().validPositions[lastAlt], 
-                            void 0 !== altPos.alternation && altPos.locator[altPos.alternation] !== prevAltPos.locator[altPos.alternation]) break;
+                            if (altPos.generatedInput !== !0 && /[0-9a-bA-Z]/.test(altPos.input) && validInputs.push(altPos.input), 
+                            delete getMaskSet().validPositions[lastAlt], void 0 !== altPos.alternation && altPos.locator[altPos.alternation] !== prevAltPos.locator[altPos.alternation]) break;
                             prevAltPos = altPos;
                         }
                     }
@@ -1034,7 +1036,7 @@
                 getBuffer().length - inputValue.length !== 1 || inputValue.charAt(caretPos.begin) === getBuffer()[caretPos.begin] || inputValue.charAt(caretPos.begin + 1) === getBuffer()[caretPos.begin] || isMask(caretPos.begin)) {
                     for (var lvp = getLastValidPosition() + 1, bufferTemplate = getBuffer().slice(lvp).join(""); null === inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$"); ) bufferTemplate = bufferTemplate.slice(1);
                     inputValue = inputValue.replace(bufferTemplate, ""), inputValue = inputValue.split(""), 
-                    checkVal(input, !0, !1, inputValue, e), isComplete(getBuffer()) === !0 && $(input).trigger("complete");
+                    checkVal(input, !0, !1, inputValue, e, caretPos.begin < lvp), isComplete(getBuffer()) === !0 && $(input).trigger("complete");
                 } else e.keyCode = Inputmask.keyCode.BACKSPACE, keydownEvent.call(input, e);
                 e.preventDefault();
             }

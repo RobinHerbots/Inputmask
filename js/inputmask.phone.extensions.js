@@ -26,10 +26,13 @@
 				opts.definitions = {"#": opts.definitions["9"]};
 				var masks = opts.phoneCodes.sort(function (a, b) {
 					var maska = (a.mask || a).replace(/#/g, "9").replace(/[\+\(\)#-]/g, ""),
-						maskb = (b.mask || b).replace(/#/g, "9").replace(/[\+\(\)#-]/g, "");
+						maskb = (b.mask || b).replace(/#/g, "9").replace(/[\+\(\)#-]/g, ""),
+						maskas = (a.mask || a).split("#")[0],
+						maskbs = (b.mask || b).split("#")[0];
 
-					return maska < maskb ? -1 : 1;
+					return maskbs.indexOf(maskas) === 0 ? -1 : (maskas.indexOf(maskbs) === 0 ? 1 : maska.localeCompare(maskb));
 				});
+				//console.log(JSON.stringify(masks));
 				return masks;
 			},
 			keepStatic: true,
