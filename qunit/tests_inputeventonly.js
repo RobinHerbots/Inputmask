@@ -10,9 +10,9 @@ define([
 	"prototypeExtensions",
 	"simulator"
 ], function (qunit, $, Inputmask) {
-
 	qunit.module("inputEventOnly: true");
-	qunit.test("inputmask(\"9-a{3}9{3}\" - simple dynamic mask", function (assert) {
+
+	qunit.test("XXX-9999-9999-XXX-XXX - gersteba", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
