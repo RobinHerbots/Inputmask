@@ -302,4 +302,22 @@ define([
 		assert.equal(testmask.value, "1234", "Result " + testmask.value);
 	});
 
-});
+	qunit.test("9999[ 9999][ 9999][ 9999][ 999] - Enfree", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask({
+			mask: '9999[ 9999][ 9999][ 9999][ 999]',
+			placeholder: '', greedy: false
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("45464748");
+		$.caret(testmask, 2);
+		$("#testmask").Type("0909");
+
+		assert.equal(testmask.value, "4546 0909 4748", "Result " + testmask.value);
+	});
+
+})
+;
