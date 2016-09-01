@@ -172,7 +172,7 @@
 		} else {
 			$input.data("clipboard", inputStr);
 			window.clipboardData = {
-				getData: function() {
+				getData: function () {
 					window.clipboardData = undefined;
 					return $input.data("clipboard");
 				}
@@ -180,5 +180,11 @@
 		}
 
 		$input.trigger('paste');
+	}
+
+	$.fn.input = function (inputStr) {
+		var input = this.nodeName ? this : this[0];
+		input.inputmask.__valueSet.call(input, inputStr);
+		$(input).trigger("input");
 	}
 }));
