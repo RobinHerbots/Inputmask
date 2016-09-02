@@ -818,31 +818,23 @@
 				for (i = (j = pos); i <= lvp; i++) {
 					var t = positionsClone[i];
 					if (t !== undefined) {
-						var posMatch = j,
-							prevPosMatch = -1;
+						var posMatch = j;
 						while (posMatch < getMaskSet().maskLength && ((t.match.fn == null && vps[i] && (vps[i].match.optionalQuantifier === true || vps[i].match.optionality === true)) || t.match.fn != null)) {
-							//determine next position
-							//if (t.match.fn === null || (!opts.keepStatic && vps[i] && (vps[i + 1] !== undefined && getTests(i + 1, vps[i].locator.slice(), i).length > 1 || vps[i].alternation !== undefined))) {
 							posMatch++;
-							//} else posMatch = seekNext(j);
-
-							if (needsValidation === false && positionsClone[posMatch] && positionsClone[posMatch].match.def === t.match.def) { //obvious match
+							if (false && needsValidation === false && positionsClone[posMatch] && positionsClone[posMatch].match.def === t.match.def) { //obvious match
 								getMaskSet().validPositions[posMatch] = $.extend(true, {}, positionsClone[posMatch]);
 								getMaskSet().validPositions[posMatch].input = t.input;
 								j = posMatch;
 								valid = true;
-								break;
 							} else if (positionCanMatchDefinition(posMatch, t.match.def)) { //validated match
 								var result = isValid(posMatch, t.input, true, true);
 								valid = result !== false;
 								j = (result.caret || result.insert) ? getLastValidPosition() : posMatch;
 								needsValidation = true;
-								if (valid) break;
 							} else {
-								valid = t.match.fn == null;
-								if (prevPosMatch === posMatch) break; //prevent endless loop
-								prevPosMatch = posMatch;
+								valid = t.generatedInput === true;
 							}
+							if (valid) break;
 						}
 					}
 					if (!valid) break;
@@ -1580,15 +1572,18 @@
 				if (getMaskSet().validPositions[pndx]) break;
 			}
 ////fill missing nonmask and valid placeholders
-			var testTemplate, generatedPos;
+			var testTemplate, generatedPos, testsFromPos;
 			for (pndx++; pndx < maskPos; pndx++) {
-				if (getMaskSet().validPositions[pndx] === undefined &&
-					(opts.jitMasking === false || opts.jitMasking > pndx) &&
-					((testTemplate = getTestTemplate(pndx, getTestTemplate(pndx - 1).locator, pndx - 1)).match.def === opts.radixPointDefinitionSymbol || !isMask(pndx, true) ||
-					($.inArray(opts.radixPoint, getBuffer()) < pndx && testTemplate.match.fn && testTemplate.match.fn.test(getPlaceholder(pndx), getMaskSet(), pndx, false, opts)))) {
-					result = _isValid(pndx, testTemplate.match.placeholder || (testTemplate.match.fn == null ? testTemplate.match.def : (getPlaceholder(pndx) !== "" ? getPlaceholder(pndx) : getBuffer()[pndx])), true);
-					if (result !== false) {
-						getMaskSet().validPositions[result.pos || pndx].generatedInput = true;
+				if (getMaskSet().validPositions[pndx] === undefined && (opts.jitMasking === false || opts.jitMasking > pndx)) {
+					testsFromPos = getTests(pndx, getTestTemplate(pndx - 1).locator, pndx - 1).slice();
+					if (testsFromPos[testsFromPos.length - 1].match.def === "") testsFromPos.pop();
+					testTemplate = determineTestTemplate(testsFromPos);
+					if (testTemplate && (testTemplate.match.def === opts.radixPointDefinitionSymbol || !isMask(pndx, true) ||
+						($.inArray(opts.radixPoint, getBuffer()) < pndx && testTemplate.match.fn && testTemplate.match.fn.test(getPlaceholder(pndx), getMaskSet(), pndx, false, opts)))) {
+						result = _isValid(pndx, testTemplate.match.placeholder || (testTemplate.match.fn == null ? testTemplate.match.def : (getPlaceholder(pndx) !== "" ? getPlaceholder(pndx) : getBuffer()[pndx])), true);
+						if (result !== false) {
+							getMaskSet().validPositions[result.pos || pndx].generatedInput = true;
+						}
 					}
 				}
 			}
@@ -1608,7 +1603,7 @@
 							"caret": seekNext(maskPos)
 						};
 					} else if ((opts.insertMode || getMaskSet().validPositions[seekNext(maskPos)] === undefined) && !isMask(maskPos, true)) { //does the input match on a further position?
-						var testsFromPos = getTests(maskPos).slice();
+						testsFromPos = getTests(maskPos).slice();
 						if (testsFromPos[testsFromPos.length - 1].match.def === "") testsFromPos.pop();
 						var staticChar = determineTestTemplate(testsFromPos, true);
 						if (staticChar) {

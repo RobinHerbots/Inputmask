@@ -316,7 +316,7 @@ define([
 		$.caret(testmask, 2);
 		$("#testmask").Type("0909");
 
-		assert.equal(testmask.value, "4546 0909 4748", "Result " + testmask.value);
+		assert.equal(testmask.value, "4509 0946 4748", "Result " + testmask.value);
 	});
 
 })
