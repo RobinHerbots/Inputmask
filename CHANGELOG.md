@@ -22,6 +22,7 @@ All notable changes to this project will be documented in this file.
 	- use selective caching in getTests
 
 ### Fixed
+- Problems with greedy dynamic masks in current version 3.x #1375
 - Croatian phone mask only supports city of Zagreb #1359
 - Pasting to masked input not working on Android #1061
 - Unable to get property 'forwardPosition' of undefined or null reference IE11 #1342

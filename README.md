@@ -28,7 +28,7 @@ Highlights:
 - AMD/CommonJS support
 - dependencyLibs: vanilla javascript, jQuery, jqlite
 
-Demo page see [http://robinherbots.github.io/jquery.inputmask](http://robinherbots.github.io/jquery.inputmask)
+Demo page see [http://robinherbots.github.io/Inputmask](http://robinherbots.github.io/Inputmask)
 
 [![donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZNR3EB6JTMMSS)
 
