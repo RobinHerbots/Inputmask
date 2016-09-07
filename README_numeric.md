@@ -12,6 +12,9 @@
 Number of fractionalDigits
 Default: "*"
 
+The value can be a number, *, or a quantifier syntax like 2,4
+When the quantifier syntax is used, the digitsOptional option is ignored
+
 ### digitsOptional
 Specify wheter the digits are optional.
 Default: true

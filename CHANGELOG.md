@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - mask-level casing => #1352
 - 'casing': 'title' #1277
+- add quantifier syntax for digits option in numeric alias. #1374
 
 ### Updates
 - add bundle in nuget package
