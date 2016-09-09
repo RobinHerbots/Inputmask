@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.2
+* Version: 3.3.3-5
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib.jquery")) : factory(window.dependencyLib || jQuery);
@@ -1088,7 +1088,8 @@
 
                       case "radixFocus":
                         if (doRadixFocus(selectedCaret.begin)) {
-                            caret(input, opts.numericInput ? seekNext($.inArray(opts.radixPoint, getBuffer())) : $.inArray(opts.radixPoint, getBuffer()));
+                            var radixPos = $.inArray(opts.radixPoint, getBuffer().join(""));
+                            caret(input, opts.numericInput ? seekNext(radixPos) : radixPos);
                             break;
                         }
 

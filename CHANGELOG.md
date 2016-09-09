@@ -1,6 +1,17 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [3.3.3 - 2016-09-09] - hotfix
+
+### Updates
+- revert moving jquery dependencyLib
+- correct caret positioning - radixFocus & placeholder: ""
+
+### Fixed
+- Build failure in heroku after release of 3.3.2 #1384
+- Error with inputMask any case (v3.3.2) #1383
+
+
 ## [3.3.2 - 2016-09-09]
 
 ### Added

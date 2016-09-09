@@ -2562,7 +2562,8 @@
 								break;
 							case "radixFocus":
 								if (doRadixFocus(selectedCaret.begin)) {
-									caret(input, opts.numericInput ? seekNext($.inArray(opts.radixPoint, getBuffer())) : $.inArray(opts.radixPoint, getBuffer()));
+									var radixPos = $.inArray(opts.radixPoint, getBuffer().join(""));
+									caret(input, opts.numericInput ? seekNext(radixPos) : radixPos);
 									break;
 								}
 							default: //lvp:

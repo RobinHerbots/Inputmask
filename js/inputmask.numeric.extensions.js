@@ -90,8 +90,8 @@
 				} else mask += "~{" + opts.integerDigits + "}";
 				if (opts.digits !== undefined) {
 					if (opts.decimalProtect) opts.radixPointDefinitionSymbol = ":";
-					var dq = opts.digits.split(",");
-					if (isFinite(dq[0] && isFinite(dq[1]))) {
+					var dq = opts.digits.toString().split(",");
+					if (isFinite(dq[0] && dq[1] && isFinite(dq[1]))) {
 						mask += (opts.decimalProtect ? ":" : opts.radixPoint) + ";{" + opts.digits + "}";
 					} else if (isNaN(opts.digits) || parseInt(opts.digits) > 0) {
 						if (opts.digitsOptional) {
