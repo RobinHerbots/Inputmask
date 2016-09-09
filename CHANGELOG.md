@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [UNRELEASED]
+## [3.3.2 - 2016-09-09]
 
 ### Added
 - mask-level casing => #1352

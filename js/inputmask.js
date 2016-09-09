@@ -803,57 +803,6 @@
 			return (before !== -1 && (closestTo - before) > 1) || after < closestTo ? before : after;
 		}
 
-		function setValidPosition(pos, validTest, fromSetValid, isSelection) {
-			if (isSelection || (opts.insertMode && getMaskSet().validPositions[pos] !== undefined && fromSetValid === undefined)) {
-				//reposition & revalidate others
-				var positionsClone = $.extend(true, {}, getMaskSet().validPositions),
-					lvp = getLastValidPosition(),
-					i;
-				for (i = pos; i <= lvp; i++) { //clear selection
-					delete getMaskSet().validPositions[i];
-				}
-				getMaskSet().validPositions[pos] = $.extend(true, {}, validTest);
-				var valid = true,
-					j, vps = getMaskSet().validPositions, needsValidation = false;
-				for (i = (j = pos); i <= lvp; i++) {
-					var t = positionsClone[i];
-					if (t !== undefined) {
-						var posMatch = j;
-						while (posMatch < getMaskSet().maskLength && ((t.match.fn == null && vps[i] && (vps[i].match.optionalQuantifier === true || vps[i].match.optionality === true)) || t.match.fn != null)) {
-							posMatch++;
-							if (false && needsValidation === false && positionsClone[posMatch] && positionsClone[posMatch].match.def === t.match.def) { //obvious match
-								getMaskSet().validPositions[posMatch] = $.extend(true, {}, positionsClone[posMatch]);
-								getMaskSet().validPositions[posMatch].input = t.input;
-								j = posMatch;
-								valid = true;
-							} else if (positionCanMatchDefinition(posMatch, t.match.def)) { //validated match
-								var result = isValid(posMatch, t.input, true, true);
-								valid = result !== false;
-								j = (result.caret || result.insert) ? getLastValidPosition() : posMatch;
-								needsValidation = true;
-							} else {
-								valid = t.generatedInput === true;
-							}
-							if (valid) break;
-						}
-					}
-					if (!valid) break;
-				}
-
-				if (!valid) {
-					getMaskSet().validPositions = $.extend(true, {}, positionsClone);
-					resetMaskSet(true);
-					return false;
-				}
-			}
-
-			else
-				getMaskSet().validPositions[pos] = $.extend(true, {}, validTest);
-			;
-
-			resetMaskSet(true);
-			return true;
-		}
 
 		function stripValidPositions(start, end, nocheck, strict) {
 			function IsEnclosedStatic(pos) {
@@ -1535,7 +1484,7 @@
 				return isValidRslt;
 			}
 
-//set alternator choice on previous skipped placeholder positions
+			//set alternator choice on previous skipped placeholder positions
 			function trackbackAlternations(originalPos, newPos) {
 				var vp = getMaskSet().validPositions[newPos],
 					targetLocator = vp.locator,
@@ -1563,31 +1512,89 @@
 				}
 			}
 
-			var result = false,
-				positionsClone = $.extend(true, {}, getMaskSet().validPositions); //clone the currentPositions
+			function setValidPosition(pos, validTest, fromSetValid, isSelection) {
+				if (isSelection || (opts.insertMode && getMaskSet().validPositions[pos] !== undefined && fromSetValid === undefined)) {
+					//reposition & revalidate others
+					var positionsClone = $.extend(true, {}, getMaskSet().validPositions),
+						lvp = getLastValidPosition(),
+						i;
+					for (i = pos; i <= lvp; i++) { //clear selection
+						delete getMaskSet().validPositions[i];
+					}
+					getMaskSet().validPositions[pos] = $.extend(true, {}, validTest);
+					var valid = true,
+						j, vps = getMaskSet().validPositions, needsValidation = false,
+						initialLength = getMaskSet().maskLength;
+					for (i = (j = pos); i <= lvp; i++) {
+						var t = positionsClone[i];
+						if (t !== undefined) {
+							var posMatch = j;
+							while (posMatch < getMaskSet().maskLength && ((t.match.fn == null && vps[i] && (vps[i].match.optionalQuantifier === true || vps[i].match.optionality === true)) || t.match.fn != null)) {
+								posMatch++;
+								if (needsValidation === false && positionsClone[posMatch] && positionsClone[posMatch].match.def === t.match.def) { //obvious match
+									getMaskSet().validPositions[posMatch] = $.extend(true, {}, positionsClone[posMatch]);
+									getMaskSet().validPositions[posMatch].input = t.input;
+									fillMissingNonMask(posMatch);
+									j = posMatch;
+									valid = true;
+								} else if (positionCanMatchDefinition(posMatch, t.match.def)) { //validated match
+									var result = isValid(posMatch, t.input, true, true);
+									valid = result !== false;
+									j = (result.caret || result.insert) ? getLastValidPosition() : posMatch;
+									needsValidation = true;
+								} else {
+									valid = t.generatedInput === true;
+								}
+								if (getMaskSet().maskLength < initialLength) getMaskSet().maskLength = initialLength; //a bit hacky but the masklength is corrected later on
+								if (valid) break;
+							}
+						}
+						if (!valid) break;
+					}
 
-//Check for a nonmask before the pos
-//find previous valid
-			for (var pndx = maskPos - 1; pndx > -1; pndx--) {
-				if (getMaskSet().validPositions[pndx]) break;
+					if (!valid) {
+						getMaskSet().validPositions = $.extend(true, {}, positionsClone);
+						resetMaskSet(true);
+						return false;
+					}
+				}
+
+				else
+					getMaskSet().validPositions[pos] = $.extend(true, {}, validTest);
+				;
+
+				resetMaskSet(true);
+				return true;
 			}
-////fill missing nonmask and valid placeholders
-			var testTemplate, generatedPos, testsFromPos;
-			for (pndx++; pndx < maskPos; pndx++) {
-				if (getMaskSet().validPositions[pndx] === undefined && (opts.jitMasking === false || opts.jitMasking > pndx)) {
-					testsFromPos = getTests(pndx, getTestTemplate(pndx - 1).locator, pndx - 1).slice();
-					if (testsFromPos[testsFromPos.length - 1].match.def === "") testsFromPos.pop();
-					testTemplate = determineTestTemplate(testsFromPos);
-					if (testTemplate && (testTemplate.match.def === opts.radixPointDefinitionSymbol || !isMask(pndx, true) ||
-						($.inArray(opts.radixPoint, getBuffer()) < pndx && testTemplate.match.fn && testTemplate.match.fn.test(getPlaceholder(pndx), getMaskSet(), pndx, false, opts)))) {
-						result = _isValid(pndx, testTemplate.match.placeholder || (testTemplate.match.fn == null ? testTemplate.match.def : (getPlaceholder(pndx) !== "" ? getPlaceholder(pndx) : getBuffer()[pndx])), true);
-						if (result !== false) {
-							getMaskSet().validPositions[result.pos || pndx].generatedInput = true;
+
+			function fillMissingNonMask(maskPos) {
+				//Check for a nonmask before the pos
+				//find previous valid
+				for (var pndx = maskPos - 1; pndx > -1; pndx--) {
+					if (getMaskSet().validPositions[pndx]) break;
+				}
+				////fill missing nonmask and valid placeholders
+				var testTemplate, testsFromPos;
+				for (pndx++; pndx < maskPos; pndx++) {
+					if (getMaskSet().validPositions[pndx] === undefined && (opts.jitMasking === false || opts.jitMasking > pndx)) {
+						testsFromPos = getTests(pndx, getTestTemplate(pndx - 1).locator, pndx - 1).slice();
+						if (testsFromPos[testsFromPos.length - 1].match.def === "") testsFromPos.pop();
+						testTemplate = determineTestTemplate(testsFromPos);
+						if (testTemplate && (testTemplate.match.def === opts.radixPointDefinitionSymbol || !isMask(pndx, true) ||
+							($.inArray(opts.radixPoint, getBuffer()) < pndx && testTemplate.match.fn && testTemplate.match.fn.test(getPlaceholder(pndx), getMaskSet(), pndx, false, opts)))) {
+							result = _isValid(pndx, testTemplate.match.placeholder || (testTemplate.match.fn == null ? testTemplate.match.def : (getPlaceholder(pndx) !== "" ? getPlaceholder(pndx) : getBuffer()[pndx])), true);
+							if (result !== false) {
+								getMaskSet().validPositions[result.pos || pndx].generatedInput = true;
+							}
 						}
 					}
 				}
 			}
 
+			var result = false,
+				positionsClone = $.extend(true, {}, getMaskSet().validPositions); //clone the currentPositions
+
+			fillMissingNonMask(maskPos);
 
 			if (isSelection(pos)) {
 				handleRemove(undefined, Inputmask.keyCode.DELETE, pos);
@@ -1603,12 +1610,13 @@
 							"caret": seekNext(maskPos)
 						};
 					} else if ((opts.insertMode || getMaskSet().validPositions[seekNext(maskPos)] === undefined) && !isMask(maskPos, true)) { //does the input match on a further position?
-						testsFromPos = getTests(maskPos).slice();
+						var testsFromPos = getTests(maskPos).slice();
 						if (testsFromPos[testsFromPos.length - 1].match.def === "") testsFromPos.pop();
 						var staticChar = determineTestTemplate(testsFromPos, true);
 						if (staticChar) {
 							staticChar = staticChar.match.placeholder || staticChar.match.def;
 							_isValid(maskPos, staticChar, strict);
+							getMaskSet().validPositions[maskPos].generatedInput = true;
 						}
 						for (var nPos = maskPos + 1, snPos = seekNext(maskPos); nPos <= snPos; nPos++) {
 							result = _isValid(nPos, c, strict);
