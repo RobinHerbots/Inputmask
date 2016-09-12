@@ -1823,6 +1823,7 @@
 			if (writeOut) {
 				var caretPos = undefined, lvp = getLastValidPosition();
 				if (document.activeElement === input && (initiatingEvent || result)) {
+					if (initiatingEvent && result === false) stickyCaret = true;
 					caretPos = caret(input).begin - (stickyCaret === true ? 1 : 0);
 					if (result && stickyCaret !== true && (caretPos < lvp + 1 || lvp === -1))
 						caretPos = (opts.numericInput && result.caret === undefined) ? seekPrevious(result.forwardPosition) : result.forwardPosition;
@@ -2134,7 +2135,7 @@
 			}
 
 			if (!npt.inputmask.__valueGet) {
-				if (opts.noValuePatching === true) {
+				if (opts.noValuePatching !== true) {
 					if (Object.getOwnPropertyDescriptor) {
 						if (typeof Object.getPrototypeOf !== "function") {
 							Object.getPrototypeOf = typeof "test".__proto__ === "object" ? function (object) {
@@ -2182,7 +2183,7 @@
 				npt.inputmask._valueSet = function (value, overruleRTL) { //null check is needed for IE8 => otherwise converts to "null"
 					valueSet.call(this.el, (value === null || value === undefined) ? "" : ((overruleRTL !== true && isRTL) ? value.split("").reverse().join("") : value));
 				};
-				
+
 				if (valueGet === undefined) { //jquery.val fallback
 					valueGet = function () {
 						return this.value;
