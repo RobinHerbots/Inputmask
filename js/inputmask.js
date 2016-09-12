@@ -117,7 +117,8 @@
 			staticDefinitionSymbol: undefined, //specify a definitionSymbol for static content, used to make matches for alternators
 			jitMasking: false, //just in time masking ~ only mask while typing, can n (number), true or false
 			nullable: true, //return nothing instead of the buffertemplate when the user hasn't entered anything.
-			inputEventOnly: false, //testing inputfallback behavior
+			inputEventOnly: false, //dev option - testing inputfallback behavior
+			noValuePatching: false, //dev option - disable value property patching
 			positionCaretOnClick: "lvp", //none, lvp (based on the last valid position (default), radixFocus (position caret to radixpoint on initial click)
 			casing: null //mask-level casing. Options: null, "upper", "lower" or "title"
 		},
@@ -2133,53 +2134,54 @@
 			}
 
 			if (!npt.inputmask.__valueGet) {
-				if (Object.getOwnPropertyDescriptor) {
-					if (typeof Object.getPrototypeOf !== "function") {
-						Object.getPrototypeOf = typeof "test".__proto__ === "object" ? function (object) {
-							return object.__proto__;
-						} : function (object) {
-							return object.constructor.prototype;
-						};
-					}
+				if (opts.noValuePatching === true) {
+					if (Object.getOwnPropertyDescriptor) {
+						if (typeof Object.getPrototypeOf !== "function") {
+							Object.getPrototypeOf = typeof "test".__proto__ === "object" ? function (object) {
+								return object.__proto__;
+							} : function (object) {
+								return object.constructor.prototype;
+							};
+						}
 
-					var valueProperty = Object.getPrototypeOf ? Object.getOwnPropertyDescriptor(Object.getPrototypeOf(npt), "value") : undefined;
-					if (valueProperty && valueProperty.get && valueProperty.set) {
-						valueGet = valueProperty.get;
-						valueSet = valueProperty.set;
-						Object.defineProperty(npt, "value", {
-							get: getter,
-							set: setter,
-							configurable: true
-						});
-					} else if (npt.tagName !== "INPUT") {
-						valueGet = function () {
-							return this.textContent;
-						};
-						valueSet = function (value) {
-							this.textContent = value;
-						};
-						Object.defineProperty(npt, "value", {
-							get: getter,
-							set: setter,
-							configurable: true
-						});
-					}
-				} else if (document.__lookupGetter__ && npt.__lookupGetter__("value")) {
-					valueGet = npt.__lookupGetter__("value");
-					valueSet = npt.__lookupSetter__("value");
+						var valueProperty = Object.getPrototypeOf ? Object.getOwnPropertyDescriptor(Object.getPrototypeOf(npt), "value") : undefined;
+						if (valueProperty && valueProperty.get && valueProperty.set) {
+							valueGet = valueProperty.get;
+							valueSet = valueProperty.set;
+							Object.defineProperty(npt, "value", {
+								get: getter,
+								set: setter,
+								configurable: true
+							});
+						} else if (npt.tagName !== "INPUT") {
+							valueGet = function () {
+								return this.textContent;
+							};
+							valueSet = function (value) {
+								this.textContent = value;
+							};
+							Object.defineProperty(npt, "value", {
+								get: getter,
+								set: setter,
+								configurable: true
+							});
+						}
+					} else if (document.__lookupGetter__ && npt.__lookupGetter__("value")) {
+						valueGet = npt.__lookupGetter__("value");
+						valueSet = npt.__lookupSetter__("value");
 
-					npt.__defineGetter__("value", getter);
-					npt.__defineSetter__("value", setter);
+						npt.__defineGetter__("value", getter);
+						npt.__defineSetter__("value", setter);
+					}
+					npt.inputmask.__valueGet = valueGet; //store native property getter
+					npt.inputmask._valueGet = function (overruleRTL) {
+						return isRTL && overruleRTL !== true ? valueGet.call(this.el).split("").reverse().join("") : valueGet.call(this.el);
+					};
+					npt.inputmask.__valueSet = valueSet; //store native property setter
+					npt.inputmask._valueSet = function (value, overruleRTL) { //null check is needed for IE8 => otherwise converts to "null"
+						valueSet.call(this.el, (value === null || value === undefined) ? "" : ((overruleRTL !== true && isRTL) ? value.split("").reverse().join("") : value));
+					};
 				}
-				npt.inputmask.__valueGet = valueGet; //store native property getter
-				npt.inputmask._valueGet = function (overruleRTL) {
-					return isRTL && overruleRTL !== true ? valueGet.call(this.el).split("").reverse().join("") : valueGet.call(this.el);
-				};
-				npt.inputmask.__valueSet = valueSet; //store native property setter
-				npt.inputmask._valueSet = function (value, overruleRTL) { //null check is needed for IE8 => otherwise converts to "null"
-					valueSet.call(this.el, (value === null || value === undefined) ? "" : ((overruleRTL !== true && isRTL) ? value.split("").reverse().join("") : value));
-				};
-
 				if (valueGet === undefined) { //jquery.val fallback
 					valueGet = function () {
 						return this.value;
