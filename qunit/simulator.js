@@ -84,24 +84,21 @@
 		}
 
 		switch (keyCode) {
-			case Inputmask.keyCode.LEFT:
-			{
+			case Inputmask.keyCode.LEFT: {
 				if (modifier == undefined) {
 					var pos = $.caret(this);
 					$.caret(this, pos.begin - 1);
 					break;
 				}
 			}
-			case Inputmask.keyCode.RIGHT:
-			{
+			case Inputmask.keyCode.RIGHT: {
 				if (modifier == undefined) {
 					var pos = $.caret(this);
 					$.caret(this, pos.begin + 1);
 					break;
 				}
 			}
-			default:
-			{
+			default: {
 				var keydown = new $.Event("keydown"),
 					keypress = new $.Event("keypress"),
 					keyup = new $.Event("keyup");
@@ -182,9 +179,11 @@
 		$input.trigger('paste');
 	}
 
-	$.fn.input = function (inputStr) {
+	$.fn.input = function (inputStr, caretBegin, caretEnd) {
 		var input = this.nodeName ? this : this[0];
 		input.inputmask.__valueSet.call(input, inputStr);
+		if (caretBegin !== undefined)
+			$.caret(input, caretBegin, caretEnd);
 		$(input).trigger("input");
 	}
 }));
