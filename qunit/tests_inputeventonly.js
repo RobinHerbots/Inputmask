@@ -73,4 +73,5 @@ define([
 		$(testmask).input("(12) ___-____", 3);
 		assert.ok($.caret(testmask).begin == 3, "Caret " + $.caret(testmask).begin);
 	});
+
 });

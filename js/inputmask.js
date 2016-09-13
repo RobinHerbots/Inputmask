@@ -1823,8 +1823,8 @@
 			if (writeOut) {
 				var caretPos = undefined, lvp = getLastValidPosition();
 				if (document.activeElement === input && (initiatingEvent || result)) {
-					if (initiatingEvent && result === false) stickyCaret = true;
-					caretPos = caret(input).begin - (stickyCaret === true ? 1 : 0);
+					caretPos = caret(input).begin;
+					if (initiatingEvent && result === false) caretPos = seekNext(getLastValidPosition(caretPos));
 					if (result && stickyCaret !== true && (caretPos < lvp + 1 || lvp === -1))
 						caretPos = (opts.numericInput && result.caret === undefined) ? seekPrevious(result.forwardPosition) : result.forwardPosition;
 				}
@@ -2468,7 +2468,7 @@
 					caret(input, inputValue.length);
 					caretPos = caret(input);
 				}
-				//detect & treat possible backspace
+				//detect & treat possible backspace before static
 				if ((getBuffer().length - inputValue.length) === 1 && inputValue.charAt(caretPos.begin) !== getBuffer()[caretPos.begin] && inputValue.charAt(caretPos.begin + 1) !== getBuffer()[caretPos.begin] && !isMask(caretPos.begin)) {
 					e.keyCode = Inputmask.keyCode.BACKSPACE;
 					keydownEvent.call(input, e);
