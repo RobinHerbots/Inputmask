@@ -40,7 +40,7 @@ module.exports = function (grunt) {
 				src: srcFiles[srcNdx],
 				options: {
 					banner: createBanner(dstFileMin),
-					preserveComments: "some",
+					preserveComments: false,
 					ASCIIOnly: true
 				}
 			};
