@@ -463,7 +463,7 @@ Inputmask("99-999-99").mask(document.querySelectorAll(selector));
 or
 
 ```javascript
-var im : new Inputmask("99-999-99");
+var im = new Inputmask("99-999-99");
 im.mask(document.querySelectorAll(selector));
 ```
 
