@@ -213,12 +213,12 @@
 						}
 
 						//check leap yeap
-						if ((opts.mask.indexOf("2") === opts.mask.length - 1) && isValid) {
-							var dayMonthValue = maskset.buffer.join("").substr(4, 4) + chrs;
+						if (isValid) {
+							var dayMonthValue = maskset.buffer.join("").substr(0, 2) + opts.separator + chrs + opts.separator;
 							if (dayMonthValue !== opts.leapday) {
 								return true;
 							} else {
-								var year = parseInt(maskset.buffer.join("").substr(0, 4), 10); //detect leap year
+								var year = parseInt(maskset.buffer.join("").substr(6, 4), 10); //detect leap year
 								if (year % 4 === 0) {
 									if (year % 100 === 0) {
 										if (year % 400 === 0) {
