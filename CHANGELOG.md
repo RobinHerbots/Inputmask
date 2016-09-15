@@ -2,7 +2,13 @@
 All notable changes to this project will be documented in this file.
 
 ## [UNRELEASED]
+### Added
+- jquery.loader.js => main in package.json
+
 ### Updates
+- rename js/inputmask.dependencyLib.jquery.js to js/inputmask.dependencyLib.js
+- rename dist/inputmask.dependencyLib.jquery.js to dist/inputmask.dependencyLib.js
+- commonjs dep to inputmask.dependencyLib instead to inputmask.dependencyLib.jquery => can be symlinked to another dependencyLib
 - improve inputfallback (Android support)
 
 ### Fixed
