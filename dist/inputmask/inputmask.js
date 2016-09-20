@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4-15
+* Version: 3.3.4-16
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define("inputmask", [ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib")) : factory(window.dependencyLib || jQuery);
@@ -1163,6 +1163,7 @@
             EventRuler.on(el, "drop", pasteEvent), EventRuler.on(el, "cut", cutEvent), EventRuler.on(el, "complete", opts.oncomplete), 
             EventRuler.on(el, "incomplete", opts.onincomplete), EventRuler.on(el, "cleared", opts.oncleared), 
             opts.inputEventOnly !== !0 && (EventRuler.on(el, "keydown", keydownEvent), EventRuler.on(el, "keypress", keypressEvent)), 
+            EventRuler.on(el, "compositionstart", $.noop), EventRuler.on(el, "compositionend", $.noop), 
             EventRuler.on(el, "input", inputFallBackEvent)), EventRuler.on(el, "setvalue", setValueEvent), 
             getBufferTemplate(), "" !== el.inputmask._valueGet() || opts.clearMaskOnLostFocus === !1 || document.activeElement === el) {
                 var initialValue = $.isFunction(opts.onBeforeMask) ? opts.onBeforeMask(el.inputmask._valueGet(), opts) || el.inputmask._valueGet() : el.inputmask._valueGet();
@@ -1173,7 +1174,7 @@
                 writeBuffer(el, buffer), document.activeElement === el && caret(el, seekNext(getLastValidPosition()));
             }
         }
-        var undoValue, el, $el, maxLength, valueBuffer, isRTL = !1, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, mouseEnter = !0, EventRuler = {
+        var undoValue, el, $el, maxLength, valueBuffer, isRTL = !1, skipKeyPressEvent = !1, skipInputEvent = !1, composition = !1, ignorable = !1, mouseEnter = !0, EventRuler = {
             on: function(input, eventName, eventHandler) {
                 var ev = function(e) {
                     if (void 0 === this.inputmask && "FORM" !== this.nodeName) {
@@ -1184,6 +1185,12 @@
                             switch (e.type) {
                               case "input":
                                 if (skipInputEvent === !0) return skipInputEvent = !1, e.preventDefault();
+                                if (mobile) {
+                                    var that = this, args = arguments;
+                                    return setTimeout(function() {
+                                        eventHandler.apply(that, args);
+                                    }, 0), e.preventDefault();
+                                }
                                 break;
 
                               case "keydown":
@@ -1197,11 +1204,19 @@
 
                               case "click":
                                 if (iemobile) {
-                                    var that = this;
+                                    var that = this, args = arguments;
                                     return setTimeout(function() {
-                                        eventHandler.apply(that, arguments);
+                                        eventHandler.apply(that, args);
                                     }, 0), !1;
                                 }
+                                break;
+
+                              case "compositionstart":
+                                composition = !0;
+                                break;
+
+                              case "compositionend":
+                                composition = !1;
                             }
                             var returnVal = eventHandler.apply(this, arguments);
                             return returnVal === !1 && (e.preventDefault(), e.stopPropagation()), returnVal;

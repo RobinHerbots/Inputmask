@@ -739,6 +739,7 @@
 			el, $el,
 			skipKeyPressEvent = false, //Safari 5.1.x - modal dialog fires keypress twice workaround
 			skipInputEvent = false, //skip when triggered from within inputmask
+			composition = false,
 			ignorable = false,
 			maxLength,
 			mouseEnter = true;
@@ -1986,7 +1987,7 @@
 		var EventRuler = {
 			on: function (input, eventName, eventHandler) {
 				var ev = function (e) {
-					// console.log("triggered " + e.type);
+					 //console.log("triggered " + e.type);
 					if (this.inputmask === undefined && this.nodeName !== "FORM") { //happens when cloning an object with jquery.clone
 						var imOpts = $.data(this, "_inputmask_opts");
 						if (imOpts)(new Inputmask(imOpts)).mask(this);
@@ -1998,6 +1999,13 @@
 							case "input":
 								if (skipInputEvent === true) {
 									skipInputEvent = false;
+									return e.preventDefault();
+								}
+								if (mobile) {
+									var that = this, args = arguments;
+									setTimeout(function () {
+										eventHandler.apply(that, args);
+									}, 0);
 									return e.preventDefault();
 								}
 								break;
@@ -2014,12 +2022,18 @@
 								break;
 							case "click":
 								if (iemobile) {
-									var that = this;
+									var that = this, args = arguments;
 									setTimeout(function () {
-										eventHandler.apply(that, arguments);
+										eventHandler.apply(that, args);
 									}, 0);
 									return false;
 								}
+								break;
+							case "compositionstart":
+								composition = true;
+								break;
+							case "compositionend":
+								composition = false;
 								break;
 						}
 						// console.log("executed " + e.type);
@@ -2450,6 +2464,7 @@
 			var input = this,
 				inputValue = input.inputmask._valueGet();
 
+			//console.log(inputValue);
 			if (getBuffer().join("") !== inputValue) {
 				var caretPos = caret(input);
 				inputValue = inputValue.replace(new RegExp("(" + Inputmask.escapeRegex(getBufferTemplate().join("")) + ")*"), "");
@@ -2737,6 +2752,8 @@
 					EventRuler.on(el, "keydown", keydownEvent);
 					EventRuler.on(el, "keypress", keypressEvent);
 				}
+				EventRuler.on(el, "compositionstart", $.noop);
+				EventRuler.on(el, "compositionend", $.noop);
 				EventRuler.on(el, "input", inputFallBackEvent);
 			}
 			EventRuler.on(el, "setvalue", setValueEvent);

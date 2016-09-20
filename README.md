@@ -118,12 +118,14 @@ If you like to automatically bind the inputmask to the inputs marked with the da
 
 If you use a module loader like requireJS
 
-Add in your config.js
+Have a look at the inputmask.loader.js for usage.
+
+Example config.js
 
 ```javascript
 paths: {
   ...
-  "inputmask.dependencyLib": "../dist/inputmask/inputmask.dependencyLib.jquery",
+  "inputmask.dependencyLib": "../dist/inputmask/inputmask.dependencyLib",
   "inputmask": "../dist/inputmask/inputmask",
   ...
 }
