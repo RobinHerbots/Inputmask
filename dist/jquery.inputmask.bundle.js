@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4-16
+* Version: 3.3.4-17
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -1183,12 +1183,6 @@
                             switch (e.type) {
                               case "input":
                                 if (skipInputEvent === !0) return skipInputEvent = !1, e.preventDefault();
-                                if (mobile) {
-                                    var that = this, args = arguments;
-                                    return setTimeout(function() {
-                                        eventHandler.apply(that, args);
-                                    }, 0), e.preventDefault();
-                                }
                                 break;
 
                               case "keydown":
@@ -1201,7 +1195,7 @@
                                 break;
 
                               case "click":
-                                if (iemobile) {
+                                if (iemobile || iphone) {
                                     var that = this, args = arguments;
                                     return setTimeout(function() {
                                         eventHandler.apply(that, args);

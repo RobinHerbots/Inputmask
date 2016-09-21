@@ -1987,7 +1987,7 @@
 		var EventRuler = {
 			on: function (input, eventName, eventHandler) {
 				var ev = function (e) {
-					 //console.log("triggered " + e.type);
+					// console.log("triggered " + e.type);
 					if (this.inputmask === undefined && this.nodeName !== "FORM") { //happens when cloning an object with jquery.clone
 						var imOpts = $.data(this, "_inputmask_opts");
 						if (imOpts)(new Inputmask(imOpts)).mask(this);
@@ -2001,13 +2001,7 @@
 									skipInputEvent = false;
 									return e.preventDefault();
 								}
-								if (mobile) {
-									var that = this, args = arguments;
-									setTimeout(function () {
-										eventHandler.apply(that, args);
-									}, 0);
-									return e.preventDefault();
-								}
+								// if (composition) return e.preventDefault();
 								break;
 							case "keydown":
 								//Safari 5.1.x - modal dialog fires keypress twice workaround
@@ -2021,7 +2015,7 @@
 								skipKeyPressEvent = true;
 								break;
 							case "click":
-								if (iemobile) {
+								if (iemobile || iphone) {
 									var that = this, args = arguments;
 									setTimeout(function () {
 										eventHandler.apply(that, args);
