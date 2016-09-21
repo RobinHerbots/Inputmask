@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4-17
+* Version: 3.3.4-18
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -1152,10 +1152,11 @@
         function mask(elem) {
             if (el = elem, $el = $(el), opts.showTooltip && (el.title = opts.tooltip || getMaskSet().mask), 
             ("rtl" === el.dir || opts.rightAlign) && (el.style.textAlign = "right"), ("rtl" === el.dir || opts.numericInput) && (el.dir = "ltr", 
-            el.removeAttribute("dir"), el.inputmask.isRTL = !0, isRTL = !0), EventRuler.off(el), 
-            patchValueProperty(el), isElementTypeSupported(el, opts) && (EventRuler.on(el, "submit", submitEvent), 
-            EventRuler.on(el, "reset", resetEvent), EventRuler.on(el, "mouseenter", mouseenterEvent), 
-            EventRuler.on(el, "blur", blurEvent), EventRuler.on(el, "focus", focusEvent), EventRuler.on(el, "mouseleave", mouseleaveEvent), 
+            el.removeAttribute("dir"), el.inputmask.isRTL = !0, isRTL = !0), mobile && (el.setAttribute("inputmode", "verbatim"), 
+            el.setAttribute("x-inputmode", "verbatim")), EventRuler.off(el), patchValueProperty(el), 
+            isElementTypeSupported(el, opts) && (EventRuler.on(el, "submit", submitEvent), EventRuler.on(el, "reset", resetEvent), 
+            EventRuler.on(el, "mouseenter", mouseenterEvent), EventRuler.on(el, "blur", blurEvent), 
+            EventRuler.on(el, "focus", focusEvent), EventRuler.on(el, "mouseleave", mouseleaveEvent), 
             EventRuler.on(el, "click", clickEvent), EventRuler.on(el, "dblclick", dblclickEvent), 
             EventRuler.on(el, "paste", pasteEvent), EventRuler.on(el, "dragdrop", pasteEvent), 
             EventRuler.on(el, "drop", pasteEvent), EventRuler.on(el, "cut", cutEvent), EventRuler.on(el, "complete", opts.oncomplete), 

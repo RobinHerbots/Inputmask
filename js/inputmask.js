@@ -2721,6 +2721,11 @@
 				isRTL = true;
 			}
 
+			if(mobile){
+				el.setAttribute("inputmode", "verbatim");
+				el.setAttribute("x-inputmode", "verbatim");
+			}
+
 			//unbind all events - to make sure that no other mask will interfere when re-masking
 			EventRuler.off(el);
 			patchValueProperty(el);
