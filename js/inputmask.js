@@ -762,7 +762,7 @@
 					testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
 					test = testPos.match;
 					ndxIntlzr = testPos.locator.slice();
-					if (opts.jitMasking === false || pos < lvp || (isFinite(opts.jitMasking) && opts.jitMasking > pos)) {
+					if (opts.jitMasking === false || pos < lvp || (Number.isFinite(opts.jitMasking) && opts.jitMasking > pos)) {
 						maskTemplate.push(getPlaceholder(pos, test));
 					}
 				}
@@ -2721,7 +2721,7 @@
 				isRTL = true;
 			}
 
-			if(mobile){
+			if (mobile) {
 				el.setAttribute("inputmode", "verbatim");
 				el.setAttribute("x-inputmode", "verbatim");
 			}
