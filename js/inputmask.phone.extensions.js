@@ -47,7 +47,8 @@
 			onUnMask: function (maskedValue, unmaskedValue, opts) {
 				//implement me
 				return unmaskedValue;
-			}
+			},
+			inputmode: "tel",
 		}
 	});
 	return Inputmask;

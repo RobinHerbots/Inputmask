@@ -120,7 +120,8 @@
 			inputEventOnly: false, //dev option - testing inputfallback behavior
 			noValuePatching: false, //dev option - disable value property patching
 			positionCaretOnClick: "lvp", //none, lvp (based on the last valid position (default), radixFocus (position caret to radixpoint on initial click)
-			casing: null //mask-level casing. Options: null, "upper", "lower" or "title"
+			casing: null, //mask-level casing. Options: null, "upper", "lower" or "title"
+			inputmode: "verbatim" //specify the inputmode  - already in place for when browsers support them
 		},
 		masksCache: {},
 		mask: function (elems) {
@@ -1988,6 +1989,7 @@
 			on: function (input, eventName, eventHandler) {
 				var ev = function (e) {
 					// console.log("triggered " + e.type);
+
 					if (this.inputmask === undefined && this.nodeName !== "FORM") { //happens when cloning an object with jquery.clone
 						var imOpts = $.data(this, "_inputmask_opts");
 						if (imOpts)(new Inputmask(imOpts)).mask(this);
@@ -2001,7 +2003,6 @@
 									skipInputEvent = false;
 									return e.preventDefault();
 								}
-								// if (composition) return e.preventDefault();
 								break;
 							case "keydown":
 								//Safari 5.1.x - modal dialog fires keypress twice workaround
@@ -2023,12 +2024,18 @@
 									return false;
 								}
 								break;
-							case "compositionstart":
-								composition = true;
-								break;
-							case "compositionend":
-								composition = false;
-								break;
+							// case "compositionstart":
+							// 	console.log("composition start");
+							// 	break;
+							// case "compositionupdate":
+							// 	console.log("Composition update " + e.originalEvent ? e.originalEvent.data : e.data);
+							// 	break;
+							// case "compositionend":
+							// 	console.log("Composition End " + e.originalEvent ? e.originalEvent.data : e.data);
+							// 	break;
+							// case "keyup":
+							// 	console.log("keyup " + e.keyCode);
+							// 	break;
 						}
 						// console.log("executed " + e.type);
 						var returnVal = eventHandler.apply(this, arguments);
@@ -2722,8 +2729,8 @@
 			}
 
 			if (mobile) {
-				el.setAttribute("inputmode", "verbatim");
-				el.setAttribute("x-inputmode", "verbatim");
+				el.setAttribute("inputmode", opts.inputmode);
+				el.setAttribute("x-inputmode", opts.inputmode);
 			}
 
 			//unbind all events - to make sure that no other mask will interfere when re-masking
@@ -2752,7 +2759,9 @@
 					EventRuler.on(el, "keypress", keypressEvent);
 				}
 				EventRuler.on(el, "compositionstart", $.noop);
+				EventRuler.on(el, "compositionupdate", $.noop);
 				EventRuler.on(el, "compositionend", $.noop);
+				EventRuler.on(el, "keyup", $.noop);
 				EventRuler.on(el, "input", inputFallBackEvent);
 			}
 			EventRuler.on(el, "setvalue", setValueEvent);

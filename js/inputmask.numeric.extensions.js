@@ -144,6 +144,7 @@
 			insertMode: true,
 			autoUnmask: false,
 			unmaskAsNumber: false,
+			inputmode: "numeric",
 			postFormat: function (buffer, pos, opts) { //this needs to be removed // this is crap
 				// console.log(buffer);
 				if (opts.numericInput === true) {

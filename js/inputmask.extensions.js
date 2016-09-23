@@ -45,7 +45,8 @@
 			},
 			mask: "(\\http://)|(\\http\\s://)|(ftp://)|(ftp\\s://)i{+}",
 			insertMode: false,
-			autoUnmask: false
+			autoUnmask: false,
+			inputmode: "url",
 		},
 		"ip": { //ip-address mask
 			mask: "i[i[i]].i[i[i]].i[i[i]].i[i[i]]",
@@ -65,7 +66,8 @@
 			},
 			onUnMask: function (maskedValue, unmaskedValue, opts) {
 				return maskedValue;
-			}
+			},
+			inputmode: "numeric",
 		},
 		"email": {
 			//https://en.wikipedia.org/wiki/Domain_name#Domain_name_space
@@ -91,7 +93,8 @@
 			},
 			onUnMask: function (maskedValue, unmaskedValue, opts) {
 				return maskedValue;
-			}
+			},
+			inputmode: "email",
 		},
 		"mac": {
 			mask: "##:##:##:##:##:##"

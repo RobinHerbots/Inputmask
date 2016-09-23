@@ -992,6 +992,11 @@ Apply casing at the mask-level.
 Options: null, "upper", "lower" or "title"
 Default: null
 
+### inputmode
+Default: "verbatim"
+Specify the inputmode  - already in place for when browsers start to  support them
+https://html.spec.whatwg.org/#input-modalities:-the-inputmode-attribute
+
 ## General
 ### set a value and apply mask
 this can be done with the traditional jquery.val function (all browsers) or JavaScript value property for browsers which implement lookupGetter or getOwnPropertyDescriptor

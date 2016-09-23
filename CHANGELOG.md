@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 - improve inputfallback (Android support)
 
 ### Fixed
+- ios 8, safari, on first visit unable to enter any characters #826
 - Numerica mask not run in Galaxy S5 + Chrome + Android #1357
 
 ## [3.3.3 - 2016-09-09] - hotfix
