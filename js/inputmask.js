@@ -730,8 +730,8 @@
 	var ua = navigator.userAgent,
 		mobile = /mobile/i.test(ua),
 		iemobile = /iemobile/i.test(ua),
-		iphone = /iphone/i.test(ua) && !iemobile;
-	//android = /android.*safari.*/i.test(ua) && !iemobile;
+		iphone = /iphone/i.test(ua) && !iemobile,
+		android = /android/i.test(ua) && !iemobile;
 
 	//masking scope
 	//actionObj definition see below
@@ -2797,7 +2797,7 @@
 				initializeColorMask(el);
 			}
 
-			if (mobile) {
+			if (android) {
 				if (el.hasOwnProperty("inputmode") || el.hasOwnProperty("x-inputmode")) {
 					el["inputmode"] = opts.inputmode;
 					el["x-inputmode"] = opts.inputmode;
