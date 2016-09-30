@@ -997,6 +997,12 @@ Default: "verbatim"
 Specify the inputmode  - already in place for when browsers start to  support them
 https://html.spec.whatwg.org/#input-modalities:-the-inputmode-attribute
 
+### colorMask
+Default: false
+Create a css styleable mask.  Defines css classes: im-caret, im-static.
+
+You need to include the inputmask.css in your page to use this option.
+
 ## General
 ### set a value and apply mask
 this can be done with the traditional jquery.val function (all browsers) or JavaScript value property for browsers which implement lookupGetter or getOwnPropertyDescriptor

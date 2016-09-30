@@ -121,7 +121,8 @@
 			noValuePatching: false, //dev option - disable value property patching
 			positionCaretOnClick: "lvp", //none, lvp (based on the last valid position (default), radixFocus (position caret to radixpoint on initial click)
 			casing: null, //mask-level casing. Options: null, "upper", "lower" or "title"
-			inputmode: "verbatim" //specify the inputmode  - already in place for when browsers support them
+			inputmode: "verbatim", //specify the inputmode  - already in place for when browsers will support it
+			colorMask: false //enable css styleable mask
 		},
 		masksCache: {},
 		mask: function (elems) {
@@ -743,7 +744,8 @@
 			composition = false,
 			ignorable = false,
 			maxLength,
-			mouseEnter = true;
+			mouseEnter = true,
+			colorMask;
 
 		//maskset helperfunctions
 		function getMaskTemplate(baseOnInput, minimalPos, includeInput) {
@@ -755,10 +757,10 @@
 			if (maxLength === -1) maxLength = undefined;
 			do {
 				if (baseOnInput === true && getMaskSet().validPositions[pos]) {
-					var validPos = getMaskSet().validPositions[pos];
-					test = validPos.match;
-					ndxIntlzr = validPos.locator.slice();
-					maskTemplate.push(includeInput === true ? validPos.input : getPlaceholder(pos, test));
+					testPos = getMaskSet().validPositions[pos];
+					test = testPos.match;
+					ndxIntlzr = testPos.locator.slice();
+					maskTemplate.push(includeInput === true ? testPos.input : getPlaceholder(pos, test));
 				} else {
 					testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
 					test = testPos.match;
@@ -1616,7 +1618,7 @@
 						var testsFromPos = getTests(maskPos).slice();
 						if (testsFromPos[testsFromPos.length - 1].match.def === "") testsFromPos.pop();
 						var staticChar = determineTestTemplate(testsFromPos, true);
-						if (staticChar) {
+						if (staticChar && staticChar.match.fn === null) {
 							staticChar = staticChar.match.placeholder || staticChar.match.def;
 							_isValid(maskPos, staticChar, strict);
 							getMaskSet().validPositions[maskPos].generatedInput = true;
@@ -1717,6 +1719,7 @@
 			if (caretPos !== undefined && (event === undefined || event.type !== "blur")) {
 				caret(input, caretPos);
 			}
+			renderColorMask(input, buffer, caretPos);
 			if (triggerInputEvent === true) {
 				skipInputEvent = true;
 				$(input).trigger("input");
@@ -2024,18 +2027,6 @@
 									return false;
 								}
 								break;
-							// case "compositionstart":
-							// 	console.log("composition start");
-							// 	break;
-							// case "compositionupdate":
-							// 	console.log("Composition update " + e.originalEvent ? e.originalEvent.data : e.data);
-							// 	break;
-							// case "compositionend":
-							// 	console.log("Composition End " + e.originalEvent ? e.originalEvent.data : e.data);
-							// 	break;
-							// case "keyup":
-							// 	console.log("keyup " + e.keyCode);
-							// 	break;
 						}
 						// console.log("executed " + e.type);
 						var returnVal = eventHandler.apply(this, arguments);
@@ -2603,6 +2594,7 @@
 								break;
 						}
 					}
+					renderColorMask(input);
 				}
 			}, 0);
 		}
@@ -2708,6 +2700,79 @@
 			}, 0);
 		}
 
+		function initializeColorMask(input) {
+			// needs computedstyle
+			var offset = input.getBoundingClientRect();
+			var computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
+
+			colorMask = document.createElement("span");
+			//positioning
+			colorMask.style.position = "absolute";
+			colorMask.width = (offset.width ? offset.width : offset.right - offset.left) + "px";
+			colorMask.height = (offset.height ? offset.height : offset.bottom - offset.top) + "px";
+			colorMask.style.top = offset.top + parseInt(computedStyle.borderTopWidth) + 'px';
+			colorMask.style.left = offset.left + parseInt(computedStyle.borderLeftWidth) + 'px';
+			colorMask.style.zIndex = isNaN(computedStyle.zIndex) ? -1 : computedStyle.zIndex - 1;
+			//styling
+			colorMask.style.color = computedStyle.color;
+			colorMask.style.fontSize = computedStyle.fontSize;
+			colorMask.style.fontStyle = computedStyle.fontStyle;
+			colorMask.style.fontFamily = computedStyle.fontFamily;
+
+			input.style.color = "transparent";
+			input.style.backgroundColor = "transparent";
+			input.parentNode.insertBefore(colorMask, input.nextSibling);
+		}
+
+		function renderColorMask(input, buffer, caretPos) {
+			function handleStatic() {
+				if (!static && (test.fn === null || testPos.input === undefined)) {
+					static = true;
+					maskTemplate += "<span class='im-static''>"
+				} else if (static && (test.fn !== null && testPos.input !== undefined)) {
+					static = false;
+					maskTemplate += "</span>"
+				}
+			}
+
+			if (colorMask !== undefined) {
+				buffer = buffer || getBuffer();
+				if (caretPos === undefined) {
+					caretPos = caret(input);
+				} else if (caretPos.begin === undefined) {
+					caretPos = {begin: caretPos, end: caretPos};
+				}
+
+				var maskTemplate = "", static = false;
+				if (buffer != "") {
+					var ndxIntlzr, pos = 0,
+						test, testPos, lvp = getLastValidPosition();
+					do {
+						if (pos === caretPos.begin && document.activeElement === input) {
+							maskTemplate += "<span class='im-caret'>|</span>";
+						}
+						if (getMaskSet().validPositions[pos]) {
+							testPos = getMaskSet().validPositions[pos];
+							test = testPos.match;
+							ndxIntlzr = testPos.locator.slice();
+							handleStatic();
+							maskTemplate += testPos.input;
+						} else {
+							testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
+							test = testPos.match;
+							ndxIntlzr = testPos.locator.slice();
+							if (opts.jitMasking === false || pos < lvp || (Number.isFinite(opts.jitMasking) && opts.jitMasking > pos)) {
+								handleStatic();
+								maskTemplate += getPlaceholder(pos, test);
+							}
+						}
+						pos++;
+					} while ((maxLength === undefined || pos < maxLength) && (test.fn !== null || test.def !== "") || lvp > pos);
+				}
+				colorMask.innerHTML = maskTemplate;
+			}
+		}
+
 		function mask(elem) {
 			el = elem;
 			$el = $(el);
@@ -2728,9 +2793,18 @@
 				isRTL = true;
 			}
 
+			if (opts.colorMask === true) {
+				initializeColorMask(el);
+			}
+
 			if (mobile) {
-				el.setAttribute("inputmode", opts.inputmode);
-				el.setAttribute("x-inputmode", opts.inputmode);
+				if (el.hasOwnProperty("inputmode") || el.hasOwnProperty("x-inputmode")) {
+					el["inputmode"] = opts.inputmode;
+					el["x-inputmode"] = opts.inputmode;
+				} else {
+					initializeColorMask(el);
+					el.type = "password";
+				}
 			}
 
 			//unbind all events - to make sure that no other mask will interfere when re-masking

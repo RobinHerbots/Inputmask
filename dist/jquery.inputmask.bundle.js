@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4-18
+* Version: 3.3.4-23
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -251,14 +251,10 @@
             minimalPos = minimalPos || 0;
             var ndxIntlzr, test, testPos, maskTemplate = [], pos = 0, lvp = getLastValidPosition();
             maxLength = void 0 !== el ? el.maxLength : void 0, maxLength === -1 && (maxLength = void 0);
-            do {
-                if (baseOnInput === !0 && getMaskSet().validPositions[pos]) {
-                    var validPos = getMaskSet().validPositions[pos];
-                    test = validPos.match, ndxIntlzr = validPos.locator.slice(), maskTemplate.push(includeInput === !0 ? validPos.input : getPlaceholder(pos, test));
-                } else testPos = getTestTemplate(pos, ndxIntlzr, pos - 1), test = testPos.match, 
-                ndxIntlzr = testPos.locator.slice(), (opts.jitMasking === !1 || pos < lvp || isFinite(opts.jitMasking) && opts.jitMasking > pos) && maskTemplate.push(getPlaceholder(pos, test));
-                pos++;
-            } while ((void 0 === maxLength || pos < maxLength) && (null !== test.fn || "" !== test.def) || minimalPos > pos);
+            do baseOnInput === !0 && getMaskSet().validPositions[pos] ? (testPos = getMaskSet().validPositions[pos], 
+            test = testPos.match, ndxIntlzr = testPos.locator.slice(), maskTemplate.push(includeInput === !0 ? testPos.input : getPlaceholder(pos, test))) : (testPos = getTestTemplate(pos, ndxIntlzr, pos - 1), 
+            test = testPos.match, ndxIntlzr = testPos.locator.slice(), (opts.jitMasking === !1 || pos < lvp || Number.isFinite(opts.jitMasking) && opts.jitMasking > pos) && maskTemplate.push(getPlaceholder(pos, test))), 
+            pos++; while ((void 0 === maxLength || pos < maxLength) && (null !== test.fn || "" !== test.def) || minimalPos > pos);
             return "" === maskTemplate[maskTemplate.length - 1] && maskTemplate.pop(), getMaskSet().maskLength = pos + 1, 
             maskTemplate;
         }
@@ -649,7 +645,7 @@
                         var testsFromPos = getTests(maskPos).slice();
                         "" === testsFromPos[testsFromPos.length - 1].match.def && testsFromPos.pop();
                         var staticChar = determineTestTemplate(testsFromPos, !0);
-                        staticChar && (staticChar = staticChar.match.placeholder || staticChar.match.def, 
+                        staticChar && null === staticChar.match.fn && (staticChar = staticChar.match.placeholder || staticChar.match.def, 
                         _isValid(maskPos, staticChar, strict), getMaskSet().validPositions[maskPos].generatedInput = !0);
                         for (var nPos = maskPos + 1, snPos = seekNext(maskPos); nPos <= snPos; nPos++) if (result = _isValid(nPos, c, strict), 
                         result !== !1) {
@@ -707,7 +703,8 @@
                 }
             }
             input.inputmask._valueSet(buffer.join("")), void 0 === caretPos || void 0 !== event && "blur" === event.type || caret(input, caretPos), 
-            triggerInputEvent === !0 && (skipInputEvent = !0, $(input).trigger("input"));
+            renderColorMask(input, buffer, caretPos), triggerInputEvent === !0 && (skipInputEvent = !0, 
+            $(input).trigger("input"));
         }
         function getPlaceholder(pos, test) {
             if (test = test || getTest(pos).match, void 0 !== test.placeholder) return test.placeholder;
@@ -1103,6 +1100,7 @@
                             caret(input, lastPosition);
                         }
                     }
+                    renderColorMask(input);
                 }
             }, 0);
         }
@@ -1149,20 +1147,57 @@
                 $el.trigger("setvalue");
             }, 0);
         }
+        function initializeColorMask(input) {
+            var offset = input.getBoundingClientRect(), computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
+            colorMask = document.createElement("span"), colorMask.style.position = "absolute", 
+            colorMask.width = (offset.width ? offset.width : offset.right - offset.left) + "px", 
+            colorMask.height = (offset.height ? offset.height : offset.bottom - offset.top) + "px", 
+            colorMask.style.top = offset.top + parseInt(computedStyle.borderTopWidth) + "px", 
+            colorMask.style.left = offset.left + parseInt(computedStyle.borderLeftWidth) + "px", 
+            colorMask.style.zIndex = isNaN(computedStyle.zIndex) ? -1 : computedStyle.zIndex - 1, 
+            colorMask.style.color = computedStyle.color, colorMask.style.fontSize = computedStyle.fontSize, 
+            colorMask.style.fontStyle = computedStyle.fontStyle, colorMask.style.fontFamily = computedStyle.fontFamily, 
+            input.style.color = "transparent", input.style.backgroundColor = "transparent", 
+            input.parentNode.insertBefore(colorMask, input.nextSibling);
+        }
+        function renderColorMask(input, buffer, caretPos) {
+            function handleStatic() {
+                static || null !== test.fn && void 0 !== testPos.input ? static && null !== test.fn && void 0 !== testPos.input && (static = !1, 
+                maskTemplate += "</span>") : (static = !0, maskTemplate += "<span class='im-static''>");
+            }
+            if (void 0 !== colorMask) {
+                buffer = buffer || getBuffer(), void 0 === caretPos ? caretPos = caret(input) : void 0 === caretPos.begin && (caretPos = {
+                    begin: caretPos,
+                    end: caretPos
+                });
+                var maskTemplate = "", static = !1;
+                if ("" != buffer) {
+                    var ndxIntlzr, test, testPos, pos = 0, lvp = getLastValidPosition();
+                    do pos === caretPos.begin && document.activeElement === input && (maskTemplate += "<span class='im-caret'>|</span>"), 
+                    getMaskSet().validPositions[pos] ? (testPos = getMaskSet().validPositions[pos], 
+                    test = testPos.match, ndxIntlzr = testPos.locator.slice(), handleStatic(), maskTemplate += testPos.input) : (testPos = getTestTemplate(pos, ndxIntlzr, pos - 1), 
+                    test = testPos.match, ndxIntlzr = testPos.locator.slice(), (opts.jitMasking === !1 || pos < lvp || Number.isFinite(opts.jitMasking) && opts.jitMasking > pos) && (handleStatic(), 
+                    maskTemplate += getPlaceholder(pos, test))), pos++; while ((void 0 === maxLength || pos < maxLength) && (null !== test.fn || "" !== test.def) || lvp > pos);
+                }
+                colorMask.innerHTML = maskTemplate;
+            }
+        }
         function mask(elem) {
             if (el = elem, $el = $(el), opts.showTooltip && (el.title = opts.tooltip || getMaskSet().mask), 
             ("rtl" === el.dir || opts.rightAlign) && (el.style.textAlign = "right"), ("rtl" === el.dir || opts.numericInput) && (el.dir = "ltr", 
-            el.removeAttribute("dir"), el.inputmask.isRTL = !0, isRTL = !0), mobile && (el.setAttribute("inputmode", "verbatim"), 
-            el.setAttribute("x-inputmode", "verbatim")), EventRuler.off(el), patchValueProperty(el), 
-            isElementTypeSupported(el, opts) && (EventRuler.on(el, "submit", submitEvent), EventRuler.on(el, "reset", resetEvent), 
-            EventRuler.on(el, "mouseenter", mouseenterEvent), EventRuler.on(el, "blur", blurEvent), 
-            EventRuler.on(el, "focus", focusEvent), EventRuler.on(el, "mouseleave", mouseleaveEvent), 
+            el.removeAttribute("dir"), el.inputmask.isRTL = !0, isRTL = !0), opts.colorMask === !0 && initializeColorMask(el), 
+            mobile && (el.hasOwnProperty("inputmode") || el.hasOwnProperty("x-inputmode") ? (el.inputmode = opts.inputmode, 
+            el["x-inputmode"] = opts.inputmode) : (initializeColorMask(el), el.type = "password")), 
+            EventRuler.off(el), patchValueProperty(el), isElementTypeSupported(el, opts) && (EventRuler.on(el, "submit", submitEvent), 
+            EventRuler.on(el, "reset", resetEvent), EventRuler.on(el, "mouseenter", mouseenterEvent), 
+            EventRuler.on(el, "blur", blurEvent), EventRuler.on(el, "focus", focusEvent), EventRuler.on(el, "mouseleave", mouseleaveEvent), 
             EventRuler.on(el, "click", clickEvent), EventRuler.on(el, "dblclick", dblclickEvent), 
             EventRuler.on(el, "paste", pasteEvent), EventRuler.on(el, "dragdrop", pasteEvent), 
             EventRuler.on(el, "drop", pasteEvent), EventRuler.on(el, "cut", cutEvent), EventRuler.on(el, "complete", opts.oncomplete), 
             EventRuler.on(el, "incomplete", opts.onincomplete), EventRuler.on(el, "cleared", opts.oncleared), 
             opts.inputEventOnly !== !0 && (EventRuler.on(el, "keydown", keydownEvent), EventRuler.on(el, "keypress", keypressEvent)), 
-            EventRuler.on(el, "compositionstart", $.noop), EventRuler.on(el, "compositionend", $.noop), 
+            EventRuler.on(el, "compositionstart", $.noop), EventRuler.on(el, "compositionupdate", $.noop), 
+            EventRuler.on(el, "compositionend", $.noop), EventRuler.on(el, "keyup", $.noop), 
             EventRuler.on(el, "input", inputFallBackEvent)), EventRuler.on(el, "setvalue", setValueEvent), 
             getBufferTemplate(), "" !== el.inputmask._valueGet() || opts.clearMaskOnLostFocus === !1 || document.activeElement === el) {
                 var initialValue = $.isFunction(opts.onBeforeMask) ? opts.onBeforeMask(el.inputmask._valueGet(), opts) || el.inputmask._valueGet() : el.inputmask._valueGet();
@@ -1173,7 +1208,7 @@
                 writeBuffer(el, buffer), document.activeElement === el && caret(el, seekNext(getLastValidPosition()));
             }
         }
-        var undoValue, el, $el, maxLength, valueBuffer, isRTL = !1, skipKeyPressEvent = !1, skipInputEvent = !1, composition = !1, ignorable = !1, mouseEnter = !0, EventRuler = {
+        var undoValue, el, $el, maxLength, colorMask, valueBuffer, isRTL = !1, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, mouseEnter = !0, EventRuler = {
             on: function(input, eventName, eventHandler) {
                 var ev = function(e) {
                     if (void 0 === this.inputmask && "FORM" !== this.nodeName) {
@@ -1202,14 +1237,6 @@
                                         eventHandler.apply(that, args);
                                     }, 0), !1;
                                 }
-                                break;
-
-                              case "compositionstart":
-                                composition = !0;
-                                break;
-
-                              case "compositionend":
-                                composition = !1;
                             }
                             var returnVal = eventHandler.apply(this, arguments);
                             return returnVal === !1 && (e.preventDefault(), e.stopPropagation()), returnVal;
@@ -1372,7 +1399,9 @@
             inputEventOnly: !1,
             noValuePatching: !1,
             positionCaretOnClick: "lvp",
-            casing: null
+            casing: null,
+            inputmode: "verbatim",
+            colorMask: !1
         },
         masksCache: {},
         mask: function(elems) {
@@ -2079,7 +2108,8 @@
             },
             mask: "(\\http://)|(\\http\\s://)|(ftp://)|(ftp\\s://)i{+}",
             insertMode: !1,
-            autoUnmask: !1
+            autoUnmask: !1,
+            inputmode: "url"
         },
         ip: {
             mask: "i[i[i]].i[i[i]].i[i[i]].i[i[i]]",
@@ -2095,7 +2125,8 @@
             },
             onUnMask: function(maskedValue, unmaskedValue, opts) {
                 return maskedValue;
-            }
+            },
+            inputmode: "numeric"
         },
         email: {
             mask: "*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@-{1,63}.-{1,63}[.-{1,63}][.-{1,63}]",
@@ -2117,7 +2148,8 @@
             },
             onUnMask: function(maskedValue, unmaskedValue, opts) {
                 return maskedValue;
-            }
+            },
+            inputmode: "email"
         },
         mac: {
             mask: "##:##:##:##:##:##"
@@ -2197,6 +2229,7 @@
             insertMode: !0,
             autoUnmask: !1,
             unmaskAsNumber: !1,
+            inputmode: "numeric",
             postFormat: function(buffer, pos, opts) {
                 opts.numericInput === !0 && (buffer = buffer.reverse(), isFinite(pos) && (pos = buffer.join("").length - pos - 1));
                 var i, l;
@@ -2539,7 +2572,8 @@
             },
             onUnMask: function(maskedValue, unmaskedValue, opts) {
                 return unmaskedValue;
-            }
+            },
+            inputmode: "tel"
         }
     }), Inputmask;
 }(jQuery, Inputmask), function($, Inputmask) {
