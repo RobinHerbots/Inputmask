@@ -999,7 +999,8 @@ https://html.spec.whatwg.org/#input-modalities:-the-inputmode-attribute
 
 ### colorMask
 Default: false
-Create a css styleable mask.  Defines css classes: im-caret, im-static.
+Create a css styleable mask.
+Uses css classes: im-caret, im-static.
 
 You need to include the inputmask.css in your page to use this option.
 
