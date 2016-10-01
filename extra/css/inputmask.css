@@ -8,46 +8,46 @@
 
 @keyframes blink {
 	from, to {
-		color: black;
+		border-right-color: black;
 	}
 	50% {
-		color: transparent;
+		border-right-color: transparent;
 	}
 }
 
 @-moz-keyframes blink {
 	from, to {
-		color: black;
+		border-right-color: black;
 	}
 	50% {
-		color: transparent;
+		border-right-color: transparent;
 	}
 }
 
 @-webkit-keyframes blink {
 	from, to {
-		color: black;
+		border-right-color: black;
 	}
 	50% {
-		color: transparent;
+		border-right-color: transparent;
 	}
 }
 
 @-ms-keyframes blink {
 	from, to {
-		color: black;
+		border-right-color: black;
 	}
 	50% {
-		color: transparent;
+		border-right-color: transparent;
 	}
 }
 
 @-o-keyframes blink {
 	from, to {
-		color: black;
+		border-right-color: black;
 	}
 	50% {
-		color: transparent;
+		border-right-color: transparent;
 	}
 }
 

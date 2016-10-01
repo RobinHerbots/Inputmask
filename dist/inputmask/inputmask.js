@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4-24
+* Version: 3.3.4-25
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define("inputmask", [ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib")) : factory(window.dependencyLib || jQuery);
@@ -704,9 +704,8 @@
                     void 0 !== caretPos && (caretPos = void 0 !== result.caret ? result.caret : caretPos);
                 }
             }
-            input.inputmask._valueSet(buffer.join("")), void 0 === caretPos || void 0 !== event && "blur" === event.type || caret(input, caretPos), 
-            renderColorMask(input, buffer, caretPos), triggerInputEvent === !0 && (skipInputEvent = !0, 
-            $(input).trigger("input"));
+            input.inputmask._valueSet(buffer.join("")), void 0 === caretPos || void 0 !== event && "blur" === event.type ? renderColorMask(input, buffer, caretPos) : caret(input, caretPos), 
+            triggerInputEvent === !0 && (skipInputEvent = !0, $(input).trigger("input"));
         }
         function getPlaceholder(pos, test) {
             if (test = test || getTest(pos).match, void 0 !== test.placeholder) return test.placeholder;
@@ -807,6 +806,10 @@
                 sel.removeAllRanges(), sel.addRange(range);
             } else input.createTextRange && (range = input.createTextRange(), range.collapse(!0), 
             range.moveEnd("character", end), range.moveStart("character", begin), range.select());
+            renderColorMask(input, void 0, {
+                begin: begin,
+                end: end
+            });
         }
         function determineLastRequiredPosition(returnDefinition) {
             var pos, testPos, buffer = getBuffer(), bl = buffer.length, lvp = getLastValidPosition(), positions = {}, lvTest = getMaskSet().validPositions[lvp], ndxIntlzr = void 0 !== lvTest ? lvTest.locator.slice() : void 0;
@@ -962,12 +965,14 @@
             $input.trigger("click")) : k !== Inputmask.keyCode.INSERT || e.shiftKey || e.ctrlKey ? opts.tabThrough === !0 && k === Inputmask.keyCode.TAB ? (e.shiftKey === !0 ? (null === getTest(pos.begin).match.fn && (pos.begin = seekNext(pos.begin)), 
             pos.end = seekPrevious(pos.begin, !0), pos.begin = seekPrevious(pos.end, !0)) : (pos.begin = seekNext(pos.begin, !0), 
             pos.end = seekNext(pos.begin, !0), pos.end < getMaskSet().maskLength && pos.end--), 
-            pos.begin < getMaskSet().maskLength && (e.preventDefault(), caret(input, pos.begin, pos.end))) : opts.insertMode !== !1 || e.shiftKey || (k === Inputmask.keyCode.RIGHT ? setTimeout(function() {
+            pos.begin < getMaskSet().maskLength && (e.preventDefault(), caret(input, pos.begin, pos.end))) : e.shiftKey || (opts.insertMode === !1 ? k === Inputmask.keyCode.RIGHT ? setTimeout(function() {
                 var caretPos = caret(input);
                 caret(input, caretPos.begin);
             }, 0) : k === Inputmask.keyCode.LEFT && setTimeout(function() {
                 var caretPos = caret(input);
                 caret(input, isRTL ? caretPos.begin + 1 : caretPos.begin - 1);
+            }, 0) : setTimeout(function() {
+                renderColorMask(input);
             }, 0)) : (opts.insertMode = !opts.insertMode, caret(input, opts.insertMode || pos.begin !== getMaskSet().maskLength ? pos.begin : pos.begin - 1));
             opts.onKeyDown.call(this, e, getBuffer(), caret(input).begin, opts), ignorable = $.inArray(k, opts.ignorables) !== -1;
         }
@@ -1102,7 +1107,6 @@
                             caret(input, lastPosition);
                         }
                     }
-                    renderColorMask(input);
                 }
             }, 0);
         }
@@ -1175,7 +1179,7 @@
                 var maskTemplate = "", static = !1;
                 if ("" != buffer) {
                     var ndxIntlzr, test, testPos, pos = 0, lvp = getLastValidPosition();
-                    do pos === caretPos.begin && document.activeElement === input && (maskTemplate += "<span class='im-caret'>|</span>"), 
+                    do pos === caretPos.begin && document.activeElement === input && (maskTemplate += "<span class='im-caret' style='border-right-width: 1px;border-right-style: solid;'></span>"), 
                     getMaskSet().validPositions[pos] ? (testPos = getMaskSet().validPositions[pos], 
                     test = testPos.match, ndxIntlzr = testPos.locator.slice(), handleStatic(), maskTemplate += testPos.input) : (testPos = getTestTemplate(pos, ndxIntlzr, pos - 1), 
                     test = testPos.match, ndxIntlzr = testPos.locator.slice(), (opts.jitMasking === !1 || pos < lvp || Number.isFinite(opts.jitMasking) && opts.jitMasking > pos) && (handleStatic(), 

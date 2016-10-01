@@ -1718,8 +1718,7 @@
 			input.inputmask._valueSet(buffer.join(""));
 			if (caretPos !== undefined && (event === undefined || event.type !== "blur")) {
 				caret(input, caretPos);
-			}
-			renderColorMask(input, buffer, caretPos);
+			} else renderColorMask(input, buffer, caretPos);
 			if (triggerInputEvent === true) {
 				skipInputEvent = true;
 				$(input).trigger("input");
@@ -1903,6 +1902,7 @@
 					range.select();
 
 				}
+				renderColorMask(input, undefined, {begin: begin, end: end});
 			} else {
 				if (input.setSelectionRange) {
 					begin = input.selectionStart;
@@ -2323,16 +2323,22 @@
 					e.preventDefault();
 					caret(input, pos.begin, pos.end);
 				}
-			} else if (opts.insertMode === false && !e.shiftKey) {
-				if (k === Inputmask.keyCode.RIGHT) {
+			} else if (!e.shiftKey) {
+				if (opts.insertMode === false) {
+					if (k === Inputmask.keyCode.RIGHT) {
+						setTimeout(function () {
+							var caretPos = caret(input);
+							caret(input, caretPos.begin);
+						}, 0);
+					} else if (k === Inputmask.keyCode.LEFT) {
+						setTimeout(function () {
+							var caretPos = caret(input);
+							caret(input, isRTL ? caretPos.begin + 1 : caretPos.begin - 1);
+						}, 0);
+					}
+				} else {
 					setTimeout(function () {
-						var caretPos = caret(input);
-						caret(input, caretPos.begin);
-					}, 0);
-				} else if (k === Inputmask.keyCode.LEFT) {
-					setTimeout(function () {
-						var caretPos = caret(input);
-						caret(input, isRTL ? caretPos.begin + 1 : caretPos.begin - 1);
+						renderColorMask(input);
 					}, 0);
 				}
 			}
@@ -2594,7 +2600,6 @@
 								break;
 						}
 					}
-					renderColorMask(input);
 				}
 			}, 0);
 		}
@@ -2749,7 +2754,7 @@
 						test, testPos, lvp = getLastValidPosition();
 					do {
 						if (pos === caretPos.begin && document.activeElement === input) {
-							maskTemplate += "<span class='im-caret'>|</span>";
+							maskTemplate += "<span class='im-caret' style='border-right-width: 1px;border-right-style: solid;'></span>";
 						}
 						if (getMaskSet().validPositions[pos]) {
 							testPos = getMaskSet().validPositions[pos];
