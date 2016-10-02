@@ -2723,6 +2723,7 @@
 			colorMask.style.fontSize = computedStyle.fontSize;
 			colorMask.style.fontStyle = computedStyle.fontStyle;
 			colorMask.style.fontFamily = computedStyle.fontFamily;
+			colorMask.style.letterSpacing = computedStyle.letterSpacing;
 
 			input.style.color = "transparent";
 			input.style.backgroundColor = "transparent";
@@ -2807,8 +2808,9 @@
 					el["inputmode"] = opts.inputmode;
 					el["x-inputmode"] = opts.inputmode;
 				} else {
-					initializeColorMask(el);
 					el.type = "password";
+					initializeColorMask(el);
+					el.style.letterSpacing = "1px"; //forced spacing
 				}
 			}
 

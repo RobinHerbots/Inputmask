@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4-25
+* Version: 3.3.4-27
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define("inputmask", [ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib")) : factory(window.dependencyLib || jQuery);
@@ -1163,8 +1163,8 @@
             colorMask.style.zIndex = isNaN(computedStyle.zIndex) ? -1 : computedStyle.zIndex - 1, 
             colorMask.style.color = computedStyle.color, colorMask.style.fontSize = computedStyle.fontSize, 
             colorMask.style.fontStyle = computedStyle.fontStyle, colorMask.style.fontFamily = computedStyle.fontFamily, 
-            input.style.color = "transparent", input.style.backgroundColor = "transparent", 
-            input.parentNode.insertBefore(colorMask, input.nextSibling);
+            colorMask.style.letterSpacing = computedStyle.letterSpacing, input.style.color = "transparent", 
+            input.style.backgroundColor = "transparent", input.parentNode.insertBefore(colorMask, input.nextSibling);
         }
         function renderColorMask(input, buffer, caretPos) {
             function handleStatic() {
@@ -1193,8 +1193,8 @@
             ("rtl" === el.dir || opts.rightAlign) && (el.style.textAlign = "right"), ("rtl" === el.dir || opts.numericInput) && (el.dir = "ltr", 
             el.removeAttribute("dir"), el.inputmask.isRTL = !0, isRTL = !0), opts.colorMask === !0 && initializeColorMask(el), 
             android && (el.hasOwnProperty("inputmode") || el.hasOwnProperty("x-inputmode") ? (el.inputmode = opts.inputmode, 
-            el["x-inputmode"] = opts.inputmode) : (initializeColorMask(el), el.type = "password")), 
-            EventRuler.off(el), patchValueProperty(el), isElementTypeSupported(el, opts) && (EventRuler.on(el, "submit", submitEvent), 
+            el["x-inputmode"] = opts.inputmode) : (el.type = "password", initializeColorMask(el), 
+            el.style.letterSpacing = "1px")), EventRuler.off(el), patchValueProperty(el), isElementTypeSupported(el, opts) && (EventRuler.on(el, "submit", submitEvent), 
             EventRuler.on(el, "reset", resetEvent), EventRuler.on(el, "mouseenter", mouseenterEvent), 
             EventRuler.on(el, "blur", blurEvent), EventRuler.on(el, "focus", focusEvent), EventRuler.on(el, "mouseleave", mouseleaveEvent), 
             EventRuler.on(el, "click", clickEvent), EventRuler.on(el, "dblclick", dblclickEvent), 
