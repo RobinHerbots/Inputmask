@@ -1152,13 +1152,11 @@
             }, 0);
         }
         function initializeColorMask(input) {
-            var offset = input.getBoundingClientRect(), computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
+            var computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
             colorMask = document.createElement("span"), colorMask.style.position = "absolute", 
-            colorMask.width = (offset.width ? offset.width : offset.right - offset.left) + "px", 
-            colorMask.height = (offset.height ? offset.height : offset.bottom - offset.top) + "px", 
-            colorMask.style.top = offset.top + parseInt(computedStyle.borderTopWidth) + "px", 
-            colorMask.style.left = offset.left + parseInt(computedStyle.borderLeftWidth) + "px", 
-            colorMask.style.zIndex = isNaN(computedStyle.zIndex) ? -1 : computedStyle.zIndex - 1, 
+            colorMask.style.top = input.clientTop + "px",
+            colorMask.style.left = input.clientLeft + parseInt(computedStyle.paddingLeft) + 'px',
+            colorMask.style.lineHeight = input.clientHeight + "px",
             colorMask.style.color = computedStyle.color, colorMask.style.fontSize = computedStyle.fontSize, 
             colorMask.style.fontStyle = computedStyle.fontStyle, colorMask.style.fontFamily = computedStyle.fontFamily, 
             colorMask.style.letterSpacing = computedStyle.letterSpacing, input.style.color = "transparent", 
