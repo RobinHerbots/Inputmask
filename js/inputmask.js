@@ -1347,7 +1347,7 @@
 								$.each(rslt.insert.sort(function (a, b) {
 									return a - b;
 								}), function (ndx, lmnt) {
-									isValid(lmnt.pos, lmnt.c, false, fromSetValid);
+									isValid(lmnt.pos, lmnt.c, true, fromSetValid);
 								});
 							}
 
@@ -2706,28 +2706,61 @@
 		}
 
 		function initializeColorMask(input) {
-			// needs computedstyle
-			var offset = input.getBoundingClientRect();
-			var computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
+			function charSize() {
+				//calculate text width
+				var e = document.createElement('span'), width = 0;
+				e.style.visibility = "hidden";
+				e.style.whiteSpace = "nowrap";
+				e.style.fontSize = computedStyle.fontSize;
+				e.style.fontFamily = computedStyle.fontFamily;
+				e.innerHTML = "0";
+				input.parentNode.insertBefore(e, input.nextSibling);
+				width = e.offsetWidth;
+				input.parentNode.removeChild(e);
+				return width;
+			}
 
-			colorMask = document.createElement("span");
+			var offset = $(input).position(),
+				computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
+
+			colorMask = document.createElement("div");
 			//positioning
 			colorMask.style.position = "absolute";
-			colorMask.width = (offset.width ? offset.width : offset.right - offset.left) + "px";
-			colorMask.height = (offset.height ? offset.height : offset.bottom - offset.top) + "px";
-			colorMask.style.top = offset.top + parseInt(computedStyle.borderTopWidth) + 'px';
-			colorMask.style.left = offset.left + parseInt(computedStyle.borderLeftWidth) + 'px';
-			colorMask.style.zIndex = isNaN(computedStyle.zIndex) ? -1 : computedStyle.zIndex - 1;
+			colorMask.style.top = offset.top + parseInt(computedStyle.borderTopWidth) + parseInt(computedStyle.paddingTop) + 'px';
+			colorMask.style.left = offset.left + parseInt(computedStyle.borderLeftWidth) + parseInt(computedStyle.paddingLeft) + 'px';
+			colorMask.style.width = computedStyle.width;
+			colorMask.style.height = computedStyle.height;
 			//styling
 			colorMask.style.color = computedStyle.color;
+			colorMask.style.backgroundColor = computedStyle.backgroundColor;
 			colorMask.style.fontSize = computedStyle.fontSize;
 			colorMask.style.fontStyle = computedStyle.fontStyle;
 			colorMask.style.fontFamily = computedStyle.fontFamily;
 			colorMask.style.letterSpacing = computedStyle.letterSpacing;
 
 			input.style.color = "transparent";
-			input.style.backgroundColor = "transparent";
 			input.parentNode.insertBefore(colorMask, input.nextSibling);
+
+			//event passthrough
+			$(window).on("resize", function (e) {
+				offset = $(input).position();
+				computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
+
+				//positioning
+				colorMask.style.top = offset.top + parseInt(computedStyle.borderTopWidth) + parseInt(computedStyle.paddingTop) + 'px';
+				colorMask.style.left = offset.left + parseInt(computedStyle.borderLeftWidth) + parseInt(computedStyle.paddingLeft) + 'px';
+				colorMask.style.width = computedStyle.width;
+				colorMask.style.height = computedStyle.height;
+			});
+			EventRuler.off(input, "mouseenter");
+			$(input.nextSibling).on("mouseenter", function (e) {
+				mouseenterEvent.call(input, e);
+			});
+			$(input.nextSibling).on("click", function (e) {
+				input.focus();
+				caret(input, Math.floor(e.clientX / charSize()));
+				$(input).trigger("click");
+			});
 		}
 
 		function renderColorMask(input, buffer, caretPos) {
@@ -2804,13 +2837,13 @@
 			}
 
 			if (android) {
-				if (el.hasOwnProperty("inputmode") || el.hasOwnProperty("x-inputmode")) {
-					el["inputmode"] = opts.inputmode;
-					el["x-inputmode"] = opts.inputmode;
+				if (el.hasOwnProperty("inputmode")) {
+					el.inputmode = opts.inputmode;
+					el.setAttribute("inputmode", opts.inputmode);
 				} else {
 					el.type = "password";
-					initializeColorMask(el);
-					el.style.letterSpacing = "1px"; //forced spacing
+					if (opts.colorMask !== true)
+						initializeColorMask(el);
 				}
 			}
 

@@ -83,8 +83,9 @@
 					opts.decimalProtect = false;
 				}
 
-				var mask = autoEscape(opts.prefix);
-				mask += "[+]";
+				var mask = "[+]";
+				mask += autoEscape(opts.prefix);
+
 				if (opts.integerOptional === true) {
 					mask += "~{1," + opts.integerDigits + "}";
 				} else mask += "~{" + opts.integerDigits + "}";
@@ -99,8 +100,8 @@
 						} else mask += (opts.decimalProtect ? ":" : opts.radixPoint) + ";{" + opts.digits + "}";
 					}
 				}
-				mask += "[-]";
 				mask += autoEscape(opts.suffix);
+				mask += "[-]";
 
 				opts.greedy = false; //enforce greedy false
 
@@ -168,6 +169,13 @@
 				//mark current pos
 				cbuf[pos] = "!";
 				var bufVal = cbuf.join(""), bufValOrigin = bufVal;
+				var isNegative = bufVal.match(new RegExp("^" + Inputmask.escapeRegex(opts.negationSymbol.front)));
+				isNegative = isNegative !== null && isNegative.length === 1;
+
+				if (isNegative) {
+					bufVal = bufVal.replace(new RegExp("^" + Inputmask.escapeRegex(opts.negationSymbol.front)), "");
+					bufVal = bufVal.replace(new RegExp(Inputmask.escapeRegex(opts.negationSymbol.back) + "$"), "");
+				}
 
 				bufVal = bufVal.replace(new RegExp(Inputmask.escapeRegex(opts.suffix) + "$"), "");
 				bufVal = bufVal.replace(new RegExp("^" + Inputmask.escapeRegex(opts.prefix)), "");
@@ -191,7 +199,9 @@
 				}
 
 				bufVal = opts.prefix + bufVal + opts.suffix;
-
+				if (isNegative) {
+					bufVal = opts.negationSymbol.front + bufVal + opts.negationSymbol.back;
+				}
 
 				var needsRefresh = bufValOrigin !== bufVal;
 				if (needsRefresh) {
@@ -273,11 +283,12 @@
 						}
 
 						if ((floatValue.toString() !== processValue && floatValue.toString() + "." !== processValue) || isNegative) {
+							processValue = (opts.prefix + processValue.join("")).split("");
 							if (isNegative && (floatValue !== 0 || e.type !== "blur")) {
 								processValue.unshift(opts.negationSymbol.front);
 								processValue.push(opts.negationSymbol.back);
 							}
-							processValue = (opts.prefix + processValue.join("")).split("");
+
 							if (opts.numericInput) processValue = processValue.reverse();
 							rslt = opts.postFormat(processValue, opts.numericInput ? caretPos : caretPos - 1, opts);
 							if (rslt.buffer) rslt.refreshFromBuffer = rslt.buffer.join("") !== buffer.join("");
@@ -311,49 +322,49 @@
 							if (chrs === "-") {
 								if (opts.negationSymbol.back !== "") {
 									return {
-										"pos": matchRslt.index,
+										"pos": 0,
 										"c": opts.negationSymbol.front,
-										"remove": matchRslt.index,
+										"remove": 0,
 										"caret": pos,
 										"insert": {
-											"pos": maskset.buffer.length - opts.suffix.length - 1,
+											"pos": maskset.buffer.length - 1,
 											"c": opts.negationSymbol.back
 										}
 									};
 								} else {
 									return {
-										"pos": matchRslt.index,
+										"pos": 0,
 										"c": opts.negationSymbol.front,
-										"remove": matchRslt.index,
+										"remove": 0,
 										"caret": pos
 									};
 								}
 							} else {
 								if (opts.negationSymbol.back !== "") {
 									return {
-										"pos": matchRslt.index,
+										"pos": 0,
 										"c": "+",
-										"remove": [matchRslt.index, maskset.buffer.length - opts.suffix.length - 1],
+										"remove": [0, maskset.buffer.length - 1],
 										"caret": pos
 									};
 								} else {
 									return {
-										"pos": matchRslt.index,
+										"pos": 0,
 										"c": "+",
-										"remove": matchRslt.index,
+										"remove": 0,
 										"caret": pos
 									};
 								}
 							}
-						} else if (maskset.buffer[matchRslt.index] === (chrs === "-" ? opts.negationSymbol.front : "+")) {
+						} else if (maskset.buffer[0] === (chrs === "-" ? opts.negationSymbol.front : "+")) {
 							if (chrs === "-" && opts.negationSymbol.back !== "") {
 								return {
-									"remove": [matchRslt.index, maskset.buffer.length - opts.suffix.length - 1],
+									"remove": [0, maskset.buffer.length - 1],
 									"caret": pos - 1
 								};
 							} else {
 								return {
-									"remove": matchRslt.index,
+									"remove": 0,
 									"caret": pos - 1
 								};
 							}
@@ -361,24 +372,24 @@
 							if (chrs === "-") {
 								if (opts.negationSymbol.back !== "") {
 									return {
-										"pos": matchRslt.index,
+										"pos": 0,
 										"c": opts.negationSymbol.front,
 										"caret": pos + 1,
 										"insert": {
-											"pos": maskset.buffer.length - opts.suffix.length,
+											"pos": maskset.buffer.length,
 											"c": opts.negationSymbol.back
 										}
 									};
 								} else {
 									return {
-										"pos": matchRslt.index,
+										"pos": 0,
 										"c": opts.negationSymbol.front,
 										"caret": pos + 1
 									};
 								}
 							} else {
 								return {
-									"pos": matchRslt.index,
+									"pos": 0,
 									"c": chrs,
 									"caret": pos + 1
 								};
@@ -387,8 +398,7 @@
 					}
 				}
 				return false;
-			}
-			,
+			},
 			radixHandler: function (chrs, maskset, pos, strict, opts) {
 				if (!strict && opts.numericInput !== true) {
 					//if ($.inArray(chrs, [",", "."]) !== -1) chrs = opts.radixPoint;

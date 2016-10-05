@@ -130,7 +130,7 @@ define([
 		$("#testmask").paste("$-123.22");
 
 		setTimeout(function () {
-			assert.equal(testmask.value, "$ -123.22", "Result " + testmask.value);
+			assert.equal(testmask.value, "-$ 123.22", "Result " + testmask.value);
 			done();
 		}, 0);
 	});
@@ -158,7 +158,7 @@ define([
 		$("#testmask").paste("-1000.00");
 
 		setTimeout(function () {
-			assert.equal(testmask.value, "$ -1,000.00", "Result " + testmask.value);
+			assert.equal(testmask.value, "-$ 1,000.00", "Result " + testmask.value);
 			done();
 		}, 0);
 	});
@@ -186,7 +186,7 @@ define([
 		$("#testmask").paste("$-1000.00");
 
 		setTimeout(function () {
-			assert.equal(testmask.value, "$ -1,000.00", "Result " + testmask.value);
+			assert.equal(testmask.value, "-$ 1,000.00", "Result " + testmask.value);
 			done();
 		}, 0);
 	});

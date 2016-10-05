@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4-27
+* Version: 3.3.4-32
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define("inputmask", [ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib")) : factory(window.dependencyLib || jQuery);
@@ -523,7 +523,7 @@
                         $.each(rslt.insert.sort(function(a, b) {
                             return a - b;
                         }), function(ndx, lmnt) {
-                            isValid(lmnt.pos, lmnt.c, !1, fromSetValid);
+                            isValid(lmnt.pos, lmnt.c, !0, fromSetValid);
                         })), rslt.refreshFromBuffer) {
                             var refresh = rslt.refreshFromBuffer;
                             if (strict = !0, refreshFromBuffer(refresh === !0 ? refresh : refresh.start, refresh.end, possibleModifiedBuffer), 
@@ -1154,15 +1154,31 @@
             }, 0);
         }
         function initializeColorMask(input) {
-            var computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
-            colorMask = document.createElement("span"), colorMask.style.position = "absolute", 
-            colorMask.style.top = input.clientTop + "px",
-            colorMask.style.left = input.clientLeft + parseInt(computedStyle.paddingLeft) + 'px',
-            colorMask.style.lineHeight = input.clientHeight + "px",
-            colorMask.style.color = computedStyle.color, colorMask.style.fontSize = computedStyle.fontSize, 
-            colorMask.style.fontStyle = computedStyle.fontStyle, colorMask.style.fontFamily = computedStyle.fontFamily, 
-            colorMask.style.letterSpacing = computedStyle.letterSpacing, input.style.color = "transparent", 
-            input.style.backgroundColor = "transparent", input.parentNode.insertBefore(colorMask, input.nextSibling);
+            function charSize() {
+                var e = document.createElement("span"), width = 0;
+                return e.style.visibility = "hidden", e.style.whiteSpace = "nowrap", e.style.fontSize = computedStyle.fontSize, 
+                e.style.fontFamily = computedStyle.fontFamily, e.innerHTML = "0", input.parentNode.insertBefore(e, input.nextSibling), 
+                width = e.offsetWidth, input.parentNode.removeChild(e), width;
+            }
+            var offset = $(input).position(), computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
+            colorMask = document.createElement("div"), colorMask.style.position = "absolute", 
+            colorMask.style.top = offset.top + parseInt(computedStyle.borderTopWidth) + parseInt(computedStyle.paddingTop) + "px", 
+            colorMask.style.left = offset.left + parseInt(computedStyle.borderLeftWidth) + parseInt(computedStyle.paddingLeft) + "px", 
+            colorMask.style.width = computedStyle.width, colorMask.style.height = computedStyle.height, 
+            colorMask.style.color = computedStyle.color, colorMask.style.backgroundColor = computedStyle.backgroundColor, 
+            colorMask.style.fontSize = computedStyle.fontSize, colorMask.style.fontStyle = computedStyle.fontStyle, 
+            colorMask.style.fontFamily = computedStyle.fontFamily, colorMask.style.letterSpacing = computedStyle.letterSpacing, 
+            input.style.color = "transparent", input.parentNode.insertBefore(colorMask, input.nextSibling), 
+            $(window).on("resize", function(e) {
+                offset = $(input).position(), computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null), 
+                colorMask.style.top = offset.top + parseInt(computedStyle.borderTopWidth) + parseInt(computedStyle.paddingTop) + "px", 
+                colorMask.style.left = offset.left + parseInt(computedStyle.borderLeftWidth) + parseInt(computedStyle.paddingLeft) + "px", 
+                colorMask.style.width = computedStyle.width, colorMask.style.height = computedStyle.height;
+            }), EventRuler.off(input, "mouseenter"), $(input.nextSibling).on("mouseenter", function(e) {
+                mouseenterEvent.call(input, e);
+            }), $(input.nextSibling).on("click", function(e) {
+                input.focus(), caret(input, Math.floor(e.clientX / charSize())), $(input).trigger("click");
+            });
         }
         function renderColorMask(input, buffer, caretPos) {
             function handleStatic() {
@@ -1190,11 +1206,11 @@
             if (el = elem, $el = $(el), opts.showTooltip && (el.title = opts.tooltip || getMaskSet().mask), 
             ("rtl" === el.dir || opts.rightAlign) && (el.style.textAlign = "right"), ("rtl" === el.dir || opts.numericInput) && (el.dir = "ltr", 
             el.removeAttribute("dir"), el.inputmask.isRTL = !0, isRTL = !0), opts.colorMask === !0 && initializeColorMask(el), 
-            android && (el.hasOwnProperty("inputmode") || el.hasOwnProperty("x-inputmode") ? (el.inputmode = opts.inputmode, 
-            el["x-inputmode"] = opts.inputmode) : (el.type = "password", initializeColorMask(el), 
-            el.style.letterSpacing = "1px")), EventRuler.off(el), patchValueProperty(el), isElementTypeSupported(el, opts) && (EventRuler.on(el, "submit", submitEvent), 
-            EventRuler.on(el, "reset", resetEvent), EventRuler.on(el, "mouseenter", mouseenterEvent), 
-            EventRuler.on(el, "blur", blurEvent), EventRuler.on(el, "focus", focusEvent), EventRuler.on(el, "mouseleave", mouseleaveEvent), 
+            android && (el.hasOwnProperty("inputmode") ? (el.inputmode = opts.inputmode, el.setAttribute("inputmode", opts.inputmode)) : (el.type = "password", 
+            opts.colorMask !== !0 && initializeColorMask(el))), EventRuler.off(el), patchValueProperty(el), 
+            isElementTypeSupported(el, opts) && (EventRuler.on(el, "submit", submitEvent), EventRuler.on(el, "reset", resetEvent), 
+            EventRuler.on(el, "mouseenter", mouseenterEvent), EventRuler.on(el, "blur", blurEvent), 
+            EventRuler.on(el, "focus", focusEvent), EventRuler.on(el, "mouseleave", mouseleaveEvent), 
             EventRuler.on(el, "click", clickEvent), EventRuler.on(el, "dblclick", dblclickEvent), 
             EventRuler.on(el, "paste", pasteEvent), EventRuler.on(el, "dragdrop", pasteEvent), 
             EventRuler.on(el, "drop", pasteEvent), EventRuler.on(el, "cut", cutEvent), EventRuler.on(el, "complete", opts.oncomplete), 

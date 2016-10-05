@@ -1391,7 +1391,7 @@ define([
 		setTimeout(function () {
 			$("#testmask").Type("-1234");
 			$.caret(testmask, 0);
-			$("#testmask").SendKey(Inputmask.keyCode.DELETE);
+			// $("#testmask").SendKey(Inputmask.keyCode.DELETE);
 			assert.equal($("#testmask")[0].inputmask._valueGet(), "$ 1,234.00", "Result " + $("#testmask")[0].inputmask._valueGet());
 			done();
 		}, 0);
@@ -1828,5 +1828,17 @@ define([
 		$("#testmask").val("237,38");
 
 		assert.equal(testmask.value, "237,38", "Result " + testmask.value);
+	});
+
+	qunit.test("numeric + type -", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("currency", {negationSymbol: {front: "(", back: ")"}}).mask(testmask);
+		testmask.focus();
+		$.caret(testmask, 1);
+		$("#testmask").Type("-");
+
+		assert.equal(testmask.value, "($ 0.00)", "Result " + testmask.value);
 	});
 });
