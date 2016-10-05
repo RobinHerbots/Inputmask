@@ -1,3 +1,11 @@
+/*input{*/
+	/*padding: 0 20px;*/
+	/*height:60px;*/
+	/*box-sizing:border-box;*/
+/*}*/
+
+
+
 .im-caret {
 	-webkit-animation: 1s blink step-end infinite;
 	-moz-animation: 1s blink step-end infinite;

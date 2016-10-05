@@ -122,7 +122,7 @@
 			positionCaretOnClick: "lvp", //none, lvp (based on the last valid position (default), radixFocus (position caret to radixpoint on initial click)
 			casing: null, //mask-level casing. Options: null, "upper", "lower" or "title"
 			inputmode: "verbatim", //specify the inputmode  - already in place for when browsers will support it
-			colorMask: false //enable css styleable mask
+			colorMask: null, //enable css styleable mask
 		},
 		masksCache: {},
 		mask: function (elems) {
@@ -2720,16 +2720,22 @@
 				return width;
 			}
 
+			function position() {
+				colorMask.style.top = offset.top + parseInt(computedStyle.borderTopWidth) + parseInt(computedStyle.paddingTop) + "px";
+				colorMask.style.left = offset.left + parseInt(computedStyle.borderLeftWidth) + parseInt(computedStyle.paddingLeft) + "px";
+				colorMask.style.width = parseInt(computedStyle.width) - (parseInt(computedStyle.paddingLeft) + parseInt(computedStyle.paddingRight) + parseInt(computedStyle.borderRightWidth)) + "px";
+				colorMask.style.height = parseInt(computedStyle.height) - (parseInt(computedStyle.paddingTop) + parseInt(computedStyle.paddingBottom) + parseInt(computedStyle.borderBottomWidth) ) + "px";
+				colorMask.style.lineHeight = colorMask.style.height;
+
+			}
+
 			var offset = $(input).position(),
 				computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
 
 			colorMask = document.createElement("div");
 			//positioning
 			colorMask.style.position = "absolute";
-			colorMask.style.top = offset.top + parseInt(computedStyle.borderTopWidth) + parseInt(computedStyle.paddingTop) + 'px';
-			colorMask.style.left = offset.left + parseInt(computedStyle.borderLeftWidth) + parseInt(computedStyle.paddingLeft) + 'px';
-			colorMask.style.width = computedStyle.width;
-			colorMask.style.height = computedStyle.height;
+			position();
 			//styling
 			colorMask.style.color = computedStyle.color;
 			colorMask.style.backgroundColor = computedStyle.backgroundColor;
@@ -2745,12 +2751,7 @@
 			$(window).on("resize", function (e) {
 				offset = $(input).position();
 				computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
-
-				//positioning
-				colorMask.style.top = offset.top + parseInt(computedStyle.borderTopWidth) + parseInt(computedStyle.paddingTop) + 'px';
-				colorMask.style.left = offset.left + parseInt(computedStyle.borderLeftWidth) + parseInt(computedStyle.paddingLeft) + 'px';
-				colorMask.style.width = computedStyle.width;
-				colorMask.style.height = computedStyle.height;
+				position();
 			});
 			EventRuler.off(input, "mouseenter");
 			$(input.nextSibling).on("mouseenter", function (e) {
@@ -2840,7 +2841,7 @@
 				if (el.hasOwnProperty("inputmode")) {
 					el.inputmode = opts.inputmode;
 					el.setAttribute("inputmode", opts.inputmode);
-				} else {
+				} else if (opts.colorMask !== false) {
 					el.type = "password";
 					if (opts.colorMask !== true)
 						initializeColorMask(el);

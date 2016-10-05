@@ -246,6 +246,9 @@
 				}
 			}
 			return this;
+		},
+		position: function () {
+			alert("todo");
 		}
 	};
 

@@ -998,11 +998,17 @@ Specify the inputmode  - already in place for when browsers start to  support th
 https://html.spec.whatwg.org/#input-modalities:-the-inputmode-attribute
 
 ### colorMask
-Default: false
+Default: null (~false)
 Create a css styleable mask.
 Uses css classes: im-caret, im-static.
 
-You need to include the inputmask.css in your page to use this option.
+You need to include the inputmask.css in your page to use this option in full.
+
+#### Android note!
+The colorMask is enabled by default when running on Android and the inputtype of the input element is changed to password.
+This is to disable the predictive text which can cause undesired results of input and the colorMask will mimick normal behavior.
+
+You can disable this by explicitly setting colorMask: false option.
 
 ## General
 ### set a value and apply mask

@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4-33
+* Version: 3.3.4-34
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define("inputmask", [ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib")) : factory(window.dependencyLib || jQuery);
@@ -1160,20 +1160,22 @@
                 e.style.fontFamily = computedStyle.fontFamily, e.innerHTML = "0", input.parentNode.insertBefore(e, input.nextSibling), 
                 width = e.offsetWidth, input.parentNode.removeChild(e), width;
             }
+            function position() {
+                colorMask.style.top = offset.top + parseInt(computedStyle.borderTopWidth) + parseInt(computedStyle.paddingTop) + "px", 
+                colorMask.style.left = offset.left + parseInt(computedStyle.borderLeftWidth) + parseInt(computedStyle.paddingLeft) + "px", 
+                colorMask.style.width = parseInt(computedStyle.width) - (parseInt(computedStyle.paddingLeft) + parseInt(computedStyle.paddingRight) + parseInt(computedStyle.borderRightWidth)) + "px", 
+                colorMask.style.height = parseInt(computedStyle.height) - (parseInt(computedStyle.paddingTop) + parseInt(computedStyle.paddingBottom) + parseInt(computedStyle.borderBottomWidth)) + "px", 
+                colorMask.style.lineHeight = colorMask.style.height;
+            }
             var offset = $(input).position(), computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
             colorMask = document.createElement("div"), colorMask.style.position = "absolute", 
-            colorMask.style.top = offset.top + parseInt(computedStyle.borderTopWidth) + parseInt(computedStyle.paddingTop) + "px", 
-            colorMask.style.left = offset.left + parseInt(computedStyle.borderLeftWidth) + parseInt(computedStyle.paddingLeft) + "px", 
-            colorMask.style.width = computedStyle.width, colorMask.style.height = computedStyle.height, 
-            colorMask.style.color = computedStyle.color, colorMask.style.backgroundColor = computedStyle.backgroundColor, 
+            position(), colorMask.style.color = computedStyle.color, colorMask.style.backgroundColor = computedStyle.backgroundColor, 
             colorMask.style.fontSize = computedStyle.fontSize, colorMask.style.fontStyle = computedStyle.fontStyle, 
             colorMask.style.fontFamily = computedStyle.fontFamily, colorMask.style.letterSpacing = computedStyle.letterSpacing, 
             input.style.color = "transparent", input.parentNode.insertBefore(colorMask, input.nextSibling), 
             $(window).on("resize", function(e) {
                 offset = $(input).position(), computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null), 
-                colorMask.style.top = offset.top + parseInt(computedStyle.borderTopWidth) + parseInt(computedStyle.paddingTop) + "px", 
-                colorMask.style.left = offset.left + parseInt(computedStyle.borderLeftWidth) + parseInt(computedStyle.paddingLeft) + "px", 
-                colorMask.style.width = computedStyle.width, colorMask.style.height = computedStyle.height;
+                position();
             }), EventRuler.off(input, "mouseenter"), $(input.nextSibling).on("mouseenter", function(e) {
                 mouseenterEvent.call(input, e);
             }), $(input.nextSibling).on("click", function(e) {
@@ -1206,7 +1208,7 @@
             if (el = elem, $el = $(el), opts.showTooltip && (el.title = opts.tooltip || getMaskSet().mask), 
             ("rtl" === el.dir || opts.rightAlign) && (el.style.textAlign = "right"), ("rtl" === el.dir || opts.numericInput) && (el.dir = "ltr", 
             el.removeAttribute("dir"), el.inputmask.isRTL = !0, isRTL = !0), opts.colorMask === !0 && initializeColorMask(el), 
-            android && (el.hasOwnProperty("inputmode") ? (el.inputmode = opts.inputmode, el.setAttribute("inputmode", opts.inputmode)) : (el.type = "password", 
+            android && (el.hasOwnProperty("inputmode") ? (el.inputmode = opts.inputmode, el.setAttribute("inputmode", opts.inputmode)) : opts.colorMask !== !1 && (el.type = "password", 
             opts.colorMask !== !0 && initializeColorMask(el))), EventRuler.off(el), patchValueProperty(el), 
             isElementTypeSupported(el, opts) && (EventRuler.on(el, "submit", submitEvent), EventRuler.on(el, "reset", resetEvent), 
             EventRuler.on(el, "mouseenter", mouseenterEvent), EventRuler.on(el, "blur", blurEvent), 
@@ -1421,7 +1423,7 @@
             positionCaretOnClick: "lvp",
             casing: null,
             inputmode: "verbatim",
-            colorMask: !1
+            colorMask: null
         },
         masksCache: {},
         mask: function(elems) {
