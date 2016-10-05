@@ -2759,7 +2759,7 @@
 			});
 			$(input.nextSibling).on("click", function (e) {
 				input.focus();
-				caret(input, Math.floor(e.clientX / charSize()));
+				caret(input, Math.floor((e.clientX - parseInt(computedStyle.paddingLeft)) / charSize()));
 				$(input).trigger("click");
 			});
 		}
