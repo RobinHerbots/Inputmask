@@ -10,7 +10,7 @@
 	} else if (typeof exports === "object") {
 		module.exports = factory(require("jqlite"));
 	} else {
-		factory(jQuery);
+		factory(jqlite);
 	}
 }
 (function ($) {

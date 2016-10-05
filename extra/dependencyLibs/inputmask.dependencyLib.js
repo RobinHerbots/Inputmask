@@ -89,6 +89,14 @@
 		}
 	}
 
+	function getWindow(elem) {
+		return isWindow(elem) ?
+			elem :
+			elem.nodeType === 9 ?
+			elem.defaultView || elem.parentWindow :
+				false;
+	}
+
 	DependencyLib.prototype = {
 		on: function (events, handler) {
 			if (isValidElement(this[0])) {
@@ -248,7 +256,12 @@
 			return this;
 		},
 		position: function () {
-			alert("todo");
+			if (isValidElement(this[0])) {
+				return {
+					top: this[0].offsetTop,
+					left: this[0].offsetLeft
+				};
+			}
 		}
 	};
 
