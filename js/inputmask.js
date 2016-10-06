@@ -2721,6 +2721,7 @@
 			}
 
 			function position() {
+				colorMask.style.position = "absolute";
 				colorMask.style.top = offset.top + parseInt(computedStyle.borderTopWidth) + "px";
 				colorMask.style.left = offset.left + parseInt(computedStyle.borderLeftWidth) + "px";
 				colorMask.style.width = parseInt(input.offsetWidth) - parseInt(computedStyle.paddingLeft) - parseInt(computedStyle.paddingRight) - parseInt(computedStyle.borderLeftWidth) - parseInt(computedStyle.borderRightWidth) + "px";
@@ -2736,18 +2737,13 @@
 				parentNode = input.parentNode;
 
 			colorMask = document.createElement("div");
-			//positioning
-			colorMask.style.position = "absolute";
-			position();
-			//styling
-			colorMask.style.color = computedStyle.color;
-			colorMask.style.backgroundColor = computedStyle.backgroundColor;
-			colorMask.style.fontSize = computedStyle.fontSize;
-			colorMask.style.fontStyle = computedStyle.fontStyle;
-			colorMask.style.fontFamily = computedStyle.fontFamily;
-			colorMask.style.letterSpacing = computedStyle.letterSpacing;
 
-			input.style.color = "transparent";
+			for (var style in computedStyle) {
+				colorMask.style[style] = computedStyle[style];
+			}
+			colorMask.style.border = "";
+			position();
+
 			parentNode.insertBefore(colorMask, input.nextSibling);
 
 			//event passthrough
@@ -2845,9 +2841,9 @@
 					el.inputmode = opts.inputmode;
 					el.setAttribute("inputmode", opts.inputmode);
 				} else if (opts.colorMask !== false) {
-					el.type = "password";
 					if (opts.colorMask !== true)
 						initializeColorMask(el);
+					el.type = "password";
 				}
 			}
 
