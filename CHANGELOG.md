@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### Updates
 - numeric alias move negation symbols to the edges
-- handle android predictive text enabled
+- ~~handle android predictive text enabled~~
 - rename js/inputmask.dependencyLib.jquery.js to js/inputmask.dependencyLib.js
 - rename dist/inputmask.dependencyLib.jquery.js to dist/inputmask.dependencyLib.js
 - commonjs dep to inputmask.dependencyLib instead to inputmask.dependencyLib.jquery => can be symlinked to another dependencyLib
