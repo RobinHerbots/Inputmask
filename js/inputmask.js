@@ -2714,23 +2714,26 @@
 				e.style.fontSize = computedStyle.fontSize;
 				e.style.fontFamily = computedStyle.fontFamily;
 				e.innerHTML = "0";
-				input.parentNode.insertBefore(e, input.nextSibling);
+				parentNode.insertBefore(e, input.nextSibling);
 				width = e.offsetWidth;
-				input.parentNode.removeChild(e);
+				parentNode.removeChild(e);
 				return width;
 			}
 
 			function position() {
-				colorMask.style.top = offset.top + parseInt(computedStyle.borderTopWidth) + parseInt(computedStyle.paddingTop) + "px";
-				colorMask.style.left = offset.left + parseInt(computedStyle.borderLeftWidth) + parseInt(computedStyle.paddingLeft) + "px";
-				colorMask.style.width = parseInt(computedStyle.width) - (parseInt(computedStyle.paddingLeft) + parseInt(computedStyle.paddingRight) + parseInt(computedStyle.borderRightWidth)) + "px";
-				colorMask.style.height = parseInt(computedStyle.height) - (parseInt(computedStyle.paddingTop) + parseInt(computedStyle.paddingBottom) + parseInt(computedStyle.borderBottomWidth) ) + "px";
-				colorMask.style.lineHeight = colorMask.style.height;
+				colorMask.style.top = offset.top + parseInt(computedStyle.borderTopWidth) + "px";
+				colorMask.style.left = offset.left + parseInt(computedStyle.borderLeftWidth) + "px";
+				colorMask.style.width = parseInt(input.offsetWidth) - parseInt(computedStyle.paddingLeft) - parseInt(computedStyle.paddingRight) - parseInt(computedStyle.borderLeftWidth) - parseInt(computedStyle.borderRightWidth) + "px";
+				colorMask.style.height = parseInt(input.offsetHeight) - parseInt(computedStyle.paddingTop) - parseInt(computedStyle.paddingBottom) - parseInt(computedStyle.borderTopWidth) - parseInt(computedStyle.borderBottomWidth) + "px";
 
+				colorMask.style.padding = computedStyle.padding;
+				colorMask.style.margin = computedStyle.margin;
+				colorMask.style.lineHeight = colorMask.style.height;
 			}
 
 			var offset = $(input).position(),
-				computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
+				computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null),
+				parentNode = input.parentNode;
 
 			colorMask = document.createElement("div");
 			//positioning
@@ -2745,7 +2748,7 @@
 			colorMask.style.letterSpacing = computedStyle.letterSpacing;
 
 			input.style.color = "transparent";
-			input.parentNode.insertBefore(colorMask, input.nextSibling);
+			parentNode.insertBefore(colorMask, input.nextSibling);
 
 			//event passthrough
 			$(window).on("resize", function (e) {
@@ -2754,10 +2757,10 @@
 				position();
 			});
 			EventRuler.off(input, "mouseenter");
-			$(input.nextSibling).on("mouseenter", function (e) {
+			$(colorMask).on("mouseenter", function (e) {
 				mouseenterEvent.call(input, e);
 			});
-			$(input.nextSibling).on("click", function (e) {
+			$(colorMask).on("click", function (e) {
 				input.focus();
 				caret(input, Math.floor((e.clientX - parseInt(computedStyle.paddingLeft)) / charSize()));
 				$(input).trigger("click");

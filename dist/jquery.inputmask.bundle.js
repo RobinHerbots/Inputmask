@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4-34
+* Version: 3.3.4-35
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -1155,29 +1155,31 @@
             function charSize() {
                 var e = document.createElement("span"), width = 0;
                 return e.style.visibility = "hidden", e.style.whiteSpace = "nowrap", e.style.fontSize = computedStyle.fontSize, 
-                e.style.fontFamily = computedStyle.fontFamily, e.innerHTML = "0", input.parentNode.insertBefore(e, input.nextSibling), 
-                width = e.offsetWidth, input.parentNode.removeChild(e), width;
+                e.style.fontFamily = computedStyle.fontFamily, e.innerHTML = "0", parentNode.insertBefore(e, input.nextSibling), 
+                width = e.offsetWidth, parentNode.removeChild(e), width;
             }
             function position() {
-                colorMask.style.top = offset.top + parseInt(computedStyle.borderTopWidth) + parseInt(computedStyle.paddingTop) + "px", 
-                colorMask.style.left = offset.left + parseInt(computedStyle.borderLeftWidth) + parseInt(computedStyle.paddingLeft) + "px", 
-                colorMask.style.width = parseInt(computedStyle.width) - (parseInt(computedStyle.paddingLeft) + parseInt(computedStyle.paddingRight) + parseInt(computedStyle.borderRightWidth)) + "px", 
-                colorMask.style.height = parseInt(computedStyle.height) - (parseInt(computedStyle.paddingTop) + parseInt(computedStyle.paddingBottom) + parseInt(computedStyle.borderBottomWidth)) + "px", 
+                colorMask.style.top = offset.top + parseInt(computedStyle.borderTopWidth) + "px", 
+                colorMask.style.left = offset.left + parseInt(computedStyle.borderLeftWidth) + "px", 
+                colorMask.style.width = parseInt(input.offsetWidth) - parseInt(computedStyle.paddingLeft) - parseInt(computedStyle.paddingRight) - parseInt(computedStyle.borderLeftWidth) - parseInt(computedStyle.borderRightWidth) + "px", 
+                colorMask.style.height = parseInt(input.offsetHeight) - parseInt(computedStyle.paddingTop) - parseInt(computedStyle.paddingBottom) - parseInt(computedStyle.borderTopWidth) - parseInt(computedStyle.borderBottomWidth) + "px", 
+                colorMask.style.padding = computedStyle.padding, colorMask.style.margin = computedStyle.margin, 
                 colorMask.style.lineHeight = colorMask.style.height;
             }
-            var offset = $(input).position(), computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
+            var offset = $(input).position(), computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null), parentNode = input.parentNode;
             colorMask = document.createElement("div"), colorMask.style.position = "absolute", 
             position(), colorMask.style.color = computedStyle.color, colorMask.style.backgroundColor = computedStyle.backgroundColor, 
             colorMask.style.fontSize = computedStyle.fontSize, colorMask.style.fontStyle = computedStyle.fontStyle, 
             colorMask.style.fontFamily = computedStyle.fontFamily, colorMask.style.letterSpacing = computedStyle.letterSpacing, 
-            input.style.color = "transparent", input.parentNode.insertBefore(colorMask, input.nextSibling), 
+            input.style.color = "transparent", parentNode.insertBefore(colorMask, input.nextSibling), 
             $(window).on("resize", function(e) {
                 offset = $(input).position(), computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null), 
                 position();
-            }), EventRuler.off(input, "mouseenter"), $(input.nextSibling).on("mouseenter", function(e) {
+            }), EventRuler.off(input, "mouseenter"), $(colorMask).on("mouseenter", function(e) {
                 mouseenterEvent.call(input, e);
-            }), $(input.nextSibling).on("click", function(e) {
-                input.focus(), caret(input, Math.floor(e.clientX / charSize())), $(input).trigger("click");
+            }), $(colorMask).on("click", function(e) {
+                input.focus(), caret(input, Math.floor((e.clientX - parseInt(computedStyle.paddingLeft)) / charSize())), 
+                $(input).trigger("click");
             });
         }
         function renderColorMask(input, buffer, caretPos) {
