@@ -2727,9 +2727,8 @@
 				colorMask.style.width = parseInt(input.offsetWidth) - parseInt(computedStyle.paddingLeft) - parseInt(computedStyle.paddingRight) - parseInt(computedStyle.borderLeftWidth) - parseInt(computedStyle.borderRightWidth) + "px";
 				colorMask.style.height = parseInt(input.offsetHeight) - parseInt(computedStyle.paddingTop) - parseInt(computedStyle.paddingBottom) - parseInt(computedStyle.borderTopWidth) - parseInt(computedStyle.borderBottomWidth) + "px";
 
-				colorMask.style.padding = computedStyle.padding;
-				colorMask.style.margin = computedStyle.margin;
 				colorMask.style.lineHeight = colorMask.style.height;
+				colorMask.style.border = "";
 			}
 
 			var offset = $(input).position(),
@@ -2737,11 +2736,9 @@
 				parentNode = input.parentNode;
 
 			colorMask = document.createElement("div");
-
-			for (var style in computedStyle) {
+			for (var style in computedStyle) { //clone styles
 				colorMask.style[style] = computedStyle[style];
 			}
-			colorMask.style.border = "";
 			position();
 
 			parentNode.insertBefore(colorMask, input.nextSibling);
@@ -2843,7 +2840,13 @@
 				} else if (opts.colorMask !== false) {
 					if (opts.colorMask !== true)
 						initializeColorMask(el);
+
+					var computedStyle = (el.ownerDocument.defaultView || window).getComputedStyle(el, null);
 					el.type = "password";
+					for (var style in computedStyle) { //clone styles
+						el.style[style] = computedStyle[style];
+					}
+
 				}
 			}
 
