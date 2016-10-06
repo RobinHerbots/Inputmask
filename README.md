@@ -1004,12 +1004,6 @@ Uses css classes: im-caret, im-static.
 
 You need to include the inputmask.css in your page to use this option in full.
 
-#### Android note!
-The colorMask is enabled by default when running on Android and the inputtype of the input element is changed to password.
-This is to disable the predictive text which can cause undesired results of input and the colorMask will mimick normal behavior.
-
-You can disable this by explicitly setting colorMask: false option.
-
 ## General
 ### set a value and apply mask
 this can be done with the traditional jquery.val function (all browsers) or JavaScript value property for browsers which implement lookupGetter or getOwnPropertyDescriptor

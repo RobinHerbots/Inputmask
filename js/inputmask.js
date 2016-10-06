@@ -2837,16 +2837,6 @@
 				if (el.hasOwnProperty("inputmode")) {
 					el.inputmode = opts.inputmode;
 					el.setAttribute("inputmode", opts.inputmode);
-				} else if (opts.colorMask !== false) {
-					if (opts.colorMask !== true)
-						initializeColorMask(el);
-
-					var computedStyle = (el.ownerDocument.defaultView || window).getComputedStyle(el, null);
-					el.type = "password";
-					for (var style in computedStyle) { //clone styles
-						el.style[style] = computedStyle[style];
-					}
-
 				}
 			}
 
