@@ -122,7 +122,7 @@
 			positionCaretOnClick: "lvp", //none, lvp (based on the last valid position (default), radixFocus (position caret to radixpoint on initial click)
 			casing: null, //mask-level casing. Options: null, "upper", "lower" or "title"
 			inputmode: "verbatim", //specify the inputmode  - already in place for when browsers will support it
-			colorMask: null, //enable css styleable mask
+			colorMask: false, //enable css styleable mask
 		},
 		masksCache: {},
 		mask: function (elems) {

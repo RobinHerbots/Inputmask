@@ -998,7 +998,7 @@ Specify the inputmode  - already in place for when browsers start to  support th
 https://html.spec.whatwg.org/#input-modalities:-the-inputmode-attribute
 
 ### colorMask
-Default: null (~false)
+Default: false
 Create a css styleable mask.
 Uses css classes: im-caret, im-static.
 
