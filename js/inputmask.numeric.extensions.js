@@ -720,5 +720,4 @@
 	})
 	;
 	return Inputmask;
-}))
-;
+}));

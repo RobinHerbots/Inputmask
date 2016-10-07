@@ -1492,28 +1492,30 @@
 
 			//set alternator choice on previous skipped placeholder positions
 			function trackbackAlternations(originalPos, newPos) {
-				var vp = getMaskSet().validPositions[newPos],
-					targetLocator = vp.locator,
-					tll = targetLocator.length;
+				var vp = getMaskSet().validPositions[newPos];
+				if (vp) {
+					var targetLocator = vp.locator,
+						tll = targetLocator.length;
 
-				for (var ps = originalPos; ps < newPos; ps++) {
-					if (getMaskSet().validPositions[ps] === undefined && !isMask(ps, true)) {
-						var tests = getTests(ps),
-							bestMatch = tests[0],
-							equality = -1;
-						$.each(tests, function (ndx, tst) { //find best matching
-							for (var i = 0; i < tll; i++) {
-								if (tst.locator[i] !== undefined && checkAlternationMatch(tst.locator[i].toString().split(","), targetLocator[i].toString().split(","))) {
-									if (equality < i) {
-										equality = i;
-										bestMatch = tst;
-									}
-								} else break;
-							}
-						});
-						setValidPosition(ps, $.extend({}, bestMatch, {
-							"input": bestMatch.match.placeholder || bestMatch.match.def
-						}), true);
+					for (var ps = originalPos; ps < newPos; ps++) {
+						if (getMaskSet().validPositions[ps] === undefined && !isMask(ps, true)) {
+							var tests = getTests(ps),
+								bestMatch = tests[0],
+								equality = -1;
+							$.each(tests, function (ndx, tst) { //find best matching
+								for (var i = 0; i < tll; i++) {
+									if (tst.locator[i] !== undefined && checkAlternationMatch(tst.locator[i].toString().split(","), targetLocator[i].toString().split(","))) {
+										if (equality < i) {
+											equality = i;
+											bestMatch = tst;
+										}
+									} else break;
+								}
+							});
+							setValidPosition(ps, $.extend({}, bestMatch, {
+								"input": bestMatch.match.placeholder || bestMatch.match.def
+							}), true);
+						}
 					}
 				}
 			}
@@ -1522,7 +1524,7 @@
 				if (isSelection || (opts.insertMode && getMaskSet().validPositions[pos] !== undefined && fromSetValid === undefined)) {
 					//reposition & revalidate others
 					var positionsClone = $.extend(true, {}, getMaskSet().validPositions),
-						lvp = getLastValidPosition(),
+						lvp = getLastValidPosition(undefined, true),
 						i;
 					for (i = pos; i <= lvp; i++) { //clear selection
 						delete getMaskSet().validPositions[i];
@@ -1627,7 +1629,7 @@
 						for (var nPos = maskPos + 1, snPos = seekNext(maskPos); nPos <= snPos; nPos++) {
 							result = _isValid(nPos, c, strict);
 							if (result !== false) {
-								trackbackAlternations(maskPos, nPos);
+								trackbackAlternations(maskPos, result.pos !== undefined ? result.pos : nPos);
 								maskPos = nPos;
 								break;
 							}
