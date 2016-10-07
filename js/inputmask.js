@@ -123,6 +123,7 @@
 			casing: null, //mask-level casing. Options: null, "upper", "lower" or "title"
 			inputmode: "verbatim", //specify the inputmode  - already in place for when browsers will support it
 			colorMask: false, //enable css styleable mask
+			androidHack: false //see README_android.md
 		},
 		masksCache: {},
 		mask: function (elems) {
@@ -2736,13 +2737,11 @@
 				parentNode = input.parentNode;
 
 			colorMask = document.createElement("div");
-			document.body.appendChild(colorMask);
+			document.body.appendChild(colorMask); //insert at body to prevent css clash :last-child for example
 			for (var style in computedStyle) { //clone styles
 				colorMask.style[style] = computedStyle[style];
 			}
 			position();
-
-			// parentNode.insertBefore(colorMask, input.nextSibling);
 
 			//event passthrough
 			$(window).on("resize", function (e) {
@@ -2750,9 +2749,11 @@
 				computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
 				position();
 			});
-			EventRuler.off(input, "mouseenter");
 			$(colorMask).on("mouseenter", function (e) {
 				mouseenterEvent.call(input, e);
+			});
+			$(colorMask).on("mouseleave", function (e) {
+				mouseleaveEvent.call(input, e);
 			});
 			$(colorMask).on("click", function (e) {
 				input.focus();
@@ -2838,6 +2839,12 @@
 				if (el.hasOwnProperty("inputmode")) {
 					el.inputmode = opts.inputmode;
 					el.setAttribute("inputmode", opts.inputmode);
+				}
+				if (opts.androidHack === "rtfm") {
+					if (opts.colorMask !== true) {
+						initializeColorMask(el);
+					}
+					el.type = "password";
 				}
 			}
 

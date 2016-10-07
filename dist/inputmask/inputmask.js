@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4-37
+* Version: 3.3.4-38
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define("inputmask", [ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib")) : factory(window.dependencyLib || jQuery);
@@ -1168,13 +1168,15 @@
                 colorMask.style.lineHeight = colorMask.style.height, colorMask.style.border = "";
             }
             var offset = $(input).position(), computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null), parentNode = input.parentNode;
-            colorMask = document.createElement("div");
+            colorMask = document.createElement("div"), document.body.appendChild(colorMask);
             for (var style in computedStyle) colorMask.style[style] = computedStyle[style];
-            position(), parentNode.insertBefore(colorMask, input.nextSibling), $(window).on("resize", function(e) {
+            position(), $(window).on("resize", function(e) {
                 offset = $(input).position(), computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null), 
                 position();
-            }), EventRuler.off(input, "mouseenter"), $(colorMask).on("mouseenter", function(e) {
+            }), $(colorMask).on("mouseenter", function(e) {
                 mouseenterEvent.call(input, e);
+            }), $(colorMask).on("mouseleave", function(e) {
+                mouseleaveEvent.call(input, e);
             }), $(colorMask).on("click", function(e) {
                 input.focus(), caret(input, Math.floor((e.clientX - parseInt(computedStyle.paddingLeft)) / charSize())), 
                 $(input).trigger("click");
@@ -1206,8 +1208,9 @@
             if (el = elem, $el = $(el), opts.showTooltip && (el.title = opts.tooltip || getMaskSet().mask), 
             ("rtl" === el.dir || opts.rightAlign) && (el.style.textAlign = "right"), ("rtl" === el.dir || opts.numericInput) && (el.dir = "ltr", 
             el.removeAttribute("dir"), el.inputmask.isRTL = !0, isRTL = !0), opts.colorMask === !0 && initializeColorMask(el), 
-            android && el.hasOwnProperty("inputmode") && (el.inputmode = opts.inputmode, el.setAttribute("inputmode", opts.inputmode)), 
-            EventRuler.off(el), patchValueProperty(el), isElementTypeSupported(el, opts) && (EventRuler.on(el, "submit", submitEvent), 
+            android && (el.hasOwnProperty("inputmode") && (el.inputmode = opts.inputmode, el.setAttribute("inputmode", opts.inputmode)), 
+            "rtfm" === opts.androidHack && (opts.colorMask !== !0 && initializeColorMask(el), 
+            el.type = "password")), EventRuler.off(el), patchValueProperty(el), isElementTypeSupported(el, opts) && (EventRuler.on(el, "submit", submitEvent), 
             EventRuler.on(el, "reset", resetEvent), EventRuler.on(el, "mouseenter", mouseenterEvent), 
             EventRuler.on(el, "blur", blurEvent), EventRuler.on(el, "focus", focusEvent), EventRuler.on(el, "mouseleave", mouseleaveEvent), 
             EventRuler.on(el, "click", clickEvent), EventRuler.on(el, "dblclick", dblclickEvent), 
@@ -1420,7 +1423,8 @@
             positionCaretOnClick: "lvp",
             casing: null,
             inputmode: "verbatim",
-            colorMask: !1
+            colorMask: !1,
+            androidHack: !1
         },
         masksCache: {},
         mask: function(elems) {
