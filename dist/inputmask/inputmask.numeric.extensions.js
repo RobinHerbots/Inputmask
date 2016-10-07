@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4-36
+* Version: 3.3.4-37
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib"), require("./inputmask")) : factory(window.dependencyLib || jQuery, window.Inputmask);
@@ -73,12 +73,12 @@
             postFormat: function(buffer, pos, opts) {
                 opts.numericInput === !0 && (buffer = buffer.reverse(), isFinite(pos) && (pos = buffer.join("").length - pos - 1));
                 var i, l;
-                pos = pos >= buffer.length ? buffer.length - 1 : pos < opts.prefix.length ? opts.prefix.length : pos;
+                pos = pos >= buffer.length ? buffer.length - 1 : pos < 0 ? 0 : pos;
                 var charAtPos = buffer[pos], cbuf = buffer.slice();
-                charAtPos === opts.groupSeparator && (cbuf.splice(pos--, 1), charAtPos = cbuf[pos]), 
-                cbuf[pos] = "!";
+                charAtPos === opts.groupSeparator && (cbuf.splice(pos--, 1), charAtPos = cbuf[pos]);
                 var bufVal = cbuf.join(""), bufValOrigin = bufVal, isNegative = bufVal.match(new RegExp("^" + Inputmask.escapeRegex(opts.negationSymbol.front)));
-                if (isNegative = null !== isNegative && 1 === isNegative.length, isNegative && (bufVal = bufVal.replace(new RegExp("^" + Inputmask.escapeRegex(opts.negationSymbol.front)), ""), 
+                if (isNegative = null !== isNegative && 1 === isNegative.length, pos > (isNegative ? opts.negationSymbol.front.length : 0) + opts.prefix.length && pos < cbuf.length - opts.suffix.length && (cbuf[pos] = "!"), 
+                isNegative && (bufVal = bufVal.replace(new RegExp("^" + Inputmask.escapeRegex(opts.negationSymbol.front)), ""), 
                 bufVal = bufVal.replace(new RegExp(Inputmask.escapeRegex(opts.negationSymbol.back) + "$"), "")), 
                 bufVal = bufVal.replace(new RegExp(Inputmask.escapeRegex(opts.suffix) + "$"), ""), 
                 bufVal = bufVal.replace(new RegExp("^" + Inputmask.escapeRegex(opts.prefix)), ""), 
@@ -95,12 +95,13 @@
                 var needsRefresh = bufValOrigin !== bufVal;
                 if (needsRefresh) for (buffer.length = bufVal.length, i = 0, l = bufVal.length; i < l; i++) buffer[i] = bufVal.charAt(i);
                 var newPos = $.inArray("!", bufVal);
-                return buffer[newPos] = charAtPos, newPos = opts.numericInput && isFinite(pos) ? buffer.join("").length - newPos - 1 : newPos, 
+                return newPos === -1 && (newPos = pos), buffer[newPos] = charAtPos, newPos = opts.numericInput && isFinite(pos) ? buffer.join("").length - newPos - 1 : newPos, 
                 opts.numericInput && (buffer = buffer.reverse(), $.inArray(opts.radixPoint, buffer) < newPos && buffer.join("").length - opts.suffix.length !== newPos && (newPos -= 1)), 
                 {
                     pos: newPos,
                     refreshFromBuffer: needsRefresh,
-                    buffer: buffer
+                    buffer: buffer,
+                    isNegative: isNegative
                 };
             },
             onBeforeWrite: function(e, buffer, caretPos, opts) {
@@ -134,7 +135,8 @@
                     }
                 }
                 if (opts.autoGroup) return rslt = opts.postFormat(buffer, opts.numericInput ? caretPos : caretPos - 1, opts), 
-                rslt.caret = caretPos <= opts.prefix.length ? rslt.pos : rslt.pos + 1, rslt;
+                rslt.caret = caretPos <= (rslt.isNegative ? opts.negationSymbol.front.length : 0) + opts.prefix.length || caretPos > rslt.buffer.length - (rslt.isNegative ? opts.negationSymbol.back.length : 0) ? rslt.pos : rslt.pos + 1, 
+                rslt;
             },
             regex: {
                 integerPart: function(opts) {

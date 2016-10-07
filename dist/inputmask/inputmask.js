@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4-36
+* Version: 3.3.4-37
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define("inputmask", [ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib")) : factory(window.dependencyLib || jQuery);
@@ -1420,7 +1420,7 @@
             positionCaretOnClick: "lvp",
             casing: null,
             inputmode: "verbatim",
-            colorMask: null
+            colorMask: !1
         },
         masksCache: {},
         mask: function(elems) {

@@ -157,7 +157,7 @@
 				var i, l;
 
 				//position overflow corrections
-				pos = pos >= buffer.length ? buffer.length - 1 : (pos < opts.prefix.length ? opts.prefix.length : pos);
+				pos = pos >= buffer.length ? buffer.length - 1 : (pos < 0 ? 0 : pos);
 
 				var charAtPos = buffer[pos];
 
@@ -166,11 +166,15 @@
 					cbuf.splice(pos--, 1);
 					charAtPos = cbuf[pos];
 				}
-				//mark current pos
-				cbuf[pos] = "!";
+
 				var bufVal = cbuf.join(""), bufValOrigin = bufVal;
 				var isNegative = bufVal.match(new RegExp("^" + Inputmask.escapeRegex(opts.negationSymbol.front)));
 				isNegative = isNegative !== null && isNegative.length === 1;
+
+				if (pos > ((isNegative ? opts.negationSymbol.front.length : 0 ) + opts.prefix.length ) && (pos < (cbuf.length - opts.suffix.length))) {
+					//mark current pos
+					cbuf[pos] = "!";
+				}
 
 				if (isNegative) {
 					bufVal = bufVal.replace(new RegExp("^" + Inputmask.escapeRegex(opts.negationSymbol.front)), "");
@@ -211,6 +215,7 @@
 					}
 				}
 				var newPos = $.inArray("!", bufVal);
+				if (newPos === -1) newPos = pos;
 				buffer[newPos] = charAtPos;
 
 				// console.log("formatted " + buffer + " refresh " + needsRefresh);
@@ -224,7 +229,8 @@
 				return {
 					pos: newPos,
 					"refreshFromBuffer": needsRefresh,
-					"buffer": buffer
+					"buffer": buffer,
+					isNegative: isNegative
 				};
 			}
 			,
@@ -297,8 +303,11 @@
 					}
 				}
 				if (opts.autoGroup) {
-					rslt = opts.postFormat(buffer, opts.numericInput ? caretPos : caretPos - 1, opts);
-					rslt.caret = caretPos <= opts.prefix.length ? rslt.pos : rslt.pos + 1;
+					rslt = opts.postFormat(buffer, opts.numericInput ? caretPos : (caretPos - 1), opts);
+					rslt.caret =
+						((caretPos <= (rslt.isNegative ? opts.negationSymbol.front.length : 0) + opts.prefix.length) ||
+						(caretPos > (rslt.buffer.length - (rslt.isNegative ? opts.negationSymbol.back.length : 0))))
+							? rslt.pos : rslt.pos + 1;
 					return rslt;
 				}
 			}
@@ -398,7 +407,8 @@
 					}
 				}
 				return false;
-			},
+			}
+			,
 			radixHandler: function (chrs, maskset, pos, strict, opts) {
 				if (!strict && opts.numericInput !== true) {
 					//if ($.inArray(chrs, [",", "."]) !== -1) chrs = opts.radixPoint;
@@ -710,4 +720,5 @@
 	})
 	;
 	return Inputmask;
-}));
+}))
+;
