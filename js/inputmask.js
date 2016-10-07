@@ -2736,12 +2736,13 @@
 				parentNode = input.parentNode;
 
 			colorMask = document.createElement("div");
+			document.body.appendChild(colorMask);
 			for (var style in computedStyle) { //clone styles
 				colorMask.style[style] = computedStyle[style];
 			}
 			position();
 
-			parentNode.insertBefore(colorMask, input.nextSibling);
+			// parentNode.insertBefore(colorMask, input.nextSibling);
 
 			//event passthrough
 			$(window).on("resize", function (e) {
