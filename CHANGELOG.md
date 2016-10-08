@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 - improve inputfallback (Android support)
 
 ### Fixed
+- How can I get "-$123.45", not "$-123.45"? #1360
 - Placeholder color #972
 - Other color on placeholder (wrap placeholder in span, using contenteditable?) #873
 - Error on 3.3.3: Uncaught TypeError: Cannot set property 'generatedInput' of undefined #1399

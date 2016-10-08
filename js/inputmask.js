@@ -2741,7 +2741,8 @@
 			colorMask = document.createElement("div");
 			document.body.appendChild(colorMask); //insert at body to prevent css clash :last-child for example
 			for (var style in computedStyle) { //clone styles
-				colorMask.style[style] = computedStyle[style];
+				if ($.inArray(style, ["font", "border", "background", "margin", "padding", "text"]) !== -1)
+					colorMask.style[style] = computedStyle[style];
 			}
 			position();
 

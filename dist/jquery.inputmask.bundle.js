@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4-43
+* Version: 3.3.4-44
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -1168,7 +1168,7 @@
             }
             var offset = $(input).position(), computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null), parentNode = input.parentNode;
             colorMask = document.createElement("div"), document.body.appendChild(colorMask);
-            for (var style in computedStyle) colorMask.style[style] = computedStyle[style];
+            for (var style in computedStyle) $.inArray(style, [ "font", "border", "background", "margin", "padding", "text" ]) !== -1 && (colorMask.style[style] = computedStyle[style]);
             position(), $(window).on("resize", function(e) {
                 offset = $(input).position(), computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null), 
                 position();
