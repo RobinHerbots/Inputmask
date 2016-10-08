@@ -1,6 +1,6 @@
 {
   "name": "jquery.inputmask",
-  "version": "3.3.4-40",
+  "version": "3.3.4-43",
   "main": [
 	  "./dist/inputmask/inputmask.loader.js"
   ],

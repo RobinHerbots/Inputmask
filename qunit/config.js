@@ -7,7 +7,7 @@ require.config({
 		"inputmask.dependencyLib": "../extra/dependencyLibs/inputmask.dependencyLib.jquery",
 		// "inputmask.dependencyLib": "../extra/dependencyLibs/inputmask.dependencyLib",
 		// "inputmask.dependencyLib": "../extra/dependencyLibs/inputmask.dependencyLib.jqlite",
-		// "inputmask": "../dist/inputmask/inputmask"
-		"inputmask": "../js/inputmask"
+		"inputmask": "../dist/inputmask/inputmask"
+		// "inputmask": "../js/inputmask"
 	}
 });

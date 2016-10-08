@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 - jquery.loader.js => main in package.json
 
 ### Updates
-- numeric alias move negation symbols to the edges (WIP)
+- numeric alias move negation symbols to the edges
 - handle android predictive text enabled
 - rename js/inputmask.dependencyLib.jquery.js to js/inputmask.dependencyLib.js
 - rename dist/inputmask.dependencyLib.jquery.js to dist/inputmask.dependencyLib.js

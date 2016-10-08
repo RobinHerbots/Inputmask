@@ -1391,7 +1391,7 @@ define([
 		setTimeout(function () {
 			$("#testmask").Type("-1234");
 			$.caret(testmask, 0);
-			// $("#testmask").SendKey(Inputmask.keyCode.DELETE);
+			$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 			assert.equal($("#testmask")[0].inputmask._valueGet(), "$ 1,234.00", "Result " + $("#testmask")[0].inputmask._valueGet());
 			done();
 		}, 0);

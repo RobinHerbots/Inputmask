@@ -167,14 +167,14 @@
 					charAtPos = cbuf[pos];
 				}
 
-				var bufVal = cbuf.join(""), bufValOrigin = bufVal;
-				var isNegative = bufVal.match(new RegExp("^" + Inputmask.escapeRegex(opts.negationSymbol.front)));
+				var isNegative = cbuf.join("").match(new RegExp("^" + Inputmask.escapeRegex(opts.negationSymbol.front)));
 				isNegative = isNegative !== null && isNegative.length === 1;
 
 				if (pos > ((isNegative ? opts.negationSymbol.front.length : 0 ) + opts.prefix.length ) && (pos < (cbuf.length - opts.suffix.length))) {
 					//mark current pos
-					cbuf[pos] = "!";
+					cbuf[pos]= "!";
 				}
+				var bufVal = cbuf.join(""), bufValOrigin = bufVal;
 
 				if (isNegative) {
 					bufVal = bufVal.replace(new RegExp("^" + Inputmask.escapeRegex(opts.negationSymbol.front)), "");
@@ -305,7 +305,7 @@
 				if (opts.autoGroup) {
 					rslt = opts.postFormat(buffer, opts.numericInput ? caretPos : (caretPos - 1), opts);
 					rslt.caret =
-						((caretPos <= (rslt.isNegative ? opts.negationSymbol.front.length : 0) + opts.prefix.length) ||
+						((caretPos < (rslt.isNegative ? opts.negationSymbol.front.length : 0) + opts.prefix.length) ||
 						(caretPos > (rslt.buffer.length - (rslt.isNegative ? opts.negationSymbol.back.length : 0))))
 							? rslt.pos : rslt.pos + 1;
 					return rslt;
