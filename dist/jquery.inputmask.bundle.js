@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4-46
+* Version: 3.3.4-47
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -1187,8 +1187,8 @@
             position(), $(window).on("resize", function(e) {
                 offset = $(input).position(), computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null), 
                 position();
-            }), $(colorMask).on("click", function(e) {
-                input.focus(), caret(input, findCaretPos(e.clientX)), $(input).trigger("click");
+            }), $(input).on("click", function(e) {
+                return caret(input, findCaretPos(e.clientX)), clickEvent.call(this, [ e ]);
             });
         }
         function renderColorMask(input, buffer, caretPos) {
@@ -1222,7 +1222,7 @@
             el.type = "password")), EventRuler.off(el), patchValueProperty(el), isElementTypeSupported(el, opts) && (EventRuler.on(el, "submit", submitEvent), 
             EventRuler.on(el, "reset", resetEvent), EventRuler.on(el, "mouseenter", mouseenterEvent), 
             EventRuler.on(el, "blur", blurEvent), EventRuler.on(el, "focus", focusEvent), EventRuler.on(el, "mouseleave", mouseleaveEvent), 
-            EventRuler.on(el, "click", clickEvent), EventRuler.on(el, "dblclick", dblclickEvent), 
+            opts.colorMask !== !0 && EventRuler.on(el, "click", clickEvent), EventRuler.on(el, "dblclick", dblclickEvent), 
             EventRuler.on(el, "paste", pasteEvent), EventRuler.on(el, "dragdrop", pasteEvent), 
             EventRuler.on(el, "drop", pasteEvent), EventRuler.on(el, "cut", cutEvent), EventRuler.on(el, "complete", opts.oncomplete), 
             EventRuler.on(el, "incomplete", opts.onincomplete), EventRuler.on(el, "cleared", opts.oncleared), 

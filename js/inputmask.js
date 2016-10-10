@@ -2785,16 +2785,9 @@
 				computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
 				position();
 			});
-			//$(colorMask).on("mouseenter", function (e) {
-			//	mouseenterEvent.call(input, e);
-			//});
-			//$(colorMask).on("mouseleave", function (e) {
-			//	mouseleaveEvent.call(input, e);
-			//});
-			$(colorMask).on("click", function (e) {
-				input.focus();
+			$(input).on("click", function (e) {
 				caret(input, findCaretPos(e.clientX));
-				$(input).trigger("click");
+				return clickEvent.call(this, [e]);
 			});
 		}
 
@@ -2896,7 +2889,8 @@
 				EventRuler.on(el, "blur", blurEvent);
 				EventRuler.on(el, "focus", focusEvent);
 				EventRuler.on(el, "mouseleave", mouseleaveEvent);
-				EventRuler.on(el, "click", clickEvent);
+				if (opts.colorMask !== true)
+					EventRuler.on(el, "click", clickEvent);
 				EventRuler.on(el, "dblclick", dblclickEvent);
 				EventRuler.on(el, "paste", pasteEvent);
 				EventRuler.on(el, "dragdrop", pasteEvent);
