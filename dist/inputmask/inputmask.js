@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4-45
+* Version: 3.3.4-46
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define("inputmask", [ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib")) : factory(window.dependencyLib || jQuery);
@@ -1173,23 +1173,22 @@
                 return document.body.removeChild(e), caretPos;
             }
             function position() {
-                colorMask.style.position = "absolute", colorMask.style.top = offset.top + parseInt(computedStyle.borderTopWidth) + "px", 
-                colorMask.style.left = offset.left + parseInt(computedStyle.borderLeftWidth) + "px", 
-                colorMask.style.width = parseInt(input.offsetWidth) - parseInt(computedStyle.paddingLeft) - parseInt(computedStyle.paddingRight) - parseInt(computedStyle.borderLeftWidth) - parseInt(computedStyle.borderRightWidth) + "px", 
+                colorMask.style.position = "absolute", colorMask.style.top = offset.top + "px", 
+                colorMask.style.left = offset.left + "px", colorMask.style.width = parseInt(input.offsetWidth) - parseInt(computedStyle.paddingLeft) - parseInt(computedStyle.paddingRight) - parseInt(computedStyle.borderLeftWidth) - parseInt(computedStyle.borderRightWidth) + "px", 
                 colorMask.style.height = parseInt(input.offsetHeight) - parseInt(computedStyle.paddingTop) - parseInt(computedStyle.paddingBottom) - parseInt(computedStyle.borderTopWidth) - parseInt(computedStyle.borderBottomWidth) + "px", 
-                colorMask.style.lineHeight = colorMask.style.height, colorMask.style.border = "";
+                colorMask.style.lineHeight = colorMask.style.height, colorMask.style.zIndex = isNaN(computedStyle.zIndex) ? -1 : computedStyle.zIndex - 1, 
+                colorMask.style.webkitAppearance = "textfield", colorMask.style.mozAppearance = "textfield", 
+                colorMask.style.Appearance = "textfield";
             }
             var offset = $(input).position(), computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
             input.parentNode;
             colorMask = document.createElement("div"), document.body.appendChild(colorMask);
             for (var style in computedStyle) isNaN(style) && "cssText" !== style && style.indexOf("webkit") == -1 && (colorMask.style[style] = computedStyle[style]);
+            input.style.backgroundColor = "transparent", input.style.color = "transparent", 
+            input.style.webkitAppearance = "caret", input.style.mozAppearance = "caret", input.style.Appearance = "caret", 
             position(), $(window).on("resize", function(e) {
                 offset = $(input).position(), computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null), 
                 position();
-            }), $(colorMask).on("mouseenter", function(e) {
-                mouseenterEvent.call(input, e);
-            }), $(colorMask).on("mouseleave", function(e) {
-                mouseleaveEvent.call(input, e);
             }), $(colorMask).on("click", function(e) {
                 input.focus(), caret(input, findCaretPos(e.clientX)), $(input).trigger("click");
             });

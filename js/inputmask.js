@@ -2745,13 +2745,17 @@
 
 			function position() {
 				colorMask.style.position = "absolute";
-				colorMask.style.top = offset.top + parseInt(computedStyle.borderTopWidth) + "px";
-				colorMask.style.left = offset.left + parseInt(computedStyle.borderLeftWidth) + "px";
+				colorMask.style.top = offset.top + "px";
+				colorMask.style.left = offset.left + "px";
 				colorMask.style.width = parseInt(input.offsetWidth) - parseInt(computedStyle.paddingLeft) - parseInt(computedStyle.paddingRight) - parseInt(computedStyle.borderLeftWidth) - parseInt(computedStyle.borderRightWidth) + "px";
 				colorMask.style.height = parseInt(input.offsetHeight) - parseInt(computedStyle.paddingTop) - parseInt(computedStyle.paddingBottom) - parseInt(computedStyle.borderTopWidth) - parseInt(computedStyle.borderBottomWidth) + "px";
 
 				colorMask.style.lineHeight = colorMask.style.height;
-				colorMask.style.border = "";
+				colorMask.style.zIndex = isNaN(computedStyle.zIndex) ? -1 : computedStyle.zIndex - 1;
+				colorMask.style.webkitAppearance = "textfield";
+				colorMask.style.mozAppearance = "textfield";
+				colorMask.style.Appearance = "textfield";
+
 			}
 
 			var offset = $(input).position(),
@@ -2765,6 +2769,14 @@
 					colorMask.style[style] = computedStyle[style];
 				}
 			}
+
+			//restyle input
+			input.style.backgroundColor = "transparent";
+			input.style.color = "transparent";
+			input.style.webkitAppearance = "caret";
+			input.style.mozAppearance = "caret";
+			input.style.Appearance = "caret";
+
 			position();
 
 			//event passthrough
@@ -2773,12 +2785,12 @@
 				computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
 				position();
 			});
-			$(colorMask).on("mouseenter", function (e) {
-				mouseenterEvent.call(input, e);
-			});
-			$(colorMask).on("mouseleave", function (e) {
-				mouseleaveEvent.call(input, e);
-			});
+			//$(colorMask).on("mouseenter", function (e) {
+			//	mouseenterEvent.call(input, e);
+			//});
+			//$(colorMask).on("mouseleave", function (e) {
+			//	mouseleaveEvent.call(input, e);
+			//});
 			$(colorMask).on("click", function (e) {
 				input.focus();
 				caret(input, findCaretPos(e.clientX));
