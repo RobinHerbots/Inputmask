@@ -2709,18 +2709,38 @@
 		}
 
 		function initializeColorMask(input) {
-			function charSize() {
+			function findCaretPos(clientx) {
 				//calculate text width
-				var e = document.createElement('span'), width = 0;
+				var e = document.createElement('span'), caretPos;
+				for (var style in computedStyle) { //clone styles
+					if (isNaN(style) && style.indexOf("font") !== -1) {
+						e.style[style] = computedStyle[style];
+					}
+				}
+				e.style.textTransform = computedStyle.textTransform;
+				e.style.letterSpacing = computedStyle.letterSpacing;
+				e.style.position = "absolute";
+				e.style.height = "auto";
+				e.style.width = "auto";
 				e.style.visibility = "hidden";
 				e.style.whiteSpace = "nowrap";
-				e.style.fontSize = computedStyle.fontSize;
-				e.style.fontFamily = computedStyle.fontFamily;
-				e.innerHTML = "0";
-				parentNode.insertBefore(e, input.nextSibling);
-				width = e.offsetWidth;
-				parentNode.removeChild(e);
-				return width;
+
+				document.body.appendChild(e);
+				var inputText = input.inputmask._valueGet(), previousWidth = 0, itl;
+				for (caretPos = 0, itl = inputText.length; caretPos <= itl; caretPos++) {
+					e.innerHTML += inputText.charAt(caretPos) || "_";
+					if (e.offsetWidth >= clientx) {
+						var offset1 = (clientx - previousWidth);
+						var offset2 = e.offsetWidth - clientx;
+						e.innerHTML = inputText.charAt(caretPos);
+						offset1 -= (e.offsetWidth / 3);
+						caretPos = offset1 < offset2 ? caretPos - 1 : caretPos;
+						break;
+					}
+					previousWidth = e.offsetWidth;
+				}
+				document.body.removeChild(e);
+				return caretPos;
 			}
 
 			function position() {
@@ -2741,8 +2761,9 @@
 			colorMask = document.createElement("div");
 			document.body.appendChild(colorMask); //insert at body to prevent css clash :last-child for example
 			for (var style in computedStyle) { //clone styles
-				if ($.inArray(style, ["font", "border", "background", "margin", "padding", "text"]) !== -1)
+				if (isNaN(style) && style !== "cssText" && style.indexOf("webkit") == -1) {
 					colorMask.style[style] = computedStyle[style];
+				}
 			}
 			position();
 
@@ -2760,7 +2781,7 @@
 			});
 			$(colorMask).on("click", function (e) {
 				input.focus();
-				caret(input, Math.floor((e.clientX - parseInt(computedStyle.paddingLeft)) / charSize()));
+				caret(input, findCaretPos(e.clientX));
 				$(input).trigger("click");
 			});
 		}

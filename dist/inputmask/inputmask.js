@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4-44
+* Version: 3.3.4-45
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define("inputmask", [ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib")) : factory(window.dependencyLib || jQuery);
@@ -1155,11 +1155,22 @@
             }, 0);
         }
         function initializeColorMask(input) {
-            function charSize() {
-                var e = document.createElement("span"), width = 0;
-                return e.style.visibility = "hidden", e.style.whiteSpace = "nowrap", e.style.fontSize = computedStyle.fontSize, 
-                e.style.fontFamily = computedStyle.fontFamily, e.innerHTML = "0", parentNode.insertBefore(e, input.nextSibling), 
-                width = e.offsetWidth, parentNode.removeChild(e), width;
+            function findCaretPos(clientx) {
+                var caretPos, e = document.createElement("span");
+                for (var style in computedStyle) isNaN(style) && style.indexOf("font") !== -1 && (e.style[style] = computedStyle[style]);
+                e.style.textTransform = computedStyle.textTransform, e.style.letterSpacing = computedStyle.letterSpacing, 
+                e.style.position = "absolute", e.style.height = "auto", e.style.width = "auto", 
+                e.style.visibility = "hidden", e.style.whiteSpace = "nowrap", document.body.appendChild(e);
+                var itl, inputText = input.inputmask._valueGet(), previousWidth = 0;
+                for (caretPos = 0, itl = inputText.length; caretPos <= itl; caretPos++) {
+                    if (e.innerHTML += inputText.charAt(caretPos) || "_", e.offsetWidth >= clientx) {
+                        var offset1 = clientx - previousWidth, offset2 = e.offsetWidth - clientx;
+                        e.innerHTML = inputText.charAt(caretPos), offset1 -= e.offsetWidth / 3, caretPos = offset1 < offset2 ? caretPos - 1 : caretPos;
+                        break;
+                    }
+                    previousWidth = e.offsetWidth;
+                }
+                return document.body.removeChild(e), caretPos;
             }
             function position() {
                 colorMask.style.position = "absolute", colorMask.style.top = offset.top + parseInt(computedStyle.borderTopWidth) + "px", 
@@ -1168,9 +1179,10 @@
                 colorMask.style.height = parseInt(input.offsetHeight) - parseInt(computedStyle.paddingTop) - parseInt(computedStyle.paddingBottom) - parseInt(computedStyle.borderTopWidth) - parseInt(computedStyle.borderBottomWidth) + "px", 
                 colorMask.style.lineHeight = colorMask.style.height, colorMask.style.border = "";
             }
-            var offset = $(input).position(), computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null), parentNode = input.parentNode;
+            var offset = $(input).position(), computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
+            input.parentNode;
             colorMask = document.createElement("div"), document.body.appendChild(colorMask);
-            for (var style in computedStyle) $.inArray(style, [ "font", "border", "background", "margin", "padding", "text" ]) !== -1 && (colorMask.style[style] = computedStyle[style]);
+            for (var style in computedStyle) isNaN(style) && "cssText" !== style && style.indexOf("webkit") == -1 && (colorMask.style[style] = computedStyle[style]);
             position(), $(window).on("resize", function(e) {
                 offset = $(input).position(), computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null), 
                 position();
@@ -1179,8 +1191,7 @@
             }), $(colorMask).on("mouseleave", function(e) {
                 mouseleaveEvent.call(input, e);
             }), $(colorMask).on("click", function(e) {
-                input.focus(), caret(input, Math.floor((e.clientX - parseInt(computedStyle.paddingLeft)) / charSize())), 
-                $(input).trigger("click");
+                input.focus(), caret(input, findCaretPos(e.clientX)), $(input).trigger("click");
             });
         }
         function renderColorMask(input, buffer, caretPos) {
