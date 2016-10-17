@@ -1841,4 +1841,19 @@ define([
 
 		assert.equal(testmask.value, "($ 0.00)", "Result " + testmask.value);
 	});
+
+	qunit.test("numeric + type 123 - select partial type 0", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("currency").mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("123");
+		$.caret(testmask, 0, 5);
+		$("#testmask").Type("0");
+
+		assert.equal(testmask.inputmask._valueGet(), "$ 0.00", "Result " + testmask.inputmask._valueGet());
+	});
+
+
 });

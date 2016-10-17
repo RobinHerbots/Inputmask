@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 - improve inputfallback (Android support)
 
 ### Fixed
+- Not allowing to change existing number to 0 #1381
 - Numbers get swapped when cursor near suffix. #1278
 - androidHack: Caret positioning needs some fine tuning #1412
 - How can I get "-$123.45", not "$-123.45"? #1360
