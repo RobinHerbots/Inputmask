@@ -434,7 +434,7 @@
 							casing: maskdef.casing,
 							def: maskdef.definitionSymbol || element,
 							placeholder: maskdef.placeholder,
-							mask: element
+							nativeDef: element
 						});
 						prevMatch = mtoken.matches[position - 1];
 					}
@@ -448,7 +448,7 @@
 						casing: maskdef.casing,
 						def: maskdef.definitionSymbol || element,
 						placeholder: maskdef.placeholder,
-						mask: element
+						nativeDef: element
 					});
 				} else {
 					mtoken.matches.splice(position++, 0, {
@@ -459,7 +459,7 @@
 						casing: null,
 						def: opts.staticDefinitionSymbol || element,
 						placeholder: opts.staticDefinitionSymbol !== undefined ? element : undefined,
-						mask: element
+						nativeDef: element
 					});
 					escaped = false;
 				}
@@ -1036,7 +1036,7 @@
 											//verify equality
 											if (typeof altIndex !== "string" || $.inArray(altMatch.locator[altMatch.alternation].toString(), altIndexArr) !== -1) {
 												if (altMatch.match.def === altMatch2.match.def || staticCanMatchDefinition(altMatch, altMatch2)) {
-													hasMatch = altMatch.match.mask === altMatch2.match.mask;
+													hasMatch = altMatch.match.nativeDef === altMatch2.match.nativeDef;
 													if (altMatch2.locator[altMatch.alternation].toString().indexOf(altMatch.locator[altMatch.alternation]) === -1) {
 														altMatch2.locator[altMatch.alternation] = altMatch2.locator[altMatch.alternation] + "," + altMatch.locator[altMatch.alternation];
 														altMatch2.alternation = altMatch.alternation; //we pass the alternation index => used in determineLastRequiredPosition

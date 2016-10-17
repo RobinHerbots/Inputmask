@@ -568,9 +568,7 @@
 								};
 							}
 						}
-						return isValid ? {
-							c: opts.radixPoint
-						} : isValid;
+						return isValid;
 					}
 					,
 					cardinality: 1,
