@@ -172,9 +172,9 @@
 
 				if (pos > ((isNegative ? opts.negationSymbol.front.length : 0 ) + opts.prefix.length ) && (pos < (cbuf.length - opts.suffix.length))) {
 					//mark current pos
-					cbuf[pos]= "!";
+					cbuf[pos] = "!";
 				}
-				var bufVal = cbuf.join(""), bufValOrigin = bufVal;
+				var bufVal = cbuf.join(""), bufValOrigin = cbuf.join(); //join without args to keep the exact elements
 
 				if (isNegative) {
 					bufVal = bufVal.replace(new RegExp("^" + Inputmask.escapeRegex(opts.negationSymbol.front)), "");
@@ -207,16 +207,16 @@
 					bufVal = opts.negationSymbol.front + bufVal + opts.negationSymbol.back;
 				}
 
-				var needsRefresh = bufValOrigin !== bufVal;
+				var needsRefresh = bufValOrigin !== bufVal.split('').join(),
+					newPos = $.inArray("!", bufVal);
+				if (newPos === -1) newPos = pos;
 				if (needsRefresh) {
 					buffer.length = bufVal.length; //align the length
 					for (i = 0, l = bufVal.length; i < l; i++) {
 						buffer[i] = bufVal.charAt(i);
 					}
+					buffer[newPos] = charAtPos;
 				}
-				var newPos = $.inArray("!", bufVal);
-				if (newPos === -1) newPos = pos;
-				buffer[newPos] = charAtPos;
 
 				// console.log("formatted " + buffer + " refresh " + needsRefresh);
 				newPos = (opts.numericInput && isFinite(pos)) ? buffer.join("").length - newPos - 1 : newPos;
