@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 - improve inputfallback (Android support)
 
 ### Fixed
+- jquery.val returns empty value (when using an unsupported input type) #1415
 - Losing the decimal part when the maximum number of digits is reached #1257
 - Not allowing to change existing number to 0 #1381
 - Numbers get swapped when cursor near suffix. #1278

@@ -2843,46 +2843,47 @@
 		}
 
 		function mask(elem) {
-			el = elem;
-			$el = $(el);
+			if (isElementTypeSupported(elem, opts)) {
+				el = elem;
+				$el = $(el);
 
-			//show tooltip
-			if (opts.showTooltip) {
-				el.title = opts.tooltip || getMaskSet().mask;
-			}
-
-			if (el.dir === "rtl" || opts.rightAlign) {
-				el.style.textAlign = "right";
-			}
-
-			if (el.dir === "rtl" || opts.numericInput) {
-				el.dir = "ltr";
-				el.removeAttribute("dir");
-				el.inputmask.isRTL = true;
-				isRTL = true;
-			}
-
-			if (opts.colorMask === true) {
-				initializeColorMask(el);
-			}
-
-			if (android) {
-				if (el.hasOwnProperty("inputmode")) {
-					el.inputmode = opts.inputmode;
-					el.setAttribute("inputmode", opts.inputmode);
+				//show tooltip
+				if (opts.showTooltip) {
+					el.title = opts.tooltip || getMaskSet().mask;
 				}
-				if (opts.androidHack === "rtfm") {
-					if (opts.colorMask !== true) {
-						initializeColorMask(el);
+
+				if (el.dir === "rtl" || opts.rightAlign) {
+					el.style.textAlign = "right";
+				}
+
+				if (el.dir === "rtl" || opts.numericInput) {
+					el.dir = "ltr";
+					el.removeAttribute("dir");
+					el.inputmask.isRTL = true;
+					isRTL = true;
+				}
+
+				if (opts.colorMask === true) {
+					initializeColorMask(el);
+				}
+
+				if (android) {
+					if (el.hasOwnProperty("inputmode")) {
+						el.inputmode = opts.inputmode;
+						el.setAttribute("inputmode", opts.inputmode);
 					}
-					el.type = "password";
+					if (opts.androidHack === "rtfm") {
+						if (opts.colorMask !== true) {
+							initializeColorMask(el);
+						}
+						el.type = "password";
+					}
 				}
-			}
 
-			//unbind all events - to make sure that no other mask will interfere when re-masking
-			EventRuler.off(el);
-			patchValueProperty(el);
-			if (isElementTypeSupported(el, opts)) {
+				//unbind all events - to make sure that no other mask will interfere when re-masking
+				EventRuler.off(el);
+				patchValueProperty(el);
+
 				//bind events
 				EventRuler.on(el, "submit", submitEvent);
 				EventRuler.on(el, "reset", resetEvent);
@@ -2910,32 +2911,32 @@
 				EventRuler.on(el, "compositionend", $.noop);
 				EventRuler.on(el, "keyup", $.noop);
 				EventRuler.on(el, "input", inputFallBackEvent);
-			}
-			EventRuler.on(el, "setvalue", setValueEvent);
+				EventRuler.on(el, "setvalue", setValueEvent);
 
-			//apply mask
-			getBufferTemplate(); //initialize the buffer and getmasklength
-			if (el.inputmask._valueGet() !== "" || opts.clearMaskOnLostFocus === false || document.activeElement === el) {
-				var initialValue = $.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask(el.inputmask._valueGet(), opts) || el.inputmask._valueGet()) : el.inputmask._valueGet();
-				checkVal(el, true, false, initialValue.split(""));
-				var buffer = getBuffer().slice();
-				undoValue = buffer.join("");
-				// Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
-				if (isComplete(buffer) === false) {
-					if (opts.clearIncomplete) {
-						resetMaskSet();
+				//apply mask
+				getBufferTemplate(); //initialize the buffer and getmasklength
+				if (el.inputmask._valueGet() !== "" || opts.clearMaskOnLostFocus === false || document.activeElement === el) {
+					var initialValue = $.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask(el.inputmask._valueGet(), opts) || el.inputmask._valueGet()) : el.inputmask._valueGet();
+					checkVal(el, true, false, initialValue.split(""));
+					var buffer = getBuffer().slice();
+					undoValue = buffer.join("");
+					// Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
+					if (isComplete(buffer) === false) {
+						if (opts.clearIncomplete) {
+							resetMaskSet();
+						}
 					}
-				}
-				if (opts.clearMaskOnLostFocus && document.activeElement !== el) {
-					if (getLastValidPosition() === -1) {
-						buffer = [];
-					} else {
-						clearOptionalTail(buffer);
+					if (opts.clearMaskOnLostFocus && document.activeElement !== el) {
+						if (getLastValidPosition() === -1) {
+							buffer = [];
+						} else {
+							clearOptionalTail(buffer);
+						}
 					}
-				}
-				writeBuffer(el, buffer);
-				if (document.activeElement === el) { //position the caret when in focus
-					caret(el, seekNext(getLastValidPosition()));
+					writeBuffer(el, buffer);
+					if (document.activeElement === el) { //position the caret when in focus
+						caret(el, seekNext(getLastValidPosition()));
+					}
 				}
 			}
 		}
