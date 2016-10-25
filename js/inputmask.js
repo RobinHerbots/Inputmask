@@ -713,6 +713,7 @@
 					}
 				});
 				altMask += ")";
+				// console.log(altMask);
 				return generateMask(altMask, opts.mask);
 			} else opts.mask = opts.mask.pop();
 		}
@@ -745,7 +746,7 @@
 			composition = false,
 			ignorable = false,
 			maxLength,
-			mouseEnter = true,
+			mouseEnter = false,
 			colorMask;
 
 		//maskset helperfunctions
@@ -2492,13 +2493,12 @@
 					keydownEvent.call(input, e);
 				} else {
 					var lvp = getLastValidPosition() + 1;
-					var bufferTemplate = getBuffer().slice(lvp).join('');
+					var bufferTemplate = getBufferTemplate().join(""); //getBuffer().slice(lvp).join('');
 					while (inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$") === null) {
 						bufferTemplate = bufferTemplate.slice(1);
 					}
 					inputValue = inputValue.replace(bufferTemplate, "");
 					inputValue = inputValue.split("");
-
 					checkVal(input, true, false, inputValue, e, caretPos.begin < lvp);
 
 					if (isComplete(getBuffer()) === true) {
@@ -2525,9 +2525,9 @@
 			if (opts.showMaskOnFocus && (!opts.showMaskOnHover || (opts.showMaskOnHover && nptValue === ""))) {
 				if (input.inputmask._valueGet() !== getBuffer().join("")) {
 					writeBuffer(input, getBuffer(), seekNext(getLastValidPosition()));
+				} else if (mouseEnter === false) { //only executed on focus without mouseenter
+					caret(input, seekNext(getLastValidPosition()));
 				}
-			} else if (mouseEnter === false) { //only executed on focus without mouseenter
-				caret(input, seekNext(getLastValidPosition()));
 			}
 			if (opts.positionCaretOnTab === true) {
 				setTimeout(function () {
