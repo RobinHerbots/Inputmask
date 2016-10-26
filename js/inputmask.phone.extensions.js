@@ -23,16 +23,40 @@
 			countrycode: "",
 			phoneCodes: [],
 			mask: function (opts) {
+				function consolidate() {
+					opts.regions = {
+						base: []
+					};
+
+					//split up in regions
+					$.each(opts.phoneCodes, function (ndx, phoneCode) {
+						var region = phoneCode.region;
+						if (region === undefined)
+							opts.regions.base.push(phoneCode);
+						else {
+							if (opts.regions[region] === undefined) {
+								opts.regions[region] = [];
+								opts.regions.base.push(phoneCode);
+								opts.regions[region].push(phoneCode);
+							} else {
+								opts.regions[region].push(phoneCode);
+							}
+						}
+					});
+				}
+
 				opts.definitions = {"#": opts.definitions["9"]};
+				// consolidate();
+				//do some sorting
 				var masks = opts.phoneCodes.sort(function (a, b) {
-					var maska = (a.mask || a).replace(/#/g, "9").replace(/[\+\(\)#-]/g, ""),
-						maskb = (b.mask || b).replace(/#/g, "9").replace(/[\+\(\)#-]/g, ""),
+					var maska = (a.mask || a).replace(/#/g, "9").replace(/[\)]/, "9").replace(/[\+\(\)#-]/g, ""),
+						maskb = (b.mask || b).replace(/#/g, "9").replace(/[\)]/, "9").replace(/[\+\(\)#-]/g, ""),
 						maskas = (a.mask || a).split("#")[0],
 						maskbs = (b.mask || b).split("#")[0];
 
 					return maskbs.indexOf(maskas) === 0 ? -1 : (maskas.indexOf(maskbs) === 0 ? 1 : maska.localeCompare(maskb));
 				});
-				//console.log(JSON.stringify(masks));
+				// console.log(JSON.stringify(masks));
 				return masks;
 			},
 			keepStatic: true,

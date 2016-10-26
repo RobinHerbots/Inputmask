@@ -34,6 +34,7 @@
 		this.noMasksCache = options && options.definitions !== undefined;
 		this.userOptions = options || {}; //user passed options
 		this.events = {};
+		this.dataAttribute = "data-inputmask"; //data attribute prefix used for attribute binding
 		resolveAlias(this.opts.alias, options, this.opts);
 	}
 
@@ -134,7 +135,7 @@
 			elems = elems.nodeName ? [elems] : elems;
 			$.each(elems, function (ndx, el) {
 				var scopedOpts = $.extend(true, {}, that.opts);
-				importAttributeOptions(el, scopedOpts, $.extend(true, {}, that.userOptions));
+				importAttributeOptions(el, scopedOpts, $.extend(true, {}, that.userOptions), that.dataAttribute);
 				var maskset = generateMaskSet(scopedOpts, that.noMasksCache);
 				if (maskset !== undefined) {
 					if (el.inputmask !== undefined) {
@@ -288,6 +289,273 @@
 		X: 88
 	};
 
+	Inputmask.analyseMask = function (mask, opts) {
+		var tokenizer = /(?:[?*+]|\{[0-9\+\*]+(?:,[0-9\+\*]*)?\})|[^.?*+^${[]()|\\]+|./g,
+			escaped = false,
+			currentToken = new MaskToken(),
+			match,
+			m,
+			openenings = [],
+			maskTokens = [],
+			openingToken,
+			currentOpeningToken,
+			alternator,
+			lastMatch,
+			groupToken;
+
+		function MaskToken(isGroup, isOptional, isQuantifier, isAlternator) {
+			this.matches = [];
+			this.isGroup = isGroup || false;
+			this.isOptional = isOptional || false;
+			this.isQuantifier = isQuantifier || false;
+			this.isAlternator = isAlternator || false;
+			this.quantifier = {
+				min: 1,
+				max: 1
+			};
+		}
+
+		//test definition => {fn: RegExp/function, cardinality: int, optionality: bool, newBlockMarker: bool, casing: null/upper/lower, def: definitionSymbol, placeholder: placeholder, mask: real maskDefinition}
+		function insertTestDefinition(mtoken, element, position) {
+			var maskdef = opts.definitions[element];
+			position = position !== undefined ? position : mtoken.matches.length;
+			var prevMatch = mtoken.matches[position - 1];
+			if (maskdef && !escaped) {
+				maskdef.placeholder = $.isFunction(maskdef.placeholder) ? maskdef.placeholder(opts) : maskdef.placeholder;
+				var prevalidators = maskdef.prevalidator,
+					prevalidatorsL = prevalidators ? prevalidators.length : 0;
+				//handle prevalidators
+				for (var i = 1; i < maskdef.cardinality; i++) {
+					var prevalidator = prevalidatorsL >= i ? prevalidators[i - 1] : [],
+						validator = prevalidator.validator,
+						cardinality = prevalidator.cardinality;
+					mtoken.matches.splice(position++, 0, {
+						fn: validator ? typeof validator === "string" ? new RegExp(validator) : new function () {
+							this.test = validator;
+						} : new RegExp("."),
+						cardinality: cardinality ? cardinality : 1,
+						optionality: mtoken.isOptional,
+						newBlockMarker: prevMatch === undefined || prevMatch.def !== (maskdef.definitionSymbol || element),
+						casing: maskdef.casing,
+						def: maskdef.definitionSymbol || element,
+						placeholder: maskdef.placeholder,
+						nativeDef: element
+					});
+					prevMatch = mtoken.matches[position - 1];
+				}
+				mtoken.matches.splice(position++, 0, {
+					fn: maskdef.validator ? typeof maskdef.validator == "string" ? new RegExp(maskdef.validator) : new function () {
+						this.test = maskdef.validator;
+					} : new RegExp("."),
+					cardinality: maskdef.cardinality,
+					optionality: mtoken.isOptional,
+					newBlockMarker: prevMatch === undefined || prevMatch.def !== (maskdef.definitionSymbol || element),
+					casing: maskdef.casing,
+					def: maskdef.definitionSymbol || element,
+					placeholder: maskdef.placeholder,
+					nativeDef: element
+				});
+			} else {
+				mtoken.matches.splice(position++, 0, {
+					fn: null,
+					cardinality: 0,
+					optionality: mtoken.isOptional,
+					newBlockMarker: prevMatch === undefined || prevMatch.def !== element,
+					casing: null,
+					def: opts.staticDefinitionSymbol || element,
+					placeholder: opts.staticDefinitionSymbol !== undefined ? element : undefined,
+					nativeDef: element
+				});
+				escaped = false;
+			}
+		}
+
+		function verifyGroupMarker(lastMatch, isOpenGroup) {
+			if (lastMatch.isGroup) { //this is not a group but a normal mask => convert
+				lastMatch.isGroup = false;
+				insertTestDefinition(lastMatch, opts.groupmarker.start, 0);
+				if (isOpenGroup !== true) {
+					insertTestDefinition(lastMatch, opts.groupmarker.end);
+				}
+			}
+		}
+
+		function maskCurrentToken(m, currentToken, lastMatch, extraCondition) {
+			if (currentToken.matches.length > 0 && (extraCondition === undefined || extraCondition)) {
+				lastMatch = currentToken.matches[currentToken.matches.length - 1];
+				verifyGroupMarker(lastMatch);
+			}
+			insertTestDefinition(currentToken, m);
+		}
+
+		function defaultCase() {
+			if (openenings.length > 0) {
+				currentOpeningToken = openenings[openenings.length - 1];
+				maskCurrentToken(m, currentOpeningToken, lastMatch, !currentOpeningToken.isAlternator);
+				if (currentOpeningToken.isAlternator) { //handle alternator a | b case
+					alternator = openenings.pop();
+					for (var mndx = 0; mndx < alternator.matches.length; mndx++) {
+						alternator.matches[mndx].isGroup = false; //don't mark alternate groups as group
+					}
+					if (openenings.length > 0) {
+						currentOpeningToken = openenings[openenings.length - 1];
+						currentOpeningToken.matches.push(alternator);
+					} else {
+						currentToken.matches.push(alternator);
+					}
+				}
+			} else {
+				maskCurrentToken(m, currentToken, lastMatch);
+			}
+		}
+
+		function reverseTokens(maskToken) {
+			function reverseStatic(st) {
+				if (st === opts.optionalmarker.start) st = opts.optionalmarker.end;
+				else if (st === opts.optionalmarker.end) st = opts.optionalmarker.start;
+				else if (st === opts.groupmarker.start) st = opts.groupmarker.end;
+				else if (st === opts.groupmarker.end) st = opts.groupmarker.start;
+
+				return st;
+			}
+
+			maskToken.matches = maskToken.matches.reverse();
+			for (var match in maskToken.matches) {
+				var intMatch = parseInt(match);
+				if (maskToken.matches[match].isQuantifier && maskToken.matches[intMatch + 1] && maskToken.matches[intMatch + 1].isGroup) { //reposition quantifier
+					var qt = maskToken.matches[match];
+					maskToken.matches.splice(match, 1);
+					maskToken.matches.splice(intMatch + 1, 0, qt);
+				}
+				if (maskToken.matches[match].matches !== undefined) {
+					maskToken.matches[match] = reverseTokens(maskToken.matches[match]);
+				} else {
+					maskToken.matches[match] = reverseStatic(maskToken.matches[match]);
+				}
+			}
+
+			return maskToken;
+		}
+
+		while (match = tokenizer.exec(mask)) {
+			m = match[0];
+
+			if (escaped) {
+				defaultCase();
+				continue;
+			}
+			switch (m.charAt(0)) {
+				case opts.escapeChar:
+					escaped = true;
+					break;
+				case opts.optionalmarker.end:
+				// optional closing
+				case opts.groupmarker.end:
+					// Group closing
+					openingToken = openenings.pop();
+					if (openingToken !== undefined) {
+						if (openenings.length > 0) {
+							currentOpeningToken = openenings[openenings.length - 1];
+							currentOpeningToken.matches.push(openingToken);
+							if (currentOpeningToken.isAlternator) { //handle alternator (a) | (b) case
+								alternator = openenings.pop();
+								for (var mndx = 0; mndx < alternator.matches.length; mndx++) {
+									alternator.matches[mndx].isGroup = false; //don't mark alternate groups as group
+								}
+								if (openenings.length > 0) {
+									currentOpeningToken = openenings[openenings.length - 1];
+									currentOpeningToken.matches.push(alternator);
+								} else {
+									currentToken.matches.push(alternator);
+								}
+							}
+						} else {
+							currentToken.matches.push(openingToken);
+						}
+					} else defaultCase();
+					break;
+				case opts.optionalmarker.start:
+					// optional opening
+					openenings.push(new MaskToken(false, true));
+					break;
+				case opts.groupmarker.start:
+					// Group opening
+					openenings.push(new MaskToken(true));
+					break;
+				case opts.quantifiermarker.start:
+					//Quantifier
+					var quantifier = new MaskToken(false, false, true);
+
+					m = m.replace(/[{}]/g, "");
+					var mq = m.split(","),
+						mq0 = isNaN(mq[0]) ? mq[0] : parseInt(mq[0]),
+						mq1 = mq.length === 1 ? mq0 : (isNaN(mq[1]) ? mq[1] : parseInt(mq[1]));
+					if (mq1 === "*" || mq1 === "+") {
+						mq0 = mq1 === "*" ? 0 : 1;
+					}
+					quantifier.quantifier = {
+						min: mq0,
+						max: mq1
+					};
+					if (openenings.length > 0) {
+						var matches = openenings[openenings.length - 1].matches;
+						match = matches.pop();
+						if (!match.isGroup) {
+							groupToken = new MaskToken(true);
+							groupToken.matches.push(match);
+							match = groupToken;
+						}
+						matches.push(match);
+						matches.push(quantifier);
+					} else {
+						match = currentToken.matches.pop();
+						if (!match.isGroup) {
+							groupToken = new MaskToken(true);
+							groupToken.matches.push(match);
+							match = groupToken;
+						}
+						currentToken.matches.push(match);
+						currentToken.matches.push(quantifier);
+					}
+					break;
+				case opts.alternatormarker:
+					if (openenings.length > 0) {
+						currentOpeningToken = openenings[openenings.length - 1];
+						lastMatch = currentOpeningToken.matches.pop();
+					} else {
+						lastMatch = currentToken.matches.pop();
+					}
+					if (lastMatch.isAlternator) {
+						openenings.push(lastMatch);
+					} else {
+						alternator = new MaskToken(false, false, false, true);
+						alternator.matches.push(lastMatch);
+						openenings.push(alternator);
+					}
+					break;
+				default:
+					defaultCase();
+			}
+		}
+
+		while (openenings.length > 0) {
+			openingToken = openenings.pop();
+			verifyGroupMarker(openingToken, true);
+			currentToken.matches.push(openingToken);
+		}
+		if (currentToken.matches.length > 0) {
+			lastMatch = currentToken.matches[currentToken.matches.length - 1];
+			verifyGroupMarker(lastMatch);
+			maskTokens.push(currentToken);
+		}
+
+		if (opts.numericInput) {
+			reverseTokens(maskTokens[0]);
+		}
+		//console.log(JSON.stringify(maskTokens));
+		return maskTokens;
+	};
+
 	//helper functions
 	function isInputEventSupported(eventName) {
 		var el = document.createElement("input"),
@@ -328,12 +596,12 @@
 		return false;
 	}
 
-	function importAttributeOptions(npt, opts, userOptions) {
-		var attrOptions = npt.getAttribute("data-inputmask"),
+	function importAttributeOptions(npt, opts, userOptions, dataAttribute) {
+		var attrOptions = npt.getAttribute(dataAttribute),
 			option, dataoptions, optionData, p;
 
 		function importOption(option, optionData) {
-			optionData = optionData !== undefined ? optionData : npt.getAttribute("data-inputmask-" + option);
+			optionData = optionData !== undefined ? optionData : npt.getAttribute(dataAttribute + "-" + option);
 			if (optionData !== null) {
 				if (typeof optionData === "string") {
 					if (option.indexOf("on") === 0) optionData = window[optionData]; //get function definition
@@ -350,7 +618,7 @@
 		}
 
 		//resolve aliases
-		if (dataoptions) { //pickup alias from data-inputmask
+		if (dataoptions) { //pickup alias from dataAttribute
 			optionData = undefined;
 			for (p in dataoptions) {
 				if (p.toLowerCase() === "alias") {
@@ -359,7 +627,7 @@
 				}
 			}
 		}
-		importOption("alias", optionData); //pickup alias from data-inputmask-alias
+		importOption("alias", optionData); //pickup alias from dataAttribute-alias
 		if (userOptions.alias) {
 			resolveAlias(userOptions.alias, userOptions, opts);
 		}
@@ -382,276 +650,7 @@
 	}
 
 	function generateMaskSet(opts, nocache) {
-		var ms;
-
-		function analyseMask(mask) {
-			var tokenizer = /(?:[?*+]|\{[0-9\+\*]+(?:,[0-9\+\*]*)?\})|[^.?*+^${[]()|\\]+|./g,
-				escaped = false,
-				currentToken = new MaskToken(),
-				match,
-				m,
-				openenings = [],
-				maskTokens = [],
-				openingToken,
-				currentOpeningToken,
-				alternator,
-				lastMatch,
-				groupToken;
-
-			function MaskToken(isGroup, isOptional, isQuantifier, isAlternator) {
-				this.matches = [];
-				this.isGroup = isGroup || false;
-				this.isOptional = isOptional || false;
-				this.isQuantifier = isQuantifier || false;
-				this.isAlternator = isAlternator || false;
-				this.quantifier = {
-					min: 1,
-					max: 1
-				};
-			}
-
-			//test definition => {fn: RegExp/function, cardinality: int, optionality: bool, newBlockMarker: bool, casing: null/upper/lower, def: definitionSymbol, placeholder: placeholder, mask: real maskDefinition}
-			function insertTestDefinition(mtoken, element, position) {
-				var maskdef = opts.definitions[element];
-				position = position !== undefined ? position : mtoken.matches.length;
-				var prevMatch = mtoken.matches[position - 1];
-				if (maskdef && !escaped) {
-					maskdef.placeholder = $.isFunction(maskdef.placeholder) ? maskdef.placeholder(opts) : maskdef.placeholder;
-					var prevalidators = maskdef.prevalidator,
-						prevalidatorsL = prevalidators ? prevalidators.length : 0;
-					//handle prevalidators
-					for (var i = 1; i < maskdef.cardinality; i++) {
-						var prevalidator = prevalidatorsL >= i ? prevalidators[i - 1] : [],
-							validator = prevalidator.validator,
-							cardinality = prevalidator.cardinality;
-						mtoken.matches.splice(position++, 0, {
-							fn: validator ? typeof validator === "string" ? new RegExp(validator) : new function () {
-								this.test = validator;
-							} : new RegExp("."),
-							cardinality: cardinality ? cardinality : 1,
-							optionality: mtoken.isOptional,
-							newBlockMarker: prevMatch === undefined || prevMatch.def !== (maskdef.definitionSymbol || element),
-							casing: maskdef.casing,
-							def: maskdef.definitionSymbol || element,
-							placeholder: maskdef.placeholder,
-							nativeDef: element
-						});
-						prevMatch = mtoken.matches[position - 1];
-					}
-					mtoken.matches.splice(position++, 0, {
-						fn: maskdef.validator ? typeof maskdef.validator == "string" ? new RegExp(maskdef.validator) : new function () {
-							this.test = maskdef.validator;
-						} : new RegExp("."),
-						cardinality: maskdef.cardinality,
-						optionality: mtoken.isOptional,
-						newBlockMarker: prevMatch === undefined || prevMatch.def !== (maskdef.definitionSymbol || element),
-						casing: maskdef.casing,
-						def: maskdef.definitionSymbol || element,
-						placeholder: maskdef.placeholder,
-						nativeDef: element
-					});
-				} else {
-					mtoken.matches.splice(position++, 0, {
-						fn: null,
-						cardinality: 0,
-						optionality: mtoken.isOptional,
-						newBlockMarker: prevMatch === undefined || prevMatch.def !== element,
-						casing: null,
-						def: opts.staticDefinitionSymbol || element,
-						placeholder: opts.staticDefinitionSymbol !== undefined ? element : undefined,
-						nativeDef: element
-					});
-					escaped = false;
-				}
-			}
-
-			function verifyGroupMarker(lastMatch, isOpenGroup) {
-				if (lastMatch.isGroup) { //this is not a group but a normal mask => convert
-					lastMatch.isGroup = false;
-					insertTestDefinition(lastMatch, opts.groupmarker.start, 0);
-					if (isOpenGroup !== true) {
-						insertTestDefinition(lastMatch, opts.groupmarker.end);
-					}
-				}
-			}
-
-			function maskCurrentToken(m, currentToken, lastMatch, extraCondition) {
-				if (currentToken.matches.length > 0 && (extraCondition === undefined || extraCondition)) {
-					lastMatch = currentToken.matches[currentToken.matches.length - 1];
-					verifyGroupMarker(lastMatch);
-				}
-				insertTestDefinition(currentToken, m);
-			}
-
-			function defaultCase() {
-				if (openenings.length > 0) {
-					currentOpeningToken = openenings[openenings.length - 1];
-					maskCurrentToken(m, currentOpeningToken, lastMatch, !currentOpeningToken.isAlternator);
-					if (currentOpeningToken.isAlternator) { //handle alternator a | b case
-						alternator = openenings.pop();
-						for (var mndx = 0; mndx < alternator.matches.length; mndx++) {
-							alternator.matches[mndx].isGroup = false; //don't mark alternate groups as group
-						}
-						if (openenings.length > 0) {
-							currentOpeningToken = openenings[openenings.length - 1];
-							currentOpeningToken.matches.push(alternator);
-						} else {
-							currentToken.matches.push(alternator);
-						}
-					}
-				} else {
-					maskCurrentToken(m, currentToken, lastMatch);
-				}
-			}
-
-			function reverseTokens(maskToken) {
-				function reverseStatic(st) {
-					if (st === opts.optionalmarker.start) st = opts.optionalmarker.end;
-					else if (st === opts.optionalmarker.end) st = opts.optionalmarker.start;
-					else if (st === opts.groupmarker.start) st = opts.groupmarker.end;
-					else if (st === opts.groupmarker.end) st = opts.groupmarker.start;
-
-					return st;
-				}
-
-				maskToken.matches = maskToken.matches.reverse();
-				for (var match in maskToken.matches) {
-					var intMatch = parseInt(match);
-					if (maskToken.matches[match].isQuantifier && maskToken.matches[intMatch + 1] && maskToken.matches[intMatch + 1].isGroup) { //reposition quantifier
-						var qt = maskToken.matches[match];
-						maskToken.matches.splice(match, 1);
-						maskToken.matches.splice(intMatch + 1, 0, qt);
-					}
-					if (maskToken.matches[match].matches !== undefined) {
-						maskToken.matches[match] = reverseTokens(maskToken.matches[match]);
-					} else {
-						maskToken.matches[match] = reverseStatic(maskToken.matches[match]);
-					}
-				}
-
-				return maskToken;
-			}
-
-			while (match = tokenizer.exec(mask)) {
-				m = match[0];
-
-				if (escaped) {
-					defaultCase();
-					continue;
-				}
-				switch (m.charAt(0)) {
-					case opts.escapeChar:
-						escaped = true;
-						break;
-					case opts.optionalmarker.end:
-					// optional closing
-					case opts.groupmarker.end:
-						// Group closing
-						openingToken = openenings.pop();
-						if (openingToken !== undefined) {
-							if (openenings.length > 0) {
-								currentOpeningToken = openenings[openenings.length - 1];
-								currentOpeningToken.matches.push(openingToken);
-								if (currentOpeningToken.isAlternator) { //handle alternator (a) | (b) case
-									alternator = openenings.pop();
-									for (var mndx = 0; mndx < alternator.matches.length; mndx++) {
-										alternator.matches[mndx].isGroup = false; //don't mark alternate groups as group
-									}
-									if (openenings.length > 0) {
-										currentOpeningToken = openenings[openenings.length - 1];
-										currentOpeningToken.matches.push(alternator);
-									} else {
-										currentToken.matches.push(alternator);
-									}
-								}
-							} else {
-								currentToken.matches.push(openingToken);
-							}
-						} else defaultCase();
-						break;
-					case opts.optionalmarker.start:
-						// optional opening
-						openenings.push(new MaskToken(false, true));
-						break;
-					case opts.groupmarker.start:
-						// Group opening
-						openenings.push(new MaskToken(true));
-						break;
-					case opts.quantifiermarker.start:
-						//Quantifier
-						var quantifier = new MaskToken(false, false, true);
-
-						m = m.replace(/[{}]/g, "");
-						var mq = m.split(","),
-							mq0 = isNaN(mq[0]) ? mq[0] : parseInt(mq[0]),
-							mq1 = mq.length === 1 ? mq0 : (isNaN(mq[1]) ? mq[1] : parseInt(mq[1]));
-						if (mq1 === "*" || mq1 === "+") {
-							mq0 = mq1 === "*" ? 0 : 1;
-						}
-						quantifier.quantifier = {
-							min: mq0,
-							max: mq1
-						};
-						if (openenings.length > 0) {
-							var matches = openenings[openenings.length - 1].matches;
-							match = matches.pop();
-							if (!match.isGroup) {
-								groupToken = new MaskToken(true);
-								groupToken.matches.push(match);
-								match = groupToken;
-							}
-							matches.push(match);
-							matches.push(quantifier);
-						} else {
-							match = currentToken.matches.pop();
-							if (!match.isGroup) {
-								groupToken = new MaskToken(true);
-								groupToken.matches.push(match);
-								match = groupToken;
-							}
-							currentToken.matches.push(match);
-							currentToken.matches.push(quantifier);
-						}
-						break;
-					case opts.alternatormarker:
-						if (openenings.length > 0) {
-							currentOpeningToken = openenings[openenings.length - 1];
-							lastMatch = currentOpeningToken.matches.pop();
-						} else {
-							lastMatch = currentToken.matches.pop();
-						}
-						if (lastMatch.isAlternator) {
-							openenings.push(lastMatch);
-						} else {
-							alternator = new MaskToken(false, false, false, true);
-							alternator.matches.push(lastMatch);
-							openenings.push(alternator);
-						}
-						break;
-					default:
-						defaultCase();
-				}
-			}
-
-			while (openenings.length > 0) {
-				openingToken = openenings.pop();
-				verifyGroupMarker(openingToken, true);
-				currentToken.matches.push(openingToken);
-			}
-			if (currentToken.matches.length > 0) {
-				lastMatch = currentToken.matches[currentToken.matches.length - 1];
-				verifyGroupMarker(lastMatch);
-				maskTokens.push(currentToken);
-			}
-
-			if (opts.numericInput) {
-				reverseTokens(maskTokens[0]);
-			}
-			//console.log(JSON.stringify(maskTokens));
-			return maskTokens;
-		}
-
-		function generateMask(mask, metadata) {
+		function generateMask(mask, metadata, opts) {
 			if (mask === null || mask === "") {
 				return undefined;
 			} else {
@@ -668,7 +667,7 @@
 				if (Inputmask.prototype.masksCache[mask] === undefined || nocache === true) {
 					masksetDefinition = {
 						"mask": mask,
-						"maskToken": analyseMask(mask),
+						"maskToken": Inputmask.analyseMask(mask, opts),
 						"validPositions": {},
 						"_buffer": undefined,
 						"buffer": undefined,
@@ -686,14 +685,7 @@
 			}
 		}
 
-		function preProcessMask(mask) {
-			mask = mask.toString();
-			// if (opts.numericInput) {
-			// 	mask = mask.split('').reverse();
-			// 	mask = mask.join('');
-			// }
-			return mask;
-		}
+		var ms;
 
 		if ($.isFunction(opts.mask)) { //allow mask to be a preprocessing fn - should return a valid mask
 			opts.mask = opts.mask(opts);
@@ -707,27 +699,28 @@
 						altMask += ")|(";
 					}
 					if (msk.mask !== undefined && !$.isFunction(msk.mask)) {
-						altMask += preProcessMask(msk.mask);
+						altMask += msk.mask;
 					} else {
-						altMask += preProcessMask(msk);
+						altMask += msk;
 					}
 				});
 				altMask += ")";
 				// console.log(altMask);
-				return generateMask(altMask, opts.mask);
+				return generateMask(altMask, opts.mask, opts);
 			} else opts.mask = opts.mask.pop();
 		}
 
 		if (opts.mask) {
 			if (opts.mask.mask !== undefined && !$.isFunction(opts.mask.mask)) {
-				ms = generateMask(preProcessMask(opts.mask.mask), opts.mask);
+				ms = generateMask(opts.mask.mask, opts.mask, opts);
 			} else {
-				ms = generateMask(preProcessMask(opts.mask), opts.mask);
+				ms = generateMask(opts.mask, opts.mask, opts);
 			}
 		}
 
 		return ms;
-	}
+	};
+
 
 	var ua = navigator.userAgent,
 		mobile = /mobile/i.test(ua),

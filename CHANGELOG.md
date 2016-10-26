@@ -3,10 +3,13 @@ All notable changes to this project will be documented in this file.
 
 ## [UNRELEASED]
 ### Added
+- extra extension points: analyseMask
 - colorMask option ~ css styleable mask
 - jquery.loader.js => main in package.json
 
 ### Updates
+- phone-alias - fine-tune mask sorting
+- make data-inputmask attribute naming configurable (dataAttribute on Inputmask)
 - numeric alias move negation symbols to the edges
 - handle android predictive text enabled
 - rename js/inputmask.dependencyLib.jquery.js to js/inputmask.dependencyLib.js
