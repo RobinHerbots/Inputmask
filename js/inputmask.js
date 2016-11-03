@@ -552,7 +552,7 @@
 		if (opts.numericInput) {
 			reverseTokens(maskTokens[0]);
 		}
-		//console.log(JSON.stringify(maskTokens));
+		// console.log(JSON.stringify(maskTokens));
 		return maskTokens;
 	};
 

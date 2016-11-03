@@ -18,35 +18,88 @@
 	}
 }
 (function ($, Inputmask) {
+	var analyseMaskBase = Inputmask.analyseMask;
+
+	function MaskToken(isGroup, isOptional, isQuantifier, isAlternator) {
+		this.matches = [];
+		this.isGroup = isGroup || false;
+		this.isOptional = isOptional || false;
+		this.isQuantifier = isQuantifier || false;
+		this.isAlternator = isAlternator || false;
+		this.quantifier = {
+			min: 1,
+			max: 1
+		};
+	}
+
+	Inputmask.analyseMask = function (mask, opts) {
+		function consolidateAlternateTokens(matches) {
+			var consolidatedTokens = [];
+			$.each(matches, function (ndx, maskToken) {
+				if (maskToken.isAlternator) {
+					var cleanupNdx = [];
+					$.each(maskToken.matches, function (ndx, childToken) {
+						if (childToken && childToken.matches) {
+							if (childToken.matches.length > 0) {
+								if (consolidatedTokens[childToken.matches[0].nativeDef] === undefined && childToken.matches && !childToken.isGroup && !childToken.isOptional && !childToken.isQuantifier && !childToken.isAlternator) {
+									consolidatedTokens[childToken.matches[0].nativeDef] = new MaskToken(false, false, false, true);
+									var alternateToken = consolidatedTokens[childToken.matches[0].nativeDef];
+									var token = new MaskToken();
+									token.matches = childToken.matches.slice(1);
+									alternateToken.matches.push(token);
+									childToken.matches.splice(1, token.matches.length, alternateToken);
+								}
+								else {
+									cleanupNdx.push(ndx);
+									var alternateToken = consolidatedTokens[childToken.matches[0].nativeDef];
+									var token = new MaskToken();
+									token.matches = childToken.matches.slice(1);
+									alternateToken.matches.push(token);
+								}
+							} else {
+								maskToken.matches.splice(ndx, 1);
+							}
+						}
+					});
+					maskToken.matches = $.map(maskToken.matches, function (match, ndx) {
+						if (cleanupNdx.indexOf(ndx) === -1) return match;
+					});
+				}
+				if (maskToken.matches) {
+					if (maskToken.matches.length === 1) //remove unnecessary nesting
+						matches[ndx] = maskToken.matches[0];
+					else if (maskToken.matches.length > 1) {
+						var prevMatch;
+						$.each(maskToken.matches, function (ndx, match) {
+							if (prevMatch) {
+
+							} else prevMatch = match;
+						});
+					}
+				}
+				if (matches[ndx].matches) {
+					consolidateAlternateTokens(matches[ndx].matches);
+				}
+			});
+		}
+
+		var mt = analyseMaskBase.call(this, mask, opts);
+		if (false && opts.phoneCodes) {
+			console.time("Optimizing...");
+			consolidateAlternateTokens(mt[0].matches);
+			if (mt[0].matches && mt[0].matches.length === 1) //remove unnecessary nesting
+				mt[0] = mt[0].matches[0];
+			console.timeEnd("Optimizing...");
+			console.log(JSON.stringify(mt));
+		}
+		return mt;
+	};
 	Inputmask.extendAliases({
 		"abstractphone": {
 			countrycode: "",
 			phoneCodes: [],
 			mask: function (opts) {
-				function consolidate() {
-					opts.regions = {
-						base: []
-					};
-
-					//split up in regions
-					$.each(opts.phoneCodes, function (ndx, phoneCode) {
-						var region = phoneCode.region;
-						if (region === undefined)
-							opts.regions.base.push(phoneCode);
-						else {
-							if (opts.regions[region] === undefined) {
-								opts.regions[region] = [];
-								opts.regions.base.push(phoneCode);
-								opts.regions[region].push(phoneCode);
-							} else {
-								opts.regions[region].push(phoneCode);
-							}
-						}
-					});
-				}
-
 				opts.definitions = {"#": opts.definitions["9"]};
-				// consolidate();
 				//do some sorting
 				var masks = opts.phoneCodes.sort(function (a, b) {
 					var maska = (a.mask || a).replace(/#/g, "9").replace(/[\)]/, "9").replace(/[\+\(\)#-]/g, ""),
@@ -56,7 +109,6 @@
 
 					return maskbs.indexOf(maskas) === 0 ? -1 : (maskas.indexOf(maskbs) === 0 ? 1 : maska.localeCompare(maskb));
 				});
-				// console.log(JSON.stringify(masks));
 				return masks;
 			},
 			keepStatic: true,

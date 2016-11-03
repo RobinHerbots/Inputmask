@@ -39,7 +39,7 @@ define([
 					input = expected;
 					//input = input.replace(/\+/g, "");
 					input = input.replace(/\(/g, "");
-					input = input.replace(/\)/g, "");
+					// input = input.replace(/\)/g, "");
 					input = input.replace(/-/g, "");
 
 					$(testmask).val(input);
