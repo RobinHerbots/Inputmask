@@ -693,10 +693,10 @@
 		if ($.isArray(opts.mask)) {
 			if (opts.mask.length > 1) {
 				opts.keepStatic = opts.keepStatic === null ? true : opts.keepStatic; //enable by default when passing multiple masks when the option is not explicitly specified
-				var altMask = "(";
+				var altMask = opts.groupmarker.start;
 				$.each(opts.numericInput ? opts.mask.reverse() : opts.mask, function (ndx, msk) {
 					if (altMask.length > 1) {
-						altMask += ")|(";
+						altMask += opts.groupmarker.end + opts.alternatormarker + opts.groupmarker.start;
 					}
 					if (msk.mask !== undefined && !$.isFunction(msk.mask)) {
 						altMask += msk.mask;
@@ -704,7 +704,7 @@
 						altMask += msk;
 					}
 				});
-				altMask += ")";
+				altMask += opts.groupmarker.end;
 				// console.log(altMask);
 				return generateMask(altMask, opts.mask, opts);
 			} else opts.mask = opts.mask.pop();
@@ -822,7 +822,7 @@
 			for (i = end - 1; i >= startPos; i--) { //clear selection
 				if (getMaskSet().validPositions[i] !== undefined) {
 					if (nocheck === true ||
-						(!IsEnclosedStatic(i) && opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), strict, opts) !== false)) {
+						((getMaskSet().validPositions[i].match.optionality || !IsEnclosedStatic(i)) && opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), strict, opts) !== false)) {
 						delete getMaskSet().validPositions[i];
 					}
 				}
@@ -2590,7 +2590,7 @@
 									caret(input, !isMask(clickPosition) && !isMask(clickPosition - 1) ? seekNext(clickPosition) : clickPosition);
 								} else {
 									var placeholder = getPlaceholder(lastPosition);
-									if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder && getTest(lastPosition).match.optionalQuantifier !== true) || (!isMask(lastPosition, true) && getTest(lastPosition).match.def === placeholder)) {
+									if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder && getTest(lastPosition).match.optionalQuantifier !== true) || (!isMask(lastPosition) && getTest(lastPosition).match.def === placeholder)) {
 										lastPosition = seekNext(lastPosition);
 									}
 									caret(input, lastPosition);
