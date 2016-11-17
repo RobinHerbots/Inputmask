@@ -74,12 +74,12 @@
 		}
 
 
-		if (opts.phoneCodes && opts.phoneCodes.length > 500) {
+		if (opts.phoneCodes && opts.phoneCodes.length > 2000) {
 			mask = mask.substr(1, mask.length - 2);
 			reduceVariations(mask.split(opts.groupmarker.end + opts.alternatormarker + opts.groupmarker.start));
 			mask = rebuild(maskGroups);
 		}
-		console.log(mask);
+		// console.log(mask);
 		var mt = analyseMaskBase.call(this, mask, opts);
 		return mt;
 	};

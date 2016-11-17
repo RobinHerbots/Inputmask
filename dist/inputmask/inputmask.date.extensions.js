@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4-92
+* Version: 3.3.4-100
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib"), require("./inputmask")) : factory(window.dependencyLib || jQuery, window.Inputmask);
@@ -11,54 +11,7 @@
     function isLeapYear(year) {
         return isNaN(year) || 29 === new Date(year, 2, 0).getDate();
     }
-    return Inputmask.extendDefinitions({
-        h: {
-            validator: "[01][0-9]|2[0-3]",
-            cardinality: 2,
-            prevalidator: [ {
-                validator: "[0-2]",
-                cardinality: 1
-            } ]
-        },
-        s: {
-            validator: "[0-5][0-9]",
-            cardinality: 2,
-            prevalidator: [ {
-                validator: "[0-5]",
-                cardinality: 1
-            } ]
-        },
-        d: {
-            validator: "0[1-9]|[12][0-9]|3[01]",
-            cardinality: 2,
-            prevalidator: [ {
-                validator: "[0-3]",
-                cardinality: 1
-            } ]
-        },
-        m: {
-            validator: "0[1-9]|1[012]",
-            cardinality: 2,
-            prevalidator: [ {
-                validator: "[01]",
-                cardinality: 1
-            } ]
-        },
-        y: {
-            validator: "(19|20)\\d{2}",
-            cardinality: 4,
-            prevalidator: [ {
-                validator: "[12]",
-                cardinality: 1
-            }, {
-                validator: "(19|20)",
-                cardinality: 2
-            }, {
-                validator: "(19|20)\\d",
-                cardinality: 3
-            } ]
-        }
-    }), Inputmask.extendAliases({
+    return Inputmask.extendAliases({
         "dd/mm/yyyy": {
             mask: "1/2/y",
             placeholder: "dd/mm/yyyy",

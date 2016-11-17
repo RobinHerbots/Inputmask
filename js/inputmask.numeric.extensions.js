@@ -611,23 +611,25 @@
 					initialValue = initialValue.split("").reverse().join("");
 				}
 				if (opts.radixPoint !== "" && isFinite(initialValue)) {
-					initialValue = initialValue.toString().replace(".", opts.radixPoint);
-				} else {
-					var kommaMatches = initialValue.match(/,/g);
-					var dotMatches = initialValue.match(/\./g);
-					if (dotMatches && kommaMatches) {
-						if (dotMatches.length > kommaMatches.length) {
-							initialValue = initialValue.replace(/\./g, "");
-							initialValue = initialValue.replace(",", opts.radixPoint);
-						} else if (kommaMatches.length > dotMatches.length) {
-							initialValue = initialValue.replace(/,/g, "");
-							initialValue = initialValue.replace(".", opts.radixPoint);
-						} else { //equal
-							initialValue = initialValue.indexOf(".") < initialValue.indexOf(",") ? initialValue.replace(/\./g, "") : initialValue = initialValue.replace(/,/g, "");
-						}
-					} else {
-						initialValue = initialValue.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "");
+					var vs = initialValue.split("."),
+						groupSize = opts.groupSeparator !== "" ? parseInt(opts.groupSize) : 0;
+					if (vs.length === 2 && (vs[0].length > groupSize || vs[1].length > groupSize))
+						initialValue = initialValue.toString().replace(".", opts.radixPoint);
+				}
+				var kommaMatches = initialValue.match(/,/g);
+				var dotMatches = initialValue.match(/\./g);
+				if (dotMatches && kommaMatches) {
+					if (dotMatches.length > kommaMatches.length) {
+						initialValue = initialValue.replace(/\./g, "");
+						initialValue = initialValue.replace(",", opts.radixPoint);
+					} else if (kommaMatches.length > dotMatches.length) {
+						initialValue = initialValue.replace(/,/g, "");
+						initialValue = initialValue.replace(".", opts.radixPoint);
+					} else { //equal
+						initialValue = initialValue.indexOf(".") < initialValue.indexOf(",") ? initialValue.replace(/\./g, "") : initialValue = initialValue.replace(/,/g, "");
 					}
+				} else {
+					initialValue = initialValue.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "");
 				}
 
 				if (opts.digits === 0) {

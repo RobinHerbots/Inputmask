@@ -223,21 +223,6 @@ define([
 		assert.equal(testmask.value, "abcde", "Result " + testmask.value);
 	});
 
-	qunit.test("inputmask(\"d/m/y\")", function (assert) {
-		var $fixture = $("#qunit-fixture");
-		$fixture.append('<input type="text" id="testmask" />');
-		var testmask = document.getElementById("testmask");
-		Inputmask("d/m/y").mask(testmask);
-
-		testmask.focus();
-
-		$("#testmask").Type("23031973");
-		$.caret(testmask, 5);
-		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
-
-		assert.equal(testmask.value, "23/0_/1973", "Result " + testmask.value);
-	});
-
 	qunit.test("inputmask(\"(999)999-9999\") - ruslanfedoseenko mask", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');

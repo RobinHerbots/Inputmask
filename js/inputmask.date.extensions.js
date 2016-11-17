@@ -21,55 +21,6 @@
 		return isNaN(year) || new Date(year, 2, 0).getDate() === 29;
 	}
 
-	//date & time aliases
-	Inputmask.extendDefinitions({
-		"h": { //hours
-			validator: "[01][0-9]|2[0-3]",
-			cardinality: 2,
-			prevalidator: [{
-				validator: "[0-2]",
-				cardinality: 1
-			}]
-		},
-		"s": { //seconds || minutes
-			validator: "[0-5][0-9]",
-			cardinality: 2,
-			prevalidator: [{
-				validator: "[0-5]",
-				cardinality: 1
-			}]
-		},
-		"d": { //basic day
-			validator: "0[1-9]|[12][0-9]|3[01]",
-			cardinality: 2,
-			prevalidator: [{
-				validator: "[0-3]",
-				cardinality: 1
-			}]
-		},
-		"m": { //basic month
-			validator: "0[1-9]|1[012]",
-			cardinality: 2,
-			prevalidator: [{
-				validator: "[01]",
-				cardinality: 1
-			}]
-		},
-		"y": { //basic year
-			validator: "(19|20)\\d{2}",
-			cardinality: 4,
-			prevalidator: [{
-				validator: "[12]",
-				cardinality: 1
-			}, {
-				validator: "(19|20)",
-				cardinality: 2
-			}, {
-				validator: "(19|20)\\d",
-				cardinality: 3
-			}]
-		}
-	});
 	Inputmask.extendAliases({
 		"dd/mm/yyyy": {
 			mask: "1/2/y",

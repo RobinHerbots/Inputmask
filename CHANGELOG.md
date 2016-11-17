@@ -5,9 +5,9 @@ All notable changes to this project will be documented in this file.
 ### Added
 - extra extension points: analyseMask
 - colorMask option ~ css styleable mask
-- jquery.loader.js => main in package.json
 
 ### Updates
+- remove h,s,d,m,y definitions => use the date/time aliases
 - phone-alias - fine-tune mask sorting
 - make data-inputmask attribute naming configurable (dataAttribute on Inputmask)
 - numeric alias move negation symbols to the edges
@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file.
 - improve inputfallback (Android support)
 
 ### Fixed
+- Decimal mask excluding zero with custom RadixPoint and GroupSeparator #1418
 - Can't remove dot from the middle of a word #1439
 - Invalid Leap Year dates can be entered #1368
 - jquery.val returns empty value (when using an unsupported input type) #1415

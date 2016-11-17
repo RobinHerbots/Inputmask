@@ -1031,8 +1031,12 @@
 											if (typeof altIndex !== "string" || $.inArray(altMatch.locator[altMatch.alternation].toString(), altIndexArr) !== -1) {
 												if (altMatch.match.def === altMatch2.match.def || staticCanMatchDefinition(altMatch, altMatch2)) {
 													hasMatch = altMatch.match.nativeDef === altMatch2.match.nativeDef;
-													if (altMatch2.locator[altMatch.alternation].toString().indexOf(altMatch.locator[altMatch.alternation]) === -1) {
-														altMatch2.locator[altMatch.alternation] = altMatch2.locator[altMatch.alternation] + "," + altMatch.locator[altMatch.alternation];
+													// if (altMatch.alternation != altMatch2.alternation){
+													// 	console.log("alternation mismatch");
+													// }
+													if (altMatch.alternation == altMatch2.alternation && //can we merge if the alternation is different??  TODO TOCHECK INVESTIGATE
+														altMatch2.locator[altMatch2.alternation].toString().indexOf(altMatch.locator[altMatch.alternation]) === -1) {
+														altMatch2.locator[altMatch2.alternation] = altMatch2.locator[altMatch2.alternation] + "," + altMatch.locator[altMatch.alternation];
 														altMatch2.alternation = altMatch.alternation; //we pass the alternation index => used in determineLastRequiredPosition
 														if (altMatch.match.fn == null) { //staticCanMatchDefinition => set no alternate on match
 															altMatch2.na = altMatch2.na || altMatch.locator[altMatch.alternation].toString();
