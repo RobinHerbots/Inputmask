@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4-100
+* Version: 3.3.4-101
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -239,17 +239,7 @@
                                         hasMatch || malternateMatches.push(altMatch);
                                     }
                                 }
-                                "string" == typeof altIndex && (malternateMatches = $.map(malternateMatches, function(lmnt, ndx) {
-                                    if (isFinite(ndx)) {
-                                        var mamatch, alternation = lmnt.alternation, altLocArr = lmnt.locator[alternation].toString().split(",");
-                                        lmnt.locator[alternation] = void 0, lmnt.alternation = void 0;
-                                        for (var alndx = 0; alndx < altLocArr.length; alndx++) mamatch = $.inArray(altLocArr[alndx], altIndexArr) !== -1, 
-                                        mamatch && (void 0 !== lmnt.locator[alternation] ? (lmnt.locator[alternation] += ",", 
-                                        lmnt.locator[alternation] += altLocArr[alndx]) : lmnt.locator[alternation] = parseInt(altLocArr[alndx]), 
-                                        lmnt.alternation = alternation);
-                                        if (void 0 !== lmnt.locator[alternation]) return lmnt;
-                                    }
-                                })), matches = currentMatches.concat(malternateMatches), testPos = pos, insertStop = matches.length > 0, 
+                                matches = currentMatches.concat(malternateMatches), testPos = pos, insertStop = matches.length > 0, 
                                 ndxInitializer = ndxInitializerClone.slice();
                             } else match = handleMatch(alternateToken.matches[altIndex] || maskToken.matches[altIndex], [ altIndex ].concat(loopNdx), quantifierRecurse);
                             if (match) return !0;

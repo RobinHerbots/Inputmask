@@ -1031,7 +1031,7 @@
 											if (typeof altIndex !== "string" || $.inArray(altMatch.locator[altMatch.alternation].toString(), altIndexArr) !== -1) {
 												if (altMatch.match.def === altMatch2.match.def || staticCanMatchDefinition(altMatch, altMatch2)) {
 													hasMatch = altMatch.match.nativeDef === altMatch2.match.nativeDef;
-													// if (altMatch.alternation != altMatch2.alternation){
+													// if (altMatch.alternation != altMatch2.alternation) {
 													// 	console.log("alternation mismatch");
 													// }
 													if (altMatch.alternation == altMatch2.alternation && //can we merge if the alternation is different??  TODO TOCHECK INVESTIGATE
@@ -1053,31 +1053,38 @@
 										}
 									}
 								}
-								if (typeof altIndex == "string") { //filter matches
-									malternateMatches = $.map(malternateMatches, function (lmnt, ndx) {
-										if (isFinite(ndx)) {
-											var mamatch,
-												alternation = lmnt.alternation,
-												altLocArr = lmnt.locator[alternation].toString().split(",");
-											lmnt.locator[alternation] = undefined;
-											lmnt.alternation = undefined;
-
-											for (var alndx = 0; alndx < altLocArr.length; alndx++) {
-												mamatch = $.inArray(altLocArr[alndx], altIndexArr) !== -1;
-												if (mamatch) { //rebuild the locator with valid entries
-													if (lmnt.locator[alternation] !== undefined) {
-														lmnt.locator[alternation] += ",";
-														lmnt.locator[alternation] += altLocArr[alndx];
-													} else lmnt.locator[alternation] = parseInt(altLocArr[alndx]);
-
-													lmnt.alternation = alternation;
-												}
-											}
-
-											if (lmnt.locator[alternation] !== undefined) return lmnt;
-										}
-									});
-								}
+								// if (typeof altIndex == "string") { //filter matches
+								// 	var maltCount = malternateMatches.length;
+								// 	malternateMatches = $.map(malternateMatches, function (lmnt, ndx) {
+								// 		if (isFinite(ndx)) {
+								// 			var originalalt = lmnt.alternation;
+								// 			var mamatch,
+								// 				alternation = lmnt.alternation,
+								// 				altLocArr = lmnt.locator[alternation].toString().split(",");
+								// 			lmnt.locator[alternation] = undefined;
+								// 			lmnt.alternation = undefined;
+                                //
+								// 			for (var alndx = 0; alndx < altLocArr.length; alndx++) {
+								// 				mamatch = $.inArray(altLocArr[alndx], altIndexArr) !== -1;
+								// 				if (mamatch) { //rebuild the locator with valid entries
+								// 					if (lmnt.locator[alternation] !== undefined) {
+								// 						lmnt.locator[alternation] += ",";
+								// 						lmnt.locator[alternation] += altLocArr[alndx];
+								// 					} else lmnt.locator[alternation] = parseInt(altLocArr[alndx]);
+                                //
+								// 					lmnt.alternation = alternation;
+								// 					if (originalalt !== lmnt.alternation)
+								// 						alert("new " + lmnt.alternation);
+								// 				}
+								// 			}
+                                //
+								// 			if (lmnt.locator[alternation] !== undefined) return lmnt;
+								// 		}
+								// 	});
+								// 	maltCount2 = malternateMatches.length;
+								// 	if (maltCount.length !== maltCount2.length)
+								// 		alert(maltCount + " vs " + maltCount2);
+								// }
 
 								matches = currentMatches.concat(malternateMatches);
 								testPos = pos;
@@ -1216,7 +1223,7 @@
 				return filterTests($.extend(true, [], matches));
 			}
 			getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
-			//console.log(pos + " - " + JSON.stringify(matches));
+			// console.log(pos + " - " + JSON.stringify(matches));
 			return filterTests(getMaskSet().tests[pos]);
 		}
 

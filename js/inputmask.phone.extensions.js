@@ -46,7 +46,7 @@
 				masks.splice(i, 1);
 			}
 			for (var ndx in maskGroup) {
-				if (maskGroup[ndx].length > 1000) {
+				if (maskGroup[ndx].length > 500) {
 					reduceVariations(maskGroup[ndx].slice(), ndx, maskGroup);
 				}
 			}
@@ -74,7 +74,7 @@
 		}
 
 
-		if (opts.phoneCodes && opts.phoneCodes.length > 2000) {
+		if (opts.phoneCodes && opts.phoneCodes.length > 1000) {
 			mask = mask.substr(1, mask.length - 2);
 			reduceVariations(mask.split(opts.groupmarker.end + opts.alternatormarker + opts.groupmarker.start));
 			mask = rebuild(maskGroups);
