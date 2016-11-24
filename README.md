@@ -1,10 +1,10 @@
-# jquery.inputmask 3.x
+# Inputmask 3.x
 
 Copyright (c) 2010 - 2016 Robin Herbots Licensed under the MIT license ([http://opensource.org/licenses/mit-license.php](http://opensource.org/licenses/mit-license.php))
 
 [![NPM Version][npm-image]][npm-url] [![Dependency Status][david-image]][david-url] [![devDependency Status][david-dev-image]][david-dev-url]
 
-jquery.inputmask is a jQuery plugin which creates an input mask.
+Inputmask is a javascript library which creates an input mask.  Inputmask can run against vanilla javascript, jQuery and jqlite.
 
 An inputmask helps the user with the input by ensuring a predefined format. This can be useful for dates, numerics, phone numbers, ...
 
@@ -614,7 +614,7 @@ For example, `placeholder: " "` will change the default autofill with empty valu
 
 ```javascript
 $(document).ready(function(){
-  $("#date").inputmask("d/m/y",{ "placeholder": "*" });
+  $("#date").inputmask("99/99/9999",{ "placeholder": "*" });
 });
 ```
 
@@ -622,7 +622,7 @@ or a multi-char placeholder
 
 ```javascript
 $(document).ready(function(){
-  $("#date").inputmask("d/m/y",{ "placeholder": "dd/mm/yyyy" });
+  $("#date").inputmask("99/99/9999",{ "placeholder": "dd/mm/yyyy" });
 });
 ```
 
@@ -671,7 +671,7 @@ Execute a function when the mask is completed
 
 ```javascript
 $(document).ready(function(){
-  $("#date").inputmask("d/m/y",{ "oncomplete": function(){ alert('inputmask complete'); } });
+  $("#date").inputmask("99/99/9999",{ "oncomplete": function(){ alert('inputmask complete'); } });
 });
 ```
 
@@ -680,7 +680,7 @@ Execute a function when the mask is incomplete.  Executes on blur.
 
 ```javascript
 $(document).ready(function(){
-  $("#date").inputmask("d/m/y",{ "onincomplete": function(){ alert('inputmask incomplete'); } });
+  $("#date").inputmask("99/99/9999",{ "onincomplete": function(){ alert('inputmask incomplete'); } });
 });
 ```
 
@@ -689,7 +689,7 @@ Execute a function when the mask is cleared.
 
 ```javascript
 $(document).ready(function(){
-  $("#date").inputmask("d/m/y",{ "oncleared": function(){ alert('inputmask cleared'); } });
+  $("#date").inputmask("99/99/9999",{ "oncleared": function(){ alert('inputmask cleared'); } });
 });
 ```
 
@@ -738,7 +738,7 @@ Clear the incomplete input on blur
 
 ```javascript
 $(document).ready(function(){
-  $("#date").inputmask("d/m/y",{ "clearIncomplete": true });
+  $("#date").inputmask("99/99/9999",{ "clearIncomplete": true });
 });
 ```
 
@@ -1022,7 +1022,7 @@ with the autoUnmaskoption you can change the return of $.fn.val (or value proper
 
 ```javascript
 $(document).ready(function(){
-  $('#<%= tbDate.ClientID%>').inputmask({ "mask": "d/m/y", 'autoUnmask' : true});    //  value: 23/03/1973
+  $('#<%= tbDate.ClientID%>').inputmask({ "mask": "99/99/9999", 'autoUnmask' : true});    //  value: 23/03/1973
   alert($('#<%= tbDate.ClientID%>').val());    // shows 23031973     (autoUnmask: true)
 
   var tbDate = document.getElementById("<%= tbDate.ClientID%>");

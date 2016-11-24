@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4-101
+* Version: 3.3.4-105
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib"), require("./inputmask")) : factory(window.dependencyLib || jQuery, window.Inputmask);
@@ -12,15 +12,15 @@
         var maska = (a.mask || a).replace(/#/g, "9").replace(/\)/, "9").replace(/[+()#-]/g, ""), maskb = (b.mask || b).replace(/#/g, "9").replace(/\)/, "9").replace(/[+()#-]/g, ""), maskas = (a.mask || a).split("#")[0], maskbs = (b.mask || b).split("#")[0];
         return 0 === maskbs.indexOf(maskas) ? -1 : 0 === maskas.indexOf(maskbs) ? 1 : maska.localeCompare(maskb);
     }
-    var analyseMaskBase = Inputmask.analyseMask;
-    return Inputmask.analyseMask = function(mask, opts) {
+    var analyseMaskBase = Inputmask.prototype.analyseMask;
+    return Inputmask.prototype.analyseMask = function(mask, opts) {
         function reduceVariations(masks, previousVariation, previousmaskGroup) {
             previousVariation = previousVariation || "", previousmaskGroup = previousmaskGroup || maskGroups, 
             "" !== previousVariation && (previousmaskGroup[previousVariation] = {});
             for (var variation = "", maskGroup = previousmaskGroup[previousVariation] || previousmaskGroup, i = masks.length - 1; i >= 0; i--) mask = masks[i].mask || masks[i], 
             variation = mask.substr(0, 1), maskGroup[variation] = maskGroup[variation] || [], 
             maskGroup[variation].unshift(mask.substr(1)), masks.splice(i, 1);
-            for (var ndx in maskGroup) maskGroup[ndx].length > 1e3 && reduceVariations(maskGroup[ndx].slice(), ndx, maskGroup);
+            for (var ndx in maskGroup) maskGroup[ndx].length > 500 && reduceVariations(maskGroup[ndx].slice(), ndx, maskGroup);
         }
         function rebuild(maskGroup) {
             var mask = "", submasks = [];
@@ -28,7 +28,7 @@
             return mask += 1 === submasks.length ? submasks[0] : opts.groupmarker.start + submasks.join(opts.groupmarker.end + opts.alternatormarker + opts.groupmarker.start) + opts.groupmarker.end;
         }
         var maskGroups = {};
-        opts.phoneCodes && opts.phoneCodes.length > 2e3 && (mask = mask.substr(1, mask.length - 2), 
+        opts.phoneCodes && opts.phoneCodes.length > 1e3 && (mask = mask.substr(1, mask.length - 2), 
         reduceVariations(mask.split(opts.groupmarker.end + opts.alternatormarker + opts.groupmarker.start)), 
         mask = rebuild(maskGroups));
         var mt = analyseMaskBase.call(this, mask, opts);

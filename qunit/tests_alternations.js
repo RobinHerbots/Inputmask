@@ -29,4 +29,72 @@ define([
 		$("#testmask").Type("S");
 		assert.equal(testmask.inputmask._valueGet(), "12S ABC 1234", "Result " + testmask.inputmask._valueGet());
 	});
+
+	qunit.test("nested alternations 1", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+
+		Inputmask("0<2)##-##-##>|<3<4)#-##-##>|<5)#-##-##>|<6)#-##-##>>", {
+			groupmarker: {
+				start: "<",
+				end: ">"
+			}
+		}).mask(testmask);
+
+		$("#testmask").Type("02121212");
+
+		assert.equal(testmask.inputmask._valueGet(), "02)12-12-12", "Result " + testmask.inputmask._valueGet());
+	});
+
+	qunit.test("nested alternations 2", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+
+		Inputmask("0<2)##-##-##>|<3<4)#-##-##>|<5)#-##-##>|<6)#-##-##>>", {
+			groupmarker: {
+				start: "<",
+				end: ">"
+			}
+		}).mask(testmask);
+
+		$("#testmask").Type("03411212");
+
+		assert.equal(testmask.inputmask._valueGet(), "034)1-12-12", "Result " + testmask.inputmask._valueGet());
+	});
+
+	qunit.test("nested alternations 3", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+
+		Inputmask("0<2)##-##-##>|<3<4)#-##-##>|<5)#-##-##>|<6)#-##-##>>", {
+			groupmarker: {
+				start: "<",
+				end: ">"
+			}
+		}).mask(testmask);
+
+		$("#testmask").Type("03511212");
+
+		assert.equal(testmask.inputmask._valueGet(), "035)1-12-12", "Result " + testmask.inputmask._valueGet());
+	});
+
+	qunit.test("nested alternations 4", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+
+		Inputmask("0<2)##-##-##>|<3<4)#-##-##>|<5)#-##-##>|<6)#-##-##>>", {
+			groupmarker: {
+				start: "<",
+				end: ">"
+			}
+		}).mask(testmask);
+
+		$("#testmask").Type("03611212");
+
+		assert.equal(testmask.inputmask._valueGet(), "036)1-12-12", "Result " + testmask.inputmask._valueGet());
+	});
 });

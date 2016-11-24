@@ -27,9 +27,9 @@
 		return maskbs.indexOf(maskas) === 0 ? -1 : (maskas.indexOf(maskbs) === 0 ? 1 : maska.localeCompare(maskb));
 	}
 
-	var analyseMaskBase = Inputmask.analyseMask;
+	var analyseMaskBase = Inputmask.prototype.analyseMask;
 
-	Inputmask.analyseMask = function (mask, opts) {
+	Inputmask.prototype.analyseMask = function (mask, opts) {
 		var maskGroups = {};
 
 		function reduceVariations(masks, previousVariation, previousmaskGroup) {

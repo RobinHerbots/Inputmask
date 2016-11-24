@@ -164,20 +164,10 @@ module.exports = function (grunt) {
 // Load the plugin that provides the tasks.
 	require('load-grunt-tasks')(grunt);
 
-	grunt.registerTask('publish:patch', ['clean', 'bump:patch', 'uglify', 'updateDistLoader', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
-	grunt.registerTask('publish:minor', ['clean', 'bump:minor', 'uglify', 'updateDistLoader', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
-	grunt.registerTask('publish:major', ['clean', 'bump:major', 'uglify', 'updateDistLoader', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
+	grunt.registerTask('publish:patch', ['clean', 'bump:patch', 'uglify', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
+	grunt.registerTask('publish:minor', ['clean', 'bump:minor', 'uglify', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
+	grunt.registerTask('publish:major', ['clean', 'bump:major', 'uglify', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
 	grunt.registerTask('validate', ['eslint', 'browserify', 'karma']);
-	grunt.registerTask('build', ['bump:prerelease', 'clean', 'uglify', 'updateDistLoader']);
+	grunt.registerTask('build', ['bump:prerelease', 'clean', 'uglify']);
 	grunt.registerTask('default', ["availabletasks"]);
-	grunt.registerTask('updateDistLoader', "Update the inputmask.loader in the dist folder", function () {
-		var configjs = grunt.file.read("dist/inputmask/inputmask.loader.js");
-		configjs = configjs.replace(/\/js\//, "/dist/inputmask/");
-		grunt.file.write("dist/inputmask/inputmask.loader.js", configjs);
-		console.log("dist/inputmask.loader.js updated");
-		var configjs = grunt.file.read("dist/min/inputmask/inputmask.loader.min.js");
-		configjs = configjs.replace(/\/js\//, "/dist/min/inputmask/");
-		grunt.file.write("dist/min/inputmask/inputmask.loader.min.js", configjs);
-		console.log("dist/min/inputmask/inputmask.loader.js updated");
-	});
 };
