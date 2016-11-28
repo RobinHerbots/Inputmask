@@ -716,7 +716,8 @@
 			colorMask;
 
 		//maskset helperfunctions
-		function getMaskTemplate(baseOnInput, minimalPos, includeInput) {
+		function getMaskTemplate(baseOnInput, minimalPos, includeMode) {
+			//includeMode true => input, undefined => placeholder, false => mask
 			minimalPos = minimalPos || 0;
 			var maskTemplate = [],
 				ndxIntlzr, pos = 0,
@@ -728,13 +729,13 @@
 					testPos = getMaskSet().validPositions[pos];
 					test = testPos.match;
 					ndxIntlzr = testPos.locator.slice();
-					maskTemplate.push(includeInput === true ? testPos.input : getPlaceholder(pos, test));
+					maskTemplate.push(includeMode === true ? testPos.input : includeMode === false ? test.nativeDef : getPlaceholder(pos, test));
 				} else {
 					testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
 					test = testPos.match;
 					ndxIntlzr = testPos.locator.slice();
 					if (opts.jitMasking === false || pos < lvp || (Number.isFinite(opts.jitMasking) && opts.jitMasking > pos)) {
-						maskTemplate.push(getPlaceholder(pos, test));
+						maskTemplate.push(includeMode === false ? test.nativeDef : getPlaceholder(pos, test));
 					}
 				}
 				pos++;
@@ -3037,15 +3038,14 @@
 					break;
 				case "getmetadata":
 					if ($.isArray(maskset.metadata)) {
-						//find last alternation
-						var alternation, lvp = getLastValidPosition(undefined, true);
-						for (var firstAlt = lvp; firstAlt >= 0; firstAlt--) {
-							if (getMaskSet().validPositions[firstAlt] && getMaskSet().validPositions[firstAlt].alternation !== undefined) {
-								alternation = getMaskSet().validPositions[firstAlt].alternation;
-								break;
+						var maskTarget = getMaskTemplate(true, 0, false).join("");
+						$.each(maskset.metadata, function (ndx, mtdt) {
+							if (mtdt.mask === maskTarget){
+								maskTarget = mtdt;
+								return false;
 							}
-						}
-						return alternation !== undefined ? maskset.metadata[getMaskSet().validPositions[firstAlt].locator[alternation]] : [];
+						});
+						return maskTarget;
 					}
 
 					return maskset.metadata;
