@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4-106
+* Version: 3.3.4-108
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define("inputmask", [ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib")) : factory(window.dependencyLib || jQuery);
@@ -261,7 +261,7 @@
                 locator: [],
                 cd: cacheDependency
             }), void 0 !== ndxIntlzr && getMaskSet().tests[pos] ? filterTests($.extend(!0, [], matches)) : (getMaskSet().tests[pos] = $.extend(!0, [], matches), 
-            console.log(pos + " - " + JSON.stringify(matches)), filterTests(getMaskSet().tests[pos]));
+            filterTests(getMaskSet().tests[pos]));
         }
         function getBufferTemplate() {
             return void 0 === getMaskSet()._buffer && (getMaskSet()._buffer = getMaskTemplate(!1, 1), 
@@ -1399,7 +1399,7 @@
                 }), escaped = !1;
             }
             function verifyGroupMarker(lastMatch, isOpenGroup) {
-                lastMatch.isGroup && (lastMatch.isGroup = !1, insertTestDefinition(lastMatch, opts.groupmarker.start, 0), 
+                lastMatch && lastMatch.isGroup && (lastMatch.isGroup = !1, insertTestDefinition(lastMatch, opts.groupmarker.start, 0), 
                 isOpenGroup !== !0 && insertTestDefinition(lastMatch, opts.groupmarker.end));
             }
             function maskCurrentToken(m, currentToken, lastMatch, extraCondition) {
@@ -1453,11 +1453,11 @@
                 break;
 
               case opts.optionalmarker.start:
-                openenings.push(new MaskToken((!1), (!0)));
+                verifyGroupMarker(currentToken.matches[currentToken.matches.length - 1]), openenings.push(new MaskToken((!1), (!0)));
                 break;
 
               case opts.groupmarker.start:
-                openenings.push(new MaskToken((!0)));
+                verifyGroupMarker(currentToken.matches[currentToken.matches.length - 1]), openenings.push(new MaskToken((!0)));
                 break;
 
               case opts.quantifiermarker.start:

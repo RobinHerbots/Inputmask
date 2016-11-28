@@ -363,7 +363,7 @@
 			}
 
 			function verifyGroupMarker(lastMatch, isOpenGroup) {
-				if (lastMatch.isGroup) { //this is not a group but a normal mask => convert
+				if (lastMatch && lastMatch.isGroup) { //this is not a group but a normal mask => convert
 					lastMatch.isGroup = false;
 					insertTestDefinition(lastMatch, opts.groupmarker.start, 0);
 					if (isOpenGroup !== true) {
@@ -467,10 +467,12 @@
 						} else defaultCase();
 						break;
 					case opts.optionalmarker.start:
+						verifyGroupMarker(currentToken.matches[currentToken.matches.length - 1]);
 						// optional opening
 						openenings.push(new MaskToken(false, true));
 						break;
 					case opts.groupmarker.start:
+						verifyGroupMarker(currentToken.matches[currentToken.matches.length - 1]);
 						// Group opening
 						openenings.push(new MaskToken(true));
 						break;
@@ -1187,7 +1189,7 @@
 				return filterTests($.extend(true, [], matches));
 			}
 			getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
-			console.log(pos + " - " + JSON.stringify(matches));
+			// console.log(pos + " - " + JSON.stringify(matches));
 			return filterTests(getMaskSet().tests[pos]);
 		}
 
