@@ -97,4 +97,40 @@ define([
 
 		assert.equal(testmask.inputmask._valueGet(), "036)1-12-12", "Result " + testmask.inputmask._valueGet());
 	});
+
+	qunit.test("alternations W|XY|Z", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+
+		Inputmask("W|XY|Z").mask(testmask);
+
+		$("#testmask").Type("WZ");
+
+		assert.equal(testmask.inputmask._valueGet(), "WZ", "Result " + testmask.inputmask._valueGet());
+	});
+
+	qunit.test("alternations (W)|(X)(Y)|(Z)", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+
+		Inputmask("(W)|(X)(Y)|(Z)").mask(testmask);
+
+		$("#testmask").Type("WZ");
+
+		assert.equal(testmask.inputmask._valueGet(), "WZ", "Result " + testmask.inputmask._valueGet());
+	});
+
+	qunit.test("alternations (9{1,3})|(S|NE|W)-9{1,3}", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+
+		Inputmask("(9{1,3})|(S|NE|W)-9{1,3}").mask(testmask);
+
+		$("#testmask").Type("NE123");
+
+		assert.equal(testmask.inputmask._valueGet(), "NE-123", "Result " + testmask.inputmask._valueGet());
+	});
 });
