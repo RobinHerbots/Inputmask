@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4-113
+* Version: 3.3.4-119
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -1358,8 +1358,8 @@
         },
         analyseMask: function(mask, opts) {
             function MaskToken(isGroup, isOptional, isQuantifier, isAlternator) {
-                this.matches = [], this.isGroup = isGroup || !1, this.isOptional = isOptional || !1, 
-                this.isQuantifier = isQuantifier || !1, this.isAlternator = isAlternator || !1, 
+                this.matches = [], this.openGroup = isGroup || !1, this.isGroup = isGroup || !1, 
+                this.isOptional = isOptional || !1, this.isQuantifier = isQuantifier || !1, this.isAlternator = isAlternator || !1, 
                 this.quantifier = {
                     min: 1,
                     max: 1
@@ -1409,24 +1409,24 @@
                     nativeDef: element
                 }), escaped = !1;
             }
-            function verifyGroupMarker(lastMatch, isOpenGroup) {
-                lastMatch && lastMatch.isGroup && (lastMatch.isGroup = !1, insertTestDefinition(lastMatch, opts.groupmarker.start, 0), 
-                isOpenGroup !== !0 && insertTestDefinition(lastMatch, opts.groupmarker.end));
-            }
-            function maskCurrentToken(m, currentToken, lastMatch, extraCondition) {
-                currentToken.matches.length > 0 && (void 0 === extraCondition || extraCondition) && (lastMatch = currentToken.matches[currentToken.matches.length - 1], 
-                verifyGroupMarker(lastMatch)), insertTestDefinition(currentToken, m);
+            function verifyGroupMarker(maskToken) {
+                $.each(maskToken.matches, function(ndx, token) {
+                    var nextToken = maskToken.matches[ndx + 1];
+                    (void 0 === nextToken || void 0 === nextToken.matches || nextToken.isQuantifier === !1) && token && token.isGroup && (token.isGroup = !1, 
+                    insertTestDefinition(token, opts.groupmarker.start, 0), token.openGroup !== !0 && insertTestDefinition(token, opts.groupmarker.end)), 
+                    verifyGroupMarker(token);
+                });
             }
             function defaultCase() {
                 if (openenings.length > 0) {
-                    if (currentOpeningToken = openenings[openenings.length - 1], maskCurrentToken(m, currentOpeningToken, lastMatch, !currentOpeningToken.isAlternator), 
+                    if (currentOpeningToken = openenings[openenings.length - 1], insertTestDefinition(currentOpeningToken, m), 
                     currentOpeningToken.isAlternator) {
                         alternator = openenings.pop();
                         for (var mndx = 0; mndx < alternator.matches.length; mndx++) alternator.matches[mndx].isGroup = !1;
                         openenings.length > 0 ? (currentOpeningToken = openenings[openenings.length - 1], 
                         currentOpeningToken.matches.push(alternator)) : currentToken.matches.push(alternator);
                     }
-                } else maskCurrentToken(m, currentToken, lastMatch);
+                } else insertTestDefinition(currentToken, m);
             }
             function reverseTokens(maskToken) {
                 function reverseStatic(st) {
@@ -1452,7 +1452,7 @@
 
               case opts.optionalmarker.end:
               case opts.groupmarker.end:
-                if (openingToken = openenings.pop(), void 0 !== openingToken) if (openenings.length > 0) {
+                if (openingToken = openenings.pop(), openingToken.openGroup = !1, void 0 !== openingToken) if (openenings.length > 0) {
                     if (currentOpeningToken = openenings[openenings.length - 1], currentOpeningToken.matches.push(openingToken), 
                     currentOpeningToken.isAlternator) {
                         alternator = openenings.pop();
@@ -1464,11 +1464,11 @@
                 break;
 
               case opts.optionalmarker.start:
-                verifyGroupMarker(currentToken.matches[currentToken.matches.length - 1]), openenings.push(new MaskToken((!1), (!0)));
+                openenings.push(new MaskToken((!1), (!0)));
                 break;
 
               case opts.groupmarker.start:
-                verifyGroupMarker(currentToken.matches[currentToken.matches.length - 1]), openenings.push(new MaskToken((!0)));
+                openenings.push(new MaskToken((!0)));
                 break;
 
               case opts.quantifiermarker.start:
@@ -1497,11 +1497,9 @@
               default:
                 defaultCase();
             }
-            for (;openenings.length > 0; ) openingToken = openenings.pop(), verifyGroupMarker(openingToken, !0), 
-            currentToken.matches.push(openingToken);
-            return currentToken.matches.length > 0 && (lastMatch = currentToken.matches[currentToken.matches.length - 1], 
-            verifyGroupMarker(lastMatch), maskTokens.push(currentToken)), opts.numericInput && reverseTokens(maskTokens[0]), 
-            maskTokens;
+            for (;openenings.length > 0; ) openingToken = openenings.pop(), currentToken.matches.push(openingToken);
+            return currentToken.matches.length > 0 && (verifyGroupMarker(currentToken), maskTokens.push(currentToken)), 
+            opts.numericInput && reverseTokens(maskTokens[0]), maskTokens;
         }
     }, Inputmask.extendDefaults = function(options) {
         $.extend(!0, Inputmask.prototype.defaults, options);

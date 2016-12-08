@@ -133,4 +133,35 @@ define([
 
 		assert.equal(testmask.inputmask._valueGet(), "NE-123", "Result " + testmask.inputmask._valueGet());
 	});
+
+	qunit.test("alternations (9{1,3})|((S|N)(E|W))-9{1,3} - yesman85", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+
+		Inputmask("(9{1,3})|((S|N)(E|W))-9{1,3}").mask(testmask);
+
+		$("#testmask").Type("(NE123");
+
+		assert.equal(testmask.inputmask._valueGet(), "(N)(E)-123", "Result " + testmask.inputmask._valueGet());
+	});
+
+	qunit.test("((S))", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+
+		Inputmask("((S))").mask(testmask);
+		testmask.focus();
+		assert.equal(testmask.inputmask._valueGet(), "((S))", "Result " + testmask.inputmask._valueGet());
+	});
+	qunit.test("((S)", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+
+		Inputmask("((S)").mask(testmask);
+		testmask.focus();
+		assert.equal(testmask.inputmask._valueGet(), "((S)", "Result " + testmask.inputmask._valueGet());
+	});
 });

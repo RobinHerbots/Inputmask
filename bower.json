@@ -1,6 +1,6 @@
 {
   "name": "jquery.inputmask",
-  "version": "3.3.4-113",
+  "version": "3.3.4-119",
   "main": [
 	  "./dist/inputmask/inputmask.dependencyLib",
 	  "./dist/inputmask/inputmask",

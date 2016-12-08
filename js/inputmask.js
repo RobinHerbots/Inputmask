@@ -296,6 +296,7 @@
 
 			function MaskToken(isGroup, isOptional, isQuantifier, isAlternator) {
 				this.matches = [];
+				this.openGroup = isGroup || false;
 				this.isGroup = isGroup || false;
 				this.isOptional = isOptional || false;
 				this.isQuantifier = isQuantifier || false;
@@ -361,28 +362,25 @@
 				}
 			}
 
-			function verifyGroupMarker(lastMatch, isOpenGroup) {
-				if (lastMatch && lastMatch.isGroup) { //this is not a group but a normal mask => convert
-					lastMatch.isGroup = false;
-					insertTestDefinition(lastMatch, opts.groupmarker.start, 0);
-					if (isOpenGroup !== true) {
-						insertTestDefinition(lastMatch, opts.groupmarker.end);
+			function verifyGroupMarker(maskToken) {
+				$.each(maskToken.matches, function (ndx, token) {
+						var nextToken = maskToken.matches[ndx + 1];
+						if ((nextToken === undefined || (nextToken.matches === undefined || nextToken.isQuantifier === false)) && token && token.isGroup) { //this is not a group but a normal mask => convert
+							token.isGroup = false;
+							insertTestDefinition(token, opts.groupmarker.start, 0);
+							if (token.openGroup !== true) {
+								insertTestDefinition(token, opts.groupmarker.end);
+							}
+						}
+						verifyGroupMarker(token);
 					}
-				}
-			}
-
-			function maskCurrentToken(m, currentToken, lastMatch, extraCondition) {
-				if (currentToken.matches.length > 0 && (extraCondition === undefined || extraCondition)) {
-					lastMatch = currentToken.matches[currentToken.matches.length - 1];
-					verifyGroupMarker(lastMatch);
-				}
-				insertTestDefinition(currentToken, m);
+				);
 			}
 
 			function defaultCase() {
 				if (openenings.length > 0) {
 					currentOpeningToken = openenings[openenings.length - 1];
-					maskCurrentToken(m, currentOpeningToken, lastMatch, !currentOpeningToken.isAlternator);
+					insertTestDefinition(currentOpeningToken, m);
 					if (currentOpeningToken.isAlternator) { //handle alternator a | b case
 						alternator = openenings.pop();
 						for (var mndx = 0; mndx < alternator.matches.length; mndx++) {
@@ -396,7 +394,7 @@
 						}
 					}
 				} else {
-					maskCurrentToken(m, currentToken, lastMatch);
+					insertTestDefinition(currentToken, m);
 				}
 			}
 
@@ -444,6 +442,7 @@
 					case opts.groupmarker.end:
 						// Group closing
 						openingToken = openenings.pop();
+						openingToken.openGroup = false; //mark group as complete
 						if (openingToken !== undefined) {
 							if (openenings.length > 0) {
 								currentOpeningToken = openenings[openenings.length - 1];
@@ -466,12 +465,10 @@
 						} else defaultCase();
 						break;
 					case opts.optionalmarker.start:
-						verifyGroupMarker(currentToken.matches[currentToken.matches.length - 1]);
 						// optional opening
 						openenings.push(new MaskToken(false, true));
 						break;
 					case opts.groupmarker.start:
-						verifyGroupMarker(currentToken.matches[currentToken.matches.length - 1]);
 						// Group opening
 						openenings.push(new MaskToken(true));
 						break;
@@ -511,7 +508,8 @@
 							currentToken.matches.push(quantifier);
 						}
 						break;
-					case opts.alternatormarker:
+					case
+					opts.alternatormarker:
 						if (openenings.length > 0) {
 							currentOpeningToken = openenings[openenings.length - 1];
 							lastMatch = currentOpeningToken.matches.pop();
@@ -533,12 +531,10 @@
 
 			while (openenings.length > 0) {
 				openingToken = openenings.pop();
-				verifyGroupMarker(openingToken, true);
 				currentToken.matches.push(openingToken);
 			}
 			if (currentToken.matches.length > 0) {
-				lastMatch = currentToken.matches[currentToken.matches.length - 1];
-				verifyGroupMarker(lastMatch);
+				verifyGroupMarker(currentToken);
 				maskTokens.push(currentToken);
 			}
 
