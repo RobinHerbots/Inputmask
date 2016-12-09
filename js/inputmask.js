@@ -363,18 +363,20 @@
 			}
 
 			function verifyGroupMarker(maskToken) {
-				$.each(maskToken.matches, function (ndx, token) {
-						var nextToken = maskToken.matches[ndx + 1];
-						if ((nextToken === undefined || (nextToken.matches === undefined || nextToken.isQuantifier === false)) && token && token.isGroup) { //this is not a group but a normal mask => convert
-							token.isGroup = false;
-							insertTestDefinition(token, opts.groupmarker.start, 0);
-							if (token.openGroup !== true) {
-								insertTestDefinition(token, opts.groupmarker.end);
+				if (maskToken && maskToken.matches) {
+					$.each(maskToken.matches, function (ndx, token) {
+							var nextToken = maskToken.matches[ndx + 1];
+							if ((nextToken === undefined || (nextToken.matches === undefined || nextToken.isQuantifier === false)) && token && token.isGroup) { //this is not a group but a normal mask => convert
+								token.isGroup = false;
+								insertTestDefinition(token, opts.groupmarker.start, 0);
+								if (token.openGroup !== true) {
+									insertTestDefinition(token, opts.groupmarker.end);
+								}
 							}
+							verifyGroupMarker(token);
 						}
-						verifyGroupMarker(token);
-					}
-				);
+					);
+				}
 			}
 
 			function defaultCase() {
