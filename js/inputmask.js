@@ -2506,9 +2506,7 @@
 					}
 				}
 				if (opts.positionCaretOnTab === true) {
-					setTimeout(function () {
-						EventHandlers.clickEvent.apply(input, [e, true]);
-					}, 0);
+					EventHandlers.clickEvent.apply(input, [e, true]);
 				}
 				undoValue = getBuffer().join("");
 			},

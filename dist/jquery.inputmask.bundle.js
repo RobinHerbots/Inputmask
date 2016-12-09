@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4-123
+* Version: 3.3.4-124
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -1022,9 +1022,8 @@
             focusEvent: function(e) {
                 var input = this, nptValue = input.inputmask._valueGet();
                 opts.showMaskOnFocus && (!opts.showMaskOnHover || opts.showMaskOnHover && "" === nptValue) && (input.inputmask._valueGet() !== getBuffer().join("") ? writeBuffer(input, getBuffer(), seekNext(getLastValidPosition())) : mouseEnter === !1 && caret(input, seekNext(getLastValidPosition()))), 
-                opts.positionCaretOnTab === !0 && setTimeout(function() {
-                    EventHandlers.clickEvent.apply(input, [ e, !0 ]);
-                }, 0), undoValue = getBuffer().join("");
+                opts.positionCaretOnTab === !0 && EventHandlers.clickEvent.apply(input, [ e, !0 ]), 
+                undoValue = getBuffer().join("");
             },
             mouseleaveEvent: function(e) {
                 var input = this;
