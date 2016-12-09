@@ -2507,7 +2507,7 @@
 				}
 				if (opts.positionCaretOnTab === true) {
 					setTimeout(function () {
-						EventHandlers.clickEvent.apply(input, [e]);
+						EventHandlers.clickEvent.apply(input, [e, true]);
 					}, 0);
 				}
 				undoValue = getBuffer().join("");
@@ -2528,7 +2528,7 @@
 					}
 				}
 			},
-			clickEvent: function (e) {
+			clickEvent: function (e, tabbed) {
 				function doRadixFocus(clickPos) {
 					if (opts.radixPoint !== "") {
 						var vps = getMaskSet().validPositions;
@@ -2552,6 +2552,7 @@
 				setTimeout(function () { //needed for Chrome ~ initial selection clears after the clickevent
 					if (document.activeElement === input) {
 						var selectedCaret = caret(input);
+						if (tabbed) selectedCaret.begin = selectedCaret.end;
 						if (selectedCaret.begin === selectedCaret.end) {
 							switch (opts.positionCaretOnClick) {
 								case "none":

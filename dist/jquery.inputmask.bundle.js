@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4-122
+* Version: 3.3.4-123
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -1023,7 +1023,7 @@
                 var input = this, nptValue = input.inputmask._valueGet();
                 opts.showMaskOnFocus && (!opts.showMaskOnHover || opts.showMaskOnHover && "" === nptValue) && (input.inputmask._valueGet() !== getBuffer().join("") ? writeBuffer(input, getBuffer(), seekNext(getLastValidPosition())) : mouseEnter === !1 && caret(input, seekNext(getLastValidPosition()))), 
                 opts.positionCaretOnTab === !0 && setTimeout(function() {
-                    EventHandlers.clickEvent.apply(input, [ e ]);
+                    EventHandlers.clickEvent.apply(input, [ e, !0 ]);
                 }, 0), undoValue = getBuffer().join("");
             },
             mouseleaveEvent: function(e) {
@@ -1034,7 +1034,7 @@
                     writeBuffer(input, buffer));
                 }
             },
-            clickEvent: function(e) {
+            clickEvent: function(e, tabbed) {
                 function doRadixFocus(clickPos) {
                     if ("" !== opts.radixPoint) {
                         var vps = getMaskSet().validPositions;
@@ -1053,7 +1053,7 @@
                 setTimeout(function() {
                     if (document.activeElement === input) {
                         var selectedCaret = caret(input);
-                        if (selectedCaret.begin === selectedCaret.end) switch (opts.positionCaretOnClick) {
+                        if (tabbed && (selectedCaret.begin = selectedCaret.end), selectedCaret.begin === selectedCaret.end) switch (opts.positionCaretOnClick) {
                           case "none":
                             break;
 
