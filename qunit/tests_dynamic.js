@@ -9,10 +9,10 @@ define([
 	"../dist/inputmask/inputmask.regex.extensions",
 	"prototypeExtensions",
 	"simulator"
-], function(qunit, $, Inputmask) {
+], function (qunit, $, Inputmask) {
 
 	qunit.module("Dynamic Masks");
-	qunit.test("inputmask(\"9-a{3}9{3}\" - simple dynamic mask", function(assert) {
+	qunit.test("inputmask(\"9-a{3}9{3}\" - simple dynamic mask", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
@@ -25,7 +25,7 @@ define([
 
 
 	});
-	qunit.test("inputmask(\"9-a{1,3}9{1,3}\" - simple dynamic mask", function(assert) {
+	qunit.test("inputmask(\"9-a{1,3}9{1,3}\" - simple dynamic mask", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
@@ -38,7 +38,7 @@ define([
 
 
 	});
-	qunit.test("inputmask(\"9-a{1,3}9{1,3}\" - simple dynamic mask - greedy false", function(assert) {
+	qunit.test("inputmask(\"9-a{1,3}9{1,3}\" - simple dynamic mask - greedy false", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
@@ -53,7 +53,7 @@ define([
 
 
 	});
-	qunit.test("inputmask(\"9-a{1,3}/9{2,3}\" - simple dynamic mask - greedy true", function(assert) {
+	qunit.test("inputmask(\"9-a{1,3}/9{2,3}\" - simple dynamic mask - greedy true", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
@@ -68,7 +68,7 @@ define([
 
 
 	});
-	qunit.test("email mask greedy false", function(assert) {
+	qunit.test("email mask greedy false", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
@@ -83,7 +83,7 @@ define([
 
 
 	});
-	qunit.test("email mask greedy true", function(assert) {
+	qunit.test("email mask greedy true", function (assert) {
 		var done = assert.async(),
 			$fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
@@ -95,13 +95,13 @@ define([
 		testmask.focus();
 		$("#testmask").Type("some.body@mail.com");
 		testmask.blur();
-		setTimeout(function() {
+		setTimeout(function () {
 			assert.equal(testmask.value, "some.body@mail.com", "Result " + testmask.value);
 			done();
 		}, 0);
 	});
 
-	qunit.test("email mask - partial input", function(assert) {
+	qunit.test("email mask - partial input", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
@@ -113,7 +113,7 @@ define([
 		assert.equal(testmask.value, "some.@_._", "Result " + testmask.value);
 	});
 
-	qunit.test("email mask - partial input 2", function(assert) {
+	qunit.test("email mask - partial input 2", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
@@ -128,7 +128,7 @@ define([
 
 	});
 
-	qunit.test("email mask - babu@us.lufthansa.com - babupca", function(assert) {
+	qunit.test("email mask - babu@us.lufthansa.com - babupca", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
@@ -141,7 +141,7 @@ define([
 
 	});
 
-	qunit.test("email mask - email@subdomain.domain.com - babupca", function(assert) {
+	qunit.test("email mask - email@subdomain.domain.com - babupca", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
@@ -154,7 +154,7 @@ define([
 
 	});
 
-	qunit.test("email mask - paste test.test@test.com - Kurumas", function(assert) {
+	qunit.test("email mask - paste test.test@test.com - Kurumas", function (assert) {
 		var done = assert.async(),
 			$fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
@@ -163,14 +163,14 @@ define([
 
 		testmask.focus();
 		$("#testmask").paste("test.test@test.com");
-		setTimeout(function() {
+		setTimeout(function () {
 			assert.equal(testmask.value, "test.test@test.com", "Result " + testmask.value);
 			done();
 
 		}, 0);
 	});
 
-	qunit.test("quantifier mask greedy false - FairSite2C", function(assert) {
+	qunit.test("quantifier mask greedy false - FairSite2C", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
@@ -185,7 +185,7 @@ define([
 
 	});
 
-	qunit.test("quantifier mask greedy true - FairSite2C", function(assert) {
+	qunit.test("quantifier mask greedy true - FairSite2C", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
@@ -201,7 +201,7 @@ define([
 	});
 
 
-	qunit.test("email mask - clearIncomplete - hiddenman", function(assert) {
+	qunit.test("email mask - clearIncomplete - hiddenman", function (assert) {
 		var done = assert.async(),
 			$fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
@@ -213,14 +213,14 @@ define([
 		testmask.focus();
 		$("#testmask").Type("akornilov");
 		testmask.blur();
-		setTimeout(function() {
+		setTimeout(function () {
 			assert.equal(document.getElementById("testmask").inputmask._valueGet(), "", "Result " + document.getElementById("testmask").inputmask._valueGet());
 			done();
 
 		}, 0);
 	});
 
-	qunit.test("email mask - clearIncomplete - hiddenman", function(assert) {
+	qunit.test("email mask - clearIncomplete - hiddenman", function (assert) {
 		var done = assert.async(),
 			$fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
@@ -232,14 +232,14 @@ define([
 		testmask.focus();
 		$("#testmask").Type("akornilov@");
 		testmask.blur();
-		setTimeout(function() {
+		setTimeout(function () {
 			assert.equal(document.getElementById("testmask").inputmask._valueGet(), "", "Result " + document.getElementById("testmask").inputmask._valueGet());
 			done();
 
 		}, 0);
 	});
 
-	qunit.test("email mask - clearIncomplete - hiddenman", function(assert) {
+	qunit.test("email mask - clearIncomplete - hiddenman", function (assert) {
 		var done = assert.async(),
 			$fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
@@ -251,14 +251,14 @@ define([
 		testmask.focus();
 		$("#testmask").Type("akornilov@gmail.com");
 		testmask.blur();
-		setTimeout(function() {
+		setTimeout(function () {
 			assert.equal(document.getElementById("testmask").inputmask._valueGet(), "akornilov@gmail.com", "Result " + document.getElementById("testmask").inputmask._valueGet());
 			done();
 
 		}, 0);
 	});
 
-	qunit.test("mask: '\\\\a{*}', repeat: 5 - voidmain02", function(assert) {
+	qunit.test("mask: '\\\\a{*}', repeat: 5 - voidmain02", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
@@ -273,7 +273,7 @@ define([
 
 	});
 
-	qunit.test("[a{1,3}-]9999 - type abc1234 => delete c - ivodopyanov", function(assert) {
+	qunit.test("[a{1,3}-]9999 - type abc1234 => delete c - ivodopyanov", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
@@ -285,7 +285,7 @@ define([
 		assert.equal(document.getElementById("testmask").inputmask._valueGet(), "ab-1234", "Result " + document.getElementById("testmask").inputmask._valueGet());
 	});
 
-	qunit.test("email mask - mouseclick to domain part - hiddenman", function(assert) {
+	qunit.test("email mask - mouseclick to domain part - hiddenman", function (assert) {
 		var done = assert.async(),
 			$fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
@@ -300,12 +300,12 @@ define([
 		$("#testmask").trigger("click");
 
 		$("#testmask").Type("gmail.com");
-		setTimeout(function() {
+		setTimeout(function () {
 			assert.equal(document.getElementById("testmask").inputmask._valueGet(), "akornilov@gmail.com", "Result " + document.getElementById("testmask").inputmask._valueGet());
 			done();
 		}, 0);
 	});
-	qunit.test("I{1,3}-ZZ - rgafaric", function(assert) {
+	qunit.test("I{1,3}-ZZ - rgafaric", function (assert) {
 		var done = assert.async(),
 			$fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" value="VAA" />');
@@ -324,13 +324,13 @@ define([
 			}
 		}).mask(testmask);
 		testmask.blur();
-		setTimeout(function() {
+		setTimeout(function () {
 			assert.equal(document.getElementById("testmask").inputmask._valueGet(), "V-AA", "Result " + document.getElementById("testmask").inputmask._valueGet());
 			done();
 		}, 0);
 	});
 
-	qunit.test("email mask - some.body@mail.com - delete before @", function(assert) {
+	qunit.test("email mask - some.body@mail.com - delete before @", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
@@ -341,5 +341,18 @@ define([
 		$.caret(testmask, 9);
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 		assert.equal(testmask.value, "some.body@ail.com", "Result " + testmask.value);
+	});
+
+	qunit.test("email mask -123@mail.com - 123 => info", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("email").mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("123@mail.com");
+		$.caret(testmask, 0, 3);
+		$("#testmask").Type("info");
+		assert.equal(testmask.value, "info@mail.com", "Result " + testmask.value);
 	});
 });

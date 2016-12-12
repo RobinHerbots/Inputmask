@@ -88,8 +88,6 @@
 			showMaskOnHover: true, //show the mask-placeholder when hovering the empty input
 			onKeyValidation: $.noop, //executes on every key-press with the result of isValid. Params: key, result, opts
 			skipOptionalPartCharacter: " ", //a character which can be used to skip an optional part of a mask
-			showTooltip: false, //show the activemask as tooltip
-			tooltip: undefined, //tooltip to show
 			numericInput: false, //numericInput input direction style (input shifts to the left while holding the caret position)
 			rightAlign: false, //align to the right
 			undoOnEscape: true, //pressing escape reverts the value to the value before focus
@@ -1511,9 +1509,9 @@
 						initialLength = getMaskSet().maskLength;
 					for (i = (j = pos); i <= lvp; i++) {
 						var t = positionsClone[i];
-						if (t !== undefined) {
+						if (t !== undefined && (t.generatedInput !== true || t.match.fn === null)) {
 							var posMatch = j;
-							while (posMatch < getMaskSet().maskLength && ((t.match.fn == null && vps[i] && (vps[i].match.optionalQuantifier === true || vps[i].match.optionality === true)) || t.match.fn != null)) {
+							while (posMatch < getMaskSet().maskLength && ((t.match.fn === null && vps[i] && (vps[i].match.optionalQuantifier === true || vps[i].match.optionality === true)) || t.match.fn != null)) {
 								posMatch++;
 								if (needsValidation === false && positionsClone[posMatch] && positionsClone[posMatch].match.def === t.match.def) { //obvious match
 									getMaskSet().validPositions[posMatch] = $.extend(true, {}, positionsClone[posMatch]);
@@ -2281,9 +2279,6 @@
 					} else if (isComplete(getBuffer()) === true) {
 						$input.trigger("complete");
 					}
-					if (opts.showTooltip) { //update tooltip
-						input.title = opts.tooltip || getMaskSet().mask;
-					}
 				} else if (k === Inputmask.keyCode.END || k === Inputmask.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
 					e.preventDefault();
 					var caretPos = seekNext(getLastValidPosition());
@@ -2378,10 +2373,6 @@
 									}, 0);
 								}
 							}
-						}
-
-						if (opts.showTooltip) { //update tooltip
-							input.title = opts.tooltip || getMaskSet().mask;
 						}
 
 						e.preventDefault();
@@ -2604,10 +2595,6 @@
 
 				if (input.inputmask._valueGet() === getBufferTemplate().join("")) {
 					$input.trigger("cleared");
-				}
-
-				if (opts.showTooltip) { //update tooltip
-					input.title = opts.tooltip || getMaskSet().mask;
 				}
 			},
 			blurEvent: function (e) {
@@ -2834,11 +2821,6 @@
 			if (isElementTypeSupported(elem, opts)) {
 				el = elem;
 				$el = $(el);
-
-				//show tooltip
-				if (opts.showTooltip) {
-					el.title = opts.tooltip || getMaskSet().mask;
-				}
 
 				if (el.dir === "rtl" || opts.rightAlign) {
 					el.style.textAlign = "right";

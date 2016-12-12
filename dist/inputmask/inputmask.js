@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2016 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4-124
+* Version: 3.3.4-126
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define("inputmask", [ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib")) : factory(window.dependencyLib || jQuery);
@@ -417,7 +417,7 @@
                     var j, valid = !0, vps = getMaskSet().validPositions, needsValidation = !1, initialLength = getMaskSet().maskLength;
                     for (i = j = pos; i <= lvp; i++) {
                         var t = positionsClone[i];
-                        if (void 0 !== t) for (var posMatch = j; posMatch < getMaskSet().maskLength && (null == t.match.fn && vps[i] && (vps[i].match.optionalQuantifier === !0 || vps[i].match.optionality === !0) || null != t.match.fn); ) {
+                        if (void 0 !== t && (t.generatedInput !== !0 || null === t.match.fn)) for (var posMatch = j; posMatch < getMaskSet().maskLength && (null === t.match.fn && vps[i] && (vps[i].match.optionalQuantifier === !0 || vps[i].match.optionality === !0) || null != t.match.fn); ) {
                             if (posMatch++, needsValidation === !1 && positionsClone[posMatch] && positionsClone[posMatch].match.def === t.match.def) getMaskSet().validPositions[posMatch] = $.extend(!0, {}, positionsClone[posMatch]), 
                             getMaskSet().validPositions[posMatch].input = t.input, fillMissingNonMask(posMatch), 
                             j = posMatch, valid = !0; else if (positionCanMatchDefinition(posMatch, t.match.def)) {
@@ -833,9 +833,9 @@
                 }
                 return isSupported;
             }
-            if (isElementTypeSupported(elem, opts) && (el = elem, $el = $(el), opts.showTooltip && (el.title = opts.tooltip || getMaskSet().mask), 
-            ("rtl" === el.dir || opts.rightAlign) && (el.style.textAlign = "right"), ("rtl" === el.dir || opts.numericInput) && (el.dir = "ltr", 
-            el.removeAttribute("dir"), el.inputmask.isRTL = !0, isRTL = !0), opts.colorMask === !0 && initializeColorMask(el), 
+            if (isElementTypeSupported(elem, opts) && (el = elem, $el = $(el), ("rtl" === el.dir || opts.rightAlign) && (el.style.textAlign = "right"), 
+            ("rtl" === el.dir || opts.numericInput) && (el.dir = "ltr", el.removeAttribute("dir"), 
+            el.inputmask.isRTL = !0, isRTL = !0), opts.colorMask === !0 && initializeColorMask(el), 
             android && (el.hasOwnProperty("inputmode") && (el.inputmode = opts.inputmode, el.setAttribute("inputmode", opts.inputmode)), 
             "rtfm" === opts.androidHack && (opts.colorMask !== !0 && initializeColorMask(el), 
             el.type = "password")), EventRuler.off(el), patchValueProperty(el), EventRuler.on(el, "submit", EventHandlers.submitEvent), 
@@ -923,8 +923,7 @@
                 var input = this, $input = $(input), k = e.keyCode, pos = caret(input);
                 if (k === Inputmask.keyCode.BACKSPACE || k === Inputmask.keyCode.DELETE || iphone && k === Inputmask.keyCode.BACKSPACE_SAFARI || e.ctrlKey && k === Inputmask.keyCode.X && !isInputEventSupported("cut")) e.preventDefault(), 
                 handleRemove(input, k, pos), writeBuffer(input, getBuffer(!0), getMaskSet().p, e, input.inputmask._valueGet() !== getBuffer().join("")), 
-                input.inputmask._valueGet() === getBufferTemplate().join("") ? $input.trigger("cleared") : isComplete(getBuffer()) === !0 && $input.trigger("complete"), 
-                opts.showTooltip && (input.title = opts.tooltip || getMaskSet().mask); else if (k === Inputmask.keyCode.END || k === Inputmask.keyCode.PAGE_DOWN) {
+                input.inputmask._valueGet() === getBufferTemplate().join("") ? $input.trigger("cleared") : isComplete(getBuffer()) === !0 && $input.trigger("complete"); else if (k === Inputmask.keyCode.END || k === Inputmask.keyCode.PAGE_DOWN) {
                     e.preventDefault();
                     var caretPos = seekNext(getLastValidPosition());
                     opts.insertMode || caretPos !== getMaskSet().maskLength || e.shiftKey || caretPos--, 
@@ -970,8 +969,8 @@
                             }, 0);
                         }
                     }
-                    if (opts.showTooltip && (input.title = opts.tooltip || getMaskSet().mask), e.preventDefault(), 
-                    checkval) return valResult.forwardPosition = forwardPosition, valResult;
+                    if (e.preventDefault(), checkval) return valResult.forwardPosition = forwardPosition, 
+                    valResult;
                 }
             },
             pasteEvent: function(e) {
@@ -1087,8 +1086,7 @@
                 clipboardData.setData("text", isRTL ? clipData.reverse().join("") : clipData.join("")), 
                 document.execCommand && document.execCommand("copy"), handleRemove(input, Inputmask.keyCode.DELETE, pos), 
                 writeBuffer(input, getBuffer(), getMaskSet().p, e, undoValue !== getBuffer().join("")), 
-                input.inputmask._valueGet() === getBufferTemplate().join("") && $input.trigger("cleared"), 
-                opts.showTooltip && (input.title = opts.tooltip || getMaskSet().mask);
+                input.inputmask._valueGet() === getBufferTemplate().join("") && $input.trigger("cleared");
             },
             blurEvent: function(e) {
                 var $input = $(this), input = this;
@@ -1218,8 +1216,6 @@
             showMaskOnHover: !0,
             onKeyValidation: $.noop,
             skipOptionalPartCharacter: " ",
-            showTooltip: !1,
-            tooltip: void 0,
             numericInput: !1,
             rightAlign: !1,
             undoOnEscape: !0,

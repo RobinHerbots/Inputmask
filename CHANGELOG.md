@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - colorMask option ~ css styleable mask
 
 ### Updates
+- remove tooltip option
 - remove h,s,d,m,y definitions => use the date/time aliases
 - phone-alias - fine-tune mask sorting
 - make data-inputmask attribute naming configurable (dataAttribute on Inputmask)
