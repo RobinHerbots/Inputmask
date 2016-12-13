@@ -1965,137 +1965,6 @@
 			return complete;
 		}
 
-		function patchValueProperty(npt) {
-			var valueGet;
-			var valueSet;
-
-			function patchValhook(type) {
-				if ($.valHooks && ($.valHooks[type] === undefined || $.valHooks[type].inputmaskpatch !== true)) {
-					var valhookGet = $.valHooks[type] && $.valHooks[type].get ? $.valHooks[type].get : function (elem) {
-						return elem.value;
-					};
-					var valhookSet = $.valHooks[type] && $.valHooks[type].set ? $.valHooks[type].set : function (elem, value) {
-						elem.value = value;
-						return elem;
-					};
-
-					$.valHooks[type] = {
-						get: function (elem) {
-							if (elem.inputmask) {
-								if (elem.inputmask.opts.autoUnmask) {
-									return elem.inputmask.unmaskedvalue();
-								} else {
-									var result = valhookGet(elem);
-									return getLastValidPosition(undefined, undefined, elem.inputmask.maskset.validPositions) !== -1 || opts.nullable !== true ? result : "";
-								}
-							} else return valhookGet(elem);
-						},
-						set: function (elem, value) {
-							var $elem = $(elem),
-								result;
-							result = valhookSet(elem, value);
-							if (elem.inputmask) {
-								$elem.trigger("setvalue");
-							}
-							return result;
-						},
-						inputmaskpatch: true
-					};
-				}
-			}
-
-			function getter() {
-				if (this.inputmask) {
-					return this.inputmask.opts.autoUnmask ?
-						this.inputmask.unmaskedvalue() :
-						(getLastValidPosition() !== -1 || opts.nullable !== true ?
-							(document.activeElement === this && opts.clearMaskOnLostFocus ?
-								(isRTL ? clearOptionalTail(getBuffer().slice()).reverse() : clearOptionalTail(getBuffer().slice())).join("") :
-								valueGet.call(this)) :
-							"");
-				} else return valueGet.call(this);
-			}
-
-			function setter(value) {
-				valueSet.call(this, value);
-				if (this.inputmask) {
-					$(this).trigger("setvalue");
-				}
-			}
-
-			function installNativeValueSetFallback(npt) {
-				EventRuler.on(npt, "mouseenter", function (event) {
-					var $input = $(this),
-						input = this,
-						value = input.inputmask._valueGet();
-					if (value !== getBuffer().join("") /*&& getLastValidPosition() > 0*/) {
-						$input.trigger("setvalue");
-					}
-				});
-			}
-
-			if (!npt.inputmask.__valueGet) {
-				if (opts.noValuePatching !== true) {
-					if (Object.getOwnPropertyDescriptor) {
-						if (typeof Object.getPrototypeOf !== "function") {
-							Object.getPrototypeOf = typeof "test".__proto__ === "object" ? function (object) {
-								return object.__proto__;
-							} : function (object) {
-								return object.constructor.prototype;
-							};
-						}
-
-						var valueProperty = Object.getPrototypeOf ? Object.getOwnPropertyDescriptor(Object.getPrototypeOf(npt), "value") : undefined;
-						if (valueProperty && valueProperty.get && valueProperty.set) {
-							valueGet = valueProperty.get;
-							valueSet = valueProperty.set;
-							Object.defineProperty(npt, "value", {
-								get: getter,
-								set: setter,
-								configurable: true
-							});
-						} else if (npt.tagName !== "INPUT") {
-							valueGet = function () {
-								return this.textContent;
-							};
-							valueSet = function (value) {
-								this.textContent = value;
-							};
-							Object.defineProperty(npt, "value", {
-								get: getter,
-								set: setter,
-								configurable: true
-							});
-						}
-					} else if (document.__lookupGetter__ && npt.__lookupGetter__("value")) {
-						valueGet = npt.__lookupGetter__("value");
-						valueSet = npt.__lookupSetter__("value");
-
-						npt.__defineGetter__("value", getter);
-						npt.__defineSetter__("value", setter);
-					}
-					npt.inputmask.__valueGet = valueGet; //store native property getter
-					npt.inputmask.__valueSet = valueSet; //store native property setter
-				}
-				npt.inputmask._valueGet = function (overruleRTL) {
-					return isRTL && overruleRTL !== true ? valueGet.call(this.el).split("").reverse().join("") : valueGet.call(this.el);
-				};
-				npt.inputmask._valueSet = function (value, overruleRTL) { //null check is needed for IE8 => otherwise converts to "null"
-					valueSet.call(this.el, (value === null || value === undefined) ? "" : ((overruleRTL !== true && isRTL) ? value.split("").reverse().join("") : value));
-				};
-
-				if (valueGet === undefined) { //jquery.val fallback
-					valueGet = function () {
-						return this.value;
-					};
-					valueSet = function (value) {
-						this.value = value;
-					};
-					patchValhook(npt.type);
-					installNativeValueSetFallback(npt);
-				}
-			}
-		}
 
 		function handleRemove(input, k, pos, strict) {
 			function generalize() {
@@ -2807,18 +2676,156 @@
 
 		function mask(elem) {
 			function isElementTypeSupported(input, opts) {
+				function patchValueProperty(npt) {
+					var valueGet;
+					var valueSet;
+
+					function patchValhook(type) {
+						if ($.valHooks && ($.valHooks[type] === undefined || $.valHooks[type].inputmaskpatch !== true)) {
+							var valhookGet = $.valHooks[type] && $.valHooks[type].get ? $.valHooks[type].get : function (elem) {
+								return elem.value;
+							};
+							var valhookSet = $.valHooks[type] && $.valHooks[type].set ? $.valHooks[type].set : function (elem, value) {
+								elem.value = value;
+								return elem;
+							};
+
+							$.valHooks[type] = {
+								get: function (elem) {
+									if (elem.inputmask) {
+										if (elem.inputmask.opts.autoUnmask) {
+											return elem.inputmask.unmaskedvalue();
+										} else {
+											var result = valhookGet(elem);
+											return getLastValidPosition(undefined, undefined, elem.inputmask.maskset.validPositions) !== -1 || opts.nullable !== true ? result : "";
+										}
+									} else return valhookGet(elem);
+								},
+								set: function (elem, value) {
+									var $elem = $(elem),
+										result;
+									result = valhookSet(elem, value);
+									if (elem.inputmask) {
+										$elem.trigger("setvalue");
+									}
+									return result;
+								},
+								inputmaskpatch: true
+							};
+						}
+					}
+
+					function getter() {
+						if (this.inputmask) {
+							return this.inputmask.opts.autoUnmask ?
+								this.inputmask.unmaskedvalue() :
+								(getLastValidPosition() !== -1 || opts.nullable !== true ?
+									(document.activeElement === this && opts.clearMaskOnLostFocus ?
+										(isRTL ? clearOptionalTail(getBuffer().slice()).reverse() : clearOptionalTail(getBuffer().slice())).join("") :
+										valueGet.call(this)) :
+									"");
+						} else return valueGet.call(this);
+					}
+
+					function setter(value) {
+						valueSet.call(this, value);
+						if (this.inputmask) {
+							$(this).trigger("setvalue");
+						}
+					}
+
+					function installNativeValueSetFallback(npt) {
+						EventRuler.on(npt, "mouseenter", function (event) {
+							var $input = $(this),
+								input = this,
+								value = input.inputmask._valueGet();
+							if (value !== getBuffer().join("") /*&& getLastValidPosition() > 0*/) {
+								$input.trigger("setvalue");
+							}
+						});
+					}
+
+					if (!npt.inputmask.__valueGet) {
+						if (opts.noValuePatching !== true) {
+							if (Object.getOwnPropertyDescriptor) {
+								if (typeof Object.getPrototypeOf !== "function") {
+									Object.getPrototypeOf = typeof "test".__proto__ === "object" ? function (object) {
+										return object.__proto__;
+									} : function (object) {
+										return object.constructor.prototype;
+									};
+								}
+
+								var valueProperty = Object.getPrototypeOf ? Object.getOwnPropertyDescriptor(Object.getPrototypeOf(npt), "value") : undefined;
+								if (valueProperty && valueProperty.get && valueProperty.set) {
+									valueGet = valueProperty.get;
+									valueSet = valueProperty.set;
+									Object.defineProperty(npt, "value", {
+										get: getter,
+										set: setter,
+										configurable: true
+									});
+								} else if (npt.tagName !== "INPUT") {
+									valueGet = function () {
+										return this.textContent;
+									};
+									valueSet = function (value) {
+										this.textContent = value;
+									};
+									Object.defineProperty(npt, "value", {
+										get: getter,
+										set: setter,
+										configurable: true
+									});
+								}
+							} else if (document.__lookupGetter__ && npt.__lookupGetter__("value")) {
+								valueGet = npt.__lookupGetter__("value");
+								valueSet = npt.__lookupSetter__("value");
+
+								npt.__defineGetter__("value", getter);
+								npt.__defineSetter__("value", setter);
+							}
+							npt.inputmask.__valueGet = valueGet; //store native property getter
+							npt.inputmask.__valueSet = valueSet; //store native property setter
+						}
+						npt.inputmask._valueGet = function (overruleRTL) {
+							return isRTL && overruleRTL !== true ? valueGet.call(this.el).split("").reverse().join("") : valueGet.call(this.el);
+						};
+						npt.inputmask._valueSet = function (value, overruleRTL) { //null check is needed for IE8 => otherwise converts to "null"
+							valueSet.call(this.el, (value === null || value === undefined) ? "" : ((overruleRTL !== true && isRTL) ? value.split("").reverse().join("") : value));
+						};
+
+						if (valueGet === undefined) { //jquery.val fallback
+							valueGet = function () {
+								return this.value;
+							};
+							valueSet = function (value) {
+								this.value = value;
+							};
+							patchValhook(npt.type);
+							installNativeValueSetFallback(npt);
+						}
+					}
+				}
+
 				var elementType = input.getAttribute("type");
 				var isSupported = (input.tagName === "INPUT" && $.inArray(elementType, opts.supportsInputType) !== -1) || input.isContentEditable || input.tagName === "TEXTAREA";
-				if (!isSupported && input.tagName === "INPUT") {
-					var el = document.createElement("input");
-					el.setAttribute("type", elementType);
-					isSupported = el.type === "text"; //apply mask only if the type is not natively supported
-					el = null;
+				if (!isSupported) {
+					if (input.tagName === "INPUT") {
+						var el = document.createElement("input");
+						el.setAttribute("type", elementType);
+						isSupported = el.type === "text"; //apply mask only if the type is not natively supported
+						el = null;
+					} else isSupported = "partial";
+				}
+				if (isSupported !== false) {
+					patchValueProperty(input);
 				}
 				return isSupported;
 			}
 
-			if (isElementTypeSupported(elem, opts)) {
+			var isSupported = isElementTypeSupported(elem, opts);
+			if (isSupported !== false) {
 				el = elem;
 				$el = $(el);
 
@@ -2852,35 +2859,35 @@
 
 				//unbind all events - to make sure that no other mask will interfere when re-masking
 				EventRuler.off(el);
-				patchValueProperty(el);
+				if (isSupported === true) {
+					//bind events
+					EventRuler.on(el, "submit", EventHandlers.submitEvent);
+					EventRuler.on(el, "reset", EventHandlers.resetEvent);
 
-				//bind events
-				EventRuler.on(el, "submit", EventHandlers.submitEvent);
-				EventRuler.on(el, "reset", EventHandlers.resetEvent);
-
-				EventRuler.on(el, "mouseenter", EventHandlers.mouseenterEvent);
-				EventRuler.on(el, "blur", EventHandlers.blurEvent);
-				EventRuler.on(el, "focus", EventHandlers.focusEvent);
-				EventRuler.on(el, "mouseleave", EventHandlers.mouseleaveEvent);
-				if (opts.colorMask !== true)
-					EventRuler.on(el, "click", EventHandlers.clickEvent);
-				EventRuler.on(el, "dblclick", EventHandlers.dblclickEvent);
-				EventRuler.on(el, "paste", EventHandlers.pasteEvent);
-				EventRuler.on(el, "dragdrop", EventHandlers.pasteEvent);
-				EventRuler.on(el, "drop", EventHandlers.pasteEvent);
-				EventRuler.on(el, "cut", EventHandlers.cutEvent);
-				EventRuler.on(el, "complete", opts.oncomplete);
-				EventRuler.on(el, "incomplete", opts.onincomplete);
-				EventRuler.on(el, "cleared", opts.oncleared);
-				if (opts.inputEventOnly !== true) {
-					EventRuler.on(el, "keydown", EventHandlers.keydownEvent);
-					EventRuler.on(el, "keypress", EventHandlers.keypressEvent);
+					EventRuler.on(el, "mouseenter", EventHandlers.mouseenterEvent);
+					EventRuler.on(el, "blur", EventHandlers.blurEvent);
+					EventRuler.on(el, "focus", EventHandlers.focusEvent);
+					EventRuler.on(el, "mouseleave", EventHandlers.mouseleaveEvent);
+					if (opts.colorMask !== true)
+						EventRuler.on(el, "click", EventHandlers.clickEvent);
+					EventRuler.on(el, "dblclick", EventHandlers.dblclickEvent);
+					EventRuler.on(el, "paste", EventHandlers.pasteEvent);
+					EventRuler.on(el, "dragdrop", EventHandlers.pasteEvent);
+					EventRuler.on(el, "drop", EventHandlers.pasteEvent);
+					EventRuler.on(el, "cut", EventHandlers.cutEvent);
+					EventRuler.on(el, "complete", opts.oncomplete);
+					EventRuler.on(el, "incomplete", opts.onincomplete);
+					EventRuler.on(el, "cleared", opts.oncleared);
+					if (opts.inputEventOnly !== true) {
+						EventRuler.on(el, "keydown", EventHandlers.keydownEvent);
+						EventRuler.on(el, "keypress", EventHandlers.keypressEvent);
+					}
+					EventRuler.on(el, "compositionstart", $.noop);
+					EventRuler.on(el, "compositionupdate", $.noop);
+					EventRuler.on(el, "compositionend", $.noop);
+					EventRuler.on(el, "keyup", $.noop);
+					EventRuler.on(el, "input", EventHandlers.inputFallBackEvent);
 				}
-				EventRuler.on(el, "compositionstart", $.noop);
-				EventRuler.on(el, "compositionupdate", $.noop);
-				EventRuler.on(el, "compositionend", $.noop);
-				EventRuler.on(el, "keyup", $.noop);
-				EventRuler.on(el, "input", EventHandlers.inputFallBackEvent);
 				EventRuler.on(el, "setvalue", EventHandlers.setValueEvent);
 
 				//apply mask
