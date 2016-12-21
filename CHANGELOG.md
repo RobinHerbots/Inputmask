@@ -19,6 +19,7 @@ All notable changes to this project will be documented in this file.
 - improve inputfallback (Android support)
 
 ### Fixed
+- IE11 : SCRIPT438: Object doesn't support property or method 'isFinite' #1472
 - () as literal followed by an optional, doubles the optional template #1453
 - Decimal mask excluding zero with custom RadixPoint and GroupSeparator #1418
 - Can't remove dot from the middle of a word #1439

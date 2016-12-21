@@ -737,7 +737,7 @@
 					testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
 					test = testPos.match;
 					ndxIntlzr = testPos.locator.slice();
-					if (opts.jitMasking === false || pos < lvp || (Number.isFinite(opts.jitMasking) && opts.jitMasking > pos)) {
+					if (opts.jitMasking === false || pos < lvp || (typeof opts.jitMasking === "number" && isFinite(opts.jitMasking) && opts.jitMasking > pos)) {
 						maskTemplate.push(includeMode === false ? test.nativeDef : getPlaceholder(pos, test));
 					}
 				}
@@ -809,10 +809,8 @@
 			resetMaskSet(true);
 			for (i = startPos + 1; i <= getLastValidPosition();) {
 				while (getMaskSet().validPositions[startPos] !== undefined) startPos++;
-				var s = getMaskSet().validPositions[startPos];
 				if (i < startPos) i = startPos + 1;
-				// while (getMaskSet().validPositions[i] == undefined) i++;
-				if ((getMaskSet().validPositions[i] !== undefined || !isMask(i)) && s === undefined) {
+				if (getMaskSet().validPositions[i] !== undefined || !isMask(i)) {
 					var t = getTestTemplate(i);
 					if (needsValidation === false && positionsClone[startPos] && positionsClone[startPos].match.def === t.match.def) { //obvious match
 						getMaskSet().validPositions[startPos] = $.extend(true, {}, positionsClone[startPos]);
@@ -1509,7 +1507,7 @@
 						initialLength = getMaskSet().maskLength;
 					for (i = (j = pos); i <= lvp; i++) {
 						var t = positionsClone[i];
-						if (t !== undefined && (t.generatedInput !== true || t.match.fn === null)) {
+						if (t !== undefined /*&& (t.generatedInput !== true || t.match.fn === null)*/) {
 							var posMatch = j;
 							while (posMatch < getMaskSet().maskLength && ((t.match.fn === null && vps[i] && (vps[i].match.optionalQuantifier === true || vps[i].match.optionality === true)) || t.match.fn != null)) {
 								posMatch++;
@@ -1923,8 +1921,10 @@
 				testPos = positions[pos];
 				if ((testPos.match.optionality ||
 					testPos.match.optionalQuantifier ||
-					(lvTestAlt && ((lvTestAlt !== positions[pos].locator[lvTest.alternation] && testPos.match.fn != null) ||
-					(testPos.match.fn === null && testPos.locator[lvTest.alternation] && checkAlternationMatch(testPos.locator[lvTest.alternation].toString().split(","), lvTestAlt.toString().split(",")) && getTests(pos)[0].def !== "")))) && buffer[pos] === getPlaceholder(pos, testPos.match)) {
+					(lvTestAlt &&
+					((lvTestAlt !== positions[pos].locator[lvTest.alternation] && testPos.match.fn != null) ||
+					(testPos.match.fn === null && testPos.locator[lvTest.alternation] && checkAlternationMatch(testPos.locator[lvTest.alternation].toString().split(","), lvTestAlt.toString().split(",")) && getTests(pos)[0].def !== "")))) &&
+					buffer[pos] === getPlaceholder(pos, testPos.match)) {
 					bl--;
 				} else break;
 			}
@@ -2662,7 +2662,7 @@
 							testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
 							test = testPos.match;
 							ndxIntlzr = testPos.locator.slice();
-							if (opts.jitMasking === false || pos < lvp || (Number.isFinite(opts.jitMasking) && opts.jitMasking > pos)) {
+							if (opts.jitMasking === false || pos < lvp || (typeof opts.jitMasking === "number" && isFinite(opts.jitMasking) && opts.jitMasking > pos)) {
 								handleStatic();
 								maskTemplate += getPlaceholder(pos, test);
 							}

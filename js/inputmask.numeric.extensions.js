@@ -656,8 +656,7 @@
 					initialValue = initialValue.split("").reverse().join("");
 				}
 				return initialValue.toString();
-			}
-			,
+			},
 			canClearPosition: function (maskset, position, lvp, strict, opts) {
 				var positionInput = maskset.validPositions[position].input,
 					canClear = ((positionInput !== opts.radixPoint || (maskset.validPositions[position].match.fn !== null && opts.decimalProtect === false)) || isFinite(positionInput)) ||
@@ -666,8 +665,7 @@
 						positionInput === opts.negationSymbol.front ||
 						positionInput === opts.negationSymbol.back;
 				return canClear;
-			}
-			,
+			},
 			onKeyDown: function (e, buffer, caretPos, opts) {
 				var $input = $(this);
 				if (e.ctrlKey) {
@@ -693,18 +691,15 @@
 			digits: 2,
 			digitsOptional: false,
 			clearMaskOnLostFocus: false
-		}
-		,
+		},
 		"decimal": {
 			alias: "numeric"
-		}
-		,
+		},
 		"integer": {
 			alias: "numeric",
 			digits: 0,
 			radixPoint: ""
-		}
-		,
+		},
 		"percentage": {
 			alias: "numeric",
 			digits: 2,
