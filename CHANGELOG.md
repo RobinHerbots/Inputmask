@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [UNRELEASED]
+## [3.3.4 - 2016-12-22]
 ### Added
 - extra extension points: analyseMask
 - colorMask option ~ css styleable mask
