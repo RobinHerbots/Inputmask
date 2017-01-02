@@ -1,9 +1,9 @@
 /*!
 * jquery.inputmask.bundle.js
 * https://github.com/RobinHerbots/jquery.inputmask
-* Copyright (c) 2010 - 2016 Robin Herbots
+* Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4
+* Version: 3.3.5-2
 */
 !function($) {
     function Inputmask(alias, options) {
@@ -82,7 +82,7 @@
             void 0 === closestTo && (closestTo = -1);
             for (var posNdx in valids) {
                 var psNdx = parseInt(posNdx);
-                valids[psNdx] && (strict || null !== valids[psNdx].match.fn) && (psNdx <= closestTo && (before = psNdx), 
+                valids[psNdx] && (strict || valids[psNdx].generatedInput !== !0) && (psNdx <= closestTo && (before = psNdx), 
                 psNdx >= closestTo && (after = psNdx));
             }
             return before !== -1 && closestTo - before > 1 || after < closestTo ? before : after;
@@ -629,8 +629,9 @@
             } : bl;
         }
         function clearOptionalTail(buffer) {
-            for (var rl = determineLastRequiredPosition(), lmib = buffer.length - 1; lmib > rl && !isMask(lmib); lmib--) ;
-            return buffer.splice(rl, lmib + 1 - rl), buffer;
+            for (var validPos, rl = determineLastRequiredPosition(), bl = buffer.length; rl < bl && !isMask(rl + 1) && (validPos = getTest(rl + 1)) && validPos.match.optionality !== !0 && validPos.match.optionalQuantifier !== !0; ) rl++;
+            for (;(validPos = getTest(rl - 1)) && validPos.match.optionality && validPos.input === opts.skipOptionalPartCharacter; ) rl--;
+            return buffer.splice(rl), buffer;
         }
         function isComplete(buffer) {
             if ($.isFunction(opts.isComplete)) return opts.isComplete(buffer, opts);
@@ -866,7 +867,7 @@
                         var imOpts = $.data(this, "_inputmask_opts");
                         imOpts ? new Inputmask(imOpts).mask(this) : EventRuler.off(this);
                     } else {
-                        if ("setvalue" === e.type || !(this.disabled || this.readOnly && !("keydown" === e.type && e.ctrlKey && 67 === e.keyCode || opts.tabThrough === !1 && e.keyCode === Inputmask.keyCode.TAB))) {
+                        if ("setvalue" === e.type || "FORM" === this.nodeName || !(this.disabled || this.readOnly && !("keydown" === e.type && e.ctrlKey && 67 === e.keyCode || opts.tabThrough === !1 && e.keyCode === Inputmask.keyCode.TAB))) {
                             switch (e.type) {
                               case "input":
                                 if (skipInputEvent === !0) return skipInputEvent = !1, e.preventDefault();
@@ -2046,6 +2047,26 @@
             placeholder: "yyyy/mm/dd",
             alias: "mm/dd/yyyy",
             clearIncomplete: !0
+        },
+        "yyyy-mm-dd hh:mm:ss": {
+            mask: "y-1-2 h:s:s",
+            placeholder: "yyyy-mm-dd hh:mm:ss",
+            alias: "datetime",
+            separator: "-",
+            leapday: "-02-29",
+            regex: {
+                val2pre: function(separator) {
+                    var escapedSeparator = Inputmask.escapeRegex.call(this, separator);
+                    return new RegExp("((0[13-9]|1[012])" + escapedSeparator + "[0-3])|(02" + escapedSeparator + "[0-2])");
+                },
+                val2: function(separator) {
+                    var escapedSeparator = Inputmask.escapeRegex.call(this, separator);
+                    return new RegExp("((0[1-9]|1[012])" + escapedSeparator + "(0[1-9]|[12][0-9]))|((0[13-9]|1[012])" + escapedSeparator + "30)|((0[13578]|1[02])" + escapedSeparator + "31)");
+                },
+                val1pre: new RegExp("[01]"),
+                val1: new RegExp("0[1-9]|1[012]")
+            },
+            onKeyDown: function(e, buffer, caretPos, opts) {}
         }
     }), Inputmask;
 }(jQuery, Inputmask), function($, Inputmask) {

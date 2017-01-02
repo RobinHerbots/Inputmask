@@ -1,9 +1,9 @@
 /*!
 * inputmask.date.extensions.js
 * https://github.com/RobinHerbots/jquery.inputmask
-* Copyright (c) 2010 - 2016 Robin Herbots
+* Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4
+* Version: 3.3.5-2
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib"), require("./inputmask")) : factory(window.dependencyLib || jQuery, window.Inputmask);
@@ -452,6 +452,26 @@
             placeholder: "yyyy/mm/dd",
             alias: "mm/dd/yyyy",
             clearIncomplete: !0
+        },
+        "yyyy-mm-dd hh:mm:ss": {
+            mask: "y-1-2 h:s:s",
+            placeholder: "yyyy-mm-dd hh:mm:ss",
+            alias: "datetime",
+            separator: "-",
+            leapday: "-02-29",
+            regex: {
+                val2pre: function(separator) {
+                    var escapedSeparator = Inputmask.escapeRegex.call(this, separator);
+                    return new RegExp("((0[13-9]|1[012])" + escapedSeparator + "[0-3])|(02" + escapedSeparator + "[0-2])");
+                },
+                val2: function(separator) {
+                    var escapedSeparator = Inputmask.escapeRegex.call(this, separator);
+                    return new RegExp("((0[1-9]|1[012])" + escapedSeparator + "(0[1-9]|[12][0-9]))|((0[13-9]|1[012])" + escapedSeparator + "30)|((0[13578]|1[02])" + escapedSeparator + "31)");
+                },
+                val1pre: new RegExp("[01]"),
+                val1: new RegExp("0[1-9]|1[012]")
+            },
+            onKeyDown: function(e, buffer, caretPos, opts) {}
         }
     }), Inputmask;
 });

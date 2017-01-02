@@ -355,4 +355,38 @@ define([
 		$("#testmask").Type("info");
 		assert.equal(testmask.value, "info@mail.com", "Result " + testmask.value);
 	});
+
+	qunit.test("(aa)|(a.a.)|(aaa)|(aa.a.)|(a.aa.) - incomplete - danielpiterak", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("(aa)|(a.a.)|(aaa)|(aa.a.)|(a.aa.)", {
+			clearMaskOnLostFocus: true,
+			showMaskOnHover: false,
+			placeholder: " ",
+			casing: "upper"
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("p.p");
+		testmask.blur();
+		assert.equal(testmask.value, "P.P.", "Result " + testmask.value);
+	});
+
+	qunit.test("(aa)|(a.a.)|(aaa)|(aa.a.)|(a.aa.) - complete - danielpiterak", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("(aa)|(a.a.)|(aaa)|(aa.a.)|(a.aa.)", {
+			clearMaskOnLostFocus: true,
+			showMaskOnHover: false,
+			placeholder: " ",
+			casing: "upper"
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("p.p.");
+		testmask.blur();
+		assert.equal(testmask.value, "P.P.", "Result " + testmask.value);
+	});
 });

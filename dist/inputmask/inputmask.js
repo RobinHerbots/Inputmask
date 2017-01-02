@@ -1,9 +1,9 @@
 /*!
 * inputmask.js
 * https://github.com/RobinHerbots/jquery.inputmask
-* Copyright (c) 2010 - 2016 Robin Herbots
+* Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.4
+* Version: 3.3.5-2
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define("inputmask", [ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib")) : factory(window.dependencyLib || jQuery);
@@ -84,7 +84,7 @@
             void 0 === closestTo && (closestTo = -1);
             for (var posNdx in valids) {
                 var psNdx = parseInt(posNdx);
-                valids[psNdx] && (strict || null !== valids[psNdx].match.fn) && (psNdx <= closestTo && (before = psNdx), 
+                valids[psNdx] && (strict || valids[psNdx].generatedInput !== !0) && (psNdx <= closestTo && (before = psNdx), 
                 psNdx >= closestTo && (after = psNdx));
             }
             return before !== -1 && closestTo - before > 1 || after < closestTo ? before : after;
@@ -631,8 +631,9 @@
             } : bl;
         }
         function clearOptionalTail(buffer) {
-            for (var rl = determineLastRequiredPosition(), lmib = buffer.length - 1; lmib > rl && !isMask(lmib); lmib--) ;
-            return buffer.splice(rl, lmib + 1 - rl), buffer;
+            for (var validPos, rl = determineLastRequiredPosition(), bl = buffer.length; rl < bl && !isMask(rl + 1) && (validPos = getTest(rl + 1)) && validPos.match.optionality !== !0 && validPos.match.optionalQuantifier !== !0; ) rl++;
+            for (;(validPos = getTest(rl - 1)) && validPos.match.optionality && validPos.input === opts.skipOptionalPartCharacter; ) rl--;
+            return buffer.splice(rl), buffer;
         }
         function isComplete(buffer) {
             if ($.isFunction(opts.isComplete)) return opts.isComplete(buffer, opts);
@@ -868,7 +869,7 @@
                         var imOpts = $.data(this, "_inputmask_opts");
                         imOpts ? new Inputmask(imOpts).mask(this) : EventRuler.off(this);
                     } else {
-                        if ("setvalue" === e.type || !(this.disabled || this.readOnly && !("keydown" === e.type && e.ctrlKey && 67 === e.keyCode || opts.tabThrough === !1 && e.keyCode === Inputmask.keyCode.TAB))) {
+                        if ("setvalue" === e.type || "FORM" === this.nodeName || !(this.disabled || this.readOnly && !("keydown" === e.type && e.ctrlKey && 67 === e.keyCode || opts.tabThrough === !1 && e.keyCode === Inputmask.keyCode.TAB))) {
                             switch (e.type) {
                               case "input":
                                 if (skipInputEvent === !0) return skipInputEvent = !1, e.preventDefault();

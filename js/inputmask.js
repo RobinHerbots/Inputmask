@@ -543,8 +543,7 @@
 			}
 			// console.log(JSON.stringify(maskTokens));
 			return maskTokens;
-		},
-
+		}
 	};
 
 	//apply defaults, definitions, aliases
@@ -772,7 +771,7 @@
 			if (closestTo === undefined) closestTo = -1;
 			for (var posNdx in valids) {
 				var psNdx = parseInt(posNdx);
-				if (valids[psNdx] && (strict || valids[psNdx].match.fn !== null)) {
+				if (valids[psNdx] && (strict || valids[psNdx].generatedInput !== true)) {
 					if (psNdx <= closestTo) before = psNdx;
 					if (psNdx >= closestTo) after = psNdx;
 				}
@@ -1936,12 +1935,16 @@
 
 		function clearOptionalTail(buffer) {
 			var rl = determineLastRequiredPosition(),
-				lmib = buffer.length - 1;
-			for (; lmib > rl; lmib--) {
-				if (isMask(lmib)) break; //fixme ismask is not good enough
-			}
-			buffer.splice(rl, lmib + 1 - rl);
+				validPos, bl = buffer.length;
 
+			while (rl < bl && !isMask(rl + 1) && (validPos = getTest(rl + 1)) && validPos.match.optionality !== true && validPos.match.optionalQuantifier !== true) {
+				rl++;
+			}
+
+			while ((validPos = getTest(rl - 1)) && validPos.match.optionality && validPos.input === opts.skipOptionalPartCharacter) {
+				rl--;
+			}
+			buffer.splice(rl);
 			return buffer;
 		}
 
