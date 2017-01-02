@@ -615,6 +615,27 @@
 			placeholder: "yyyy/mm/dd",
 			alias: "mm/dd/yyyy",
 			clearIncomplete: true
+		},
+		"yyyy-mm-dd hh:mm:ss": {
+			mask: "y-1-2 h:s:s",
+			placeholder: "yyyy-mm-dd hh:mm:ss",
+			alias: "datetime",
+			separator: "-",
+			leapday: "-02-29",
+			regex: {
+				val2pre: function (separator) {
+					var escapedSeparator = Inputmask.escapeRegex.call(this, separator);
+					return new RegExp("((0[13-9]|1[012])" + escapedSeparator + "[0-3])|(02" + escapedSeparator + "[0-2])");
+				}, //daypre
+				val2: function (separator) {
+					var escapedSeparator = Inputmask.escapeRegex.call(this, separator);
+					return new RegExp("((0[1-9]|1[012])" + escapedSeparator + "(0[1-9]|[12][0-9]))|((0[13-9]|1[012])" + escapedSeparator + "30)|((0[13578]|1[02])" + escapedSeparator + "31)");
+				}, //day
+				val1pre: new RegExp("[01]"), //monthpre
+				val1: new RegExp("0[1-9]|1[012]") //month
+			},
+			onKeyDown: function (e, buffer, caretPos, opts) {
+			}
 		}
 	});
 
