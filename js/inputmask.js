@@ -543,7 +543,7 @@
 			}
 			// console.log(JSON.stringify(maskTokens));
 			return maskTokens;
-		},
+		}
 
 	};
 
