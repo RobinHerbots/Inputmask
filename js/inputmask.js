@@ -2046,7 +2046,7 @@
 						var imOpts = $.data(this, "_inputmask_opts");
 						if (imOpts) (new Inputmask(imOpts)).mask(this);
 						else EventRuler.off(this);
-					} else if (e.type !== "setvalue" && (this.disabled || (this.readOnly && !(e.type === "keydown" && (e.ctrlKey && e.keyCode === 67) || (opts.tabThrough === false && e.keyCode === Inputmask.keyCode.TAB))))) {
+					} else if (e.type !== "setvalue" && this.nodeName !== "FORM" && (this.disabled || (this.readOnly && !(e.type === "keydown" && (e.ctrlKey && e.keyCode === 67) || (opts.tabThrough === false && e.keyCode === Inputmask.keyCode.TAB))))) {
 						e.preventDefault();
 					} else {
 						switch (e.type) {

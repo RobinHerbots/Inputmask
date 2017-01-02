@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [UNRELEASED]
+### Added
+### Updates
+### Fixed
+- Form can`t submitted with input[name=disabled] #1473
+
 ## [3.3.4 - 2016-12-22]
 ### Added
 - extra extension points: analyseMask
