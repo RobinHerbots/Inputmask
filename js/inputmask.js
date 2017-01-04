@@ -2630,11 +2630,11 @@
 
 		function renderColorMask(input, buffer, caretPos) {
 			function handleStatic() {
-				if (!static && (test.fn === null || testPos.input === undefined)) {
-					static = true;
+				if (!isStatic && (test.fn === null || testPos.input === undefined)) {
+					isStatic = true;
 					maskTemplate += "<span class='im-static''>"
-				} else if (static && (test.fn !== null && testPos.input !== undefined)) {
-					static = false;
+				} else if (isStatic && (test.fn !== null && testPos.input !== undefined)) {
+					isStatic = false;
 					maskTemplate += "</span>"
 				}
 			}
@@ -2647,7 +2647,7 @@
 					caretPos = {begin: caretPos, end: caretPos};
 				}
 
-				var maskTemplate = "", static = false;
+				var maskTemplate = "", isStatic = false;
 				if (buffer != "") {
 					var ndxIntlzr, pos = 0,
 						test, testPos, lvp = getLastValidPosition();
