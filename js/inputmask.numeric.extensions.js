@@ -131,8 +131,7 @@
 			negationSymbol: {
 				front: "-", //"("
 				back: "" //")"
-			}
-			,
+			},
 			integerDigits: "+", //number of integerDigits
 			integerOptional: true,
 			prefix: "",
@@ -442,26 +441,30 @@
 			,
 			leadingZeroHandler: function (chrs, maskset, pos, strict, opts, isSelection) {
 				if (!strict) {
-					var buffer = maskset.buffer.slice("");
+					var initialPos = pos,
+						buffer = opts.numericInput === true ? maskset.buffer.slice("").reverse() : maskset.buffer.slice("");
+					if (opts.numericInput) {
+						pos = buffer.join("").length - pos - 1;
+					}
 					buffer.splice(0, opts.prefix.length);
 					buffer.splice(buffer.length - opts.suffix.length, opts.suffix.length);
-					if (opts.numericInput === true) {
-						var buffer = buffer.reverse();
-						var bufferChar = buffer[0];
-						if (bufferChar === "0" && maskset.validPositions[pos - 1] === undefined) {
-							return {
-								"pos": pos,
-								"remove": buffer.length - 1
-							};
-						}
-					} else {
-						pos = pos - opts.prefix.length;
-						var radixPosition = $.inArray(opts.radixPoint, buffer),
-							matchRslt = buffer.slice(0, radixPosition !== -1 ? radixPosition : undefined).join("").match(opts.regex.integerNPart(opts));
-						if (matchRslt && (radixPosition === -1 || pos <= radixPosition)) {
-							var decimalPart = radixPosition === -1 ? 0 : parseInt(buffer.slice(radixPosition + 1).join(""));
-							if (matchRslt["0"].indexOf(opts.placeholder !== "" ? opts.placeholder.charAt(0) : "0") === 0 &&
-								(matchRslt.index + 1 === pos || (isSelection !== true && decimalPart === 0))) {
+
+					pos = pos - opts.prefix.length;
+					var radixPosition = $.inArray(opts.radixPoint, buffer),
+						matchRslt = buffer.slice(0, radixPosition !== -1 ? radixPosition : undefined).join("").match(opts.regex.integerNPart(opts));
+					if (matchRslt && (radixPosition === -1 || pos <= radixPosition || opts.numericInput)) {
+						var decimalPart = radixPosition === -1 ? 0 : parseInt(buffer.slice(radixPosition + 1).join("")),
+							leadingZero = matchRslt["0"].indexOf(opts.placeholder !== "" ? opts.placeholder.charAt(0) : "0") === 0;
+						if (opts.numericInput) {
+							if (leadingZero && decimalPart !== 0 && isSelection !== true) {
+								maskset.buffer.splice((buffer.length - matchRslt.index - 1) + opts.suffix.length, 1);
+								return {
+									"pos": initialPos,
+									"remove": (buffer.length - matchRslt.index - 1) + opts.suffix.length
+								};
+							}
+						} else {
+							if (leadingZero && (matchRslt.index + 1 === pos || (isSelection !== true && decimalPart === 0))) {
 								maskset.buffer.splice(matchRslt.index + opts.prefix.length, 1);
 								return {
 									"pos": matchRslt.index + opts.prefix.length,
@@ -474,8 +477,7 @@
 					}
 				}
 				return true;
-			}
-			,
+			},
 			definitions: {
 				"~": {
 					validator: function (chrs, maskset, pos, strict, opts, isSelection) {
@@ -486,7 +488,7 @@
 								isValid = strict ? new RegExp("[0-9" + Inputmask.escapeRegex(opts.groupSeparator) + "]").test(chrs) : new RegExp("[0-9]").test(chrs);
 								if (isValid === true) {
 									isValid = opts.leadingZeroHandler(chrs, maskset, pos, strict, opts, isSelection);
-									if (isValid === true) {
+									if (isValid === true && opts.numericInput !== true) {
 										//handle overwrite when fixed precision
 										var radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
 										if (radixPosition !== -1 && (opts.digitsOptional === false || maskset.validPositions[pos]) && opts.numericInput !== true && pos > radixPosition && !strict) {
@@ -607,6 +609,7 @@
 			}
 			,
 			onBeforeMask: function (initialValue, opts) {
+				initialValue = initialValue.toString();
 				if (opts.numericInput === true) {
 					initialValue = initialValue.split("").reverse().join("");
 				}
@@ -614,7 +617,7 @@
 					var vs = initialValue.split("."),
 						groupSize = opts.groupSeparator !== "" ? parseInt(opts.groupSize) : 0;
 					if (vs.length === 2 && (vs[0].length > groupSize || vs[1].length > groupSize))
-						initialValue = initialValue.toString().replace(".", opts.radixPoint);
+						initialValue = initialValue.replace(".", opts.radixPoint);
 				}
 				var kommaMatches = initialValue.match(/,/g);
 				var dotMatches = initialValue.match(/\./g);
@@ -655,7 +658,7 @@
 				if (opts.numericInput === true) {
 					initialValue = initialValue.split("").reverse().join("");
 				}
-				return initialValue.toString();
+				return initialValue;
 			},
 			canClearPosition: function (maskset, position, lvp, strict, opts) {
 				var positionInput = maskset.validPositions[position].input,

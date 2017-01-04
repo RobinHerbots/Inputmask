@@ -56,6 +56,10 @@ define([
 		assert.equal(formattedValue, "(555) 111-2222", "Result " + formattedValue);
 	});
 
+	qunit.test("format(62.91, { alias: 'numeric' } - penihel", function(assert) {
+		var formattedValue = 	Inputmask.format(62.91, { alias: 'numeric' });
+		assert.equal(formattedValue, "62.91", "Result " + formattedValue);
+	});
 
 	qunit.module("Value Validating");
 	qunit.test("Inputmask.isValid(\"23/03/1973\", { alias: \"date\"})", function(assert) {
@@ -228,4 +232,6 @@ define([
 		});
 		assert.equal(unmasked, "23031973", "Result " + unmasked);
 	});
+
+
 });

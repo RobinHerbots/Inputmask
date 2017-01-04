@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.5-4
+* Version: 3.3.5-8
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib"), require("./inputmask")) : factory(window.dependencyLib || jQuery, window.Inputmask);
@@ -222,20 +222,20 @@
             },
             leadingZeroHandler: function(chrs, maskset, pos, strict, opts, isSelection) {
                 if (!strict) {
-                    var buffer = maskset.buffer.slice("");
-                    if (buffer.splice(0, opts.prefix.length), buffer.splice(buffer.length - opts.suffix.length, opts.suffix.length), 
-                    opts.numericInput === !0) {
-                        var buffer = buffer.reverse(), bufferChar = buffer[0];
-                        if ("0" === bufferChar && void 0 === maskset.validPositions[pos - 1]) return {
-                            pos: pos,
-                            remove: buffer.length - 1
-                        };
-                    } else {
-                        pos -= opts.prefix.length;
-                        var radixPosition = $.inArray(opts.radixPoint, buffer), matchRslt = buffer.slice(0, radixPosition !== -1 ? radixPosition : void 0).join("").match(opts.regex.integerNPart(opts));
-                        if (matchRslt && (radixPosition === -1 || pos <= radixPosition)) {
-                            var decimalPart = radixPosition === -1 ? 0 : parseInt(buffer.slice(radixPosition + 1).join(""));
-                            if (0 === matchRslt[0].indexOf("" !== opts.placeholder ? opts.placeholder.charAt(0) : "0") && (matchRslt.index + 1 === pos || isSelection !== !0 && 0 === decimalPart)) return maskset.buffer.splice(matchRslt.index + opts.prefix.length, 1), 
+                    var initialPos = pos, buffer = opts.numericInput === !0 ? maskset.buffer.slice("").reverse() : maskset.buffer.slice("");
+                    opts.numericInput && (pos = buffer.join("").length - pos - 1), buffer.splice(0, opts.prefix.length), 
+                    buffer.splice(buffer.length - opts.suffix.length, opts.suffix.length), pos -= opts.prefix.length;
+                    var radixPosition = $.inArray(opts.radixPoint, buffer), matchRslt = buffer.slice(0, radixPosition !== -1 ? radixPosition : void 0).join("").match(opts.regex.integerNPart(opts));
+                    if (matchRslt && (radixPosition === -1 || pos <= radixPosition || opts.numericInput)) {
+                        var decimalPart = radixPosition === -1 ? 0 : parseInt(buffer.slice(radixPosition + 1).join("")), leadingZero = 0 === matchRslt[0].indexOf("" !== opts.placeholder ? opts.placeholder.charAt(0) : "0");
+                        if (opts.numericInput) {
+                            if (leadingZero && 0 !== decimalPart && isSelection !== !0) return maskset.buffer.splice(buffer.length - matchRslt.index - 1 + opts.suffix.length, 1), 
+                            {
+                                pos: initialPos,
+                                remove: buffer.length - matchRslt.index - 1 + opts.suffix.length
+                            };
+                        } else {
+                            if (leadingZero && (matchRslt.index + 1 === pos || isSelection !== !0 && 0 === decimalPart)) return maskset.buffer.splice(matchRslt.index + opts.prefix.length, 1), 
                             {
                                 pos: matchRslt.index + opts.prefix.length,
                                 remove: matchRslt.index + opts.prefix.length
@@ -253,7 +253,7 @@
                         if (!isValid && (isValid = opts.radixHandler(chrs, maskset, pos, strict, opts), 
                         !isValid && (isValid = strict ? new RegExp("[0-9" + Inputmask.escapeRegex(opts.groupSeparator) + "]").test(chrs) : new RegExp("[0-9]").test(chrs), 
                         isValid === !0 && (isValid = opts.leadingZeroHandler(chrs, maskset, pos, strict, opts, isSelection), 
-                        isValid === !0)))) {
+                        isValid === !0 && opts.numericInput !== !0)))) {
                             var radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
                             isValid = radixPosition !== -1 && (opts.digitsOptional === !1 || maskset.validPositions[pos]) && opts.numericInput !== !0 && pos > radixPosition && !strict ? {
                                 pos: pos,
@@ -328,10 +328,10 @@
                 isFinite(processValue);
             },
             onBeforeMask: function(initialValue, opts) {
-                if (opts.numericInput === !0 && (initialValue = initialValue.split("").reverse().join("")), 
+                if (initialValue = initialValue.toString(), opts.numericInput === !0 && (initialValue = initialValue.split("").reverse().join("")), 
                 "" !== opts.radixPoint && isFinite(initialValue)) {
                     var vs = initialValue.split("."), groupSize = "" !== opts.groupSeparator ? parseInt(opts.groupSize) : 0;
-                    2 === vs.length && (vs[0].length > groupSize || vs[1].length > groupSize) && (initialValue = initialValue.toString().replace(".", opts.radixPoint));
+                    2 === vs.length && (vs[0].length > groupSize || vs[1].length > groupSize) && (initialValue = initialValue.replace(".", opts.radixPoint));
                 }
                 var kommaMatches = initialValue.match(/,/g), dotMatches = initialValue.match(/\./g);
                 if (dotMatches && kommaMatches ? dotMatches.length > kommaMatches.length ? (initialValue = initialValue.replace(/\./g, ""), 
@@ -348,7 +348,7 @@
                     }
                 }
                 return opts.numericInput === !0 && (initialValue = initialValue.split("").reverse().join("")), 
-                initialValue.toString();
+                initialValue;
             },
             canClearPosition: function(maskset, position, lvp, strict, opts) {
                 var positionInput = maskset.validPositions[position].input, canClear = positionInput !== opts.radixPoint || null !== maskset.validPositions[position].match.fn && opts.decimalProtect === !1 || isFinite(positionInput) || position === lvp || positionInput === opts.groupSeparator || positionInput === opts.negationSymbol.front || positionInput === opts.negationSymbol.back;

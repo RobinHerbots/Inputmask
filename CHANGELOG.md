@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 ### Updates
 ### Fixed
+- Form not cleaning correctly when AutoUnmask option is set to true #1442
 - Form can`t submitted with input[name=disabled] #1473
 
 ## [3.3.4 - 2016-12-22]

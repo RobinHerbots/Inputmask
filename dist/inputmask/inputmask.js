@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.5-4
+* Version: 3.3.5-8
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define("inputmask", [ "inputmask.dependencyLib" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib")) : factory(window.dependencyLib || jQuery);
@@ -13,7 +13,8 @@
         options.alias = alias), this.el = void 0, this.opts = $.extend(!0, {}, this.defaults, options), 
         this.maskset = void 0, this.noMasksCache = options && void 0 !== options.definitions, 
         this.userOptions = options || {}, this.events = {}, this.dataAttribute = "data-inputmask", 
-        this.isRTL = this.opts.numericInput, void resolveAlias(this.opts.alias, options, this.opts)) : new Inputmask(alias, options);
+        this.isRTL = this.opts.numericInput, this.refreshValue = !1, resolveAlias(this.opts.alias, options, this.opts), 
+        void 0) : new Inputmask(alias, options);
     }
     function resolveAlias(aliasStr, options, opts) {
         var aliasDefinition = opts.aliases[aliasStr];
@@ -571,7 +572,10 @@
             }
         }
         function unmaskedvalue(input) {
-            if (input && void 0 === input.inputmask) return input.value;
+            if (input) {
+                if (void 0 === input.inputmask) return input.value;
+                input.inputmask && input.inputmask.refreshValue && EventHandlers.setValueEvent.call(input);
+            }
             var umValue = [], vps = getMaskSet().validPositions;
             for (var pndx in vps) vps[pndx].match && null != vps[pndx].match.fn && umValue.push(vps[pndx].input);
             var unmaskedValue = 0 === umValue.length ? "" : (isRTL ? umValue.reverse() : umValue).join("");
@@ -1017,6 +1021,7 @@
                 }
             },
             setValueEvent: function(e) {
+                this.inputmask.refreshValue = !1;
                 var input = this, value = input.inputmask._valueGet();
                 checkVal(input, !0, !1, ($.isFunction(opts.onBeforeMask) ? opts.onBeforeMask(value, opts) || value : value).split("")), 
                 undoValue = getBuffer().join(""), (opts.clearMaskOnLostFocus || opts.clearIncomplete) && input.inputmask._valueGet() === getBufferTemplate().join("") && input.inputmask._valueSet("");
@@ -1114,7 +1119,7 @@
                 }, 0));
             },
             resetEvent: function(e) {
-                setTimeout(function() {
+                el.inputmask.refreshValue = !0, setTimeout(function() {
                     $el.trigger("setvalue");
                 }, 0);
             }
