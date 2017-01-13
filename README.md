@@ -371,7 +371,7 @@ Inputmask.extendDefinitions({
 ```
 
 ### placeholder
-Specify a placeholder for a definition.
+Specify a placeholder for a definition.  This can also be a function.
 
 ### set defaults
 Defaults can be set as below.
@@ -1022,6 +1022,8 @@ $(document).ready(function(){
 ```
 
 ### escape special mask chars
+
+If you want a mask element to appear as a static element you can escape them by \\
 
 ```javascript
 $(document).ready(function(){

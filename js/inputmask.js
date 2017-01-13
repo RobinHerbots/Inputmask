@@ -312,7 +312,6 @@
 				position = position !== undefined ? position : mtoken.matches.length;
 				var prevMatch = mtoken.matches[position - 1];
 				if (maskdef && !escaped) {
-					maskdef.placeholder = $.isFunction(maskdef.placeholder) ? maskdef.placeholder(opts) : maskdef.placeholder;
 					var prevalidators = maskdef.prevalidator,
 						prevalidatorsL = prevalidators ? prevalidators.length : 0;
 					//handle prevalidators
@@ -411,16 +410,18 @@
 
 				maskToken.matches = maskToken.matches.reverse();
 				for (var match in maskToken.matches) {
-					var intMatch = parseInt(match);
-					if (maskToken.matches[match].isQuantifier && maskToken.matches[intMatch + 1] && maskToken.matches[intMatch + 1].isGroup) { //reposition quantifier
-						var qt = maskToken.matches[match];
-						maskToken.matches.splice(match, 1);
-						maskToken.matches.splice(intMatch + 1, 0, qt);
-					}
-					if (maskToken.matches[match].matches !== undefined) {
-						maskToken.matches[match] = reverseTokens(maskToken.matches[match]);
-					} else {
-						maskToken.matches[match] = reverseStatic(maskToken.matches[match]);
+					if (maskToken.matches.hasOwnProperty(match)) {
+						var intMatch = parseInt(match);
+						if (maskToken.matches[match].isQuantifier && maskToken.matches[intMatch + 1] && maskToken.matches[intMatch + 1].isGroup) { //reposition quantifier
+							var qt = maskToken.matches[match];
+							maskToken.matches.splice(match, 1);
+							maskToken.matches.splice(intMatch + 1, 0, qt);
+						}
+						if (maskToken.matches[match].matches !== undefined) {
+							maskToken.matches[match] = reverseTokens(maskToken.matches[match]);
+						} else {
+							maskToken.matches[match] = reverseStatic(maskToken.matches[match]);
+						}
 					}
 				}
 
@@ -1295,13 +1296,14 @@
 						rslt = test.fn != null ?
 							test.fn.test(chrs, getMaskSet(), position, strict, opts, isSelection(pos)) : (c === test.def || c === opts.skipOptionalPartCharacter) && test.def !== "" ? //non mask
 							{
-								c: test.placeholder || test.def,
+								c: getPlaceholder(position, test, true) || test.def,
 								pos: position
 							} : false;
 
 						if (rslt !== false) {
 							var elem = rslt.c !== undefined ? rslt.c : c;
-							elem = (elem === opts.skipOptionalPartCharacter && test.fn === null) ? (test.placeholder || test.def) : elem;
+							elem = (elem === opts.skipOptionalPartCharacter && test.fn === null) ?
+								(getPlaceholder(position, test, true) || test.def) : elem;
 
 							var validatedPos = position,
 								possibleModifiedBuffer = getBuffer();
@@ -1484,7 +1486,7 @@
 								}
 							});
 							setValidPosition(ps, $.extend({}, bestMatch, {
-								"input": bestMatch.match.placeholder || bestMatch.match.def
+								"input": getPlaceholder(ps, bestMatch.match, true) || bestMatch.match.def
 							}), true);
 						}
 					}
@@ -1561,7 +1563,7 @@
 						testTemplate = determineTestTemplate(testsFromPos);
 						if (testTemplate && (testTemplate.match.def === opts.radixPointDefinitionSymbol || !isMask(pndx, true) ||
 							($.inArray(opts.radixPoint, getBuffer()) < pndx && testTemplate.match.fn && testTemplate.match.fn.test(getPlaceholder(pndx), getMaskSet(), pndx, false, opts)))) {
-							result = _isValid(pndx, testTemplate.match.placeholder || (testTemplate.match.fn == null ? testTemplate.match.def : (getPlaceholder(pndx) !== "" ? getPlaceholder(pndx) : getBuffer()[pndx])), true);
+							result = _isValid(pndx, getPlaceholder(pndx, testTemplate.match, true) || (testTemplate.match.fn == null ? testTemplate.match.def : (getPlaceholder(pndx) !== "" ? getPlaceholder(pndx) : getBuffer()[pndx])), true);
 							if (result !== false) {
 								getMaskSet().validPositions[result.pos || pndx].generatedInput = true;
 							}
@@ -1593,7 +1595,7 @@
 						if (testsFromPos[testsFromPos.length - 1].match.def === "") testsFromPos.pop();
 						var staticChar = determineTestTemplate(testsFromPos, true);
 						if (staticChar && staticChar.match.fn === null) {
-							staticChar = staticChar.match.placeholder || staticChar.match.def;
+							staticChar = getPlaceholder(undefined, staticChar.match, true) || staticChar.match.def;
 							_isValid(maskPos, staticChar, strict);
 							getMaskSet().validPositions[maskPos].generatedInput = true;
 						}
@@ -1699,10 +1701,10 @@
 			}
 		}
 
-		function getPlaceholder(pos, test) {
+		function getPlaceholder(pos, test, returnPL) {
 			test = test || getTest(pos).match;
-			if (test.placeholder !== undefined) {
-				return test.placeholder;
+			if (test.placeholder !== undefined || returnPL === true) {
+				return $.isFunction(test.placeholder) ? test.placeholder(opts) : test.placeholder;
 			} else if (test.fn === null) {
 				if (pos > -1 && getMaskSet().validPositions[pos] === undefined) {
 					var tests = getTests(pos),
@@ -2220,7 +2222,7 @@
 				} else {
 					if (k) {
 						//special treat the decimal separator
-						if (k === 46 && e.shiftKey === false && opts.radixPoint === ",") k = 44;
+						if (k === 46 && e.shiftKey === false && opts.radixPoint !== "") k = opts.radixPoint.charCodeAt(0);
 						var pos = checkval ? {
 								begin: ndx,
 								end: ndx

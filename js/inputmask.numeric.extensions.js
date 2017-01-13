@@ -90,14 +90,14 @@
 					mask += "~{1," + opts.integerDigits + "}";
 				} else mask += "~{" + opts.integerDigits + "}";
 				if (opts.digits !== undefined) {
-					if (opts.decimalProtect) opts.radixPointDefinitionSymbol = ":";
+					opts.radixPointDefinitionSymbol = opts.decimalProtect ? ":" : opts.radixPoint;
 					var dq = opts.digits.toString().split(",");
 					if (isFinite(dq[0] && dq[1] && isFinite(dq[1]))) {
-						mask += (opts.decimalProtect ? ":" : opts.radixPoint) + ";{" + opts.digits + "}";
+						mask += opts.radixPointDefinitionSymbol + ";{" + opts.digits + "}";
 					} else if (isNaN(opts.digits) || parseInt(opts.digits) > 0) {
 						if (opts.digitsOptional) {
-							mask += "[" + (opts.decimalProtect ? ":" : opts.radixPoint) + ";{1," + opts.digits + "}]";
-						} else mask += (opts.decimalProtect ? ":" : opts.radixPoint) + ";{" + opts.digits + "}";
+							mask += "[" + opts.radixPointDefinitionSymbol + ";{1," + opts.digits + "}]";
+						} else mask += opts.radixPointDefinitionSymbol + ";{" + opts.digits + "}";
 					}
 				}
 				mask += autoEscape(opts.suffix);
@@ -309,8 +309,7 @@
 							? rslt.pos : rslt.pos + 1;
 					return rslt;
 				}
-			}
-			,
+			},
 			regex: {
 				integerPart: function (opts) {
 					return new RegExp("[" + Inputmask.escapeRegex(opts.negationSymbol.front) + "\+]?\\d+");
@@ -319,8 +318,7 @@
 				integerNPart: function (opts) {
 					return new RegExp("[\\d" + Inputmask.escapeRegex(opts.groupSeparator) + Inputmask.escapeRegex(opts.placeholder.charAt(0)) + "]+");
 				}
-			}
-			,
+			},
 			signHandler: function (chrs, maskset, pos, strict, opts) {
 				if (!strict && (opts.allowMinus && chrs === "-") || (opts.allowPlus && chrs === "+")) {
 					var matchRslt = maskset.buffer.join("").match(opts.regex.integerPart(opts));
@@ -437,8 +435,7 @@
 					}
 				}
 				return false;
-			}
-			,
+			},
 			leadingZeroHandler: function (chrs, maskset, pos, strict, opts, isSelection) {
 				if (!strict) {
 					var initialPos = pos,
@@ -543,8 +540,7 @@
 					,
 					cardinality: 1,
 					placeholder: ""
-				}
-				,
+				},
 				"-": {
 					validator: function (chrs, maskset, pos, strict, opts) {
 						var isValid = opts.signHandler(chrs, maskset, pos, strict, opts);
@@ -571,8 +567,7 @@
 							}
 						}
 						return isValid;
-					}
-					,
+					},
 					cardinality: 1,
 					placeholder: function (opts) {
 						return opts.radixPoint;
