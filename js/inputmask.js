@@ -21,33 +21,35 @@
 		iphone = /iphone/i.test(ua) && !iemobile,
 		android = /android/i.test(ua) && !iemobile;
 
-	function Inputmask(alias, options) {
+	function Inputmask(alias, options, internal) {
 		//allow instanciating without new
 		if (!(this instanceof Inputmask)) {
-			return new Inputmask(alias, options);
-		}
-
-		if ($.isPlainObject(alias)) {
-			options = alias;
-		} else {
-			options = options || {};
-			options.alias = alias;
+			return new Inputmask(alias, options, internal);
 		}
 
 		this.el = undefined;
-		//init options
-		this.opts = $.extend(true, {}, this.defaults, options);
-		this.maskset = undefined;
-		this.noMasksCache = options && options.definitions !== undefined;
-		this.userOptions = options || {}; //user passed options
 		this.events = {};
-		this.dataAttribute = "data-inputmask"; //data attribute prefix used for attribute binding
-		this.isRTL = this.opts.numericInput;
-		this.refreshValue = false, //indicate a refresh from the inputvalue is needed (form.reset)
+		this.maskset = undefined;
+		this.refreshValue = false; //indicate a refresh from the inputvalue is needed (form.reset)
+
+		if (internal !== true) {
+			//init options
+			if ($.isPlainObject(alias)) {
+				options = alias;
+			} else {
+				options = options || {};
+				options.alias = alias;
+			}
+			this.opts = $.extend(true, {}, this.defaults, options);
+			this.noMasksCache = options && options.definitions !== undefined;
+			this.userOptions = options || {}; //user passed options
+			this.isRTL = this.opts.numericInput;
 			resolveAlias(this.opts.alias, options, this.opts);
+		}
 	}
 
 	Inputmask.prototype = {
+		dataAttribute: "data-inputmask", //data attribute prefix used for attribute binding
 		//options default
 		defaults: {
 			placeholder: "_",
@@ -76,7 +78,6 @@
 			clearMaskOnLostFocus: true,
 			insertMode: true, //insert the input or overwrite the input
 			clearIncomplete: false, //clear the incomplete input on blur
-			aliases: {}, //aliases definitions => see jquery.inputmask.extensions.js
 			alias: null,
 			onKeyDown: $.noop, //callback to implement autocomplete on certain keys for example. args => event, buffer, caretPos, opts
 			onBeforeMask: null, //executes before masking the initial value to allow preprocessing of the initial value.	args => initialValue, opts => return processedValue
@@ -101,22 +102,6 @@
 			positionCaretOnTab: true, //when enabled the caret position is set after the latest valid position on TAB
 			tabThrough: false, //allows for tabbing through the different parts of the masked field
 			supportsInputType: ["text", "tel", "password"], //list with the supported input types
-			definitions: {
-				"9": {
-					validator: "[0-9]",
-					cardinality: 1,
-					definitionSymbol: "*"
-				},
-				"a": {
-					validator: "[A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
-					cardinality: 1,
-					definitionSymbol: "*"
-				},
-				"*": {
-					validator: "[0-9A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
-					cardinality: 1
-				}
-			},
 			//specify keyCodes which should not be considered in the keypress event, otherwise the preventDefault will stop their default behavior especially in FF
 			ignorables: [8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123],
 			isComplete: null, //override for isComplete - args => buffer, opts - return true || false
@@ -133,6 +118,23 @@
 			colorMask: false, //enable css styleable mask
 			androidHack: false //see README_android.md
 		},
+		definitions: {
+			"9": {
+				validator: "[0-9]",
+				cardinality: 1,
+				definitionSymbol: "*"
+			},
+			"a": {
+				validator: "[A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
+				cardinality: 1,
+				definitionSymbol: "*"
+			},
+			"*": {
+				validator: "[0-9A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
+				cardinality: 1
+			}
+		},
+		aliases: {}, //aliases definitions => see jquery.inputmask.extensions.js
 		masksCache: {},
 		mask: function (elems) {
 			var that = this;
@@ -203,10 +205,11 @@
 						el.inputmask.remove();
 					}
 					//store inputmask instance on the input with element reference
-					el.inputmask = new Inputmask();
+					el.inputmask = new Inputmask(undefined, undefined, true);
 					el.inputmask.opts = scopedOpts;
 					el.inputmask.noMasksCache = that.noMasksCache;
 					el.inputmask.userOptions = $.extend(true, {}, that.userOptions);
+					el.inputmask.isRTL = that.isRTL;
 					el.inputmask.el = el;
 					el.inputmask.maskset = maskset;
 
@@ -308,7 +311,7 @@
 
 			//test definition => {fn: RegExp/function, cardinality: int, optionality: bool, newBlockMarker: bool, casing: null/upper/lower, def: definitionSymbol, placeholder: placeholder, mask: real maskDefinition}
 			function insertTestDefinition(mtoken, element, position) {
-				var maskdef = opts.definitions[element];
+				var maskdef = (opts.definitions ? opts.definitions[element] : undefined) || Inputmask.prototype.definitions[element];
 				position = position !== undefined ? position : mtoken.matches.length;
 				var prevMatch = mtoken.matches[position - 1];
 				if (maskdef && !escaped) {
@@ -553,10 +556,10 @@
 		$.extend(true, Inputmask.prototype.defaults, options);
 	};
 	Inputmask.extendDefinitions = function (definition) {
-		$.extend(true, Inputmask.prototype.defaults.definitions, definition);
+		$.extend(true, Inputmask.prototype.definitions, definition);
 	};
 	Inputmask.extendAliases = function (alias) {
-		$.extend(true, Inputmask.prototype.defaults.aliases, alias);
+		$.extend(true, Inputmask.prototype.aliases, alias);
 	};
 	//static fn on inputmask
 	Inputmask.format = function (value, options, metadata) {
@@ -615,7 +618,7 @@
 	};
 
 	function resolveAlias(aliasStr, options, opts) {
-		var aliasDefinition = opts.aliases[aliasStr];
+		var aliasDefinition = Inputmask.prototype.aliases[aliasStr];
 		if (aliasDefinition) {
 			if (aliasDefinition.alias) resolveAlias(aliasDefinition.alias, undefined, opts); //alias is another alias
 			$.extend(true, opts, aliasDefinition); //merge alias definition in the options

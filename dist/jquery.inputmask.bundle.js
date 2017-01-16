@@ -3,19 +3,17 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.5-17
+* Version: 3.3.5-19
 */
 !function($) {
-    function Inputmask(alias, options) {
-        return this instanceof Inputmask ? ($.isPlainObject(alias) ? options = alias : (options = options || {}, 
-        options.alias = alias), this.el = void 0, this.opts = $.extend(!0, {}, this.defaults, options), 
-        this.maskset = void 0, this.noMasksCache = options && void 0 !== options.definitions, 
-        this.userOptions = options || {}, this.events = {}, this.dataAttribute = "data-inputmask", 
-        this.isRTL = this.opts.numericInput, this.refreshValue = !1, resolveAlias(this.opts.alias, options, this.opts), 
-        void 0) : new Inputmask(alias, options);
+    function Inputmask(alias, options, internal) {
+        return this instanceof Inputmask ? (this.el = void 0, this.events = {}, this.maskset = void 0, 
+        this.refreshValue = !1, void (internal !== !0 && ($.isPlainObject(alias) ? options = alias : (options = options || {}, 
+        options.alias = alias), this.opts = $.extend(!0, {}, this.defaults, options), this.noMasksCache = options && void 0 !== options.definitions, 
+        this.userOptions = options || {}, this.isRTL = this.opts.numericInput, resolveAlias(this.opts.alias, options, this.opts)))) : new Inputmask(alias, options, internal);
     }
     function resolveAlias(aliasStr, options, opts) {
-        var aliasDefinition = opts.aliases[aliasStr];
+        var aliasDefinition = Inputmask.prototype.aliases[aliasStr];
         return aliasDefinition ? (aliasDefinition.alias && resolveAlias(aliasDefinition.alias, void 0, opts), 
         $.extend(!0, opts, aliasDefinition), $.extend(!0, opts, options), !0) : (null === opts.mask && (opts.mask = aliasStr), 
         !1);
@@ -1180,6 +1178,7 @@
     }
     var ua = navigator.userAgent, mobile = /mobile/i.test(ua), iemobile = /iemobile/i.test(ua), iphone = /iphone/i.test(ua) && !iemobile, android = /android/i.test(ua) && !iemobile;
     return Inputmask.prototype = {
+        dataAttribute: "data-inputmask",
         defaults: {
             placeholder: "_",
             optionalmarker: {
@@ -1207,7 +1206,6 @@
             clearMaskOnLostFocus: !0,
             insertMode: !0,
             clearIncomplete: !1,
-            aliases: {},
             alias: null,
             onKeyDown: $.noop,
             onBeforeMask: null,
@@ -1230,22 +1228,6 @@
             positionCaretOnTab: !0,
             tabThrough: !1,
             supportsInputType: [ "text", "tel", "password" ],
-            definitions: {
-                "9": {
-                    validator: "[0-9]",
-                    cardinality: 1,
-                    definitionSymbol: "*"
-                },
-                a: {
-                    validator: "[A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
-                    cardinality: 1,
-                    definitionSymbol: "*"
-                },
-                "*": {
-                    validator: "[0-9A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
-                    cardinality: 1
-                }
-            },
             ignorables: [ 8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123 ],
             isComplete: null,
             canClearPosition: $.noop,
@@ -1261,6 +1243,23 @@
             colorMask: !1,
             androidHack: !1
         },
+        definitions: {
+            "9": {
+                validator: "[0-9]",
+                cardinality: 1,
+                definitionSymbol: "*"
+            },
+            a: {
+                validator: "[A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
+                cardinality: 1,
+                definitionSymbol: "*"
+            },
+            "*": {
+                validator: "[0-9A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
+                cardinality: 1
+            }
+        },
+        aliases: {},
         masksCache: {},
         mask: function(elems) {
             function importAttributeOptions(npt, opts, userOptions, dataAttribute) {
@@ -1297,10 +1296,10 @@
                 var scopedOpts = $.extend(!0, {}, that.opts);
                 importAttributeOptions(el, scopedOpts, $.extend(!0, {}, that.userOptions), that.dataAttribute);
                 var maskset = generateMaskSet(scopedOpts, that.noMasksCache);
-                void 0 !== maskset && (void 0 !== el.inputmask && el.inputmask.remove(), el.inputmask = new Inputmask(), 
+                void 0 !== maskset && (void 0 !== el.inputmask && el.inputmask.remove(), el.inputmask = new Inputmask((void 0), (void 0), (!0)), 
                 el.inputmask.opts = scopedOpts, el.inputmask.noMasksCache = that.noMasksCache, el.inputmask.userOptions = $.extend(!0, {}, that.userOptions), 
-                el.inputmask.el = el, el.inputmask.maskset = maskset, $.data(el, "_inputmask_opts", scopedOpts), 
-                maskScope.call(el.inputmask, {
+                el.inputmask.isRTL = that.isRTL, el.inputmask.el = el, el.inputmask.maskset = maskset, 
+                $.data(el, "_inputmask_opts", scopedOpts), maskScope.call(el.inputmask, {
                     action: "mask"
                 }));
             }), elems && elems[0] ? elems[0].inputmask || this : this;
@@ -1367,7 +1366,7 @@
                 };
             }
             function insertTestDefinition(mtoken, element, position) {
-                var maskdef = opts.definitions[element];
+                var maskdef = (opts.definitions ? opts.definitions[element] : void 0) || Inputmask.prototype.definitions[element];
                 position = void 0 !== position ? position : mtoken.matches.length;
                 var prevMatch = mtoken.matches[position - 1];
                 if (maskdef && !escaped) {
@@ -1504,9 +1503,9 @@
     }, Inputmask.extendDefaults = function(options) {
         $.extend(!0, Inputmask.prototype.defaults, options);
     }, Inputmask.extendDefinitions = function(definition) {
-        $.extend(!0, Inputmask.prototype.defaults.definitions, definition);
+        $.extend(!0, Inputmask.prototype.definitions, definition);
     }, Inputmask.extendAliases = function(alias) {
-        $.extend(!0, Inputmask.prototype.defaults.aliases, alias);
+        $.extend(!0, Inputmask.prototype.aliases, alias);
     }, Inputmask.format = function(value, options, metadata) {
         return Inputmask(options).format(value, metadata);
     }, Inputmask.unmask = function(value, options) {
@@ -2585,7 +2584,7 @@
             phoneCodes: [],
             mask: function(opts) {
                 return opts.definitions = {
-                    "#": opts.definitions[9]
+                    "#": Inputmask.prototype.definitions[9]
                 }, opts.phoneCodes.sort(maskSort);
             },
             keepStatic: !0,

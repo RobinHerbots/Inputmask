@@ -92,7 +92,7 @@
 			countrycode: "",
 			phoneCodes: [],
 			mask: function (opts) {
-				opts.definitions = {"#": opts.definitions["9"]};
+				opts.definitions = {"#": Inputmask.prototype.definitions["9"]};
 				return opts.phoneCodes.sort(maskSort);
 			},
 			keepStatic: true,

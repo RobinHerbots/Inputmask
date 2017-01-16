@@ -19,7 +19,7 @@ define([
 	qunit.module("Phoneru masks");
 
 
-	for (var i = 0; i < Inputmask.prototype.defaults.aliases.phoneru.phoneCodes.length; i += 25) {
+	for (var i = 0; i < Inputmask.prototype.aliases.phoneru.phoneCodes.length; i += 25) {
 		qunit.test("inputmask(\"phoneru\") - " + i + "-" + (i + 25), function (assert) {
 				var i = assert.test.testName.match(/\d+$/);
 				i = i - 25;
@@ -30,7 +30,7 @@ define([
 
 				testmask.focus();
 
-				$.each(Inputmask.prototype.defaults.aliases.phoneru.phoneCodes.slice(i, i + 25), function (ndx, lmnt) {
+				$.each(Inputmask.prototype.aliases.phoneru.phoneCodes.slice(i, i + 25), function (ndx, lmnt) {
 					var ndx = 1, input, expected = lmnt.mask;
 					while (expected.match(/#/)) {
 						expected = expected.replace(/#/, ndx++);

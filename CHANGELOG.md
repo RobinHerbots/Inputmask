@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 ## [UNRELEASED]
 ### Added
 ### Updates
+- performance updates
+	- initialization
+
 ### Fixed
 - hasOwnProperty check missing in reverseTokens (numericInput) #1486
 - Per-element radixPoint overwrites defaults #1454
