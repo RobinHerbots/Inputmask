@@ -103,7 +103,7 @@
 			tabThrough: false, //allows for tabbing through the different parts of the masked field
 			supportsInputType: ["text", "tel", "password"], //list with the supported input types
 			//specify keyCodes which should not be considered in the keypress event, otherwise the preventDefault will stop their default behavior especially in FF
-			ignorables: [8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123],
+			ignorables: [8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 0, 229],
 			isComplete: null, //override for isComplete - args => buffer, opts - return true || false
 			canClearPosition: $.noop, //hook to alter the clear behavior in the stripValidPositions args => maskset, position, lastValidPosition, opts => return true|false
 			postValidation: null, //hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, currentResult, opts => return true/false
@@ -1253,9 +1253,17 @@
 			return elem;
 		}
 
-		function checkAlternationMatch(altArr1, altArr2) {
+		function checkAlternationMatch(altArr1, altArr2, na) {
 			var altArrC = opts.greedy ? altArr2 : altArr2.slice(0, 1),
-				isMatch = false;
+				isMatch = false, naArr = na !== undefined ? na.split(",") : [],
+				naNdx;
+
+			//remove no alternate indexes from alternation array
+			for (var i = 0; i < naArr.length; i++) {
+				if ((naNdx = altArr1.indexOf(naArr[i])) !== -1)
+					altArr1.splice(naNdx, 1);
+			}
+
 			for (var alndx = 0; alndx < altArr1.length; alndx++) {
 				if ($.inArray(altArr1[alndx], altArrC) !== -1) {
 					isMatch = true;
@@ -1475,22 +1483,30 @@
 
 					for (var ps = originalPos; ps < newPos; ps++) {
 						if (getMaskSet().validPositions[ps] === undefined && !isMask(ps, true)) {
-							var tests = getTests(ps),
-								bestMatch = tests[0],
+							var tests = getTests(ps).slice(),
+								bestMatch = determineTestTemplate(tests, true),
 								equality = -1;
+							if (tests[tests.length - 1].match.def === "") tests.pop();
 							$.each(tests, function (ndx, tst) { //find best matching
 								for (var i = 0; i < tll; i++) {
-									if (tst.locator[i] !== undefined && checkAlternationMatch(tst.locator[i].toString().split(","), targetLocator[i].toString().split(","))) {
+									if (tst.locator[i] !== undefined && checkAlternationMatch(tst.locator[i].toString().split(","), targetLocator[i].toString().split(","), tst.na)) {
 										if (equality < i) {
 											equality = i;
 											bestMatch = tst;
+										} else if (equality == i) {
+											bestMatch = determineTestTemplate(tests, true);
 										}
 									} else break;
 								}
 							});
-							setValidPosition(ps, $.extend({}, bestMatch, {
+							bestMatch = $.extend({}, bestMatch, {
 								"input": getPlaceholder(ps, bestMatch.match, true) || bestMatch.match.def
-							}), true);
+							});
+							bestMatch.generatedInput = true;
+							setValidPosition(ps, bestMatch, true);
+							//revalidate the new position to update the locator value
+							getMaskSet().validPositions[newPos]=undefined;
+							_isValid(newPos, vp.input, true);
 						}
 					}
 				}
@@ -1528,6 +1544,7 @@
 									needsValidation = true;
 								} else {
 									valid = t.generatedInput === true;
+									if (!valid && posMatch >= getMaskSet().maskLength - 1) break;
 								}
 								if (getMaskSet().maskLength < initialLength) getMaskSet().maskLength = initialLength; //a bit hacky but the masklength is corrected later on
 								if (valid) break;
@@ -1594,14 +1611,14 @@
 							"caret": seekNext(maskPos)
 						};
 					} else if ((opts.insertMode || getMaskSet().validPositions[seekNext(maskPos)] === undefined) && !isMask(maskPos, true)) { //does the input match on a further position?
-						var testsFromPos = getTests(maskPos).slice();
-						if (testsFromPos[testsFromPos.length - 1].match.def === "") testsFromPos.pop();
-						var staticChar = determineTestTemplate(testsFromPos, true);
-						if (staticChar && staticChar.match.fn === null) {
-							staticChar = getPlaceholder(undefined, staticChar.match, true) || staticChar.match.def;
-							_isValid(maskPos, staticChar, strict);
-							getMaskSet().validPositions[maskPos].generatedInput = true;
-						}
+						// var testsFromPos = getTests(maskPos).slice();
+						// if (testsFromPos[testsFromPos.length - 1].match.def === "") testsFromPos.pop();
+						// var staticChar = determineTestTemplate(testsFromPos, true);
+						// if (staticChar && staticChar.match.fn === null) {
+						// 	staticChar = getPlaceholder(undefined, staticChar.match, true) || staticChar.match.def;
+						// 	_isValid(maskPos, staticChar, strict);
+						// 	getMaskSet().validPositions[maskPos].generatedInput = true;
+						// }
 						for (var nPos = maskPos + 1, snPos = seekNext(maskPos); nPos <= snPos; nPos++) {
 							result = _isValid(nPos, c, strict);
 							if (result !== false) {
@@ -2892,7 +2909,7 @@
 					EventRuler.on(el, "complete", opts.oncomplete);
 					EventRuler.on(el, "incomplete", opts.onincomplete);
 					EventRuler.on(el, "cleared", opts.oncleared);
-					if (opts.inputEventOnly !== true) {
+					if (!android || opts.inputEventOnly !== true) {
 						EventRuler.on(el, "keydown", EventHandlers.keydownEvent);
 						EventRuler.on(el, "keypress", EventHandlers.keypressEvent);
 					}
@@ -2901,6 +2918,7 @@
 					EventRuler.on(el, "compositionend", $.noop);
 					EventRuler.on(el, "keyup", $.noop);
 					EventRuler.on(el, "input", EventHandlers.inputFallBackEvent);
+					EventRuler.on(el, "beforeinput", $.noop); //https://github.com/w3c/input-events - to implement
 				}
 				EventRuler.on(el, "setvalue", EventHandlers.setValueEvent);
 

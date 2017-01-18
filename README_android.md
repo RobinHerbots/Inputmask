@@ -13,6 +13,11 @@ When browsers would implement the inputmode attribute, disabling will be possibl
 [Inputmode html spec](https://html.spec.whatwg.org/multipage/forms.html#input-modalities:-the-inputmode-attribute)
 [Inputmode chromestatus](https://www.chromestatus.com/feature/6225984592281600)
 
+##Update 18/01/2017
+
+It seems that the GBoard fires the keydown event only with 229 as keycode.  This behavior is not considered a bug as others means should be used to handle input.  (when available offcourse ;-) )
+See https://github.com/w3c/input-events
+
 ##The workaround, the patchwork, the bad and ugly ;-)
 
 This is not enabled by default, because I find that the developer should be aware of what it does and what you need to take into account when using this hack.

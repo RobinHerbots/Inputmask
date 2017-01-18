@@ -80,6 +80,8 @@
 			mask = rebuild(maskGroups);
 		}
 		// console.log(mask);
+		//escape 9 definition
+		mask = mask.replace(/9/g, "\\9");
 		var mt = analyseMaskBase.call(this, mask, opts);
 		return mt;
 	};
