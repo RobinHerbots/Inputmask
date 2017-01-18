@@ -74,14 +74,16 @@
 		}
 
 
-		if (opts.phoneCodes && opts.phoneCodes.length > 1000) {
-			mask = mask.substr(1, mask.length - 2);
-			reduceVariations(mask.split(opts.groupmarker.end + opts.alternatormarker + opts.groupmarker.start));
-			mask = rebuild(maskGroups);
+		if (opts.phoneCodes) {
+			//escape 9 definition
+			mask = mask.replace(/9/g, "\\9");
+			if (opts.phoneCodes && opts.phoneCodes.length > 1000) {
+				mask = mask.substr(1, mask.length - 2);
+				reduceVariations(mask.split(opts.groupmarker.end + opts.alternatormarker + opts.groupmarker.start));
+				mask = rebuild(maskGroups);
+			}
 		}
 		// console.log(mask);
-		//escape 9 definition
-		mask = mask.replace(/9/g, "\\9");
 		var mt = analyseMaskBase.call(this, mask, opts);
 		return mt;
 	};

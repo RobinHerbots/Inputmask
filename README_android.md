@@ -15,7 +15,7 @@ When browsers would implement the inputmode attribute, disabling will be possibl
 
 ##Update 18/01/2017
 
-It seems that the GBoard fires the keydown event only with 229 as keycode.  This behavior is not considered a bug as others means should be used to handle input.  (when available offcourse ;-) )
+It seems that the GBoard keryboard fires the keydown event only with 229 as keycode.  This behavior is not considered a bug as other means should be used to handle input.  (when available offcourse ;-) )
 See https://github.com/w3c/input-events
 
 ##The workaround, the patchwork, the bad and ugly ;-)
