@@ -184,4 +184,23 @@ define([
 		$("#testmask").Type("112123123");
 		assert.equal(testmask.inputmask._valueGet(), "+371-12-123-123", "Result " + testmask.inputmask._valueGet());
 	});
+	qunit.test("+371-99-999-999 - artemkaint", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+
+		Inputmask([
+			"+371-99-999-999",
+			"+370(999)99-999",
+			"+375(99)999-99-99",
+			"+374-99-999-999",
+			"+380(99)999-99-99",
+			"+358(999)999-99-99",
+			"+373-9999-9999",
+			"+381-99-999-9999"
+		]).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("412123123");
+		assert.equal(testmask.inputmask._valueGet(), "+374-12-123-123", "Result " + testmask.inputmask._valueGet());
+	});
 });

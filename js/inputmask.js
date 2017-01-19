@@ -1493,10 +1493,17 @@
 										if (equality < i) {
 											equality = i;
 											bestMatch = tst;
-										} else if (equality == i) {
-											bestMatch = determineTestTemplate(tests, true);
 										}
-									} else break;
+									} else {
+										//check if alternationIndex is closer then the current bestmatch
+										var targetAI = targetLocator[i],
+											bestMatchAI = bestMatch.locator[i],
+											tstAI = tst.locator[i];
+										if ((targetAI - bestMatchAI) > Math.abs(targetAI - tstAI)) {
+											bestMatch = tst;
+										}
+										break;
+									}
 								}
 							});
 							bestMatch = $.extend({}, bestMatch, {
@@ -1505,7 +1512,7 @@
 							bestMatch.generatedInput = true;
 							setValidPosition(ps, bestMatch, true);
 							//revalidate the new position to update the locator value
-							getMaskSet().validPositions[newPos]=undefined;
+							getMaskSet().validPositions[newPos] = undefined;
 							_isValid(newPos, vp.input, true);
 						}
 					}
@@ -1611,14 +1618,6 @@
 							"caret": seekNext(maskPos)
 						};
 					} else if ((opts.insertMode || getMaskSet().validPositions[seekNext(maskPos)] === undefined) && !isMask(maskPos, true)) { //does the input match on a further position?
-						// var testsFromPos = getTests(maskPos).slice();
-						// if (testsFromPos[testsFromPos.length - 1].match.def === "") testsFromPos.pop();
-						// var staticChar = determineTestTemplate(testsFromPos, true);
-						// if (staticChar && staticChar.match.fn === null) {
-						// 	staticChar = getPlaceholder(undefined, staticChar.match, true) || staticChar.match.def;
-						// 	_isValid(maskPos, staticChar, strict);
-						// 	getMaskSet().validPositions[maskPos].generatedInput = true;
-						// }
 						for (var nPos = maskPos + 1, snPos = seekNext(maskPos); nPos <= snPos; nPos++) {
 							result = _isValid(nPos, c, strict);
 							if (result !== false) {

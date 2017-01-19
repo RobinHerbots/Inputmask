@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.5-25
+* Version: 3.3.5-29
 */
 !function($) {
     function Inputmask(alias, options, internal) {
@@ -399,8 +399,14 @@
                 if (vp) for (var targetLocator = vp.locator, tll = targetLocator.length, ps = originalPos; ps < newPos; ps++) if (void 0 === getMaskSet().validPositions[ps] && !isMask(ps, !0)) {
                     var tests = getTests(ps).slice(), bestMatch = determineTestTemplate(tests, !0), equality = -1;
                     "" === tests[tests.length - 1].match.def && tests.pop(), $.each(tests, function(ndx, tst) {
-                        for (var i = 0; i < tll && (void 0 !== tst.locator[i] && checkAlternationMatch(tst.locator[i].toString().split(","), targetLocator[i].toString().split(","), tst.na)); i++) equality < i ? (equality = i, 
-                        bestMatch = tst) : equality == i && (bestMatch = determineTestTemplate(tests, !0));
+                        for (var i = 0; i < tll; i++) {
+                            if (void 0 === tst.locator[i] || !checkAlternationMatch(tst.locator[i].toString().split(","), targetLocator[i].toString().split(","), tst.na)) {
+                                var targetAI = targetLocator[i], bestMatchAI = bestMatch.locator[i], tstAI = tst.locator[i];
+                                targetAI - bestMatchAI > Math.abs(targetAI - tstAI) && (bestMatch = tst);
+                                break;
+                            }
+                            equality < i && (equality = i, bestMatch = tst);
+                        }
                     }), bestMatch = $.extend({}, bestMatch, {
                         input: getPlaceholder(ps, bestMatch.match, !0) || bestMatch.match.def
                     }), bestMatch.generatedInput = !0, setValidPosition(ps, bestMatch, !0), getMaskSet().validPositions[newPos] = void 0, 
