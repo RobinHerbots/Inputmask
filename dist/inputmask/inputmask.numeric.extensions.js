@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.5-30
+* Version: 3.3.5-31
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "inputmask.dependencyLib", "inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask.dependencyLib"), require("./inputmask")) : factory(window.dependencyLib || jQuery, window.Inputmask);
@@ -75,7 +75,8 @@
                 var i, l;
                 pos = pos >= buffer.length ? buffer.length - 1 : pos < 0 ? 0 : pos;
                 var charAtPos = buffer[pos], cbuf = buffer.slice();
-                charAtPos === opts.groupSeparator && (cbuf.splice(pos--, 1), charAtPos = cbuf[pos]);
+                charAtPos === opts.groupSeparator && pos > opts.prefix.length && pos < buffer.length - opts.suffix.length && (cbuf.splice(pos--, 1), 
+                charAtPos = cbuf[pos]);
                 var isNegative = cbuf.join("").match(new RegExp("^" + Inputmask.escapeRegex(opts.negationSymbol.front)));
                 isNegative = null !== isNegative && 1 === isNegative.length, pos > (isNegative ? opts.negationSymbol.front.length : 0) + opts.prefix.length && pos < cbuf.length - opts.suffix.length && (cbuf[pos] = "!");
                 var bufVal = cbuf.join(""), bufValOrigin = cbuf.join();

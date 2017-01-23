@@ -161,7 +161,7 @@
 				var charAtPos = buffer[pos];
 
 				var cbuf = buffer.slice();
-				if (charAtPos === opts.groupSeparator) {
+				if (charAtPos === opts.groupSeparator && pos > opts.prefix.length && pos < (buffer.length - opts.suffix.length)) {
 					cbuf.splice(pos--, 1);
 					charAtPos = cbuf[pos];
 				}

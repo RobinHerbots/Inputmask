@@ -1855,5 +1855,37 @@ define([
 		assert.equal(testmask.inputmask._valueGet(), "$ 0.00", "Result " + testmask.inputmask._valueGet());
 	});
 
+	qunit.test("numeric + groupSeparator: \"  \" backspace, - krajcot", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("currency",{
+			digits: 0,
+			groupSeparator: " ",
+			autoGroup: true
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("1");
+		$.caret(testmask, 3);
+		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
 
+		assert.equal(testmask.inputmask._valueGet(), "$ 0", "Result " + testmask.inputmask._valueGet());
+	});
+
+	qunit.test("numeric + groupSeparator: \"  \" delete, - krajcot", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("currency",{
+			digits: 0,
+			groupSeparator: " ",
+			autoGroup: true
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("1");
+		$.caret(testmask, 2);
+		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
+
+		assert.equal(testmask.inputmask._valueGet(), "$ 0", "Result " + testmask.inputmask._valueGet());
+	});
 });
