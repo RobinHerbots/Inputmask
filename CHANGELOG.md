@@ -2,12 +2,12 @@
 All notable changes to this project will be documented in this file.
 
 ## [UNRELEASED]
-### Added
 ### Updates
 - performance updates
 	- initialization
 
 ### Fixed
+- static is a reserved keyword #1479
 - hasOwnProperty check missing in reverseTokens (numericInput) #1486
 - Per-element radixPoint overwrites defaults #1454
 - Form not cleaning correctly when AutoUnmask option is set to true #1442

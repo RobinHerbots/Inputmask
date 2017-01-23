@@ -255,15 +255,17 @@
 					if (processValue !== "" && isFinite(processValue)) {
 						var floatValue = parseFloat(processValue),
 							signedFloatValue = isNegative ? floatValue * -1 : floatValue;
-						if (opts.min !== null && isFinite(opts.min) && signedFloatValue < parseFloat(opts.min)) {
-							floatValue = Math.abs(opts.min);
-							isNegative = opts.min < 0;
-							maskedValue = undefined;
-						}
-						else if (opts.max !== null && isFinite(opts.max) && signedFloatValue > parseFloat(opts.max)) {
-							floatValue = Math.abs(opts.max);
-							isNegative = opts.max < 0;
-							maskedValue = undefined;
+						if (e.type === "blur") {
+							if (opts.min !== null && isFinite(opts.min) && signedFloatValue < parseFloat(opts.min)) {
+								floatValue = Math.abs(opts.min);
+								isNegative = opts.min < 0;
+								maskedValue = undefined;
+							}
+							else if (opts.max !== null && isFinite(opts.max) && signedFloatValue > parseFloat(opts.max)) {
+								floatValue = Math.abs(opts.max);
+								isNegative = opts.max < 0;
+								maskedValue = undefined;
+							}
 						}
 
 						processValue = floatValue.toString().replace(".", opts.radixPoint).split('');

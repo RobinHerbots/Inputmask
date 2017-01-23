@@ -1524,9 +1524,8 @@ define([
 			min: 1000,
 			max: 3000
 		}).mask(testmask);
-
+		$(testmask).blur();
 		assert.equal(testmask.inputmask._valueGet(), "1000", "Result " + testmask.inputmask._valueGet());
-
 	});
 
 	qunit.test("numeric alias - value=\"-1234\" minvalue = -1000", function (assert) {
@@ -1539,8 +1538,8 @@ define([
 			max: 3000
 		}).mask(testmask);
 
+		$(testmask).blur();
 		assert.equal(testmask.inputmask._valueGet(), "-1000", "Result " + testmask.inputmask._valueGet());
-
 	});
 
 	qunit.test("numeric alias - value=\"1000\" minvalue = 1000", function (assert) {
@@ -1859,7 +1858,7 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		Inputmask("currency",{
+		Inputmask("currency", {
 			digits: 0,
 			groupSeparator: " ",
 			autoGroup: true
@@ -1876,7 +1875,7 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		Inputmask("currency",{
+		Inputmask("currency", {
 			digits: 0,
 			groupSeparator: " ",
 			autoGroup: true
@@ -1887,5 +1886,26 @@ define([
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 
 		assert.equal(testmask.inputmask._valueGet(), "$ 0", "Result " + testmask.inputmask._valueGet());
+	});
+
+	qunit.test("minvalue, - serGlazkov", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask({
+			alias: 'integer',
+			autoUnmask: true,
+			rightAlign: false,
+			min: 18,
+			max: 80,
+			prefix: '',
+			suffix: ' %',
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("30");
+		$.caret(testmask, 1);
+		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
+		$("#testmask").Type("1");
+		assert.equal(testmask.inputmask._valueGet(), "31 %", "Result " + testmask.inputmask._valueGet());
 	});
 });
