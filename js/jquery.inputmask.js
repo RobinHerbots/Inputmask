@@ -8,7 +8,7 @@
 
 (function (factory) {
 	if (typeof define === "function" && define.amd) {
-		define(["jquery", "inputmask"], factory);
+		define(["jquery", "./inputmask"], factory);
 	} else if (typeof exports === "object") {
 		module.exports = factory(require("jquery"), require("./inputmask"));
 	} else {

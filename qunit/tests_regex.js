@@ -1,7 +1,6 @@
 define([
 	"qunit",
-	"inputmask.dependencyLib",
-	"inputmask",
+	"../dist/inputmask/dependencyLibs/inputmask.dependencyLib",
 	"../dist/inputmask/inputmask.date.extensions",
 	"../dist/inputmask/inputmask.extensions",
 	"../dist/inputmask/inputmask.numeric.extensions",

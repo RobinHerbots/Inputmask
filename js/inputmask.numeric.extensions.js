@@ -9,9 +9,9 @@
  */
 (function (factory) {
 	if (typeof define === "function" && define.amd) {
-		define(["inputmask.dependencyLib", "inputmask"], factory);
+		define(["./dependencyLibs/inputmask.dependencyLib", "./inputmask"], factory);
 	} else if (typeof exports === "object") {
-		module.exports = factory(require("./inputmask.dependencyLib"), require("./inputmask"));
+		module.exports = factory(require("./dependencyLibs/inputmask.dependencyLib"), require("./inputmask"));
 	} else {
 		factory(window.dependencyLib || jQuery, window.Inputmask);
 	}
@@ -305,16 +305,16 @@
 				}
 				if (opts.autoGroup) {
 					rslt = opts.postFormat(buffer, opts.numericInput ? caretPos : (caretPos - 1), opts);
-					rslt.caret =
-						((caretPos < (rslt.isNegative ? opts.negationSymbol.front.length : 0) + opts.prefix.length) ||
+					rslt.caret = //FIXME
+						((caretPos <= (rslt.isNegative ? opts.negationSymbol.front.length : 0) + opts.prefix.length) ||
 						(caretPos > (rslt.buffer.length - (rslt.isNegative ? opts.negationSymbol.back.length : 0))))
-							? rslt.pos : rslt.pos + 1;
+							? caretPos : caretPos + 1;
 					return rslt;
 				}
 			},
 			regex: {
-				integerPart: function (opts) {
-					return new RegExp("[" + Inputmask.escapeRegex(opts.negationSymbol.front) + "\+]?\\d+");
+				integerPart: function (opts, emptyCheck) {
+					return emptyCheck ? new RegExp("[" + Inputmask.escapeRegex(opts.negationSymbol.front) + "\+]?") : new RegExp("[" + Inputmask.escapeRegex(opts.negationSymbol.front) + "\+]?\\d+");
 				}
 				,
 				integerNPart: function (opts) {
@@ -324,7 +324,7 @@
 			signHandler: function (chrs, maskset, pos, strict, opts) {
 				if (!strict && (opts.allowMinus && chrs === "-") || (opts.allowPlus && chrs === "+")) {
 					var matchRslt = maskset.buffer.join("").match(opts.regex.integerPart(opts));
-
+					if (matchRslt === null) matchRslt = maskset.buffer.join("").match(opts.regex.integerPart(opts, true));
 					if (matchRslt && matchRslt[0].length > 0) {
 						if (maskset.buffer[matchRslt.index] === (chrs === "-" ? "+" : opts.negationSymbol.front)) {
 							if (chrs === "-") {

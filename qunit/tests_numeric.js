@@ -1,7 +1,6 @@
 define([
 	"qunit",
-	"inputmask.dependencyLib",
-	"inputmask",
+	"../dist/inputmask/dependencyLibs/inputmask.dependencyLib",
 	"../dist/inputmask/inputmask.date.extensions",
 	"../dist/inputmask/inputmask.extensions",
 	"../dist/inputmask/inputmask.numeric.extensions",
@@ -1524,7 +1523,7 @@ define([
 			min: 1000,
 			max: 3000
 		}).mask(testmask);
-		$(testmask).blur();
+		testmask.blur();
 		assert.equal(testmask.inputmask._valueGet(), "1000", "Result " + testmask.inputmask._valueGet());
 	});
 
@@ -1538,7 +1537,7 @@ define([
 			max: 3000
 		}).mask(testmask);
 
-		$(testmask).blur();
+		testmask.blur();
 		assert.equal(testmask.inputmask._valueGet(), "-1000", "Result " + testmask.inputmask._valueGet());
 	});
 

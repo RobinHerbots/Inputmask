@@ -6,14 +6,14 @@
  */
 (function (factory) {
 	if (typeof define === "function" && define.amd) {
-		define("inputmask.dependencyLib", ["jqlite"], factory);
+		define(["jqlite", "../global/window", "../global/document]"], factory);
 	} else if (typeof exports === "object") {
-		module.exports = factory(require("jqlite"));
+		module.exports = factory(require("jqlite"), require("../global/window"), require("../global/document"));
 	} else {
-		factory(jqlite);
+		factory(jqlite, window, document);
 	}
 }
-(function ($) {
+(function ($, window, document) {
 	// Use a stripped-down indexOf as it's faster than native
 	// http://jsperf.com/thor-indexof-vs-for/5
 	function indexOf(list, elem) {

@@ -7,14 +7,14 @@
  */
 (function (factory) {
 	if (typeof define === "function" && define.amd) {
-		define("inputmask", ["inputmask.dependencyLib"], factory);
+		define(["./dependencyLibs/inputmask.dependencyLib", "./global/window", "./global/document"], factory);
 	} else if (typeof exports === "object") {
-		module.exports = factory(require("./inputmask.dependencyLib"));
+		module.exports = factory(require("./dependencyLibs/inputmask.dependencyLib"), require("../global/window"), require("../global/document"));
 	} else {
-		factory(window.dependencyLib || jQuery);
+		factory(window.dependencyLib || jQuery, window, document);
 	}
 }
-(function ($) {
+(function ($, window, document, undefined) {
 	var ua = navigator.userAgent,
 		mobile = /mobile/i.test(ua),
 		iemobile = /iemobile/i.test(ua),
@@ -1306,10 +1306,10 @@
 						//return is false or a json object => { pos: ??, c: ??} or true
 						rslt = test.fn != null ?
 							test.fn.test(chrs, getMaskSet(), position, strict, opts, isSelection(pos)) : (c === test.def || c === opts.skipOptionalPartCharacter) && test.def !== "" ? //non mask
-							{
-								c: getPlaceholder(position, test, true) || test.def,
-								pos: position
-							} : false;
+						{
+							c: getPlaceholder(position, test, true) || test.def,
+							pos: position
+						} : false;
 
 						if (rslt !== false) {
 							var elem = rslt.c !== undefined ? rslt.c : c;

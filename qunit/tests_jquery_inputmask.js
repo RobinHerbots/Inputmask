@@ -1,7 +1,6 @@
 define([
 	"qunit",
 	"jquery",
-	"inputmask",
 	"../dist/inputmask/inputmask.date.extensions",
 	"../dist/inputmask/inputmask.extensions",
 	"../dist/inputmask/inputmask.numeric.extensions",

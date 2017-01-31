@@ -22,7 +22,7 @@ module.exports = function (grunt) {
 		}
 
 		var uglifyConfig = {};
-		var srcFiles = grunt.file.expand(path + "/*.js");
+		var srcFiles = grunt.file.expand(path + "/**/*.js");
 		for (var srcNdx in srcFiles) {
 			var dstFile = srcFiles[srcNdx].replace("js/", ""),
 				dstFileMin = dstFile.replace(".js", ".min.js");

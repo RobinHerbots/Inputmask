@@ -1,6 +1,7 @@
 (function (factory) {
 	if (typeof define === "function" && define.amd) {
-		define(["inputmask.dependencyLib", "inputmask"], factory);
+		define(["../dist/inputmask/dependencyLibs/inputmask.dependencyLib",
+			"../dist/inputmask/inputmask"], factory);
 	} else {
 		factory(window.dependencyLib || jQuery, window.Inputmask);
 	}
@@ -167,11 +168,11 @@
 		if (window.clipboardData) {
 			window.clipboardData.setData('Text', inputStr);
 		} else {
-			$input.data("clipboard", inputStr);
+			$.data($input, "clipboard", inputStr);
 			window.clipboardData = {
 				getData: function () {
 					window.clipboardData = undefined;
-					return $input.data("clipboard");
+					return $.data($input, "clipboard");
 				}
 			}
 		}

@@ -3,10 +3,12 @@ All notable changes to this project will be documented in this file.
 
 ## [UNRELEASED]
 ### Updates
+- restructure project
 - performance updates
 	- initialization
 
 ### Fixed
+- min value issue fix #1177
 - static is a reserved keyword #1479
 - hasOwnProperty check missing in reverseTokens (numericInput) #1486
 - Per-element radixPoint overwrites defaults #1454

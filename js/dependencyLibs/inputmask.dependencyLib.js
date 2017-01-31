@@ -6,14 +6,14 @@
  */
 (function (factory) {
 	if (typeof define === "function" && define.amd) {
-		define("inputmask.dependencyLib", factory);
+		define(["../global/window", "../global/document"], factory);
 	} else if (typeof exports === "object") {
-		module.exports = factory();
+		module.exports = factory(require("../global/window"), require("../global/document"));
 	} else {
-		factory();
+		factory(window, document);
 	}
 }
-(function () {
+(function (window, document) {
 
 	//helper functions
 
