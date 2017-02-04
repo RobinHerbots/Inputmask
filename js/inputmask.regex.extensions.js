@@ -29,7 +29,7 @@
 			tokenizer: /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?[:=!]?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g,
 			quantifierFilter: /[0-9]+[^,]/,
 			isComplete: function (buffer, opts) {
-				return new RegExp(opts.regex).test(buffer.join(""));
+				return new RegExp(opts.regex,opts.casing?"i":"").test(buffer.join(""));
 			},
 			definitions: {
 				"r": {
@@ -163,7 +163,7 @@
 										for (var j = 0; j < openGroupCount; j++) {
 											testExp += ")";
 										}
-										var exp = new RegExp("^(" + testExp + ")$");
+										var exp = new RegExp("^(" + testExp + ")$",opts.casing?"i":"");
 										isvalid = exp.test(bufferStr);
 									} else {
 										for (var l = 0, tl = matchToken.length; l < tl; l++) {
@@ -174,7 +174,7 @@
 											for (var j = 0; j < openGroupCount; j++) {
 												testExp += ")";
 											}
-											var exp = new RegExp("^(" + testExp + ")$");
+											var exp = new RegExp("^(" + testExp + ")$",opts.casing?"i":"");
 											isvalid = exp.test(bufferStr);
 											if (isvalid) break;
 										}
