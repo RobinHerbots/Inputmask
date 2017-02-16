@@ -3,7 +3,11 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
+<<<<<<< HEAD
 * Version: 3.3.5-49
+=======
+* Version: 3.3.5-34
+>>>>>>> refs/remotes/origin/3.x
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "./dependencyLibs/inputmask.dependencyLib", "./inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./dependencyLibs/inputmask.dependencyLib"), require("./inputmask")) : factory(window.dependencyLib || jQuery, window.Inputmask);
@@ -18,7 +22,7 @@
             tokenizer: /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?[:=!]?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g,
             quantifierFilter: /[0-9]+[^,]/,
             isComplete: function(buffer, opts) {
-                return new RegExp(opts.regex).test(buffer.join(""));
+                return new RegExp(opts.regex, opts.casing ? "i" : "").test(buffer.join(""));
             },
             definitions: {
                 r: {
@@ -85,12 +89,12 @@
                                     if ("[" == matchToken.charAt(0)) {
                                         testExp = regexPart, testExp += matchToken;
                                         for (var j = 0; j < openGroupCount; j++) testExp += ")";
-                                        var exp = new RegExp("^(" + testExp + ")$");
+                                        var exp = new RegExp("^(" + testExp + ")$", opts.casing ? "i" : "");
                                         isvalid = exp.test(bufferStr);
                                     } else for (var l = 0, tl = matchToken.length; l < tl; l++) if ("\\" !== matchToken.charAt(l)) {
                                         testExp = regexPart, testExp += matchToken.substr(0, l + 1), testExp = testExp.replace(/\|$/, "");
                                         for (var j = 0; j < openGroupCount; j++) testExp += ")";
-                                        var exp = new RegExp("^(" + testExp + ")$");
+                                        var exp = new RegExp("^(" + testExp + ")$", opts.casing ? "i" : "");
                                         if (isvalid = exp.test(bufferStr)) break;
                                     }
                                     regexPart += matchToken;

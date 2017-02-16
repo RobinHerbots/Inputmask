@@ -27,10 +27,6 @@ Default: 3
 Enable grouping of the integer part.
 Default: false
 
-### allowPlus
-Allow to enter +.
-Default: true
-
 ### allowMinus
 Allow to enter -.
 Default: true

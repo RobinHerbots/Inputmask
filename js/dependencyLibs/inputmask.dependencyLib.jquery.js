@@ -1,13 +1,12 @@
 (function (factory) {
 	if (typeof define === "function" && define.amd) {
-		define(["jquery", "../global/window"], factory);
+		define(["jquery"], factory);
 	} else if (typeof exports === "object") {
-		module.exports = factory(require("jquery"), require("../global/window"));
+		module.exports = factory(require("jquery"));
 	} else {
-		factory(jQuery, window);
+		window.dependencyLib = factory(jQuery);
 	}
 }
-(function ($, window) {
-	window.dependencyLib = $;
+(function ($) {
 	return $;
 }));

@@ -10,7 +10,7 @@
 	} else if (typeof exports === "object") {
 		module.exports = factory(require("jqlite"), require("../global/window"), require("../global/document"));
 	} else {
-		factory(jqlite, window, document);
+		window.dependencyLib = 	factory(jqlite, window, document);
 	}
 }
 (function ($, window, document) {
@@ -222,6 +222,5 @@
 		};
 	$.Event.prototype = window.Event.prototype;
 
-	window.dependencyLib = $;
 	return $;
 }));

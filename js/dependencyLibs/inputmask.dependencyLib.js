@@ -10,7 +10,7 @@
 	} else if (typeof exports === "object") {
 		module.exports = factory(require("../global/window"), require("../global/document"));
 	} else {
-		factory(window, document);
+		window.dependencyLib = factory(window, document);
 	}
 }
 (function (window, document) {
@@ -435,6 +435,5 @@
 	}
 	DependencyLib.Event.prototype = window.Event.prototype;
 
-	window.dependencyLib = DependencyLib;
 	return DependencyLib;
 }));
