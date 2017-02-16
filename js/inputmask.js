@@ -2854,6 +2854,8 @@
 				return isSupported;
 			}
 
+			//unbind all events - to make sure that no other mask will interfere when re-masking
+			EventRuler.off(el);
 			var isSupported = isElementTypeSupported(elem, opts);
 			if (isSupported !== false) {
 				el = elem;
@@ -2887,8 +2889,6 @@
 					}
 				}
 
-				//unbind all events - to make sure that no other mask will interfere when re-masking
-				EventRuler.off(el);
 				if (isSupported === true) {
 					//bind events
 					EventRuler.on(el, "submit", EventHandlers.submitEvent);
