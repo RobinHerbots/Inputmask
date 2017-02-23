@@ -1312,10 +1312,10 @@
 						//return is false or a json object => { pos: ??, c: ??} or true
 						rslt = test.fn != null ?
 							test.fn.test(chrs, getMaskSet(), position, strict, opts, isSelection(pos)) : (c === test.def || c === opts.skipOptionalPartCharacter) && test.def !== "" ? //non mask
-						{
-							c: getPlaceholder(position, test, true) || test.def,
-							pos: position
-						} : false;
+							{
+								c: getPlaceholder(position, test, true) || test.def,
+								pos: position
+							} : false;
 
 						if (rslt !== false) {
 							var elem = rslt.c !== undefined ? rslt.c : c;
@@ -1728,12 +1728,11 @@
 			}
 			input.inputmask._valueSet(buffer.join(""));
 			if (caretPos !== undefined && (event === undefined || event.type !== "blur")) {
-				caret(input, caretPos);
 				if (android && event.type === "input") {
 					setTimeout(function () {
 						caret(input, caretPos);
 					}, 0);
-				}
+				} else caret(input, caretPos);
 			} else renderColorMask(input, buffer, caretPos);
 			if (triggerInputEvent === true) {
 				skipInputEvent = true;
@@ -1871,7 +1870,7 @@
 			var unmaskedValue = umValue.length === 0 ? "" : (isRTL ? umValue.reverse() : umValue).join("");
 			if ($.isFunction(opts.onUnMask)) {
 				var bufferValue = (isRTL ? getBuffer().slice().reverse() : getBuffer()).join("");
-				unmaskedValue = (opts.onUnMask(bufferValue, unmaskedValue, opts) || unmaskedValue);
+				unmaskedValue = opts.onUnMask(bufferValue, unmaskedValue, opts);
 			}
 			return unmaskedValue;
 		}

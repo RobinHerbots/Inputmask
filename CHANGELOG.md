@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 	- initialization
 
 ### Fixed
+- This line of code returns an unexpected value when unmasking as number #1527
 - Phone Mask Cursor Issue on Chrome on some Androids.. #1490
 - min value issue fix #1177
 - static is a reserved keyword #1479
