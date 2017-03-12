@@ -7,6 +7,7 @@
 		"dist/inputmask/",
 		"extra/",
 		"dist/jquery.inputmask.bundle.js",
+		"dist/jquery.inputmask.bundle.min.js",
 		"index.js"
 	],
 	"scripts": {
