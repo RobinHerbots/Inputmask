@@ -469,7 +469,7 @@
             result === !0 && (result = {
                 pos: maskPos
             }), $.isFunction(opts.postValidation) && result !== !1 && !strict && fromSetValid !== !0 && (result = !!opts.postValidation(getBuffer(!0), result, opts) && result), 
-            void 0 === result.pos && (result.pos = maskPos), result === !1 && (resetMaskSet(!0), 
+            void 0 === result.pos && (result.pos == maskPos), result === !1 && (resetMaskSet(!0), 
             getMaskSet().validPositions = $.extend(!0, {}, positionsClone)), result;
         }
         function isMask(pos, strict) {
