@@ -145,7 +145,7 @@
 			var input = this.nodeName ? this : this[0];
 			if (value !== undefined) {
 				if (input.inputmask) {
-					input.inputmask._valueSet(value);
+					input.inputmask._valueSet(value, true);
 					$(input).trigger("setvalue");
 				} else input.value = value;
 			}

@@ -954,7 +954,7 @@ Hook to alter the clear behavior in the stripValidPositions<br>Args => maskset, 
 Hook to postValidate the result from isValid.  Usefull for validating the entry as a whole.  Args => buffer, currentResult, opts<br>Return => true|false|command object
 
 ### preValidation
-Hook to preValidate the input.  Useful for validating regardless the definition. Args => buffer, pos, char, opts => return true/false/command object
+Hook to preValidate the input.  Useful for validating regardless the definition. Args => buffer, pos, char, isSelection, opts => return true/false/command object
 When return true, the normal validation kicks in, otherwise it is skipped.
 
 ### staticDefinitionSymbol

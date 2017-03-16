@@ -3,10 +3,10 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.5-49
+* Version: 3.3.5-144
 */
 !function(factory) {
-    "function" == typeof define && define.amd ? define([ "jqlite", "../global/window", "../global/document]" ], factory) : "object" == typeof exports ? module.exports = factory(require("jqlite"), require("../global/window"), require("../global/document")) : factory(jqlite, window, document);
+    "function" == typeof define && define.amd ? define([ "jqlite", "../global/window", "../global/document]" ], factory) : "object" == typeof exports ? module.exports = factory(require("jqlite"), require("../global/window"), require("../global/document")) : window.dependencyLib = factory(jqlite, window, document);
 }(function($, window, document) {
     function indexOf(list, elem) {
         for (var i = 0, len = list.length; i < len; i++) if (list[i] === elem) return i;
@@ -60,5 +60,5 @@
         var evt = document.createEvent("CustomEvent");
         return evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail), 
         evt;
-    }, $.Event.prototype = window.Event.prototype, window.dependencyLib = $, $;
+    }, $.Event.prototype = window.Event.prototype, $;
 });

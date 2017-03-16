@@ -134,13 +134,14 @@
 			autoUnmask: false,
 			unmaskAsNumber: false,
 			inputmode: "numeric",
-			preValidation: function (buffer, pos, c, opts) {
+			preValidation: function (buffer, pos, c, isSelection, opts) {
 				if (c === "-" || c == opts.negationSymbol.front) {
 					if (opts.allowMinus !== true) return false;
 					opts.isNegative = opts.isNegative === undefined ? true : !opts.isNegative;
+					if (buffer.join("") === "") return true;
 					return {caret: pos, dopost: true};
 				}
-				if (opts.numericInput !== true && c === opts.radixPoint && (opts.digits !== undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0))) {
+				if (isSelection === false && opts.numericInput !== true && c === opts.radixPoint && (opts.digits !== undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0))) {
 					var radixPos = $.inArray(opts.radixPoint, buffer);
 					if (radixPos !== -1) {
 						return {"caret": radixPos + 1};
@@ -171,12 +172,18 @@
 				var caretPos = currentResult.caret != undefined ? currentResult.caret : currentResult.pos;
 				var maskedValue = buffer.slice();
 				if (opts.numericInput) {
-					caretPos = maskedValue.length - caretPos;
+					caretPos = maskedValue.length - caretPos - 1;
 					maskedValue = maskedValue.reverse();
 				}
 				//mark caretPos
 				var charAtPos = maskedValue[caretPos];
-				if (caretPos == maskedValue.length - 1 && charAtPos === opts.radixPoint) return currentResult;
+				if (charAtPos === opts.groupSeparator) {
+					caretPos += 1;
+					charAtPos = maskedValue[caretPos];
+				}
+
+
+				if (caretPos == maskedValue.length - opts.suffix.length - 1 && charAtPos === opts.radixPoint) return currentResult;
 
 				if (charAtPos !== undefined) {
 					if (charAtPos !== opts.radixPoint &&
@@ -184,10 +191,10 @@
 						(charAtPos !== opts.negationSymbol.back)
 					) {
 						maskedValue[caretPos] = "?";
-						if (opts.prefix.length > 0 && caretPos >= (opts.isNegative === true ? 0 : 1) && caretPos < opts.prefix.length - 1 + (opts.isNegative === true ? 0 : 1)) {
-							prefix[caretPos - (opts.isNegative === true ? 0 : 1)] = "?";
-						} else if (opts.suffix.length > 0 && caretPos >= (maskedValue.length - opts.suffix.length) - (opts.isNegative === true ? 0 : 1)) {
-							suffix[caretPos - (maskedValue.length - opts.suffix.length - (opts.isNegative === true ? 0 : 1))] = "?";
+						if (opts.prefix.length > 0 && caretPos >= (opts.isNegative === false ? 1 : 0) && caretPos < opts.prefix.length - 1 + (opts.isNegative === false ? 1 : 0)) {
+							prefix[caretPos - (opts.isNegative === false ? 1 : 0)] = "?";
+						} else if (opts.suffix.length > 0 && caretPos >= (maskedValue.length - opts.suffix.length) - (opts.isNegative === false ? 1 : 0)) {
+							suffix[caretPos - (maskedValue.length - opts.suffix.length - (opts.isNegative === false ? 1 : 0))] = "?";
 						}
 					}
 				}
@@ -206,16 +213,19 @@
 				}
 
 				//strip leading zeroes
-				if (charAtPos == "0")
-					processValue = processValue.replace(/^\?0/g, "?");
-				processValue = processValue.replace(/^0/g, "");
+				if (processValue.length > 1 && $.inArray(opts.radixPoint, processValue) !== 1) {
+					if (charAtPos == "0") {
+						processValue = processValue.replace(/^\?/g, "");
+					}
+					processValue = processValue.replace(/^0/g, "");
+				}
 
-				if (processValue[0] === opts.radixPoint) processValue = "0" + processValue;
+				if (processValue.charAt(0) === opts.radixPoint && opts.numericInput !== true) processValue = "0" + processValue;
 
 				if (processValue !== "") {
 					processValue = processValue.split("");
 					//handle digits
-					if (isFinite(opts.digits)) {
+					if (!opts.digitsOptional && isFinite(opts.digits)) {
 						var radixPosition = $.inArray(opts.radixPoint, processValue);
 						var rpb = $.inArray(opts.radixPoint, maskedValue);
 						if (radixPosition === -1) {
@@ -224,14 +234,14 @@
 						}
 						for (var i = 1; i <= opts.digits; i++) {
 							if (!opts.digitsOptional && (processValue[radixPosition + i] === undefined || processValue[radixPosition + i] === opts.placeholder.charAt(0))) {
-								processValue[radixPosition + i] = "0";
+								processValue[radixPosition + i] = currentResult.placeholder || opts.placeholder.charAt(0);
 							} else if (rpb !== -1 && maskedValue[rpb + i] !== undefined) {
 								processValue[radixPosition + i] = processValue[radixPosition + i] || maskedValue[rpb + i];
 							}
 						}
 					}
 
-					if (opts.autoGroup === true && opts.groupSeparator !== "" && charAtPos !== opts.radixPoint) {
+					if (opts.autoGroup === true && opts.groupSeparator !== "" && (charAtPos !== opts.radixPoint || currentResult.pos !== undefined || currentResult.dopost)) {
 						processValue = Inputmask(buildPostMask(processValue, opts), {
 							numericInput: true, jitMasking: true,
 							definitions: {
@@ -241,8 +251,16 @@
 								}
 							}
 						}).format(processValue.join(""));
+						if (processValue.charAt(0) === opts.groupSeparator) {
+							processValue.substr(1);
+						}
 					} else processValue = processValue.join("");
 				}
+
+				if (opts.isNegative && currentResult.event === "blur") {
+					opts.isNegative = processValue !== "0"
+				}
+
 				processValue = prefix + processValue;
 				processValue += suffix;
 				if (opts.isNegative) {
@@ -254,29 +272,30 @@
 				if (charAtPos !== undefined) {
 					if (charAtPos !== opts.radixPoint && charAtPos !== opts.negationSymbol.front && charAtPos !== opts.negationSymbol.back) {
 						caretPos = $.inArray("?", processValue);
-						processValue[caretPos] = charAtPos;
+						if (caretPos > -1)
+							processValue[caretPos] = charAtPos;
+						else caretPos = currentResult.caret || 0;
 					} else if (charAtPos === opts.radixPoint ||
 						charAtPos === opts.negationSymbol.front ||
 						charAtPos === opts.negationSymbol.back) {
 						var newCaretPos = $.inArray(charAtPos, processValue);
 						if (newCaretPos !== -1) caretPos = newCaretPos;
-						else charAtPos = undefined;
+						// else charAtPos = undefined;
 					}
 				}
 
-
 				if (opts.numericInput) {
-					caretPos = processValue.length - caretPos;
+					caretPos = processValue.length - caretPos - 1;
 					processValue = processValue.reverse();
 				}
 
 				var rslt = {
-					caret: (charAtPos === undefined || currentResult.pos) ? caretPos + 1 : caretPos,
+					caret: (charAtPos === undefined || currentResult.pos !== undefined) ? caretPos + (opts.numericInput ? -1 : 1) : caretPos,
 					buffer: processValue,
-					refreshFromBuffer: processValue.join("") != buffer.join("")
+					refreshFromBuffer: currentResult.dopost || buffer.join("") !== processValue.join("")
 				};
 
-				console.log(JSON.stringify(rslt));
+				// console.log(JSON.stringify(rslt));
 				return rslt.refreshFromBuffer ? rslt : currentResult;
 			},
 			onBeforeWrite: function (e, buffer, caretPos, opts) {
@@ -296,7 +315,7 @@
 							if (isNaN(opts.max)) opts.max = Number.MAX_VALUE;
 						}
 						opts.parseMinMaxOptions = "done";
-						console.log(opts.min + " " + opts.max);
+						// console.log(opts.min + " " + opts.max);
 					}
 				}
 
@@ -305,30 +324,42 @@
 						case "keydown":
 							return opts.postValidation(buffer, {caret: caretPos, dopost: true}, opts);
 						case  "blur":
+						case  "checkval":
 							var unmasked;
 							parseMinMaxOptions(opts);
 							if (opts.min !== null || opts.max !== null) {
 								unmasked = opts.onUnMask(buffer.join(""), undefined, $.extend({}, opts, {unmaskAsNumber: true}));
 								if (opts.min !== null && unmasked < opts.min) {
 									opts.isNegative = opts.min < 0;
-									return {
-										buffer: opts.min.toString().split(""),
-										refreshFromBuffer: true
-									}
+									return opts.postValidation(opts.min.toString().replace(".", opts.radixPoint).split(""), {  //needs fix for MIN_VALUE & MAX_VALUE
+										caret: caretPos,
+										dopost: true,
+										placeholder: "0"
+									}, opts);
 								} else if (opts.max !== null && unmasked > opts.max) {
 									opts.isNegative = opts.max < 0;
-									return {
-										buffer: opts.max.toString().split(""),
-										refreshFromBuffer: true
-									}
+									return opts.postValidation(opts.max.toString().replace(".", opts.radixPoint).split(""), {  //needs fix for MIN_VALUE & MAX_VALUE
+										caret: caretPos,
+										dopost: true,
+										placeholder: "0"
+									}, opts);
 								}
 							}
-							break;
+							return opts.postValidation(buffer, {
+								caret: caretPos,
+								dopost: true,
+								placeholder: "0",
+								event: "blur"
+							}, opts);
 						default:
-
 							//strip radixpoint at the end
-							// if (processValue[processValue.length - 1] === opts.radixPoint) {
-							// 	delete processValue[processValue.length - 1];
+							// if (buffer[buffer.length - 1] === opts.radixPoint) {
+							// 	delete buffer[buffer.length - 1];
+							// 	return opts.postValidation(buffer, {
+							// 		caret: caretPos,
+							// 		dopost: true,
+							// 		placeholder: "0"
+							// 	}, opts);
 							// }
 							break;
 					}
@@ -348,18 +379,39 @@
 				"~": {
 					validator: function (chrs, maskset, pos, strict, opts, isSelection) {
 						var isValid = strict ? new RegExp("[0-9" + Inputmask.escapeRegex(opts.groupSeparator) + "]").test(chrs) : new RegExp("[0-9]").test(chrs);
-						if (isValid === true && opts.numericInput !== true) {
-							//handle overwrite when fixed precision
-							var radixPosition = $.inArray(opts.radixPoint, maskset.buffer);
-							if (radixPosition !== -1 && (opts.digitsOptional === false || maskset.validPositions[pos]) && opts.numericInput !== true && pos > radixPosition && !strict) {
-								isValid = {
-									"pos": pos,
-									"remove": pos
-								};
-							} else {
-								isValid = {
-									pos: pos
-								};
+						if (isValid === true) {
+							if (opts.numericInput !== true && maskset.validPositions[pos] !== undefined && maskset.validPositions[pos].match.def === "~" && !isSelection) {
+								var processValue = maskset.buffer.join("");
+								//strip negation symbol
+								processValue = processValue.replace(new RegExp("[-" + Inputmask.escapeRegex(opts.negationSymbol.front) + "]", "g"), "");
+								processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.negationSymbol.back) + "$"), "");
+								//filter 0
+								processValue = processValue.replace(/0/g, opts.placeholder.charAt(0));
+								var bufferTemplate = maskset._buffer.join(""); //getBuffer().slice(lvp).join('');
+								if (processValue === opts.radixPoint) {
+									processValue = bufferTemplate;
+								}
+								while (processValue.match(Inputmask.escapeRegex(bufferTemplate) + "$") === null) {
+									bufferTemplate = bufferTemplate.slice(1);
+								}
+								processValue = processValue.replace(bufferTemplate, "");
+								processValue = processValue.split("");
+
+								if (processValue[pos] === undefined) {
+									isValid = {
+										"pos": pos,
+										"remove": pos
+									};
+								} else {
+									isValid = {
+										pos: pos
+									};
+								}
+							}
+						} else if (!strict && chrs === opts.radixPoint && maskset.validPositions[pos - 1] === undefined) {
+							maskset.buffer[pos] = "0";
+							isValid = {
+								"pos": pos + 1
 							}
 						}
 						return isValid;
@@ -370,7 +422,7 @@
 				,
 				"+": {
 					validator: function (chrs, maskset, pos, strict, opts) {
-						return (strict && opts.allowMinus && chrs === opts.negationSymbol.front);
+						return (opts.allowMinus && (chrs === "-" || chrs === opts.negationSymbol.front));
 
 					},
 					cardinality: 1,
@@ -378,7 +430,7 @@
 				},
 				"-": {
 					validator: function (chrs, maskset, pos, strict, opts) {
-						return (strict && opts.allowMinus && chrs === opts.negationSymbol.back);
+						return (opts.allowMinus && chrs === opts.negationSymbol.back);
 
 					},
 					cardinality: 1,
@@ -408,6 +460,8 @@
 				var processValue = maskedValue.replace(opts.prefix, "");
 				processValue = processValue.replace(opts.suffix, "");
 				processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "");
+				if (opts.placeholder.charAt(0) !== "")
+					processValue = processValue.replace(new RegExp(opts.placeholder.charAt(0), "g"), "0");
 				if (opts.unmaskAsNumber) {
 					if (opts.radixPoint !== "" && processValue.indexOf(opts.radixPoint) !== -1) processValue = processValue.replace(Inputmask.escapeRegex.call(this, opts.radixPoint), ".");
 					return Number(processValue);
@@ -428,12 +482,14 @@
 				return isFinite(processValue);
 			},
 			onBeforeMask: function (initialValue, opts) {
+				opts.isNegative = undefined;
 
+				initialValue = initialValue.toString().charAt(initialValue.length - 1) === opts.radixPoint
+					? initialValue.toString().substr(0, initialValue.length - 1) : initialValue.toString();
 
-				initialValue = initialValue.toString();
-				if (opts.numericInput === true) {
-					initialValue = initialValue.split("").reverse().join("");
-				}
+				// if (opts.numericInput === true) {
+				// 	initialValue = initialValue.split("").reverse().join("");
+				// }
 				if (opts.radixPoint !== "" && isFinite(initialValue)) {
 					var vs = initialValue.split("."),
 						groupSize = opts.groupSeparator !== "" ? parseInt(opts.groupSize) : 0;
@@ -476,15 +532,19 @@
 					}
 				}
 
-				if (opts.numericInput === true) {
-					initialValue = initialValue.split("").reverse().join("");
-				}
+				// if (opts.numericInput === true) {
+				// 	initialValue = initialValue.split("").reverse().join("");
+				// }
 				return initialValue;
 			}
 			,
 			canClearPosition: function (maskset, position, lvp, strict, opts) {
 				var vp = maskset.validPositions[position],
-					canClear = ((vp.input !== opts.radixPoint || (maskset.validPositions[position].match.fn !== null && opts.decimalProtect === false)) || isFinite(vp.input)) ||
+					canClear =
+						vp.input !== opts.radixPoint ||
+						(maskset.validPositions[position].match.fn !== null && opts.decimalProtect === false) ||
+						(vp.input === opts.radixPoint && maskset.validPositions[position + 1] && maskset.validPositions[position + 1].match.fn === null) ||
+						isFinite(vp.input) ||
 						position === lvp ||
 						vp.input === opts.groupSeparator ||
 						vp.input === opts.negationSymbol.front ||
@@ -538,6 +598,7 @@
 		"percentage": {
 			alias: "numeric",
 			digits: 2,
+			digitsOptional: true,
 			radixPoint: ".",
 			placeholder: "0",
 			autoGroup: false,
@@ -549,5 +610,4 @@
 	})
 	;
 	return Inputmask;
-}))
-;
+}));

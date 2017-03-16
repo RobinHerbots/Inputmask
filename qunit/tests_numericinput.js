@@ -290,7 +290,7 @@ define([
 
 		testmask.focus();
 		$("#testmask").trigger("click");
-		;
+
 		setTimeout(function () {
 			$("#testmask").Type("123");
 			assert.equal(testmask.value, "_123 t", "Result " + testmask.value);

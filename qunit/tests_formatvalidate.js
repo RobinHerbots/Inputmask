@@ -140,7 +140,8 @@ define([
 			alias: "decimal",
 			radixPoint: ".",
 			groupSeparator: ",",
-			groupSize: 3
+			groupSize: 3,
+			autoGroup: true
 		});
 		assert.equal(isValid, true, "Result " + isValid);
 	});
@@ -167,7 +168,8 @@ define([
 			alias: "decimal",
 			radixPoint: ".",
 			groupSeparator: ",",
-			groupSize: 3
+			groupSize: 3,
+			autoGroup: true
 		});
 		assert.equal(isValid, true, "Result " + isValid);
 	});
