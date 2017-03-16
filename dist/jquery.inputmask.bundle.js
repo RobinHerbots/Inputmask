@@ -2273,7 +2273,7 @@
                     isNaN(opts.placeholder) && (processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.placeholder), "g"), "")), 
                     processValue = processValue === opts.negationSymbol.front ? processValue + "0" : processValue, 
                     "" !== processValue && isFinite(processValue)) {
-                        var floatValue = parseFloat(processValue), signedFloatValue = isNegative ? floatValue * -1 : floatValue;
+                        var floatValue = processValue, signedFloatValue = isNegative ? floatValue * -1 : floatValue;
                         if ("blur" === e.type && (null !== opts.min && isFinite(opts.min) && signedFloatValue < parseFloat(opts.min) ? (floatValue = Math.abs(opts.min), 
                         isNegative = opts.min < 0, maskedValue = void 0) : null !== opts.max && isFinite(opts.max) && signedFloatValue > parseFloat(opts.max) && (floatValue = Math.abs(opts.max), 
                         isNegative = opts.max < 0, maskedValue = void 0)), processValue = floatValue.toString().replace(".", opts.radixPoint).split(""), 

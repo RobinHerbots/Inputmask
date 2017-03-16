@@ -253,7 +253,7 @@
 					processValue = processValue === opts.negationSymbol.front ? processValue + "0" : processValue;
 
 					if (processValue !== "" && isFinite(processValue)) {
-						var floatValue = parseFloat(processValue),
+						var floatValue = processValue,
 							signedFloatValue = isNegative ? floatValue * -1 : floatValue;
 						if (e.type === "blur") {
 							if (opts.min !== null && isFinite(opts.min) && signedFloatValue < parseFloat(opts.min)) {
