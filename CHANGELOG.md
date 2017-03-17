@@ -3,11 +3,13 @@ All notable changes to this project will be documented in this file.
 
 ## [UNRELEASED]
 ### Updates
+- enhance inputfallback event (android)
 - restructure project
 - performance updates
 	- initialization
 
 ### Fixed
+- Rounding numeric values #1540
 - Casing lower/upper as extend aliases? #1529
 - This line of code returns an unexpected value when unmasking as number #1527
 - Phone Mask Cursor Issue on Chrome on some Androids.. #1490

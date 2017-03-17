@@ -331,14 +331,14 @@
 								unmasked = opts.onUnMask(buffer.join(""), undefined, $.extend({}, opts, {unmaskAsNumber: true}));
 								if (opts.min !== null && unmasked < opts.min) {
 									opts.isNegative = opts.min < 0;
-									return opts.postValidation(opts.min.toString().replace(".", opts.radixPoint).split(""), {  //needs fix for MIN_VALUE & MAX_VALUE
+									return opts.postValidation(opts.min.toString().replace(".", opts.radixPoint).split(""), {  //TODO needs fix for MIN_VALUE & MAX_VALUE
 										caret: caretPos,
 										dopost: true,
 										placeholder: "0"
 									}, opts);
 								} else if (opts.max !== null && unmasked > opts.max) {
 									opts.isNegative = opts.max < 0;
-									return opts.postValidation(opts.max.toString().replace(".", opts.radixPoint).split(""), {  //needs fix for MIN_VALUE & MAX_VALUE
+									return opts.postValidation(opts.max.toString().replace(".", opts.radixPoint).split(""), {  //TODO needs fix for MIN_VALUE & MAX_VALUE
 										caret: caretPos,
 										dopost: true,
 										placeholder: "0"

@@ -1833,6 +1833,7 @@
 					if (result && stickyCaret !== true && (caretPos < lvp + 1 || lvp === -1))
 						caretPos = (opts.numericInput && result.caret === undefined) ? seekPrevious(result.forwardPosition) : result.forwardPosition;
 				}
+
 				writeBuffer(input, getBuffer(), caretPos, initiatingEvent || new $.Event("checkval"));
 			}
 		}
@@ -2370,6 +2371,7 @@
 							bufferTemplate = bufferTemplate.slice(1);
 						}
 						inputValue = inputValue.replace(bufferTemplate, "");
+						if ($.isFunction(opts.onBeforeMask)) inputValue = opts.onBeforeMask(inputValue, opts) || inputValue;
 						inputValue = inputValue.split("");
 						checkVal(input, true, false, inputValue, e, caretPos.begin < lvp);
 
@@ -2921,7 +2923,7 @@
 					EventRuler.on(el, "complete", opts.oncomplete);
 					EventRuler.on(el, "incomplete", opts.onincomplete);
 					EventRuler.on(el, "cleared", opts.oncleared);
-					if (!android || opts.inputEventOnly !== true) {
+					if (!android && opts.inputEventOnly !== true) {
 						EventRuler.on(el, "keydown", EventHandlers.keydownEvent);
 						EventRuler.on(el, "keypress", EventHandlers.keypressEvent);
 					}

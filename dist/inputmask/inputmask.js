@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.5-152
+* Version: 3.3.5-153
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "./dependencyLibs/inputmask.dependencyLib", "./global/window", "./global/document" ], factory) : "object" == typeof exports ? module.exports = factory(require("./dependencyLibs/inputmask.dependencyLib"), require("../global/window"), require("../global/document")) : window.Inputmask = factory(window.dependencyLib || jQuery, window, document);
@@ -855,7 +855,7 @@
             EventRuler.on(el, "dragdrop", EventHandlers.pasteEvent), EventRuler.on(el, "drop", EventHandlers.pasteEvent), 
             EventRuler.on(el, "cut", EventHandlers.cutEvent), EventRuler.on(el, "complete", opts.oncomplete), 
             EventRuler.on(el, "incomplete", opts.onincomplete), EventRuler.on(el, "cleared", opts.oncleared), 
-            android && opts.inputEventOnly === !0 || (EventRuler.on(el, "keydown", EventHandlers.keydownEvent), 
+            android || opts.inputEventOnly === !0 || (EventRuler.on(el, "keydown", EventHandlers.keydownEvent), 
             EventRuler.on(el, "keypress", EventHandlers.keypressEvent)), EventRuler.on(el, "compositionstart", $.noop), 
             EventRuler.on(el, "compositionupdate", $.noop), EventRuler.on(el, "compositionend", $.noop), 
             EventRuler.on(el, "keyup", $.noop), EventRuler.on(el, "input", EventHandlers.inputFallBackEvent), 
@@ -1018,8 +1018,9 @@
                     if (caretPos.begin > inputValue.length && (caret(input, inputValue.length), caretPos = caret(input)), 
                     getBuffer().length - inputValue.length !== 1 || inputValue.charAt(caretPos.begin) === getBuffer()[caretPos.begin] || inputValue.charAt(caretPos.begin + 1) === getBuffer()[caretPos.begin] || isMask(caretPos.begin)) {
                         for (var lvp = getLastValidPosition() + 1, bufferTemplate = getBufferTemplate().join(""); null === inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$"); ) bufferTemplate = bufferTemplate.slice(1);
-                        inputValue = inputValue.replace(bufferTemplate, ""), inputValue = inputValue.split(""), 
-                        checkVal(input, !0, !1, inputValue, e, caretPos.begin < lvp), isComplete(getBuffer()) === !0 && $(input).trigger("complete");
+                        inputValue = inputValue.replace(bufferTemplate, ""), $.isFunction(opts.onBeforeMask) && (inputValue = opts.onBeforeMask(inputValue, opts) || inputValue), 
+                        inputValue = inputValue.split(""), checkVal(input, !0, !1, inputValue, e, caretPos.begin < lvp), 
+                        isComplete(getBuffer()) === !0 && $(input).trigger("complete");
                     } else e.keyCode = Inputmask.keyCode.BACKSPACE, EventHandlers.keydownEvent.call(input, e);
                     e.preventDefault();
                 }
