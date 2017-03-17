@@ -10,13 +10,20 @@ module.exports = function (grunt) {
 	}
 
 	function createUglifyConfig(path) {
+		function replacer(match, p1, p2, p3, offset, string) {
+			// p1 is nondigits, p2 digits, and p3 non-alphanumerics
+			return [p1, p2, p3].join('');
+		}
+
 		function stripModuleLoaders(src, dst) {
 			var srcFile = grunt.file.read(src);
 			if (src.indexOf("inputmask.config") === -1) {
-				srcFile = srcFile.replace(new RegExp("\\(function\\s?\\(factory\\)[\\s\\S]*\\(function\\s?\\(\\$"), "(function ($");
-				if (src.indexOf("extensions") === -1 && src.indexOf("jquery.inputmask") === -1) {
-					srcFile = srcFile.replace(new RegExp("\\}\\)\\);[\\s]*$"), "})(jQuery);");
-				} else srcFile = srcFile.replace(new RegExp("\\}\\)\\);[\\s]*$"), "})(jQuery, Inputmask);");
+				var fileMatches = srcFile.match("(\\(function\\s?\\(factory\\)\\s*{)[\\s\\S]*else {\\s*([\\s\\S]*)\\s*}[\\s\\S]*(}\\s*\\(function[\\s\\S]*)");
+				if (fileMatches && fileMatches.length === 4)
+					srcFile = fileMatches[1] + fileMatches[2] + fileMatches[3];
+				// if (src.indexOf("extensions") === -1 && src.indexOf("jquery.inputmask") === -1) {
+				// 	srcFile = srcFile.replace(new RegExp("\\}\\)\\);[\\s]*$"), "})(jQuery);");
+				// } else srcFile = srcFile.replace(new RegExp("\\}\\)\\);[\\s]*$"), "})(jQuery, Inputmask);");
 			}
 			grunt.file.write(dst, srcFile);
 		}

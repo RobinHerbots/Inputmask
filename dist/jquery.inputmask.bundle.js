@@ -3,9 +3,11 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.5-144
+* Version: 3.3.5-152
 */
-!function($, window, document, undefined) {
+!function(factory) {
+    window.Inputmask = factory(window.dependencyLib || jQuery, window, document);
+}(function($, window, document, undefined) {
     function Inputmask(alias, options, internal) {
         return this instanceof Inputmask ? (this.el = undefined, this.events = {}, this.maskset = undefined, 
         this.refreshValue = !1, void (internal !== !0 && ($.isPlainObject(alias) ? options = alias : (options = options || {}, 
@@ -1565,7 +1567,9 @@
         WINDOWS: 91,
         X: 88
     }, Inputmask;
-}(jQuery), function($, Inputmask) {
+}), function(factory) {
+    factory(jQuery, window.Inputmask);
+}(function($, Inputmask) {
     return void 0 === $.fn.inputmask && ($.fn.inputmask = function(fn, options) {
         var nptmask, input = this[0];
         if (void 0 === options && (options = {}), "string" == typeof fn) switch (fn) {
@@ -1615,7 +1619,9 @@
             });
         }
     }), $.fn.inputmask;
-}(jQuery, Inputmask), function($, Inputmask) {}(jQuery, Inputmask), function($, Inputmask) {
+}), function($, Inputmask) {}(jQuery, Inputmask), function(factory) {
+    factory(window.dependencyLib || jQuery, window.Inputmask);
+}(function($, Inputmask) {
     function isLeapYear(year) {
         return isNaN(year) || 29 === new Date(year, 2, 0).getDate();
     }
@@ -2082,7 +2088,9 @@
             onKeyDown: function(e, buffer, caretPos, opts) {}
         }
     }), Inputmask;
-}(jQuery, Inputmask), function($, Inputmask) {
+}), function(factory) {
+    factory(window.dependencyLib || jQuery, window.Inputmask);
+}(function($, Inputmask) {
     return Inputmask.extendDefinitions({
         A: {
             validator: "[A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
@@ -2168,7 +2176,9 @@
             autoUnmask: !0
         }
     }), Inputmask;
-}(jQuery, Inputmask), function($, Inputmask, undefined) {
+}), function(factory) {
+    factory(window.dependencyLib || jQuery, window.Inputmask);
+}(function($, Inputmask, undefined) {
     function autoEscape(txt, opts) {
         for (var escapedTxt = "", i = 0; i < txt.length; i++) escapedTxt += opts.definitions[txt.charAt(i)] || opts.optionalmarker.start === txt.charAt(i) || opts.optionalmarker.end === txt.charAt(i) || opts.quantifiermarker.start === txt.charAt(i) || opts.quantifiermarker.end === txt.charAt(i) || opts.groupmarker.start === txt.charAt(i) || opts.groupmarker.end === txt.charAt(i) || opts.alternatormarker === txt.charAt(i) ? "\\" + txt.charAt(i) : txt.charAt(i);
         return escapedTxt;
@@ -2492,7 +2502,9 @@
             allowMinus: !1
         }
     }), Inputmask;
-}(jQuery, Inputmask), function($, Inputmask) {
+}), function(factory) {
+    factory(window.dependencyLib || jQuery, window.Inputmask);
+}(function($, Inputmask) {
     function maskSort(a, b) {
         var maska = (a.mask || a).replace(/#/g, "9").replace(/\)/, "9").replace(/[+()#-]/g, ""), maskb = (b.mask || b).replace(/#/g, "9").replace(/\)/, "9").replace(/[+()#-]/g, ""), maskas = (a.mask || a).split("#")[0], maskbs = (b.mask || b).split("#")[0];
         return 0 === maskbs.indexOf(maskas) ? -1 : 0 === maskas.indexOf(maskbs) ? 1 : maska.localeCompare(maskb);
@@ -2543,7 +2555,9 @@
             inputmode: "tel"
         }
     }), Inputmask;
-}(jQuery, Inputmask), function($, Inputmask) {
+}), function(factory) {
+    factory(window.dependencyLib || jQuery, window.Inputmask);
+}(function($, Inputmask) {
     return Inputmask.extendAliases({
         Regex: {
             mask: "r",
@@ -2648,4 +2662,4 @@
             }
         }
     }), Inputmask;
-}(jQuery, Inputmask);
+});
