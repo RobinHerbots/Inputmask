@@ -1656,7 +1656,7 @@
 				result = postResult === true ? result : postResult;
 			}
 
-			if (result.pos === undefined) {
+			if (result && result.pos === undefined) {
 				result.pos = maskPos;
 			}
 
@@ -1813,7 +1813,7 @@
 						result = EventHandlers.keypressEvent.call(input, keypress, true, false, true, lvp + 1);
 					}
 					if (!strict && $.isFunction(opts.onBeforeWrite)) {
-						result = opts.onBeforeWrite(keypress, getBuffer(), result.forwardPosition, opts);
+						result = opts.onBeforeWrite(keypress, getBuffer(), result ? result.forwardPosition : 0, opts);
 						if (result && result.refreshFromBuffer) {
 							var refresh = result.refreshFromBuffer;
 							refreshFromBuffer(refresh === true ? refresh : refresh.start, refresh.end, result.buffer);
@@ -2281,7 +2281,7 @@
 
 						e.preventDefault();
 
-						if (checkval) {
+						if (checkval && valResult) {
 							valResult.forwardPosition = forwardPosition;
 							return valResult;
 						}
