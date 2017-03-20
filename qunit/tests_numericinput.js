@@ -373,4 +373,19 @@ define([
 		assert.equal(testmask.value, "20,00", "Result " + testmask.value);
 
 	});
+
+	qunit.test("currency - numericInput: true - initial value 4545.56 - sadhuria", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" value="4545.56" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("currency", {
+			groupSeparator: ',',
+			placeholder: '0.00',
+			numericInput: true,
+			autoGroup: true
+		}).mask(testmask);
+
+		assert.equal(testmask.value, "$ 4,545.56", "Result " + testmask.value);
+
+	});
 });

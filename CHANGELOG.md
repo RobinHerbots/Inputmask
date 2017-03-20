@@ -9,6 +9,9 @@ All notable changes to this project will be documented in this file.
 	- initialization
 
 ### Fixed
+- Currency InputMask Input Value issue with numericInput: true #1269
+- onCleared event doesn't fire with 'numeric' alias in some case #1495
+- Currency InputMask Input Value issue with numericInput: true #1269
 - Rounding numeric values #1540
 - Casing lower/upper as extend aliases? #1529
 - This line of code returns an unexpected value when unmasking as number #1527

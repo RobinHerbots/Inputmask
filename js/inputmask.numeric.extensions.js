@@ -141,9 +141,12 @@
 					if (buffer.join("") === "") return true;
 					return {caret: pos, dopost: true};
 				}
-				if (isSelection === false && opts.numericInput !== true && c === opts.radixPoint && (opts.digits !== undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0))) {
+				if (isSelection === false && c === opts.radixPoint && (opts.digits !== undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0))) {
 					var radixPos = $.inArray(opts.radixPoint, buffer);
 					if (radixPos !== -1) {
+						if(opts.numericInput === true) {
+							return pos === radixPos;
+						}
 						return {"caret": radixPos + 1};
 					}
 				}
@@ -415,11 +418,9 @@
 							}
 						}
 						return isValid;
-					}
-					,
+					},
 					cardinality: 1
-				}
-				,
+				},
 				"+": {
 					validator: function (chrs, maskset, pos, strict, opts) {
 						return (opts.allowMinus && (chrs === "-" || chrs === opts.negationSymbol.front));

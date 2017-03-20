@@ -1907,4 +1907,21 @@ define([
 		$("#testmask").Type("1");
 		assert.equal(testmask.inputmask._valueGet(), "31 %", "Result " + testmask.inputmask._valueGet());
 	});
+
+	qunit.test("groupseparator ' ' - krajcot", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("currency", {
+			groupSeparator: " ",
+			autoGroup: true,
+			suffix: " €",
+			prefix: "",
+			digits: 0,
+			inputEventOnly: false
+		}).mask(testmask);
+		testmask.focus();
+		testmask.blur();
+		assert.equal(testmask.inputmask._valueGet(), "0 €", "Result " + testmask.inputmask._valueGet());
+	});
 });

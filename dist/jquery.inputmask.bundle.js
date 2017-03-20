@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.5-153
+* Version: 3.3.5-167
 */
 !function(factory) {
     window.Inputmask = factory(window.dependencyLib || jQuery, window, document);
@@ -333,7 +333,7 @@
                             isValid(lmnt.pos, lmnt.c, !0, fromSetValid);
                         })), rslt.refreshFromBuffer) {
                             var refresh = rslt.refreshFromBuffer;
-                            if (strict = !0, refreshFromBuffer(refresh === !0 ? refresh : refresh.start, refresh.end, possibleModifiedBuffer), 
+                            if (refreshFromBuffer(refresh === !0 ? refresh : refresh.start, refresh.end, possibleModifiedBuffer), 
                             rslt.pos === undefined && rslt.c === undefined) return rslt.pos = getLastValidPosition(), 
                             !1;
                             if (validatedPos = rslt.pos !== undefined ? rslt.pos : position, validatedPos !== position) return rslt = $.extend(rslt, isValid(validatedPos, elem, !0, fromSetValid)), 
@@ -860,9 +860,9 @@
             EventRuler.on(el, "compositionupdate", $.noop), EventRuler.on(el, "compositionend", $.noop), 
             EventRuler.on(el, "keyup", $.noop), EventRuler.on(el, "input", EventHandlers.inputFallBackEvent), 
             EventRuler.on(el, "beforeinput", $.noop)), EventRuler.on(el, "setvalue", EventHandlers.setValueEvent), 
-            getBufferTemplate(), "" !== el.inputmask._valueGet() || opts.clearMaskOnLostFocus === !1 || document.activeElement === el)) {
-                var initialValue = $.isFunction(opts.onBeforeMask) ? opts.onBeforeMask(el.inputmask._valueGet(), opts) || el.inputmask._valueGet() : el.inputmask._valueGet();
-                "" !== initialValue && checkVal(el, !0, !1, initialValue.split(""));
+            getBufferTemplate(), "" !== el.inputmask._valueGet(!0) || opts.clearMaskOnLostFocus === !1 || document.activeElement === el)) {
+                var initialValue = $.isFunction(opts.onBeforeMask) ? opts.onBeforeMask(el.inputmask._valueGet(!0), opts) || el.inputmask._valueGet(!0) : el.inputmask._valueGet(!0);
+                "" !== initialValue && checkVal(el, !0, !1, isRTL ? initialValue.split("").reverse() : initialValue.split(""));
                 var buffer = getBuffer().slice();
                 undoValue = buffer.join(""), isComplete(buffer) === !1 && opts.clearIncomplete && resetMaskSet(), 
                 opts.clearMaskOnLostFocus && document.activeElement !== el && (getLastValidPosition() === -1 ? buffer = [] : clearOptionalTail(buffer)), 
@@ -2243,9 +2243,9 @@
                     caret: pos,
                     dopost: !0
                 });
-                if (isSelection === !1 && opts.numericInput !== !0 && c === opts.radixPoint && opts.digits !== undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0)) {
+                if (isSelection === !1 && c === opts.radixPoint && opts.digits !== undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0)) {
                     var radixPos = $.inArray(opts.radixPoint, buffer);
-                    if (radixPos !== -1) return {
+                    if (radixPos !== -1) return opts.numericInput === !0 ? pos === radixPos : {
                         caret: radixPos + 1
                     };
                 }
