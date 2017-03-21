@@ -9,6 +9,8 @@ All notable changes to this project will be documented in this file.
 	- initialization
 
 ### Fixed
+- IE 8 problems with currency and jquery.inputmask.bundle.js #1545
+- Rounding error for numeric aliases #1300
 - Currency InputMask Input Value issue with numericInput: true #1269
 - onCleared event doesn't fire with 'numeric' alias in some case #1495
 - Currency InputMask Input Value issue with numericInput: true #1269

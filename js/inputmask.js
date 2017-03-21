@@ -1829,8 +1829,8 @@
 			if (writeOut) {
 				var caretPos = undefined, lvp = getLastValidPosition();
 				if (document.activeElement === input && (initiatingEvent || result)) {
-					caretPos = caret(input).begin;
-					if (initiatingEvent && result === false) caretPos = seekNext(getLastValidPosition(caretPos));
+					caretPos = result && result.caret && stickyCaret !== true ? result.caret : caret(input).begin;
+					if (initiatingEvent && (result === false || result === undefined)) caretPos = seekNext(getLastValidPosition(caretPos));
 					if (result && stickyCaret !== true && (caretPos < lvp + 1 || lvp === -1))
 						caretPos = (opts.numericInput && result.caret === undefined) ? seekPrevious(result.forwardPosition) : result.forwardPosition;
 				}
@@ -2463,7 +2463,7 @@
 									break;
 								case "radixFocus":
 									if (doRadixFocus(selectedCaret.begin)) {
-										var radixPos = $.inArray(opts.radixPoint, getBuffer().join(""));
+										var radixPos = $.inArray(opts.radixPoint, getBuffer());
 										caret(input, opts.numericInput ? seekNext(radixPos) : radixPos);
 										break;
 									}

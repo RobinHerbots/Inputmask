@@ -144,7 +144,7 @@
 				if (isSelection === false && c === opts.radixPoint && (opts.digits !== undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0))) {
 					var radixPos = $.inArray(opts.radixPoint, buffer);
 					if (radixPos !== -1) {
-						if(opts.numericInput === true) {
+						if (opts.numericInput === true) {
 							return pos === radixPos;
 						}
 						return {"caret": radixPos + 1};
@@ -216,7 +216,7 @@
 				}
 
 				//strip leading zeroes
-				if (processValue.length > 1 && $.inArray(opts.radixPoint, processValue) !== 1) {
+				if (processValue.length > 1 && processValue.indexOf(opts.radixPoint) !== 1) {
 					if (charAtPos == "0") {
 						processValue = processValue.replace(/^\?/g, "");
 					}
@@ -354,6 +354,8 @@
 								placeholder: "0",
 								event: "blur"
 							}, opts);
+						case "_checkval":
+							return {caret: caretPos};
 						default:
 							//strip radixpoint at the end
 							// if (buffer[buffer.length - 1] === opts.radixPoint) {

@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.5-167
+* Version: 3.3.5-168
 */
 !function(factory) {
     window.Inputmask = factory(window.dependencyLib || jQuery, window, document);
@@ -569,8 +569,8 @@
                 }
             }), writeOut) {
                 var caretPos = undefined, lvp = getLastValidPosition();
-                document.activeElement === input && (initiatingEvent || result) && (caretPos = caret(input).begin, 
-                initiatingEvent && result === !1 && (caretPos = seekNext(getLastValidPosition(caretPos))), 
+                document.activeElement === input && (initiatingEvent || result) && (caretPos = result && result.caret && stickyCaret !== !0 ? result.caret : caret(input).begin, 
+                !initiatingEvent || result !== !1 && result !== undefined || (caretPos = seekNext(getLastValidPosition(caretPos))), 
                 result && stickyCaret !== !0 && (caretPos < lvp + 1 || lvp === -1) && (caretPos = opts.numericInput && result.caret === undefined ? seekPrevious(result.forwardPosition) : result.forwardPosition)), 
                 writeBuffer(input, getBuffer(), caretPos, initiatingEvent || new $.Event("checkval"));
             }
@@ -1072,7 +1072,7 @@
 
                           case "radixFocus":
                             if (doRadixFocus(selectedCaret.begin)) {
-                                var radixPos = $.inArray(opts.radixPoint, getBuffer().join(""));
+                                var radixPos = $.inArray(opts.radixPoint, getBuffer());
                                 caret(input, opts.numericInput ? seekNext(radixPos) : radixPos);
                                 break;
                             }
@@ -2275,7 +2275,7 @@
                 processValue = processValue.replace(new RegExp("[-" + Inputmask.escapeRegex(opts.negationSymbol.front) + "]", "g"), ""), 
                 processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.negationSymbol.back) + "$"), ""), 
                 isNaN(opts.placeholder) && (processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.placeholder), "g"), "")), 
-                processValue.length > 1 && 1 !== $.inArray(opts.radixPoint, processValue) && ("0" == charAtPos && (processValue = processValue.replace(/^\?/g, "")), 
+                processValue.length > 1 && 1 !== processValue.indexOf(opts.radixPoint) && ("0" == charAtPos && (processValue = processValue.replace(/^\?/g, "")), 
                 processValue = processValue.replace(/^0/g, "")), processValue.charAt(0) === opts.radixPoint && opts.numericInput !== !0 && (processValue = "0" + processValue), 
                 "" !== processValue) {
                     if (processValue = processValue.split(""), !opts.digitsOptional && isFinite(opts.digits)) {
@@ -2352,6 +2352,11 @@
                         placeholder: "0",
                         event: "blur"
                     }, opts);
+
+                  case "_checkval":
+                    return {
+                        caret: caretPos
+                    };
                 }
             },
             regex: {

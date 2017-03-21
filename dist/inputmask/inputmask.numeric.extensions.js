@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.5-167
+* Version: 3.3.5-168
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "./dependencyLibs/inputmask.dependencyLib", "./inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./dependencyLibs/inputmask.dependencyLib"), require("./inputmask")) : factory(window.dependencyLib || jQuery, window.Inputmask);
@@ -103,7 +103,7 @@
                 processValue = processValue.replace(new RegExp("[-" + Inputmask.escapeRegex(opts.negationSymbol.front) + "]", "g"), ""), 
                 processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.negationSymbol.back) + "$"), ""), 
                 isNaN(opts.placeholder) && (processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.placeholder), "g"), "")), 
-                processValue.length > 1 && 1 !== $.inArray(opts.radixPoint, processValue) && ("0" == charAtPos && (processValue = processValue.replace(/^\?/g, "")), 
+                processValue.length > 1 && 1 !== processValue.indexOf(opts.radixPoint) && ("0" == charAtPos && (processValue = processValue.replace(/^\?/g, "")), 
                 processValue = processValue.replace(/^0/g, "")), processValue.charAt(0) === opts.radixPoint && opts.numericInput !== !0 && (processValue = "0" + processValue), 
                 "" !== processValue) {
                     if (processValue = processValue.split(""), !opts.digitsOptional && isFinite(opts.digits)) {
@@ -180,6 +180,11 @@
                         placeholder: "0",
                         event: "blur"
                     }, opts);
+
+                  case "_checkval":
+                    return {
+                        caret: caretPos
+                    };
                 }
             },
             regex: {
