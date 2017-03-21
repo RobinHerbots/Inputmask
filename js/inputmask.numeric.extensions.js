@@ -496,7 +496,7 @@
 				if (opts.radixPoint !== "" && isFinite(initialValue)) {
 					var vs = initialValue.split("."),
 						groupSize = opts.groupSeparator !== "" ? parseInt(opts.groupSize) : 0;
-					if (vs.length === 2 && (vs[0].length > groupSize || vs[1].length > groupSize))
+					if (vs.length === 2 && (vs[0].length > groupSize || vs[1].length > groupSize || (vs[0].length < groupSize && vs[1].length < groupSize)))
 						initialValue = initialValue.replace(".", opts.radixPoint);
 				}
 				var kommaMatches = initialValue.match(/,/g);

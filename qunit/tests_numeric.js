@@ -1924,4 +1924,54 @@ define([
 		testmask.blur();
 		assert.equal(testmask.inputmask._valueGet(), "0 €", "Result " + testmask.inputmask._valueGet());
 	});
+
+	qunit.test("decimal set 0.50", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("decimal", {
+			radixPoint: ',',
+			groupSeparator: '.',
+			autoGroup: true,
+			digits: 2,
+			removeMaskOnSubmit: false
+		}).mask(testmask);
+
+		$(testmask).val("0.50");
+
+		assert.equal(testmask.inputmask._valueGet(), "0,50", "Result " + testmask.inputmask._valueGet());
+	});
+
+	qunit.test("decimal set 1.000", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("decimal", {
+			radixPoint: ',',
+			groupSeparator: '.',
+			autoGroup: true,
+			digits: 2,
+			removeMaskOnSubmit: false
+		}).mask(testmask);
+
+		$(testmask).val("1.000");
+
+		assert.equal(testmask.inputmask._valueGet(), "1.000", "Result " + testmask.inputmask._valueGet());
+	});
+	qunit.test("decimal set 1234.56", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("decimal", {
+			radixPoint: ',',
+			groupSeparator: '.',
+			autoGroup: true,
+			digits: 2,
+			removeMaskOnSubmit: false
+		}).mask(testmask);
+
+		$(testmask).val("1234.56");
+
+		assert.equal(testmask.inputmask._valueGet(), "1.234,56", "Result " + testmask.inputmask._valueGet());
+	});
 });

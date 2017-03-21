@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.5-169
+* Version: 3.3.5-172
 */
 !function(factory) {
     window.Inputmask = factory(window.dependencyLib || jQuery, window, document);
@@ -2442,7 +2442,7 @@
                 if (opts.isNegative = undefined, initialValue = initialValue.toString().charAt(initialValue.length - 1) === opts.radixPoint ? initialValue.toString().substr(0, initialValue.length - 1) : initialValue.toString(), 
                 "" !== opts.radixPoint && isFinite(initialValue)) {
                     var vs = initialValue.split("."), groupSize = "" !== opts.groupSeparator ? parseInt(opts.groupSize) : 0;
-                    2 === vs.length && (vs[0].length > groupSize || vs[1].length > groupSize) && (initialValue = initialValue.replace(".", opts.radixPoint));
+                    2 === vs.length && (vs[0].length > groupSize || vs[1].length > groupSize || vs[0].length < groupSize && vs[1].length < groupSize) && (initialValue = initialValue.replace(".", opts.radixPoint));
                 }
                 var kommaMatches = initialValue.match(/,/g), dotMatches = initialValue.match(/\./g);
                 if (dotMatches && kommaMatches ? dotMatches.length > kommaMatches.length ? (initialValue = initialValue.replace(/\./g, ""), 
