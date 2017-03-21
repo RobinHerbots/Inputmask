@@ -2463,7 +2463,7 @@
 									break;
 								case "radixFocus":
 									if (doRadixFocus(selectedCaret.begin)) {
-										var radixPos = $.inArray(opts.radixPoint, getBuffer());
+										var radixPos = getBuffer().join("").indexOf(opts.radixPoint);
 										caret(input, opts.numericInput ? seekNext(radixPos) : radixPos);
 										break;
 									}

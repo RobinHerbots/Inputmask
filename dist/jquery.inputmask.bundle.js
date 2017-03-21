@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.5-168
+* Version: 3.3.5-169
 */
 !function(factory) {
     window.Inputmask = factory(window.dependencyLib || jQuery, window, document);
@@ -1072,7 +1072,7 @@
 
                           case "radixFocus":
                             if (doRadixFocus(selectedCaret.begin)) {
-                                var radixPos = $.inArray(opts.radixPoint, getBuffer());
+                                var radixPos = getBuffer().join("").indexOf(opts.radixPoint);
                                 caret(input, opts.numericInput ? seekNext(radixPos) : radixPos);
                                 break;
                             }
