@@ -1769,7 +1769,7 @@
 			return opts.placeholder.charAt(pos % opts.placeholder.length);
 		}
 
-		function checkVal(input, writeOut, strict, nptvl, initiatingEvent, stickyCaret) {
+		function checkVal(input, writeOut, strict, nptvl, initiatingEvent) {
 			var inputValue = nptvl.slice(),
 				charCodes = "",
 				initialNdx = 0, result = undefined;
@@ -1814,25 +1814,25 @@
 						result = EventHandlers.keypressEvent.call(input, keypress, true, false, true, lvp + 1);
 					}
 					if (!strict && $.isFunction(opts.onBeforeWrite)) {
+						var fp = result.forwardPosition;
 						result = opts.onBeforeWrite(keypress, getBuffer(), result.forwardPosition, opts);
+						result.forwardPosition = fp;
 						if (result && result.refreshFromBuffer) {
 							var refresh = result.refreshFromBuffer;
 							refreshFromBuffer(refresh === true ? refresh : refresh.start, refresh.end, result.buffer);
 							resetMaskSet(true);
 							if (result.caret) {
 								getMaskSet().p = result.caret;
+								result.forwardPosition = result.caret;
 							}
 						}
 					}
 				}
 			});
 			if (writeOut) {
-				var caretPos = undefined, lvp = getLastValidPosition();
-				if (document.activeElement === input && (initiatingEvent || result)) {
-					caretPos = result && result.caret && stickyCaret !== true ? result.caret : caret(input).begin;
-					if (initiatingEvent && (result === false || result === undefined)) caretPos = seekNext(getLastValidPosition(caretPos));
-					if (result && stickyCaret !== true && (caretPos < lvp + 1 || lvp === -1))
-						caretPos = (opts.numericInput && result.caret === undefined) ? seekPrevious(result.forwardPosition) : result.forwardPosition;
+				var caretPos = undefined;
+				if (document.activeElement === input && result) {
+					caretPos = opts.numericInput ? seekPrevious(result.forwardPosition) : result.forwardPosition;
 				}
 
 				writeBuffer(input, getBuffer(), caretPos, initiatingEvent || new $.Event("checkval"));
@@ -2342,7 +2342,6 @@
 				var input = this,
 					inputValue = input.inputmask._valueGet();
 
-				//console.log(inputValue);
 				if (getBuffer().join("") !== inputValue) {
 					var caretPos = caret(input);
 					inputValue = inputValue.replace(new RegExp("(" + Inputmask.escapeRegex(getBufferTemplate().join("")) + ")*"), "");
@@ -2366,15 +2365,37 @@
 						e.keyCode = Inputmask.keyCode.BACKSPACE;
 						EventHandlers.keydownEvent.call(input, e);
 					} else {
-						var lvp = getLastValidPosition() + 1;
-						var bufferTemplate = getBufferTemplate().join(""); //getBuffer().slice(lvp).join('');
+						var stickyParts = [], bufferTemplate = getBufferTemplate().join("");
+						stickyParts.push(inputValue.substr(0, caretPos.begin));
+						stickyParts.push(inputValue.substr(caretPos.begin));
+
 						while (inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$") === null) {
 							bufferTemplate = bufferTemplate.slice(1);
 						}
 						inputValue = inputValue.replace(bufferTemplate, "");
 						if ($.isFunction(opts.onBeforeMask)) inputValue = opts.onBeforeMask(inputValue, opts) || inputValue;
-						inputValue = inputValue.split("");
-						checkVal(input, true, false, inputValue, e, caretPos.begin < lvp);
+
+						checkVal(input, true, false, inputValue.split(""), e);
+						//correct caret position
+						var currentPos = caret(input).begin, currentValue = input.inputmask._valueGet();
+						if (currentValue.indexOf(stickyParts[0]) === 0 && currentPos !== stickyParts[0].length) {
+							caret(input, stickyParts[0].length);
+							if (android) { //caret is set by android after inputevent
+								setTimeout(function () {
+									caret(input, stickyParts[0].length);
+								}, 0);
+							}
+						} else {
+							var pos2 = currentValue.indexOf(stickyParts[1]);
+							if (currentPos > pos2) {
+								caret(input, pos2);
+								if (android) { //caret is set by android after inputevent
+									setTimeout(function () {
+										caret(input, pos2);
+									}, 0);
+								}
+							}
+						}
 
 						if (isComplete(getBuffer()) === true) {
 							$(input).trigger("complete");
@@ -2395,7 +2416,9 @@
 				if ((opts.clearMaskOnLostFocus || opts.clearIncomplete) && input.inputmask._valueGet() === getBufferTemplate().join("")) {
 					input.inputmask._valueSet("");
 				}
-			},
+			}
+
+			,
 			focusEvent: function (e) {
 				var input = this,
 					nptValue = input.inputmask._valueGet();
@@ -2410,7 +2433,8 @@
 					EventHandlers.clickEvent.apply(input, [e, true]);
 				}
 				undoValue = getBuffer().join("");
-			},
+			}
+			,
 			mouseleaveEvent: function (e) {
 				var input = this;
 				mouseEnter = false;
@@ -2426,7 +2450,8 @@
 						writeBuffer(input, buffer);
 					}
 				}
-			},
+			}
+			,
 			clickEvent: function (e, tabbed) {
 				function doRadixFocus(clickPos) {
 					if (opts.radixPoint !== "") {
@@ -2485,13 +2510,15 @@
 						}
 					}
 				}, 0);
-			},
+			}
+			,
 			dblclickEvent: function (e) {
 				var input = this;
 				setTimeout(function () {
 					caret(input, 0, seekNext(getLastValidPosition()));
 				}, 0);
-			},
+			}
+			,
 			cutEvent: function (e) {
 				var input = this,
 					$input = $(input),
@@ -2510,7 +2537,8 @@
 				if (input.inputmask._valueGet() === getBufferTemplate().join("")) {
 					$input.trigger("cleared");
 				}
-			},
+			}
+			,
 			blurEvent: function (e) {
 				var $input = $(this),
 					input = this;
@@ -2548,7 +2576,8 @@
 						writeBuffer(input, buffer, undefined, e);
 					}
 				}
-			},
+			}
+			,
 			mouseenterEvent: function (e) {
 				var input = this;
 				mouseEnter = true;
@@ -2557,7 +2586,8 @@
 						writeBuffer(input, getBuffer());
 					}
 				}
-			},
+			}
+			,
 			submitEvent: function (e) { //trigger change on submit if any
 				if (undoValue !== getBuffer().join("")) {
 					$el.trigger("change");
@@ -2571,7 +2601,8 @@
 						writeBuffer(el, getBuffer());
 					}, 0);
 				}
-			},
+			}
+			,
 			resetEvent: function (e) {
 				el.inputmask.refreshValue = true; //indicate a forced refresh when there is a call to the value before leaving the triggering event fn
 				setTimeout(function () {
@@ -3064,4 +3095,5 @@
 
 //make inputmask available
 	return Inputmask;
-}));
+}))
+;

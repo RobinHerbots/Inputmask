@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.5-172
+* Version: 3.3.5-173
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "./dependencyLibs/inputmask.dependencyLib", "./global/window", "./global/document" ], factory) : "object" == typeof exports ? module.exports = factory(require("./dependencyLibs/inputmask.dependencyLib"), require("../global/window"), require("../global/document")) : window.Inputmask = factory(window.dependencyLib || jQuery, window, document);
@@ -539,7 +539,7 @@
             }
             return opts.placeholder.charAt(pos % opts.placeholder.length);
         }
-        function checkVal(input, writeOut, strict, nptvl, initiatingEvent, stickyCaret) {
+        function checkVal(input, writeOut, strict, nptvl, initiatingEvent) {
             function isTemplateMatch(ndx, charCodes) {
                 var charCodeNdx = getBufferTemplate().slice(ndx, seekNext(ndx)).join("").indexOf(charCodes);
                 return charCodeNdx !== -1 && !isMask(ndx) && getTest(ndx).match.nativeDef === charCodes.charAt(charCodes.length - 1);
@@ -560,18 +560,19 @@
                         result = EventHandlers.keypressEvent.call(input, keypress, !0, !1, strict, pos), 
                         initialNdx = pos + 1, charCodes = "";
                     } else result = EventHandlers.keypressEvent.call(input, keypress, !0, !1, !0, lvp + 1);
-                    if (!strict && $.isFunction(opts.onBeforeWrite) && (result = opts.onBeforeWrite(keypress, getBuffer(), result.forwardPosition, opts), 
-                    result && result.refreshFromBuffer)) {
-                        var refresh = result.refreshFromBuffer;
-                        refreshFromBuffer(refresh === !0 ? refresh : refresh.start, refresh.end, result.buffer), 
-                        resetMaskSet(!0), result.caret && (getMaskSet().p = result.caret);
+                    if (!strict && $.isFunction(opts.onBeforeWrite)) {
+                        var fp = result.forwardPosition;
+                        if (result = opts.onBeforeWrite(keypress, getBuffer(), result.forwardPosition, opts), 
+                        result.forwardPosition = fp, result && result.refreshFromBuffer) {
+                            var refresh = result.refreshFromBuffer;
+                            refreshFromBuffer(refresh === !0 ? refresh : refresh.start, refresh.end, result.buffer), 
+                            resetMaskSet(!0), result.caret && (getMaskSet().p = result.caret, result.forwardPosition = result.caret);
+                        }
                     }
                 }
             }), writeOut) {
-                var caretPos = undefined, lvp = getLastValidPosition();
-                document.activeElement === input && (initiatingEvent || result) && (caretPos = result && result.caret && stickyCaret !== !0 ? result.caret : caret(input).begin, 
-                !initiatingEvent || result !== !1 && result !== undefined || (caretPos = seekNext(getLastValidPosition(caretPos))), 
-                result && stickyCaret !== !0 && (caretPos < lvp + 1 || lvp === -1) && (caretPos = opts.numericInput && result.caret === undefined ? seekPrevious(result.forwardPosition) : result.forwardPosition)), 
+                var caretPos = undefined;
+                document.activeElement === input && result && (caretPos = opts.numericInput ? seekPrevious(result.forwardPosition) : result.forwardPosition), 
                 writeBuffer(input, getBuffer(), caretPos, initiatingEvent || new $.Event("checkval"));
             }
         }
@@ -1017,9 +1018,20 @@
                     }
                     if (caretPos.begin > inputValue.length && (caret(input, inputValue.length), caretPos = caret(input)), 
                     getBuffer().length - inputValue.length !== 1 || inputValue.charAt(caretPos.begin) === getBuffer()[caretPos.begin] || inputValue.charAt(caretPos.begin + 1) === getBuffer()[caretPos.begin] || isMask(caretPos.begin)) {
-                        for (var lvp = getLastValidPosition() + 1, bufferTemplate = getBufferTemplate().join(""); null === inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$"); ) bufferTemplate = bufferTemplate.slice(1);
+                        var stickyParts = [], bufferTemplate = getBufferTemplate().join("");
+                        for (stickyParts.push(inputValue.substr(0, caretPos.begin)), stickyParts.push(inputValue.substr(caretPos.begin)); null === inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$"); ) bufferTemplate = bufferTemplate.slice(1);
                         inputValue = inputValue.replace(bufferTemplate, ""), $.isFunction(opts.onBeforeMask) && (inputValue = opts.onBeforeMask(inputValue, opts) || inputValue), 
-                        inputValue = inputValue.split(""), checkVal(input, !0, !1, inputValue, e, caretPos.begin < lvp), 
+                        checkVal(input, !0, !1, inputValue.split(""), e);
+                        var currentPos = caret(input).begin, currentValue = input.inputmask._valueGet();
+                        if (0 === currentValue.indexOf(stickyParts[0]) && currentPos !== stickyParts[0].length) caret(input, stickyParts[0].length), 
+                        android && setTimeout(function() {
+                            caret(input, stickyParts[0].length);
+                        }, 0); else {
+                            var pos2 = currentValue.indexOf(stickyParts[1]);
+                            currentPos > pos2 && (caret(input, pos2), android && setTimeout(function() {
+                                caret(input, pos2);
+                            }, 0));
+                        }
                         isComplete(getBuffer()) === !0 && $(input).trigger("complete");
                     } else e.keyCode = Inputmask.keyCode.BACKSPACE, EventHandlers.keydownEvent.call(input, e);
                     e.preventDefault();
