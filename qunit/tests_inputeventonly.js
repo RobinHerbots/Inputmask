@@ -56,7 +56,7 @@ define([
 		testmask.focus();
 		//simulate input
 		$(testmask).input("abc");
-		assert.ok($.caret(testmask).begin == 1, "Caret " + $.caret(testmask).begin);
+		assert.ok($.caret(testmask).begin == 0, "Caret " + $.caret(testmask).begin);
 	});
 
 	qunit.test("(999) 999-9999 - type 123 + backspace", function (assert) {

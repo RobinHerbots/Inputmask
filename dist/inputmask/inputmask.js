@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.5-173
+* Version: 3.3.5-174
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "./dependencyLibs/inputmask.dependencyLib", "./global/window", "./global/document" ], factory) : "object" == typeof exports ? module.exports = factory(require("./dependencyLibs/inputmask.dependencyLib"), require("../global/window"), require("../global/document")) : window.Inputmask = factory(window.dependencyLib || jQuery, window, document);
@@ -1018,7 +1018,7 @@
                     }
                     if (caretPos.begin > inputValue.length && (caret(input, inputValue.length), caretPos = caret(input)), 
                     getBuffer().length - inputValue.length !== 1 || inputValue.charAt(caretPos.begin) === getBuffer()[caretPos.begin] || inputValue.charAt(caretPos.begin + 1) === getBuffer()[caretPos.begin] || isMask(caretPos.begin)) {
-                        var stickyParts = [], bufferTemplate = getBufferTemplate().join("");
+                        var stickyParts = [], bufferTemplate = getMaskTemplate(!0, 1).join("");
                         for (stickyParts.push(inputValue.substr(0, caretPos.begin)), stickyParts.push(inputValue.substr(caretPos.begin)); null === inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$"); ) bufferTemplate = bufferTemplate.slice(1);
                         inputValue = inputValue.replace(bufferTemplate, ""), $.isFunction(opts.onBeforeMask) && (inputValue = opts.onBeforeMask(inputValue, opts) || inputValue), 
                         checkVal(input, !0, !1, inputValue.split(""), e);
@@ -1027,6 +1027,7 @@
                         android && setTimeout(function() {
                             caret(input, stickyParts[0].length);
                         }, 0); else {
+                            for (;null === currentValue.match(Inputmask.escapeRegex(stickyParts[1]) + "$"); ) stickyParts[1] = stickyParts[1].substr(1);
                             var pos2 = currentValue.indexOf(stickyParts[1]);
                             currentPos > pos2 && (caret(input, pos2), android && setTimeout(function() {
                                 caret(input, pos2);

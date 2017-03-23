@@ -2365,20 +2365,23 @@
 						e.keyCode = Inputmask.keyCode.BACKSPACE;
 						EventHandlers.keydownEvent.call(input, e);
 					} else {
-						var stickyParts = [], bufferTemplate = getBufferTemplate().join("");
+						var stickyParts = [], bufferTemplate = getMaskTemplate(true, 1).join("");
 						stickyParts.push(inputValue.substr(0, caretPos.begin));
 						stickyParts.push(inputValue.substr(caretPos.begin));
-
+						// console.log(stickyParts[0] + " , " + stickyParts[1]);
 						while (inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$") === null) {
 							bufferTemplate = bufferTemplate.slice(1);
 						}
+						// console.log("initial " + inputValue);
 						inputValue = inputValue.replace(bufferTemplate, "");
+						// console.log(inputValue);
 						if ($.isFunction(opts.onBeforeMask)) inputValue = opts.onBeforeMask(inputValue, opts) || inputValue;
 
 						checkVal(input, true, false, inputValue.split(""), e);
 						//correct caret position
 						var currentPos = caret(input).begin, currentValue = input.inputmask._valueGet();
 						if (currentValue.indexOf(stickyParts[0]) === 0 && currentPos !== stickyParts[0].length) {
+							// console.log("set caret to " + stickyParts[0].length);
 							caret(input, stickyParts[0].length);
 							if (android) { //caret is set by android after inputevent
 								setTimeout(function () {
@@ -2386,8 +2389,13 @@
 								}, 0);
 							}
 						} else {
+							// console.log(currentValue);
+							while (currentValue.match(Inputmask.escapeRegex(stickyParts[1]) + "$") === null) {
+								stickyParts[1] = stickyParts[1].substr(1);
+							}
 							var pos2 = currentValue.indexOf(stickyParts[1]);
 							if (currentPos > pos2) {
+								// console.log("set caret to2 " + pos2 + " - " + currentPos);
 								caret(input, pos2);
 								if (android) { //caret is set by android after inputevent
 									setTimeout(function () {
