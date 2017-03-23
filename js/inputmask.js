@@ -2394,7 +2394,7 @@
 								stickyParts[1] = stickyParts[1].substr(1);
 							}
 							var pos2 = currentValue.indexOf(stickyParts[1]);
-							if (currentPos > pos2) {
+							if (pos2 !== -1 && stickyParts[1] !== "" && currentPos > pos2) {
 								// console.log("set caret to2 " + pos2 + " - " + currentPos);
 								caret(input, pos2);
 								if (android) { //caret is set by android after inputevent

@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.5-174
+* Version: 3.3.5-175
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "./dependencyLibs/inputmask.dependencyLib", "./global/window", "./global/document" ], factory) : "object" == typeof exports ? module.exports = factory(require("./dependencyLibs/inputmask.dependencyLib"), require("../global/window"), require("../global/document")) : window.Inputmask = factory(window.dependencyLib || jQuery, window, document);
@@ -1029,7 +1029,8 @@
                         }, 0); else {
                             for (;null === currentValue.match(Inputmask.escapeRegex(stickyParts[1]) + "$"); ) stickyParts[1] = stickyParts[1].substr(1);
                             var pos2 = currentValue.indexOf(stickyParts[1]);
-                            currentPos > pos2 && (caret(input, pos2), android && setTimeout(function() {
+                            pos2 !== -1 && "" !== stickyParts[1] && currentPos > pos2 && (caret(input, pos2), 
+                            android && setTimeout(function() {
                                 caret(input, pos2);
                             }, 0));
                         }
