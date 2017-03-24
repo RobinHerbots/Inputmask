@@ -3054,10 +3054,10 @@
 				case "getemptymask":
 					return getBufferTemplate().join("");
 				case "remove":
-					if (el) {
+					if (el && el.inputmask) {
 						$el = $(el);
-						//writeout the unmaskedvalue
-						el.inputmask._valueSet(unmaskedvalue(el));
+						//writeout the value
+						el.inputmask._valueSet(opts.autoUnmask ? unmaskedvalue(el) : el.inputmask._valueGet(true));
 						//unbind all events
 						EventRuler.off(el);
 						//restore the value property

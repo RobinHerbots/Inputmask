@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.5-175
+* Version: 3.3.5-176
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "./dependencyLibs/inputmask.dependencyLib", "./global/window", "./global/document" ], factory) : "object" == typeof exports ? module.exports = factory(require("./dependencyLibs/inputmask.dependencyLib"), require("../global/window"), require("../global/document")) : window.Inputmask = factory(window.dependencyLib || jQuery, window, document);
@@ -1177,8 +1177,9 @@
             return getBufferTemplate().join("");
 
           case "remove":
-            if (el) {
-                $el = $(el), el.inputmask._valueSet(unmaskedvalue(el)), EventRuler.off(el);
+            if (el && el.inputmask) {
+                $el = $(el), el.inputmask._valueSet(opts.autoUnmask ? unmaskedvalue(el) : el.inputmask._valueGet(!0)), 
+                EventRuler.off(el);
                 var valueProperty;
                 Object.getOwnPropertyDescriptor && Object.getPrototypeOf ? (valueProperty = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), "value"), 
                 valueProperty && el.inputmask.__valueGet && Object.defineProperty(el, "value", {
