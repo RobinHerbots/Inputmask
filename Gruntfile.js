@@ -162,7 +162,7 @@ module.exports = function (grunt) {
 				dest: 'build/browserify.bundle.js',
 				src: [],
 				options: {
-					require: ["./"]
+					require: ["./dist/inputmask/inputmask.js"]
 				}
 			}
 		}

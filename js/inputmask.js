@@ -9,7 +9,7 @@
 	if (typeof define === "function" && define.amd) {
 		define(["./dependencyLibs/inputmask.dependencyLib", "./global/window", "./global/document"], factory);
 	} else if (typeof exports === "object") {
-		module.exports = factory(require("./dependencyLibs/inputmask.dependencyLib"), require("../global/window"), require("../global/document"));
+		module.exports = factory(require("./dependencyLibs/inputmask.dependencyLib"), require("./global/window"), require("./global/document"));
 	} else {
 		window.Inputmask = factory(window.dependencyLib || jQuery, window, document);
 	}
