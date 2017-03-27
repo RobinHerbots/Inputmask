@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.5-176
+* Version: 3.3.5-177
 */
 !function(factory) {
     window.Inputmask = factory(window.dependencyLib || jQuery, window, document);
@@ -1007,6 +1007,13 @@
                 var input = this, inputValue = input.inputmask._valueGet();
                 if (getBuffer().join("") !== inputValue) {
                     var caretPos = caret(input);
+                    if ("." === inputValue.charAt(caretPos.begin - 1) && "" !== opts.radixPoint && (inputValue = inputValue.split(""), 
+                    inputValue[caretPos.begin - 1] = opts.radixPoint.charAt(0), inputValue = inputValue.join("")), 
+                    inputValue.charAt(caretPos.begin - 1) === opts.radixPoint && inputValue.length > getBuffer().length) {
+                        var keypress = new $.Event("keypress");
+                        return keypress.which = opts.radixPoint.charCodeAt(0), EventHandlers.keypressEvent.call(input, keypress, !0, !0, !1, caretPos.begin), 
+                        !1;
+                    }
                     if (inputValue = inputValue.replace(new RegExp("(" + Inputmask.escapeRegex(getBufferTemplate().join("")) + ")*"), ""), 
                     iemobile) {
                         var inputChar = inputValue.replace(getBuffer().join(""), "");
@@ -1022,14 +1029,14 @@
                         for (stickyParts.push(inputValue.substr(0, caretPos.begin)), stickyParts.push(inputValue.substr(caretPos.begin)); null === inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$"); ) bufferTemplate = bufferTemplate.slice(1);
                         inputValue = inputValue.replace(bufferTemplate, ""), $.isFunction(opts.onBeforeMask) && (inputValue = opts.onBeforeMask(inputValue, opts) || inputValue), 
                         checkVal(input, !0, !1, inputValue.split(""), e);
-                        var currentPos = caret(input).begin, currentValue = input.inputmask._valueGet();
-                        if (0 === currentValue.indexOf(stickyParts[0]) && currentPos !== stickyParts[0].length) caret(input, stickyParts[0].length), 
+                        var currentPos = caret(input).begin, currentValue = input.inputmask._valueGet(), pos1 = currentValue.indexOf(stickyParts[0]);
+                        if (0 === pos1 && currentPos !== stickyParts[0].length) caret(input, stickyParts[0].length), 
                         android && setTimeout(function() {
                             caret(input, stickyParts[0].length);
                         }, 0); else {
                             for (;null === currentValue.match(Inputmask.escapeRegex(stickyParts[1]) + "$"); ) stickyParts[1] = stickyParts[1].substr(1);
                             var pos2 = currentValue.indexOf(stickyParts[1]);
-                            pos2 !== -1 && "" !== stickyParts[1] && currentPos > pos2 && (caret(input, pos2), 
+                            pos2 !== -1 && "" !== stickyParts[1] && currentPos > pos2 && pos2 > pos1 && (caret(input, pos2), 
                             android && setTimeout(function() {
                                 caret(input, pos2);
                             }, 0));

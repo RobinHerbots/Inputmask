@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [UNRELEASED]
 ### Updates
+- make removing the inputmask take the autoUnmask option into account
 - enhance inputfallback event (android)
 - restructure project
 - performance updates

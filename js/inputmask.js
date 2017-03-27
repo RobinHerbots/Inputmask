@@ -2338,12 +2338,27 @@
 
 				return e.preventDefault();
 			},
-			inputFallBackEvent: function (e) { //fallback when keypress fails
+			inputFallBackEvent: function (e) { //fallback when keypress is not triggered
 				var input = this,
 					inputValue = input.inputmask._valueGet();
 
 				if (getBuffer().join("") !== inputValue) {
 					var caretPos = caret(input);
+					//radixpoint tweak
+					if (inputValue.charAt(caretPos.begin - 1) === "." && opts.radixPoint !== "") {
+						inputValue = inputValue.split("");
+						inputValue[caretPos.begin - 1] = opts.radixPoint.charAt(0);
+						inputValue = inputValue.join("");
+					}
+
+					if (inputValue.charAt(caretPos.begin - 1) === opts.radixPoint && inputValue.length > getBuffer().length) {
+						var keypress = new $.Event("keypress");
+						keypress.which = opts.radixPoint.charCodeAt(0);
+						EventHandlers.keypressEvent.call(input, keypress, true, true, false, caretPos.begin);
+						return false;
+
+					}
+
 					inputValue = inputValue.replace(new RegExp("(" + Inputmask.escapeRegex(getBufferTemplate().join("")) + ")*"), "");
 
 					if (iemobile) { //iemobile just set the character at the end althought the caret position is correctly set
@@ -2380,7 +2395,8 @@
 						checkVal(input, true, false, inputValue.split(""), e);
 						//correct caret position
 						var currentPos = caret(input).begin, currentValue = input.inputmask._valueGet();
-						if (currentValue.indexOf(stickyParts[0]) === 0 && currentPos !== stickyParts[0].length) {
+						var pos1 = currentValue.indexOf(stickyParts[0]);
+						if (pos1 === 0 && currentPos !== stickyParts[0].length) {
 							// console.log("set caret to " + stickyParts[0].length);
 							caret(input, stickyParts[0].length);
 							if (android) { //caret is set by android after inputevent
@@ -2394,7 +2410,7 @@
 								stickyParts[1] = stickyParts[1].substr(1);
 							}
 							var pos2 = currentValue.indexOf(stickyParts[1]);
-							if (pos2 !== -1 && stickyParts[1] !== "" && currentPos > pos2) {
+							if (pos2 !== -1 && stickyParts[1] !== "" && currentPos > pos2 && pos2 > pos1) {
 								// console.log("set caret to2 " + pos2 + " - " + currentPos);
 								caret(input, pos2);
 								if (android) { //caret is set by android after inputevent
