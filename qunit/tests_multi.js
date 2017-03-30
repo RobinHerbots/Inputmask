@@ -362,9 +362,9 @@ define([
 		var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
-		Inputmask("(99 99 999999)|(i{+})", {
+		Inputmask("(99 99 999999)|(*{+})", {
 			definitions: {
-				"i": {
+				"*": {
 					validator: ".",
 					cardinality: 1,
 					definitionSymbol: "*"

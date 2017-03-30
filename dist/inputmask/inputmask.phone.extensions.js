@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.5-178
+* Version: 3.3.5-209
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "./dependencyLibs/inputmask.dependencyLib", "./inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./dependencyLibs/inputmask.dependencyLib"), require("./inputmask")) : factory(window.dependencyLib || jQuery, window.Inputmask);
@@ -13,7 +13,7 @@
         return 0 === maskbs.indexOf(maskas) ? -1 : 0 === maskas.indexOf(maskbs) ? 1 : maska.localeCompare(maskb);
     }
     var analyseMaskBase = Inputmask.prototype.analyseMask;
-    return Inputmask.prototype.analyseMask = function(mask, opts) {
+    return Inputmask.prototype.analyseMask = function(mask, regexMask, opts) {
         function reduceVariations(masks, previousVariation, previousmaskGroup) {
             previousVariation = previousVariation || "", previousmaskGroup = previousmaskGroup || maskGroups, 
             "" !== previousVariation && (previousmaskGroup[previousVariation] = {});
@@ -31,7 +31,7 @@
         opts.phoneCodes && (opts.phoneCodes && opts.phoneCodes.length > 1e3 && (mask = mask.substr(1, mask.length - 2), 
         reduceVariations(mask.split(opts.groupmarker.end + opts.alternatormarker + opts.groupmarker.start)), 
         mask = rebuild(maskGroups)), mask = mask.replace(/9/g, "\\9"));
-        var mt = analyseMaskBase.call(this, mask, opts);
+        var mt = analyseMaskBase.call(this, mask, regexMask, opts);
         return mt;
     }, Inputmask.extendAliases({
         abstractphone: {

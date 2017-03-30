@@ -202,4 +202,26 @@ define([
 		$("#testmask").Type("412123123");
 		assert.equal(testmask.inputmask._valueGet(), "+374-12-123-123", "Result " + testmask.inputmask._valueGet());
 	});
+
+	qunit.test("(9)|(a9) - type 1 - ivaninDarpatov", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+
+		Inputmask("(9)|(a9)").mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("12");
+		assert.equal(testmask.inputmask._valueGet(), "1", "Result " + testmask.inputmask._valueGet());
+	});
+
+	qunit.test("(9)|(a9) - type a1 - ivaninDarpatov", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+
+		Inputmask("(9)|(a9)").mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("a1");
+		assert.equal(testmask.inputmask._valueGet(), "a1", "Result " + testmask.inputmask._valueGet());
+	});
 });

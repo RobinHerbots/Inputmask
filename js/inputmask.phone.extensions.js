@@ -29,7 +29,7 @@
 
 	var analyseMaskBase = Inputmask.prototype.analyseMask;
 
-	Inputmask.prototype.analyseMask = function (mask, opts) {
+	Inputmask.prototype.analyseMask = function (mask, regexMask, opts) {
 		var maskGroups = {};
 
 		function reduceVariations(masks, previousVariation, previousmaskGroup) {
@@ -84,7 +84,7 @@
 			mask = mask.replace(/9/g, "\\9");
 		}
 		// console.log(mask);
-		var mt = analyseMaskBase.call(this, mask, opts);
+		var mt = analyseMaskBase.call(this, mask, regexMask,opts);
 		return mt;
 	};
 	Inputmask.extendAliases({

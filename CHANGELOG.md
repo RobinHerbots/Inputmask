@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 
 ## [UNRELEASED]
+### Added
+- build-in regex support without extension
+
 ### Updates
 - make removing the inputmask take the autoUnmask option into account
 - enhance inputfallback event (android)
