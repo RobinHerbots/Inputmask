@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.5-211
+* Version: 3.3.5-213
 */
 !function(factory) {
     window.Inputmask = factory(window.dependencyLib || jQuery, window, document);
@@ -1417,7 +1417,7 @@
             }
             function insertTestDefinition(mtoken, element, position) {
                 if (position = position !== undefined ? position : mtoken.matches.length, regexMask) 0 === element.indexOf("[") || escaped ? mtoken.matches.splice(position++, 0, {
-                    fn: new RegExp(element),
+                    fn: new RegExp(element, opts.casing ? "i" : ""),
                     cardinality: 0,
                     optionality: mtoken.isOptional,
                     newBlockMarker: prevMatch === undefined || prevMatch.def !== element,
@@ -1440,7 +1440,7 @@
                         for (var prevalidators = maskdef.prevalidator, prevalidatorsL = prevalidators ? prevalidators.length : 0, i = 1; i < maskdef.cardinality; i++) {
                             var prevalidator = prevalidatorsL >= i ? prevalidators[i - 1] : [], validator = prevalidator.validator, cardinality = prevalidator.cardinality;
                             mtoken.matches.splice(position++, 0, {
-                                fn: validator ? "string" == typeof validator ? new RegExp(validator) : new function() {
+                                fn: validator ? "string" == typeof validator ? new RegExp(validator, opts.casing ? "i" : "") : new function() {
                                     this.test = validator;
                                 }() : new RegExp("."),
                                 cardinality: cardinality ? cardinality : 1,
@@ -1453,7 +1453,7 @@
                             }), prevMatch = mtoken.matches[position - 1];
                         }
                         mtoken.matches.splice(position++, 0, {
-                            fn: maskdef.validator ? "string" == typeof maskdef.validator ? new RegExp(maskdef.validator) : new function() {
+                            fn: maskdef.validator ? "string" == typeof maskdef.validator ? new RegExp(maskdef.validator, opts.casing ? "i" : "") : new function() {
                                 this.test = maskdef.validator;
                             }() : new RegExp("."),
                             cardinality: maskdef.cardinality,

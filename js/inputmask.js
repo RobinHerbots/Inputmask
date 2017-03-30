@@ -322,7 +322,7 @@
 				if (regexMask) {
 					if (element.indexOf("[") === 0 || escaped) {
 						mtoken.matches.splice(position++, 0, {
-							fn: new RegExp(element),
+							fn: new RegExp(element, opts.casing ? "i" : ""),
 							cardinality: 0,
 							optionality: mtoken.isOptional,
 							newBlockMarker: prevMatch === undefined || prevMatch.def !== element,
@@ -356,7 +356,7 @@
 								validator = prevalidator.validator,
 								cardinality = prevalidator.cardinality;
 							mtoken.matches.splice(position++, 0, {
-								fn: validator ? typeof validator === "string" ? new RegExp(validator) : new function () {
+								fn: validator ? typeof validator === "string" ? new RegExp(validator, opts.casing ? "i" : "") : new function () {
 									this.test = validator;
 								} : new RegExp("."),
 								cardinality: cardinality ? cardinality : 1,
@@ -370,7 +370,7 @@
 							prevMatch = mtoken.matches[position - 1];
 						}
 						mtoken.matches.splice(position++, 0, {
-							fn: maskdef.validator ? typeof maskdef.validator == "string" ? new RegExp(maskdef.validator) : new function () {
+							fn: maskdef.validator ? typeof maskdef.validator == "string" ? new RegExp(maskdef.validator, opts.casing ? "i" : "") : new function () {
 								this.test = maskdef.validator;
 							} : new RegExp("."),
 							cardinality: maskdef.cardinality,
