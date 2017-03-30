@@ -688,7 +688,11 @@
 			var regexMask = false;
 			if (mask === null || mask === "") {
 				regexMask = opts.regex !== null;
-				mask = opts.regex || "*{*}";
+				if (regexMask) {
+					mask = opts.regex;
+					mask = mask.replace(/^(\^)(.*)(\$)$/, "$2");
+				} else
+					mask = "*{*}";
 			}
 			if (mask.length === 1 && opts.greedy === false && opts.repeat !== 0) {
 				opts.placeholder = "";
