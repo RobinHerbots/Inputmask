@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.5-210
+* Version: 3.3.5-211
 */
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "./dependencyLibs/inputmask.dependencyLib", "./global/window", "./global/document" ], factory) : "object" == typeof exports ? module.exports = factory(require("./dependencyLibs/inputmask.dependencyLib"), require("./global/window"), require("./global/document")) : window.Inputmask = factory(window.dependencyLib || jQuery, window, document);
@@ -1416,7 +1416,7 @@
                 };
             }
             function insertTestDefinition(mtoken, element, position) {
-                if (position = position !== undefined ? position : mtoken.matches.length, regexMask) 0 === element.indexOf("[") ? mtoken.matches.splice(position++, 0, {
+                if (position = position !== undefined ? position : mtoken.matches.length, regexMask) 0 === element.indexOf("[") || escaped ? mtoken.matches.splice(position++, 0, {
                     fn: new RegExp(element),
                     cardinality: 0,
                     optionality: mtoken.isOptional,
@@ -1524,7 +1524,7 @@
                 }
                 if (escaped) defaultCase(); else switch (m.charAt(0)) {
                   case opts.escapeChar:
-                    escaped = !0;
+                    escaped = !0, regexMask && defaultCase();
                     break;
 
                   case opts.optionalmarker.end:

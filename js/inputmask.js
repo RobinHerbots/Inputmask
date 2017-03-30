@@ -320,7 +320,7 @@
 			function insertTestDefinition(mtoken, element, position) {
 				position = position !== undefined ? position : mtoken.matches.length;
 				if (regexMask) {
-					if (element.indexOf("[") === 0) {
+					if (element.indexOf("[") === 0 || escaped) {
 						mtoken.matches.splice(position++, 0, {
 							fn: new RegExp(element),
 							cardinality: 0,
@@ -493,6 +493,7 @@
 				switch (m.charAt(0)) {
 					case opts.escapeChar:
 						escaped = true;
+						if (regexMask) defaultCase();
 						break;
 					case opts.optionalmarker.end:
 					// optional closing
