@@ -156,15 +156,6 @@ module.exports = function (grunt) {
 					showTasks: ['user']
 				}
 			}
-		},
-		browserify: {
-			dist: {
-				dest: 'build/browserify.bundle.js',
-				src: [],
-				options: {
-					require: ["./dist/inputmask/inputmask.js"]
-				}
-			}
 		}
 	});
 
@@ -174,7 +165,7 @@ module.exports = function (grunt) {
 	grunt.registerTask('publish:patch', ['clean', 'bump:patch', 'uglify', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
 	grunt.registerTask('publish:minor', ['clean', 'bump:minor', 'uglify', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
 	grunt.registerTask('publish:major', ['clean', 'bump:major', 'uglify', 'shell:gitcommitchanges', 'release', 'nugetpack', 'nugetpush']);
-	grunt.registerTask('validate', ['eslint', 'browserify', 'karma']);
+	grunt.registerTask('validate', ['eslint', 'karma']);
 	grunt.registerTask('build', ['bump:prerelease', 'clean', 'uglify']);
 	grunt.registerTask('default', ["availabletasks"]);
 };
