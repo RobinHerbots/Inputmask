@@ -18,7 +18,7 @@ module.exports = {
 		preLoaders: [
 			{
 				test: /\.js$/,
-				loader:'source-map',
+				loader: 'source-map',
 			},
 		],
 		loaders: [
@@ -43,7 +43,7 @@ module.exports = {
 	postcss: [postcss_cssnext],
 	resolve: {
 		alias: {
-		},
+		}
 	},
 	plugins: [
 		new webpack.SourceMapDevToolPlugin(

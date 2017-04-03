@@ -2,14 +2,14 @@
   "name": "jquery.inputmask",
   "version": "3.3.5-213",
   "description": "jquery.inputmask is a jquery plugin which create an input mask.",
-  "main": "dist/jquery.inputmask.bundle.js",
+  "main": "index.js",
   "files": [
     "dist/",
     "css/"
   ],
   "scripts": {
     "start": "webpack-dev-server --progress --colors ",
-    "build": "webpack --progress --colors --watch",
+    "build": "webpack --progress --colors",
     "test": "grunt validate"
   },
   "repository": {
@@ -62,7 +62,7 @@
     "karma-qunit": "^1.1.0",
     "karma-requirejs": "^1.0.0",
     "load-grunt-tasks": "^3.2.0",
-    "phantomjs": "^2.1.7",
+    "phantomjs-prebuilt": "^2.1.14",
     "postcss": "^5.0.21",
     "postcss-cssnext": "^2.6.0",
     "postcss-loader": "^0.9.1",
