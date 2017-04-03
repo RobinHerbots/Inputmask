@@ -444,7 +444,7 @@
 				":": {
 					validator: function (chrs, maskset, pos, strict, opts) {
 						var radix = "[" + Inputmask.escapeRegex(opts.radixPoint) + "]";
-						isValid = new RegExp(radix).test(chrs);
+						var isValid = new RegExp(radix).test(chrs);
 						if (isValid && maskset.validPositions[pos] && maskset.validPositions[pos].match.placeholder === opts.radixPoint) {
 							isValid = {
 								"caret": pos + 1

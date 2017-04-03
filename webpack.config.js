@@ -1,7 +1,6 @@
 'use strict';
 
 let webpack = require('webpack');
-let postcss_cssnext = require('postcss-cssnext');
 let path = require('path');
 
 function _path(p) {
@@ -15,18 +14,17 @@ module.exports = {
 		filename: "build/bundle.js"
 	},
 	module: {
-		preLoaders: [
+		rules: [
 			{
+				enforce: 'pre',
 				test: /\.js$/,
-				loader: 'source-map',
+				loader: 'source-map-loader',
 			},
-		],
-		loaders: [
 			{
 				test: /\.js$/,
-				loader: 'babel',
+				loader: 'babel-loader',
 				exclude: /(node_modules)/,
-				query: {
+				options: {
 					presets: [
 						'es2015',
 						'stage-0',
@@ -36,28 +34,49 @@ module.exports = {
 			},
 			{
 				test: /\.css$/,
-				loader: 'style!css?importLoaders=1!postcss',
-			},
+				use: [
+					'style-loader',
+					{
+						loader: 'css-loader',
+						options: {
+							importLoaders: 1
+						}
+					},
+					{
+						loader: 'postcss-loader',
+						options: {
+							plugins: function () {
+								return [
+									require('postcss-cssnext')
+								];
+							}
+						}
+					}
+				]
+			}
 		]
 	},
-	postcss: [postcss_cssnext],
 	resolve: {
-		alias: {
-		}
+		alias: {}
 	},
 	plugins: [
-		new webpack.SourceMapDevToolPlugin(
-			'[file].map', null,
-			'[absolute-resource-path]',
-			'[absolute-resource-path]'
-		),
+		new webpack.SourceMapDevToolPlugin({
+			// file and reference
+			filename: '[file].map',
+			// sources naming
+			moduleFilenameTemplate: '[absolute-resource-path]',
+			fallbackModuleFilenameTemplate: '[absolute-resource-path]',
+		}),
+		new webpack.LoaderOptionsPlugin({
+			debug: true
+		})
 	],
 	bail: true,
-	debug: true,
 	devServer: {
 		publicPath: '/',
-		outputPath: _path('build'),
-		stats: {colors: true},
+		stats: {
+			colors: true
+		},
 		host: '0.0.0.0',
 		inline: true,
 		port: '8080',
