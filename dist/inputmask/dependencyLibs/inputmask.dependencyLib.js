@@ -3,8 +3,9 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.5-213
+* Version: 3.3.5-214
 */
+
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "../global/window", "../global/document" ], factory) : "object" == typeof exports ? module.exports = factory(require("../global/window"), require("../global/document")) : window.dependencyLib = factory(window, document);
 }(function(window, document) {
@@ -32,23 +33,18 @@
     for (var class2type = {}, classTypes = "Boolean Number String Function Array Date RegExp Object Error".split(" "), nameNdx = 0; nameNdx < classTypes.length; nameNdx++) class2type["[object " + classTypes[nameNdx] + "]"] = classTypes[nameNdx].toLowerCase();
     return DependencyLib.prototype = {
         on: function(events, handler) {
-            function addEvent(ev, namespace) {
-                elem.addEventListener ? elem.addEventListener(ev, handler, !1) : elem.attachEvent && elem.attachEvent("on" + ev, handler), 
-                eventRegistry[ev] = eventRegistry[ev] || {}, eventRegistry[ev][namespace] = eventRegistry[ev][namespace] || [], 
-                eventRegistry[ev][namespace].push(handler);
-            }
             if (isValidElement(this[0])) for (var eventRegistry = this[0].eventRegistry, elem = this[0], _events = events.split(" "), endx = 0; endx < _events.length; endx++) {
                 var nsEvent = _events[endx].split("."), ev = nsEvent[0], namespace = nsEvent[1] || "global";
-                addEvent(ev, namespace);
+                !function(ev, namespace) {
+                    elem.addEventListener ? elem.addEventListener(ev, handler, !1) : elem.attachEvent && elem.attachEvent("on" + ev, handler), 
+                    eventRegistry[ev] = eventRegistry[ev] || {}, eventRegistry[ev][namespace] = eventRegistry[ev][namespace] || [], 
+                    eventRegistry[ev][namespace].push(handler);
+                }(ev, namespace);
             }
             return this;
         },
         off: function(events, handler) {
-            function removeEvent(ev, namespace, handler) {
-                if (ev in eventRegistry == !0) if (elem.removeEventListener ? elem.removeEventListener(ev, handler, !1) : elem.detachEvent && elem.detachEvent("on" + ev, handler), 
-                "global" === namespace) for (var nmsp in eventRegistry[ev]) eventRegistry[ev][nmsp].splice(eventRegistry[ev][nmsp].indexOf(handler), 1); else eventRegistry[ev][namespace].splice(eventRegistry[ev][namespace].indexOf(handler), 1);
-            }
-            function resolveNamespace(ev, namespace) {
+            if (isValidElement(this[0])) for (var eventRegistry = this[0].eventRegistry, elem = this[0], _events = events.split(" "), endx = 0; endx < _events.length; endx++) for (var nsEvent = _events[endx].split("."), offEvents = function(ev, namespace) {
                 var hndx, hndL, evts = [];
                 if (ev.length > 0) if (void 0 === handler) for (hndx = 0, hndL = eventRegistry[ev][namespace].length; hndx < hndL; hndx++) evts.push({
                     ev: ev,
@@ -69,8 +65,10 @@
                     handler: handler
                 });
                 return evts;
-            }
-            if (isValidElement(this[0])) for (var eventRegistry = this[0].eventRegistry, elem = this[0], _events = events.split(" "), endx = 0; endx < _events.length; endx++) for (var nsEvent = _events[endx].split("."), offEvents = resolveNamespace(nsEvent[0], nsEvent[1]), i = 0, offEventsL = offEvents.length; i < offEventsL; i++) removeEvent(offEvents[i].ev, offEvents[i].namespace, offEvents[i].handler);
+            }(nsEvent[0], nsEvent[1]), i = 0, offEventsL = offEvents.length; i < offEventsL; i++) !function(ev, namespace, handler) {
+                if (ev in eventRegistry == 1) if (elem.removeEventListener ? elem.removeEventListener(ev, handler, !1) : elem.detachEvent && elem.detachEvent("on" + ev, handler), 
+                "global" === namespace) for (var nmsp in eventRegistry[ev]) eventRegistry[ev][nmsp].splice(eventRegistry[ev][nmsp].indexOf(handler), 1); else eventRegistry[ev][namespace].splice(eventRegistry[ev][namespace].indexOf(handler), 1);
+            }(offEvents[i].ev, offEvents[i].namespace, offEvents[i].handler);
             return this;
         },
         trigger: function(events) {
@@ -105,7 +103,7 @@
     }, DependencyLib.isFunction = function(obj) {
         return "function" === type(obj);
     }, DependencyLib.noop = function() {}, DependencyLib.isArray = Array.isArray, DependencyLib.inArray = function(elem, arr, i) {
-        return null == arr ? -1 : indexOf(arr, elem, i);
+        return null == arr ? -1 : indexOf(arr, elem);
     }, DependencyLib.valHooks = void 0, DependencyLib.isPlainObject = function(obj) {
         return "object" === type(obj) && !obj.nodeType && !isWindow(obj) && !(obj.constructor && !class2type.hasOwnProperty.call(obj.constructor.prototype, "isPrototypeOf"));
     }, DependencyLib.extend = function() {
@@ -118,19 +116,16 @@
         target[name] = DependencyLib.extend(deep, clone, copy)) : void 0 !== copy && (target[name] = copy));
         return target;
     }, DependencyLib.each = function(obj, callback) {
-        var value, i = 0;
-        if (isArraylike(obj)) for (var length = obj.length; i < length && (value = callback.call(obj[i], i, obj[i]), 
-        value !== !1); i++) ; else for (i in obj) if (value = callback.call(obj[i], i, obj[i]), 
-        value === !1) break;
+        var i = 0;
+        if (isArraylike(obj)) for (var length = obj.length; i < length && !1 !== callback.call(obj[i], i, obj[i]); i++) ; else for (i in obj) if (!1 === callback.call(obj[i], i, obj[i])) break;
         return obj;
     }, DependencyLib.map = function(elems, callback) {
         var value, i = 0, length = elems.length, isArray = isArraylike(elems), ret = [];
-        if (isArray) for (;i < length; i++) value = callback(elems[i], i), null != value && ret.push(value); else for (i in elems) value = callback(elems[i], i), 
-        null != value && ret.push(value);
+        if (isArray) for (;i < length; i++) null != (value = callback(elems[i], i)) && ret.push(value); else for (i in elems) null != (value = callback(elems[i], i)) && ret.push(value);
         return [].concat(ret);
     }, DependencyLib.data = function(owner, key, value) {
-        return void 0 === value ? owner.__data ? owner.__data[key] : null : (owner.__data = owner.__data || {}, 
-        void (owner.__data[key] = value));
+        if (void 0 === value) return owner.__data ? owner.__data[key] : null;
+        owner.__data = owner.__data || {}, owner.__data[key] = value;
     }, DependencyLib.Event = function(event, params) {
         params = params || {
             bubbles: !1,

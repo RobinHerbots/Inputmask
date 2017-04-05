@@ -1974,4 +1974,15 @@ define([
 
 		assert.equal(testmask.inputmask._valueGet(), "1.234,56", "Result " + testmask.inputmask._valueGet());
 	});
+
+	qunit.test("currency  set 100.00 - NurGuz", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("currency",  { radixPoint: ","}).mask(testmask);
+
+		$(testmask).val("100.00");
+
+		assert.equal(testmask.inputmask._valueGet(), "$ 100,00", "Result " + testmask.inputmask._valueGet());
+	});
 });

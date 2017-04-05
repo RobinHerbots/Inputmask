@@ -7,6 +7,48 @@ function _path(p) {
 	return path.join(__dirname, p);
 }
 
+const rules = {
+	sourceMap: {
+		enforce: 'pre',
+		test: /\.js$/,
+		loader: 'source-map-loader',
+	},
+	js: {
+		test: /\.js$/,
+		loader: 'babel-loader',
+		exclude: /(node_modules)/,
+		options: {
+			presets: [
+				'es2015',
+				'stage-0',
+			],
+			passPerPreset: true,
+		},
+	},
+	styles: {
+		test: /\.css$/,
+		use: [
+			'style-loader',
+			{
+				loader: 'css-loader',
+				options: {
+					importLoaders: 1
+				}
+			},
+			{
+				loader: 'postcss-loader',
+				options: {
+					plugins: function () {
+						return [
+							require('postcss-cssnext')
+						];
+					}
+				}
+			}
+		]
+	}
+}
+
 module.exports = {
 	entry: "./app.js",
 	output: {
@@ -15,45 +57,9 @@ module.exports = {
 	},
 	module: {
 		rules: [
-			{
-				enforce: 'pre',
-				test: /\.js$/,
-				loader: 'source-map-loader',
-			},
-			{
-				test: /\.js$/,
-				loader: 'babel-loader',
-				exclude: /(node_modules)/,
-				options: {
-					presets: [
-						'es2015',
-						'stage-0',
-					],
-					passPerPreset: true,
-				},
-			},
-			{
-				test: /\.css$/,
-				use: [
-					'style-loader',
-					{
-						loader: 'css-loader',
-						options: {
-							importLoaders: 1
-						}
-					},
-					{
-						loader: 'postcss-loader',
-						options: {
-							plugins: function () {
-								return [
-									require('postcss-cssnext')
-								];
-							}
-						}
-					}
-				]
-			}
+			rules.sourceMap,
+			rules.js,
+			rules.styles
 		]
 	},
 	resolve: {
@@ -72,15 +78,15 @@ module.exports = {
 		})
 	],
 	bail: true,
-	devServer: {
-		publicPath: '/',
-		stats: {
-			colors: true
-		},
-		host: '0.0.0.0',
-		inline: true,
-		port: '8080',
-		quiet: false,
-		noInfo: false,
-	},
+	// devServer: {
+	// 	publicPath: '/',
+	// 	stats: {
+	// 		colors: true
+	// 	},
+	// 	host: '0.0.0.0',
+	// 	inline: true,
+	// 	port: '8080',
+	// 	quiet: false,
+	// 	noInfo: false,
+	// },
 };

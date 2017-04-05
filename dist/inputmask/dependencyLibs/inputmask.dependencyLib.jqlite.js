@@ -3,8 +3,9 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.5-213
+* Version: 3.3.5-214
 */
+
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jqlite", "../global/window", "../global/document]" ], factory) : "object" == typeof exports ? module.exports = factory(require("jqlite"), require("../global/window"), require("../global/document")) : window.dependencyLib = factory(jqlite, window, document);
 }(function($, window, document) {
@@ -24,7 +25,7 @@
     }
     for (var class2type = {}, classTypes = "Boolean Number String Function Array Date RegExp Object Error".split(" "), nameNdx = 0; nameNdx < classTypes.length; nameNdx++) class2type["[object " + classTypes[nameNdx] + "]"] = classTypes[nameNdx].toLowerCase();
     return $.inArray = function(elem, arr, i) {
-        return null == arr ? -1 : indexOf(arr, elem, i);
+        return null == arr ? -1 : indexOf(arr, elem);
     }, $.isFunction = function(obj) {
         return "function" === type(obj);
     }, $.isArray = Array.isArray, $.isPlainObject = function(obj) {
@@ -39,15 +40,12 @@
         target[name] = $.extend(deep, clone, copy)) : void 0 !== copy && (target[name] = copy));
         return target;
     }, $.each = function(obj, callback) {
-        var value, i = 0;
-        if (isArraylike(obj)) for (var length = obj.length; i < length && (value = callback.call(obj[i], i, obj[i]), 
-        value !== !1); i++) ; else for (i in obj) if (value = callback.call(obj[i], i, obj[i]), 
-        value === !1) break;
+        var i = 0;
+        if (isArraylike(obj)) for (var length = obj.length; i < length && !1 !== callback.call(obj[i], i, obj[i]); i++) ; else for (i in obj) if (!1 === callback.call(obj[i], i, obj[i])) break;
         return obj;
     }, $.map = function(elems, callback) {
         var value, i = 0, length = elems.length, isArray = isArraylike(elems), ret = [];
-        if (isArray) for (;i < length; i++) value = callback(elems[i], i), null != value && ret.push(value); else for (i in elems) value = callback(elems[i], i), 
-        null != value && ret.push(value);
+        if (isArray) for (;i < length; i++) null != (value = callback(elems[i], i)) && ret.push(value); else for (i in elems) null != (value = callback(elems[i], i)) && ret.push(value);
         return [].concat(ret);
     }, $.data = function(elem, name, data) {
         return $(elem).data(name, data);
