@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 	- initialization
 
 ### Fixed
+- Multiple alternators #1553
 - Weird Issue with decimal masking when value is like 0.55 #1512
 - IE 8 problems with currency and jquery.inputmask.bundle.js #1545
 - Rounding error for numeric aliases #1300

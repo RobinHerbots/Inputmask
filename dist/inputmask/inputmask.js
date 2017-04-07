@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/jquery.inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.5-214
+* Version: 3.3.5-221
 */
 
 !function(factory) {
@@ -195,9 +195,10 @@
                                                 if (function(source, target) {
                                                     return null === source.match.fn && null !== target.match.fn && target.match.fn.test(source.match.def, getMaskSet(), pos, !1, opts, !1);
                                                 }(altMatch, altMatch2)) {
-                                                    dropMatch = altMatch.match.nativeDef === altMatch2.match.nativeDef, altMatch.alternation == altMatch2.alternation && -1 === altMatch2.locator[altMatch2.alternation].toString().indexOf(altMatch.locator[altMatch.alternation]) && (altMatch2.locator[altMatch2.alternation] = altMatch2.locator[altMatch2.alternation] + "," + altMatch.locator[altMatch.alternation], 
-                                                    altMatch2.alternation = altMatch.alternation, null == altMatch.match.fn && (altMatch2.na = altMatch2.na || altMatch.locator[altMatch.alternation].toString(), 
-                                                    -1 === altMatch2.na.indexOf(altMatch.locator[altMatch.alternation]) && (altMatch2.na = altMatch2.na + "," + altMatch.locator[altMatch.alternation])));
+                                                    console.log("case 5"), altMatch.alternation == altMatch2.alternation && -1 === altMatch.locator[altMatch.alternation].toString().indexOf(altMatch2.locator[altMatch2.alternation].toString().split("")[0]) && (altMatch.na = altMatch.na || altMatch.locator[altMatch.alternation].toString(), 
+                                                    -1 === altMatch.na.indexOf(altMatch.locator[altMatch.alternation].toString().split("")[0]) && (altMatch.na = altMatch.na + "," + altMatch.locator[altMatch2.alternation].toString().split("")[0]), 
+                                                    dropMatch = !0, altMatch.locator[altMatch.alternation] = altMatch2.locator[altMatch2.alternation].toString().split("")[0] + "," + altMatch.locator[altMatch.alternation], 
+                                                    malternateMatches.splice(malternateMatches.indexOf(altMatch2), 0, altMatch));
                                                     break;
                                                 }
                                             }
@@ -443,7 +444,7 @@
                             altNdxs = test.locator[alternation] ? test.locator[alternation].toString().split(",") : [];
                             for (var mndx = 0; mndx < altNdxs.length; mndx++) {
                                 var validInputs = [], staticInputsBeforePos = 0, staticInputsBeforePosAlternate = 0, verifyValidInput = !1;
-                                if (decisionTaker < altNdxs[mndx] && (test.na === undefined || -1 === $.inArray(altNdxs[mndx], test.na.split(",")))) {
+                                if (decisionTaker < altNdxs[mndx] && (test.na === undefined || -1 === $.inArray(altNdxs[mndx], test.na.split(",")) || -1 === $.inArray(decisionTaker.toString(), altNdxs))) {
                                     getMaskSet().validPositions[decisionPos] = $.extend(!0, {}, test);
                                     var possibilities = getMaskSet().validPositions[decisionPos].locator;
                                     for (getMaskSet().validPositions[decisionPos].locator[alternation] = parseInt(altNdxs[mndx]), 
@@ -717,7 +718,7 @@
             var offset = $(input).position(), computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
             input.parentNode;
             colorMask = document.createElement("div"), document.body.appendChild(colorMask);
-            for (var style in computedStyle) isNaN(style) && "cssText" !== style && -1 == style.indexOf("webkit") && (colorMask.style[style] = computedStyle[style]);
+            for (var style in computedStyle) computedStyle.hasOwnProperty(style) && isNaN(style) && "cssText" !== style && -1 == style.indexOf("webkit") && (colorMask.style[style] = computedStyle[style]);
             input.style.backgroundColor = "transparent", input.style.color = "transparent", 
             input.style.webkitAppearance = "caret", input.style.mozAppearance = "caret", input.style.Appearance = "caret", 
             position(), $(window).on("resize", function(e) {

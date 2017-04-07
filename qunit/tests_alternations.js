@@ -224,4 +224,99 @@ define([
 		$("#testmask").Type("a1");
 		assert.equal(testmask.inputmask._valueGet(), "a1", "Result " + testmask.inputmask._valueGet());
 	});
+
+	qunit.test("(999)|(0aa) - type 0ab - ivaninDarpatov", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+
+		Inputmask("(999)|(0aa)").mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("0ab");
+		assert.equal(testmask.inputmask._valueGet(), "0ab", "Result " + testmask.inputmask._valueGet());
+	});
+
+	qunit.test("(999)|(0aa) - type 1ab - ivaninDarpatov", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+
+		Inputmask("(999)|(0aa)").mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("1ab");
+		assert.equal(testmask.inputmask._valueGet(), "1__", "Result " + testmask.inputmask._valueGet());
+	});
+
+	qunit.test("(9)|(09)|(19)|(2f) - type 41 - ivaninDarpatov", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+
+		Inputmask("(9)|(09)|(19)|(2f)", {
+			definitions: {
+				"f": {validator: "[0-3]"}
+			}
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("41");
+		assert.equal(testmask.inputmask._valueGet(), "4", "Result " + testmask.inputmask._valueGet());
+	});
+
+	qunit.test("(9)|(09)|(19)|(2f) - type 01 - ivaninDarpatov", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+
+		Inputmask("(9)|(09)|(19)|(2f)", {
+			definitions: {
+				"f": {validator: "[0-3]"}
+			}
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("01");
+		assert.equal(testmask.inputmask._valueGet(), "01", "Result " + testmask.inputmask._valueGet());
+	});
+	qunit.test("(9)|(09)|(19)|(2f) - type 11 - ivaninDarpatov", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+
+		Inputmask("(9)|(09)|(19)|(2f)", {
+			definitions: {
+				"f": {validator: "[0-3]"}
+			}
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("11");
+		assert.equal(testmask.inputmask._valueGet(), "11", "Result " + testmask.inputmask._valueGet());
+	});
+
+	qunit.test("(9)|(09)|(19)|(2f) - type 23 - ivaninDarpatov", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+
+		Inputmask("(9)|(09)|(19)|(2f)", {
+			definitions: {
+				"f": {validator: "[0-3]"}
+			}
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("23");
+		assert.equal(testmask.inputmask._valueGet(), "23", "Result " + testmask.inputmask._valueGet());
+	});
+	qunit.test("(9)|(09)|(19)|(2f) - type 24 - ivaninDarpatov", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+
+		Inputmask("(9)|(09)|(19)|(2f)", {
+			definitions: {
+				"f": {validator: "[0-3]"}
+			}
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("24");
+		assert.equal(testmask.inputmask._valueGet(), "2_", "Result " + testmask.inputmask._valueGet());
+	});
 });

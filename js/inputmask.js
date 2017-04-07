@@ -1077,17 +1077,18 @@
 													dropMatch = false;
 													break;
 												} else if (staticCanMatchDefinition(altMatch, altMatch2)) {
-													// console.log("case 5");
-													dropMatch = altMatch.match.nativeDef === altMatch2.match.nativeDef;
-													if (altMatch.alternation == altMatch2.alternation && //can we merge if the alternation is different??  TODO TOCHECK INVESTIGATE
-														altMatch2.locator[altMatch2.alternation].toString().indexOf(altMatch.locator[altMatch.alternation]) === -1) {
-														altMatch2.locator[altMatch2.alternation] = altMatch2.locator[altMatch2.alternation] + "," + altMatch.locator[altMatch.alternation];
-														altMatch2.alternation = altMatch.alternation; //we pass the alternation index => used in determineLastRequiredPosition
-														if (altMatch.match.fn == null) { //staticCanMatchDefinition => set no alternate on match
-															altMatch2.na = altMatch2.na || altMatch.locator[altMatch.alternation].toString();
-															if (altMatch2.na.indexOf(altMatch.locator[altMatch.alternation]) === -1)
-																altMatch2.na = altMatch2.na + "," + altMatch.locator[altMatch.alternation];
-														}
+													console.log("case 5");
+													if (altMatch.alternation == altMatch2.alternation &&
+														altMatch.locator[altMatch.alternation].toString().indexOf(altMatch2.locator[altMatch2.alternation].toString().split("")[0]) === -1) {
+
+														//no alternation marker
+														altMatch.na = altMatch.na || altMatch.locator[altMatch.alternation].toString();
+														if (altMatch.na.indexOf(altMatch.locator[altMatch.alternation].toString().split("")[0]) === -1)
+															altMatch.na = altMatch.na + "," + altMatch.locator[altMatch2.alternation].toString().split("")[0];
+														//insert match above general match
+														dropMatch = true;
+														altMatch.locator[altMatch.alternation] = altMatch2.locator[altMatch2.alternation].toString().split("")[0] + "," + altMatch.locator[altMatch.alternation];
+														malternateMatches.splice(malternateMatches.indexOf(altMatch2), 0, altMatch);
 													}
 													break;
 												}
@@ -1488,7 +1489,7 @@
 								staticInputsBeforePos = 0,
 								staticInputsBeforePosAlternate = 0,
 								verifyValidInput = false;
-							if (decisionTaker < altNdxs[mndx] && (test.na === undefined || $.inArray(altNdxs[mndx], test.na.split(",")) === -1)) {
+							if (decisionTaker < altNdxs[mndx] && (test.na === undefined || ($.inArray(altNdxs[mndx], test.na.split(",")) === -1 || $.inArray(decisionTaker.toString(), altNdxs) === -1))) {
 								getMaskSet().validPositions[decisionPos] = $.extend(true, {}, test);
 								var possibilities = getMaskSet().validPositions[decisionPos].locator;
 								getMaskSet().validPositions[decisionPos].locator[alternation] = parseInt(altNdxs[mndx]); //set forced decision
@@ -2764,9 +2765,10 @@
 			colorMask = document.createElement("div");
 			document.body.appendChild(colorMask); //insert at body to prevent css clash :last-child for example
 			for (var style in computedStyle) { //clone styles
-				if (isNaN(style) && style !== "cssText" && style.indexOf("webkit") == -1) {
-					colorMask.style[style] = computedStyle[style];
-				}
+				if (computedStyle.hasOwnProperty(style))
+					if (isNaN(style) && style !== "cssText" && style.indexOf("webkit") == -1) {
+						colorMask.style[style] = computedStyle[style];
+					}
 			}
 
 			//restyle input
