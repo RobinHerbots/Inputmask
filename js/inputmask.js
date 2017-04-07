@@ -1077,7 +1077,7 @@
 													dropMatch = false;
 													break;
 												} else if (staticCanMatchDefinition(altMatch, altMatch2)) {
-													console.log("case 5");
+													// console.log("case 5");
 													if (altMatch.alternation == altMatch2.alternation &&
 														altMatch.locator[altMatch.alternation].toString().indexOf(altMatch2.locator[altMatch2.alternation].toString().split("")[0]) === -1) {
 
