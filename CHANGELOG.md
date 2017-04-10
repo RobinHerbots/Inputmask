@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - build-in regex support without extension
 
 ### Updates
+- Change package name to Inputmask to better reflect that Inputmask doesn't require jQuery
 - make removing the inputmask take the autoUnmask option into account
 - enhance inputfallback event (android)
 - restructure project
@@ -14,6 +15,7 @@ All notable changes to this project will be documented in this file.
 	- initialization
 
 ### Fixed
+- Changes are not reflected back to model when using with Vue2 (mobile) #1468
 - Multiple alternators #1553
 - Weird Issue with decimal masking when value is like 0.55 #1512
 - IE 8 problems with currency and jquery.inputmask.bundle.js #1545

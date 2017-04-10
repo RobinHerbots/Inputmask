@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>jQuery.InputMask</id>
+    <id>InputMask</id>
     <version>0.0.0</version>
-    <title>jQuery Input Mask</title>
+    <title>Inputmask</title>
     <authors>Robin Herbots</authors>
     <owners>Robin Herbots</owners>
     <licenseUrl>http://opensource.org/licenses/mit-license.php</licenseUrl>
-    <projectUrl>https://github.com/RobinHerbots/jquery.inputmask</projectRUrl>
+    <projectUrl>https://github.com/RobinHerbots/Inputmask</projectRUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <summary>jquery.inputmask is a jquery plugin which create an input mask.</summary>
-    <description>jquery.inputmask is a jquery plugin which create an input mask.</description>
+    <summary>Inputmask is a jquery plugin which create an input mask.</summary>
+    <description>Inputmask is a jquery plugin which create an input mask.</description>
     <tags>jQuery, plugins, input, form, inputmask, mask</tags>
   </metadata>
   <files>

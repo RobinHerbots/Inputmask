@@ -1,6 +1,6 @@
 {
-  "name": "jquery.inputmask",
-  "version": "3.3.5-222",
+  "name": "Inputmask",
+  "version": "3.3.5-223",
   "main": [
 	  "./dist/inputmask/inputmask.js",
 	  "./dist/inputmask/inputmask.extensions.js",
@@ -37,5 +37,5 @@
   "authors": [{
     "name": "Robin Herbots"
   }],
-  "homepage": "http://robinherbots.github.io/jquery.inputmask"
+  "homepage": "http://robinherbots.github.io/Inputmask"
 }

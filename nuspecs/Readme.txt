@@ -1,7 +1,7 @@
 ## .NET Nuget Package Install
 
 ```html
-PM> Install-Package jQuery.InputMask
+PM> Install-Package InputMask
 ```
 
 In App_Start, BundleConfig.cs

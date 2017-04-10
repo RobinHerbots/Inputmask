@@ -112,13 +112,13 @@ module.exports = function (grunt) {
 		release: {
 			options: {
 				bump: false,
-				commitMessage: 'jquery.inputmask <%= version %>'
+				commitMessage: 'Inputmask <%= version %>'
 			}
 		},
 		nugetpack: {
 			dist: {
 				src: function () {
-					return process.platform === "linux" ? 'nuspecs/jquery.inputmask.linux.nuspec' : 'nuspecs/jquery.inputmask.nuspec';
+					return process.platform === "linux" ? 'nuspecs/Inputmask.linux.nuspec' : 'nuspecs/Inputmask.nuspec';
 				}(),
 				dest: 'dist/',
 				options: {
@@ -128,7 +128,7 @@ module.exports = function (grunt) {
 		},
 		nugetpush: {
 			dist: {
-				src: 'dist/jQuery.InputMask.<%= pkg.version %>.nupkg',
+				src: 'dist/InputMask.<%= pkg.version %>.nupkg',
 				options: {
 					source: "https://www.nuget.org"
 				}
@@ -141,7 +141,7 @@ module.exports = function (grunt) {
 			gitcommitchanges: {
 				command: ['git add .',
 					'git reset -- package.json',
-					'git commit -m "jquery.inputmask <%= pkg.version %>"'
+					'git commit -m "Inputmask <%= pkg.version %>"'
 				].join('&&')
 			}
 		},

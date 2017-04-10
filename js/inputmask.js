@@ -1906,7 +1906,7 @@
 					caretPos = opts.numericInput ? seekPrevious(result.forwardPosition) : result.forwardPosition;
 				}
 
-				writeBuffer(input, getBuffer(), caretPos, initiatingEvent || new $.Event("checkval"));
+				writeBuffer(input, getBuffer(), caretPos, initiatingEvent || new $.Event("checkval"), initiatingEvent && initiatingEvent.type === "input");
 			}
 		}
 
@@ -2176,7 +2176,7 @@
 								skipKeyPressEvent = true;
 								break;
 							case "click":
-								if (iemobile || iphone) {
+								if (iemobile || iphone || true) {  //needed for Chrome ~ initial selection clears after the clickevent
 									var that = this, args = arguments;
 									setTimeout(function () {
 										eventHandler.apply(that, args);
@@ -2569,52 +2569,48 @@
 				}
 
 				var input = this;
-				setTimeout(function () { //needed for Chrome ~ initial selection clears after the clickevent
-					if (document.activeElement === input) {
-						var selectedCaret = caret(input);
-						if (tabbed) {
-							if (isRTL)
-								selectedCaret.end = selectedCaret.begin;
-							else
-								selectedCaret.begin = selectedCaret.end;
-						}
-						if (selectedCaret.begin === selectedCaret.end) {
-							switch (opts.positionCaretOnClick) {
-								case "none":
+				if (document.activeElement === input) {
+					var selectedCaret = caret(input);
+					if (tabbed) {
+						if (isRTL)
+							selectedCaret.end = selectedCaret.begin;
+						else
+							selectedCaret.begin = selectedCaret.end;
+					}
+					if (selectedCaret.begin === selectedCaret.end) {
+						switch (opts.positionCaretOnClick) {
+							case "none":
+								break;
+							case "radixFocus":
+								if (doRadixFocus(selectedCaret.begin)) {
+									var radixPos = getBuffer().join("").indexOf(opts.radixPoint);
+									caret(input, opts.numericInput ? seekNext(radixPos) : radixPos);
 									break;
-								case "radixFocus":
-									if (doRadixFocus(selectedCaret.begin)) {
-										var radixPos = getBuffer().join("").indexOf(opts.radixPoint);
-										caret(input, opts.numericInput ? seekNext(radixPos) : radixPos);
-										break;
+								}
+							default: //lvp:
+								var clickPosition = selectedCaret.begin,
+									lvclickPosition = getLastValidPosition(clickPosition, true),
+									lastPosition = seekNext(lvclickPosition);
+								if (clickPosition < lastPosition) {
+									caret(input, !isMask(clickPosition) && !isMask(clickPosition - 1) ? seekNext(clickPosition) : clickPosition);
+								} else {
+									var placeholder = getPlaceholder(lastPosition);
+									if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder && getTest(lastPosition).match.optionalQuantifier !== true) || (!isMask(lastPosition) && getTest(lastPosition).match.def === placeholder)) {
+										lastPosition = seekNext(lastPosition);
 									}
-								default: //lvp:
-									var clickPosition = selectedCaret.begin,
-										lvclickPosition = getLastValidPosition(clickPosition, true),
-										lastPosition = seekNext(lvclickPosition);
-									if (clickPosition < lastPosition) {
-										caret(input, !isMask(clickPosition) && !isMask(clickPosition - 1) ? seekNext(clickPosition) : clickPosition);
-									} else {
-										var placeholder = getPlaceholder(lastPosition);
-										if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder && getTest(lastPosition).match.optionalQuantifier !== true) || (!isMask(lastPosition) && getTest(lastPosition).match.def === placeholder)) {
-											lastPosition = seekNext(lastPosition);
-										}
-										caret(input, lastPosition);
-									}
-									break;
-							}
+									caret(input, lastPosition);
+								}
+								break;
 						}
 					}
-				}, 0);
-			}
-			,
+				}
+			},
 			dblclickEvent: function (e) {
 				var input = this;
 				setTimeout(function () {
 					caret(input, 0, seekNext(getLastValidPosition()));
 				}, 0);
-			}
-			,
+			},
 			cutEvent: function (e) {
 				var input = this,
 					$input = $(input),
@@ -2633,8 +2629,7 @@
 				if (input.inputmask._valueGet() === getBufferTemplate().join("")) {
 					$input.trigger("cleared");
 				}
-			}
-			,
+			},
 			blurEvent: function (e) {
 				var $input = $(this),
 					input = this;
@@ -2672,8 +2667,7 @@
 						writeBuffer(input, buffer, undefined, e);
 					}
 				}
-			}
-			,
+			},
 			mouseenterEvent: function (e) {
 				var input = this;
 				mouseEnter = true;
