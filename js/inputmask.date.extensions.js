@@ -97,9 +97,9 @@
 				var dayMonthValue, year, bufferStr = buffer.join("");
 				if (opts.mask.indexOf("y") === 0) {
 					year = bufferStr.substr(0, 4);
-					dayMonthValue = bufferStr.substr(4, 11);
+					dayMonthValue = bufferStr.substring(4, 10);
 				} else {
-					year = bufferStr.substr(6, 11);
+					year = bufferStr.substring(6, 10);
 					dayMonthValue = bufferStr.substr(0, 6);
 				}
 

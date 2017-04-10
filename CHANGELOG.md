@@ -1,10 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [UNRELEASED]
+### Fixed
+- 29 february of non leap-year #1567
+
 ## [3.3.5 - 2017-04-10]
 ### Added
 - add example webpack setup (thx to Kevin Suen)
-- build-in regex support without extension
+- build-in regex support without extension (WIP)
 
 ### Updates
 - Change package name to Inputmask to better reflect that Inputmask doesn't require jQuery
