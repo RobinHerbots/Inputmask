@@ -1,6 +1,6 @@
 {
   "name": "Inputmask",
-  "version": "3.3.5-223",
+  "version": "3.3.5",
   "description": "Inputmask is a jquery plugin which create an input mask.",
   "main": "index.js",
   "files": [
