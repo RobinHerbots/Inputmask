@@ -8,12 +8,13 @@ In App_Start, BundleConfig.cs
 
 ```c#
 bundles.Add(new ScriptBundle("~/bundles/inputmask").Include(
-            "~/Scripts/jquery.inputmask/inputmask.js",
-            "~/Scripts/jquery.inputmask/jquery.inputmask.js",
-            "~/Scripts/jquery.inputmask/inputmask.extensions.js",
-            "~/Scripts/jquery.inputmask/inputmask.date.extensions.js",
+            //~/Scripts/Inputmask/dependencyLibs/inputmask.dependencyLib.js",  //if not using jquery
+            "~/Scripts/Inputmask/inputmask.js",
+            "~/Scripts/Inputmask/jquery.inputmask.js",
+            "~/Scripts/Inputmask/inputmask.extensions.js",
+            "~/Scripts/Inputmask/inputmask.date.extensions.js",
             //and other extensions you want to include
-            "~/Scripts/jquery.inputmask/inputmask.numeric.extensions.js"));
+            "~/Scripts/Inputmask/inputmask.numeric.extensions.js"));
 ```
 
 In Layout

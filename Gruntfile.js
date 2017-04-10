@@ -118,7 +118,7 @@ module.exports = function (grunt) {
 		nugetpack: {
 			dist: {
 				src: function () {
-					return process.platform === "linux" ? 'nuspecs/Inputmask.linux.nuspec' : 'nuspecs/Inputmask.nuspec';
+					return 'nuspecs/Inputmask.nuspec';
 				}(),
 				dest: 'dist/',
 				options: {
