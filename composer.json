@@ -1,6 +1,6 @@
 {
   "name": "robinherbots/inputmask",
-  "description": "Inputmask is a jquery plugin which create an input mask.",
+  "description": "Inputmask is a javascript library which creates an input mask.  Inputmask can run against vanilla javascript, jQuery and jqlite.",
   "version": "3.3.6-0",
   "type": "library",
   "keywords": ["jquery", "plugins", "input", "form", "inputmask", "mask"],
