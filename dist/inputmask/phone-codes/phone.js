@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.6-2
+* Version: 3.3.6-3
 */
 
 !function(factory) {
@@ -1337,6 +1337,13 @@
                 desc_ru: ""
             }, {
                 mask: "+60-##-###-####",
+                cc: "MY",
+                cd: "Malaysia ",
+                desc_en: "mobile",
+                name_ru: "\u041c\u0430\u043b\u0430\u0439\u0437\u0438\u044f ",
+                desc_ru: "\u043c\u043e\u0431\u0438\u043b\u044c\u043d\u044b\u0435"
+            }, {
+                mask: "+60-11-####-####",
                 cc: "MY",
                 cd: "Malaysia ",
                 desc_en: "mobile",

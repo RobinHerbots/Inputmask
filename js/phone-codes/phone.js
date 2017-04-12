@@ -211,6 +211,7 @@
 				{ "mask": "+52(###)###-####", "cc": "MX", "cd": "Mexico", "desc_en": "", "name_ru": "Мексика", "desc_ru": "" },
 				{ "mask": "+52-##-##-####", "cc": "MX", "cd": "Mexico", "desc_en": "", "name_ru": "Мексика", "desc_ru": "" },
 				{ "mask": "+60-##-###-####", "cc": "MY", "cd": "Malaysia ", "desc_en": "mobile", "name_ru": "Малайзия ", "desc_ru": "мобильные" },
+				{ "mask": "+60-11-####-####", "cc": "MY", "cd": "Malaysia ", "desc_en": "mobile", "name_ru": "Малайзия ", "desc_ru": "мобильные" },
 				{ "mask": "+60(###)###-###", "cc": "MY", "cd": "Malaysia", "desc_en": "", "name_ru": "Малайзия", "desc_ru": "" },
 				{ "mask": "+60-##-###-###", "cc": "MY", "cd": "Malaysia", "desc_en": "", "name_ru": "Малайзия", "desc_ru": "" },
 				{ "mask": "+60-#-###-###", "cc": "MY", "cd": "Malaysia", "desc_en": "", "name_ru": "Малайзия", "desc_ru": "" },
