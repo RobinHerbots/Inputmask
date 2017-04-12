@@ -133,7 +133,7 @@ Inputmask("9-a{1,3}9{1,3}").mask(selector);
 Inputmask("9", { repeat: 10 }).mask(selector);
 ```
 
-###via jquery plugin
+### via jquery plugin
 
 ```javascript
 $(document).ready(function(){
@@ -143,7 +143,7 @@ $(document).ready(function(){
 });
 ```
 
-###via data-inputmask attribute
+### via data-inputmask attribute
 
 ```html
 <input data-inputmask="'alias': 'date'" />
@@ -159,7 +159,7 @@ $(document).ready(function(){
 });
 ```
 
-####Any option can also be passed through the use of a data attribute. Use data-inputmask-<**_the name of the option_**>="value"
+#### Any option can also be passed through the use of a data attribute. Use data-inputmask-<**_the name of the option_**>="value"
 
 ```html
 <input id="example1" data-inputmask-clearmaskonlostfocus="false" />
