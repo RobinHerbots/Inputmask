@@ -1985,4 +1985,21 @@ define([
 
 		assert.equal(testmask.inputmask._valueGet(), "$ 100,00", "Result " + testmask.inputmask._valueGet());
 	});
+
+	qunit.test("decimal suffix: years => yers - marcelokohl", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask('decimal', {
+			suffix:" years",
+			rightAlign: false,
+			onBeforeMask: function (value, opts) {
+				return value;
+			}
+		}).mask(testmask);
+
+		$(testmask).val("1");
+
+		assert.equal(testmask.inputmask._valueGet(), "1 years", "Result " + testmask.inputmask._valueGet());
+	});
 });

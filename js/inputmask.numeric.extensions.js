@@ -20,7 +20,8 @@
 	function autoEscape(txt, opts) {
 		var escapedTxt = "";
 		for (var i = 0; i < txt.length; i++) {
-			if (opts.definitions[txt.charAt(i)] ||
+			if (Inputmask.prototype.definitions[txt.charAt(i)] ||
+				opts.definitions[txt.charAt(i)] ||
 				opts.optionalmarker.start === txt.charAt(i) ||
 				opts.optionalmarker.end === txt.charAt(i) ||
 				opts.quantifiermarker.start === txt.charAt(i) ||
@@ -612,7 +613,6 @@
 			suffix: " %",
 			allowMinus: false
 		}
-	})
-	;
+	});
 	return Inputmask;
 }));

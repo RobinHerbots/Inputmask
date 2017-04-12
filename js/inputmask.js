@@ -2176,7 +2176,7 @@
 								skipKeyPressEvent = true;
 								break;
 							case "click":
-								if (iemobile || iphone || true) {  //needed for Chrome ~ initial selection clears after the clickevent
+								if (iemobile || iphone) {
 									var that = this, args = arguments;
 									setTimeout(function () {
 										eventHandler.apply(that, args);
@@ -2569,42 +2569,45 @@
 				}
 
 				var input = this;
-				if (document.activeElement === input) {
-					var selectedCaret = caret(input);
-					if (tabbed) {
-						if (isRTL)
-							selectedCaret.end = selectedCaret.begin;
-						else
-							selectedCaret.begin = selectedCaret.end;
-					}
-					if (selectedCaret.begin === selectedCaret.end) {
-						switch (opts.positionCaretOnClick) {
-							case "none":
-								break;
-							case "radixFocus":
-								if (doRadixFocus(selectedCaret.begin)) {
-									var radixPos = getBuffer().join("").indexOf(opts.radixPoint);
-									caret(input, opts.numericInput ? seekNext(radixPos) : radixPos);
+				setTimeout(function () { //needed for Chrome ~ initial selection clears after the clickevent
+					if (document.activeElement === input) {
+						var selectedCaret = caret(input);
+						if (tabbed) {
+							if (isRTL)
+								selectedCaret.end = selectedCaret.begin;
+							else
+								selectedCaret.begin = selectedCaret.end;
+						}
+						if (selectedCaret.begin === selectedCaret.end) {
+							switch (opts.positionCaretOnClick) {
+								case "none":
 									break;
-								}
-							default: //lvp:
-								var clickPosition = selectedCaret.begin,
-									lvclickPosition = getLastValidPosition(clickPosition, true),
-									lastPosition = seekNext(lvclickPosition);
-								if (clickPosition < lastPosition) {
-									caret(input, !isMask(clickPosition) && !isMask(clickPosition - 1) ? seekNext(clickPosition) : clickPosition);
-								} else {
-									var placeholder = getPlaceholder(lastPosition);
-									if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder && getTest(lastPosition).match.optionalQuantifier !== true) || (!isMask(lastPosition) && getTest(lastPosition).match.def === placeholder)) {
-										lastPosition = seekNext(lastPosition);
+								case "radixFocus":
+									if (doRadixFocus(selectedCaret.begin)) {
+										var radixPos = getBuffer().join("").indexOf(opts.radixPoint);
+										caret(input, opts.numericInput ? seekNext(radixPos) : radixPos);
+										break;
 									}
-									caret(input, lastPosition);
-								}
-								break;
+								default: //lvp:
+									var clickPosition = selectedCaret.begin,
+										lvclickPosition = getLastValidPosition(clickPosition, true),
+										lastPosition = seekNext(lvclickPosition);
+									if (clickPosition < lastPosition) {
+										caret(input, !isMask(clickPosition) && !isMask(clickPosition - 1) ? seekNext(clickPosition) : clickPosition);
+									} else {
+										var placeholder = getPlaceholder(lastPosition);
+										if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder && getTest(lastPosition).match.optionalQuantifier !== true) || (!isMask(lastPosition) && getTest(lastPosition).match.def === placeholder)) {
+											lastPosition = seekNext(lastPosition);
+										}
+										caret(input, lastPosition);
+									}
+									break;
+							}
 						}
 					}
-				}
-			},
+				}, 0);
+			}
+			,
 			dblclickEvent: function (e) {
 				var input = this;
 				setTimeout(function () {
