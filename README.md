@@ -85,18 +85,17 @@ For individual extensions. (with vanilla dependencylib)
 If you like to automatically bind the inputmask to the inputs marked with the data-inputmask- ... attributes you may also want to include the inputmask.binding.js
 
 ```html
-...
 <script src="dist/inputmask/bindings/inputmask.binding.js"></script>
-...
+```
 
-###webpack
+### webpack
 
-####Install the package
+#### Install the package
 ```
 npm install inputmask --save-dev
 ```
 
-####In your modules
+#### In your modules
 If you want to include the Inputmask and all extensions.
 ```
 var Inputmask = require('inputmask');
