@@ -306,6 +306,7 @@
 			function MaskToken(isGroup, isOptional, isQuantifier, isAlternator) {
 				this.matches = [];
 				this.openGroup = isGroup || false;
+				this.alternatorGroup = false;
 				this.isGroup = isGroup || false;
 				this.isOptional = isOptional || false;
 				this.isQuantifier = isQuantifier || false;
@@ -511,6 +512,7 @@
 									alternator = openenings.pop();
 									for (var mndx = 0; mndx < alternator.matches.length; mndx++) {
 										alternator.matches[mndx].isGroup = false; //don't mark alternate groups as group
+										alternator.matches[mndx].alternatorGroup = false;
 									}
 									if (openenings.length > 0) {
 										currentOpeningToken = openenings[openenings.length - 1];
@@ -571,16 +573,30 @@
 					case opts.alternatormarker:
 						if (openenings.length > 0) {
 							currentOpeningToken = openenings[openenings.length - 1];
-							lastMatch = currentOpeningToken.matches.pop();
+							if (currentOpeningToken.openGroup) { //regexp alt syntax
+								lastMatch = openenings.pop();
+							} else
+								lastMatch = currentOpeningToken.matches.pop();
 						} else {
 							lastMatch = currentToken.matches.pop();
 						}
 						if (lastMatch.isAlternator) {
 							openenings.push(lastMatch);
 						} else {
-							alternator = new MaskToken(false, false, false, true);
+							if (lastMatch.alternatorGroup) {
+								alternator = openenings.pop();
+								lastMatch.alternatorGroup = false;
+							} else {
+								alternator = new MaskToken(false, false, false, true);
+							}
 							alternator.matches.push(lastMatch);
 							openenings.push(alternator);
+							if (lastMatch.openGroup) { //regexp alt syntax
+								lastMatch.openGroup = false;
+								var alternatorGroup = new MaskToken(true);
+								alternatorGroup.alternatorGroup = true;
+								openenings.push(alternatorGroup);
+							}
 						}
 						break;
 					default:
