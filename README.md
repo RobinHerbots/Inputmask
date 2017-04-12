@@ -88,7 +88,6 @@ If you like to automatically bind the inputmask to the inputs marked with the da
 ...
 <script src="dist/inputmask/bindings/inputmask.binding.js"></script>
 ...
-```
 
 ###webpack
 
@@ -1160,10 +1159,10 @@ When cloning a inputmask, the inputmask reactivates on the first event (mouseent
 ## [phone extensions](README_phone.md)
 ## [other extensions](README_other.md)
 
-[npm-url]: https://npmjs.org/package/jquery.inputmask
-[npm-image]: https://img.shields.io/npm/v/jquery.inputmask.svg
-[david-url]: https://david-dm.org/RobinHerbots/jquery.inputmask#info=dependencies
-[david-image]: https://img.shields.io/david/RobinHerbots/jquery.inputmask.svg
-[david-dev-url]: https://david-dm.org/RobinHerbots/jquery.inputmask#info=devDependencies
-[david-dev-image]: https://img.shields.io/david/dev/RobinHerbots/jquery.inputmask.svg
+[npm-url]: https://npmjs.org/package/inputmask
+[npm-image]: https://img.shields.io/npm/v/inputmask.svg
+[david-url]: https://david-dm.org/RobinHerbots/inputmask#info=dependencies
+[david-image]: https://img.shields.io/david/RobinHerbots/inputmask.svg
+[david-dev-url]: https://david-dm.org/RobinHerbots/inputmask#info=devDependencies
+[david-dev-image]: https://img.shields.io/david/dev/RobinHerbots/inputmask.svg
 [input-type-ref]: https://html.spec.whatwg.org/multipage/forms.html#do-not-apply
