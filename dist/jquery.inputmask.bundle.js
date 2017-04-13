@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.6-3
+* Version: 3.3.6-4
 */
 
 !function(factory) {
@@ -1385,7 +1385,7 @@
             },
             analyseMask: function(mask, regexMask, opts) {
                 function MaskToken(isGroup, isOptional, isQuantifier, isAlternator) {
-                    this.matches = [], this.openGroup = isGroup || !1, this.isGroup = isGroup || !1, 
+                    this.matches = [], this.openGroup = isGroup || !1, this.alternatorGroup = !1, this.isGroup = isGroup || !1, 
                     this.isOptional = isOptional || !1, this.isQuantifier = isQuantifier || !1, this.isAlternator = isAlternator || !1, 
                     this.quantifier = {
                         min: 1,
@@ -1509,7 +1509,8 @@
                             if (currentOpeningToken = openenings[openenings.length - 1], currentOpeningToken.matches.push(openingToken), 
                             currentOpeningToken.isAlternator) {
                                 alternator = openenings.pop();
-                                for (var mndx = 0; mndx < alternator.matches.length; mndx++) alternator.matches[mndx].isGroup = !1;
+                                for (var mndx = 0; mndx < alternator.matches.length; mndx++) alternator.matches[mndx].isGroup = !1, 
+                                alternator.matches[mndx].alternatorGroup = !1;
                                 openenings.length > 0 ? (currentOpeningToken = openenings[openenings.length - 1], 
                                 currentOpeningToken.matches.push(alternator)) : currentToken.matches.push(alternator);
                             }
@@ -1541,10 +1542,15 @@
                         break;
 
                       case opts.alternatormarker:
-                        openenings.length > 0 ? (currentOpeningToken = openenings[openenings.length - 1], 
-                        lastMatch = currentOpeningToken.matches.pop()) : lastMatch = currentToken.matches.pop(), 
-                        lastMatch.isAlternator ? openenings.push(lastMatch) : (alternator = new MaskToken(!1, !1, !1, !0), 
-                        alternator.matches.push(lastMatch), openenings.push(alternator));
+                        if (openenings.length > 0 ? (currentOpeningToken = openenings[openenings.length - 1], 
+                        lastMatch = currentOpeningToken.openGroup ? openenings.pop() : currentOpeningToken.matches.pop()) : lastMatch = currentToken.matches.pop(), 
+                        lastMatch.isAlternator) openenings.push(lastMatch); else if (lastMatch.alternatorGroup ? (alternator = openenings.pop(), 
+                        lastMatch.alternatorGroup = !1) : alternator = new MaskToken(!1, !1, !1, !0), alternator.matches.push(lastMatch), 
+                        openenings.push(alternator), lastMatch.openGroup) {
+                            lastMatch.openGroup = !1;
+                            var alternatorGroup = new MaskToken(!0);
+                            alternatorGroup.alternatorGroup = !0, openenings.push(alternatorGroup);
+                        }
                         break;
 
                       default:

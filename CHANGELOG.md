@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ## [UNRELEASED]
 ### Fixed
+- Regex with placeholder, not working? #798
+- Visualize regular expressions #1040
 - Mobile phone code update needed for Malaysia #1571
 - suffix bug (regression) #1558
 - 29 february of non leap-year #1567
