@@ -2,10 +2,14 @@
 All notable changes to this project will be documented in this file.
 
 ## [UNRELEASED]
+### added
+- noValuePatching option #1276
+
 ### Updates
 - alternator syntax update - regex like alternations is now supported (aa|99|AA) ~ aa or 99 or AA
 
 ### Fixed
+- integer backspace bug when set maxLength attr. #1546
 - Regex with placeholder, not working? #798
 - Visualize regular expressions #1040
 - Mobile phone code update needed for Malaysia #1571

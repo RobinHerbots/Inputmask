@@ -1017,6 +1017,10 @@ Inputmask("(99 99 999999)|(i{+})", {
 Return nothing when the user hasn't entered anything.
 Default: true
 
+### noValuePatching
+Disable value property patching  
+Default: false
+
 ### positionCaretOnClick
 Positioning of the caret on click.  Options none, lvp (based on the last valid position (default), radixFocus (position caret to radixpoint on initial click)
 Default: "lvp"

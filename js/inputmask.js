@@ -113,7 +113,7 @@
 			jitMasking: false, //just in time masking ~ only mask while typing, can n (number), true or false
 			nullable: true, //return nothing instead of the buffertemplate when the user hasn't entered anything.
 			inputEventOnly: false, //dev option - testing inputfallback behavior
-			noValuePatching: false, //dev option - disable value property patching
+			noValuePatching: false, //disable value property patching
 			positionCaretOnClick: "lvp", //none, lvp (based on the last valid position (default), radixFocus (position caret to radixpoint on initial click)
 			casing: null, //mask-level casing. Options: null, "upper", "lower" or "title"
 			inputmode: "verbatim", //specify the inputmode  - already in place for when browsers will support it
