@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.6-4
+* Version: 3.3.6-10
 */
 
 !function(factory) {
@@ -397,7 +397,7 @@
                 if ($.isFunction(opts.preValidation) && !strict && !0 !== fromSetValid && (result = opts.preValidation(getBuffer(), maskPos, c, isSelection(pos), opts)), 
                 !0 === result) {
                     if (fillMissingNonMask(maskPos), isSelection(pos) && (handleRemove(undefined, Inputmask.keyCode.DELETE, pos), 
-                    maskPos = getMaskSet().p), maskPos < getMaskSet().maskLength && (result = _isValid(maskPos, c, strict), 
+                    maskPos = getMaskSet().p), maskPos < getMaskSet().maskLength && (maxLength === undefined || maskPos < maxLength) && (result = _isValid(maskPos, c, strict), 
                     (!strict || !0 === fromSetValid) && !1 === result)) {
                         var currentPosValid = getMaskSet().validPositions[maskPos];
                         if (!currentPosValid || null !== currentPosValid.match.fn || currentPosValid.match.def !== c && c !== opts.skipOptionalPartCharacter) {
@@ -1542,9 +1542,12 @@
                         break;
 
                       case opts.alternatormarker:
-                        if (openenings.length > 0 ? (currentOpeningToken = openenings[openenings.length - 1], 
-                        lastMatch = currentOpeningToken.openGroup ? openenings.pop() : currentOpeningToken.matches.pop()) : lastMatch = currentToken.matches.pop(), 
-                        lastMatch.isAlternator) openenings.push(lastMatch); else if (lastMatch.alternatorGroup ? (alternator = openenings.pop(), 
+                        if (openenings.length > 0) {
+                            currentOpeningToken = openenings[openenings.length - 1];
+                            var subToken = currentOpeningToken.matches[currentOpeningToken.matches.length - 1];
+                            lastMatch = currentOpeningToken.openGroup && (subToken.matches === undefined || !1 === subToken.isGroup && !1 === subToken.isAlternator) ? openenings.pop() : currentOpeningToken.matches.pop();
+                        } else lastMatch = currentToken.matches.pop();
+                        if (lastMatch.isAlternator) openenings.push(lastMatch); else if (lastMatch.alternatorGroup ? (alternator = openenings.pop(), 
                         lastMatch.alternatorGroup = !1) : alternator = new MaskToken(!1, !1, !1, !0), alternator.matches.push(lastMatch), 
                         openenings.push(alternator), lastMatch.openGroup) {
                             lastMatch.openGroup = !1;

@@ -276,9 +276,12 @@ $(document).ready(function(){
 ```
 
 ### Alternator masks
-The alternator syntax is like an **OR** statement.  The mask can be one of the 2 choices specified in the alternator.
+The alternator syntax is like an **OR** statement.  The mask can be one of the 3 choices specified in the alternator.
 
-To define an alternator use the |.<br>ex: "a|9" => a or 9<br>    "(aaa)|(999)" => aaa or 999
+To define an alternator use the |.  
+ex: "a|9" => a or 9  
+"(aaa)|(999)" => aaa or 999  
+"(aaa|999|9AA)" => aaa or 999 or 9AA
 
 Also make sure to read about the keepStatic option.
 

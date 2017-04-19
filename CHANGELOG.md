@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 
 ## [UNRELEASED]
+### Updates
+- alternator syntax update - regex like alternations is now supported (aa|99|AA) ~ aa or 99 or AA
+
 ### Fixed
 - Regex with placeholder, not working? #798
 - Visualize regular expressions #1040

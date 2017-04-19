@@ -573,7 +573,9 @@
 					case opts.alternatormarker:
 						if (openenings.length > 0) {
 							currentOpeningToken = openenings[openenings.length - 1];
-							if (currentOpeningToken.openGroup) { //regexp alt syntax
+							var subToken = currentOpeningToken.matches[currentOpeningToken.matches.length - 1];
+							if (currentOpeningToken.openGroup && //regexp alt syntax
+								(subToken.matches === undefined || (subToken.isGroup === false && subToken.isAlternator === false))) { //alternations within group
 								lastMatch = openenings.pop();
 							} else
 								lastMatch = currentOpeningToken.matches.pop();
@@ -1706,7 +1708,7 @@
 					maskPos = getMaskSet().p;
 				}
 
-				if (maskPos < getMaskSet().maskLength) {
+				if (maskPos < getMaskSet().maskLength && (maxLength === undefined || maskPos < maxLength)) {
 					result = _isValid(maskPos, c, strict);
 					if ((!strict || fromSetValid === true) && result === false) {
 						var currentPosValid = getMaskSet().validPositions[maskPos];
