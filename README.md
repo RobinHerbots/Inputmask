@@ -57,7 +57,6 @@ For individual extensions. (with jQuery as dependencylib)
 ```html
 <script src="jquery.js"></script>
 <script src="dist/inputmask/inputmask.js"></script>
-<script src="dist/inputmask/inputmask.regex.extensions.js"></script>
 <script src="dist/inputmask/inputmask.extensions.js"></script>
 <script src="dist/inputmask/inputmask.numeric.extensions.js"></script>
 <script src="dist/inputmask/inputmask.date.extensions.js"></script>
@@ -72,7 +71,6 @@ For individual extensions. (with vanilla dependencylib)
 ```html
 <script src="dist/inputmask/dependencyLibs/inputmask.dependencyLib.js"></script>
 <script src="dist/inputmask/inputmask.js"></script>
-<script src="dist/inputmask/inputmask.regex.extensions.js"></script>
 <script src="dist/inputmask/inputmask.extensions.js"></script>
 <script src="dist/inputmask/inputmask.numeric.extensions.js"></script>
 <script src="dist/inputmask/inputmask.date.extensions.js"></script>
@@ -169,7 +167,7 @@ $(document).ready(function(){
 ```javascript
 $(document).ready(function(){
   $("#example1").inputmask("99-9999999");
-  $("#example2").inputmask("Regex");
+  $("#example2").inputmask();
 });
 ```
 
@@ -431,7 +429,7 @@ Inputmask.extendDefinitions({
   }
 });
 Inputmask.extendAliases({
-  'Regex': {
+  'numeric': {
     mask: "r",
     greedy: false,
     ...
@@ -977,7 +975,7 @@ Allows for tabbing through the different parts of the masked field.<br>Default: 
 With this call-in (hook) you can override the default implementation of the isComplete function.<br>Args => buffer, opts Return => true|false
 
 ```javascript
-$(selector).inputmask("Regex", {
+$(selector).inputmask({
   regex: "[0-9]*",
   isComplete: function(buffer, opts) {
     return new RegExp(opts.regex).test(buffer.join(''));
