@@ -1,13 +1,12 @@
 {
   "name": "inputmask",
-  "version": "3.3.6-10",
+  "version": "3.3.6-46",
   "main": [
 	  "./dist/inputmask/inputmask.js",
 	  "./dist/inputmask/inputmask.extensions.js",
 	  "./dist/inputmask/inputmask.date.extensions.js",
 	  "./dist/inputmask/inputmask.numeric.extensions.js",
 	  "./dist/inputmask/inputmask.phone.extensions.js",
-	  "./dist/inputmask/inputmask.regex.extensions.js",
 	  "./dist/inputmask/jquery.inputmask.js",
 	  "./dist/inputmask/global/document.js",
 	  "./dist/inputmask/global/window.js",

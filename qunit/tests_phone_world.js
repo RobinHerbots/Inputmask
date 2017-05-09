@@ -10,7 +10,6 @@ define([
 	"../dist/inputmask/phone-codes/phone-nl",
 	"../dist/inputmask/phone-codes/phone-ru",
 	"../dist/inputmask/phone-codes/phone-uk",
-	"../dist/inputmask/inputmask.regex.extensions",
 	"prototypeExtensions",
 	"simulator"
 ], function (qunit, $, Inputmask) {

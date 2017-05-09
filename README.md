@@ -1161,7 +1161,6 @@ When cloning a inputmask, the inputmask reactivates on the first event (mouseent
 # jquery.inputmask extensions
 ## [date & datetime extensions](README_date.md)
 ## [numeric extensions](README_numeric.md)
-## [regex extensions](README_regex.md)
 ## [phone extensions](README_phone.md)
 ## [other extensions](README_other.md)
 

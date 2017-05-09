@@ -112,6 +112,7 @@
 			greedy: false,
 			digits: "*", //number of fractionalDigits
 			digitsOptional: true,
+			enforceDigitsOnBlur: false,
 			radixPoint: ".",
 			positionCaretOnClick: "radixFocus",
 			groupSize: 3,
@@ -231,7 +232,7 @@
 				if (processValue !== "") {
 					processValue = processValue.split("");
 					//handle digits
-					if (!opts.digitsOptional && isFinite(opts.digits)) {
+					if ((!opts.digitsOptional || (opts.enforceDigitsOnBlur && currentResult.event === "blur")) && isFinite(opts.digits)) {
 						var radixPosition = $.inArray(opts.radixPoint, processValue);
 						var rpb = $.inArray(opts.radixPoint, maskedValue);
 						if (radixPosition === -1) {
@@ -239,7 +240,7 @@
 							radixPosition = processValue.length - 1;
 						}
 						for (var i = 1; i <= opts.digits; i++) {
-							if (!opts.digitsOptional && (processValue[radixPosition + i] === undefined || processValue[radixPosition + i] === opts.placeholder.charAt(0))) {
+							if ((!opts.digitsOptional || (opts.enforceDigitsOnBlur && currentResult.event === "blur")) && (processValue[radixPosition + i] === undefined || processValue[radixPosition + i] === opts.placeholder.charAt(0))) {
 								processValue[radixPosition + i] = currentResult.placeholder || opts.placeholder.charAt(0);
 							} else if (rpb !== -1 && maskedValue[rpb + i] !== undefined) {
 								processValue[radixPosition + i] = processValue[radixPosition + i] || maskedValue[rpb + i];

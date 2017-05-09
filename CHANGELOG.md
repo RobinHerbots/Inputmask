@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 - noValuePatching option #1276
 
 ### Updates
+- drop Regex alias => use the inputmask regex option instead
 - alternator syntax update - regex like alternations is now supported (aa|99|AA) ~ aa or 99 or AA
 
 ### Fixed
