@@ -2756,7 +2756,7 @@
 				}
 				,
 				submitEvent: function (e) { //trigger change on submit if any
-					if (undoValue !== undefined && undoValue !== getBuffer().join("")) {
+					if (undoValue !== getBuffer().join("")) {
 						$el.trigger("change");
 					}
 					if (opts.clearMaskOnLostFocus && getLastValidPosition() === -1 && el.inputmask._valueGet && el.inputmask._valueGet() === getBufferTemplate().join("")) {
@@ -3126,12 +3126,11 @@
 					EventRuler.on(el, "setvalue", EventHandlers.setValueEvent);
 
 					//apply mask
-					getBufferTemplate(); //initialize the buffer and getmasklength
+					undoValue = getBufferTemplate().join(""); //initialize the buffer and getmasklength
 					if (el.inputmask._valueGet(true) !== "" || opts.clearMaskOnLostFocus === false || document.activeElement === el) {
 						var initialValue = $.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask(el.inputmask._valueGet(true), opts) || el.inputmask._valueGet(true)) : el.inputmask._valueGet(true);
 						if (initialValue !== "") checkVal(el, true, false, isRTL ? initialValue.split("").reverse() : initialValue.split(""));
 						var buffer = getBuffer().slice();
-						undoValue = buffer.join("");
 						// Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
 						if (isComplete(buffer) === false) {
 							if (opts.clearIncomplete) {

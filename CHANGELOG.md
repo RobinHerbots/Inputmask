@@ -10,6 +10,9 @@ All notable changes to this project will be documented in this file.
 - alternator syntax update - regex like alternations is now supported (aa|99|AA) ~ aa or 99 or AA
 
 ### Fixed
+- variable "undoValue" isn't initialized correctly #1519
+- on submit change event is triggered #1392
+- Change Event Problems for Masked Input #1583
 - integer backspace bug when set maxLength attr. #1546
 - Regex with placeholder, not working? #798
 - Visualize regular expressions #1040
