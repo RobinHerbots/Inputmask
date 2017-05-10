@@ -365,7 +365,7 @@ define([
 
 		$("#testmask").Type("abc");
 
-		assert.equal(testmask.value, "A.B.C", "Result " + testmask.value);
+		assert.equal(testmask.value, "A.B.C.", "Result " + testmask.value);
 	});
 
 	qunit.test("{ mask: \"A\", placeholder: \"\", repeat: 16 }) - type testtest - glosswordteam", function (assert) {

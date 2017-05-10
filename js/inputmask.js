@@ -2113,8 +2113,8 @@
 				!isMask(rl, true) &&
 				(validPos = (lv !== undefined ? getTestTemplate(rl, lv.locator.slice(""), lv) : getTest(rl))) &&
 				validPos.match.optionality !== true &&
-				((validPos.match.optionalQuantifier !== true && validPos.match.newBlockMarker !== true) ||
-				(lv !== undefined ? getTestTemplate(rl + 1, lv.locator.slice(""), lv) : getTest(rl + 1)).match.def === "")) {
+				((validPos.match.optionalQuantifier !== true && validPos.match.newBlockMarker !== true) || (rl + 1 === bl &&
+				(lv !== undefined ? getTestTemplate(rl + 1, lv.locator.slice(""), lv) : getTest(rl + 1)).match.def === ""))) {
 					rl++;
 				}
 
