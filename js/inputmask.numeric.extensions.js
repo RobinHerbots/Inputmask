@@ -471,6 +471,8 @@
 					processValue = processValue.replace(new RegExp(opts.placeholder.charAt(0), "g"), "0");
 				if (opts.unmaskAsNumber) {
 					if (opts.radixPoint !== "" && processValue.indexOf(opts.radixPoint) !== -1) processValue = processValue.replace(Inputmask.escapeRegex.call(this, opts.radixPoint), ".");
+					processValue = processValue.replace(new RegExp("^" + Inputmask.escapeRegex(opts.negationSymbol.front)), "-");
+					processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.negationSymbol.back) + "$"), "");
 					return Number(processValue);
 				}
 				return processValue;
