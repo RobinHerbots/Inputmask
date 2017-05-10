@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - alternator syntax update - regex like alternations is now supported (aa|99|AA) ~ aa or 99 or AA
 
 ### Fixed
+- A dot (.) in Regex Causes Errors #647
 - variable "undoValue" isn't initialized correctly #1519
 - on submit change event is triggered #1392
 - Change Event Problems for Masked Input #1583
