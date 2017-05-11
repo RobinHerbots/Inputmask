@@ -415,4 +415,32 @@ define([
 		assert.equal(testmask.inputmask._valueGet(), "+_(___)___-__-__", "Result " + testmask.inputmask._valueGet());
 
 	});
+
+	qunit.test("(9{4} 9{4} 9{4} 9{4})|(9{4} 9{6} 9[5])|(9{9} 9{9}) - 1234123412341234 - necrosisoff ", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("(9{4} 9{4} 9{4} 9{4})|(9{4} 9{6} 9[5])|(9{9} 9{9})", {
+				"keepStatic": true
+			}
+		).mask(testmask);
+		testmask.focus();
+		$("#testmask").type("1234123412341234")
+		assert.equal(testmask.inputmask._valueGet(), "1234 1234 1234 1234", "Result " + testmask.inputmask._valueGet());
+
+	});
+
+	qunit.test("(9{4} 9{4} 9{4} 9{4})|(9{4} 9{6} 9[5])|(9{9} 9{9}) - 12341234123412341 - necrosisoff ", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("(9{4} 9{4} 9{4} 9{4})|(9{4} 9{6} 9[5])|(9{9} 9{9})", {
+				"keepStatic": true
+			}
+		).mask(testmask);
+		testmask.focus();
+		$("#testmask").type("12341234123412341")
+		assert.equal(testmask.inputmask._valueGet(), "123412341 23412341_", "Result " + testmask.inputmask._valueGet());
+
+	});
 });

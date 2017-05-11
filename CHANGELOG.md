@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [UNRELEASED]
+## [3.3.6 - 2017-05-11]
 ### added
 - noValuePatching option #1276
 
