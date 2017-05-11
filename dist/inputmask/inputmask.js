@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.6-52
+* Version: 3.3.6-53
 */
 
 !function(factory) {
@@ -1019,8 +1019,8 @@
                     !1 === isComplete(buffer) && (setTimeout(function() {
                         $input.trigger("incomplete");
                     }, 0), opts.clearIncomplete && (resetMaskSet(), buffer = opts.clearMaskOnLostFocus ? [] : getBufferTemplate().slice())), 
-                    writeBuffer(input, buffer, undefined, e)), undoValue !== getBuffer().join("") && ($input.trigger("change"), 
-                    undoValue = buffer.join(""));
+                    writeBuffer(input, buffer, undefined, e)), undoValue !== getBuffer().join("") && (undoValue = buffer.join(""), 
+                    $input.trigger("change"));
                 }
             },
             mouseenterEvent: function(e) {

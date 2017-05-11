@@ -2740,8 +2740,8 @@
 						}
 
 						if (undoValue !== getBuffer().join("")) {
-								$input.trigger("change");
-								undoValue = buffer.join("");
+							undoValue = buffer.join("");
+							$input.trigger("change");
 						}
 					}
 				},
