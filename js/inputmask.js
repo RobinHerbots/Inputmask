@@ -1004,7 +1004,7 @@
 								var tpAlternation = getMaskSet().tests[pos][0].locator;
 								for (var i = 0; i < targetAlternation; i++) {
 									if (vpAlternation[i] !== tpAlternation[i]) {
-										return vpAlternation[targetAlternation];
+										return vpAlternation.slice(targetAlternation + 1);
 									}
 								}
 							}
