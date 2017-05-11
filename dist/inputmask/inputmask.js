@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.6-51
+* Version: 3.3.6-52
 */
 
 !function(factory) {
@@ -1015,13 +1015,12 @@
                 var $input = $(this), input = this;
                 if (input.inputmask) {
                     var nptValue = input.inputmask._valueGet(), buffer = getBuffer().slice();
-                    undoValue !== buffer.join("") && setTimeout(function() {
-                        $input.trigger("change"), undoValue = buffer.join("");
-                    }, 0), "" !== nptValue && (opts.clearMaskOnLostFocus && (-1 === getLastValidPosition() && nptValue === getBufferTemplate().join("") ? buffer = [] : clearOptionalTail(buffer)), 
+                    "" !== nptValue && (opts.clearMaskOnLostFocus && (-1 === getLastValidPosition() && nptValue === getBufferTemplate().join("") ? buffer = [] : clearOptionalTail(buffer)), 
                     !1 === isComplete(buffer) && (setTimeout(function() {
                         $input.trigger("incomplete");
                     }, 0), opts.clearIncomplete && (resetMaskSet(), buffer = opts.clearMaskOnLostFocus ? [] : getBufferTemplate().slice())), 
-                    writeBuffer(input, buffer, undefined, e));
+                    writeBuffer(input, buffer, undefined, e)), undoValue !== getBuffer().join("") && ($input.trigger("change"), 
+                    undoValue = buffer.join(""));
                 }
             },
             mouseenterEvent: function(e) {

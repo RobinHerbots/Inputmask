@@ -2713,12 +2713,7 @@
 					if (input.inputmask) {
 						var nptValue = input.inputmask._valueGet(),
 							buffer = getBuffer().slice();
-						if (undoValue !== buffer.join("")) {
-							setTimeout(function () { //change event should be triggered after the other buffer manipulations on blur
-								$input.trigger("change");
-								undoValue = buffer.join("");
-							}, 0);
-						}
+
 						if (nptValue !== "") {
 							if (opts.clearMaskOnLostFocus) {
 								if (getLastValidPosition() === -1 && nptValue === getBufferTemplate().join("")) {
@@ -2742,6 +2737,11 @@
 							}
 
 							writeBuffer(input, buffer, undefined, e);
+						}
+
+						if (undoValue !== getBuffer().join("")) {
+								$input.trigger("change");
+								undoValue = buffer.join("");
 						}
 					}
 				},
