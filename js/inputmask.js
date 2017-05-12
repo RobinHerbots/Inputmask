@@ -1935,7 +1935,7 @@
 					}
 				}
 				$.each(inputValue, function (ndx, charCode) {
-					console.log(charCode);
+					// console.log(charCode);
 					if (charCode !== undefined) { //inputfallback strips some elements out of the inputarray.  $.each logically presents them as undefined
 						var keypress = new $.Event("_checkval");
 						keypress.which = charCode.charCodeAt(0);

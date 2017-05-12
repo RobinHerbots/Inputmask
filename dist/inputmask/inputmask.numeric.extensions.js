@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.7-5
+* Version: 3.3.7-6
 */
 
 !function(factory) {
@@ -137,7 +137,7 @@
                     buffer: processValue,
                     refreshFromBuffer: currentResult.dopost || buffer.join("") !== processValue.join("")
                 };
-                return console.log(JSON.stringify(rslt)), rslt.refreshFromBuffer ? rslt : currentResult;
+                return rslt.refreshFromBuffer ? rslt : currentResult;
             },
             onBeforeWrite: function(e, buffer, caretPos, opts) {
                 if (e) switch (e.type) {

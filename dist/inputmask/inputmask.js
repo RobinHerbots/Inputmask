@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.7-5
+* Version: 3.3.7-6
 */
 
 !function(factory) {
@@ -566,7 +566,7 @@
                 initialNdx = seekNext(initialNdx));
             } else initialNdx = seekNext(initialNdx);
             if ($.each(inputValue, function(ndx, charCode) {
-                if (console.log(charCode), charCode !== undefined) {
+                if (charCode !== undefined) {
                     var keypress = new $.Event("_checkval");
                     keypress.which = charCode.charCodeAt(0), charCodes += charCode;
                     var lvp = getLastValidPosition(undefined, !0), lvTest = getMaskSet().validPositions[lvp], nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : undefined, lvp);
