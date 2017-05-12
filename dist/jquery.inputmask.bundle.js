@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.7-1
+* Version: 3.3.7-5
 */
 
 !function(factory) {
@@ -309,6 +309,13 @@
                   case "title":
                     var posBefore = getMaskSet().validPositions[pos - 1];
                     elem = 0 === pos || posBefore && posBefore.input === String.fromCharCode(Inputmask.keyCode.SPACE) ? elem.toUpperCase() : elem.toLowerCase();
+                    break;
+
+                  default:
+                    if ($.isFunction(opts.casing)) {
+                        var args = arguments.push(getMaskSet().validPositions);
+                        elem = opts.casing.apply(this, args);
+                    }
                 }
                 return elem;
             }
@@ -558,7 +565,7 @@
                     initialNdx = seekNext(initialNdx));
                 } else initialNdx = seekNext(initialNdx);
                 if ($.each(inputValue, function(ndx, charCode) {
-                    if (charCode !== undefined) {
+                    if (console.log(charCode), charCode !== undefined) {
                         var keypress = new $.Event("_checkval");
                         keypress.which = charCode.charCodeAt(0), charCodes += charCode;
                         var lvp = getLastValidPosition(undefined, !0), lvTest = getMaskSet().validPositions[lvp], nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : undefined, lvp);
@@ -2367,7 +2374,7 @@
                         buffer: processValue,
                         refreshFromBuffer: currentResult.dopost || buffer.join("") !== processValue.join("")
                     };
-                    return rslt.refreshFromBuffer ? rslt : currentResult;
+                    return console.log(JSON.stringify(rslt)), rslt.refreshFromBuffer ? rslt : currentResult;
                 },
                 onBeforeWrite: function(e, buffer, caretPos, opts) {
                     if (e) switch (e.type) {

@@ -115,7 +115,7 @@
 				inputEventOnly: false, //dev option - testing inputfallback behavior
 				noValuePatching: false, //disable value property patching
 				positionCaretOnClick: "lvp", //none, lvp (based on the last valid position (default), radixFocus (position caret to radixpoint on initial click)
-				casing: null, //mask-level casing. Options: null, "upper", "lower" or "title"
+				casing: null, //mask-level casing. Options: null, "upper", "lower" or "title" or callback args => elem, test, pos, validPositions return charValue
 				inputmode: "verbatim", //specify the inputmode  - already in place for when browsers will support it
 				colorMask: false, //enable css styleable mask
 				androidHack: false //see README_android.md
@@ -1378,6 +1378,11 @@
 							elem = elem.toLowerCase();
 						}
 						break;
+					default:
+						if($.isFunction(opts.casing)){
+							var args = arguments.push(getMaskSet().validPositions);
+							elem = opts.casing.apply(this, args);
+						}
 				}
 
 				return elem;
@@ -1930,6 +1935,7 @@
 					}
 				}
 				$.each(inputValue, function (ndx, charCode) {
+					console.log(charCode);
 					if (charCode !== undefined) { //inputfallback strips some elements out of the inputarray.  $.each logically presents them as undefined
 						var keypress = new $.Event("_checkval");
 						keypress.which = charCode.charCodeAt(0);

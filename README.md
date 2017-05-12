@@ -1025,7 +1025,15 @@ Default: "lvp"
 
 ### casing
 Apply casing at the mask-level.
-Options: null, "upper", "lower" or "title"
+Options: null, "upper", "lower" or "title"   
+or callback args => elem, test, pos, validPositions return charValue
+
+```
+casing: function(elem, test, pos, validPositions) {
+	do some processing || upper/lower input property in the validPositions
+	return elem; //upper/lower element
+}
+```
 Default: null
 
 ### inputmode

@@ -302,7 +302,7 @@
 					refreshFromBuffer: currentResult.dopost || buffer.join("") !== processValue.join("")
 				};
 
-				// console.log(JSON.stringify(rslt));
+				console.log(JSON.stringify(rslt));
 				return rslt.refreshFromBuffer ? rslt : currentResult;
 			},
 			onBeforeWrite: function (e, buffer, caretPos, opts) {
