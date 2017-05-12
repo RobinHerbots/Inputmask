@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.7-0
+* Version: 3.3.7-1
 */
 
 !function(factory) {
@@ -2328,7 +2328,7 @@
                     processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.negationSymbol.back) + "$"), ""), 
                     isNaN(opts.placeholder) && (processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.placeholder), "g"), "")), 
                     processValue.length > 1 && 1 !== processValue.indexOf(opts.radixPoint) && ("0" == charAtPos && (processValue = processValue.replace(/^\?/g, "")), 
-                    processValue = processValue.replace(/^0/g, "")), processValue.charAt(0) === opts.radixPoint && !0 !== opts.numericInput && (processValue = "0" + processValue), 
+                    processValue = processValue.replace(/^0/g, "")), processValue.charAt(0) === opts.radixPoint && "" !== opts.radixPoint && !0 !== opts.numericInput && (processValue = "0" + processValue), 
                     "" !== processValue) {
                         if (processValue = processValue.split(""), (!opts.digitsOptional || opts.enforceDigitsOnBlur && "blur" === currentResult.event) && isFinite(opts.digits)) {
                             var radixPosition = $.inArray(opts.radixPoint, processValue), rpb = $.inArray(opts.radixPoint, maskedValue);

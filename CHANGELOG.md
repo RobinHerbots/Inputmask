@@ -1,6 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [UNRELEASED]
+### added
+
+### Updates
+
+### Fixed
+- Force numeric to empty (on blur) with '0' as value #215
+- ndxInitializer.shift is not a function
+
 ## [3.3.6 - 2017-05-11]
 ### added
 - noValuePatching option #1276

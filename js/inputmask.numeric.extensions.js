@@ -225,7 +225,7 @@
 					processValue = processValue.replace(/^0/g, "");
 				}
 
-				if (processValue.charAt(0) === opts.radixPoint && opts.numericInput !== true) {
+				if (processValue.charAt(0) === opts.radixPoint && opts.radixPoint !== "" && opts.numericInput !== true) {
 					processValue = "0" + processValue;
 				}
 
