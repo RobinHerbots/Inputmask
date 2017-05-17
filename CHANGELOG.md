@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 - allow custom operation in casing option by callback #1565
 
 ### Updates
+- fix undoValue initialization 
 
 ### Fixed
 - Force numeric to empty (on blur) with '0' as value #215

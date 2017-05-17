@@ -1264,7 +1264,9 @@
 						if (tests.length > 1 + (tests[tests.length - 1].match.def === "" ? 1 : 0)) {
 							if (tests[0].match.optionality !== true &&
 								tests[0].match.optionalQuantifier !== true &&
-								tests[0].match.fn === null && !/[0-9a-bA-Z]/.test(tests[0].match.def)) {
+								tests[0].match.fn === null && !/[0-9a-bA-Z]/.test(tests[0].match.def) &&
+									(true || getMaskSet().validPositions[pos - 1] === undefined ||
+									getMaskSet().validPositions[pos - 1].alternation === tests[0].alternation)) {
 								return [determineTestTemplate(tests)];
 							}
 						}
@@ -1379,7 +1381,7 @@
 						}
 						break;
 					default:
-						if($.isFunction(opts.casing)){
+						if ($.isFunction(opts.casing)) {
 							var args = arguments.push(getMaskSet().validPositions);
 							elem = opts.casing.apply(this, args);
 						}
@@ -3137,6 +3139,7 @@
 						var initialValue = $.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask(el.inputmask._valueGet(true), opts) || el.inputmask._valueGet(true)) : el.inputmask._valueGet(true);
 						if (initialValue !== "") checkVal(el, true, false, isRTL ? initialValue.split("").reverse() : initialValue.split(""));
 						var buffer = getBuffer().slice();
+						undoValue = buffer.join("");
 						// Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
 						if (isComplete(buffer) === false) {
 							if (opts.clearIncomplete) {
