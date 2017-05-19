@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.7-10
+* Version: 3.3.7-12
 */
 
 !function(factory) {
@@ -247,7 +247,12 @@
                 }
             }
             function filterTests(tests) {
-                return opts.keepStatic && pos > 0 && tests.length > 1 + ("" === tests[tests.length - 1].match.def ? 1 : 0) && !0 !== tests[0].match.optionality && !0 !== tests[0].match.optionalQuantifier && null === tests[0].match.fn && !/[0-9a-bA-Z]/.test(tests[0].match.def) ? [ determineTestTemplate(tests) ] : tests;
+                if (opts.keepStatic && pos > 0 && tests.length > 1 + ("" === tests[tests.length - 1].match.def ? 1 : 0) && !0 !== tests[0].match.optionality && !0 !== tests[0].match.optionalQuantifier && null === tests[0].match.fn && !/[0-9a-bA-Z]/.test(tests[0].match.def)) {
+                    if (getMaskSet().validPositions[pos - 1] === undefined) return [ determineTestTemplate(tests) ];
+                    if (getMaskSet().validPositions[pos - 1].alternation === tests[0].alternation) return [ determineTestTemplate(tests) ];
+                    if (getMaskSet().validPositions[pos - 1]) return [ determineTestTemplate(tests) ];
+                }
+                return tests;
             }
             var latestMatch, maskTokens = getMaskSet().maskToken, testPos = ndxIntlzr ? tstPs : 0, ndxInitializer = ndxIntlzr ? ndxIntlzr.slice() : [ 0 ], matches = [], insertStop = !1, cacheDependency = ndxIntlzr ? ndxIntlzr.join("") : "";
             if (pos > -1) {
@@ -497,7 +502,7 @@
                 }
                 result = !0 === postResult ? result : postResult;
             }
-            return result.pos === undefined && (result.pos = maskPos), !1 === result && (resetMaskSet(!0), 
+            return result && result.pos === undefined && (result.pos = maskPos), !1 === result && (resetMaskSet(!0), 
             getMaskSet().validPositions = $.extend(!0, {}, positionsClone)), result;
         }
         function isMask(pos, strict) {
@@ -921,8 +926,10 @@
                     }
                     if (caretPos.begin > inputValue.length && (caret(input, inputValue.length), caretPos = caret(input)), 
                     getBuffer().length - inputValue.length != 1 || inputValue.charAt(caretPos.begin) === getBuffer()[caretPos.begin] || inputValue.charAt(caretPos.begin + 1) === getBuffer()[caretPos.begin] || isMask(caretPos.begin)) {
-                        var stickyParts = [], bufferTemplate = getMaskTemplate(!0, 1).join("");
-                        for (stickyParts.push(inputValue.substr(0, caretPos.begin)), stickyParts.push(inputValue.substr(caretPos.begin)); null === inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$"); ) bufferTemplate = bufferTemplate.slice(1);
+                        var stickyParts = [], stickyParts2 = [], buffer = getBuffer().join(""), bufferTemplate = getMaskTemplate(!0, 1).join("");
+                        for (stickyParts.push(inputValue.substr(0, caretPos.begin)), stickyParts.push(inputValue.substr(caretPos.begin)), 
+                        stickyParts2.push(buffer.substr(0, caretPos.begin)), stickyParts2.push(buffer.substr(caretPos.begin)), 
+                        console.log(stickyParts[0] + " , " + stickyParts[1] + " vs " + stickyParts2[0] + " , " + stickyParts2[1]); null === inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$"); ) bufferTemplate = bufferTemplate.slice(1);
                         inputValue = inputValue.replace(bufferTemplate, ""), $.isFunction(opts.onBeforeMask) && (inputValue = opts.onBeforeMask(inputValue, opts) || inputValue), 
                         checkVal(input, !0, !1, inputValue.split(""), e);
                         var currentPos = caret(input).begin, currentValue = input.inputmask._valueGet(), pos1 = currentValue.indexOf(stickyParts[0]);

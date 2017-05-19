@@ -1264,10 +1264,14 @@
 						if (tests.length > 1 + (tests[tests.length - 1].match.def === "" ? 1 : 0)) {
 							if (tests[0].match.optionality !== true &&
 								tests[0].match.optionalQuantifier !== true &&
-								tests[0].match.fn === null && !/[0-9a-bA-Z]/.test(tests[0].match.def) &&
-									(true || getMaskSet().validPositions[pos - 1] === undefined ||
-									getMaskSet().validPositions[pos - 1].alternation === tests[0].alternation)) {
-								return [determineTestTemplate(tests)];
+								tests[0].match.fn === null && !/[0-9a-bA-Z]/.test(tests[0].match.def)) {
+								if (getMaskSet().validPositions[pos - 1] === undefined)
+									return [determineTestTemplate(tests)];
+								else if (getMaskSet().validPositions[pos - 1].alternation === tests[0].alternation) {
+									return [determineTestTemplate(tests)];
+								} else if (getMaskSet().validPositions[pos - 1]) {
+									return [determineTestTemplate(tests)];
+								}
 							}
 						}
 					}
@@ -1318,7 +1322,7 @@
 					return filterTests($.extend(true, [], matches));
 				}
 				getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
-				// console.log(pos + " - " + JSON.stringify(matches));
+// console.log(pos + " - " + JSON.stringify(matches));
 				return filterTests(getMaskSet().tests[pos]);
 			}
 
@@ -1792,7 +1796,7 @@
 					result = postResult === true ? result : postResult;
 				}
 
-				if (result.pos === undefined) {
+				if (result && result.pos === undefined) {
 					result.pos = maskPos;
 				}
 
@@ -2533,10 +2537,13 @@
 							e.keyCode = Inputmask.keyCode.BACKSPACE;
 							EventHandlers.keydownEvent.call(input, e);
 						} else {
-							var stickyParts = [], bufferTemplate = getMaskTemplate(true, 1).join("");
+							var stickyParts = [], stickyParts2 = [], buffer = getBuffer().join(""),
+								bufferTemplate = getMaskTemplate(true, 1).join("");
 							stickyParts.push(inputValue.substr(0, caretPos.begin));
 							stickyParts.push(inputValue.substr(caretPos.begin));
-							// console.log(stickyParts[0] + " , " + stickyParts[1]);
+							stickyParts2.push(buffer.substr(0, caretPos.begin));
+							stickyParts2.push(buffer.substr(caretPos.begin));
+							console.log(stickyParts[0] + " , " + stickyParts[1] + " vs " + stickyParts2[0] + " , " + stickyParts2[1]);
 							while (inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$") === null) {
 								bufferTemplate = bufferTemplate.slice(1);
 							}
