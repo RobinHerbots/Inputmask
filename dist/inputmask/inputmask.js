@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.7-12
+* Version: 3.3.7-13
 */
 
 !function(factory) {
@@ -319,8 +319,8 @@
 
               default:
                 if ($.isFunction(opts.casing)) {
-                    var args = arguments.push(getMaskSet().validPositions);
-                    elem = opts.casing.apply(this, args);
+                    var args = Array.prototype.slice.call(arguments);
+                    args.push(getMaskSet().validPositions), elem = opts.casing.apply(this, args);
                 }
             }
             return elem;

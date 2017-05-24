@@ -7,3 +7,5 @@ bower_components/
 npm-debug.log
 .idea/
 *.iml
+qunit/qunit.js
+qunit/qunit.js.map

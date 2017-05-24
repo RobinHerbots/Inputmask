@@ -1386,7 +1386,8 @@
 						break;
 					default:
 						if ($.isFunction(opts.casing)) {
-							var args = arguments.push(getMaskSet().validPositions);
+							var args = Array.prototype.slice.call(arguments);
+							args.push(getMaskSet().validPositions);
 							elem = opts.casing.apply(this, args);
 						}
 				}
