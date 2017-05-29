@@ -1,13 +1,4 @@
-define([
-	"qunit",
-	"../dist/inputmask/dependencyLibs/inputmask.dependencyLib",
-	"../dist/inputmask/inputmask.date.extensions",
-	"../dist/inputmask/inputmask.extensions",
-	"../dist/inputmask/inputmask.numeric.extensions",
-	"../dist/inputmask/inputmask.phone.extensions",
-	"prototypeExtensions",
-	"simulator"
-], function(qunit, $, Inputmask) {
+export default function(qunit, $, Inputmask) {
 	qunit.module("Value formatting");
 	qunit.test("Inputmask.format(\"2331973\", { alias: \"date\"})", function(assert) {
 		var formattedValue = Inputmask.format("2331973", {
@@ -234,4 +225,4 @@ define([
 	});
 
 
-});
+};

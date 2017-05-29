@@ -1,11 +1,4 @@
-define([
-	"qunit",
-	"../dist/inputmask/dependencyLibs/inputmask.dependencyLib",
-	"../dist/inputmask/inputmask.date.extensions",
-	"../dist/inputmask/inputmask.extensions",
-	"prototypeExtensions",
-	"simulator"
-], function(qunit, $, Inputmask) {
+export default function(qunit, $, Inputmask) {
 	qunit.module("Date.Extensions");
 	qunit.test("inputmask(\"dd/mm/yyyy\") - input 2331973", function(assert) {
 		var $fixture = $("#qunit-fixture");
@@ -388,4 +381,4 @@ define([
 			$("#testmask").Type("23312");
 			assert.equal(testmask.value, "23/03/2012", "Result " + testmask.value);
 	});
-});
+};

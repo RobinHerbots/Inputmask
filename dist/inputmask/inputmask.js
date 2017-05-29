@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.7-13
+* Version: 3.3.7-17
 */
 
 !function(factory) {
@@ -580,7 +580,7 @@
                         result = EventHandlers.keypressEvent.call(input, keypress, !0, !1, strict, pos), 
                         initialNdx = pos + 1, charCodes = "";
                     } else result = EventHandlers.keypressEvent.call(input, keypress, !0, !1, !0, lvp + 1);
-                    if (!strict && $.isFunction(opts.onBeforeWrite)) {
+                    if (!1 !== result && !strict && $.isFunction(opts.onBeforeWrite)) {
                         var fp = result.forwardPosition;
                         if (result = opts.onBeforeWrite(keypress, getBuffer(), result.forwardPosition, opts), 
                         result.forwardPosition = fp, result && result.refreshFromBuffer) {
@@ -736,7 +736,6 @@
                 colorMask.style.Appearance = "textfield";
             }
             var offset = $(input).position(), computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
-            input.parentNode;
             colorMask = document.createElement("div"), document.body.appendChild(colorMask);
             for (var style in computedStyle) computedStyle.hasOwnProperty(style) && isNaN(style) && "cssText" !== style && -1 == style.indexOf("webkit") && (colorMask.style[style] = computedStyle[style]);
             input.style.backgroundColor = "transparent", input.style.color = "transparent", 
@@ -880,7 +879,7 @@
                             !0 === isComplete(buffer) && $input.trigger("complete");
                         }, 0);
                     }
-                    if (e.preventDefault(), checkval) return valResult.forwardPosition = forwardPosition, 
+                    if (e.preventDefault(), checkval) return !1 !== valResult && (valResult.forwardPosition = forwardPosition), 
                     valResult;
                 }
             },
@@ -928,8 +927,7 @@
                     getBuffer().length - inputValue.length != 1 || inputValue.charAt(caretPos.begin) === getBuffer()[caretPos.begin] || inputValue.charAt(caretPos.begin + 1) === getBuffer()[caretPos.begin] || isMask(caretPos.begin)) {
                         var stickyParts = [], stickyParts2 = [], buffer = getBuffer().join(""), bufferTemplate = getMaskTemplate(!0, 1).join("");
                         for (stickyParts.push(inputValue.substr(0, caretPos.begin)), stickyParts.push(inputValue.substr(caretPos.begin)), 
-                        stickyParts2.push(buffer.substr(0, caretPos.begin)), stickyParts2.push(buffer.substr(caretPos.begin)), 
-                        console.log(stickyParts[0] + " , " + stickyParts[1] + " vs " + stickyParts2[0] + " , " + stickyParts2[1]); null === inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$"); ) bufferTemplate = bufferTemplate.slice(1);
+                        stickyParts2.push(buffer.substr(0, caretPos.begin)), stickyParts2.push(buffer.substr(caretPos.begin)); null === inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$"); ) bufferTemplate = bufferTemplate.slice(1);
                         inputValue = inputValue.replace(bufferTemplate, ""), $.isFunction(opts.onBeforeMask) && (inputValue = opts.onBeforeMask(inputValue, opts) || inputValue), 
                         checkVal(input, !0, !1, inputValue.split(""), e);
                         var currentPos = caret(input).begin, currentValue = input.inputmask._valueGet(), pos1 = currentValue.indexOf(stickyParts[0]);

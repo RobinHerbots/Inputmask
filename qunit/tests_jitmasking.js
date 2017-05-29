@@ -1,10 +1,4 @@
-define([
-	"qunit",
-	"../dist/inputmask/dependencyLibs/inputmask.dependencyLib",
-	"../dist/inputmask/inputmask.extensions",
-	"prototypeExtensions",
-	"simulator"
-], function (qunit, $, Inputmask) {
+export default function (qunit, $, Inputmask) {
 	qunit.module("JIT Masking");
 
 	qunit.test("'(.999){*}', { jitMasking: true, numericInput: true   }", function (assert) {
@@ -16,4 +10,4 @@ define([
 		$("#testmask").Type("123456");
 		assert.equal($(testmask).val(), "123.456", "Result " + $(testmask).val());
 	});
-});
+};

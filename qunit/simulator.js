@@ -1,12 +1,4 @@
-(function (factory) {
-	if (typeof define === "function" && define.amd) {
-		define(["../dist/inputmask/dependencyLibs/inputmask.dependencyLib",
-			"../dist/inputmask/inputmask"], factory);
-	} else {
-		factory(window.dependencyLib || jQuery, window.Inputmask);
-	}
-}
-(function ($, Inputmask) {
+export default function ($, Inputmask) {
 	$.caret = function (input, begin, end) {
 		input = input.nodeName ? input : input[0];
 		var range;
@@ -67,7 +59,7 @@
 	$.fn.SendKey = function (keyCode, modifier) {
 		function trigger(elem, evnt) {
 			elem.focus();
-			if ($ === jQuery) {
+			if ($ === window.jQuery) {
 				$(elem).trigger(evnt);
 			} else {
 				if (document.createEvent) {
@@ -187,4 +179,4 @@
 			$.caret(input, caretBegin, caretEnd);
 		$(input).trigger("input");
 	}
-}));
+};

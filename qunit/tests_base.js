@@ -1,10 +1,4 @@
-define([
-	"qunit",
-	"../dist/inputmask/dependencyLibs/inputmask.dependencyLib",
-	"../dist/inputmask/inputmask.extensions",
-	"prototypeExtensions",
-	"simulator"
-], function (qunit, $, Inputmask) {
+export default function (qunit, $, Inputmask) {
 	qunit.module("Simple masking");
 
 	qunit.test("inputmask(\"99-99-99\", { clearMaskOnLostFocus: false}", function (assert) {
@@ -572,4 +566,4 @@ define([
 
 		assert.equal(document.getElementById("testmask").inputmask._valueGet(), "___BA__V__", "Result " + document.getElementById("testmask").inputmask._valueGet());
 	});
-});
+};

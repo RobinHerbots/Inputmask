@@ -7,12 +7,13 @@
 <body>
 <input id="test1" name="test1"/>
 <br/>
-<script type="text/javascript" src="build/bundle.js" charset="utf-8"></script>
+<script type="text/javascript" src="node_modules/jquery/dist/jquery.js" charset="utf-8"></script>
+<script type="text/javascript" src="dist/jquery.inputmask.bundle.js" charset="utf-8"></script>
 <script>
 	console.log(navigator.userAgent);
-	Inputmask("currency", {
+	$("#test1").inputmask("currency", {
 	    colorMask: true
-	}).mask("test1");
+	});
 </script>
 </body>
 </html>

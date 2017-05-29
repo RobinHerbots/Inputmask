@@ -7,25 +7,17 @@ module.exports = function (config) {
 		// base path that will be used to resolve all patterns (eg. files, exclude)
 		basePath: '',
 
-
 		// frameworks to use
 		// available frameworks: https://npmjs.org/browse/keyword/karma-adapter
 		frameworks: ['qunit'],
-
-
 		// list of files / patterns to load in the browser
 		files: [
-			'node_modules/jquery/dist/jquery.js',
-			//'js/**/*.js',
-			'dist/jquery.inputmask.bundle.js',
-			'qunit/prototypeExtensions.js',
-			'qunit/simulator.js',
-			'qunit/tests_*.js'
+            'qunit/qunit.js'
 		],
 
-
 		// list of files to exclude
-		exclude: [],
+		exclude: [
+        ],
 
 
 		// preprocess matching files before serving them to the browser
@@ -45,7 +37,6 @@ module.exports = function (config) {
 
 		// enable / disable colors in the output (reporters and logs)
 		colors: true,
-
 
 		// level of logging
 		// possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG

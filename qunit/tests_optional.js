@@ -1,13 +1,4 @@
-define([
-	"qunit",
-	"../dist/inputmask/dependencyLibs/inputmask.dependencyLib",
-	"../dist/inputmask/inputmask.date.extensions",
-	"../dist/inputmask/inputmask.extensions",
-	"../dist/inputmask/inputmask.numeric.extensions",
-	"../dist/inputmask/inputmask.phone.extensions",
-	"prototypeExtensions",
-	"simulator"
-], function (qunit, $, Inputmask) {
+export default function (qunit, $, Inputmask) {
 
 	qunit.module("Optional");
 	qunit.test("inputmask(\"(99) 9999[9]-99999\") - input 121234-12345", function (assert) {
@@ -317,5 +308,4 @@ define([
 		assert.equal(testmask.value, "4509 0946 4748", "Result " + testmask.value);
 	});
 
-})
-;
+};

@@ -1,13 +1,4 @@
-define([
-	"qunit",
-	"../dist/inputmask/dependencyLibs/inputmask.dependencyLib",
-	"../dist/inputmask/inputmask.date.extensions",
-	"../dist/inputmask/inputmask.extensions",
-	"../dist/inputmask/inputmask.numeric.extensions",
-	"../dist/inputmask/inputmask.phone.extensions",
-	"prototypeExtensions",
-	"simulator"
-], function (qunit, $, Inputmask) {
+export default function (qunit, $, Inputmask) {
 
 	qunit.module("Direction RTL");
 	qunit.test("inputmask(\"999.999.999\") - delete 2nd with backspace, continue the mask", function (assert) {
@@ -387,4 +378,4 @@ define([
 		assert.equal(testmask.value, "$ 4,545.56", "Result " + testmask.value);
 
 	});
-});
+};

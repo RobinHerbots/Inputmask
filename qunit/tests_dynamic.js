@@ -1,13 +1,4 @@
-define([
-	"qunit",
-	"../dist/inputmask/dependencyLibs/inputmask.dependencyLib",
-	"../dist/inputmask/inputmask.date.extensions",
-	"../dist/inputmask/inputmask.extensions",
-	"../dist/inputmask/inputmask.numeric.extensions",
-	"../dist/inputmask/inputmask.phone.extensions",
-	"prototypeExtensions",
-	"simulator"
-], function (qunit, $, Inputmask) {
+export default function (qunit, $, Inputmask) {
 
 	qunit.module("Dynamic Masks");
 	qunit.test("inputmask(\"9-a{3}9{3}\" - simple dynamic mask", function (assert) {
@@ -387,4 +378,4 @@ define([
 		testmask.blur();
 		assert.equal(testmask.value, "P.P.", "Result " + testmask.value);
 	});
-});
+};

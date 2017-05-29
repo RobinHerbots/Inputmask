@@ -15,8 +15,7 @@
       "smart"
     ],
     "indent": [
-      1,
-      "tab"
+     0
     ],
     "quotes": [
       1,
@@ -66,7 +65,6 @@
   "globals": {
     "Inputmask": true,
     "jQuery": false,
-    "jBone": false,
     "module": false,
     "require": false,
     "requirejs": false,

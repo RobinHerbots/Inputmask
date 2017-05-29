@@ -114,6 +114,17 @@ import "inputmask/dist/inputmask/inputmask.numeric.extensions";
 import Inputmask from "inputmask/dist/inputmask/inputmask.date.extensions";
 ```
 
+#### Selecting the dependencyLib
+By default the vanilla dependencyLib is used.  You can select another dependency
+by creating an alias in the webpack.config.
+
+```
+ resolve: {
+        alias: {
+            "./dependencyLibs/inputmask.dependencyLib": "./dependencyLibs/inputmask.dependencyLib.jquery"
+        }
+    },
+```
 ## Usage
 
 ### via Inputmask class

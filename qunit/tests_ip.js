@@ -1,10 +1,4 @@
-define([
-	"qunit",
-	"../dist/inputmask/dependencyLibs/inputmask.dependencyLib",
-	"../dist/inputmask/inputmask.extensions",
-	"prototypeExtensions",
-	"simulator"
-], function(qunit, $, Inputmask) {
+export default function(qunit, $, Inputmask) {
 
 	qunit.module("IP - masks");
 	qunit.test("inputmask(\"ip\" - 10.10.10.10", function(assert) {
@@ -98,4 +92,4 @@ define([
 			done();
 		}, 0);
 	});
-});
+};

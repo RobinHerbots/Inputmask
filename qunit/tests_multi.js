@@ -1,13 +1,4 @@
-define([
-	"qunit",
-	"../dist/inputmask/dependencyLibs/inputmask.dependencyLib",
-	"../dist/inputmask/inputmask.date.extensions",
-	"../dist/inputmask/inputmask.extensions",
-	"../dist/inputmask/inputmask.numeric.extensions",
-	"../dist/inputmask/inputmask.phone.extensions",
-	"prototypeExtensions",
-	"simulator"
-], function (qunit, $, Inputmask) {
+export default function (qunit, $, Inputmask) {
 
 	qunit.module("multi masks");
 	qunit.test("inputmask({ mask: [\"99-99\", \"999-99\"]}) - input 12345", function (assert) {
@@ -425,7 +416,7 @@ define([
 			}
 		).mask(testmask);
 		testmask.focus();
-		$("#testmask").type("1234123412341234")
+		$("#testmask").Type("1234123412341234")
 		assert.equal(testmask.inputmask._valueGet(), "1234 1234 1234 1234", "Result " + testmask.inputmask._valueGet());
 
 	});
@@ -439,8 +430,8 @@ define([
 			}
 		).mask(testmask);
 		testmask.focus();
-		$("#testmask").type("12341234123412341")
+		$("#testmask").Type("12341234123412341")
 		assert.equal(testmask.inputmask._valueGet(), "123412341 23412341_", "Result " + testmask.inputmask._valueGet());
 
 	});
-});
+};

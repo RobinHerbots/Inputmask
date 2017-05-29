@@ -1,10 +1,4 @@
-define([
-	"qunit",
-	"../dist/inputmask/dependencyLibs/inputmask.dependencyLib",
-	"../dist/inputmask/inputmask.extensions",
-	"prototypeExtensions",
-	"simulator"
-], function (qunit, $, Inputmask) {
+export default function (qunit, $, Inputmask) {
 	qunit.module("Alternations");
 
 	qunit.test("\"9{1,2}C|S A{1,3} 9{4}\" - ankitajain32", function (assert) {
@@ -308,4 +302,4 @@ define([
 		$("#testmask").Type("24");
 		assert.equal(testmask.inputmask._valueGet(), "2_", "Result " + testmask.inputmask._valueGet());
 	});
-});
+};

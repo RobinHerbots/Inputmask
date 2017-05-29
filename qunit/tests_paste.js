@@ -1,13 +1,4 @@
-define([
-	"qunit",
-	"../dist/inputmask/dependencyLibs/inputmask.dependencyLib",
-	"../dist/inputmask/inputmask.date.extensions",
-	"../dist/inputmask/inputmask.extensions",
-	"../dist/inputmask/inputmask.numeric.extensions",
-	"../dist/inputmask/inputmask.phone.extensions",
-	"prototypeExtensions",
-	"simulator"
-], function (qunit, $, Inputmask) {
+export default function (qunit, $, Inputmask) {
 
 	qunit.module("Paste value");
 	qunit.test("inputmask(\"+7 (999) 999-99-99\") ~ paste \"+79114041112\"", function (assert) {
@@ -235,4 +226,4 @@ define([
 			done();
 		}, 0);
 	});
-});
+};
