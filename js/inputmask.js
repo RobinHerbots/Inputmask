@@ -2695,9 +2695,13 @@
                                         if (clickPosition < lastPosition) {
                                             caret(input, !isMask(clickPosition) && !isMask(clickPosition - 1) ? seekNext(clickPosition) : clickPosition);
                                         } else {
-                                            var placeholder = getPlaceholder(lastPosition);
-                                            if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder && getTest(lastPosition).match.optionalQuantifier !== true) || (!isMask(lastPosition) && getTest(lastPosition).match.def === placeholder)) {
-                                                lastPosition = seekNext(lastPosition);
+                                            var placeholder = getPlaceholder(lastPosition),
+                                                lvp = getMaskSet().validPositions[lvclickPosition],
+                                                tt = getTestTemplate(lastPosition, lvp ? lvp.match.locator : undefined, lvp);
+                                            if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder && tt.match.optionalQuantifier !== true) || (!isMask(lastPosition) && tt.match.def === placeholder)) {
+                                                var newPos = seekNext(lastPosition);
+                                                if (clickPosition >= newPos)
+                                                    lastPosition = newPos;
                                             }
                                             caret(input, lastPosition);
                                         }
@@ -2808,7 +2812,7 @@
             function initializeColorMask(input) {
                 var offset = $(input).position(),
                     computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
-                    // parentNode = input.parentNode;
+                // parentNode = input.parentNode;
 
                 function findCaretPos(clientx) {
                     //calculate text width
@@ -2858,7 +2862,6 @@
                     colorMask.style.Appearance = "textfield";
 
                 }
-
 
 
                 colorMask = document.createElement("div");

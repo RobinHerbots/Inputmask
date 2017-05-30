@@ -1,6 +1,6 @@
 {
   "name": "inputmask",
-  "version": "3.3.7-17",
+  "version": "3.3.7-19",
   "description": "Inputmask is a javascript library which creates an input mask.  Inputmask can run against vanilla javascript, jQuery and jqlite.",
   "main": "index.js",
   "files": [
@@ -8,7 +8,7 @@
     "css/"
   ],
   "scripts": {
-    "start": "grunt webpack:build",
+    "start": "webpack --progress --watch --config webpack.config.js",
     "test": "grunt validate"
   },
   "repository": {

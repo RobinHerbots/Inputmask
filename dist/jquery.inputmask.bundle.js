@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.7-17
+* Version: 3.3.7-19
 */
 
 !function(modules) {
@@ -1040,8 +1040,11 @@
                               default:
                                 var clickPosition = selectedCaret.begin, lvclickPosition = getLastValidPosition(clickPosition, !0), lastPosition = seekNext(lvclickPosition);
                                 if (clickPosition < lastPosition) caret(input, isMask(clickPosition) || isMask(clickPosition - 1) ? clickPosition : seekNext(clickPosition)); else {
-                                    var placeholder = getPlaceholder(lastPosition);
-                                    ("" !== placeholder && getBuffer()[lastPosition] !== placeholder && !0 !== getTest(lastPosition).match.optionalQuantifier || !isMask(lastPosition) && getTest(lastPosition).match.def === placeholder) && (lastPosition = seekNext(lastPosition)), 
+                                    var placeholder = getPlaceholder(lastPosition), lvp = getMaskSet().validPositions[lvclickPosition], tt = getTestTemplate(lastPosition, lvp ? lvp.match.locator : undefined, lvp);
+                                    if ("" !== placeholder && getBuffer()[lastPosition] !== placeholder && !0 !== tt.match.optionalQuantifier || !isMask(lastPosition) && tt.match.def === placeholder) {
+                                        var newPos = seekNext(lastPosition);
+                                        clickPosition >= newPos && (lastPosition = newPos);
+                                    }
                                     caret(input, lastPosition);
                                 }
                             }
@@ -26239,15 +26242,16 @@
     content.locals && (module.exports = content.locals);
 }, function(module, exports, __webpack_require__) {
     "use strict";
-    __webpack_require__(13), __webpack_require__(3), __webpack_require__(4), __webpack_require__(5), 
-    __webpack_require__(6), __webpack_require__(8), __webpack_require__(9), __webpack_require__(10), 
-    __webpack_require__(11), __webpack_require__(12);
-    var _inputmask = __webpack_require__(0), _inputmask2 = function(obj) {
+    function _interopRequireDefault(obj) {
         return obj && obj.__esModule ? obj : {
             default: obj
         };
-    }(_inputmask);
-    __webpack_require__(7), window.Inputmask = _inputmask2.default;
+    }
+    __webpack_require__(13), __webpack_require__(3), __webpack_require__(4), __webpack_require__(5), 
+    __webpack_require__(6), __webpack_require__(8), __webpack_require__(9), __webpack_require__(10), 
+    __webpack_require__(11), __webpack_require__(12);
+    var _inputmask = __webpack_require__(0), _inputmask2 = _interopRequireDefault(_inputmask), _inputmask3 = __webpack_require__(1), _inputmask4 = _interopRequireDefault(_inputmask3), _jquery = __webpack_require__(2), _jquery2 = _interopRequireDefault(_jquery);
+    _inputmask4.default === _jquery2.default && __webpack_require__(7), window.Inputmask = _inputmask2.default;
 }, function(module, exports, __webpack_require__) {
     "use strict";
     var __WEBPACK_AMD_DEFINE_RESULT__;
