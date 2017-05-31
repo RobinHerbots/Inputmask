@@ -2217,12 +2217,14 @@
 
                 if (k === Inputmask.keyCode.BACKSPACE && (pos.end - pos.begin < 1 || opts.insertMode === false)) {
                     pos.begin = seekPrevious(pos.begin);
-                    if (getMaskSet().validPositions[pos.begin] !== undefined && (getMaskSet().validPositions[pos.begin].input === opts.groupSeparator || getMaskSet().validPositions[pos.begin].input === opts.radixPoint)) {
+                    if (getMaskSet().validPositions[pos.begin] !== undefined && getMaskSet().validPositions[pos.begin].input === opts.groupSeparator) {
                         pos.begin--;
                     }
                 } else if (k === Inputmask.keyCode.DELETE && pos.begin === pos.end) {
-                    pos.end = isMask(pos.end, true) ? pos.end + 1 : seekNext(pos.end) + 1;
-                    if (getMaskSet().validPositions[pos.begin] !== undefined && (getMaskSet().validPositions[pos.begin].input === opts.groupSeparator || getMaskSet().validPositions[pos.begin].input === opts.radixPoint)) {
+                    pos.end = isMask(pos.end, true) && (getMaskSet().validPositions[pos.end] && getMaskSet().validPositions[pos.end].input !== opts.radixPoint  ) ?
+                        pos.end + 1 :
+                        seekNext(pos.end) + 1;
+                    if (getMaskSet().validPositions[pos.begin] !== undefined && getMaskSet().validPositions[pos.begin].input === opts.groupSeparator) {
                         pos.end++;
                     }
                 }

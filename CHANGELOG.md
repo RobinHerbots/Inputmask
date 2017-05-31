@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - fix undoValue initialization 
 
 ### Fixed
+- Decimal editing problems #1603
 - UX problem with email mask #1600
 - Force numeric to empty (on blur) with '0' as value #215
 - ndxInitializer.shift is not a function
