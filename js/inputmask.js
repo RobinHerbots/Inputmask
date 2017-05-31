@@ -2239,6 +2239,10 @@
                     getMaskSet().p = seekNext(lvp);
                 } else if (strict !== true) {
                     getMaskSet().p = pos.begin;
+                    //put position on first valid from pos.begin ~ #1351
+                    while (getMaskSet().p < lvp && getMaskSet().validPositions[getMaskSet().p] === undefined) {
+                        getMaskSet().p++;
+                    }
                 }
             }
 

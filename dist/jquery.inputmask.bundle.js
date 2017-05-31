@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.7-20
+* Version: 3.3.7-21
 */
 
 !function(modules) {
@@ -745,7 +745,7 @@
                     }
                 }();
                 var lvp = getLastValidPosition(pos.begin, !0);
-                lvp < pos.begin ? getMaskSet().p = seekNext(lvp) : !0 !== strict && (getMaskSet().p = pos.begin);
+                if (lvp < pos.begin) getMaskSet().p = seekNext(lvp); else if (!0 !== strict) for (getMaskSet().p = pos.begin; getMaskSet().p < lvp && getMaskSet().validPositions[getMaskSet().p] === undefined; ) getMaskSet().p++;
             }
             function initializeColorMask(input) {
                 function findCaretPos(clientx) {

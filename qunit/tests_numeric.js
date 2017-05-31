@@ -2020,4 +2020,24 @@ export default function (qunit, $, Inputmask) {
 
         assert.equal(testmask.inputmask._valueGet(), "100", "Result " + testmask.inputmask._valueGet());
     });
+
+    qunit.test("Currency digits and delete #1351 - kousenlsn", function (assert) {
+        var $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask(  {
+            max: '99999999.99',
+            alias: 'currency',
+            prefix: '',
+            allowPlus: false,
+            autoUnmask: true}).mask(testmask);
+
+        $(testmask).Type("1.23");
+        $.caret(testmask, 0);
+        $("#testmask").SendKey(Inputmask.keyCode.DELETE);
+        $("#testmask").SendKey(Inputmask.keyCode.DELETE);
+        $("#testmask").SendKey(Inputmask.keyCode.DELETE);
+
+        assert.equal(testmask.inputmask._valueGet(), "0.00", "Result " + testmask.inputmask._valueGet());
+    });
 };
