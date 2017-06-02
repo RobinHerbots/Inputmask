@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.7-24
+* Version: 3.3.7-25
 */
 
 !function(factory) {
@@ -76,7 +76,7 @@
                 var nsEvent = _events[endx].split("."), ev = nsEvent[0], namespace = nsEvent[1] || "global";
                 if (void 0 !== document && "global" === namespace) {
                     var evnt, i, params = {
-                        bubbles: !1,
+                        bubbles: !0,
                         cancelable: !0,
                         detail: Array.prototype.slice.call(arguments, 1)
                     };
@@ -126,14 +126,18 @@
     }, DependencyLib.data = function(owner, key, value) {
         if (void 0 === value) return owner.__data ? owner.__data[key] : null;
         owner.__data = owner.__data || {}, owner.__data[key] = value;
-    }, DependencyLib.Event = function(event, params) {
+    }, DependencyLib.Event = function CustomEvent(event, params) {
         params = params || {
             bubbles: !1,
             cancelable: !1,
             detail: void 0
         };
-        var evt = document.createEvent("CustomEvent");
-        return evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail), 
-        evt;
+        var evnt;
+        if (document.createEvent) try {
+            evnt = new CustomEvent(event, params);
+        } catch (e) {
+            evnt = document.createEvent("CustomEvent"), evnt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+        } else evnt = document.createEventObject(), evnt.eventType = event;
+        return evnt;
     }, DependencyLib.Event.prototype = window.Event.prototype, DependencyLib;
 });

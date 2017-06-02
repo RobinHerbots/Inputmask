@@ -78,37 +78,49 @@ export default function ($, Inputmask) {
         }
 
         switch (keyCode) {
-            case Inputmask.keyCode.LEFT: {
+            case Inputmask.keyCode.LEFT:
                 if (modifier == undefined) {
                     var pos = $.caret(this);
                     $.caret(this, pos.begin - 1);
                     break;
                 }
-            }
-            case Inputmask.keyCode.RIGHT: {
+            case Inputmask.keyCode.RIGHT:
                 if (modifier == undefined) {
                     var pos = $.caret(this);
                     $.caret(this, pos.begin + 1);
                     break;
                 }
-            }
-            default: {
+            default:
                 if (window.Inputmask && window.Inputmask.prototype.defaults.inputEventOnly === true) {
                     var input = new $.Event("input"),
                         elem = this.nodeName ? this : this[0],
                         currentValue = elem.inputmask.__valueGet ? elem.inputmask.__valueGet.call(elem) : elem.value,
                         caretPos = $.caret(elem);
 
-                    console.log(currentValue);
+                    console.log("initial " + currentValue);
                     console.log(caretPos);
 
                     var front = currentValue.substring(0, caretPos.begin),
-                        back = currentValue.substring(caretPos.end);
-                    if (elem.inputmask.__valueSet)
-                        elem.inputmask.__valueSet.call(elem, front + String.fromCharCode(keyCode) + back);
-                    else elem.value = front + String.fromCharCode(keyCode) + back;
+                        back = currentValue.substring(caretPos.end),
+                        newValue = currentValue;
 
-                    console.log(front + String.fromCharCode(keyCode) + back);
+                    switch (keyCode) {
+                        case Inputmask.keyCode.BACKSPACE:
+                            newValue = front.substr(0, front.length - (caretPos.end - caretPos.begin ) - 1) + back;
+                            break;
+                        case     Inputmask.keyCode.DELETE :
+                            newValue = front + back.substr(0, back.length - (caretPos.end - caretPos.begin ) - 1);
+                            break;
+                        default:
+                            newValue = front + String.fromCharCode(keyCode) + back;
+                    }
+
+                    if (elem.inputmask.__valueSet)
+                        elem.inputmask.__valueSet.call(elem, newValue);
+                    else elem.value = newValue;
+
+                    $.caret(elem, newValue.length - back.length);
+                    console.log("new " + newValue);
                     trigger(this.nodeName ? this : this[0], input);
                 } else {
                     var keydown = new $.Event("keydown"),
@@ -134,7 +146,6 @@ export default function ($, Inputmask) {
                         //}
                     }
                 }
-            }
         }
     }
     if (!('append' in $.fn)) {
