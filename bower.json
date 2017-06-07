@@ -1,6 +1,6 @@
 {
   "name": "inputmask",
-  "version": "3.3.7-25",
+  "version": "3.3.7-26",
   "main": [
 	  "./dist/inputmask/inputmask.js",
 	  "./dist/inputmask/inputmask.extensions.js",

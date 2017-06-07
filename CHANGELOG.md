@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - fix undoValue initialization 
 
 ### Fixed
+- React onChange event doesn't work with Inputmask #1377
 - Currency digits and delete #1351
 - Decimal editing problems #1603
 - UX problem with email mask #1600

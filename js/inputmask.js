@@ -1119,7 +1119,7 @@
                                                 if (typeof altIndex !== "string" || $.inArray(altMatch.locator[altMatch.alternation].toString(), altIndexArr) !== -1) {
                                                     if (definitionCanMatchDefinition(altMatch, altMatch2)) {
                                                         dropMatch = true;
-                                                        if (altMatch.alternation == altMatch2.alternation &&
+                                                        if (altMatch.alternation === altMatch2.alternation &&
                                                             altMatch2.locator[altMatch2.alternation].toString().indexOf(altMatch.locator[altMatch.alternation]) === -1) {
                                                             altMatch2.locator[altMatch2.alternation] = altMatch2.locator[altMatch2.alternation] + "," + altMatch.locator[altMatch.alternation];
                                                             altMatch2.alternation = altMatch.alternation; //we pass the alternation index => used in determineLastRequiredPosition
@@ -1760,7 +1760,7 @@
                     fillMissingNonMask(maskPos);
 
                     if (isSelection(pos)) {
-                        handleRemove(undefined, Inputmask.keyCode.DELETE, pos);
+                        handleRemove(undefined, Inputmask.keyCode.DELETE, pos, true);
                         maskPos = getMaskSet().p;
                     }
 
@@ -2084,6 +2084,7 @@
                         begin = 0 - range.duplicate().moveStart("character", -input.inputmask._valueGet().length);
                         end = begin + range.text.length;
                     }
+
                     /*eslint-disable consistent-return */
                     return {
                         "begin": translatePosition(begin),
@@ -2168,7 +2169,7 @@
             }
 
 
-            function handleRemove(input, k, pos, strict) {
+            function handleRemove(input, k, pos, strict, fromIsValid) {
                 function generalize() {
                     if (opts.keepStatic) {
                         var validInputs = [],
@@ -2195,7 +2196,9 @@
                             while (validInputs.length > 0) {
                                 var keypress = new $.Event("keypress");
                                 keypress.which = validInputs.pop().charCodeAt(0);
+                                // eslint-disable-next-line no-use-before-define
                                 EventHandlers.keypressEvent.call(input, keypress, true, false, false, getMaskSet().p);
+
                             }
                         } else getMaskSet().validPositions = $.extend(true, {}, positionsClone); //restore original positions
                     }
@@ -2239,9 +2242,11 @@
                     getMaskSet().p = seekNext(lvp);
                 } else if (strict !== true) {
                     getMaskSet().p = pos.begin;
-                    //put position on first valid from pos.begin ~ #1351
-                    while (getMaskSet().p < lvp && getMaskSet().validPositions[getMaskSet().p] === undefined) {
-                        getMaskSet().p++;
+                    if (fromIsValid !== true) {
+                        //put position on first valid from pos.begin ~ #1351
+                        while (getMaskSet().p < lvp && getMaskSet().validPositions[getMaskSet().p] === undefined) {
+                            getMaskSet().p++;
+                        }
                     }
                 }
             }
@@ -2511,6 +2516,32 @@
                     return e.preventDefault();
                 },
                 inputFallBackEvent: function (e) { //fallback when keypress is not triggered
+                    function repositionCaret(input, frontPart, backPart) {
+                        var targetPos = caret(input).begin, currentValue = input.inputmask._valueGet(),
+                            pos = currentValue.indexOf(frontPart), currentPos = targetPos;
+                        if (pos === 0 && targetPos !== frontPart.length) {
+                            targetPos = frontPart.length;
+                        } else {
+                            while (currentValue.match(Inputmask.escapeRegex(backPart) + "$") === null) {
+                                backPart = backPart.substr(1);
+                            }
+                            var pos2 = currentValue.indexOf(backPart);
+                            if (pos2 !== -1 && backPart !== "" && targetPos > pos2 && pos2 > pos) {
+                                targetPos = pos2;
+                            }
+                        }
+
+                        if (!isMask(targetPos)) targetPos = seekNext(targetPos);
+                        if (currentPos !== targetPos) {
+                            caret(input, targetPos);
+                            if (android) { //caret is set by android after inputevent
+                                setTimeout(function () {
+                                    caret(input, targetPos);
+                                }, 0);
+                            }
+                        }
+                    }
+
                     var input = this,
                         inputValue = input.inputmask._valueGet();
 
@@ -2552,49 +2583,19 @@
                             e.keyCode = Inputmask.keyCode.BACKSPACE;
                             EventHandlers.keydownEvent.call(input, e);
                         } else {
-                            var stickyParts = [], stickyParts2 = [], buffer = getBuffer().join(""),
-                                bufferTemplate = getMaskTemplate(true, 1).join("");
+                            var stickyParts = [],
+                                bufferTemplate = getBufferTemplate().join("");
                             stickyParts.push(inputValue.substr(0, caretPos.begin));
                             stickyParts.push(inputValue.substr(caretPos.begin));
-                            stickyParts2.push(buffer.substr(0, caretPos.begin));
-                            stickyParts2.push(buffer.substr(caretPos.begin));
-                            // console.log(stickyParts[0] + " , " + stickyParts[1] + " vs " + stickyParts2[0] + " , " + stickyParts2[1]);
+
                             while (inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$") === null) {
                                 bufferTemplate = bufferTemplate.slice(1);
                             }
-                            // console.log("initial " + inputValue);
                             inputValue = inputValue.replace(bufferTemplate, "");
-                            // console.log(inputValue);
                             if ($.isFunction(opts.onBeforeMask)) inputValue = opts.onBeforeMask(inputValue, opts) || inputValue;
 
                             checkVal(input, true, false, inputValue.split(""), e);
-                            //correct caret position
-                            var currentPos = caret(input).begin, currentValue = input.inputmask._valueGet();
-                            var pos1 = currentValue.indexOf(stickyParts[0]);
-                            if (pos1 === 0 && currentPos !== stickyParts[0].length) {
-                                // console.log("set caret to " + stickyParts[0].length);
-                                caret(input, stickyParts[0].length);
-                                if (android) { //caret is set by android after inputevent
-                                    setTimeout(function () {
-                                        caret(input, stickyParts[0].length);
-                                    }, 0);
-                                }
-                            } else {
-                                // console.log(currentValue);
-                                while (currentValue.match(Inputmask.escapeRegex(stickyParts[1]) + "$") === null) {
-                                    stickyParts[1] = stickyParts[1].substr(1);
-                                }
-                                var pos2 = currentValue.indexOf(stickyParts[1]);
-                                if (pos2 !== -1 && stickyParts[1] !== "" && currentPos > pos2 && pos2 > pos1) {
-                                    // console.log("set caret to2 " + pos2 + " - " + currentPos);
-                                    caret(input, pos2);
-                                    if (android) { //caret is set by android after inputevent
-                                        setTimeout(function () {
-                                            caret(input, pos2);
-                                        }, 0);
-                                    }
-                                }
-                            }
+                            repositionCaret(input, stickyParts[0], stickyParts[1]);
 
                             if (isComplete(getBuffer()) === true) {
                                 $(input).trigger("complete");

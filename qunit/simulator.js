@@ -1,6 +1,8 @@
 export default function ($, Inputmask) {
     $.caret = function (input, begin, end) {
         input = input.nodeName ? input : input[0];
+        var inputType = input.type;
+        input.type = "text";
         input.focus();
         var range;
         if (typeof begin === "number") {
@@ -33,6 +35,7 @@ export default function ($, Inputmask) {
                 range.select();
 
             }
+            input.type = inputType;
         } else {
             if (input.setSelectionRange) {
                 begin = input.selectionStart;
@@ -49,6 +52,7 @@ export default function ($, Inputmask) {
                 end = begin + range.text.length;
             }
             /*eslint-disable consistent-return */
+            input.type = inputType;
             return {
                 "begin": begin,
                 "end": end
@@ -108,8 +112,9 @@ export default function ($, Inputmask) {
                         case Inputmask.keyCode.BACKSPACE:
                             newValue = front.substr(0, front.length - (caretPos.end - caretPos.begin ) - 1) + back;
                             break;
-                        case     Inputmask.keyCode.DELETE :
-                            newValue = front + back.substr(0, back.length - (caretPos.end - caretPos.begin ) - 1);
+                        case Inputmask.keyCode.DELETE :
+                            back = back.substr(1);
+                            newValue = front + back;
                             break;
                         default:
                             newValue = front + String.fromCharCode(keyCode) + back;

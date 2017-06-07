@@ -24,11 +24,11 @@ import "./prototypeExtensions.js";
 import simulator from "./simulator.js";
 
 
-//android testing
-// Inputmask.extendDefaults({
-//    inputEventOnly: true
-// });
-// window.Inputmask = Inputmask; //inject globally for the simulator to detect inputeventonly
+// android testing
+Inputmask.extendDefaults({
+   inputEventOnly: true
+});
+window.Inputmask = Inputmask; //inject globally for the simulator to detect inputeventonly
 
 import tests_alternations from "./tests_alternations";
 import tests_attributes from "./tests_attributes";
