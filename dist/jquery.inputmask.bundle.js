@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.7-26
+* Version: 3.3.7-28
 */
 
 !function(modules) {
@@ -74,7 +74,7 @@
             function generateMask(mask, metadata, opts) {
                 var regexMask = !1;
                 if (null !== mask && "" !== mask || (regexMask = null !== opts.regex, regexMask ? (mask = opts.regex, 
-                mask = mask.replace(/^(\^)(.*)(\$)$/, "$2")) : mask = "*{*}"), 1 === mask.length && !1 === opts.greedy && 0 !== opts.repeat && (opts.placeholder = ""), 
+                mask = mask.replace(/^(\^)(.*)(\$)$/, "$2")) : (regexMask = !0, mask = ".*")), 1 === mask.length && !1 === opts.greedy && 0 !== opts.repeat && (opts.placeholder = ""), 
                 opts.repeat > 0 || "*" === opts.repeat || "+" === opts.repeat) {
                     var repeatStart = "*" === opts.repeat ? 0 : "+" === opts.repeat ? 1 : opts.repeat;
                     mask = opts.groupmarker.start + mask + opts.groupmarker.end + opts.quantifiermarker.start + repeatStart + "," + opts.repeat + opts.quantifiermarker.end;
@@ -1345,9 +1345,7 @@
                     definitionSymbol: "*"
                 },
                 "*": {
-                    validator: function() {
-                        return !0;
-                    },
+                    validator: "[0-9A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
                     cardinality: 1
                 }
             },
@@ -1559,7 +1557,7 @@
                 }
                 var match, m, openingToken, currentOpeningToken, alternator, lastMatch, groupToken, tokenizer = /(?:[?*+]|\{[0-9\+\*]+(?:,[0-9\+\*]*)?\})|[^.?*+^${[]()|\\]+|./g, regexTokenizer = /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?[:=!]?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g, escaped = !1, currentToken = new MaskToken(), openenings = [], maskTokens = [];
                 for (regexMask && (opts.optionalmarker.start = undefined, opts.optionalmarker.end = undefined); match = regexMask ? regexTokenizer.exec(mask) : tokenizer.exec(mask); ) {
-                    if (m = match[0], regexMask) switch (m.charAt(0)) {
+                    if (m = match[0], regexMask && !0 !== escaped) switch (m.charAt(0)) {
                       case "?":
                         m = "{0,1}";
                         break;
@@ -1606,9 +1604,9 @@
                             var matches = openenings[openenings.length - 1].matches;
                             match = matches.pop(), match.isGroup || (groupToken = new MaskToken(!0), groupToken.matches.push(match), 
                             match = groupToken), matches.push(match), matches.push(quantifier);
-                        } else match = currentToken.matches.pop(), match.isGroup || (groupToken = new MaskToken(!0), 
-                        groupToken.matches.push(match), match = groupToken), currentToken.matches.push(match), 
-                        currentToken.matches.push(quantifier);
+                        } else match = currentToken.matches.pop(), match.isGroup || (regexMask && null === match.fn && "." === match.def && (match.fn = new RegExp(match.def, opts.casing ? "i" : "")), 
+                        groupToken = new MaskToken(!0), groupToken.matches.push(match), match = groupToken), 
+                        currentToken.matches.push(match), currentToken.matches.push(quantifier);
                         break;
 
                       case opts.alternatormarker:

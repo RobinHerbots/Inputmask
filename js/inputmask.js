@@ -132,10 +132,7 @@
                     definitionSymbol: "*"
                 },
                 "*": {
-                    validator: function () {
-                        return true;
-                    },
-                    // validator: "[0-9A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
+                    validator: "[0-9A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
                     cardinality: 1
                 }
             },
@@ -490,7 +487,7 @@
                 while (match = regexMask ? regexTokenizer.exec(mask) : tokenizer.exec(mask)) {
                     m = match[0];
 
-                    if (regexMask) {
+                    if (regexMask && escaped !== true) {
                         switch (m.charAt(0)) {
                             //Quantifier
                             case "?":
@@ -576,6 +573,10 @@
                             } else {
                                 match = currentToken.matches.pop();
                                 if (!match.isGroup) {
+                                    if (regexMask && match.fn === null) {
+                                        if (match.def === ".") match.fn = new RegExp(match.def, opts.casing ? "i" : "");
+                                    }
+
                                     groupToken = new MaskToken(true);
                                     groupToken.matches.push(match);
                                     match = groupToken;
@@ -728,7 +729,8 @@
                         mask = opts.regex;
                         mask = mask.replace(/^(\^)(.*)(\$)$/, "$2");
                     } else {
-                        mask = "*{*}";
+                        regexMask = true;
+                        mask = ".*";
                     }
                 }
                 if (mask.length === 1 && opts.greedy === false && opts.repeat !== 0) {
