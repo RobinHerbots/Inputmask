@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
-        <id>inputMask</id>
+        <id>inputmask</id>
         <version>0.0.0</version>
         <title>Inputmask</title>
         <authors>Robin Herbots</authors>
