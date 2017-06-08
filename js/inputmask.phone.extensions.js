@@ -109,8 +109,8 @@
 				return processedValue;
 			},
 			onUnMask: function (maskedValue, unmaskedValue, opts) {
-				//implement me
-				return unmaskedValue;
+				var unmasked = maskedValue.replace(/[()#-]/g, "");
+				return unmasked;
 			},
 			inputmode: "tel",
 		}
