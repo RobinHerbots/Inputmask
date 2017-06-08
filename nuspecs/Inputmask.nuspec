@@ -48,8 +48,8 @@
         <file src="..\dist\min\inputmask\inputmask.phone.extensions.min.js" target="content\Scripts\inputmask\inputmask.phone.extensions.min.js" />
         <file src="..\dist\inputmask\inputmask.regex.extensions.js" target="content\Scripts\inputmask\inputmask.regex.extensions.js" />
         <file src="..\dist\min\inputmask\inputmask.regex.extensions.min.js" target="content\Scripts\inputmask\inputmask.regex.extensions.min.js" />
-        <file src="..\dist\inputmask\integrations\jquery.inputmask.js" target="content\Scripts\inputmask\integrations\jquery.inputmask.js" />
-        <file src="..\dist\min\inputmask\integrations\jquery.inputmask.min.js" target="content\Scripts\inputmask\integrations\jquery.inputmask.min.js" />
+        <file src="..\dist\inputmask\jquery.inputmask.js" target="content\Scripts\inputmask\jquery.inputmask.js" />
+        <file src="..\dist\min\inputmask\jquery.inputmask.min.js" target="content\Scripts\inputmask\jquery.inputmask.min.js" />
         <file src="..\dist\jquery.inputmask.bundle.js" target="content\Scripts\jquery.inputmask.bundle.js" />
         <file src="..\dist\min\jquery.inputmask.bundle.min.js" target="content\Scripts\jquery.inputmask.bundle.min.js" />
         <file src="Readme.txt" target="Readme.txt" />

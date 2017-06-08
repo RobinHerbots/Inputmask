@@ -11,7 +11,7 @@ import "../js/phone-codes/phone-nl";
 import "../js/phone-codes/phone-ru";
 import "../js/phone-codes/phone-uk";
 import "../js/phone-codes/phone";
-import "../js/integrations/jquery.inputmask";
+import "../js/jquery.inputmask";
 
 import  Inputmask from "../js/inputmask";
 import dependencyLib from "../js/dependencyLibs/inputmask.dependencyLib";

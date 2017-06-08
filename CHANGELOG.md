@@ -6,7 +6,6 @@ All notable changes to this project will be documented in this file.
 - allow custom operation in casing option by callback #1565
 
 ### Updates
-- move to jquery.inputmask.js to integrations
 - put back Regex alias extension for legacy support #1611
 - postvalidation cannot set pos of undefined
 - fix undoValue initialization 
