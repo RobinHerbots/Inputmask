@@ -6,10 +6,13 @@ All notable changes to this project will be documented in this file.
 - allow custom operation in casing option by callback #1565
 
 ### Updates
+- move to jquery.inputmask.js to integrations
+- put back Regex alias extension for legacy support #1611
 - postvalidation cannot set pos of undefined
 - fix undoValue initialization 
 
 ### Fixed
+- Major issue with regex #1611
 - React onChange event doesn't work with Inputmask #1377
 - Currency digits and delete #1351
 - Decimal editing problems #1603

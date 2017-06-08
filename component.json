@@ -2,7 +2,7 @@
 	"name": "inputmask",
 	"repository": "robinherbots/Inputmask",
 	"description": "Inputmask is a javascript library which creates an input mask.  Inputmask can run against vanilla javascript, jQuery and jqlite.",
-	"version": "3.3.7-29",
+	"version": "3.3.7-35",
 	"keywords": [
 		"jquery",
 		"plugins",
@@ -18,7 +18,7 @@
 		"./dist/inputmask/inputmask.date.extensions.js",
 		"./dist/inputmask/inputmask.numeric.extensions.js",
 		"./dist/inputmask/inputmask.phone.extensions.js",
-		"./dist/inputmask/jquery.inputmask.js",
+		"./dist/inputmask/integrations/jquery.inputmask.js",
 		"./dist/inputmask/global/document.js",
 		"./dist/inputmask/global/window.js",
 		"./dist/inputmask/phone-codes/phone.js",
