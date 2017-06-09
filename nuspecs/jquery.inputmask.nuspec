@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>jQuery.InputMask</id>
+        <version>0.0.0</version>
+        <title>jQuery Input Mask</title>
+        <authors>Robin Herbots</authors>
+        <owners>Robin Herbots</owners>
+        <licenseUrl>http://opensource.org/licenses/mit-license.php</licenseUrl>
+        <projectUrl>https://github.com/RobinHerbots/Inputmask</projectUrl>
+        <requireLicenseAcceptance>true</requireLicenseAcceptance>
+        <description>Inputmask is a javascript library which creates an input mask.  Inputmask can run against vanilla javascript, jQuery and jqlite.</description>
+        <summary>Inputmask is a javascript library which creates an input mask.  Inputmask can run against vanilla javascript, jQuery and jqlite.</summary>
+        <tags>jQuery, plugins, input, form, inputmask, mask</tags>
+    </metadata>
+    <files>
+        <file src="..\dist\inputmask\bindings\inputmask.binding.js" target="content\Scripts\inputmask\bindings\inputmask.binding.js" />
+        <file src="..\dist\min\inputmask\bindings\inputmask.binding.min.js" target="content\Scripts\inputmask\bindings\inputmask.binding.min.js" />
+        <file src="..\dist\inputmask\dependencyLibs\inputmask.dependencyLib.jqlite.js" target="content\Scripts\inputmask\dependencyLibs\inputmask.dependencyLib.jqlite.js" />
+        <file src="..\dist\min\inputmask\dependencyLibs\inputmask.dependencyLib.jqlite.min.js" target="content\Scripts\inputmask\dependencyLibs\inputmask.dependencyLib.jqlite.min.js" />
+        <file src="..\dist\inputmask\dependencyLibs\inputmask.dependencyLib.jquery.js" target="content\Scripts\inputmask\dependencyLibs\inputmask.dependencyLib.jquery.js" />
+        <file src="..\dist\min\inputmask\dependencyLibs\inputmask.dependencyLib.jquery.min.js" target="content\Scripts\inputmask\dependencyLibs\inputmask.dependencyLib.jquery.min.js" />
+        <file src="..\dist\inputmask\dependencyLibs\inputmask.dependencyLib.js" target="content\Scripts\inputmask\dependencyLibs\inputmask.dependencyLib.js" />
+        <file src="..\dist\min\inputmask\dependencyLibs\inputmask.dependencyLib.min.js" target="content\Scripts\inputmask\dependencyLibs\inputmask.dependencyLib.min.js" />
+        <file src="..\dist\inputmask\global\document.js" target="content\Scripts\inputmask\global\document.js" />
+        <file src="..\dist\min\inputmask\global\document.min.js" target="content\Scripts\inputmask\global\document.min.js" />
+        <file src="..\dist\inputmask\global\window.js" target="content\Scripts\inputmask\global\window.js" />
+        <file src="..\dist\min\inputmask\global\window.min.js" target="content\Scripts\inputmask\global\window.min.js" />
+        <file src="..\dist\inputmask\phone-codes\phone-be.js" target="content\Scripts\inputmask\phone-codes\phone-be.js" />
+        <file src="..\dist\min\inputmask\phone-codes\phone-be.min.js" target="content\Scripts\inputmask\phone-codes\phone-be.min.js" />
+        <file src="..\dist\inputmask\phone-codes\phone-nl.js" target="content\Scripts\inputmask\phone-codes\phone-nl.js" />
+        <file src="..\dist\min\inputmask\phone-codes\phone-nl.min.js" target="content\Scripts\inputmask\phone-codes\phone-nl.min.js" />
+        <file src="..\dist\inputmask\phone-codes\phone-ru.js" target="content\Scripts\inputmask\phone-codes\phone-ru.js" />
+        <file src="..\dist\min\inputmask\phone-codes\phone-ru.min.js" target="content\Scripts\inputmask\phone-codes\phone-ru.min.js" />
+        <file src="..\dist\inputmask\phone-codes\phone-uk.js" target="content\Scripts\inputmask\phone-codes\phone-uk.js" />
+        <file src="..\dist\min\inputmask\phone-codes\phone-uk.min.js" target="content\Scripts\inputmask\phone-codes\phone-uk.min.js" />
+        <file src="..\dist\inputmask\phone-codes\phone.js" target="content\Scripts\inputmask\phone-codes\phone.js" />
+        <file src="..\dist\min\inputmask\phone-codes\phone.min.js" target="content\Scripts\inputmask\phone-codes\phone.min.js" />
+        <file src="..\dist\inputmask\inputmask.date.extensions.js" target="content\Scripts\inputmask\inputmask.date.extensions.js" />
+        <file src="..\dist\min\inputmask\inputmask.date.extensions.min.js" target="content\Scripts\inputmask\inputmask.date.extensions.min.js" />
+        <file src="..\dist\inputmask\inputmask.extensions.js" target="content\Scripts\inputmask\inputmask.extensions.js" />
+        <file src="..\dist\min\inputmask\inputmask.extensions.min.js" target="content\Scripts\inputmask\inputmask.extensions.min.js" />
+        <file src="..\dist\inputmask\inputmask.js" target="content\Scripts\inputmask\inputmask.js" />
+        <file src="..\dist\min\inputmask\inputmask.min.js" target="content\Scripts\inputmask\inputmask.min.js" />
+        <file src="..\dist\inputmask\inputmask.numeric.extensions.js" target="content\Scripts\inputmask\inputmask.numeric.extensions.js" />
+        <file src="..\dist\min\inputmask\inputmask.numeric.extensions.min.js" target="content\Scripts\inputmask\inputmask.numeric.extensions.min.js" />
+        <file src="..\dist\inputmask\inputmask.phone.extensions.js" target="content\Scripts\inputmask\inputmask.phone.extensions.js" />
+        <file src="..\dist\min\inputmask\inputmask.phone.extensions.min.js" target="content\Scripts\inputmask\inputmask.phone.extensions.min.js" />
+        <file src="..\dist\inputmask\inputmask.regex.extensions.js" target="content\Scripts\inputmask\inputmask.regex.extensions.js" />
+        <file src="..\dist\min\inputmask\inputmask.regex.extensions.min.js" target="content\Scripts\inputmask\inputmask.regex.extensions.min.js" />
+        <file src="..\dist\inputmask\jquery.inputmask.js" target="content\Scripts\inputmask\jquery.inputmask.js" />
+        <file src="..\dist\min\inputmask\jquery.inputmask.min.js" target="content\Scripts\inputmask\jquery.inputmask.min.js" />
+        <file src="..\dist\jquery.inputmask.bundle.js" target="content\Scripts\jquery.inputmask.bundle.js" />
+        <file src="..\dist\min\jquery.inputmask.bundle.min.js" target="content\Scripts\jquery.inputmask.bundle.min.js" />
+        <file src="Readme.txt" target="Readme.txt" />
+    </files>
+</package>
