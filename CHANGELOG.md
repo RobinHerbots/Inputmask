@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 
 ## [UNRELEASED]
 ### added
+
+### Updates
+
+### Fixed
+
+## [3.3.7 - 2017-06-09]
+### added
 - allow custom operation in casing option by callback #1565
 
 ### Updates

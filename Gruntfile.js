@@ -100,7 +100,16 @@ module.exports = function (grunt) {
                 src: function () {
                     return 'nuspecs/Inputmask.nuspec';
                 }(),
-                dest: 'dist/',
+                dest: 'build/',
+                options: {
+                    version: '<%= pkg.version %>'
+                }
+            },
+            dist2: {
+                src: function () {
+                    return 'nuspecs/jquery.inputmask.nuspec';
+                }(),
+                dest: 'build/',
                 options: {
                     version: '<%= pkg.version %>'
                 }
@@ -108,7 +117,13 @@ module.exports = function (grunt) {
         },
         nugetpush: {
             dist: {
-                src: 'dist/InputMask.<%= pkg.version %>.nupkg',
+                src: 'build/InputMask.<%= pkg.version %>.nupkg',
+                options: {
+                    source: "https://www.nuget.org"
+                }
+            },
+            dist2: {
+                src: 'build/jquery.inputMask.<%= pkg.version %>.nupkg',
                 options: {
                     source: "https://www.nuget.org"
                 }
