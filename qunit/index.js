@@ -28,7 +28,8 @@ import simulator from "./simulator.js";
 // Inputmask.extendDefaults({
 //    inputEventOnly: true
 // });
-// window.Inputmask = Inputmask; //inject globally for the simulator to detect inputeventonly
+
+window.Inputmask = Inputmask; //inject globally for the simulator to detect inputeventonly
 
 import tests_alternations from "./tests_alternations";
 import tests_attributes from "./tests_attributes";

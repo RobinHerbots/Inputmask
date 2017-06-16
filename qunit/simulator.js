@@ -62,6 +62,8 @@ export default function ($, Inputmask) {
     };
     $.fn = $.fn || $.prototype;
     $.fn.SendKey = function (keyCode, modifier) {
+        var elem = this.nodeName ? this : this[0];
+
         function trigger(elem, evnt) {
             elem.focus();
             if ($ === window.jQuery) {
@@ -95,9 +97,9 @@ export default function ($, Inputmask) {
                     break;
                 }
             default:
-                if (window.Inputmask && window.Inputmask.prototype.defaults.inputEventOnly === true) {
+                if ((window.Inputmask && window.Inputmask.prototype.defaults.inputEventOnly === true) ||
+                    (elem.inputmask && elem.inputmask.opts.inputEventOnly === true)) {
                     var input = new $.Event("input"),
-                        elem = this.nodeName ? this : this[0],
                         currentValue = elem.inputmask.__valueGet ? elem.inputmask.__valueGet.call(elem) : elem.value,
                         caretPos = $.caret(elem);
 
@@ -110,10 +112,13 @@ export default function ($, Inputmask) {
 
                     switch (keyCode) {
                         case Inputmask.keyCode.BACKSPACE:
-                            newValue = front.substr(0, front.length - (caretPos.end - caretPos.begin ) - 1) + back;
+                            if (caretPos.begin === caretPos.end)
+                                front = front.substr(0, front.length - 1)
+                            newValue = front + back;
                             break;
                         case Inputmask.keyCode.DELETE :
-                            back = back.substr(1);
+                            if (caretPos.begin === caretPos.end)
+                                back = back.substr(1);
                             newValue = front + back;
                             break;
                         default:

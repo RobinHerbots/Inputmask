@@ -1762,7 +1762,7 @@
                     fillMissingNonMask(maskPos);
 
                     if (isSelection(pos)) {
-                        handleRemove(undefined, Inputmask.keyCode.DELETE, pos, true);
+                        handleRemove(undefined, Inputmask.keyCode.DELETE, pos, true, true);
                         maskPos = getMaskSet().p;
                     }
 
@@ -2544,11 +2544,7 @@
                         }
                     }
 
-                    var input = this,
-                        inputValue = input.inputmask._valueGet();
-
-                    if (getBuffer().join("") !== inputValue) {
-                        var caretPos = caret(input);
+                    function radixPointHandler(input, inputValue, caretPos) {
                         //radixpoint tweak
                         if (inputValue.charAt(caretPos.begin - 1) === "." && opts.radixPoint !== "") {
                             inputValue = inputValue.split("");
@@ -2563,9 +2559,9 @@
                             return false;
 
                         }
+                    }
 
-                        inputValue = inputValue.replace(new RegExp("(" + Inputmask.escapeRegex(getBufferTemplate().join("")) + ")*"), "");
-
+                    function ieMobileHandler(input, inputValue, caretPos) {
                         if (iemobile) { //iemobile just set the character at the end althought the caret position is correctly set
                             var inputChar = inputValue.replace(getBuffer().join(""), "");
                             if (inputChar.length === 1) {
@@ -2575,34 +2571,72 @@
                                 return false;
                             }
                         }
+                    }
+
+                    var input = this,
+                        inputValue = input.inputmask._valueGet();
+
+                    if (getBuffer().join("") !== inputValue) {
+                        var caretPos = caret(input);
+                        if (radixPointHandler(input, inputValue, caretPos) === false) return false;
+                        inputValue = inputValue.replace(new RegExp("(" + Inputmask.escapeRegex(getBufferTemplate().join("")) + ")*"), "");
+                        if (ieMobileHandler(input, inputValue, caretPos) === false) return false;
 
                         if (caretPos.begin > inputValue.length) {
                             caret(input, inputValue.length);
                             caretPos = caret(input);
                         }
-                        //detect & treat possible backspace before static
-                        if ((getBuffer().length - inputValue.length) === 1 && inputValue.charAt(caretPos.begin) !== getBuffer()[caretPos.begin] && inputValue.charAt(caretPos.begin + 1) !== getBuffer()[caretPos.begin] && !isMask(caretPos.begin)) {
-                            e.keyCode = Inputmask.keyCode.BACKSPACE;
-                            EventHandlers.keydownEvent.call(input, e);
-                        } else {
-                            var stickyParts = [],
-                                bufferTemplate = getBufferTemplate().join("");
-                            stickyParts.push(inputValue.substr(0, caretPos.begin));
-                            stickyParts.push(inputValue.substr(caretPos.begin));
 
+                        var buffer = getBuffer().join(""),
+                            frontPart = inputValue.substr(0, caretPos.begin),
+                            backPart = inputValue.substr(caretPos.begin),
+                            frontBufferPart = buffer.substr(0, caretPos.begin),
+                            backBufferPart = buffer.substr(caretPos.begin);
+
+                        //check if thare was a selection
+                        var selection = {begin: frontPart.length}, endOffset = 0;
+                        if (frontPart[frontPart.length - 1] !== frontBufferPart[frontBufferPart.length - 1]) {
+                            selection.begin--;
+                            endOffset++;
+                        }
+                        if (backPart.length > backBufferPart.length) {
+                            selection.end = selection.begin;
+                        } else {
+                            var selectedPart = backBufferPart.replace(new RegExp(Inputmask.escapeRegex(backPart) + "$"), "");
+                            selection.end = selection.begin + selectedPart.length + endOffset;
+                        }
+
+                        if (selection.begin == selection.end && !isMask(selection.begin)) {
+                            selection.end = caretPos.end;
+                        }
+
+                        //is selection
+                        if (backPart !== "" && selection.begin < selection.end) {
+                            writeBuffer(input, getBuffer(), selection);
+                            if (frontPart.charCodeAt(frontPart.length - 1) !== frontBufferPart.charCodeAt(frontBufferPart.length - 1)) {
+                                e.which = frontPart.charCodeAt(frontPart.length - 1);
+                                EventHandlers.keypressEvent.call(input, e);
+                            } else {
+                                if (selection.begin == selection.end - 1)
+                                    caret(input, seekPrevious(selection.begin + 1), selection.end);
+                                e.keyCode = Inputmask.keyCode.DELETE;
+                                EventHandlers.keydownEvent.call(input, e);
+                            }
+                        } else {
+                            var bufferTemplate = getBufferTemplate().join("");
                             while (inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$") === null) {
                                 bufferTemplate = bufferTemplate.slice(1);
                             }
                             inputValue = inputValue.replace(bufferTemplate, "");
                             if ($.isFunction(opts.onBeforeMask)) inputValue = opts.onBeforeMask(inputValue, opts) || inputValue;
-
                             checkVal(input, true, false, inputValue.split(""), e);
-                            repositionCaret(input, stickyParts[0], stickyParts[1]);
+                            repositionCaret(input, frontPart, backPart);
 
                             if (isComplete(getBuffer()) === true) {
                                 $(input).trigger("complete");
                             }
                         }
+
                         e.preventDefault();
                     }
                 },
@@ -2709,8 +2743,9 @@
                                                 tt = getTestTemplate(lastPosition, lvp ? lvp.match.locator : undefined, lvp);
                                             if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder && tt.match.optionalQuantifier !== true) || (!isMask(lastPosition) && tt.match.def === placeholder)) {
                                                 var newPos = seekNext(lastPosition);
-                                                if (clickPosition >= newPos)
+                                                if (clickPosition >= newPos) {
                                                     lastPosition = newPos;
+                                                }
                                             }
                                             caret(input, lastPosition);
                                         }

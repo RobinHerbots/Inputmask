@@ -19,8 +19,7 @@ const rules = {
         exclude: /(node_modules)/,
         options: {
             presets: [
-                'es2015',
-                'stage-0',
+                'env'
             ],
             passPerPreset: true,
         },

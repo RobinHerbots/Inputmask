@@ -314,4 +314,17 @@ qunit.test("inputmask({regex: \"[а-яА-Я\\s]*\"}) - type space - SilentImp", 
 	assert.equal(testmask.value, " ", "Result " + testmask.value);
 });
 
+    qunit.test("inputmask({regex: \"\\+7 \\(\d{3}\\) \d{3} \d{4}\"}) - hxss", function(assert) {
+        var $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask({
+            regex: "\\+7 \\(\d{3}\\) \d{3} \d{4}"
+        }).mask(testmask);
+
+        testmask.focus();
+
+        assert.equal(testmask.inputmask.__valueGet.call(testmask), "+_ (___) ___ ____", "Result " + testmask.inputmask.__valueGet.call(testmask));
+    });
+
 };

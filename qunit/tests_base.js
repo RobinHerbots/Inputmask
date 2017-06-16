@@ -181,7 +181,7 @@ export default function (qunit, $, Inputmask) {
 
 		$("#testmask").Type("123456789");
 		$.caret(testmask, 3, 7);
-		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
+		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
 
 		assert.equal(testmask.value, "123.789.___", "Result " + testmask.value);
 	});
