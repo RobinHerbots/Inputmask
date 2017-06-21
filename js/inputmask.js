@@ -1936,8 +1936,11 @@
                 }
 
                 resetMaskSet();
-                getMaskSet().p = seekNext(-1);
-                // if (writeOut) input.inputmask._valueSet(""); //initial clear
+                while (inputValue[0] === getPlaceholder(initialNdx)) {
+                    inputValue.shift();
+                    initialNdx++;
+                }
+                getMaskSet().p = initialNdx;
 
                 if (!strict) {
                     if (opts.autoUnmask !== true) {
@@ -2615,6 +2618,7 @@
                             writeBuffer(input, getBuffer(), selection);
                             if (frontPart.charCodeAt(frontPart.length - 1) !== frontBufferPart.charCodeAt(frontBufferPart.length - 1)) {
                                 e.which = frontPart.charCodeAt(frontPart.length - 1);
+                                ignorable = false; //make sure ignorable is ignored ;-)
                                 EventHandlers.keypressEvent.call(input, e);
                             } else {
                                 if (selection.begin == selection.end - 1)
