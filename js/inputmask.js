@@ -822,8 +822,6 @@
                 var maskTemplate = [],
                     ndxIntlzr, pos = 0,
                     test, testPos, lvp = getLastValidPosition();
-                maxLength = el !== undefined ? el.maxLength : undefined;
-                if (maxLength === -1) maxLength = undefined;
                 do {
                     if (baseOnInput === true && getMaskSet().validPositions[pos]) {
                         testPos = getMaskSet().validPositions[pos];
@@ -1936,11 +1934,11 @@
                 }
 
                 resetMaskSet();
-                while (inputValue[0] === getPlaceholder(initialNdx)) {
-                    inputValue.shift();
-                    initialNdx++;
-                }
-                getMaskSet().p = initialNdx;
+                // while (inputValue[0] === getPlaceholder(initialNdx)) {
+                //     inputValue.shift();
+                //     initialNdx++;
+                // }
+                getMaskSet().p = seekNext(-1);
 
                 if (!strict) {
                     if (opts.autoUnmask !== true) {
@@ -2745,7 +2743,7 @@
                                             var placeholder = getPlaceholder(lastPosition),
                                                 lvp = getMaskSet().validPositions[lvclickPosition],
                                                 tt = getTestTemplate(lastPosition, lvp ? lvp.match.locator : undefined, lvp);
-                                            if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder && tt.match.optionalQuantifier !== true) || (!isMask(lastPosition) && tt.match.def === placeholder)) {
+                                            if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder && tt.match.optionalQuantifier !== true && tt.match.newBlockMarker !== true) || (!isMask(lastPosition) && tt.match.def === placeholder)) {
                                                 var newPos = seekNext(lastPosition);
                                                 if (clickPosition >= newPos) {
                                                     lastPosition = newPos;
@@ -3156,6 +3154,10 @@
                     el = elem;
                     $el = $(el);
 
+                    //read maxlength prop from el
+                    maxLength = el !== undefined ? el.maxLength : undefined;
+                    if (maxLength === -1) maxLength = undefined;
+
                     if (opts.colorMask === true) {
                         initializeColorMask(el);
                     }
@@ -3196,7 +3198,7 @@
                         if (!android && opts.inputEventOnly !== true) {
                             EventRuler.on(el, "keydown", EventHandlers.keydownEvent);
                             EventRuler.on(el, "keypress", EventHandlers.keypressEvent);
-                        }
+                        } else el.removeAttribute('maxLength');
                         EventRuler.on(el, "compositionstart", $.noop);
                         EventRuler.on(el, "compositionupdate", $.noop);
                         EventRuler.on(el, "compositionend", $.noop);

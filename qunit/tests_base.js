@@ -141,17 +141,14 @@ export default function (qunit, $, Inputmask) {
 
 		testmask.focus();
 
-		$("#testmask").SendKey(49);
-		$("#testmask").SendKey(50);
-		$("#testmask").SendKey(51);
+        $("#testmask").Type("123");
 		$("#testmask").SendKey(Inputmask.keyCode.LEFT);
 		$("#testmask").SendKey(Inputmask.keyCode.LEFT);
 		$("#testmask").SendKey(Inputmask.keyCode.LEFT);
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
-		$("#testmask").SendKey(52);
+        $("#testmask").Type("4");
 		$("#testmask").SendKey(Inputmask.keyCode.RIGHT);
-		$("#testmask").SendKey(53);
-		$("#testmask").SendKey(54);
+        $("#testmask").Type("56");
 
 		assert.equal(testmask.value, "143.56_.___", "Result " + testmask.value);
 	});
@@ -466,7 +463,7 @@ export default function (qunit, $, Inputmask) {
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
 		Inputmask("9999 9999 9999 9999").mask(testmask);
-		$("#testmask").on("keyup", function (event) {
+		$("#testmask").on("keyup input", function (event) {
 			var value = this.inputmask.unmaskedvalue();
 
 			if (value != null && value.length === 2 && value === "37") {
