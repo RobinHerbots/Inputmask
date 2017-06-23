@@ -90,7 +90,7 @@ If you like to automatically bind the inputmask to the inputs marked with the da
 
 #### Install the package
 ```
-npm install inputmask --save-dev
+npm install inputmask --save
 ```
 
 #### In your modules
