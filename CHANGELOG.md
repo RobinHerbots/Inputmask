@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 ### added
 
 ### Updates
+- remove maxLength attribute on android #1490
+- drop Regex alias
+- enhance inputfallback (Android)
+- TODO drop all date/time related aliases
+- TODO rewrite datatime alias
 
 ### Fixed
 

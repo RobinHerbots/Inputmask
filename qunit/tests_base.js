@@ -214,7 +214,7 @@ export default function (qunit, $, Inputmask) {
 	});
 
 	qunit.test("inputmask(\"(999)999-9999\") - ruslanfedoseenko mask", function (assert) {
-		var $fixture = $("#qunit-fixture");
+        var $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
 		Inputmask("(999)999-9999").mask(testmask);

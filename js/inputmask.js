@@ -1422,7 +1422,7 @@
                 return isMatch;
             }
 
-            function isValid(pos, c, strict, fromSetValid, fromAlternate) { //strict true ~ no correction or autofill
+            function isValid(pos, c, strict, fromSetValid, fromAlternate, validateOnly) { //strict true ~ no correction or autofill
                 function isSelection(posObj) {
                     var selection = isRTL ? (posObj.begin - posObj.end) > 1 || ((posObj.begin - posObj.end) === 1) :
                         (posObj.end - posObj.begin) > 1 || ((posObj.end - posObj.begin) === 1);
@@ -1753,7 +1753,7 @@
                 var result = true,
                     positionsClone = $.extend(true, {}, getMaskSet().validPositions); //clone the currentPositions
 
-                if ($.isFunction(opts.preValidation) && !strict && fromSetValid !== true) {
+                if ($.isFunction(opts.preValidation) && !strict && fromSetValid !== true && validateOnly !== true) {
                     result = opts.preValidation(getBuffer(), maskPos, c, isSelection(pos), opts);
                 }
                 if (result === true) {
@@ -1766,7 +1766,7 @@
 
                     if (maskPos < getMaskSet().maskLength && (maxLength === undefined || maskPos < maxLength)) {
                         result = _isValid(maskPos, c, strict);
-                        if ((!strict || fromSetValid === true) && result === false) {
+                        if ((!strict || fromSetValid === true) && result === false && validateOnly !== true) {
                             var currentPosValid = getMaskSet().validPositions[maskPos];
                             if (currentPosValid && currentPosValid.match.fn === null && (currentPosValid.match.def === c || c === opts.skipOptionalPartCharacter)) {
                                 result = {
@@ -1796,7 +1796,7 @@
                         };
                     }
                 }
-                if ($.isFunction(opts.postValidation) && result !== false && !strict && fromSetValid !== true) {
+                if ($.isFunction(opts.postValidation) && result !== false && !strict && fromSetValid !== true && validateOnly !== true) {
                     var postResult = opts.postValidation(getBuffer(true), result, opts);
                     if (postResult.refreshFromBuffer && postResult.buffer) {
                         var refresh = postResult.refreshFromBuffer;
@@ -1809,7 +1809,7 @@
                     result.pos = maskPos;
                 }
 
-                if (result === false) {
+                if (result === false || validateOnly === true) {
                     resetMaskSet(true);
                     getMaskSet().validPositions = $.extend(true, {}, positionsClone); //revert validation changes
                 }
@@ -1878,7 +1878,7 @@
                 if (input !== undefined) {
                     input.inputmask._valueSet(buffer.join(""));
                     if (caretPos !== undefined && (event === undefined || event.type !== "blur")) {
-                        if (android && event.type === "input") {
+                        if (android && event && event.type === "input") {
                             setTimeout(function () {
                                 caret(input, caretPos);
                             }, 0);
@@ -1924,7 +1924,7 @@
             function checkVal(input, writeOut, strict, nptvl, initiatingEvent) {
                 var inputValue = nptvl.slice(),
                     charCodes = "",
-                    initialNdx = 0, result = undefined;
+                    initialNdx = -1, result = undefined;
 
                 // console.log(nptvl);
 
@@ -1934,52 +1934,55 @@
                 }
 
                 resetMaskSet();
-                // while (inputValue[0] === getPlaceholder(initialNdx)) {
-                //     inputValue.shift();
-                //     initialNdx++;
-                // }
-                getMaskSet().p = seekNext(-1);
-
-                if (!strict) {
-                    if (opts.autoUnmask !== true) {
-                        var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(""),
-                            matches = inputValue.join("").match(new RegExp("^" + Inputmask.escapeRegex(staticInput), "g"));
-                        if (matches && matches.length > 0) {
-                            inputValue.splice(0, matches.length * staticInput.length);
-                            initialNdx = seekNext(initialNdx);
-                        }
-                    } else {
+                if (!strict && opts.autoUnmask !== true) {
+                    var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(""),
+                        matches = inputValue.join("").match(new RegExp("^" + Inputmask.escapeRegex(staticInput), "g"));
+                    if (matches && matches.length > 0) {
+                        inputValue.splice(0, matches.length * staticInput.length);
                         initialNdx = seekNext(initialNdx);
                     }
+                } else {
+                    initialNdx = seekNext(initialNdx);
                 }
+                if (initialNdx === -1) {
+                    getMaskSet().p = seekNext(initialNdx);
+                    initialNdx = 0;
+                } else getMaskSet().p = initialNdx;
                 $.each(inputValue, function (ndx, charCode) {
                     // console.log(charCode);
                     if (charCode !== undefined) { //inputfallback strips some elements out of the inputarray.  $.each logically presents them as undefined
-                        var keypress = new $.Event("_checkval");
-                        keypress.which = charCode.charCodeAt(0);
-                        charCodes += charCode;
-                        var lvp = getLastValidPosition(undefined, true),
-                            lvTest = getMaskSet().validPositions[lvp],
-                            nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : undefined, lvp);
-                        if (!isTemplateMatch(initialNdx, charCodes) || strict || opts.autoUnmask) {
-                            var pos = strict ? ndx : (nextTest.match.fn == null && nextTest.match.optionality && (lvp + 1) < getMaskSet().p ? lvp + 1 : getMaskSet().p);
-                            result = EventHandlers.keypressEvent.call(input, keypress, true, false, strict, pos);
-                            initialNdx = pos + 1;
-                            charCodes = "";
-                        } else {
-                            result = EventHandlers.keypressEvent.call(input, keypress, true, false, true, lvp + 1);
+                        if (getMaskSet().validPositions[ndx] === undefined && inputValue[ndx] === getPlaceholder(ndx) && isMask(ndx, true) &&
+                            isValid(ndx, inputValue[ndx], true, undefined, undefined, true) === false) {
+                            getMaskSet().p++;
                         }
-                        if (result !== false && !strict && $.isFunction(opts.onBeforeWrite)) {
-                            var fp = result.forwardPosition;
-                            result = opts.onBeforeWrite(keypress, getBuffer(), result.forwardPosition, opts);
-                            result.forwardPosition = fp;
-                            if (result && result.refreshFromBuffer) {
-                                var refresh = result.refreshFromBuffer;
-                                refreshFromBuffer(refresh === true ? refresh : refresh.start, refresh.end, result.buffer);
-                                resetMaskSet(true);
-                                if (result.caret) {
-                                    getMaskSet().p = result.caret;
-                                    result.forwardPosition = result.caret;
+                        else {
+
+                            var keypress = new $.Event("_checkval");
+                            keypress.which = charCode.charCodeAt(0);
+                            charCodes += charCode;
+                            var lvp = getLastValidPosition(undefined, true),
+                                lvTest = getMaskSet().validPositions[lvp],
+                                nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : undefined, lvp);
+                            if (!isTemplateMatch(initialNdx, charCodes) || strict || opts.autoUnmask) {
+                                var pos = strict ? ndx : (nextTest.match.fn == null && nextTest.match.optionality && (lvp + 1) < getMaskSet().p ? lvp + 1 : getMaskSet().p);
+                                result = EventHandlers.keypressEvent.call(input, keypress, true, false, strict, pos);
+                                initialNdx = pos + 1;
+                                charCodes = "";
+                            } else {
+                                result = EventHandlers.keypressEvent.call(input, keypress, true, false, true, lvp + 1);
+                            }
+                            if (result !== false && !strict && $.isFunction(opts.onBeforeWrite)) {
+                                var fp = result.forwardPosition;
+                                result = opts.onBeforeWrite(keypress, getBuffer(), result.forwardPosition, opts);
+                                result.forwardPosition = fp;
+                                if (result && result.refreshFromBuffer) {
+                                    var refresh = result.refreshFromBuffer;
+                                    refreshFromBuffer(refresh === true ? refresh : refresh.start, refresh.end, result.buffer);
+                                    resetMaskSet(true);
+                                    if (result.caret) {
+                                        getMaskSet().p = result.caret;
+                                        result.forwardPosition = result.caret;
+                                    }
                                 }
                             }
                         }
@@ -2477,6 +2480,8 @@
                         caretPos = caret(input),
                         tempValue;
 
+                    console.log(inputValue);
+
                     if (isRTL) {
                         tempValue = caretPos.end;
                         caretPos.end = caretPos.begin;
@@ -2501,6 +2506,7 @@
                     } else return true; //allow native paste event as fallback ~ masking will continue by inputfallback
 
                     var pasteValue = inputValue;
+                    console.log(inputValue);
                     if ($.isFunction(opts.onBeforePaste)) {
                         pasteValue = opts.onBeforePaste(inputValue, opts);
                         if (pasteValue === false) {
