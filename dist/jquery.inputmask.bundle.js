@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-3
+* Version: 4.0.1-4
 */
 
 !function(modules) {
@@ -803,7 +803,7 @@
             function renderColorMask(input, buffer, caretPos) {
                 function handleStatic() {
                     isStatic || null !== test.fn && testPos.input !== undefined ? isStatic && null !== test.fn && testPos.input !== undefined && (isStatic = !1, 
-                    maskTemplate += "</span>") : (isStatic = !0, maskTemplate += "<span class='im-static''>");
+                    maskTemplate += "</span>") : (isStatic = !0, maskTemplate += "<span class='im-static'>");
                 }
                 if (colorMask !== undefined) {
                     buffer = buffer || getBuffer(), caretPos === undefined ? caretPos = caret(input) : caretPos.begin === undefined && (caretPos = {
@@ -1348,7 +1348,8 @@
                 casing: null,
                 inputmode: "verbatim",
                 colorMask: !1,
-                androidHack: !1
+                androidHack: !1,
+                importDataAttributes: !0
             },
             definitions: {
                 "9": {
@@ -1370,31 +1371,31 @@
             masksCache: {},
             mask: function(elems) {
                 function importAttributeOptions(npt, opts, userOptions, dataAttribute) {
-                    function importOption(option, optionData) {
-                        null !== (optionData = optionData !== undefined ? optionData : npt.getAttribute(dataAttribute + "-" + option)) && ("string" == typeof optionData && (0 === option.indexOf("on") ? optionData = window[optionData] : "false" === optionData ? optionData = !1 : "true" === optionData && (optionData = !0)), 
-                        userOptions[option] = optionData);
-                    }
-                    ("rtl" === npt.dir || opts.rightAlign) && (npt.style.textAlign = "right"), ("rtl" === npt.dir || opts.numericInput) && (npt.dir = "ltr", 
-                    npt.removeAttribute("dir"), opts.isRTL = !0);
-                    var option, dataoptions, optionData, p, attrOptions = npt.getAttribute(dataAttribute);
-                    if (attrOptions && "" !== attrOptions && (attrOptions = attrOptions.replace(new RegExp("'", "g"), '"'), 
-                    dataoptions = JSON.parse("{" + attrOptions + "}")), dataoptions) {
-                        optionData = undefined;
-                        for (p in dataoptions) if ("alias" === p.toLowerCase()) {
-                            optionData = dataoptions[p];
-                            break;
-                        }
-                    }
-                    importOption("alias", optionData), userOptions.alias && resolveAlias(userOptions.alias, userOptions, opts);
-                    for (option in opts) {
-                        if (dataoptions) {
+                    if (("rtl" === npt.dir || opts.rightAlign) && (npt.style.textAlign = "right"), ("rtl" === npt.dir || opts.numericInput) && (npt.dir = "ltr", 
+                    npt.removeAttribute("dir"), opts.isRTL = !0), !0 === opts.importDataAttributes) {
+                        var option, dataoptions, optionData, p, importOption = function(option, optionData) {
+                            null !== (optionData = optionData !== undefined ? optionData : npt.getAttribute(dataAttribute + "-" + option)) && ("string" == typeof optionData && (0 === option.indexOf("on") ? optionData = window[optionData] : "false" === optionData ? optionData = !1 : "true" === optionData && (optionData = !0)), 
+                            userOptions[option] = optionData);
+                        }, attrOptions = npt.getAttribute(dataAttribute);
+                        if (attrOptions && "" !== attrOptions && (attrOptions = attrOptions.replace(new RegExp("'", "g"), '"'), 
+                        dataoptions = JSON.parse("{" + attrOptions + "}")), dataoptions) {
                             optionData = undefined;
-                            for (p in dataoptions) if (p.toLowerCase() === option.toLowerCase()) {
+                            for (p in dataoptions) if ("alias" === p.toLowerCase()) {
                                 optionData = dataoptions[p];
                                 break;
                             }
                         }
-                        importOption(option, optionData);
+                        importOption("alias", optionData), userOptions.alias && resolveAlias(userOptions.alias, userOptions, opts);
+                        for (option in opts) {
+                            if (dataoptions) {
+                                optionData = undefined;
+                                for (p in dataoptions) if (p.toLowerCase() === option.toLowerCase()) {
+                                    optionData = dataoptions[p];
+                                    break;
+                                }
+                            }
+                            importOption(option, optionData);
+                        }
                     }
                     return $.extend(!0, opts, userOptions), opts;
                 }

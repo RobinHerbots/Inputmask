@@ -1059,6 +1059,14 @@ Uses css classes: im-caret, im-static.
 
 You need to include the inputmask.css in your page to use this option in full.
 
+### importDataAttributes
+Specify to use the data-inputmask attributes or to ignore them.
+
+If you don't use data attributes you can disable the import by specifying importDataAttributes: false.
+
+
+Default: true
+
 ## General
 ### set a value and apply mask
 this can be done with the traditional jquery.val function (all browsers) or JavaScript value property for browsers which implement lookupGetter or getOwnPropertyDescriptor

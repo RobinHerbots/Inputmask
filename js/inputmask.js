@@ -118,7 +118,8 @@
                 casing: null, //mask-level casing. Options: null, "upper", "lower" or "title" or callback args => elem, test, pos, validPositions return charValue
                 inputmode: "verbatim", //specify the inputmode  - already in place for when browsers will support it
                 colorMask: false, //enable css styleable mask
-                androidHack: false //see README_android.md
+                androidHack: false, //see README_android.md
+                importDataAttributes: true //import data-inputmask attributes
             },
             definitions: {
                 "9": {
@@ -152,55 +153,55 @@
                         npt.removeAttribute("dir");
                         opts.isRTL = true;
                     }
+                    if (opts.importDataAttributes === true) {
+                        var attrOptions = npt.getAttribute(dataAttribute),
+                            option, dataoptions, optionData, p;
 
-                    var attrOptions = npt.getAttribute(dataAttribute),
-                        option, dataoptions, optionData, p;
-
-                    function importOption(option, optionData) {
-                        optionData = optionData !== undefined ? optionData : npt.getAttribute(dataAttribute + "-" + option);
-                        if (optionData !== null) {
-                            if (typeof optionData === "string") {
-                                if (option.indexOf("on") === 0) optionData = window[optionData]; //get function definition
-                                else if (optionData === "false") optionData = false;
-                                else if (optionData === "true") optionData = true;
-                            }
-                            userOptions[option] = optionData;
-                        }
-                    }
-
-                    if (attrOptions && attrOptions !== "") {
-                        attrOptions = attrOptions.replace(new RegExp("'", "g"), '"');
-                        dataoptions = JSON.parse("{" + attrOptions + "}");
-                    }
-
-                    //resolve aliases
-                    if (dataoptions) { //pickup alias from dataAttribute
-                        optionData = undefined;
-                        for (p in dataoptions) {
-                            if (p.toLowerCase() === "alias") {
-                                optionData = dataoptions[p];
-                                break;
+                        function importOption(option, optionData) {
+                            optionData = optionData !== undefined ? optionData : npt.getAttribute(dataAttribute + "-" + option);
+                            if (optionData !== null) {
+                                if (typeof optionData === "string") {
+                                    if (option.indexOf("on") === 0) optionData = window[optionData]; //get function definition
+                                    else if (optionData === "false") optionData = false;
+                                    else if (optionData === "true") optionData = true;
+                                }
+                                userOptions[option] = optionData;
                             }
                         }
-                    }
-                    importOption("alias", optionData); //pickup alias from dataAttribute-alias
-                    if (userOptions.alias) {
-                        resolveAlias(userOptions.alias, userOptions, opts);
-                    }
 
-                    for (option in opts) {
-                        if (dataoptions) {
+                        if (attrOptions && attrOptions !== "") {
+                            attrOptions = attrOptions.replace(new RegExp("'", "g"), '"');
+                            dataoptions = JSON.parse("{" + attrOptions + "}");
+                        }
+
+                        //resolve aliases
+                        if (dataoptions) { //pickup alias from dataAttribute
                             optionData = undefined;
                             for (p in dataoptions) {
-                                if (p.toLowerCase() === option.toLowerCase()) {
+                                if (p.toLowerCase() === "alias") {
                                     optionData = dataoptions[p];
                                     break;
                                 }
                             }
                         }
-                        importOption(option, optionData);
-                    }
+                        importOption("alias", optionData); //pickup alias from dataAttribute-alias
+                        if (userOptions.alias) {
+                            resolveAlias(userOptions.alias, userOptions, opts);
+                        }
 
+                        for (option in opts) {
+                            if (dataoptions) {
+                                optionData = undefined;
+                                for (p in dataoptions) {
+                                    if (p.toLowerCase() === option.toLowerCase()) {
+                                        optionData = dataoptions[p];
+                                        break;
+                                    }
+                                }
+                            }
+                            importOption(option, optionData);
+                        }
+                    }
                     $.extend(true, opts, userOptions);
                     return opts;
                 }

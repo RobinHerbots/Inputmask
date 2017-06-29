@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [UNRELEASED]
 ### added
+- importDataAttributes option #1633
 
 ### Updates
 - remove maxLength attribute on android #1490
@@ -11,7 +12,6 @@ All notable changes to this project will be documented in this file.
 - TODO drop all date/time related aliases
 - TODO rewrite datatime alias
 
-### Fixed
 
 ## [3.3.7 - 2017-06-09]
 ### added
