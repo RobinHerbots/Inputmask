@@ -2958,7 +2958,7 @@
                 function handleStatic() {
                     if (!isStatic && (test.fn === null || testPos.input === undefined)) {
                         isStatic = true;
-                        maskTemplate += "<span class='im-static''>"
+                        maskTemplate += "<span class='im-static'>"
                     } else if (isStatic && (test.fn !== null && testPos.input !== undefined)) {
                         isStatic = false;
                         maskTemplate += "</span>"
