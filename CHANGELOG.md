@@ -13,6 +13,8 @@ All notable changes to this project will be documented in this file.
 - TODO drop all date/time related aliases
 - TODO rewrite datatime alias
 
+### Fixes
+- Numeric suffix makes radixPoint disappear on preset value #1638
 
 ## [3.3.7 - 2017-06-09]
 ### added

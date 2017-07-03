@@ -249,6 +249,7 @@
                     }
 
                     if (opts.autoGroup === true && opts.groupSeparator !== "" && (charAtPos !== opts.radixPoint || currentResult.pos !== undefined || currentResult.dopost)) {
+                        var addRadix = processValue[processValue.length - 1] === opts.radixPoint && currentResult.c === opts.radixPoint;
                         processValue = Inputmask(buildPostMask(processValue, opts), {
                             numericInput: true, jitMasking: true,
                             definitions: {
@@ -258,6 +259,7 @@
                                 }
                             }
                         }).format(processValue.join(""));
+                        if (addRadix) processValue += opts.radixPoint;
                         if (processValue.charAt(0) === opts.groupSeparator) {
                             processValue.substr(1);
                         }

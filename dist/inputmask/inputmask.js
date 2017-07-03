@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-6
+* Version: 4.0.1-9
 */
 
 !function(factory) {
@@ -875,8 +875,7 @@
             },
             pasteEvent: function(e) {
                 var tempValue, input = this, ev = e.originalEvent || e, $input = $(input), inputValue = input.inputmask._valueGet(!0), caretPos = caret(input);
-                console.log(inputValue), isRTL && (tempValue = caretPos.end, caretPos.end = caretPos.begin, 
-                caretPos.begin = tempValue);
+                isRTL && (tempValue = caretPos.end, caretPos.end = caretPos.begin, caretPos.begin = tempValue);
                 var valueBeforeCaret = inputValue.substr(0, caretPos.begin), valueAfterCaret = inputValue.substr(caretPos.end, inputValue.length);
                 if (valueBeforeCaret === (isRTL ? getBufferTemplate().reverse() : getBufferTemplate()).slice(0, caretPos.begin).join("") && (valueBeforeCaret = ""), 
                 valueAfterCaret === (isRTL ? getBufferTemplate().reverse() : getBufferTemplate()).slice(caretPos.end).join("") && (valueAfterCaret = ""), 
@@ -886,7 +885,7 @@
                     inputValue = valueBeforeCaret + ev.clipboardData.getData("text/plain") + valueAfterCaret;
                 }
                 var pasteValue = inputValue;
-                if (console.log(inputValue), $.isFunction(opts.onBeforePaste)) {
+                if ($.isFunction(opts.onBeforePaste)) {
                     if (!1 === (pasteValue = opts.onBeforePaste(inputValue, opts))) return e.preventDefault();
                     pasteValue || (pasteValue = inputValue);
                 }

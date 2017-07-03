@@ -2481,7 +2481,7 @@
                         caretPos = caret(input),
                         tempValue;
 
-                    console.log(inputValue);
+                    // console.log(inputValue);
 
                     if (isRTL) {
                         tempValue = caretPos.end;
@@ -2507,7 +2507,7 @@
                     } else return true; //allow native paste event as fallback ~ masking will continue by inputfallback
 
                     var pasteValue = inputValue;
-                    console.log(inputValue);
+                    // console.log(inputValue);
                     if ($.isFunction(opts.onBeforePaste)) {
                         pasteValue = opts.onBeforePaste(inputValue, opts);
                         if (pasteValue === false) {

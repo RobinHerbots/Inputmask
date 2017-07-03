@@ -53,7 +53,7 @@ export default function (qunit, $, Inputmask) {
 
 
     qunit.test("9999\\9\\9 - type 1234 + backspace - NightsDream", function (assert) {
-        var $fixture = $("body");
+        var $fixture = $("#qunit-fixture");
         $fixture.append('<input type="text" id="testmask" />');
         var testmask = document.getElementById("testmask");
         Inputmask({
