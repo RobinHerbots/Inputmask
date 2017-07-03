@@ -43,7 +43,7 @@ Inputmask.extendDefaults({ androidHack: "rtfm" });
 Before you submit an issue related to Android.  Test the issue with and without predictive text enabled.
 
 If the issue also occurs with predictive text disabled you may create an issue for it on Github.
-Otherwise, retry the issue on a desktop browser and add the colorMask: true option.
+Otherwise, retry the issue on a desktop browser and add the inputEventOnly: true and colorMask: true option.
 If the problem is still there you may submit an issue.
 
 Always include a jsfiddle or alike to ease reproducing the problem.
