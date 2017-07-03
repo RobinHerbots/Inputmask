@@ -1884,7 +1884,7 @@
                                 caret(input, caretPos);
                             }, 0);
                         } else caret(input, caretPos);
-                    } else renderColorMask(input, buffer, caretPos);
+                    } else renderColorMask(input, caretPos, buffer.length === 0);
                     if (triggerInputEvent === true) {
                         skipInputEvent = true;
                         $(input).trigger("input");
@@ -2074,7 +2074,7 @@
                             range.select();
 
                         }
-                        renderColorMask(input, undefined, {begin: begin, end: end});
+                        renderColorMask(input, {begin: begin, end: end});
                     }
                 } else {
                     if (input.setSelectionRange) {
@@ -2923,7 +2923,7 @@
                 template.zIndex = input.zIndex - 1;
             }
 
-            function renderColorMask(input, buffer, caretPos) {
+            function renderColorMask(input, caretPos, clear) {
                 var maskTemplate = "", isStatic = false, test, testPos;
 
                 function handleStatic() {
@@ -2937,14 +2937,13 @@
                 }
 
                 if (colorMask !== undefined) {
-                    buffer = buffer || getBuffer();
                     if (caretPos === undefined) {
                         caretPos = caret(input);
                     } else if (caretPos.begin === undefined) {
                         caretPos = {begin: caretPos, end: caretPos};
                     }
 
-                    if (buffer !== "") {
+                    if (clear !== true) {
                         var ndxIntlzr, pos = 0, lvp = getLastValidPosition();
                         do {
                             if (pos === caretPos.begin && document.activeElement === input) {

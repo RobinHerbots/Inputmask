@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-5
+* Version: 4.0.1-6
 */
 
 !function(modules) {
@@ -590,7 +590,7 @@
                         caretPos !== undefined && (caretPos = result.caret !== undefined ? result.caret : caretPos);
                     }
                 }
-                input !== undefined && (input.inputmask._valueSet(buffer.join("")), caretPos === undefined || event !== undefined && "blur" === event.type ? renderColorMask(input, buffer, caretPos) : android && event && "input" === event.type ? setTimeout(function() {
+                input !== undefined && (input.inputmask._valueSet(buffer.join("")), caretPos === undefined || event !== undefined && "blur" === event.type ? renderColorMask(input, caretPos, 0 === buffer.length) : android && event && "input" === event.type ? setTimeout(function() {
                     caret(input, caretPos);
                 }, 0) : caret(input, caretPos), !0 === triggerInputEvent && (skipInputEvent = !0, 
                 $(input).trigger("input")));
@@ -691,7 +691,7 @@
                         sel.removeAllRanges(), sel.addRange(range);
                     } else input.createTextRange && (range = input.createTextRange(), range.collapse(!0), 
                     range.moveEnd("character", end), range.moveStart("character", begin), range.select());
-                    renderColorMask(input, undefined, {
+                    renderColorMask(input, {
                         begin: begin,
                         end: end
                     });
@@ -787,17 +787,17 @@
                     }, 0);
                 });
             }
-            function renderColorMask(input, buffer, caretPos) {
+            function renderColorMask(input, caretPos, clear) {
                 function handleStatic() {
                     isStatic || null !== test.fn && testPos.input !== undefined ? isStatic && (null !== test.fn && testPos.input !== undefined || "" === test.def) && (isStatic = !1, 
                     maskTemplate += "</span>") : (isStatic = !0, maskTemplate += "<span class='im-static'>");
                 }
                 var test, testPos, maskTemplate = "", isStatic = !1;
                 if (colorMask !== undefined) {
-                    if (buffer = buffer || getBuffer(), caretPos === undefined ? caretPos = caret(input) : caretPos.begin === undefined && (caretPos = {
+                    if (caretPos === undefined ? caretPos = caret(input) : caretPos.begin === undefined && (caretPos = {
                         begin: caretPos,
                         end: caretPos
-                    }), "" !== buffer) {
+                    }), !0 !== clear) {
                         var ndxIntlzr, pos = 0, lvp = getLastValidPosition();
                         do {
                             pos === caretPos.begin && document.activeElement === input && (maskTemplate += "<span class='im-caret' style='border-right-width: 1px;border-right-style: solid;'></span>"), 
