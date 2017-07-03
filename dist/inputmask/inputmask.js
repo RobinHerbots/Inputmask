@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-4
+* Version: 4.0.1-5
 */
 
 !function(factory) {
@@ -728,23 +728,10 @@
                 }
                 return document.body.removeChild(e), caretPos;
             }
-            function position() {
-                colorMask.style.position = "absolute", colorMask.style.top = offset.top + "px", 
-                colorMask.style.left = offset.left + "px", colorMask.style.width = parseInt(input.offsetWidth) - parseInt(computedStyle.paddingLeft) - parseInt(computedStyle.paddingRight) - parseInt(computedStyle.borderLeftWidth) - parseInt(computedStyle.borderRightWidth) + "px", 
-                colorMask.style.height = parseInt(input.offsetHeight) - parseInt(computedStyle.paddingTop) - parseInt(computedStyle.paddingBottom) - parseInt(computedStyle.borderTopWidth) - parseInt(computedStyle.borderBottomWidth) + "px", 
-                colorMask.style.lineHeight = colorMask.style.height, colorMask.style.zIndex = isNaN(computedStyle.zIndex) ? -1 : computedStyle.zIndex - 1, 
-                colorMask.style.webkitAppearance = "textfield", colorMask.style.mozAppearance = "textfield", 
-                colorMask.style.Appearance = "textfield";
-            }
-            var offset = $(input).position(), computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
-            colorMask = document.createElement("div"), document.body.appendChild(colorMask);
-            for (var style in computedStyle) computedStyle.hasOwnProperty(style) && isNaN(style) && "cssText" !== style && -1 == style.indexOf("webkit") && (colorMask.style[style] = computedStyle[style]);
-            input.style.backgroundColor = "transparent", input.style.color = "transparent", 
-            input.style.webkitAppearance = "caret", input.style.mozAppearance = "caret", input.style.Appearance = "caret", 
-            position(), $(window).on("resize", function(e) {
-                offset = $(input).position(), computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null), 
-                position();
-            }), $(input).on("click", function(e) {
+            var computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
+            colorMask = document.createElement("div"), colorMask.className = "im-colormask", 
+            input.parentNode.insertBefore(colorMask, input), input.parentNode.removeChild(input), 
+            colorMask.appendChild(input), $(input).on("click", function(e) {
                 return caret(input, findCaretPos(e.clientX)), EventHandlers.clickEvent.call(this, [ e ]);
             }), $(input).on("keydown", function(e) {
                 e.shiftKey || !1 === opts.insertMode || setTimeout(function() {
@@ -754,17 +741,16 @@
         }
         function renderColorMask(input, buffer, caretPos) {
             function handleStatic() {
-                isStatic || null !== test.fn && testPos.input !== undefined ? isStatic && null !== test.fn && testPos.input !== undefined && (isStatic = !1, 
+                isStatic || null !== test.fn && testPos.input !== undefined ? isStatic && (null !== test.fn && testPos.input !== undefined || "" === test.def) && (isStatic = !1, 
                 maskTemplate += "</span>") : (isStatic = !0, maskTemplate += "<span class='im-static'>");
             }
+            var test, testPos, maskTemplate = "", isStatic = !1;
             if (colorMask !== undefined) {
-                buffer = buffer || getBuffer(), caretPos === undefined ? caretPos = caret(input) : caretPos.begin === undefined && (caretPos = {
+                if (buffer = buffer || getBuffer(), caretPos === undefined ? caretPos = caret(input) : caretPos.begin === undefined && (caretPos = {
                     begin: caretPos,
                     end: caretPos
-                });
-                var maskTemplate = "", isStatic = !1;
-                if ("" != buffer) {
-                    var ndxIntlzr, test, testPos, pos = 0, lvp = getLastValidPosition();
+                }), "" !== buffer) {
+                    var ndxIntlzr, pos = 0, lvp = getLastValidPosition();
                     do {
                         pos === caretPos.begin && document.activeElement === input && (maskTemplate += "<span class='im-caret' style='border-right-width: 1px;border-right-style: solid;'></span>"), 
                         getMaskSet().validPositions[pos] ? (testPos = getMaskSet().validPositions[pos], 
@@ -772,12 +758,15 @@
                         test = testPos.match, ndxIntlzr = testPos.locator.slice(), (!1 === opts.jitMasking || pos < lvp || "number" == typeof opts.jitMasking && isFinite(opts.jitMasking) && opts.jitMasking > pos) && (handleStatic(), 
                         maskTemplate += getPlaceholder(pos, test))), pos++;
                     } while ((maxLength === undefined || pos < maxLength) && (null !== test.fn || "" !== test.def) || lvp > pos);
+                    isStatic && handleStatic();
                 }
-                colorMask.innerHTML = maskTemplate;
+                var oldTemplate = colorMask.getElementsByTagName("div")[0], template = document.createElement("div");
+                template.innerHTML = maskTemplate, oldTemplate && colorMask.removeChild(oldTemplate), 
+                colorMask.appendChild(template), input.inputmask.positionColorMask(input, template);
             }
         }
         maskset = maskset || this.maskset, opts = opts || this.opts;
-        var undoValue, $el, maxLength, colorMask, valueBuffer, el = this.el, isRTL = this.isRTL, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, mouseEnter = !1, EventRuler = {
+        var undoValue, $el, maxLength, colorMask, el = this.el, isRTL = this.isRTL, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, mouseEnter = !1, EventRuler = {
             on: function(input, eventName, eventHandler) {
                 var ev = function(e) {
                     if (this.inputmask === undefined && "FORM" !== this.nodeName) {
@@ -1069,6 +1058,10 @@
                 }, 0);
             }
         };
+        Inputmask.prototype.positionColorMask = function(input, template) {
+            template.style.left = input.offsetLeft + "px", template.zIndex = input.zIndex - 1;
+        };
+        var valueBuffer;
         if (actionObj !== undefined) switch (actionObj.action) {
           case "isComplete":
             return el = actionObj.el, isComplete(getBuffer());

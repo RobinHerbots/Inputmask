@@ -1055,10 +1055,18 @@ https://html.spec.whatwg.org/#input-modalities:-the-inputmode-attribute
 ### colorMask
 Default: false
 Create a css styleable mask.
-Uses css classes: im-caret, im-static.
 
-You need to include the inputmask.css in your page to use this option in full.
+You need to include the inputmask.css in your page to use this option.
 
+See the inputmask.css for more info about the used styling.
+You can override the Inputmask.prototype.positionColorMask`if you need some custom positioning.
+```
+ Inputmask.prototype.positionColorMask = function (input, template) {
+                template.style.left = input.offsetLeft + "px";
+                template.zIndex = input.zIndex - 1;
+           }
+```
+ 
 ### importDataAttributes
 Specify to use the data-inputmask attributes or to ignore them.
 

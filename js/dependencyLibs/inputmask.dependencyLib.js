@@ -254,14 +254,6 @@
                 }
             }
             return this;
-        },
-        position: function () {
-            if (isValidElement(this[0])) {
-                return {
-                    top: this[0].offsetTop,
-                    left: this[0].offsetLeft
-                };
-            }
         }
     };
 

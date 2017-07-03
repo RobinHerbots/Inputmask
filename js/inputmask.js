@@ -2863,9 +2863,7 @@
 
 
             function initializeColorMask(input) {
-                var offset = $(input).position(),
-                    computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
-                // parentNode = input.parentNode;
+                var computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
 
                 function findCaretPos(clientx) {
                     //calculate text width
@@ -2901,47 +2899,12 @@
                     return caretPos;
                 }
 
-                function position() {
-                    colorMask.style.position = "absolute";
-                    colorMask.style.top = offset.top + "px";
-                    colorMask.style.left = offset.left + "px";
-                    colorMask.style.width = parseInt(input.offsetWidth) - parseInt(computedStyle.paddingLeft) - parseInt(computedStyle.paddingRight) - parseInt(computedStyle.borderLeftWidth) - parseInt(computedStyle.borderRightWidth) + "px";
-                    colorMask.style.height = parseInt(input.offsetHeight) - parseInt(computedStyle.paddingTop) - parseInt(computedStyle.paddingBottom) - parseInt(computedStyle.borderTopWidth) - parseInt(computedStyle.borderBottomWidth) + "px";
-
-                    colorMask.style.lineHeight = colorMask.style.height;
-                    colorMask.style.zIndex = isNaN(computedStyle.zIndex) ? -1 : computedStyle.zIndex - 1;
-                    colorMask.style.webkitAppearance = "textfield";
-                    colorMask.style.mozAppearance = "textfield";
-                    colorMask.style.Appearance = "textfield";
-
-                }
-
-
                 colorMask = document.createElement("div");
-                document.body.appendChild(colorMask); //insert at body to prevent css clash :last-child for example
-                for (var style in computedStyle) { //clone styles
-                    if (computedStyle.hasOwnProperty(style)) {
-                        if (isNaN(style) && style !== "cssText" && style.indexOf("webkit") == -1) {
-                            colorMask.style[style] = computedStyle[style];
-                        }
-                    }
-                }
+                colorMask.className = "im-colormask";
+                input.parentNode.insertBefore(colorMask, input);
+                input.parentNode.removeChild(input);
+                colorMask.appendChild(input);
 
-                //restyle input
-                input.style.backgroundColor = "transparent";
-                input.style.color = "transparent";
-                input.style.webkitAppearance = "caret";
-                input.style.mozAppearance = "caret";
-                input.style.Appearance = "caret";
-
-                position();
-
-                //event passthrough
-                $(window).on("resize", function (e) {
-                    offset = $(input).position();
-                    computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
-                    position();
-                });
                 $(input).on("click", function (e) {
                     caret(input, findCaretPos(e.clientX));
                     return EventHandlers.clickEvent.call(this, [e]);
@@ -2955,12 +2918,19 @@
                 });
             }
 
+            Inputmask.prototype.positionColorMask = function (input, template) {
+                template.style.left = input.offsetLeft + "px";
+                template.zIndex = input.zIndex - 1;
+            }
+
             function renderColorMask(input, buffer, caretPos) {
+                var maskTemplate = "", isStatic = false, test, testPos;
+
                 function handleStatic() {
                     if (!isStatic && (test.fn === null || testPos.input === undefined)) {
                         isStatic = true;
                         maskTemplate += "<span class='im-static'>"
-                    } else if (isStatic && (test.fn !== null && testPos.input !== undefined)) {
+                    } else if (isStatic && ((test.fn !== null && testPos.input !== undefined) || test.def === "")) {
                         isStatic = false;
                         maskTemplate += "</span>"
                     }
@@ -2974,10 +2944,8 @@
                         caretPos = {begin: caretPos, end: caretPos};
                     }
 
-                    var maskTemplate = "", isStatic = false;
-                    if (buffer != "") {
-                        var ndxIntlzr, pos = 0,
-                            test, testPos, lvp = getLastValidPosition();
+                    if (buffer !== "") {
+                        var ndxIntlzr, pos = 0, lvp = getLastValidPosition();
                         do {
                             if (pos === caretPos.begin && document.activeElement === input) {
                                 maskTemplate += "<span class='im-caret' style='border-right-width: 1px;border-right-style: solid;'></span>";
@@ -2999,8 +2967,15 @@
                             }
                             pos++;
                         } while ((maxLength === undefined || pos < maxLength) && (test.fn !== null || test.def !== "") || lvp > pos);
+                        if (isStatic) handleStatic();
                     }
-                    colorMask.innerHTML = maskTemplate;
+
+                    var oldTemplate = colorMask.getElementsByTagName('div')[0],
+                        template = document.createElement("div");
+                    template.innerHTML = maskTemplate;
+                    if (oldTemplate) colorMask.removeChild(oldTemplate);
+                    colorMask.appendChild(template);
+                    input.inputmask.positionColorMask(input, template);
                 }
             }
 

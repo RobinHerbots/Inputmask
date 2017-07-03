@@ -24,10 +24,10 @@ This is not enabled by default, because I find that the developer should be awar
 
 What it does.
 - changes the input type to password => disabled predictive text
-- enables the colorMask option which creates a div which is positioned above the input.
-So we type in the hidden password input and render the mask in the created div.
-Be aware that by changing the type to password that all css you targeted for type=text will not be applied anymore.
-You will need to adapt your css for it.  It is possible that the div is not well positioned.  If so, open an issue for it with a jsfiddle.
+- enables the colorMask option which creates a div, which surrounds the input.  
+So we type in the hidden password input and render the mask in the a created div.
+
+To use the colorMask, you need to include the inputmask.css you might need to add some css-tweaks to make it all visually correct in your page.
 
 To enable the workaround add the androidHack option to your individual masks or globally by setting defaults.
 You should set the option to "rtfm".
