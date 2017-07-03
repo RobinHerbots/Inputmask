@@ -79,6 +79,7 @@ div.im-colormask > input:focus {
 }
 
 div.im-colormask > div {
+    color: black;
     position: absolute;
     display: inline-block;
     left: 0; /*calculated*/

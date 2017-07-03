@@ -51,4 +51,24 @@ export default function (qunit, $, Inputmask) {
 		assert.ok($.caret(testmask).begin == 3, "Caret " + $.caret(testmask).begin);
 	});
 
+
+    qunit.test("9999\\9\\9 - type 1234 + backspace - NightsDream", function (assert) {
+        var $fixture = $("body");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask({
+            "mask": "9999\\9\\9",
+            clearMaskOnLostFocus: false,
+            placeholder: "X",
+            colorMask: true,
+            inputEventOnly: true
+        }).mask(testmask);
+
+        testmask.focus();
+        //simulate input
+        $(testmask).input("1234");
+        //simulate backspace
+        $(testmask).input("1234X", 5);
+        assert.ok($.caret(testmask).begin == 5, "Caret " + $.caret(testmask).begin);
+    });
 };
