@@ -2602,32 +2602,36 @@
                             backBufferPart = buffer.substr(caretPos.begin);
 
                         //check if thare was a selection
-                        var selection = {begin: frontPart.length}, endOffset = 0;
-                        if (frontPart[frontPart.length - 1] !== frontBufferPart[frontBufferPart.length - 1]) {
-                            selection.begin--;
-                            endOffset++;
-                        }
-                        if (backPart.length > backBufferPart.length) {
-                            selection.end = selection.begin;
-                        } else {
-                            var selectedPart = backBufferPart.replace(new RegExp(Inputmask.escapeRegex(backPart) + "$"), "");
-                            selection.end = selection.begin + selectedPart.length + endOffset;
-                        }
+                        var selection = caretPos, endOffset = 0;
+                        if (backPart === backBufferPart || frontPart === frontBufferPart) {
+                            selection = {begin: frontPart.length};
+                            if (frontPart[frontPart.length - 1] !== frontBufferPart[frontBufferPart.length - 1]) {
+                                selection.begin--;
+                                endOffset++;
+                            }
+                            if (backPart.length > backBufferPart.length) {
+                                selection.end = selection.begin;
+                            } else {
+                                var selectedPart = backBufferPart.replace(new RegExp(Inputmask.escapeRegex(backPart) + "$"), "");
+                                selection.end = selection.begin + selectedPart.length + endOffset;
+                            }
 
-                        if (selection.begin == selection.end && !isMask(selection.begin)) {
-                            selection.end = caretPos.end;
+                            if (selection.begin === selection.end && !isMask(selection.begin)) {
+                                selection.end = caretPos.end;
+                            }
                         }
 
                         //is selection
-                        if (backPart !== "" && selection.begin < selection.end) {
+                        if (selection.begin < selection.end) {
                             writeBuffer(input, getBuffer(), selection);
                             if (frontPart.charCodeAt(frontPart.length - 1) !== frontBufferPart.charCodeAt(frontBufferPart.length - 1)) {
                                 e.which = frontPart.charCodeAt(frontPart.length - 1);
                                 ignorable = false; //make sure ignorable is ignored ;-)
                                 EventHandlers.keypressEvent.call(input, e);
                             } else {
-                                if (selection.begin == selection.end - 1)
+                                if (selection.begin === selection.end - 1) {
                                     caret(input, seekPrevious(selection.begin + 1), selection.end);
+                                }
                                 e.keyCode = Inputmask.keyCode.DELETE;
                                 EventHandlers.keydownEvent.call(input, e);
                             }
@@ -2924,7 +2928,7 @@
             }
 
             function renderColorMask(input, caretPos, clear) {
-                var maskTemplate = "", isStatic = false, test, testPos;
+                var maskTemplate = "", isStatic = false, test, testPos, ndxIntlzr, pos = 0;
 
                 function handleStatic() {
                     if (!isStatic && (test.fn === null || testPos.input === undefined)) {
@@ -2936,6 +2940,12 @@
                     }
                 }
 
+                function handleCaret(force) {
+                    if ((force === true || pos === caretPos.begin) && document.activeElement === input) {
+                        maskTemplate += "<span class='im-caret' style='border-right-width: 1px;border-right-style: solid;'></span>";
+                    }
+                }
+
                 if (colorMask !== undefined) {
                     if (caretPos === undefined) {
                         caretPos = caret(input);
@@ -2944,11 +2954,9 @@
                     }
 
                     if (clear !== true) {
-                        var ndxIntlzr, pos = 0, lvp = getLastValidPosition();
+                        var lvp = getLastValidPosition();
                         do {
-                            if (pos === caretPos.begin && document.activeElement === input) {
-                                maskTemplate += "<span class='im-caret' style='border-right-width: 1px;border-right-style: solid;'></span>";
-                            }
+                            handleCaret();
                             if (getMaskSet().validPositions[pos]) {
                                 testPos = getMaskSet().validPositions[pos];
                                 test = testPos.match;
@@ -2965,7 +2973,8 @@
                                 }
                             }
                             pos++;
-                        } while ((maxLength === undefined || pos < maxLength) && (test.fn !== null || test.def !== "") || lvp > pos);
+                        } while ((maxLength === undefined || pos < maxLength) && (test.fn !== null || test.def !== "") || lvp > pos || isStatic);
+                        if (maskTemplate.indexOf("im-caret") === -1) handleCaret(true);
                         if (isStatic) handleStatic();
                     }
 

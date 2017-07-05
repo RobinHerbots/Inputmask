@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixes
 - Numeric suffix makes radixPoint disappear on preset value #1638
+- Cannot delete after fill up all the mask Android Chrome browser Jsfiddle #1637
 
 ## [3.3.7 - 2017-06-09]
 ### added

@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-9
+* Version: 4.0.1-10
 */
 
 !function(modules) {
@@ -792,21 +792,23 @@
                     isStatic || null !== test.fn && testPos.input !== undefined ? isStatic && (null !== test.fn && testPos.input !== undefined || "" === test.def) && (isStatic = !1, 
                     maskTemplate += "</span>") : (isStatic = !0, maskTemplate += "<span class='im-static'>");
                 }
-                var test, testPos, maskTemplate = "", isStatic = !1;
+                function handleCaret(force) {
+                    !0 !== force && pos !== caretPos.begin || document.activeElement !== input || (maskTemplate += "<span class='im-caret' style='border-right-width: 1px;border-right-style: solid;'></span>");
+                }
+                var test, testPos, ndxIntlzr, maskTemplate = "", isStatic = !1, pos = 0;
                 if (colorMask !== undefined) {
                     if (caretPos === undefined ? caretPos = caret(input) : caretPos.begin === undefined && (caretPos = {
                         begin: caretPos,
                         end: caretPos
                     }), !0 !== clear) {
-                        var ndxIntlzr, pos = 0, lvp = getLastValidPosition();
+                        var lvp = getLastValidPosition();
                         do {
-                            pos === caretPos.begin && document.activeElement === input && (maskTemplate += "<span class='im-caret' style='border-right-width: 1px;border-right-style: solid;'></span>"), 
-                            getMaskSet().validPositions[pos] ? (testPos = getMaskSet().validPositions[pos], 
+                            handleCaret(), getMaskSet().validPositions[pos] ? (testPos = getMaskSet().validPositions[pos], 
                             test = testPos.match, ndxIntlzr = testPos.locator.slice(), handleStatic(), maskTemplate += testPos.input) : (testPos = getTestTemplate(pos, ndxIntlzr, pos - 1), 
                             test = testPos.match, ndxIntlzr = testPos.locator.slice(), (!1 === opts.jitMasking || pos < lvp || "number" == typeof opts.jitMasking && isFinite(opts.jitMasking) && opts.jitMasking > pos) && (handleStatic(), 
                             maskTemplate += getPlaceholder(pos, test))), pos++;
-                        } while ((maxLength === undefined || pos < maxLength) && (null !== test.fn || "" !== test.def) || lvp > pos);
-                        isStatic && handleStatic();
+                        } while ((maxLength === undefined || pos < maxLength) && (null !== test.fn || "" !== test.def) || lvp > pos || isStatic);
+                        -1 === maskTemplate.indexOf("im-caret") && handleCaret(!0), isStatic && handleStatic();
                     }
                     var oldTemplate = colorMask.getElementsByTagName("div")[0], template = document.createElement("div");
                     template.innerHTML = maskTemplate, oldTemplate && colorMask.removeChild(oldTemplate), 
@@ -966,18 +968,20 @@
                             }
                         }(input, inputValue, caretPos)) return !1;
                         caretPos.begin > inputValue.length && (caret(input, inputValue.length), caretPos = caret(input));
-                        var buffer = getBuffer().join(""), frontPart = inputValue.substr(0, caretPos.begin), backPart = inputValue.substr(caretPos.begin), frontBufferPart = buffer.substr(0, caretPos.begin), backBufferPart = buffer.substr(caretPos.begin), selection = {
-                            begin: frontPart.length
-                        }, endOffset = 0;
-                        if (frontPart[frontPart.length - 1] !== frontBufferPart[frontBufferPart.length - 1] && (selection.begin--, 
-                        endOffset++), backPart.length > backBufferPart.length) selection.end = selection.begin; else {
-                            var selectedPart = backBufferPart.replace(new RegExp(Inputmask.escapeRegex(backPart) + "$"), "");
-                            selection.end = selection.begin + selectedPart.length + endOffset;
+                        var buffer = getBuffer().join(""), frontPart = inputValue.substr(0, caretPos.begin), backPart = inputValue.substr(caretPos.begin), frontBufferPart = buffer.substr(0, caretPos.begin), backBufferPart = buffer.substr(caretPos.begin), selection = caretPos, endOffset = 0;
+                        if (backPart === backBufferPart || frontPart === frontBufferPart) {
+                            if (selection = {
+                                begin: frontPart.length
+                            }, frontPart[frontPart.length - 1] !== frontBufferPart[frontBufferPart.length - 1] && (selection.begin--, 
+                            endOffset++), backPart.length > backBufferPart.length) selection.end = selection.begin; else {
+                                var selectedPart = backBufferPart.replace(new RegExp(Inputmask.escapeRegex(backPart) + "$"), "");
+                                selection.end = selection.begin + selectedPart.length + endOffset;
+                            }
+                            selection.begin !== selection.end || isMask(selection.begin) || (selection.end = caretPos.end);
                         }
-                        if (selection.begin != selection.end || isMask(selection.begin) || (selection.end = caretPos.end), 
-                        "" !== backPart && selection.begin < selection.end) writeBuffer(input, getBuffer(), selection), 
+                        if (selection.begin < selection.end) writeBuffer(input, getBuffer(), selection), 
                         frontPart.charCodeAt(frontPart.length - 1) !== frontBufferPart.charCodeAt(frontBufferPart.length - 1) ? (e.which = frontPart.charCodeAt(frontPart.length - 1), 
-                        ignorable = !1, EventHandlers.keypressEvent.call(input, e)) : (selection.begin == selection.end - 1 && caret(input, seekPrevious(selection.begin + 1), selection.end), 
+                        ignorable = !1, EventHandlers.keypressEvent.call(input, e)) : (selection.begin === selection.end - 1 && caret(input, seekPrevious(selection.begin + 1), selection.end), 
                         e.keyCode = Inputmask.keyCode.DELETE, EventHandlers.keydownEvent.call(input, e)); else {
                             for (var bufferTemplate = getBufferTemplate().join(""); null === inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$"); ) bufferTemplate = bufferTemplate.slice(1);
                             inputValue = inputValue.replace(bufferTemplate, ""), $.isFunction(opts.onBeforeMask) && (inputValue = opts.onBeforeMask(inputValue, opts) || inputValue), 
