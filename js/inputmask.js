@@ -223,7 +223,7 @@
                         el.inputmask.opts = scopedOpts;
                         el.inputmask.noMasksCache = that.noMasksCache;
                         el.inputmask.userOptions = $.extend(true, {}, that.userOptions);
-                        el.inputmask.isRTL = scopedOpts.isRTL;
+                        el.inputmask.isRTL = scopedOpts.isRTL || scopedOpts.numericInput;
                         el.inputmask.el = el;
                         el.inputmask.maskset = maskset;
 
