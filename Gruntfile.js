@@ -1,4 +1,5 @@
 const webpackConfig = require('./webpack.config');
+const buildWebpackConfig = require('./webpackbuild.config');
 const qunitWebpackConfig = require('./qunit/webpack.config');
 
 module.exports = function (grunt) {
@@ -153,7 +154,8 @@ module.exports = function (grunt) {
             }
         },
         webpack: {
-            build: webpackConfig,
+            main: webpackConfig,
+            build: buildWebpackConfig,
             qunit: qunitWebpackConfig
         }
     });

@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 - TODO rewrite datatime alias
 
 ### Fixes
+- Usage of numericInput in data-inputmask causes reversed value #1640
 - Numeric suffix makes radixPoint disappear on preset value #1638
 - Cannot delete after fill up all the mask Android Chrome browser Jsfiddle #1637
 

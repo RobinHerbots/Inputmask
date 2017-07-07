@@ -143,16 +143,6 @@
                 var that = this;
 
                 function importAttributeOptions(npt, opts, userOptions, dataAttribute) {
-                    //handle dir=rtl
-                    if (npt.dir === "rtl" || opts.rightAlign) {
-                        npt.style.textAlign = "right";
-                    }
-
-                    if (npt.dir === "rtl" || opts.numericInput) {
-                        npt.dir = "ltr";
-                        npt.removeAttribute("dir");
-                        opts.isRTL = true;
-                    }
                     if (opts.importDataAttributes === true) {
                         var attrOptions = npt.getAttribute(dataAttribute),
                             option, dataoptions, optionData, p;
@@ -203,6 +193,18 @@
                         }
                     }
                     $.extend(true, opts, userOptions);
+
+                    //handle dir=rtl
+                    if (npt.dir === "rtl" || opts.rightAlign) {
+                        npt.style.textAlign = "right";
+                    }
+
+                    if (npt.dir === "rtl" || opts.numericInput) {
+                        npt.dir = "ltr";
+                        npt.removeAttribute("dir");
+                        opts.isRTL = true;
+                    }
+
                     return opts;
                 }
 
