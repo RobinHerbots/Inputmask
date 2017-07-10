@@ -2905,16 +2905,21 @@
                     return caretPos;
                 }
 
+                var template = document.createElement("div");
                 colorMask = document.createElement("div");
                 colorMask.className = "im-colormask";
                 input.parentNode.insertBefore(colorMask, input);
                 input.parentNode.removeChild(input);
                 colorMask.appendChild(input);
+                colorMask.appendChild(template);
 
-                $(input).on("click", function (e) {
+                function clickHandler(e) {
+                    input.focus();
                     caret(input, findCaretPos(e.clientX));
-                    return EventHandlers.clickEvent.call(this, [e]);
-                });
+                    return EventHandlers.clickEvent.call(input, [e]);
+                };
+                $(input).on("click", clickHandler);
+                $(template).on("click", clickHandler);
                 $(input).on("keydown", function (e) {
                     if (!e.shiftKey && opts.insertMode !== false) {
                         setTimeout(function () {
@@ -2926,7 +2931,6 @@
 
             Inputmask.prototype.positionColorMask = function (input, template) {
                 template.style.left = input.offsetLeft + "px";
-                template.zIndex = input.zIndex - 1;
             }
 
             function renderColorMask(input, caretPos, clear) {
@@ -2980,11 +2984,8 @@
                         if (isStatic) handleStatic();
                     }
 
-                    var oldTemplate = colorMask.getElementsByTagName('div')[0],
-                        template = document.createElement("div");
+                    var template = colorMask.getElementsByTagName('div')[0];
                     template.innerHTML = maskTemplate;
-                    if (oldTemplate) colorMask.removeChild(oldTemplate);
-                    colorMask.appendChild(template);
                     input.inputmask.positionColorMask(input, template);
                 }
             }

@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-12
+* Version: 4.0.1-13
 */
 
 !function(modules) {
@@ -776,12 +776,14 @@
                     }
                     return document.body.removeChild(e), caretPos;
                 }
-                var computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
+                function clickHandler(e) {
+                    return input.focus(), caret(input, findCaretPos(e.clientX)), EventHandlers.clickEvent.call(input, [ e ]);
+                }
+                var computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null), template = document.createElement("div");
                 colorMask = document.createElement("div"), colorMask.className = "im-colormask", 
                 input.parentNode.insertBefore(colorMask, input), input.parentNode.removeChild(input), 
-                colorMask.appendChild(input), $(input).on("click", function(e) {
-                    return caret(input, findCaretPos(e.clientX)), EventHandlers.clickEvent.call(this, [ e ]);
-                }), $(input).on("keydown", function(e) {
+                colorMask.appendChild(input), colorMask.appendChild(template), $(input).on("click", clickHandler), 
+                $(template).on("click", clickHandler), $(input).on("keydown", function(e) {
                     e.shiftKey || !1 === opts.insertMode || setTimeout(function() {
                         renderColorMask(input);
                     }, 0);
@@ -810,9 +812,8 @@
                         } while ((maxLength === undefined || pos < maxLength) && (null !== test.fn || "" !== test.def) || lvp > pos || isStatic);
                         -1 === maskTemplate.indexOf("im-caret") && handleCaret(!0), isStatic && handleStatic();
                     }
-                    var oldTemplate = colorMask.getElementsByTagName("div")[0], template = document.createElement("div");
-                    template.innerHTML = maskTemplate, oldTemplate && colorMask.removeChild(oldTemplate), 
-                    colorMask.appendChild(template), input.inputmask.positionColorMask(input, template);
+                    var template = colorMask.getElementsByTagName("div")[0];
+                    template.innerHTML = maskTemplate, input.inputmask.positionColorMask(input, template);
                 }
             }
             maskset = maskset || this.maskset, opts = opts || this.opts;
@@ -1110,7 +1111,7 @@
                 }
             };
             Inputmask.prototype.positionColorMask = function(input, template) {
-                template.style.left = input.offsetLeft + "px", template.zIndex = input.zIndex - 1;
+                template.style.left = input.offsetLeft + "px";
             };
             var valueBuffer;
             if (actionObj !== undefined) switch (actionObj.action) {
@@ -2771,7 +2772,7 @@
         return window;
     }.call(exports, __webpack_require__, exports, module)) && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__);
 }, function(module, exports, __webpack_require__) {
-    exports = module.exports = __webpack_require__(13)(void 0), exports.push([ module.i, "span.im-caret {\r\n    -webkit-animation: 1s blink step-end infinite;\r\n    animation: 1s blink step-end infinite;\r\n}\r\n\r\n@keyframes blink {\r\n    from, to {\r\n        border-right-color: black;\r\n    }\r\n    50% {\r\n        border-right-color: transparent;\r\n    }\r\n}\r\n\r\n@-webkit-keyframes blink {\r\n    from, to {\r\n        border-right-color: black;\r\n    }\r\n    50% {\r\n        border-right-color: transparent;\r\n    }\r\n}\r\n\r\nspan.im-static {\r\n    color: grey;\r\n}\r\n\r\ndiv.im-colormask {\r\n    display: inline-block;\r\n    border-style: inset;\r\n    border-width: 2px;\r\n    -webkit-appearance: textfield;\r\n    -moz-appearance: textfield;\r\n    appearance: textfield;\r\n}\r\n\r\ndiv.im-colormask > input {\r\n    display: inline-block;\r\n    background-color: transparent;\r\n    color: transparent;\r\n    -webkit-appearance: caret;\r\n    -moz-appearance: caret;\r\n    appearance: caret;\r\n    border-style: none;\r\n}\r\n\r\ndiv.im-colormask > input:focus {\r\n    outline: none;\r\n}\r\n\r\ndiv.im-colormask > div {\r\n    color: black;\r\n    position: absolute;\r\n    display: inline-block;\r\n    left: 0; /*calculated*/\r\n    z-index: -1; /*calculated*/\r\n}", "" ]);
+    exports = module.exports = __webpack_require__(13)(void 0), exports.push([ module.i, "span.im-caret {\r\n    -webkit-animation: 1s blink step-end infinite;\r\n    animation: 1s blink step-end infinite;\r\n}\r\n\r\n@keyframes blink {\r\n    from, to {\r\n        border-right-color: black;\r\n    }\r\n    50% {\r\n        border-right-color: transparent;\r\n    }\r\n}\r\n\r\n@-webkit-keyframes blink {\r\n    from, to {\r\n        border-right-color: black;\r\n    }\r\n    50% {\r\n        border-right-color: transparent;\r\n    }\r\n}\r\n\r\nspan.im-static {\r\n    color: grey;\r\n}\r\n\r\ndiv.im-colormask {\r\n    display: inline-block;\r\n    border-style: inset;\r\n    border-width: 2px;\r\n    -webkit-appearance: textfield;\r\n    -moz-appearance: textfield;\r\n    appearance: textfield;\r\n}\r\n\r\ndiv.im-colormask > input {\r\n    display: inline-block;\r\n    background-color: transparent;\r\n    color: transparent;\r\n    -webkit-appearance: caret;\r\n    -moz-appearance: caret;\r\n    appearance: caret;\r\n    border-style: none;\r\n}\r\n\r\ndiv.im-colormask > input:focus {\r\n    outline: none;\r\n}\r\n\r\ndiv.im-colormask > div {\r\n    color: black;\r\n    position: absolute;\r\n    display: inline-block;\r\n    left: 0; /*calculated*/\r\n}", "" ]);
 }, function(module, exports) {
     function cssWithMappingToString(item, useSourceMap) {
         var content = item[1] || "", cssMapping = item[3];

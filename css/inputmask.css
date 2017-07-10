@@ -83,5 +83,4 @@ div.im-colormask > div {
     position: absolute;
     display: inline-block;
     left: 0; /*calculated*/
-    z-index: -1; /*calculated*/
 }
