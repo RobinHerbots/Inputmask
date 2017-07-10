@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 - TODO rewrite datatime alias
 
 ### Fixes
+- colorMask - incorrect positioning #1421
 - Object doesn't support property or method '_valueGet' in version 3.3.7 #1645
 - Usage of numericInput in data-inputmask causes reversed value #1640
 - Numeric suffix makes radixPoint disappear on preset value #1638
