@@ -118,7 +118,8 @@
                 casing: null, //mask-level casing. Options: null, "upper", "lower" or "title" or callback args => elem, test, pos, validPositions return charValue
                 inputmode: "verbatim", //specify the inputmode  - already in place for when browsers will support it
                 colorMask: false, //enable css styleable mask
-                androidHack: false //see README_android.md
+                androidHack: false, //see README_android.md
+                importDataAttributes: true //import data-inputmask attributes
             },
             definitions: {
                 "9": {
@@ -142,6 +143,57 @@
                 var that = this;
 
                 function importAttributeOptions(npt, opts, userOptions, dataAttribute) {
+                    if (opts.importDataAttributes === true) {
+                        var attrOptions = npt.getAttribute(dataAttribute),
+                            option, dataoptions, optionData, p;
+
+                        function importOption(option, optionData) {
+                            optionData = optionData !== undefined ? optionData : npt.getAttribute(dataAttribute + "-" + option);
+                            if (optionData !== null) {
+                                if (typeof optionData === "string") {
+                                    if (option.indexOf("on") === 0) optionData = window[optionData]; //get function definition
+                                    else if (optionData === "false") optionData = false;
+                                    else if (optionData === "true") optionData = true;
+                                }
+                                userOptions[option] = optionData;
+                            }
+                        }
+
+                        if (attrOptions && attrOptions !== "") {
+                            attrOptions = attrOptions.replace(new RegExp("'", "g"), '"');
+                            dataoptions = JSON.parse("{" + attrOptions + "}");
+                        }
+
+                        //resolve aliases
+                        if (dataoptions) { //pickup alias from dataAttribute
+                            optionData = undefined;
+                            for (p in dataoptions) {
+                                if (p.toLowerCase() === "alias") {
+                                    optionData = dataoptions[p];
+                                    break;
+                                }
+                            }
+                        }
+                        importOption("alias", optionData); //pickup alias from dataAttribute-alias
+                        if (userOptions.alias) {
+                            resolveAlias(userOptions.alias, userOptions, opts);
+                        }
+
+                        for (option in opts) {
+                            if (dataoptions) {
+                                optionData = undefined;
+                                for (p in dataoptions) {
+                                    if (p.toLowerCase() === option.toLowerCase()) {
+                                        optionData = dataoptions[p];
+                                        break;
+                                    }
+                                }
+                            }
+                            importOption(option, optionData);
+                        }
+                    }
+                    $.extend(true, opts, userOptions);
+
                     //handle dir=rtl
                     if (npt.dir === "rtl" || opts.rightAlign) {
                         npt.style.textAlign = "right";
@@ -153,55 +205,6 @@
                         opts.isRTL = true;
                     }
 
-                    var attrOptions = npt.getAttribute(dataAttribute),
-                        option, dataoptions, optionData, p;
-
-                    function importOption(option, optionData) {
-                        optionData = optionData !== undefined ? optionData : npt.getAttribute(dataAttribute + "-" + option);
-                        if (optionData !== null) {
-                            if (typeof optionData === "string") {
-                                if (option.indexOf("on") === 0) optionData = window[optionData]; //get function definition
-                                else if (optionData === "false") optionData = false;
-                                else if (optionData === "true") optionData = true;
-                            }
-                            userOptions[option] = optionData;
-                        }
-                    }
-
-                    if (attrOptions && attrOptions !== "") {
-                        attrOptions = attrOptions.replace(new RegExp("'", "g"), '"');
-                        dataoptions = JSON.parse("{" + attrOptions + "}");
-                    }
-
-                    //resolve aliases
-                    if (dataoptions) { //pickup alias from dataAttribute
-                        optionData = undefined;
-                        for (p in dataoptions) {
-                            if (p.toLowerCase() === "alias") {
-                                optionData = dataoptions[p];
-                                break;
-                            }
-                        }
-                    }
-                    importOption("alias", optionData); //pickup alias from dataAttribute-alias
-                    if (userOptions.alias) {
-                        resolveAlias(userOptions.alias, userOptions, opts);
-                    }
-
-                    for (option in opts) {
-                        if (dataoptions) {
-                            optionData = undefined;
-                            for (p in dataoptions) {
-                                if (p.toLowerCase() === option.toLowerCase()) {
-                                    optionData = dataoptions[p];
-                                    break;
-                                }
-                            }
-                        }
-                        importOption(option, optionData);
-                    }
-
-                    $.extend(true, opts, userOptions);
                     return opts;
                 }
 
@@ -222,7 +225,7 @@
                         el.inputmask.opts = scopedOpts;
                         el.inputmask.noMasksCache = that.noMasksCache;
                         el.inputmask.userOptions = $.extend(true, {}, that.userOptions);
-                        el.inputmask.isRTL = scopedOpts.isRTL;
+                        el.inputmask.isRTL = scopedOpts.isRTL || scopedOpts.numericInput;
                         el.inputmask.el = el;
                         el.inputmask.maskset = maskset;
 
@@ -822,8 +825,6 @@
                 var maskTemplate = [],
                     ndxIntlzr, pos = 0,
                     test, testPos, lvp = getLastValidPosition();
-                maxLength = el !== undefined ? el.maxLength : undefined;
-                if (maxLength === -1) maxLength = undefined;
                 do {
                     if (baseOnInput === true && getMaskSet().validPositions[pos]) {
                         testPos = getMaskSet().validPositions[pos];
@@ -1424,7 +1425,7 @@
                 return isMatch;
             }
 
-            function isValid(pos, c, strict, fromSetValid, fromAlternate) { //strict true ~ no correction or autofill
+            function isValid(pos, c, strict, fromSetValid, fromAlternate, validateOnly) { //strict true ~ no correction or autofill
                 function isSelection(posObj) {
                     var selection = isRTL ? (posObj.begin - posObj.end) > 1 || ((posObj.begin - posObj.end) === 1) :
                         (posObj.end - posObj.begin) > 1 || ((posObj.end - posObj.begin) === 1);
@@ -1755,20 +1756,20 @@
                 var result = true,
                     positionsClone = $.extend(true, {}, getMaskSet().validPositions); //clone the currentPositions
 
-                if ($.isFunction(opts.preValidation) && !strict && fromSetValid !== true) {
+                if ($.isFunction(opts.preValidation) && !strict && fromSetValid !== true && validateOnly !== true) {
                     result = opts.preValidation(getBuffer(), maskPos, c, isSelection(pos), opts);
                 }
                 if (result === true) {
                     fillMissingNonMask(maskPos);
 
                     if (isSelection(pos)) {
-                        handleRemove(undefined, Inputmask.keyCode.DELETE, pos, true);
+                        handleRemove(undefined, Inputmask.keyCode.DELETE, pos, true, true);
                         maskPos = getMaskSet().p;
                     }
 
                     if (maskPos < getMaskSet().maskLength && (maxLength === undefined || maskPos < maxLength)) {
                         result = _isValid(maskPos, c, strict);
-                        if ((!strict || fromSetValid === true) && result === false) {
+                        if ((!strict || fromSetValid === true) && result === false && validateOnly !== true) {
                             var currentPosValid = getMaskSet().validPositions[maskPos];
                             if (currentPosValid && currentPosValid.match.fn === null && (currentPosValid.match.def === c || c === opts.skipOptionalPartCharacter)) {
                                 result = {
@@ -1798,7 +1799,7 @@
                         };
                     }
                 }
-                if ($.isFunction(opts.postValidation) && result !== false && !strict && fromSetValid !== true) {
+                if ($.isFunction(opts.postValidation) && result !== false && !strict && fromSetValid !== true && validateOnly !== true) {
                     var postResult = opts.postValidation(getBuffer(true), result, opts);
                     if (postResult.refreshFromBuffer && postResult.buffer) {
                         var refresh = postResult.refreshFromBuffer;
@@ -1811,7 +1812,7 @@
                     result.pos = maskPos;
                 }
 
-                if (result === false) {
+                if (result === false || validateOnly === true) {
                     resetMaskSet(true);
                     getMaskSet().validPositions = $.extend(true, {}, positionsClone); //revert validation changes
                 }
@@ -1880,12 +1881,12 @@
                 if (input !== undefined) {
                     input.inputmask._valueSet(buffer.join(""));
                     if (caretPos !== undefined && (event === undefined || event.type !== "blur")) {
-                        if (android && event.type === "input") {
+                        if (android && event && event.type === "input") {
                             setTimeout(function () {
                                 caret(input, caretPos);
                             }, 0);
                         } else caret(input, caretPos);
-                    } else renderColorMask(input, buffer, caretPos);
+                    } else renderColorMask(input, caretPos, buffer.length === 0);
                     if (triggerInputEvent === true) {
                         skipInputEvent = true;
                         $(input).trigger("input");
@@ -1926,7 +1927,7 @@
             function checkVal(input, writeOut, strict, nptvl, initiatingEvent) {
                 var inputValue = nptvl.slice(),
                     charCodes = "",
-                    initialNdx = 0, result = undefined;
+                    initialNdx = -1, result = undefined;
 
                 // console.log(nptvl);
 
@@ -1936,49 +1937,55 @@
                 }
 
                 resetMaskSet();
-                getMaskSet().p = seekNext(-1);
-                // if (writeOut) input.inputmask._valueSet(""); //initial clear
-
-                if (!strict) {
-                    if (opts.autoUnmask !== true) {
-                        var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(""),
-                            matches = inputValue.join("").match(new RegExp("^" + Inputmask.escapeRegex(staticInput), "g"));
-                        if (matches && matches.length > 0) {
-                            inputValue.splice(0, matches.length * staticInput.length);
-                            initialNdx = seekNext(initialNdx);
-                        }
-                    } else {
+                if (!strict && opts.autoUnmask !== true) {
+                    var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(""),
+                        matches = inputValue.join("").match(new RegExp("^" + Inputmask.escapeRegex(staticInput), "g"));
+                    if (matches && matches.length > 0) {
+                        inputValue.splice(0, matches.length * staticInput.length);
                         initialNdx = seekNext(initialNdx);
                     }
+                } else {
+                    initialNdx = seekNext(initialNdx);
                 }
+                if (initialNdx === -1) {
+                    getMaskSet().p = seekNext(initialNdx);
+                    initialNdx = 0;
+                } else getMaskSet().p = initialNdx;
                 $.each(inputValue, function (ndx, charCode) {
                     // console.log(charCode);
                     if (charCode !== undefined) { //inputfallback strips some elements out of the inputarray.  $.each logically presents them as undefined
-                        var keypress = new $.Event("_checkval");
-                        keypress.which = charCode.charCodeAt(0);
-                        charCodes += charCode;
-                        var lvp = getLastValidPosition(undefined, true),
-                            lvTest = getMaskSet().validPositions[lvp],
-                            nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : undefined, lvp);
-                        if (!isTemplateMatch(initialNdx, charCodes) || strict || opts.autoUnmask) {
-                            var pos = strict ? ndx : (nextTest.match.fn == null && nextTest.match.optionality && (lvp + 1) < getMaskSet().p ? lvp + 1 : getMaskSet().p);
-                            result = EventHandlers.keypressEvent.call(input, keypress, true, false, strict, pos);
-                            initialNdx = pos + 1;
-                            charCodes = "";
-                        } else {
-                            result = EventHandlers.keypressEvent.call(input, keypress, true, false, true, lvp + 1);
+                        if (getMaskSet().validPositions[ndx] === undefined && inputValue[ndx] === getPlaceholder(ndx) && isMask(ndx, true) &&
+                            isValid(ndx, inputValue[ndx], true, undefined, undefined, true) === false) {
+                            getMaskSet().p++;
                         }
-                        if (result !== false && !strict && $.isFunction(opts.onBeforeWrite)) {
-                            var fp = result.forwardPosition;
-                            result = opts.onBeforeWrite(keypress, getBuffer(), result.forwardPosition, opts);
-                            result.forwardPosition = fp;
-                            if (result && result.refreshFromBuffer) {
-                                var refresh = result.refreshFromBuffer;
-                                refreshFromBuffer(refresh === true ? refresh : refresh.start, refresh.end, result.buffer);
-                                resetMaskSet(true);
-                                if (result.caret) {
-                                    getMaskSet().p = result.caret;
-                                    result.forwardPosition = result.caret;
+                        else {
+
+                            var keypress = new $.Event("_checkval");
+                            keypress.which = charCode.charCodeAt(0);
+                            charCodes += charCode;
+                            var lvp = getLastValidPosition(undefined, true),
+                                lvTest = getMaskSet().validPositions[lvp],
+                                nextTest = getTestTemplate(lvp + 1, lvTest ? lvTest.locator.slice() : undefined, lvp);
+                            if (!isTemplateMatch(initialNdx, charCodes) || strict || opts.autoUnmask) {
+                                var pos = strict ? ndx : (nextTest.match.fn == null && nextTest.match.optionality && (lvp + 1) < getMaskSet().p ? lvp + 1 : getMaskSet().p);
+                                result = EventHandlers.keypressEvent.call(input, keypress, true, false, strict, pos);
+                                initialNdx = pos + 1;
+                                charCodes = "";
+                            } else {
+                                result = EventHandlers.keypressEvent.call(input, keypress, true, false, true, lvp + 1);
+                            }
+                            if (result !== false && !strict && $.isFunction(opts.onBeforeWrite)) {
+                                var fp = result.forwardPosition;
+                                result = opts.onBeforeWrite(keypress, getBuffer(), result.forwardPosition, opts);
+                                result.forwardPosition = fp;
+                                if (result && result.refreshFromBuffer) {
+                                    var refresh = result.refreshFromBuffer;
+                                    refreshFromBuffer(refresh === true ? refresh : refresh.start, refresh.end, result.buffer);
+                                    resetMaskSet(true);
+                                    if (result.caret) {
+                                        getMaskSet().p = result.caret;
+                                        result.forwardPosition = result.caret;
+                                    }
                                 }
                             }
                         }
@@ -2069,7 +2076,7 @@
                             range.select();
 
                         }
-                        renderColorMask(input, undefined, {begin: begin, end: end});
+                        renderColorMask(input, {begin: begin, end: end});
                     }
                 } else {
                     if (input.setSelectionRange) {
@@ -2476,6 +2483,8 @@
                         caretPos = caret(input),
                         tempValue;
 
+                    // console.log(inputValue);
+
                     if (isRTL) {
                         tempValue = caretPos.end;
                         caretPos.end = caretPos.begin;
@@ -2500,6 +2509,7 @@
                     } else return true; //allow native paste event as fallback ~ masking will continue by inputfallback
 
                     var pasteValue = inputValue;
+                    // console.log(inputValue);
                     if ($.isFunction(opts.onBeforePaste)) {
                         pasteValue = opts.onBeforePaste(inputValue, opts);
                         if (pasteValue === false) {
@@ -2544,11 +2554,7 @@
                         }
                     }
 
-                    var input = this,
-                        inputValue = input.inputmask._valueGet();
-
-                    if (getBuffer().join("") !== inputValue) {
-                        var caretPos = caret(input);
+                    function radixPointHandler(input, inputValue, caretPos) {
                         //radixpoint tweak
                         if (inputValue.charAt(caretPos.begin - 1) === "." && opts.radixPoint !== "") {
                             inputValue = inputValue.split("");
@@ -2563,9 +2569,9 @@
                             return false;
 
                         }
+                    }
 
-                        inputValue = inputValue.replace(new RegExp("(" + Inputmask.escapeRegex(getBufferTemplate().join("")) + ")*"), "");
-
+                    function ieMobileHandler(input, inputValue, caretPos) {
                         if (iemobile) { //iemobile just set the character at the end althought the caret position is correctly set
                             var inputChar = inputValue.replace(getBuffer().join(""), "");
                             if (inputChar.length === 1) {
@@ -2575,34 +2581,77 @@
                                 return false;
                             }
                         }
+                    }
+
+                    var input = this,
+                        inputValue = input.inputmask._valueGet();
+
+                    if (getBuffer().join("") !== inputValue) {
+                        var caretPos = caret(input);
+                        if (radixPointHandler(input, inputValue, caretPos) === false) return false;
+                        inputValue = inputValue.replace(new RegExp("(" + Inputmask.escapeRegex(getBufferTemplate().join("")) + ")*"), "");
+                        if (ieMobileHandler(input, inputValue, caretPos) === false) return false;
 
                         if (caretPos.begin > inputValue.length) {
                             caret(input, inputValue.length);
                             caretPos = caret(input);
                         }
-                        //detect & treat possible backspace before static
-                        if ((getBuffer().length - inputValue.length) === 1 && inputValue.charAt(caretPos.begin) !== getBuffer()[caretPos.begin] && inputValue.charAt(caretPos.begin + 1) !== getBuffer()[caretPos.begin] && !isMask(caretPos.begin)) {
-                            e.keyCode = Inputmask.keyCode.BACKSPACE;
-                            EventHandlers.keydownEvent.call(input, e);
-                        } else {
-                            var stickyParts = [],
-                                bufferTemplate = getBufferTemplate().join("");
-                            stickyParts.push(inputValue.substr(0, caretPos.begin));
-                            stickyParts.push(inputValue.substr(caretPos.begin));
 
+                        var buffer = getBuffer().join(""),
+                            frontPart = inputValue.substr(0, caretPos.begin),
+                            backPart = inputValue.substr(caretPos.begin),
+                            frontBufferPart = buffer.substr(0, caretPos.begin),
+                            backBufferPart = buffer.substr(caretPos.begin);
+
+                        //check if thare was a selection
+                        var selection = caretPos, endOffset = 0;
+                        if (backPart === backBufferPart || frontPart === frontBufferPart) {
+                            selection = {begin: frontPart.length};
+                            if (frontPart[frontPart.length - 1] !== frontBufferPart[frontBufferPart.length - 1]) {
+                                selection.begin--;
+                                endOffset++;
+                            }
+                            if (backPart.length > backBufferPart.length) {
+                                selection.end = selection.begin;
+                            } else {
+                                var selectedPart = backBufferPart.replace(new RegExp(Inputmask.escapeRegex(backPart) + "$"), "");
+                                selection.end = selection.begin + selectedPart.length + endOffset;
+                            }
+
+                            if (selection.begin === selection.end && !isMask(selection.begin)) {
+                                selection.end = caretPos.end;
+                            }
+                        }
+
+                        //is selection
+                        if (selection.begin < selection.end) {
+                            writeBuffer(input, getBuffer(), selection);
+                            if (frontPart.charCodeAt(frontPart.length - 1) !== frontBufferPart.charCodeAt(frontBufferPart.length - 1)) {
+                                e.which = frontPart.charCodeAt(frontPart.length - 1);
+                                ignorable = false; //make sure ignorable is ignored ;-)
+                                EventHandlers.keypressEvent.call(input, e);
+                            } else {
+                                if (selection.begin === selection.end - 1) {
+                                    caret(input, seekPrevious(selection.begin + 1), selection.end);
+                                }
+                                e.keyCode = Inputmask.keyCode.DELETE;
+                                EventHandlers.keydownEvent.call(input, e);
+                            }
+                        } else {
+                            var bufferTemplate = getBufferTemplate().join("");
                             while (inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$") === null) {
                                 bufferTemplate = bufferTemplate.slice(1);
                             }
                             inputValue = inputValue.replace(bufferTemplate, "");
                             if ($.isFunction(opts.onBeforeMask)) inputValue = opts.onBeforeMask(inputValue, opts) || inputValue;
-
                             checkVal(input, true, false, inputValue.split(""), e);
-                            repositionCaret(input, stickyParts[0], stickyParts[1]);
+                            repositionCaret(input, frontPart, backPart);
 
                             if (isComplete(getBuffer()) === true) {
                                 $(input).trigger("complete");
                             }
                         }
+
                         e.preventDefault();
                     }
                 },
@@ -2707,10 +2756,11 @@
                                             var placeholder = getPlaceholder(lastPosition),
                                                 lvp = getMaskSet().validPositions[lvclickPosition],
                                                 tt = getTestTemplate(lastPosition, lvp ? lvp.match.locator : undefined, lvp);
-                                            if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder && tt.match.optionalQuantifier !== true) || (!isMask(lastPosition) && tt.match.def === placeholder)) {
+                                            if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder && tt.match.optionalQuantifier !== true && tt.match.newBlockMarker !== true) || (!isMask(lastPosition) && tt.match.def === placeholder)) {
                                                 var newPos = seekNext(lastPosition);
-                                                if (clickPosition >= newPos)
+                                                if (clickPosition >= newPos) {
                                                     lastPosition = newPos;
+                                                }
                                             }
                                             caret(input, lastPosition);
                                         }
@@ -2819,9 +2869,7 @@
 
 
             function initializeColorMask(input) {
-                var offset = $(input).position(),
-                    computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
-                // parentNode = input.parentNode;
+                var computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
 
                 function findCaretPos(clientx) {
                     //calculate text width
@@ -2857,51 +2905,21 @@
                     return caretPos;
                 }
 
-                function position() {
-                    colorMask.style.position = "absolute";
-                    colorMask.style.top = offset.top + "px";
-                    colorMask.style.left = offset.left + "px";
-                    colorMask.style.width = parseInt(input.offsetWidth) - parseInt(computedStyle.paddingLeft) - parseInt(computedStyle.paddingRight) - parseInt(computedStyle.borderLeftWidth) - parseInt(computedStyle.borderRightWidth) + "px";
-                    colorMask.style.height = parseInt(input.offsetHeight) - parseInt(computedStyle.paddingTop) - parseInt(computedStyle.paddingBottom) - parseInt(computedStyle.borderTopWidth) - parseInt(computedStyle.borderBottomWidth) + "px";
-
-                    colorMask.style.lineHeight = colorMask.style.height;
-                    colorMask.style.zIndex = isNaN(computedStyle.zIndex) ? -1 : computedStyle.zIndex - 1;
-                    colorMask.style.webkitAppearance = "textfield";
-                    colorMask.style.mozAppearance = "textfield";
-                    colorMask.style.Appearance = "textfield";
-
-                }
-
-
+                var template = document.createElement("div");
                 colorMask = document.createElement("div");
-                document.body.appendChild(colorMask); //insert at body to prevent css clash :last-child for example
-                for (var style in computedStyle) { //clone styles
-                    if (computedStyle.hasOwnProperty(style)) {
-                        if (isNaN(style) && style !== "cssText" && style.indexOf("webkit") == -1) {
-                            colorMask.style[style] = computedStyle[style];
-                        }
-                    }
-                }
+                colorMask.className = "im-colormask";
+                input.parentNode.insertBefore(colorMask, input);
+                input.parentNode.removeChild(input);
+                colorMask.appendChild(input);
+                colorMask.appendChild(template);
 
-                //restyle input
-                input.style.backgroundColor = "transparent";
-                input.style.color = "transparent";
-                input.style.webkitAppearance = "caret";
-                input.style.mozAppearance = "caret";
-                input.style.Appearance = "caret";
-
-                position();
-
-                //event passthrough
-                $(window).on("resize", function (e) {
-                    offset = $(input).position();
-                    computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
-                    position();
-                });
-                $(input).on("click", function (e) {
+                function clickHandler(e) {
+                    input.focus();
                     caret(input, findCaretPos(e.clientX));
-                    return EventHandlers.clickEvent.call(this, [e]);
-                });
+                    return EventHandlers.clickEvent.call(input, [e]);
+                };
+                $(input).on("click", clickHandler);
+                $(template).on("click", clickHandler);
                 $(input).on("keydown", function (e) {
                     if (!e.shiftKey && opts.insertMode !== false) {
                         setTimeout(function () {
@@ -2911,33 +2929,40 @@
                 });
             }
 
-            function renderColorMask(input, buffer, caretPos) {
+            Inputmask.prototype.positionColorMask = function (input, template) {
+                template.style.left = input.offsetLeft + "px";
+            }
+
+            function renderColorMask(input, caretPos, clear) {
+                var maskTemplate = "", isStatic = false, test, testPos, ndxIntlzr, pos = 0;
+
                 function handleStatic() {
                     if (!isStatic && (test.fn === null || testPos.input === undefined)) {
                         isStatic = true;
-                        maskTemplate += "<span class='im-static''>"
-                    } else if (isStatic && (test.fn !== null && testPos.input !== undefined)) {
+                        maskTemplate += "<span class='im-static'>"
+                    } else if (isStatic && ((test.fn !== null && testPos.input !== undefined) || test.def === "")) {
                         isStatic = false;
                         maskTemplate += "</span>"
                     }
                 }
 
+                function handleCaret(force) {
+                    if ((force === true || pos === caretPos.begin) && document.activeElement === input) {
+                        maskTemplate += "<span class='im-caret' style='border-right-width: 1px;border-right-style: solid;'></span>";
+                    }
+                }
+
                 if (colorMask !== undefined) {
-                    buffer = buffer || getBuffer();
                     if (caretPos === undefined) {
                         caretPos = caret(input);
                     } else if (caretPos.begin === undefined) {
                         caretPos = {begin: caretPos, end: caretPos};
                     }
 
-                    var maskTemplate = "", isStatic = false;
-                    if (buffer != "") {
-                        var ndxIntlzr, pos = 0,
-                            test, testPos, lvp = getLastValidPosition();
+                    if (clear !== true) {
+                        var lvp = getLastValidPosition();
                         do {
-                            if (pos === caretPos.begin && document.activeElement === input) {
-                                maskTemplate += "<span class='im-caret' style='border-right-width: 1px;border-right-style: solid;'></span>";
-                            }
+                            handleCaret();
                             if (getMaskSet().validPositions[pos]) {
                                 testPos = getMaskSet().validPositions[pos];
                                 test = testPos.match;
@@ -2954,9 +2979,14 @@
                                 }
                             }
                             pos++;
-                        } while ((maxLength === undefined || pos < maxLength) && (test.fn !== null || test.def !== "") || lvp > pos);
+                        } while ((maxLength === undefined || pos < maxLength) && (test.fn !== null || test.def !== "") || lvp > pos || isStatic);
+                        if (maskTemplate.indexOf("im-caret") === -1) handleCaret(true);
+                        if (isStatic) handleStatic();
                     }
-                    colorMask.innerHTML = maskTemplate;
+
+                    var template = colorMask.getElementsByTagName('div')[0];
+                    template.innerHTML = maskTemplate;
+                    input.inputmask.positionColorMask(input, template);
                 }
             }
 
@@ -3106,7 +3136,7 @@
                     }
                     if (isSupported !== false) {
                         patchValueProperty(input);
-                    }
+                    } else input.inputmask = undefined;
                     return isSupported;
                 }
 
@@ -3116,6 +3146,10 @@
                 if (isSupported !== false) {
                     el = elem;
                     $el = $(el);
+
+                    //read maxlength prop from el
+                    maxLength = el !== undefined ? el.maxLength : undefined;
+                    if (maxLength === -1) maxLength = undefined;
 
                     if (opts.colorMask === true) {
                         initializeColorMask(el);
@@ -3157,7 +3191,7 @@
                         if (!android && opts.inputEventOnly !== true) {
                             EventRuler.on(el, "keydown", EventHandlers.keydownEvent);
                             EventRuler.on(el, "keypress", EventHandlers.keypressEvent);
-                        }
+                        } else el.removeAttribute('maxLength');
                         EventRuler.on(el, "compositionstart", $.noop);
                         EventRuler.on(el, "compositionupdate", $.noop);
                         EventRuler.on(el, "compositionend", $.noop);

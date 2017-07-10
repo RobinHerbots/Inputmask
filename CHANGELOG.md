@@ -1,6 +1,25 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [UNRELEASED]
+### added
+- importDataAttributes option #1633
+
+### Updates
+- colorMask enhancement: better positioning and more controllable via inputmask.css
+- remove maxLength attribute on android #1490
+- drop Regex alias
+- enhance inputfallback (Android)
+- TODO drop all date/time related aliases
+- TODO rewrite datatime alias
+
+### Fixes
+- colorMask - incorrect positioning #1421
+- Object doesn't support property or method '_valueGet' in version 3.3.7 #1645
+- Usage of numericInput in data-inputmask causes reversed value #1640
+- Numeric suffix makes radixPoint disappear on preset value #1638
+- Cannot delete after fill up all the mask Android Chrome browser Jsfiddle #1637
+
 ## [3.3.7 - 2017-06-09]
 ### added
 - allow custom operation in casing option by callback #1565
