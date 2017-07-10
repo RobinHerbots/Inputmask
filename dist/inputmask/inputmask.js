@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-11
+* Version: 4.0.1-12
 */
 
 !function(factory) {
@@ -1084,7 +1084,7 @@
                         var el = document.createElement("input");
                         el.setAttribute("type", elementType), isSupported = "text" === el.type, el = null;
                     } else isSupported = "partial";
-                    return !1 !== isSupported && function(npt) {
+                    return !1 !== isSupported ? function(npt) {
                         function getter() {
                             return this.inputmask ? this.inputmask.opts.autoUnmask ? this.inputmask.unmaskedvalue() : -1 !== getLastValidPosition() || !0 !== opts.nullable ? document.activeElement === this && opts.clearMaskOnLostFocus ? (isRTL ? clearOptionalTail(getBuffer().slice()).reverse() : clearOptionalTail(getBuffer().slice())).join("") : valueGet.call(this) : "" : valueGet.call(this);
                         }
@@ -1159,7 +1159,7 @@
                                 });
                             }(npt));
                         }
-                    }(input), isSupported;
+                    }(input) : input.inputmask = undefined, isSupported;
                 }(elem, opts);
                 if (!1 !== isSupported && (el = elem, $el = $(el), maxLength = el !== undefined ? el.maxLength : undefined, 
                 -1 === maxLength && (maxLength = undefined), !0 === opts.colorMask && initializeColorMask(el), 
@@ -1323,8 +1323,7 @@
                     null !== (optionData = optionData !== undefined ? optionData : npt.getAttribute(dataAttribute + "-" + option)) && ("string" == typeof optionData && (0 === option.indexOf("on") ? optionData = window[optionData] : "false" === optionData ? optionData = !1 : "true" === optionData && (optionData = !0)), 
                     userOptions[option] = optionData);
                 }
-                if (("rtl" === npt.dir || opts.rightAlign) && (npt.style.textAlign = "right"), ("rtl" === npt.dir || opts.numericInput) && (npt.dir = "ltr", 
-                npt.removeAttribute("dir"), opts.isRTL = !0), !0 === opts.importDataAttributes) {
+                if (!0 === opts.importDataAttributes) {
                     var option, dataoptions, optionData, p, attrOptions = npt.getAttribute(dataAttribute);
                     if (attrOptions && "" !== attrOptions && (attrOptions = attrOptions.replace(new RegExp("'", "g"), '"'), 
                     dataoptions = JSON.parse("{" + attrOptions + "}")), dataoptions) {
@@ -1346,7 +1345,9 @@
                         importOption(option, optionData);
                     }
                 }
-                return $.extend(!0, opts, userOptions), opts;
+                return $.extend(!0, opts, userOptions), ("rtl" === npt.dir || opts.rightAlign) && (npt.style.textAlign = "right"), 
+                ("rtl" === npt.dir || opts.numericInput) && (npt.dir = "ltr", npt.removeAttribute("dir"), 
+                opts.isRTL = !0), opts;
             }
             var that = this;
             return "string" == typeof elems && (elems = document.getElementById(elems) || document.querySelectorAll(elems)), 

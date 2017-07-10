@@ -3135,7 +3135,7 @@
                     }
                     if (isSupported !== false) {
                         patchValueProperty(input);
-                    }
+                    } else input.inputmask = undefined;
                     return isSupported;
                 }
 
