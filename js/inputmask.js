@@ -2565,7 +2565,7 @@
                         if (inputValue.charAt(caretPos.begin - 1) === opts.radixPoint && inputValue.length > getBuffer().length) {
                             var keypress = new $.Event("keypress");
                             keypress.which = opts.radixPoint.charCodeAt(0);
-                            EventHandlers.keypressEvent.call(input, keypress, true, true, false, caretPos.begin);
+                            EventHandlers.keypressEvent.call(input, keypress, true, true, false, caretPos.begin - 1);
                             return false;
 
                         }
@@ -2626,7 +2626,7 @@
                         //is selection
                         if (selection.begin < selection.end) {
                             writeBuffer(input, getBuffer(), selection);
-                            if (frontPart.charCodeAt(frontPart.length - 1) !== frontBufferPart.charCodeAt(frontBufferPart.length - 1)) {
+                            if (frontPart.split("")[frontPart.length - 1] !== frontBufferPart.split("")[frontBufferPart.length - 1]) {
                                 e.which = frontPart.charCodeAt(frontPart.length - 1);
                                 ignorable = false; //make sure ignorable is ignored ;-)
                                 EventHandlers.keypressEvent.call(input, e);
@@ -2638,11 +2638,6 @@
                                 EventHandlers.keydownEvent.call(input, e);
                             }
                         } else {
-                            var bufferTemplate = getBufferTemplate().join("");
-                            while (inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$") === null) {
-                                bufferTemplate = bufferTemplate.slice(1);
-                            }
-                            inputValue = inputValue.replace(bufferTemplate, "");
                             if ($.isFunction(opts.onBeforeMask)) inputValue = opts.onBeforeMask(inputValue, opts) || inputValue;
                             checkVal(input, true, false, inputValue.split(""), e);
                             repositionCaret(input, frontPart, backPart);

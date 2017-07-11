@@ -62,7 +62,7 @@ export default function ($, Inputmask) {
     };
     $.fn = $.fn || $.prototype;
     $.fn.SendKey = function (keyCode, modifier) {
-        var elem = this.nodeName ? this : this[0];
+        var elem = this.nodeName ? this : this[0], origCode = keyCode;
 
         function trigger(elem, evnt) {
             elem.focus();
@@ -100,11 +100,11 @@ export default function ($, Inputmask) {
                 if ((window.Inputmask && window.Inputmask.prototype.defaults.inputEventOnly === true) ||
                     (elem.inputmask && elem.inputmask.opts.inputEventOnly === true)) {
                     var input = new $.Event("input"),
-                        currentValue = elem.inputmask.__valueGet ? elem.inputmask.__valueGet.call(elem) : elem.value,
+                        currentValue = (elem.inputmask && elem.inputmask.__valueGet) ? elem.inputmask.__valueGet.call(elem) : elem.value,
                         caretPos = $.caret(elem);
 
-                    console.log("initial " + currentValue);
-                    console.log(caretPos);
+                    // console.log("initial " + currentValue);
+                    // console.log(caretPos);
 
                     var front = currentValue.substring(0, caretPos.begin),
                         back = currentValue.substring(caretPos.end),
@@ -116,7 +116,7 @@ export default function ($, Inputmask) {
                                 front = front.substr(0, front.length - 1)
                             newValue = front + back;
                             break;
-                        case Inputmask.keyCode.DELETE :
+                        case Inputmask.keyCode.DELETE && origCode !== ".":
                             if (caretPos.begin === caretPos.end)
                                 back = back.substr(1);
                             newValue = front + back;
@@ -125,12 +125,12 @@ export default function ($, Inputmask) {
                             newValue = front + String.fromCharCode(keyCode) + back;
                     }
 
-                    if (elem.inputmask.__valueSet)
+                    if (elem.inputmask && elem.inputmask.__valueSet)
                         elem.inputmask.__valueSet.call(elem, newValue);
                     else elem.value = newValue;
 
                     $.caret(elem, newValue.length - back.length);
-                    console.log("new " + newValue);
+                    // console.log("new " + newValue);
                     trigger(this.nodeName ? this : this[0], input);
                 } else {
                     var keydown = new $.Event("keydown"),

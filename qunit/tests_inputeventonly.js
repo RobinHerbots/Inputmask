@@ -71,4 +71,23 @@ export default function (qunit, $, Inputmask) {
         $(testmask).input("12349", 5);
         assert.ok($.caret(testmask).begin == 3, "Caret " + $.caret(testmask).begin);
     });
+
+    qunit.test("numeric placeholder 0 - alexey-m-ukolov", function (assert) {
+        var $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask({
+            alias: 'numeric',
+            placeholder: '0',
+            inputEventOnly: true,
+            colorMask: true,
+            androidHack: "rtfm"
+        }, {inputEventOnly: true}).mask(testmask);
+
+        testmask.focus();
+        //simulate input
+        $(testmask).input("10");
+
+        assert.equal(testmask.value, "10", "Result " + testmask.value);
+    });
 };

@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-13
+* Version: 4.0.1-14
 */
 
 !function(modules) {
@@ -953,7 +953,7 @@
                             inputValue[caretPos.begin - 1] = opts.radixPoint.charAt(0), inputValue = inputValue.join("")), 
                             inputValue.charAt(caretPos.begin - 1) === opts.radixPoint && inputValue.length > getBuffer().length) {
                                 var keypress = new $.Event("keypress");
-                                return keypress.which = opts.radixPoint.charCodeAt(0), EventHandlers.keypressEvent.call(input, keypress, !0, !0, !1, caretPos.begin), 
+                                return keypress.which = opts.radixPoint.charCodeAt(0), EventHandlers.keypressEvent.call(input, keypress, !0, !0, !1, caretPos.begin - 1), 
                                 !1;
                             }
                         }(input, inputValue, caretPos)) return !1;
@@ -980,25 +980,21 @@
                             }
                             selection.begin !== selection.end || isMask(selection.begin) || (selection.end = caretPos.end);
                         }
-                        if (selection.begin < selection.end) writeBuffer(input, getBuffer(), selection), 
-                        frontPart.charCodeAt(frontPart.length - 1) !== frontBufferPart.charCodeAt(frontBufferPart.length - 1) ? (e.which = frontPart.charCodeAt(frontPart.length - 1), 
+                        selection.begin < selection.end ? (writeBuffer(input, getBuffer(), selection), frontPart.split("")[frontPart.length - 1] !== frontBufferPart.split("")[frontBufferPart.length - 1] ? (e.which = frontPart.charCodeAt(frontPart.length - 1), 
                         ignorable = !1, EventHandlers.keypressEvent.call(input, e)) : (selection.begin === selection.end - 1 && caret(input, seekPrevious(selection.begin + 1), selection.end), 
-                        e.keyCode = Inputmask.keyCode.DELETE, EventHandlers.keydownEvent.call(input, e)); else {
-                            for (var bufferTemplate = getBufferTemplate().join(""); null === inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$"); ) bufferTemplate = bufferTemplate.slice(1);
-                            inputValue = inputValue.replace(bufferTemplate, ""), $.isFunction(opts.onBeforeMask) && (inputValue = opts.onBeforeMask(inputValue, opts) || inputValue), 
-                            checkVal(input, !0, !1, inputValue.split(""), e), function(input, frontPart, backPart) {
-                                var targetPos = caret(input).begin, currentValue = input.inputmask._valueGet(), pos = currentValue.indexOf(frontPart), currentPos = targetPos;
-                                if (0 === pos && targetPos !== frontPart.length) targetPos = frontPart.length; else {
-                                    for (;null === currentValue.match(Inputmask.escapeRegex(backPart) + "$"); ) backPart = backPart.substr(1);
-                                    var pos2 = currentValue.indexOf(backPart);
-                                    -1 !== pos2 && "" !== backPart && targetPos > pos2 && pos2 > pos && (targetPos = pos2);
-                                }
-                                isMask(targetPos) || (targetPos = seekNext(targetPos)), currentPos !== targetPos && (caret(input, targetPos), 
-                                android && setTimeout(function() {
-                                    caret(input, targetPos);
-                                }, 0));
-                            }(input, frontPart, backPart), !0 === isComplete(getBuffer()) && $(input).trigger("complete");
-                        }
+                        e.keyCode = Inputmask.keyCode.DELETE, EventHandlers.keydownEvent.call(input, e))) : ($.isFunction(opts.onBeforeMask) && (inputValue = opts.onBeforeMask(inputValue, opts) || inputValue), 
+                        checkVal(input, !0, !1, inputValue.split(""), e), function(input, frontPart, backPart) {
+                            var targetPos = caret(input).begin, currentValue = input.inputmask._valueGet(), pos = currentValue.indexOf(frontPart), currentPos = targetPos;
+                            if (0 === pos && targetPos !== frontPart.length) targetPos = frontPart.length; else {
+                                for (;null === currentValue.match(Inputmask.escapeRegex(backPart) + "$"); ) backPart = backPart.substr(1);
+                                var pos2 = currentValue.indexOf(backPart);
+                                -1 !== pos2 && "" !== backPart && targetPos > pos2 && pos2 > pos && (targetPos = pos2);
+                            }
+                            isMask(targetPos) || (targetPos = seekNext(targetPos)), currentPos !== targetPos && (caret(input, targetPos), 
+                            android && setTimeout(function() {
+                                caret(input, targetPos);
+                            }, 0));
+                        }(input, frontPart, backPart), !0 === isComplete(getBuffer()) && $(input).trigger("complete")), 
                         e.preventDefault();
                     }
                 },
