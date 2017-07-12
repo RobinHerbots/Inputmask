@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 - importDataAttributes option #1633
 
 ### Updates
+- pass inputmask object in the callbacks
 - colorMask enhancement: better positioning and more controllable via inputmask.css
 - remove maxLength attribute on android #1490
 - drop Regex alias
