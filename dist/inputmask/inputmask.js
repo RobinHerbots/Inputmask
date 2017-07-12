@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-14
+* Version: 4.0.1-16
 */
 
 !function(factory) {
@@ -932,21 +932,28 @@
                         }
                         selection.begin !== selection.end || isMask(selection.begin) || (selection.end = caretPos.end);
                     }
-                    selection.begin < selection.end ? (writeBuffer(input, getBuffer(), selection), frontPart.split("")[frontPart.length - 1] !== frontBufferPart.split("")[frontBufferPart.length - 1] ? (e.which = frontPart.charCodeAt(frontPart.length - 1), 
+                    if (selection.begin < selection.end) writeBuffer(input, getBuffer(), selection), 
+                    frontPart.split("")[frontPart.length - 1] !== frontBufferPart.split("")[frontBufferPart.length - 1] ? (e.which = frontPart.charCodeAt(frontPart.length - 1), 
                     ignorable = !1, EventHandlers.keypressEvent.call(input, e)) : (selection.begin === selection.end - 1 && caret(input, seekPrevious(selection.begin + 1), selection.end), 
-                    e.keyCode = Inputmask.keyCode.DELETE, EventHandlers.keydownEvent.call(input, e))) : ($.isFunction(opts.onBeforeMask) && (inputValue = opts.onBeforeMask(inputValue, opts) || inputValue), 
-                    checkVal(input, !0, !1, inputValue.split(""), e), function(input, frontPart, backPart) {
-                        var targetPos = caret(input).begin, currentValue = input.inputmask._valueGet(), pos = currentValue.indexOf(frontPart), currentPos = targetPos;
-                        if (0 === pos && targetPos !== frontPart.length) targetPos = frontPart.length; else {
-                            for (;null === currentValue.match(Inputmask.escapeRegex(backPart) + "$"); ) backPart = backPart.substr(1);
-                            var pos2 = currentValue.indexOf(backPart);
-                            -1 !== pos2 && "" !== backPart && targetPos > pos2 && pos2 > pos && (targetPos = pos2);
+                    e.keyCode = Inputmask.keyCode.DELETE, EventHandlers.keydownEvent.call(input, e)); else {
+                        if (-1 === getLastValidPosition()) {
+                            for (var bufferTemplate = getBufferTemplate().join(""); null === inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$"); ) bufferTemplate = bufferTemplate.slice(1);
+                            inputValue = inputValue.replace(bufferTemplate, "");
                         }
-                        isMask(targetPos) || (targetPos = seekNext(targetPos)), currentPos !== targetPos && (caret(input, targetPos), 
-                        android && setTimeout(function() {
-                            caret(input, targetPos);
-                        }, 0));
-                    }(input, frontPart, backPart), !0 === isComplete(getBuffer()) && $(input).trigger("complete")), 
+                        $.isFunction(opts.onBeforeMask) && (inputValue = opts.onBeforeMask(inputValue, opts) || inputValue), 
+                        checkVal(input, !0, !1, inputValue.split(""), e), function(input, frontPart, backPart) {
+                            var targetPos = caret(input).begin, currentValue = input.inputmask._valueGet(), pos = currentValue.indexOf(frontPart), currentPos = targetPos;
+                            if (0 === pos && targetPos !== frontPart.length) targetPos = frontPart.length; else {
+                                for (;null === currentValue.match(Inputmask.escapeRegex(backPart) + "$"); ) backPart = backPart.substr(1);
+                                var pos2 = currentValue.indexOf(backPart);
+                                -1 !== pos2 && "" !== backPart && targetPos > pos2 && pos2 > pos && (targetPos = pos2);
+                            }
+                            isMask(targetPos) || (targetPos = seekNext(targetPos)), currentPos !== targetPos && (caret(input, targetPos), 
+                            android && setTimeout(function() {
+                                caret(input, targetPos);
+                            }, 0));
+                        }(input, frontPart, backPart), !0 === isComplete(getBuffer()) && $(input).trigger("complete");
+                    }
                     e.preventDefault();
                 }
             },

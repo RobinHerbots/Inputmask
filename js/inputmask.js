@@ -2638,6 +2638,14 @@
                                 EventHandlers.keydownEvent.call(input, e);
                             }
                         } else {
+                            if(getLastValidPosition() === -1) {
+                                var bufferTemplate = getBufferTemplate().join("");
+                                while (inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$") === null) {
+                                    bufferTemplate = bufferTemplate.slice(1);
+                                }
+                                inputValue = inputValue.replace(bufferTemplate, "");
+                            }
+
                             if ($.isFunction(opts.onBeforeMask)) inputValue = opts.onBeforeMask(inputValue, opts) || inputValue;
                             checkVal(input, true, false, inputValue.split(""), e);
                             repositionCaret(input, frontPart, backPart);

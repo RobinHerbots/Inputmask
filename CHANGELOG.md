@@ -14,6 +14,8 @@ All notable changes to this project will be documented in this file.
 - TODO rewrite datatime alias
 
 ### Fixes
+- Currency mask works incorrectly on Android Chrome v58 #1617
+- Can't input character at the end if it's also a placeholder on Android #1648
 - colorMask - incorrect positioning #1421
 - Object doesn't support property or method '_valueGet' in version 3.3.7 #1645
 - Usage of numericInput in data-inputmask causes reversed value #1640

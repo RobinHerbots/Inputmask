@@ -85,8 +85,7 @@ export default function (qunit, $, Inputmask) {
         }, {inputEventOnly: true}).mask(testmask);
 
         testmask.focus();
-        //simulate input
-        $(testmask).input("10");
+        $(testmask).Type("10");
 
         assert.equal(testmask.value, "10", "Result " + testmask.value);
     });
