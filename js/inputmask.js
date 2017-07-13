@@ -2763,7 +2763,7 @@
                                                 placeholder = getPlaceholder(lastPosition, tt.match);
                                             if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder && tt.match.optionalQuantifier !== true && tt.match.newBlockMarker !== true) || (!isMask(lastPosition, true) && tt.match.def === placeholder)) {
                                                 var newPos = seekNext(lastPosition);
-                                                if (clickPosition >= newPos) {
+                                                if (clickPosition >= newPos || clickPosition === lastPosition) {
                                                     lastPosition = newPos;
                                                 }
                                             }
