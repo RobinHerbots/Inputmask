@@ -1868,7 +1868,7 @@
 
             function writeBuffer(input, buffer, caretPos, event, triggerInputEvent) {
                 if (event && $.isFunction(opts.onBeforeWrite)) {
-                //    buffer = buffer.slice(); //prevent uncontrolled manipulation of the internal buffer
+                    //    buffer = buffer.slice(); //prevent uncontrolled manipulation of the internal buffer
                     var result = opts.onBeforeWrite.call(inputmask, event, buffer, caretPos, opts);
                     if (result) {
                         if (result.refreshFromBuffer) {
@@ -2758,10 +2758,10 @@
                                         if (clickPosition < lastPosition) {
                                             caret(input, !isMask(clickPosition) && !isMask(clickPosition - 1) ? seekNext(clickPosition) : clickPosition);
                                         } else {
-                                            var placeholder = getPlaceholder(lastPosition),
-                                                lvp = getMaskSet().validPositions[lvclickPosition],
-                                                tt = getTestTemplate(lastPosition, lvp ? lvp.match.locator : undefined, lvp);
-                                            if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder && tt.match.optionalQuantifier !== true && tt.match.newBlockMarker !== true) || (!isMask(lastPosition) && tt.match.def === placeholder)) {
+                                            var lvp = getMaskSet().validPositions[lvclickPosition],
+                                                tt = getTestTemplate(lastPosition, lvp ? lvp.match.locator : undefined, lvp),
+                                                placeholder = getPlaceholder(lastPosition, tt.match);
+                                            if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder && tt.match.optionalQuantifier !== true && tt.match.newBlockMarker !== true) || (!isMask(lastPosition, true) && tt.match.def === placeholder)) {
                                                 var newPos = seekNext(lastPosition);
                                                 if (clickPosition >= newPos) {
                                                     lastPosition = newPos;
