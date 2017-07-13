@@ -83,7 +83,7 @@
                 onKeyDown: $.noop, //callback to implement autocomplete on certain keys for example. args => event, buffer, caretPos, opts
                 onBeforeMask: null, //executes before masking the initial value to allow preprocessing of the initial value.	args => initialValue, opts => return processedValue
                 onBeforePaste: function (pastedValue, opts) {
-                    return $.isFunction(opts.onBeforeMask) ? opts.onBeforeMask(pastedValue, opts) : pastedValue;
+                    return $.isFunction(opts.onBeforeMask) ? opts.onBeforeMask.call(this, pastedValue, opts) : pastedValue;
                 }, //executes before masking the pasted value to allow preprocessing of the pasted value.	args => pastedValue, opts => return processedValue
                 onBeforeWrite: null, //executes before writing to the masked element. args => event, opts
                 onUnMask: null, //executes after unmasking to allow postprocessing of the unmaskedvalue.	args => maskedValue, unmaskedValue, opts
@@ -807,7 +807,8 @@
         function maskScope(actionObj, maskset, opts) {
             maskset = maskset || this.maskset;
             opts = opts || this.opts;
-            var el = this.el,
+            var inputmask = this,
+                el = this.el,
                 isRTL = this.isRTL,
                 undoValue,
                 $el,
@@ -1867,7 +1868,8 @@
 
             function writeBuffer(input, buffer, caretPos, event, triggerInputEvent) {
                 if (event && $.isFunction(opts.onBeforeWrite)) {
-                    var result = opts.onBeforeWrite(event, buffer, caretPos, opts);
+                    //    buffer = buffer.slice(); //prevent uncontrolled manipulation of the internal buffer
+                    var result = opts.onBeforeWrite.call(inputmask, event, buffer, caretPos, opts);
                     if (result) {
                         if (result.refreshFromBuffer) {
                             var refresh = result.refreshFromBuffer;
@@ -1975,9 +1977,9 @@
                                 result = EventHandlers.keypressEvent.call(input, keypress, true, false, true, lvp + 1);
                             }
                             if (result !== false && !strict && $.isFunction(opts.onBeforeWrite)) {
-                                var fp = result.forwardPosition;
-                                result = opts.onBeforeWrite(keypress, getBuffer(), result.forwardPosition, opts);
-                                result.forwardPosition = fp;
+                                var origResult = result;
+                                result = opts.onBeforeWrite.call(inputmask, keypress, getBuffer(), result.forwardPosition, opts);
+                                result = $.extend(origResult, result);
                                 if (result && result.refreshFromBuffer) {
                                     var refresh = result.refreshFromBuffer;
                                     refreshFromBuffer(refresh === true ? refresh : refresh.start, refresh.end, result.buffer);
@@ -2020,7 +2022,7 @@
                 var unmaskedValue = umValue.length === 0 ? "" : (isRTL ? umValue.reverse() : umValue).join("");
                 if ($.isFunction(opts.onUnMask)) {
                     var bufferValue = (isRTL ? getBuffer().slice().reverse() : getBuffer()).join("");
-                    unmaskedValue = opts.onUnMask(bufferValue, unmaskedValue, opts);
+                    unmaskedValue = opts.onUnMask.call(inputmask, bufferValue, unmaskedValue, opts);
                 }
                 return unmaskedValue;
             }
@@ -2511,7 +2513,7 @@
                     var pasteValue = inputValue;
                     // console.log(inputValue);
                     if ($.isFunction(opts.onBeforePaste)) {
-                        pasteValue = opts.onBeforePaste(inputValue, opts);
+                        pasteValue = opts.onBeforePaste.call(inputmask, inputValue, opts);
                         if (pasteValue === false) {
                             return e.preventDefault();
                         }
@@ -2565,7 +2567,7 @@
                         if (inputValue.charAt(caretPos.begin - 1) === opts.radixPoint && inputValue.length > getBuffer().length) {
                             var keypress = new $.Event("keypress");
                             keypress.which = opts.radixPoint.charCodeAt(0);
-                            EventHandlers.keypressEvent.call(input, keypress, true, true, false, caretPos.begin);
+                            EventHandlers.keypressEvent.call(input, keypress, true, true, false, caretPos.begin - 1);
                             return false;
 
                         }
@@ -2626,7 +2628,7 @@
                         //is selection
                         if (selection.begin < selection.end) {
                             writeBuffer(input, getBuffer(), selection);
-                            if (frontPart.charCodeAt(frontPart.length - 1) !== frontBufferPart.charCodeAt(frontBufferPart.length - 1)) {
+                            if (frontPart.split("")[frontPart.length - 1] !== frontBufferPart.split("")[frontBufferPart.length - 1]) {
                                 e.which = frontPart.charCodeAt(frontPart.length - 1);
                                 ignorable = false; //make sure ignorable is ignored ;-)
                                 EventHandlers.keypressEvent.call(input, e);
@@ -2638,12 +2640,15 @@
                                 EventHandlers.keydownEvent.call(input, e);
                             }
                         } else {
-                            var bufferTemplate = getBufferTemplate().join("");
-                            while (inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$") === null) {
-                                bufferTemplate = bufferTemplate.slice(1);
+                            if (getLastValidPosition() === -1) {
+                                var bufferTemplate = getBufferTemplate().join("");
+                                while (inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$") === null) {
+                                    bufferTemplate = bufferTemplate.slice(1);
+                                }
+                                inputValue = inputValue.replace(bufferTemplate, "");
                             }
-                            inputValue = inputValue.replace(bufferTemplate, "");
-                            if ($.isFunction(opts.onBeforeMask)) inputValue = opts.onBeforeMask(inputValue, opts) || inputValue;
+
+                            if ($.isFunction(opts.onBeforeMask)) inputValue = opts.onBeforeMask.call(inputmask, inputValue, opts) || inputValue;
                             checkVal(input, true, false, inputValue.split(""), e);
                             repositionCaret(input, frontPart, backPart);
 
@@ -2660,7 +2665,7 @@
                     var input = this,
                         value = input.inputmask._valueGet(true);
 
-                    if ($.isFunction(opts.onBeforeMask)) value = opts.onBeforeMask(value, opts) || value;
+                    if ($.isFunction(opts.onBeforeMask)) value = opts.onBeforeMask.call(inputmask, value, opts) || value;
                     value = value.split("");
                     checkVal(input, true, false, isRTL ? value.reverse() : value);
                     undoValue = getBuffer().join("");
@@ -2753,12 +2758,12 @@
                                         if (clickPosition < lastPosition) {
                                             caret(input, !isMask(clickPosition) && !isMask(clickPosition - 1) ? seekNext(clickPosition) : clickPosition);
                                         } else {
-                                            var placeholder = getPlaceholder(lastPosition),
-                                                lvp = getMaskSet().validPositions[lvclickPosition],
-                                                tt = getTestTemplate(lastPosition, lvp ? lvp.match.locator : undefined, lvp);
-                                            if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder && tt.match.optionalQuantifier !== true && tt.match.newBlockMarker !== true) || (!isMask(lastPosition) && tt.match.def === placeholder)) {
+                                            var lvp = getMaskSet().validPositions[lvclickPosition],
+                                                tt = getTestTemplate(lastPosition, lvp ? lvp.match.locator : undefined, lvp),
+                                                placeholder = getPlaceholder(lastPosition, tt.match);
+                                            if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder && tt.match.optionalQuantifier !== true && tt.match.newBlockMarker !== true) || (!isMask(lastPosition, true) && tt.match.def === placeholder)) {
                                                 var newPos = seekNext(lastPosition);
-                                                if (clickPosition >= newPos) {
+                                                if (clickPosition >= newPos || clickPosition === lastPosition) {
                                                     lastPosition = newPos;
                                                 }
                                             }
@@ -2953,6 +2958,7 @@
                 }
 
                 if (colorMask !== undefined) {
+                    var buffer = getBuffer();
                     if (caretPos === undefined) {
                         caretPos = caret(input);
                     } else if (caretPos.begin === undefined) {
@@ -2968,7 +2974,7 @@
                                 test = testPos.match;
                                 ndxIntlzr = testPos.locator.slice();
                                 handleStatic();
-                                maskTemplate += testPos.input;
+                                maskTemplate += buffer[pos];
                             } else {
                                 testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
                                 test = testPos.match;
@@ -3204,7 +3210,7 @@
                     //apply mask
                     undoValue = getBufferTemplate().join(""); //initialize the buffer and getmasklength
                     if (el.inputmask._valueGet(true) !== "" || opts.clearMaskOnLostFocus === false || document.activeElement === el) {
-                        var initialValue = $.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask(el.inputmask._valueGet(true), opts) || el.inputmask._valueGet(true)) : el.inputmask._valueGet(true);
+                        var initialValue = $.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(inputmask, el.inputmask._valueGet(true), opts) || el.inputmask._valueGet(true)) : el.inputmask._valueGet(true);
                         if (initialValue !== "") checkVal(el, true, false, isRTL ? initialValue.split("").reverse() : initialValue.split(""));
                         var buffer = getBuffer().slice();
                         undoValue = buffer.join("");
@@ -3239,16 +3245,16 @@
                     case "unmaskedvalue":
                         if (el === undefined || actionObj.value !== undefined) {
                             valueBuffer = actionObj.value;
-                            valueBuffer = ($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask(valueBuffer, opts) || valueBuffer) : valueBuffer).split("");
+                            valueBuffer = ($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(inputmask, valueBuffer, opts) || valueBuffer) : valueBuffer).split("");
                             checkVal(undefined, false, false, isRTL ? valueBuffer.reverse() : valueBuffer);
-                            if ($.isFunction(opts.onBeforeWrite)) opts.onBeforeWrite(undefined, getBuffer(), 0, opts);
+                            if ($.isFunction(opts.onBeforeWrite)) opts.onBeforeWrite.call(inputmask, undefined, getBuffer(), 0, opts);
                         }
                         return unmaskedvalue(el);
                     case "mask":
                         mask(el);
                         break;
                     case "format":
-                        valueBuffer = ($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask(actionObj.value, opts) || actionObj.value) : actionObj.value).split("");
+                        valueBuffer = ($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(inputmask, actionObj.value, opts) || actionObj.value) : actionObj.value).split("");
                         checkVal(undefined, true, false, isRTL ? valueBuffer.reverse() : valueBuffer);
                         if (actionObj.metadata) {
                             return {
