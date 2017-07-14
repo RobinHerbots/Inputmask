@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-20
+* Version: 4.0.1-21
 */
 
 !function(factory) {
@@ -120,18 +120,14 @@
     }, DependencyLib.data = function(owner, key, value) {
         if (void 0 === value) return owner.__data ? owner.__data[key] : null;
         owner.__data = owner.__data || {}, owner.__data[key] = value;
-    }, DependencyLib.Event = function CustomEvent(event, params) {
+    }, "function" == typeof window.CustomEvent ? DependencyLib.Event = window.CustomEvent : (DependencyLib.Event = function(event, params) {
         params = params || {
             bubbles: !1,
             cancelable: !1,
             detail: void 0
         };
-        var evnt;
-        if (document.createEvent) try {
-            evnt = new CustomEvent(event, params);
-        } catch (e) {
-            evnt = document.createEvent("CustomEvent"), evnt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
-        } else evnt = document.createEventObject(), evnt.eventType = event;
-        return evnt;
-    }, DependencyLib.Event.prototype = window.Event.prototype, DependencyLib;
+        var evt = document.createEvent("CustomEvent");
+        return evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail), 
+        evt;
+    }, DependencyLib.Event.prototype = window.Event.prototype), DependencyLib;
 });
