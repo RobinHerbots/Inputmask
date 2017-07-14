@@ -254,14 +254,6 @@
                 }
             }
             return this;
-        },
-        position: function () {
-            if (isValidElement(this[0])) {
-                return {
-                    top: this[0].offsetTop,
-                    left: this[0].offsetLeft
-                };
-            }
         }
     };
 
@@ -423,27 +415,18 @@
         }
     };
 
-    DependencyLib.Event = function CustomEvent(event, params) {
-        params = params || {
-                bubbles: false,
-                cancelable: false,
-                detail: undefined
-            };
-        var evnt;
-        if (document.createEvent) {
-            try {
-                evnt = new CustomEvent(event, params);
-            } catch (e) {
-                evnt = document.createEvent("CustomEvent");
-                evnt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
-            }
-        } else {
-            evnt = document.createEventObject();
-            evnt.eventType = event;
-        }
-        return evnt;
+    if (typeof window.CustomEvent === "function") {
+        DependencyLib.Event = window.CustomEvent;
     }
-    DependencyLib.Event.prototype = window.Event.prototype;
+    else {
+        DependencyLib.Event = function (event, params) {
+            params = params || {bubbles: false, cancelable: false, detail: undefined};
+            var evt = document.createEvent('CustomEvent');
+            evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+            return evt;
+        }
+        DependencyLib.Event.prototype = window.Event.prototype;
+    }
 
     return DependencyLib;
 }));

@@ -1,7 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [UNRELEASED]
+## [UNRELEASED - 4.x]
+### Updates
+- drop Regex alias
+- TODO drop all date/time related aliases
+- TODO rewrite datatime alias
+
+## [UNRELEASED - 3.3.8]
 ### added
 - importDataAttributes option #1633
 
@@ -9,12 +15,10 @@ All notable changes to this project will be documented in this file.
 - pass inputmask object in the callbacks
 - colorMask enhancement: better positioning and more controllable via inputmask.css
 - remove maxLength attribute on android #1490
-- drop Regex alias
 - enhance inputfallback (Android)
-- TODO drop all date/time related aliases
-- TODO rewrite datatime alias
 
 ### Fixes
+- DependencyLib.Event CustomEvent #1642
 - Wrong initial cursor position with Numeric and Prefix #1578
 - Currency mask works incorrectly on Android Chrome v58 #1617
 - Can't input character at the end if it's also a placeholder on Android #1648

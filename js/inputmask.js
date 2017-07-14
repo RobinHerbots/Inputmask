@@ -2756,7 +2756,7 @@
                                             lvclickPosition = getLastValidPosition(clickPosition, true),
                                             lastPosition = seekNext(lvclickPosition);
                                         if (clickPosition < lastPosition) {
-                                            caret(input, !isMask(clickPosition) && !isMask(clickPosition - 1) ? seekNext(clickPosition) : clickPosition);
+                                            caret(input, !isMask(clickPosition, true) && !isMask(clickPosition - 1, true) ? seekNext(clickPosition) : clickPosition);
                                         } else {
                                             var lvp = getMaskSet().validPositions[lvclickPosition],
                                                 tt = getTestTemplate(lastPosition, lvp ? lvp.match.locator : undefined, lvp),
