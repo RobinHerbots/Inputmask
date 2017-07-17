@@ -2874,6 +2874,7 @@
 
             function initializeColorMask(input) {
                 var computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
+
                 function findCaretPos(clientx) {
                     //calculate text width
                     var e = document.createElement("span"), caretPos;
@@ -2910,6 +2911,7 @@
 
                 var template = document.createElement("div");
                 template.style.width = computedStyle.width;
+                template.style.textAlign = computedStyle.textAlign;
                 colorMask = document.createElement("div");
                 colorMask.className = "im-colormask";
                 input.parentNode.insertBefore(colorMask, input);
@@ -2918,12 +2920,10 @@
                 colorMask.appendChild(input);
                 input.style.left = template.offsetLeft + "px";
 
-                function clickHandler(e) {
-                    input.focus();
+                $(input).on("click", function (e) {
                     caret(input, findCaretPos(e.clientX));
                     return EventHandlers.clickEvent.call(input, [e]);
-                };
-                $(input).on("click", clickHandler);
+                });
                 $(input).on("keydown", function (e) {
                     if (!e.shiftKey && opts.insertMode !== false) {
                         setTimeout(function () {

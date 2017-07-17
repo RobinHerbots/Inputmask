@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-22
+* Version: 4.0.1-23
 */
 
 !function(modules) {
@@ -776,15 +776,14 @@
                     }
                     return document.body.removeChild(e), caretPos;
                 }
-                function clickHandler(e) {
-                    return input.focus(), caret(input, findCaretPos(e.clientX)), EventHandlers.clickEvent.call(input, [ e ]);
-                }
                 var computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null), template = document.createElement("div");
-                template.style.width = computedStyle.width, colorMask = document.createElement("div"), 
-                colorMask.className = "im-colormask", input.parentNode.insertBefore(colorMask, input), 
-                input.parentNode.removeChild(input), colorMask.appendChild(template), colorMask.appendChild(input), 
-                input.style.left = template.offsetLeft + "px", $(input).on("click", clickHandler), 
-                $(input).on("keydown", function(e) {
+                template.style.width = computedStyle.width, template.style.textAlign = computedStyle.textAlign, 
+                colorMask = document.createElement("div"), colorMask.className = "im-colormask", 
+                input.parentNode.insertBefore(colorMask, input), input.parentNode.removeChild(input), 
+                colorMask.appendChild(template), colorMask.appendChild(input), input.style.left = template.offsetLeft + "px", 
+                $(input).on("click", function(e) {
+                    return caret(input, findCaretPos(e.clientX)), EventHandlers.clickEvent.call(input, [ e ]);
+                }), $(input).on("keydown", function(e) {
                     e.shiftKey || !1 === opts.insertMode || setTimeout(function() {
                         renderColorMask(input);
                     }, 0);
