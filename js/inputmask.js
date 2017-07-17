@@ -2872,10 +2872,8 @@
                 }
             };
 
-
             function initializeColorMask(input) {
                 var computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
-
                 function findCaretPos(clientx) {
                     //calculate text width
                     var e = document.createElement("span"), caretPos;
@@ -2911,12 +2909,14 @@
                 }
 
                 var template = document.createElement("div");
+                template.style.width = computedStyle.width;
                 colorMask = document.createElement("div");
                 colorMask.className = "im-colormask";
                 input.parentNode.insertBefore(colorMask, input);
                 input.parentNode.removeChild(input);
-                colorMask.appendChild(input);
                 colorMask.appendChild(template);
+                colorMask.appendChild(input);
+                input.style.left = template.offsetLeft + "px";
 
                 function clickHandler(e) {
                     input.focus();
@@ -2924,7 +2924,6 @@
                     return EventHandlers.clickEvent.call(input, [e]);
                 };
                 $(input).on("click", clickHandler);
-                $(template).on("click", clickHandler);
                 $(input).on("keydown", function (e) {
                     if (!e.shiftKey && opts.insertMode !== false) {
                         setTimeout(function () {
@@ -2935,7 +2934,7 @@
             }
 
             Inputmask.prototype.positionColorMask = function (input, template) {
-                template.style.left = input.offsetLeft + "px";
+                input.style.left = template.offsetLeft + "px";
             }
 
             function renderColorMask(input, caretPos, clear) {
