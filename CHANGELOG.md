@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file.
 - enhance inputfallback (Android)
 
 ### Fixes
+- Mask appear when I press TAB & showMaskOnFocus: false, showMaskOnHover: false #1198
 - DependencyLib.Event CustomEvent #1642
 - Wrong initial cursor position with Numeric and Prefix #1578
 - Currency mask works incorrectly on Android Chrome v58 #1617

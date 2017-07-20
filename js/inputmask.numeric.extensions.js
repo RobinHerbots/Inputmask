@@ -356,7 +356,7 @@
                             }
                             return opts.postValidation(buffer, {
                                 caret: caretPos,
-                                dopost: true,
+                                // dopost: true,
                                 placeholder: "0",
                                 event: "blur"
                             }, opts);

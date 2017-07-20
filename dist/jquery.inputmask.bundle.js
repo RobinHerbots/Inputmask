@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-23
+* Version: 4.0.1-24
 */
 
 !function(modules) {
@@ -1016,7 +1016,7 @@
                 focusEvent: function(e) {
                     var input = this, nptValue = input.inputmask._valueGet();
                     opts.showMaskOnFocus && (!opts.showMaskOnHover || opts.showMaskOnHover && "" === nptValue) && (input.inputmask._valueGet() !== getBuffer().join("") ? writeBuffer(input, getBuffer(), seekNext(getLastValidPosition())) : !1 === mouseEnter && caret(input, seekNext(getLastValidPosition()))), 
-                    !0 === opts.positionCaretOnTab && !1 === mouseEnter && (writeBuffer(input, getBuffer(), caret(input)), 
+                    !0 === opts.positionCaretOnTab && !1 === mouseEnter && "" !== nptValue && (writeBuffer(input, getBuffer(), caret(input)), 
                     EventHandlers.clickEvent.apply(input, [ e, !0 ])), undoValue = getBuffer().join("");
                 },
                 mouseleaveEvent: function(e) {
@@ -2458,7 +2458,6 @@
                         }
                         return opts.postValidation(buffer, {
                             caret: caretPos,
-                            dopost: !0,
                             placeholder: "0",
                             event: "blur"
                         }, opts);
