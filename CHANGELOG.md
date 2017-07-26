@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 ## [UNRELEASED - 3.3.8]
 ### added
 - importDataAttributes option #1633
+- add dot support in regex #1651
 
 ### Updates
 - pass inputmask object in the callbacks
@@ -18,6 +19,7 @@ All notable changes to this project will be documented in this file.
 - enhance inputfallback (Android)
 
 ### Fixes
+- Mask appear when I press TAB & showMaskOnFocus: false, showMaskOnHover: false #1198
 - DependencyLib.Event CustomEvent #1642
 - Wrong initial cursor position with Numeric and Prefix #1578
 - Currency mask works incorrectly on Android Chrome v58 #1617

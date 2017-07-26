@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.8-4
+* Version: 3.3.8-5
 */
 
 !function(factory) {
@@ -728,14 +728,14 @@
                 }
                 return document.body.removeChild(e), caretPos;
             }
-            function clickHandler(e) {
-                return input.focus(), caret(input, findCaretPos(e.clientX)), EventHandlers.clickEvent.call(input, [ e ]);
-            }
             var computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null), template = document.createElement("div");
+            template.style.width = computedStyle.width, template.style.textAlign = computedStyle.textAlign, 
             colorMask = document.createElement("div"), colorMask.className = "im-colormask", 
             input.parentNode.insertBefore(colorMask, input), input.parentNode.removeChild(input), 
-            colorMask.appendChild(input), colorMask.appendChild(template), $(input).on("click", clickHandler), 
-            $(template).on("click", clickHandler), $(input).on("keydown", function(e) {
+            colorMask.appendChild(template), colorMask.appendChild(input), input.style.left = template.offsetLeft + "px", 
+            $(input).on("click", function(e) {
+                return caret(input, findCaretPos(e.clientX)), EventHandlers.clickEvent.call(input, [ e ]);
+            }), $(input).on("keydown", function(e) {
                 e.shiftKey || !1 === opts.insertMode || setTimeout(function() {
                     renderColorMask(input);
                 }, 0);
@@ -968,7 +968,7 @@
             focusEvent: function(e) {
                 var input = this, nptValue = input.inputmask._valueGet();
                 opts.showMaskOnFocus && (!opts.showMaskOnHover || opts.showMaskOnHover && "" === nptValue) && (input.inputmask._valueGet() !== getBuffer().join("") ? writeBuffer(input, getBuffer(), seekNext(getLastValidPosition())) : !1 === mouseEnter && caret(input, seekNext(getLastValidPosition()))), 
-                !0 === opts.positionCaretOnTab && !1 === mouseEnter && (writeBuffer(input, getBuffer(), caret(input)), 
+                !0 === opts.positionCaretOnTab && !1 === mouseEnter && "" !== nptValue && (writeBuffer(input, getBuffer(), caret(input)), 
                 EventHandlers.clickEvent.apply(input, [ e, !0 ])), undoValue = getBuffer().join("");
             },
             mouseleaveEvent: function(e) {
@@ -1067,7 +1067,7 @@
             }
         };
         Inputmask.prototype.positionColorMask = function(input, template) {
-            template.style.left = input.offsetLeft + "px";
+            input.style.left = template.offsetLeft + "px";
         };
         var valueBuffer;
         if (actionObj !== undefined) switch (actionObj.action) {
@@ -1432,7 +1432,7 @@
             function insertTestDefinition(mtoken, element, position) {
                 position = position !== undefined ? position : mtoken.matches.length;
                 var prevMatch = mtoken.matches[position - 1];
-                if (regexMask) 0 === element.indexOf("[") || escaped ? mtoken.matches.splice(position++, 0, {
+                if (regexMask) 0 === element.indexOf("[") || escaped || "." === element ? mtoken.matches.splice(position++, 0, {
                     fn: new RegExp(element, opts.casing ? "i" : ""),
                     cardinality: 1,
                     optionality: mtoken.isOptional,

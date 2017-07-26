@@ -333,7 +333,7 @@
                     position = position !== undefined ? position : mtoken.matches.length;
                     var prevMatch = mtoken.matches[position - 1];
                     if (regexMask) {
-                        if (element.indexOf("[") === 0 || escaped) {
+                        if (element.indexOf("[") === 0 || escaped || element === ".") {
                             mtoken.matches.splice(position++, 0, {
                                 fn: new RegExp(element, opts.casing ? "i" : ""),
                                 cardinality: 1,
@@ -481,7 +481,6 @@
 
                     return maskToken;
                 }
-
 
                 if (regexMask) {
                     opts.optionalmarker.start = undefined;
@@ -943,8 +942,8 @@
 
                     if (testPos.match &&
                         (((opts.greedy && testPos.match.optionalQuantifier !== true) || (testPos.match.optionality === false || testPos.match.newBlockMarker === false) && testPos.match.optionalQuantifier !== true) &&
-                        ((lvTest.alternation === undefined || lvTest.alternation !== testPos.alternation) ||
-                        (testPos.locator[lvTest.alternation] !== undefined && checkAlternationMatch(testPos.locator[lvTest.alternation].toString().split(","), lvTestAltArr))))) {
+                            ((lvTest.alternation === undefined || lvTest.alternation !== testPos.alternation) ||
+                                (testPos.locator[lvTest.alternation] !== undefined && checkAlternationMatch(testPos.locator[lvTest.alternation].toString().split(","), lvTestAltArr))))) {
 
                         if (guessNextBest !== true || (testPos.match.fn === null && !/[0-9a-bA-Z]/.test(testPos.match.def))) {
                             break;
@@ -1744,7 +1743,7 @@
                             if (testsFromPos[testsFromPos.length - 1].match.def === "") testsFromPos.pop();
                             testTemplate = determineTestTemplate(testsFromPos);
                             if (testTemplate && (testTemplate.match.def === opts.radixPointDefinitionSymbol || !isMask(pndx, true) ||
-                                ($.inArray(opts.radixPoint, getBuffer()) < pndx && testTemplate.match.fn && testTemplate.match.fn.test(getPlaceholder(pndx), getMaskSet(), pndx, false, opts)))) {
+                                    ($.inArray(opts.radixPoint, getBuffer()) < pndx && testTemplate.match.fn && testTemplate.match.fn.test(getPlaceholder(pndx), getMaskSet(), pndx, false, opts)))) {
                                 result = _isValid(pndx, getPlaceholder(pndx, testTemplate.match, true) || (testTemplate.match.fn == null ? testTemplate.match.def : (getPlaceholder(pndx) !== "" ? getPlaceholder(pndx) : getBuffer()[pndx])), true);
                                 if (result !== false) {
                                     getMaskSet().validPositions[result.pos || pndx].generatedInput = true;
@@ -1844,7 +1843,7 @@
                 }
                 while (++position < maskL &&
                 ((newBlock === true && (getTest(position).match.newBlockMarker !== true || !isMask(position))) ||
-                (newBlock !== true && !isMask(position)))) {
+                    (newBlock !== true && !isMask(position)))) {
                 }
                 return position;
             }
@@ -1855,8 +1854,8 @@
 
                 while (--position > 0 &&
                 ((newBlock === true && getTest(position).match.newBlockMarker !== true) ||
-                (newBlock !== true && !isMask(position) &&
-                (tests = getTests(position), tests.length < 2 || (tests.length === 2 && tests[1].match.def === ""))))) {
+                    (newBlock !== true && !isMask(position) &&
+                        (tests = getTests(position), tests.length < 2 || (tests.length === 2 && tests[1].match.def === ""))))) {
                 }
 
                 return position;
@@ -2123,10 +2122,10 @@
                 for (pos = bl - 1; pos > lvp; pos--) {
                     testPos = positions[pos];
                     if ((testPos.match.optionality ||
-                        (testPos.match.optionalQuantifier && testPos.match.newBlockMarker) ||
-                        (lvTestAlt &&
-                        ((lvTestAlt !== positions[pos].locator[lvTest.alternation] && testPos.match.fn != null) ||
-                        (testPos.match.fn === null && testPos.locator[lvTest.alternation] && checkAlternationMatch(testPos.locator[lvTest.alternation].toString().split(","), lvTestAlt.toString().split(",")) && getTests(pos)[0].def !== "")))) &&
+                            (testPos.match.optionalQuantifier && testPos.match.newBlockMarker) ||
+                            (lvTestAlt &&
+                                ((lvTestAlt !== positions[pos].locator[lvTest.alternation] && testPos.match.fn != null) ||
+                                    (testPos.match.fn === null && testPos.locator[lvTest.alternation] && checkAlternationMatch(testPos.locator[lvTest.alternation].toString().split(","), lvTestAlt.toString().split(",")) && getTests(pos)[0].def !== "")))) &&
                         buffer[pos] === getPlaceholder(pos, testPos.match)) {
                         bl--;
                     } else break;
@@ -2147,7 +2146,7 @@
                 (validPos = (lv !== undefined ? getTestTemplate(rl, lv.locator.slice(""), lv) : getTest(rl))) &&
                 validPos.match.optionality !== true &&
                 ((validPos.match.optionalQuantifier !== true && validPos.match.newBlockMarker !== true) || (rl + 1 === bl &&
-                (lv !== undefined ? getTestTemplate(rl + 1, lv.locator.slice(""), lv) : getTest(rl + 1)).match.def === ""))) {
+                    (lv !== undefined ? getTestTemplate(rl + 1, lv.locator.slice(""), lv) : getTest(rl + 1)).match.def === ""))) {
                     rl++;
                 }
 
@@ -2685,7 +2684,7 @@
                             caret(input, seekNext(getLastValidPosition()));
                         }
                     }
-                    if (opts.positionCaretOnTab === true && mouseEnter === false) {
+                    if (opts.positionCaretOnTab === true && mouseEnter === false && nptValue !== "") {
                         writeBuffer(input, getBuffer(), caret(input));
                         EventHandlers.clickEvent.apply(input, [e, true]);
                     }
@@ -2872,7 +2871,6 @@
                 }
             };
 
-
             function initializeColorMask(input) {
                 var computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
 
@@ -2911,20 +2909,20 @@
                 }
 
                 var template = document.createElement("div");
+                template.style.width = computedStyle.width;
+                template.style.textAlign = computedStyle.textAlign;
                 colorMask = document.createElement("div");
                 colorMask.className = "im-colormask";
                 input.parentNode.insertBefore(colorMask, input);
                 input.parentNode.removeChild(input);
-                colorMask.appendChild(input);
                 colorMask.appendChild(template);
+                colorMask.appendChild(input);
+                input.style.left = template.offsetLeft + "px";
 
-                function clickHandler(e) {
-                    input.focus();
+                $(input).on("click", function (e) {
                     caret(input, findCaretPos(e.clientX));
                     return EventHandlers.clickEvent.call(input, [e]);
-                };
-                $(input).on("click", clickHandler);
-                $(template).on("click", clickHandler);
+                });
                 $(input).on("keydown", function (e) {
                     if (!e.shiftKey && opts.insertMode !== false) {
                         setTimeout(function () {
@@ -2935,7 +2933,7 @@
             }
 
             Inputmask.prototype.positionColorMask = function (input, template) {
-                template.style.left = input.offsetLeft + "px";
+                input.style.left = template.offsetLeft + "px";
             }
 
             function renderColorMask(input, caretPos, clear) {
