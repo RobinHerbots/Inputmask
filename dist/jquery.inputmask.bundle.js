@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-24
+* Version: 4.0.1-25
 */
 
 !function(modules) {
@@ -1479,7 +1479,7 @@
                 function insertTestDefinition(mtoken, element, position) {
                     position = position !== undefined ? position : mtoken.matches.length;
                     var prevMatch = mtoken.matches[position - 1];
-                    if (regexMask) 0 === element.indexOf("[") || escaped ? mtoken.matches.splice(position++, 0, {
+                    if (regexMask) 0 === element.indexOf("[") || escaped || "." === element ? mtoken.matches.splice(position++, 0, {
                         fn: new RegExp(element, opts.casing ? "i" : ""),
                         cardinality: 1,
                         optionality: mtoken.isOptional,

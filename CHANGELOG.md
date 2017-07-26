@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 ## [UNRELEASED - 3.3.8]
 ### added
 - importDataAttributes option #1633
+- add dot support in regex #1651
 
 ### Updates
 - pass inputmask object in the callbacks

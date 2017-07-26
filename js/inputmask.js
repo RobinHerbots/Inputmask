@@ -333,7 +333,7 @@
                     position = position !== undefined ? position : mtoken.matches.length;
                     var prevMatch = mtoken.matches[position - 1];
                     if (regexMask) {
-                        if (element.indexOf("[") === 0 || escaped) {
+                        if (element.indexOf("[") === 0 || escaped || element === ".") {
                             mtoken.matches.splice(position++, 0, {
                                 fn: new RegExp(element, opts.casing ? "i" : ""),
                                 cardinality: 1,
@@ -481,7 +481,6 @@
 
                     return maskToken;
                 }
-
 
                 if (regexMask) {
                     opts.optionalmarker.start = undefined;
