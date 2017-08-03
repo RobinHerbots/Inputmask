@@ -108,6 +108,16 @@
 			definitions: {
 				"1": { //val1 ~ day or month
 					validator: function (chrs, maskset, pos, strict, opts) {
+						if(chrs.charAt(0) == '3'){
+							var secondCharRgxp = new RegExp("[2-9]");
+							if(secondCharRgxp.test(chrs.charAt(1))){
+								chrs = '30';
+								return maskset.buffer[pos] = "0",
+								pos++, {
+									pos: pos
+								};
+							}
+						}
 						var isValid = opts.regex.val1.test(chrs);
 						if (!strict && !isValid) {
 							if (chrs.charAt(1) === opts.separator || "-./".indexOf(chrs.charAt(1)) !== -1) {
@@ -161,6 +171,16 @@
 					validator: function (chrs, maskset, pos, strict, opts) {
 						var frontValue = opts.getFrontValue(maskset.mask, maskset.buffer, opts);
 						if (frontValue.indexOf(opts.placeholder[0]) !== -1) frontValue = "01" + opts.separator;
+						if(chrs.charAt(0) == '1'){
+							var secondCharRgxp = new RegExp("[3-9]");
+							if(secondCharRgxp.test(chrs.charAt(1))){
+								chrs = '10';
+								return maskset.buffer[pos] = "0",
+								pos++, {
+									pos: pos
+								};
+							}
+						}
 						var isValid = opts.regex.val2(opts.separator).test(frontValue + chrs);
 						if (!strict && !isValid) {
 							if (chrs.charAt(1) === opts.separator || "-./".indexOf(chrs.charAt(1)) !== -1) {
