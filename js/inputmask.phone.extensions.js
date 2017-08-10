@@ -35,8 +35,9 @@
 		function reduceVariations(masks, previousVariation, previousmaskGroup) {
 			previousVariation = previousVariation || "";
 			previousmaskGroup = previousmaskGroup || maskGroups;
-			if (previousVariation !== "")
+			if (previousVariation !== "") {
 				previousmaskGroup[previousVariation] = {};
+			}
 			var variation = "", maskGroup = previousmaskGroup[previousVariation] || previousmaskGroup;
 			for (var i = masks.length - 1; i >= 0; i--) {
 				mask = masks[i].mask || masks[i];
@@ -56,10 +57,11 @@
 			var mask = "", submasks = [];
 			for (var ndx in maskGroup) {
 				if ($.isArray(maskGroup[ndx])) {
-					if (maskGroup[ndx].length === 1)
+					if (maskGroup[ndx].length === 1) {
 						submasks.push(ndx + maskGroup[ndx]);
-					else
+					} else {
 						submasks.push(ndx + opts.groupmarker.start + maskGroup[ndx].join(opts.groupmarker.end + opts.alternatormarker + opts.groupmarker.start) + opts.groupmarker.end);
+					}
 				} else {
 					submasks.push(ndx + rebuild(maskGroup[ndx]));
 				}

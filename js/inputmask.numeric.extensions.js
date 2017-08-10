@@ -28,9 +28,12 @@
                 opts.quantifiermarker.end === txt.charAt(i) ||
                 opts.groupmarker.start === txt.charAt(i) ||
                 opts.groupmarker.end === txt.charAt(i) ||
-                opts.alternatormarker === txt.charAt(i))
+                opts.alternatormarker === txt.charAt(i)) {
                 escapedTxt += "\\" + txt.charAt(i)
-            else escapedTxt += txt.charAt(i);
+            }
+            else {
+                escapedTxt += txt.charAt(i);
+            }
         }
         return escapedTxt;
     }
@@ -137,7 +140,7 @@
             unmaskAsNumber: false,
             inputmode: "numeric",
             preValidation: function (buffer, pos, c, isSelection, opts) {
-                if (c === "-" || c == opts.negationSymbol.front) {
+                if (c === "-" || c === opts.negationSymbol.front) {
                     if (opts.allowMinus !== true) return false;
                     opts.isNegative = opts.isNegative === undefined ? true : !opts.isNegative;
                     if (buffer.join("") === "") return true;
@@ -172,9 +175,9 @@
 
                 var suffix = opts.suffix.split(""), prefix = opts.prefix.split("");
 
-                if (currentResult.pos == undefined && currentResult.caret !== undefined && currentResult.dopost !== true) return currentResult;
+                if (currentResult.pos === undefined && currentResult.caret !== undefined && currentResult.dopost !== true) return currentResult;
 
-                var caretPos = currentResult.caret != undefined ? currentResult.caret : currentResult.pos;
+                var caretPos = currentResult.caret !== undefined ? currentResult.caret : currentResult.pos;
                 var maskedValue = buffer.slice();
                 if (opts.numericInput) {
                     caretPos = maskedValue.length - caretPos - 1;
@@ -188,7 +191,9 @@
                 }
 
 
-                if (caretPos == maskedValue.length - opts.suffix.length - 1 && charAtPos === opts.radixPoint) return currentResult;
+                if (caretPos === maskedValue.length - opts.suffix.length - 1 && charAtPos === opts.radixPoint) {
+                    return currentResult;
+                }
 
                 if (charAtPos !== undefined) {
                     if (charAtPos !== opts.radixPoint &&
@@ -279,9 +284,12 @@
                 if (charAtPos !== undefined) {
                     if (charAtPos !== opts.radixPoint && charAtPos !== opts.negationSymbol.front && charAtPos !== opts.negationSymbol.back) {
                         caretPos = $.inArray("?", processValue);
-                        if (caretPos > -1)
+                        if (caretPos > -1) {
                             processValue[caretPos] = charAtPos;
-                        else caretPos = currentResult.caret || 0;
+                        }
+                        else {
+                            caretPos = currentResult.caret || 0;
+                        }
                     } else if (charAtPos === opts.radixPoint ||
                         charAtPos === opts.negationSymbol.front ||
                         charAtPos === opts.negationSymbol.back) {
@@ -395,11 +403,13 @@
                                 processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.negationSymbol.back) + "$"), "");
                                 //filter 0 after radixpoint
                                 var pvRadixSplit = processValue.split(opts.radixPoint);
-                                if (pvRadixSplit.length > 1)
+                                if (pvRadixSplit.length > 1) {
                                     pvRadixSplit[1] = pvRadixSplit[1].replace(/0/g, opts.placeholder.charAt(0));
+                                }
                                 //filter 0 before radixpoint
-                                if (pvRadixSplit[0] === "0")
+                                if (pvRadixSplit[0] === "0") {
                                     pvRadixSplit[0] = pvRadixSplit[0].replace(/0/g, opts.placeholder.charAt(0));
+                                }
                                 processValue = pvRadixSplit[0] + opts.radixPoint + pvRadixSplit[1] || "";
                                 var bufferTemplate = maskset._buffer.join(""); //getBuffer().slice(lvp).join('');
                                 if (processValue === opts.radixPoint) {
@@ -472,8 +482,9 @@
                 var processValue = maskedValue.replace(opts.prefix, "");
                 processValue = processValue.replace(opts.suffix, "");
                 processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "");
-                if (opts.placeholder.charAt(0) !== "")
+                if (opts.placeholder.charAt(0) !== "") {
                     processValue = processValue.replace(new RegExp(opts.placeholder.charAt(0), "g"), "0");
+                }
                 if (opts.unmaskAsNumber) {
                     if (opts.radixPoint !== "" && processValue.indexOf(opts.radixPoint) !== -1) processValue = processValue.replace(Inputmask.escapeRegex.call(this, opts.radixPoint), ".");
                     processValue = processValue.replace(new RegExp("^" + Inputmask.escapeRegex(opts.negationSymbol.front)), "-");
@@ -507,8 +518,9 @@
                 if (opts.radixPoint !== "" && isFinite(initialValue)) {
                     var vs = initialValue.split("."),
                         groupSize = opts.groupSeparator !== "" ? parseInt(opts.groupSize) : 0;
-                    if (vs.length === 2 && (vs[0].length > groupSize || vs[1].length > groupSize || (vs[0].length <= groupSize && vs[1].length < groupSize)))
+                    if (vs.length === 2 && (vs[0].length > groupSize || vs[1].length > groupSize || (vs[0].length <= groupSize && vs[1].length < groupSize))) {
                         initialValue = initialValue.replace(".", opts.radixPoint);
+                    }
                 }
                 var kommaMatches = initialValue.match(/,/g);
                 var dotMatches = initialValue.match(/\./g);
@@ -564,7 +576,7 @@
                         vp.input === opts.negationSymbol.front ||
                         vp.input === opts.negationSymbol.back;
 
-                if (canClear && (vp.match.nativeDef == "+" || vp.match.nativeDef == "-")) {
+                if (canClear && (vp.match.nativeDef === "+" || vp.match.nativeDef === "-")) {
                     opts.isNegative = false;
                 }
 

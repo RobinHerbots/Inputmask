@@ -1,0 +1,14 @@
+language: node_js
+node_js: "7"
+
+# Before running the script, make sure that grunt is installed.
+before_script:
+  - npm install -g grunt-cli
+
+# Run gulp validate to run all the tests.
+script: grunt validate
+
+# Cache the node modules directory.
+cache:
+  directories:
+    - "node_modules"
