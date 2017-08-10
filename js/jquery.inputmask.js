@@ -69,7 +69,9 @@
 					return this.each(function () {
 						if (this.inputmask !== undefined) {
 							return this.inputmask.option(fn);
-						} else nptmask.mask(this);
+						} else {
+							return nptmask.mask(this);
+						}
 					});
 				} else {
 					return this.each(function () {

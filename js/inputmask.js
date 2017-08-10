@@ -238,17 +238,19 @@
                 });
                 return elems && elems[0] ? (elems[0].inputmask || this) : this;
             },
-            option: function (options, noremask) { //set extra options || retrieve value of a current option
+            option: function (options, noremask) {
+                // Set extra options || retrieve value of a current option.
                 if (typeof options === "string") {
                     return this.opts[options];
                 } else if (typeof options === "object") {
                     $.extend(this.userOptions, options); //user passed options
-                    //remask
+                    // Remask.
                     if (this.el && noremask !== true) {
                         this.mask(this.el);
                     }
                     return this;
                 }
+                return this;
             },
             unmaskedvalue: function (value) {
                 this.maskset = this.maskset || generateMaskSet(this.opts, this.noMasksCache);
@@ -1137,7 +1139,7 @@
                                                         break;
                                                     } else if (staticCanMatchDefinition(altMatch, altMatch2) || isSubsetOf(altMatch, altMatch2)) {
                                                         // console.log("case 5");
-                                                        if (altMatch.alternation == altMatch2.alternation &&
+                                                        if (altMatch.alternation === altMatch2.alternation &&
                                                             altMatch.locator[altMatch.alternation].toString().indexOf(altMatch2.locator[altMatch2.alternation].toString().split("")[0]) === -1) {
 
                                                             //no alternation marker
@@ -1736,7 +1738,7 @@
                         if (getMaskSet().validPositions[pndx]) break;
                     }
                     ////fill missing nonmask and valid placeholders
-                    var testTemplate, testsFromPos;
+                    var testTemplate, testsFromPos, result;
                     for (pndx++; pndx < maskPos; pndx++) {
                         if (getMaskSet().validPositions[pndx] === undefined && (opts.jitMasking === false || opts.jitMasking > pndx)) {
                             testsFromPos = getTests(pndx, getTestTemplate(pndx - 1).locator, pndx - 1).slice();

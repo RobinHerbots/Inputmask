@@ -104,7 +104,7 @@
 		"vin": {
 			mask: "V{13}9{4}",
 			definitions: {
-				'V': {
+				"V": {
 					validator: "[A-HJ-NPR-Za-hj-npr-z\\d]",
 					cardinality: 1,
 					casing: "upper"

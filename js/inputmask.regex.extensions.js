@@ -159,7 +159,7 @@
                                     }
                                 } else {
                                     var testExp;
-                                    if (matchToken.charAt(0) == "[") {
+                                    if (matchToken.charAt(0) === "[") {
                                         testExp = regexPart;
                                         testExp += matchToken;
                                         for (var j = 0; j < openGroupCount; j++) {
