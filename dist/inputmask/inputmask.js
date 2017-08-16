@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-25
+* Version: 4.0.1-26
 */
 
 !function(factory) {
@@ -199,7 +199,7 @@
                                                 }(altMatch, altMatch2) || function(source, target) {
                                                     return null !== source.match.fn && null !== target.match.fn && target.match.fn.test(source.match.def.replace(/[\[\]]/g, ""), getMaskSet(), pos, !1, opts, !1);
                                                 }(altMatch, altMatch2)) {
-                                                    altMatch.alternation == altMatch2.alternation && -1 === altMatch.locator[altMatch.alternation].toString().indexOf(altMatch2.locator[altMatch2.alternation].toString().split("")[0]) && (altMatch.na = altMatch.na || altMatch.locator[altMatch.alternation].toString(), 
+                                                    altMatch.alternation === altMatch2.alternation && -1 === altMatch.locator[altMatch.alternation].toString().indexOf(altMatch2.locator[altMatch2.alternation].toString().split("")[0]) && (altMatch.na = altMatch.na || altMatch.locator[altMatch.alternation].toString(), 
                                                     -1 === altMatch.na.indexOf(altMatch.locator[altMatch.alternation].toString().split("")[0]) && (altMatch.na = altMatch.na + "," + altMatch.locator[altMatch2.alternation].toString().split("")[0]), 
                                                     dropMatch = !0, altMatch.locator[altMatch.alternation] = altMatch2.locator[altMatch2.alternation].toString().split("")[0] + "," + altMatch.locator[altMatch.alternation], 
                                                     malternateMatches.splice(malternateMatches.indexOf(altMatch2), 0, altMatch));
@@ -807,7 +807,7 @@
                     }
                 };
                 input.inputmask.events[eventName] = input.inputmask.events[eventName] || [], input.inputmask.events[eventName].push(ev), 
-                -1 !== $.inArray(eventName, [ "submit", "reset" ]) ? null != input.form && $(input.form).on(eventName, ev) : $(input).on(eventName, ev);
+                -1 !== $.inArray(eventName, [ "submit", "reset" ]) ? null !== input.form && $(input.form).on(eventName, ev) : $(input).on(eventName, ev);
             },
             off: function(input, event) {
                 if (input.inputmask && input.inputmask.events) {
@@ -816,7 +816,7 @@
                     $.each(events, function(eventName, evArr) {
                         for (;evArr.length > 0; ) {
                             var ev = evArr.pop();
-                            -1 !== $.inArray(eventName, [ "submit", "reset" ]) ? null != input.form && $(input.form).off(eventName, ev) : $(input).off(eventName, ev);
+                            -1 !== $.inArray(eventName, [ "submit", "reset" ]) ? null !== input.form && $(input.form).off(eventName, ev) : $(input).off(eventName, ev);
                         }
                         delete input.inputmask.events[eventName];
                     });
@@ -1432,7 +1432,7 @@
             function insertTestDefinition(mtoken, element, position) {
                 position = position !== undefined ? position : mtoken.matches.length;
                 var prevMatch = mtoken.matches[position - 1];
-                if (regexMask) 0 === element.indexOf("[") || escaped || "." === element ? mtoken.matches.splice(position++, 0, {
+                if (regexMask) 0 === element.indexOf("[") || escaped && /\\d|\\s|\\w]/i.test(element) || "." === element ? mtoken.matches.splice(position++, 0, {
                     fn: new RegExp(element, opts.casing ? "i" : ""),
                     cardinality: 1,
                     optionality: mtoken.isOptional,
@@ -1441,7 +1441,7 @@
                     def: element,
                     placeholder: undefined,
                     nativeDef: element
-                }) : $.each(element.split(""), function(ndx, lmnt) {
+                }) : (escaped && (element = element[element.length - 1]), $.each(element.split(""), function(ndx, lmnt) {
                     prevMatch = mtoken.matches[position - 1], mtoken.matches.splice(position++, 0, {
                         fn: null,
                         cardinality: 0,
@@ -1452,7 +1452,7 @@
                         placeholder: opts.staticDefinitionSymbol !== undefined ? lmnt : undefined,
                         nativeDef: lmnt
                     });
-                }), escaped = !1; else {
+                })), escaped = !1; else {
                     var maskdef = (opts.definitions ? opts.definitions[element] : undefined) || Inputmask.prototype.definitions[element];
                     if (maskdef && !escaped) {
                         for (var prevalidators = maskdef.prevalidator, prevalidatorsL = prevalidators ? prevalidators.length : 0, i = 1; i < maskdef.cardinality; i++) {
@@ -1530,7 +1530,7 @@
             }
             var match, m, openingToken, currentOpeningToken, alternator, lastMatch, groupToken, tokenizer = /(?:[?*+]|\{[0-9\+\*]+(?:,[0-9\+\*]*)?\})|[^.?*+^${[]()|\\]+|./g, regexTokenizer = /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?[:=!]?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g, escaped = !1, currentToken = new MaskToken(), openenings = [], maskTokens = [];
             for (regexMask && (opts.optionalmarker.start = undefined, opts.optionalmarker.end = undefined); match = regexMask ? regexTokenizer.exec(mask) : tokenizer.exec(mask); ) {
-                if (m = match[0], regexMask && !0 !== escaped) switch (m.charAt(0)) {
+                if (m = match[0], regexMask) switch (m.charAt(0)) {
                   case "?":
                     m = "{0,1}";
                     break;

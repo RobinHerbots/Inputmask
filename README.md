@@ -140,6 +140,9 @@ im.mask(selector);
 Inputmask({"mask": "(999) 999-9999", .... other options .....}).mask(selector);
 Inputmask("9-a{1,3}9{1,3}").mask(selector);
 Inputmask("9", { repeat: 10 }).mask(selector);
+  
+Inputmask({ regex: "\\d*" }).mask(selector);
+Inputmask({ regex: String.raw`\d*` }).mask(selector);
 ```
 
 ### via jquery plugin
@@ -712,6 +715,24 @@ See **escape special mask chars**
 
 ### mask
 The mask to use.
+
+```
+Inputmask({ mask: "9{*}").mask(selector);
+```
+
+### regex
+Use a regular expression as a mask
+
+```
+Inputmask({ regex: "[0-9]*").mask(selector);
+```
+
+When using shorthands be aware that you need to double escape or use String.raw with a string literal.
+```
+Inputmask({ regex: "\\d*").mask(selector);  
+~  
+Inputmask({ regex: String.raw`\d*`).mask(selector);
+```
 
 ### oncomplete
 Execute a function when the mask is completed

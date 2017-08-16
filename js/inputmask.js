@@ -333,7 +333,7 @@
                     position = position !== undefined ? position : mtoken.matches.length;
                     var prevMatch = mtoken.matches[position - 1];
                     if (regexMask) {
-                        if (element.indexOf("[") === 0 || escaped || element === ".") {
+                        if (element.indexOf("[") === 0 || (escaped && /\\d|\\s|\\w]/i.test(elgit gitement)) || element === ".") {
                             mtoken.matches.splice(position++, 0, {
                                 fn: new RegExp(element, opts.casing ? "i" : ""),
                                 cardinality: 1,
@@ -345,6 +345,7 @@
                                 nativeDef: element
                             });
                         } else {
+                            if (escaped) element = element[element.length - 1];
                             $.each(element.split(""), function (ndx, lmnt) {
                                 prevMatch = mtoken.matches[position - 1];
                                 mtoken.matches.splice(position++, 0, {
@@ -489,7 +490,7 @@
                 while (match = regexMask ? regexTokenizer.exec(mask) : tokenizer.exec(mask)) {
                     m = match[0];
 
-                    if (regexMask && escaped !== true) {
+                    if (regexMask) {
                         switch (m.charAt(0)) {
                             //Quantifier
                             case "?":
@@ -509,7 +510,9 @@
                     switch (m.charAt(0)) {
                         case opts.escapeChar:
                             escaped = true;
-                            if (regexMask) defaultCase();
+                            if (regexMask) {
+                                defaultCase();
+                            }
                             break;
                         case opts.optionalmarker.end:
                         // optional closing
@@ -1757,7 +1760,7 @@
                     }
                 }
 
-                   if ($.isFunction(opts.preValidation) && !strict && fromSetValid !== true && validateOnly !== true) {
+                if ($.isFunction(opts.preValidation) && !strict && fromSetValid !== true && validateOnly !== true) {
                     result = opts.preValidation(getBuffer(), maskPos, c, isSelection(pos), opts);
                 }
                 if (result === true) {
@@ -1926,7 +1929,8 @@
 
                 return opts.placeholder.charAt(pos % opts.placeholder.length);
             }
-     var EventRuler = {
+
+            var EventRuler = {
                 on: function (input, eventName, eventHandler) {
                     var ev = function (e) {
                         // console.log("triggered " + e.type);
