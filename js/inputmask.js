@@ -218,6 +218,7 @@
                     var maskset = generateMaskSet(scopedOpts, that.noMasksCache);
                     if (maskset !== undefined) {
                         if (el.inputmask !== undefined) {
+                            el.inputmask.opts.autoUnmask = true; //force autounmasking when remasking
                             el.inputmask.remove();
                         }
                         //store inputmask instance on the input with element reference
@@ -333,7 +334,7 @@
                     position = position !== undefined ? position : mtoken.matches.length;
                     var prevMatch = mtoken.matches[position - 1];
                     if (regexMask) {
-                        if (element.indexOf("[") === 0 || (escaped && /\\d|\\s|\\w]/i.test(elgit gitement)) || element === ".") {
+                        if (element.indexOf("[") === 0 || (escaped && /\\d|\\s|\\w]/i.test(element)) || element === ".") {
                             mtoken.matches.splice(position++, 0, {
                                 fn: new RegExp(element, opts.casing ? "i" : ""),
                                 cardinality: 1,

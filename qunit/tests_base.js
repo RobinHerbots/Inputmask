@@ -473,7 +473,8 @@ export default function (qunit, $, Inputmask) {
 		testmask.focus();
 		$("#testmask").Type("37");
 		setTimeout(function () {
-			$("#testmask").Type("12");
+.
+             ... $("#testmask").Type("12");
 			assert.equal(testmask.value, "3712 ______ _____", "Result " + testmask.value);
 			done();
 		}, 0);
