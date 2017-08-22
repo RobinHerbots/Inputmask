@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-28
+* Version: 4.0.1-29
 */
 
 !function(modules) {
@@ -2776,16 +2776,16 @@
         return window;
     }.call(exports, __webpack_require__, exports, module)) && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__);
 }, function(module, exports, __webpack_require__) {
-    exports = module.exports = __webpack_require__(13)(void 0), exports.push([ module.i, "span.im-caret {\r\n    -webkit-animation: 1s blink step-end infinite;\r\n    animation: 1s blink step-end infinite;\r\n}\r\n\r\n@keyframes blink {\r\n    from, to {\r\n        border-right-color: black;\r\n    }\r\n    50% {\r\n        border-right-color: transparent;\r\n    }\r\n}\r\n\r\n@-webkit-keyframes blink {\r\n    from, to {\r\n        border-right-color: black;\r\n    }\r\n    50% {\r\n        border-right-color: transparent;\r\n    }\r\n}\r\n\r\nspan.im-static {\r\n    color: grey;\r\n}\r\n\r\ndiv.im-colormask {\r\n    display: inline-block;\r\n    border-style: inset;\r\n    border-width: 2px;\r\n    -webkit-appearance: textfield;\r\n    -moz-appearance: textfield;\r\n    appearance: textfield;\r\n}\r\n\r\ndiv.im-colormask > input {\r\n    position: absolute;\r\n    display: inline-block;\r\n    background-color: transparent;\r\n    color: transparent;\r\n    -webkit-appearance: caret;\r\n    -moz-appearance: caret;\r\n    appearance: caret;\r\n    border-style: none;\r\n    left: 0; /*calculated*/\r\n}\r\n\r\ndiv.im-colormask > input:focus {\r\n    outline: none;\r\n}\r\n\r\ndiv.im-colormask > div {\r\n    color: black;\r\n    display: inline-block;\r\n    width: 100px; /*calculated*/\r\n}", "" ]);
+    exports = module.exports = __webpack_require__(13)(void 0), exports.push([ module.i, "span.im-caret {\n    -webkit-animation: 1s blink step-end infinite;\n    animation: 1s blink step-end infinite;\n}\n\n@keyframes blink {\n    from, to {\n        border-right-color: black;\n    }\n    50% {\n        border-right-color: transparent;\n    }\n}\n\n@-webkit-keyframes blink {\n    from, to {\n        border-right-color: black;\n    }\n    50% {\n        border-right-color: transparent;\n    }\n}\n\nspan.im-static {\n    color: grey;\n}\n\ndiv.im-colormask {\n    display: inline-block;\n    border-style: inset;\n    border-width: 2px;\n    -webkit-appearance: textfield;\n    -moz-appearance: textfield;\n    appearance: textfield;\n}\n\ndiv.im-colormask > input {\n    position: absolute;\n    display: inline-block;\n    background-color: transparent;\n    color: transparent;\n    -webkit-appearance: caret;\n    -moz-appearance: caret;\n    appearance: caret;\n    border-style: none;\n    left: 0; /*calculated*/\n}\n\ndiv.im-colormask > input:focus {\n    outline: none;\n}\n\ndiv.im-colormask > div {\n    color: black;\n    display: inline-block;\n    width: 100px; /*calculated*/\n}", "" ]);
 }, function(module, exports) {
     function cssWithMappingToString(item, useSourceMap) {
         var content = item[1] || "", cssMapping = item[3];
         if (!cssMapping) return content;
         if (useSourceMap && "function" == typeof btoa) {
-            var sourceMapping = toComment(cssMapping), sourceURLs = cssMapping.sources.map(function(source) {
+            var sourceMapping = toComment(cssMapping);
+            return [ content ].concat(cssMapping.sources.map(function(source) {
                 return "/*# sourceURL=" + cssMapping.sourceRoot + source + " */";
-            });
-            return [ content ].concat(sourceURLs).concat([ sourceMapping ]).join("\n");
+            })).concat([ sourceMapping ]).join("\n");
         }
         return [ content ].join("\n");
     }

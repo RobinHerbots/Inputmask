@@ -34,6 +34,10 @@
         <file src="..\dist\min\inputmask\phone-codes\phone-ru.min.js" target="content\Scripts\inputmask\phone-codes\phone-ru.min.js" />
         <file src="..\dist\inputmask\phone-codes\phone-uk.js" target="content\Scripts\inputmask\phone-codes\phone-uk.js" />
         <file src="..\dist\min\inputmask\phone-codes\phone-uk.min.js" target="content\Scripts\inputmask\phone-codes\phone-uk.min.js" />
+        <file src="..\dist\inputmask\phone-codes\phone-ca.js" target="content\Scripts\inputmask\phone-codes\phone-ca.js" />
+        <file src="..\dist\min\inputmask\phone-codes\phone-ca.min.js" target="content\Scripts\inputmask\phone-codes\phone-ca.min.js" />
+        <file src="..\dist\inputmask\phone-codes\phone-us.js" target="content\Scripts\inputmask\phone-codes\phone-us.js" />
+        <file src="..\dist\min\inputmask\phone-codes\phone-us.min.js" target="content\Scripts\inputmask\phone-codes\phone-us.min.js" />
         <file src="..\dist\inputmask\phone-codes\phone.js" target="content\Scripts\inputmask\phone-codes\phone.js" />
         <file src="..\dist\min\inputmask\phone-codes\phone.min.js" target="content\Scripts\inputmask\phone-codes\phone.min.js" />
         <file src="..\dist\inputmask\inputmask.date.extensions.js" target="content\Scripts\inputmask\inputmask.date.extensions.js" />
