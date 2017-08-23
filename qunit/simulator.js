@@ -1,8 +1,6 @@
 export default function ($, Inputmask) {
     $.caret = function (input, begin, end) {
         input = input.nodeName ? input : input[0];
-        var inputType = input.type;
-        input.type = "text";
         input.focus();
         var range;
         if (typeof begin === "number") {
@@ -35,7 +33,6 @@ export default function ($, Inputmask) {
                 range.select();
 
             }
-            input.type = inputType;
         } else {
             if (input.setSelectionRange) {
                 begin = input.selectionStart;
@@ -52,7 +49,6 @@ export default function ($, Inputmask) {
                 end = begin + range.text.length;
             }
             /*eslint-disable consistent-return */
-            input.type = inputType;
             return {
                 "begin": begin,
                 "end": end
@@ -63,6 +59,8 @@ export default function ($, Inputmask) {
     $.fn = $.fn || $.prototype;
     $.fn.SendKey = function (keyCode, modifier) {
         var elem = this.nodeName ? this : this[0], origCode = keyCode;
+        elem.type = "text"; //force textinput to support caret fn
+
 
         function trigger(elem, evnt) {
             elem.focus();
@@ -101,7 +99,7 @@ export default function ($, Inputmask) {
                     (elem.inputmask && elem.inputmask.opts.inputEventOnly === true)) {
                     var input = new $.Event("input"),
                         currentValue = (elem.inputmask && elem.inputmask.__valueGet) ? elem.inputmask.__valueGet.call(elem) : elem.value,
-                        caretPos = $.caret(elem);
+                        caretPos = $.caret(elem), caretOffset = 0;
 
                     // console.log("initial " + currentValue);
                     // console.log(caretPos);
@@ -116,22 +114,24 @@ export default function ($, Inputmask) {
                                 front = front.substr(0, front.length - 1)
                             newValue = front + back;
                             break;
-                        case Inputmask.keyCode.DELETE && origCode !== ".":
-                            if (caretPos.begin === caretPos.end)
-                                back = back.substr(1);
-                            newValue = front + back;
-                            break;
+                        case Inputmask.keyCode.DELETE:
+                            if (origCode !== ".") {
+                                if (caretPos.begin === caretPos.end)
+                                    back = back.slice(1);
+                                newValue = front + back;
+                                break;
+                            }
                         default:
                             newValue = front + String.fromCharCode(keyCode) + back;
+                            caretOffset = front.length > 0 ? 1 : 0;
+                            break;
                     }
 
                     if (elem.inputmask && elem.inputmask.__valueSet)
                         elem.inputmask.__valueSet.call(elem, newValue);
                     else elem.value = newValue;
-
-                    $.caret(elem, newValue.length - back.length);
-                    // console.log("new " + newValue);
-                    trigger(this.nodeName ? this : this[0], input);
+                    $.caret(elem, (newValue.length - back.length));
+                    trigger(elem, input);
                 } else {
                     var keydown = new $.Event("keydown"),
                         keypress = new $.Event("keypress"),
@@ -142,17 +142,17 @@ export default function ($, Inputmask) {
                         if (modifier == Inputmask.keyCode.CONTROL)
                             keydown.ctrlKey = true;
                     }
-                    trigger(this.nodeName ? this : this[0], keydown);
+                    trigger(elem, keydown);
                     if (!keydown.defaultPrevented) {
                         keypress.keyCode = keyCode;
                         if (modifier == Inputmask.keyCode.CONTROL)
                             keypress.ctrlKey = true;
-                        trigger(this.nodeName ? this : this[0], keypress);
+                        trigger(elem, keypress);
                         //if (!keypress.isDefaultPrevented()) {
                         keyup.keyCode = keyCode;
                         if (modifier == Inputmask.keyCode.CONTROL)
                             keyup.ctrlKey = true;
-                        trigger(this.nodeName ? this : this[0], keyup);
+                        trigger(elem, keyup);
                         //}
                     }
                 }

@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-29
+* Version: 4.0.1-31
 */
 
 !function(factory) {
@@ -922,39 +922,18 @@
                         }
                     }(input, inputValue, caretPos)) return !1;
                     caretPos.begin > inputValue.length && (caret(input, inputValue.length), caretPos = caret(input));
-                    var buffer = getBuffer().join(""), frontPart = inputValue.substr(0, caretPos.begin), backPart = inputValue.substr(caretPos.begin), frontBufferPart = buffer.substr(0, caretPos.begin), backBufferPart = buffer.substr(caretPos.begin), selection = caretPos, endOffset = 0;
-                    if (backPart === backBufferPart || frontPart === frontBufferPart) {
-                        if (selection = {
-                            begin: frontPart.length
-                        }, frontPart[frontPart.length - 1] !== frontBufferPart[frontBufferPart.length - 1] && (selection.begin--, 
-                        endOffset++), backPart.length > backBufferPart.length) selection.end = selection.begin; else {
-                            var selectedPart = backBufferPart.replace(new RegExp(Inputmask.escapeRegex(backPart) + "$"), "");
-                            selection.end = selection.begin + selectedPart.length + endOffset;
-                        }
-                        selection.begin !== selection.end || isMask(selection.begin) || (selection.end = caretPos.end);
+                    var buffer = getBuffer().join(""), frontPart = inputValue.substr(0, caretPos.begin), backPart = inputValue.substr(caretPos.begin), frontBufferPart = buffer.substr(0, caretPos.begin), backBufferPart = buffer.substr(caretPos.begin), selection = caretPos, entries = "", isEntry = !1;
+                    if (frontPart !== frontBufferPart) {
+                        selection.begin = 0;
+                        for (var fpl = (isEntry = frontPart.length >= frontBufferPart.length) ? frontPart.length : frontBufferPart.length, i = 0; frontPart.charAt(i) === frontBufferPart.charAt(i) && i < fpl; i++) selection.begin++;
+                        isEntry && (entries += frontPart.slice(selection.begin, selection.end));
                     }
-                    if (selection.begin < selection.end) writeBuffer(input, getBuffer(), selection), 
-                    frontPart.split("")[frontPart.length - 1] !== frontBufferPart.split("")[frontBufferPart.length - 1] ? (e.which = frontPart.charCodeAt(frontPart.length - 1), 
-                    ignorable = !1, EventHandlers.keypressEvent.call(input, e)) : (selection.begin === selection.end - 1 && caret(input, seekPrevious(selection.begin + 1), selection.end), 
-                    e.keyCode = Inputmask.keyCode.DELETE, EventHandlers.keydownEvent.call(input, e)); else {
-                        if (-1 === getLastValidPosition()) {
-                            for (var bufferTemplate = getBufferTemplate().join(""); null === inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$"); ) bufferTemplate = bufferTemplate.slice(1);
-                            inputValue = inputValue.replace(bufferTemplate, "");
-                        }
-                        $.isFunction(opts.onBeforeMask) && (inputValue = opts.onBeforeMask.call(inputmask, inputValue, opts) || inputValue), 
-                        checkVal(input, !0, !1, inputValue.split(""), e), function(input, frontPart, backPart) {
-                            var targetPos = caret(input).begin, currentValue = input.inputmask._valueGet(), pos = currentValue.indexOf(frontPart), currentPos = targetPos;
-                            if (0 === pos && targetPos !== frontPart.length) targetPos = frontPart.length; else {
-                                for (;null === currentValue.match(Inputmask.escapeRegex(backPart) + "$"); ) backPart = backPart.substr(1);
-                                var pos2 = currentValue.indexOf(backPart);
-                                -1 !== pos2 && "" !== backPart && targetPos > pos2 && pos2 > pos && (targetPos = pos2);
-                            }
-                            isMask(targetPos) || (targetPos = seekNext(targetPos)), currentPos !== targetPos && (caret(input, targetPos), 
-                            android && setTimeout(function() {
-                                caret(input, targetPos);
-                            }, 0));
-                        }(input, frontPart, backPart), !0 === isComplete(getBuffer()) && $(input).trigger("complete");
-                    }
+                    backPart !== backBufferPart && (backPart.length > backBufferPart.length ? isEntry && (selection.end = selection.begin) : backPart.length < backBufferPart.length ? selection.end += backBufferPart.length - backPart.length : backPart.charAt(0) !== backBufferPart.charAt(0) && selection.end++), 
+                    writeBuffer(input, getBuffer(), selection), entries.length > 0 ? $.each(entries.split(""), function(ndx, entry) {
+                        var keypress = new $.Event("keypress");
+                        keypress.which = entry.charCodeAt(0), ignorable = !1, EventHandlers.keypressEvent.call(input, keypress);
+                    }) : (selection.begin === selection.end - 1 && caret(input, seekPrevious(selection.begin + 1), selection.end), 
+                    e.keyCode = Inputmask.keyCode.DELETE, EventHandlers.keydownEvent.call(input, e)), 
                     e.preventDefault();
                 }
             },

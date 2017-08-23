@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-29
+* Version: 4.0.1-31
 */
 
 !function(modules) {
@@ -970,39 +970,18 @@
                             }
                         }(input, inputValue, caretPos)) return !1;
                         caretPos.begin > inputValue.length && (caret(input, inputValue.length), caretPos = caret(input));
-                        var buffer = getBuffer().join(""), frontPart = inputValue.substr(0, caretPos.begin), backPart = inputValue.substr(caretPos.begin), frontBufferPart = buffer.substr(0, caretPos.begin), backBufferPart = buffer.substr(caretPos.begin), selection = caretPos, endOffset = 0;
-                        if (backPart === backBufferPart || frontPart === frontBufferPart) {
-                            if (selection = {
-                                begin: frontPart.length
-                            }, frontPart[frontPart.length - 1] !== frontBufferPart[frontBufferPart.length - 1] && (selection.begin--, 
-                            endOffset++), backPart.length > backBufferPart.length) selection.end = selection.begin; else {
-                                var selectedPart = backBufferPart.replace(new RegExp(Inputmask.escapeRegex(backPart) + "$"), "");
-                                selection.end = selection.begin + selectedPart.length + endOffset;
-                            }
-                            selection.begin !== selection.end || isMask(selection.begin) || (selection.end = caretPos.end);
+                        var buffer = getBuffer().join(""), frontPart = inputValue.substr(0, caretPos.begin), backPart = inputValue.substr(caretPos.begin), frontBufferPart = buffer.substr(0, caretPos.begin), backBufferPart = buffer.substr(caretPos.begin), selection = caretPos, entries = "", isEntry = !1;
+                        if (frontPart !== frontBufferPart) {
+                            selection.begin = 0;
+                            for (var fpl = (isEntry = frontPart.length >= frontBufferPart.length) ? frontPart.length : frontBufferPart.length, i = 0; frontPart.charAt(i) === frontBufferPart.charAt(i) && i < fpl; i++) selection.begin++;
+                            isEntry && (entries += frontPart.slice(selection.begin, selection.end));
                         }
-                        if (selection.begin < selection.end) writeBuffer(input, getBuffer(), selection), 
-                        frontPart.split("")[frontPart.length - 1] !== frontBufferPart.split("")[frontBufferPart.length - 1] ? (e.which = frontPart.charCodeAt(frontPart.length - 1), 
-                        ignorable = !1, EventHandlers.keypressEvent.call(input, e)) : (selection.begin === selection.end - 1 && caret(input, seekPrevious(selection.begin + 1), selection.end), 
-                        e.keyCode = Inputmask.keyCode.DELETE, EventHandlers.keydownEvent.call(input, e)); else {
-                            if (-1 === getLastValidPosition()) {
-                                for (var bufferTemplate = getBufferTemplate().join(""); null === inputValue.match(Inputmask.escapeRegex(bufferTemplate) + "$"); ) bufferTemplate = bufferTemplate.slice(1);
-                                inputValue = inputValue.replace(bufferTemplate, "");
-                            }
-                            $.isFunction(opts.onBeforeMask) && (inputValue = opts.onBeforeMask.call(inputmask, inputValue, opts) || inputValue), 
-                            checkVal(input, !0, !1, inputValue.split(""), e), function(input, frontPart, backPart) {
-                                var targetPos = caret(input).begin, currentValue = input.inputmask._valueGet(), pos = currentValue.indexOf(frontPart), currentPos = targetPos;
-                                if (0 === pos && targetPos !== frontPart.length) targetPos = frontPart.length; else {
-                                    for (;null === currentValue.match(Inputmask.escapeRegex(backPart) + "$"); ) backPart = backPart.substr(1);
-                                    var pos2 = currentValue.indexOf(backPart);
-                                    -1 !== pos2 && "" !== backPart && targetPos > pos2 && pos2 > pos && (targetPos = pos2);
-                                }
-                                isMask(targetPos) || (targetPos = seekNext(targetPos)), currentPos !== targetPos && (caret(input, targetPos), 
-                                android && setTimeout(function() {
-                                    caret(input, targetPos);
-                                }, 0));
-                            }(input, frontPart, backPart), !0 === isComplete(getBuffer()) && $(input).trigger("complete");
-                        }
+                        backPart !== backBufferPart && (backPart.length > backBufferPart.length ? isEntry && (selection.end = selection.begin) : backPart.length < backBufferPart.length ? selection.end += backBufferPart.length - backPart.length : backPart.charAt(0) !== backBufferPart.charAt(0) && selection.end++), 
+                        writeBuffer(input, getBuffer(), selection), entries.length > 0 ? $.each(entries.split(""), function(ndx, entry) {
+                            var keypress = new $.Event("keypress");
+                            keypress.which = entry.charCodeAt(0), ignorable = !1, EventHandlers.keypressEvent.call(input, keypress);
+                        }) : (selection.begin === selection.end - 1 && caret(input, seekPrevious(selection.begin + 1), selection.end), 
+                        e.keyCode = Inputmask.keyCode.DELETE, EventHandlers.keydownEvent.call(input, e)), 
                         e.preventDefault();
                     }
                 },
@@ -2776,16 +2755,16 @@
         return window;
     }.call(exports, __webpack_require__, exports, module)) && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__);
 }, function(module, exports, __webpack_require__) {
-    exports = module.exports = __webpack_require__(13)(void 0), exports.push([ module.i, "span.im-caret {\n    -webkit-animation: 1s blink step-end infinite;\n    animation: 1s blink step-end infinite;\n}\n\n@keyframes blink {\n    from, to {\n        border-right-color: black;\n    }\n    50% {\n        border-right-color: transparent;\n    }\n}\n\n@-webkit-keyframes blink {\n    from, to {\n        border-right-color: black;\n    }\n    50% {\n        border-right-color: transparent;\n    }\n}\n\nspan.im-static {\n    color: grey;\n}\n\ndiv.im-colormask {\n    display: inline-block;\n    border-style: inset;\n    border-width: 2px;\n    -webkit-appearance: textfield;\n    -moz-appearance: textfield;\n    appearance: textfield;\n}\n\ndiv.im-colormask > input {\n    position: absolute;\n    display: inline-block;\n    background-color: transparent;\n    color: transparent;\n    -webkit-appearance: caret;\n    -moz-appearance: caret;\n    appearance: caret;\n    border-style: none;\n    left: 0; /*calculated*/\n}\n\ndiv.im-colormask > input:focus {\n    outline: none;\n}\n\ndiv.im-colormask > div {\n    color: black;\n    display: inline-block;\n    width: 100px; /*calculated*/\n}", "" ]);
+    exports = module.exports = __webpack_require__(13)(void 0), exports.push([ module.i, "span.im-caret {\r\n    -webkit-animation: 1s blink step-end infinite;\r\n    animation: 1s blink step-end infinite;\r\n}\r\n\r\n@keyframes blink {\r\n    from, to {\r\n        border-right-color: black;\r\n    }\r\n    50% {\r\n        border-right-color: transparent;\r\n    }\r\n}\r\n\r\n@-webkit-keyframes blink {\r\n    from, to {\r\n        border-right-color: black;\r\n    }\r\n    50% {\r\n        border-right-color: transparent;\r\n    }\r\n}\r\n\r\nspan.im-static {\r\n    color: grey;\r\n}\r\n\r\ndiv.im-colormask {\r\n    display: inline-block;\r\n    border-style: inset;\r\n    border-width: 2px;\r\n    -webkit-appearance: textfield;\r\n    -moz-appearance: textfield;\r\n    appearance: textfield;\r\n}\r\n\r\ndiv.im-colormask > input {\r\n    position: absolute;\r\n    display: inline-block;\r\n    background-color: transparent;\r\n    color: transparent;\r\n    -webkit-appearance: caret;\r\n    -moz-appearance: caret;\r\n    appearance: caret;\r\n    border-style: none;\r\n    left: 0; /*calculated*/\r\n}\r\n\r\ndiv.im-colormask > input:focus {\r\n    outline: none;\r\n}\r\n\r\ndiv.im-colormask > div {\r\n    color: black;\r\n    display: inline-block;\r\n    width: 100px; /*calculated*/\r\n}", "" ]);
 }, function(module, exports) {
     function cssWithMappingToString(item, useSourceMap) {
         var content = item[1] || "", cssMapping = item[3];
         if (!cssMapping) return content;
         if (useSourceMap && "function" == typeof btoa) {
-            var sourceMapping = toComment(cssMapping);
-            return [ content ].concat(cssMapping.sources.map(function(source) {
+            var sourceMapping = toComment(cssMapping), sourceURLs = cssMapping.sources.map(function(source) {
                 return "/*# sourceURL=" + cssMapping.sourceRoot + source + " */";
-            })).concat([ sourceMapping ]).join("\n");
+            });
+            return [ content ].concat(sourceURLs).concat([ sourceMapping ]).join("\n");
         }
         return [ content ].join("\n");
     }

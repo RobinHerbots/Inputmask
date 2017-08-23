@@ -294,7 +294,7 @@ export default function (qunit, $, Inputmask) {
 
         //IE7 does not know type=number and treats as type=text
         //noinspection JSUnresolvedFunction
-        assert.ok(testmask.value === "" || testmask.value === "123456", "Result " + testmask.value);
+        assert.ok(testmask.value === "" || testmask.value === "123456-", "Result " + testmask.value);
 
     });
 
