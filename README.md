@@ -724,14 +724,14 @@ Inputmask({ mask: "9{*}").mask(selector);
 Use a regular expression as a mask
 
 ```
-Inputmask({ regex: "[0-9]*").mask(selector);
+Inputmask({ regex: "[0-9]*" }).mask(selector);
 ```
 
 When using shorthands be aware that you need to double escape or use String.raw with a string literal.
 ```
-Inputmask({ regex: "\\d*").mask(selector);  
+Inputmask({ regex: "\\d*" }).mask(selector);
 ~  
-Inputmask({ regex: String.raw`\d*`).mask(selector);
+Inputmask({ regex: String.raw`\d*` }).mask(selector);
 ```
 
 ### oncomplete
