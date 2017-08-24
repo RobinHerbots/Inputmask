@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ## [UNRELEASED - 3.3.8]
 ### added
+- added \uFF11-\uFF19 character range to 9 definition #1606
 - importDataAttributes option #1633
 - add dot support in regex #1651
 
