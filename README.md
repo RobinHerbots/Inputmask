@@ -1,6 +1,6 @@
-#Branch 2.x is no longer maintained!
+# Branch 2.x is no longer maintained!
 
-#jquery.inputmask 2.x
+# jquery.inputmask 2.x
 
 Copyright (c) 2010 - 2014 Robin Herbots
 Licensed under the MIT license (http://opensource.org/licenses/mit-license.php)
