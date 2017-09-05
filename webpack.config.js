@@ -24,6 +24,11 @@ const rules = {
             passPerPreset: true,
         },
     },
+    ts: {
+        test: /\.tsx?$/,
+        loader: 'awesome-typescript-loader',
+        exclude: /(node_modules)/
+    },
     styles: {
         test: /\.css$/,
         use: [
@@ -61,6 +66,7 @@ module.exports = {
         rules: [
             rules.sourceMap,
             rules.js,
+            rules.ts,
             rules.styles
         ]
     },

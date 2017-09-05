@@ -89,4 +89,33 @@ export default function (qunit, $, Inputmask) {
 
         assert.equal(testmask.value, "10", "Result " + testmask.value);
     });
+
+    qunit.test("numeric 1 - #1617", function (assert) {
+        var $fixture = $("body");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask("numeric", {
+            groupSeparator: ".",
+            radixPoint: ",",
+            placeholder: "0",
+            autoGroup: true,
+            integerDigits: 16,
+            digits: 2,
+            digitsOptional: false,
+            clearMaskOnLostFocus: false,
+            inputEventOnly: true
+        }).mask(testmask);
+
+        testmask.focus();
+        $.caret(testmask, 0);
+        $(testmask).Type("56,03");
+        $("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
+        $("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
+        $("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
+        $("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
+        $(testmask).Type("0,03");
+
+
+        assert.equal(testmask.value, "50,03", "Result " + testmask.value);
+    });
 };

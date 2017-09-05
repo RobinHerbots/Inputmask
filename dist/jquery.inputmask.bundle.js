@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-31
+* Version: 4.0.1-32
 */
 
 !function(modules) {
@@ -959,30 +959,33 @@
                             }
                         }(input, inputValue, caretPos)) return !1;
                         if (inputValue = inputValue.replace(new RegExp("(" + Inputmask.escapeRegex(getBufferTemplate().join("")) + ")*"), ""), 
-                        !1 === function(input, inputValue, caretPos) {
+                        inputValue = function(input, inputValue, caretPos) {
                             if (iemobile) {
                                 var inputChar = inputValue.replace(getBuffer().join(""), "");
                                 if (1 === inputChar.length) {
-                                    var keypress = new $.Event("keypress");
-                                    return keypress.which = inputChar.charCodeAt(0), EventHandlers.keypressEvent.call(input, keypress, !0, !0, !1, getMaskSet().validPositions[caretPos.begin - 1] ? caretPos.begin : caretPos.begin - 1), 
-                                    !1;
+                                    var iv = inputValue.split("");
+                                    iv.splice(caretPos.begin, 0, inputChar), inputValue = iv.join("");
                                 }
                             }
-                        }(input, inputValue, caretPos)) return !1;
-                        caretPos.begin > inputValue.length && (caret(input, inputValue.length), caretPos = caret(input));
-                        var buffer = getBuffer().join(""), frontPart = inputValue.substr(0, caretPos.begin), backPart = inputValue.substr(caretPos.begin), frontBufferPart = buffer.substr(0, caretPos.begin), backBufferPart = buffer.substr(caretPos.begin), selection = caretPos, entries = "", isEntry = !1;
-                        if (frontPart !== frontBufferPart) {
-                            selection.begin = 0;
-                            for (var fpl = (isEntry = frontPart.length >= frontBufferPart.length) ? frontPart.length : frontBufferPart.length, i = 0; frontPart.charAt(i) === frontBufferPart.charAt(i) && i < fpl; i++) selection.begin++;
-                            isEntry && (entries += frontPart.slice(selection.begin, selection.end));
+                            return inputValue;
+                        }(input, inputValue, caretPos), caretPos.begin > inputValue.length && (caret(input, inputValue.length), 
+                        caretPos = caret(input)), getBuffer().join("") !== inputValue) {
+                            var buffer = getBuffer().join(""), offset = inputValue.length > buffer.length ? -1 : 0, frontPart = inputValue.substr(0, caretPos.begin), backPart = inputValue.substr(caretPos.begin), frontBufferPart = buffer.substr(0, caretPos.begin + offset), backBufferPart = buffer.substr(caretPos.begin + offset), selection = caretPos, entries = "", isEntry = !1;
+                            if (frontPart !== frontBufferPart) {
+                                for (var fpl = (isEntry = frontPart.length >= frontBufferPart.length) ? frontPart.length : frontBufferPart.length, i = 0; frontPart.charAt(i) === frontBufferPart.charAt(i) && i < fpl; i++) ;
+                                isEntry && (entries += frontPart.slice(i, selection.end));
+                            }
+                            isEntry || backPart === backBufferPart || (backPart.length > backBufferPart.length ? entries += backPart.slice(0, 1) : backPart.length < backBufferPart.length && (selection.end += backBufferPart.length - backPart.length)), 
+                            writeBuffer(input, getBuffer(), {
+                                begin: selection.begin + offset,
+                                end: selection.end + offset
+                            }), entries.length > 0 ? $.each(entries.split(""), function(ndx, entry) {
+                                var keypress = new $.Event("keypress");
+                                keypress.which = entry.charCodeAt(0), ignorable = !1, EventHandlers.keypressEvent.call(input, keypress);
+                            }) : (selection.begin === selection.end - 1 && caret(input, seekPrevious(selection.begin + 1), selection.end), 
+                            e.keyCode = Inputmask.keyCode.DELETE, EventHandlers.keydownEvent.call(input, e)), 
+                            e.preventDefault();
                         }
-                        backPart !== backBufferPart && (backPart.length > backBufferPart.length ? isEntry && (selection.end = selection.begin) : backPart.length < backBufferPart.length ? selection.end += backBufferPart.length - backPart.length : backPart.charAt(0) !== backBufferPart.charAt(0) && selection.end++), 
-                        writeBuffer(input, getBuffer(), selection), entries.length > 0 ? $.each(entries.split(""), function(ndx, entry) {
-                            var keypress = new $.Event("keypress");
-                            keypress.which = entry.charCodeAt(0), ignorable = !1, EventHandlers.keypressEvent.call(input, keypress);
-                        }) : (selection.begin === selection.end - 1 && caret(input, seekPrevious(selection.begin + 1), selection.end), 
-                        e.keyCode = Inputmask.keyCode.DELETE, EventHandlers.keydownEvent.call(input, e)), 
-                        e.preventDefault();
                     }
                 },
                 setValueEvent: function(e) {
@@ -1333,7 +1336,7 @@
             },
             definitions: {
                 "9": {
-                    validator: "[0-9]",
+                    validator: "[0-9\uff11-\uff19]",
                     cardinality: 1,
                     definitionSymbol: "*"
                 },
@@ -1343,7 +1346,7 @@
                     definitionSymbol: "*"
                 },
                 "*": {
-                    validator: "[0-9A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
+                    validator: "[0-9\uff11-\uff19A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
                     cardinality: 1
                 }
             },
@@ -1766,6 +1769,12 @@
                 definitions: {
                     "1": {
                         validator: function(chrs, maskset, pos, strict, opts) {
+                            if ("3" == chrs.charAt(0)) {
+                                if (new RegExp("[2-9]").test(chrs.charAt(1))) return chrs = "30", maskset.buffer[pos] = "0", 
+                                pos++, {
+                                    pos: pos
+                                };
+                            }
                             var isValid = opts.regex.val1.test(chrs);
                             return strict || isValid || chrs.charAt(1) !== opts.separator && -1 === "-./".indexOf(chrs.charAt(1)) || !(isValid = opts.regex.val1.test("0" + chrs.charAt(0))) ? isValid : (maskset.buffer[pos - 1] = "0", 
                             {
@@ -1802,7 +1811,13 @@
                     "2": {
                         validator: function(chrs, maskset, pos, strict, opts) {
                             var frontValue = opts.getFrontValue(maskset.mask, maskset.buffer, opts);
-                            -1 !== frontValue.indexOf(opts.placeholder[0]) && (frontValue = "01" + opts.separator);
+                            if (-1 !== frontValue.indexOf(opts.placeholder[0]) && (frontValue = "01" + opts.separator), 
+                            "1" == chrs.charAt(0)) {
+                                if (new RegExp("[3-9]").test(chrs.charAt(1))) return chrs = "10", maskset.buffer[pos] = "0", 
+                                pos++, {
+                                    pos: pos
+                                };
+                            }
                             var isValid = opts.regex.val2(opts.separator).test(frontValue + chrs);
                             return strict || isValid || chrs.charAt(1) !== opts.separator && -1 === "-./".indexOf(chrs.charAt(1)) || !(isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs.charAt(0))) ? isValid : (maskset.buffer[pos - 1] = "0", 
                             {
@@ -2275,7 +2290,7 @@
             numeric: {
                 mask: function(opts) {
                     if (0 !== opts.repeat && isNaN(opts.integerDigits) && (opts.integerDigits = opts.repeat), 
-                    opts.repeat = 0, opts.groupSeparator === opts.radixPoint && ("." === opts.radixPoint ? opts.groupSeparator = "," : "," === opts.radixPoint ? opts.groupSeparator = "." : opts.groupSeparator = ""), 
+                    opts.repeat = 0, opts.groupSeparator === opts.radixPoint && opts.digits && "0" !== opts.digits && ("." === opts.radixPoint ? opts.groupSeparator = "," : "," === opts.radixPoint ? opts.groupSeparator = "." : opts.groupSeparator = ""), 
                     " " === opts.groupSeparator && (opts.skipOptionalPartCharacter = undefined), opts.autoGroup = opts.autoGroup && "" !== opts.groupSeparator, 
                     opts.autoGroup && ("string" == typeof opts.groupSize && isFinite(opts.groupSize) && (opts.groupSize = parseInt(opts.groupSize)), 
                     isFinite(opts.integerDigits))) {
@@ -2761,10 +2776,10 @@
         var content = item[1] || "", cssMapping = item[3];
         if (!cssMapping) return content;
         if (useSourceMap && "function" == typeof btoa) {
-            var sourceMapping = toComment(cssMapping), sourceURLs = cssMapping.sources.map(function(source) {
+            var sourceMapping = toComment(cssMapping);
+            return [ content ].concat(cssMapping.sources.map(function(source) {
                 return "/*# sourceURL=" + cssMapping.sourceRoot + source + " */";
-            });
-            return [ content ].concat(sourceURLs).concat([ sourceMapping ]).join("\n");
+            })).concat([ sourceMapping ]).join("\n");
         }
         return [ content ].join("\n");
     }
