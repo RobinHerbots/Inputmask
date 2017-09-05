@@ -91,7 +91,7 @@ export default function (qunit, $, Inputmask) {
     });
 
     qunit.test("numeric 1 - #1617", function (assert) {
-        var $fixture = $("body");
+        var $fixture = $("#qunit-fixture");
         $fixture.append('<input type="text" id="testmask" />');
         var testmask = document.getElementById("testmask");
         Inputmask("numeric", {

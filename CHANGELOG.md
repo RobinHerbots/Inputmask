@@ -7,6 +7,9 @@ All notable changes to this project will be documented in this file.
 - TODO drop all date/time related aliases
 - TODO rewrite datatime alias
 
+### Fixes
+- 
+
 ## [3.3.8 - 2017-08-24]
 ### added
 - added \uFF11-\uFF19 character range to 9 definition #1606

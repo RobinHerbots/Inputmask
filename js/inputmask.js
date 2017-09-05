@@ -900,7 +900,7 @@
                 for (i = end - 1; i >= startPos; i--) { //clear selection
                     if (getMaskSet().validPositions[i] !== undefined) {
                         if (nocheck === true ||
-                            ((getMaskSet().validPositions[i].match.optionality || !IsEnclosedStatic(i)) && opts.canClearPosition(getMaskSet(), i, getLastValidPosition(), strict, opts) !== false)) {
+                            ((getMaskSet().validPositions[i].match.optionality || !IsEnclosedStatic(i)) && opts.canClearPosition(getMaskSet(), i, getLastValidPosition(undefined, true), strict, opts) !== false)) {
                             delete getMaskSet().validPositions[i];
                         }
                     }
