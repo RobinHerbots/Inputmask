@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 - drop Regex alias
 - TODO drop all date/time related aliases
 - TODO rewrite datatime alias
+- enhance inputfallback (Android)
 
 ### Fixes
 - Currency mask works incorrectly on Android Chrome v58 #1617

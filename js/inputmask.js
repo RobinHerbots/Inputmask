@@ -2205,13 +2205,7 @@
                             inputValue = inputValue.join("");
                         }
 
-                        if (inputValue.charAt(caretPos.begin - 1) === opts.radixPoint && inputValue.length > getBuffer().length) {
-                            var keypress = new $.Event("keypress");
-                            keypress.which = opts.radixPoint.charCodeAt(0);
-                            EventHandlers.keypressEvent.call(input, keypress, true, true, false, caretPos.begin - 1);
-                            return false;
-
-                        }
+                        return inputValue;
                     }
 
                     function ieMobileHandler(input, inputValue, caretPos) {
@@ -2232,8 +2226,7 @@
                     if (getBuffer().join("") !== inputValue) {
 
                         var caretPos = caret(input);
-                        if (radixPointHandler(input, inputValue, caretPos) === false) return false;
-                        // inputValue = inputValue.replace(new RegExp("(" + Inputmask.escapeRegex(getBufferTemplate().join("")) + ")*"), "");
+                        inputValue = radixPointHandler(input, inputValue, caretPos);
                         inputValue = ieMobileHandler(input, inputValue, caretPos);
 
                         if (caretPos.begin > inputValue.length) {
@@ -2267,9 +2260,18 @@
                                 } else {
                                     if (backPart.length < backBufferPart.length) {
                                         selection.end += backBufferPart.length - backPart.length;
+                                        //hack around numeric alias & radixpoint
+                                        if (!isEntry && opts.radixPoint !== "" && backPart === "" && frontPart.charAt(selection.begin + offset - 1) === opts.radixPoint) {
+                                            selection.begin--;
+                                            entries = opts.radixPoint;
+                                        }
+
+
                                     }
                                 }
                             }
+
+
 
                             writeBuffer(input, getBuffer(), {
                                 "begin": selection.begin + offset,

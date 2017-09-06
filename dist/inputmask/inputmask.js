@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-35
+* Version: 4.0.1-37
 */
 
 !function(factory) {
@@ -901,16 +901,11 @@
                 var input = this, inputValue = input.inputmask._valueGet();
                 if (getBuffer().join("") !== inputValue) {
                     var caretPos = caret(input);
-                    if (!1 === function(input, inputValue, caretPos) {
-                        if ("." === inputValue.charAt(caretPos.begin - 1) && "" !== opts.radixPoint && (inputValue = inputValue.split(""), 
-                        inputValue[caretPos.begin - 1] = opts.radixPoint.charAt(0), inputValue = inputValue.join("")), 
-                        inputValue.charAt(caretPos.begin - 1) === opts.radixPoint && inputValue.length > getBuffer().length) {
-                            var keypress = new $.Event("keypress");
-                            return keypress.which = opts.radixPoint.charCodeAt(0), EventHandlers.keypressEvent.call(input, keypress, !0, !0, !1, caretPos.begin - 1), 
-                            !1;
-                        }
-                    }(input, inputValue, caretPos)) return !1;
                     if (inputValue = function(input, inputValue, caretPos) {
+                        return "." === inputValue.charAt(caretPos.begin - 1) && "" !== opts.radixPoint && (inputValue = inputValue.split(""), 
+                        inputValue[caretPos.begin - 1] = opts.radixPoint.charAt(0), inputValue = inputValue.join("")), 
+                        inputValue;
+                    }(input, inputValue, caretPos), inputValue = function(input, inputValue, caretPos) {
                         if (iemobile) {
                             var inputChar = inputValue.replace(getBuffer().join(""), "");
                             if (1 === inputChar.length) {
@@ -926,8 +921,9 @@
                             for (var fpl = (isEntry = frontPart.length >= frontBufferPart.length) ? frontPart.length : frontBufferPart.length, i = 0; frontPart.charAt(i) === frontBufferPart.charAt(i) && i < fpl; i++) ;
                             isEntry && (0 === offset && (selection.begin = i), entries += frontPart.slice(i, selection.end));
                         }
-                        if (backPart !== backBufferPart && (backPart.length > backBufferPart.length ? entries += backPart.slice(0, 1) : backPart.length < backBufferPart.length && (selection.end += backBufferPart.length - backPart.length)), 
-                        writeBuffer(input, getBuffer(), {
+                        if (backPart !== backBufferPart && (backPart.length > backBufferPart.length ? entries += backPart.slice(0, 1) : backPart.length < backBufferPart.length && (selection.end += backBufferPart.length - backPart.length, 
+                        isEntry || "" === opts.radixPoint || "" !== backPart || frontPart.charAt(selection.begin + offset - 1) !== opts.radixPoint || (selection.begin--, 
+                        entries = opts.radixPoint))), writeBuffer(input, getBuffer(), {
                             begin: selection.begin + offset,
                             end: selection.end + offset
                         }), entries.length > 0) $.each(entries.split(""), function(ndx, entry) {
