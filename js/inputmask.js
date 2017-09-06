@@ -2233,7 +2233,7 @@
 
                         var caretPos = caret(input);
                         if (radixPointHandler(input, inputValue, caretPos) === false) return false;
-                        inputValue = inputValue.replace(new RegExp("(" + Inputmask.escapeRegex(getBufferTemplate().join("")) + ")*"), "");
+                        // inputValue = inputValue.replace(new RegExp("(" + Inputmask.escapeRegex(getBufferTemplate().join("")) + ")*"), "");
                         inputValue = ieMobileHandler(input, inputValue, caretPos);
 
                         if (caretPos.begin > inputValue.length) {
@@ -2261,7 +2261,7 @@
                                     entries += frontPart.slice(i, selection.end);
                                 }
                             }
-                            if (!isEntry && backPart !== backBufferPart) {
+                            if (backPart !== backBufferPart) {
                                 if (backPart.length > backBufferPart.length) {
                                     entries += backPart.slice(0, 1);
                                 } else {
@@ -2284,10 +2284,16 @@
                                 });
                             } else {
                                 if (selection.begin === selection.end - 1) {
-                                    caret(input, seekPrevious(selection.begin + 1), selection.end);
+                                    selection.begin = seekPrevious(selection.begin + 1);
+                                    if (selection.begin === selection.end - 1) {
+                                        caret(input, selection.begin);
+                                    } else {
+                                        caret(input, selection.begin, selection.end);
+                                    }
                                 }
-                                e.keyCode = Inputmask.keyCode.DELETE;
-                                EventHandlers.keydownEvent.call(input, e);
+                                var keydown = new $.Event("keydown");
+                                keydown.keyCode = Inputmask.keyCode.DELETE;
+                                EventHandlers.keydownEvent.call(input, keydown);
                             }
 
                             e.preventDefault();

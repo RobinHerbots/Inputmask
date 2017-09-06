@@ -8,7 +8,8 @@ All notable changes to this project will be documented in this file.
 - TODO rewrite datatime alias
 
 ### Fixes
-- 
+- Currency mask works incorrectly on Android Chrome v58 #1617
+- Can't input character at the end if it's also a placeholder on Android #1648
 
 ## [3.3.8 - 2017-08-24]
 ### added

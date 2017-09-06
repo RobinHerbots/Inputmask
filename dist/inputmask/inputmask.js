@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-34
+* Version: 4.0.1-35
 */
 
 !function(factory) {
@@ -910,8 +910,7 @@
                             !1;
                         }
                     }(input, inputValue, caretPos)) return !1;
-                    if (inputValue = inputValue.replace(new RegExp("(" + Inputmask.escapeRegex(getBufferTemplate().join("")) + ")*"), ""), 
-                    inputValue = function(input, inputValue, caretPos) {
+                    if (inputValue = function(input, inputValue, caretPos) {
                         if (iemobile) {
                             var inputChar = inputValue.replace(getBuffer().join(""), "");
                             if (1 === inputChar.length) {
@@ -927,15 +926,19 @@
                             for (var fpl = (isEntry = frontPart.length >= frontBufferPart.length) ? frontPart.length : frontBufferPart.length, i = 0; frontPart.charAt(i) === frontBufferPart.charAt(i) && i < fpl; i++) ;
                             isEntry && (0 === offset && (selection.begin = i), entries += frontPart.slice(i, selection.end));
                         }
-                        isEntry || backPart === backBufferPart || (backPart.length > backBufferPart.length ? entries += backPart.slice(0, 1) : backPart.length < backBufferPart.length && (selection.end += backBufferPart.length - backPart.length)), 
+                        if (backPart !== backBufferPart && (backPart.length > backBufferPart.length ? entries += backPart.slice(0, 1) : backPart.length < backBufferPart.length && (selection.end += backBufferPart.length - backPart.length)), 
                         writeBuffer(input, getBuffer(), {
                             begin: selection.begin + offset,
                             end: selection.end + offset
-                        }), entries.length > 0 ? $.each(entries.split(""), function(ndx, entry) {
+                        }), entries.length > 0) $.each(entries.split(""), function(ndx, entry) {
                             var keypress = new $.Event("keypress");
                             keypress.which = entry.charCodeAt(0), ignorable = !1, EventHandlers.keypressEvent.call(input, keypress);
-                        }) : (selection.begin === selection.end - 1 && caret(input, seekPrevious(selection.begin + 1), selection.end), 
-                        e.keyCode = Inputmask.keyCode.DELETE, EventHandlers.keydownEvent.call(input, e)), 
+                        }); else {
+                            selection.begin === selection.end - 1 && (selection.begin = seekPrevious(selection.begin + 1), 
+                            selection.begin === selection.end - 1 ? caret(input, selection.begin) : caret(input, selection.begin, selection.end));
+                            var keydown = new $.Event("keydown");
+                            keydown.keyCode = Inputmask.keyCode.DELETE, EventHandlers.keydownEvent.call(input, keydown);
+                        }
                         e.preventDefault();
                     }
                 }
