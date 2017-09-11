@@ -2,10 +2,12 @@
 All notable changes to this project will be documented in this file.
 
 ## [UNRELEASED - 4.x]
+### added
+- new datetime alias (WIP)
+
 ### Updates
 - drop Regex alias
-- TODO drop all date/time related aliases
-- TODO rewrite datatime alias
+- drop all date/time related aliases
 - enhance inputfallback (Android)
 
 ### Fixes
