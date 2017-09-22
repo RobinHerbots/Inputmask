@@ -84,21 +84,20 @@
 
     function parse(format) {
         //parse format to regex string
-        var mask = "";
-
-        var match;
+        var mask = "", match;
         while (match = getTokenizer().exec(format)) {
-            mask += formatCode[match[0]] || match[0];
+            mask += formatCode[match[0]] ? "(" + formatCode[match[0]] + ")" : match[0];
         }
-        console.log(mask);
         return mask;
     }
 
     Inputmask.extendAliases({
         "datetimenew": {
             mask: function (opts) {
-                var format = formatAlias[opts.inputFormat] || opts.inputFormat; //resolve possible formatAkias
-                opts.regex = parse(format);
+                opts.inputFormat = formatAlias[opts.inputFormat] || opts.inputFormat; //resolve possible formatAkias
+                opts.displayFormat = formatAlias[opts.displayFormat] || opts.displayFormat || opts.inputFormat; //resolve possible formatAkias
+                opts.outputFormat = formatAlias[opts.outputFormat] || opts.outputFormat || opts.inputFormat; //resolve possible formatAkias
+                opts.regex = parse(opts.inputFormat);
                 return null; //migrate to regex mask
             },
             inputFormat: "dd/mm/yyyy", //format used to input the date
@@ -112,11 +111,24 @@
 
             },
             onKeyDown: function (e, buffer, caretPos, opts) {
-                var $input = $(this);
+                var input = this;
                 if (e.ctrlKey && e.keyCode === Inputmask.keyCode.RIGHT) {
-                    var today = new Date();
-                    $input.val(today.getDate().toString() + (today.getMonth() + 1).toString() + today.getFullYear().toString());
-                    $input.trigger("setvalue");
+                    var today = new Date(), match, date = "";
+
+                    while (match = getTokenizer().exec(opts.inputFormat)) {
+                        if (match[0].charAt(0) === "d") {
+                            date += today.getDate().toString();
+                        } else if (match[0].charAt(0) === "m") {
+                            date += today.getMonth().toString();
+                        } else if (match[0] === "yyyy") {
+                            date += today.getFullYear().toString();
+                        } else if (match[0] === "yy") {
+                            date += today.getYear().toString();
+                        }
+                    }
+
+                    input.inputmask._valueSet(date);
+                    $(input).trigger("setvalue");
                 }
             },
             insertMode: false
@@ -729,4 +741,5 @@
     });
 
     return Inputmask;
-}));
+}))
+;
