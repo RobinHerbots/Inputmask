@@ -1804,7 +1804,7 @@
             }
             if ($.isFunction(opts.postValidation) && result !== false && !strict && fromSetValid !== true && validateOnly !== true) {
                 var postResult = opts.postValidation(getBuffer(true), result, opts);
-                if (postResult) {
+                if (postResult !== undefined) {
                     if (postResult.refreshFromBuffer && postResult.buffer) {
                         var refresh = postResult.refreshFromBuffer;
                         refreshFromBuffer(refresh === true ? refresh : refresh.start, refresh.end, postResult.buffer);

@@ -79,7 +79,11 @@
     }
 
     function isLeapYear(year) {
-        return isNaN(year) || new Date(year, 2, 0).getDate() === 29;
+        return new Date(year, 2, 0).getDate() === 29;
+    }
+
+    function isDateInRange(maskDate, opts) {
+        return opts.min.getTime() <= maskDate.getTime() && opts.max.getTime() >= maskDate.getTime();
     }
 
     function parse(format) {
@@ -91,24 +95,63 @@
         return mask;
     }
 
+    function analyseMask(maskString, format, opts) {
+        function extendYear(year) {
+            var correctedyear = year.length === 4 ? year : new Date().getFullYear().toString().substr(0, 4 - year.length) + year;
+            correctedyear = correctedyear.replace(/[^0-9]/g, "")
+            var minPart = opts.min.getFullYear().toString().substr(correctedyear.length);
+            return year.charAt(0) === opts.max.getFullYear().toString().charAt(0) ? year.replace(/[^0-9]/g, "0") : correctedyear + minPart.substr(correctedyear.length);
+        }
+
+        var dateObj = {}, targetProp, mask = maskString, match;
+
+        while (match = getTokenizer().exec(format)) {
+            if (match[0].charAt(0) === "d") {
+                targetProp = "day";
+            } else if (match[0].charAt(0) === "m") {
+                targetProp = "month";
+            } else if (match[0].charAt(0) === "y") {
+                targetProp = "year";
+            } else if (formatCode.hasOwnProperty(match[0])) {
+                targetProp = "unmatched";
+            } else { //separatot
+                var value = mask.split(match[0])[0];
+                dateObj[targetProp] = targetProp === "year" ? extendYear(value) : value;
+                mask = mask.slice((value + match[0]).length);
+            }
+        }
+        return dateObj;
+    }
+
     Inputmask.extendAliases({
         "datetimenew": {
             mask: function (opts) {
                 opts.inputFormat = formatAlias[opts.inputFormat] || opts.inputFormat; //resolve possible formatAkias
                 opts.displayFormat = formatAlias[opts.displayFormat] || opts.displayFormat || opts.inputFormat; //resolve possible formatAkias
                 opts.outputFormat = formatAlias[opts.outputFormat] || opts.outputFormat || opts.inputFormat; //resolve possible formatAkias
+                opts.placeholder = opts.placeholder || opts.inputFormat;
                 opts.regex = parse(opts.inputFormat);
                 return null; //migrate to regex mask
             },
-            inputFormat: "dd/mm/yyyy", //format used to input the date
+            inputFormat: "dd/mm/yyyy HH:MM", //format used to input the date
             displayFormat: undefined, //visual format when the input looses focus
             outputFormat: undefined, //unmasking format
-            yearrange: {
-                minyear: 1900,
-                maxyear: 2099
-            },
+            min: new Date("1900/1/1"),
+            max: new Date(new Date().getFullYear().toString().substr(0, 2) + "99/12/31 24:00:00"),
             postValidation: function (buffer, currentResult, opts) {
+                var dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
+                var result = currentResult;
 
+                if (result && isFinite(dateParts.year)) {
+                    result = result && (dateParts.day !== "29" || !isLeapYear(dateParts.year));
+                }
+                if (result) {
+                    var maskDate = new Date(dateParts.year, dateParts.month, dateParts.day);
+                    if (maskDate.getTime() === maskDate.getTime()) { //check for a valid date ~ an invalid date returns NaN which isn't equal
+                        result = result && isDateInRange(maskDate, opts);
+                    }
+                }
+                return result;
             },
             onKeyDown: function (e, buffer, caretPos, opts) {
                 var input = this;
