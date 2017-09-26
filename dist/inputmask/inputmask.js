@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-37
+* Version: 4.0.1-39
 */
 
 !function(factory) {
@@ -495,11 +495,13 @@
             }
             if ($.isFunction(opts.postValidation) && !1 !== result && !strict && !0 !== fromSetValid && !0 !== validateOnly) {
                 var postResult = opts.postValidation(getBuffer(!0), result, opts);
-                if (postResult.refreshFromBuffer && postResult.buffer) {
-                    var refresh = postResult.refreshFromBuffer;
-                    refreshFromBuffer(!0 === refresh ? refresh : refresh.start, refresh.end, postResult.buffer);
+                if (postResult !== undefined) {
+                    if (postResult.refreshFromBuffer && postResult.buffer) {
+                        var refresh = postResult.refreshFromBuffer;
+                        refreshFromBuffer(!0 === refresh ? refresh : refresh.start, refresh.end, postResult.buffer);
+                    }
+                    result = !0 === postResult ? result : postResult;
                 }
-                result = !0 === postResult ? result : postResult;
             }
             return result && result.pos === undefined && (result.pos = maskPos), !1 !== result && !0 !== validateOnly || (resetMaskSet(!0), 
             getMaskSet().validPositions = $.extend(!0, {}, positionsClone)), result;

@@ -26,7 +26,7 @@ import simulator from "./simulator.js";
 
 // android testing
 Inputmask.extendDefaults({
-   inputEventOnly: true
+   inputEventOnly: false
 });
 
 window.Inputmask = Inputmask; //inject globally for the simulator to detect inputeventonly

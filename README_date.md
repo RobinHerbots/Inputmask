@@ -1,3 +1,5 @@
+#OBSOLETE - NEEDS UPDATE
+
 # date & datetime extensions
 
 Date & Time masks.  Includes autocompletion, yearranges, leapyeares, etc.
