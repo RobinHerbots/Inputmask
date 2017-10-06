@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-39
+* Version: 4.0.1-40
 */
 
 !function(modules) {
@@ -983,7 +983,8 @@
                                 selection.begin === selection.end - 1 && (selection.begin = seekPrevious(selection.begin + 1), 
                                 selection.begin === selection.end - 1 ? caret(input, selection.begin) : caret(input, selection.begin, selection.end));
                                 var keydown = new $.Event("keydown");
-                                keydown.keyCode = Inputmask.keyCode.DELETE, EventHandlers.keydownEvent.call(input, keydown);
+                                keydown.keyCode = Inputmask.keyCode.DELETE, EventHandlers.keydownEvent.call(input, keydown), 
+                                !1 === opts.insertMode && caret(input, caret(input).begin - 1);
                             }
                             e.preventDefault();
                         }
@@ -1702,43 +1703,45 @@
         __WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(0), __webpack_require__(1) ], 
         __WEBPACK_AMD_DEFINE_FACTORY__ = factory, void 0 !== (__WEBPACK_AMD_DEFINE_RESULT__ = "function" == typeof __WEBPACK_AMD_DEFINE_FACTORY__ ? __WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__) : __WEBPACK_AMD_DEFINE_FACTORY__) && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__);
     }(function($, Inputmask) {
-        function getTokenizer() {
-            return tokenizer || (tokenizer = "(" + $.map(formatCode, function(lmnt, ndx) {
+        function getTokenizer(opts) {
+            return opts.tokenizer || (opts.tokenizer = "(" + $.map(formatCode, function(lmnt, ndx) {
                 return ndx;
-            }).join("|") + ")+|.", tokenizer = new RegExp(tokenizer, "g")), tokenizer;
+            }).join("|") + ")+|.", opts.tokenizer = new RegExp(opts.tokenizer, "g")), opts.tokenizer;
         }
         function isLeapYear(year) {
             return 29 === new Date(year, 2, 0).getDate();
         }
         function isDateInRange(maskDate, opts) {
-            return opts.min.getTime() <= maskDate.getTime() && opts.max.getTime() >= maskDate.getTime();
+            var result = !0;
+            return opts.min && opts.min.date.getTime() === opts.min.date.getTime() && (result = result && opts.min.date.getTime() <= maskDate.getTime()), 
+            opts.max && opts.max.date.getTime() === opts.max.date.getTime() && (result = result && opts.max.date.getTime() >= maskDate.getTime()), 
+            result;
         }
-        function parse(format) {
-            for (var match, mask = ""; match = getTokenizer().exec(format); ) mask += formatCode[match[0]] ? "(" + formatCode[match[0]] + ")" : match[0];
+        function parse(format, opts) {
+            for (var match, mask = ""; match = getTokenizer(opts).exec(format); ) mask += formatCode[match[0]] ? "(" + ($.isFunction(formatCode[match[0]]) ? formatCode[match[0]](opts.min, opts.max) : formatCode[match[0]]) + ")" : match[0];
             return mask;
         }
         function analyseMask(maskString, format, opts) {
             function extendYear(year) {
                 var correctedyear = 4 === year.length ? year : new Date().getFullYear().toString().substr(0, 4 - year.length) + year;
-                return correctedyear = correctedyear.replace(/[^0-9]/g, ""), year.charAt(0) === opts.max.getFullYear().toString().charAt(0) ? year.replace(/[^0-9]/g, "0") : correctedyear + opts.min.getFullYear().toString().substr(correctedyear.length);
+                return opts.min && opts.min.year && opts.max && opts.max.year ? (correctedyear = correctedyear.replace(/[^0-9]/g, ""), 
+                correctedyear = year.charAt(0) === opts.max.year.charAt(0) ? year.replace(/[^0-9]/g, "0") : correctedyear + opts.min.year.substr(correctedyear.length)) : correctedyear = correctedyear.replace(/[^0-9]/g, "0"), 
+                correctedyear;
             }
-            for (var targetProp, match, dateObj = {
-                day: 1,
-                month: 1,
-                year: extendYear("____"),
-                hour: 0,
-                minutes: 0,
-                seconds: 0
-            }, mask = maskString; match = getTokenizer().exec(format); ) if ("d" === match[0].charAt(0)) targetProp = "day"; else if ("m" === match[0].charAt(0)) targetProp = "month"; else if ("y" === match[0].charAt(0)) targetProp = "year"; else if ("h" === match[0].charAt(0).toLowerCase()) targetProp = "hour"; else if ("M" === match[0].charAt(0)) targetProp = "minutes"; else if ("s" === match[0].charAt(0)) targetProp = "seconds"; else if (formatCode.hasOwnProperty(match[0])) targetProp = "unmatched"; else {
-                var value = mask.split(match[0])[0];
-                "year" === targetProp ? (dateObj[targetProp] = extendYear(value), dateObj["raw" + targetProp] = value) : dateObj[targetProp] = value.replace(/[^0-9]/g, "0"), 
-                mask = mask.slice((value + match[0]).length), targetProp = void 0;
+            var targetProp, match, dateObj = {}, mask = maskString;
+            if ("string" == typeof mask) {
+                for (;match = getTokenizer(opts).exec(format); ) if ("d" === match[0].charAt(0)) targetProp = "day"; else if ("m" === match[0].charAt(0)) targetProp = "month"; else if ("y" === match[0].charAt(0)) targetProp = "year"; else if ("h" === match[0].charAt(0).toLowerCase()) targetProp = "hour"; else if ("M" === match[0].charAt(0)) targetProp = "minutes"; else if ("s" === match[0].charAt(0)) targetProp = "seconds"; else if (formatCode.hasOwnProperty(match[0])) targetProp = "unmatched"; else {
+                    var value = mask.split(match[0])[0];
+                    "year" === targetProp ? (dateObj[targetProp] = extendYear(value), dateObj["raw" + targetProp] = value) : dateObj[targetProp] = opts.min && value.match(/[^0-9]/) ? opts.min[targetProp] : value, 
+                    mask = mask.slice((value + match[0]).length), targetProp = void 0;
+                }
+                return void 0 !== targetProp && ("year" === targetProp ? (dateObj[targetProp] = extendYear(mask), 
+                dateObj["raw" + targetProp] = mask) : dateObj[targetProp] = mask.replace(/[^0-9]/g, "0")), 
+                dateObj.date = new Date(dateObj.year + "-" + dateObj.month + "-" + dateObj.day + "T" + dateObj.hour + ":" + dateObj.minutes + ":" + dateObj.seconds), 
+                dateObj;
             }
-            return void 0 !== targetProp && ("year" === targetProp ? (dateObj[targetProp] = extendYear(mask), 
-            dateObj["raw" + targetProp] = mask) : dateObj[targetProp] = mask.replace(/[^0-9]/g, "0")), 
-            dateObj;
         }
-        var tokenizer, formatCode = {
+        var formatCode = {
             d: "[1-9]|[12][0-9]|3[01]",
             dd: "0[1-9]|[12][0-9]|3[01]",
             ddd: "",
@@ -1785,27 +1788,25 @@
                 mask: function(opts) {
                     return opts.inputFormat = formatAlias[opts.inputFormat] || opts.inputFormat, opts.displayFormat = formatAlias[opts.displayFormat] || opts.displayFormat || opts.inputFormat, 
                     opts.outputFormat = formatAlias[opts.outputFormat] || opts.outputFormat || opts.inputFormat, 
-                    opts.placeholder = opts.placeholder || opts.inputFormat, opts.regex = parse(opts.inputFormat), 
-                    null;
+                    opts.placeholder = opts.placeholder !== Inputmask.prototype.defaults.placeholder ? opts.placeholder : opts.inputFormat, 
+                    opts.min = analyseMask(opts.min, opts.inputFormat, opts), opts.max = analyseMask(opts.max, opts.inputFormat, opts), 
+                    opts.regex = parse(opts.inputFormat, opts), console.log(opts.regex), null;
                 },
                 inputFormat: "dd/mm/yyyy HH:MM",
                 displayFormat: void 0,
                 outputFormat: void 0,
-                min: new Date("1900/1/1"),
-                max: new Date(new Date().getFullYear().toString().substr(0, 2) + "99/12/31 24:00:00"),
+                min: null,
+                max: null,
                 postValidation: function(buffer, currentResult, opts) {
                     var dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts), result = currentResult;
-                    if (result && isFinite(dateParts.rawyear) && (result = result && ("29" !== dateParts.day || !isLeapYear(dateParts.rawyear))), 
-                    result) {
-                        var maskDate = new Date(dateParts.year + "/" + dateParts.month + "/" + dateParts.day + " " + dateParts.hour + ":" + dateParts.minutes + ":" + dateParts.seconds);
-                        maskDate.getTime() === maskDate.getTime() && (result = result && isDateInRange(maskDate, opts));
-                    }
-                    return result;
+                    return result && isFinite(dateParts.rawyear) && (result = result && ("29" !== dateParts.day || !isLeapYear(dateParts.rawyear))), 
+                    result && dateParts.date.getTime() === dateParts.date.getTime() && (result = result && isDateInRange(dateParts.date, opts)), 
+                    result;
                 },
                 onKeyDown: function(e, buffer, caretPos, opts) {
                     var input = this;
                     if (e.ctrlKey && e.keyCode === Inputmask.keyCode.RIGHT) {
-                        for (var match, today = new Date(), date = ""; match = getTokenizer().exec(opts.inputFormat); ) "d" === match[0].charAt(0) ? date += today.getDate().toString() : "m" === match[0].charAt(0) ? date += today.getMonth().toString() : "yyyy" === match[0] ? date += today.getFullYear().toString() : "yy" === match[0] && (date += today.getYear().toString());
+                        for (var match, today = new Date(), date = ""; match = getTokenizer(opts).exec(opts.inputFormat); ) "d" === match[0].charAt(0) ? date += today.getDate().toString() : "m" === match[0].charAt(0) ? date += (today.getMonth() + 1).toString() : "yyyy" === match[0] ? date += today.getFullYear().toString() : "yy" === match[0] && (date += today.getYear().toString());
                         input.inputmask._valueSet(date), $(input).trigger("setvalue");
                     }
                 },

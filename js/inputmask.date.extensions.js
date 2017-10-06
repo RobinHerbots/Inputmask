@@ -30,7 +30,7 @@
             mmm: "", //Month as a three-letter abbreviation.
             mmmm: "", //Month as its full name.
             yy: "[0-9]{2}", //Year as last two digits; leading zero for years less than 10.
-            yyyy: "[0-9]{4}", //Year represented by four digits.
+            yyyy: "[0-9]{4}",
             h: "[1-9]|1[0-2]", //Hours; no leading zero for single-digit hours (12-hour clock).
             hh: "0[1-9]|1[0-2]", //Hours; leading zero for single-digit hours (12-hour clock).
             H: "1?[1-9]|2[0-4]", //Hours; no leading zero for single-digit hours (24-hour clock).
@@ -64,18 +64,16 @@
             isoUtcDateTime: "UTC:yyyy-mm-dd'T'HH:MM:ss'Z'" //2007-06-09T22:46:21Z
         };
 
-    var tokenizer;
-
-    function getTokenizer() {
-        if (!tokenizer) {
-            tokenizer = "(" + $.map(formatCode, function (lmnt, ndx) {
+    function getTokenizer(opts) {
+        if (!opts.tokenizer) {
+            opts.tokenizer = "(" + $.map(formatCode, function (lmnt, ndx) {
                 return ndx;
             }).join("|") + ")+|.";
 
-            tokenizer = new RegExp(tokenizer, "g");
+            opts.tokenizer = new RegExp(opts.tokenizer, "g");
         }
 
-        return tokenizer;
+        return opts.tokenizer;
     }
 
     function isLeapYear(year) {
@@ -83,14 +81,22 @@
     }
 
     function isDateInRange(maskDate, opts) {
-        return opts.min.getTime() <= maskDate.getTime() && opts.max.getTime() >= maskDate.getTime();
+        var result = true;
+        if (opts.min && opts.min.date.getTime() === opts.min.date.getTime()) {
+            result = result && opts.min.date.getTime() <= maskDate.getTime();
+        }
+        if (opts.max && opts.max.date.getTime() === opts.max.date.getTime()) {
+            result = result && opts.max.date.getTime() >= maskDate.getTime();
+        }
+
+        return result;
     }
 
-    function parse(format) {
+    function parse(format, opts) {
         //parse format to regex string
         var mask = "", match;
-        while (match = getTokenizer().exec(format)) {
-            mask += formatCode[match[0]] ? "(" + formatCode[match[0]] + ")" : match[0];
+        while (match = getTokenizer(opts).exec(format)) {
+            mask += formatCode[match[0]] ? "(" + ($.isFunction(formatCode[match[0]]) ? formatCode[match[0]](opts.min, opts.max) : formatCode[match[0]]) + ")" : match[0];
         }
         return mask;
     }
@@ -98,53 +104,60 @@
     function analyseMask(maskString, format, opts) {
         function extendYear(year) {
             var correctedyear = year.length === 4 ? year : new Date().getFullYear().toString().substr(0, 4 - year.length) + year;
-            correctedyear = correctedyear.replace(/[^0-9]/g, "")
-            return year.charAt(0) === opts.max.getFullYear().toString().charAt(0) ? year.replace(/[^0-9]/g, "0") : correctedyear + opts.min.getFullYear().toString().substr(correctedyear.length);
+            if (opts.min && opts.min.year && opts.max && opts.max.year) {
+                correctedyear = correctedyear.replace(/[^0-9]/g, "");
+                correctedyear = year.charAt(0) === opts.max.year.charAt(0) ? year.replace(/[^0-9]/g, "0") : correctedyear + opts.min.year.substr(correctedyear.length);
+            } else correctedyear = correctedyear.replace(/[^0-9]/g, "0");
+            return correctedyear;
         }
+
 
         var dateObj = {
-            day: 1,
-            month: 1,
-            year: extendYear("____"),
-            hour: 0,
-            minutes: 0,
-            seconds: 0
+            // day:  "01",
+            // month: "01",
+            // year: extendYear("____"),
+            // hour: "00",
+            // minutes: "00",
+            // seconds: "00"
         }, targetProp, mask = maskString, match;
-
-        while (match = getTokenizer().exec(format)) {
-            if (match[0].charAt(0) === "d") {
-                targetProp = "day";
-            } else if (match[0].charAt(0) === "m") {
-                targetProp = "month";
-            } else if (match[0].charAt(0) === "y") {
-                targetProp = "year";
-            } else if (match[0].charAt(0).toLowerCase() === "h") {
-                targetProp = "hour";
-            } else if (match[0].charAt(0) === "M") {
-                targetProp = "minutes";
-            } else if (match[0].charAt(0) === "s") {
-                targetProp = "seconds";
-            } else if (formatCode.hasOwnProperty(match[0])) {
-                targetProp = "unmatched";
-            } else { //separatot
-                var value = mask.split(match[0])[0];
-                if (targetProp === "year") {
-                    dateObj[targetProp] = extendYear(value);
-                    dateObj["raw" + targetProp] = value;
+        if (typeof mask === "string") {
+            while (match = getTokenizer(opts).exec(format)) {
+                if (match[0].charAt(0) === "d") {
+                    targetProp = "day";
+                } else if (match[0].charAt(0) === "m") {
+                    targetProp = "month";
+                } else if (match[0].charAt(0) === "y") {
+                    targetProp = "year";
+                } else if (match[0].charAt(0).toLowerCase() === "h") {
+                    targetProp = "hour";
+                } else if (match[0].charAt(0) === "M") {
+                    targetProp = "minutes";
+                } else if (match[0].charAt(0) === "s") {
+                    targetProp = "seconds";
+                } else if (formatCode.hasOwnProperty(match[0])) {
+                    targetProp = "unmatched";
+                } else { //separatot
+                    var value = mask.split(match[0])[0];
+                    if (targetProp === "year") {
+                        dateObj[targetProp] = extendYear(value);
+                        dateObj["raw" + targetProp] = value;
+                    }
+                    else dateObj[targetProp] = opts.min && value.match(/[^0-9]/) ? opts.min[targetProp] : value;
+                    mask = mask.slice((value + match[0]).length);
+                    targetProp = undefined;
                 }
-                else dateObj[targetProp] = value.replace(/[^0-9]/g, "0");
-                mask = mask.slice((value + match[0]).length);
-                targetProp = undefined;
             }
-        }
-        if (targetProp !== undefined) {
-            if (targetProp === "year") {
-                dateObj[targetProp] = extendYear(mask);
-                dateObj["raw" + targetProp] = mask;
+            if (targetProp !== undefined) {
+                if (targetProp === "year") {
+                    dateObj[targetProp] = extendYear(mask);
+                    dateObj["raw" + targetProp] = mask;
+                }
+                else dateObj[targetProp] = mask.replace(/[^0-9]/g, "0");
             }
-            else dateObj[targetProp] = mask.replace(/[^0-9]/g, "0");
+            dateObj.date = new Date(dateObj.year + "-" + dateObj.month + "-" + dateObj.day + "T" + dateObj.hour + ":" + dateObj.minutes + ":" + dateObj.seconds);
+            return dateObj;
         }
-        return dateObj;
+        return undefined;
     }
 
     Inputmask.extendAliases({
@@ -153,15 +166,18 @@
                 opts.inputFormat = formatAlias[opts.inputFormat] || opts.inputFormat; //resolve possible formatAkias
                 opts.displayFormat = formatAlias[opts.displayFormat] || opts.displayFormat || opts.inputFormat; //resolve possible formatAkias
                 opts.outputFormat = formatAlias[opts.outputFormat] || opts.outputFormat || opts.inputFormat; //resolve possible formatAkias
-                opts.placeholder = opts.placeholder || opts.inputFormat;
-                opts.regex = parse(opts.inputFormat);
+                opts.placeholder = opts.placeholder !== Inputmask.prototype.defaults.placeholder ? opts.placeholder : opts.inputFormat;
+                opts.min = analyseMask(opts.min, opts.inputFormat, opts);
+                opts.max = analyseMask(opts.max, opts.inputFormat, opts);
+                opts.regex = parse(opts.inputFormat, opts);
+                console.log(opts.regex);
                 return null; //migrate to regex mask
             },
             inputFormat: "dd/mm/yyyy HH:MM", //format used to input the date
             displayFormat: undefined, //visual format when the input looses focus
             outputFormat: undefined, //unmasking format
-            min: new Date("1900/1/1"),
-            max: new Date(new Date().getFullYear().toString().substr(0, 2) + "99/12/31 24:00:00"),
+            min: null, //needs to be in the same format as the inputfornat
+            max: null, //needs to be in the same format as the inputfornat
             postValidation: function (buffer, currentResult, opts) {
                 var dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
                 var result = currentResult;
@@ -170,9 +186,8 @@
                     result = result && (dateParts.day !== "29" || !isLeapYear(dateParts.rawyear));
                 }
                 if (result) {
-                    var maskDate = new Date(dateParts.year + "/" + dateParts.month + "/" + dateParts.day + " " + dateParts.hour + ":" + dateParts.minutes + ":" + dateParts.seconds);
-                    if (maskDate.getTime() === maskDate.getTime()) { //check for a valid date ~ an invalid date returns NaN which isn't equal
-                        result = result && isDateInRange(maskDate, opts);
+                    if (dateParts.date.getTime() === dateParts.date.getTime()) { //check for a valid date ~ an invalid date returns NaN which isn't equal
+                        result = result && isDateInRange(dateParts.date, opts);
                     }
                 }
                 return result;
@@ -182,11 +197,11 @@
                 if (e.ctrlKey && e.keyCode === Inputmask.keyCode.RIGHT) {
                     var today = new Date(), match, date = "";
 
-                    while (match = getTokenizer().exec(opts.inputFormat)) {
+                    while (match = getTokenizer(opts).exec(opts.inputFormat)) {
                         if (match[0].charAt(0) === "d") {
                             date += today.getDate().toString();
                         } else if (match[0].charAt(0) === "m") {
-                            date += today.getMonth().toString();
+                            date += (today.getMonth() + 1).toString();
                         } else if (match[0] === "yyyy") {
                             date += today.getFullYear().toString();
                         } else if (match[0] === "yy") {
@@ -203,4 +218,5 @@
     });
 
     return Inputmask;
-}));
+}))
+;

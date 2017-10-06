@@ -2300,6 +2300,10 @@
                             var keydown = new $.Event("keydown");
                             keydown.keyCode = Inputmask.keyCode.DELETE;
                             EventHandlers.keydownEvent.call(input, keydown);
+
+                            if (opts.insertMode === false) {
+                                caret(input, caret(input).begin - 1);
+                            }
                         }
 
                         e.preventDefault();
@@ -3183,7 +3187,9 @@
                     if (!android && opts.inputEventOnly !== true) {
                         EventRuler.on(el, "keydown", EventHandlers.keydownEvent);
                         EventRuler.on(el, "keypress", EventHandlers.keypressEvent);
-                    } else el.removeAttribute("maxLength");
+                    } else {
+                        el.removeAttribute("maxLength");
+                    }
                     EventRuler.on(el, "compositionstart", $.noop);
                     EventRuler.on(el, "compositionupdate", $.noop);
                     EventRuler.on(el, "compositionend", $.noop);

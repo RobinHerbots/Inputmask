@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-39
+* Version: 4.0.1-40
 */
 
 !function(factory) {
@@ -935,7 +935,8 @@
                             selection.begin === selection.end - 1 && (selection.begin = seekPrevious(selection.begin + 1), 
                             selection.begin === selection.end - 1 ? caret(input, selection.begin) : caret(input, selection.begin, selection.end));
                             var keydown = new $.Event("keydown");
-                            keydown.keyCode = Inputmask.keyCode.DELETE, EventHandlers.keydownEvent.call(input, keydown);
+                            keydown.keyCode = Inputmask.keyCode.DELETE, EventHandlers.keydownEvent.call(input, keydown), 
+                            !1 === opts.insertMode && caret(input, caret(input).begin - 1);
                         }
                         e.preventDefault();
                     }
