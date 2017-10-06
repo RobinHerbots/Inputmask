@@ -2302,7 +2302,11 @@
                             EventHandlers.keydownEvent.call(input, keydown);
 
                             if (opts.insertMode === false) {
-                                caret(input, caret(input).begin - 1);
+                                if (android) {
+                                    setTimeout(function () {
+                                        caret(input, caret(input).begin - 1);
+                                    }, 0);
+                                } else caret(input, caret(input).begin - 1);
                             }
                         }
 
