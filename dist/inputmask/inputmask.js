@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-41
+* Version: 4.0.1-42
 */
 
 !function(factory) {
@@ -544,10 +544,8 @@
                     caretPos !== undefined && (caretPos = result.caret !== undefined ? result.caret : caretPos);
                 }
             }
-            input !== undefined && (input.inputmask._valueSet(buffer.join("")), caretPos === undefined || event !== undefined && "blur" === event.type ? renderColorMask(input, caretPos, 0 === buffer.length) : android && event && "input" === event.type ? setTimeout(function() {
-                caret(input, caretPos);
-            }, 0) : caret(input, caretPos), !0 === triggerInputEvent && (skipInputEvent = !0, 
-            $(input).trigger("input")));
+            input !== undefined && (input.inputmask._valueSet(buffer.join("")), caretPos === undefined || event !== undefined && "blur" === event.type ? renderColorMask(input, caretPos, 0 === buffer.length) : caret(input, caretPos), 
+            !0 === triggerInputEvent && (skipInputEvent = !0, $(input).trigger("input")));
         }
         function getPlaceholder(pos, test, returnPL) {
             if (test = test || getTest(pos).match, test.placeholder !== undefined || !0 === returnPL) return $.isFunction(test.placeholder) ? test.placeholder(opts) : test.placeholder;
@@ -633,7 +631,10 @@
                 begin = translatePosition(begin), end = translatePosition(end), end = "number" == typeof end ? end : begin;
                 var scrollCalc = parseInt(((input.ownerDocument.defaultView || window).getComputedStyle ? (input.ownerDocument.defaultView || window).getComputedStyle(input, null) : input.currentStyle).fontSize) * end;
                 if (input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0, mobile || !1 !== opts.insertMode || begin !== end || end++, 
-                input.setSelectionRange) input.selectionStart = begin, input.selectionEnd = end; else if (window.getSelection) {
+                input.inputmask.caretPos = {
+                    begin: begin,
+                    end: end
+                }, input.setSelectionRange) input.selectionStart = begin, input.selectionEnd = end; else if (window.getSelection) {
                     if (range = document.createRange(), input.firstChild === undefined || null === input.firstChild) {
                         var textNode = document.createTextNode("");
                         input.appendChild(textNode);
@@ -772,17 +773,19 @@
             }
         }
         maskset = maskset || this.maskset, opts = opts || this.opts;
-        var undoValue, $el, maxLength, colorMask, inputmask = this, el = this.el, isRTL = this.isRTL, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, mouseEnter = !1, EventRuler = {
+        var undoValue, $el, maxLength, colorMask, inputmask = this, el = this.el, isRTL = this.isRTL, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, mouseEnter = !1, trackCaret = !1, EventRuler = {
             on: function(input, eventName, eventHandler) {
                 var ev = function(e) {
-                    if (this.inputmask === undefined && "FORM" !== this.nodeName) {
-                        var imOpts = $.data(this, "_inputmask_opts");
-                        imOpts ? new Inputmask(imOpts).mask(this) : EventRuler.off(this);
+                    var that = this;
+                    if (that.inputmask === undefined && "FORM" !== this.nodeName) {
+                        var imOpts = $.data(that, "_inputmask_opts");
+                        imOpts ? new Inputmask(imOpts).mask(that) : EventRuler.off(that);
                     } else {
-                        if ("setvalue" === e.type || "FORM" === this.nodeName || !(this.disabled || this.readOnly && !("keydown" === e.type && e.ctrlKey && 67 === e.keyCode || !1 === opts.tabThrough && e.keyCode === Inputmask.keyCode.TAB))) {
+                        if ("setvalue" === e.type || "FORM" === this.nodeName || !(that.disabled || that.readOnly && !("keydown" === e.type && e.ctrlKey && 67 === e.keyCode || !1 === opts.tabThrough && e.keyCode === Inputmask.keyCode.TAB))) {
                             switch (e.type) {
                               case "input":
                                 if (!0 === skipInputEvent) return skipInputEvent = !1, e.preventDefault();
+                                android && (trackCaret = !0);
                                 break;
 
                               case "keydown":
@@ -796,14 +799,16 @@
 
                               case "click":
                                 if (iemobile || iphone) {
-                                    var that = this, args = arguments;
+                                    var args = arguments;
                                     return setTimeout(function() {
                                         eventHandler.apply(that, args);
                                     }, 0), !1;
                                 }
                             }
-                            var returnVal = eventHandler.apply(this, arguments);
-                            return !1 === returnVal && (e.preventDefault(), e.stopPropagation()), returnVal;
+                            var returnVal = eventHandler.apply(that, arguments);
+                            return trackCaret && (trackCaret = !1, setTimeout(function() {
+                                caret(that, that.inputmask.caretPos);
+                            })), !1 === returnVal && (e.preventDefault(), e.stopPropagation()), returnVal;
                         }
                         e.preventDefault();
                     }
@@ -936,9 +941,7 @@
                             selection.begin === selection.end - 1 ? caret(input, selection.begin) : caret(input, selection.begin, selection.end));
                             var keydown = new $.Event("keydown");
                             keydown.keyCode = Inputmask.keyCode.DELETE, EventHandlers.keydownEvent.call(input, keydown), 
-                            !1 === opts.insertMode && (android ? setTimeout(function() {
-                                caret(input, caret(input).begin - 1);
-                            }, 0) : caret(input, caret(input).begin - 1));
+                            !1 === opts.insertMode && caret(input, caret(input).begin - 1);
                         }
                         e.preventDefault();
                     }

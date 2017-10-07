@@ -33,6 +33,9 @@ Demo page see [http://robinherbots.github.io/Inputmask](http://robinherbots.gith
 
 [![donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZNR3EB6JTMMSS)
 
+
+Thanks to[Jetbrains](https://www.jetbrains.com/)for providing a free license for their excellent Webstorm IDE.
+
 ## Setup
 ### dependencyLibs
 Inputmask can run against different javascript libraries.  

@@ -819,7 +819,8 @@
             ignorable = false,
             maxLength,
             mouseEnter = false,
-            colorMask;
+            colorMask,
+            trackCaret = false;
 
         //maskset helperfunctions
         function getMaskTemplate(baseOnInput, minimalPos, includeMode) {
@@ -1889,11 +1890,7 @@
             if (input !== undefined) {
                 input.inputmask._valueSet(buffer.join(""));
                 if (caretPos !== undefined && (event === undefined || event.type !== "blur")) {
-                    if (android && event && event.type === "input") {
-                        setTimeout(function () {
-                            caret(input, caretPos);
-                        }, 0);
-                    } else caret(input, caretPos);
+                    caret(input, caretPos);
                 } else renderColorMask(input, caretPos, buffer.length === 0);
                 if (triggerInputEvent === true) {
                     skipInputEvent = true;
@@ -1936,12 +1933,12 @@
             on: function (input, eventName, eventHandler) {
                 var ev = function (e) {
                     // console.log("triggered " + e.type);
-
-                    if (this.inputmask === undefined && this.nodeName !== "FORM") { //happens when cloning an object with jquery.clone
-                        var imOpts = $.data(this, "_inputmask_opts");
-                        if (imOpts) (new Inputmask(imOpts)).mask(this);
-                        else EventRuler.off(this);
-                    } else if (e.type !== "setvalue" && this.nodeName !== "FORM" && (this.disabled || (this.readOnly && !(e.type === "keydown" && (e.ctrlKey && e.keyCode === 67) || (opts.tabThrough === false && e.keyCode === Inputmask.keyCode.TAB))))) {
+                    var that = this;
+                    if (that.inputmask === undefined && this.nodeName !== "FORM") { //happens when cloning an object with jquery.clone
+                        var imOpts = $.data(that, "_inputmask_opts");
+                        if (imOpts) (new Inputmask(imOpts)).mask(that);
+                        else EventRuler.off(that);
+                    } else if (e.type !== "setvalue" && this.nodeName !== "FORM" && (that.disabled || (that.readOnly && !(e.type === "keydown" && (e.ctrlKey && e.keyCode === 67) || (opts.tabThrough === false && e.keyCode === Inputmask.keyCode.TAB))))) {
                         e.preventDefault();
                     } else {
                         switch (e.type) {
@@ -1949,6 +1946,9 @@
                                 if (skipInputEvent === true) {
                                     skipInputEvent = false;
                                     return e.preventDefault();
+                                }
+                                if (android) {
+                                    trackCaret = true;
                                 }
                                 break;
                             case "keydown":
@@ -1964,8 +1964,7 @@
                                 break;
                             case "click":
                                 if (iemobile || iphone) {
-                                    var that = this,
-                                        args = arguments;
+                                    var args = arguments;
                                     setTimeout(function () {
                                         eventHandler.apply(that, args);
                                     }, 0);
@@ -1974,7 +1973,14 @@
                                 break;
                         }
                         // console.log("executed " + e.type);
-                        var returnVal = eventHandler.apply(this, arguments);
+                        var returnVal = eventHandler.apply(that, arguments);
+                        if (trackCaret) {
+                            trackCaret = false;
+                            setTimeout(function () {
+                                caret(that, that.inputmask.caretPos);
+                                // console.log("3" + JSON.stringify(caret(input)));
+                            });
+                        }
                         if (returnVal === false) {
                             e.preventDefault();
                             e.stopPropagation();
@@ -2302,14 +2308,15 @@
                             EventHandlers.keydownEvent.call(input, keydown);
 
                             if (opts.insertMode === false) {
-                                if (android) {
-                                    setTimeout(function () {
-                                        caret(input, caret(input).begin - 1);
-                                    }, 0);
-                                } else caret(input, caret(input).begin - 1);
+                                caret(input, caret(input).begin - 1);
                             }
                         }
 
+
+                        // console.log("1" + JSON.stringify(caret(input)));
+                        // setTimeout(function () {
+                        //     console.log("2" + JSON.stringify(caret(input)));
+                        // }, 0);
                         e.preventDefault();
                     }
                 }
@@ -2648,6 +2655,8 @@
                     input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0;
 
                     if (!mobile && opts.insertMode === false && begin === end) end++; //set visualization for insert/overwrite mode
+
+                    input.inputmask.caretPos = {begin: begin, end: end}; //track caret internally
                     if (input.setSelectionRange) {
                         input.selectionStart = begin;
                         input.selectionEnd = end;

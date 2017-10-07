@@ -80,6 +80,13 @@ div.im-colormask > input:focus {
     outline: none;
 }
 
+div.im-colormask > input::selection{
+    background: none;
+}
+div.im-colormask > input::-moz-selection{
+    background: none;
+}
+
 div.im-colormask > div {
     color: black;
     display: inline-block;
