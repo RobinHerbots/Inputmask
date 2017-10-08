@@ -19,7 +19,7 @@
         mobile = /mobile/i.test(ua),
         iemobile = /iemobile/i.test(ua),
         iphone = /iphone/i.test(ua) && !iemobile,
-        android = /android/i.test(ua) && !iemobile;
+        android = (/android/i.test(ua) && !iemobile) || isInputEventSupported("touchstart");
 
     function Inputmask(alias, options, internal) {
         //allow instanciating without new
@@ -803,6 +803,17 @@
         return ms;
     };
 
+    function isInputEventSupported(eventName) {
+        var el = document.createElement("input"),
+            evName = "on" + eventName,
+            isSupported = (evName in el);
+        if (!isSupported) {
+            el.setAttribute(evName, "return;");
+            isSupported = typeof el[evName] === "function";
+        }
+        el = null;
+        return isSupported;
+    }
 
     //masking scope
     //actionObj definition see below
@@ -1929,6 +1940,7 @@
             return opts.placeholder.charAt(pos % opts.placeholder.length);
         }
 
+
         var EventRuler = {
             on: function (input, eventName, eventHandler) {
                 var ev = function (e) {
@@ -2021,20 +2033,10 @@
                 }
             }
         };
+
+
         var EventHandlers = {
             keydownEvent: function (e) {
-                function isInputEventSupported(eventName) {
-                    var el = document.createElement("input"),
-                        evName = "on" + eventName,
-                        isSupported = (evName in el);
-                    if (!isSupported) {
-                        el.setAttribute(evName, "return;");
-                        isSupported = typeof el[evName] === "function";
-                    }
-                    el = null;
-                    return isSupported;
-                }
-
                 var input = this,
                     $input = $(input),
                     k = e.keyCode,

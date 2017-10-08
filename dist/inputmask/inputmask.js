@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-45
+* Version: 4.0.1-46
 */
 
 !function(factory) {
@@ -57,6 +57,11 @@
             opts.mask = opts.mask.pop();
         }
         return opts.mask && opts.mask.mask !== undefined && !$.isFunction(opts.mask.mask) ? generateMask(opts.mask.mask, opts.mask, opts) : generateMask(opts.mask, opts.mask, opts);
+    }
+    function isInputEventSupported(eventName) {
+        var el = document.createElement("input"), evName = "on" + eventName, isSupported = evName in el;
+        return isSupported || (el.setAttribute(evName, "return;"), isSupported = "function" == typeof el[evName]), 
+        el = null, isSupported;
     }
     function maskScope(actionObj, maskset, opts) {
         function getMaskTemplate(baseOnInput, minimalPos, includeMode) {
@@ -821,11 +826,8 @@
         }, EventHandlers = {
             keydownEvent: function(e) {
                 var input = this, $input = $(input), k = e.keyCode, pos = caret(input);
-                if (k === Inputmask.keyCode.BACKSPACE || k === Inputmask.keyCode.DELETE || iphone && k === Inputmask.keyCode.BACKSPACE_SAFARI || e.ctrlKey && k === Inputmask.keyCode.X && !function(eventName) {
-                    var el = document.createElement("input"), evName = "on" + eventName, isSupported = evName in el;
-                    return isSupported || (el.setAttribute(evName, "return;"), isSupported = "function" == typeof el[evName]), 
-                    el = null, isSupported;
-                }("cut")) e.preventDefault(), handleRemove(input, k, pos), writeBuffer(input, getBuffer(!0), getMaskSet().p, e, input.inputmask._valueGet() !== getBuffer().join("")), 
+                if (k === Inputmask.keyCode.BACKSPACE || k === Inputmask.keyCode.DELETE || iphone && k === Inputmask.keyCode.BACKSPACE_SAFARI || e.ctrlKey && k === Inputmask.keyCode.X && !isInputEventSupported("cut")) e.preventDefault(), 
+                handleRemove(input, k, pos), writeBuffer(input, getBuffer(!0), getMaskSet().p, e, input.inputmask._valueGet() !== getBuffer().join("")), 
                 input.inputmask._valueGet() === getBufferTemplate().join("") ? $input.trigger("cleared") : !0 === isComplete(getBuffer()) && $input.trigger("complete"); else if (k === Inputmask.keyCode.END || k === Inputmask.keyCode.PAGE_DOWN) {
                     e.preventDefault();
                     var caretPos = seekNext(getLastValidPosition());
@@ -1210,7 +1212,7 @@
             return maskset.metadata;
         }
     }
-    var ua = navigator.userAgent, iemobile = (/mobile/i.test(ua), /iemobile/i.test(ua)), iphone = /iphone/i.test(ua) && !iemobile, android = /android/i.test(ua) && !iemobile;
+    var ua = navigator.userAgent, iemobile = (/mobile/i.test(ua), /iemobile/i.test(ua)), iphone = /iphone/i.test(ua) && !iemobile, android = /android/i.test(ua) && !iemobile || isInputEventSupported("touchstart");
     return Inputmask.prototype = {
         dataAttribute: "data-inputmask",
         defaults: {
