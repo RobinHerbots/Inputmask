@@ -1334,7 +1334,7 @@
                 return filterTests($.extend(true, [], matches));
             }
             getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
-            // console.log(pos + " - " + JSON.stringify(matches));
+            console.log(pos + " - " + JSON.stringify(matches));
             return filterTests(getMaskSet().tests[pos]);
         }
 
@@ -1978,7 +1978,6 @@
                             trackCaret = false;
                             setTimeout(function () {
                                 caret(that, that.inputmask.caretPos);
-                                // console.log("3" + JSON.stringify(caret(input)));
                             });
                         }
                         if (returnVal === false) {
@@ -2312,11 +2311,6 @@
                             }
                         }
 
-
-                        // console.log("1" + JSON.stringify(caret(input)));
-                        // setTimeout(function () {
-                        //     console.log("2" + JSON.stringify(caret(input)));
-                        // }, 0);
                         e.preventDefault();
                     }
                 }
@@ -2642,7 +2636,7 @@
                 if (begin.begin !== undefined) {
                     end = begin.end;
                     begin = begin.begin;
-                }
+                }ezrzerzer
                 if (typeof begin === "number") {
                     begin = translatePosition(begin);
                     end = translatePosition(end);
@@ -2654,7 +2648,7 @@
                     var scrollCalc = parseInt(((input.ownerDocument.defaultView || window).getComputedStyle ? (input.ownerDocument.defaultView || window).getComputedStyle(input, null) : input.currentStyle).fontSize) * end;
                     input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0;
 
-                    if (!mobile && opts.insertMode === false && begin === end) end++; //set visualization for insert/overwrite mode
+                    if (opts.insertMode === false && begin === end) end++; //set visualization for insert/overwrite mode
 
                     input.inputmask.caretPos = {begin: begin, end: end}; //track caret internally
                     if (input.setSelectionRange) {
