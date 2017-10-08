@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-43
+* Version: 4.0.1-44
 */
 
 !function(factory) {
@@ -278,7 +278,7 @@
                 locator: [],
                 cd: cacheDependency
             }), ndxIntlzr !== undefined && getMaskSet().tests[pos] ? filterTests($.extend(!0, [], matches)) : (getMaskSet().tests[pos] = $.extend(!0, [], matches), 
-            console.log(pos + " - " + JSON.stringify(matches)), filterTests(getMaskSet().tests[pos]));
+            filterTests(getMaskSet().tests[pos]));
         }
         function getBufferTemplate() {
             return getMaskSet()._buffer === undefined && (getMaskSet()._buffer = getMaskTemplate(!1, 1), 

@@ -1334,7 +1334,7 @@
                 return filterTests($.extend(true, [], matches));
             }
             getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
-            console.log(pos + " - " + JSON.stringify(matches));
+            // console.log(pos + " - " + JSON.stringify(matches));
             return filterTests(getMaskSet().tests[pos]);
         }
 
@@ -2636,7 +2636,7 @@
                 if (begin.begin !== undefined) {
                     end = begin.end;
                     begin = begin.begin;
-                }ezrzerzer
+                }
                 if (typeof begin === "number") {
                     begin = translatePosition(begin);
                     end = translatePosition(end);
