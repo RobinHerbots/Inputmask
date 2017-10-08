@@ -16,10 +16,10 @@
 }
 (function ($, window, document, undefined) {
     var ua = navigator.userAgent,
-        mobile = /mobile/i.test(ua),
+        mobile = isInputEventSupported("touchstart"), //not entirely correct but will currently do
         iemobile = /iemobile/i.test(ua),
         iphone = /iphone/i.test(ua) && !iemobile,
-        android = (/android/i.test(ua) && !iemobile) || isInputEventSupported("touchstart");
+        android = /android/i.test(ua) && !iemobile;
 
     function Inputmask(alias, options, internal) {
         //allow instanciating without new
@@ -1959,7 +1959,7 @@
                                     skipInputEvent = false;
                                     return e.preventDefault();
                                 }
-                                if (android) {
+                                if (mobile) {
                                     trackCaret = true;
                                 }
                                 break;
@@ -3165,12 +3165,12 @@
                     initializeColorMask(el);
                 }
 
-                if (android) {
+                if (mobile) {
                     if (el.hasOwnProperty("inputmode")) {
                         el.inputmode = opts.inputmode;
                         el.setAttribute("inputmode", opts.inputmode);
                     }
-                    if (opts.androidHack === "rtfm") {
+                    if (opts.androidHack === "rtfm" && android) {
                         if (opts.colorMask !== true) {
                             initializeColorMask(el);
                         }
@@ -3198,7 +3198,7 @@
                     EventRuler.on(el, "complete", opts.oncomplete);
                     EventRuler.on(el, "incomplete", opts.onincomplete);
                     EventRuler.on(el, "cleared", opts.oncleared);
-                    if (!android && opts.inputEventOnly !== true) {
+                    if (!mobile && opts.inputEventOnly !== true) {
                         EventRuler.on(el, "keydown", EventHandlers.keydownEvent);
                         EventRuler.on(el, "keypress", EventHandlers.keypressEvent);
                     } else {
