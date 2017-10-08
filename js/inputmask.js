@@ -1978,6 +1978,7 @@
                             trackCaret = false;
                             setTimeout(function () {
                                 caret(that, that.inputmask.caretPos);
+                                // console.log("2 " + JSON.stringify(that.inputmask.caretPos));
                             });
                         }
                         if (returnVal === false) {
@@ -2310,6 +2311,10 @@
                                 caret(input, caret(input).begin - 1);
                             }
                         }
+
+                        // setTimeout(function(){
+                        //     console.log("2 " + JSON.stringify(caret(input)));
+                        // },0);
 
                         e.preventDefault();
                     }
