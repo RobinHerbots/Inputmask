@@ -1,11 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [UNRELEASED - 4.x]
+## [3.3.9 - 2017-10-10]
 ### Updates
-- drop Regex alias
-- TODO drop all date/time related aliases
-- TODO rewrite datatime alias
+- enhance inputfallback (Android)
 
 ## [3.3.8 - 2017-08-24]
 ### added
