@@ -15,9 +15,19 @@ When browsers would implement the inputmode attribute, disabling will be possibl
 
 ##Update 18/01/2017
 
-It seems that the GBoard keyboard fires the keydown event only with 229 as keycode.  This behavior is not considered a bug as other means should be used to handle input.  (when available offcourse ;-) )
+It seems that the GBoard keyboard fires the keydown event only with 229 as keycode.  This behavior is not considered a bug as other means should be used to handle input.  
 See https://github.com/w3c/input-events
 
+##Update 10/10/2017
+
+Masking on mobile devices is currently implemented solely based on the input event.  The beforeinput event isn't common in the browsers yet and so cannot be used.
+
+I renamed the androidHack option to disablePredictiveText, so the option is now also available for other platforms.
+This can be enabled by passing true for the option.  
+
+ 
+
+<strike>
 ##The workaround, the patchwork, the bad and ugly ;-)
 
 This is not enabled by default, because I find that the developer should be aware of what it does and what you need to take into account when using this hack.
@@ -37,6 +47,7 @@ Inputmask("myfancymask", {androidHack: "rtfm"}).mask(selector);
 
 Inputmask.extendDefaults({ androidHack: "rtfm" });
 ```
+</strike>
 
 ##Reporting android related issues
 

@@ -6,11 +6,13 @@ All notable changes to this project will be documented in this file.
 - new datetime alias (WIP)
 
 ### Updates
+- rename androidHack option to disablePredictiveText. Make it available for other platforms.
 - drop Regex alias
 - drop all date/time related aliases
 - enhance inputfallback (Android)
 
 ### Fixes
+- On Android with date mask input mashing up #1708
 - Currency mask works incorrectly on Android Chrome v58 #1617
 - Can't input character at the end if it's also a placeholder on Android #1648
 

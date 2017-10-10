@@ -18,8 +18,7 @@
     var ua = navigator.userAgent,
         mobile = isInputEventSupported("touchstart"), //not entirely correct but will currently do
         iemobile = /iemobile/i.test(ua),
-        iphone = /iphone/i.test(ua) && !iemobile,
-        android = /android/i.test(ua) && !iemobile;
+        iphone = /iphone/i.test(ua) && !iemobile;
 
     function Inputmask(alias, options, internal) {
         //allow instanciating without new
@@ -118,7 +117,7 @@
             casing: null, //mask-level casing. Options: null, "upper", "lower" or "title" or callback args => elem, test, pos, validPositions return charValue
             inputmode: "verbatim", //specify the inputmode  - already in place for when browsers will support it
             colorMask: false, //enable css styleable mask
-            androidHack: false, //see README_android.md
+            disablePredictiveText: false, //disable Predictive Text on mobile devices
             importDataAttributes: true //import data-inputmask attributes
         },
         definitions: {
@@ -3170,7 +3169,7 @@
                         el.inputmode = opts.inputmode;
                         el.setAttribute("inputmode", opts.inputmode);
                     }
-                    if (opts.androidHack === "rtfm" && android) {
+                    if (opts.disablePredictiveText === "true") {
                         if (opts.colorMask !== true) {
                             initializeColorMask(el);
                         }
