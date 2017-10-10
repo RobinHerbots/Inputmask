@@ -11,6 +11,10 @@ All notable changes to this project will be documented in this file.
 - drop all date/time related aliases
 - enhance inputfallback (Android)
 
+## [3.3.9 - 2017-10-10]
+### Updates
+- enhance inputfallback (Android)
+
 ### Fixes
 - On Android with date mask input mashing up #1708
 - Currency mask works incorrectly on Android Chrome v58 #1617
