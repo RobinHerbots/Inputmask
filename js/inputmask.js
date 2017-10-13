@@ -2912,6 +2912,7 @@
             template.style.width = computedStyle.width;
             template.style.textAlign = computedStyle.textAlign;
             colorMask = document.createElement("div");
+            input.inputmask.colorMask = colorMask;
             colorMask.className = "im-colormask";
             input.parentNode.insertBefore(colorMask, input);
             input.parentNode.removeChild(input);
@@ -3296,6 +3297,13 @@
                         el.inputmask._valueSet(opts.autoUnmask ? unmaskedvalue(el) : el.inputmask._valueGet(true));
                         //unbind all events
                         EventRuler.off(el);
+                        //remove colormask if used
+                        if (el.inputmask.colorMask) {
+                            colorMask = el.inputmask.colorMask;
+                            colorMask.removeChild(el);
+                            colorMask.parentNode.insertBefore(el, colorMask);
+                            colorMask.parentNode.removeChild(colorMask);
+                        }
                         //restore the value property
                         var valueProperty;
                         if (Object.getOwnPropertyDescriptor && Object.getPrototypeOf) {

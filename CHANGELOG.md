@@ -11,6 +11,9 @@ All notable changes to this project will be documented in this file.
 - drop all date/time related aliases
 - enhance inputfallback (Android)
 
+### Fixed
+- colorMask + Remask = Duplicate im-colormask element #1709
+
 ## [3.3.9 - 2017-10-10]
 ### Updates
 - enhance inputfallback (Android)
