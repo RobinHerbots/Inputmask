@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-48
+* Version: 4.0.0-51
 */
 
 !function(factory) {
@@ -1147,7 +1147,7 @@
                 }(elem, opts);
                 if (!1 !== isSupported && (el = elem, $el = $(el), -1 === (maxLength = el !== undefined ? el.maxLength : undefined) && (maxLength = undefined), 
                 !0 === opts.colorMask && initializeColorMask(el), mobile && (el.hasOwnProperty("inputmode") && (el.inputmode = opts.inputmode, 
-                el.setAttribute("inputmode", opts.inputmode)), "rtfm" === opts.androidHack && android && (!0 !== opts.colorMask && initializeColorMask(el), 
+                el.setAttribute("inputmode", opts.inputmode)), "true" === opts.disablePredictiveText && (!0 !== opts.colorMask && initializeColorMask(el), 
                 el.type = "password")), !0 === isSupported && (EventRuler.on(el, "submit", EventHandlers.submitEvent), 
                 EventRuler.on(el, "reset", EventHandlers.resetEvent), EventRuler.on(el, "mouseenter", EventHandlers.mouseenterEvent), 
                 EventRuler.on(el, "blur", EventHandlers.blurEvent), EventRuler.on(el, "focus", EventHandlers.focusEvent), 
@@ -1212,7 +1212,7 @@
             return maskset.metadata;
         }
     }
-    var ua = navigator.userAgent, mobile = isInputEventSupported("touchstart"), iemobile = /iemobile/i.test(ua), iphone = /iphone/i.test(ua) && !iemobile, android = /android/i.test(ua) && !iemobile;
+    var ua = navigator.userAgent, mobile = isInputEventSupported("touchstart"), iemobile = /iemobile/i.test(ua), iphone = /iphone/i.test(ua) && !iemobile;
     return Inputmask.prototype = {
         dataAttribute: "data-inputmask",
         defaults: {
@@ -1279,7 +1279,7 @@
             casing: null,
             inputmode: "verbatim",
             colorMask: !1,
-            androidHack: !1,
+            disablePredictiveText: !1,
             importDataAttributes: !0
         },
         definitions: {
