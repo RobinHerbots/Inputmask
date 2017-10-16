@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 3.3.10-0
+* Version: 3.3.10
 */
 
 !function(factory) {
@@ -77,10 +77,6 @@
             definitions: {
                 "1": {
                     validator: function(chrs, maskset, pos, strict, opts) {
-                        if ("3" == chrs.charAt(0) && new RegExp("[2-9]").test(chrs.charAt(1))) return chrs = "30", 
-                        maskset.buffer[pos] = "0", pos++, {
-                            pos: pos
-                        };
                         var isValid = opts.regex.val1.test(chrs);
                         return strict || isValid || chrs.charAt(1) !== opts.separator && -1 === "-./".indexOf(chrs.charAt(1)) || !(isValid = opts.regex.val1.test("0" + chrs.charAt(0))) ? isValid : (maskset.buffer[pos - 1] = "0", 
                         {
@@ -98,7 +94,8 @@
                             var pchrs = chrs;
                             isNaN(maskset.buffer[pos + 1]) || (pchrs += maskset.buffer[pos + 1]);
                             var isValid = 1 === pchrs.length ? opts.regex.val1pre.test(pchrs) : opts.regex.val1.test(pchrs);
-                            if (!strict && !isValid) {
+                            if (isValid && maskset.validPositions[pos] && (opts.regex.val2(opts.separator).test(chrs + maskset.validPositions[pos].input) || (maskset.validPositions[pos].input = "0" === chrs ? "1" : "0")), 
+                            !strict && !isValid) {
                                 if (isValid = opts.regex.val1.test(chrs + "0")) return maskset.buffer[pos] = chrs, 
                                 maskset.buffer[++pos] = "0", {
                                     pos: pos,
@@ -117,11 +114,7 @@
                 "2": {
                     validator: function(chrs, maskset, pos, strict, opts) {
                         var frontValue = opts.getFrontValue(maskset.mask, maskset.buffer, opts);
-                        if (-1 !== frontValue.indexOf(opts.placeholder[0]) && (frontValue = "01" + opts.separator), 
-                        "1" == chrs.charAt(0) && new RegExp("[3-9]").test(chrs.charAt(1))) return chrs = "10", 
-                        maskset.buffer[pos] = "0", pos++, {
-                            pos: pos
-                        };
+                        -1 !== frontValue.indexOf(opts.placeholder[0]) && (frontValue = "01" + opts.separator);
                         var isValid = opts.regex.val2(opts.separator).test(frontValue + chrs);
                         return strict || isValid || chrs.charAt(1) !== opts.separator && -1 === "-./".indexOf(chrs.charAt(1)) || !(isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs.charAt(0))) ? isValid : (maskset.buffer[pos - 1] = "0", 
                         {
@@ -140,7 +133,8 @@
                             var frontValue = opts.getFrontValue(maskset.mask, maskset.buffer, opts);
                             -1 !== frontValue.indexOf(opts.placeholder[0]) && (frontValue = "01" + opts.separator);
                             var isValid = 1 === chrs.length ? opts.regex.val2pre(opts.separator).test(frontValue + chrs) : opts.regex.val2(opts.separator).test(frontValue + chrs);
-                            return strict || isValid || !(isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs)) ? isValid : (maskset.buffer[pos] = "0", 
+                            return isValid && maskset.validPositions[pos] && (opts.regex.val2(opts.separator).test(chrs + maskset.validPositions[pos].input) || (maskset.validPositions[pos].input = "0" === chrs ? "1" : "0")), 
+                            strict || isValid || !(isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs)) ? isValid : (maskset.buffer[pos] = "0", 
                             pos++, {
                                 pos: pos
                             });
