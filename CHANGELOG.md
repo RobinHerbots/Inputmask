@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [3.3.10 - 2017-10-16]
+### Updates
+- Fix changes from PR #1664
+
 ## [3.3.9 - 2017-10-10]
 ### Updates
 - enhance inputfallback (Android)
