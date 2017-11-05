@@ -946,19 +946,18 @@
             resetMaskSet(true);
         }
 
-        function determineTestTemplate(tests, guessNextBest) {
+        function determineTestTemplate(pos, tests, guessNextBest) {
+            pos = pos > 0 ? pos - 1 : 0;
             var testPos,
-                testPositions = tests,
-                lvp = getLastValidPosition(),
-                lvTest = getMaskSet().validPositions[lvp] || getTests(0)[0],
-                lvTestAltArr = (lvTest.alternation !== undefined) ? lvTest.locator[lvTest.alternation].toString().split(",") : [];
-            for (var ndx = 0; ndx < testPositions.length; ndx++) {
-                testPos = testPositions[ndx];
+                altTest = getTest(pos),
+                altArr = (altTest.alternation !== undefined) ? altTest.locator[altTest.alternation].toString().split(",") : [];
+            for (var ndx = 0; ndx < tests.length; ndx++) {
+                testPos = tests[ndx];
 
                 if (testPos.match &&
                     (((opts.greedy && testPos.match.optionalQuantifier !== true) || (testPos.match.optionality === false || testPos.match.newBlockMarker === false) && testPos.match.optionalQuantifier !== true) &&
-                        ((lvTest.alternation === undefined || lvTest.alternation !== testPos.alternation) ||
-                            (testPos.locator[lvTest.alternation] !== undefined && checkAlternationMatch(testPos.locator[lvTest.alternation].toString().split(","), lvTestAltArr))))) {
+                        ((altTest.alternation === undefined || altTest.alternation !== testPos.alternation) ||
+                            (testPos.locator[altTest.alternation] !== undefined && checkAlternationMatch(testPos.locator[altTest.alternation].toString().split(","), altArr))))) {
 
                     if (guessNextBest !== true || (testPos.match.fn === null && !/[0-9a-bA-Z]/.test(testPos.match.def))) {
                         break;
@@ -970,7 +969,7 @@
         }
 
         function getTestTemplate(pos, ndxIntlzr, tstPs) {
-            return getMaskSet().validPositions[pos] || determineTestTemplate(getTests(pos, ndxIntlzr ? ndxIntlzr.slice() : ndxIntlzr, tstPs));
+            return getMaskSet().validPositions[pos] || determineTestTemplate(pos, getTests(pos, ndxIntlzr ? ndxIntlzr.slice() : ndxIntlzr, tstPs));
         }
 
         function getTest(pos) {
@@ -1105,6 +1104,7 @@
                                         altIndexArr.push(amndx);
                                     }
                                 }
+
                                 for (var ndx = 0; ndx < altIndexArr.length; ndx++) {
                                     amndx = parseInt(altIndexArr[ndx]);
                                     matches = [];
@@ -1112,16 +1112,19 @@
                                     ndxInitializer = resolveNdxInitializer(testPos, amndx, loopNdxCnt) || ndxInitializerClone.slice();
                                     match = handleMatch(alternateToken.matches[amndx] || maskToken.matches[amndx], [amndx].concat(loopNdx), quantifierRecurse) || match;
                                     if (match !== true && match !== undefined && (altIndexArr[altIndexArr.length - 1] < alternateToken.matches.length)) { //no match in the alternations (length mismatch) => look further
-                                        var ntndx = $.inArray(match, maskToken.matches) + 1;
-                                        if (maskToken.matches.length > ntndx) {
-                                            match = handleMatch(maskToken.matches[ntndx], [ntndx].concat(loopNdx.slice(1, loopNdx.length)), quantifierRecurse);
-                                            if (match) {
-                                                altIndexArr.push(ntndx.toString());
-                                                $.each(matches, function (ndx, lmnt) {
-                                                    lmnt.alternation = loopNdx.length - 1;
-                                                });
-                                            }
-                                        }
+                                        // ndx = altIndexArr.length;  //skip alternation
+
+                                        //TODO CHECK ME  IS THIS CORRECT???
+                                        // var ntndx = $.inArray(match, maskToken.matches) + 1;
+                                        // if (maskToken.matches.length > ntndx) {
+                                        //     match = handleMatch(maskToken.matches[ntndx], [ntndx].concat(loopNdx.slice(1, loopNdx.length)), quantifierRecurse);
+                                        //     if (match) {
+                                        //         altIndexArr.push(ntndx.toString());
+                                        //         $.each(matches, function (ndx, lmnt) {
+                                        //             lmnt.alternation = loopNdx.length - 1;
+                                        //         });
+                                        //     }
+                                        // }
                                     }
                                     maltMatches = matches.slice();
                                     testPos = currentPos;
@@ -1256,12 +1259,12 @@
                 }
             }
 
-            function mergeLocators(tests) {
+            function mergeLocators(pos, tests) {
                 var locator = [];
                 if (!$.isArray(tests)) tests = [tests];
                 if (tests.length > 0) {
                     if (tests[0].alternation === undefined) {
-                        locator = determineTestTemplate(tests.slice()).locator.slice();
+                        locator = determineTestTemplate(pos, tests.slice()).locator.slice();
                         if (locator.length === 0) locator = tests[0].locator.slice();
                     } else {
                         $.each(tests, function (ndx, tst) {
@@ -1288,11 +1291,11 @@
                             tests[0].match.optionalQuantifier !== true &&
                             tests[0].match.fn === null && !/[0-9a-bA-Z]/.test(tests[0].match.def)) {
                             if (getMaskSet().validPositions[pos - 1] === undefined) {
-                                return [determineTestTemplate(tests)];
+                                return [determineTestTemplate(pos, tests)];
                             } else if (getMaskSet().validPositions[pos - 1].alternation === tests[0].alternation) {
-                                return [determineTestTemplate(tests)];
+                                return [determineTestTemplate(pos, tests)];
                             } else if (getMaskSet().validPositions[pos - 1]) {
-                                return [determineTestTemplate(tests)];
+                                return [determineTestTemplate(pos, tests)];
                             }
                         }
                     }
@@ -1309,7 +1312,7 @@
                         previousPos--;
                     }
                     if (test !== undefined && previousPos > -1) {
-                        ndxInitializer = mergeLocators(test);
+                        ndxInitializer = mergeLocators(previousPos, test);
                         cacheDependency = ndxInitializer.join("");
                         testPos = previousPos;
                     }
@@ -1651,7 +1654,7 @@
                     for (var ps = originalPos; ps < newPos; ps++) {
                         if (getMaskSet().validPositions[ps] === undefined && !isMask(ps, true)) {
                             var tests = getTests(ps).slice(),
-                                bestMatch = determineTestTemplate(tests, true),
+                                bestMatch = determineTestTemplate(ps, tests, true),
                                 equality = -1;
                             if (tests[tests.length - 1].match.def === "") tests.pop();
                             $.each(tests, function (ndx, tst) { //find best matching
@@ -1758,7 +1761,7 @@
                     if (getMaskSet().validPositions[pndx] === undefined && (opts.jitMasking === false || opts.jitMasking > pndx)) {
                         testsFromPos = getTests(pndx, getTestTemplate(pndx - 1).locator, pndx - 1).slice();
                         if (testsFromPos[testsFromPos.length - 1].match.def === "") testsFromPos.pop();
-                        testTemplate = determineTestTemplate(testsFromPos);
+                        testTemplate = determineTestTemplate(pndx, testsFromPos);
                         if (testTemplate && (testTemplate.match.def === opts.radixPointDefinitionSymbol || !isMask(pndx, true) ||
                                 ($.inArray(opts.radixPoint, getBuffer()) < pndx && testTemplate.match.fn && testTemplate.match.fn.test(getPlaceholder(pndx), getMaskSet(), pndx, false, opts)))) {
                             result = _isValid(pndx, getPlaceholder(pndx, testTemplate.match, true) || (testTemplate.match.fn == null ? testTemplate.match.def : (getPlaceholder(pndx) !== "" ? getPlaceholder(pndx) : getBuffer()[pndx])), true);

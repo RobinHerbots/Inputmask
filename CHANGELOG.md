@@ -6,12 +6,14 @@ All notable changes to this project will be documented in this file.
 - new datetime alias (WIP)
 
 ### Updates
+- fix in determineTestTemplate.  Impacts alternations.
 - rename androidHack option to disablePredictiveText. Make it available for other platforms.
 - drop Regex alias
 - drop all date/time related aliases
 - enhance inputfallback (Android)
 
 ### Fixed
+- problem with two separate alternaions #1722
 - colorMask + Remask = Duplicate im-colormask element #1709
 
 ## [3.3.9 - 2017-10-10]

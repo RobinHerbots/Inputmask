@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-52
+* Version: 4.0.0-53
 */
 
 !function(factory) {
@@ -96,7 +96,7 @@
                 opts.outputFormat = formatAlias[opts.outputFormat] || opts.outputFormat || opts.inputFormat, 
                 opts.placeholder = opts.placeholder !== Inputmask.prototype.defaults.placeholder ? opts.placeholder : opts.inputFormat, 
                 opts.min = analyseMask(opts.min, opts.inputFormat, opts), opts.max = analyseMask(opts.max, opts.inputFormat, opts), 
-                opts.regex = parse(opts.inputFormat, opts), console.log(opts.regex), null;
+                opts.regex = parse(opts.inputFormat, opts), null;
             },
             inputFormat: "dd/mm/yyyy HH:MM",
             displayFormat: void 0,

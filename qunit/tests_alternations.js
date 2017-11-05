@@ -302,4 +302,15 @@ export default function (qunit, $, Inputmask) {
 		$("#testmask").Type("24");
 		assert.equal(testmask.inputmask._valueGet(), "2_", "Result " + testmask.inputmask._valueGet());
 	});
+
+    qunit.test("(1|2|3)/(4|5)", function (assert) {
+        var $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+
+        Inputmask("(1|2|3)/(4|5)").mask(testmask);
+        testmask.focus();
+        $("#testmask").Type("34");
+        assert.equal(testmask.inputmask._valueGet(), "3/4", "Result " + testmask.inputmask._valueGet());
+    });
 };

@@ -170,7 +170,7 @@
                 opts.min = analyseMask(opts.min, opts.inputFormat, opts);
                 opts.max = analyseMask(opts.max, opts.inputFormat, opts);
                 opts.regex = parse(opts.inputFormat, opts);
-                console.log(opts.regex);
+                // console.log(opts.regex);
                 return null; //migrate to regex mask
             },
             inputFormat: "dd/mm/yyyy HH:MM", //format used to input the date
