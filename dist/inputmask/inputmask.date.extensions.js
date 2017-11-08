@@ -116,7 +116,7 @@
                         var frontValue = opts.getFrontValue(maskset.mask, maskset.buffer, opts);
                         -1 !== frontValue.indexOf(opts.placeholder[0]) && (frontValue = "01" + opts.separator);
                         var isValid = opts.regex.val2(opts.separator).test(frontValue + chrs);
-                        return strict || isValid || chrs.charAt(1) !== opts.separator && -1 === "-./".indexOf(chrs.charAt(1)) || !(isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs.charAt(0))) ? isValid : (maskset.buffer[pos - 1] = "0", 
+                        return (strict || isValid || chrs.charAt(1) !== opts.separator && -1 === "-./".indexOf(chrs.charAt(1)) || !(isValid = opts.regex.val2(opts.separator).test(frontValue + "0" + chrs.charAt(0))) ? isValid : (maskset.buffer[pos - 1] = "0", 
                         {
                             refreshFromBuffer: {
                                 start: pos - 1,
@@ -124,7 +124,21 @@
                             },
                             pos: pos,
                             c: chrs.charAt(0)
-                        });
+                        }))
+                        // Checking when the day is 31 and the mounth has 30 days only or the mounth is Febrary and day`s part is greater than 28.
+                        // If this is true, then decrease the day of the month with 30 or 28 (for February).
+                        || (
+                            frontValue.charAt(0) == "3" && (opts.regex.val2(opts.separator).test("30." + chrs)? (maskset.validPositions[1].input = "0",
+                                {
+                                   pos: pos
+                                }):
+                                (chrs == "02"? (((maskset.validPositions[0].input = "2") && (maskset.validPositions[1].input = "8")),
+                                   {
+                                        pos: pos
+                                   }) : chrs
+                                )
+                            )
+                        );
                     },
                     cardinality: 2,
                     prevalidator: [ {
