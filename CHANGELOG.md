@@ -1,14 +1,17 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [UNRELEASED - 4.x]
+## [3.3.10 - 2017-10-16]
 ### Updates
-- drop Regex alias
-- TODO drop all date/time related aliases
-- TODO rewrite datatime alias
+- Fix changes from PR #1664
 
-## [UNRELEASED - 3.3.8]
+## [3.3.9 - 2017-10-10]
+### Updates
+- enhance inputfallback (Android)
+
+## [3.3.8 - 2017-08-24]
 ### added
+- added \uFF11-\uFF19 character range to 9 definition #1606
 - importDataAttributes option #1633
 - add dot support in regex #1651
 
