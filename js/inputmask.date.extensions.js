@@ -76,8 +76,9 @@
         return opts.tokenizer;
     }
 
-    function isLeapYear(year) {
-        return new Date(year, 2, 0).getDate() === 29;
+    function isValidDate(dateParts) {
+        if (dateParts.day == 29 && !isFinite(dateParts.rawyear)) return true;
+        return new Date(dateParts.year, dateParts.month, 0).getDate() >= dateParts.day;
     }
 
     function isDateInRange(maskDate, opts) {
@@ -112,14 +113,7 @@
         }
 
 
-        var dateObj = {
-            // day:  "01",
-            // month: "01",
-            // year: extendYear("____"),
-            // hour: "00",
-            // minutes: "00",
-            // seconds: "00"
-        }, targetProp, mask = maskString, match;
+        var dateObj = {}, targetProp, mask = maskString, match;
         if (typeof mask === "string") {
             while (match = getTokenizer(opts).exec(format)) {
                 if (match[0].charAt(0) === "d") {
@@ -136,7 +130,7 @@
                     targetProp = "seconds";
                 } else if (formatCode.hasOwnProperty(match[0])) {
                     targetProp = "unmatched";
-                } else { //separatot
+                } else { //separator
                     var value = mask.split(match[0])[0];
                     if (targetProp === "year") {
                         dateObj[targetProp] = extendYear(value);
@@ -150,11 +144,12 @@
             if (targetProp !== undefined) {
                 if (targetProp === "year") {
                     dateObj[targetProp] = extendYear(mask);
-                    dateObj["raw" + targetProp] = mask;
+                    dateObj["raw" + targetProp] = value;
                 }
                 else dateObj[targetProp] = mask.replace(/[^0-9]/g, "0");
             }
-            dateObj.date = new Date(dateObj.year + "-" + dateObj.month + "-" + dateObj.day + "T" + dateObj.hour + ":" + dateObj.minutes + ":" + dateObj.seconds);
+            dateObj.date = new Date(dateObj.year + "-" + dateObj.month + "-" + dateObj.day);
+            dateObj.datetime = new Date(dateObj.year + "-" + dateObj.month + "-" + dateObj.day + "T" + dateObj.hour + ":" + dateObj.minutes + ":" + dateObj.seconds);
             return dateObj;
         }
         return undefined;
@@ -179,17 +174,14 @@
             min: null, //needs to be in the same format as the inputfornat
             max: null, //needs to be in the same format as the inputfornat
             postValidation: function (buffer, currentResult, opts) {
-                var dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
-                var result = currentResult;
+                var result = currentResult, dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
+                if (result && dateParts.date.getTime() === dateParts.date.getTime()) {
+                    result = isValidDate(dateParts);
+                }
+                if (result && dateParts.datetime.getTime() === dateParts.datetime.getTime()) { //check for a valid date ~ an invalid date returns NaN which isn't equal
+                    result = isDateInRange(dateParts.date, opts);
+                }
 
-                if (result && isFinite(dateParts.rawyear)) {
-                    result = result && (dateParts.day !== "29" || !isLeapYear(dateParts.rawyear));
-                }
-                if (result) {
-                    if (dateParts.date.getTime() === dateParts.date.getTime()) { //check for a valid date ~ an invalid date returns NaN which isn't equal
-                        result = result && isDateInRange(dateParts.date, opts);
-                    }
-                }
                 return result;
             },
             onKeyDown: function (e, buffer, caretPos, opts) {

@@ -31,7 +31,7 @@
 						});
 					case "getemptymask":
 						return input && input.inputmask ? input.inputmask.getemptymask() : "";
-					case "hasMaskedValue": //check wheter the returned value is masked or not; currently only works reliable when using jquery.val fn to retrieve the value
+					case "hasMaskedValue": //check whether the returned value is masked or not; currently only works reliable when using jquery.val fn to retrieve the value
 						return input && input.inputmask ? input.inputmask.hasMaskedValue() : false;
 					case "isComplete":
 						return input && input.inputmask ? input.inputmask.isComplete() : true;

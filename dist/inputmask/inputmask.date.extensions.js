@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-53
+* Version: 4.0.0-54
 */
 
 !function(factory) {
@@ -14,8 +14,8 @@
             return ndx;
         }).join("|") + ")+|.", opts.tokenizer = new RegExp(opts.tokenizer, "g")), opts.tokenizer;
     }
-    function isLeapYear(year) {
-        return 29 === new Date(year, 2, 0).getDate();
+    function isValidDate(dateParts) {
+        return 29 == dateParts.day && !isFinite(dateParts.rawyear) || new Date(dateParts.year, dateParts.month, 0).getDate() >= dateParts.day;
     }
     function isDateInRange(maskDate, opts) {
         var result = !0;
@@ -42,8 +42,9 @@
                 mask = mask.slice((value + match[0]).length), targetProp = void 0;
             }
             return void 0 !== targetProp && ("year" === targetProp ? (dateObj[targetProp] = extendYear(mask), 
-            dateObj["raw" + targetProp] = mask) : dateObj[targetProp] = mask.replace(/[^0-9]/g, "0")), 
-            dateObj.date = new Date(dateObj.year + "-" + dateObj.month + "-" + dateObj.day + "T" + dateObj.hour + ":" + dateObj.minutes + ":" + dateObj.seconds), 
+            dateObj["raw" + targetProp] = value) : dateObj[targetProp] = mask.replace(/[^0-9]/g, "0")), 
+            dateObj.date = new Date(dateObj.year + "-" + dateObj.month + "-" + dateObj.day), 
+            dateObj.datetime = new Date(dateObj.year + "-" + dateObj.month + "-" + dateObj.day + "T" + dateObj.hour + ":" + dateObj.minutes + ":" + dateObj.seconds), 
             dateObj;
         }
     }
@@ -104,9 +105,9 @@
             min: null,
             max: null,
             postValidation: function(buffer, currentResult, opts) {
-                var dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts), result = currentResult;
-                return result && isFinite(dateParts.rawyear) && (result = result && ("29" !== dateParts.day || !isLeapYear(dateParts.rawyear))), 
-                result && dateParts.date.getTime() === dateParts.date.getTime() && (result = result && isDateInRange(dateParts.date, opts)), 
+                var result = currentResult, dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
+                return result && dateParts.date.getTime() === dateParts.date.getTime() && (result = isValidDate(dateParts)), 
+                result && dateParts.datetime.getTime() === dateParts.datetime.getTime() && (result = isDateInRange(dateParts.date, opts)), 
                 result;
             },
             onKeyDown: function(e, buffer, caretPos, opts) {
