@@ -112,6 +112,13 @@
             return correctedyear;
         }
 
+        function setValue(dateObj, value, opts) {
+            if (targetProp === "year") {
+                dateObj[targetProp] = extendYear(value);
+                dateObj["raw" + targetProp] = value;
+            }
+            else dateObj[targetProp] = opts.min && value.match(/[^0-9]/) ? opts.min[targetProp] : value;
+        }
 
         var dateObj = {}, targetProp, mask = maskString, match;
         if (typeof mask === "string") {
@@ -132,20 +139,13 @@
                     targetProp = "unmatched";
                 } else { //separator
                     var value = mask.split(match[0])[0];
-                    if (targetProp === "year") {
-                        dateObj[targetProp] = extendYear(value);
-                        dateObj["raw" + targetProp] = value;
-                    }
-                    else dateObj[targetProp] = opts.min && value.match(/[^0-9]/) ? opts.min[targetProp] : value;
+                    setValue(dateObj, value, opts);
                     mask = mask.slice((value + match[0]).length);
                     targetProp = undefined;
                 }
             }
             if (targetProp !== undefined) {
-                if (targetProp === "year") {
-                    dateObj[targetProp] = extendYear(mask);
-                }
-                else dateObj[targetProp] = mask.replace(/[^0-9]/g, "0");
+                setValue(dateObj, mask, opts);
             }
             dateObj.date = new Date(dateObj.year + "-" + dateObj.month + "-" + dateObj.day);
             dateObj.datetime = new Date(dateObj.year + "-" + dateObj.month + "-" + dateObj.day + "T" + dateObj.hour + ":" + dateObj.minutes + ":" + dateObj.seconds);

@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-55
+* Version: 4.0.0-56
 */
 
 !function(modules) {
@@ -1947,15 +1947,16 @@
                 correctedyear = year.charAt(0) === opts.max.year.charAt(0) ? year.replace(/[^0-9]/g, "0") : correctedyear + opts.min.year.substr(correctedyear.length)) : correctedyear = correctedyear.replace(/[^0-9]/g, "0"), 
                 correctedyear;
             }
+            function setValue(dateObj, value, opts) {
+                "year" === targetProp ? (dateObj[targetProp] = extendYear(value), dateObj["raw" + targetProp] = value) : dateObj[targetProp] = opts.min && value.match(/[^0-9]/) ? opts.min[targetProp] : value;
+            }
             var targetProp, match, dateObj = {}, mask = maskString;
             if ("string" == typeof mask) {
                 for (;match = getTokenizer(opts).exec(format); ) if ("d" === match[0].charAt(0)) targetProp = "day"; else if ("m" === match[0].charAt(0)) targetProp = "month"; else if ("y" === match[0].charAt(0)) targetProp = "year"; else if ("h" === match[0].charAt(0).toLowerCase()) targetProp = "hour"; else if ("M" === match[0].charAt(0)) targetProp = "minutes"; else if ("s" === match[0].charAt(0)) targetProp = "seconds"; else if (formatCode.hasOwnProperty(match[0])) targetProp = "unmatched"; else {
                     var value = mask.split(match[0])[0];
-                    "year" === targetProp ? (dateObj[targetProp] = extendYear(value), dateObj["raw" + targetProp] = value) : dateObj[targetProp] = opts.min && value.match(/[^0-9]/) ? opts.min[targetProp] : value, 
-                    mask = mask.slice((value + match[0]).length), targetProp = void 0;
+                    setValue(dateObj, value, opts), mask = mask.slice((value + match[0]).length), targetProp = void 0;
                 }
-                return void 0 !== targetProp && (dateObj[targetProp] = "year" === targetProp ? extendYear(mask) : mask.replace(/[^0-9]/g, "0")), 
-                dateObj.date = new Date(dateObj.year + "-" + dateObj.month + "-" + dateObj.day), 
+                return void 0 !== targetProp && setValue(dateObj, mask, opts), dateObj.date = new Date(dateObj.year + "-" + dateObj.month + "-" + dateObj.day), 
                 dateObj.datetime = new Date(dateObj.year + "-" + dateObj.month + "-" + dateObj.day + "T" + dateObj.hour + ":" + dateObj.minutes + ":" + dateObj.seconds), 
                 dateObj;
             }
