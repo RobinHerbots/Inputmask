@@ -144,7 +144,6 @@
             if (targetProp !== undefined) {
                 if (targetProp === "year") {
                     dateObj[targetProp] = extendYear(mask);
-                    dateObj["raw" + targetProp] = value;
                 }
                 else dateObj[targetProp] = mask.replace(/[^0-9]/g, "0");
             }

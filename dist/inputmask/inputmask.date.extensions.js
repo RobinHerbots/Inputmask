@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-54
+* Version: 4.0.0-55
 */
 
 !function(factory) {
@@ -41,8 +41,7 @@
                 "year" === targetProp ? (dateObj[targetProp] = extendYear(value), dateObj["raw" + targetProp] = value) : dateObj[targetProp] = opts.min && value.match(/[^0-9]/) ? opts.min[targetProp] : value, 
                 mask = mask.slice((value + match[0]).length), targetProp = void 0;
             }
-            return void 0 !== targetProp && ("year" === targetProp ? (dateObj[targetProp] = extendYear(mask), 
-            dateObj["raw" + targetProp] = value) : dateObj[targetProp] = mask.replace(/[^0-9]/g, "0")), 
+            return void 0 !== targetProp && (dateObj[targetProp] = "year" === targetProp ? extendYear(mask) : mask.replace(/[^0-9]/g, "0")), 
             dateObj.date = new Date(dateObj.year + "-" + dateObj.month + "-" + dateObj.day), 
             dateObj.datetime = new Date(dateObj.year + "-" + dateObj.month + "-" + dateObj.day + "T" + dateObj.hour + ":" + dateObj.minutes + ":" + dateObj.seconds), 
             dateObj;
