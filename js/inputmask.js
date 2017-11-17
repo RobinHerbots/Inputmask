@@ -101,7 +101,7 @@
             keepStatic: null, //try to keep the mask static while typing. Decisions to alter the mask will be posponed if possible - null see auto selection for multi masks
             positionCaretOnTab: true, //when enabled the caret position is set after the latest valid position on TAB
             tabThrough: false, //allows for tabbing through the different parts of the masked field
-            supportsInputType: ["text", "tel", "password"], //list with the supported input types
+            supportsInputType: ["text", "tel", "password", "search"], //list with the supported input types
             //specify keyCodes which should not be considered in the keypress event, otherwise the preventDefault will stop their default behavior especially in FF
             ignorables: [8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 0, 229],
             isComplete: null, //override for isComplete - args => buffer, opts - return true || false

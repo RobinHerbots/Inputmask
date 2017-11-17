@@ -1306,7 +1306,7 @@
                 keepStatic: null,
                 positionCaretOnTab: !0,
                 tabThrough: !1,
-                supportsInputType: [ "text", "tel", "password" ],
+                supportsInputType: [ "text", "tel", "password", "search" ],
                 ignorables: [ 8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 0, 229 ],
                 isComplete: null,
                 canClearPosition: $.noop,

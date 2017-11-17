@@ -190,6 +190,7 @@ $(document).ready(function(){
 
 ### Allowed HTML-elements
 - `<input type="text">`
+- `<input type="search">`
 - `<input type="tel">`
 - `<input type="password">`
 - `<div contenteditable="true">` (and all others supported by contenteditable)
