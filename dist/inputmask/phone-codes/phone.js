@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-56
+* Version: 4.0.0-57
 */
 
 !function(factory) {
@@ -615,7 +615,7 @@
                 name_ru: "Майотта",
                 desc_ru: ""
             }, {
-                mask: "+33(#) ##-##-##-##",
+                mask: "+33(###)###-###",
                 cc: "FR",
                 cd: "France",
                 desc_en: "",

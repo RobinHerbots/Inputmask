@@ -50,14 +50,6 @@
             S: "" //The date's ordinal suffix (st, nd, rd, or th). Works well with d.
         },
         formatAlias = {
-            default: "ddd mmm dd yyyy HH:MM:ss", //Sat Jun 09 2007 17:46:21
-            shortDate: "m/d/yy", //6/9/07
-            mediumDate: "mmm d, yyyy", //Jun 9, 2007
-            longDate: "mmmm d, yyyy", //June 9, 2007
-            fullDate: "dddd, mmmm d, yyyy", //Saturday, June 9, 2007
-            shortTime: "h:MM TT", //5:46 PM
-            mediumTime: "h:MM:ss TT", //5:46:21 PM
-            longTime: "h:MM:ss TT Z", //5:46:21 PM EST
             isoDate: "yyyy-mm-dd", //2007-06-09
             isoTime: "HH:MM:ss", //17:46:21
             isoDateTime: "yyyy-mm-dd'T'HH:MM:ss", //2007-06-09T17:46:21
@@ -76,9 +68,10 @@
         return opts.tokenizer;
     }
 
-    function isValidDate(dateParts) {
-        if (dateParts.day == 29 && !isFinite(dateParts.rawyear)) return true;
-        return new Date(dateParts.year, dateParts.month, 0).getDate() >= dateParts.day;
+    function isValidDate(dateParts, currentResult) {
+        return (dateParts.day == 29 && !isFinite(dateParts.rawyear)) || new Date(dateParts.year, dateParts.month, 0).getDate() >= dateParts.day
+            ? currentResult
+            : false; //take corrective action if possible
     }
 
     function isDateInRange(maskDate, opts) {
@@ -167,7 +160,7 @@
                 // console.log(opts.regex);
                 return null; //migrate to regex mask
             },
-            inputFormat: "dd/mm/yyyy HH:MM", //format used to input the date
+            inputFormat: "isoDateTime", //format used to input the date
             displayFormat: undefined, //visual format when the input looses focus
             outputFormat: undefined, //unmasking format
             min: null, //needs to be in the same format as the inputfornat
@@ -175,7 +168,7 @@
             postValidation: function (buffer, currentResult, opts) {
                 var result = currentResult, dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
                 if (result && dateParts.date.getTime() === dateParts.date.getTime()) {
-                    result = isValidDate(dateParts);
+                    result = isValidDate(dateParts, currentResult);
                 }
                 if (result && dateParts.datetime.getTime() === dateParts.datetime.getTime()) { //check for a valid date ~ an invalid date returns NaN which isn't equal
                     result = isDateInRange(dateParts.date, opts);

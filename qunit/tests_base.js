@@ -258,7 +258,9 @@ export default function (qunit, $, Inputmask) {
         var $fixture = $("#qunit-fixture");
         $fixture.append('<input type="text" id="testmask" />');
         var testmask = document.getElementById("testmask");
-        Inputmask("dd/mm/yyyy").mask(testmask);
+        Inputmask("datetime", {
+            inputFormat: "dd/mm/yyyy"
+        }).mask(testmask);
 
         testmask.focus();
         $("#testmask").Type("23314");
@@ -271,7 +273,9 @@ export default function (qunit, $, Inputmask) {
         var $fixture = $("#qunit-fixture");
         $fixture.append('<input type="text" id="testmask" />');
         var testmask = document.getElementById("testmask");
-        Inputmask("dd/mm/yyyy").mask(testmask);
+        Inputmask("datetime", {
+            inputFormat: "dd/mm/yyyy"
+        }).mask(testmask);
 
         testmask.focus();
         $("#testmask").Type("23314");

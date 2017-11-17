@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-56
+* Version: 4.0.0-57
 */
 
 !function(modules) {
@@ -1927,8 +1927,8 @@
                 return ndx;
             }).join("|") + ")+|.", opts.tokenizer = new RegExp(opts.tokenizer, "g")), opts.tokenizer;
         }
-        function isValidDate(dateParts) {
-            return 29 == dateParts.day && !isFinite(dateParts.rawyear) || new Date(dateParts.year, dateParts.month, 0).getDate() >= dateParts.day;
+        function isValidDate(dateParts, currentResult) {
+            return (29 == dateParts.day && !isFinite(dateParts.rawyear) || new Date(dateParts.year, dateParts.month, 0).getDate() >= dateParts.day) && currentResult;
         }
         function isDateInRange(maskDate, opts) {
             var result = !0;
@@ -1990,14 +1990,6 @@
             o: "",
             S: ""
         }, formatAlias = {
-            default: "ddd mmm dd yyyy HH:MM:ss",
-            shortDate: "m/d/yy",
-            mediumDate: "mmm d, yyyy",
-            longDate: "mmmm d, yyyy",
-            fullDate: "dddd, mmmm d, yyyy",
-            shortTime: "h:MM TT",
-            mediumTime: "h:MM:ss TT",
-            longTime: "h:MM:ss TT Z",
             isoDate: "yyyy-mm-dd",
             isoTime: "HH:MM:ss",
             isoDateTime: "yyyy-mm-dd'T'HH:MM:ss",
@@ -2012,14 +2004,14 @@
                     opts.min = analyseMask(opts.min, opts.inputFormat, opts), opts.max = analyseMask(opts.max, opts.inputFormat, opts), 
                     opts.regex = parse(opts.inputFormat, opts), null;
                 },
-                inputFormat: "dd/mm/yyyy HH:MM",
+                inputFormat: "isoDateTime",
                 displayFormat: void 0,
                 outputFormat: void 0,
                 min: null,
                 max: null,
                 postValidation: function(buffer, currentResult, opts) {
                     var result = currentResult, dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
-                    return result && dateParts.date.getTime() === dateParts.date.getTime() && (result = isValidDate(dateParts)), 
+                    return result && dateParts.date.getTime() === dateParts.date.getTime() && (result = isValidDate(dateParts, currentResult)), 
                     result && dateParts.datetime.getTime() === dateParts.datetime.getTime() && (result = isDateInRange(dateParts.date, opts)), 
                     result;
                 },
