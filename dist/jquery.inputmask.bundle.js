@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-58
+* Version: 4.0.0-59
 */
 
 !function(modules) {
@@ -1928,7 +1928,7 @@
             }).join("|") + ")+|.", opts.tokenizer = new RegExp(opts.tokenizer, "g")), opts.tokenizer;
         }
         function isValidDate(dateParts, currentResult) {
-            return (29 == dateParts.day && !isFinite(dateParts.rawyear) || new Date(dateParts.year, dateParts.month, 0).getDate() >= dateParts.day) && currentResult;
+            return (!isFinite(dateParts.day) || "29" == dateParts.day && !isFinite(dateParts.rawyear) || new Date(dateParts.date.getFullYear(), isFinite(dateParts.month) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day) && currentResult;
         }
         function isDateInRange(maskDate, opts) {
             var result = !0;
@@ -1949,16 +1949,16 @@
             }
             function setValue(dateObj, value, dateOperation, opts) {
                 "year" === targetProp ? (dateObj[targetProp] = extendYear(value), dateObj["raw" + targetProp] = value) : dateObj[targetProp] = opts.min && value.match(/[^0-9]/) ? opts.min[targetProp] : value, 
-                void 0 !== dateOperation && dateOperation.call(dateObj.date, dateObj[targetProp]);
+                void 0 !== dateOperation && dateOperation.call(dateObj.date, "month" == targetProp ? parseInt(dateObj[targetProp]) - 1 : dateObj[targetProp]);
             }
             var targetProp, match, dateOperation, dateObj = {
-                date: new Date("0001-01-01")
+                date: new Date(1, 0, 1)
             }, mask = maskString;
             if ("string" == typeof mask) {
                 for (;match = getTokenizer(opts).exec(format); ) if ("d" === match[0].charAt(0)) targetProp = "day", 
                 dateOperation = Date.prototype.setDate; else if ("m" === match[0].charAt(0)) targetProp = "month", 
                 dateOperation = Date.prototype.setMonth; else if ("y" === match[0].charAt(0)) targetProp = "year", 
-                dateOperation = Date.prototype.setYear; else if ("h" === match[0].charAt(0).toLowerCase()) targetProp = "hour", 
+                dateOperation = Date.prototype.setFullYear; else if ("h" === match[0].charAt(0).toLowerCase()) targetProp = "hour", 
                 dateOperation = Date.prototype.setHours; else if ("M" === match[0].charAt(0)) targetProp = "minutes", 
                 dateOperation = Date.prototype.setMinutes; else if ("s" === match[0].charAt(0)) targetProp = "seconds", 
                 dateOperation = Date.prototype.setSeconds; else if (formatCode.hasOwnProperty(match[0])) targetProp = "unmatched", 

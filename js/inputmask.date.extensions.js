@@ -69,7 +69,7 @@
     }
 
     function isValidDate(dateParts, currentResult) {
-        return (dateParts.day == 29 && !isFinite(dateParts.rawyear)) || new Date(dateParts.year, dateParts.month, 0).getDate() >= dateParts.day
+        return !isFinite(dateParts.day) || (dateParts.day == "29" && !isFinite(dateParts.rawyear)) || new Date(dateParts.date.getFullYear(), isFinite(dateParts.month) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day
             ? currentResult
             : false; //take corrective action if possible
     }
@@ -113,10 +113,10 @@
             else dateObj[targetProp] = opts.min && value.match(/[^0-9]/) ? opts.min[targetProp] : value;
 
             if (dateOperation !== undefined)
-                dateOperation.call(dateObj.date, dateObj[targetProp]);
+                dateOperation.call(dateObj.date, targetProp == "month" ? parseInt(dateObj[targetProp]) - 1 : dateObj[targetProp]);
         }
 
-        var dateObj = {"date": new Date("0001-01-01")}, targetProp, mask = maskString, match, dateOperation;
+        var dateObj = {"date": new Date(1, 0, 1)}, targetProp, mask = maskString, match, dateOperation;
         if (typeof mask === "string") {
             while (match = getTokenizer(opts).exec(format)) {
                 if (match[0].charAt(0) === "d") {
@@ -127,7 +127,7 @@
                     dateOperation = Date.prototype.setMonth;
                 } else if (match[0].charAt(0) === "y") {
                     targetProp = "year";
-                    dateOperation = Date.prototype.setYear;
+                    dateOperation = Date.prototype.setFullYear;
                 } else if (match[0].charAt(0).toLowerCase() === "h") {
                     targetProp = "hour";
                     dateOperation = Date.prototype.setHours;
