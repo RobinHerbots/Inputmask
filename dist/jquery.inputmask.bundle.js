@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-57
+* Version: 4.0.0-58
 */
 
 !function(modules) {
@@ -1947,18 +1947,27 @@
                 correctedyear = year.charAt(0) === opts.max.year.charAt(0) ? year.replace(/[^0-9]/g, "0") : correctedyear + opts.min.year.substr(correctedyear.length)) : correctedyear = correctedyear.replace(/[^0-9]/g, "0"), 
                 correctedyear;
             }
-            function setValue(dateObj, value, opts) {
-                "year" === targetProp ? (dateObj[targetProp] = extendYear(value), dateObj["raw" + targetProp] = value) : dateObj[targetProp] = opts.min && value.match(/[^0-9]/) ? opts.min[targetProp] : value;
+            function setValue(dateObj, value, dateOperation, opts) {
+                "year" === targetProp ? (dateObj[targetProp] = extendYear(value), dateObj["raw" + targetProp] = value) : dateObj[targetProp] = opts.min && value.match(/[^0-9]/) ? opts.min[targetProp] : value, 
+                void 0 !== dateOperation && dateOperation.call(dateObj.date, dateObj[targetProp]);
             }
-            var targetProp, match, dateObj = {}, mask = maskString;
+            var targetProp, match, dateOperation, dateObj = {
+                date: new Date("0001-01-01")
+            }, mask = maskString;
             if ("string" == typeof mask) {
-                for (;match = getTokenizer(opts).exec(format); ) if ("d" === match[0].charAt(0)) targetProp = "day"; else if ("m" === match[0].charAt(0)) targetProp = "month"; else if ("y" === match[0].charAt(0)) targetProp = "year"; else if ("h" === match[0].charAt(0).toLowerCase()) targetProp = "hour"; else if ("M" === match[0].charAt(0)) targetProp = "minutes"; else if ("s" === match[0].charAt(0)) targetProp = "seconds"; else if (formatCode.hasOwnProperty(match[0])) targetProp = "unmatched"; else {
+                for (;match = getTokenizer(opts).exec(format); ) if ("d" === match[0].charAt(0)) targetProp = "day", 
+                dateOperation = Date.prototype.setDate; else if ("m" === match[0].charAt(0)) targetProp = "month", 
+                dateOperation = Date.prototype.setMonth; else if ("y" === match[0].charAt(0)) targetProp = "year", 
+                dateOperation = Date.prototype.setYear; else if ("h" === match[0].charAt(0).toLowerCase()) targetProp = "hour", 
+                dateOperation = Date.prototype.setHours; else if ("M" === match[0].charAt(0)) targetProp = "minutes", 
+                dateOperation = Date.prototype.setMinutes; else if ("s" === match[0].charAt(0)) targetProp = "seconds", 
+                dateOperation = Date.prototype.setSeconds; else if (formatCode.hasOwnProperty(match[0])) targetProp = "unmatched", 
+                dateOperation = void 0; else {
                     var value = mask.split(match[0])[0];
-                    setValue(dateObj, value, opts), mask = mask.slice((value + match[0]).length), targetProp = void 0;
+                    setValue(dateObj, value, dateOperation, opts), mask = mask.slice((value + match[0]).length), 
+                    targetProp = void 0;
                 }
-                return void 0 !== targetProp && setValue(dateObj, mask, opts), dateObj.date = new Date(dateObj.year + "-" + dateObj.month + "-" + dateObj.day), 
-                dateObj.datetime = new Date(dateObj.year + "-" + dateObj.month + "-" + dateObj.day + "T" + dateObj.hour + ":" + dateObj.minutes + ":" + dateObj.seconds), 
-                dateObj;
+                return void 0 !== targetProp && setValue(dateObj, mask, dateOperation, opts), dateObj;
             }
         }
         var formatCode = {
@@ -2011,8 +2020,7 @@
                 max: null,
                 postValidation: function(buffer, currentResult, opts) {
                     var result = currentResult, dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
-                    return result && dateParts.date.getTime() === dateParts.date.getTime() && (result = isValidDate(dateParts, currentResult)), 
-                    result && dateParts.datetime.getTime() === dateParts.datetime.getTime() && (result = isDateInRange(dateParts.date, opts)), 
+                    return result && dateParts.date.getTime() === dateParts.date.getTime() && (result = (result = isValidDate(dateParts, result)) && isDateInRange(dateParts.date, opts)), 
                     result;
                 },
                 onKeyDown: function(e, buffer, caretPos, opts) {
