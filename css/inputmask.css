@@ -1,56 +1,94 @@
-.im-caret {
-	-webkit-animation: 1s blink step-end infinite;
-	-moz-animation: 1s blink step-end infinite;
-	-ms-animation: 1s blink step-end infinite;
-	-o-animation: 1s blink step-end infinite;
-	animation: 1s blink step-end infinite;
+span.im-caret {
+    -webkit-animation: 1s blink step-end infinite;
+    -moz-animation: 1s blink step-end infinite;
+    -ms-animation: 1s blink step-end infinite;
+    -o-animation: 1s blink step-end infinite;
+    animation: 1s blink step-end infinite;
 }
 
 @keyframes blink {
-	from, to {
-		border-right-color: black;
-	}
-	50% {
-		border-right-color: transparent;
-	}
+    from, to {
+        border-right-color: black;
+    }
+    50% {
+        border-right-color: transparent;
+    }
 }
 
 @-moz-keyframes blink {
-	from, to {
-		border-right-color: black;
-	}
-	50% {
-		border-right-color: transparent;
-	}
+    from, to {
+        border-right-color: black;
+    }
+    50% {
+        border-right-color: transparent;
+    }
 }
 
 @-webkit-keyframes blink {
-	from, to {
-		border-right-color: black;
-	}
-	50% {
-		border-right-color: transparent;
-	}
+    from, to {
+        border-right-color: black;
+    }
+    50% {
+        border-right-color: transparent;
+    }
 }
 
 @-ms-keyframes blink {
-	from, to {
-		border-right-color: black;
-	}
-	50% {
-		border-right-color: transparent;
-	}
+    from, to {
+        border-right-color: black;
+    }
+    50% {
+        border-right-color: transparent;
+    }
 }
 
 @-o-keyframes blink {
-	from, to {
-		border-right-color: black;
-	}
-	50% {
-		border-right-color: transparent;
-	}
+    from, to {
+        border-right-color: black;
+    }
+    50% {
+        border-right-color: transparent;
+    }
 }
 
-.im-static {
-	color: grey;
+span.im-static {
+    color: grey;
+}
+
+div.im-colormask {
+    display: inline-block;
+    border-style: inset;
+    border-width: 2px;
+    -webkit-appearance: textfield;
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+div.im-colormask > input {
+    position: absolute;
+    display: inline-block;
+    background-color: transparent;
+    color: transparent;
+    -webkit-appearance: caret;
+    -moz-appearance: caret;
+    appearance: caret;
+    border-style: none;
+    left: 0; /*calculated*/
+}
+
+div.im-colormask > input:focus {
+    outline: none;
+}
+
+div.im-colormask > input::selection{
+    background: none;
+}
+div.im-colormask > input::-moz-selection{
+    background: none;
+}
+
+div.im-colormask > div {
+    color: black;
+    display: inline-block;
+    width: 100px; /*calculated*/
 }

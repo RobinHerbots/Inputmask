@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [3.3.11 - 2017-11-21]
+### Updates
+- Fix css for use with the androidHack & colorMask option
+
 ## [3.3.10 - 2017-10-16]
 ### Updates
 - Fix changes from PR #1664
