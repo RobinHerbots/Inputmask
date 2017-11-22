@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-60
+* Version: 4.0.0-61
 */
 
 !function(factory) {
@@ -1143,7 +1143,7 @@
                 }(elem, opts);
                 if (!1 !== isSupported && (el = elem, $el = $(el), -1 === (maxLength = el !== undefined ? el.maxLength : undefined) && (maxLength = undefined), 
                 !0 === opts.colorMask && initializeColorMask(el), mobile && (el.hasOwnProperty("inputmode") && (el.inputmode = opts.inputmode, 
-                el.setAttribute("inputmode", opts.inputmode)), "true" === opts.disablePredictiveText && (!0 !== opts.colorMask && initializeColorMask(el), 
+                el.setAttribute("inputmode", opts.inputmode)), !0 === opts.disablePredictiveText && (!0 !== opts.colorMask && initializeColorMask(el), 
                 el.type = "password")), !0 === isSupported && (EventRuler.on(el, "submit", EventHandlers.submitEvent), 
                 EventRuler.on(el, "reset", EventHandlers.resetEvent), EventRuler.on(el, "mouseenter", EventHandlers.mouseenterEvent), 
                 EventRuler.on(el, "blur", EventHandlers.blurEvent), EventRuler.on(el, "focus", EventHandlers.focusEvent), 

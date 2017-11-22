@@ -3168,13 +3168,12 @@
                 if (opts.colorMask === true) {
                     initializeColorMask(el);
                 }
-
                 if (mobile) {
                     if (el.hasOwnProperty("inputmode")) {
                         el.inputmode = opts.inputmode;
                         el.setAttribute("inputmode", opts.inputmode);
                     }
-                    if (opts.disablePredictiveText === "true") {
+                    if (opts.disablePredictiveText === true) {
                         if (opts.colorMask !== true) {
                             initializeColorMask(el);
                         }
