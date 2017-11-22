@@ -2468,7 +2468,7 @@
                     var nptValue = input.inputmask._valueGet(),
                         buffer = getBuffer().slice();
 
-                    if (nptValue !== "") {
+                    if (nptValue !== "" || colorMask !== undefined) {
                         if (opts.clearMaskOnLostFocus) {
                             if (getLastValidPosition() === -1 && nptValue === getBufferTemplate().join("")) {
                                 buffer = [];
