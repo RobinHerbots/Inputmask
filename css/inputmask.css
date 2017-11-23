@@ -65,7 +65,7 @@ div.im-colormask {
 }
 
 div.im-colormask > input {
-    position: absolute;
+    position: absolute !important;
     display: inline-block;
     background-color: transparent;
     color: transparent;

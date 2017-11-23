@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-62
+* Version: 4.0.0-63
 */
 
 !function(factory) {
@@ -723,8 +723,8 @@
             }
             var computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null), template = document.createElement("div");
             template.style.width = computedStyle.width, template.style.textAlign = computedStyle.textAlign, 
-            template.className = input.className, colorMask = document.createElement("div"), 
-            input.inputmask.colorMask = colorMask, colorMask.className = "im-colormask", input.parentNode.insertBefore(colorMask, input), 
+            colorMask = document.createElement("div"), input.inputmask.colorMask = colorMask, 
+            colorMask.className = "im-colormask", input.parentNode.insertBefore(colorMask, input), 
             input.parentNode.removeChild(input), colorMask.appendChild(template), colorMask.appendChild(input), 
             input.style.left = template.offsetLeft + "px", $(input).on("click", function(e) {
                 return caret(input, findCaretPos(e.clientX)), EventHandlers.clickEvent.call(input, [ e ]);
