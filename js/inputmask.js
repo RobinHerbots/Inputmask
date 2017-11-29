@@ -2243,10 +2243,10 @@
                     inputValue = radixPointHandler(input, inputValue, caretPos);
                     inputValue = ieMobileHandler(input, inputValue, caretPos);
 
-                    if (caretPos.begin > inputValue.length) {
-                        caret(input, inputValue.length);
-                        caretPos = caret(input);
-                    }
+                    // if (caretPos.begin > inputValue.length) {
+                    //     caret(input, inputValue.length);
+                    //     caretPos = caret(input);
+                    // }
 
                     if (getBuffer().join("") !== inputValue) {
                         var buffer = getBuffer().join(""),
@@ -2634,8 +2634,7 @@
         function caret(input, begin, end, notranslate) {
             function translatePosition(pos) {
                 if (notranslate !== true && isRTL && typeof pos === "number" && (!opts.greedy || opts.placeholder !== "")) {
-                    var bffrLght = getBuffer().join("").length; //join is needed because sometimes we get an empty buffer element which must not be counted for the caret position (numeric alias)
-                    pos = bffrLght - pos;
+                    pos = input.inputmask.__valueGet.call(input).length - pos;
                 }
                 return pos;
             }
@@ -2643,8 +2642,8 @@
             var range;
             if (begin !== undefined) {
                 if (begin.begin !== undefined) {
-                    end = begin.end;
-                    begin = begin.begin;
+                    end = isRTL ? begin.begin : begin.end;
+                    begin = isRTL ? begin.end : begin.begin;
                 }
                 if (typeof begin === "number") {
                     begin = translatePosition(begin);

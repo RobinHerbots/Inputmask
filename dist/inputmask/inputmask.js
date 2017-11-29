@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-62
+* Version: 4.0.0-63
 */
 
 !function(factory) {
@@ -606,7 +606,7 @@
         }
         function caret(input, begin, end, notranslate) {
             function translatePosition(pos) {
-                return !0 === notranslate || !isRTL || "number" != typeof pos || opts.greedy && "" === opts.placeholder || (pos = getBuffer().join("").length - pos), 
+                return !0 === notranslate || !isRTL || "number" != typeof pos || opts.greedy && "" === opts.placeholder || (pos = input.inputmask.__valueGet.call(input).length - pos), 
                 pos;
             }
             var range;
@@ -617,7 +617,8 @@
                 begin: translatePosition(begin),
                 end: translatePosition(end)
             };
-            if (begin.begin !== undefined && (end = begin.end, begin = begin.begin), "number" == typeof begin) {
+            if (begin.begin !== undefined && (end = isRTL ? begin.begin : begin.end, begin = isRTL ? begin.end : begin.begin), 
+            "number" == typeof begin) {
                 begin = translatePosition(begin), end = "number" == typeof (end = translatePosition(end)) ? end : begin;
                 var scrollCalc = parseInt(((input.ownerDocument.defaultView || window).getComputedStyle ? (input.ownerDocument.defaultView || window).getComputedStyle(input, null) : input.currentStyle).fontSize) * end;
                 if (input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0, !1 === opts.insertMode && begin === end && end++, 
@@ -907,8 +908,7 @@
                             }
                         }
                         return inputValue;
-                    }(0, inputValue, caretPos), caretPos.begin > inputValue.length && (caret(input, inputValue.length), 
-                    caretPos = caret(input)), getBuffer().join("") !== inputValue) {
+                    }(0, inputValue, caretPos), getBuffer().join("") !== inputValue) {
                         var buffer = getBuffer().join(""), offset = inputValue.length > buffer.length ? -1 : 0, frontPart = inputValue.substr(0, caretPos.begin), backPart = inputValue.substr(caretPos.begin), frontBufferPart = buffer.substr(0, caretPos.begin + offset), backBufferPart = buffer.substr(caretPos.begin + offset), selection = caretPos, entries = "", isEntry = !1;
                         if (frontPart !== frontBufferPart) {
                             for (var fpl = (isEntry = frontPart.length >= frontBufferPart.length) ? frontPart.length : frontBufferPart.length, i = 0; frontPart.charAt(i) === frontBufferPart.charAt(i) && i < fpl; i++) ;
