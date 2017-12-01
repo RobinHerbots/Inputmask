@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-63
+* Version: 4.0.0-64
 */
 
 !function(modules) {
@@ -1187,9 +1187,9 @@
                         }(input) : input.inputmask = undefined, isSupported;
                     }(elem, opts);
                     if (!1 !== isSupported && (el = elem, $el = $(el), -1 === (maxLength = el !== undefined ? el.maxLength : undefined) && (maxLength = undefined), 
-                    !0 === opts.colorMask && initializeColorMask(el), mobile && (el.hasOwnProperty("inputmode") && (el.inputmode = opts.inputmode, 
-                    el.setAttribute("inputmode", opts.inputmode)), !0 === opts.disablePredictiveText && (!0 !== opts.colorMask && initializeColorMask(el), 
-                    el.type = "password")), !0 === isSupported && (EventRuler.on(el, "submit", EventHandlers.submitEvent), 
+                    !0 === opts.colorMask && initializeColorMask(el), mobile && ("inputmode" in el && (el.inputmode = opts.inputmode, 
+                    el.setAttribute("inputmode", opts.inputmode)), !0 === opts.disablePredictiveText && ("autocorrect" in el ? el.autocorrect = !1 : (!0 !== opts.colorMask && initializeColorMask(el), 
+                    el.type = "password"))), !0 === isSupported && (EventRuler.on(el, "submit", EventHandlers.submitEvent), 
                     EventRuler.on(el, "reset", EventHandlers.resetEvent), EventRuler.on(el, "mouseenter", EventHandlers.mouseenterEvent), 
                     EventRuler.on(el, "blur", EventHandlers.blurEvent), EventRuler.on(el, "focus", EventHandlers.focusEvent), 
                     EventRuler.on(el, "mouseleave", EventHandlers.mouseleaveEvent), !0 !== opts.colorMask && EventRuler.on(el, "click", EventHandlers.clickEvent), 
@@ -1983,8 +1983,10 @@
             yyyy: "[0-9]{4}",
             h: "[1-9]|1[0-2]",
             hh: "0[1-9]|1[0-2]",
-            H: "1?[1-9]|2[0-4]",
-            HH: "[01][1-9]|2[0-4]",
+            hhh: "[0-9]+",
+            H: "1?[1-9]|2[0-3]",
+            HH: "[01][1-9]|2[0-3]",
+            HHH: "[0-9]+",
             M: "[1-5]?[0-9]",
             MM: "[0-5][0-9]",
             s: "[1-5]?[0-9]",

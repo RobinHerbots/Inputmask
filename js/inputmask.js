@@ -3168,15 +3168,19 @@
                     initializeColorMask(el);
                 }
                 if (mobile) {
-                    if (el.hasOwnProperty("inputmode")) {
+                    if ("inputmode" in el) {
                         el.inputmode = opts.inputmode;
                         el.setAttribute("inputmode", opts.inputmode);
                     }
                     if (opts.disablePredictiveText === true) {
-                        if (opts.colorMask !== true) {
-                            initializeColorMask(el);
+                        if ("autocorrect" in el) {  //safari
+                            el.autocorrect = false;
+                        } else {
+                            if (opts.colorMask !== true) {
+                                initializeColorMask(el);
+                            }
+                            el.type = "password";
                         }
-                        el.type = "password";
                     }
                 }
 

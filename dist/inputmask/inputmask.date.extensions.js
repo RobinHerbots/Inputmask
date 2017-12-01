@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-63
+* Version: 4.0.0-64
 */
 
 !function(factory) {
@@ -70,8 +70,10 @@
         yyyy: "[0-9]{4}",
         h: "[1-9]|1[0-2]",
         hh: "0[1-9]|1[0-2]",
-        H: "1?[1-9]|2[0-4]",
-        HH: "[01][1-9]|2[0-4]",
+        hhh: "[0-9]+",
+        H: "1?[1-9]|2[0-3]",
+        HH: "[01][1-9]|2[0-3]",
+        HHH: "[0-9]+",
         M: "[1-5]?[0-9]",
         MM: "[0-5][0-9]",
         s: "[1-5]?[0-9]",

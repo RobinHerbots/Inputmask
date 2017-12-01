@@ -33,8 +33,10 @@
             yyyy: "[0-9]{4}",
             h: "[1-9]|1[0-2]", //Hours; no leading zero for single-digit hours (12-hour clock).
             hh: "0[1-9]|1[0-2]", //Hours; leading zero for single-digit hours (12-hour clock).
-            H: "1?[1-9]|2[0-4]", //Hours; no leading zero for single-digit hours (24-hour clock).
-            HH: "[01][1-9]|2[0-4]", //Hours; leading zero for single-digit hours (24-hour clock).
+            hhh: "[0-9]+", //Hours; no limit
+            H: "1?[1-9]|2[0-3]", //Hours; no leading zero for single-digit hours (24-hour clock).
+            HH: "[01][1-9]|2[0-3]", //Hours; leading zero for single-digit hours (24-hour clock).
+            HHH: "[0-9]+", //Hours; no limit
             M: "[1-5]?[0-9]", //Minutes; no leading zero for single-digit minutes. Uppercase M unlike CF timeFormat's m to avoid conflict with months.
             MM: "[0-5][0-9]", //Minutes; leading zero for single-digit minutes. Uppercase MM unlike CF timeFormat's mm to avoid conflict with months.
             s: "[1-5]?[0-9]", //Seconds; no leading zero for single-digit seconds.
