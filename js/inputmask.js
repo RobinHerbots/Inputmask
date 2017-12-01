@@ -2913,7 +2913,6 @@
             var template = document.createElement("div");
             template.style.width = computedStyle.width;
             template.style.textAlign = computedStyle.textAlign;
-            template.className = input.className;
             colorMask = document.createElement("div");
             input.inputmask.colorMask = colorMask;
             colorMask.className = "im-colormask";
