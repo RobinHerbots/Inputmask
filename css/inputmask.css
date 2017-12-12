@@ -69,6 +69,7 @@ div.im-colormask > input {
     display: inline-block;
     background-color: transparent;
     color: transparent;
+    caret-color: transparent;
     -webkit-appearance: caret;
     -moz-appearance: caret;
     appearance: caret;

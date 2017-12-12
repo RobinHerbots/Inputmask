@@ -1,5 +1,4 @@
-export  default function(qunit, $, Inputmask)
-{
+export default function (qunit, $, Inputmask) {
     qunit.module("Set value with fn.val");
     qunit.test("inputmask(\"decimal\") ~ value=\"123.45\"", function (assert) {
         var $fixture = $("#qunit-fixture");
@@ -32,7 +31,7 @@ export  default function(qunit, $, Inputmask)
         var $fixture = $("#qunit-fixture");
         $fixture.append('<input type="text" id="testmask" disabled="disabled" />');
         var testmask = document.getElementById("testmask");
-        Inputmask("mm/yyyy").mask(testmask);
+        Inputmask("datetime", {inputFormat: "mm/yyyy"}).mask(testmask);
         $("#testmask").val("031973");
         assert.equal(testmask.value, "03/1973", "Result " + testmask.value);
     });

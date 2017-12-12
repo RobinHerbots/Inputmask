@@ -222,7 +222,8 @@ export default function (qunit, $, Inputmask) {
     qunit.test("inputmask.unmask(\"23/03/1973\", { alias: \"datetime dd/mm/yyyy\" })", function (assert) {
         var unmasked = Inputmask.unmask("23/03/1973", {
             alias: "datetime",
-            inputFormat: "dd/mm/yyyy"
+            inputFormat: "dd/mm/yyyy",
+            outputFormat: "ddmmyyyy"
         });
         assert.equal(unmasked, "23031973", "Result " + unmasked);
     });
