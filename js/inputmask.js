@@ -2130,9 +2130,10 @@
                         var valResult = isValid(pos, c, strict);
                         if (valResult !== false) {
                             resetMaskSet(true);
-                            forwardPosition = valResult.caret !== undefined ? valResult.caret : seekNext(valResult.pos);
+                            forwardPosition = valResult.caret !== undefined ? valResult.caret : seekNext(valResult.pos.begin ? valResult.pos.begin : valResult.pos);
                             getMaskSet().p = forwardPosition; //needed for checkval
                         }
+
 
                         forwardPosition = (opts.numericInput && valResult.caret === undefined) ? seekPrevious(forwardPosition) : forwardPosition;
                         if (writeOut !== false) {
@@ -2540,8 +2541,10 @@
             // console.log(nptvl);
 
             function isTemplateMatch(ndx, charCodes) {
-                var charCodeNdx = getBufferTemplate().slice(ndx, seekNext(ndx)).join("").indexOf(charCodes);
-                return charCodeNdx !== -1 && !isMask(ndx);
+                var charCodeNdx = getMaskTemplate(true, 0, false).slice(ndx, seekNext(ndx)).join("").indexOf(charCodes);
+                return charCodeNdx !== -1 && !isMask(ndx) &&
+                    (getTest(ndx).match.nativeDef === charCodes.charAt(0) ||
+                        (getTest(ndx).match.nativeDef === " " && getTest(ndx + 1).match.nativeDef === charCodes.charAt(0)));
             }
 
             resetMaskSet();
@@ -2577,9 +2580,10 @@
                             var pos = strict ? ndx : (nextTest.match.fn == null && nextTest.match.optionality && (lvp + 1) < getMaskSet().p ? lvp + 1 : getMaskSet().p);
                             result = EventHandlers.keypressEvent.call(input, keypress, true, false, strict, pos);
 
-                            if (result)
+                            if (result) {
                                 initialNdx = pos + 1;
-                            charCodes = "";
+                                charCodes = "";
+                            }
                         } else {
                             result = EventHandlers.keypressEvent.call(input, keypress, true, false, true, lvp + 1);
                         }
