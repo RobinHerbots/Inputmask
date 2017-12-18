@@ -1020,18 +1020,12 @@
                     function resolveNdxInitializer(pos, alternateNdx, targetAlternation) {
                         var bestMatch, indexPos;
 
-                        // if (getMaskSet().validPositions[pos - 1] && targetAlternation && getMaskSet().tests[pos]) { //detect altarnation offset
-                        //     var vpAlternation = getMaskSet().validPositions[pos - 1].locator;
-                        //     var tpAlternation = getMaskSet().tests[pos][0].locator;
-                        //     for (var i = 0; i < targetAlternation; i++) {
-                        //         if (vpAlternation[i] !== tpAlternation[i]) {
-                        //             return vpAlternation.slice(targetAlternation + 1);
-                        //         }
-                        //     }
-                        // }
-
                         if (getMaskSet().tests[pos] || getMaskSet().validPositions[pos]) {
                             $.each(getMaskSet().tests[pos] || [getMaskSet().validPositions[pos]], function (ndx, lmnt) {
+                                if (lmnt.mloc[alternateNdx]) {
+                                    bestMatch = lmnt;
+                                    return false; //break
+                                }
                                 var alternation = targetAlternation !== undefined ? targetAlternation : lmnt.alternation,
                                     ndxPos = lmnt.locator[alternation] !== undefined ? lmnt.locator[alternation].toString().indexOf(alternateNdx) : -1;
                                 if ((indexPos === undefined || ndxPos < indexPos) && ndxPos !== -1) {
@@ -1069,7 +1063,8 @@
                     //mergelocators for retrieving the correct locator match when merging
                     function setMergeLocators(targetMatch, altMatch) {
                         targetMatch.mloc = targetMatch.mloc || {};
-                        targetMatch.mloc[targetMatch.locator[targetMatch.alternation]] = targetMatch.locator;
+                        if (typeof targetMatch.locator[targetMatch.alternation] !== "string")
+                            targetMatch.mloc[targetMatch.locator[targetMatch.alternation]] = targetMatch.locator.slice();
                         if (altMatch !== undefined) {
                             targetMatch.mloc[altMatch.locator[altMatch.alternation]] = altMatch.locator;
                             //TODO REFACTOR THIS AWAY
@@ -1154,8 +1149,8 @@
                                                         setMergeLocators(altMatch, altMatch2);
                                                         altMatch.locator[altMatch.alternation] = altMatch2.locator[altMatch2.alternation];
                                                         //generalize optionality indicators when merging matches
-                                                        // if ((altMatch.match.optionalQuantifier === true) !== (altMatch2.match.optionalQuantifier === true))
-                                                        //     altMatch.match.optionalQuantifier = altMatch2.match.optionalQuantifier;
+                                                        if ((altMatch.match.optionalQuantifier === true) !== (altMatch2.match.optionalQuantifier === true))
+                                                            altMatch.match.optionalQuantifier = altMatch2.match.optionalQuantifier;
                                                         malternateMatches.splice(malternateMatches.indexOf(altMatch2), 1, altMatch);
                                                     }
                                                     break;
@@ -1186,31 +1181,6 @@
                                         }
                                     }
                                 }
-                                // if (typeof altIndex == "string") { //filter matches
-                                //     malternateMatches = $.map(malternateMatches, function (lmnt, ndx) {
-                                //         if (isFinite(ndx)) {
-                                //             var mamatch,
-                                //                 alternation = lmnt.alternation,
-                                //                 altLocArr = Object.keys(lmnt.mloc);
-                                //             lmnt.locator[alternation] = undefined;
-                                //             lmnt.alternation = undefined;
-                                //
-                                //             for (var alndx = 0; alndx < altLocArr.length; alndx++) {
-                                //                 mamatch = $.inArray(altLocArr[alndx], altIndexArr) !== -1;
-                                //                 if (mamatch) { //rebuild the locator with valid entries
-                                //                     if (lmnt.locator[alternation] !== undefined) {
-                                //                         lmnt.locator[alternation] += ",";
-                                //                         lmnt.locator[alternation] += altLocArr[alndx];
-                                //                     } else lmnt.locator[alternation] = parseInt(altLocArr[alndx]);
-                                //
-                                //                     lmnt.alternation = alternation;
-                                //                 }
-                                //             }
-                                //
-                                //             if (lmnt.locator[alternation] !== undefined) return lmnt;
-                                //         }
-                                //     });
-                                // }
 
                                 matches = currentMatches.concat(malternateMatches);
                                 testPos = pos;
@@ -1347,6 +1317,7 @@
                         placeholder: ""
                     },
                     locator: [],
+                    mloc: {},
                     cd: cacheDependency
                 });
             }
@@ -1355,7 +1326,7 @@
                 return filterTests($.extend(true, [], matches));
             }
             getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
-            console.log(pos + " - " + JSON.stringify(matches));
+            // console.log(pos + " - " + JSON.stringify(matches));
             return filterTests(getMaskSet().tests[pos]);
         }
 
