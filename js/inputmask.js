@@ -858,8 +858,9 @@
             if (maskTemplate[maskTemplate.length - 1] === "") {
                 maskTemplate.pop(); //drop the last one which is empty
             }
-
-            getMaskSet().maskLength = pos + 1;
+            if (includeMode !== false || //do not alter the masklength when just retrieving the maskdefinition
+                getMaskSet().maskLength === undefined) //just make sure the maskLength gets initialized in all cases (needed for isValid)
+                getMaskSet().maskLength = pos + 1;
             return maskTemplate;
         }
 
@@ -1019,15 +1020,15 @@
                     function resolveNdxInitializer(pos, alternateNdx, targetAlternation) {
                         var bestMatch, indexPos;
 
-                        if (getMaskSet().validPositions[pos - 1] && targetAlternation && getMaskSet().tests[pos]) { //detect altarnation offset
-                            var vpAlternation = getMaskSet().validPositions[pos - 1].locator;
-                            var tpAlternation = getMaskSet().tests[pos][0].locator;
-                            for (var i = 0; i < targetAlternation; i++) {
-                                if (vpAlternation[i] !== tpAlternation[i]) {
-                                    return vpAlternation.slice(targetAlternation + 1);
-                                }
-                            }
-                        }
+                        // if (getMaskSet().validPositions[pos - 1] && targetAlternation && getMaskSet().tests[pos]) { //detect altarnation offset
+                        //     var vpAlternation = getMaskSet().validPositions[pos - 1].locator;
+                        //     var tpAlternation = getMaskSet().tests[pos][0].locator;
+                        //     for (var i = 0; i < targetAlternation; i++) {
+                        //         if (vpAlternation[i] !== tpAlternation[i]) {
+                        //             return vpAlternation.slice(targetAlternation + 1);
+                        //         }
+                        //     }
+                        // }
 
                         if (getMaskSet().tests[pos] || getMaskSet().validPositions[pos]) {
                             $.each(getMaskSet().tests[pos] || [getMaskSet().validPositions[pos]], function (ndx, lmnt) {
@@ -1040,7 +1041,7 @@
                             });
                         }
                         return bestMatch ?
-                            bestMatch.locator.slice((targetAlternation !== undefined ? targetAlternation : bestMatch.alternation) + 1) :
+                            bestMatch.mloc[alternateNdx].slice((targetAlternation !== undefined ? targetAlternation : bestMatch.alternation) + 1) :
                             targetAlternation !== undefined ? resolveNdxInitializer(pos, alternateNdx) : undefined;
                     }
 
@@ -1059,6 +1060,13 @@
 
                     function staticCanMatchDefinition(source, target) {
                         return source.match.fn === null && target.match.fn !== null ? target.match.fn.test(source.match.def, getMaskSet(), pos, false, opts, false) : false;
+                    }
+
+                    //mergelocators for retrieving the correct locator match when merging
+                    function setMergeLocators(targetMatch, altMatch) {
+                        targetMatch.mloc = targetMatch.mloc || {};
+                        targetMatch.mloc[targetMatch.locator[targetMatch.alternation]] = targetMatch.locator;
+                        targetMatch.mloc[altMatch.locator[altMatch.alternation]] = altMatch.locator;
                     }
 
                     if (testPos > 10000) {
@@ -1111,25 +1119,11 @@
                                     //set the correct ndxInitializer
                                     ndxInitializer = resolveNdxInitializer(testPos, amndx, loopNdxCnt) || ndxInitializerClone.slice();
                                     match = handleMatch(alternateToken.matches[amndx] || maskToken.matches[amndx], [amndx].concat(loopNdx), quantifierRecurse) || match;
-                                    if (match !== true && match !== undefined && (altIndexArr[altIndexArr.length - 1] < alternateToken.matches.length)) { //no match in the alternations (length mismatch) => look further
-                                        // ndx = altIndexArr.length;  //skip alternation
-
-                                        //TODO CHECK ME  IS THIS CORRECT???
-                                        // var ntndx = $.inArray(match, maskToken.matches) + 1;
-                                        // if (maskToken.matches.length > ntndx) {
-                                        //     match = handleMatch(maskToken.matches[ntndx], [ntndx].concat(loopNdx.slice(1, loopNdx.length)), quantifierRecurse);
-                                        //     if (match) {
-                                        //         altIndexArr.push(ntndx.toString());
-                                        //         $.each(matches, function (ndx, lmnt) {
-                                        //             lmnt.alternation = loopNdx.length - 1;
-                                        //         });
-                                        //     }
-                                        // }
-                                    }
                                     maltMatches = matches.slice();
                                     testPos = currentPos;
                                     matches = [];
 
+                                    console.log(pos + " - " + JSON.stringify(maltMatches));
                                     //fuzzy merge matches
                                     for (var ndx1 = 0; ndx1 < maltMatches.length; ndx1++) {
                                         var altMatch = maltMatches[ndx1],
@@ -1143,11 +1137,16 @@
                                                     dropMatch = true;
                                                     if (altMatch.alternation === altMatch2.alternation &&
                                                         altMatch2.locator[altMatch2.alternation].toString().indexOf(altMatch.locator[altMatch.alternation]) === -1) {
-                                                        altMatch2.locator[altMatch2.alternation] = altMatch2.locator[altMatch2.alternation] + "," + altMatch.locator[altMatch.alternation];
+                                                        setMergeLocators(altMatch2, altMatch);
+                                                        // altMatch2.locator[altMatch2.alternation] = altMatch2.locator[altMatch2.alternation] + "," + altMatch.locator[altMatch.alternation];
                                                         altMatch2.alternation = altMatch.alternation; //we pass the alternation index => used in determineLastRequiredPosition
                                                     }
                                                     if (altMatch.match.nativeDef === altMatch2.match.def) {
-                                                        altMatch.locator[altMatch.alternation] = altMatch2.locator[altMatch2.alternation];
+                                                        setMergeLocators(altMatch, altMatch2);
+                                                        // altMatch.locator[altMatch.alternation] = altMatch2.locator[altMatch2.alternation];
+                                                        //generalize optionality indicators when merging matches
+                                                        if ((altMatch.match.optionalQuantifier === true) !== (altMatch2.match.optionalQuantifier === true))
+                                                            altMatch.match.optionalQuantifier = altMatch2.match.optionalQuantifier;
                                                         malternateMatches.splice(malternateMatches.indexOf(altMatch2), 1, altMatch);
                                                     }
                                                     break;
@@ -1166,7 +1165,8 @@
                                                         }
                                                         //insert match above general match
                                                         dropMatch = true;
-                                                        altMatch.locator[altMatch.alternation] = altMatch2.locator[altMatch2.alternation].toString().split("")[0] + "," + altMatch.locator[altMatch.alternation];
+                                                        setMergeLocators(altMatch, altMatch2);
+                                                        // altMatch.locator[altMatch.alternation] = altMatch2.locator[altMatch2.alternation].toString().split("")[0] + "," + altMatch.locator[altMatch.alternation];
                                                         malternateMatches.splice(malternateMatches.indexOf(altMatch2), 0, altMatch);
                                                     }
                                                     break;
@@ -1178,31 +1178,31 @@
                                         }
                                     }
                                 }
-                                if (typeof altIndex == "string") { //filter matches
-                                    malternateMatches = $.map(malternateMatches, function (lmnt, ndx) {
-                                        if (isFinite(ndx)) {
-                                            var mamatch,
-                                                alternation = lmnt.alternation,
-                                                altLocArr = lmnt.locator[alternation].toString().split(",");
-                                            lmnt.locator[alternation] = undefined;
-                                            lmnt.alternation = undefined;
-
-                                            for (var alndx = 0; alndx < altLocArr.length; alndx++) {
-                                                mamatch = $.inArray(altLocArr[alndx], altIndexArr) !== -1;
-                                                if (mamatch) { //rebuild the locator with valid entries
-                                                    if (lmnt.locator[alternation] !== undefined) {
-                                                        lmnt.locator[alternation] += ",";
-                                                        lmnt.locator[alternation] += altLocArr[alndx];
-                                                    } else lmnt.locator[alternation] = parseInt(altLocArr[alndx]);
-
-                                                    lmnt.alternation = alternation;
-                                                }
-                                            }
-
-                                            if (lmnt.locator[alternation] !== undefined) return lmnt;
-                                        }
-                                    });
-                                }
+                                // if (typeof altIndex == "string") { //filter matches
+                                //     malternateMatches = $.map(malternateMatches, function (lmnt, ndx) {
+                                //         if (isFinite(ndx)) {
+                                //             var mamatch,
+                                //                 alternation = lmnt.alternation,
+                                //                 altLocArr = Object.keys(lmnt.mloc);
+                                //             lmnt.locator[alternation] = undefined;
+                                //             lmnt.alternation = undefined;
+                                //
+                                //             for (var alndx = 0; alndx < altLocArr.length; alndx++) {
+                                //                 mamatch = $.inArray(altLocArr[alndx], altIndexArr) !== -1;
+                                //                 if (mamatch) { //rebuild the locator with valid entries
+                                //                     if (lmnt.locator[alternation] !== undefined) {
+                                //                         lmnt.locator[alternation] += ",";
+                                //                         lmnt.locator[alternation] += altLocArr[alndx];
+                                //                     } else lmnt.locator[alternation] = parseInt(altLocArr[alndx]);
+                                //
+                                //                     lmnt.alternation = alternation;
+                                //                 }
+                                //             }
+                                //
+                                //             if (lmnt.locator[alternation] !== undefined) return lmnt;
+                                //         }
+                                //     });
+                                // }
 
                                 matches = currentMatches.concat(malternateMatches);
                                 testPos = pos;
@@ -1347,7 +1347,7 @@
                 return filterTests($.extend(true, [], matches));
             }
             getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
-            // console.log(pos + " - " + JSON.stringify(matches));
+            console.log(pos + " - " + JSON.stringify(matches));
             return filterTests(getMaskSet().tests[pos]);
         }
 
@@ -1858,8 +1858,7 @@
             if (pos >= maskL) return maskL;
             var position = pos;
             if (getTests(maskL + 1).length > 1) {
-                getMaskTemplate(true, maskL + 1, true);
-                maskL = getMaskSet().maskLength;
+                maskL = getMaskTemplate(true, maskL + 1, false).kength;
             }
             while (++position < maskL &&
             ((newBlock === true && (getTest(position).match.newBlockMarker !== true || !isMask(position))) ||
@@ -2592,7 +2591,7 @@
                 }
             });
             if (writeOut)
-                writeBuffer(input, getBuffer(), result.forwardPosition, initiatingEvent || new $.Event("checkval"), initiatingEvent && initiatingEvent.type === "input");
+                writeBuffer(input, getBuffer(), result ? result.forwardPosition : undefined, initiatingEvent || new $.Event("checkval"), initiatingEvent && initiatingEvent.type === "input");
         }
 
         function unmaskedvalue(input) {
