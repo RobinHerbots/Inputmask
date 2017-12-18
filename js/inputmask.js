@@ -1040,9 +1040,13 @@
                                 }
                             });
                         }
-                        return bestMatch ?
-                            bestMatch.mloc[alternateNdx].slice((targetAlternation !== undefined ? targetAlternation : bestMatch.alternation) + 1) :
-                            targetAlternation !== undefined ? resolveNdxInitializer(pos, alternateNdx) : undefined;
+                        if (bestMatch) {
+                            var bestMatchAltIndex = bestMatch.locator[bestMatch.alternation];
+                            var locator = bestMatch.mloc[alternateNdx] || bestMatch.mloc[bestMatchAltIndex] || bestMatch.locator;
+                            return locator.slice((targetAlternation !== undefined ? targetAlternation : bestMatch.alternation) + 1);
+                        } else {
+                            return targetAlternation !== undefined ? resolveNdxInitializer(pos, alternateNdx) : undefined;
+                        }
                     }
 
                     function definitionCanMatchDefinition(source, target) {
@@ -1066,7 +1070,12 @@
                     function setMergeLocators(targetMatch, altMatch) {
                         targetMatch.mloc = targetMatch.mloc || {};
                         targetMatch.mloc[targetMatch.locator[targetMatch.alternation]] = targetMatch.locator;
-                        targetMatch.mloc[altMatch.locator[altMatch.alternation]] = altMatch.locator;
+                        if (altMatch !== undefined) {
+                            targetMatch.mloc[altMatch.locator[altMatch.alternation]] = altMatch.locator;
+                            //TODO REFACTOR THIS AWAY
+                            targetMatch.locator[targetMatch.alternation] = targetMatch.locator[targetMatch.alternation] + "," + altMatch.locator[altMatch.alternation];
+                            targetMatch.alternation = altMatch.alternation; //we pass the alternation index => used in determineLastRequiredPosition
+                        }
                     }
 
                     if (testPos > 10000) {
@@ -1076,7 +1085,8 @@
                         matches.push({
                             "match": match,
                             "locator": loopNdx.reverse(),
-                            "cd": cacheDependency
+                            "cd": cacheDependency,
+                            "mloc": {}
                         });
                         return true;
                     } else if (match.matches !== undefined) {
@@ -1123,12 +1133,13 @@
                                     testPos = currentPos;
                                     matches = [];
 
-                                    console.log(pos + " - " + JSON.stringify(maltMatches));
+                                    // console.log(pos + " - " + JSON.stringify(maltMatches));
                                     //fuzzy merge matches
                                     for (var ndx1 = 0; ndx1 < maltMatches.length; ndx1++) {
                                         var altMatch = maltMatches[ndx1],
                                             dropMatch = false;
                                         altMatch.alternation = altMatch.alternation || loopNdxCnt;
+                                        setMergeLocators(altMatch);
                                         for (var ndx2 = 0; ndx2 < malternateMatches.length; ndx2++) {
                                             var altMatch2 = malternateMatches[ndx2];
                                             //verify equality
@@ -1138,15 +1149,13 @@
                                                     if (altMatch.alternation === altMatch2.alternation &&
                                                         altMatch2.locator[altMatch2.alternation].toString().indexOf(altMatch.locator[altMatch.alternation]) === -1) {
                                                         setMergeLocators(altMatch2, altMatch);
-                                                        // altMatch2.locator[altMatch2.alternation] = altMatch2.locator[altMatch2.alternation] + "," + altMatch.locator[altMatch.alternation];
-                                                        altMatch2.alternation = altMatch.alternation; //we pass the alternation index => used in determineLastRequiredPosition
                                                     }
                                                     if (altMatch.match.nativeDef === altMatch2.match.def) {
                                                         setMergeLocators(altMatch, altMatch2);
-                                                        // altMatch.locator[altMatch.alternation] = altMatch2.locator[altMatch2.alternation];
+                                                        altMatch.locator[altMatch.alternation] = altMatch2.locator[altMatch2.alternation];
                                                         //generalize optionality indicators when merging matches
-                                                        if ((altMatch.match.optionalQuantifier === true) !== (altMatch2.match.optionalQuantifier === true))
-                                                            altMatch.match.optionalQuantifier = altMatch2.match.optionalQuantifier;
+                                                        // if ((altMatch.match.optionalQuantifier === true) !== (altMatch2.match.optionalQuantifier === true))
+                                                        //     altMatch.match.optionalQuantifier = altMatch2.match.optionalQuantifier;
                                                         malternateMatches.splice(malternateMatches.indexOf(altMatch2), 1, altMatch);
                                                     }
                                                     break;
@@ -1166,7 +1175,6 @@
                                                         //insert match above general match
                                                         dropMatch = true;
                                                         setMergeLocators(altMatch, altMatch2);
-                                                        // altMatch.locator[altMatch.alternation] = altMatch2.locator[altMatch2.alternation].toString().split("")[0] + "," + altMatch.locator[altMatch.alternation];
                                                         malternateMatches.splice(malternateMatches.indexOf(altMatch2), 0, altMatch);
                                                     }
                                                     break;
