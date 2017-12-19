@@ -1063,13 +1063,17 @@
                     //mergelocators for retrieving the correct locator match when merging
                     function setMergeLocators(targetMatch, altMatch) {
                         targetMatch.mloc = targetMatch.mloc || {};
-                        if (typeof targetMatch.locator[targetMatch.alternation] !== "string")
+                        if (targetMatch.mloc[targetMatch.locator[targetMatch.alternation]] === undefined)
                             targetMatch.mloc[targetMatch.locator[targetMatch.alternation]] = targetMatch.locator.slice();
                         if (altMatch !== undefined) {
-                            targetMatch.mloc[altMatch.locator[altMatch.alternation]] = altMatch.locator;
-                            //TODO REFACTOR THIS AWAY
-                            targetMatch.locator[targetMatch.alternation] = targetMatch.locator[targetMatch.alternation] + "," + altMatch.locator[altMatch.alternation];
-                            targetMatch.alternation = altMatch.alternation; //we pass the alternation index => used in determineLastRequiredPosition
+                            var locNdx = altMatch.locator[altMatch.alternation];
+                            if(typeof locNdx === "string")
+                                locNdx = locNdx.split("")[0];
+                            if (targetMatch.mloc[locNdx] === undefined)
+                                targetMatch.mloc[locNdx] = altMatch.mloc[locNdx] || altMatch.locator.slice();
+
+                            targetMatch.locator[targetMatch.alternation] = (altMatch.locator[altMatch.alternation] + "," + targetMatch.locator[targetMatch.alternation]).split(",").sort().join(",");
+                            // targetMatch.alternation = altMatch.alternation; //we pass the alternation index => used in determineLastRequiredPosition
                         }
                     }
 
@@ -1149,8 +1153,8 @@
                                                         setMergeLocators(altMatch, altMatch2);
                                                         altMatch.locator[altMatch.alternation] = altMatch2.locator[altMatch2.alternation];
                                                         //generalize optionality indicators when merging matches
-                                                        if ((altMatch.match.optionalQuantifier === true) !== (altMatch2.match.optionalQuantifier === true))
-                                                            altMatch.match.optionalQuantifier = altMatch2.match.optionalQuantifier;
+                                                        // if ((altMatch.match.optionalQuantifier === true) !== (altMatch2.match.optionalQuantifier === true))
+                                                        //     altMatch.match.optionalQuantifier = altMatch2.match.optionalQuantifier;
                                                         malternateMatches.splice(malternateMatches.indexOf(altMatch2), 1, altMatch);
                                                     }
                                                     break;
@@ -1158,7 +1162,7 @@
                                                     dropMatch = false;
                                                     break;
                                                 } else if (staticCanMatchDefinition(altMatch, altMatch2) || isSubsetOf(altMatch, altMatch2)) {
-                                                    // console.log("case 5");
+                                                     // console.log("case 5");
                                                     if (altMatch.alternation === altMatch2.alternation &&
                                                         altMatch.locator[altMatch.alternation].toString().indexOf(altMatch2.locator[altMatch2.alternation].toString().split("")[0]) === -1) {
 
