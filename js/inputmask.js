@@ -673,15 +673,8 @@
         return str.replace(new RegExp("(\\" + specials.join("|\\") + ")", "gim"), "\\$1");
     };
     Inputmask.keyCode = {
-        ALT: 18,
         BACKSPACE: 8,
         BACKSPACE_SAFARI: 127,
-        CAPS_LOCK: 20,
-        COMMA: 188,
-        COMMAND: 91,
-        COMMAND_LEFT: 91,
-        COMMAND_RIGHT: 93,
-        CONTROL: 17,
         DELETE: 46,
         DOWN: 40,
         END: 35,
@@ -690,22 +683,12 @@
         HOME: 36,
         INSERT: 45,
         LEFT: 37,
-        MENU: 93,
-        NUMPAD_ADD: 107,
-        NUMPAD_DECIMAL: 110,
-        NUMPAD_DIVIDE: 111,
-        NUMPAD_ENTER: 108,
-        NUMPAD_MULTIPLY: 106,
-        NUMPAD_SUBTRACT: 109,
         PAGE_DOWN: 34,
         PAGE_UP: 33,
-        PERIOD: 190,
         RIGHT: 39,
-        SHIFT: 16,
         SPACE: 32,
         TAB: 9,
         UP: 38,
-        WINDOWS: 91,
         X: 88
     };
 
@@ -1067,7 +1050,7 @@
                             targetMatch.mloc[targetMatch.locator[targetMatch.alternation]] = targetMatch.locator.slice();
                         if (altMatch !== undefined) {
                             var locNdx = altMatch.locator[altMatch.alternation];
-                            if(typeof locNdx === "string")
+                            if (typeof locNdx === "string")
                                 locNdx = locNdx.split("")[0];
                             if (targetMatch.mloc[locNdx] === undefined)
                                 targetMatch.mloc[locNdx] = altMatch.mloc[locNdx] || altMatch.locator.slice();
@@ -1162,7 +1145,7 @@
                                                     dropMatch = false;
                                                     break;
                                                 } else if (staticCanMatchDefinition(altMatch, altMatch2) || isSubsetOf(altMatch, altMatch2)) {
-                                                     // console.log("case 5");
+                                                    // console.log("case 5");
                                                     if (altMatch.alternation === altMatch2.alternation &&
                                                         altMatch.locator[altMatch.alternation].toString().indexOf(altMatch2.locator[altMatch2.alternation].toString().split("")[0]) === -1) {
 
@@ -2626,7 +2609,7 @@
                     var scrollCalc = parseInt(((input.ownerDocument.defaultView || window).getComputedStyle ? (input.ownerDocument.defaultView || window).getComputedStyle(input, null) : input.currentStyle).fontSize) * end;
                     input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0;
 
-                    if (opts.insertMode === false && begin === end) end++; //set visualization for insert/overwrite mode
+                    if (opts.insertMode === false && begin === end && !mobile) end++; //set visualization for insert/overwrite mode
 
                     input.inputmask.caretPos = {begin: begin, end: end}; //track caret internally
                     if (input.setSelectionRange) {
@@ -2926,7 +2909,13 @@
 
             function handleCaret(force) {
                 if ((force === true || pos === caretPos.begin) && document.activeElement === input) {
-                    maskTemplate += "<span class='im-caret' style='border-right-width: 1px;border-right-style: solid;'></span>";
+                    if (caretPos.begin === caretPos.end)
+                        maskTemplate += `<span class="im-caret" style="border-right-width: 1px;border-right-style: solid;">`;
+                    else
+                        maskTemplate += `<span class="im-caret-select">`;
+                }
+                if ((force === true || pos === caretPos.end) && document.activeElement === input) {
+                    maskTemplate += "</span>";
                 }
             }
 
