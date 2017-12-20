@@ -283,7 +283,6 @@ $(document).ready(function(){
     definitions: {
       '*': {
         validator: "[0-9A-Za-z!#$%&'*+/=?^_`{|}~\-]",
-        cardinality: 1,
         casing: "lower"
       }
     }
@@ -306,7 +305,6 @@ $("selector").inputmask("(99.9)|(X)", {
   definitions: {
     "X": {
       validator: "[xX]",
-      cardinality: 1,
       casing: "upper"
     }
   }
@@ -321,7 +319,6 @@ $("selector").inputmask({
   definitions: {
     "X": {
       validator: "[xX]",
-      cardinality: 1,
       casing: "upper"
     }
   }
@@ -368,41 +365,24 @@ The return value of a validator can be true,  false or a command object.
   - true => refresh validPositions from the complete buffer
   - { start: , end: } => refresh from start to end
 
-### cardinality
-Cardinality specifies how many characters are represented and validated for the definition.
-
-### prevalidator(chrs, maskset, pos, strict, opts)
-The prevalidator option is used to validate the characters before the definition cardinality is reached. (see 'j' example)
-
 ### definitionSymbol
 When you insert or delete characters, they are only shifted when the definition type is the same.  This behavior can be overridden by giving a definitionSymbol. (see example x, y, z, which can be used for ip-address masking, the validation is different, but it is allowed to shift the characters between the definitions)
 
 ```javascript
 Inputmask.extendDefinitions({
   'f': {  //masksymbol
-    "validator": "[0-9\(\)\.\+/ ]",
-    "cardinality": 1,
-    'prevalidator': null
+    "validator": "[0-9\(\)\.\+/ ]"
   },
   'g': {
     "validator": function (chrs, buffer, pos, strict, opts) {
       //do some logic and return true, false, or { "pos": new position, "c": character to place }
     }
-    "cardinality": 1,
-    'prevalidator': null
   },
   'j': { //basic year
-    validator: "(19|20)\\d{2}",
-    cardinality: 4,
-    prevalidator: [
-      { validator: "[12]", cardinality: 1 },
-      { validator: "(19|20)", cardinality: 2 },
-      { validator: "(19|20)\\d", cardinality: 3 }
-    ]
+    validator: "(19|20)\\d{2}"
   },
   'x': {
     validator: "[0-2]",
-    cardinality: 1,
     definitionSymbol: "i" //this allows shifting values from other definitions, with the same masksymbol or definitionSymbol
   },
   'y': {
@@ -410,7 +390,6 @@ Inputmask.extendDefinitions({
       var valExp2 = new RegExp("2[0-5]|[01][0-9]");
       return valExp2.test(buffer[pos - 1] + chrs);
     },
-    cardinality: 1,
     definitionSymbol: "i"
   },
   'z': {
@@ -418,7 +397,6 @@ Inputmask.extendDefinitions({
       var valExp3 = new RegExp("25[0-5]|2[0-4][0-9]|[01][0-9][0-9]");
       return valExp3.test(buffer[pos - 2] + buffer[pos - 1] + chrs);
     },
-    cardinality: 1,
     definitionSymbol: "i"
   }
 });
@@ -437,12 +415,10 @@ Inputmask.extendDefaults({
 Inputmask.extendDefinitions({
   'A': {
     validator: "[A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
-    cardinality: 1,
     casing: "upper" //auto uppercasing
   },
   '+': {
     validator: "[0-9A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
-    cardinality: 1,
     casing: "upper"
   }
 });
@@ -1039,7 +1015,6 @@ Inputmask("(99 99 999999)|(i{+})", {
   definitions: {
     "i": {
       validator: ".",
-      cardinality: 1,
       definitionSymbol: "*"
     }
   },
@@ -1154,12 +1129,10 @@ You can define within a definition to automatically apply some casing on the ent
 Inputmask.extendDefinitions({
   'A': {
     validator: "[A-Za-z]",
-    cardinality: 1,
     casing: "upper" //auto uppercasing
   },
   '+': {
     validator: "[A-Za-z\u0410-\u044F\u0401\u04510-9]",
-    cardinality: 1,
     casing: "upper"
   }
 });

@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-66
+* Version: 4.0.0-68
 */
 
 !function(modules) {
@@ -200,11 +200,13 @@
                             return targetAlternation !== undefined ? resolveNdxInitializer(pos, alternateNdx) : undefined;
                         }
                         function setMergeLocators(targetMatch, altMatch) {
-                            if (targetMatch.mloc = targetMatch.mloc || {}, targetMatch.mloc[targetMatch.locator[targetMatch.alternation]] === undefined && (targetMatch.mloc[targetMatch.locator[targetMatch.alternation]] = targetMatch.locator.slice()), 
+                            targetMatch.mloc = targetMatch.mloc || {};
+                            var locNdx = targetMatch.locator[targetMatch.alternation];
+                            if ("string" == typeof locNdx && (locNdx = locNdx.split(",")[0]), targetMatch.mloc[locNdx] === undefined && (targetMatch.mloc[locNdx] = targetMatch.locator.slice()), 
                             altMatch !== undefined) {
-                                var locNdx = altMatch.locator[altMatch.alternation];
-                                "string" == typeof locNdx && (locNdx = locNdx.split("")[0]), targetMatch.mloc[locNdx] === undefined && (targetMatch.mloc[locNdx] = altMatch.mloc[locNdx] || altMatch.locator.slice()), 
-                                targetMatch.locator[targetMatch.alternation] = (altMatch.locator[altMatch.alternation] + "," + targetMatch.locator[targetMatch.alternation]).split(",").sort().join(",");
+                                for (var ndx in altMatch.mloc) "string" == typeof ndx && (ndx = ndx.split(",")[0]), 
+                                targetMatch.mloc[ndx] === undefined && (targetMatch.mloc[ndx] = altMatch.mloc[ndx]);
+                                targetMatch.locator[targetMatch.alternation] = Object.keys(targetMatch.mloc).join(",");
                             }
                         }
                         if (testPos > 1e4) throw "Inputmask: There is probably an error in your mask definition or in the code. Create an issue on github with an example of the mask you are using. " + getMaskSet().mask;
@@ -317,7 +319,6 @@
                 return (0 === matches.length || insertStop) && matches.push({
                     match: {
                         fn: null,
-                        cardinality: 0,
                         optionality: !0,
                         casing: null,
                         def: "",
@@ -385,8 +386,8 @@
                 function _isValid(position, c, strict) {
                     var rslt = !1;
                     return $.each(getTests(position), function(ndx, tst) {
-                        for (var test = tst.match, loopend = c ? 1 : 0, chrs = "", i = test.cardinality; i > loopend; i--) chrs += getBufferElement(position - (i - 1));
-                        if (c && (chrs += c), getBuffer(!0), !1 !== (rslt = null != test.fn ? test.fn.test(chrs, getMaskSet(), position, strict, opts, isSelection(pos)) : (c === test.def || c === opts.skipOptionalPartCharacter) && "" !== test.def && {
+                        var test = tst.match;
+                        if (getBuffer(!0), !1 !== (rslt = null != test.fn ? test.fn.test(c, getMaskSet(), position, strict, opts, isSelection(pos)) : (c === test.def || c === opts.skipOptionalPartCharacter) && "" !== test.def && {
                             c: getPlaceholder(position, test, !0) || test.def,
                             pos: position
                         })) {
@@ -572,9 +573,6 @@
                 for (;--position > 0 && (!0 === newBlock && !0 !== getTest(position).match.newBlockMarker || !0 !== newBlock && !isMask(position) && ((tests = getTests(position)).length < 2 || 2 === tests.length && "" === tests[1].match.def)); ) ;
                 return position;
             }
-            function getBufferElement(position) {
-                return getMaskSet().validPositions[position] === undefined ? getPlaceholder(position) : getMaskSet().validPositions[position].input;
-            }
             function writeBuffer(input, buffer, caretPos, event, triggerInputEvent) {
                 if (event && $.isFunction(opts.onBeforeWrite)) {
                     var result = opts.onBeforeWrite.call(inputmask, event, buffer, caretPos, opts);
@@ -658,7 +656,7 @@
                 "number" == typeof begin) {
                     begin = translatePosition(begin), end = "number" == typeof (end = translatePosition(end)) ? end : begin;
                     var scrollCalc = parseInt(((input.ownerDocument.defaultView || window).getComputedStyle ? (input.ownerDocument.defaultView || window).getComputedStyle(input, null) : input.currentStyle).fontSize) * end;
-                    if (input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0, !1 === opts.insertMode && begin === end && end++, 
+                    if (input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0, !1 !== opts.insertMode || begin !== end || mobile || end++, 
                     input.inputmask.caretPos = {
                         begin: begin,
                         end: end
@@ -778,7 +776,8 @@
                     maskTemplate += "</span>") : (isStatic = !0, maskTemplate += "<span class='im-static'>");
                 }
                 function handleCaret(force) {
-                    !0 !== force && pos !== caretPos.begin || document.activeElement !== input || (maskTemplate += "<span class='im-caret' style='border-right-width: 1px;border-right-style: solid;'></span>");
+                    !0 !== force && pos !== caretPos.begin || document.activeElement !== input || (caretPos.begin === caretPos.end ? maskTemplate += '<span class="im-caret" style="border-right-width: 1px;border-right-style: solid;">' : maskTemplate += '<span class="im-caret-select">'), 
+                    !0 !== force && pos !== caretPos.end || document.activeElement !== input || (maskTemplate += "</span>");
                 }
                 var test, testPos, ndxIntlzr, maskTemplate = "", isStatic = !1, pos = 0;
                 if (colorMask !== undefined) {
@@ -1319,17 +1318,14 @@
             definitions: {
                 "9": {
                     validator: "[0-9１-９]",
-                    cardinality: 1,
                     definitionSymbol: "*"
                 },
                 a: {
                     validator: "[A-Za-zА-яЁёÀ-ÿµ]",
-                    cardinality: 1,
                     definitionSymbol: "*"
                 },
                 "*": {
-                    validator: "[0-9１-９A-Za-zА-яЁёÀ-ÿµ]",
-                    cardinality: 1
+                    validator: "[0-9１-９A-Za-zА-яЁёÀ-ÿµ]"
                 }
             },
             aliases: {},
@@ -1446,7 +1442,6 @@
                     var prevMatch = mtoken.matches[position - 1];
                     if (regexMask) 0 === element.indexOf("[") || escaped && /\\d|\\s|\\w]/i.test(element) || "." === element ? mtoken.matches.splice(position++, 0, {
                         fn: new RegExp(element, opts.casing ? "i" : ""),
-                        cardinality: 1,
                         optionality: mtoken.isOptional,
                         newBlockMarker: prevMatch === undefined || prevMatch.def !== element,
                         casing: null,
@@ -1456,7 +1451,6 @@
                     }) : (escaped && (element = element[element.length - 1]), $.each(element.split(""), function(ndx, lmnt) {
                         prevMatch = mtoken.matches[position - 1], mtoken.matches.splice(position++, 0, {
                             fn: null,
-                            cardinality: 0,
                             optionality: mtoken.isOptional,
                             newBlockMarker: prevMatch === undefined || prevMatch.def !== lmnt && null !== prevMatch.fn,
                             casing: null,
@@ -1466,44 +1460,25 @@
                         });
                     })), escaped = !1; else {
                         var maskdef = (opts.definitions ? opts.definitions[element] : undefined) || Inputmask.prototype.definitions[element];
-                        if (maskdef && !escaped) {
-                            for (var prevalidators = maskdef.prevalidator, prevalidatorsL = prevalidators ? prevalidators.length : 0, i = 1; i < maskdef.cardinality; i++) {
-                                var prevalidator = prevalidatorsL >= i ? prevalidators[i - 1] : [], validator = prevalidator.validator, cardinality = prevalidator.cardinality;
-                                mtoken.matches.splice(position++, 0, {
-                                    fn: validator ? "string" == typeof validator ? new RegExp(validator, opts.casing ? "i" : "") : new function() {
-                                        this.test = validator;
-                                    }() : new RegExp("."),
-                                    cardinality: cardinality || 1,
-                                    optionality: mtoken.isOptional,
-                                    newBlockMarker: prevMatch === undefined || prevMatch.def !== (maskdef.definitionSymbol || element),
-                                    casing: maskdef.casing,
-                                    def: maskdef.definitionSymbol || element,
-                                    placeholder: maskdef.placeholder,
-                                    nativeDef: element
-                                }), prevMatch = mtoken.matches[position - 1];
-                            }
-                            mtoken.matches.splice(position++, 0, {
-                                fn: maskdef.validator ? "string" == typeof maskdef.validator ? new RegExp(maskdef.validator, opts.casing ? "i" : "") : new function() {
-                                    this.test = maskdef.validator;
-                                }() : new RegExp("."),
-                                cardinality: maskdef.cardinality,
-                                optionality: mtoken.isOptional,
-                                newBlockMarker: prevMatch === undefined || prevMatch.def !== (maskdef.definitionSymbol || element),
-                                casing: maskdef.casing,
-                                def: maskdef.definitionSymbol || element,
-                                placeholder: maskdef.placeholder,
-                                nativeDef: element
-                            });
-                        } else mtoken.matches.splice(position++, 0, {
+                        maskdef && !escaped ? mtoken.matches.splice(position++, 0, {
+                            fn: maskdef.validator ? "string" == typeof maskdef.validator ? new RegExp(maskdef.validator, opts.casing ? "i" : "") : new function() {
+                                this.test = maskdef.validator;
+                            }() : new RegExp("."),
+                            optionality: mtoken.isOptional,
+                            newBlockMarker: prevMatch === undefined || prevMatch.def !== (maskdef.definitionSymbol || element),
+                            casing: maskdef.casing,
+                            def: maskdef.definitionSymbol || element,
+                            placeholder: maskdef.placeholder,
+                            nativeDef: element
+                        }) : (mtoken.matches.splice(position++, 0, {
                             fn: null,
-                            cardinality: 0,
                             optionality: mtoken.isOptional,
                             newBlockMarker: prevMatch === undefined || prevMatch.def !== element && null !== prevMatch.fn,
                             casing: null,
                             def: opts.staticDefinitionSymbol || element,
                             placeholder: opts.staticDefinitionSymbol !== undefined ? element : undefined,
                             nativeDef: element
-                        }), escaped = !1;
+                        }), escaped = !1);
                     }
                 }
                 function verifyGroupMarker(maskToken) {
@@ -1632,15 +1607,8 @@
             var specials = [ "/", ".", "*", "+", "?", "|", "(", ")", "[", "]", "{", "}", "\\", "$", "^" ];
             return str.replace(new RegExp("(\\" + specials.join("|\\") + ")", "gim"), "\\$1");
         }, Inputmask.keyCode = {
-            ALT: 18,
             BACKSPACE: 8,
             BACKSPACE_SAFARI: 127,
-            CAPS_LOCK: 20,
-            COMMA: 188,
-            COMMAND: 91,
-            COMMAND_LEFT: 91,
-            COMMAND_RIGHT: 93,
-            CONTROL: 17,
             DELETE: 46,
             DOWN: 40,
             END: 35,
@@ -1649,23 +1617,14 @@
             HOME: 36,
             INSERT: 45,
             LEFT: 37,
-            MENU: 93,
-            NUMPAD_ADD: 107,
-            NUMPAD_DECIMAL: 110,
-            NUMPAD_DIVIDE: 111,
-            NUMPAD_ENTER: 108,
-            NUMPAD_MULTIPLY: 106,
-            NUMPAD_SUBTRACT: 109,
             PAGE_DOWN: 34,
             PAGE_UP: 33,
-            PERIOD: 190,
             RIGHT: 39,
-            SHIFT: 16,
             SPACE: 32,
             TAB: 9,
             UP: 38,
-            WINDOWS: 91,
-            X: 88
+            X: 88,
+            CONTROL: 17
         }, Inputmask;
     });
 }, function(module, exports) {
@@ -1691,7 +1650,7 @@
     __webpack_require__(7)(content, options);
     content.locals && (module.exports = content.locals);
 }, function(module, exports, __webpack_require__) {
-    (module.exports = __webpack_require__(6)(void 0)).push([ module.i, "span.im-caret {\r\n    -webkit-animation: 1s blink step-end infinite;\r\n    animation: 1s blink step-end infinite;\r\n}\r\n\r\n@keyframes blink {\r\n    from, to {\r\n        border-right-color: black;\r\n    }\r\n    50% {\r\n        border-right-color: transparent;\r\n    }\r\n}\r\n\r\n@-webkit-keyframes blink {\r\n    from, to {\r\n        border-right-color: black;\r\n    }\r\n    50% {\r\n        border-right-color: transparent;\r\n    }\r\n}\r\n\r\nspan.im-static {\r\n    color: grey;\r\n}\r\n\r\ndiv.im-colormask {\r\n    display: inline-block;\r\n    border-style: inset;\r\n    border-width: 2px;\r\n    -webkit-appearance: textfield;\r\n    -moz-appearance: textfield;\r\n    appearance: textfield;\r\n}\r\n\r\ndiv.im-colormask > input {\r\n    position: absolute !important;\r\n    display: inline-block;\r\n    background-color: transparent;\r\n    color: transparent;\r\n    caret-color: transparent;\r\n    -webkit-appearance: caret;\r\n    -moz-appearance: caret;\r\n    appearance: caret;\r\n    border-style: none;\r\n    left: 0; /*calculated*/\r\n}\r\n\r\ndiv.im-colormask > input:focus {\r\n    outline: none;\r\n}\r\n\r\ndiv.im-colormask > input::-moz-selection{\r\n    background: none;\r\n}\r\n\r\ndiv.im-colormask > input::selection{\r\n    background: none;\r\n}\r\ndiv.im-colormask > input::-moz-selection{\r\n    background: none;\r\n}\r\n\r\ndiv.im-colormask > div {\r\n    color: black;\r\n    display: inline-block;\r\n    width: 100px; /*calculated*/\r\n}", "" ]);
+    (module.exports = __webpack_require__(6)(void 0)).push([ module.i, "span.im-caret {\r\n    -webkit-animation: 1s blink step-end infinite;\r\n            animation: 1s blink step-end infinite;\r\n}\r\n\r\nspan.im-caret-select {\r\n    background-color: rgba(0, 0, 0, .25);\r\n}\r\n\r\n@-webkit-keyframes blink {\r\n    from, to {\r\n        border-right-color: black;\r\n    }\r\n    50% {\r\n        border-right-color: transparent;\r\n    }\r\n}\r\n\r\n@keyframes blink {\r\n    from, to {\r\n        border-right-color: black;\r\n    }\r\n    50% {\r\n        border-right-color: transparent;\r\n    }\r\n}\r\n\r\nspan.im-static {\r\n    color: grey;\r\n}\r\n\r\ndiv.im-colormask {\r\n    display: inline-block;\r\n    border-style: inset;\r\n    border-width: 2px;\r\n    -webkit-appearance: textfield;\r\n    -moz-appearance: textfield;\r\n    appearance: textfield;\r\n}\r\n\r\ndiv.im-colormask > input {\r\n    position: absolute !important;\r\n    display: inline-block;\r\n    background-color: transparent;\r\n    color: transparent;\r\n    caret-color: transparent;\r\n    -webkit-appearance: caret;\r\n    -moz-appearance: caret;\r\n    appearance: caret;\r\n    border-style: none;\r\n    left: 0; /*calculated*/\r\n}\r\n\r\ndiv.im-colormask > input:focus {\r\n    outline: none;\r\n}\r\n\r\ndiv.im-colormask > input::-moz-selection{\r\n    background: none;\r\n}\r\n\r\ndiv.im-colormask > input::selection{\r\n    background: none;\r\n}\r\ndiv.im-colormask > input::-moz-selection{\r\n    background: none;\r\n}\r\n\r\ndiv.im-colormask > div {\r\n    color: black;\r\n    display: inline-block;\r\n    width: 100px; /*calculated*/\r\n}", "" ]);
 }, function(module, exports) {
     function cssWithMappingToString(item, useSourceMap) {
         var content = item[1] || "", cssMapping = item[3];
@@ -2081,25 +2040,21 @@
         return Inputmask.extendDefinitions({
             A: {
                 validator: "[A-Za-zА-яЁёÀ-ÿµ]",
-                cardinality: 1,
                 casing: "upper"
             },
             "&": {
                 validator: "[0-9A-Za-zА-яЁёÀ-ÿµ]",
-                cardinality: 1,
                 casing: "upper"
             },
             "#": {
                 validator: "[0-9A-Fa-f]",
-                cardinality: 1,
                 casing: "upper"
             }
         }), Inputmask.extendAliases({
             url: {
                 definitions: {
                     i: {
-                        validator: ".",
-                        cardinality: 1
+                        validator: "."
                     }
                 },
                 mask: "(\\http://)|(\\http\\s://)|(ftp://)|(ftp\\s://)i{+}",
@@ -2115,8 +2070,7 @@
                             return pos - 1 > -1 && "." !== maskset.buffer[pos - 1] ? (chrs = maskset.buffer[pos - 1] + chrs, 
                             chrs = pos - 2 > -1 && "." !== maskset.buffer[pos - 2] ? maskset.buffer[pos - 2] + chrs : "0" + chrs) : chrs = "00" + chrs, 
                             new RegExp("25[0-5]|2[0-4][0-9]|[01][0-9][0-9]").test(chrs);
-                        },
-                        cardinality: 1
+                        }
                     }
                 },
                 onUnMask: function(maskedValue, unmaskedValue, opts) {
@@ -2133,12 +2087,10 @@
                 definitions: {
                     "*": {
                         validator: "[0-9A-Za-z!#$%&'*+/=?^_`{|}~-]",
-                        cardinality: 1,
                         casing: "lower"
                     },
                     "-": {
                         validator: "[0-9A-Za-z-]",
-                        cardinality: 1,
                         casing: "lower"
                     }
                 },
@@ -2155,7 +2107,6 @@
                 definitions: {
                     V: {
                         validator: "[A-HJ-NPR-Za-hj-npr-z\\d]",
-                        cardinality: 1,
                         casing: "upper"
                     }
                 },

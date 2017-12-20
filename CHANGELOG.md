@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - new datetime alias (WIP)
 
 ### Updates
+- drop prevalidator and cardinality support in definitions
 - better determination of the NdxInitializer (alternations)
 - disable autocorrect on safari when disablePredictiveText is used
 - fix in determineTestTemplate.  Impacts alternations.

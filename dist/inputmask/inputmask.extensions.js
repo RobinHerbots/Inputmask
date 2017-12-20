@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-66
+* Version: 4.0.0-68
 */
 
 !function(factory) {
@@ -12,25 +12,21 @@
     return Inputmask.extendDefinitions({
         A: {
             validator: "[A-Za-zА-яЁёÀ-ÿµ]",
-            cardinality: 1,
             casing: "upper"
         },
         "&": {
             validator: "[0-9A-Za-zА-яЁёÀ-ÿµ]",
-            cardinality: 1,
             casing: "upper"
         },
         "#": {
             validator: "[0-9A-Fa-f]",
-            cardinality: 1,
             casing: "upper"
         }
     }), Inputmask.extendAliases({
         url: {
             definitions: {
                 i: {
-                    validator: ".",
-                    cardinality: 1
+                    validator: "."
                 }
             },
             mask: "(\\http://)|(\\http\\s://)|(ftp://)|(ftp\\s://)i{+}",
@@ -46,8 +42,7 @@
                         return pos - 1 > -1 && "." !== maskset.buffer[pos - 1] ? (chrs = maskset.buffer[pos - 1] + chrs, 
                         chrs = pos - 2 > -1 && "." !== maskset.buffer[pos - 2] ? maskset.buffer[pos - 2] + chrs : "0" + chrs) : chrs = "00" + chrs, 
                         new RegExp("25[0-5]|2[0-4][0-9]|[01][0-9][0-9]").test(chrs);
-                    },
-                    cardinality: 1
+                    }
                 }
             },
             onUnMask: function(maskedValue, unmaskedValue, opts) {
@@ -64,12 +59,10 @@
             definitions: {
                 "*": {
                     validator: "[0-9A-Za-z!#$%&'*+/=?^_`{|}~-]",
-                    cardinality: 1,
                     casing: "lower"
                 },
                 "-": {
                     validator: "[0-9A-Za-z-]",
-                    cardinality: 1,
                     casing: "lower"
                 }
             },
@@ -86,7 +79,6 @@
             definitions: {
                 V: {
                     validator: "[A-HJ-NPR-Za-hj-npr-z\\d]",
-                    cardinality: 1,
                     casing: "upper"
                 }
             },

@@ -123,17 +123,14 @@
         definitions: {
             "9": { //\uFF11-\uFF19 #1606
                 validator: "[0-9\uFF11-\uFF19]",
-                cardinality: 1,
                 definitionSymbol: "*"
             },
             "a": { //\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5 #76
                 validator: "[A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
-                cardinality: 1,
                 definitionSymbol: "*"
             },
             "*": {
-                validator: "[0-9\uFF11-\uFF19A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
-                cardinality: 1
+                validator: "[0-9\uFF11-\uFF19A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]"
             }
         },
         aliases: {}, //aliases definitions => see jquery.inputmask.extensions.js
@@ -328,7 +325,7 @@
                 };
             }
 
-            //test definition => {fn: RegExp/function, cardinality: int, optionality: bool, newBlockMarker: bool, casing: null/upper/lower, def: definitionSymbol, placeholder: placeholder, mask: real maskDefinition}
+            //test definition => {fn: RegExp/function, optionality: bool, newBlockMarker: bool, casing: null/upper/lower, def: definitionSymbol, placeholder: placeholder, mask: real maskDefinition}
             function insertTestDefinition(mtoken, element, position) {
                 position = position !== undefined ? position : mtoken.matches.length;
                 var prevMatch = mtoken.matches[position - 1];
@@ -336,7 +333,6 @@
                     if (element.indexOf("[") === 0 || (escaped && /\\d|\\s|\\w]/i.test(element)) || element === ".") {
                         mtoken.matches.splice(position++, 0, {
                             fn: new RegExp(element, opts.casing ? "i" : ""),
-                            cardinality: 1,
                             optionality: mtoken.isOptional,
                             newBlockMarker: prevMatch === undefined || prevMatch.def !== element,
                             casing: null,
@@ -350,7 +346,6 @@
                             prevMatch = mtoken.matches[position - 1];
                             mtoken.matches.splice(position++, 0, {
                                 fn: null,
-                                cardinality: 0,
                                 optionality: mtoken.isOptional,
                                 newBlockMarker: prevMatch === undefined || (prevMatch.def !== lmnt && prevMatch.fn !== null),
                                 casing: null,
@@ -364,32 +359,10 @@
                 } else {
                     var maskdef = (opts.definitions ? opts.definitions[element] : undefined) || Inputmask.prototype.definitions[element];
                     if (maskdef && !escaped) {
-                        var prevalidators = maskdef.prevalidator,
-                            prevalidatorsL = prevalidators ? prevalidators.length : 0;
-                        //handle prevalidators
-                        for (var i = 1; i < maskdef.cardinality; i++) {
-                            var prevalidator = prevalidatorsL >= i ? prevalidators[i - 1] : [],
-                                validator = prevalidator.validator,
-                                cardinality = prevalidator.cardinality;
-                            mtoken.matches.splice(position++, 0, {
-                                fn: validator ? typeof validator === "string" ? new RegExp(validator, opts.casing ? "i" : "") : new function () {
-                                    this.test = validator;
-                                } : new RegExp("."),
-                                cardinality: cardinality ? cardinality : 1,
-                                optionality: mtoken.isOptional,
-                                newBlockMarker: prevMatch === undefined || prevMatch.def !== (maskdef.definitionSymbol || element),
-                                casing: maskdef.casing,
-                                def: maskdef.definitionSymbol || element,
-                                placeholder: maskdef.placeholder,
-                                nativeDef: element
-                            });
-                            prevMatch = mtoken.matches[position - 1];
-                        }
                         mtoken.matches.splice(position++, 0, {
                             fn: maskdef.validator ? typeof maskdef.validator == "string" ? new RegExp(maskdef.validator, opts.casing ? "i" : "") : new function () {
                                 this.test = maskdef.validator;
                             } : new RegExp("."),
-                            cardinality: maskdef.cardinality,
                             optionality: mtoken.isOptional,
                             newBlockMarker: prevMatch === undefined || prevMatch.def !== (maskdef.definitionSymbol || element),
                             casing: maskdef.casing,
@@ -400,7 +373,6 @@
                     } else {
                         mtoken.matches.splice(position++, 0, {
                             fn: null,
-                            cardinality: 0,
                             optionality: mtoken.isOptional,
                             newBlockMarker: prevMatch === undefined || (prevMatch.def !== element && prevMatch.fn !== null),
                             casing: null,
@@ -689,7 +661,8 @@
         SPACE: 32,
         TAB: 9,
         UP: 38,
-        X: 88
+        X: 88,
+        CONTROL: 17
     };
 
     function resolveAlias(aliasStr, options, opts) {
@@ -1046,17 +1019,15 @@
                     //mergelocators for retrieving the correct locator match when merging
                     function setMergeLocators(targetMatch, altMatch) {
                         targetMatch.mloc = targetMatch.mloc || {};
-                        if (targetMatch.mloc[targetMatch.locator[targetMatch.alternation]] === undefined)
-                            targetMatch.mloc[targetMatch.locator[targetMatch.alternation]] = targetMatch.locator.slice();
+                        var locNdx = targetMatch.locator[targetMatch.alternation];
+                        if (typeof locNdx === "string") locNdx = locNdx.split(",")[0];
+                        if (targetMatch.mloc[locNdx] === undefined) targetMatch.mloc[locNdx] = targetMatch.locator.slice();
                         if (altMatch !== undefined) {
-                            var locNdx = altMatch.locator[altMatch.alternation];
-                            if (typeof locNdx === "string")
-                                locNdx = locNdx.split("")[0];
-                            if (targetMatch.mloc[locNdx] === undefined)
-                                targetMatch.mloc[locNdx] = altMatch.mloc[locNdx] || altMatch.locator.slice();
-
-                            targetMatch.locator[targetMatch.alternation] = (altMatch.locator[altMatch.alternation] + "," + targetMatch.locator[targetMatch.alternation]).split(",").sort().join(",");
-                            // targetMatch.alternation = altMatch.alternation; //we pass the alternation index => used in determineLastRequiredPosition
+                            for (var ndx in altMatch.mloc) {
+                                if (typeof ndx === "string") ndx = ndx.split(",")[0];
+                                if (targetMatch.mloc[ndx] === undefined) targetMatch.mloc[ndx] = altMatch.mloc[ndx];
+                            }
+                            targetMatch.locator[targetMatch.alternation] = Object.keys(targetMatch.mloc).join(",");
                         }
                     }
 
@@ -1297,7 +1268,6 @@
                 matches.push({
                     match: {
                         fn: null,
-                        cardinality: 0,
                         optionality: true,
                         casing: null,
                         def: "",
@@ -1321,9 +1291,7 @@
             if (getMaskSet()._buffer === undefined) {
                 //generate template
                 getMaskSet()._buffer = getMaskTemplate(false, 1);
-                if (getMaskSet().buffer === undefined) {
-                    getMaskSet().buffer = getMaskSet()._buffer.slice();
-                }
+                if (getMaskSet().buffer === undefined) getMaskSet().buffer = getMaskSet()._buffer.slice();
             }
             return getMaskSet()._buffer;
         }
@@ -1426,21 +1394,12 @@
             function _isValid(position, c, strict) {
                 var rslt = false;
                 $.each(getTests(position), function (ndx, tst) {
-                    var test = tst.match,
-                        loopend = c ? 1 : 0,
-                        chrs = "";
-                    for (var i = test.cardinality; i > loopend; i--) {
-                        chrs += getBufferElement(position - (i - 1));
-                    }
-                    if (c) {
-                        chrs += c;
-                    }
-
+                    var test = tst.match;
                     //make sure the buffer is set and correct
                     getBuffer(true);
                     //return is false or a json object => { pos: ??, c: ??} or true
                     rslt = test.fn != null ?
-                        test.fn.test(chrs, getMaskSet(), position, strict, opts, isSelection(pos)) : (c === test.def || c === opts.skipOptionalPartCharacter) && test.def !== "" ? //non mask
+                        test.fn.test(c, getMaskSet(), position, strict, opts, isSelection(pos)) : (c === test.def || c === opts.skipOptionalPartCharacter) && test.def !== "" ? //non mask
                             {
                                 c: getPlaceholder(position, test, true) || test.def,
                                 pos: position
@@ -2910,9 +2869,9 @@
             function handleCaret(force) {
                 if ((force === true || pos === caretPos.begin) && document.activeElement === input) {
                     if (caretPos.begin === caretPos.end)
-                        maskTemplate += `<span class="im-caret" style="border-right-width: 1px;border-right-style: solid;">`;
+                        maskTemplate += '<span class="im-caret" style="border-right-width: 1px;border-right-style: solid;">';
                     else
-                        maskTemplate += `<span class="im-caret-select">`;
+                        maskTemplate += '<span class="im-caret-select">';
                 }
                 if ((force === true || pos === caretPos.end) && document.activeElement === input) {
                     maskTemplate += "</span>";

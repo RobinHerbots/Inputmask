@@ -21,17 +21,14 @@
 	Inputmask.extendDefinitions({
 		"A": {
 			validator: "[A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
-			cardinality: 1,
 			casing: "upper" //auto uppercasing
 		},
 		"&": { //alfanumeric uppercasing
 			validator: "[0-9A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
-			cardinality: 1,
 			casing: "upper"
 		},
 		"#": { //hexadecimal
 			validator: "[0-9A-Fa-f]",
-			cardinality: 1,
 			casing: "upper"
 		}
 	});
@@ -40,7 +37,6 @@
 			definitions: {
 				"i": {
 					validator: ".",
-					cardinality: 1
 				}
 			},
 			mask: "(\\http://)|(\\http\\s://)|(ftp://)|(ftp\\s://)i{+}",
@@ -60,8 +56,7 @@
 							} else chrs = "0" + chrs;
 						} else chrs = "00" + chrs;
 						return new RegExp("25[0-5]|2[0-4][0-9]|[01][0-9][0-9]").test(chrs);
-					},
-					cardinality: 1
+					}
 				}
 			},
 			onUnMask: function (maskedValue, unmaskedValue, opts) {
@@ -82,12 +77,10 @@
 			definitions: {
 				"*": {
 					validator: "[0-9A-Za-z!#$%&'*+/=?^_`{|}~\-]",
-					cardinality: 1,
 					casing: "lower"
 				},
 				"-": {
 					validator: "[0-9A-Za-z\-]",
-					cardinality: 1,
 					casing: "lower"
 				}
 			},
@@ -106,7 +99,6 @@
 			definitions: {
 				'V': {
 					validator: "[A-HJ-NPR-Za-hj-npr-z\\d]",
-					cardinality: 1,
 					casing: "upper"
 				}
 			},
