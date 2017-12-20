@@ -13,9 +13,10 @@ import "../js/phone-codes/phone-uk";
 import "../js/phone-codes/phone";
 import "../js/jquery.inputmask";
 
-import  Inputmask from "../js/inputmask";
+import Inputmask from "../js/inputmask";
 import dependencyLib from "../js/dependencyLibs/inputmask.dependencyLib";
 import jQuery from "jquery";
+
 if (dependencyLib === jQuery)
     window.jQuery = dependencyLib;
 
@@ -26,7 +27,7 @@ import simulator from "./simulator.js";
 
 // android testing
 Inputmask.extendDefaults({
-   inputEventOnly: false
+    inputEventOnly: false
 });
 
 window.Inputmask = Inputmask; //inject globally for the simulator to detect inputeventonly
@@ -87,7 +88,7 @@ tests_regex(qunit, dependencyLib, Inputmask);
 tests_setvalue(qunit, dependencyLib, Inputmask);
 
 //phone
-// tests_phone_world(qunit, dependencyLib, Inputmask);
+//tests_phone_world(qunit, dependencyLib, Inputmask);
 // tests_phonebe(qunit, dependencyLib, Inputmask);
 // tests_phonenl(qunit, dependencyLib, Inputmask);
 // tests_phoneru(qunit, dependencyLib, Inputmask);

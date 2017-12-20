@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-68
+* Version: 4.0.0-69
 */
 
 !function(modules) {
@@ -656,7 +656,7 @@
                 "number" == typeof begin) {
                     begin = translatePosition(begin), end = "number" == typeof (end = translatePosition(end)) ? end : begin;
                     var scrollCalc = parseInt(((input.ownerDocument.defaultView || window).getComputedStyle ? (input.ownerDocument.defaultView || window).getComputedStyle(input, null) : input.currentStyle).fontSize) * end;
-                    if (input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0, !1 !== opts.insertMode || begin !== end || mobile || end++, 
+                    if (input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0, !1 === opts.insertMode && begin === end && end++, 
                     input.inputmask.caretPos = {
                         begin: begin,
                         end: end

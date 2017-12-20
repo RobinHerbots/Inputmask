@@ -2568,7 +2568,7 @@
                     var scrollCalc = parseInt(((input.ownerDocument.defaultView || window).getComputedStyle ? (input.ownerDocument.defaultView || window).getComputedStyle(input, null) : input.currentStyle).fontSize) * end;
                     input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0;
 
-                    if (opts.insertMode === false && begin === end && !mobile) end++; //set visualization for insert/overwrite mode
+                    if (opts.insertMode === false && begin === end) end++; //set visualization for insert/overwrite mode
 
                     input.inputmask.caretPos = {begin: begin, end: end}; //track caret internally
                     if (input.setSelectionRange) {
