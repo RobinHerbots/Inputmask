@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-69
+* Version: 4.0.0-71
 */
 
 !function(factory) {
@@ -726,15 +726,14 @@
             });
         }
         function renderColorMask(input, caretPos, clear) {
-            function handleStatic() {
-                isStatic || null !== test.fn && testPos.input !== undefined ? isStatic && (null !== test.fn && testPos.input !== undefined || "" === test.def) && (isStatic = !1, 
-                maskTemplate += "</span>") : (isStatic = !0, maskTemplate += "<span class='im-static'>");
+            function setEntry(entry) {
+                if (entry === undefined && (entry = ""), isStatic || null !== test.fn && testPos.input !== undefined) if (isStatic && (null !== test.fn && testPos.input !== undefined || "" === test.def)) {
+                    isStatic = !1;
+                    var mtl = maskTemplate.length;
+                    maskTemplate[mtl - 1] = maskTemplate[mtl - 1] + "</span>", maskTemplate.push(entry);
+                } else maskTemplate.push(entry); else isStatic = !0, maskTemplate.push("<span class='im-static'>" + entry);
             }
-            function handleCaret(force) {
-                !0 !== force && pos !== caretPos.begin || document.activeElement !== input || (caretPos.begin === caretPos.end ? maskTemplate += '<span class="im-caret" style="border-right-width: 1px;border-right-style: solid;">' : maskTemplate += '<span class="im-caret-select">'), 
-                !0 !== force && pos !== caretPos.end || document.activeElement !== input || (maskTemplate += "</span>");
-            }
-            var test, testPos, ndxIntlzr, maskTemplate = "", isStatic = !1, pos = 0;
+            var test, testPos, ndxIntlzr, maskTemplate = [], isStatic = !1, pos = 0;
             if (colorMask !== undefined) {
                 var buffer = getBuffer();
                 if (caretPos === undefined ? caretPos = caret(input) : caretPos.begin === undefined && (caretPos = {
@@ -743,15 +742,16 @@
                 }), !0 !== clear) {
                     var lvp = getLastValidPosition();
                     do {
-                        handleCaret(), getMaskSet().validPositions[pos] ? (testPos = getMaskSet().validPositions[pos], 
-                        test = testPos.match, ndxIntlzr = testPos.locator.slice(), handleStatic(), maskTemplate += buffer[pos]) : (testPos = getTestTemplate(pos, ndxIntlzr, pos - 1), 
-                        test = testPos.match, ndxIntlzr = testPos.locator.slice(), (!1 === opts.jitMasking || pos < lvp || "number" == typeof opts.jitMasking && isFinite(opts.jitMasking) && opts.jitMasking > pos) && (handleStatic(), 
-                        maskTemplate += getPlaceholder(pos, test))), pos++;
+                        getMaskSet().validPositions[pos] ? (testPos = getMaskSet().validPositions[pos], 
+                        test = testPos.match, ndxIntlzr = testPos.locator.slice(), setEntry(buffer[pos])) : (testPos = getTestTemplate(pos, ndxIntlzr, pos - 1), 
+                        test = testPos.match, ndxIntlzr = testPos.locator.slice(), (!1 === opts.jitMasking || pos < lvp || "number" == typeof opts.jitMasking && isFinite(opts.jitMasking) && opts.jitMasking > pos) && setEntry(getPlaceholder(pos, test))), 
+                        pos++;
                     } while ((maxLength === undefined || pos < maxLength) && (null !== test.fn || "" !== test.def) || lvp > pos || isStatic);
-                    -1 === maskTemplate.indexOf("im-caret") && handleCaret(!0), isStatic && handleStatic();
+                    isStatic && setEntry(), document.activeElement === input && (maskTemplate.splice(caretPos.begin, 0, caretPos.begin === caretPos.end ? '<mark class="im-caret" style="border-right-width: 1px;border-right-style: solid;">' : '<mark class="im-caret-select">'), 
+                    maskTemplate.splice(caretPos.end + 1, 0, "</mark>"));
                 }
                 var template = colorMask.getElementsByTagName("div")[0];
-                template.innerHTML = maskTemplate, input.inputmask.positionColorMask(input, template);
+                template.innerHTML = maskTemplate.join(""), input.inputmask.positionColorMask(input, template);
             }
         }
         maskset = maskset || this.maskset, opts = opts || this.opts;

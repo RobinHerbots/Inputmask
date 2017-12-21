@@ -2852,29 +2852,32 @@
         }
 
         function renderColorMask(input, caretPos, clear) {
-            var maskTemplate = "",
+            var maskTemplate = [],
                 isStatic = false,
                 test, testPos, ndxIntlzr, pos = 0;
 
-            function handleStatic() {
+
+            function setEntry(entry) {
+                if (entry === undefined) entry = "";
                 if (!isStatic && (test.fn === null || testPos.input === undefined)) {
                     isStatic = true;
-                    maskTemplate += "<span class='im-static'>"
+                    maskTemplate.push("<span class='im-static'>" + entry);
                 } else if (isStatic && ((test.fn !== null && testPos.input !== undefined) || test.def === "")) {
                     isStatic = false;
-                    maskTemplate += "</span>"
-                }
+                    var mtl = maskTemplate.length;
+                    maskTemplate[mtl - 1] = maskTemplate[mtl - 1] + "</span>";
+                    maskTemplate.push(entry);
+                } else
+                    maskTemplate.push(entry);
             }
 
-            function handleCaret(force) {
-                if ((force === true || pos === caretPos.begin) && document.activeElement === input) {
-                    if (caretPos.begin === caretPos.end)
-                        maskTemplate += '<span class="im-caret" style="border-right-width: 1px;border-right-style: solid;">';
-                    else
-                        maskTemplate += '<span class="im-caret-select">';
-                }
-                if ((force === true || pos === caretPos.end) && document.activeElement === input) {
-                    maskTemplate += "</span>";
+            function setCaret() {
+                if (document.activeElement === input) {
+                    maskTemplate.splice(caretPos.begin, 0,
+                        caretPos.begin === caretPos.end ?
+                            '<mark class="im-caret" style="border-right-width: 1px;border-right-style: solid;">' :
+                            '<mark class="im-caret-select">');
+                    maskTemplate.splice(caretPos.end + 1, 0, "</mark>");
                 }
             }
 
@@ -2892,30 +2895,27 @@
                 if (clear !== true) {
                     var lvp = getLastValidPosition();
                     do {
-                        handleCaret();
                         if (getMaskSet().validPositions[pos]) {
                             testPos = getMaskSet().validPositions[pos];
                             test = testPos.match;
                             ndxIntlzr = testPos.locator.slice();
-                            handleStatic();
-                            maskTemplate += buffer[pos];
+                            setEntry(buffer[pos]);
                         } else {
                             testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
                             test = testPos.match;
                             ndxIntlzr = testPos.locator.slice();
                             if (opts.jitMasking === false || pos < lvp || (typeof opts.jitMasking === "number" && isFinite(opts.jitMasking) && opts.jitMasking > pos)) {
-                                handleStatic();
-                                maskTemplate += getPlaceholder(pos, test);
+                                setEntry(getPlaceholder(pos, test));
                             }
                         }
                         pos++;
                     } while ((maxLength === undefined || pos < maxLength) && (test.fn !== null || test.def !== "") || lvp > pos || isStatic);
-                    if (maskTemplate.indexOf("im-caret") === -1) handleCaret(true);
-                    if (isStatic) handleStatic();
+                    if (isStatic) setEntry();
+                    setCaret();
                 }
 
                 var template = colorMask.getElementsByTagName("div")[0];
-                template.innerHTML = maskTemplate;
+                template.innerHTML = maskTemplate.join("");
                 input.inputmask.positionColorMask(input, template);
             }
         }
