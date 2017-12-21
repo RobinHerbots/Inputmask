@@ -61,7 +61,7 @@
                         submasks.push(ndx + maskGroup[ndx]);
                     }
                     else {
-                        submasks.push(ndx + opts.groupmarker.start + maskGroup[ndx].join(opts.groupmarker.end + opts.alternatormarker + opts.groupmarker.start) + opts.groupmarker.end);
+                        submasks.push(ndx + opts.groupmarker[0] + maskGroup[ndx].join(opts.groupmarker[1] + opts.alternatormarker + opts.groupmarker[0]) + opts.groupmarker[1]);
                     }
                 } else {
                     submasks.push(ndx + rebuild(maskGroup[ndx]));
@@ -70,7 +70,7 @@
             if (submasks.length === 1) {
                 mask += submasks[0];
             } else {
-                mask += opts.groupmarker.start + submasks.join(opts.groupmarker.end + opts.alternatormarker + opts.groupmarker.start) + opts.groupmarker.end;
+                mask += opts.groupmarker[0] + submasks.join(opts.groupmarker[1] + opts.alternatormarker + opts.groupmarker[0]) + opts.groupmarker[1];
             }
 
             return mask;
@@ -80,7 +80,7 @@
         if (opts.phoneCodes) {
             if (opts.phoneCodes && opts.phoneCodes.length > 1000) {
                 mask = mask.substr(1, mask.length - 2);
-                reduceVariations(mask.split(opts.groupmarker.end + opts.alternatormarker + opts.groupmarker.start));
+                reduceVariations(mask.split(opts.groupmarker[1] + opts.alternatormarker + opts.groupmarker[0]));
                 mask = rebuild(maskGroups);
             }
             //escape 9 definition
@@ -92,10 +92,7 @@
     };
     Inputmask.extendAliases({
         "abstractphone": {
-            groupmarker: {
-                start: "<",
-                end: ">"
-            },
+            groupmarker: ["<", ">"],
             countrycode: "",
             phoneCodes: [],
             mask: function (opts) {

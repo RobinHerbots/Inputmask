@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-71
+* Version: 4.0.0-72
 */
 
 !function(factory) {
@@ -29,7 +29,7 @@
             mask = ".*")), 1 === mask.length && !1 === opts.greedy && 0 !== opts.repeat && (opts.placeholder = ""), 
             opts.repeat > 0 || "*" === opts.repeat || "+" === opts.repeat) {
                 var repeatStart = "*" === opts.repeat ? 0 : "+" === opts.repeat ? 1 : opts.repeat;
-                mask = opts.groupmarker.start + mask + opts.groupmarker.end + opts.quantifiermarker.start + repeatStart + "," + opts.repeat + opts.quantifiermarker.end;
+                mask = opts.groupmarker[0] + mask + opts.groupmarker[1] + opts.quantifiermarker[0] + repeatStart + "," + opts.repeat + opts.quantifiermarker[1];
             }
             var masksetDefinition, maskdefKey = regexMask ? "regex_" + opts.regex : opts.numericInput ? mask.split("").reverse().join("") : mask;
             return Inputmask.prototype.masksCache[maskdefKey] === undefined || !0 === nocache ? (masksetDefinition = {
@@ -48,11 +48,11 @@
         if ($.isFunction(opts.mask) && (opts.mask = opts.mask(opts)), $.isArray(opts.mask)) {
             if (opts.mask.length > 1) {
                 opts.keepStatic = null === opts.keepStatic || opts.keepStatic;
-                var altMask = opts.groupmarker.start;
+                var altMask = opts.groupmarker[0];
                 return $.each(opts.numericInput ? opts.mask.reverse() : opts.mask, function(ndx, msk) {
-                    altMask.length > 1 && (altMask += opts.groupmarker.end + opts.alternatormarker + opts.groupmarker.start), 
+                    altMask.length > 1 && (altMask += opts.groupmarker[1] + opts.alternatormarker + opts.groupmarker[0]), 
                     msk.mask === undefined || $.isFunction(msk.mask) ? altMask += msk : altMask += msk.mask;
-                }), altMask += opts.groupmarker.end, generateMask(altMask, opts.mask, opts);
+                }), altMask += opts.groupmarker[1], generateMask(altMask, opts.mask, opts);
             }
             opts.mask = opts.mask.pop();
         }
@@ -1205,18 +1205,9 @@
         dataAttribute: "data-inputmask",
         defaults: {
             placeholder: "_",
-            optionalmarker: {
-                start: "[",
-                end: "]"
-            },
-            quantifiermarker: {
-                start: "{",
-                end: "}"
-            },
-            groupmarker: {
-                start: "(",
-                end: ")"
-            },
+            optionalmarker: [ "[", "]" ],
+            quantifiermarker: [ "{", "}" ],
+            groupmarker: [ "(", ")" ],
             alternatormarker: "|",
             escapeChar: "\\",
             mask: null,
@@ -1441,7 +1432,7 @@
                 maskToken && maskToken.matches && $.each(maskToken.matches, function(ndx, token) {
                     var nextToken = maskToken.matches[ndx + 1];
                     (nextToken === undefined || nextToken.matches === undefined || !1 === nextToken.isQuantifier) && token && token.isGroup && (token.isGroup = !1, 
-                    regexMask || (insertTestDefinition(token, opts.groupmarker.start, 0), !0 !== token.openGroup && insertTestDefinition(token, opts.groupmarker.end))), 
+                    regexMask || (insertTestDefinition(token, opts.groupmarker[0], 0), !0 !== token.openGroup && insertTestDefinition(token, opts.groupmarker[1]))), 
                     verifyGroupMarker(token);
                 });
             }
@@ -1464,14 +1455,14 @@
                         maskToken.matches.splice(match, 1), maskToken.matches.splice(intMatch + 1, 0, qt);
                     }
                     maskToken.matches[match].matches !== undefined ? maskToken.matches[match] = reverseTokens(maskToken.matches[match]) : maskToken.matches[match] = function(st) {
-                        return st === opts.optionalmarker.start ? st = opts.optionalmarker.end : st === opts.optionalmarker.end ? st = opts.optionalmarker.start : st === opts.groupmarker.start ? st = opts.groupmarker.end : st === opts.groupmarker.end && (st = opts.groupmarker.start), 
+                        return st === opts.optionalmarker[0] ? st = opts.optionalmarker[1] : st === opts.optionalmarker[1] ? st = opts.optionalmarker[0] : st === opts.groupmarker[0] ? st = opts.groupmarker[1] : st === opts.groupmarker[1] && (st = opts.groupmarker[0]), 
                         st;
                     }(maskToken.matches[match]);
                 }
                 return maskToken;
             }
             var match, m, openingToken, currentOpeningToken, alternator, lastMatch, groupToken, tokenizer = /(?:[?*+]|\{[0-9\+\*]+(?:,[0-9\+\*]*)?\})|[^.?*+^${[]()|\\]+|./g, regexTokenizer = /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?[:=!]?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g, escaped = !1, currentToken = new MaskToken(), openenings = [], maskTokens = [];
-            for (regexMask && (opts.optionalmarker.start = undefined, opts.optionalmarker.end = undefined); match = regexMask ? regexTokenizer.exec(mask) : tokenizer.exec(mask); ) {
+            for (regexMask && (opts.optionalmarker[0] = undefined, opts.optionalmarker[1] = undefined); match = regexMask ? regexTokenizer.exec(mask) : tokenizer.exec(mask); ) {
                 if (m = match[0], regexMask) switch (m.charAt(0)) {
                   case "?":
                     m = "{0,1}";
@@ -1486,8 +1477,8 @@
                     escaped = !0, regexMask && defaultCase();
                     break;
 
-                  case opts.optionalmarker.end:
-                  case opts.groupmarker.end:
+                  case opts.optionalmarker[1]:
+                  case opts.groupmarker[1]:
                     if (openingToken = openenings.pop(), openingToken.openGroup = !1, openingToken !== undefined) if (openenings.length > 0) {
                         if ((currentOpeningToken = openenings[openenings.length - 1]).matches.push(openingToken), 
                         currentOpeningToken.isAlternator) {
@@ -1499,15 +1490,15 @@
                     } else currentToken.matches.push(openingToken); else defaultCase();
                     break;
 
-                  case opts.optionalmarker.start:
+                  case opts.optionalmarker[0]:
                     openenings.push(new MaskToken(!1, !0));
                     break;
 
-                  case opts.groupmarker.start:
+                  case opts.groupmarker[0]:
                     openenings.push(new MaskToken(!0));
                     break;
 
-                  case opts.quantifiermarker.start:
+                  case opts.quantifiermarker[0]:
                     var quantifier = new MaskToken(!1, !1, !0), mq = (m = m.replace(/[{}]/g, "")).split(","), mq0 = isNaN(mq[0]) ? mq[0] : parseInt(mq[0]), mq1 = 1 === mq.length ? mq0 : isNaN(mq[1]) ? mq[1] : parseInt(mq[1]);
                     if ("*" !== mq1 && "+" !== mq1 || (mq0 = "*" === mq1 ? 0 : 1), quantifier.quantifier = {
                         min: mq0,
