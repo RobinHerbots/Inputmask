@@ -2160,11 +2160,6 @@
                     inputValue = radixPointHandler(input, inputValue, caretPos);
                     inputValue = ieMobileHandler(input, inputValue, caretPos);
 
-                    // if (caretPos.begin > inputValue.length) {
-                    //     caret(input, inputValue.length);
-                    //     caretPos = caret(input);
-                    // }
-
                     if (getBuffer().join("") !== inputValue) {
                         var buffer = getBuffer().join(""),
                             offset = inputValue.length > buffer.length ? -1 : 0,
@@ -2197,8 +2192,6 @@
                                         selection.begin--;
                                         entries = opts.radixPoint;
                                     }
-
-
                                 }
                             }
                         }
@@ -2544,6 +2537,10 @@
 
             var range;
             if (begin !== undefined) {
+                if ($.isArray(begin)) {
+                    end = isRTL ? begin[0] : begin[1];
+                    begin = isRTL ? begin[1] : begin[0];
+                }
                 if (begin.begin !== undefined) {
                     end = isRTL ? begin.begin : begin.end;
                     begin = isRTL ? begin.end : begin.begin;
