@@ -1906,7 +1906,7 @@
                         if (trackCaret) {
                             trackCaret = false;
                             setTimeout(function () {
-                                caret(that, that.inputmask.caretPos);
+                                caret(that, that.inputmask.caretPos, undefined, true);
                                 // console.log("2 " + JSON.stringify(that.inputmask.caretPos));
                             });
                         }
