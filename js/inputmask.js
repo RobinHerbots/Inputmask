@@ -1103,20 +1103,14 @@
                                                         altMatch2.locator[altMatch2.alternation].toString().indexOf(altMatch.locator[altMatch.alternation]) === -1) {
                                                         setMergeLocators(altMatch2, altMatch);
                                                     }
-                                                    if (altMatch.match.nativeDef === altMatch2.match.def) {
-                                                        setMergeLocators(altMatch, altMatch2);
-                                                        altMatch.locator[altMatch.alternation] = altMatch2.locator[altMatch2.alternation];
-                                                        //generalize optionality indicators when merging matches
-                                                        // if ((altMatch.match.optionalQuantifier === true) !== (altMatch2.match.optionalQuantifier === true))
-                                                        //     altMatch.match.optionalQuantifier = altMatch2.match.optionalQuantifier;
-                                                        malternateMatches.splice(malternateMatches.indexOf(altMatch2), 1, altMatch);
+                                                    if (altMatch.match.nativeDef !== altMatch2.match.nativeDef && altMatch.match.nativeDef === altMatch2.match.def) {
+                                                        dropMatch = false;
                                                     }
                                                     break;
                                                 } else if (altMatch.match.def === altMatch2.match.def) {
                                                     dropMatch = false;
                                                     break;
                                                 } else if (staticCanMatchDefinition(altMatch, altMatch2) || isSubsetOf(altMatch, altMatch2)) {
-                                                    // console.log("case 5");
                                                     if (altMatch.alternation === altMatch2.alternation &&
                                                         altMatch.locator[altMatch.alternation].toString().indexOf(altMatch2.locator[altMatch2.alternation].toString().split("")[0]) === -1) {
 

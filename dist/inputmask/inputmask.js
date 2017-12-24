@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-69
+* Version: 4.0.0-70
 */
 
 !function(factory) {
@@ -199,9 +199,7 @@
                                                     return source.match.nativeDef === target.match.nativeDef || source.match.def === target.match.nativeDef || source.match.nativeDef === target.match.def;
                                                 }(altMatch, altMatch2)) {
                                                     dropMatch = !0, altMatch.alternation === altMatch2.alternation && -1 === altMatch2.locator[altMatch2.alternation].toString().indexOf(altMatch.locator[altMatch.alternation]) && setMergeLocators(altMatch2, altMatch), 
-                                                    altMatch.match.nativeDef === altMatch2.match.def && (setMergeLocators(altMatch, altMatch2), 
-                                                    altMatch.locator[altMatch.alternation] = altMatch2.locator[altMatch2.alternation], 
-                                                    malternateMatches.splice(malternateMatches.indexOf(altMatch2), 1, altMatch));
+                                                    altMatch.match.nativeDef !== altMatch2.match.nativeDef && altMatch.match.nativeDef === altMatch2.match.def && (dropMatch = !1);
                                                     break;
                                                 }
                                                 if (altMatch.match.def === altMatch2.match.def) {
