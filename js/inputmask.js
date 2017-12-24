@@ -52,18 +52,9 @@
         //options default
         defaults: {
             placeholder: "_",
-            optionalmarker: {
-                start: "[",
-                end: "]"
-            },
-            quantifiermarker: {
-                start: "{",
-                end: "}"
-            },
-            groupmarker: {
-                start: "(",
-                end: ")"
-            },
+            optionalmarker: ["[", "]"],
+            quantifiermarker: ["{", "}"],
+            groupmarker: ["(", ")"],
             alternatormarker: "|",
             escapeChar: "\\",
             mask: null, //needs tobe null instead of undefined as the extend method does not consider props with the undefined value
@@ -392,9 +383,9 @@
                         if ((nextToken === undefined || (nextToken.matches === undefined || nextToken.isQuantifier === false)) && token && token.isGroup) { //this is not a group but a normal mask => convert
                             token.isGroup = false;
                             if (!regexMask) {
-                                insertTestDefinition(token, opts.groupmarker.start, 0);
+                                insertTestDefinition(token, opts.groupmarker[0], 0);
                                 if (token.openGroup !== true) {
-                                    insertTestDefinition(token, opts.groupmarker.end);
+                                    insertTestDefinition(token, opts.groupmarker[1]);
                                 }
                             }
                         }
@@ -426,10 +417,10 @@
 
             function reverseTokens(maskToken) {
                 function reverseStatic(st) {
-                    if (st === opts.optionalmarker.start) st = opts.optionalmarker.end;
-                    else if (st === opts.optionalmarker.end) st = opts.optionalmarker.start;
-                    else if (st === opts.groupmarker.start) st = opts.groupmarker.end;
-                    else if (st === opts.groupmarker.end) st = opts.groupmarker.start;
+                    if (st === opts.optionalmarker[0]) st = opts.optionalmarker[1];
+                    else if (st === opts.optionalmarker[1]) st = opts.optionalmarker[0];
+                    else if (st === opts.groupmarker[0]) st = opts.groupmarker[1];
+                    else if (st === opts.groupmarker[1]) st = opts.groupmarker[0];
 
                     return st;
                 }
@@ -455,8 +446,8 @@
             }
 
             if (regexMask) {
-                opts.optionalmarker.start = undefined;
-                opts.optionalmarker.end = undefined;
+                opts.optionalmarker[0] = undefined;
+                opts.optionalmarker[1] = undefined;
             }
             while (match = regexMask ? regexTokenizer.exec(mask) : tokenizer.exec(mask)) {
                 m = match[0];
@@ -485,9 +476,9 @@
                             defaultCase();
                         }
                         break;
-                    case opts.optionalmarker.end:
+                    case opts.optionalmarker[1]:
                     // optional closing
-                    case opts.groupmarker.end:
+                    case opts.groupmarker[1]:
                         // Group closing
                         openingToken = openenings.pop();
                         openingToken.openGroup = false; //mark group as complete
@@ -513,15 +504,15 @@
                             }
                         } else defaultCase();
                         break;
-                    case opts.optionalmarker.start:
+                    case opts.optionalmarker[0]:
                         // optional opening
                         openenings.push(new MaskToken(false, true));
                         break;
-                    case opts.groupmarker.start:
+                    case opts.groupmarker[0]:
                         // Group opening
                         openenings.push(new MaskToken(true));
                         break;
-                    case opts.quantifiermarker.start:
+                    case opts.quantifiermarker[0]:
                         //Quantifier
                         var quantifier = new MaskToken(false, false, true);
 
@@ -698,7 +689,7 @@
             } //hide placeholder with single non-greedy mask
             if (opts.repeat > 0 || opts.repeat === "*" || opts.repeat === "+") {
                 var repeatStart = opts.repeat === "*" ? 0 : (opts.repeat === "+" ? 1 : opts.repeat);
-                mask = opts.groupmarker.start + mask + opts.groupmarker.end + opts.quantifiermarker.start + repeatStart + "," + opts.repeat + opts.quantifiermarker.end;
+                mask = opts.groupmarker[0] + mask + opts.groupmarker[1] + opts.quantifiermarker[0] + repeatStart + "," + opts.repeat + opts.quantifiermarker[1];
             }
 
             // console.log(mask);
@@ -732,10 +723,10 @@
         if ($.isArray(opts.mask)) {
             if (opts.mask.length > 1) {
                 opts.keepStatic = opts.keepStatic === null ? true : opts.keepStatic; //enable by default when passing multiple masks when the option is not explicitly specified
-                var altMask = opts.groupmarker.start;
+                var altMask = opts.groupmarker[0];
                 $.each(opts.numericInput ? opts.mask.reverse() : opts.mask, function (ndx, msk) {
                     if (altMask.length > 1) {
-                        altMask += opts.groupmarker.end + opts.alternatormarker + opts.groupmarker.start;
+                        altMask += opts.groupmarker[1] + opts.alternatormarker + opts.groupmarker[0];
                     }
                     if (msk.mask !== undefined && !$.isFunction(msk.mask)) {
                         altMask += msk.mask;
@@ -743,7 +734,7 @@
                         altMask += msk;
                     }
                 });
-                altMask += opts.groupmarker.end;
+                altMask += opts.groupmarker[1];
                 // console.log(altMask);
                 return generateMask(altMask, opts.mask, opts);
             } else opts.mask = opts.mask.pop();
@@ -1909,7 +1900,7 @@
                         if (trackCaret) {
                             trackCaret = false;
                             setTimeout(function () {
-                                caret(that, that.inputmask.caretPos);
+                                caret(that, that.inputmask.caretPos, undefined, true);
                                 // console.log("2 " + JSON.stringify(that.inputmask.caretPos));
                             });
                         }
@@ -2163,11 +2154,6 @@
                     inputValue = radixPointHandler(input, inputValue, caretPos);
                     inputValue = ieMobileHandler(input, inputValue, caretPos);
 
-                    // if (caretPos.begin > inputValue.length) {
-                    //     caret(input, inputValue.length);
-                    //     caretPos = caret(input);
-                    // }
-
                     if (getBuffer().join("") !== inputValue) {
                         var buffer = getBuffer().join(""),
                             offset = inputValue.length > buffer.length ? -1 : 0,
@@ -2200,8 +2186,6 @@
                                         selection.begin--;
                                         entries = opts.radixPoint;
                                     }
-
-
                                 }
                             }
                         }
@@ -2547,6 +2531,10 @@
 
             var range;
             if (begin !== undefined) {
+                if ($.isArray(begin)) {
+                    end = isRTL ? begin[0] : begin[1];
+                    begin = isRTL ? begin[1] : begin[0];
+                }
                 if (begin.begin !== undefined) {
                     end = isRTL ? begin.begin : begin.end;
                     begin = isRTL ? begin.end : begin.begin;
@@ -2846,29 +2834,32 @@
         }
 
         function renderColorMask(input, caretPos, clear) {
-            var maskTemplate = "",
+            var maskTemplate = [],
                 isStatic = false,
                 test, testPos, ndxIntlzr, pos = 0;
 
-            function handleStatic() {
+
+            function setEntry(entry) {
+                if (entry === undefined) entry = "";
                 if (!isStatic && (test.fn === null || testPos.input === undefined)) {
                     isStatic = true;
-                    maskTemplate += "<span class='im-static'>"
+                    maskTemplate.push("<span class='im-static'>" + entry);
                 } else if (isStatic && ((test.fn !== null && testPos.input !== undefined) || test.def === "")) {
                     isStatic = false;
-                    maskTemplate += "</span>"
-                }
+                    var mtl = maskTemplate.length;
+                    maskTemplate[mtl - 1] = maskTemplate[mtl - 1] + "</span>";
+                    maskTemplate.push(entry);
+                } else
+                    maskTemplate.push(entry);
             }
 
-            function handleCaret(force) {
-                if ((force === true || pos === caretPos.begin) && document.activeElement === input) {
-                    if (caretPos.begin === caretPos.end)
-                        maskTemplate += '<span class="im-caret" style="border-right-width: 1px;border-right-style: solid;">';
-                    else
-                        maskTemplate += '<span class="im-caret-select">';
-                }
-                if ((force === true || pos === caretPos.end) && document.activeElement === input) {
-                    maskTemplate += "</span>";
+            function setCaret() {
+                if (document.activeElement === input) {
+                    maskTemplate.splice(caretPos.begin, 0,
+                        caretPos.begin === caretPos.end ?
+                            '<mark class="im-caret" style="border-right-width: 1px;border-right-style: solid;">' :
+                            '<mark class="im-caret-select">');
+                    maskTemplate.splice(caretPos.end + 1, 0, "</mark>");
                 }
             }
 
@@ -2886,30 +2877,27 @@
                 if (clear !== true) {
                     var lvp = getLastValidPosition();
                     do {
-                        handleCaret();
                         if (getMaskSet().validPositions[pos]) {
                             testPos = getMaskSet().validPositions[pos];
                             test = testPos.match;
                             ndxIntlzr = testPos.locator.slice();
-                            handleStatic();
-                            maskTemplate += buffer[pos];
+                            setEntry(buffer[pos]);
                         } else {
                             testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
                             test = testPos.match;
                             ndxIntlzr = testPos.locator.slice();
                             if (opts.jitMasking === false || pos < lvp || (typeof opts.jitMasking === "number" && isFinite(opts.jitMasking) && opts.jitMasking > pos)) {
-                                handleStatic();
-                                maskTemplate += getPlaceholder(pos, test);
+                                setEntry(getPlaceholder(pos, test));
                             }
                         }
                         pos++;
                     } while ((maxLength === undefined || pos < maxLength) && (test.fn !== null || test.def !== "") || lvp > pos || isStatic);
-                    if (maskTemplate.indexOf("im-caret") === -1) handleCaret(true);
-                    if (isStatic) handleStatic();
+                    if (isStatic) setEntry();
+                    setCaret();
                 }
 
                 var template = colorMask.getElementsByTagName("div")[0];
-                template.innerHTML = maskTemplate;
+                template.innerHTML = maskTemplate.join("");
                 input.inputmask.positionColorMask(input, template);
             }
         }

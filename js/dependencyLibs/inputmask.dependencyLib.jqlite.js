@@ -53,7 +53,7 @@
 		// hasOwn isn't used here due to false negatives
 		// regarding Nodelist length in IE
 		var length = "length" in obj && obj.length,
-			ltype = type(obj);
+			ltype = typeof obj;
 
 		if (ltype === "function" || isWindow(obj)) {
 			return false;
@@ -71,7 +71,7 @@
 		return arr == null ? -1 : indexOf(arr, elem, i);
 	};
 	$.isFunction = function (obj) {
-		return type(obj) === "function";
+		return typeof obj === "function";
 	};
 	$.isArray = Array.isArray;
 	$.isPlainObject = function (obj) {
@@ -79,7 +79,7 @@
 		// - Any object or value whose internal [[Class]] property is not "[object Object]"
 		// - DOM nodes
 		// - window
-		if (type(obj) !== "object" || obj.nodeType || isWindow(obj)) {
+		if (typeof obj !== "object" || obj.nodeType || isWindow(obj)) {
 			return false;
 		}
 
