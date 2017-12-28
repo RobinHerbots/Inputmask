@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-76
+* Version: 4.0.0-77
 */
 
 !function(modules) {
@@ -240,11 +240,14 @@
                                             for (var ndx2 = 0; ndx2 < malternateMatches.length; ndx2++) {
                                                 var altMatch2 = malternateMatches[ndx2];
                                                 if ("string" != typeof altIndex || -1 !== $.inArray(altMatch.locator[altMatch.alternation].toString(), altIndexArr)) {
+                                                    var ss;
                                                     if (function(source, target) {
                                                         return source.match.nativeDef === target.match.nativeDef || source.match.def === target.match.nativeDef || source.match.nativeDef === target.match.def;
-                                                    }(altMatch, altMatch2)) {
+                                                    }(altMatch, altMatch2) || (ss = function(source, target) {
+                                                        return opts.regex !== undefined && null !== source.match.fn && null !== target.match.fn && target.match.fn.test(source.match.def.replace(/[\[\]]/g, ""), getMaskSet(), pos, !1, opts, !1);
+                                                    }(altMatch, altMatch2))) {
                                                         dropMatch = !0, altMatch.alternation === altMatch2.alternation && -1 === altMatch2.locator[altMatch2.alternation].toString().indexOf(altMatch.locator[altMatch.alternation]) && setMergeLocators(altMatch2, altMatch), 
-                                                        altMatch.match.nativeDef !== altMatch2.match.nativeDef && altMatch.match.nativeDef === altMatch2.match.def && (dropMatch = !1);
+                                                        altMatch.match.nativeDef === altMatch2.match.nativeDef || altMatch.match.nativeDef !== altMatch2.match.def && !ss || (dropMatch = !1);
                                                         break;
                                                     }
                                                     if (altMatch.match.def === altMatch2.match.def) {
@@ -253,8 +256,6 @@
                                                     }
                                                     if (function(source, target) {
                                                         return null === source.match.fn && null !== target.match.fn && target.match.fn.test(source.match.def, getMaskSet(), pos, !1, opts, !1);
-                                                    }(altMatch, altMatch2) || function(source, target) {
-                                                        return null !== source.match.fn && null !== target.match.fn && target.match.fn.test(source.match.def.replace(/[\[\]]/g, ""), getMaskSet(), pos, !1, opts, !1);
                                                     }(altMatch, altMatch2)) {
                                                         altMatch.alternation === altMatch2.alternation && -1 === altMatch.locator[altMatch.alternation].toString().indexOf(altMatch2.locator[altMatch2.alternation].toString().split("")[0]) && (altMatch.na = altMatch.na || altMatch.locator[altMatch.alternation].toString(), 
                                                         -1 === altMatch.na.indexOf(altMatch.locator[altMatch.alternation].toString().split("")[0]) && (altMatch.na = altMatch.na + "," + altMatch.locator[altMatch2.alternation].toString().split("")[0]), 

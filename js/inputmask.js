@@ -995,7 +995,7 @@
                     }
 
                     function isSubsetOf(source, target) {
-                        if (source.match.fn !== null && target.match.fn !== null) { //is regex a subset
+                        if (opts.regex !== undefined && source.match.fn !== null && target.match.fn !== null) { //is regex a subset
                             //do we need a dfa for this?
                             //currently only a simplistic approach
                             return target.match.fn.test(source.match.def.replace(/[\[\]]/g, ""), getMaskSet(), pos, false, opts, false);
@@ -1088,20 +1088,21 @@
                                             var altMatch2 = malternateMatches[ndx2];
                                             //verify equality
                                             if (typeof altIndex !== "string" || $.inArray(altMatch.locator[altMatch.alternation].toString(), altIndexArr) !== -1) {
-                                                if (definitionCanMatchDefinition(altMatch, altMatch2)) {
+                                                var ss;
+                                                if (definitionCanMatchDefinition(altMatch, altMatch2) || (ss = isSubsetOf(altMatch, altMatch2))) {
                                                     dropMatch = true;
                                                     if (altMatch.alternation === altMatch2.alternation &&
                                                         altMatch2.locator[altMatch2.alternation].toString().indexOf(altMatch.locator[altMatch.alternation]) === -1) {
                                                         setMergeLocators(altMatch2, altMatch);
                                                     }
-                                                    if (altMatch.match.nativeDef !== altMatch2.match.nativeDef && altMatch.match.nativeDef === altMatch2.match.def) {
+                                                    if (altMatch.match.nativeDef !== altMatch2.match.nativeDef && (altMatch.match.nativeDef === altMatch2.match.def || ss)) {
                                                         dropMatch = false;
                                                     }
                                                     break;
                                                 } else if (altMatch.match.def === altMatch2.match.def) {
                                                     dropMatch = false;
                                                     break;
-                                                } else if (staticCanMatchDefinition(altMatch, altMatch2) || isSubsetOf(altMatch, altMatch2)) {
+                                                } else if (staticCanMatchDefinition(altMatch, altMatch2)) {
                                                     if (altMatch.alternation === altMatch2.alternation &&
                                                         altMatch.locator[altMatch.alternation].toString().indexOf(altMatch2.locator[altMatch2.alternation].toString().split("")[0]) === -1) {
 

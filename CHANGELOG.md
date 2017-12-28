@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [UNRELEASED - 4.x]
 ### added
 - add support for input type search
-- new datetime alias (WIP)
+- new datetime alias
 
 ### Updates
 - better caret handling in colormask

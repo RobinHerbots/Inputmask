@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-76
+* Version: 4.0.0-77
 */
 
 !function(factory) {
@@ -109,10 +109,6 @@
         var i = 0;
         if (isArraylike(obj)) for (var length = obj.length; i < length && !1 !== callback.call(obj[i], i, obj[i]); i++) ; else for (i in obj) if (!1 === callback.call(obj[i], i, obj[i])) break;
         return obj;
-    }, DependencyLib.map = function(elems, callback) {
-        var value, i = 0, length = elems.length, ret = [];
-        if (isArraylike(elems)) for (;i < length; i++) null != (value = callback(elems[i], i)) && ret.push(value); else for (i in elems) null != (value = callback(elems[i], i)) && ret.push(value);
-        return [].concat(ret);
     }, DependencyLib.data = function(owner, key, value) {
         if (void 0 === value) return owner.__data ? owner.__data[key] : null;
         owner.__data = owner.__data || {}, owner.__data[key] = value;

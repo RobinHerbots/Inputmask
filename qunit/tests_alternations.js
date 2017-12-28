@@ -301,4 +301,45 @@ export default function (qunit, $, Inputmask) {
         $("#testmask").Type("34");
         assert.equal(testmask.inputmask._valueGet(), "3/4", "Result " + testmask.inputmask._valueGet());
     });
+
+    qunit.test("(99)|(*a)", function (assert) {
+        var $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+
+        Inputmask("(99)|(*a)").mask(testmask);
+        testmask.focus();
+        $("#testmask").Type("12");
+        assert.equal(testmask.inputmask._valueGet(), "12", "Result " + testmask.inputmask._valueGet());
+    });
+    qunit.test("(99)|(*a)", function (assert) {
+        var $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+
+        Inputmask("(99)|(*a)").mask(testmask);
+        testmask.focus();
+        $("#testmask").Type("1a");
+        assert.equal(testmask.inputmask._valueGet(), "1a", "Result " + testmask.inputmask._valueGet());
+    });
+    qunit.test("(99)|(*a)", function (assert) {
+        var $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+
+        Inputmask("(99)|(*a)").mask(testmask);
+        testmask.focus();
+        $("#testmask").Type("ab");
+        assert.equal(testmask.inputmask._valueGet(), "ab", "Result " + testmask.inputmask._valueGet());
+    });
+    qunit.test("(99)|(*a)", function (assert) {
+        var $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+
+        Inputmask("(99)|(*a)").mask(testmask);
+        testmask.focus();
+        $("#testmask").Type("a2");
+        assert.equal(testmask.inputmask._valueGet(), "a_", "Result " + testmask.inputmask._valueGet());
+    });
 };
