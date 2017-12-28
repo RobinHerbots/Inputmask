@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-75
+* Version: 4.0.0-76
 */
 
 !function(factory) {
@@ -20,13 +20,12 @@
         var length = "length" in obj && obj.length, ltype = typeof obj;
         return "function" !== ltype && !isWindow(obj) && (!(1 !== obj.nodeType || !length) || ("array" === ltype || 0 === length || "number" == typeof length && length > 0 && length - 1 in obj));
     }
-    for (var class2type = {}, classTypes = "Boolean Number String Function Array Date RegExp Object Error".split(" "), nameNdx = 0; nameNdx < classTypes.length; nameNdx++) class2type["[object " + classTypes[nameNdx] + "]"] = classTypes[nameNdx].toLowerCase();
     return $.inArray = function(elem, arr, i) {
         return null == arr ? -1 : indexOf(arr, elem);
     }, $.isFunction = function(obj) {
         return "function" == typeof obj;
     }, $.isArray = Array.isArray, $.isPlainObject = function(obj) {
-        return "object" == typeof obj && !obj.nodeType && !isWindow(obj) && !(obj.constructor && !class2type.hasOwnProperty.call(obj.constructor.prototype, "isPrototypeOf"));
+        return "object" == typeof obj && !obj.nodeType && !isWindow(obj) && !(obj.constructor && !Object.hasOwnProperty.call(obj.constructor.prototype, "isPrototypeOf"));
     }, $.extend = function() {
         var options, name, src, copy, copyIsArray, clone, target = arguments[0] || {}, i = 1, length = arguments.length, deep = !1;
         for ("boolean" == typeof target && (deep = target, target = arguments[i] || {}, 

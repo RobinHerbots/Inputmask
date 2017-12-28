@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2017 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-75
+* Version: 4.0.0-76
 */
 
 !function(factory) {
@@ -82,8 +82,8 @@
             return pad(Date.prototype.getHours.call(this), 2);
         } ],
         hhh: [ "[0-9]+", Date.prototype.setHours, "hours", Date.prototype.getHours ],
-        H: [ "1?[1-9]|2[0-3]", Date.prototype.setHours, "hours", Date.prototype.getHours ],
-        HH: [ "[01][1-9]|2[0-3]", Date.prototype.setHours, "hours", function() {
+        H: [ "1?[0-9]|2[0-3]", Date.prototype.setHours, "hours", Date.prototype.getHours ],
+        HH: [ "[01][0-9]|2[0-3]", Date.prototype.setHours, "hours", function() {
             return pad(Date.prototype.getHours.call(this), 2);
         } ],
         HHH: [ "[0-9]+", Date.prototype.setHours, "hours", Date.prototype.getHours ],

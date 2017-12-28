@@ -46,8 +46,8 @@
                 return pad(Date.prototype.getHours.call(this), 2);
             }], //Hours; leading zero for single-digit hours (12-hour clock).
             hhh: ["[0-9]+", Date.prototype.setHours, "hours", Date.prototype.getHours], //Hours; no limit
-            H: ["1?[1-9]|2[0-3]", Date.prototype.setHours, "hours", Date.prototype.getHours], //Hours; no leading zero for single-digit hours (24-hour clock).
-            HH: ["[01][1-9]|2[0-3]", Date.prototype.setHours, "hours", function () {
+            H: ["1?[0-9]|2[0-3]", Date.prototype.setHours, "hours", Date.prototype.getHours], //Hours; no leading zero for single-digit hours (24-hour clock).
+            HH: ["[01][0-9]|2[0-3]", Date.prototype.setHours, "hours", function () {
                 return pad(Date.prototype.getHours.call(this), 2);
             }], //Hours; leading zero for single-digit hours (24-hour clock).
             HHH: ["[0-9]+", Date.prototype.setHours, "hours", Date.prototype.getHours], //Hours; no limit
