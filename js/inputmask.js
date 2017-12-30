@@ -991,16 +991,17 @@
                     }
 
                     function definitionCanMatchDefinition(source, target) {
-                        return source.match.nativeDef === target.match.nativeDef || source.match.def === target.match.nativeDef || source.match.nativeDef === target.match.def;
+                        return source.match.nativeDef === target.match.nativeDef || source.match.def === target.match.nativeDef;
                     }
 
                     function isSubsetOf(source, target) {
-                        if (opts.regex !== undefined && source.match.fn !== null && target.match.fn !== null) { //is regex a subset
+                        if (opts.regex && source.match.fn !== null && target.match.fn !== null) { //is regex a subset
                             //do we need a dfa for this?
                             //currently only a simplistic approach
-                            return target.match.fn.test(source.match.def.replace(/[\[\]]/g, ""), getMaskSet(), pos, false, opts, false);
+                            var src = source.match.def.replace(/[\[\]]/g, ""), trgt = target.match.def.replace(/[\[\]]/g, "");
+                            return trgt.indexOf(src) !== -1;
                         }
-                        return false;
+                        return source.match.def === target.match.nativeDef;
                     }
 
                     function staticCanMatchDefinition(source, target) {
@@ -1009,17 +1010,25 @@
 
                     //mergelocators for retrieving the correct locator match when merging
                     function setMergeLocators(targetMatch, altMatch) {
-                        targetMatch.mloc = targetMatch.mloc || {};
-                        var locNdx = targetMatch.locator[targetMatch.alternation];
-                        if (typeof locNdx === "string") locNdx = locNdx.split(",")[0];
-                        if (targetMatch.mloc[locNdx] === undefined) targetMatch.mloc[locNdx] = targetMatch.locator.slice();
-                        if (altMatch !== undefined) {
-                            for (var ndx in altMatch.mloc) {
-                                if (typeof ndx === "string") ndx = ndx.split(",")[0];
-                                if (targetMatch.mloc[ndx] === undefined) targetMatch.mloc[ndx] = altMatch.mloc[ndx];
+                        if (altMatch === undefined || (targetMatch.alternation === altMatch.alternation &&
+                                targetMatch.locator[targetMatch.alternation].toString().indexOf(altMatch.locator[altMatch.alternation]) === -1)) {
+                            targetMatch.mloc = targetMatch.mloc || {};
+                            var locNdx = targetMatch.locator[targetMatch.alternation];
+                            if (locNdx === undefined) targetMatch.alternation = undefined;
+                            else {
+                                if (typeof locNdx === "string") locNdx = locNdx.split(",")[0];
+                                if (targetMatch.mloc[locNdx] === undefined) targetMatch.mloc[locNdx] = targetMatch.locator.slice();
+                                if (altMatch !== undefined) {
+                                    for (var ndx in altMatch.mloc) {
+                                        if (typeof ndx === "string") ndx = ndx.split(",")[0];
+                                        if (targetMatch.mloc[ndx] === undefined) targetMatch.mloc[ndx] = altMatch.mloc[ndx];
+                                    }
+                                    targetMatch.locator[targetMatch.alternation] = Object.keys(targetMatch.mloc).join(",");
+                                }
+                                return true;
                             }
-                            targetMatch.locator[targetMatch.alternation] = Object.keys(targetMatch.mloc).join(",");
                         }
+                        return false;
                     }
 
                     if (testPos > 10000) {
@@ -1072,7 +1081,10 @@
                                     matches = [];
                                     //set the correct ndxInitializer
                                     ndxInitializer = resolveNdxInitializer(testPos, amndx, loopNdxCnt) || ndxInitializerClone.slice();
-                                    match = handleMatch(alternateToken.matches[amndx] || maskToken.matches[amndx], [amndx].concat(loopNdx), quantifierRecurse) || match;
+                                    if (alternateToken.matches[amndx] && handleMatch(alternateToken.matches[amndx], [amndx].concat(loopNdx), quantifierRecurse))
+                                        match = true;
+                                    else if (maskToken.matches[amndx] && alternateToken !== maskToken.matches[amndx] && handleMatch(maskToken.matches[amndx], [amndx].concat(loopNdx.slice(1)), quantifierRecurse))
+                                        match = true;
                                     maltMatches = matches.slice();
                                     testPos = currentPos;
                                     matches = [];
@@ -1087,25 +1099,21 @@
                                         for (var ndx2 = 0; ndx2 < malternateMatches.length; ndx2++) {
                                             var altMatch2 = malternateMatches[ndx2];
                                             //verify equality
-                                            if (typeof altIndex !== "string" || $.inArray(altMatch.locator[altMatch.alternation].toString(), altIndexArr) !== -1) {
-                                                var ss;
-                                                if (definitionCanMatchDefinition(altMatch, altMatch2) || (ss = isSubsetOf(altMatch, altMatch2))) {
+                                            if (typeof altIndex !== "string" || (altMatch.alternation !== undefined && $.inArray(altMatch.locator[altMatch.alternation].toString(), altIndexArr) !== -1)) {
+                                                if (altMatch.match.nativeDef === altMatch2.match.nativeDef) {
                                                     dropMatch = true;
-                                                    if (altMatch.alternation === altMatch2.alternation &&
-                                                        altMatch2.locator[altMatch2.alternation].toString().indexOf(altMatch.locator[altMatch.alternation]) === -1) {
-                                                        setMergeLocators(altMatch2, altMatch);
-                                                    }
-                                                    if (altMatch.match.nativeDef !== altMatch2.match.nativeDef && (altMatch.match.nativeDef === altMatch2.match.def || ss)) {
-                                                        dropMatch = false;
-                                                    }
+                                                    setMergeLocators(altMatch2, altMatch);
                                                     break;
-                                                } else if (altMatch.match.def === altMatch2.match.def) {
-                                                    dropMatch = false;
+                                                } else if (isSubsetOf(altMatch, altMatch2)) {
+                                                    setMergeLocators(altMatch, altMatch2);
+                                                    dropMatch = true;
+                                                    malternateMatches.splice(malternateMatches.indexOf(altMatch2), 0, altMatch);
+                                                    break;
+                                                } else if (isSubsetOf(altMatch2, altMatch)) {
+                                                    setMergeLocators(altMatch2, altMatch);
                                                     break;
                                                 } else if (staticCanMatchDefinition(altMatch, altMatch2)) {
-                                                    if (altMatch.alternation === altMatch2.alternation &&
-                                                        altMatch.locator[altMatch.alternation].toString().indexOf(altMatch2.locator[altMatch2.alternation].toString().split("")[0]) === -1) {
-
+                                                    if (setMergeLocators(altMatch, altMatch2)) {
                                                         //no alternation marker
                                                         altMatch.na = altMatch.na || altMatch.locator[altMatch.alternation].toString();
                                                         if (altMatch.na.indexOf(altMatch.locator[altMatch.alternation].toString().split("")[0]) === -1) {
@@ -1113,7 +1121,6 @@
                                                         }
                                                         //insert match above general match
                                                         dropMatch = true;
-                                                        setMergeLocators(altMatch, altMatch2);
                                                         malternateMatches.splice(malternateMatches.indexOf(altMatch2), 0, altMatch);
                                                     }
                                                     break;

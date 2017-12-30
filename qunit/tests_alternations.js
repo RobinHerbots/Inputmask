@@ -342,4 +342,15 @@ export default function (qunit, $, Inputmask) {
         $("#testmask").Type("a2");
         assert.equal(testmask.inputmask._valueGet(), "a_", "Result " + testmask.inputmask._valueGet());
     });
+
+    qunit.test("regex: \"([0-9]{2})|([a-z0-9][a-z])\"", function (assert) {
+        var $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+
+        Inputmask({ regex: "([0-9]{2})|([a-z0-9][a-z])"}).mask(testmask);
+        testmask.focus();
+        $("#testmask").Type("a2");
+        assert.equal(testmask.inputmask._valueGet(), "a_", "Result " + testmask.inputmask._valueGet());
+    });
 };
