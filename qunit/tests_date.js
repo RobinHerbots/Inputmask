@@ -1,4 +1,11 @@
 export default function (qunit, $, Inputmask) {
+    function pad(val, len) {
+        val = String(val);
+        len = len || 2;
+        while (val.length < len) val = "0" + val;
+        return val;
+    }
+
     qunit.module("Date.Extensions - dd/mm/yyyy");
     qunit.test("valid entry", function (assert) {
         var $fixture = $("#qunit-fixture");
@@ -67,7 +74,7 @@ export default function (qunit, $, Inputmask) {
         testmask.focus();
         $("#testmask").SendKey(Inputmask.keyCode.RIGHT, Inputmask.keyCode.CONTROL);
         var today = new Date();
-        today = "00".substr(0, 2 - today.getDate().toString().length) + today.getDate() + "/" + (parseInt(today.getMonth()) + 1) + "/" + today.getFullYear();
+        today = pad(today.getDate(), 2) + "/" + pad(parseInt(today.getMonth()) + 1, 2) + "/" + today.getFullYear();
         assert.equal(testmask.value, today, "Result " + testmask.value);
     });
     qunit.test("backspace year", function (assert) {
@@ -242,7 +249,7 @@ export default function (qunit, $, Inputmask) {
         testmask.focus();
         $("#testmask").SendKey(Inputmask.keyCode.RIGHT, Inputmask.keyCode.CONTROL);
         var today = new Date();
-        today = (parseInt(today.getMonth()) + 1) + "/" + "00".substr(0, 2 - today.getDate().toString().length) + today.getDate() + "/" + today.getFullYear();
+        today = pad(parseInt(today.getMonth()) + 1, 2) + "/" + pad(today.getDate(), 2) + "/" + today.getFullYear();
         assert.equal(testmask.value, today, "Result " + testmask.value);
     });
     qunit.test("backspace year", function (assert) {

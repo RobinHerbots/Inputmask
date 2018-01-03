@@ -223,13 +223,13 @@
 
                     while (match = getTokenizer(opts).exec(opts.inputFormat)) {
                         if (match[0].charAt(0) === "d") {
-                            date += today.getDate().toString();
+                            date += pad(today.getDate(), match[0].length);
                         } else if (match[0].charAt(0) === "m") {
-                            date += (today.getMonth() + 1).toString();
+                            date += pad((today.getMonth() + 1), match[0].length);
                         } else if (match[0] === "yyyy") {
                             date += today.getFullYear().toString();
-                        } else if (match[0] === "yy") {
-                            date += today.getYear().toString();
+                        } else if (match[0].charAt(0) === "y") {
+                            date += pad(today.getYear(), match[0].length);
                         }
                     }
 
