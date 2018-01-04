@@ -1006,9 +1006,7 @@
                         }
 
                         if (opts.regex && source.match.fn !== null && target.match.fn !== null) { //is regex a subset
-                            var src = expand(source.match.def.replace(/[\[\]]/g, "")),
-                                trgt = expand(target.match.def.replace(/[\[\]]/g, ""));
-                            return trgt.indexOf(src) !== -1;
+                            return expand(target.match.def.replace(/[\[\]]/g, "")).indexOf(expand(source.match.def.replace(/[\[\]]/g, ""))) !== -1;
                         }
                         return source.match.def === target.match.nativeDef;
                     }
@@ -1098,7 +1096,6 @@
                                     testPos = currentPos;
                                     matches = [];
 
-                                    // console.log(pos + " - " + JSON.stringify(maltMatches));
                                     //fuzzy merge matches
                                     for (var ndx1 = 0; ndx1 < maltMatches.length; ndx1++) {
                                         var altMatch = maltMatches[ndx1],
@@ -1107,7 +1104,6 @@
                                         setMergeLocators(altMatch);
                                         for (var ndx2 = 0; ndx2 < malternateMatches.length; ndx2++) {
                                             var altMatch2 = malternateMatches[ndx2];
-                                            //verify equality
                                             if (typeof altIndex !== "string" || (altMatch.alternation !== undefined && $.inArray(altMatch.locator[altMatch.alternation].toString(), altIndexArr) !== -1)) {
                                                 if (altMatch.match.nativeDef === altMatch2.match.nativeDef) {
                                                     dropMatch = true;
@@ -1149,11 +1145,7 @@
 
                                 //cloneback
                                 ndxInitializer = ndxInitializerClone.slice();
-                            } else {
-                                // if (alternateToken.matches[altIndex]) { //if not in the initial alternation => look further
-                                match = handleMatch(alternateToken.matches[altIndex] || maskToken.matches[altIndex], [altIndex].concat(loopNdx), quantifierRecurse);
-                                // } else match = false;
-                            }
+                            } else match = handleMatch(alternateToken.matches[altIndex] || maskToken.matches[altIndex], [altIndex].concat(loopNdx), quantifierRecurse);
                             if (match) return true;
                         } else if (match.isQuantifier && quantifierRecurse !== maskToken.matches[$.inArray(match, maskToken.matches) - 1]) {
                             var qt = match;
@@ -2094,8 +2086,6 @@
                     caretPos = caret(input),
                     tempValue;
 
-                // console.log(inputValue);
-
                 if (isRTL) {
                     tempValue = caretPos.end;
                     caretPos.end = caretPos.begin;
@@ -2120,7 +2110,6 @@
                 } else return true; //allow native paste event as fallback ~ masking will continue by inputfallback
 
                 var pasteValue = inputValue;
-                // console.log(inputValue);
                 if ($.isFunction(opts.onBeforePaste)) {
                     pasteValue = opts.onBeforePaste.call(inputmask, inputValue, opts);
                     if (pasteValue === false) {
