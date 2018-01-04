@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-79
+* Version: 4.0.0-80
 */
 
 !function(factory) {
@@ -155,9 +155,14 @@
                         return targetAlternation !== undefined ? resolveNdxInitializer(pos, alternateNdx) : undefined;
                     }
                     function isSubsetOf(source, target) {
+                        function expand(pattern) {
+                            for (var start, end, expanded = [], i = 0, l = pattern.length; i < l; i++) if ("-" === pattern.charAt(i)) for (end = pattern.charCodeAt(i + 1); ++start < end; ) expanded.push(String.fromCharCode(start)); else start = pattern.charCodeAt(i), 
+                            expanded.push(pattern.charAt(i));
+                            return expanded.join("");
+                        }
                         if (opts.regex && null !== source.match.fn && null !== target.match.fn) {
-                            var src = source.match.def.replace(/[\[\]]/g, "");
-                            return -1 !== target.match.def.replace(/[\[\]]/g, "").indexOf(src);
+                            var src = expand(source.match.def.replace(/[\[\]]/g, ""));
+                            return -1 !== expand(target.match.def.replace(/[\[\]]/g, "")).indexOf(src);
                         }
                         return source.match.def === target.match.nativeDef;
                     }

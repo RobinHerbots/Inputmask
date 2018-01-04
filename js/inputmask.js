@@ -990,15 +990,24 @@
                         }
                     }
 
-                    function definitionCanMatchDefinition(source, target) {
-                        return source.match.nativeDef === target.match.nativeDef || source.match.def === target.match.nativeDef;
-                    }
-
                     function isSubsetOf(source, target) {
+                        function expand(pattern) {
+                            var expanded = [], start, end;
+                            for (var i = 0, l = pattern.length; i < l; i++) {
+                                if (pattern.charAt(i) === "-") {
+                                    end = pattern.charCodeAt(i + 1);
+                                    while (++start < end) expanded.push(String.fromCharCode(start));
+                                } else {
+                                    start = pattern.charCodeAt(i);
+                                    expanded.push(pattern.charAt(i));
+                                }
+                            }
+                            return expanded.join("");
+                        }
+
                         if (opts.regex && source.match.fn !== null && target.match.fn !== null) { //is regex a subset
-                            //do we need a dfa for this?
-                            //currently only a simplistic approach
-                            var src = source.match.def.replace(/[\[\]]/g, ""), trgt = target.match.def.replace(/[\[\]]/g, "");
+                            var src = expand(source.match.def.replace(/[\[\]]/g, "")),
+                                trgt = expand(target.match.def.replace(/[\[\]]/g, ""));
                             return trgt.indexOf(src) !== -1;
                         }
                         return source.match.def === target.match.nativeDef;
