@@ -124,15 +124,14 @@
                 validator: "[0-9\uFF11-\uFF19A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]"
             }
         },
-        aliases: {}, //aliases definitions => see jquery.inputmask.extensions.js
+        aliases: {}, //aliases definitions
         masksCache: {},
         mask: function (elems) {
             var that = this;
 
             function importAttributeOptions(npt, opts, userOptions, dataAttribute) {
                 if (opts.importDataAttributes === true) {
-                    var attrOptions = npt.getAttribute(dataAttribute),
-                        option, dataoptions, optionData, p;
+                    var attrOptions = npt.getAttribute(dataAttribute), option, dataoptions, optionData, p;
 
                     function importOption(option, optionData) {
                         optionData = optionData !== undefined ? optionData : npt.getAttribute(dataAttribute + "-" + option);
@@ -147,7 +146,7 @@
                     }
 
                     if (attrOptions && attrOptions !== "") {
-                        attrOptions = attrOptions.replace(new RegExp("'", "g"), '"');
+                        attrOptions = attrOptions.replace(/'/g, '"');
                         dataoptions = JSON.parse("{" + attrOptions + "}");
                     }
 
@@ -1090,8 +1089,9 @@
                                     ndxInitializer = resolveNdxInitializer(testPos, amndx, loopNdxCnt) || ndxInitializerClone.slice();
                                     if (alternateToken.matches[amndx] && handleMatch(alternateToken.matches[amndx], [amndx].concat(loopNdx), quantifierRecurse))
                                         match = true;
-                                    else if (maskToken.matches[amndx] && alternateToken !== maskToken.matches[amndx] && handleMatch(maskToken.matches[amndx], [amndx].concat(loopNdx.slice(1)), quantifierRecurse))
-                                        match = true;
+                                    // else if (maskToken.matches[amndx] && alternateToken !== maskToken.matches[amndx] && handleMatch(maskToken.matches[amndx], [amndx].concat(loopNdx.slice(1)), quantifierRecurse)) {
+                                    //     match = true;
+                                    // }
                                     maltMatches = matches.slice();
                                     testPos = currentPos;
                                     matches = [];

@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-80
+* Version: 4.0.0-82
 */
 
 !function(factory) {
@@ -160,11 +160,7 @@
                             expanded.push(pattern.charAt(i));
                             return expanded.join("");
                         }
-                        if (opts.regex && null !== source.match.fn && null !== target.match.fn) {
-                            var src = expand(source.match.def.replace(/[\[\]]/g, ""));
-                            return -1 !== expand(target.match.def.replace(/[\[\]]/g, "")).indexOf(src);
-                        }
-                        return source.match.def === target.match.nativeDef;
+                        return opts.regex && null !== source.match.fn && null !== target.match.fn ? -1 !== expand(target.match.def.replace(/[\[\]]/g, "")).indexOf(expand(source.match.def.replace(/[\[\]]/g, ""))) : source.match.def === target.match.nativeDef;
                     }
                     function setMergeLocators(targetMatch, altMatch) {
                         if (altMatch === undefined || targetMatch.alternation === altMatch.alternation && -1 === targetMatch.locator[targetMatch.alternation].toString().indexOf(altMatch.locator[altMatch.alternation])) {
@@ -206,7 +202,7 @@
                                 if ("string" == typeof altIndex) altIndexArr = altIndex.split(","); else for (amndx = 0; amndx < alternateToken.matches.length; amndx++) altIndexArr.push(amndx);
                                 for (var ndx = 0; ndx < altIndexArr.length; ndx++) {
                                     amndx = parseInt(altIndexArr[ndx]), matches = [], ndxInitializer = resolveNdxInitializer(testPos, amndx, loopNdxCnt) || ndxInitializerClone.slice(), 
-                                    alternateToken.matches[amndx] && handleMatch(alternateToken.matches[amndx], [ amndx ].concat(loopNdx), quantifierRecurse) ? match = !0 : maskToken.matches[amndx] && alternateToken !== maskToken.matches[amndx] && handleMatch(maskToken.matches[amndx], [ amndx ].concat(loopNdx.slice(1)), quantifierRecurse) && (match = !0), 
+                                    alternateToken.matches[amndx] && handleMatch(alternateToken.matches[amndx], [ amndx ].concat(loopNdx), quantifierRecurse) && (match = !0), 
                                     maltMatches = matches.slice(), testPos = currentPos, matches = [];
                                     for (var ndx1 = 0; ndx1 < maltMatches.length; ndx1++) {
                                         var altMatch = maltMatches[ndx1], dropMatch = !1;
@@ -1301,7 +1297,7 @@
                 }
                 if (!0 === opts.importDataAttributes) {
                     var option, dataoptions, optionData, p, attrOptions = npt.getAttribute(dataAttribute);
-                    if (attrOptions && "" !== attrOptions && (attrOptions = attrOptions.replace(new RegExp("'", "g"), '"'), 
+                    if (attrOptions && "" !== attrOptions && (attrOptions = attrOptions.replace(/'/g, '"'), 
                     dataoptions = JSON.parse("{" + attrOptions + "}")), dataoptions) {
                         optionData = undefined;
                         for (p in dataoptions) if ("alias" === p.toLowerCase()) {
