@@ -1093,7 +1093,7 @@
                                             altIndexArr = altIndexArrClone;
                                         }
                                     }
-                                    if (opts.keepStatic === true || currentPos >= opts.keepStatic) altIndexArr = altIndexArr.slice(0, 1);
+                                    if (opts.keepStatic === true || (isFinite(parseInt(opts.keepStatic)) && currentPos >= opts.keepStatic)) altIndexArr = altIndexArr.slice(0, 1);
 
                                     for (var ndx = 0; ndx < altIndexArr.length; ndx++) {
                                         amndx = parseInt(altIndexArr[ndx]);
