@@ -1385,7 +1385,7 @@
                     }
                 }
 
-                console.log(">>>>> last alternator " + lastAlt);
+                // console.log(">>>>> last alternator " + lastAlt);
                 if (alternation !== undefined) {
                     decisionPos = parseInt(lastAlt);
                     var decisionTaker = prevAltPos.locator[prevAltPos.alternation];
@@ -1408,7 +1408,7 @@
                     }
 
                     while (getMaskSet().excludes[decisionPos]) {
-                        console.log("alternate " + decisionPos + "  " + getMaskSet().excludes[decisionPos].join(','));
+                        // console.log("alternate " + decisionPos + "  " + getMaskSet().excludes[decisionPos].join(','));
                         var posOffset = staticInputsBeforePos * -1, //negate
                             validInputs = validInputsClone.slice();
                         getMaskSet().tests[decisionPos] = undefined; //clear decisionPos

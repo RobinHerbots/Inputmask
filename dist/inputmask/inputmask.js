@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-83
+* Version: 4.0.0-84
 */
 
 !function(factory) {
@@ -350,7 +350,7 @@
                 lastAlt = lAltPos, alternation = getMaskSet().validPositions[lastAlt].alternation, 
                 prevAltPos = altPos;
             }
-            if (console.log(">>>>> last alternator " + lastAlt), alternation !== undefined) {
+            if (alternation !== undefined) {
                 decisionPos = parseInt(lastAlt);
                 var decisionTaker = prevAltPos.locator[prevAltPos.alternation];
                 decisionTaker.length > 0 && (decisionTaker = decisionTaker.split(",")[0]), getMaskSet().excludes[decisionPos] = getMaskSet().excludes[decisionPos] || [], 
@@ -359,7 +359,6 @@
                 for (i = decisionPos; i < getLastValidPosition(undefined, !0) + 1; i++) (validPos = getMaskSet().validPositions[i]) && !0 !== validPos.generatedInput && /[0-9a-bA-Z]/.test(validPos.input) ? validInputsClone.push(validPos.input) : i < pos && staticInputsBeforePos++, 
                 delete getMaskSet().validPositions[i];
                 for (;getMaskSet().excludes[decisionPos]; ) {
-                    console.log("alternate " + decisionPos + "  " + getMaskSet().excludes[decisionPos].join(","));
                     var posOffset = -1 * staticInputsBeforePos, validInputs = validInputsClone.slice();
                     for (getMaskSet().tests[decisionPos] = undefined, resetMaskSet(!0), isValidRslt = !0; validInputs.length > 0; ) {
                         var input = validInputs.shift();

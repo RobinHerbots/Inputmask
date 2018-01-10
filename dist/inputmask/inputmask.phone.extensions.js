@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-83
+* Version: 4.0.0-84
 */
 
 !function(factory) {
@@ -11,7 +11,6 @@
 }(function($, Inputmask) {
     function maskSort(a, b) {
         var maska = (a.mask || a).replace(/#/g, "9").replace(/\)/, "9").replace(/[+()#-]/g, ""), maskb = (b.mask || b).replace(/#/g, "9").replace(/\)/, "9").replace(/[+()#-]/g, "");
-        (a.mask || a).split("#")[0], (b.mask || b).split("#")[0];
         return maska.localeCompare(maskb);
     }
     var analyseMaskBase = Inputmask.prototype.analyseMask;

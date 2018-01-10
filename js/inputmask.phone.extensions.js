@@ -20,12 +20,7 @@
 (function ($, Inputmask) {
     function maskSort(a, b) {
         var maska = (a.mask || a).replace(/#/g, "9").replace(/\)/, "9").replace(/[+()#-]/g, ""),
-            maskb = (b.mask || b).replace(/#/g, "9").replace(/\)/, "9").replace(/[+()#-]/g, ""),
-            maskas = (a.mask || a).split("#")[0],
-            maskbs = (b.mask || b).split("#")[0];
-
-        // return maskbs.indexOf(maskas) === 0 ? -1 : (maskas.indexOf(maskbs) === 0 ? 1 : maska.localeCompare(maskb));
-
+            maskb = (b.mask || b).replace(/#/g, "9").replace(/\)/, "9").replace(/[+()#-]/g, "");
         return maska.localeCompare(maskb);
     }
 
@@ -54,7 +49,6 @@
                 }
             }
         }
-
         function rebuild(maskGroup) {
             var mask = "", submasks = [];
             for (var ndx in maskGroup) {
@@ -77,7 +71,6 @@
 
             return mask;
         }
-
 
         if (opts.phoneCodes) {
             if (opts.phoneCodes && opts.phoneCodes.length > 1000) {
