@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-84
+* Version: 4.0.0-85
 */
 
 !function(modules) {
@@ -2449,7 +2449,7 @@
         void 0 !== (__WEBPACK_AMD_DEFINE_RESULT__ = "function" == typeof (__WEBPACK_AMD_DEFINE_FACTORY__ = factory) ? __WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__) : __WEBPACK_AMD_DEFINE_FACTORY__) && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__);
     }(function($, Inputmask) {
         function maskSort(a, b) {
-            var maska = (a.mask || a).replace(/#/g, "9").replace(/\)/, "9").replace(/[+()#-]/g, ""), maskb = (b.mask || b).replace(/#/g, "9").replace(/\)/, "9").replace(/[+()#-]/g, "");
+            var maska = (a.mask || a).replace(/#/g, "0").replace(/\)/, "0").replace(/[+()#-]/g, ""), maskb = (b.mask || b).replace(/#/g, "0").replace(/\)/, "0").replace(/[+()#-]/g, "");
             return maska.localeCompare(maskb);
         }
         var analyseMaskBase = Inputmask.prototype.analyseMask;
@@ -2475,12 +2475,14 @@
                 groupmarker: [ "<", ">" ],
                 countrycode: "",
                 phoneCodes: [],
-                mask: function(opts) {
-                    return opts.definitions = {
-                        "#": Inputmask.prototype.definitions[9]
-                    }, opts.phoneCodes.sort(maskSort);
-                },
                 keepStatic: 5,
+                mask: function(opts) {
+                    opts.definitions = {
+                        "#": Inputmask.prototype.definitions[9]
+                    };
+                    var sorted = opts.phoneCodes.sort(maskSort);
+                    return console.table(sorted), sorted;
+                },
                 onBeforeMask: function(value, opts) {
                     var processedValue = value.replace(/^0{1,2}/, "").replace(/[\s]/g, "");
                     return (processedValue.indexOf(opts.countrycode) > 1 || -1 === processedValue.indexOf(opts.countrycode)) && (processedValue = "+" + opts.countrycode + processedValue), 

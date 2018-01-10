@@ -19,8 +19,9 @@
 }
 (function ($, Inputmask) {
     function maskSort(a, b) {
-        var maska = (a.mask || a).replace(/#/g, "9").replace(/\)/, "9").replace(/[+()#-]/g, ""),
-            maskb = (b.mask || b).replace(/#/g, "9").replace(/\)/, "9").replace(/[+()#-]/g, "");
+        var maska = (a.mask || a).replace(/#/g, "0").replace(/\)/, "0").replace(/[+()#-]/g, ""),
+            maskb = (b.mask || b).replace(/#/g, "0").replace(/\)/, "0").replace(/[+()#-]/g, "");
+
         return maska.localeCompare(maskb);
     }
 
@@ -90,12 +91,13 @@
             groupmarker: ["<", ">"],
             countrycode: "",
             phoneCodes: [],
+            keepStatic: 5,
             mask: function (opts) {
                 opts.definitions = {"#": Inputmask.prototype.definitions["9"]};
                 var sorted = opts.phoneCodes.sort(maskSort);
+                console.table(sorted);
                 return sorted;
             },
-            keepStatic: 5,
             onBeforeMask: function (value, opts) {
                 var processedValue = value.replace(/^0{1,2}/, "").replace(/[\s]/g, "");
                 if (processedValue.indexOf(opts.countrycode) > 1 || processedValue.indexOf(opts.countrycode) === -1) {
