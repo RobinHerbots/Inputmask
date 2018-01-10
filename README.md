@@ -969,6 +969,8 @@ Define the groupseparator<br>Default: ""
 ### keepStatic
 Default: null (~false) Use in combination with the alternator syntax Try to keep the mask static while typing. Decisions to alter the mask will be postponed if possible.
 
+Value can be true or number.  When a number is passed the mask is kept static as of the position == number passed.
+
 ex. $(selector).inputmask({ mask: ["+55-99-9999-9999", "+55-99-99999-9999", ], keepStatic: true });
 
 typing 1212345123 => should result in +55-12-1234-5123 type extra 4 => switch to +55-12-12345-1234

@@ -1093,7 +1093,7 @@
                                             altIndexArr = altIndexArrClone;
                                         }
                                     }
-                                    if (opts.keepStatic === true || (isFinite(parseInt(opts.keepStatic)) && currentPos >= opts.keepStatic)) altIndexArr = altIndexArr.slice(0, 1);
+                                    if ((opts.keepStatic === true && currentPos > 0) || (isFinite(parseInt(opts.keepStatic)) && currentPos >= opts.keepStatic)) altIndexArr = altIndexArr.slice(0, 1);
 
                                     for (var ndx = 0; ndx < altIndexArr.length; ndx++) {
                                         amndx = parseInt(altIndexArr[ndx]);
@@ -1270,7 +1270,7 @@
                     return $.extend(true, [], matches);
                 }
                 getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
-                console.log(pos + " - " + JSON.stringify(matches));
+                // console.log(pos + " - " + JSON.stringify(matches));
                 return getMaskSet().tests[pos];
             }
 
@@ -1363,13 +1363,14 @@
                 return isMatch;
             }
 
-            function alternate(pos, c, strict, fromSetValid) { //pos == true => generalize
+            function alternate(pos, c, strict, fromSetValid, lAltPos) { //pos == true => generalize
                 var validPsClone = $.extend(true, {}, getMaskSet().validPositions),
                     lastAlt,
                     alternation,
                     isValidRslt = false,
-                    altPos, prevAltPos, i, validPos, lAltPos = getLastValidPosition(),
+                    altPos, prevAltPos, i, validPos,
                     decisionPos;
+                lAltPos = lAltPos !== undefined ? lAltPos : getLastValidPosition();
                 //find last modified alternation
                 prevAltPos = getMaskSet().validPositions[lAltPos];
                 for (; lAltPos >= 0; lAltPos--) {
@@ -1437,17 +1438,23 @@
                         }
                         if (!isValidRslt) {
                             resetMaskSet();
+                            prevAltPos = getTest(decisionPos);  //get the current decisionPos to exclude ~ needs to be before restoring the initial validation
                             //reset & revert
                             getMaskSet().validPositions = $.extend(true, {}, validPsClone);
                             if (getMaskSet().excludes[decisionPos]) {
-                                prevAltPos = getTest(decisionPos);
+                                // prevAltPos = getTest(decisionPos);
                                 var decisionTaker = prevAltPos.locator[prevAltPos.alternation];
                                 if (decisionTaker.length > 0) { //no decision taken ~ take first one as decider
                                     decisionTaker = decisionTaker.split(",")[0];
                                 }
-                                if (getMaskSet().excludes[decisionPos].indexOf(decisionTaker.toString()) !== -1) break;
+                                if (getMaskSet().excludes[decisionPos].indexOf(decisionTaker.toString()) !== -1) {
+                                    isValidRslt = alternate(pos, c, strict, fromSetValid, decisionPos - 1);
+                                    break;
+                                }
                                 getMaskSet().excludes[decisionPos].push(decisionTaker.toString());
+                                for (i = decisionPos; i < getLastValidPosition(undefined, true) + 1; i++) delete getMaskSet().validPositions[i];
                             } else { //latest alternation
+                                isValidRslt = alternate(pos, c, strict, fromSetValid, decisionPos - 1);
                                 break;
                             }
                         } else break;
