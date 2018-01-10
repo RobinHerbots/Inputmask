@@ -24,7 +24,9 @@
             maskas = (a.mask || a).split("#")[0],
             maskbs = (b.mask || b).split("#")[0];
 
-        return maskbs.indexOf(maskas) === 0 ? -1 : (maskas.indexOf(maskbs) === 0 ? 1 : maska.localeCompare(maskb));
+        // return maskbs.indexOf(maskas) === 0 ? -1 : (maskas.indexOf(maskbs) === 0 ? 1 : maska.localeCompare(maskb));
+
+        return maska.localeCompare(maskb);
     }
 
     var analyseMaskBase = Inputmask.prototype.analyseMask;
@@ -97,9 +99,10 @@
             phoneCodes: [],
             mask: function (opts) {
                 opts.definitions = {"#": Inputmask.prototype.definitions["9"]};
-                return opts.phoneCodes.sort(maskSort);
+                var sorted = opts.phoneCodes.sort(maskSort);
+                return sorted;
             },
-            keepStatic: true,
+            keepStatic: 3,
             onBeforeMask: function (value, opts) {
                 var processedValue = value.replace(/^0{1,2}/, "").replace(/[\s]/g, "");
                 if (processedValue.indexOf(opts.countrycode) > 1 || processedValue.indexOf(opts.countrycode) === -1) {
