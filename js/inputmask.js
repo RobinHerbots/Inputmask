@@ -37,7 +37,7 @@
                     options = alias;
                 } else {
                     options = options || {};
-                    options.alias = alias;
+                    if(alias) options.alias = alias;
                 }
                 this.opts = $.extend(true, {}, this.defaults, options);
                 this.noMasksCache = options && options.definitions !== undefined;
@@ -201,26 +201,28 @@
                 $.each(elems, function (ndx, el) {
                     var scopedOpts = $.extend(true, {}, that.opts);
                     importAttributeOptions(el, scopedOpts, $.extend(true, {}, that.userOptions), that.dataAttribute);
-                    var maskset = generateMaskSet(scopedOpts, that.noMasksCache);
-                    if (maskset !== undefined) {
-                        if (el.inputmask !== undefined) {
-                            el.inputmask.opts.autoUnmask = true; //force autounmasking when remasking
-                            el.inputmask.remove();
+                    if (Object.keys(that.userOptions).length) {
+                        var maskset = generateMaskSet(scopedOpts, that.noMasksCache);
+                        if (maskset !== undefined) {
+                            if (el.inputmask !== undefined) {
+                                el.inputmask.opts.autoUnmask = true; //force autounmasking when remasking
+                                el.inputmask.remove();
+                            }
+                            //store inputmask instance on the input with element reference
+                            el.inputmask = new Inputmask(undefined, undefined, true);
+                            el.inputmask.opts = scopedOpts;
+                            el.inputmask.noMasksCache = that.noMasksCache;
+                            el.inputmask.userOptions = $.extend(true, {}, that.userOptions);
+                            el.inputmask.isRTL = scopedOpts.isRTL || scopedOpts.numericInput;
+                            el.inputmask.el = el;
+                            el.inputmask.maskset = maskset;
+
+                            $.data(el, "_inputmask_opts", scopedOpts);
+
+                            maskScope.call(el.inputmask, {
+                                "action": "mask"
+                            });
                         }
-                        //store inputmask instance on the input with element reference
-                        el.inputmask = new Inputmask(undefined, undefined, true);
-                        el.inputmask.opts = scopedOpts;
-                        el.inputmask.noMasksCache = that.noMasksCache;
-                        el.inputmask.userOptions = $.extend(true, {}, that.userOptions);
-                        el.inputmask.isRTL = scopedOpts.isRTL || scopedOpts.numericInput;
-                        el.inputmask.el = el;
-                        el.inputmask.maskset = maskset;
-
-                        $.data(el, "_inputmask_opts", scopedOpts);
-
-                        maskScope.call(el.inputmask, {
-                            "action": "mask"
-                        });
                     }
                 });
                 return elems && elems[0] ? (elems[0].inputmask || this) : this;

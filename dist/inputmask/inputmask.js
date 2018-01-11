@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-89
+* Version: 4.0.0-90
 */
 
 !function(factory) {
@@ -12,9 +12,10 @@
     function Inputmask(alias, options, internal) {
         if (!(this instanceof Inputmask)) return new Inputmask(alias, options, internal);
         this.el = undefined, this.events = {}, this.maskset = undefined, this.refreshValue = !1, 
-        !0 !== internal && ($.isPlainObject(alias) ? options = alias : (options = options || {}).alias = alias, 
-        this.opts = $.extend(!0, {}, this.defaults, options), this.noMasksCache = options && options.definitions !== undefined, 
-        this.userOptions = options || {}, this.isRTL = this.opts.numericInput, resolveAlias(this.opts.alias, options, this.opts));
+        !0 !== internal && ($.isPlainObject(alias) ? options = alias : (options = options || {}, 
+        alias && (options.alias = alias)), this.opts = $.extend(!0, {}, this.defaults, options), 
+        this.noMasksCache = options && options.definitions !== undefined, this.userOptions = options || {}, 
+        this.isRTL = this.opts.numericInput, resolveAlias(this.opts.alias, options, this.opts));
     }
     function resolveAlias(aliasStr, options, opts) {
         var aliasDefinition = Inputmask.prototype.aliases[aliasStr];
@@ -1310,15 +1311,17 @@
             return "string" == typeof elems && (elems = document.getElementById(elems) || document.querySelectorAll(elems)), 
             elems = elems.nodeName ? [ elems ] : elems, $.each(elems, function(ndx, el) {
                 var scopedOpts = $.extend(!0, {}, that.opts);
-                importAttributeOptions(el, scopedOpts, $.extend(!0, {}, that.userOptions), that.dataAttribute);
-                var maskset = generateMaskSet(scopedOpts, that.noMasksCache);
-                maskset !== undefined && (el.inputmask !== undefined && (el.inputmask.opts.autoUnmask = !0, 
-                el.inputmask.remove()), el.inputmask = new Inputmask(undefined, undefined, !0), 
-                el.inputmask.opts = scopedOpts, el.inputmask.noMasksCache = that.noMasksCache, el.inputmask.userOptions = $.extend(!0, {}, that.userOptions), 
-                el.inputmask.isRTL = scopedOpts.isRTL || scopedOpts.numericInput, el.inputmask.el = el, 
-                el.inputmask.maskset = maskset, $.data(el, "_inputmask_opts", scopedOpts), maskScope.call(el.inputmask, {
-                    action: "mask"
-                }));
+                if (importAttributeOptions(el, scopedOpts, $.extend(!0, {}, that.userOptions), that.dataAttribute), 
+                Object.keys(that.userOptions).length) {
+                    var maskset = generateMaskSet(scopedOpts, that.noMasksCache);
+                    maskset !== undefined && (el.inputmask !== undefined && (el.inputmask.opts.autoUnmask = !0, 
+                    el.inputmask.remove()), el.inputmask = new Inputmask(undefined, undefined, !0), 
+                    el.inputmask.opts = scopedOpts, el.inputmask.noMasksCache = that.noMasksCache, el.inputmask.userOptions = $.extend(!0, {}, that.userOptions), 
+                    el.inputmask.isRTL = scopedOpts.isRTL || scopedOpts.numericInput, el.inputmask.el = el, 
+                    el.inputmask.maskset = maskset, $.data(el, "_inputmask_opts", scopedOpts), maskScope.call(el.inputmask, {
+                        action: "mask"
+                    }));
+                }
             }), elems && elems[0] ? elems[0].inputmask || this : this;
         },
         option: function(options, noremask) {
