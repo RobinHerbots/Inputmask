@@ -1407,7 +1407,7 @@
                         delete getMaskSet().validPositions[i];
                     }
 
-                    while (getMaskSet().excludes[decisionPos]) {
+                    while (getMaskSet().excludes[decisionPos] && getMaskSet().excludes[decisionPos].length < 10) {
                         // console.log("alternate " + decisionPos + "  " + getMaskSet().excludes[decisionPos].join(','));
                         var posOffset = staticInputsBeforePos * -1, //negate
                             validInputs = validInputsClone.slice();
