@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 - new datetime alias
 
 ### Updates
-- better caret handling in colormask
+- better caret handlgit aing in colormask
 - change notation of optionalmarker, quantifiermarker, groupmarker
 - drop prevalidator and cardinality support in definitions
 - better determination of the NdxInitializer (alternations)

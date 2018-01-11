@@ -1,4 +1,4 @@
-import "./css/inputmask.css";
+// import "./css/inputmask.css";
 
 import "./js/inputmask.date.extensions";
 import "./js/inputmask.extensions";
