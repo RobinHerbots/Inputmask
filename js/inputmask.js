@@ -37,7 +37,7 @@
                     options = alias;
                 } else {
                     options = options || {};
-                    if(alias) options.alias = alias;
+                    if (alias) options.alias = alias;
                 }
                 this.opts = $.extend(true, {}, this.defaults, options);
                 this.noMasksCache = options && options.definitions !== undefined;
@@ -191,7 +191,7 @@
                         opts.isRTL = true;
                     }
 
-                    return opts;
+                    return Object.keys(userOptions).length;
                 }
 
                 if (typeof elems === "string") {
@@ -200,8 +200,7 @@
                 elems = elems.nodeName ? [elems] : elems;
                 $.each(elems, function (ndx, el) {
                     var scopedOpts = $.extend(true, {}, that.opts);
-                    importAttributeOptions(el, scopedOpts, $.extend(true, {}, that.userOptions), that.dataAttribute);
-                    if (Object.keys(that.userOptions).length) {
+                    if (importAttributeOptions(el, scopedOpts, $.extend(true, {}, that.userOptions), that.dataAttribute)) {
                         var maskset = generateMaskSet(scopedOpts, that.noMasksCache);
                         if (maskset !== undefined) {
                             if (el.inputmask !== undefined) {
