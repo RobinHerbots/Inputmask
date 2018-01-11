@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-85
+* Version: 4.0.0-88
 */
 
 !function(factory) {
@@ -38,11 +38,9 @@
             phoneCodes: [],
             keepStatic: 5,
             mask: function(opts) {
-                opts.definitions = {
+                return opts.definitions = {
                     "#": Inputmask.prototype.definitions[9]
-                };
-                var sorted = opts.phoneCodes.sort(maskSort);
-                return console.table(sorted), sorted;
+                }, opts.phoneCodes.sort(maskSort);
             },
             onBeforeMask: function(value, opts) {
                 var processedValue = value.replace(/^0{1,2}/, "").replace(/[\s]/g, "");

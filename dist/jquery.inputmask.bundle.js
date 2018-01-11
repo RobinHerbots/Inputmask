@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-85
+* Version: 4.0.0-88
 */
 
 !function(modules) {
@@ -403,7 +403,7 @@
                     var validInputsClone = [], staticInputsBeforePos = 0;
                     for (i = decisionPos; i < getLastValidPosition(undefined, !0) + 1; i++) (validPos = getMaskSet().validPositions[i]) && !0 !== validPos.generatedInput && /[0-9a-bA-Z]/.test(validPos.input) ? validInputsClone.push(validPos.input) : i < pos && staticInputsBeforePos++, 
                     delete getMaskSet().validPositions[i];
-                    for (;getMaskSet().excludes[decisionPos]; ) {
+                    for (;getMaskSet().excludes[decisionPos] && getMaskSet().excludes[decisionPos].length < 10; ) {
                         var posOffset = -1 * staticInputsBeforePos, validInputs = validInputsClone.slice();
                         for (getMaskSet().tests[decisionPos] = undefined, resetMaskSet(!0), isValidRslt = !0; validInputs.length > 0; ) {
                             var input = validInputs.shift();
@@ -2477,11 +2477,9 @@
                 phoneCodes: [],
                 keepStatic: 5,
                 mask: function(opts) {
-                    opts.definitions = {
+                    return opts.definitions = {
                         "#": Inputmask.prototype.definitions[9]
-                    };
-                    var sorted = opts.phoneCodes.sort(maskSort);
-                    return console.table(sorted), sorted;
+                    }, opts.phoneCodes.sort(maskSort);
                 },
                 onBeforeMask: function(value, opts) {
                     var processedValue = value.replace(/^0{1,2}/, "").replace(/[\s]/g, "");

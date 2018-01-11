@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-85
+* Version: 4.0.0-88
 */
 
 !function(factory) {
@@ -29,7 +29,7 @@
                 cd: "Belgium",
                 city: "Arlon"
             }, {
-                mask: "+32(67)##-##-##",
+                mask: "+32(68)##-##-##",
                 cc: "BE",
                 cd: "Belgium",
                 city: "Ath"
@@ -58,6 +58,11 @@
                 cc: "BE",
                 cd: "Belgium",
                 city: "Ciney"
+            }, {
+                mask: "+32(56)##-##-##",
+                cc: "BE",
+                cd: "Belgium",
+                city: "Courtrai, Comines-Warneton, Mouscron"
             }, {
                 mask: "+32(52)##-##-##",
                 cc: "BE",
@@ -104,6 +109,11 @@
                 cd: "Belgium",
                 city: "Huy (Hoei)"
             }, {
+                mask: "+32(57)##-##-##",
+                cc: "BE",
+                cd: "Belgium",
+                city: "Ieper (Ypres)"
+            }, {
                 mask: "+32(64)##-##-##",
                 cc: "BE",
                 cd: "Belgium",
@@ -123,6 +133,11 @@
                 cc: "BE",
                 cd: "Belgium",
                 city: "Liège (Luik)"
+            }, {
+                mask: "+32(84)###-##-##",
+                cc: "BE",
+                cd: "Belgium",
+                city: "Marche-en-Famenne"
             }, {
                 mask: "+32(15)##-##-##",
                 cc: "BE",
@@ -227,7 +242,7 @@
                 mask: "+32(19)##-##-##",
                 cc: "BE",
                 cd: "Belgium",
-                city: "Wareme"
+                city: "Waremme"
             }, {
                 mask: "+32(10)##-##-##",
                 cc: "BE",

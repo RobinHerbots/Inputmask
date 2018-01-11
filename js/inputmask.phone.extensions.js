@@ -95,7 +95,7 @@
             mask: function (opts) {
                 opts.definitions = {"#": Inputmask.prototype.definitions["9"]};
                 var sorted = opts.phoneCodes.sort(maskSort);
-                console.table(sorted);
+                // console.table(sorted);
                 return sorted;
             },
             onBeforeMask: function (value, opts) {
