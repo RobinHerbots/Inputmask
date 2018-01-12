@@ -1443,7 +1443,6 @@
                             //reset & revert
                             getMaskSet().validPositions = $.extend(true, {}, validPsClone);
                             if (getMaskSet().excludes[decisionPos]) {
-                                // prevAltPos = getTest(decisionPos);
                                 var decisionTaker = prevAltPos.locator[prevAltPos.alternation];
                                 if (decisionTaker.length > 0) { //no decision taken ~ take first one as decider
                                     decisionTaker = decisionTaker.split(",")[0];
@@ -1564,34 +1563,29 @@
 
 //set alternator choice on previous skipped placeholder positions
                 function trackbackAlternations(originalPos, newPos) {
-                    var vp = getMaskSet().validPositions[newPos];
-                    if (vp) {
-                        var targetLocator = vp.locator,
-                            tll = targetLocator.length;
-
-                        for (var ps = originalPos; ps < newPos; ps++) {
-                            if (getMaskSet().validPositions[ps] === undefined && !isMask(ps, true)) {
-                                var tests = getTests(ps).slice(),
-                                    bestMatch = determineTestTemplate(ps, tests, true),
-                                    equality = -1;
-                                if (tests[tests.length - 1].match.def === "") tests.pop();
+                    var result;
+                    for (var ps = originalPos; ps < newPos; ps++) {
+                        if (getMaskSet().validPositions[ps] === undefined && !isMask(ps, true)) {
+                            var vp = ps == 0 ? getTest(ps) : getMaskSet().validPositions[ps - 1];
+                            if (vp) {
+                                var decisionTaker = vp.locator[vp.alternation];
+                                if (typeof decisionTaker == "string" && decisionTaker.length > 0) { //no decision taken ~ take first one as decider
+                                    decisionTaker = decisionTaker.split(",")[0];
+                                }
+                                var targetLocator = (vp.alternation != undefined ? vp.mloc[decisionTaker] : vp.locator).join(""),
+                                    tests = getTests(ps).slice(),
+                                    tstLocator, closest, bestMatch;
+                                if (tests[tests.length - 1].match.def === "") tests.pop(); //remove stop from matches
                                 $.each(tests, function (ndx, tst) { //find best matching
-                                    for (var i = 0; i < tll; i++) {
-                                        if (tst.locator[i] !== undefined && checkAlternationMatch(tst.locator[i].toString().split(","), targetLocator[i].toString().split(","), tst.na)) {
-                                            if (equality < i) {
-                                                equality = i;
-                                                bestMatch = tst;
-                                            }
-                                        } else {
-                                            //check if alternationIndex is closer then the current bestmatch
-                                            var targetAI = targetLocator[i],
-                                                bestMatchAI = bestMatch.locator[i],
-                                                tstAI = tst.locator[i];
-                                            if ((targetAI - bestMatchAI) > Math.abs(targetAI - tstAI)) {
-                                                bestMatch = tst;
-                                            }
-                                            break;
-                                        }
+                                    var decisionTaker = tst.locator[tst.alternation];
+                                    if (typeof decisionTaker == "string" && decisionTaker.length > 0) { //no decision taken ~ take first one as decider
+                                        decisionTaker = decisionTaker.split(",")[0];
+                                    }
+                                    tstLocator = (tst.alternation != undefined ? tst.mloc[decisionTaker] : tst.locator).join("");
+                                    var distance = Math.abs(tstLocator - targetLocator);
+                                    if (closest === undefined || distance < closest) {
+                                        closest = distance;
+                                        bestMatch = tst;
                                     }
                                 });
                                 bestMatch = $.extend({}, bestMatch, {
@@ -1600,11 +1594,13 @@
                                 bestMatch.generatedInput = true;
                                 setValidPosition(ps, bestMatch, true);
                                 //revalidate the new position to update the locator value
+                                var cvpInput = getMaskSet().validPositions[newPos].input;
                                 getMaskSet().validPositions[newPos] = undefined;
-                                _isValid(newPos, vp.input, true);
+                                result = isValid(newPos, cvpInput, true, true);
                             }
                         }
                     }
+                    return result;
                 }
 
                 function setValidPosition(pos, validTest, fromSetValid, isSelection) {
@@ -1717,7 +1713,7 @@
                                     // }
                                     result = _isValid(nPos, c, strict);
                                     if (result !== false) {
-                                        trackbackAlternations(maskPos, result.pos !== undefined ? result.pos : nPos);
+                                        result = trackbackAlternations(maskPos, result.pos !== undefined ? result.pos : nPos) || result;
                                         maskPos = nPos;
                                         break;
                                     }
@@ -3127,6 +3123,11 @@
 
 //action object
             var valueBuffer;
+            // if(opts.keepStatic === true) {
+            //     getBufferTemplate();
+            //     opts.keepStatic = seekNext(0);
+            //     getMaskSet().tests = {};
+            // }
             if (actionObj !== undefined) {
                 switch (actionObj.action) {
                     case "isComplete":

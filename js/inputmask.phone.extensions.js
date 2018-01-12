@@ -91,7 +91,7 @@
             groupmarker: ["<", ">"],
             countrycode: "",
             phoneCodes: [],
-            keepStatic: 5,
+            keepStatic: true,
             mask: function (opts) {
                 opts.definitions = {"#": Inputmask.prototype.definitions["9"]};
                 var sorted = opts.phoneCodes.sort(maskSort);
