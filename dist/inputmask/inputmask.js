@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-91
+* Version: 4.0.0-92
 */
 
 !function(factory) {
@@ -73,6 +73,7 @@
                 !0 === baseOnInput && getMaskSet().validPositions[pos] ? (test = (testPos = getMaskSet().validPositions[pos]).match, 
                 ndxIntlzr = testPos.locator.slice(), maskTemplate.push(!0 === includeMode ? testPos.input : !1 === includeMode ? test.nativeDef : getPlaceholder(pos, test))) : (test = (testPos = getTestTemplate(pos, ndxIntlzr, pos - 1)).match, 
                 ndxIntlzr = testPos.locator.slice(), (!1 === opts.jitMasking || pos < lvp || "number" == typeof opts.jitMasking && isFinite(opts.jitMasking) && opts.jitMasking > pos) && maskTemplate.push(!1 === includeMode ? test.nativeDef : getPlaceholder(pos, test))), 
+                1 == opts.keepStatic && test.newBlockMarker && null !== test.fn && (opts.keepStatic = pos - 1), 
                 pos++;
             } while ((maxLength === undefined || pos < maxLength) && (null !== test.fn || "" !== test.def) || minimalPos > pos);
             return "" === maskTemplate[maskTemplate.length - 1] && maskTemplate.pop(), !1 === includeMode && getMaskSet().maskLength !== undefined || (getMaskSet().maskLength = pos + 1), 
@@ -206,7 +207,7 @@
                                     for (var altIndexArrClone = altIndexArr.slice(), i = 0, el = getMaskSet().excludes[pos].length; i < el; i++) altIndexArr.splice(altIndexArr.indexOf(getMaskSet().excludes[pos][i].toString()), 1);
                                     0 === altIndexArr.length && (getMaskSet().excludes[pos] = undefined, altIndexArr = altIndexArrClone);
                                 }
-                                (!0 === opts.keepStatic && currentPos > 0 || isFinite(parseInt(opts.keepStatic)) && currentPos >= opts.keepStatic) && (altIndexArr = altIndexArr.slice(0, 1));
+                                isFinite(parseInt(opts.keepStatic)) && currentPos >= opts.keepStatic && (altIndexArr = altIndexArr.slice(0, 1));
                                 for (var ndx = 0; ndx < altIndexArr.length; ndx++) {
                                     amndx = parseInt(altIndexArr[ndx]), matches = [], ndxInitializer = resolveNdxInitializer(testPos, amndx, loopNdxCnt) || ndxInitializerClone.slice(), 
                                     alternateToken.matches[amndx] && handleMatch(alternateToken.matches[amndx], [ amndx ].concat(loopNdx), quantifierRecurse) && (match = !0), 
@@ -473,25 +474,28 @@
                     var currentPosValid = getMaskSet().validPositions[maskPos];
                     if (!currentPosValid || null !== currentPosValid.match.fn || currentPosValid.match.def !== c && c !== opts.skipOptionalPartCharacter) {
                         if ((opts.insertMode || getMaskSet().validPositions[seekNext(maskPos)] === undefined) && !isMask(maskPos, !0)) for (var nPos = maskPos + 1, snPos = seekNext(maskPos); nPos <= snPos; nPos++) if (!1 !== (result = _isValid(nPos, c, strict))) {
-                            !function(originalPos, newPos) {
-                                var vp = getMaskSet().validPositions[newPos];
-                                if (vp) for (var targetLocator = vp.locator, tll = targetLocator.length, ps = originalPos; ps < newPos; ps++) if (getMaskSet().validPositions[ps] === undefined && !isMask(ps, !0)) {
-                                    var tests = getTests(ps).slice(), bestMatch = determineTestTemplate(ps, tests, !0), equality = -1;
-                                    "" === tests[tests.length - 1].match.def && tests.pop(), $.each(tests, function(ndx, tst) {
-                                        for (var i = 0; i < tll; i++) {
-                                            if (tst.locator[i] === undefined || !checkAlternationMatch(tst.locator[i].toString().split(","), targetLocator[i].toString().split(","), tst.na)) {
-                                                var targetAI = targetLocator[i], bestMatchAI = bestMatch.locator[i], tstAI = tst.locator[i];
-                                                targetAI - bestMatchAI > Math.abs(targetAI - tstAI) && (bestMatch = tst);
-                                                break;
-                                            }
-                                            equality < i && (equality = i, bestMatch = tst);
-                                        }
-                                    }), (bestMatch = $.extend({}, bestMatch, {
-                                        input: getPlaceholder(ps, bestMatch.match, !0) || bestMatch.match.def
-                                    })).generatedInput = !0, setValidPosition(ps, bestMatch, !0), getMaskSet().validPositions[newPos] = undefined, 
-                                    _isValid(newPos, vp.input, !0);
+                            result = function(originalPos, newPos) {
+                                for (var result, ps = originalPos; ps < newPos; ps++) if (getMaskSet().validPositions[ps] === undefined && !isMask(ps, !0)) {
+                                    var vp = 0 == ps ? getTest(ps) : getMaskSet().validPositions[ps - 1];
+                                    if (vp) {
+                                        var decisionTaker = vp.locator[vp.alternation];
+                                        "string" == typeof decisionTaker && decisionTaker.length > 0 && (decisionTaker = decisionTaker.split(",")[0]);
+                                        var tstLocator, closest, bestMatch, targetLocator = (vp.alternation != undefined ? vp.mloc[decisionTaker] : vp.locator).join(""), tests = getTests(ps).slice();
+                                        "" === tests[tests.length - 1].match.def && tests.pop(), $.each(tests, function(ndx, tst) {
+                                            var decisionTaker = tst.locator[tst.alternation];
+                                            "string" == typeof decisionTaker && decisionTaker.length > 0 && (decisionTaker = decisionTaker.split(",")[0]), 
+                                            tstLocator = (tst.alternation != undefined ? tst.mloc[decisionTaker] : tst.locator).join("");
+                                            var distance = Math.abs(tstLocator - targetLocator);
+                                            (closest === undefined || distance < closest) && (closest = distance, bestMatch = tst);
+                                        }), (bestMatch = $.extend({}, bestMatch, {
+                                            input: getPlaceholder(ps, bestMatch.match, !0) || bestMatch.match.def
+                                        })).generatedInput = !0, setValidPosition(ps, bestMatch, !0);
+                                        var cvpInput = getMaskSet().validPositions[newPos].input;
+                                        getMaskSet().validPositions[newPos] = undefined, result = isValid(newPos, cvpInput, !0, !0);
+                                    }
                                 }
-                            }(maskPos, result.pos !== undefined ? result.pos : nPos), maskPos = nPos;
+                                return result;
+                            }(maskPos, result.pos !== undefined ? result.pos : nPos) || result, maskPos = nPos;
                             break;
                         }
                     } else result = {

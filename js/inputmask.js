@@ -801,6 +801,12 @@
                             maskTemplate.push(includeMode === false ? test.nativeDef : getPlaceholder(pos, test));
                         }
                     }
+                    if (opts.keepStatic == true) {
+                        if (test.newBlockMarker && test.fn !== null) {
+                            opts.keepStatic = pos - 1;
+                        }
+                    }
+
                     pos++;
                 } while ((maxLength === undefined || pos < maxLength) && (test.fn !== null || test.def !== "") || minimalPos > pos);
                 if (maskTemplate[maskTemplate.length - 1] === "") {
@@ -1094,7 +1100,7 @@
                                             altIndexArr = altIndexArrClone;
                                         }
                                     }
-                                    if ((opts.keepStatic === true && currentPos > 0) || (isFinite(parseInt(opts.keepStatic)) && currentPos >= opts.keepStatic)) altIndexArr = altIndexArr.slice(0, 1);
+                                    if (isFinite(parseInt(opts.keepStatic)) && currentPos >= opts.keepStatic) altIndexArr = altIndexArr.slice(0, 1);
 
                                     for (var ndx = 0; ndx < altIndexArr.length; ndx++) {
                                         amndx = parseInt(altIndexArr[ndx]);
@@ -3123,11 +3129,6 @@
 
 //action object
             var valueBuffer;
-            // if(opts.keepStatic === true) {
-            //     getBufferTemplate();
-            //     opts.keepStatic = seekNext(0);
-            //     getMaskSet().tests = {};
-            // }
             if (actionObj !== undefined) {
                 switch (actionObj.action) {
                     case "isComplete":
