@@ -801,7 +801,7 @@
                             maskTemplate.push(includeMode === false ? test.nativeDef : getPlaceholder(pos, test));
                         }
                     }
-                    if (opts.keepStatic == true) {
+                    if (opts.keepStatic === true) {
                         if (test.newBlockMarker && test.fn !== null) {
                             opts.keepStatic = pos - 1;
                         }
@@ -1727,7 +1727,7 @@
                             }
                         }
                     }
-                    if (result === false && opts.keepStatic && !strict && fromAlternate !== true) { //try fuzzy alternator logic
+                    if (result === false && opts.keepStatic !== false && !strict && fromAlternate !== true) { //try fuzzy alternator logic
                         result = alternate(maskPos, c, strict, fromSetValid);
                     }
                     if (result === true) {
