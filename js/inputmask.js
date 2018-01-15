@@ -920,8 +920,42 @@
                     }
                 }
 
+                // var controlPos = determineTestTemplate2(pos, tests, guessNextBest);
+                //
+                // if (controlPos != testPos) {
+                //     debugger;
+                //     console.table(controlPos);
+                //     console.table(testPos);
+                // }
+
                 return testPos;
             }
+
+            function getLocator(tst, align) { //need to align the locators to be correct
+                var decisionTaker = tst.locator[tst.alternation];
+                if (typeof decisionTaker == "string" && decisionTaker.length > 0) { //no decision taken ~ take first one as decider
+                    decisionTaker = decisionTaker.split(",")[0];
+                }
+                var locator = (tst.alternation != undefined ? tst.mloc[decisionTaker] : tst.locator).join("");
+                while (locator.length < align) locator += "0";
+                return locator;
+            }
+
+            function determineTestTemplate2(pos, tests, guessNextBest) {
+                pos = pos > 0 ? pos - 1 : 0;
+                var altTest = getTest(pos), targetLocator = getLocator(altTest), tstLocator, closest, bestMatch;
+                $.each(tests, function (ndx, tst) { //find best matching
+                    tstLocator = getLocator(tst, targetLocator.length);
+                    var distance = Math.abs(tstLocator - targetLocator);
+                    if (closest === undefined || (tstLocator !== "" && distance < closest)) {
+                        closest = distance;
+                        bestMatch = tst;
+                    }
+                });
+
+                return bestMatch;
+            }
+
 
             function getTestTemplate(pos, ndxIntlzr, tstPs) {
                 return getMaskSet().validPositions[pos] || determineTestTemplate(pos, getTests(pos, ndxIntlzr ? ndxIntlzr.slice() : ndxIntlzr, tstPs));
@@ -1574,20 +1608,11 @@
                         if (getMaskSet().validPositions[ps] === undefined && !isMask(ps, true)) {
                             var vp = ps == 0 ? getTest(ps) : getMaskSet().validPositions[ps - 1];
                             if (vp) {
-                                var decisionTaker = vp.locator[vp.alternation];
-                                if (typeof decisionTaker == "string" && decisionTaker.length > 0) { //no decision taken ~ take first one as decider
-                                    decisionTaker = decisionTaker.split(",")[0];
-                                }
-                                var targetLocator = (vp.alternation != undefined ? vp.mloc[decisionTaker] : vp.locator).join(""),
-                                    tests = getTests(ps).slice(),
+                                var targetLocator = getLocator(vp), tests = getTests(ps).slice(),
                                     tstLocator, closest, bestMatch;
                                 if (tests[tests.length - 1].match.def === "") tests.pop(); //remove stop from matches
                                 $.each(tests, function (ndx, tst) { //find best matching
-                                    var decisionTaker = tst.locator[tst.alternation];
-                                    if (typeof decisionTaker == "string" && decisionTaker.length > 0) { //no decision taken ~ take first one as decider
-                                        decisionTaker = decisionTaker.split(",")[0];
-                                    }
-                                    tstLocator = (tst.alternation != undefined ? tst.mloc[decisionTaker] : tst.locator).join("");
+                                    tstLocator = getLocator(tst, targetLocator.length);
                                     var distance = Math.abs(tstLocator - targetLocator);
                                     if (closest === undefined || distance < closest) {
                                         closest = distance;
