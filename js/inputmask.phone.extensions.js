@@ -50,6 +50,7 @@
                 }
             }
         }
+
         function rebuild(maskGroup) {
             var mask = "", submasks = [];
             for (var ndx in maskGroup) {
@@ -91,7 +92,7 @@
             groupmarker: ["<", ">"],
             countrycode: "",
             phoneCodes: [],
-            keepStatic: true,
+            keepStatic: "auto",
             mask: function (opts) {
                 opts.definitions = {"#": Inputmask.prototype.definitions["9"]};
                 var sorted = opts.phoneCodes.sort(maskSort);
