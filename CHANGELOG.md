@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ### added
 - add support for input type search
 - new datetime alias
+- extend positionCaretOnClick with "select" to select the whole input on focus
 
 ### Updates
 - improve alternate fn
