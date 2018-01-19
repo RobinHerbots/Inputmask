@@ -2335,15 +2335,15 @@
                                 switch (opts.positionCaretOnClick) {
                                     case "none":
                                         break;
+                                    case "select":
+                                        caret(input, 0, getBuffer().length);
+                                        break;
                                     case "radixFocus":
                                         if (doRadixFocus(selectedCaret.begin)) {
                                             var radixPos = getBuffer().join("").indexOf(opts.radixPoint);
                                             caret(input, opts.numericInput ? seekNext(radixPos) : radixPos);
                                             break;
                                         }
-                                    case "select":
-                                        caret(input, 0, getBuffer().length);
-                                        break;
                                     default: //lvp:
                                         var clickPosition = selectedCaret.begin,
                                             lvclickPosition = getLastValidPosition(clickPosition, true),
