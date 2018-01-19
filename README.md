@@ -1031,7 +1031,14 @@ Disable value property patching
 Default: false
 
 ### positionCaretOnClick
-Positioning of the caret on click.  Options none, lvp (based on the last valid position (default), radixFocus (position caret to radixpoint on initial click)
+Positioning of the caret on click.   
+
+Options: 
+ - none
+ - lvp (based on the last valid position (default)
+ - radixFocus (position caret to radixpoint on initial click)
+ - select (select the whole input)
+ 
 Default: "lvp"
 
 ### casing

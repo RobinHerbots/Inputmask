@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-94
+* Version: 4.0.0-95
 */
 
 !function(factory) {
@@ -888,12 +888,45 @@
                 name_ru: "Исландия",
                 desc_ru: ""
             }, {
-                mask: "+39(###)####-###",
+                mask: "+39(0##)####-##-##",
                 cc: "IT",
                 cd: "Italy",
-                desc_en: "",
-                name_ru: "Италия",
-                desc_ru: ""
+                desc_en: ""
+            }, {
+                mask: "+39(0##)####-###",
+                cc: "IT",
+                cd: "Italy",
+                desc_en: ""
+            }, {
+                mask: "+39(0##)###-###",
+                cc: "IT",
+                cd: "Italy",
+                desc_en: ""
+            }, {
+                mask: "+39(0##)##-###",
+                cc: "IT",
+                cd: "Italy",
+                desc_en: ""
+            }, {
+                mask: "+39(0##)##-##",
+                cc: "IT",
+                cd: "Italy",
+                desc_en: ""
+            }, {
+                mask: "+39(0#)##-##",
+                cc: "IT",
+                cd: "Italy",
+                desc_en: ""
+            }, {
+                mask: "+39(3##)###-##-##",
+                cc: "IT",
+                cd: "Italy",
+                desc_en: ""
+            }, {
+                mask: "+39(3##)##-##-##",
+                cc: "IT",
+                cd: "Italy",
+                desc_en: ""
             }, {
                 mask: "+1(876)###-####",
                 cc: "JM",

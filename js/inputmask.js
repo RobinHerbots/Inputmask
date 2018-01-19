@@ -104,7 +104,7 @@
                 nullable: true, //return nothing instead of the buffertemplate when the user hasn't entered anything.
                 inputEventOnly: false, //dev option - testing inputfallback behavior
                 noValuePatching: false, //disable value property patching
-                positionCaretOnClick: "lvp", //none, lvp (based on the last valid position (default), radixFocus (position caret to radixpoint on initial click)
+                positionCaretOnClick: "lvp", //none, lvp (based on the last valid position (default), radixFocus (position caret to radixpoint on initial click), select (select the whole input)
                 casing: null, //mask-level casing. Options: null, "upper", "lower" or "title" or callback args => elem, test, pos, validPositions return charValue
                 inputmode: "verbatim", //specify the inputmode  - already in place for when browsers will support it
                 colorMask: false, //enable css styleable mask
@@ -1138,7 +1138,7 @@
                                             altIndexArr = altIndexArrClone;
                                         }
                                     }
-                                    if ((opts.keepStatic === true /*&& currentPos > 0*/) || (isFinite(parseInt(opts.keepStatic)) && currentPos >= opts.keepStatic)) altIndexArr = altIndexArr.slice(0, 1);
+                                    if (opts.keepStatic === true || (isFinite(parseInt(opts.keepStatic)) && currentPos >= opts.keepStatic)) altIndexArr = altIndexArr.slice(0, 1);
 
                                     for (var ndx = 0; ndx < altIndexArr.length; ndx++) {
                                         amndx = parseInt(altIndexArr[ndx]);
@@ -1147,9 +1147,7 @@
                                         ndxInitializer = resolveNdxInitializer(testPos, amndx, loopNdxCnt) || ndxInitializerClone.slice();
                                         if (alternateToken.matches[amndx] && handleMatch(alternateToken.matches[amndx], [amndx].concat(loopNdx), quantifierRecurse))
                                             match = true;
-                                        // else if (maskToken.matches[amndx] && alternateToken !== maskToken.matches[amndx] && handleMatch(maskToken.matches[amndx], [amndx].concat(loopNdx.slice(1)), quantifierRecurse)) {
-                                        //     match = true;
-                                        // }
+
                                         maltMatches = matches.slice();
                                         testPos = currentPos;
                                         matches = [];
@@ -1168,20 +1166,16 @@
                                                         setMergeLocators(altMatch2, altMatch);
                                                         break;
                                                     } else if (isSubsetOf(altMatch, altMatch2)) {
-                                                        setMergeLocators(altMatch, altMatch2);
-                                                        dropMatch = true;
-                                                        malternateMatches.splice(malternateMatches.indexOf(altMatch2), 0, altMatch);
+                                                        if (setMergeLocators(altMatch, altMatch2)) {
+                                                            dropMatch = true;
+                                                            malternateMatches.splice(malternateMatches.indexOf(altMatch2), 0, altMatch);
+                                                        }
                                                         break;
                                                     } else if (isSubsetOf(altMatch2, altMatch)) {
                                                         setMergeLocators(altMatch2, altMatch);
                                                         break;
                                                     } else if (staticCanMatchDefinition(altMatch, altMatch2)) {
                                                         if (setMergeLocators(altMatch, altMatch2)) {
-                                                            //no alternation marker
-                                                            altMatch.na = altMatch.na || altMatch.locator[altMatch.alternation].toString();
-                                                            if (altMatch.na.indexOf(altMatch.locator[altMatch.alternation].toString().split("")[0]) === -1) {
-                                                                altMatch.na = altMatch.na + "," + altMatch.locator[altMatch2.alternation].toString().split("")[0];
-                                                            }
                                                             //insert match above general match
                                                             dropMatch = true;
                                                             malternateMatches.splice(malternateMatches.indexOf(altMatch2), 0, altMatch);
@@ -1315,7 +1309,7 @@
                     return $.extend(true, [], matches);
                 }
                 getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
-                console.log(pos + " - " + JSON.stringify(matches));
+                // console.log(pos + " - " + JSON.stringify(matches));
                 return getMaskSet().tests[pos];
             }
 
@@ -1436,7 +1430,6 @@
                     }
                 }
 
-                // console.log(">>>>> last alternator " + lastAlt);
                 if (alternation !== undefined) {
                     decisionPos = parseInt(lastAlt);
                     getMaskSet().excludes[decisionPos] = getMaskSet().excludes[decisionPos] || [];
@@ -1454,7 +1447,6 @@
                     }
 
                     while (getMaskSet().excludes[decisionPos] && getMaskSet().excludes[decisionPos].length < 10) {
-                        // console.log("alternate " + decisionPos + "  " + getMaskSet().excludes[decisionPos].join(','));
                         var posOffset = staticInputsBeforePos * -1, //negate
                             validInputs = validInputsClone.slice();
                         getMaskSet().tests[decisionPos] = undefined; //clear decisionPos
@@ -2287,8 +2279,7 @@
                             caret(input, seekNext(getLastValidPosition()));
                         }
                     }
-                    if (opts.positionCaretOnTab === true && mouseEnter === false && nptValue !== "") {
-                        writeBuffer(input, getBuffer(), caret(input));
+                    if (opts.positionCaretOnTab === true && mouseEnter === false) {
                         EventHandlers.clickEvent.apply(input, [e, true]);
                     }
                     undoValue = getBuffer().join("");
@@ -2350,6 +2341,9 @@
                                             caret(input, opts.numericInput ? seekNext(radixPos) : radixPos);
                                             break;
                                         }
+                                    case "select":
+                                        caret(input, 0, getBuffer().length);
+                                        break;
                                     default: //lvp:
                                         var clickPosition = selectedCaret.begin,
                                             lvclickPosition = getLastValidPosition(clickPosition, true),
@@ -2755,7 +2749,7 @@
                 stripValidPositions(pos.begin, pos.end, false, strict);
                 if (strict !== true && opts.keepStatic) {
                     var result = alternate(true);
-                    if (result) pos.begin = result.caret !== undefined ? result.caret : seekNext(result.pos.begin ? result.pos.begin : result.pos)
+                    if (result) pos.begin = result.caret !== undefined ? result.caret : (result.pos ? seekNext(result.pos.begin ? result.pos.begin : result.pos) : getLastValidPosition(-1, true));
                 }
                 var lvp = getLastValidPosition(pos.begin, true);
                 if (lvp < pos.begin) {

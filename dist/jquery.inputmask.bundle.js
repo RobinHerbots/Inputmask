@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-94
+* Version: 4.0.0-95
 */
 
 !function(modules) {
@@ -277,7 +277,7 @@
                                                         break;
                                                     }
                                                     if (isSubsetOf(altMatch, altMatch2)) {
-                                                        setMergeLocators(altMatch, altMatch2), dropMatch = !0, malternateMatches.splice(malternateMatches.indexOf(altMatch2), 0, altMatch);
+                                                        setMergeLocators(altMatch, altMatch2) && (dropMatch = !0, malternateMatches.splice(malternateMatches.indexOf(altMatch2), 0, altMatch));
                                                         break;
                                                     }
                                                     if (isSubsetOf(altMatch2, altMatch)) {
@@ -287,9 +287,7 @@
                                                     if (function(source, target) {
                                                         return null === source.match.fn && null !== target.match.fn && target.match.fn.test(source.match.def, getMaskSet(), pos, !1, opts, !1);
                                                     }(altMatch, altMatch2)) {
-                                                        setMergeLocators(altMatch, altMatch2) && (altMatch.na = altMatch.na || altMatch.locator[altMatch.alternation].toString(), 
-                                                        -1 === altMatch.na.indexOf(altMatch.locator[altMatch.alternation].toString().split("")[0]) && (altMatch.na = altMatch.na + "," + altMatch.locator[altMatch2.alternation].toString().split("")[0]), 
-                                                        dropMatch = !0, malternateMatches.splice(malternateMatches.indexOf(altMatch2), 0, altMatch));
+                                                        setMergeLocators(altMatch, altMatch2) && (dropMatch = !0, malternateMatches.splice(malternateMatches.indexOf(altMatch2), 0, altMatch));
                                                         break;
                                                     }
                                                 }
@@ -349,7 +347,7 @@
                     mloc: {},
                     cd: cacheDependency
                 }), ndxIntlzr !== undefined && getMaskSet().tests[pos] ? $.extend(!0, [], matches) : (getMaskSet().tests[pos] = $.extend(!0, [], matches), 
-                console.log(pos + " - " + JSON.stringify(matches)), getMaskSet().tests[pos]);
+                getMaskSet().tests[pos]);
             }
             function getBufferTemplate() {
                 return getMaskSet()._buffer === undefined && (getMaskSet()._buffer = getMaskTemplate(!1, 1), 
@@ -739,7 +737,7 @@
                 getMaskSet().validPositions[pos.begin] !== undefined && getMaskSet().validPositions[pos.begin].input === opts.groupSeparator && pos.end++), 
                 stripValidPositions(pos.begin, pos.end, !1, strict), !0 !== strict && opts.keepStatic) {
                     var result = alternate(!0);
-                    result && (pos.begin = result.caret !== undefined ? result.caret : seekNext(result.pos.begin ? result.pos.begin : result.pos));
+                    result && (pos.begin = result.caret !== undefined ? result.caret : result.pos ? seekNext(result.pos.begin ? result.pos.begin : result.pos) : getLastValidPosition(-1, !0));
                 }
                 var lvp = getLastValidPosition(pos.begin, !0);
                 if (lvp < pos.begin) getMaskSet().p = seekNext(lvp); else if (!0 !== strict && (getMaskSet().p = pos.begin, 
@@ -985,8 +983,8 @@
                 focusEvent: function(e) {
                     var input = this, nptValue = input.inputmask._valueGet();
                     opts.showMaskOnFocus && (!opts.showMaskOnHover || opts.showMaskOnHover && "" === nptValue) && (input.inputmask._valueGet() !== getBuffer().join("") ? writeBuffer(input, getBuffer(), seekNext(getLastValidPosition())) : !1 === mouseEnter && caret(input, seekNext(getLastValidPosition()))), 
-                    !0 === opts.positionCaretOnTab && !1 === mouseEnter && "" !== nptValue && (writeBuffer(input, getBuffer(), caret(input)), 
-                    EventHandlers.clickEvent.apply(input, [ e, !0 ])), undoValue = getBuffer().join("");
+                    !0 === opts.positionCaretOnTab && !1 === mouseEnter && EventHandlers.clickEvent.apply(input, [ e, !0 ]), 
+                    undoValue = getBuffer().join("");
                 },
                 mouseleaveEvent: function(e) {
                     var input = this;
@@ -1026,6 +1024,10 @@
                                     caret(input, opts.numericInput ? seekNext(radixPos) : radixPos);
                                     break;
                                 }
+
+                              case "select":
+                                caret(input, 0, getBuffer().length);
+                                break;
 
                               default:
                                 var clickPosition = selectedCaret.begin, lvclickPosition = getLastValidPosition(clickPosition, !0), lastPosition = seekNext(lvclickPosition);
