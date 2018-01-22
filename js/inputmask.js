@@ -1596,21 +1596,25 @@
                 }
 
                 //fill in best positions according the current input
-                function trackbackPositions(originalPos, newPos) {
+                function trackbackPositions(originalPos, newPos, fillOnly) {
                     var result;
-                    if (originalPos === undefined) originalPos = getLastValidPosition();
+                    if (originalPos === undefined) {
+                        //find previous valid
+                        for (originalPos = newPos - 1; originalPos > 0; originalPos--) {
+                            if (getMaskSet().validPositions[originalPos]) break;
+                        }
+                    }
                     for (var ps = originalPos; ps < newPos; ps++) {
                         if (getMaskSet().validPositions[ps] === undefined && !isMask(ps, true)) {
                             var vp = ps == 0 ? getTest(ps) : getMaskSet().validPositions[ps - 1];
                             if (vp) {
                                 var targetLocator = getLocator(vp), tests = getTests(ps).slice(),
-                                    tstLocator, closest, bestMatch;
+                                    tstLocator, closest =undefined, bestMatch;
                                 if (tests[tests.length - 1].match.def === "") tests.pop(); //remove stop from matches
                                 $.each(tests, function (ndx, tst) { //find best matching
                                     tstLocator = getLocator(tst, targetLocator.length);
                                     var distance = Math.abs(tstLocator - targetLocator);
-                                    if ((closest === undefined || distance < closest) && tst.match.fn === null && tst.match.optionality !== true && tst.match.optionalQuantifier !== true)
-                                    {
+                                    if ((closest === undefined || distance < closest) && tst.match.fn === null && tst.match.optionality !== true && tst.match.optionalQuantifier !== true) {
                                         closest = distance;
                                         bestMatch = tst;
                                     }
@@ -1620,10 +1624,12 @@
                                 });
                                 bestMatch.generatedInput = true;
                                 setValidPosition(ps, bestMatch, true);
-                                //revalidate the new position to update the locator value
-                                var cvpInput = getMaskSet().validPositions[newPos].input;
-                                getMaskSet().validPositions[newPos] = undefined;
-                                result = isValid(newPos, cvpInput, true, true);
+                                if (fillOnly !== true) {
+                                    //revalidate the new position to update the locator value
+                                    var cvpInput = getMaskSet().validPositions[newPos].input;
+                                    getMaskSet().validPositions[newPos] = undefined;
+                                    result = isValid(newPos, cvpInput, true, true);
+                                }
                             }
                         }
                     }
@@ -1653,7 +1659,7 @@
                                     if (needsValidation === false && positionsClone[posMatch] && positionsClone[posMatch].match.def === t.match.def) { //obvious match
                                         getMaskSet().validPositions[posMatch] = $.extend(true, {}, positionsClone[posMatch]);
                                         getMaskSet().validPositions[posMatch].input = t.input;
-                                        fillMissingNonMask(posMatch);
+                                        trackbackPositions(undefined, posMatch, true);
                                         j = posMatch;
                                         valid = true;
                                     } else if (positionCanMatchDefinition(posMatch, t.match.def)) { //validated match
@@ -1718,7 +1724,7 @@
                     result = opts.preValidation(getBuffer(), maskPos, c, isSelection(pos), opts);
                 }
                 if (result === true) {
-                    fillMissingNonMask(maskPos);
+                    trackbackPositions(undefined, maskPos, true);
 
                     if (isSelection(pos)) {
                         handleRemove(undefined, Inputmask.keyCode.DELETE, pos, true, true);
