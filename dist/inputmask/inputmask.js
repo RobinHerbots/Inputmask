@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-96
+* Version: 4.0.0-98
 */
 
 !function(factory) {
@@ -480,14 +480,17 @@
                     if (!currentPosValid || null !== currentPosValid.match.fn || currentPosValid.match.def !== c && c !== opts.skipOptionalPartCharacter) {
                         if ((opts.insertMode || getMaskSet().validPositions[seekNext(maskPos)] === undefined) && !isMask(maskPos, !0)) for (var nPos = maskPos + 1, snPos = seekNext(maskPos); nPos <= snPos; nPos++) if (!1 !== (result = _isValid(nPos, c, strict))) {
                             result = function(originalPos, newPos) {
-                                for (var result, ps = originalPos; ps < newPos; ps++) if (getMaskSet().validPositions[ps] === undefined && !isMask(ps, !0)) {
+                                var result;
+                                originalPos === undefined && (originalPos = getLastValidPosition());
+                                for (var ps = originalPos; ps < newPos; ps++) if (getMaskSet().validPositions[ps] === undefined && !isMask(ps, !0)) {
                                     var vp = 0 == ps ? getTest(ps) : getMaskSet().validPositions[ps - 1];
                                     if (vp) {
                                         var tstLocator, closest, bestMatch, targetLocator = getLocator(vp), tests = getTests(ps).slice();
                                         "" === tests[tests.length - 1].match.def && tests.pop(), $.each(tests, function(ndx, tst) {
                                             tstLocator = getLocator(tst, targetLocator.length);
                                             var distance = Math.abs(tstLocator - targetLocator);
-                                            (closest === undefined || distance < closest) && (closest = distance, bestMatch = tst);
+                                            (closest === undefined || distance < closest) && null === tst.match.fn && !0 !== tst.match.optionality && !0 !== tst.match.optionalQuantifier && (closest = distance, 
+                                            bestMatch = tst);
                                         }), (bestMatch = $.extend({}, bestMatch, {
                                             input: getPlaceholder(ps, bestMatch.match, !0) || bestMatch.match.def
                                         })).generatedInput = !0, setValidPosition(ps, bestMatch, !0);

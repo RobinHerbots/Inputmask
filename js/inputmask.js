@@ -1595,9 +1595,10 @@
                     return rslt;
                 }
 
-//set alternator choice on previous skipped placeholder positions
-                function trackbackAlternations(originalPos, newPos) {
+                //fill in best positions according the current input
+                function trackbackPositions(originalPos, newPos) {
                     var result;
+                    if (originalPos === undefined) originalPos = getLastValidPosition();
                     for (var ps = originalPos; ps < newPos; ps++) {
                         if (getMaskSet().validPositions[ps] === undefined && !isMask(ps, true)) {
                             var vp = ps == 0 ? getTest(ps) : getMaskSet().validPositions[ps - 1];
@@ -1608,7 +1609,8 @@
                                 $.each(tests, function (ndx, tst) { //find best matching
                                     tstLocator = getLocator(tst, targetLocator.length);
                                     var distance = Math.abs(tstLocator - targetLocator);
-                                    if (closest === undefined || distance < closest) {
+                                    if ((closest === undefined || distance < closest) && tst.match.fn === null && tst.match.optionality !== true && tst.match.optionalQuantifier !== true)
+                                    {
                                         closest = distance;
                                         bestMatch = tst;
                                     }
@@ -1738,7 +1740,7 @@
                                     // }
                                     result = _isValid(nPos, c, strict);
                                     if (result !== false) {
-                                        result = trackbackAlternations(maskPos, result.pos !== undefined ? result.pos : nPos) || result;
+                                        result = trackbackPositions(maskPos, result.pos !== undefined ? result.pos : nPos) || result;
                                         maskPos = nPos;
                                         break;
                                     }
