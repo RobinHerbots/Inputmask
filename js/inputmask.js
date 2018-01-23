@@ -723,7 +723,15 @@
             }
             if ($.isArray(opts.mask)) {
                 if (opts.mask.length > 1) {
-                    opts.keepStatic = opts.keepStatic === null ? true : opts.keepStatic; //enable by default when passing multiple masks when the option is not explicitly specified
+                    if (opts.keepStatic === null) { //enable by default when passing multiple masks when the option is not explicitly specified
+                        opts.keepStatic = "auto";
+                        for (var i = 0; i < opts.mask.length; i++) {
+                            if (opts.mask[i].charAt(0) !== opts.mask[0].charAt(0)) {
+                                opts.keepStatic = true;
+                                break;
+                            }
+                        }
+                    }
                     var altMask = opts.groupmarker[0];
                     $.each(opts.numericInput ? opts.mask.reverse() : opts.mask, function (ndx, msk) {
                         if (altMask.length > 1) {
@@ -1416,11 +1424,10 @@
                     alternation = prevAltPos.alternation;
                 } else {
                     //find last modified alternation
-                    prevAltPos = getMaskSet().validPositions[lAltPos];
                     for (; lAltPos >= 0; lAltPos--) {
                         altPos = getMaskSet().validPositions[lAltPos];
                         if (altPos && altPos.alternation !== undefined) {
-                            if (prevAltPos.locator[altPos.alternation] !== altPos.locator[altPos.alternation]) {
+                            if (prevAltPos && prevAltPos.locator[altPos.alternation] !== altPos.locator[altPos.alternation]) {
                                 break;
                             }
                             lastAlt = lAltPos;
@@ -1609,7 +1616,7 @@
                             var vp = ps == 0 ? getTest(ps) : getMaskSet().validPositions[ps - 1];
                             if (vp) {
                                 var targetLocator = getLocator(vp), tests = getTests(ps).slice(),
-                                    tstLocator, closest =undefined, bestMatch;
+                                    tstLocator, closest = undefined, bestMatch = getTest(ps);
                                 if (tests[tests.length - 1].match.def === "") tests.pop(); //remove stop from matches
                                 $.each(tests, function (ndx, tst) { //find best matching
                                     tstLocator = getLocator(tst, targetLocator.length);
@@ -1695,31 +1702,6 @@
                 var result = true,
                     positionsClone = $.extend(true, {}, getMaskSet().validPositions); //clone the currentPositions
 
-
-                function fillMissingNonMask(maskPos) {
-                    //Check for a nonmask before the pos
-                    //find previous valid
-                    for (var pndx = maskPos - 1; pndx > -1; pndx--) {
-                        if (getMaskSet().validPositions[pndx]) break;
-                    }
-                    ////fill missing nonmask and valid placeholders
-                    var testTemplate, testsFromPos;
-                    for (pndx++; pndx < maskPos; pndx++) {
-                        if (getMaskSet().validPositions[pndx] === undefined && (opts.jitMasking === false || opts.jitMasking > pndx)) {
-                            testsFromPos = getTests(pndx, getTestTemplate(pndx - 1).locator, pndx - 1).slice();
-                            if (testsFromPos[testsFromPos.length - 1].match.def === "") testsFromPos.pop();
-                            testTemplate = determineTestTemplate(pndx, testsFromPos);
-                            if (testTemplate && (testTemplate.match.def === opts.radixPointDefinitionSymbol || !isMask(pndx, true) ||
-                                    ($.inArray(opts.radixPoint, getBuffer()) < pndx && testTemplate.match.fn && testTemplate.match.fn.test(getPlaceholder(pndx), getMaskSet(), pndx, false, opts)))) {
-                                result = _isValid(pndx, getPlaceholder(pndx, testTemplate.match, true) || (testTemplate.match.fn == null ? testTemplate.match.def : (getPlaceholder(pndx) !== "" ? getPlaceholder(pndx) : getBuffer()[pndx])), true);
-                                if (result !== false) {
-                                    getMaskSet().validPositions[result.pos || pndx].generatedInput = true;
-                                }
-                            }
-                        }
-                    }
-                }
-
                 if ($.isFunction(opts.preValidation) && !strict && fromSetValid !== true && validateOnly !== true) {
                     result = opts.preValidation(getBuffer(), maskPos, c, isSelection(pos), opts);
                 }
@@ -1754,7 +1736,7 @@
                             }
                         }
                     }
-                    if (result === false && opts.keepStatic !== false && !strict && fromAlternate !== true) { //try fuzzy alternator logic
+                    if (result === false && (opts.keepStatic !== null && opts.keepStatic !== false) && !strict && fromAlternate !== true) { //try fuzzy alternator logic
                         result = alternate(maskPos, c, strict, fromSetValid);
                     }
                     if (result === true) {
@@ -2755,12 +2737,12 @@
                 }
 
                 stripValidPositions(pos.begin, pos.end, false, strict);
-                if (strict !== true && opts.keepStatic) {
+                if (strict !== true && (opts.keepStatic !== null && opts.keepStatic !== false)) {
                     var result = alternate(true);
                     if (result) pos.begin = result.caret !== undefined ? result.caret : (result.pos ? seekNext(result.pos.begin ? result.pos.begin : result.pos) : getLastValidPosition(-1, true));
                 }
                 var lvp = getLastValidPosition(pos.begin, true);
-                if (lvp < pos.begin) {
+                if (lvp < pos.begin || pos.begin === -1) {
                     //if (lvp === -1) resetMaskSet();
                     getMaskSet().p = seekNext(lvp);
                 } else if (strict !== true) {
