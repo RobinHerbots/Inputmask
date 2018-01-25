@@ -733,7 +733,7 @@
                         }
                     }
                     var altMask = opts.groupmarker[0];
-                    $.each(opts.numericInput ? opts.mask.reverse() : opts.mask, function (ndx, msk) {
+                    $.each(opts.isRTL ? opts.mask.reverse() : opts.mask, function (ndx, msk) {
                         if (altMask.length > 1) {
                             altMask += opts.groupmarker[1] + opts.alternatormarker + opts.groupmarker[0];
                         }
@@ -822,7 +822,7 @@
                 }
                 if (includeMode !== false || //do not alter the masklength when just retrieving the maskdefinition
                     getMaskSet().maskLength === undefined) //just make sure the maskLength gets initialized in all cases (needed for isValid)
-                    getMaskSet().maskLength = pos + 1;
+                    getMaskSet().maskLength = pos - 1;
                 return maskTemplate;
             }
 
@@ -1655,13 +1655,12 @@
                         getMaskSet().validPositions[pos] = $.extend(true, {}, validTest);
                         var valid = true,
                             j, vps = getMaskSet().validPositions,
-                            needsValidation = false,
-                            initialLength = getMaskSet().maskLength;
+                            needsValidation = false;
                         for (i = (j = pos); i <= lvp; i++) {
                             var t = positionsClone[i];
                             if (t !== undefined /*&& (t.generatedInput !== true || t.match.fn === null)*/) {
                                 var posMatch = j;
-                                while (posMatch < getMaskSet().maskLength && ((t.match.fn === null && vps[i] && (vps[i].match.optionalQuantifier === true || vps[i].match.optionality === true)) || t.match.fn != null)) {
+                                while (getTest(posMatch).match.def !== "" && ((t.match.fn === null && vps[i] && (vps[i].match.optionalQuantifier === true || vps[i].match.optionality === true)) || t.match.fn != null)) {
                                     posMatch++;
                                     if (needsValidation === false && positionsClone[posMatch] && positionsClone[posMatch].match.def === t.match.def) { //obvious match
                                         getMaskSet().validPositions[posMatch] = $.extend(true, {}, positionsClone[posMatch]);
@@ -1676,9 +1675,8 @@
                                         needsValidation = true;
                                     } else {
                                         valid = t.generatedInput === true;
-                                        if (!valid && posMatch >= getMaskSet().maskLength - 1) break;
+                                        if (!valid && getTest(posMatch).match.def === "") break;
                                     }
-                                    if (getMaskSet().maskLength < initialLength) getMaskSet().maskLength = initialLength; //a bit hacky but the masklength is corrected later on
                                     if (valid) break;
                                 }
                             }
@@ -1713,7 +1711,7 @@
                         maskPos = getMaskSet().p;
                     }
 
-                    if (maskPos < getMaskSet().maskLength && (maxLength === undefined || maskPos < maxLength)) {
+                    if (maxLength === undefined || maskPos < maxLength) {
                         result = _isValid(maskPos, c, strict);
                         if ((!strict || fromSetValid === true) && result === false && validateOnly !== true) {
                             var currentPosValid = getMaskSet().validPositions[maskPos];
@@ -1783,15 +1781,11 @@
             }
 
             function seekNext(pos, newBlock) {
-                var maskL = getMaskSet().maskLength;
-                if (pos >= maskL) return maskL;
-                var position = pos;
-                if (getTests(maskL + 1).length > 1) {
-                    maskL = getMaskTemplate(true, maskL + 1, false).kength;
-                }
-                while (++position < maskL &&
+                var position = pos + 1;
+                while (getTest(position).match.def !== "" &&
                 ((newBlock === true && (getTest(position).match.newBlockMarker !== true || !isMask(position))) ||
                     (newBlock !== true && !isMask(position)))) {
+                    position++;
                 }
                 return position;
             }
