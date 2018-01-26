@@ -21,6 +21,7 @@ All notable changes to this project will be documented in this file.
 - enhance inputfallback (Android)
 
 ### Fixed
+- Not able to input 31.12. in DD.MM date input in v4.x #1803
 - problem with two separate alternaions #1722
 - colorMask + Remask = Duplicate im-colormask element #1709
 

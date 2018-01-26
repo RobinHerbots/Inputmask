@@ -119,7 +119,7 @@
         var mask = "", match;
         while (match = getTokenizer(opts).exec(format)) {
             if (dateObjValue === undefined)
-                mask += formatCode[match[0]] ? "(" + formatCode[match[0]][0] + ")" : match[0];
+                mask += formatCode[match[0]] ? "(" + formatCode[match[0]][0] + ")" : Inputmask.escapeRegex(match[0]);
             else {
                 if (formatCode[match[0]]) {
                     var getFn = formatCode[match[0]][3];

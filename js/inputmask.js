@@ -1508,10 +1508,8 @@
 
             function isValid(pos, c, strict, fromSetValid, fromAlternate, validateOnly) { //strict true ~ no correction or autofill
                 function isSelection(posObj) {
-                    var selection = isRTL ? (posObj.begin - posObj.end) > 1 || ((posObj.begin - posObj.end) === 1) :
+                    return isRTL ? (posObj.begin - posObj.end) > 1 || ((posObj.begin - posObj.end) === 1) :
                         (posObj.end - posObj.begin) > 1 || ((posObj.end - posObj.begin) === 1);
-
-                    return selection && posObj.begin === 0 && posObj.end === getMaskSet().maskLength ? "full" : selection;
                 }
 
                 strict = strict === true; //always set a value to strict to prevent possible strange behavior in the extensions
