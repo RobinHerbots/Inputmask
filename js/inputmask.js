@@ -906,9 +906,11 @@
                     } else i++;
                 }
 
-                i = getLastValidPosition(-1, true);
-                while (getMaskSet().validPositions[i] && getMaskSet().validPositions[i].generatedInput === true) {
-                    delete getMaskSet().validPositions[i--];
+                if (strict !== true) {
+                    i = getLastValidPosition(-1, true);
+                    while (getMaskSet().validPositions[i] && getMaskSet().validPositions[i].generatedInput === true) {
+                        delete getMaskSet().validPositions[i--];
+                    }
                 }
                 resetMaskSet(true);
             }
