@@ -1616,7 +1616,7 @@
                         }
                     }
                     for (var ps = originalPos; ps < newPos; ps++) {
-                        if (getMaskSet().validPositions[ps] === undefined && !isMask(ps, true)) {
+                        if (getMaskSet().validPositions[ps] === undefined && (!isMask(ps, true) || getPlaceholder(ps, getTestTemplate(ps), true) === opts.radixPoint)) {
                             var vp = ps == 0 ? getTest(ps) : getMaskSet().validPositions[ps - 1];
                             if (vp) {
                                 var targetLocator = getLocator(vp), tests = getTests(ps).slice(),
