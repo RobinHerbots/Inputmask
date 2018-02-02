@@ -1616,7 +1616,7 @@
                         }
                     }
                     for (var ps = originalPos; ps < newPos; ps++) {
-                        if (getMaskSet().validPositions[ps] === undefined && (!isMask(ps, true) || getPlaceholder(ps, getTestTemplate(ps), true) === opts.radixPoint)) {
+                        if (getMaskSet().validPositions[ps] === undefined && !isMask(ps, true)) {
                             var vp = ps == 0 ? getTest(ps) : getMaskSet().validPositions[ps - 1];
                             if (vp) {
                                 var targetLocator = getLocator(vp), tests = getTests(ps).slice(),
@@ -1705,7 +1705,7 @@
                     positionsClone = $.extend(true, {}, getMaskSet().validPositions); //clone the currentPositions
 
                 if ($.isFunction(opts.preValidation) && !strict && fromSetValid !== true && validateOnly !== true) {
-                    result = opts.preValidation(getBuffer(), maskPos, c, isSelection(pos), opts);
+                    result = opts.preValidation(getBuffer(), maskPos, c, isSelection(pos), opts, getMaskSet());
                 }
                 if (result === true) {
                     trackbackPositions(undefined, maskPos, true);

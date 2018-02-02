@@ -136,7 +136,7 @@
             autoUnmask: false,
             unmaskAsNumber: false,
             inputmode: "numeric",
-            preValidation: function (buffer, pos, c, isSelection, opts) {
+            preValidation: function (buffer, pos, c, isSelection, opts, maskset) {
                 if (c === "-" || c === opts.negationSymbol.front) {
                     if (opts.allowMinus !== true) return false;
                     opts.isNegative = opts.isNegative === undefined ? true : !opts.isNegative;
@@ -148,7 +148,7 @@
                 }
                 if (isSelection === false && c === opts.radixPoint && (opts.digits !== undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0))) {
                     var radixPos = $.inArray(opts.radixPoint, buffer);
-                    if (radixPos !== -1) {
+                    if (radixPos !== -1 && maskset.validPositions[radixPos] !== undefined) {
                         if (opts.numericInput === true) {
                             return pos === radixPos;
                         }
@@ -423,7 +423,9 @@
                                 while (processValue.match(Inputmask.escapeRegex(bufferTemplate) + "$") === null) {
                                     bufferTemplate = bufferTemplate.slice(1);
                                 }
-                                processValue = processValue.replace(bufferTemplate, "");
+                                // if (processValue !== opts.radixPoint) {
+                                    processValue = processValue.replace(bufferTemplate, "");
+                                // }
                                 processValue = processValue.split("");
 
                                 if (processValue[pos] === undefined) {
@@ -472,6 +474,7 @@
                                 "caret": pos + 1
                             };
                         }
+
                         return isValid;
                     },
                     cardinality: 1,
