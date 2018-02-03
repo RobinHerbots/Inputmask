@@ -3,12 +3,59 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.1
+* Version: 4.0.0-beta.2
 */
 
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "./dependencyLibs/inputmask.dependencyLib", "./inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./dependencyLibs/inputmask.dependencyLib"), require("./inputmask")) : factory(window.dependencyLib || jQuery, window.Inputmask);
 }(function($, Inputmask) {
+    function getTokenizer(opts) {
+        if (!opts.tokenizer) {
+            var tokens = [];
+            for (var ndx in formatCode) -1 === tokens.indexOf(ndx[0]) && tokens.push(ndx[0]);
+            opts.tokenizer = "(" + tokens.join("+|") + ")+?|.", opts.tokenizer = new RegExp(opts.tokenizer, "g");
+        }
+        return opts.tokenizer;
+    }
+    function isValidDate(dateParts, currentResult) {
+        return (!isFinite(dateParts.day) || "29" == dateParts.day && !isFinite(dateParts.rawyear) || new Date(dateParts.date.getFullYear(), isFinite(dateParts.month) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day) && currentResult;
+    }
+    function isDateInRange(maskDate, opts) {
+        var result = !0;
+        return opts.min && opts.min.date.getTime() === opts.min.date.getTime() && (result = result && opts.min.date.getTime() <= maskDate.getTime()), 
+        opts.max && opts.max.date.getTime() === opts.max.date.getTime() && (result = result && opts.max.date.getTime() >= maskDate.getTime()), 
+        result;
+    }
+    function parse(format, dateObjValue, opts) {
+        for (var match, mask = ""; match = getTokenizer(opts).exec(format); ) void 0 === dateObjValue ? mask += formatCode[match[0]] ? "(" + formatCode[match[0]][0] + ")" : Inputmask.escapeRegex(match[0]) : formatCode[match[0]] ? mask += formatCode[match[0]][3].call(dateObjValue.date) : mask += match[0];
+        return mask;
+    }
+    function pad(val, len) {
+        for (val = String(val), len = len || 2; val.length < len; ) val = "0" + val;
+        return val;
+    }
+    function analyseMask(maskString, format, opts) {
+        function extendYear(year) {
+            var correctedyear = 4 === year.length ? year : new Date().getFullYear().toString().substr(0, 4 - year.length) + year;
+            return opts.min && opts.min.year && opts.max && opts.max.year ? (correctedyear = correctedyear.replace(/[^0-9]/g, ""), 
+            correctedyear = year.charAt(0) === opts.max.year.charAt(0) ? year.replace(/[^0-9]/g, "0") : correctedyear + opts.min.year.substr(correctedyear.length)) : correctedyear = correctedyear.replace(/[^0-9]/g, "0"), 
+            correctedyear;
+        }
+        var targetProp, match, dateOperation, dateObj = {
+            date: new Date(1, 0, 1)
+        }, mask = maskString;
+        if ("string" == typeof mask) {
+            for (;match = getTokenizer(opts).exec(format); ) {
+                var value = mask.slice(0, match[0].length);
+                formatCode.hasOwnProperty(match[0]) && (targetProp = formatCode[match[0]][2], dateOperation = formatCode[match[0]][1], 
+                function(dateObj, value, opts) {
+                    "year" === targetProp ? (dateObj[targetProp] = extendYear(value), dateObj["raw" + targetProp] = value) : dateObj[targetProp] = opts.min && value.match(/[^0-9]/) ? opts.min[targetProp] : value, 
+                    void 0 !== dateOperation && dateOperation.call(dateObj.date, "month" == targetProp ? parseInt(dateObj[targetProp]) - 1 : dateObj[targetProp]);
+                }(dateObj, value, opts)), mask = mask.slice(value.length);
+            }
+            return dateObj;
+        }
+    }
     var formatCode = {
         d: [ "[1-9]|[12][0-9]|3[01]", Date.prototype.setDate, "day", Date.prototype.getDate ],
         dd: [ "0[1-9]|[12][0-9]|3[01]", Date.prototype.setDate, "day", function() {
@@ -67,47 +114,6 @@
         isoDateTime: "yyyy-mm-dd'T'HH:MM:ss",
         isoUtcDateTime: "UTC:yyyy-mm-dd'T'HH:MM:ss'Z'"
     };
-    function getTokenizer(opts) {
-        if (!opts.tokenizer) {
-            var tokens = [];
-            for (var ndx in formatCode) -1 === tokens.indexOf(ndx[0]) && tokens.push(ndx[0]);
-            opts.tokenizer = "(" + tokens.join("+|") + ")+?|.", opts.tokenizer = new RegExp(opts.tokenizer, "g");
-        }
-        return opts.tokenizer;
-    }
-    function parse(format, dateObjValue, opts) {
-        for (var match, mask = ""; match = getTokenizer(opts).exec(format); ) {
-            if (void 0 === dateObjValue) mask += formatCode[match[0]] ? "(" + formatCode[match[0]][0] + ")" : Inputmask.escapeRegex(match[0]); else if (formatCode[match[0]]) mask += formatCode[match[0]][3].call(dateObjValue.date); else mask += match[0];
-        }
-        return mask;
-    }
-    function pad(val, len) {
-        for (val = String(val), len = len || 2; val.length < len; ) val = "0" + val;
-        return val;
-    }
-    function analyseMask(maskString, format, opts) {
-        var targetProp, match, dateOperation, dateObj = {
-            date: new Date(1, 0, 1)
-        }, mask = maskString;
-        function extendYear(year) {
-            var correctedyear = 4 === year.length ? year : new Date().getFullYear().toString().substr(0, 4 - year.length) + year;
-            return opts.min && opts.min.year && opts.max && opts.max.year ? (correctedyear = correctedyear.replace(/[^0-9]/g, ""), 
-            correctedyear = year.charAt(0) === opts.max.year.charAt(0) ? year.replace(/[^0-9]/g, "0") : correctedyear + opts.min.year.substr(correctedyear.length)) : correctedyear = correctedyear.replace(/[^0-9]/g, "0"), 
-            correctedyear;
-        }
-        function setValue(dateObj, value, opts) {
-            "year" === targetProp ? (dateObj[targetProp] = extendYear(value), dateObj["raw" + targetProp] = value) : dateObj[targetProp] = opts.min && value.match(/[^0-9]/) ? opts.min[targetProp] : value, 
-            void 0 !== dateOperation && dateOperation.call(dateObj.date, "month" == targetProp ? parseInt(dateObj[targetProp]) - 1 : dateObj[targetProp]);
-        }
-        if ("string" == typeof mask) {
-            for (;match = getTokenizer(opts).exec(format); ) {
-                var value = mask.slice(0, match[0].length);
-                formatCode.hasOwnProperty(match[0]) && (targetProp = formatCode[match[0]][2], dateOperation = formatCode[match[0]][1], 
-                setValue(dateObj, value, opts)), mask = mask.slice(value.length);
-            }
-            return dateObj;
-        }
-    }
     return Inputmask.extendAliases({
         datetime: {
             mask: function(opts) {
@@ -128,19 +134,14 @@
             },
             postValidation: function(buffer, currentResult, opts) {
                 var result = currentResult, dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
-                return result && dateParts.date.getTime() == dateParts.date.getTime() && (result = (result = function(dateParts, currentResult) {
-                    return (!isFinite(dateParts.day) || "29" == dateParts.day && !isFinite(dateParts.rawyear) || new Date(dateParts.date.getFullYear(), isFinite(dateParts.month) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day) && currentResult;
-                }(dateParts, result)) && function(maskDate, opts) {
-                    var result = !0;
-                    return opts.min && opts.min.date.getTime() == opts.min.date.getTime() && (result = result && opts.min.date.getTime() <= maskDate.getTime()), 
-                    opts.max && opts.max.date.getTime() == opts.max.date.getTime() && (result = result && opts.max.date.getTime() >= maskDate.getTime()), 
-                    result;
-                }(dateParts.date, opts)), result;
+                return result && dateParts.date.getTime() === dateParts.date.getTime() && (result = (result = isValidDate(dateParts, result)) && isDateInRange(dateParts.date, opts)), 
+                result;
             },
             onKeyDown: function(e, buffer, caretPos, opts) {
+                var input = this;
                 if (e.ctrlKey && e.keyCode === Inputmask.keyCode.RIGHT) {
                     for (var match, today = new Date(), date = ""; match = getTokenizer(opts).exec(opts.inputFormat); ) "d" === match[0].charAt(0) ? date += pad(today.getDate(), match[0].length) : "m" === match[0].charAt(0) ? date += pad(today.getMonth() + 1, match[0].length) : "yyyy" === match[0] ? date += today.getFullYear().toString() : "y" === match[0].charAt(0) && (date += pad(today.getYear(), match[0].length));
-                    this.inputmask._valueSet(date), $(this).trigger("setvalue");
+                    input.inputmask._valueSet(date), $(input).trigger("setvalue");
                 }
             },
             onUnMask: function(maskedValue, unmaskedValue, opts) {

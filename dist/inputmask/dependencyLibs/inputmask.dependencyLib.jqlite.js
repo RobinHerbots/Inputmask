@@ -3,20 +3,25 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.1
+* Version: 4.0.0-beta.2
 */
 
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "jqlite", "../global/window", "../global/document]" ], factory) : "object" == typeof exports ? module.exports = factory(require("jqlite"), require("../global/window"), require("../global/document")) : window.dependencyLib = factory(jqlite, window, document);
 }(function($, window, document) {
+    function indexOf(list, elem) {
+        for (var i = 0, len = list.length; i < len; i++) if (list[i] === elem) return i;
+        return -1;
+    }
     function isWindow(obj) {
         return null != obj && obj === obj.window;
     }
+    function isArraylike(obj) {
+        var length = "length" in obj && obj.length, ltype = typeof obj;
+        return "function" !== ltype && !isWindow(obj) && (!(1 !== obj.nodeType || !length) || ("array" === ltype || 0 === length || "number" == typeof length && length > 0 && length - 1 in obj));
+    }
     return $.inArray = function(elem, arr, i) {
-        return null == arr ? -1 : function(list, elem) {
-            for (var i = 0, len = list.length; i < len; i++) if (list[i] === elem) return i;
-            return -1;
-        }(arr, elem);
+        return null == arr ? -1 : indexOf(arr, elem);
     }, $.isFunction = function(obj) {
         return "function" == typeof obj;
     }, $.isArray = Array.isArray, $.isPlainObject = function(obj) {
@@ -32,10 +37,7 @@
         return target;
     }, $.each = function(obj, callback) {
         var i = 0;
-        if (function(obj) {
-            var length = "length" in obj && obj.length, ltype = typeof obj;
-            return "function" !== ltype && !isWindow(obj) && (!(1 !== obj.nodeType || !length) || "array" === ltype || 0 === length || "number" == typeof length && length > 0 && length - 1 in obj);
-        }(obj)) for (var length = obj.length; i < length && !1 !== callback.call(obj[i], i, obj[i]); i++) ; else for (i in obj) if (!1 === callback.call(obj[i], i, obj[i])) break;
+        if (isArraylike(obj)) for (var length = obj.length; i < length && !1 !== callback.call(obj[i], i, obj[i]); i++) ; else for (i in obj) if (!1 === callback.call(obj[i], i, obj[i])) break;
         return obj;
     }, $.data = function(elem, name, data) {
         return $(elem).data(name, data);
