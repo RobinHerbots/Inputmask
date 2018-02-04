@@ -1,57 +1,86 @@
-# OBSOLETE - NEEDS UPDATE
+# datetime extensions
 
-# date & datetime extensions
+Date and Time masks.
 
-Date & Time masks.  Includes autocompletion, yearranges, leapyeares, etc.
+# Aliases
 
-This extension will be updated in milestone 3.5
-All aliases will be replaced by 1 generic datetime alias which can accept a specifier for the desired datetime format.
-
-## Definitions
-
-- h   :   hours
-- s   :   seconds / minutes
-- d   :   simple day
-- m   :   simple month
-- y   :   simple year
-
-## Aliases
-
-- dd/mm/yyyy
-- mm/dd/yyyy
-- yyyy/mm/dd
-- dd.mm.yyyy
-- dd-mm-yyyy
-- mm.dd.yyyy
-- mm-dd-yyyy
-- yyyy.mm.dd
-- yyyy-mm-dd
 - datetime
-- datetime12
-- mm/dd/yyyy hh:mm xm
-- hh:mm t
-- h:s t
-- hh:mm:ss
-- hh:mm
-- date
-- mm/yyyy
-- shamsi
 
-## Options
-### yearrange
-Define a yearrange.
+# Options
 
-yearrange: {
-  minyear: 1900,
-  maxyear: 2099
-}
+## inputFormat
+Format used to input the date
 
-## jqueryui.datepicker example
+ex:   
+- dd/mm/yyyy  
+- mm/dd/yyyy  
+- dd.mm.yyyy HH:MM:ss  
 
-```javascript
-$('#calender').datepicker({
-  dateFormat: 'dd/mm/yy',
-  changeMonth: true,
-  changeYear: true
-}).inputmask('dd/mm/yyyy');
-```
+###Supported symbols
+- d  
+Day of the month as digits; no leading zero for single-digit days.
+- dd  
+Day of the month as digits; leading zero for single-digit days.
+- ddd  
+Day of the week as a three-letter abbreviation.
+- dddd  
+Day of the week as its full name.
+- m  
+Month as digits; no leading zero for single-digit months.
+- mm  
+Month as digits; leading zero for single-digit months.
+- mmm  
+Month as a three-letter abbreviation.
+- mmmm  
+Month as its full name.
+-yy  
+Year as last two digits; leading zero for years less than 10.
+- yyyy  
+Year as 4 digits.
+- h  
+Hours; no leading zero for single-digit hours (12-hour clock).
+- hh  
+Hours; leading zero for single-digit hours (12-hour clock).
+- hhh  
+Hours; no limit
+-H  
+Hours; no leading zero for single-digit hours (24-hour clock).
+- HH  
+Hours; leading zero for single-digit hours (24-hour clock).
+- HHH  
+Hours; no limit
+- M  
+Minutes; no leading zero for single-digit minutes. Uppercase M unlike CF timeFormat's m to avoid conflict with months.
+- MM  
+Minutes; leading zero for single-digit minutes. Uppercase MM unlike CF timeFormat's mm to avoid conflict with months.
+- s  
+Seconds; no leading zero for single-digit seconds.
+- ss  
+Seconds; leading zero for single-digit seconds.
+- l  
+Milliseconds. 3 digits.
+- L  
+Milliseconds. 2 digits.
+- t  
+Lowercase, single-character time marker string: a or p.
+- tt  
+Two-character time marker string: am or pm.
+- T  
+Single-character time marker string: A or P.
+- TT  
+Two-character time marker string: AM or PM.
+- Z  
+US timezone abbreviation, e.g. EST or MDT. With non-US timezones or in the Opera browser, the GMT/UTC offset is returned, e.g. GMT-0500
+- o  
+GMT/UTC timezone offset, e.g. -0500 or +0230.
+- S  
+The date's ordinal suffix (st, nd, rd, or th). Works well with d.
+
+## displayFormat
+Visual format when the input looses focus
+## outputFormat
+Unmasking format
+## min
+Minimum value. This needs to be in the same format as the inputfornat
+## max
+Maximum value. This needs to be in the same format as the inputfornat,
