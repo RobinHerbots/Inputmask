@@ -96,6 +96,11 @@ If you like to automatically bind the inputmask to the inputs marked with the da
 npm install inputmask --save
 ```
 
+##### Install the latest beta version
+```
+npm install inputmask@next --save
+```
+
 #### In your modules
 If you want to include the Inputmask and all extensions.
 ```

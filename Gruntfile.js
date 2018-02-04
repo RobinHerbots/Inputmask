@@ -95,8 +95,7 @@ module.exports = function (grunt) {
             options: {
                 bump: false,
                 commit: false,
-                add: false,
-                tagName: 'Inputmask <%= version %>'
+                add: false
             }
         },
         nugetpack: {
