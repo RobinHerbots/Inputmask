@@ -94,7 +94,9 @@ module.exports = function (grunt) {
         release: {
             options: {
                 bump: false,
-                commitMessage: 'Inputmask <%= version %>'
+                commit: false,
+                add: false,
+                tagName: 'Inputmask <%= version %>'
             }
         },
         nugetpack: {
@@ -154,7 +156,7 @@ module.exports = function (grunt) {
     require('load-grunt-tasks')(grunt);
 
     grunt.registerTask('publish', ['release', 'nugetpack', 'nugetpush']);
-    grunt.registerTask('publishnext', function() {
+    grunt.registerTask('publishnext', function () {
         grunt.config('release.options.npmtag', "next");
         grunt.task.run('release');
     });
