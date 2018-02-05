@@ -244,6 +244,11 @@
             onUnMask: function (maskedValue, unmaskedValue, opts) {
                 return parse(opts.outputFormat, analyseMask(maskedValue, opts.inputFormat, opts), opts);
             },
+            casing: function (elem, test, pos, validPositions) {
+                if (test.nativeDef.indexOf("[ap]") == 0) return elem.toLowerCase();
+                if (test.nativeDef.indexOf("[AP]") == 0) return elem.toUpperCase();
+                return elem;
+            },
             insertMode: false
         }
     });
