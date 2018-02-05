@@ -65,13 +65,13 @@
             L: ["[0-9]{2}", Date.prototype.setMilliseconds, "milliseconds", function () {
                 return pad(Date.prototype.getMilliseconds.call(this), 2);
             }], //Milliseconds. 2 digits.
-            t: [""], //Lowercase, single-character time marker string: a or p.
-            tt: [""], //two-character time marker string: am or pm.
-            T: [""], //single-character time marker string: A or P.
-            TT: [""], //two-character time marker string: AM or PM.
+            t: ["[ap]"], //Lowercase, single-character time marker string: a or p.
+            tt: ["[ap]m"], //two-character time marker string: am or pm.
+            T: ["[AP]"], //single-character time marker string: A or P.
+            TT: ["[AP]M"], //two-character time marker string: AM or PM.
             Z: [""], //US timezone abbreviation, e.g. EST or MDT. With non-US timezones or in the Opera browser, the GMT/UTC offset is returned, e.g. GMT-0500
             o: [""], //GMT/UTC timezone offset, e.g. -0500 or +0230.
-            S: [""] //The date's ordinal suffix (st, nd, rd, or th). Works well with d.
+            S: [""] //The date's ordinal suffix (st, nd, rd, or th).
         },
         formatAlias = {
             isoDate: "yyyy-mm-dd", //2007-06-09
@@ -181,6 +181,9 @@
     Inputmask.extendAliases({
         "datetime": {
             mask: function (opts) {
+                //localize
+                formatCode.S = opts.i18n.ordinalSuffix.join("|");
+
                 opts.inputFormat = formatAlias[opts.inputFormat] || opts.inputFormat; //resolve possible formatAkias
                 opts.displayFormat = formatAlias[opts.displayFormat] || opts.displayFormat || opts.inputFormat; //resolve possible formatAkias
                 opts.outputFormat = formatAlias[opts.outputFormat] || opts.outputFormat || opts.inputFormat; //resolve possible formatAkias
@@ -205,7 +208,8 @@
                 monthNames: [
                     "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
                     "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
-                ]
+                ],
+                ordinalSuffix: ["st", "nd", "rd", "th"]
             },
             postValidation: function (buffer, currentResult, opts) {
                 var result = currentResult, dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
