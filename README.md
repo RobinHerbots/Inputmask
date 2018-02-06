@@ -2,6 +2,8 @@
 
 Copyright (c) 2010 - 2018 Robin Herbots Licensed under the MIT license ([http://opensource.org/licenses/mit-license.php](http://opensource.org/licenses/mit-license.php))
 
+[![donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZNR3EB6JTMMSS)
+
 [![NPM Version][npm-image]][npm-url] [![Dependency Status][david-image]][david-url] [![devDependency Status][david-dev-image]][david-dev-url]
 
 Inputmask is a javascript library which creates an input mask.  Inputmask can run against vanilla javascript, jQuery and jqlite.
@@ -30,9 +32,6 @@ Highlights:
 - [Android support](README_android.md)
 
 Demo page see [http://robinherbots.github.io/Inputmask](http://robinherbots.github.io/Inputmask)
-
-[![donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZNR3EB6JTMMSS)
-
 
 Thanks to [Jetbrains](https://www.jetbrains.com/) for providing a free license for their excellent Webstorm IDE.
 
