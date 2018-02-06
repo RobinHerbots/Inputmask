@@ -91,14 +91,14 @@
                     mask += "~{1," + opts.integerDigits + "}";
                 } else mask += "~{" + opts.integerDigits + "}";
                 if (opts.digits !== undefined) {
-                    opts.radixPointDefinitionSymbol = opts.decimalProtect ? ":" : opts.radixPoint;
+                    var radixDef = opts.decimalProtect ? ":" : opts.radixPoint;
                     var dq = opts.digits.toString().split(",");
                     if (isFinite(dq[0] && dq[1] && isFinite(dq[1]))) {
-                        mask += opts.radixPointDefinitionSymbol + ";{" + opts.digits + "}";
+                        mask += radixDef + ";{" + opts.digits + "}";
                     } else if (isNaN(opts.digits) || parseInt(opts.digits) > 0) {
                         if (opts.digitsOptional) {
-                            mask += "[" + opts.radixPointDefinitionSymbol + ";{1," + opts.digits + "}]";
-                        } else mask += opts.radixPointDefinitionSymbol + ";{" + opts.digits + "}";
+                            mask += "[" + radixDef + ";{1," + opts.digits + "}]";
+                        } else mask += radixDef + ";{" + opts.digits + "}";
                     }
                 }
                 mask += autoEscape(opts.suffix, opts);

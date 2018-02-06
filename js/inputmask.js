@@ -86,7 +86,7 @@
                 undoOnEscape: true, //pressing escape reverts the value to the value before focus
                 //numeric basic properties
                 radixPoint: "", //".", // | ","
-                radixPointDefinitionSymbol: undefined, //set the radixPoint definitionSymbol ~ used for awareness of the radixpoint
+                _radixDance: false, //dance around the radixPoint
                 groupSeparator: "", //",", // | "."
                 //numeric basic properties
                 keepStatic: null, //try to keep the mask static while typing. Decisions to alter the mask will be posponed if possible - null see auto selection for multi masks
@@ -918,7 +918,7 @@
             function determineTestTemplate(pos, tests, guessNextBest) {
                 pos = pos > 0 ? pos - 1 : 0;
                 var testPos,
-                    altTest = getTest(pos),
+                    altTest = getTest(pos, tests),
                     altArr = (altTest.alternation !== undefined) ? altTest.locator[altTest.alternation].toString().split(",") : [];
                 for (var ndx = 0; ndx < tests.length; ndx++) {
                     testPos = tests[ndx];
@@ -979,11 +979,11 @@
                 return getMaskSet().validPositions[pos] || determineTestTemplate(pos, getTests(pos, ndxIntlzr ? ndxIntlzr.slice() : ndxIntlzr, tstPs));
             }
 
-            function getTest(pos) {
+            function getTest(pos, tests) {
                 if (getMaskSet().validPositions[pos]) {
                     return getMaskSet().validPositions[pos];
                 }
-                return getTests(pos)[0];
+                return (tests || getTests(pos))[0];
             }
 
             function positionCanMatchDefinition(pos, def) {
@@ -2050,7 +2050,17 @@
                                     begin: ndx,
                                     end: ndx
                                 } : caret(input),
-                                forwardPosition, c = String.fromCharCode(k);
+                                forwardPosition, c = String.fromCharCode(k), offset = 0;
+
+                            if (opts._radixDance && opts.numericInput) {
+                                var caretPos = getBuffer().indexOf(opts.radixPoint.charAt(0)) + 1;
+                                if (pos.begin <= caretPos) {
+                                    if (k === opts.radixPoint.charCodeAt(0)) offset = 1;
+                                    pos.begin -= 1;
+                                    pos.end -= 1;
+                                }
+                            }
+
 
                             getMaskSet().writeOutBuffer = true;
                             var valResult = isValid(pos, c, strict);
@@ -2061,7 +2071,7 @@
                             }
 
 
-                            forwardPosition = (opts.numericInput && valResult.caret === undefined) ? seekPrevious(forwardPosition) : forwardPosition;
+                            forwardPosition = ((opts.numericInput && valResult.caret === undefined) ? seekPrevious(forwardPosition) : forwardPosition) + offset;
                             if (writeOut !== false) {
                                 setTimeout(function () {
                                     opts.onKeyValidation.call(input, k, valResult, opts);
