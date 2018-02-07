@@ -287,7 +287,7 @@
                 });
             },
             analyseMask: function (mask, regexMask, opts) {
-                var tokenizer = /(?:[?*+]|\{[0-9\+\*]+(?:,[0-9\+\*]*)?\})|[^.?*+^${[]()|\\]+|./g,
+                var tokenizer = /(?:[?*+]|\{[0-9\+\*]+(?:,[0-9\+\*]*)?(?:\|[0-9\+\*]*)?\})|[^.?*+^${[]()|\\]+|./g,
                     //Thx to https://github.com/slevithan/regex-colorizer for the regexTokenizer regex
                     regexTokenizer = /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?[:=!]?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g,
                     escaped = false,
@@ -517,7 +517,8 @@
                             var quantifier = new MaskToken(false, false, true);
 
                             m = m.replace(/[{}]/g, "");
-                            var mq = m.split(","),
+                            var mqj = m.split("|"),
+                                mq = mqj[0].split(","),
                                 mq0 = isNaN(mq[0]) ? mq[0] : parseInt(mq[0]),
                                 mq1 = mq.length === 1 ? mq0 : (isNaN(mq[1]) ? mq[1] : parseInt(mq[1]));
                             if (mq1 === "*" || mq1 === "+") {
@@ -525,7 +526,8 @@
                             }
                             quantifier.quantifier = {
                                 min: mq0,
-                                max: mq1
+                                max: mq1,
+                                jit: mqj[1]
                             };
                             if (openenings.length > 0) {
                                 var matches = openenings[openenings.length - 1].matches;
@@ -805,7 +807,8 @@
                         testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
                         test = testPos.match;
                         ndxIntlzr = testPos.locator.slice();
-                        if (opts.jitMasking === false || pos < lvp || (typeof opts.jitMasking === "number" && isFinite(opts.jitMasking) && opts.jitMasking > pos)) {
+                        var jitMasking = opts.jitMasking !== false ? opts.jitMasking : test.jit;
+                        if (jitMasking === false || jitMasking === undefined || pos < lvp || (typeof jitMasking === "number" && isFinite(jitMasking) && jitMasking > pos)) {
                             maskTemplate.push(includeMode === false ? test.nativeDef : getPlaceholder(pos, test));
                         }
                     }
@@ -1223,6 +1226,7 @@
                                         //get latest match
                                         latestMatch = matches[matches.length - 1].match;
                                         latestMatch.optionalQuantifier = qndx > (qt.quantifier.min - 1);
+                                        latestMatch.jit = qndx + tokenGroup.matches.indexOf(latestMatch) >= qt.quantifier.jit;
                                         if (isFirstMatch(latestMatch, tokenGroup)) { //search for next possible match
                                             if (qndx > (qt.quantifier.min - 1)) {
                                                 insertStop = true;

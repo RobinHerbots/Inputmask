@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [UNRELEASED - 4.x]
 ### added
+- jit enabled dynamic masks
 - add support for input type search
 - new datetime alias
 - extend positionCaretOnClick with "select" to select the whole input on focus

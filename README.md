@@ -267,7 +267,10 @@ The initial mask shown will be "**_**" instead of "**_**-____".
 ### Dynamic masks
 Dynamic masks can change during the input.  To define a dynamic part use { }.
 
-{n} => n repeats<br>{n,m} => from n to m repeats
+{n} => n repeats  
+{n|j} => n repeats, with j jitmasking  
+{n,m} => from n to m repeats  
+{n,m|j} => from n to m repeats, with j jitmasking
 
 Also {+} and {*} is allowed. + start from 1 and * start from 0.
 
@@ -291,6 +294,19 @@ $(document).ready(function(){
       }
     }
   });
+  //decimal mask
+   Inputmask("(.999){+|1},00", {
+        positionCaretOnClick: "radixFocus",
+        radixPoint: ",",
+        _radixDance: true,
+        numericInput: true,
+        placeholder: "0",
+        definitions: {
+            "0": {
+                validator: "[0-9\uFF11-\uFF19]"
+            }
+        }
+   }).mask(selector);
 });
 ```
 
