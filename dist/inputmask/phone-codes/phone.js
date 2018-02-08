@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.7
+* Version: 4.0.0-beta.8
 */
 
 !function(factory) {
@@ -891,42 +891,58 @@
                 mask: "+39(0##)####-##-##",
                 cc: "IT",
                 cd: "Italy",
-                desc_en: ""
+                desc_en: "",
+                name_ru: "Италия",
+                desc_ru: ""
             }, {
                 mask: "+39(0##)####-###",
                 cc: "IT",
                 cd: "Italy",
-                desc_en: ""
+                desc_en: "",
+                name_ru: "Италия",
+                desc_ru: ""
             }, {
                 mask: "+39(0##)###-###",
                 cc: "IT",
                 cd: "Italy",
-                desc_en: ""
+                desc_en: "",
+                name_ru: "Италия",
+                desc_ru: ""
             }, {
                 mask: "+39(0##)##-###",
                 cc: "IT",
                 cd: "Italy",
-                desc_en: ""
+                desc_en: "",
+                name_ru: "Италия",
+                desc_ru: ""
             }, {
                 mask: "+39(0##)##-##",
                 cc: "IT",
                 cd: "Italy",
-                desc_en: ""
+                desc_en: "",
+                name_ru: "Италия",
+                desc_ru: ""
             }, {
                 mask: "+39(0#)##-##",
                 cc: "IT",
                 cd: "Italy",
-                desc_en: ""
+                desc_en: "",
+                name_ru: "Италия",
+                desc_ru: ""
             }, {
                 mask: "+39(3##)###-##-##",
                 cc: "IT",
                 cd: "Italy",
-                desc_en: ""
+                desc_en: "",
+                name_ru: "Италия",
+                desc_ru: ""
             }, {
                 mask: "+39(3##)##-##-##",
                 cc: "IT",
                 cd: "Italy",
-                desc_en: ""
+                desc_en: "",
+                name_ru: "Италия",
+                desc_ru: ""
             }, {
                 mask: "+1(876)###-####",
                 cc: "JM",

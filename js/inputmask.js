@@ -1232,7 +1232,7 @@
                                             testPos = pos; //match the position after the group
                                             break; //stop quantifierloop && search for next possible match
                                         }
-                                        if (isNaN(qt.quantifier.max) && latestMatch.optionalQuantifier && getMaskSet().validPositions[pos-1] === undefined) {
+                                        if (isNaN(qt.quantifier.max) && latestMatch.optionalQuantifier && getMaskSet().validPositions[pos - 1] === undefined) {
                                             matches.pop()
                                             insertStop = true;
                                             testPos = pos; //match the position after the group
@@ -2245,7 +2245,7 @@
                                     }
                                 }
                                 var keydown = new $.Event("keydown");
-                                keydown.keyCode = Inputmask.keyCode.DELETE;
+                                keydown.keyCode = opts.numericInput ? Inputmask.keyCode.BACKSPACE : Inputmask.keyCode.DELETE;
                                 EventHandlers.keydownEvent.call(input, keydown);
 
                                 if (opts.insertMode === false) {
