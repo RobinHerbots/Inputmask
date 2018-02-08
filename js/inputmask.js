@@ -1100,7 +1100,7 @@
                             return false;
                         }
 
-                        if (testPos > 10000) {
+                        if (testPos > 5000) {
                             throw "Inputmask: There is probably an error in your mask definition or in the code. Create an issue on github with an example of the mask you are using. " + getMaskSet().mask;
                         }
                         if (testPos === pos && match.matches === undefined) {
@@ -1227,15 +1227,20 @@
                                         latestMatch = matches[matches.length - 1].match;
                                         latestMatch.optionalQuantifier = qndx > (qt.quantifier.min - 1);
                                         latestMatch.jit = qndx + tokenGroup.matches.indexOf(latestMatch) >= qt.quantifier.jit;
-                                        if (isFirstMatch(latestMatch, tokenGroup)) { //search for next possible match
-                                            if (qndx > (qt.quantifier.min - 1)) {
-                                                insertStop = true;
-                                                testPos = pos; //match the position after the group
-                                                break; //stop quantifierloop
-                                            } else return true;
-                                        } else {
-                                            return true;
+                                        if (isFirstMatch(latestMatch, tokenGroup) && qndx > (qt.quantifier.min - 1)) {
+                                            insertStop = true;
+                                            testPos = pos; //match the position after the group
+                                            break; //stop quantifierloop && search for next possible match
                                         }
+                                        if (isNaN(qt.quantifier.max) && latestMatch.optionalQuantifier && getMaskSet().validPositions[pos-1] === undefined) {
+                                            matches.pop()
+                                            insertStop = true;
+                                            testPos = pos; //match the position after the group
+                                            cacheDependency = undefined; //enforce revalidation when requested
+                                            break; //stop quantifierloop && search for next possible match
+                                        }
+
+                                        return true;
                                     }
                                 }
                             } else {

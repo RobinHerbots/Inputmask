@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.6
+* Version: 4.0.0-beta.7
 */
 
 !function(modules) {
@@ -245,7 +245,7 @@
                             }
                             return !1;
                         }
-                        if (testPos > 1e4) throw "Inputmask: There is probably an error in your mask definition or in the code. Create an issue on github with an example of the mask you are using. " + getMaskSet().mask;
+                        if (testPos > 5e3) throw "Inputmask: There is probably an error in your mask definition or in the code. Create an issue on github with an example of the mask you are using. " + getMaskSet().mask;
                         if (testPos === pos && match.matches === undefined) return matches.push({
                             match: match,
                             locator: loopNdx.reverse(),
@@ -311,12 +311,13 @@
                                 if (match = handleMatch(tokenGroup, [ qndx ].concat(loopNdx), tokenGroup)) {
                                     if ((latestMatch = matches[matches.length - 1].match).optionalQuantifier = qndx > qt.quantifier.min - 1, 
                                     latestMatch.jit = qndx + tokenGroup.matches.indexOf(latestMatch) >= qt.quantifier.jit, 
-                                    isFirstMatch(latestMatch, tokenGroup)) {
-                                        if (qndx > qt.quantifier.min - 1) {
-                                            insertStop = !0, testPos = pos;
-                                            break;
-                                        }
-                                        return !0;
+                                    isFirstMatch(latestMatch, tokenGroup) && qndx > qt.quantifier.min - 1) {
+                                        insertStop = !0, testPos = pos;
+                                        break;
+                                    }
+                                    if (isNaN(qt.quantifier.max) && latestMatch.optionalQuantifier && getMaskSet().validPositions[pos - 1] === undefined) {
+                                        matches.pop(), insertStop = !0, testPos = pos, cacheDependency = undefined;
+                                        break;
                                     }
                                     return !0;
                                 }

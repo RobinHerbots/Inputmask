@@ -378,4 +378,26 @@ export default function (qunit, $, Inputmask) {
 		testmask.blur();
 		assert.equal(testmask.value, "P.P.", "Result " + testmask.value);
 	});
+
+    qunit.test("(.999){+|1},00 - Loop trigger in setValidPosition", function (assert) {
+        var $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask("(.999){+|1},00", {
+            radixPoint: ",",
+            numericInput: true,
+            placeholder: "0",
+            definitions: {
+                "0": {
+                    validator: "[0-9\uFF11-\uFF19]"
+                }
+            }
+        }).mask(testmask);
+
+        testmask.focus();
+        $("#testmask").trigger("click");
+        $("#testmask").Type("123333333333333333333333");
+        assert.equal(testmask.value, "0,12", "Result " + testmask.value);
+    });
+
 };
