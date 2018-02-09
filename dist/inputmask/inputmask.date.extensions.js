@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.9
+* Version: 4.0.0-beta.10
 */
 
 !function(factory) {
@@ -114,10 +114,11 @@
                 return formatCode.S = opts.i18n.ordinalSuffix.join("|"), opts.inputFormat = formatAlias[opts.inputFormat] || opts.inputFormat, 
                 opts.displayFormat = formatAlias[opts.displayFormat] || opts.displayFormat || opts.inputFormat, 
                 opts.outputFormat = formatAlias[opts.outputFormat] || opts.outputFormat || opts.inputFormat, 
-                opts.placeholder = opts.placeholder !== Inputmask.prototype.defaults.placeholder ? opts.placeholder : opts.inputFormat, 
+                opts.placeholder = "" !== opts.placeholder ? opts.placeholder : opts.inputFormat, 
                 opts.min = analyseMask(opts.min, opts.inputFormat, opts), opts.max = analyseMask(opts.max, opts.inputFormat, opts), 
                 opts.regex = parse(opts.inputFormat, void 0, opts), null;
             },
+            placeholder: "",
             inputFormat: "isoDateTime",
             displayFormat: void 0,
             outputFormat: void 0,

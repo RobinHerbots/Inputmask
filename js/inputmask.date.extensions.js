@@ -187,13 +187,14 @@
                 opts.inputFormat = formatAlias[opts.inputFormat] || opts.inputFormat; //resolve possible formatAkias
                 opts.displayFormat = formatAlias[opts.displayFormat] || opts.displayFormat || opts.inputFormat; //resolve possible formatAkias
                 opts.outputFormat = formatAlias[opts.outputFormat] || opts.outputFormat || opts.inputFormat; //resolve possible formatAkias
-                opts.placeholder = opts.placeholder !== Inputmask.prototype.defaults.placeholder ? opts.placeholder : opts.inputFormat;
+                opts.placeholder = opts.placeholder !== "" ? opts.placeholder : opts.inputFormat;
                 opts.min = analyseMask(opts.min, opts.inputFormat, opts);
                 opts.max = analyseMask(opts.max, opts.inputFormat, opts);
                 opts.regex = parse(opts.inputFormat, undefined, opts);
                 // console.log(opts.regex);
                 return null; //migrate to regex mask
             },
+            placeholder: "", //set default as none (~ auto); when a custom placeholder is passed it will be used
             inputFormat: "isoDateTime", //format used to input the date
             displayFormat: undefined, //visual format when the input looses focus
             outputFormat: undefined, //unmasking format
