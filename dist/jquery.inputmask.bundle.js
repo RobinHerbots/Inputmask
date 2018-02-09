@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.10
+* Version: 4.0.0-beta.11
 */
 
 !function(modules) {
@@ -204,7 +204,8 @@
                         function isFirstMatch(latestMatch, tokenGroup) {
                             var firstMatch = 0 === $.inArray(latestMatch, tokenGroup.matches);
                             return firstMatch || $.each(tokenGroup.matches, function(ndx, match) {
-                                if (!0 === match.isQuantifier && (firstMatch = isFirstMatch(latestMatch, tokenGroup.matches[ndx - 1]))) return !1;
+                                if (!0 === match.isQuantifier ? firstMatch = isFirstMatch(latestMatch, tokenGroup.matches[ndx - 1]) : !0 === match.isOptional ? firstMatch = isFirstMatch(latestMatch, match) : !0 === match.isAlternate && (firstMatch = isFirstMatch(latestMatch, match)), 
+                                firstMatch) return !1;
                             }), firstMatch;
                         }
                         function resolveNdxInitializer(pos, alternateNdx, targetAlternation) {
@@ -258,7 +259,7 @@
                             } else if (match.isOptional) {
                                 var optionalToken = match;
                                 if (match = resolveTestFromToken(match, ndxInitializer, loopNdx, quantifierRecurse)) {
-                                    if (!isFirstMatch(latestMatch = matches[matches.length - 1].match, optionalToken)) return !0;
+                                    if (latestMatch = matches[matches.length - 1].match, quantifierRecurse !== undefined || !isFirstMatch(latestMatch, optionalToken)) return !0;
                                     insertStop = !0, testPos = pos;
                                 }
                             } else if (match.isAlternator) {
@@ -315,7 +316,7 @@
                                         insertStop = !0, testPos = pos;
                                         break;
                                     }
-                                    if (isNaN(qt.quantifier.max) && latestMatch.optionalQuantifier && getMaskSet().validPositions[pos - 1] === undefined) {
+                                    if (qt.quantifier.jit !== undefined && isNaN(qt.quantifier.max) && latestMatch.optionalQuantifier && getMaskSet().validPositions[pos - 1] === undefined) {
                                         matches.pop(), insertStop = !0, testPos = pos, cacheDependency = undefined;
                                         break;
                                     }

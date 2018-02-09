@@ -22,6 +22,7 @@ All notable changes to this project will be documented in this file.
 - enhance inputfallback (Android)
 
 ### Fixed
+- Hang on combination of optional mask and repeat #698
 - Can't remove inputmask on focus? #1820
 - Not able to input 31.12. in DD.MM date input in v4.x #1803
 - problem with two separate alternations #1722

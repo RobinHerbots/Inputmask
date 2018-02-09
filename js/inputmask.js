@@ -1017,10 +1017,10 @@
                             var firstMatch = $.inArray(latestMatch, tokenGroup.matches) === 0;
                             if (!firstMatch) {
                                 $.each(tokenGroup.matches, function (ndx, match) {
-                                    if (match.isQuantifier === true) {
-                                        firstMatch = isFirstMatch(latestMatch, tokenGroup.matches[ndx - 1]);
-                                        if (firstMatch) return false;
-                                    }
+                                    if (match.isQuantifier === true) firstMatch = isFirstMatch(latestMatch, tokenGroup.matches[ndx - 1]);
+                                    else if (match.isOptional === true) firstMatch = isFirstMatch(latestMatch, match);
+                                    else if (match.isAlternate === true) firstMatch = isFirstMatch(latestMatch, match);
+                                    if (firstMatch) return false;
                                 });
                             }
                             return firstMatch;
@@ -1120,7 +1120,7 @@
                                 match = resolveTestFromToken(match, ndxInitializer, loopNdx, quantifierRecurse);
                                 if (match) {
                                     latestMatch = matches[matches.length - 1].match;
-                                    if (isFirstMatch(latestMatch, optionalToken)) {
+                                    if (quantifierRecurse === undefined && isFirstMatch(latestMatch, optionalToken)) { //prevent loop see #698
                                         insertStop = true; //insert a stop
                                         testPos = pos; //match the position after the group
                                     } else return true;
@@ -1232,14 +1232,13 @@
                                             testPos = pos; //match the position after the group
                                             break; //stop quantifierloop && search for next possible match
                                         }
-                                        if (isNaN(qt.quantifier.max) && latestMatch.optionalQuantifier && getMaskSet().validPositions[pos - 1] === undefined) {
+                                        if (qt.quantifier.jit !== undefined && isNaN(qt.quantifier.max) && latestMatch.optionalQuantifier && getMaskSet().validPositions[pos - 1] === undefined) {
                                             matches.pop()
                                             insertStop = true;
                                             testPos = pos; //match the position after the group
                                             cacheDependency = undefined; //enforce revalidation when requested
                                             break; //stop quantifierloop && search for next possible match
                                         }
-
                                         return true;
                                     }
                                 }
