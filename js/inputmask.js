@@ -3206,6 +3206,7 @@
                         return getBufferTemplate().join("");
                     case "remove":
                         if (el && el.inputmask) {
+                            $.data(el, "_inputmask_opts", null); //invalidate
                             $el = $(el);
                             //writeout the value
                             el.inputmask._valueSet(opts.autoUnmask ? unmaskedvalue(el) : el.inputmask._valueGet(true));
