@@ -2558,7 +2558,7 @@
             function caret(input, begin, end, notranslate) {
                 function translatePosition(pos) {
                     if (notranslate !== true && isRTL && typeof pos === "number" && (!opts.greedy || opts.placeholder !== "")) {
-                        pos = input.inputmask.__valueGet.call(input).length - pos;
+                        pos = input.inputmask._valueGet.call(input).length - pos;
                     }
                     return pos;
                 }
@@ -2584,7 +2584,7 @@
                         var scrollCalc = parseInt(((input.ownerDocument.defaultView || window).getComputedStyle ? (input.ownerDocument.defaultView || window).getComputedStyle(input, null) : input.currentStyle).fontSize) * end;
                         input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0;
 
-                        if (opts.insertMode === false && begin === end) end++; //set visualization for insert/overwrite mode
+                        if (!iphone && opts.insertMode === false && begin === end) end++; //set visualization for insert/overwrite mode
 
                         input.inputmask.caretPos = {begin: begin, end: end}; //track caret internally
                         if (input.setSelectionRange) {
