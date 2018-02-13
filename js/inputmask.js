@@ -2188,7 +2188,7 @@
 
                         if (getBuffer().join("") !== inputValue) {
                             var buffer = getBuffer().join(""),
-                                offset = inputValue.length > buffer.length ? -1 : 0,
+                                offset = (!opts.numericInput && inputValue.length > buffer.length) ? -1 : 0,
                                 frontPart = inputValue.substr(0, caretPos.begin),
                                 backPart = inputValue.substr(caretPos.begin),
                                 frontBufferPart = buffer.substr(0, caretPos.begin + offset),
