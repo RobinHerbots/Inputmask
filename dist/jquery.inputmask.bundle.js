@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.12
+* Version: 4.0.0-beta.14
 */
 
 !function(modules) {
@@ -942,7 +942,7 @@
             }
             function caret(input, begin, end, notranslate) {
                 function translatePosition(pos) {
-                    return !0 === notranslate || !isRTL || "number" != typeof pos || opts.greedy && "" === opts.placeholder || (pos = input.inputmask._valueGet.call(input).length - pos), 
+                    return !0 === notranslate || !isRTL || "number" != typeof pos || opts.greedy && "" === opts.placeholder || (pos = input.inputmask._valueGet().length - pos), 
                     pos;
                 }
                 var range;
@@ -1757,12 +1757,12 @@
                     var result = currentResult, dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
                     return result && dateParts.date.getTime() == dateParts.date.getTime() && (result = (result = function(dateParts, currentResult) {
                         return (!isFinite(dateParts.day) || "29" == dateParts.day && !isFinite(dateParts.rawyear) || new Date(dateParts.date.getFullYear(), isFinite(dateParts.month) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day) && currentResult;
-                    }(dateParts, result)) && function(maskDate, opts) {
+                    }(dateParts, result)) && function(dateParts, opts) {
                         var result = !0;
-                        return opts.min && opts.min.date.getTime() == opts.min.date.getTime() && (result = result && opts.min.date.getTime() <= maskDate.getTime()), 
-                        opts.max && opts.max.date.getTime() == opts.max.date.getTime() && (result = result && opts.max.date.getTime() >= maskDate.getTime()), 
+                        return dateParts.rawyear.match(/[0-9]+/) && (opts.min && opts.min.date.getTime() == opts.min.date.getTime() && (result = opts.min.date.getTime() <= dateParts.date.getTime()), 
+                        result && opts.max && opts.max.date.getTime() == opts.max.date.getTime() && (result = opts.max.date.getTime() >= dateParts.date.getTime())), 
                         result;
-                    }(dateParts.date, opts)), result;
+                    }(dateParts, opts)), result;
                 },
                 onKeyDown: function(e, buffer, caretPos, opts) {
                     if (e.ctrlKey && e.keyCode === Inputmask.keyCode.RIGHT) {

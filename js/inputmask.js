@@ -2558,7 +2558,7 @@
             function caret(input, begin, end, notranslate) {
                 function translatePosition(pos) {
                     if (notranslate !== true && isRTL && typeof pos === "number" && (!opts.greedy || opts.placeholder !== "")) {
-                        pos = input.inputmask._valueGet.call(input).length - pos;
+                        pos = input.inputmask._valueGet().length - pos;
                     }
                     return pos;
                 }

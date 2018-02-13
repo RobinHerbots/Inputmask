@@ -100,13 +100,15 @@
             : false; //take corrective action if possible
     }
 
-    function isDateInRange(maskDate, opts) {
+    function isDateInRange(dateParts, opts) {
         var result = true;
-        if (opts.min && opts.min.date.getTime() === opts.min.date.getTime()) {
-            result = result && opts.min.date.getTime() <= maskDate.getTime();
-        }
-        if (opts.max && opts.max.date.getTime() === opts.max.date.getTime()) {
-            result = result && opts.max.date.getTime() >= maskDate.getTime();
+        if (dateParts.rawyear.match(/[0-9]+/)) {
+            if (opts.min && opts.min.date.getTime() === opts.min.date.getTime()) {
+                result = opts.min.date.getTime() <= dateParts.date.getTime();
+            }
+            if (result && opts.max && opts.max.date.getTime() === opts.max.date.getTime()) {
+                result = opts.max.date.getTime() >= dateParts.date.getTime();
+            }
         }
 
         return result;
@@ -216,7 +218,7 @@
                 var result = currentResult, dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
                 if (result && dateParts.date.getTime() === dateParts.date.getTime()) { //check for a valid date ~ an invalid date returns NaN which isn't equal
                     result = isValidDate(dateParts, result);
-                    result = result && isDateInRange(dateParts.date, opts);
+                    result = result && isDateInRange(dateParts, opts);
                 }
 
                 return result;
