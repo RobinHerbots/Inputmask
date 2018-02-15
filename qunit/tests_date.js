@@ -181,6 +181,21 @@ export default function (qunit, $, Inputmask) {
         assert.equal(testmask.value, "31/12/2017", "Result " + testmask.value);
     });
 
+    qunit.test("min 14/02/1938 max 14/02/2038 enter 01011939", function (assert) {
+        var $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask("datetime", {
+            inputFormat: "dd/mm/yyyy",
+            min: "14/02/1938",
+            max: "14/02/2038"
+        }).mask(testmask);
+
+        testmask.focus();
+        $("#testmask").val("01011939");
+        assert.equal(testmask.value, "01/01/1939", "Result " + testmask.value);
+    });
+
     qunit.module("Date.Extensions - mm/dd/yyyy");
     qunit.test("valid entry", function (assert) {
         var $fixture = $("#qunit-fixture");
@@ -354,6 +369,21 @@ export default function (qunit, $, Inputmask) {
         testmask.focus();
         $("#testmask").val("12312017");
         assert.equal(testmask.value, "12/31/2017", "Result " + testmask.value);
+    });
+
+    qunit.test("min 02/14/1938 max 02/14/2038 enter 01011939", function (assert) {
+        var $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask("datetime", {
+            inputFormat: "mm/dd/yyyy",
+            min: "02/14/1938",
+            max: "02/14/2038"
+        }).mask(testmask);
+
+        testmask.focus();
+        $("#testmask").val("01011939");
+        assert.equal(testmask.value, "01/01/1939", "Result " + testmask.value);
     });
 
     qunit.module("Date.Extensions - dd.mm.yyyy");
@@ -531,4 +561,18 @@ export default function (qunit, $, Inputmask) {
         assert.equal(testmask.value, "31.12.2017", "Result " + testmask.value);
     });
 
+    qunit.test("min 14.02.1938 max 14.02.2038 enter 01011939", function (assert) {
+        var $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask("datetime", {
+            inputFormat: "dd.mm.yyyy",
+            min: "14.02.1938",
+            max: "14.02.2038"
+        }).mask(testmask);
+
+        testmask.focus();
+        $("#testmask").val("01011939");
+        assert.equal(testmask.value, "01.01.1939", "Result " + testmask.value);
+    });
 };

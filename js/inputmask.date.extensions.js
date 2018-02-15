@@ -102,13 +102,11 @@
 
     function isDateInRange(dateParts, opts) {
         var result = true;
-        if (dateParts.rawyear.match(/[0-9]+/)) {
-            if (opts.min && opts.min.date.getTime() === opts.min.date.getTime()) {
-                result = opts.min.date.getTime() <= dateParts.date.getTime();
-            }
-            if (result && opts.max && opts.max.date.getTime() === opts.max.date.getTime()) {
-                result = opts.max.date.getTime() >= dateParts.date.getTime();
-            }
+        if (opts.min && opts.min.date.getTime() === opts.min.date.getTime()) {
+            result = opts.min.date.getTime() <= dateParts.date.getTime();
+        }
+        if (result && opts.max && opts.max.date.getTime() === opts.max.date.getTime()) {
+            result = opts.max.date.getTime() >= dateParts.date.getTime();
         }
 
         return result;
@@ -148,7 +146,9 @@
             var correctedyear = year.length === 4 ? year : new Date().getFullYear().toString().substr(0, 4 - year.length) + year;
             if (opts.min && opts.min.year && opts.max && opts.max.year) {
                 correctedyear = correctedyear.replace(/[^0-9]/g, "");
-                correctedyear = year.charAt(0) === opts.max.year.charAt(0) ? year.replace(/[^0-9]/g, "0") : correctedyear + opts.min.year.substr(correctedyear.length);
+                correctedyear += opts.min.year == opts.max.year ?
+                    opts.min.year.substr(correctedyear.length) :
+                    (correctedyear !== "" && opts.max.year.indexOf(correctedyear) == 0 ? parseInt(opts.max.year) -1 : parseInt(opts.min.year) + 1).toString().substr(correctedyear.length);
             } else correctedyear = correctedyear.replace(/[^0-9]/g, "0");
             return correctedyear;
         }

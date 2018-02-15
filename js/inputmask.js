@@ -1156,7 +1156,6 @@
                                         }
                                     }
                                     if (opts.keepStatic === true || (isFinite(parseInt(opts.keepStatic)) && currentPos >= opts.keepStatic)) altIndexArr = altIndexArr.slice(0, 1);
-
                                     for (var ndx = 0; ndx < altIndexArr.length; ndx++) {
                                         amndx = parseInt(altIndexArr[ndx]);
                                         matches = [];
@@ -1331,7 +1330,7 @@
                     return $.extend(true, [], matches);
                 }
                 getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
-                // console.log(pos + " - " + JSON.stringify(matches));
+                console.log(pos + " - " + JSON.stringify(matches));
                 return getMaskSet().tests[pos];
             }
 
