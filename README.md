@@ -165,7 +165,7 @@ $(document).ready(function(){
 ### via data-inputmask attribute
 
 ```html
-<input data-inputmask="'alias': 'date'" />
+<input data-inputmask="'alias': 'datetime'" />
 <input data-inputmask="'mask': '9', 'repeat': 10, 'greedy' : false" />
 <input data-inputmask="'mask': '99-9999999'" />
 ```
@@ -359,7 +359,7 @@ Default: false
 Value can be true or a threshold number or false.
 
 ```javascript
-Inputmask("date", { jitMasking: true }).mask(selector);
+Inputmask("datetime", { jitMasking: true }).mask(selector);
 ```
 
 ## Define custom definitions
@@ -824,25 +824,25 @@ Some examples can be found in jquery.inputmask.xxx.extensions.js
 use:
 
 ```javascript
-$("#date").inputmask("date");
+$("#date").inputmask("datetime");
 ```
 
 or
 
 ```javascript
-$("#date").inputmask({ alias: "date"});
+$("#date").inputmask({ alias: "datetime"});
 ```
 
 You can also call an alias and extend it with some more options
 
 ```javascript
-$("#date").inputmask("date", { "clearIncomplete": true });
+$("#date").inputmask("datetime", { "clearIncomplete": true });
 ```
 
 or
 
 ```javascript
-$("#date").inputmask({ alias: "date", "clearIncomplete": true });
+$("#date").inputmask({ alias: "datetime", "clearIncomplete": true });
 ```
 
 ### alias
@@ -1202,7 +1202,7 @@ $(document).ready(function(){
 You can also apply an inputmask by using the data-inputmask attribute.  In the attribute you specify the options wanted for the inputmask. This gets parsed with $.parseJSON (for the moment), so be sure to use a well-formed json-string without the {}.
 
 ```html
-<input data-inputmask="'alias': 'date'" />
+<input data-inputmask="'alias': 'datetime'" />
 <input data-inputmask="'mask': '9', 'repeat': 10, 'greedy' : false" />
 ```
 
