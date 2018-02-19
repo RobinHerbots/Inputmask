@@ -2823,6 +2823,12 @@
                 colorMask.appendChild(input);
                 input.style.left = template.offsetLeft + "px";
 
+                $(colorMask).on("mouseleave", function (e) {
+                    return EventHandlers.mouseleaveEvent.call(input, [e]);
+                });
+                $(colorMask).on("mouseenter", function (e) {
+                    return EventHandlers.mouseenterEvent.call(input, [e]);
+                });
                 $(input).on("click", function (e) {
                     caret(input, findCaretPos(e.clientX));
                     return EventHandlers.clickEvent.call(input, [e]);
@@ -2863,7 +2869,7 @@
                 function setCaret() {
                     if (document.activeElement === input) {
                         maskTemplate.splice(caretPos.begin, 0,
-                            caretPos.begin === caretPos.end ?
+                            (caretPos.begin === caretPos.end || caretPos.end > getMaskSet().maskLength) ?
                                 '<mark class="im-caret" style="border-right-width: 1px;border-right-style: solid;">' :
                                 '<mark class="im-caret-select">');
                         maskTemplate.splice(caretPos.end + 1, 0, "</mark>");
@@ -3094,13 +3100,12 @@
                         //bind events
                         EventRuler.on(el, "submit", EventHandlers.submitEvent);
                         EventRuler.on(el, "reset", EventHandlers.resetEvent);
-
-                        EventRuler.on(el, "mouseenter", EventHandlers.mouseenterEvent);
                         EventRuler.on(el, "blur", EventHandlers.blurEvent);
                         EventRuler.on(el, "focus", EventHandlers.focusEvent);
-                        EventRuler.on(el, "mouseleave", EventHandlers.mouseleaveEvent);
                         if (opts.colorMask !== true) {
                             EventRuler.on(el, "click", EventHandlers.clickEvent);
+                            EventRuler.on(el, "mouseleave", EventHandlers.mouseleaveEvent);
+                            EventRuler.on(el, "mouseenter", EventHandlers.mouseenterEvent);
                         }
                         EventRuler.on(el, "dblclick", EventHandlers.dblclickEvent);
                         EventRuler.on(el, "paste", EventHandlers.pasteEvent);

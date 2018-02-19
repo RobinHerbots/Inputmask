@@ -24,6 +24,7 @@ div.im-colormask {
     border-style: inset;
     border-width: 2px;
     appearance: textfield;
+    cursor: text;
 }
 
 div.im-colormask > input {
