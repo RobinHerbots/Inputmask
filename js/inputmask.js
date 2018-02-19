@@ -2819,8 +2819,8 @@
                 colorMask.className = "im-colormask";
                 input.parentNode.insertBefore(colorMask, input);
                 input.parentNode.removeChild(input);
-                colorMask.appendChild(template);
                 colorMask.appendChild(input);
+                colorMask.appendChild(template);
                 input.style.left = template.offsetLeft + "px";
 
                 $(colorMask).on("mouseleave", function (e) {
@@ -2829,7 +2829,7 @@
                 $(colorMask).on("mouseenter", function (e) {
                     return EventHandlers.mouseenterEvent.call(input, [e]);
                 });
-                $(input).on("click", function (e) {
+                $(colorMask).on("click", function (e) {
                     caret(input, findCaretPos(e.clientX));
                     return EventHandlers.clickEvent.call(input, [e]);
                 });

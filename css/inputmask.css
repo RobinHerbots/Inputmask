@@ -27,11 +27,13 @@ div.im-colormask {
     cursor: text;
 }
 
-div.im-colormask > input {
+div.im-colormask > input, div.im-colormask > input:-webkit-autofill {
     position: absolute !important;
     display: inline-block;
     background-color: transparent;
     color: transparent;
+    -webkit-text-fill-color: transparent;
+    transition: background-color 5000s ease-in-out 0s;
     caret-color: transparent;
     appearance: caret;
     border-style: none;
@@ -42,11 +44,16 @@ div.im-colormask > input:focus {
     outline: none;
 }
 
-div.im-colormask > input::selection{
+div.im-colormask > input::selection {
     background: none;
 }
-div.im-colormask > input::-moz-selection{
+
+div.im-colormask > input::-moz-selection {
     background: none;
+}
+
+div.im-colormask > input:-webkit-autofill ~ div {
+    background-color:  rgb(250, 255, 189);
 }
 
 div.im-colormask > div {

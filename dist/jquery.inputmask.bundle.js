@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.19
+* Version: 4.0.0-beta.20
 */
 
 !function(modules) {
@@ -1035,12 +1035,12 @@
                 template.style.width = computedStyle.width, template.style.textAlign = computedStyle.textAlign, 
                 colorMask = document.createElement("div"), input.inputmask.colorMask = colorMask, 
                 colorMask.className = "im-colormask", input.parentNode.insertBefore(colorMask, input), 
-                input.parentNode.removeChild(input), colorMask.appendChild(template), colorMask.appendChild(input), 
+                input.parentNode.removeChild(input), colorMask.appendChild(input), colorMask.appendChild(template), 
                 input.style.left = template.offsetLeft + "px", $(colorMask).on("mouseleave", function(e) {
                     return EventHandlers.mouseleaveEvent.call(input, [ e ]);
                 }), $(colorMask).on("mouseenter", function(e) {
                     return EventHandlers.mouseenterEvent.call(input, [ e ]);
-                }), $(input).on("click", function(e) {
+                }), $(colorMask).on("click", function(e) {
                     return caret(input, function(clientx) {
                         var caretPos, e = document.createElement("span");
                         for (var style in computedStyle) isNaN(style) && -1 !== style.indexOf("font") && (e.style[style] = computedStyle[style]);
