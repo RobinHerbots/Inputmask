@@ -38,10 +38,7 @@
 					case "getmetadata": //return mask metadata if exists
 						return input && input.inputmask ? input.inputmask.getmetadata() : undefined;
 					case "setvalue":
-						$(input).val(options);
-						if (input && input.inputmask === undefined) { //reactivate jquery.clone
-							$(input).triggerHandler("setvalue");
-						}
+					    Inputmask.setValue(input, options);
 						break;
 					case "option":
 						if (typeof options === "string") {

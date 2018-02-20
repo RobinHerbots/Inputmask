@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.22
+* Version: 4.0.0-beta.23
 */
 
 !function(factory) {
@@ -33,7 +33,7 @@
             return input && input.inputmask ? input.inputmask.getmetadata() : void 0;
 
           case "setvalue":
-            $(input).val(options), input && void 0 === input.inputmask && $(input).triggerHandler("setvalue");
+            Inputmask.setValue(input, options);
             break;
 
           case "option":

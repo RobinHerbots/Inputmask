@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.22
+* Version: 4.0.0-beta.23
 */
 
 !function(factory) {
@@ -755,7 +755,7 @@
             },
             setValueEvent: function(e) {
                 this.inputmask.refreshValue = !1;
-                var value = e.detail[0] || arguments[1] || this.inputmask._valueGet(!0);
+                var value = (value = e && e.detail ? e.detail[0] : arguments[1]) || this.inputmask._valueGet(!0);
                 $.isFunction(opts.onBeforeMask) && (value = opts.onBeforeMask.call(inputmask, value, opts) || value), 
                 value = value.split(""), checkVal(this, !0, !1, isRTL ? value.reverse() : value), 
                 undoValue = getBuffer().join(""), (opts.clearMaskOnLostFocus || opts.clearIncomplete) && this.inputmask._valueGet() === getBufferTemplate().join("") && this.inputmask._valueSet("");
@@ -1136,7 +1136,7 @@
                                         },
                                         set: function(elem, value) {
                                             var result, $elem = $(elem);
-                                            return result = valhookSet(elem, value), elem.inputmask && $elem.trigger("setvalue"), 
+                                            return result = valhookSet(elem, value), elem.inputmask && $elem.trigger("setvalue", [ value ]), 
                                             result;
                                         },
                                         inputmaskpatch: !0
@@ -1386,6 +1386,9 @@
                 metadata: metadata
             });
         },
+        setValue: function(value) {
+            this.el && $(this.el).trigger("setvalue", [ value ]);
+        },
         analyseMask: function(mask, regexMask, opts) {
             var match, m, openingToken, currentOpeningToken, alternator, lastMatch, groupToken, tokenizer = /(?:[?*+]|\{[0-9\+\*]+(?:,[0-9\+\*]*)?(?:\|[0-9\+\*]*)?\})|[^.?*+^${[]()|\\]+|./g, regexTokenizer = /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?[:=!]?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g, escaped = !1, currentToken = new MaskToken(), openenings = [], maskTokens = [];
             function MaskToken(isGroup, isOptional, isQuantifier, isAlternator) {
@@ -1554,8 +1557,14 @@
     }, Inputmask.isValid = function(value, options) {
         return Inputmask(options).isValid(value);
     }, Inputmask.remove = function(elems) {
-        $.each(elems, function(ndx, el) {
+        "string" == typeof elems && (elems = document.getElementById(elems) || document.querySelectorAll(elems)), 
+        elems = elems.nodeName ? [ elems ] : elems, $.each(elems, function(ndx, el) {
             el.inputmask && el.inputmask.remove();
+        });
+    }, Inputmask.setValue = function(elems, value) {
+        "string" == typeof elems && (elems = document.getElementById(elems) || document.querySelectorAll(elems)), 
+        elems = elems.nodeName ? [ elems ] : elems, $.each(elems, function(ndx, el) {
+            el.inputmask ? el.inputmask.setValue(value) : $(el).trigger("setvalue", [ value ]);
         });
     }, Inputmask.escapeRegex = function(str) {
         return str.replace(new RegExp("(\\" + [ "/", ".", "*", "+", "?", "|", "(", ")", "[", "]", "{", "}", "\\", "$", "^" ].join("|\\") + ")", "gim"), "\\$1");

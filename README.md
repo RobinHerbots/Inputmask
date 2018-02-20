@@ -617,6 +617,16 @@ $(selector).inputmask("getmetadata");
 ### setvalue
 The setvalue functionality is to set a value to the inputmask like you would do with jQuery.val, BUT it will trigger the internal event used by the inputmask always, whatever the case. This is particular usefull when cloning an inputmask with jQuery.clone.  Cloning an inputmask is not a fully functional clone.  On the first event (mouseenter, focus, ...) the inputmask can detect if it where cloned an can reactivate the masking.  However when setting the value with jQuery.val there is none of the events triggered in that case.  The setvalue functionality does this for you.
 
+```
+$(selector).inputmask("setvalue", value);  
+  
+var selector = document.getElementById("selector");
+selector.inputmask.setValue(value);  
+  
+Inputmask.setValue(selector, value);
+```
+
+
 ### option(options, noremask)
 Get or set an option on an existing inputmask.
 The option method is intented for adding extra options like callbacks, etc at a later time to the mask.

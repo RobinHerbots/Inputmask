@@ -286,6 +286,11 @@
                     "metadata": metadata //true/false getmetadata
                 });
             },
+            setValue: function (value) {
+                if (this.el) {
+                    $(this.el).trigger("setvalue", [value]);
+                }
+            },
             analyseMask: function (mask, regexMask, opts) {
                 var tokenizer = /(?:[?*+]|\{[0-9\+\*]+(?:,[0-9\+\*]*)?(?:\|[0-9\+\*]*)?\})|[^.?*+^${[]()|\\]+|./g,
                     //Thx to https://github.com/slevithan/regex-colorizer for the regexTokenizer regex
@@ -629,8 +634,21 @@
             return Inputmask(options).isValid(value);
         };
         Inputmask.remove = function (elems) {
+            if (typeof elems === "string") {
+                elems = document.getElementById(elems) || document.querySelectorAll(elems);
+            }
+            elems = elems.nodeName ? [elems] : elems;
             $.each(elems, function (ndx, el) {
                 if (el.inputmask) el.inputmask.remove();
+            });
+        };
+        Inputmask.setValue = function (elems, value) {
+            if (typeof elems === "string") {
+                elems = document.getElementById(elems) || document.querySelectorAll(elems);
+            }
+            elems = elems.nodeName ? [elems] : elems;
+            $.each(elems, function (ndx, el) {
+                if (el.inputmask) el.inputmask.setValue(value); else $(el).trigger("setvalue", [value]);
             });
         };
         Inputmask.escapeRegex = function (str) {
@@ -2262,7 +2280,8 @@
                 setValueEvent: function (e) {
                     this.inputmask.refreshValue = false;
                     var input = this,
-                        value = e.detail[0] || arguments[1] || input.inputmask._valueGet(true);
+                        value = (e && e.detail) ? e.detail[0] : arguments[1],
+                        value = value || input.inputmask._valueGet(true);
 
                     if ($.isFunction(opts.onBeforeMask)) value = opts.onBeforeMask.call(inputmask, value, opts) || value;
                     value = value.split("");
@@ -2947,7 +2966,7 @@
                                             result;
                                         result = valhookSet(elem, value);
                                         if (elem.inputmask) {
-                                            $elem.trigger("setvalue");
+                                            $elem.trigger("setvalue", [value]);
                                         }
                                         return result;
                                     },
