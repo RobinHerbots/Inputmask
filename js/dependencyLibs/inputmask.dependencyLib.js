@@ -203,7 +203,7 @@
                         var evnt, i, params = {
                             bubbles: true,
                             cancelable: true,
-                            detail: Array.prototype.slice.call(arguments, 1)
+                            detail: arguments[1]
                         };
                         // The custom event that will be created
                         if (document.createEvent) {
@@ -218,6 +218,7 @@
                         } else {
                             evnt = document.createEventObject();
                             evnt.eventType = ev;
+                            evnt.detail = arguments[1];
                             if (events.type) DependencyLib.extend(evnt, events);
                             elem.fireEvent("on" + evnt.eventType, evnt);
                         }

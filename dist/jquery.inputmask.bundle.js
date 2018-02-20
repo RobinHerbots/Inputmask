@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.20
+* Version: 4.0.0-beta.21
 */
 
 !function(modules) {
@@ -795,7 +795,7 @@
                 },
                 setValueEvent: function(e) {
                     this.inputmask.refreshValue = !1;
-                    var value = this.inputmask._valueGet(!0);
+                    var value = e.detail || arguments[1] || this.inputmask._valueGet(!0);
                     $.isFunction(opts.onBeforeMask) && (value = opts.onBeforeMask.call(inputmask, value, opts) || value), 
                     value = value.split(""), checkVal(this, !0, !1, isRTL ? value.reverse() : value), 
                     undoValue = getBuffer().join(""), (opts.clearMaskOnLostFocus || opts.clearIncomplete) && this.inputmask._valueGet() === getBufferTemplate().join("") && this.inputmask._valueSet("");
@@ -1120,7 +1120,7 @@
                                 return this.inputmask ? this.inputmask.opts.autoUnmask ? this.inputmask.unmaskedvalue() : -1 !== getLastValidPosition() || !0 !== opts.nullable ? document.activeElement === this && opts.clearMaskOnLostFocus ? (isRTL ? clearOptionalTail(getBuffer().slice()).reverse() : clearOptionalTail(getBuffer().slice())).join("") : valueGet.call(this) : "" : valueGet.call(this);
                             }
                             function setter(value) {
-                                valueSet.call(this, value), this.inputmask && $(this).trigger("setvalue");
+                                valueSet.call(this, value), this.inputmask && $(this).trigger("setvalue", [ value ]);
                             }
                             if (!npt.inputmask.__valueGet) {
                                 if (!0 !== opts.noValuePatching) {

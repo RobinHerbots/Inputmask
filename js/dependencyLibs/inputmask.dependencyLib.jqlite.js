@@ -6,7 +6,7 @@
  */
 (function (factory) {
     if (typeof define === "function" && define.amd) {
-        define(["jqlite", "../global/window", "../global/document]"], factory);
+        define(["jqlite", "../global/window", "../global/document"], factory);
     } else if (typeof exports === "object") {
         module.exports = factory(require("jqlite"), require("../global/window"), require("../global/document"));
     } else {

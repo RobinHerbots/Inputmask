@@ -2262,7 +2262,7 @@
                 setValueEvent: function (e) {
                     this.inputmask.refreshValue = false;
                     var input = this,
-                        value = input.inputmask._valueGet(true);
+                        value = e.detail || arguments[1] || input.inputmask._valueGet(true);
 
                     if ($.isFunction(opts.onBeforeMask)) value = opts.onBeforeMask.call(inputmask, value, opts) || value;
                     value = value.split("");
@@ -2971,7 +2971,7 @@
                         function setter(value) {
                             valueSet.call(this, value);
                             if (this.inputmask) {
-                                $(this).trigger("setvalue");
+                                $(this).trigger("setvalue", [value]);
                             }
                         }
 

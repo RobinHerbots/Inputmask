@@ -519,9 +519,6 @@
                 initialValue = initialValue.toString().charAt(initialValue.length - 1) === opts.radixPoint ?
                     initialValue.toString().substr(0, initialValue.length - 1) : initialValue.toString();
 
-                // if (opts.numericInput === true) {
-                // 	initialValue = initialValue.split("").reverse().join("");
-                // }
                 if (opts.radixPoint !== "" && isFinite(initialValue)) {
                     var vs = initialValue.split("."),
                         groupSize = opts.groupSeparator !== "" ? parseInt(opts.groupSize) : 0;

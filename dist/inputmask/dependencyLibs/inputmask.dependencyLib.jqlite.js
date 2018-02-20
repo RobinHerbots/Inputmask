@@ -3,11 +3,11 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.20
+* Version: 4.0.0-beta.21
 */
 
 !function(factory) {
-    "function" == typeof define && define.amd ? define([ "jqlite", "../global/window", "../global/document]" ], factory) : "object" == typeof exports ? module.exports = factory(require("jqlite"), require("../global/window"), require("../global/document")) : window.dependencyLib = factory(jqlite, window, document);
+    "function" == typeof define && define.amd ? define([ "jqlite", "../global/window", "../global/document" ], factory) : "object" == typeof exports ? module.exports = factory(require("jqlite"), require("../global/window"), require("../global/document")) : window.dependencyLib = factory(jqlite, window, document);
 }(function($, window, document) {
     function isWindow(obj) {
         return null != obj && obj === obj.window;

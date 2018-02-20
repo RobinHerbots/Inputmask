@@ -60,7 +60,8 @@ module.exports = {
         filename: "build/bundle.js"
     },
     externals: {
-        "jquery": "jQuery"
+        // "jquery": "jQuery"
+        // "jqlite": "jqlite"
     },
     module: {
         rules: [
@@ -74,7 +75,7 @@ module.exports = {
         alias: {
             // "./js/dependencyLibs/inputmask.dependencyLib": "./js/dependencyLibs/inputmask.dependencyLib.jquery",
             // "./dependencyLibs/inputmask.dependencyLib": "./dependencyLibs/inputmask.dependencyLib.jquery"
-            //"./js/dependencyLibs/inputmask.dependencyLib": "./js/dependencyLibs/inputmask.dependencyLib.jqlite",
+            // "./js/dependencyLibs/inputmask.dependencyLib": "./js/dependencyLibs/inputmask.dependencyLib.jqlite",
             // "./dependencyLibs/inputmask.dependencyLib": "./dependencyLibs/inputmask.dependencyLib.jqlite"
         }
     },

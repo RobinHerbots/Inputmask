@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.20
+* Version: 4.0.0-beta.21
 */
 
 !function(factory) {
@@ -75,7 +75,7 @@
                     var evnt, i, params = {
                         bubbles: !0,
                         cancelable: !0,
-                        detail: Array.prototype.slice.call(arguments, 1)
+                        detail: arguments[1]
                     };
                     if (document.createEvent) {
                         try {
@@ -84,8 +84,8 @@
                             (evnt = document.createEvent("CustomEvent")).initCustomEvent(ev, params.bubbles, params.cancelable, params.detail);
                         }
                         events.type && DependencyLib.extend(evnt, events), elem.dispatchEvent(evnt);
-                    } else (evnt = document.createEventObject()).eventType = ev, events.type && DependencyLib.extend(evnt, events), 
-                    elem.fireEvent("on" + evnt.eventType, evnt);
+                    } else (evnt = document.createEventObject()).eventType = ev, evnt.detail = arguments[1], 
+                    events.type && DependencyLib.extend(evnt, events), elem.fireEvent("on" + evnt.eventType, evnt);
                 } else if (void 0 !== eventRegistry[ev]) if (arguments[0] = arguments[0].type ? arguments[0] : DependencyLib.Event(arguments[0]), 
                 "global" === namespace) for (var nmsp in eventRegistry[ev]) for (i = 0; i < eventRegistry[ev][nmsp].length; i++) eventRegistry[ev][nmsp][i].apply(elem, arguments); else for (i = 0; i < eventRegistry[ev][namespace].length; i++) eventRegistry[ev][namespace][i].apply(elem, arguments);
             }
