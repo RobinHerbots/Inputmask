@@ -516,6 +516,10 @@
             onBeforeMask: function (initialValue, opts) {
                 opts.isNegative = undefined;
 
+                if(typeof initialValue == "number" && opts.radixPoint !== "") {
+                    initialValue = initialValue.toString().replace(".", opts.radixPoint);
+                }
+
                 initialValue = initialValue.toString().charAt(initialValue.length - 1) === opts.radixPoint ?
                     initialValue.toString().substr(0, initialValue.length - 1) : initialValue.toString();
 

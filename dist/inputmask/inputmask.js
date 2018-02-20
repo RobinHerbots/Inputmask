@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.21
+* Version: 4.0.0-beta.22
 */
 
 !function(factory) {
@@ -755,7 +755,7 @@
             },
             setValueEvent: function(e) {
                 this.inputmask.refreshValue = !1;
-                var value = e.detail || arguments[1] || this.inputmask._valueGet(!0);
+                var value = e.detail[0] || arguments[1] || this.inputmask._valueGet(!0);
                 $.isFunction(opts.onBeforeMask) && (value = opts.onBeforeMask.call(inputmask, value, opts) || value), 
                 value = value.split(""), checkVal(this, !0, !1, isRTL ? value.reverse() : value), 
                 undoValue = getBuffer().join(""), (opts.clearMaskOnLostFocus || opts.clearIncomplete) && this.inputmask._valueGet() === getBufferTemplate().join("") && this.inputmask._valueSet("");
