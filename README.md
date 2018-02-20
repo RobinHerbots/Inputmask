@@ -615,7 +615,10 @@ $(selector).inputmask("getmetadata");
 ```
 
 ### setvalue
-The setvalue functionality is to set a value to the inputmask like you would do with jQuery.val, BUT it will trigger the internal event used by the inputmask always, whatever the case. This is particular usefull when cloning an inputmask with jQuery.clone.  Cloning an inputmask is not a fully functional clone.  On the first event (mouseenter, focus, ...) the inputmask can detect if it where cloned an can reactivate the masking.  However when setting the value with jQuery.val there is none of the events triggered in that case.  The setvalue functionality does this for you.
+The setvalue functionality is to set a value to the inputmask like you would do with jQuery.val, 
+BUT it will trigger the internal event used by the inputmask always, whatever the case. 
+This is particular usefull when cloning an inputmask with jQuery.clone.  Cloning an inputmask is not a fully functional clone.  
+On the first event (mouseenter, focus, ...) the inputmask can detect if it where cloned and can reactivate the masking.  However when setting the value with jQuery.val there is none of the events triggered in that case.  The setvalue functionality does this for you.
 
 ```
 $(selector).inputmask("setvalue", value);  
@@ -654,14 +657,14 @@ $("#CellPhone").inputmask("option", {
 Instead of masking an input element it is also possible to use the inputmask for formatting given values. Think of formatting values to show in jqGrid or on other elements then inputs.
 
 ```javascript
-var formattedDate = Inputmask.format("2331973", { alias: "dd/mm/yyyy"});
+var formattedDate = Inputmask.format("2331973", { alias: "datetime", inputFormat: "dd/mm/yyyy"});
 ```
 
 ### isValid
 Validate a given value against the mask.
 
 ```javascript
-var isValid = Inputmask.isValid("23/03/1973", { alias: "dd/mm/yyyy"});
+var isValid = Inputmask.isValid("23/03/1973", { alias: "datetime", inputFormat: "dd/mm/yyyy"});
 ```
 
 ## Options:
