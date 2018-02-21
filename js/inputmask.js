@@ -873,7 +873,7 @@
                         if (psNdx >= closestTo) after = psNdx;
                     }
                 }
-                return (before !== -1 && (closestTo - before) > 1) || after < closestTo ? before : after;
+                return (before === -1 || before == closestTo)  ? after : after == -1 ? before : (closestTo - before) < (after - closestTo) ? before : after;
             }
 
             function stripValidPositions(start, end, nocheck, strict) {
@@ -2760,6 +2760,9 @@
                     pos.begin = seekPrevious(pos.begin);
                     if (getMaskSet().validPositions[pos.begin] !== undefined && getMaskSet().validPositions[pos.begin].input === opts.groupSeparator) {
                         pos.begin--;
+                    }
+                    if (opts.insertMode === false && pos.end !== getMaskSet().maskLength) {
+                        pos.end--;
                     }
                 } else if (k === Inputmask.keyCode.DELETE && pos.begin === pos.end) {
                     pos.end = isMask(pos.end, true) && (getMaskSet().validPositions[pos.end] && getMaskSet().validPositions[pos.end].input !== opts.radixPoint) ?
