@@ -1624,7 +1624,7 @@
                                 resetMaskSet(true);
                             }
 
-                            if (!setValidPosition(validatedPos, $.extend({}, tst, {
+                            if (!revalidateMask(validatedPos, $.extend({}, tst, {
                                     "input": casing(elem, test, validatedPos)
                                 }), fromSetValid, isSelection(pos))) {
                                 rslt = false;
@@ -1646,8 +1646,9 @@
                     trackbackPositions(undefined, maskPos, true);
 
                     if (isSelection(pos)) {
-                        handleRemove(undefined, Inputmask.keyCode.DELETE, pos, true, true);
-                        maskPos = getMaskSet().p;
+                        // handleRemove(undefined, Inputmask.keyCode.DELETE, pos, true, true);
+                        revalidateMask(pos);
+                        // maskPos = getMaskSet().p;
                     }
 
                     if (maxLength === undefined || maskPos < maxLength) {
@@ -1733,7 +1734,7 @@
                                 "input": getPlaceholder(ps, bestMatch.match, true) || bestMatch.match.def
                             });
                             bestMatch.generatedInput = true;
-                            setValidPosition(ps, bestMatch, true);
+                            revalidateMask(ps, bestMatch, true);
                             if (fillOnly !== true) {
                                 //revalidate the new position to update the locator value
                                 var cvpInput = getMaskSet().validPositions[newPos].input;
@@ -1746,9 +1747,9 @@
                 return result;
             }
 
-            function setValidPosition(pos, validTest, fromSetValid, isSelection) {
+            function revalidateMask(pos, validTest, fromSetValid, isSelection) {
                 if (pos.begin === undefined) pos = {begin: pos, end: pos};
-                if (isSelection || (opts.insertMode && getMaskSet().validPositions[pos.begin] !== undefined && fromSetValid === undefined)) {
+                if (isSelection || pos.begin !== pos.end || (opts.insertMode && getMaskSet().validPositions[pos.begin] !== undefined && fromSetValid === undefined)) {
                     //reposition & revalidate others
                     var positionsClone = $.extend(true, {}, getMaskSet().validPositions),
                         lvp = getLastValidPosition(undefined, true),
