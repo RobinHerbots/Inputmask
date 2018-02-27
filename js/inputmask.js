@@ -1748,15 +1748,32 @@
             }
 
             function revalidateMask(pos, validTest, fromSetValid, isSelection) {
+                function IsEnclosedStatic(pos) {
+                    var posMatch = getMaskSet().validPositions[pos];
+                    if (posMatch !== undefined && posMatch.match.fn === null) {
+                        var prevMatch = getMaskSet().validPositions[pos - 1],
+                            nextMatch = getMaskSet().validPositions[pos + 1];
+                        return prevMatch !== undefined && nextMatch !== undefined;
+                    }
+                    return false;
+                }
+
                 if (pos.begin === undefined) pos = {begin: pos, end: pos};
                 if (isSelection || pos.begin !== pos.end || (opts.insertMode && getMaskSet().validPositions[pos.begin] !== undefined && fromSetValid === undefined)) {
                     //reposition & revalidate others
                     var positionsClone = $.extend(true, {}, getMaskSet().validPositions),
                         lvp = getLastValidPosition(undefined, true),
                         i;
-                    for (i = pos.begin; i <= lvp; i++) { //clear selection
-                        delete getMaskSet().validPositions[i];
+                    getMaskSet().p = pos.begin; //needed for alternated position after overtype selection
+
+                    for (i = lvp; i >= pos.begin; i--) { //clear selection
+                        if (getMaskSet().validPositions[i] !== undefined) {
+                            if ((getMaskSet().validPositions[i].match.optionality || !IsEnclosedStatic(i)) && opts.canClearPosition(getMaskSet(), i, getLastValidPosition(undefined, true), false, opts) !== false) {
+                                delete getMaskSet().validPositions[i];
+                            }
+                        }
                     }
+
                     if (validTest) getMaskSet().validPositions[pos.begin] = $.extend(true, {}, validTest); else pos.begin--;
                     var valid = true, offset = pos.end - pos.begin,
                         j, vps = getMaskSet().validPositions,
