@@ -1648,7 +1648,7 @@
                     if (isSelection(pos)) {
                         // handleRemove(undefined, Inputmask.keyCode.DELETE, pos, true, true);
                         revalidateMask(pos);
-                        // maskPos = getMaskSet().p;
+                        maskPos = getMaskSet().p;
                     }
 
                     if (maxLength === undefined || maskPos < maxLength) {
@@ -1758,15 +1758,20 @@
                     return false;
                 }
 
-                if (pos.begin === undefined) pos = {begin: pos, end: pos};
-                if (isSelection || pos.begin !== pos.end || (opts.insertMode && getMaskSet().validPositions[pos.begin] !== undefined && fromSetValid === undefined)) {
+
+                var begin = pos.begin !== undefined ? pos.begin : pos, end = pos.end !== undefined ? pos.end : pos
+                if (isRTL && pos.begin !== pos.end) {
+                    begin = pos.end;
+                    end = pos.begin;
+                }
+                if (isSelection || begin !== end || (opts.insertMode && getMaskSet().validPositions[begin] !== undefined && fromSetValid === undefined)) {
                     //reposition & revalidate others
                     var positionsClone = $.extend(true, {}, getMaskSet().validPositions),
                         lvp = getLastValidPosition(undefined, true),
                         i;
-                    getMaskSet().p = pos.begin; //needed for alternated position after overtype selection
+                    getMaskSet().p = begin; //needed for alternated position after overtype selection
 
-                    for (i = lvp; i >= pos.begin; i--) { //clear selection
+                    for (i = lvp; i >= begin; i--) { //clear selection
                         if (getMaskSet().validPositions[i] !== undefined) {
                             if ((getMaskSet().validPositions[i].match.optionality || !IsEnclosedStatic(i)) && opts.canClearPosition(getMaskSet(), i, getLastValidPosition(undefined, true), false, opts) !== false) {
                                 delete getMaskSet().validPositions[i];
@@ -1774,33 +1779,41 @@
                         }
                     }
 
-                    if (validTest) getMaskSet().validPositions[pos.begin] = $.extend(true, {}, validTest); else pos.begin--;
-                    var valid = true, offset = pos.end - pos.begin,
-                        j, vps = getMaskSet().validPositions,
-                        needsValidation = false;
-                    for (i = (j = pos.begin); i <= lvp; i++) {
+
+                    var valid = true, offset = end - begin,
+                        j = begin, vps = getMaskSet().validPositions,
+                        needsValidation = false, posMatch = j;
+
+                    if (validTest) {
+                        getMaskSet().validPositions[j] = $.extend(true, {}, validTest);
+                        posMatch++;
+                    }
+                    for (i = j; i <= lvp; i++) {
                         var t = positionsClone[i + offset];
                         if (t !== undefined /*&& (t.generatedInput !== true || t.match.fn === null)*/) {
-                            var posMatch = j;
                             while (getTest(posMatch).match.def !== "" && ((t.match.fn === null && vps[i] && (vps[i].match.optionalQuantifier === true || vps[i].match.optionality === true)) || t.match.fn != null)) {
-                                posMatch++;
                                 if (needsValidation === false && positionsClone[posMatch] && positionsClone[posMatch].match.def === t.match.def) { //obvious match
                                     getMaskSet().validPositions[posMatch] = $.extend(true, {}, positionsClone[posMatch]);
                                     getMaskSet().validPositions[posMatch].input = t.input;
                                     trackbackPositions(undefined, posMatch, true);
-                                    j = posMatch;
+                                    j = posMatch + 1;
                                     valid = true;
                                 } else if (positionCanMatchDefinition(posMatch, t.match.def)) { //validated match
                                     var result = isValid(posMatch, t.input, true, true);
                                     valid = result !== false;
-                                    j = (result.caret || result.insert) ? getLastValidPosition() : posMatch;
+                                    j = (result.caret || result.insert) ? getLastValidPosition() : posMatch + 1;
                                     needsValidation = true;
                                 } else {
                                     valid = t.generatedInput === true;
                                     if (!valid && getTest(posMatch).match.def === "") break;
                                 }
                                 if (valid) break;
+                                posMatch++;
                             }
+                            if (getTest(posMatch).match.def == "")
+                                valid = false;
+                            //restore position
+                            posMatch = j;
                         }
                         if (!valid) break;
                     }
@@ -1810,8 +1823,9 @@
                         resetMaskSet(true);
                         return false;
                     }
-                } else {
-                    getMaskSet().validPositions[pos.begin] = $.extend(true, {}, validTest);
+                }
+                else {
+                    getMaskSet().validPositions[begin] = $.extend(true, {}, validTest);
                 }
 
 

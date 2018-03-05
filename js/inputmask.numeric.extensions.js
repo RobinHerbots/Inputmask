@@ -424,7 +424,7 @@
                                     bufferTemplate = bufferTemplate.slice(1);
                                 }
                                 // if (processValue !== opts.radixPoint) {
-                                    processValue = processValue.replace(bufferTemplate, "");
+                                processValue = processValue.replace(bufferTemplate, "");
                                 // }
                                 processValue = processValue.split("");
 
@@ -516,7 +516,7 @@
             onBeforeMask: function (initialValue, opts) {
                 opts.isNegative = undefined;
 
-                if(typeof initialValue == "number" && opts.radixPoint !== "") {
+                if (typeof initialValue == "number" && opts.radixPoint !== "") {
                     initialValue = initialValue.toString().replace(".", opts.radixPoint);
                 }
 
@@ -583,7 +583,7 @@
                         vp.input === opts.negationSymbol.front ||
                         vp.input === opts.negationSymbol.back;
 
-                if (canClear && (vp.match.nativeDef === "+" || vp.match.nativeDef === "-")) {
+                if (canClear && vp.match.nativeDef === "+") {
                     opts.isNegative = false;
                 }
 

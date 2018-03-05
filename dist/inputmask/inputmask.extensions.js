@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.24
+* Version: 4.0.0-beta.25
 */
 
 !function(factory) {
@@ -53,17 +53,16 @@
         email: {
             mask: "*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@-{1,63}.-{1,63}[.-{1,63}][.-{1,63}]",
             greedy: !1,
+            casing: "lower",
             onBeforePaste: function(pastedValue, opts) {
                 return (pastedValue = pastedValue.toLowerCase()).replace("mailto:", "");
             },
             definitions: {
                 "*": {
-                    validator: "[0-9A-Za-z!#$%&'*+/=?^_`{|}~-]",
-                    casing: "lower"
+                    validator: "[0-9１-９A-Za-zА-яЁёÀ-ÿµ!#$%&'*+/=?^_`{|}~-]"
                 },
                 "-": {
-                    validator: "[0-9A-Za-z-]",
-                    casing: "lower"
+                    validator: "[0-9A-Za-z-]"
                 }
             },
             onUnMask: function(maskedValue, unmaskedValue, opts) {

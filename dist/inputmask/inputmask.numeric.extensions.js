@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.24
+* Version: 4.0.0-beta.25
 */
 
 !function(factory) {
@@ -287,8 +287,7 @@
             },
             canClearPosition: function(maskset, position, lvp, strict, opts) {
                 var vp = maskset.validPositions[position], canClear = vp.input !== opts.radixPoint || null !== maskset.validPositions[position].match.fn && !1 === opts.decimalProtect || vp.input === opts.radixPoint && maskset.validPositions[position + 1] && null === maskset.validPositions[position + 1].match.fn || isFinite(vp.input) || position === lvp || vp.input === opts.groupSeparator || vp.input === opts.negationSymbol.front || vp.input === opts.negationSymbol.back;
-                return !canClear || "+" !== vp.match.nativeDef && "-" !== vp.match.nativeDef || (opts.isNegative = !1), 
-                canClear;
+                return canClear && "+" === vp.match.nativeDef && (opts.isNegative = !1), canClear;
             },
             onKeyDown: function(e, buffer, caretPos, opts) {
                 var $input = $(this);
