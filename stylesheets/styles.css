@@ -143,7 +143,7 @@ strong {
 }
 
 header span {
-    display: inline-block;
+    /*display: inline-block;*/
 }
 
 header ul a strong {
