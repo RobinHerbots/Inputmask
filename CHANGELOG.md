@@ -1,5 +1,4 @@
 # Change Log
-All notable changes to this project will be documented in this file.
 
 ## [UNRELEASED - 4.x]
 ### added
@@ -23,6 +22,7 @@ All notable changes to this project will be documented in this file.
 - rename androidHack option to disablePredictiveText. Make it available for other platforms.
 
 ### Fixed
+- When "clearIncomplete: true" and pressing Enter to Submit Form #1839
 - Hang on combination of optional mask and repeat #698
 - Can't remove inputmask on focus? #1820
 - Not able to input 31.12. in DD.MM date input in v4.x #1803

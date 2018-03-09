@@ -2420,6 +2420,9 @@
                     if (opts.clearMaskOnLostFocus && getLastValidPosition() === -1 && el.inputmask._valueGet && el.inputmask._valueGet() === getBufferTemplate().join("")) {
                         el.inputmask._valueSet(""); //clear masktemplete on submit and still has focus
                     }
+                    if (opts.clearIncomplete && isComplete(getBuffer()) === false) {
+                        el.inputmask._valueSet("");
+                    }
                     if (opts.removeMaskOnSubmit) {
                         el.inputmask._valueSet(el.inputmask.unmaskedvalue(), true);
                         setTimeout(function () {
