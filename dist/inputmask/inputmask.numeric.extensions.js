@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.25
+* Version: 4.0.0-beta.26
 */
 
 !function(factory) {
@@ -34,9 +34,10 @@
                 if (mask += autoEscape(opts.prefix, opts), !0 === opts.integerOptional ? mask += "~{1," + opts.integerDigits + "}" : mask += "~{" + opts.integerDigits + "}", 
                 opts.digits !== undefined) {
                     var radixDef = opts.decimalProtect ? ":" : opts.radixPoint, dq = opts.digits.toString().split(",");
-                    isFinite(dq[0] && dq[1] && isFinite(dq[1])) ? mask += radixDef + ";{" + opts.digits + "}" : (isNaN(opts.digits) || parseInt(opts.digits) > 0) && (opts.digitsOptional ? mask += "[" + radixDef + ";{1," + opts.digits + "}]" : mask += radixDef + ";{" + opts.digits + "}");
+                    isFinite(dq[0]) && dq[1] && isFinite(dq[1]) ? mask += radixDef + ";{" + opts.digits + "}" : (isNaN(opts.digits) || parseInt(opts.digits) > 0) && (opts.digitsOptional ? mask += "[" + radixDef + ";{1," + opts.digits + "}]" : mask += radixDef + ";{" + opts.digits + "}");
                 }
-                return mask += autoEscape(opts.suffix, opts), mask += "[-]", opts.greedy = !1, mask;
+                return mask += autoEscape(opts.suffix, opts), mask += "[-]", opts.greedy = !1, console.log(mask), 
+                mask;
             },
             placeholder: "",
             greedy: !1,
@@ -213,8 +214,11 @@
                                     pos: pos
                                 };
                             }
-                        } else strict || chrs !== opts.radixPoint || maskset.validPositions[pos - 1] !== undefined || (maskset.buffer[pos] = "0", 
-                        isValid = {
+                        } else strict || chrs !== opts.radixPoint || maskset.validPositions[pos - 1] !== undefined || (isValid = {
+                            insert: {
+                                pos: pos,
+                                c: 0
+                            },
                             pos: pos + 1
                         });
                         return isValid;
@@ -284,10 +288,6 @@
                     }
                 }
                 return initialValue;
-            },
-            canClearPosition: function(maskset, position, lvp, strict, opts) {
-                var vp = maskset.validPositions[position], canClear = vp.input !== opts.radixPoint || null !== maskset.validPositions[position].match.fn && !1 === opts.decimalProtect || vp.input === opts.radixPoint && maskset.validPositions[position + 1] && null === maskset.validPositions[position + 1].match.fn || isFinite(vp.input) || position === lvp || vp.input === opts.groupSeparator || vp.input === opts.negationSymbol.front || vp.input === opts.negationSymbol.back;
-                return canClear && "+" === vp.match.nativeDef && (opts.isNegative = !1), canClear;
             },
             onKeyDown: function(e, buffer, caretPos, opts) {
                 var $input = $(this);

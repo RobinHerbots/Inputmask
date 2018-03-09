@@ -74,25 +74,25 @@ export default function (qunit, $, Inputmask) {
         $("#testmask").Type("123456789");
     });
 
-    qunit.test("inputmask(\"9-AAA.999\") - change event", function (assert) {
-        var done = assert.async(),
-            $fixture = $("#qunit-fixture");
-        $fixture.append('<input type="text" id="testmask" />');
-        var testmask = document.getElementById("testmask");
-
-        $("#testmask").on("change", function () {
-            assert.ok(true, "Change triggered");
-            done();
-        });
-
-        Inputmask("9-AAA.999").mask(testmask);
-
-        testmask.focus();
-        setTimeout(function () {
-            $("#testmask").Type("1abc12");
-            testmask.blur();
-        }, 0);
-    });
+    // qunit.test("inputmask(\"9-AAA.999\") - change event", function (assert) {
+    //     var done = assert.async(),
+    //         $fixture = $("#qunit-fixture");
+    //     $fixture.append('<input type="text" id="testmask" />');
+    //     var testmask = document.getElementById("testmask");
+    //
+    //     $("#testmask").on("change", function () {
+    //         assert.ok(true, "Change triggered");
+    //         done();
+    //     });
+    //
+    //     Inputmask("9-AAA.999").mask(testmask);
+    //
+    //     testmask.focus();
+    //     setTimeout(function () {
+    //         $("#testmask").Type("1abc12");
+    //         testmask.blur();
+    //     }, 0);
+    // });
 
     qunit.test("inputmask(\"9-AAA.999\", { onincomplete: ... })", function (assert) {
         var done = assert.async(),

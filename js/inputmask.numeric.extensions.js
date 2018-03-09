@@ -90,10 +90,12 @@
                 if (opts.integerOptional === true) {
                     mask += "~{1," + opts.integerDigits + "}";
                 } else mask += "~{" + opts.integerDigits + "}";
+
+
                 if (opts.digits !== undefined) {
                     var radixDef = opts.decimalProtect ? ":" : opts.radixPoint;
                     var dq = opts.digits.toString().split(",");
-                    if (isFinite(dq[0] && dq[1] && isFinite(dq[1]))) {
+                    if (isFinite(dq[0]) && dq[1] && isFinite(dq[1])) {
                         mask += radixDef + ";{" + opts.digits + "}";
                     } else if (isNaN(opts.digits) || parseInt(opts.digits) > 0) {
                         if (opts.digitsOptional) {
@@ -106,6 +108,8 @@
 
                 opts.greedy = false; //enforce greedy false
 
+
+                console.log(mask);
                 return mask;
             },
             placeholder: "",
@@ -440,9 +444,12 @@
                                 }
                             }
                         } else if (!strict && chrs === opts.radixPoint && maskset.validPositions[pos - 1] === undefined) {
-                            maskset.buffer[pos] = "0";
                             isValid = {
-                                "pos": pos + 1
+                                insert: {
+                                    pos: pos,
+                                    c: 0
+                                },
+                                pos: pos + 1
                             }
                         }
                         return isValid;
@@ -460,7 +467,6 @@
                 "-": {
                     validator: function (chrs, maskset, pos, strict, opts) {
                         return (opts.allowMinus && chrs === opts.negationSymbol.back);
-
                     },
                     cardinality: 1,
                     placeholder: ""
@@ -570,24 +576,6 @@
                 // 	initialValue = initialValue.split("").reverse().join("");
                 // }
                 return initialValue;
-            },
-            canClearPosition: function (maskset, position, lvp, strict, opts) {
-                var vp = maskset.validPositions[position],
-                    canClear =
-                        vp.input !== opts.radixPoint ||
-                        (maskset.validPositions[position].match.fn !== null && opts.decimalProtect === false) ||
-                        (vp.input === opts.radixPoint && maskset.validPositions[position + 1] && maskset.validPositions[position + 1].match.fn === null) ||
-                        isFinite(vp.input) ||
-                        position === lvp ||
-                        vp.input === opts.groupSeparator ||
-                        vp.input === opts.negationSymbol.front ||
-                        vp.input === opts.negationSymbol.back;
-
-                if (canClear && vp.match.nativeDef === "+") {
-                    opts.isNegative = false;
-                }
-
-                return canClear;
             },
             onKeyDown: function (e, buffer, caretPos, opts) {
                 //TODO FIXME

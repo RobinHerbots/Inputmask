@@ -1028,9 +1028,6 @@ $(selector).inputmask({
 });
 ```
 
-### canClearPosition
-Hook to alter the clear behavior in the stripValidPositions<br>Args => maskset, position, lastValidPosition, opts<br>Return => true|false
-
 ### postValidation
 Hook to postValidate the result from isValid.  Usefull for validating the entry as a whole.  Args => buffer, currentResult, opts<br>Return => true|false|command object
 

@@ -9,17 +9,18 @@ All notable changes to this project will be documented in this file.
 - extend positionCaretOnClick with "select" to select the whole input on focus
 
 ### Updates
-- improve alternate fn
+- code cleanup and refactoring
+    - merge setValidPosition and stripValidPositions => revalidateMask
+    - remove canClearPosition hook
+    - change notation of optionalmarker, quantifiermarker, groupmarker
+    - drop prevalidator and cardinality support in definitions
+    - drop Regex alias
+    - drop all date/time related aliases => replaced by new datetime alias
+- improve alternation logic
+- improve inputfallback (Android)
 - better caret handling in colormask
-- change notation of optionalmarker, quantifiermarker, groupmarker
-- drop prevalidator and cardinality support in definitions
-- better determination of the NdxInitializer (alternations)
 - disable autocorrect on safari when disablePredictiveText is used
-- fix in determineTestTemplate.  Impacts alternations.
 - rename androidHack option to disablePredictiveText. Make it available for other platforms.
-- drop Regex alias
-- drop all date/time related aliases
-- enhance inputfallback (Android)
 
 ### Fixed
 - Hang on combination of optional mask and repeat #698

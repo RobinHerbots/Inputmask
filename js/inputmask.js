@@ -96,7 +96,6 @@
                 //specify keyCodes which should not be considered in the keypress event, otherwise the preventDefault will stop their default behavior especially in FF
                 ignorables: [8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 0, 229],
                 isComplete: null, //override for isComplete - args => buffer, opts - return true || false
-                canClearPosition: $.noop, //hook to alter the clear behavior in the stripValidPositions args => maskset, position, lastValidPosition, opts => return true|false/command object
                 preValidation: null, //hook to preValidate the input.  Usefull for validating regardless the definition.	args => buffer, pos, char, isSelection, opts => return true/false/command object
                 postValidation: null, //hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, currentResult, opts => return true/false/json
                 staticDefinitionSymbol: undefined, //specify a definitionSymbol for static content, used to make matches for alternators
@@ -876,70 +875,6 @@
                 return (before === -1 || before == closestTo) ? after : after == -1 ? before : (closestTo - before) < (after - closestTo) ? before : after;
             }
 
-            function stripValidPositions(pos, nocheck, strict) {
-
-                // setValidPosition(pos, undefined, false, true);
-                // return;
-
-                function IsEnclosedStatic(pos) {
-                    var posMatch = getMaskSet().validPositions[pos];
-                    if (posMatch !== undefined && posMatch.match.fn === null) {
-                        var prevMatch = getMaskSet().validPositions[pos - 1],
-                            nextMatch = getMaskSet().validPositions[pos + 1];
-                        return prevMatch !== undefined && nextMatch !== undefined;
-                    }
-                    return false;
-                }
-
-                var i, startPos = pos.begin,
-                    positionsClone = $.extend(true, {}, getMaskSet().validPositions),
-                    needsValidation = false;
-                getMaskSet().p = pos.begin; //needed for alternated position after overtype selection
-
-                for (i = pos.end - 1; i >= startPos; i--) { //clear selection
-                    if (getMaskSet().validPositions[i] !== undefined) {
-                        if (nocheck === true ||
-                            ((getMaskSet().validPositions[i].match.optionality || !IsEnclosedStatic(i)) && opts.canClearPosition(getMaskSet(), i, getLastValidPosition(undefined, true), strict, opts) !== false)) {
-                            delete getMaskSet().validPositions[i];
-                        }
-                    }
-                }
-
-                //clear buffer
-                resetMaskSet(true);
-                for (i = startPos + 1; i <= getLastValidPosition();) {
-                    while (getMaskSet().validPositions[startPos] !== undefined) startPos++;
-                    if (i < startPos) i = startPos + 1;
-                    if (getMaskSet().validPositions[i] !== undefined || !isMask(i)) {
-                        var t = getTestTemplate(i);
-                        if (needsValidation === false && positionsClone[startPos] && positionsClone[startPos].match.def === t.match.def) { //obvious match
-                            getMaskSet().validPositions[startPos] = $.extend(true, {}, positionsClone[startPos]);
-                            getMaskSet().validPositions[startPos].input = t.input;
-                            delete getMaskSet().validPositions[i];
-                            i++;
-                        } else if (positionCanMatchDefinition(startPos, t.match.def)) {
-                            if (isValid(startPos, t.input || getPlaceholder(i), true) !== false) {
-                                delete getMaskSet().validPositions[i];
-                                i++;
-                                needsValidation = true;
-                            }
-                        } else if (!isMask(i)) {
-                            i++;
-                            startPos--;
-                        }
-                        startPos++;
-                    } else i++;
-                }
-
-                if (strict !== true) {
-                    i = getLastValidPosition(-1, true);
-                    while (getMaskSet().validPositions[i] && getMaskSet().validPositions[i].generatedInput === true) {
-                        delete getMaskSet().validPositions[i--];
-                    }
-                }
-                resetMaskSet(true);
-            }
-
             function determineTestTemplate(pos, tests, guessNextBest) {
                 pos = pos > 0 ? pos - 1 : 0;
                 var testPos,
@@ -1551,7 +1486,7 @@
 
                 var maskPos = pos;
                 if (pos.begin !== undefined) { //position was a position object - used to handle a delete by typing over a selection
-                    maskPos = isRTL && !isSelection(pos) ? pos.end : pos.begin;
+                    maskPos = isRTL ? pos.end : pos.begin;
                 }
 
                 function _isValid(position, c, strict) {
@@ -1569,19 +1504,16 @@
                                 } : false;
 
                         if (rslt !== false) {
-                            var elem = rslt.c !== undefined ? rslt.c : c;
+                            var elem = rslt.c !== undefined ? rslt.c : c, validatedPos = position;
                             elem = (elem === opts.skipOptionalPartCharacter && test.fn === null) ?
                                 (getPlaceholder(position, test, true) || test.def) : elem;
-
-                            var validatedPos = position,
-                                possibleModifiedBuffer = getBuffer();
 
                             if (rslt.remove !== undefined) { //remove position(s)
                                 if (!$.isArray(rslt.remove)) rslt.remove = [rslt.remove];
                                 $.each(rslt.remove.sort(function (a, b) {
                                     return b - a;
                                 }), function (ndx, lmnt) {
-                                    stripValidPositions({begin: lmnt, end: lmnt + 1}, true);
+                                    revalidateMask({begin: lmnt, end: lmnt + 1});
                                 });
                             }
                             if (rslt.insert !== undefined) { //insert position(s)
@@ -1593,27 +1525,8 @@
                                 });
                             }
 
-                            if (rslt.refreshFromBuffer) {
-                                var refresh = rslt.refreshFromBuffer;
-                                // strict = true;
-                                refreshFromBuffer(refresh === true ? refresh : refresh.start, refresh.end, possibleModifiedBuffer);
-                                if (rslt.pos === undefined && rslt.c === undefined) {
-                                    rslt.pos = getLastValidPosition();
-                                    return false; //breakout if refreshFromBuffer && nothing to insert
-                                }
-                                validatedPos = rslt.pos !== undefined ? rslt.pos : position;
-                                if (validatedPos !== position) {
-                                    rslt = $.extend(rslt, isValid(validatedPos, elem, true, fromSetValid)); //revalidate new position strict
-                                    return false;
-                                }
-
-                            } else if (rslt !== true && rslt.pos !== undefined && rslt.pos !== position) { //their is a position offset
+                            if (rslt !== true && rslt.pos !== undefined && rslt.pos !== position) { //their is a position offset
                                 validatedPos = rslt.pos;
-                                refreshFromBuffer(position, validatedPos, getBuffer().slice());
-                                if (validatedPos !== position) {
-                                    rslt = $.extend(rslt, isValid(validatedPos, elem, true)); //revalidate new position strict
-                                    return false;
-                                }
                             }
 
                             if (rslt !== true && rslt.pos === undefined && rslt.c === undefined) {
@@ -1624,9 +1537,9 @@
                                 resetMaskSet(true);
                             }
 
-                            if (!revalidateMask(validatedPos, $.extend({}, tst, {
+                            if (!revalidateMask(pos, $.extend({}, tst, {
                                     "input": casing(elem, test, validatedPos)
-                                }), fromSetValid, isSelection(pos))) {
+                                }), fromSetValid, validatedPos)) {
                                 rslt = false;
                             }
                             return false; //break from $.each
@@ -1644,12 +1557,6 @@
                 }
                 if (result === true) {
                     trackbackPositions(undefined, maskPos, true);
-
-                    if (isSelection(pos)) {
-                        // handleRemove(undefined, Inputmask.keyCode.DELETE, pos, true, true);
-                        revalidateMask(pos);
-                        maskPos = getMaskSet().p;
-                    }
 
                     if (maxLength === undefined || maskPos < maxLength) {
                         result = _isValid(maskPos, c, strict);
@@ -1747,52 +1654,56 @@
                 return result;
             }
 
-            function revalidateMask(pos, validTest, fromSetValid, isSelection) {
-                function IsEnclosedStatic(pos) {
-                    var posMatch = getMaskSet().validPositions[pos];
-                    if (posMatch !== undefined && posMatch.match.fn === null) {
-                        var prevMatch = getMaskSet().validPositions[pos - 1],
-                            nextMatch = getMaskSet().validPositions[pos + 1];
-                        return prevMatch !== undefined && nextMatch !== undefined;
+            function revalidateMask(pos, validTest, fromSetValid, validatedPos) {
+                function IsEnclosedStatic(pos, valids, selection) {
+                    var posMatch = valids[pos];
+                    if (posMatch !== undefined && ((!isMask(pos) && posMatch.match.optionality !== true) || posMatch.input === opts.radixPoint)) {
+                        var prevMatch = selection.begin <= pos - 1 ? !isMask(pos - 1) && valids[pos - 1] : valids[pos - 1],
+                            nextMatch = selection.end > pos + 1 ? !isMask(pos + 1) && valids[pos + 1] : valids[pos + 1];
+                        return prevMatch && nextMatch;
                     }
                     return false;
                 }
 
 
-                var begin = pos.begin !== undefined ? pos.begin : pos, end = pos.end !== undefined ? pos.end : pos
-                if (isRTL && pos.begin !== pos.end) {
+                var begin = pos.begin !== undefined ? pos.begin : pos, end = pos.end !== undefined ? pos.end : pos;
+                if (pos.begin > pos.end) {
                     begin = pos.end;
                     end = pos.begin;
                 }
-                if (isSelection || begin !== end || (opts.insertMode && getMaskSet().validPositions[begin] !== undefined && fromSetValid === undefined)) {
+                validatedPos = validatedPos !== undefined ? validatedPos : begin;
+                if (begin !== end || (opts.insertMode && getMaskSet().validPositions[validatedPos] !== undefined && fromSetValid === undefined)) {
                     //reposition & revalidate others
                     var positionsClone = $.extend(true, {}, getMaskSet().validPositions),
                         lvp = getLastValidPosition(undefined, true),
                         i;
                     getMaskSet().p = begin; //needed for alternated position after overtype selection
 
-                    for (i = lvp; i >= begin; i--) { //clear selection
-                        if (getMaskSet().validPositions[i] !== undefined) {
-                            if ((getMaskSet().validPositions[i].match.optionality || !IsEnclosedStatic(i)) && opts.canClearPosition(getMaskSet(), i, getLastValidPosition(undefined, true), false, opts) !== false) {
-                                delete getMaskSet().validPositions[i];
-                            }
+                    for (i = lvp; i >= begin; i--) {
+                        if (getMaskSet().validPositions[i] && getMaskSet().validPositions[i].match.nativeDef === "+") { //REMOVE ME AFTER REFACTORING OF NUMERIC ALIAS
+                            opts.isNegative = false;
                         }
+                        delete getMaskSet().validPositions[i];
                     }
 
-
-                    var valid = true, offset = end - begin,
-                        j = begin, vps = getMaskSet().validPositions,
-                        needsValidation = false, posMatch = j;
+                    var valid = true, j = validatedPos,
+                        vps = getMaskSet().validPositions,
+                        needsValidation = false, posMatch = j, i = j;
 
                     if (validTest) {
-                        getMaskSet().validPositions[j] = $.extend(true, {}, validTest);
+                        getMaskSet().validPositions[validatedPos] = $.extend(true, {}, validTest);
                         posMatch++;
+                        j++;
                     }
-                    for (i = j; i <= lvp; i++) {
-                        var t = positionsClone[i + offset];
-                        if (t !== undefined /*&& (t.generatedInput !== true || t.match.fn === null)*/) {
-                            while (getTest(posMatch).match.def !== "" && ((t.match.fn === null && vps[i] && (vps[i].match.optionalQuantifier === true || vps[i].match.optionality === true)) || t.match.fn != null)) {
-                                if (needsValidation === false && positionsClone[posMatch] && positionsClone[posMatch].match.def === t.match.def) { //obvious match
+                    for (; i <= lvp; i++) {
+                        var t = positionsClone[i];
+                        if (t !== undefined &&
+                            (i >= end || (i >= begin && t.generatedInput !== true && IsEnclosedStatic(i, positionsClone, {
+                                begin: begin,
+                                end: end
+                            })))) {
+                            while (getTest(posMatch).match.def !== "") {
+                                if (needsValidation === false && positionsClone[posMatch] && positionsClone[posMatch].match.nativeDef === t.match.nativeDef) { //obvious match
                                     getMaskSet().validPositions[posMatch] = $.extend(true, {}, positionsClone[posMatch]);
                                     getMaskSet().validPositions[posMatch].input = t.input;
                                     trackbackPositions(undefined, posMatch, true);
@@ -1804,7 +1715,7 @@
                                     j = (result.caret || result.insert) ? getLastValidPosition() : posMatch + 1;
                                     needsValidation = true;
                                 } else {
-                                    valid = t.generatedInput === true;
+                                    valid = t.generatedInput === true || t.input == opts.radixPoint;
                                     if (!valid && getTest(posMatch).match.def === "") break;
                                 }
                                 if (valid) break;
@@ -1825,7 +1736,7 @@
                     }
                 }
                 else {
-                    getMaskSet().validPositions[begin] = $.extend(true, {}, validTest);
+                    getMaskSet().validPositions[validatedPos] = $.extend(true, {}, validTest);
                 }
 
 
@@ -2611,14 +2522,14 @@
                 return unmaskedValue;
             }
 
-            function caret(input, begin, end, notranslate) {
-                function translatePosition(pos) {
-                    if (notranslate !== true && isRTL && typeof pos === "number" && (!opts.greedy || opts.placeholder !== "")) {
-                        pos = input.inputmask._valueGet().length - pos;
-                    }
-                    return pos;
+            function translatePosition(pos) {
+                if (isRTL && typeof pos === "number" && (!opts.greedy || opts.placeholder !== "")) {
+                    pos = el.inputmask._valueGet().length - pos;
                 }
+                return pos;
+            }
 
+            function caret(input, begin, end, notranslate) {
                 var range;
                 if (begin !== undefined) {
                     if ($.isArray(begin)) {
@@ -2630,8 +2541,8 @@
                         begin = isRTL ? begin.end : begin.begin;
                     }
                     if (typeof begin === "number") {
-                        begin = translatePosition(begin);
-                        end = translatePosition(end);
+                        begin = notranslate ? begin : translatePosition(begin);
+                        end = notranslate ? end : translatePosition(end);
                         end = (typeof end == "number") ? end : begin;
                         // if (!$(input).is(":visible")) {
                         // 	return;
@@ -2690,8 +2601,8 @@
 
                     /*eslint-disable consistent-return */
                     return {
-                        "begin": translatePosition(begin),
-                        "end": translatePosition(end)
+                        "begin": notranslate ? begin : translatePosition(begin),
+                        "end": notranslate ? end : translatePosition(end)
                     };
                     /*eslint-enable consistent-return */
                 }
@@ -2811,7 +2722,8 @@
                     }
                 }
 
-                stripValidPositions(pos, false, strict);
+                revalidateMask(pos);
+
                 if (strict !== true && (opts.keepStatic !== null && opts.keepStatic !== false)) {
                     var result = alternate(true);
                     if (result) pos.begin = result.caret !== undefined ? result.caret : (result.pos ? seekNext(result.pos.begin ? result.pos.begin : result.pos) : getLastValidPosition(-1, true));
