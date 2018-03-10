@@ -109,7 +109,7 @@
                 opts.greedy = false; //enforce greedy false
 
 
-                console.log(mask);
+                // console.log(mask);
                 return mask;
             },
             placeholder: "",

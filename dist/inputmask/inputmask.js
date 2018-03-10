@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.27
+* Version: 4.0.0-beta.28
 */
 
 !function(factory) {
@@ -481,8 +481,8 @@
         function revalidateMask(pos, validTest, fromSetValid, validatedPos) {
             function IsEnclosedStatic(pos, valids, selection) {
                 var posMatch = valids[pos];
-                if (posMatch !== undefined && (!isMask(pos) && !0 !== posMatch.match.optionality || posMatch.input === opts.radixPoint)) {
-                    var prevMatch = selection.begin <= pos - 1 ? !isMask(pos - 1) && valids[pos - 1] : valids[pos - 1], nextMatch = selection.end > pos + 1 ? !isMask(pos + 1) && valids[pos + 1] : valids[pos + 1];
+                if (posMatch !== undefined && (null === posMatch.match.fn && !0 !== posMatch.match.optionality || posMatch.input === opts.radixPoint)) {
+                    var prevMatch = selection.begin <= pos - 1 ? valids[pos - 1] && null === valids[pos - 1].match.fn && valids[pos - 1] : valids[pos - 1], nextMatch = selection.end > pos + 1 ? valids[pos + 1] && null === valids[pos + 1].match.fn && valids[pos + 1] : valids[pos + 1];
                     return prevMatch && nextMatch;
                 }
                 return !1;
