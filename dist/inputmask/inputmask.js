@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.28
+* Version: 4.0.0-beta.29
 */
 
 !function(factory) {
@@ -496,7 +496,7 @@
                 var valid = !0, j = validatedPos, needsValidation = (getMaskSet().validPositions, 
                 !1), posMatch = j, i = j;
                 for (validTest && (getMaskSet().validPositions[validatedPos] = $.extend(!0, {}, validTest), 
-                posMatch++, j++); i <= lvp; i++) {
+                posMatch++, j++, begin < end && i++); i <= lvp; i++) {
                     var t = positionsClone[i];
                     if (t !== undefined && (i >= end || i >= begin && !0 !== t.generatedInput && IsEnclosedStatic(i, positionsClone, {
                         begin: begin,

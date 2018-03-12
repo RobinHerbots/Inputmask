@@ -1694,6 +1694,7 @@
                         getMaskSet().validPositions[validatedPos] = $.extend(true, {}, validTest);
                         posMatch++;
                         j++;
+                        if (begin < end) i++; //if selection and entry move start by one
                     }
                     for (; i <= lvp; i++) {
                         var t = positionsClone[i];

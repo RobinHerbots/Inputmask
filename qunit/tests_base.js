@@ -222,7 +222,7 @@ export default function (qunit, $, Inputmask) {
         testmask.focus();
 
         testmask.value = "9999999999";
-        $.caret(testmask, 4, 5);
+        $.caret(testmask, 4);
         $("#testmask").Type("7");
         assert.equal(testmask.value, "(999)999-9999", "Result " + testmask.value);
     });
@@ -237,7 +237,7 @@ export default function (qunit, $, Inputmask) {
         testmask.focus();
 
         testmask.value = "9999999999";
-        $.caret(testmask, 4, 5);
+        $.caret(testmask, 4);
         $("#testmask").Type("7");
         assert.equal(testmask.value, "(999)999-9999", "Result " + testmask.value);
     });
