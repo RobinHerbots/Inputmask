@@ -449,6 +449,13 @@
                     return maskToken;
                 }
 
+                function groupify(matches) {
+                    var groupToken = new MaskToken(true);
+                    groupToken.openGroup = false;
+                    groupToken.matches = matches;
+                    return groupToken;
+                }
+
                 if (regexMask) {
                     opts.optionalmarker[0] = undefined;
                     opts.optionalmarker[1] = undefined;
@@ -533,32 +540,34 @@
                                 max: mq1,
                                 jit: mqj[1]
                             };
-                            if (openenings.length > 0) {
-                                var matches = openenings[openenings.length - 1].matches;
-                                match = matches.pop();
-                                if (!match.isGroup) {
-                                    groupToken = new MaskToken(true);
-                                    groupToken.matches.push(match);
-                                    match = groupToken;
-                                }
+                            var matches = openenings.length > 0 ? openenings[openenings.length - 1].matches : currentToken.matches;
+                            match = matches.pop();
+                            if (match.isAlternator) { //handle quantifier in an alternation [0-9]{2}|[0-9]{3}
                                 matches.push(match);
-                                matches.push(quantifier);
-                            } else {
-                                match = currentToken.matches.pop();
-                                if (!match.isGroup) {
-                                    if (regexMask && match.fn === null) {
-                                        if (match.def === ".") match.fn = new RegExp(match.def, opts.casing ? "i" : "");
-                                    }
-
-                                    groupToken = new MaskToken(true);
-                                    groupToken.matches.push(match);
-                                    match = groupToken;
-                                }
-                                currentToken.matches.push(match);
-                                currentToken.matches.push(quantifier);
+                                matches = match.matches;
+                                match = matches.pop();
                             }
+                            if (!match.isGroup) {
+                                if (regexMask && match.fn === null) {
+                                    if (match.def === ".") match.fn = new RegExp(match.def, opts.casing ? "i" : "");
+                                }
+
+                                match = groupify([match]);
+                            }
+                            matches.push(match);
+                            matches.push(quantifier);
+
                             break;
                         case opts.alternatormarker:
+
+                        function groupQuantifier(matches) {
+                            var lastMatch = matches.pop();
+                            if (lastMatch.isQuantifier) {
+                                lastMatch = groupify([matches.pop(), lastMatch]);
+                            }
+                            return lastMatch;
+                        }
+
                             if (openenings.length > 0) {
                                 currentOpeningToken = openenings[openenings.length - 1];
                                 var subToken = currentOpeningToken.matches[currentOpeningToken.matches.length - 1];
@@ -566,10 +575,10 @@
                                     (subToken.matches === undefined || (subToken.isGroup === false && subToken.isAlternator === false))) { //alternations within group
                                     lastMatch = openenings.pop();
                                 } else {
-                                    lastMatch = currentOpeningToken.matches.pop();
+                                    lastMatch = groupQuantifier(currentOpeningToken.matches);
                                 }
                             } else {
-                                lastMatch = currentToken.matches.pop();
+                                lastMatch = groupQuantifier(currentToken.matches);
                             }
                             if (lastMatch.isAlternator) {
                                 openenings.push(lastMatch);
@@ -607,7 +616,7 @@
                 if (opts.numericInput || opts.isRTL) {
                     reverseTokens(maskTokens[0]);
                 }
-                // console.log(JSON.stringify(maskTokens));
+                console.log(JSON.stringify(maskTokens));
                 return maskTokens;
             }
         };
@@ -1736,7 +1745,7 @@
                         return false;
                     }
                 }
-                else {
+                else if (validTest) {
                     getMaskSet().validPositions[validatedPos] = $.extend(true, {}, validTest);
                 }
 
