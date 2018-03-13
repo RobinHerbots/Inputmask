@@ -1716,7 +1716,7 @@
                                     j = (result.caret || result.insert) ? getLastValidPosition() : posMatch + 1;
                                     needsValidation = true;
                                 } else {
-                                    valid = t.generatedInput === true || t.input == opts.radixPoint;
+                                    valid = t.generatedInput === true || (t.input === opts.radixPoint && opts.numericInput === true);
                                     if (!valid && getTest(posMatch).match.def === "") break;
                                 }
                                 if (valid) break;
