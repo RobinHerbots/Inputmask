@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.31
+* Version: 4.0.0-beta.32
 */
 
 !function(modules) {
@@ -1475,7 +1475,7 @@
                         if (insertTestDefinition(currentOpeningToken = openenings[openenings.length - 1], m), 
                         currentOpeningToken.isAlternator) {
                             alternator = openenings.pop();
-                            for (var mndx = 0; mndx < alternator.matches.length; mndx++) alternator.matches[mndx].isGroup = !1;
+                            for (var mndx = 0; mndx < alternator.matches.length; mndx++) alternator.matches[mndx].isGroup && (alternator.matches[mndx].isGroup = !1);
                             openenings.length > 0 ? (currentOpeningToken = openenings[openenings.length - 1]).matches.push(alternator) : currentToken.matches.push(alternator);
                         }
                     } else insertTestDefinition(currentToken, m);
@@ -1528,7 +1528,11 @@
                             jit: mqj[1]
                         };
                         var matches = openenings.length > 0 ? openenings[openenings.length - 1].matches : currentToken.matches;
-                        (match = matches.pop()).isAlternator && (matches.push(match), match = (matches = match.matches).pop()), 
+                        if ((match = matches.pop()).isAlternator) {
+                            matches.push(match), matches = match.matches;
+                            var groupToken = new MaskToken(!0), tmpMatch = matches.pop();
+                            matches.push(groupToken), matches = groupToken.matches, match = tmpMatch;
+                        }
                         match.isGroup || (regexMask && null === match.fn && "." === match.def && (match.fn = new RegExp(match.def, opts.casing ? "i" : "")), 
                         match = groupify([ match ])), matches.push(match), matches.push(quantifier);
                         break;
@@ -1576,7 +1580,7 @@
                     }
                     var st;
                     return maskToken;
-                }(maskTokens[0]), console.log(JSON.stringify(maskTokens)), maskTokens;
+                }(maskTokens[0]), maskTokens;
             }
         }, Inputmask.extendDefaults = function(options) {
             $.extend(!0, Inputmask.prototype.defaults, options);

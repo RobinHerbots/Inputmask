@@ -405,7 +405,7 @@
                         if (currentOpeningToken.isAlternator) { //handle alternator a | b case
                             alternator = openenings.pop();
                             for (var mndx = 0; mndx < alternator.matches.length; mndx++) {
-                                alternator.matches[mndx].isGroup = false; //don't mark alternate groups as group
+                                if (alternator.matches[mndx].isGroup) alternator.matches[mndx].isGroup = false; //don't mark alternate groups as group
                             }
                             if (openenings.length > 0) {
                                 currentOpeningToken = openenings[openenings.length - 1];
@@ -543,9 +543,13 @@
                             var matches = openenings.length > 0 ? openenings[openenings.length - 1].matches : currentToken.matches;
                             match = matches.pop();
                             if (match.isAlternator) { //handle quantifier in an alternation [0-9]{2}|[0-9]{3}
-                                matches.push(match);
-                                matches = match.matches;
-                                match = matches.pop();
+                                matches.push(match); //push back alternator
+                                matches = match.matches; //remap target matches
+                                var groupToken = new MaskToken(true);
+                                var tmpMatch = matches.pop();
+                                matches.push(groupToken); //push the group
+                                matches = groupToken.matches;
+                                match = tmpMatch;
                             }
                             if (!match.isGroup) {
                                 if (regexMask && match.fn === null) {
@@ -616,7 +620,7 @@
                 if (opts.numericInput || opts.isRTL) {
                     reverseTokens(maskTokens[0]);
                 }
-                console.log(JSON.stringify(maskTokens));
+                // console.log(JSON.stringify(maskTokens));
                 return maskTokens;
             }
         };
