@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.32
+* Version: 4.0.0-beta.33
 */
 
 !function(modules) {
@@ -432,8 +432,7 @@
                             }), function(ndx, lmnt) {
                                 isValid(lmnt.pos, lmnt.c, !0, fromSetValid);
                             })), !0 !== rslt && rslt.pos !== undefined && rslt.pos !== position && (validatedPos = rslt.pos), 
-                            !0 !== rslt && rslt.pos === undefined && rslt.c === undefined ? !1 : (ndx > 0 && resetMaskSet(!0), 
-                            revalidateMask(pos, $.extend({}, tst, {
+                            !0 !== rslt && rslt.pos === undefined && rslt.c === undefined ? !1 : (revalidateMask(pos, $.extend({}, tst, {
                                 input: function(elem, test, pos) {
                                     switch (opts.casing || test.casing) {
                                       case "upper":
