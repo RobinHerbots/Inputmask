@@ -1546,9 +1546,6 @@
                                 return false; //breakout if nothing to insert
                             }
 
-                            if (ndx > 0) {
-                                resetMaskSet(true);
-                            }
 
                             if (!revalidateMask(pos, $.extend({}, tst, {
                                     "input": casing(elem, test, validatedPos)
