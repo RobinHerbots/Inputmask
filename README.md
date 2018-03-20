@@ -451,11 +451,13 @@ Inputmask.extendAliases({
 });
 ```
 
-But if the property is defined within an alias you need to set it for the alias definition.
+But if the property is defined within an alias you need to set it for the alias definition.  
+This is also for default plugin options.  If the alias definitions extends on default options, you can only override it at alias level.
 
 ```javascript
 Inputmask.extendAliases({
-  'numeric': {
+  'numeric': 
+    autoUnmask: true,
     allowPlus: false,
     allowMinus: false
   }
