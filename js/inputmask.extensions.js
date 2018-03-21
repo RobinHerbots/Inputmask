@@ -33,16 +33,12 @@
         }
     });
     Inputmask.extendAliases({
-        "url": {
-            definitions: {
-                "i": {
-                    validator: ".",
-                }
-            },
-            mask: "(\\http://)|(\\http\\s://)|(ftp://)|(ftp\\s://)i{+}",
-            insertMode: false,
-            autoUnmask: false,
-            inputmode: "url",
+        "cssunit": {
+            regex: '[+-]?[0-9]+.?([0-9]+)?(px|em|rem|ex|%|in|cm|mm|pt|pc)'
+        },
+        "url": { //needs update => https://en.wikipedia.org/wiki/URL
+            regex: "(https?|ftp)//.*",
+            autoUnmask: false
         },
         "ip": { //ip-address mask
             mask: "i[i[i]].i[i[i]].i[i[i]].i[i[i]]",

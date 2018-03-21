@@ -821,7 +821,7 @@
                 trackCaret = false;
 
             //maskset helperfunctions
-            function getMaskTemplate(baseOnInput, minimalPos, includeMode) {
+            function getMaskTemplate(baseOnInput, minimalPos, includeMode, noJit) {
                 //includeMode true => input, undefined => placeholder, false => mask
                 minimalPos = minimalPos || 0;
                 var maskTemplate = [],
@@ -837,7 +837,7 @@
                         testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
                         test = testPos.match;
                         ndxIntlzr = testPos.locator.slice();
-                        var jitMasking = opts.jitMasking !== false ? opts.jitMasking : test.jit;
+                        var jitMasking = noJit === true ? false : (opts.jitMasking !== false ? opts.jitMasking : test.jit);
                         if (jitMasking === false || jitMasking === undefined || pos < lvp || (typeof jitMasking === "number" && isFinite(jitMasking) && jitMasking > pos)) {
                             maskTemplate.push(includeMode === false ? test.nativeDef : getPlaceholder(pos, test));
                         }
@@ -2338,7 +2338,7 @@
                                             var lvp = getMaskSet().validPositions[lvclickPosition],
                                                 tt = getTestTemplate(lastPosition, lvp ? lvp.match.locator : undefined, lvp),
                                                 placeholder = getPlaceholder(lastPosition, tt.match);
-                                            if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder && tt.match.optionalQuantifier !== true && tt.match.newBlockMarker !== true) || (!isMask(lastPosition, true) && tt.match.def === placeholder)) {
+                                            if ((placeholder !== "" && getBuffer()[lastPosition] !== placeholder && tt.match.optionalQuantifier !== true && tt.match.newBlockMarker !== true) || (!isMask(lastPosition, opts.keepStatic) && tt.match.def === placeholder)) {
                                                 var newPos = seekNext(lastPosition);
                                                 if (clickPosition >= newPos || clickPosition === lastPosition) {
                                                     lastPosition = newPos;
@@ -2623,7 +2623,7 @@
             }
 
             function determineLastRequiredPosition(returnDefinition) {
-                var buffer = getBuffer(),
+                var buffer = getMaskTemplate(true, getLastValidPosition(), true, true),
                     bl = buffer.length,
                     pos, lvp = getLastValidPosition(),
                     positions = {},

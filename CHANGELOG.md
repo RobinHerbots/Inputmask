@@ -23,6 +23,9 @@
 - rename androidHack option to disablePredictiveText. Make it available for other platforms.
 
 ### Fixed
+- Method oncomplete doesn't work correctly with jitMasking #1845
+- isComplete in numeric extensions doesn't take into account negationSymbol #1844
+- Email alias - retype @ removes last . #1324
 - When "clearIncomplete: true" and pressing Enter to Submit Form #1839
 - Hang on combination of optional mask and repeat #698
 - Can't remove inputmask on focus? #1820

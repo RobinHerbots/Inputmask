@@ -353,4 +353,15 @@ export default function (qunit, $, Inputmask) {
         $("#testmask").Type("a2");
         assert.equal(testmask.inputmask._valueGet(), "a_", "Result " + testmask.inputmask._valueGet());
     });
+
+    qunit.test("9|(9a)", function (assert) {
+        var $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+
+        Inputmask("9|(9a)").mask(testmask);
+        testmask.focus();
+        $("#testmask").Type("1");
+        assert.equal(testmask.inputmask._valueGet(), "1", "Result " + testmask.inputmask._valueGet());
+    });
 };

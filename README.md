@@ -480,7 +480,7 @@ Inputmask.extendAliases({
 Once defined, you can call the alias by:
 
 ```javascript
-$(selector).inputmask("myNum");
+Inputmask("myNum").mask(selector);
 ```
 
 All callbacks are implemented as options.  This means that you can set general implementations for the callbacks by setting a default.

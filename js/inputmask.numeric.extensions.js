@@ -403,7 +403,20 @@
             definitions: {
                 "~": {
                     validator: function (chrs, maskset, pos, strict, opts, isSelection) {
-                        var isValid = strict ? new RegExp("[0-9" + Inputmask.escapeRegex(opts.groupSeparator) + "]").test(chrs) : new RegExp("[0-9]").test(chrs);
+                        var isValid, l;
+                        if (chrs === "k" || chrs === "m") {
+                            isValid = {
+                                insert: [],
+                                c: 0
+                            };
+
+                            for (var i = 0, l = chrs === "k" ? 2 : 5; i < l; i++) {
+                                isValid.insert.push({pos: pos + i, c: 0});
+                            }
+                            isValid.pos = pos + l;
+                            return isValid;
+                        }
+                        isValid = strict ? new RegExp("[0-9" + Inputmask.escapeRegex(opts.groupSeparator) + "]").test(chrs) : new RegExp("[0-9]").test(chrs);
                         if (isValid === true) {
                             if (opts.numericInput !== true && maskset.validPositions[pos] !== undefined && maskset.validPositions[pos].match.def === "~" && !isSelection) {
                                 var processValue = maskset.buffer.join("");
@@ -513,7 +526,9 @@
                 //verify separator positions
                 if (bufClone.join("") !== maskedValue) return false;
 
-                var processValue = maskedValue.replace(opts.prefix, "");
+                var processValue = maskedValue.replace(new RegExp("^" + Inputmask.escapeRegex(opts.negationSymbol.front)), "-");
+                processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.negationSymbol.back) + "$"), "");
+                processValue = processValue.replace(opts.prefix, "");
                 processValue = processValue.replace(opts.suffix, "");
                 processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator) + "([0-9]{3})", "g"), "$1");
                 if (opts.radixPoint === ",") processValue = processValue.replace(Inputmask.escapeRegex(opts.radixPoint), ".");

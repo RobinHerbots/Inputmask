@@ -342,4 +342,18 @@ export default function (qunit, $, Inputmask) {
         assert.equal(testmask.inputmask.__valueGet.call(testmask), "123", "Result " + testmask.inputmask.__valueGet.call(testmask));
     });
 
+    qunit.test("[+-]?[0-9]+.?([0-9]+)?(px|em|rem|ex|%|in|cm|mm|pt|pc) - type maimairel", function (assert) {
+        var $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask({
+            regex: "[+-]?[0-9]+.?([0-9]+)?(px|em|rem|ex|%|in|cm|mm|pt|pc)"
+        }).mask(testmask);
+
+        testmask.focus();
+        $("#testmask").Type("10px");
+
+        assert.equal(testmask.inputmask.__valueGet.call(testmask), "10px", "Result " + testmask.inputmask.__valueGet.call(testmask));
+    });
+
 };

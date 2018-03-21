@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.33
+* Version: 4.0.0-beta.34
 */
 
 !function(factory) {
@@ -23,16 +23,12 @@
             casing: "upper"
         }
     }), Inputmask.extendAliases({
+        cssunit: {
+            regex: "[+-]?[0-9]+.?([0-9]+)?(px|em|rem|ex|%|in|cm|mm|pt|pc)"
+        },
         url: {
-            definitions: {
-                i: {
-                    validator: "."
-                }
-            },
-            mask: "(\\http://)|(\\http\\s://)|(ftp://)|(ftp\\s://)i{+}",
-            insertMode: !1,
-            autoUnmask: !1,
-            inputmode: "url"
+            regex: "(https?|ftp)//.*",
+            autoUnmask: !1
         },
         ip: {
             mask: "i[i[i]].i[i[i]].i[i[i]].i[i[i]]",

@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.33
+* Version: 4.0.0-beta.34
 */
 
 !function(factory) {
@@ -197,8 +197,19 @@
             definitions: {
                 "~": {
                     validator: function(chrs, maskset, pos, strict, opts, isSelection) {
-                        var isValid = strict ? new RegExp("[0-9" + Inputmask.escapeRegex(opts.groupSeparator) + "]").test(chrs) : new RegExp("[0-9]").test(chrs);
-                        if (!0 === isValid) {
+                        var isValid;
+                        if ("k" === chrs || "m" === chrs) {
+                            isValid = {
+                                insert: [],
+                                c: 0
+                            };
+                            for (var i = 0, l = "k" === chrs ? 2 : 5; i < l; i++) isValid.insert.push({
+                                pos: pos + i,
+                                c: 0
+                            });
+                            return isValid.pos = pos + l, isValid;
+                        }
+                        if (!0 === (isValid = strict ? new RegExp("[0-9" + Inputmask.escapeRegex(opts.groupSeparator) + "]").test(chrs) : new RegExp("[0-9]").test(chrs))) {
                             if (!0 !== opts.numericInput && maskset.validPositions[pos] !== undefined && "~" === maskset.validPositions[pos].match.def && !isSelection) {
                                 var processValue = maskset.buffer.join(""), pvRadixSplit = (processValue = (processValue = processValue.replace(new RegExp("[-" + Inputmask.escapeRegex(opts.negationSymbol.front) + "]", "g"), "")).replace(new RegExp(Inputmask.escapeRegex(opts.negationSymbol.back) + "$"), "")).split(opts.radixPoint);
                                 pvRadixSplit.length > 1 && (pvRadixSplit[1] = pvRadixSplit[1].replace(/0/g, opts.placeholder.charAt(0))), 
@@ -263,8 +274,8 @@
             isComplete: function(buffer, opts) {
                 var maskedValue = buffer.join("");
                 if (buffer.slice().join("") !== maskedValue) return !1;
-                var processValue = maskedValue.replace(opts.prefix, "");
-                return processValue = (processValue = processValue.replace(opts.suffix, "")).replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator) + "([0-9]{3})", "g"), "$1"), 
+                var processValue = maskedValue.replace(new RegExp("^" + Inputmask.escapeRegex(opts.negationSymbol.front)), "-");
+                return processValue = (processValue = (processValue = (processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.negationSymbol.back) + "$"), "")).replace(opts.prefix, "")).replace(opts.suffix, "")).replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator) + "([0-9]{3})", "g"), "$1"), 
                 "," === opts.radixPoint && (processValue = processValue.replace(Inputmask.escapeRegex(opts.radixPoint), ".")), 
                 isFinite(processValue);
             },
