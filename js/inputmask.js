@@ -552,9 +552,9 @@
                                 match = tmpMatch;
                             }
                             if (!match.isGroup) {
-                                if (regexMask && match.fn === null) {
-                                    if (match.def === ".") match.fn = new RegExp(match.def, opts.casing ? "i" : "");
-                                }
+                                // if (regexMask && match.fn === null) { //why is this needed???
+                                //     if (match.def === ".") match.fn = new RegExp(match.def, opts.casing ? "i" : "");
+                                // }
 
                                 match = groupify([match]);
                             }

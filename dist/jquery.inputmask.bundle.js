@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.34
+* Version: 4.0.0-beta.35
 */
 
 !function(modules) {
@@ -1532,8 +1532,7 @@
                             var groupToken = new MaskToken(!0), tmpMatch = matches.pop();
                             matches.push(groupToken), matches = groupToken.matches, match = tmpMatch;
                         }
-                        match.isGroup || (regexMask && null === match.fn && "." === match.def && (match.fn = new RegExp(match.def, opts.casing ? "i" : "")), 
-                        match = groupify([ match ])), matches.push(match), matches.push(quantifier);
+                        match.isGroup || (match = groupify([ match ])), matches.push(match), matches.push(quantifier);
                         break;
 
                       case opts.alternatormarker:
@@ -1826,7 +1825,7 @@
             }
         }), Inputmask.extendAliases({
             cssunit: {
-                regex: "[+-]?[0-9]+.?([0-9]+)?(px|em|rem|ex|%|in|cm|mm|pt|pc)"
+                regex: "[+-]?[0-9]+\\.?([0-9]+)?(px|em|rem|ex|%|in|cm|mm|pt|pc)"
             },
             url: {
                 regex: "(https?|ftp)//.*",
