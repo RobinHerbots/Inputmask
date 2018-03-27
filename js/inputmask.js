@@ -1130,7 +1130,7 @@
                                         amndx = parseInt(altIndexArr[ndx]);
                                         matches = [];
                                         //set the correct ndxInitializer
-                                        ndxInitializer = resolveNdxInitializer(testPos, amndx, loopNdxCnt) || ndxInitializerClone.slice();
+                                        ndxInitializer = typeof altIndex === "string" ? resolveNdxInitializer(testPos, amndx, loopNdxCnt) || ndxInitializerClone.slice() : ndxInitializerClone.slice();
                                         if (alternateToken.matches[amndx] && handleMatch(alternateToken.matches[amndx], [amndx].concat(loopNdx), quantifierRecurse))
                                             match = true;
 
