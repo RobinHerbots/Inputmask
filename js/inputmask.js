@@ -2738,7 +2738,7 @@
 
                 revalidateMask(pos);
 
-                if (strict !== true && (opts.keepStatic !== null && opts.keepStatic !== false)) {
+                if (strict !== true && opts.keepStatic !== false || opts.regex !== null) {
                     var result = alternate(true);
                     if (result) pos.begin = result.caret !== undefined ? result.caret : (result.pos ? seekNext(result.pos.begin ? result.pos.begin : result.pos) : getLastValidPosition(-1, true));
                 }
