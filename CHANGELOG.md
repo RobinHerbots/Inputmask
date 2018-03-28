@@ -7,6 +7,7 @@
 - new datetime alias
 - extend positionCaretOnClick with "select" to select the whole input on focus
 - add regex option ()replaces the Regex alias)
+- CSS Unit Mask #1843
 
 ### Updates
 - code cleanup and refactoring
