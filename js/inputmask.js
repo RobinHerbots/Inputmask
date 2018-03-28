@@ -1591,7 +1591,7 @@
                             }
                         }
                     }
-                    if (result === false && (opts.keepStatic !== null && opts.keepStatic !== false) && !strict && fromAlternate !== true) { //try fuzzy alternator logic
+                    if (result === false && opts.keepStatic !== false && (opts.regex == null || isComplete(getBuffer())) && !strict && fromAlternate !== true) { //try fuzzy alternator logic
                         result = alternate(maskPos, c, strict, fromSetValid);
                     }
                     if (result === true) {
