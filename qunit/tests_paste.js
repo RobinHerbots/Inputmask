@@ -80,7 +80,7 @@ export default function (qunit, $, Inputmask) {
 	});
 
 	qunit.test("99.999.999/9999-99 numericInput ~ paste 79100085302751__-____/..__ - imbelo", function (assert) {
-		var done = assert.async(), $fixture = $("#qunit-fixture");
+		var done = assert.async(), $fixture = $("body");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
 		Inputmask({
