@@ -1430,7 +1430,7 @@
                     var validInputsClone = [], staticInputsBeforePos = 0;
                     for (i = decisionPos; i < getLastValidPosition(undefined, true) + 1; i++) {
                         validPos = getMaskSet().validPositions[i];
-                        if (validPos && validPos.generatedInput !== true && /[0-9a-bA-Z]/.test(validPos.input)) {
+                        if (validPos && validPos.generatedInput !== true /*&& /[0-9a-bA-Z]/.test(validPos.input)*/) {
                             validInputsClone.push(validPos.input);
                         } else if (i < pos) staticInputsBeforePos++;
                         delete getMaskSet().validPositions[i];
@@ -1446,11 +1446,11 @@
                         isValidRslt = true;
                         while (validInputs.length > 0) {
                             var input = validInputs.shift();
-                            if (input !== opts.skipOptionalPartCharacter) {
+                            // if (input !== opts.skipOptionalPartCharacter) {
                                 if (!(isValidRslt = isValid(getLastValidPosition(undefined, true) + 1, input, false, fromSetValid, true))) {
                                     break;
                                 }
-                            }
+                            // }
                         }
 
                         if (isValidRslt && c !== undefined) {
@@ -2740,7 +2740,12 @@
 
                 if (strict !== true && opts.keepStatic !== false || opts.regex !== null) {
                     var result = alternate(true);
-                    if (result) pos.begin = result.caret !== undefined ? result.caret : (result.pos ? seekNext(result.pos.begin ? result.pos.begin : result.pos) : getLastValidPosition(-1, true));
+                    if (result) {
+                        var newPos = result.caret !== undefined ? result.caret : (result.pos ? seekNext(result.pos.begin ? result.pos.begin : result.pos) : getLastValidPosition(-1, true));
+                        if (k !== Inputmask.keyCode.DELETE || pos.begin > newPos) {
+                            pos.begin == newPos;
+                        }
+                    }
                 }
                 var lvp = getLastValidPosition(pos.begin, true);
                 if (lvp < pos.begin || pos.begin === -1) {
@@ -3136,7 +3141,8 @@
                                 clearOptionalTail(buffer);
                             }
                         }
-                        writeBuffer(el, buffer);
+                        if (opts.clearMaskOnLostFocus === false || (opts.showMaskOnFocus && document.activeElement === el) || el.inputmask._valueGet(true) !== "")
+                            writeBuffer(el, buffer);
                         if (document.activeElement === el) { //position the caret when in focus
                             caret(el, seekNext(getLastValidPosition()));
                         }

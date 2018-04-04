@@ -80,7 +80,7 @@ export default function (qunit, $, Inputmask) {
 	});
 
 	qunit.test("99.999.999/9999-99 numericInput ~ paste 79100085302751__-____/..__ - imbelo", function (assert) {
-		var done = assert.async(), $fixture = $("body");
+		var done = assert.async(), $fixture = $("#qunit-fixture");
 		$fixture.append('<input type="text" id="testmask" />');
 		var testmask = document.getElementById("testmask");
 		Inputmask({
@@ -88,7 +88,7 @@ export default function (qunit, $, Inputmask) {
 			"numericInput": true
 		}).mask(testmask);
 		testmask.focus();
-		$("#testmask").paste("79100085302751__-____/..__");
+		$("#testmask").paste("79100085302751");
 
 		setTimeout(function () {
 			assert.equal(testmask.value, "79.100.085/3027-51", "Result " + testmask.value);

@@ -9,7 +9,6 @@ import "../js/inputmask.phone.extensions";
 import "../js/phone-codes/phone-be";
 import "../js/phone-codes/phone-nl";
 import "../js/phone-codes/phone-ru";
-import "../js/phone-codes/phone-uk";
 import "../js/phone-codes/phone";
 import "../js/jquery.inputmask";
 
