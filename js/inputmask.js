@@ -1050,7 +1050,7 @@
                         //mergelocators for retrieving the correct locator match when merging
                         function setMergeLocators(targetMatch, altMatch) {
                             if (altMatch === undefined || (targetMatch.alternation === altMatch.alternation &&
-                                    targetMatch.locator[targetMatch.alternation].toString().indexOf(altMatch.locator[altMatch.alternation]) === -1)) {
+                                targetMatch.locator[targetMatch.alternation].toString().indexOf(altMatch.locator[altMatch.alternation]) === -1)) {
                                 targetMatch.mloc = targetMatch.mloc || {};
                                 var locNdx = targetMatch.locator[targetMatch.alternation];
                                 if (locNdx === undefined) targetMatch.alternation = undefined;
@@ -1447,9 +1447,9 @@
                         while (validInputs.length > 0) {
                             var input = validInputs.shift();
                             // if (input !== opts.skipOptionalPartCharacter) {
-                                if (!(isValidRslt = isValid(getLastValidPosition(undefined, true) + 1, input, false, fromSetValid, true))) {
-                                    break;
-                                }
+                            if (!(isValidRslt = isValid(getLastValidPosition(undefined, true) + 1, input, false, fromSetValid, true))) {
+                                break;
+                            }
                             // }
                         }
 
@@ -1548,8 +1548,8 @@
 
 
                             if (!revalidateMask(pos, $.extend({}, tst, {
-                                    "input": casing(elem, test, validatedPos)
-                                }), fromSetValid, validatedPos)) {
+                                "input": casing(elem, test, validatedPos)
+                            }), fromSetValid, validatedPos)) {
                                 rslt = false;
                             }
                             return false; //break from $.each
@@ -1797,7 +1797,7 @@
                 return getMaskSet().validPositions[position] === undefined ? getPlaceholder(position) : getMaskSet().validPositions[position].input;
             }
 
-            function writeBuffer(input, buffer, caretPos, event, triggerInputEvent) {
+            function writeBuffer(input, buffer, caretPos, event, triggerEvents) {
                 if (event && $.isFunction(opts.onBeforeWrite)) {
                     //    buffer = buffer.slice(); //prevent uncontrolled manipulation of the internal buffer
                     var result = opts.onBeforeWrite.call(inputmask, event, buffer, caretPos, opts);
@@ -1816,9 +1816,17 @@
                     if (caretPos !== undefined && (event === undefined || event.type !== "blur")) {
                         caret(input, caretPos);
                     } else renderColorMask(input, caretPos, buffer.length === 0);
-                    if (triggerInputEvent === true) {
+                    if (triggerEvents === true) {
+                        var $input = $(input);
                         skipInputEvent = true;
-                        $(input).trigger("input");
+                        $input.trigger("input");
+                        setTimeout(function () { //timeout needed for IE
+                            if (input.inputmask._valueGet() === getBufferTemplate().join("")) {
+                                $input.trigger("cleared");
+                            } else if (isComplete(buffer) === true) {
+                                $input.trigger("complete");
+                            }
+                        }, 0);
                     }
                 }
             }
@@ -1960,11 +1968,6 @@
                         e.preventDefault(); //stop default action but allow propagation
                         handleRemove(input, k, pos);
                         writeBuffer(input, getBuffer(true), getMaskSet().p, e, input.inputmask._valueGet() !== getBuffer().join(""));
-                        if (input.inputmask._valueGet() === getBufferTemplate().join("")) {
-                            $input.trigger("cleared");
-                        } else if (isComplete(getBuffer()) === true) {
-                            $input.trigger("complete");
-                        }
                     } else if (k === Inputmask.keyCode.END || k === Inputmask.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
                         e.preventDefault();
                         var caretPos = seekNext(getLastValidPosition());
@@ -2064,11 +2067,6 @@
                                 if (getMaskSet().writeOutBuffer && valResult !== false) {
                                     var buffer = getBuffer();
                                     writeBuffer(input, buffer, forwardPosition, e, checkval !== true);
-                                    if (checkval !== true) {
-                                        setTimeout(function () { //timeout needed for IE
-                                            if (isComplete(buffer) === true) $input.trigger("complete");
-                                        }, 0);
-                                    }
                                 }
                             }
 
@@ -2124,10 +2122,6 @@
                     }
                     checkVal(input, false, false, isRTL ? pasteValue.split("").reverse() : pasteValue.toString().split(""));
                     writeBuffer(input, getBuffer(), seekNext(getLastValidPosition()), e, undoValue !== getBuffer().join(""));
-                    if (isComplete(getBuffer()) === true) {
-                        $input.trigger("complete");
-                    }
-
                     return e.preventDefault();
                 },
                 inputFallBackEvent: function (e) { //fallback when keypress is not triggered
@@ -2372,10 +2366,6 @@
 
                     handleRemove(input, Inputmask.keyCode.DELETE, pos);
                     writeBuffer(input, getBuffer(), getMaskSet().p, e, undoValue !== getBuffer().join(""));
-
-                    if (input.inputmask._valueGet() === getBufferTemplate().join("")) {
-                        $input.trigger("cleared");
-                    }
                 },
                 blurEvent: function (e) {
                     var $input = $(this),

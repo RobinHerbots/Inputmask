@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.42
+* Version: 4.0.0-beta.44
 */
 
 !function(factory) {
@@ -540,7 +540,7 @@
             for (;--position > 0 && (!0 === newBlock && !0 !== getTest(position).match.newBlockMarker || !0 !== newBlock && !isMask(position) && ((tests = getTests(position)).length < 2 || 2 === tests.length && "" === tests[1].match.def)); ) ;
             return position;
         }
-        function writeBuffer(input, buffer, caretPos, event, triggerInputEvent) {
+        function writeBuffer(input, buffer, caretPos, event, triggerEvents) {
             if (event && $.isFunction(opts.onBeforeWrite)) {
                 var result = opts.onBeforeWrite.call(inputmask, event, buffer, caretPos, opts);
                 if (result) {
@@ -552,8 +552,13 @@
                     caretPos !== undefined && (caretPos = result.caret !== undefined ? result.caret : caretPos);
                 }
             }
-            input !== undefined && (input.inputmask._valueSet(buffer.join("")), caretPos === undefined || event !== undefined && "blur" === event.type ? renderColorMask(input, caretPos, 0 === buffer.length) : caret(input, caretPos), 
-            !0 === triggerInputEvent && (skipInputEvent = !0, $(input).trigger("input")));
+            if (input !== undefined && (input.inputmask._valueSet(buffer.join("")), caretPos === undefined || event !== undefined && "blur" === event.type ? renderColorMask(input, caretPos, 0 === buffer.length) : caret(input, caretPos), 
+            !0 === triggerEvents)) {
+                var $input = $(input);
+                skipInputEvent = !0, $input.trigger("input"), setTimeout(function() {
+                    input.inputmask._valueGet() === getBufferTemplate().join("") ? $input.trigger("cleared") : !0 === isComplete(buffer) && $input.trigger("complete");
+                }, 0);
+            }
         }
         function getPlaceholder(pos, test, returnPL) {
             if ((test = test || getTest(pos).match).placeholder !== undefined || !0 === returnPL) return $.isFunction(test.placeholder) ? test.placeholder(opts) : test.placeholder;
@@ -625,8 +630,7 @@
             keydownEvent: function(e) {
                 var input = this, $input = $(input), k = e.keyCode, pos = caret(input);
                 if (k === Inputmask.keyCode.BACKSPACE || k === Inputmask.keyCode.DELETE || iphone && k === Inputmask.keyCode.BACKSPACE_SAFARI || e.ctrlKey && k === Inputmask.keyCode.X && !isInputEventSupported("cut")) e.preventDefault(), 
-                handleRemove(input, k, pos), writeBuffer(input, getBuffer(!0), getMaskSet().p, e, input.inputmask._valueGet() !== getBuffer().join("")), 
-                input.inputmask._valueGet() === getBufferTemplate().join("") ? $input.trigger("cleared") : !0 === isComplete(getBuffer()) && $input.trigger("complete"); else if (k === Inputmask.keyCode.END || k === Inputmask.keyCode.PAGE_DOWN) {
+                handleRemove(input, k, pos), writeBuffer(input, getBuffer(!0), getMaskSet().p, e, input.inputmask._valueGet() !== getBuffer().join("")); else if (k === Inputmask.keyCode.END || k === Inputmask.keyCode.PAGE_DOWN) {
                     e.preventDefault();
                     var caretPos = seekNext(getLastValidPosition());
                     opts.insertMode || caretPos !== getMaskSet().maskLength || e.shiftKey || caretPos--, 
@@ -670,16 +674,14 @@
                         opts.onKeyValidation.call(input, k, valResult, opts);
                     }, 0), getMaskSet().writeOutBuffer && !1 !== valResult)) {
                         var buffer = getBuffer();
-                        writeBuffer(input, buffer, forwardPosition, e, !0 !== checkval), !0 !== checkval && setTimeout(function() {
-                            !0 === isComplete(buffer) && $input.trigger("complete");
-                        }, 0);
+                        writeBuffer(input, buffer, forwardPosition, e, !0 !== checkval);
                     }
                     if (e.preventDefault(), checkval) return !1 !== valResult && (valResult.forwardPosition = forwardPosition), 
                     valResult;
                 }
             },
             pasteEvent: function(e) {
-                var tempValue, ev = e.originalEvent || e, $input = $(this), inputValue = this.inputmask._valueGet(!0), caretPos = caret(this);
+                var tempValue, ev = e.originalEvent || e, inputValue = ($(this), this.inputmask._valueGet(!0)), caretPos = caret(this);
                 isRTL && (tempValue = caretPos.end, caretPos.end = caretPos.begin, caretPos.begin = tempValue);
                 var valueBeforeCaret = inputValue.substr(0, caretPos.begin), valueAfterCaret = inputValue.substr(caretPos.end, inputValue.length);
                 if (valueBeforeCaret === (isRTL ? getBufferTemplate().reverse() : getBufferTemplate()).slice(0, caretPos.begin).join("") && (valueBeforeCaret = ""), 
@@ -696,7 +698,7 @@
                 }
                 return checkVal(this, !1, !1, isRTL ? pasteValue.split("").reverse() : pasteValue.toString().split("")), 
                 writeBuffer(this, getBuffer(), seekNext(getLastValidPosition()), e, undoValue !== getBuffer().join("")), 
-                !0 === isComplete(getBuffer()) && $input.trigger("complete"), e.preventDefault();
+                e.preventDefault();
             },
             inputFallBackEvent: function(e) {
                 var input = this, inputValue = input.inputmask._valueGet();
@@ -814,11 +816,11 @@
                 }, 0);
             },
             cutEvent: function(e) {
-                var $input = $(this), pos = caret(this), ev = e.originalEvent || e, clipboardData = window.clipboardData || ev.clipboardData, clipData = isRTL ? getBuffer().slice(pos.end, pos.begin) : getBuffer().slice(pos.begin, pos.end);
+                $(this);
+                var pos = caret(this), ev = e.originalEvent || e, clipboardData = window.clipboardData || ev.clipboardData, clipData = isRTL ? getBuffer().slice(pos.end, pos.begin) : getBuffer().slice(pos.begin, pos.end);
                 clipboardData.setData("text", isRTL ? clipData.reverse().join("") : clipData.join("")), 
                 document.execCommand && document.execCommand("copy"), handleRemove(this, Inputmask.keyCode.DELETE, pos), 
-                writeBuffer(this, getBuffer(), getMaskSet().p, e, undoValue !== getBuffer().join("")), 
-                this.inputmask._valueGet() === getBufferTemplate().join("") && $input.trigger("cleared");
+                writeBuffer(this, getBuffer(), getMaskSet().p, e, undoValue !== getBuffer().join(""));
             },
             blurEvent: function(e) {
                 var $input = $(this);
