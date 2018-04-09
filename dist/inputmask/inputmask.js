@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.44
+* Version: 4.0.0-beta.45
 */
 
 !function(factory) {
@@ -554,9 +554,9 @@
             }
             if (input !== undefined && (input.inputmask._valueSet(buffer.join("")), caretPos === undefined || event !== undefined && "blur" === event.type ? renderColorMask(input, caretPos, 0 === buffer.length) : caret(input, caretPos), 
             !0 === triggerEvents)) {
-                var $input = $(input);
+                var $input = $(input), nptVal = input.inputmask._valueGet();
                 skipInputEvent = !0, $input.trigger("input"), setTimeout(function() {
-                    input.inputmask._valueGet() === getBufferTemplate().join("") ? $input.trigger("cleared") : !0 === isComplete(buffer) && $input.trigger("complete");
+                    nptVal === getBufferTemplate().join("") ? $input.trigger("cleared") : !0 === isComplete(buffer) && $input.trigger("complete");
                 }, 0);
             }
         }

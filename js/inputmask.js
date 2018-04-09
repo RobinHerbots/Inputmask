@@ -1817,11 +1817,11 @@
                         caret(input, caretPos);
                     } else renderColorMask(input, caretPos, buffer.length === 0);
                     if (triggerEvents === true) {
-                        var $input = $(input);
+                        var $input = $(input), nptVal = input.inputmask._valueGet();
                         skipInputEvent = true;
                         $input.trigger("input");
                         setTimeout(function () { //timeout needed for IE
-                            if (input.inputmask._valueGet() === getBufferTemplate().join("")) {
+                            if (nptVal === getBufferTemplate().join("")) {
                                 $input.trigger("cleared");
                             } else if (isComplete(buffer) === true) {
                                 $input.trigger("complete");
