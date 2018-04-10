@@ -1133,6 +1133,9 @@
                                         ndxInitializer = typeof altIndex === "string" ? resolveNdxInitializer(testPos, amndx, loopNdxCnt) || ndxInitializerClone.slice() : ndxInitializerClone.slice();
                                         if (alternateToken.matches[amndx] && handleMatch(alternateToken.matches[amndx], [amndx].concat(loopNdx), quantifierRecurse))
                                             match = true;
+                                        else {
+                                            console.log("unmatched " + testPos + " : " + amndx);
+                                        }
 
                                         maltMatches = matches.slice();
                                         testPos = currentPos;
@@ -1172,13 +1175,6 @@
                                             }
                                             if (!dropMatch) {
                                                 malternateMatches.push(altMatch);
-                                            }
-                                        }
-
-                                        if (match !== true) {
-                                            cacheDependency = undefined;
-                                            if (getMaskSet().validPositions[currentPos - 1] === undefined) {
-                                                break;
                                             }
                                         }
                                     }

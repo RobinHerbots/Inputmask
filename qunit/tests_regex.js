@@ -200,7 +200,7 @@ export default function (qunit, $, Inputmask) {
     });
 
     qunit.test("inputmask({ regex: \"([0-9]|[1][0-9]|[2][0-3]?)(\\.(5|25|75))?\" - arame regex 12", function (assert) {
-        var $fixture = $("body");
+        var $fixture = $("#qunit-fixture");
         $fixture.append('<input type="text" id="testmask" />');
         var testmask = document.getElementById("testmask");
         Inputmask({
