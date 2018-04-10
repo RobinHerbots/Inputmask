@@ -1174,6 +1174,13 @@
                                                 malternateMatches.push(altMatch);
                                             }
                                         }
+
+                                        if (match !== true) {
+                                            cacheDependency = undefined;
+                                            if (getMaskSet().validPositions[currentPos - 1] === undefined) {
+                                                break;
+                                            }
+                                        }
                                     }
 
                                     matches = currentMatches.concat(malternateMatches);
@@ -1300,7 +1307,7 @@
                     return $.extend(true, [], matches);
                 }
                 getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
-                // console.log(pos + " - " + JSON.stringify(matches));
+                console.log(pos + " - " + JSON.stringify(matches));
                 return getMaskSet().tests[pos];
             }
 

@@ -288,7 +288,7 @@ export default function (qunit, $, Inputmask) {
         }).mask(testmask);
         testmask.focus();
         $("#testmask").Type("24");
-        assert.equal(testmask.inputmask._valueGet(), "2_", "Result " + testmask.inputmask._valueGet());
+        assert.equal(testmask.inputmask._valueGet(), "2", "Result " + testmask.inputmask._valueGet());
     });
 
     qunit.test("(1|2|3)/(4|5)", function (assert) {
