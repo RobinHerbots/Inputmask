@@ -10,7 +10,9 @@
 - CSS Unit Mask #1843
 
 ### Updates
+- fix unmatched alternations in gettests. ("[0-9]{2}|[0-9]{3}" like masks)
 - code cleanup and refactoring
+    - oncomplete calls
     - merge setValidPosition and stripValidPositions => revalidateMask
     - remove canClearPosition hook
     - change notation of optionalmarker, quantifiermarker, groupmarker

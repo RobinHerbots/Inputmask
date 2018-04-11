@@ -1126,6 +1126,7 @@
                                         }
                                     }
                                     if (opts.keepStatic === true || (isFinite(parseInt(opts.keepStatic)) && currentPos >= opts.keepStatic)) altIndexArr = altIndexArr.slice(0, 1);
+                                    var unMatchedAlternation = false;
                                     for (var ndx = 0; ndx < altIndexArr.length; ndx++) {
                                         amndx = parseInt(altIndexArr[ndx]);
                                         matches = [];
@@ -1133,8 +1134,8 @@
                                         ndxInitializer = typeof altIndex === "string" ? resolveNdxInitializer(testPos, amndx, loopNdxCnt) || ndxInitializerClone.slice() : ndxInitializerClone.slice();
                                         if (alternateToken.matches[amndx] && handleMatch(alternateToken.matches[amndx], [amndx].concat(loopNdx), quantifierRecurse))
                                             match = true;
-                                        else {
-                                            console.log("unmatched " + testPos + " : " + amndx);
+                                        else if (ndx === 0) {
+                                            unMatchedAlternation = true;
                                         }
 
                                         maltMatches = matches.slice();
@@ -1145,6 +1146,7 @@
                                         for (var ndx1 = 0; ndx1 < maltMatches.length; ndx1++) {
                                             var altMatch = maltMatches[ndx1],
                                                 dropMatch = false;
+                                            altMatch.match.jit = altMatch.match.jit || unMatchedAlternation; //mark jit when there are unmatched alternations  ex: mask: "(a|aa)"
                                             altMatch.alternation = altMatch.alternation || loopNdxCnt;
                                             setMergeLocators(altMatch);
                                             for (var ndx2 = 0; ndx2 < malternateMatches.length; ndx2++) {
@@ -1303,7 +1305,7 @@
                     return $.extend(true, [], matches);
                 }
                 getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
-                console.log(pos + " - " + JSON.stringify(matches));
+                // console.log(pos + " - " + JSON.stringify(matches));
                 return getMaskSet().tests[pos];
             }
 
