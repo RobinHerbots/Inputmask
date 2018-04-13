@@ -2887,7 +2887,7 @@
                                 ndxIntlzr = testPos.locator.slice();
                                 if (opts.jitMasking === false || pos < lvp || (typeof opts.jitMasking === "number" && isFinite(opts.jitMasking) && opts.jitMasking > pos)) {
                                     setEntry(getPlaceholder(pos, test));
-                                }
+                                } else isStatic = false; //break infinite loop
                             }
                             pos++;
                         } while ((maxLength === undefined || pos < maxLength) && (test.fn !== null || test.def !== "") || lvp > pos || isStatic);
