@@ -2,6 +2,7 @@
 
 ## [UNRELEASED - 4.x]
 ### added
+- extend positionCaretOnClick with "ignore" to ignore the click in the input
 - jit enabled dynamic masks
 - add support for input type search
 - new datetime alias

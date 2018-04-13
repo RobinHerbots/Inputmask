@@ -1070,6 +1070,7 @@ Options:
  - lvp (based on the last valid position (default)
  - radixFocus (position caret to radixpoint on initial click)
  - select (select the whole input)
+ - ignore (ignore the click and continue the mask)
  
 Default: "lvp"
 

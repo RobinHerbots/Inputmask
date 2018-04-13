@@ -103,7 +103,7 @@
                 nullable: true, //return nothing instead of the buffertemplate when the user hasn't entered anything.
                 inputEventOnly: false, //dev option - testing inputfallback behavior
                 noValuePatching: false, //disable value property patching
-                positionCaretOnClick: "lvp", //none, lvp (based on the last valid position (default), radixFocus (position caret to radixpoint on initial click), select (select the whole input)
+                positionCaretOnClick: "lvp", //none, lvp (based on the last valid position (default), radixFocus (position caret to radixpoint on initial click), select (select the whole input), ignore (ignore the click and continue the mask)
                 casing: null, //mask-level casing. Options: null, "upper", "lower" or "title" or callback args => elem, test, pos, validPositions return charValue
                 inputmode: "verbatim", //specify the inputmode  - already in place for when browsers will support it
                 colorMask: false, //enable css styleable mask
@@ -2327,6 +2327,9 @@
                                             caret(input, opts.numericInput ? seekNext(radixPos) : radixPos);
                                             break;
                                         }
+                                    case "ignore":
+                                        caret(input, seekNext(getLastValidPosition()));
+                                        break;
                                     default: //lvp:
                                         var clickPosition = selectedCaret.begin,
                                             lvclickPosition = getLastValidPosition(clickPosition, true),
