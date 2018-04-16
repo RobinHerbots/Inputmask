@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.48
+* Version: 4.0.0-beta.49
 */
 
 !function(factory) {
@@ -77,7 +77,18 @@
     }
     function parse(format, dateObjValue, opts) {
         for (var match, mask = ""; match = getTokenizer(opts).exec(format); ) {
-            if (void 0 === dateObjValue) mask += formatCode[match[0]] ? "(" + formatCode[match[0]][0] + ")" : Inputmask.escapeRegex(match[0]); else if (formatCode[match[0]]) mask += formatCode[match[0]][3].call(dateObjValue.date); else mask += match[0];
+            if (void 0 === dateObjValue) if (formatCode[match[0]]) mask += "(" + formatCode[match[0]][0] + ")"; else switch (match[0]) {
+              case "[":
+                mask += "(";
+                break;
+
+              case "]":
+                mask += ")?";
+                break;
+
+              default:
+                mask += Inputmask.escapeRegex(match[0]);
+            } else if (formatCode[match[0]]) mask += formatCode[match[0]][3].call(dateObjValue.date); else mask += match[0];
         }
         return mask;
     }
@@ -114,9 +125,9 @@
                 return formatCode.S = opts.i18n.ordinalSuffix.join("|"), opts.inputFormat = formatAlias[opts.inputFormat] || opts.inputFormat, 
                 opts.displayFormat = formatAlias[opts.displayFormat] || opts.displayFormat || opts.inputFormat, 
                 opts.outputFormat = formatAlias[opts.outputFormat] || opts.outputFormat || opts.inputFormat, 
-                opts.placeholder = "" !== opts.placeholder ? opts.placeholder : opts.inputFormat, 
+                opts.placeholder = "" !== opts.placeholder ? opts.placeholder : opts.inputFormat.replace(/[\[\]]/, ""), 
                 opts.min = analyseMask(opts.min, opts.inputFormat, opts), opts.max = analyseMask(opts.max, opts.inputFormat, opts), 
-                opts.regex = parse(opts.inputFormat, void 0, opts), null;
+                opts.regex = parse(opts.inputFormat, void 0, opts), console.log(opts.regex), null;
             },
             placeholder: "",
             inputFormat: "isoDateTime",

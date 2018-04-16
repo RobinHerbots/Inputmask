@@ -76,6 +76,13 @@ GMT/UTC timezone offset, e.g. -0500 or +0230.
 - S  
 The date's ordinal suffix (st, nd, rd, or th). Works well with d.
 
+### Optional parts
+To mark a part of the inputFormat as optional, use the [] as you would for other masks.
+
+Ex.
+inputFormat: "dd/mm/yyyy [HH]"
+
+
 ## displayFormat
 Visual format when the input looses focus
 ## outputFormat
