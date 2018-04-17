@@ -11,6 +11,8 @@
 - CSS Unit Mask #1843
 
 ### Updates
+- make behavior of [] an {0,1} consistent
+- change default value from greedy option to false
 - fix unmatched alternations in gettests. ("[0-9]{2}|[0-9]{3}" like masks)
 - code cleanup and refactoring
     - oncomplete calls

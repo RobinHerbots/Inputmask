@@ -63,7 +63,7 @@
                 onincomplete: $.noop, //executes when the mask is incomplete and focus is lost
                 oncleared: $.noop, //executes when the mask is cleared
                 repeat: 0, //repetitions of the mask: * ~ forever, otherwise specify an integer
-                greedy: true, //true: allocated buffer for the mask and repetitions - false: allocate only if needed
+                greedy: false, //true: allocated buffer for the mask and repetitions - false: allocate only if needed
                 autoUnmask: false, //automatically unmask when retrieving the value with $.fn.val or value if the browser supports __lookupGetter__ or getOwnPropertyDescriptor
                 removeMaskOnSubmit: false, //remove the mask before submitting the form.
                 clearMaskOnLostFocus: true,
@@ -821,15 +821,20 @@
                 trackCaret = false;
 
             //maskset helperfunctions
-            function getMaskTemplate(baseOnInput, minimalPos, includeMode, noJit) {
+            function getMaskTemplate(baseOnInput, minimalPos, includeMode, noJit, clearOptionalTail) {
                 //includeMode true => input, undefined => placeholder, false => mask
+
+                var greedy = opts.greedy;
+                if (clearOptionalTail) opts.greedy = false;
                 minimalPos = minimalPos || 0;
                 var maskTemplate = [],
                     ndxIntlzr, pos = 0,
                     test, testPos, lvp = getLastValidPosition();
                 do {
                     if (baseOnInput === true && getMaskSet().validPositions[pos]) {
-                        testPos = getMaskSet().validPositions[pos];
+                        testPos = (clearOptionalTail && getMaskSet().validPositions[pos].match.optionality === true && (getMaskSet().validPositions[pos].generatedInput === true || getMaskSet().validPositions[pos].input == opts.skipOptionalPartCharacter) && getMaskSet().validPositions[pos + 1] === undefined)
+                            ? determineTestTemplate(pos, getTests(pos, ndxIntlzr, pos - 1))
+                            : getMaskSet().validPositions[pos];
                         test = testPos.match;
                         ndxIntlzr = testPos.locator.slice();
                         maskTemplate.push(includeMode === true ? testPos.input : includeMode === false ? test.nativeDef : getPlaceholder(pos, test));
@@ -856,6 +861,8 @@
                 if (includeMode !== false || //do not alter the masklength when just retrieving the maskdefinition
                     getMaskSet().maskLength === undefined) //just make sure the maskLength gets initialized in all cases (needed for isValid)
                     getMaskSet().maskLength = pos - 1;
+
+                opts.greedy = greedy;
                 return maskTemplate;
             }
 
@@ -2660,24 +2667,9 @@
             }
 
             function clearOptionalTail(buffer) {
-                var rl = determineLastRequiredPosition(),
-                    validPos, bl = buffer.length;
-
-                var lv = getMaskSet().validPositions[getLastValidPosition()];
-                while (rl < bl &&
-                !isMask(rl, true) &&
-                (validPos = (lv !== undefined ? getTestTemplate(rl, lv.locator.slice(""), lv) : getTest(rl))) &&
-                validPos.match.optionality !== true &&
-                ((validPos.match.optionalQuantifier !== true && validPos.match.newBlockMarker !== true) || (rl + 1 === bl &&
-                    (lv !== undefined ? getTestTemplate(rl + 1, lv.locator.slice(""), lv) : getTest(rl + 1)).match.def === ""))) {
-                    rl++;
-                }
-
-                //exceptionally strip from the validatedPositions
-                while ((validPos = getMaskSet().validPositions[rl - 1]) && validPos && validPos.match.optionality && validPos.input === opts.skipOptionalPartCharacter) {
-                    rl--;
-                }
-                buffer.splice(rl);
+                buffer.length = 0;
+                var template = getMaskTemplate(true, 0, true, undefined, true), lmnt, validPos;
+                while (lmnt = template.shift(), lmnt !== undefined) buffer.push(lmnt);
                 return buffer;
             }
 
