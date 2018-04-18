@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.50
+* Version: 4.0.0-beta.51
 */
 
 !function(factory) {
@@ -586,7 +586,13 @@
                             switch (e.type) {
                               case "input":
                                 if (!0 === skipInputEvent) return skipInputEvent = !1, e.preventDefault();
-                                mobile && (trackCaret = !0);
+                                if (mobile) {
+                                    trackCaret = !0;
+                                    var args = arguments;
+                                    return setTimeout(function() {
+                                        eventHandler.apply(that, args);
+                                    }, 0), !1;
+                                }
                                 break;
 
                               case "keydown":
@@ -600,7 +606,7 @@
 
                               case "click":
                                 if (iemobile || iphone) {
-                                    var args = arguments;
+                                    args = arguments;
                                     return setTimeout(function() {
                                         eventHandler.apply(that, args);
                                     }, 0), !1;

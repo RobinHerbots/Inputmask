@@ -917,9 +917,10 @@
                 // var controlPos = determineTestTemplate2(pos, tests, guessNextBest);
                 //
                 // if (controlPos != testPos) {
-                //     debugger;
-                //     console.table(controlPos);
-                //     console.table(testPos);
+                //     // debugger;
+                //     console.log(pos + " 1) " + JSON.stringify(testPos));
+                //     console.log(pos + " 2) " + JSON.stringify(controlPos));
+                //
                 // }
 
                 return testPos;
@@ -942,14 +943,17 @@
             function determineTestTemplate2(pos, tests, guessNextBest) {
                 pos = pos > 0 ? pos - 1 : 0;
                 var altTest = getTest(pos), targetLocator = getLocator(altTest), tstLocator, closest, bestMatch;
-                $.each(tests, function (ndx, tst) { //find best matching
+                for (var ndx = 0; ndx < tests.length; ndx++) { //find best matching
+                    var tst = tests[ndx];
                     tstLocator = getLocator(tst, targetLocator.length);
                     var distance = Math.abs(tstLocator - targetLocator);
+                    if (tst.match.optionality)
+                        distance += (tests.length - ndx);
                     if (closest === undefined || (tstLocator !== "" && distance < closest)) {
                         closest = distance;
                         bestMatch = tst;
                     }
-                });
+                }
 
                 return bestMatch;
             }
@@ -1635,7 +1639,7 @@
                 return result;
             }
 
-            //fill in best positions according the current input
+//fill in best positions according the current input
             function trackbackPositions(originalPos, newPos, fillOnly) {
                 var result;
                 if (originalPos === undefined) {
@@ -1894,6 +1898,11 @@
                                     }
                                     if (mobile) {
                                         trackCaret = true;
+                                        var args = arguments;
+                                        setTimeout(function () { //needed for caret selection when entering a char on Android 8 - #1818
+                                            eventHandler.apply(that, args);
+                                        }, 0);
+                                        return false;
                                     }
                                     break;
                                 case "keydown":
@@ -3248,4 +3257,5 @@
 //make inputmask available
         return Inputmask;
     }
-));
+))
+;

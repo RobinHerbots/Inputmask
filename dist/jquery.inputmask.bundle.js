@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.50
+* Version: 4.0.0-beta.51
 */
 
 !function(modules) {
@@ -626,7 +626,13 @@
                                 switch (e.type) {
                                   case "input":
                                     if (!0 === skipInputEvent) return skipInputEvent = !1, e.preventDefault();
-                                    mobile && (trackCaret = !0);
+                                    if (mobile) {
+                                        trackCaret = !0;
+                                        var args = arguments;
+                                        return setTimeout(function() {
+                                            eventHandler.apply(that, args);
+                                        }, 0), !1;
+                                    }
                                     break;
 
                                   case "keydown":
@@ -640,7 +646,7 @@
 
                                   case "click":
                                     if (iemobile || iphone) {
-                                        var args = arguments;
+                                        args = arguments;
                                         return setTimeout(function() {
                                             eventHandler.apply(that, args);
                                         }, 0), !1;
@@ -1773,7 +1779,7 @@
                     opts.outputFormat = formatAlias[opts.outputFormat] || opts.outputFormat || opts.inputFormat, 
                     opts.placeholder = "" !== opts.placeholder ? opts.placeholder : opts.inputFormat.replace(/[\[\]]/, ""), 
                     opts.min = analyseMask(opts.min, opts.inputFormat, opts), opts.max = analyseMask(opts.max, opts.inputFormat, opts), 
-                    opts.regex = parse(opts.inputFormat, void 0, opts), console.log(opts.regex), null;
+                    opts.regex = parse(opts.inputFormat, void 0, opts), null;
                 },
                 placeholder: "",
                 inputFormat: "isoDateTime",

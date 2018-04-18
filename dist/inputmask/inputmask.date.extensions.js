@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.50
+* Version: 4.0.0-beta.51
 */
 
 !function(factory) {
@@ -127,7 +127,7 @@
                 opts.outputFormat = formatAlias[opts.outputFormat] || opts.outputFormat || opts.inputFormat, 
                 opts.placeholder = "" !== opts.placeholder ? opts.placeholder : opts.inputFormat.replace(/[\[\]]/, ""), 
                 opts.min = analyseMask(opts.min, opts.inputFormat, opts), opts.max = analyseMask(opts.max, opts.inputFormat, opts), 
-                opts.regex = parse(opts.inputFormat, void 0, opts), console.log(opts.regex), null;
+                opts.regex = parse(opts.inputFormat, void 0, opts), null;
             },
             placeholder: "",
             inputFormat: "isoDateTime",

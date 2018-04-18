@@ -207,7 +207,7 @@
                 opts.min = analyseMask(opts.min, opts.inputFormat, opts);
                 opts.max = analyseMask(opts.max, opts.inputFormat, opts);
                 opts.regex = parse(opts.inputFormat, undefined, opts);
-                console.log(opts.regex);
+                // console.log(opts.regex);
                 return null; //migrate to regex mask
             },
             placeholder: "", //set default as none (~ auto); when a custom placeholder is passed it will be used
