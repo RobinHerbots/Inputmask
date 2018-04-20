@@ -77,7 +77,7 @@ export default function (qunit, $, Inputmask) {
 
 		testmask.focus();
 		$("#testmask").Type("123456");
-		assert.equal(testmask.value, "12345-6", "Result " + testmask.value);
+		assert.equal(testmask.value, "12345-6___", "Result " + testmask.value);
 	});
 
 	qunit.test("inputmask({ mask: \"99999[-9999]\", greedy: false }) - input 123456789", function (assert) {

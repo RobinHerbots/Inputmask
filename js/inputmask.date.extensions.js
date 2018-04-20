@@ -118,8 +118,22 @@
         //parse format to regex string
         var mask = "", match;
         while (match = getTokenizer(opts).exec(format)) {
-            if (dateObjValue === undefined)
-                mask += formatCode[match[0]] ? "(" + formatCode[match[0]][0] + ")" : Inputmask.escapeRegex(match[0]);
+            if (dateObjValue === undefined) {
+                if (formatCode[match[0]]) {
+                    mask += "(" + formatCode[match[0]][0] + ")";
+                } else {
+                    switch (match[0]) {
+                        case "[":
+                            mask += "(";
+                            break;
+                        case "]":
+                            mask += ")?";
+                            break;
+                        default:
+                            mask += Inputmask.escapeRegex(match[0]);
+                    }
+                }
+            }
             else {
                 if (formatCode[match[0]]) {
                     var getFn = formatCode[match[0]][3];
@@ -148,7 +162,7 @@
                 correctedyear = correctedyear.replace(/[^0-9]/g, "");
                 correctedyear += opts.min.year == opts.max.year ?
                     opts.min.year.substr(correctedyear.length) :
-                    (correctedyear !== "" && opts.max.year.indexOf(correctedyear) == 0 ? parseInt(opts.max.year) -1 : parseInt(opts.min.year) + 1).toString().substr(correctedyear.length);
+                    (correctedyear !== "" && opts.max.year.indexOf(correctedyear) == 0 ? parseInt(opts.max.year) - 1 : parseInt(opts.min.year) + 1).toString().substr(correctedyear.length);
             } else correctedyear = correctedyear.replace(/[^0-9]/g, "0");
             return correctedyear;
         }
@@ -189,7 +203,7 @@
                 opts.inputFormat = formatAlias[opts.inputFormat] || opts.inputFormat; //resolve possible formatAkias
                 opts.displayFormat = formatAlias[opts.displayFormat] || opts.displayFormat || opts.inputFormat; //resolve possible formatAkias
                 opts.outputFormat = formatAlias[opts.outputFormat] || opts.outputFormat || opts.inputFormat; //resolve possible formatAkias
-                opts.placeholder = opts.placeholder !== "" ? opts.placeholder : opts.inputFormat;
+                opts.placeholder = opts.placeholder !== "" ? opts.placeholder : opts.inputFormat.replace(/[\[\]]/, "");
                 opts.min = analyseMask(opts.min, opts.inputFormat, opts);
                 opts.max = analyseMask(opts.max, opts.inputFormat, opts);
                 opts.regex = parse(opts.inputFormat, undefined, opts);

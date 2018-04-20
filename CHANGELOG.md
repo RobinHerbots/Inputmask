@@ -11,6 +11,8 @@
 - CSS Unit Mask #1843
 
 ### Updates
+- make behavior of [] an {0,1} consistent
+- change default value from greedy option to false
 - fix unmatched alternations in gettests. ("[0-9]{2}|[0-9]{3}" like masks)
 - code cleanup and refactoring
     - oncomplete calls
@@ -28,6 +30,7 @@
 
 ### Fixed
 - jitMasking + disablePredictiveText causes android browser tab to stuck when clicked on "backspase" #1862
+- Android 6 issue - Samsung device keyboard #1818
 - Method oncomplete doesn't work correctly with jitMasking #1845
 - isComplete in numeric extensions doesn't take into account negationSymbol #1844
 - Email alias - retype @ removes last . #1324

@@ -786,6 +786,7 @@ $(document).ready(function(){
 ```
 
 ### greedy
+Default: false
 Toggle to allocate as much possible or the opposite. Non-greedy repeat function.
 
 ```javascript

@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.48
+* Version: 4.0.0-beta.51
 */
 
 !function(modules) {
@@ -115,11 +115,12 @@
         function maskScope(actionObj, maskset, opts) {
             maskset = maskset || this.maskset, opts = opts || this.opts;
             var undoValue, $el, maxLength, colorMask, inputmask = this, el = this.el, isRTL = this.isRTL, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, mouseEnter = !1, trackCaret = !1;
-            function getMaskTemplate(baseOnInput, minimalPos, includeMode, noJit) {
-                minimalPos = minimalPos || 0;
+            function getMaskTemplate(baseOnInput, minimalPos, includeMode, noJit, clearOptionalTail) {
+                var greedy = opts.greedy;
+                clearOptionalTail && (opts.greedy = !1), minimalPos = minimalPos || 0;
                 var ndxIntlzr, test, testPos, maskTemplate = [], pos = 0, lvp = getLastValidPosition();
                 do {
-                    if (!0 === baseOnInput && getMaskSet().validPositions[pos]) test = (testPos = getMaskSet().validPositions[pos]).match, 
+                    if (!0 === baseOnInput && getMaskSet().validPositions[pos]) test = (testPos = !clearOptionalTail || !0 !== getMaskSet().validPositions[pos].match.optionality || !0 !== getMaskSet().validPositions[pos].generatedInput && getMaskSet().validPositions[pos].input != opts.skipOptionalPartCharacter || getMaskSet().validPositions[pos + 1] !== undefined ? getMaskSet().validPositions[pos] : determineTestTemplate(pos, getTests(pos, ndxIntlzr, pos - 1))).match, 
                     ndxIntlzr = testPos.locator.slice(), maskTemplate.push(!0 === includeMode ? testPos.input : !1 === includeMode ? test.nativeDef : getPlaceholder(pos, test)); else {
                         test = (testPos = getTestTemplate(pos, ndxIntlzr, pos - 1)).match, ndxIntlzr = testPos.locator.slice();
                         var jitMasking = !0 !== noJit && (!1 !== opts.jitMasking ? opts.jitMasking : test.jit);
@@ -129,7 +130,7 @@
                     pos++;
                 } while ((maxLength === undefined || pos < maxLength) && (null !== test.fn || "" !== test.def) || minimalPos > pos);
                 return "" === maskTemplate[maskTemplate.length - 1] && maskTemplate.pop(), !1 === includeMode && getMaskSet().maskLength !== undefined || (getMaskSet().maskLength = pos - 1), 
-                maskTemplate;
+                opts.greedy = greedy, maskTemplate;
             }
             function getMaskSet() {
                 return maskset;
@@ -625,7 +626,13 @@
                                 switch (e.type) {
                                   case "input":
                                     if (!0 === skipInputEvent) return skipInputEvent = !1, e.preventDefault();
-                                    mobile && (trackCaret = !0);
+                                    if (mobile) {
+                                        trackCaret = !0;
+                                        var args = arguments;
+                                        return setTimeout(function() {
+                                            eventHandler.apply(that, args);
+                                        }, 0), !1;
+                                    }
                                     break;
 
                                   case "keydown":
@@ -639,7 +646,7 @@
 
                                   case "click":
                                     if (iemobile || iphone) {
-                                        var args = arguments;
+                                        args = arguments;
                                         return setTimeout(function() {
                                             eventHandler.apply(that, args);
                                         }, 0), !1;
@@ -986,9 +993,9 @@
                 } : bl;
             }
             function clearOptionalTail(buffer) {
-                for (var validPos, rl = determineLastRequiredPosition(), bl = buffer.length, lv = getMaskSet().validPositions[getLastValidPosition()]; rl < bl && !isMask(rl, !0) && (validPos = lv !== undefined ? getTestTemplate(rl, lv.locator.slice(""), lv) : getTest(rl)) && !0 !== validPos.match.optionality && (!0 !== validPos.match.optionalQuantifier && !0 !== validPos.match.newBlockMarker || rl + 1 === bl && "" === (lv !== undefined ? getTestTemplate(rl + 1, lv.locator.slice(""), lv) : getTest(rl + 1)).match.def); ) rl++;
-                for (;(validPos = getMaskSet().validPositions[rl - 1]) && validPos && validPos.match.optionality && validPos.input === opts.skipOptionalPartCharacter; ) rl--;
-                return buffer.splice(rl), buffer;
+                buffer.length = 0;
+                for (var lmnt, template = getMaskTemplate(!0, 0, !0, undefined, !0); (lmnt = template.shift()) !== undefined; ) buffer.push(lmnt);
+                return buffer;
             }
             function isComplete(buffer) {
                 if ($.isFunction(opts.isComplete)) return opts.isComplete(buffer, opts);
@@ -1271,7 +1278,7 @@
                 onincomplete: $.noop,
                 oncleared: $.noop,
                 repeat: 0,
-                greedy: !0,
+                greedy: !1,
                 autoUnmask: !1,
                 removeMaskOnSubmit: !1,
                 clearMaskOnLostFocus: !0,
@@ -1722,7 +1729,18 @@
         }
         function parse(format, dateObjValue, opts) {
             for (var match, mask = ""; match = getTokenizer(opts).exec(format); ) {
-                if (void 0 === dateObjValue) mask += formatCode[match[0]] ? "(" + formatCode[match[0]][0] + ")" : Inputmask.escapeRegex(match[0]); else if (formatCode[match[0]]) mask += formatCode[match[0]][3].call(dateObjValue.date); else mask += match[0];
+                if (void 0 === dateObjValue) if (formatCode[match[0]]) mask += "(" + formatCode[match[0]][0] + ")"; else switch (match[0]) {
+                  case "[":
+                    mask += "(";
+                    break;
+
+                  case "]":
+                    mask += ")?";
+                    break;
+
+                  default:
+                    mask += Inputmask.escapeRegex(match[0]);
+                } else if (formatCode[match[0]]) mask += formatCode[match[0]][3].call(dateObjValue.date); else mask += match[0];
             }
             return mask;
         }
@@ -1759,7 +1777,7 @@
                     return formatCode.S = opts.i18n.ordinalSuffix.join("|"), opts.inputFormat = formatAlias[opts.inputFormat] || opts.inputFormat, 
                     opts.displayFormat = formatAlias[opts.displayFormat] || opts.displayFormat || opts.inputFormat, 
                     opts.outputFormat = formatAlias[opts.outputFormat] || opts.outputFormat || opts.inputFormat, 
-                    opts.placeholder = "" !== opts.placeholder ? opts.placeholder : opts.inputFormat, 
+                    opts.placeholder = "" !== opts.placeholder ? opts.placeholder : opts.inputFormat.replace(/[\[\]]/, ""), 
                     opts.min = analyseMask(opts.min, opts.inputFormat, opts), opts.max = analyseMask(opts.max, opts.inputFormat, opts), 
                     opts.regex = parse(opts.inputFormat, void 0, opts), null;
                 },
