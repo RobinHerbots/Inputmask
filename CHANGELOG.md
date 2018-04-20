@@ -27,6 +27,7 @@
 - rename androidHack option to disablePredictiveText. Make it available for other platforms.
 
 ### Fixed
+- jitMasking + disablePredictiveText causes android browser tab to stuck when clicked on "backspase" #1862
 - Method oncomplete doesn't work correctly with jitMasking #1845
 - isComplete in numeric extensions doesn't take into account negationSymbol #1844
 - Email alias - retype @ removes last . #1324
