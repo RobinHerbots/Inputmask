@@ -328,7 +328,7 @@
                         if (element.indexOf("[") === 0 || (escaped && /\\d|\\s|\\w]/i.test(element)) || element === ".") {
                             mtoken.matches.splice(position++, 0, {
                                 fn: new RegExp(element, opts.casing ? "i" : ""),
-                                optionality: mtoken.isOptional,
+                                optionality: false,
                                 newBlockMarker: prevMatch === undefined || prevMatch.def !== element,
                                 casing: null,
                                 def: element,
@@ -341,7 +341,7 @@
                                 prevMatch = mtoken.matches[position - 1];
                                 mtoken.matches.splice(position++, 0, {
                                     fn: null,
-                                    optionality: mtoken.isOptional,
+                                    optionality: false,
                                     newBlockMarker: prevMatch === undefined || (prevMatch.def !== lmnt && prevMatch.fn !== null),
                                     casing: null,
                                     def: opts.staticDefinitionSymbol || lmnt,
@@ -358,7 +358,7 @@
                                 fn: maskdef.validator ? typeof maskdef.validator == "string" ? new RegExp(maskdef.validator, opts.casing ? "i" : "") : new function () {
                                     this.test = maskdef.validator;
                                 } : new RegExp("."),
-                                optionality: mtoken.isOptional,
+                                optionality: false,
                                 newBlockMarker: prevMatch === undefined || prevMatch.def !== (maskdef.definitionSymbol || element),
                                 casing: maskdef.casing,
                                 def: maskdef.definitionSymbol || element,
@@ -368,7 +368,7 @@
                         } else {
                             mtoken.matches.splice(position++, 0, {
                                 fn: null,
-                                optionality: mtoken.isOptional,
+                                optionality: false,
                                 newBlockMarker: prevMatch === undefined || (prevMatch.def !== element && prevMatch.fn !== null),
                                 casing: null,
                                 def: opts.staticDefinitionSymbol || element,
@@ -914,14 +914,14 @@
                     }
                 }
 
-                // var controlPos = determineTestTemplate2(pos, tests, guessNextBest);
-                //
-                // if (controlPos != testPos) {
-                //     // debugger;
-                //     console.log(pos + " 1) " + JSON.stringify(testPos));
-                //     console.log(pos + " 2) " + JSON.stringify(controlPos));
-                //
-                // }
+                var controlPos = determineTestTemplate2(pos, tests, guessNextBest);
+
+                if (controlPos != testPos) {
+                    // debugger;
+                    console.log(pos + " 1) " + JSON.stringify(testPos));
+                    console.log(pos + " 2) " + JSON.stringify(controlPos));
+                    determineTestTemplate2(pos, tests, guessNextBest);
+                }
 
                 return testPos;
             }
@@ -936,7 +936,7 @@
 
             function getLocator(tst, align) { //need to align the locators to be correct
                 var locator = (tst.alternation != undefined ? tst.mloc[getDecisionTaker(tst)] : tst.locator).join("");
-                while (locator.length < align) locator += "0";
+                if (locator !== "") while (locator.length < align) locator += "0";
                 return locator;
             }
 
@@ -947,9 +947,10 @@
                     var tst = tests[ndx];
                     tstLocator = getLocator(tst, targetLocator.length);
                     var distance = Math.abs(tstLocator - targetLocator);
-                    if (tst.match.optionality)
-                        distance += (tests.length - ndx);
-                    if (closest === undefined || (tstLocator !== "" && distance < closest)) {
+                    if (closest === undefined
+                        || (tstLocator !== "" && distance < closest)
+                        || (bestMatch && bestMatch.match.optionality && (!tst.match.optionality || !tst.match.newBlockMarker))
+                        || (bestMatch && bestMatch.match.optionalQuantifier && !tst.match.optionalQuantifier)) {
                         closest = distance;
                         bestMatch = tst;
                     }
@@ -1100,6 +1101,10 @@
                                 var optionalToken = match;
                                 match = resolveTestFromToken(match, ndxInitializer, loopNdx, quantifierRecurse);
                                 if (match) {
+                                    //mark optionality in matches
+                                    $.each(matches, function (ndx, mtch) {
+                                        mtch.match.optionality = true;
+                                    });
                                     latestMatch = matches[matches.length - 1].match;
                                     if (quantifierRecurse === undefined && isFirstMatch(latestMatch, optionalToken)) { //prevent loop see #698
                                         insertStop = true; //insert a stop
@@ -1301,7 +1306,7 @@
                     matches.push({
                         match: {
                             fn: null,
-                            optionality: true,
+                            optionality: false,
                             casing: null,
                             def: "",
                             placeholder: ""

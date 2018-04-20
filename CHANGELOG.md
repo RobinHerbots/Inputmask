@@ -29,6 +29,7 @@
 - rename androidHack option to disablePredictiveText. Make it available for other platforms.
 
 ### Fixed
+- Android 6 issue - Samsung device keyboard #1818
 - Method oncomplete doesn't work correctly with jitMasking #1845
 - isComplete in numeric extensions doesn't take into account negationSymbol #1844
 - Email alias - retype @ removes last . #1324
