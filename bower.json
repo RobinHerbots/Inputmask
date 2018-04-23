@@ -10,6 +10,8 @@
   "license": "http://opensource.org/licenses/mit-license.php",
   "ignore": [
     "**/*",
+    "!index.js",
+    "!css/*",
     "!dist/*",
     "!dist/inputmask/*",
     "!dist/min/*",
