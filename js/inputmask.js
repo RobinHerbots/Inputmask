@@ -329,7 +329,7 @@
                             mtoken.matches.splice(position++, 0, {
                                 fn: new RegExp(element, opts.casing ? "i" : ""),
                                 optionality: false,
-                                newBlockMarker: prevMatch === undefined || prevMatch.def !== element,
+                                newBlockMarker: prevMatch === undefined ? "master" : prevMatch.def !== element,
                                 casing: null,
                                 def: element,
                                 placeholder: undefined,
@@ -342,7 +342,7 @@
                                 mtoken.matches.splice(position++, 0, {
                                     fn: null,
                                     optionality: false,
-                                    newBlockMarker: prevMatch === undefined || (prevMatch.def !== lmnt && prevMatch.fn !== null),
+                                    newBlockMarker: prevMatch === undefined ? "master" : (prevMatch.def !== lmnt && prevMatch.fn !== null),
                                     casing: null,
                                     def: opts.staticDefinitionSymbol || lmnt,
                                     placeholder: opts.staticDefinitionSymbol !== undefined ? lmnt : undefined,
@@ -359,7 +359,7 @@
                                     this.test = maskdef.validator;
                                 } : new RegExp("."),
                                 optionality: false,
-                                newBlockMarker: prevMatch === undefined || prevMatch.def !== (maskdef.definitionSymbol || element),
+                                newBlockMarker: prevMatch === undefined ? "master" : prevMatch.def !== (maskdef.definitionSymbol || element),
                                 casing: maskdef.casing,
                                 def: maskdef.definitionSymbol || element,
                                 placeholder: maskdef.placeholder,
@@ -369,7 +369,7 @@
                             mtoken.matches.splice(position++, 0, {
                                 fn: null,
                                 optionality: false,
-                                newBlockMarker: prevMatch === undefined || (prevMatch.def !== element && prevMatch.fn !== null),
+                                newBlockMarker: prevMatch === undefined ? "master" : (prevMatch.def !== element && prevMatch.fn !== null),
                                 casing: null,
                                 def: opts.staticDefinitionSymbol || element,
                                 placeholder: opts.staticDefinitionSymbol !== undefined ? element : undefined,
@@ -895,37 +895,6 @@
                 return (before === -1 || before == closestTo) ? after : after == -1 ? before : (closestTo - before) < (after - closestTo) ? before : after;
             }
 
-            function determineTestTemplate(pos, tests, guessNextBest) {
-                pos = pos > 0 ? pos - 1 : 0;
-                var testPos,
-                    altTest = getTest(pos, tests),
-                    altArr = (altTest.alternation !== undefined) ? altTest.locator[altTest.alternation].toString().split(",") : [];
-                for (var ndx = 0; ndx < tests.length; ndx++) {
-                    testPos = tests[ndx];
-
-                    if (testPos.match &&
-                        (((opts.greedy && testPos.match.optionalQuantifier !== true) || (testPos.match.optionality === false || testPos.match.newBlockMarker === false) && testPos.match.optionalQuantifier !== true) &&
-                            ((altTest.alternation === undefined || altTest.alternation !== testPos.alternation) ||
-                                (testPos.locator[altTest.alternation] !== undefined && checkAlternationMatch(testPos.locator[altTest.alternation].toString().split(","), altArr))))) {
-
-                        if (guessNextBest !== true || (testPos.match.fn === null && !/[0-9a-bA-Z]/.test(testPos.match.def))) {
-                            break;
-                        }
-                    }
-                }
-
-                var controlPos = determineTestTemplate2(pos, tests, guessNextBest);
-
-                if (controlPos != testPos) {
-                    // debugger;
-                    console.log(pos + " 1) " + JSON.stringify(testPos));
-                    console.log(pos + " 2) " + JSON.stringify(controlPos));
-                    determineTestTemplate2(pos, tests, guessNextBest);
-                }
-
-                return testPos;
-            }
-
             function getDecisionTaker(tst) {
                 var decisionTaker = tst.locator[tst.alternation];
                 if (typeof decisionTaker == "string" && decisionTaker.length > 0) { //no decision taken ~ take first one as decider
@@ -940,7 +909,7 @@
                 return locator;
             }
 
-            function determineTestTemplate2(pos, tests, guessNextBest) {
+            function determineTestTemplate(pos, tests) {
                 pos = pos > 0 ? pos - 1 : 0;
                 var altTest = getTest(pos), targetLocator = getLocator(altTest), tstLocator, closest, bestMatch;
                 for (var ndx = 0; ndx < tests.length; ndx++) { //find best matching
@@ -949,7 +918,7 @@
                     var distance = Math.abs(tstLocator - targetLocator);
                     if (closest === undefined
                         || (tstLocator !== "" && distance < closest)
-                        || (bestMatch && bestMatch.match.optionality && (!tst.match.optionality || !tst.match.newBlockMarker))
+                        || (bestMatch && bestMatch.match.optionality && bestMatch.match.newBlockMarker === "master" && (!tst.match.optionality || !tst.match.newBlockMarker))
                         || (bestMatch && bestMatch.match.optionalQuantifier && !tst.match.optionalQuantifier)) {
                         closest = distance;
                         bestMatch = tst;

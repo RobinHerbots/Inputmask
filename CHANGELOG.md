@@ -15,6 +15,7 @@
 - change default value from greedy option to false
 - fix unmatched alternations in gettests. ("[0-9]{2}|[0-9]{3}" like masks)
 - code cleanup and refactoring
+    - enhance determineTestTemplate
     - oncomplete calls
     - merge setValidPosition and stripValidPositions => revalidateMask
     - remove canClearPosition hook
