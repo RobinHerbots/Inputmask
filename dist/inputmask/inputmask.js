@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.51
+* Version: 4.0.0-beta.52
 */
 
 !function(factory) {
@@ -108,18 +108,25 @@
             }
             return -1 === before || before == closestTo ? after : -1 == after ? before : closestTo - before < after - closestTo ? before : after;
         }
-        function determineTestTemplate(pos, tests, guessNextBest) {
-            for (var testPos, altTest = getTest(pos = pos > 0 ? pos - 1 : 0, tests), altArr = altTest.alternation !== undefined ? altTest.locator[altTest.alternation].toString().split(",") : [], ndx = 0; ndx < tests.length && (!((testPos = tests[ndx]).match && (opts.greedy && !0 !== testPos.match.optionalQuantifier || (!1 === testPos.match.optionality || !1 === testPos.match.newBlockMarker) && !0 !== testPos.match.optionalQuantifier) && (altTest.alternation === undefined || altTest.alternation !== testPos.alternation || testPos.locator[altTest.alternation] !== undefined && checkAlternationMatch(testPos.locator[altTest.alternation].toString().split(","), altArr))) || !0 === guessNextBest && (null !== testPos.match.fn || /[0-9a-bA-Z]/.test(testPos.match.def))); ndx++) ;
-            return testPos;
-        }
         function getDecisionTaker(tst) {
             var decisionTaker = tst.locator[tst.alternation];
             return "string" == typeof decisionTaker && decisionTaker.length > 0 && (decisionTaker = decisionTaker.split(",")[0]), 
             decisionTaker !== undefined ? decisionTaker.toString() : "";
         }
         function getLocator(tst, align) {
-            for (var locator = (tst.alternation != undefined ? tst.mloc[getDecisionTaker(tst)] : tst.locator).join(""); locator.length < align; ) locator += "0";
+            var locator = (tst.alternation != undefined ? tst.mloc[getDecisionTaker(tst)] : tst.locator).join("");
+            if ("" !== locator) for (;locator.length < align; ) locator += "0";
             return locator;
+        }
+        function determineTestTemplate(pos, tests) {
+            for (var tstLocator, closest, bestMatch, targetLocator = getLocator(getTest(pos = pos > 0 ? pos - 1 : 0)), ndx = 0; ndx < tests.length; ndx++) {
+                var tst = tests[ndx];
+                tstLocator = getLocator(tst, targetLocator.length);
+                var distance = Math.abs(tstLocator - targetLocator);
+                (closest === undefined || "" !== tstLocator && distance < closest || bestMatch && bestMatch.match.optionality && "master" === bestMatch.match.newBlockMarker && (!tst.match.optionality || !tst.match.newBlockMarker) || bestMatch && bestMatch.match.optionalQuantifier && !tst.match.optionalQuantifier) && (closest = distance, 
+                bestMatch = tst);
+            }
+            return bestMatch;
         }
         function getTestTemplate(pos, ndxIntlzr, tstPs) {
             return getMaskSet().validPositions[pos] || determineTestTemplate(pos, getTests(pos, ndxIntlzr ? ndxIntlzr.slice() : ndxIntlzr, tstPs));
@@ -196,7 +203,9 @@
                         } else if (match.isOptional) {
                             var optionalToken = match;
                             if (match = resolveTestFromToken(match, ndxInitializer, loopNdx, quantifierRecurse)) {
-                                if (latestMatch = matches[matches.length - 1].match, quantifierRecurse !== undefined || !isFirstMatch(latestMatch, optionalToken)) return !0;
+                                if ($.each(matches, function(ndx, mtch) {
+                                    mtch.match.optionality = !0;
+                                }), latestMatch = matches[matches.length - 1].match, quantifierRecurse !== undefined || !isFirstMatch(latestMatch, optionalToken)) return !0;
                                 insertStop = !0, testPos = pos;
                             }
                         } else if (match.isAlternator) {
@@ -288,7 +297,7 @@
             return (0 === matches.length || insertStop) && matches.push({
                 match: {
                     fn: null,
-                    optionality: !0,
+                    optionality: !1,
                     casing: null,
                     def: "",
                     placeholder: ""
@@ -1409,8 +1418,8 @@
                 var prevMatch = mtoken.matches[position - 1];
                 if (regexMask) 0 === element.indexOf("[") || escaped && /\\d|\\s|\\w]/i.test(element) || "." === element ? mtoken.matches.splice(position++, 0, {
                     fn: new RegExp(element, opts.casing ? "i" : ""),
-                    optionality: mtoken.isOptional,
-                    newBlockMarker: prevMatch === undefined || prevMatch.def !== element,
+                    optionality: !1,
+                    newBlockMarker: prevMatch === undefined ? "master" : prevMatch.def !== element,
                     casing: null,
                     def: element,
                     placeholder: undefined,
@@ -1418,8 +1427,8 @@
                 }) : (escaped && (element = element[element.length - 1]), $.each(element.split(""), function(ndx, lmnt) {
                     prevMatch = mtoken.matches[position - 1], mtoken.matches.splice(position++, 0, {
                         fn: null,
-                        optionality: mtoken.isOptional,
-                        newBlockMarker: prevMatch === undefined || prevMatch.def !== lmnt && null !== prevMatch.fn,
+                        optionality: !1,
+                        newBlockMarker: prevMatch === undefined ? "master" : prevMatch.def !== lmnt && null !== prevMatch.fn,
                         casing: null,
                         def: opts.staticDefinitionSymbol || lmnt,
                         placeholder: opts.staticDefinitionSymbol !== undefined ? lmnt : undefined,
@@ -1431,16 +1440,16 @@
                         fn: maskdef.validator ? "string" == typeof maskdef.validator ? new RegExp(maskdef.validator, opts.casing ? "i" : "") : new function() {
                             this.test = maskdef.validator;
                         }() : new RegExp("."),
-                        optionality: mtoken.isOptional,
-                        newBlockMarker: prevMatch === undefined || prevMatch.def !== (maskdef.definitionSymbol || element),
+                        optionality: !1,
+                        newBlockMarker: prevMatch === undefined ? "master" : prevMatch.def !== (maskdef.definitionSymbol || element),
                         casing: maskdef.casing,
                         def: maskdef.definitionSymbol || element,
                         placeholder: maskdef.placeholder,
                         nativeDef: element
                     }) : (mtoken.matches.splice(position++, 0, {
                         fn: null,
-                        optionality: mtoken.isOptional,
-                        newBlockMarker: prevMatch === undefined || prevMatch.def !== element && null !== prevMatch.fn,
+                        optionality: !1,
+                        newBlockMarker: prevMatch === undefined ? "master" : prevMatch.def !== element && null !== prevMatch.fn,
                         casing: null,
                         def: opts.staticDefinitionSymbol || element,
                         placeholder: opts.staticDefinitionSymbol !== undefined ? element : undefined,
