@@ -832,7 +832,9 @@
                     test, testPos, lvp = getLastValidPosition();
                 do {
                     if (baseOnInput === true && getMaskSet().validPositions[pos]) {
-                        testPos = (clearOptionalTail && getMaskSet().validPositions[pos].match.optionality === true && (getMaskSet().validPositions[pos].generatedInput === true || getMaskSet().validPositions[pos].input == opts.skipOptionalPartCharacter) && getMaskSet().validPositions[pos + 1] === undefined)
+                        testPos = (clearOptionalTail && getMaskSet().validPositions[pos].match.optionality === true
+                            && getMaskSet().validPositions[pos + 1] === undefined
+                            && (getMaskSet().validPositions[pos].generatedInput === true || (getMaskSet().validPositions[pos].input == opts.skipOptionalPartCharacter && pos > 0)))
                             ? determineTestTemplate(pos, getTests(pos, ndxIntlzr, pos - 1))
                             : getMaskSet().validPositions[pos];
                         test = testPos.match;
@@ -1855,7 +1857,6 @@
             var EventRuler = {
                 on: function (input, eventName, eventHandler) {
                     var ev = function (e) {
-                        // console.log("triggered " + e.type);
                         var that = this;
                         if (that.inputmask === undefined && this.nodeName !== "FORM") { //happens when cloning an object with jquery.clone
                             var imOpts = $.data(that, "_inputmask_opts");
@@ -2226,6 +2227,32 @@
                         }
                     }
                 },
+                beforeInputEvent: function (e) {
+                    var input = this;
+                    // e.preventDefault(); not working
+                    if (e.cancelable) { // not cancelable
+                        // switch (e.inputType) {
+                        //     case "insertText":
+                        //         $.each(e.data.split(""), function (ndx, entry) {
+                        //             var keypress = new $.Event("keypress");
+                        //             keypress.which = entry.charCodeAt(0);
+                        //             ignorable = false; //make sure ignorable is ignored ;-)
+                        //             EventHandlers.keypressEvent.call(input, keypress);
+                        //         });
+                        //         return e.preventDefault();
+                        //     case "deleteContentBackward":
+                        //         var keydown = new $.Event("keydown");
+                        //         keydown.keyCode = Inputmask.keyCode.DELETE;
+                        //         EventHandlers.keydownEvent.call(input, keydown);
+                        //         return e.preventDefault();
+                        //     case "deleteContentForward":
+                        //         var keydown = new $.Event("keydown");
+                        //         keydown.keyCode = Inputmask.keyCode.BACKSPACE;
+                        //         EventHandlers.keydownEvent.call(input, keydown);
+                        //         return e.preventDefault();
+                        // }
+                    }
+                },
                 setValueEvent: function (e) {
                     this.inputmask.refreshValue = false;
                     var input = this,
@@ -2239,9 +2266,7 @@
                     if ((opts.clearMaskOnLostFocus || opts.clearIncomplete) && input.inputmask._valueGet() === getBufferTemplate().join("")) {
                         input.inputmask._valueSet("");
                     }
-                }
-
-                ,
+                },
                 focusEvent: function (e) {
                     var input = this,
                         nptValue = input.inputmask._valueGet();
@@ -3090,7 +3115,7 @@
                         EventRuler.on(el, "compositionend", $.noop);
                         EventRuler.on(el, "keyup", $.noop);
                         EventRuler.on(el, "input", EventHandlers.inputFallBackEvent);
-                        EventRuler.on(el, "beforeinput", $.noop); //https://github.com/w3c/input-events - to implement
+                        EventRuler.on(el, "beforeinput", EventHandlers.beforeInputEvent); //https://github.com/w3c/input-events - to implement
                     }
                     EventRuler.on(el, "setvalue", EventHandlers.setValueEvent);
 
