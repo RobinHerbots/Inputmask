@@ -817,8 +817,7 @@
                 ignorable = false,
                 maxLength,
                 mouseEnter = false,
-                colorMask,
-                trackCaret = false;
+                colorMask;
 
             //maskset helperfunctions
             function getMaskTemplate(baseOnInput, minimalPos, includeMode, noJit, clearOptionalTail) {
@@ -1872,10 +1871,10 @@
                                         return e.preventDefault();
                                     }
                                     if (mobile) {
-                                        trackCaret = true;
                                         var args = arguments;
                                         setTimeout(function () { //needed for caret selection when entering a char on Android 8 - #1818
                                             eventHandler.apply(that, args);
+                                            caret(that, that.inputmask.caretPos, undefined, true);
                                         }, 0);
                                         return false;
                                     }
@@ -1901,15 +1900,7 @@
                                     }
                                     break;
                             }
-                            // console.log("executed " + e.type);
                             var returnVal = eventHandler.apply(that, arguments);
-                            if (trackCaret) {
-                                trackCaret = false;
-                                setTimeout(function () {
-                                    caret(that, that.inputmask.caretPos, undefined, true);
-                                    // console.log("2 " + JSON.stringify(that.inputmask.caretPos));
-                                });
-                            }
                             if (returnVal === false) {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -2219,38 +2210,33 @@
                                 }
                             }
 
-                            // setTimeout(function(){
-                            //     console.log("2 " + JSON.stringify(caret(input)));
-                            // },0);
-
                             e.preventDefault();
                         }
                     }
                 },
                 beforeInputEvent: function (e) {
-                    var input = this;
-                    // e.preventDefault(); not working
-                    if (e.cancelable) { // not cancelable
-                        // switch (e.inputType) {
-                        //     case "insertText":
-                        //         $.each(e.data.split(""), function (ndx, entry) {
-                        //             var keypress = new $.Event("keypress");
-                        //             keypress.which = entry.charCodeAt(0);
-                        //             ignorable = false; //make sure ignorable is ignored ;-)
-                        //             EventHandlers.keypressEvent.call(input, keypress);
-                        //         });
-                        //         return e.preventDefault();
-                        //     case "deleteContentBackward":
-                        //         var keydown = new $.Event("keydown");
-                        //         keydown.keyCode = Inputmask.keyCode.DELETE;
-                        //         EventHandlers.keydownEvent.call(input, keydown);
-                        //         return e.preventDefault();
-                        //     case "deleteContentForward":
-                        //         var keydown = new $.Event("keydown");
-                        //         keydown.keyCode = Inputmask.keyCode.BACKSPACE;
-                        //         EventHandlers.keydownEvent.call(input, keydown);
-                        //         return e.preventDefault();
-                        // }
+                    if (e.cancelable) {
+                        var input = this;
+                        switch (e.inputType) {
+                            case "insertText":
+                                $.each(e.data.split(""), function (ndx, entry) {
+                                    var keypress = new $.Event("keypress");
+                                    keypress.which = entry.charCodeAt(0);
+                                    ignorable = false; //make sure ignorable is ignored ;-)
+                                    EventHandlers.keypressEvent.call(input, keypress);
+                                });
+                                return e.preventDefault();
+                            case "deleteContentBackward":
+                                var keydown = new $.Event("keydown");
+                                keydown.keyCode = Inputmask.keyCode.BACKSPACE;
+                                EventHandlers.keydownEvent.call(input, keydown);
+                                return e.preventDefault();
+                            case "deleteContentForward":
+                                var keydown = new $.Event("keydown");
+                                keydown.keyCode = Inputmask.keyCode.DELETE;
+                                EventHandlers.keydownEvent.call(input, keydown);
+                                return e.preventDefault();
+                        }
                     }
                 },
                 setValueEvent: function (e) {
