@@ -2,6 +2,7 @@
 
 ## [UNRELEASED - 4.x]
 ### added
+- add support for beforeInput event with inputType (Input Events Level 2 - https://w3c.github.io/input-events/)
 - extend positionCaretOnClick with "ignore" to ignore the click in the input
 - jit enabled dynamic masks
 - add support for input type search
@@ -30,6 +31,7 @@
 - rename androidHack option to disablePredictiveText. Make it available for other platforms.
 
 ### Fixed
+- Fast typing text #1872
 - jitMasking + disablePredictiveText causes android browser tab to stuck when clicked on "backspase" #1862
 - Android 6 issue - Samsung device keyboard #1818
 - Method oncomplete doesn't work correctly with jitMasking #1845
