@@ -346,7 +346,7 @@
                                     casing: null,
                                     def: opts.staticDefinitionSymbol || lmnt,
                                     placeholder: opts.staticDefinitionSymbol !== undefined ? lmnt : undefined,
-                                    nativeDef: lmnt
+                                    nativeDef: (escaped ? "'" : "") + lmnt
                                 });
                             });
                         }
@@ -373,7 +373,7 @@
                                 casing: null,
                                 def: opts.staticDefinitionSymbol || element,
                                 placeholder: opts.staticDefinitionSymbol !== undefined ? element : undefined,
-                                nativeDef: element
+                                nativeDef: (escaped ? "'" : "") + element
                             });
                             escaped = false;
                         }

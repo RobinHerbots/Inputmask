@@ -31,6 +31,7 @@
 - rename androidHack option to disablePredictiveText. Make it available for other platforms.
 
 ### Fixed
+- Bug: Using backspace when caret is not at the end messes up static placeholders #1525
 - Fast typing text #1872
 - jitMasking + disablePredictiveText causes android browser tab to stuck when clicked on "backspase" #1862
 - Android 6 issue - Samsung device keyboard #1818
