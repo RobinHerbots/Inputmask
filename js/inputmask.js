@@ -481,6 +481,14 @@
                         continue;
                     }
                     switch (m.charAt(0)) {
+                        case "(?=": //lookahead
+                            break;
+                        case "(?!": //negative lookahead
+                            break;
+                        case "(?<=": //lookbehind
+                            break;
+                        case "(?<!": //negative lookbehind
+                            break;
                         case opts.escapeChar:
                             escaped = true;
                             if (regexMask) {
