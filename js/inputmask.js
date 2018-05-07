@@ -540,7 +540,7 @@
                                 mq = mqj[0].split(","),
                                 mq0 = isNaN(mq[0]) ? mq[0] : parseInt(mq[0]),
                                 mq1 = mq.length === 1 ? mq0 : (isNaN(mq[1]) ? mq[1] : parseInt(mq[1]));
-                            if (mq1 === "*" || mq1 === "+") {
+                            if (mq0 === "*" || mq0 === "+") {
                                 mq0 = mq1 === "*" ? 0 : 1;
                             }
                             quantifier.quantifier = {
