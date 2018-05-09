@@ -521,18 +521,14 @@
                 return processValue;
             },
             isComplete: function (buffer, opts) {
-                var maskedValue = buffer.join(""),
-                    bufClone = buffer.slice();
-                //verify separator positions
-                if (bufClone.join("") !== maskedValue) return false;
-
-                var processValue = maskedValue.replace(new RegExp("^" + Inputmask.escapeRegex(opts.negationSymbol.front)), "-");
-                processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.negationSymbol.back) + "$"), "");
-                processValue = processValue.replace(opts.prefix, "");
-                processValue = processValue.replace(opts.suffix, "");
-                processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator) + "([0-9]{3})", "g"), "$1");
-                if (opts.radixPoint === ",") processValue = processValue.replace(Inputmask.escapeRegex(opts.radixPoint), ".");
-                return isFinite(processValue);
+                var maskedValue = (opts.numericInput ? buffer.reverse() : buffer).join("");
+                maskedValue = maskedValue.replace(new RegExp("^" + Inputmask.escapeRegex(opts.negationSymbol.front)), "-");
+                maskedValue = maskedValue.replace(new RegExp(Inputmask.escapeRegex(opts.negationSymbol.back) + "$"), "");
+                maskedValue = maskedValue.replace(opts.prefix, "");
+                maskedValue = maskedValue.replace(opts.suffix, "");
+                maskedValue = maskedValue.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator) + "([0-9]{3})", "g"), "$1");
+                if (opts.radixPoint === ",") maskedValue = maskedValue.replace(Inputmask.escapeRegex(opts.radixPoint), ".");
+                return isFinite(maskedValue);
             },
             onBeforeMask: function (initialValue, opts) {
                 opts.isNegative = undefined;

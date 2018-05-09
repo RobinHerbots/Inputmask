@@ -2465,11 +2465,11 @@
 
                 function isTemplateMatch(ndx, charCodes) {
                     var charCodeNdx = getMaskTemplate(true, 0, false).slice(ndx, seekNext(ndx)).join("").replace(/'/g, "").indexOf(charCodes);
-                    return charCodeNdx !== -1 && !isMask(charCodeNdx)
-                        && (getTest(charCodeNdx).match.nativeDef === charCodes.charAt(0)
-                            || (getTest(charCodeNdx).match.fn === null && getTest(charCodeNdx).match.nativeDef === ("'" + charCodes.charAt(0)))
-                            || (getTest(charCodeNdx).match.nativeDef === " " && (getTest(charCodeNdx + 1).match.nativeDef === charCodes.charAt(0)
-                                    || (getTest(charCodeNdx + 1).match.fn === null && getTest(charCodeNdx + 1).match.nativeDef === ("'" + charCodes.charAt(0))))));
+                    return charCodeNdx !== -1 && !isMask(ndx)
+                        && (getTest(ndx).match.nativeDef === charCodes.charAt(0)
+                            || (getTest(ndx).match.fn === null && getTest(ndx).match.nativeDef === ("'" + charCodes.charAt(0)))
+                            || (getTest(ndx).match.nativeDef === " " && (getTest(ndx + 1).match.nativeDef === charCodes.charAt(0)
+                                    || (getTest(ndx + 1).match.fn === null && getTest(ndx + 1).match.nativeDef === ("'" + charCodes.charAt(0))))));
                 }
 
                 resetMaskSet();
