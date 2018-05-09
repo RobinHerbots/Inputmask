@@ -1073,7 +1073,7 @@
                             return true;
                         } else if (match.matches !== undefined) {
                             if (match.isGroup && quantifierRecurse !== match) { //when a group pass along to the quantifier
-                                match = handleMatch(maskToken.matches[$.inArray(match, maskToken.matches) + 1], loopNdx);
+                                match = handleMatch(maskToken.matches[$.inArray(match, maskToken.matches) + 1], loopNdx, quantifierRecurse);
                                 if (match) return true;
                             } else if (match.isOptional) {
                                 var optionalToken = match;
@@ -1193,7 +1193,10 @@
                                     if (match) {
                                         //get latest match
                                         latestMatch = matches[matches.length - 1].match;
+                                        //mark optionality
+                                        //TODO FIX RECURSIVE QUANTIFIERS
                                         latestMatch.optionalQuantifier = qndx > (qt.quantifier.min - 1);
+                                        // console.log(pos + " " + qt.quantifier.min + " " + latestMatch.optionalQuantifier);
                                         latestMatch.jit = qndx + tokenGroup.matches.indexOf(latestMatch) >= qt.quantifier.jit;
                                         if (isFirstMatch(latestMatch, tokenGroup) && qndx > (qt.quantifier.min - 1)) {
                                             insertStop = true;
@@ -2093,11 +2096,6 @@
 
                     if (valueBeforeCaret === (isRTL ? getBufferTemplate().reverse() : getBufferTemplate()).slice(0, caretPos.begin).join("")) valueBeforeCaret = "";
                     if (valueAfterCaret === (isRTL ? getBufferTemplate().reverse() : getBufferTemplate()).slice(caretPos.end).join("")) valueAfterCaret = "";
-                    if (isRTL) {
-                        tempValue = valueBeforeCaret;
-                        valueBeforeCaret = valueAfterCaret;
-                        valueAfterCaret = tempValue;
-                    }
 
                     if (window.clipboardData && window.clipboardData.getData) { // IE
                         inputValue = valueBeforeCaret + window.clipboardData.getData("Text") + valueAfterCaret;
@@ -2115,7 +2113,7 @@
                             pasteValue = inputValue;
                         }
                     }
-                    checkVal(input, false, false, isRTL ? pasteValue.split("").reverse() : pasteValue.toString().split(""));
+                    checkVal(input, false, false, pasteValue.toString().split(""));
                     writeBuffer(input, getBuffer(), seekNext(getLastValidPosition()), e, undoValue !== getBuffer().join(""));
                     return e.preventDefault();
                 },
@@ -2255,7 +2253,7 @@
 
                     if ($.isFunction(opts.onBeforeMask)) value = opts.onBeforeMask.call(inputmask, value, opts) || value;
                     value = value.split("");
-                    checkVal(input, true, false, isRTL ? value.reverse() : value);
+                    checkVal(input, true, false, value);
                     undoValue = getBuffer().join("");
                     if ((opts.clearMaskOnLostFocus || opts.clearIncomplete) && input.inputmask._valueGet() === getBufferTemplate().join("")) {
                         input.inputmask._valueSet("");
@@ -2457,7 +2455,8 @@
             };
 
             function checkVal(input, writeOut, strict, nptvl, initiatingEvent) {
-                var inputValue = nptvl.slice(),
+                var inputmask = this || input.inputmask,
+                    inputValue = nptvl.slice(),
                     charCodes = "",
                     initialNdx = -1,
                     result = undefined;
@@ -2465,10 +2464,12 @@
                 // console.log(nptvl);
 
                 function isTemplateMatch(ndx, charCodes) {
-                    var charCodeNdx = getMaskTemplate(true, 0, false).slice(ndx, seekNext(ndx)).join("").indexOf(charCodes);
-                    return charCodeNdx !== -1 && !isMask(ndx) &&
-                        (getTest(ndx).match.nativeDef === charCodes.charAt(0) ||
-                            (getTest(ndx).match.nativeDef === " " && getTest(ndx + 1).match.nativeDef === charCodes.charAt(0)));
+                    var charCodeNdx = getMaskTemplate(true, 0, false).slice(ndx, seekNext(ndx)).join("").replace(/'/g, "").indexOf(charCodes);
+                    return charCodeNdx !== -1 && !isMask(charCodeNdx)
+                        && (getTest(charCodeNdx).match.nativeDef === charCodes.charAt(0)
+                            || (getTest(charCodeNdx).match.fn === null && getTest(charCodeNdx).match.nativeDef === ("'" + charCodes.charAt(0)))
+                            || (getTest(charCodeNdx).match.nativeDef === " " && (getTest(charCodeNdx + 1).match.nativeDef === charCodes.charAt(0)
+                                    || (getTest(charCodeNdx + 1).match.fn === null && getTest(charCodeNdx + 1).match.nativeDef === ("'" + charCodes.charAt(0))))));
                 }
 
                 resetMaskSet();
@@ -2486,6 +2487,7 @@
                     getMaskSet().p = seekNext(initialNdx);
                     initialNdx = 0;
                 } else getMaskSet().p = initialNdx;
+                inputmask.caretPos = {begin: initialNdx};
                 $.each(inputValue, function (ndx, charCode) {
                     // console.log(charCode);
                     if (charCode !== undefined) { //inputfallback strips some elements out of the inputarray.  $.each logically presents them as undefined
@@ -2493,25 +2495,24 @@
                             isValid(ndx, inputValue[ndx], true, undefined, undefined, true) === false) {
                             getMaskSet().p++;
                         } else {
-
                             var keypress = new $.Event("_checkval");
                             keypress.which = charCode.charCodeAt(0);
                             charCodes += charCode;
-                            var lvp = getLastValidPosition(undefined, true),
-                                prevTest = getTest(lvp),
-                                nextTest = getTestTemplate(lvp + 1, prevTest ? prevTest.locator.slice() : undefined, lvp);
-                            if (!isTemplateMatch(initialNdx, charCodes) || strict || opts.autoUnmask) {
-                                var pos = strict ? ndx : (nextTest.match.fn == null && nextTest.match.optionality && (lvp + 1) < getMaskSet().p ? lvp + 1 : getMaskSet().p);
-                                result = EventHandlers.keypressEvent.call(input, keypress, true, false, strict, pos);
+                            var lvp = getLastValidPosition(undefined, true);
+                            if (!isTemplateMatch(initialNdx, charCodes)) {
+                                result = EventHandlers.keypressEvent.call(input, keypress, true, false, strict, inputmask.caretPos.begin);
 
                                 if (result) {
-                                    initialNdx = pos + 1;
+                                    initialNdx = inputmask.caretPos.begin + 1;
                                     charCodes = "";
                                 }
                             } else {
-                                result = EventHandlers.keypressEvent.call(input, keypress, true, false, true, lvp + 1);
+                                result = EventHandlers.keypressEvent.call(input, keypress, true, false, strict, lvp + 1);
                             }
-                            writeBuffer(undefined, getBuffer(), result.forwardPosition, keypress, false);
+                            if (result) {
+                                writeBuffer(undefined, getBuffer(), result.forwardPosition, keypress, false);
+                                inputmask.caretPos = {begin: result.forwardPosition, end: result.forwardPosition};
+                            }
                         }
                     }
                 });
@@ -2544,7 +2545,7 @@
             }
 
             function translatePosition(pos) {
-                if (isRTL && typeof pos === "number" && (!opts.greedy || opts.placeholder !== "")) {
+                if (isRTL && typeof pos === "number" && (!opts.greedy || opts.placeholder !== "") && el) {
                     pos = el.inputmask._valueGet().length - pos;
                 }
                 return pos;
@@ -3117,7 +3118,7 @@
                     undoValue = getBufferTemplate().join(""); //initialize the buffer and getmasklength
                     if (el.inputmask._valueGet(true) !== "" || opts.clearMaskOnLostFocus === false || document.activeElement === el) {
                         var initialValue = $.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(inputmask, el.inputmask._valueGet(true), opts) || el.inputmask._valueGet(true)) : el.inputmask._valueGet(true);
-                        if (initialValue !== "") checkVal(el, true, false, isRTL ? initialValue.split("").reverse() : initialValue.split(""));
+                        if (initialValue !== "") checkVal(el, true, false, initialValue.split(""));
                         var buffer = getBuffer().slice();
                         undoValue = buffer.join("");
                         // Wrap document.activeElement in a try/catch block since IE9 throw "Unspecified error" if document.activeElement is undefined when we are in an IFrame.
@@ -3153,7 +3154,7 @@
                         if (el === undefined || actionObj.value !== undefined) {
                             valueBuffer = actionObj.value;
                             valueBuffer = ($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(inputmask, valueBuffer, opts) || valueBuffer) : valueBuffer).split("");
-                            checkVal(undefined, false, false, isRTL ? valueBuffer.reverse() : valueBuffer);
+                            checkVal.call(this, undefined, false, false, valueBuffer);
                             if ($.isFunction(opts.onBeforeWrite)) opts.onBeforeWrite.call(inputmask, undefined, getBuffer(), 0, opts);
                         }
                         return unmaskedvalue(el);
@@ -3162,7 +3163,7 @@
                         break;
                     case "format":
                         valueBuffer = ($.isFunction(opts.onBeforeMask) ? (opts.onBeforeMask.call(inputmask, actionObj.value, opts) || actionObj.value) : actionObj.value).split("");
-                        checkVal(undefined, true, false, isRTL ? valueBuffer.reverse() : valueBuffer);
+                        checkVal.call(this, undefined, true, false, valueBuffer);
                         if (actionObj.metadata) {
                             return {
                                 value: isRTL ? getBuffer().slice().reverse().join("") : getBuffer().join(""),
@@ -3176,7 +3177,7 @@
                     case "isValid":
                         if (actionObj.value) {
                             valueBuffer = actionObj.value.split("");
-                            checkVal(undefined, true, true, isRTL ? valueBuffer.reverse() : valueBuffer);
+                            checkVal.call(this, undefined, true, true, valueBuffer);
                         } else {
                             actionObj.value = getBuffer().join("");
                         }
