@@ -521,7 +521,7 @@
                 return processValue;
             },
             isComplete: function (buffer, opts) {
-                var maskedValue = (opts.numericInput ? buffer.reverse() : buffer).join("");
+                var maskedValue = (opts.numericInput ? buffer.slice().reverse() : buffer).join("");
                 maskedValue = maskedValue.replace(new RegExp("^" + Inputmask.escapeRegex(opts.negationSymbol.front)), "-");
                 maskedValue = maskedValue.replace(new RegExp(Inputmask.escapeRegex(opts.negationSymbol.back) + "$"), "");
                 maskedValue = maskedValue.replace(opts.prefix, "");
