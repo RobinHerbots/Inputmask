@@ -35,6 +35,18 @@
         return escapedTxt;
     }
 
+    function alignDigits(buffer, opts) {
+        var radixPosition = $.inArray(opts.radixPoint, buffer);
+        if (radixPosition === -1) {
+            buffer.push(opts.radixPoint);
+            radixPosition = buffer.length - 1;
+        }
+        for (var i = 1; i <= opts.digits; i++) {
+            buffer[radixPosition + i] = buffer[radixPosition + i] || "0";
+        }
+        return buffer;
+    }
+
     //number aliases
     Inputmask.extendAliases({
         "numeric": {
@@ -379,15 +391,6 @@
                                 caret: caretPos
                             };
                         default:
-                            //strip radixpoint at the end
-                            // if (buffer[buffer.length - 1] === opts.radixPoint) {
-                            // 	delete buffer[buffer.length - 1];
-                            // 	return opts.postValidation(buffer, {
-                            // 		caret: caretPos,
-                            // 		dopost: true,
-                            // 		placeholder: "0"
-                            // 	}, opts);
-                            // }
                             break;
                     }
                 }
@@ -571,22 +574,22 @@
                     }
                 }
 
-                if (opts.radixPoint !== "" && isFinite(opts.digits) && initialValue.indexOf(opts.radixPoint) !== -1) {
-                    var valueParts = initialValue.split(opts.radixPoint),
-                        decPart = valueParts[1].match(new RegExp("\\d*"))[0];
-                    if (parseInt(opts.digits) < decPart.toString().length) {
-                        var digitsFactor = Math.pow(10, parseInt(opts.digits));
-                        //make the initialValue a valid javascript number for the parsefloat
-                        initialValue = initialValue.replace(Inputmask.escapeRegex(opts.radixPoint), ".");
-                        initialValue = Math.round(parseFloat(initialValue) * digitsFactor) / digitsFactor;
-                        initialValue = initialValue.toString().replace(".", opts.radixPoint);
+                if (opts.radixPoint !== "" && isFinite(opts.digits)) {
+                    if (initialValue.indexOf(opts.radixPoint) !== -1) {
+                        var valueParts = initialValue.split(opts.radixPoint),
+                            decPart = valueParts[1].match(new RegExp("\\d*"))[0];
+                        if (parseInt(opts.digits) < decPart.toString().length) {
+                            var digitsFactor = Math.pow(10, parseInt(opts.digits));
+                            //make the initialValue a valid javascript number for the parsefloat
+                            initialValue = initialValue.replace(Inputmask.escapeRegex(opts.radixPoint), ".");
+                            initialValue = Math.round(parseFloat(initialValue) * digitsFactor) / digitsFactor;
+                            initialValue = initialValue.toString().replace(".", opts.radixPoint);
+                        }
                     }
-                }
 
-                // if (opts.numericInput === true) {
-                // 	initialValue = initialValue.split("").reverse().join("");
-                // }
-                return initialValue;
+
+                }
+                return alignDigits(initialValue.toString().split(""), opts).join("");
             },
             onKeyDown: function (e, buffer, caretPos, opts) {
                 //TODO FIXME
