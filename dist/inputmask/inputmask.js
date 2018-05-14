@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.57
+* Version: 4.0.0-beta.58
 */
 
 !function(factory) {
@@ -808,6 +808,10 @@
                             caret(input, 0, getBuffer().length);
                             break;
 
+                          case "ignore":
+                            caret(input, seekNext(getLastValidPosition()));
+                            break;
+
                           case "radixFocus":
                             if (function(clickPos) {
                                 if ("" !== opts.radixPoint) {
@@ -827,10 +831,6 @@
                                 caret(input, opts.numericInput ? seekNext(radixPos) : radixPos);
                                 break;
                             }
-
-                          case "ignore":
-                            caret(input, seekNext(getLastValidPosition()));
-                            break;
 
                           default:
                             var clickPosition = selectedCaret.begin, lvclickPosition = getLastValidPosition(clickPosition, !0), lastPosition = seekNext(lvclickPosition);

@@ -2328,15 +2328,15 @@
                                     case "select":
                                         caret(input, 0, getBuffer().length);
                                         break;
+                                    case "ignore":
+                                        caret(input, seekNext(getLastValidPosition()));
+                                        break;
                                     case "radixFocus":
                                         if (doRadixFocus(selectedCaret.begin)) {
                                             var radixPos = getBuffer().join("").indexOf(opts.radixPoint);
                                             caret(input, opts.numericInput ? seekNext(radixPos) : radixPos);
                                             break;
-                                        }
-                                    case "ignore":
-                                        caret(input, seekNext(getLastValidPosition()));
-                                        break;
+                                        } //fallback to lvp
                                     default: //lvp:
                                         var clickPosition = selectedCaret.begin,
                                             lvclickPosition = getLastValidPosition(clickPosition, true),
@@ -2469,7 +2469,7 @@
                         && (getTest(ndx).match.nativeDef === charCodes.charAt(0)
                             || (getTest(ndx).match.fn === null && getTest(ndx).match.nativeDef === ("'" + charCodes.charAt(0)))
                             || (getTest(ndx).match.nativeDef === " " && (getTest(ndx + 1).match.nativeDef === charCodes.charAt(0)
-                                    || (getTest(ndx + 1).match.fn === null && getTest(ndx + 1).match.nativeDef === ("'" + charCodes.charAt(0))))));
+                                || (getTest(ndx + 1).match.fn === null && getTest(ndx + 1).match.nativeDef === ("'" + charCodes.charAt(0))))));
                 }
 
                 resetMaskSet();
