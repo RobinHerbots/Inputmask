@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.59
+* Version: 4.0.0-beta.60
 */
 
 !function(modules) {
@@ -1781,7 +1781,7 @@
             return val;
         }
         function analyseMask(maskString, format, opts) {
-            var targetProp, match, dateOperation, dateObj = {
+            var targetProp, match, dateOperation, targetValidator, dateObj = {
                 date: new Date(1, 0, 1)
             }, mask = maskString;
             function extendYear(year) {
@@ -1792,15 +1792,24 @@
                 } else correctedyear = correctedyear.replace(/[^0-9]/g, "0");
                 return correctedyear;
             }
+            function extendProperty(value) {
+                var correctedValue;
+                if (opts.min && opts.min[targetProp] || opts.max && opts.max[targetProp]) {
+                    var min = opts.min && opts.min[targetProp] || opts.max[targetProp], max = opts.max && opts.max[targetProp] || opts.min[targetProp];
+                    for (correctedValue = value.replace(/[^0-9]/g, ""), correctedValue += ("" !== correctedValue && 0 == max.indexOf(correctedValue) ? max : min).toString().substr(correctedValue.length); !new RegExp(targetValidator).test(correctedValue); ) correctedValue--;
+                } else correctedValue = value.replace(/[^0-9]/g, "0");
+                return correctedValue;
+            }
             function setValue(dateObj, value, opts) {
-                "year" === targetProp ? (dateObj[targetProp] = extendYear(value), dateObj["raw" + targetProp] = value) : dateObj[targetProp] = opts.min && value.match(/[^0-9]/) ? opts.min[targetProp] : value, 
+                "year" === targetProp ? (dateObj[targetProp] = extendYear(value), dateObj["raw" + targetProp] = value) : dateObj[targetProp] = extendProperty(value), 
                 void 0 !== dateOperation && dateOperation.call(dateObj.date, "month" == targetProp ? parseInt(dateObj[targetProp]) - 1 : dateObj[targetProp]);
             }
             if ("string" == typeof mask) {
                 for (;match = getTokenizer(opts).exec(format); ) {
                     var value = mask.slice(0, match[0].length);
-                    formatCode.hasOwnProperty(match[0]) && (targetProp = formatCode[match[0]][2], dateOperation = formatCode[match[0]][1], 
-                    setValue(dateObj, value, opts)), mask = mask.slice(value.length);
+                    formatCode.hasOwnProperty(match[0]) && (targetValidator = formatCode[match[0]][0], 
+                    targetProp = formatCode[match[0]][2], dateOperation = formatCode[match[0]][1], setValue(dateObj, value)), 
+                    mask = mask.slice(value.length);
                 }
                 return dateObj;
             }
