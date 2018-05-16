@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.60
+* Version: 4.0.0-beta.62
 */
 
 !function(factory) {
@@ -100,24 +100,16 @@
         var targetProp, match, dateOperation, targetValidator, dateObj = {
             date: new Date(1, 0, 1)
         }, mask = maskString;
-        function extendYear(year) {
-            var correctedyear = 4 === year.length ? year : new Date().getFullYear().toString().substr(0, 4 - year.length) + year;
-            if (opts.min && opts.min.year || opts.max && opts.max.year) {
-                var minyear = opts.min && opts.min.year || opts.max.year, maxyear = opts.max && opts.max.year || opts.min.year;
-                correctedyear = correctedyear.replace(/[^0-9]/g, ""), correctedyear += minyear == maxyear ? minyear.substr(correctedyear.length) : ("" !== correctedyear && 0 == maxyear.indexOf(correctedyear) ? parseInt(maxyear) - 1 : parseInt(minyear) + 1).toString().substr(correctedyear.length);
-            } else correctedyear = correctedyear.replace(/[^0-9]/g, "0");
-            return correctedyear;
-        }
         function extendProperty(value) {
             var correctedValue;
             if (opts.min && opts.min[targetProp] || opts.max && opts.max[targetProp]) {
                 var min = opts.min && opts.min[targetProp] || opts.max[targetProp], max = opts.max && opts.max[targetProp] || opts.min[targetProp];
-                for (correctedValue = value.replace(/[^0-9]/g, ""), correctedValue += ("" !== correctedValue && 0 == max.indexOf(correctedValue) ? max : min).toString().substr(correctedValue.length); !new RegExp(targetValidator).test(correctedValue); ) correctedValue--;
+                for (correctedValue = value.replace(/[^0-9]/g, ""), correctedValue += (min.indexOf(correctedValue) < max.indexOf(correctedValue) ? max : min).toString().substr(correctedValue.length); !new RegExp(targetValidator).test(correctedValue); ) correctedValue--;
             } else correctedValue = value.replace(/[^0-9]/g, "0");
             return correctedValue;
         }
         function setValue(dateObj, value, opts) {
-            "year" === targetProp ? (dateObj[targetProp] = extendYear(value), dateObj["raw" + targetProp] = value) : dateObj[targetProp] = extendProperty(value), 
+            "year" === targetProp ? (dateObj[targetProp] = extendProperty(value), dateObj["raw" + targetProp] = value) : dateObj[targetProp] = extendProperty(value), 
             void 0 !== dateOperation && dateOperation.call(dateObj.date, "month" == targetProp ? parseInt(dateObj[targetProp]) - 1 : dateObj[targetProp]);
         }
         if ("string" == typeof mask) {
@@ -157,8 +149,11 @@
                     return (!isFinite(dateParts.day) || "29" == dateParts.day && !isFinite(dateParts.rawyear) || new Date(dateParts.date.getFullYear(), isFinite(dateParts.month) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day) && currentResult;
                 }(dateParts, result)) && function(dateParts, opts) {
                     var result = !0;
-                    return opts.min && opts.min.date.getTime() == opts.min.date.getTime() && (result = opts.min.date.getTime() <= dateParts.date.getTime()), 
-                    result && opts.max && opts.max.date.getTime() == opts.max.date.getTime() && (result = opts.max.date.getTime() >= dateParts.date.getTime()), 
+                    if (opts.min) {
+                        var rawYear = dateParts.rawyear.replace(/[^0-9]/g, "");
+                        result = opts.min.year.substr(0, rawYear.length) <= rawYear, dateParts.year === dateParts.rawyear && opts.min.date.getTime() == opts.min.date.getTime() && (result = opts.min.date.getTime() <= dateParts.date.getTime());
+                    }
+                    return result && opts.max && opts.max.date.getTime() == opts.max.date.getTime() && (result = opts.max.date.getTime() >= dateParts.date.getTime()), 
                     result;
                 }(dateParts, opts)), result;
             },

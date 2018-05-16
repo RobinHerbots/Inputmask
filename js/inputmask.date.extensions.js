@@ -102,13 +102,20 @@
 
         function isDateInRange(dateParts, opts) {
             var result = true;
-            if (opts.min && opts.min.date.getTime() === opts.min.date.getTime()) {
-                result = opts.min.date.getTime() <= dateParts.date.getTime();
+            if (opts.min) {
+                var rawYear = dateParts["rawyear"].replace(/[^0-9]/g, ""),
+                    minYear = opts.min.year.substr(0, rawYear.length);
+                result = minYear <= rawYear;
+                if (dateParts["year"] === dateParts["rawyear"]) {
+                    if (opts.min.date.getTime() === opts.min.date.getTime()) {
+                        result = opts.min.date.getTime() <= dateParts.date.getTime();
+                    }
+                }
             }
+
             if (result && opts.max && opts.max.date.getTime() === opts.max.date.getTime()) {
                 result = opts.max.date.getTime() >= dateParts.date.getTime();
             }
-
             return result;
         }
 
@@ -156,26 +163,13 @@
         function analyseMask(maskString, format, opts) {
             var dateObj = {"date": new Date(1, 0, 1)}, targetProp, mask = maskString, match, dateOperation, targetValidator;
 
-            function extendYear(year) {
-                var correctedyear = year.length === 4 ? year : new Date().getFullYear().toString().substr(0, 4 - year.length) + year;
-                if (opts.min && opts.min.year || opts.max && opts.max.year) {
-                    var minyear = opts.min && opts.min.year || opts.max.year,
-                        maxyear = opts.max && opts.max.year || opts.min.year;
-                    correctedyear = correctedyear.replace(/[^0-9]/g, "");
-                    correctedyear += minyear == maxyear ?
-                        minyear.substr(correctedyear.length) :
-                        (correctedyear !== "" && maxyear.indexOf(correctedyear) == 0 ? parseInt(maxyear) - 1 : parseInt(minyear) + 1).toString().substr(correctedyear.length);
-                } else correctedyear = correctedyear.replace(/[^0-9]/g, "0");
-                return correctedyear;
-            }
-
             function extendProperty(value) {
                 var correctedValue;
                 if (opts.min && opts.min[targetProp] || opts.max && opts.max[targetProp]) {
                     var min = opts.min && opts.min[targetProp] || opts.max[targetProp],
                         max = opts.max && opts.max[targetProp] || opts.min[targetProp];
                     correctedValue = value.replace(/[^0-9]/g, "");
-                    correctedValue += (correctedValue !== "" && max.indexOf(correctedValue) == 0 ? max : min).toString().substr(correctedValue.length);
+                    correctedValue += (min.indexOf(correctedValue) < max.indexOf(correctedValue) ? max : min).toString().substr(correctedValue.length);
                     while (!(new RegExp(targetValidator)).test(correctedValue)) {
                         correctedValue--;
                     }
@@ -185,7 +179,7 @@
 
             function setValue(dateObj, value, opts) {
                 if (targetProp === "year") {
-                    dateObj[targetProp] = extendYear(value);
+                    dateObj[targetProp] = extendProperty(value);
                     dateObj["raw" + targetProp] = value;
                 }
                 else dateObj[targetProp] = extendProperty(value);
