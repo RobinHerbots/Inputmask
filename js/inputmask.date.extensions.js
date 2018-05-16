@@ -158,11 +158,13 @@
 
         function extendYear(year) {
             var correctedyear = year.length === 4 ? year : new Date().getFullYear().toString().substr(0, 4 - year.length) + year;
-            if (opts.min && opts.min.year && opts.max && opts.max.year) {
+            if (opts.min && opts.min.year || opts.max && opts.max.year) {
+                var minyear = opts.min && opts.min.year || opts.max.year,
+                    maxyear = opts.max && opts.max.year || opts.min.year;
                 correctedyear = correctedyear.replace(/[^0-9]/g, "");
-                correctedyear += opts.min.year == opts.max.year ?
-                    opts.min.year.substr(correctedyear.length) :
-                    (correctedyear !== "" && opts.max.year.indexOf(correctedyear) == 0 ? parseInt(opts.max.year) - 1 : parseInt(opts.min.year) + 1).toString().substr(correctedyear.length);
+                correctedyear += minyear == maxyear ?
+                    minyear.substr(correctedyear.length) :
+                    (correctedyear !== "" && maxyear.indexOf(correctedyear) == 0 ? parseInt(maxyear) - 1 : parseInt(minyear) + 1).toString().substr(correctedyear.length);
             } else correctedyear = correctedyear.replace(/[^0-9]/g, "0");
             return correctedyear;
         }

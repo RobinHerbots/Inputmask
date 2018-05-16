@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.58
+* Version: 4.0.0-beta.59
 */
 
 !function(modules) {
@@ -114,8 +114,9 @@
         }
         function maskScope(actionObj, maskset, opts) {
             maskset = maskset || this.maskset, opts = opts || this.opts;
-            var undoValue, $el, maxLength, colorMask, inputmask = this, el = this.el, isRTL = this.isRTL, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, mouseEnter = !1;
+            var undoValue, $el, maxLength, colorMask, jitPos, inputmask = this, el = this.el, isRTL = this.isRTL, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, mouseEnter = !1, jitOffset = 0;
             function getMaskTemplate(baseOnInput, minimalPos, includeMode, noJit, clearOptionalTail) {
+                !0 !== noJit && (jitPos = undefined, jitOffset = 0);
                 var greedy = opts.greedy;
                 clearOptionalTail && (opts.greedy = !1), minimalPos = minimalPos || 0;
                 var ndxIntlzr, test, testPos, maskTemplate = [], pos = 0, lvp = getLastValidPosition();
@@ -124,7 +125,8 @@
                     ndxIntlzr = testPos.locator.slice(), maskTemplate.push(!0 === includeMode ? testPos.input : !1 === includeMode ? test.nativeDef : getPlaceholder(pos, test)); else {
                         test = (testPos = getTestTemplate(pos, ndxIntlzr, pos - 1)).match, ndxIntlzr = testPos.locator.slice();
                         var jitMasking = !0 !== noJit && (!1 !== opts.jitMasking ? opts.jitMasking : test.jit);
-                        (!1 === jitMasking || jitMasking === undefined || pos < lvp || "number" == typeof jitMasking && isFinite(jitMasking) && jitMasking > pos) && maskTemplate.push(!1 === includeMode ? test.nativeDef : getPlaceholder(pos, test));
+                        !1 === jitMasking || jitMasking === undefined || pos < lvp || "number" == typeof jitMasking && isFinite(jitMasking) && jitMasking > pos ? maskTemplate.push(!1 === includeMode ? test.nativeDef : getPlaceholder(pos, test)) : test.jit && test.optionalQuantifier !== undefined && (jitPos = pos, 
+                        jitOffset++);
                     }
                     "auto" === opts.keepStatic && test.newBlockMarker && null !== test.fn && (opts.keepStatic = pos - 1), 
                     pos++;
@@ -421,7 +423,7 @@
                 var maskPos = pos;
                 function _isValid(position, c, strict) {
                     var rslt = !1;
-                    return $.each(getTests(position), function(ndx, tst) {
+                    return $.each(getTests(position + (position == jitPos ? jitOffset : 0)), function(ndx, tst) {
                         var test = tst.match;
                         if (getBuffer(!0), !1 !== (rslt = null != test.fn ? test.fn.test(c, getMaskSet(), position, strict, opts, isSelection(pos)) : (c === test.def || c === opts.skipOptionalPartCharacter) && "" !== test.def && {
                             c: getPlaceholder(position, test, !0) || test.def,
@@ -509,16 +511,12 @@
             function trackbackPositions(originalPos, newPos, fillOnly) {
                 var result;
                 if (originalPos === undefined) for (originalPos = newPos - 1; originalPos > 0 && !getMaskSet().validPositions[originalPos]; originalPos--) ;
-                for (var ps = originalPos; ps < newPos; ps++) if (getMaskSet().validPositions[ps] === undefined && !isMask(ps, !0)) {
-                    var vp = 0 == ps ? getTest(ps) : getMaskSet().validPositions[ps - 1];
-                    if (vp) {
-                        var tstLocator, targetLocator = getLocator(vp), tests = getTests(ps).slice(), closest = undefined, bestMatch = getTest(ps);
-                        if ("" === tests[tests.length - 1].match.def && tests.pop(), $.each(tests, function(ndx, tst) {
-                            tstLocator = getLocator(tst, targetLocator.length);
-                            var distance = Math.abs(tstLocator - targetLocator);
-                            (closest === undefined || distance < closest) && null === tst.match.fn && !0 !== tst.match.optionality && !0 !== tst.match.optionalQuantifier && (closest = distance, 
-                            bestMatch = tst);
-                        }), (bestMatch = $.extend({}, bestMatch, {
+                for (var ps = originalPos; ps < newPos; ps++) {
+                    if (getMaskSet().validPositions[ps] === undefined && !isMask(ps, !0)) if (0 == ps ? getTest(ps) : getMaskSet().validPositions[ps - 1]) {
+                        var tests = getTests(ps).slice();
+                        "" === tests[tests.length - 1].match.def && tests.pop();
+                        var bestMatch = determineTestTemplate(ps, tests);
+                        if ((bestMatch = $.extend({}, bestMatch, {
                             input: getPlaceholder(ps, bestMatch.match, !0) || bestMatch.match.def
                         })).generatedInput = !0, revalidateMask(ps, bestMatch, !0), !0 !== fillOnly) {
                             var cvpInput = getMaskSet().validPositions[newPos].input;
@@ -1788,9 +1786,11 @@
             }, mask = maskString;
             function extendYear(year) {
                 var correctedyear = 4 === year.length ? year : new Date().getFullYear().toString().substr(0, 4 - year.length) + year;
-                return opts.min && opts.min.year && opts.max && opts.max.year ? (correctedyear = correctedyear.replace(/[^0-9]/g, ""), 
-                correctedyear += opts.min.year == opts.max.year ? opts.min.year.substr(correctedyear.length) : ("" !== correctedyear && 0 == opts.max.year.indexOf(correctedyear) ? parseInt(opts.max.year) - 1 : parseInt(opts.min.year) + 1).toString().substr(correctedyear.length)) : correctedyear = correctedyear.replace(/[^0-9]/g, "0"), 
-                correctedyear;
+                if (opts.min && opts.min.year || opts.max && opts.max.year) {
+                    var minyear = opts.min && opts.min.year || opts.max.year, maxyear = opts.max && opts.max.year || opts.min.year;
+                    correctedyear = correctedyear.replace(/[^0-9]/g, ""), correctedyear += minyear == maxyear ? minyear.substr(correctedyear.length) : ("" !== correctedyear && 0 == maxyear.indexOf(correctedyear) ? parseInt(maxyear) - 1 : parseInt(minyear) + 1).toString().substr(correctedyear.length);
+                } else correctedyear = correctedyear.replace(/[^0-9]/g, "0");
+                return correctedyear;
             }
             function setValue(dateObj, value, opts) {
                 "year" === targetProp ? (dateObj[targetProp] = extendYear(value), dateObj["raw" + targetProp] = value) : dateObj[targetProp] = opts.min && value.match(/[^0-9]/) ? opts.min[targetProp] : value, 
@@ -2239,9 +2239,11 @@
                         }
                     }
                     return function(buffer, opts) {
-                        var radixPosition = $.inArray(opts.radixPoint, buffer);
-                        -1 === radixPosition && (buffer.push(opts.radixPoint), radixPosition = buffer.length - 1);
-                        for (var i = 1; i <= opts.digits; i++) buffer[radixPosition + i] = buffer[radixPosition + i] || "0";
+                        if (opts.numericInput) {
+                            var radixPosition = $.inArray(opts.radixPoint, buffer);
+                            -1 === radixPosition && (buffer.push(opts.radixPoint), radixPosition = buffer.length - 1);
+                            for (var i = 1; i <= opts.digits; i++) buffer[radixPosition + i] = buffer[radixPosition + i] || "0";
+                        }
                         return buffer;
                     }(initialValue.toString().split(""), opts).join("");
                 },

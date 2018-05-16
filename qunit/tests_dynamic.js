@@ -400,4 +400,16 @@ export default function (qunit, $, Inputmask) {
         assert.equal(testmask.value, "0,12", "Result " + testmask.value);
     });
 
+    qunit.test("(99){+|1}a - dynamic jit offset", function (assert) {
+        var $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask("(99){+|1}a").mask(testmask);
+
+        testmask.focus();
+        $("#testmask").trigger("click");
+        $("#testmask").Type("1a");
+        assert.equal(testmask.value, "1a", "Result " + testmask.value);
+    });
+
 };

@@ -825,11 +825,18 @@
                 ignorable = false,
                 maxLength,
                 mouseEnter = false,
-                colorMask;
+                colorMask,
+                jitPos,
+                jitOffset = 0;
 
             //maskset helperfunctions
             function getMaskTemplate(baseOnInput, minimalPos, includeMode, noJit, clearOptionalTail) {
                 //includeMode true => input, undefined => placeholder, false => mask
+
+                if (noJit !== true) {
+                    jitPos = undefined;
+                    jitOffset = 0;
+                }
 
                 var greedy = opts.greedy;
                 if (clearOptionalTail) opts.greedy = false;
@@ -854,6 +861,9 @@
                         var jitMasking = noJit === true ? false : (opts.jitMasking !== false ? opts.jitMasking : test.jit);
                         if (jitMasking === false || jitMasking === undefined || pos < lvp || (typeof jitMasking === "number" && isFinite(jitMasking) && jitMasking > pos)) {
                             maskTemplate.push(includeMode === false ? test.nativeDef : getPlaceholder(pos, test));
+                        } else if (test.jit && test.optionalQuantifier !== undefined) {
+                            jitPos = pos;
+                            jitOffset++;
                         }
                     }
                     if (opts.keepStatic === "auto") {
@@ -1506,7 +1516,8 @@
 
                 function _isValid(position, c, strict) {
                     var rslt = false;
-                    $.each(getTests(position), function (ndx, tst) {
+
+                    $.each(getTests(position + (position == jitPos ? jitOffset : 0)), function (ndx, tst) {
                         var test = tst.match;
                         //make sure the buffer is set and correct
                         getBuffer(true);
@@ -1641,18 +1652,16 @@
                             var tests = getTests(ps).slice()
                             if (tests[tests.length - 1].match.def === "") tests.pop();
                             var bestMatch = determineTestTemplate(ps, tests);
-                            if (true || bestMatch.match.jit === undefined) {
-                                bestMatch = $.extend({}, bestMatch, {
-                                    "input": getPlaceholder(ps, bestMatch.match, true) || bestMatch.match.def
-                                });
-                                bestMatch.generatedInput = true;
-                                revalidateMask(ps, bestMatch, true);
-                                if (fillOnly !== true) {
-                                    //revalidate the new position to update the locator value
-                                    var cvpInput = getMaskSet().validPositions[newPos].input;
-                                    getMaskSet().validPositions[newPos] = undefined;
-                                    result = isValid(newPos, cvpInput, true, true);
-                                }
+                            bestMatch = $.extend({}, bestMatch, {
+                                "input": getPlaceholder(ps, bestMatch.match, true) || bestMatch.match.def
+                            });
+                            bestMatch.generatedInput = true;
+                            revalidateMask(ps, bestMatch, true);
+                            if (fillOnly !== true) {
+                                //revalidate the new position to update the locator value
+                                var cvpInput = getMaskSet().validPositions[newPos].input;
+                                getMaskSet().validPositions[newPos] = undefined;
+                                result = isValid(newPos, cvpInput, true, true);
                             }
                         }
                     }

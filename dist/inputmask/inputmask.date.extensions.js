@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.58
+* Version: 4.0.0-beta.59
 */
 
 !function(factory) {
@@ -102,9 +102,11 @@
         }, mask = maskString;
         function extendYear(year) {
             var correctedyear = 4 === year.length ? year : new Date().getFullYear().toString().substr(0, 4 - year.length) + year;
-            return opts.min && opts.min.year && opts.max && opts.max.year ? (correctedyear = correctedyear.replace(/[^0-9]/g, ""), 
-            correctedyear += opts.min.year == opts.max.year ? opts.min.year.substr(correctedyear.length) : ("" !== correctedyear && 0 == opts.max.year.indexOf(correctedyear) ? parseInt(opts.max.year) - 1 : parseInt(opts.min.year) + 1).toString().substr(correctedyear.length)) : correctedyear = correctedyear.replace(/[^0-9]/g, "0"), 
-            correctedyear;
+            if (opts.min && opts.min.year || opts.max && opts.max.year) {
+                var minyear = opts.min && opts.min.year || opts.max.year, maxyear = opts.max && opts.max.year || opts.min.year;
+                correctedyear = correctedyear.replace(/[^0-9]/g, ""), correctedyear += minyear == maxyear ? minyear.substr(correctedyear.length) : ("" !== correctedyear && 0 == maxyear.indexOf(correctedyear) ? parseInt(maxyear) - 1 : parseInt(minyear) + 1).toString().substr(correctedyear.length);
+            } else correctedyear = correctedyear.replace(/[^0-9]/g, "0");
+            return correctedyear;
         }
         function setValue(dateObj, value, opts) {
             "year" === targetProp ? (dateObj[targetProp] = extendYear(value), dateObj["raw" + targetProp] = value) : dateObj[targetProp] = opts.min && value.match(/[^0-9]/) ? opts.min[targetProp] : value, 
