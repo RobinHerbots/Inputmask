@@ -1625,7 +1625,7 @@
                 return result;
             }
 
-//fill in best positions according the current input
+            //fill in best positions according the current input
             function trackbackPositions(originalPos, newPos, fillOnly) {
                 var result;
                 if (originalPos === undefined) {
@@ -1638,27 +1638,21 @@
                     if (getMaskSet().validPositions[ps] === undefined && !isMask(ps, true)) {
                         var vp = ps == 0 ? getTest(ps) : getMaskSet().validPositions[ps - 1];
                         if (vp) {
-                            var targetLocator = getLocator(vp), tests = getTests(ps).slice(),
-                                tstLocator, closest = undefined, bestMatch = getTest(ps);
-                            if (tests[tests.length - 1].match.def === "") tests.pop(); //remove stop from matches
-                            $.each(tests, function (ndx, tst) { //find best matching
-                                tstLocator = getLocator(tst, targetLocator.length);
-                                var distance = Math.abs(tstLocator - targetLocator);
-                                if ((closest === undefined || distance < closest) && tst.match.fn === null && tst.match.optionality !== true && tst.match.optionalQuantifier !== true) {
-                                    closest = distance;
-                                    bestMatch = tst;
+                            var tests = getTests(ps).slice()
+                            if (tests[tests.length - 1].match.def === "") tests.pop();
+                            var bestMatch = determineTestTemplate(ps, tests);
+                            if (true || bestMatch.match.jit === undefined) {
+                                bestMatch = $.extend({}, bestMatch, {
+                                    "input": getPlaceholder(ps, bestMatch.match, true) || bestMatch.match.def
+                                });
+                                bestMatch.generatedInput = true;
+                                revalidateMask(ps, bestMatch, true);
+                                if (fillOnly !== true) {
+                                    //revalidate the new position to update the locator value
+                                    var cvpInput = getMaskSet().validPositions[newPos].input;
+                                    getMaskSet().validPositions[newPos] = undefined;
+                                    result = isValid(newPos, cvpInput, true, true);
                                 }
-                            });
-                            bestMatch = $.extend({}, bestMatch, {
-                                "input": getPlaceholder(ps, bestMatch.match, true) || bestMatch.match.def
-                            });
-                            bestMatch.generatedInput = true;
-                            revalidateMask(ps, bestMatch, true);
-                            if (fillOnly !== true) {
-                                //revalidate the new position to update the locator value
-                                var cvpInput = getMaskSet().validPositions[newPos].input;
-                                getMaskSet().validPositions[newPos] = undefined;
-                                result = isValid(newPos, cvpInput, true, true);
                             }
                         }
                     }
