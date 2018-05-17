@@ -95,7 +95,9 @@
         }
 
         function isValidDate(dateParts, currentResult) {
-            return !isFinite(dateParts.day) || (dateParts.day == "29" && !isFinite(dateParts.rawyear)) || new Date(dateParts.date.getFullYear(), isFinite(dateParts.month) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day
+            return !isFinite(dateParts.rawday)
+            || (dateParts.day == "29" && !isFinite(dateParts.rawyear))
+            || new Date(dateParts.date.getFullYear(), isFinite(dateParts.rawmonth) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day
                 ? currentResult
                 : false; //take corrective action if possible
         }
@@ -103,9 +105,11 @@
         function isDateInRange(dateParts, opts) {
             var result = true;
             if (opts.min) {
-                var rawYear = dateParts["rawyear"].replace(/[^0-9]/g, ""),
-                    minYear = opts.min.year.substr(0, rawYear.length);
-                result = minYear <= rawYear;
+                if (dateParts["rawyear"]) {
+                    var rawYear = dateParts["rawyear"].replace(/[^0-9]/g, ""),
+                        minYear = opts.min.year.substr(0, rawYear.length);
+                    result = minYear <= rawYear;
+                }
                 if (dateParts["year"] === dateParts["rawyear"]) {
                     if (opts.min.date.getTime() === opts.min.date.getTime()) {
                         result = opts.min.date.getTime() <= dateParts.date.getTime();
@@ -178,11 +182,8 @@
             }
 
             function setValue(dateObj, value, opts) {
-                if (targetProp === "year") {
-                    dateObj[targetProp] = extendProperty(value);
-                    dateObj["raw" + targetProp] = value;
-                }
-                else dateObj[targetProp] = extendProperty(value);
+                dateObj[targetProp] = extendProperty(value);
+                dateObj["raw" + targetProp] = value;
 
                 if (dateOperation !== undefined)
                     dateOperation.call(dateObj.date, targetProp == "month" ? parseInt(dateObj[targetProp]) - 1 : dateObj[targetProp]);

@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.62
+* Version: 4.0.0-beta.64
 */
 
 !function(factory) {
@@ -109,7 +109,7 @@
             return correctedValue;
         }
         function setValue(dateObj, value, opts) {
-            "year" === targetProp ? (dateObj[targetProp] = extendProperty(value), dateObj["raw" + targetProp] = value) : dateObj[targetProp] = extendProperty(value), 
+            dateObj[targetProp] = extendProperty(value), dateObj["raw" + targetProp] = value, 
             void 0 !== dateOperation && dateOperation.call(dateObj.date, "month" == targetProp ? parseInt(dateObj[targetProp]) - 1 : dateObj[targetProp]);
         }
         if ("string" == typeof mask) {
@@ -146,12 +146,15 @@
             postValidation: function(buffer, currentResult, opts) {
                 var result = currentResult, dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
                 return result && dateParts.date.getTime() == dateParts.date.getTime() && (result = (result = function(dateParts, currentResult) {
-                    return (!isFinite(dateParts.day) || "29" == dateParts.day && !isFinite(dateParts.rawyear) || new Date(dateParts.date.getFullYear(), isFinite(dateParts.month) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day) && currentResult;
+                    return (!isFinite(dateParts.rawday) || "29" == dateParts.day && !isFinite(dateParts.rawyear) || new Date(dateParts.date.getFullYear(), isFinite(dateParts.rawmonth) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day) && currentResult;
                 }(dateParts, result)) && function(dateParts, opts) {
                     var result = !0;
                     if (opts.min) {
-                        var rawYear = dateParts.rawyear.replace(/[^0-9]/g, "");
-                        result = opts.min.year.substr(0, rawYear.length) <= rawYear, dateParts.year === dateParts.rawyear && opts.min.date.getTime() == opts.min.date.getTime() && (result = opts.min.date.getTime() <= dateParts.date.getTime());
+                        if (dateParts.rawyear) {
+                            var rawYear = dateParts.rawyear.replace(/[^0-9]/g, "");
+                            result = opts.min.year.substr(0, rawYear.length) <= rawYear;
+                        }
+                        dateParts.year === dateParts.rawyear && opts.min.date.getTime() == opts.min.date.getTime() && (result = opts.min.date.getTime() <= dateParts.date.getTime());
                     }
                     return result && opts.max && opts.max.date.getTime() == opts.max.date.getTime() && (result = opts.max.date.getTime() >= dateParts.date.getTime()), 
                     result;

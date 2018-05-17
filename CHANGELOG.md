@@ -31,6 +31,8 @@
 - rename androidHack option to disablePredictiveText. Make it available for other platforms.
 
 ### Fixed
+- Both date and time in same masked textbox #1888
+- time input mask min and max #1674
 - Bug: Using backspace when caret is not at the end messes up static placeholders #1525
 - Fast typing text #1872
 - jitMasking + disablePredictiveText causes android browser tab to stuck when clicked on "backspase" #1862
