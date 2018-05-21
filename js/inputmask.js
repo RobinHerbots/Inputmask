@@ -1871,6 +1871,7 @@
                 on: function (input, eventName, eventHandler) {
                     var ev = function (e) {
                         var that = this;
+                        console.log(e.type);
                         if (that.inputmask === undefined && this.nodeName !== "FORM") { //happens when cloning an object with jquery.clone
                             var imOpts = $.data(that, "_inputmask_opts");
                             if (imOpts) (new Inputmask(imOpts)).mask(that);
@@ -2214,7 +2215,7 @@
                                 keydown.keyCode = opts.numericInput ? Inputmask.keyCode.BACKSPACE : Inputmask.keyCode.DELETE;
                                 EventHandlers.keydownEvent.call(input, keydown);
 
-                                if (opts.insertMode === false) {
+                                if (!iphone && opts.insertMode === false) {
                                     caret(input, caret(input).begin - 1);
                                 }
                             }
