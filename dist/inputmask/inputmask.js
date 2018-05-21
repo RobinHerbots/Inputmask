@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.65
+* Version: 4.0.0-beta.66
 */
 
 !function(factory) {
@@ -585,7 +585,7 @@
             on: function(input, eventName, eventHandler) {
                 var ev = function(e) {
                     var that = this;
-                    if (console.log(e.type), that.inputmask === undefined && "FORM" !== this.nodeName) {
+                    if (that.inputmask === undefined && "FORM" !== this.nodeName) {
                         var imOpts = $.data(that, "_inputmask_opts");
                         imOpts ? new Inputmask(imOpts).mask(that) : EventRuler.off(that);
                     } else {

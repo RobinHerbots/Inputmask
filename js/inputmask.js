@@ -1871,7 +1871,7 @@
                 on: function (input, eventName, eventHandler) {
                     var ev = function (e) {
                         var that = this;
-                        console.log(e.type);
+                        // console.log(e.type);
                         if (that.inputmask === undefined && this.nodeName !== "FORM") { //happens when cloning an object with jquery.clone
                             var imOpts = $.data(that, "_inputmask_opts");
                             if (imOpts) (new Inputmask(imOpts)).mask(that);
