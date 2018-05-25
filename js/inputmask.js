@@ -2364,12 +2364,6 @@
                         }
                     }, 0);
                 },
-                dblclickEvent: function (e) {
-                    var input = this;
-                    setTimeout(function () {
-                        caret(input, 0, seekNext(getLastValidPosition()));
-                    }, 0);
-                },
                 cutEvent: function (e) {
                     var input = this,
                         $input = $(input),
@@ -3094,10 +3088,7 @@
                             EventRuler.on(el, "mouseleave", EventHandlers.mouseleaveEvent);
                             EventRuler.on(el, "mouseenter", EventHandlers.mouseenterEvent);
                         }
-                        EventRuler.on(el, "dblclick", EventHandlers.dblclickEvent);
                         EventRuler.on(el, "paste", EventHandlers.pasteEvent);
-                        EventRuler.on(el, "dragdrop", EventHandlers.pasteEvent);
-                        EventRuler.on(el, "drop", EventHandlers.pasteEvent);
                         EventRuler.on(el, "cut", EventHandlers.cutEvent);
                         EventRuler.on(el, "complete", opts.oncomplete);
                         EventRuler.on(el, "incomplete", opts.onincomplete);
@@ -3108,10 +3099,6 @@
                         } else {
                             el.removeAttribute("maxLength");
                         }
-                        EventRuler.on(el, "compositionstart", $.noop);
-                        EventRuler.on(el, "compositionupdate", $.noop);
-                        EventRuler.on(el, "compositionend", $.noop);
-                        EventRuler.on(el, "keyup", $.noop);
                         EventRuler.on(el, "input", EventHandlers.inputFallBackEvent);
                         EventRuler.on(el, "beforeinput", EventHandlers.beforeInputEvent); //https://github.com/w3c/input-events - to implement
                     }
