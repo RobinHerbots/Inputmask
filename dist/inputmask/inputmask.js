@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.64
+* Version: 4.0.0-beta.66
 */
 
 !function(factory) {
@@ -745,7 +745,7 @@
                             selection.begin === selection.end - 1 ? caret(input, selection.begin) : caret(input, selection.begin, selection.end));
                             var keydown = new $.Event("keydown");
                             keydown.keyCode = opts.numericInput ? Inputmask.keyCode.BACKSPACE : Inputmask.keyCode.DELETE, 
-                            EventHandlers.keydownEvent.call(input, keydown), !1 === opts.insertMode && caret(input, caret(input).begin - 1);
+                            EventHandlers.keydownEvent.call(input, keydown), iphone || !1 !== opts.insertMode || caret(input, caret(input).begin - 1);
                         }
                         e.preventDefault();
                     }
