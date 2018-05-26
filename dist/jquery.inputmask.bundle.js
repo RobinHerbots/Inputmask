@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.0-beta.66
+* Version: 4.0.0-beta.67
 */
 
 !function(modules) {
@@ -114,9 +114,9 @@
         }
         function maskScope(actionObj, maskset, opts) {
             maskset = maskset || this.maskset, opts = opts || this.opts;
-            var undoValue, $el, maxLength, colorMask, jitPos, inputmask = this, el = this.el, isRTL = this.isRTL, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, mouseEnter = !1, jitOffset = 0;
+            var undoValue, $el, maxLength, colorMask, inputmask = this, el = this.el, isRTL = this.isRTL, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, mouseEnter = !1;
             function getMaskTemplate(baseOnInput, minimalPos, includeMode, noJit, clearOptionalTail) {
-                !0 !== noJit && (jitPos = undefined, jitOffset = 0);
+                !0 !== noJit && (undefined, 0);
                 var greedy = opts.greedy;
                 clearOptionalTail && (opts.greedy = !1), minimalPos = minimalPos || 0;
                 var ndxIntlzr, test, testPos, maskTemplate = [], pos = 0, lvp = getLastValidPosition();
@@ -125,8 +125,8 @@
                     ndxIntlzr = testPos.locator.slice(), maskTemplate.push(!0 === includeMode ? testPos.input : !1 === includeMode ? test.nativeDef : getPlaceholder(pos, test)); else {
                         test = (testPos = getTestTemplate(pos, ndxIntlzr, pos - 1)).match, ndxIntlzr = testPos.locator.slice();
                         var jitMasking = !0 !== noJit && (!1 !== opts.jitMasking ? opts.jitMasking : test.jit);
-                        !1 === jitMasking || jitMasking === undefined || pos < lvp || "number" == typeof jitMasking && isFinite(jitMasking) && jitMasking > pos ? maskTemplate.push(!1 === includeMode ? test.nativeDef : getPlaceholder(pos, test)) : test.jit && test.optionalQuantifier !== undefined && (jitPos = pos, 
-                        jitOffset++);
+                        !1 === jitMasking || jitMasking === undefined || pos < lvp || "number" == typeof jitMasking && isFinite(jitMasking) && jitMasking > pos ? maskTemplate.push(!1 === includeMode ? test.nativeDef : getPlaceholder(pos, test)) : test.jit && test.optionalQuantifier !== undefined && (pos, 
+                        0);
                     }
                     "auto" === opts.keepStatic && test.newBlockMarker && null !== test.fn && (opts.keepStatic = pos - 1), 
                     pos++;
@@ -423,7 +423,7 @@
                 var maskPos = pos;
                 function _isValid(position, c, strict) {
                     var rslt = !1;
-                    return $.each(getTests(position + (position == jitPos ? jitOffset : 0)), function(ndx, tst) {
+                    return $.each(getTests(position), function(ndx, tst) {
                         var test = tst.match;
                         if (getBuffer(!0), !1 !== (rslt = null != test.fn ? test.fn.test(c, getMaskSet(), position, strict, opts, isSelection(pos)) : (c === test.def || c === opts.skipOptionalPartCharacter) && "" !== test.def && {
                             c: getPlaceholder(position, test, !0) || test.def,
@@ -884,12 +884,6 @@
                         }
                     }, 0);
                 },
-                dblclickEvent: function(e) {
-                    var input = this;
-                    setTimeout(function() {
-                        caret(input, 0, seekNext(getLastValidPosition()));
-                    }, 0);
-                },
                 cutEvent: function(e) {
                     $(this);
                     var pos = caret(this), ev = e.originalEvent || e, clipboardData = window.clipboardData || ev.clipboardData, clipData = isRTL ? getBuffer().slice(pos.end, pos.begin) : getBuffer().slice(pos.begin, pos.end);
@@ -1229,14 +1223,10 @@
                     EventRuler.on(el, "reset", EventHandlers.resetEvent), EventRuler.on(el, "blur", EventHandlers.blurEvent), 
                     EventRuler.on(el, "focus", EventHandlers.focusEvent), !0 !== opts.colorMask && (EventRuler.on(el, "click", EventHandlers.clickEvent), 
                     EventRuler.on(el, "mouseleave", EventHandlers.mouseleaveEvent), EventRuler.on(el, "mouseenter", EventHandlers.mouseenterEvent)), 
-                    EventRuler.on(el, "dblclick", EventHandlers.dblclickEvent), EventRuler.on(el, "paste", EventHandlers.pasteEvent), 
-                    EventRuler.on(el, "dragdrop", EventHandlers.pasteEvent), EventRuler.on(el, "drop", EventHandlers.pasteEvent), 
-                    EventRuler.on(el, "cut", EventHandlers.cutEvent), EventRuler.on(el, "complete", opts.oncomplete), 
-                    EventRuler.on(el, "incomplete", opts.onincomplete), EventRuler.on(el, "cleared", opts.oncleared), 
-                    mobile || !0 === opts.inputEventOnly ? el.removeAttribute("maxLength") : (EventRuler.on(el, "keydown", EventHandlers.keydownEvent), 
-                    EventRuler.on(el, "keypress", EventHandlers.keypressEvent)), EventRuler.on(el, "compositionstart", $.noop), 
-                    EventRuler.on(el, "compositionupdate", $.noop), EventRuler.on(el, "compositionend", $.noop), 
-                    EventRuler.on(el, "keyup", $.noop), EventRuler.on(el, "input", EventHandlers.inputFallBackEvent), 
+                    EventRuler.on(el, "paste", EventHandlers.pasteEvent), EventRuler.on(el, "cut", EventHandlers.cutEvent), 
+                    EventRuler.on(el, "complete", opts.oncomplete), EventRuler.on(el, "incomplete", opts.onincomplete), 
+                    EventRuler.on(el, "cleared", opts.oncleared), mobile || !0 === opts.inputEventOnly ? el.removeAttribute("maxLength") : (EventRuler.on(el, "keydown", EventHandlers.keydownEvent), 
+                    EventRuler.on(el, "keypress", EventHandlers.keypressEvent)), EventRuler.on(el, "input", EventHandlers.inputFallBackEvent), 
                     EventRuler.on(el, "beforeinput", EventHandlers.beforeInputEvent)), EventRuler.on(el, "setvalue", EventHandlers.setValueEvent), 
                     undoValue = getBufferTemplate().join(""), "" !== el.inputmask._valueGet(!0) || !1 === opts.clearMaskOnLostFocus || document.activeElement === el)) {
                         var initialValue = $.isFunction(opts.onBeforeMask) && opts.onBeforeMask.call(inputmask, el.inputmask._valueGet(!0), opts) || el.inputmask._valueGet(!0);

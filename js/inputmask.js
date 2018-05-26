@@ -1517,7 +1517,7 @@
                 function _isValid(position, c, strict) {
                     var rslt = false;
 
-                    $.each(getTests(position + (position == jitPos ? jitOffset : 0)), function (ndx, tst) {
+                    $.each(getTests(position), function (ndx, tst) {
                         var test = tst.match;
                         //make sure the buffer is set and correct
                         getBuffer(true);
