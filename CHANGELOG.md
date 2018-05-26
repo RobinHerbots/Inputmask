@@ -1,5 +1,10 @@
 # Change Log
 
+## [UNRELEASED]
+### Updates
+- update nuget package
+- update dependencies
+
 ## [4.0.0 - 2018-05-26]
 ### added
 - add support for beforeInput event with inputType (Input Events Level 2 - https://w3c.github.io/input-events/)
