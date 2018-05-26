@@ -1,3 +1,5 @@
+# Branch 3.x is no longer maintained!
+
 # Inputmask 3.x
 
 Copyright (c) 2010 - 2017 Robin Herbots Licensed under the MIT license ([http://opensource.org/licenses/mit-license.php](http://opensource.org/licenses/mit-license.php))
