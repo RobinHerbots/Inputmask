@@ -1,6 +1,6 @@
 # Change Log
 
-## [UNRELEASED - 4.x]
+## [4.0.0 - 2018-05-26]
 ### added
 - add support for beforeInput event with inputType (Input Events Level 2 - https://w3c.github.io/input-events/)
 - extend positionCaretOnClick with "ignore" to ignore the click in the input
@@ -46,6 +46,16 @@
 - Not able to input 31.12. in DD.MM date input in v4.x #1803
 - problem with two separate alternations #1722
 - colorMask + Remask = Duplicate im-colormask element #1709
+
+### Note
+Be aware when upgrading from 3.3.11, that the regex alias is removed 
+and that the datetime alias has totally changed. 
+So expect you need todo some changes to your date-masks and regex masks.
+Also some defaults has changed, so have a read through the changes for this release.
+
+There are still many open issues but postponing the release to resolve all issues will take like another year, 
+while there are already many enhancements available.
+
 
 ## [3.3.9 - 2017-10-10]
 ### Updates
