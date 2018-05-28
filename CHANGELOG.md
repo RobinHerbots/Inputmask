@@ -5,6 +5,9 @@
 - update nuget package
 - update dependencies
 
+### Fixed
+- Problem with delete masked date on iOS #1899
+
 ## [4.0.0 - 2018-05-26]
 ### added
 - add support for beforeInput event with inputType (Input Events Level 2 - https://w3c.github.io/input-events/)

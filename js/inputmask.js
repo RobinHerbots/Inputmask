@@ -18,7 +18,7 @@
         var ua = navigator.userAgent,
             mobile = isInputEventSupported("touchstart"), //not entirely correct but will currently do
             iemobile = /iemobile/i.test(ua),
-            iphone = /iphone/i.test(ua) && !iemobile;
+            iphone = true || (/iphone/i.test(ua) && !iemobile);
 
         function Inputmask(alias, options, internal) {
             //allow instanciating without new
@@ -815,6 +815,8 @@
         function maskScope(actionObj, maskset, opts) {
             maskset = maskset || this.maskset;
             opts = opts || this.opts;
+            opts.insertMode = iphone || opts.insertMode;
+
             var inputmask = this,
                 el = this.el,
                 isRTL = this.isRTL,
@@ -1982,7 +1984,7 @@
                         checkVal(input, true, false, undoValue.split(""));
                         $input.trigger("click");
                     } else if (k === Inputmask.keyCode.INSERT && !(e.shiftKey || e.ctrlKey)) { //insert
-                        opts.insertMode = !opts.insertMode;
+                        opts.insertMode = iphone || !opts.insertMode;
                         caret(input, !opts.insertMode && pos.begin === getMaskSet().maskLength ? pos.begin - 1 : pos.begin);
                     } else if (opts.tabThrough === true && k === Inputmask.keyCode.TAB) {
                         if (e.shiftKey === true) {
@@ -2215,7 +2217,7 @@
                                 keydown.keyCode = opts.numericInput ? Inputmask.keyCode.BACKSPACE : Inputmask.keyCode.DELETE;
                                 EventHandlers.keydownEvent.call(input, keydown);
 
-                                if (!iphone && opts.insertMode === false) {
+                                if (opts.insertMode === false) {
                                     caret(input, caret(input).begin - 1);
                                 }
                             }
@@ -2571,7 +2573,7 @@
                         var scrollCalc = parseInt(((input.ownerDocument.defaultView || window).getComputedStyle ? (input.ownerDocument.defaultView || window).getComputedStyle(input, null) : input.currentStyle).fontSize) * end;
                         input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0;
 
-                        if (!iphone && opts.insertMode === false && begin === end) end++; //set visualization for insert/overwrite mode
+                        if (opts.insertMode === false && begin === end) end++; //set visualization for insert/overwrite mode
 
                         input.inputmask.caretPos = {begin: begin, end: end}; //track caret internally
                         if (input.setSelectionRange) {
