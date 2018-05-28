@@ -3,13 +3,13 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.0
+* Version: 4.0.1-beta.1
 */
 
 !function(factory) {
     "function" == typeof define && define.amd ? define([ "./dependencyLibs/inputmask.dependencyLib", "./global/window", "./global/document" ], factory) : "object" == typeof exports ? module.exports = factory(require("./dependencyLibs/inputmask.dependencyLib"), require("./global/window"), require("./global/document")) : window.Inputmask = factory(window.dependencyLib || jQuery, window, document);
 }(function($, window, document, undefined) {
-    var ua = navigator.userAgent, mobile = isInputEventSupported("touchstart"), iemobile = /iemobile/i.test(ua), iphone = !0;
+    var ua = navigator.userAgent, mobile = isInputEventSupported("touchstart"), iemobile = /iemobile/i.test(ua), iphone = /iphone/i.test(ua) && !iemobile;
     function Inputmask(alias, options, internal) {
         if (!(this instanceof Inputmask)) return new Inputmask(alias, options, internal);
         this.el = undefined, this.events = {}, this.maskset = undefined, this.refreshValue = !1, 
@@ -658,7 +658,7 @@
                 }, 0) : k === Inputmask.keyCode.LEFT && setTimeout(function() {
                     var caretPos = caret(input);
                     caret(input, isRTL ? caretPos.begin + 1 : caretPos.begin - 1);
-                }, 0)) : (opts.insertMode = iphone || !opts.insertMode, caret(input, opts.insertMode || pos.begin !== getMaskSet().maskLength ? pos.begin : pos.begin - 1));
+                }, 0)) : (opts.insertMode = !opts.insertMode, caret(input, opts.insertMode || pos.begin !== getMaskSet().maskLength ? pos.begin : pos.begin - 1));
                 opts.onKeyDown.call(this, e, getBuffer(), caret(input).begin, opts), ignorable = -1 !== $.inArray(k, opts.ignorables);
             },
             keypressEvent: function(e, checkval, writeOut, strict, ndx) {

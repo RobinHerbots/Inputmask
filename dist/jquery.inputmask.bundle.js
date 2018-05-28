@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.0
+* Version: 4.0.1-beta.1
 */
 
 !function(e) {
@@ -45,7 +45,7 @@
         return e && "function" == typeof Symbol && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
     };
     a = [ n(1), n(8), n(7) ], void 0 === (r = "function" == typeof (i = function(e, t, n, i) {
-        var a = navigator.userAgent, r = f("touchstart"), s = /iemobile/i.test(a), l = !0;
+        var a = navigator.userAgent, r = f("touchstart"), s = /iemobile/i.test(a), l = /iphone/i.test(a) && !s;
         function u(t, n, a) {
             if (!(this instanceof u)) return new u(t, n, a);
             this.el = i, this.events = {}, this.maskset = i, this.refreshValue = !1, !0 !== a && (e.isPlainObject(t) ? n = t : (n = n || {}, 
@@ -663,7 +663,7 @@
                     }, 0) : a === u.keyCode.LEFT && setTimeout(function() {
                         var e = te(n);
                         te(n, b ? e.begin + 1 : e.begin - 1);
-                    }, 0)) : (p.insertMode = l || !p.insertMode, te(n, p.insertMode || r.begin !== E().maskLength ? r.begin : r.begin - 1));
+                    }, 0)) : (p.insertMode = !p.insertMode, te(n, p.insertMode || r.begin !== E().maskLength ? r.begin : r.begin - 1));
                     p.onKeyDown.call(this, t, G(), te(n).begin, p), S = -1 !== e.inArray(a, p.ignorables);
                 },
                 keypressEvent: function(t, n, a, r, o) {

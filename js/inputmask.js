@@ -18,7 +18,7 @@
         var ua = navigator.userAgent,
             mobile = isInputEventSupported("touchstart"), //not entirely correct but will currently do
             iemobile = /iemobile/i.test(ua),
-            iphone = true || (/iphone/i.test(ua) && !iemobile);
+            iphone = /iphone/i.test(ua) && !iemobile;
 
         function Inputmask(alias, options, internal) {
             //allow instanciating without new
@@ -1984,7 +1984,7 @@
                         checkVal(input, true, false, undoValue.split(""));
                         $input.trigger("click");
                     } else if (k === Inputmask.keyCode.INSERT && !(e.shiftKey || e.ctrlKey)) { //insert
-                        opts.insertMode = iphone || !opts.insertMode;
+                        opts.insertMode = !opts.insertMode;
                         caret(input, !opts.insertMode && pos.begin === getMaskSet().maskLength ? pos.begin - 1 : pos.begin);
                     } else if (opts.tabThrough === true && k === Inputmask.keyCode.TAB) {
                         if (e.shiftKey === true) {
