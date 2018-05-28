@@ -92,6 +92,7 @@ module.exports = {
         })
     ],
     bail: true,
+    mode: "none"
     // devServer: {
     // 	publicPath: '/',
     // 	stats: {
