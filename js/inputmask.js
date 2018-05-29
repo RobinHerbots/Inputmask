@@ -815,7 +815,6 @@
         function maskScope(actionObj, maskset, opts) {
             maskset = maskset || this.maskset;
             opts = opts || this.opts;
-            opts.insertMode = iphone || opts.insertMode;
 
             var inputmask = this,
                 el = this.el,
@@ -1975,7 +1974,6 @@
                     } else if (k === Inputmask.keyCode.END || k === Inputmask.keyCode.PAGE_DOWN) { //when END or PAGE_DOWN pressed set position at lastmatch
                         e.preventDefault();
                         var caretPos = seekNext(getLastValidPosition());
-                        if (!opts.insertMode && caretPos === getMaskSet().maskLength && !e.shiftKey) caretPos--;
                         caret(input, e.shiftKey ? pos.begin : caretPos, caretPos, true);
                     } else if ((k === Inputmask.keyCode.HOME && !e.shiftKey) || k === Inputmask.keyCode.PAGE_UP) { //Home or page_up
                         e.preventDefault();
@@ -1985,7 +1983,7 @@
                         $input.trigger("click");
                     } else if (k === Inputmask.keyCode.INSERT && !(e.shiftKey || e.ctrlKey)) { //insert
                         opts.insertMode = !opts.insertMode;
-                        caret(input, !opts.insertMode && pos.begin === getMaskSet().maskLength ? pos.begin - 1 : pos.begin);
+                        input.setAttribute("im-insert", opts.insertMode);
                     } else if (opts.tabThrough === true && k === Inputmask.keyCode.TAB) {
                         if (e.shiftKey === true) {
                             if (getTest(pos.begin).match.fn === null) {
@@ -2001,20 +1999,6 @@
                         if (pos.begin < getMaskSet().maskLength) {
                             e.preventDefault();
                             caret(input, pos.begin, pos.end);
-                        }
-                    } else if (!e.shiftKey) {
-                        if (opts.insertMode === false) {
-                            if (k === Inputmask.keyCode.RIGHT) {
-                                setTimeout(function () {
-                                    var caretPos = caret(input);
-                                    caret(input, caretPos.begin);
-                                }, 0);
-                            } else if (k === Inputmask.keyCode.LEFT) {
-                                setTimeout(function () {
-                                    var caretPos = caret(input);
-                                    caret(input, isRTL ? caretPos.begin + 1 : caretPos.begin - 1);
-                                }, 0);
-                            }
                         }
                     }
                     opts.onKeyDown.call(this, e, getBuffer(), caret(input).begin, opts);
@@ -2216,10 +2200,6 @@
                                 var keydown = new $.Event("keydown");
                                 keydown.keyCode = opts.numericInput ? Inputmask.keyCode.BACKSPACE : Inputmask.keyCode.DELETE;
                                 EventHandlers.keydownEvent.call(input, keydown);
-
-                                if (opts.insertMode === false) {
-                                    caret(input, caret(input).begin - 1);
-                                }
                             }
 
                             e.preventDefault();
@@ -2573,10 +2553,8 @@
                         var scrollCalc = parseInt(((input.ownerDocument.defaultView || window).getComputedStyle ? (input.ownerDocument.defaultView || window).getComputedStyle(input, null) : input.currentStyle).fontSize) * end;
                         input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0;
 
-                        if (opts.insertMode === false && begin === end) end++; //set visualization for insert/overwrite mode
-
                         input.inputmask.caretPos = {begin: begin, end: end}; //track caret internally
-                        if (input.setSelectionRange) {
+                        if ("selectionStart" in input) {
                             input.selectionStart = begin;
                             input.selectionEnd = end;
                         } else if (window.getSelection) {
@@ -2598,15 +2576,15 @@
                             range.moveEnd("character", end);
                             range.moveStart("character", begin);
                             range.select();
-
                         }
+
                         renderColorMask(input, {
                             begin: begin,
                             end: end
                         });
                     }
                 } else {
-                    if (input.setSelectionRange) {
+                    if ("selectionStart" in input) {
                         begin = input.selectionStart;
                         end = input.selectionEnd;
                     } else if (window.getSelection) {
@@ -2712,13 +2690,10 @@
                     }
                 }
 
-                if (k === Inputmask.keyCode.BACKSPACE && (pos.end - pos.begin < 1 || opts.insertMode === false)) {
+                if (k === Inputmask.keyCode.BACKSPACE && (pos.end - pos.begin < 1)) {
                     pos.begin = seekPrevious(pos.begin);
                     if (getMaskSet().validPositions[pos.begin] !== undefined && getMaskSet().validPositions[pos.begin].input === opts.groupSeparator) {
                         pos.begin--;
-                    }
-                    if (opts.insertMode === false && pos.end !== getMaskSet().maskLength) {
-                        pos.end--;
                     }
                 } else if (k === Inputmask.keyCode.DELETE && pos.begin === pos.end) {
                     pos.end = isMask(pos.end, true) && (getMaskSet().validPositions[pos.end] && getMaskSet().validPositions[pos.end].input !== opts.radixPoint) ?
@@ -2816,13 +2791,6 @@
                 $(colorMask).on("click", function (e) {
                     caret(input, findCaretPos(e.clientX));
                     return EventHandlers.clickEvent.call(input, [e]);
-                });
-                $(input).on("keydown", function (e) {
-                    if (!e.shiftKey && opts.insertMode !== false) {
-                        setTimeout(function () {
-                            renderColorMask(input);
-                        }, 0);
-                    }
                 });
             }
 
@@ -3081,6 +3049,8 @@
                     }
 
                     if (isSupported === true) {
+                        el.setAttribute("im-insert", opts.insertMode);
+
                         //bind events
                         EventRuler.on(el, "submit", EventHandlers.submitEvent);
                         EventRuler.on(el, "reset", EventHandlers.resetEvent);

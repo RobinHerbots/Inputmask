@@ -35,6 +35,7 @@ div.im-colormask > input, div.im-colormask > input:-webkit-autofill {
     -webkit-text-fill-color: transparent;
     transition: background-color 5000s ease-in-out 0s;
     caret-color: transparent;
+    text-shadow: none;
     appearance: caret;
     border-style: none;
     left: 0; /*calculated*/
@@ -53,11 +54,16 @@ div.im-colormask > input::-moz-selection {
 }
 
 div.im-colormask > input:-webkit-autofill ~ div {
-    background-color:  rgb(250, 255, 189);
+    background-color: rgb(250, 255, 189);
 }
 
 div.im-colormask > div {
     color: black;
     display: inline-block;
     width: 100px; /*calculated*/
+}
+
+[im-insert="false"] {
+    caret-color: red;
+    caret-shape: block;
 }
