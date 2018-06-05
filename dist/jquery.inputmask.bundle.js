@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.3
+* Version: 4.0.1-beta.4
 */
 
 !function(modules) {
@@ -1013,11 +1013,7 @@
                     undoValue = getBuffer().join("");
                 },
                 mouseleaveEvent: function(e) {
-                    if (mouseEnter = !1, opts.clearMaskOnLostFocus && document.activeElement !== this) {
-                        var buffer = getBuffer().slice(), nptValue = this.inputmask._valueGet();
-                        nptValue !== this.getAttribute("placeholder") && "" !== nptValue && (-1 === getLastValidPosition() && nptValue === getBufferTemplate().join("") ? buffer = [] : clearOptionalTail(buffer), 
-                        writeBuffer(this, buffer));
-                    }
+                    mouseEnter = !1, opts.clearMaskOnLostFocus && document.activeElement !== this && (this.placeholder = "");
                 },
                 clickEvent: function(e, tabbed) {
                     var input = this;
@@ -1081,6 +1077,7 @@
                 blurEvent: function(e) {
                     var $input = $(this);
                     if (this.inputmask) {
+                        this.placeholder = "";
                         var nptValue = this.inputmask._valueGet(), buffer = getBuffer().slice();
                         "" === nptValue && colorMask === undefined || (opts.clearMaskOnLostFocus && (-1 === getLastValidPosition() && nptValue === getBufferTemplate().join("") ? buffer = [] : clearOptionalTail(buffer)), 
                         !1 === isComplete(buffer) && (setTimeout(function() {
@@ -1091,7 +1088,7 @@
                     }
                 },
                 mouseenterEvent: function(e) {
-                    mouseEnter = !0, document.activeElement !== this && opts.showMaskOnHover && this.inputmask._valueGet() !== getBuffer().join("") && writeBuffer(this, getBuffer());
+                    mouseEnter = !0, document.activeElement !== this && opts.showMaskOnHover && (this.placeholder = getBuffer().join(""));
                 },
                 submitEvent: function(e) {
                     undoValue !== getBuffer().join("") && $el.trigger("change"), opts.clearMaskOnLostFocus && -1 === getLastValidPosition() && el.inputmask._valueGet && el.inputmask._valueGet() === getBufferTemplate().join("") && el.inputmask._valueSet(""), 

@@ -2264,16 +2264,7 @@
                     var input = this;
                     mouseEnter = false;
                     if (opts.clearMaskOnLostFocus && document.activeElement !== input) {
-                        var buffer = getBuffer().slice(),
-                            nptValue = input.inputmask._valueGet();
-                        if (nptValue !== input.getAttribute("placeholder") && nptValue !== "") {
-                            if (getLastValidPosition() === -1 && nptValue === getBufferTemplate().join("")) {
-                                buffer = [];
-                            } else { //clearout optional tail of the mask
-                                clearOptionalTail(buffer);
-                            }
-                            writeBuffer(input, buffer);
-                        }
+                        input.placeholder = "";
                     }
                 },
                 clickEvent: function (e, tabbed) {
@@ -2366,6 +2357,7 @@
                     var $input = $(this),
                         input = this;
                     if (input.inputmask) {
+                        input.placeholder ="";
                         var nptValue = input.inputmask._valueGet(),
                             buffer = getBuffer().slice();
 
@@ -2404,9 +2396,7 @@
                     var input = this;
                     mouseEnter = true;
                     if (document.activeElement !== input && opts.showMaskOnHover) {
-                        if (input.inputmask._valueGet() !== getBuffer().join("")) {
-                            writeBuffer(input, getBuffer());
-                        }
+                        input.placeholder = getBuffer().join("");
                     }
                 },
                 submitEvent: function (e) { //trigger change on submit if any

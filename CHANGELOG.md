@@ -2,6 +2,7 @@
 
 ## [UNRELEASED]
 ### Updates
+- remove caret selection for insertMode => use inputmask.css for visualization
 - update nuget package
 - update dependencies
 
