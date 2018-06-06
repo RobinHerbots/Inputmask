@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.4
+* Version: 4.0.1-beta.5
 */
 
 !function(factory) {
@@ -74,7 +74,7 @@
     }
     function maskScope(actionObj, maskset, opts) {
         maskset = maskset || this.maskset, opts = opts || this.opts;
-        var undoValue, $el, maxLength, colorMask, inputmask = this, el = this.el, isRTL = this.isRTL, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, mouseEnter = !1;
+        var undoValue, $el, maxLength, colorMask, inputmask = this, el = this.el, isRTL = this.isRTL, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, mouseEnter = !1, originalPlaceholder = "";
         function getMaskTemplate(baseOnInput, minimalPos, includeMode, noJit, clearOptionalTail) {
             !0 !== noJit && (undefined, 0);
             var greedy = opts.greedy;
@@ -780,7 +780,7 @@
                 undoValue = getBuffer().join("");
             },
             mouseleaveEvent: function(e) {
-                mouseEnter = !1, opts.clearMaskOnLostFocus && document.activeElement !== this && (this.placeholder = "");
+                mouseEnter = !1, opts.clearMaskOnLostFocus && document.activeElement !== this && (this.placeholder = originalPlaceholder);
             },
             clickEvent: function(e, tabbed) {
                 var input = this;
@@ -844,7 +844,7 @@
             blurEvent: function(e) {
                 var $input = $(this);
                 if (this.inputmask) {
-                    this.placeholder = "";
+                    this.placeholder = originalPlaceholder;
                     var nptValue = this.inputmask._valueGet(), buffer = getBuffer().slice();
                     "" === nptValue && colorMask === undefined || (opts.clearMaskOnLostFocus && (-1 === getLastValidPosition() && nptValue === getBufferTemplate().join("") ? buffer = [] : clearOptionalTail(buffer)), 
                     !1 === isComplete(buffer) && (setTimeout(function() {
@@ -1161,7 +1161,8 @@
                         }
                     }(input) : input.inputmask = undefined, isSupported;
                 }(elem, opts);
-                if (!1 !== isSupported && ($el = $(el = elem), -1 === (maxLength = el !== undefined ? el.maxLength : undefined) && (maxLength = undefined), 
+                if (!1 !== isSupported && ($el = $(el = elem), originalPlaceholder = el.placeholder, 
+                -1 === (maxLength = el !== undefined ? el.maxLength : undefined) && (maxLength = undefined), 
                 !0 === opts.colorMask && initializeColorMask(el), mobile && ("inputmode" in el && (el.inputmode = opts.inputmode, 
                 el.setAttribute("inputmode", opts.inputmode)), !0 === opts.disablePredictiveText && ("autocorrect" in el ? el.autocorrect = !1 : (!0 !== opts.colorMask && initializeColorMask(el), 
                 el.type = "password"))), !0 === isSupported && (el.setAttribute("im-insert", opts.insertMode), 

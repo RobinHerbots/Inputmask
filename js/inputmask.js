@@ -828,7 +828,8 @@
                 mouseEnter = false,
                 colorMask,
                 jitPos,
-                jitOffset = 0;
+                jitOffset = 0,
+                originalPlaceholder = "";
 
             //maskset helperfunctions
             function getMaskTemplate(baseOnInput, minimalPos, includeMode, noJit, clearOptionalTail) {
@@ -2264,7 +2265,7 @@
                     var input = this;
                     mouseEnter = false;
                     if (opts.clearMaskOnLostFocus && document.activeElement !== input) {
-                        input.placeholder = "";
+                        input.placeholder = originalPlaceholder;
                     }
                 },
                 clickEvent: function (e, tabbed) {
@@ -2357,7 +2358,7 @@
                     var $input = $(this),
                         input = this;
                     if (input.inputmask) {
-                        input.placeholder ="";
+                        input.placeholder = originalPlaceholder;
                         var nptValue = input.inputmask._valueGet(),
                             buffer = getBuffer().slice();
 
@@ -3013,6 +3014,8 @@
                 if (isSupported !== false) {
                     el = elem;
                     $el = $(el);
+
+                    originalPlaceholder = el.placeholder;
 
                     //read maxlength prop from el
                     maxLength = el !== undefined ? el.maxLength : undefined;
