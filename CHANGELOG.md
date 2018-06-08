@@ -8,6 +8,7 @@
 
 ### Fixed
 - Problem with delete masked date on iOS #1899
+- Autofill corrupts input on email mask #1908(gl)
 
 ## [4.0.0 - 2018-05-26]
 ### added

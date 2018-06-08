@@ -2154,11 +2154,11 @@
                                 entries = "",
                                 isEntry = false;
                             if (frontPart !== frontBufferPart) {
-                                var fpl = (isEntry = frontPart.length >= frontBufferPart.length) ? frontPart.length : frontBufferPart.length
-                                for (var i = 0; frontPart.charAt(i) === frontBufferPart.charAt(i) && i < fpl; i++) {
-                                }
+                                var fpl = (isEntry = frontPart.length >= frontBufferPart.length) ? frontPart.length : frontBufferPart.length,
+                                    i;
+                                for (i = 0; frontPart.charAt(i) === frontBufferPart.charAt(i) && i < fpl; i++) ;
                                 if (isEntry) {
-                                    if (offset === 0) selection.begin = i;
+                                    selection.begin = i - offset;
                                     entries += frontPart.slice(i, selection.end);
                                 }
                             }
