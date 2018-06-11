@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.7
+* Version: 4.0.1-beta.8
 */
 
 !function(modules) {
@@ -20,14 +20,26 @@
     }
     __webpack_require__.m = modules, __webpack_require__.c = installedModules, __webpack_require__.d = function(exports, name, getter) {
         __webpack_require__.o(exports, name) || Object.defineProperty(exports, name, {
-            configurable: !1,
             enumerable: !0,
             get: getter
         });
     }, __webpack_require__.r = function(exports) {
-        Object.defineProperty(exports, "__esModule", {
+        "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(exports, Symbol.toStringTag, {
+            value: "Module"
+        }), Object.defineProperty(exports, "__esModule", {
             value: !0
         });
+    }, __webpack_require__.t = function(value, mode) {
+        if (1 & mode && (value = __webpack_require__(value)), 8 & mode) return value;
+        if (4 & mode && "object" == typeof value && value && value.__esModule) return value;
+        var ns = Object.create(null);
+        if (__webpack_require__.r(ns), Object.defineProperty(ns, "default", {
+            enumerable: !0,
+            value: value
+        }), 2 & mode && "string" != typeof value) for (var key in value) __webpack_require__.d(ns, key, function(key) {
+            return value[key];
+        }.bind(null, key));
+        return ns;
     }, __webpack_require__.n = function(module) {
         var getter = module && module.__esModule ? function() {
             return module.default;
@@ -2382,6 +2394,10 @@
                     nptmask.mask(this);
                 });
             } else {
+                if (Array.isArray(fn)) return options.alias = fn, nptmask = new Inputmask(options), 
+                this.each(function() {
+                    nptmask.mask(this);
+                });
                 if ("object" == (void 0 === fn ? "undefined" : _typeof(fn))) return nptmask = new Inputmask(fn), 
                 void 0 === fn.mask && void 0 === fn.alias ? this.each(function() {
                     if (void 0 !== this.inputmask) return this.inputmask.option(fn);
