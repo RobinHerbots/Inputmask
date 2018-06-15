@@ -1046,7 +1046,11 @@
                         }
 
                         function staticCanMatchDefinition(source, target) {
-                            return source.match.fn === null && target.match.fn !== null ? target.match.fn.test(source.match.def, getMaskSet(), pos, false, opts, false) : false;
+                            var sloc = source.locator.slice(source.alternation).join(""),
+                                tloc = target.locator.slice(target.alternation).join(""), canMatch = sloc == tloc,
+                                canMatch = canMatch && source.match.fn === null && target.match.fn !== null ? target.match.fn.test(source.match.def, getMaskSet(), pos, false, opts, false) : false;
+
+                            return canMatch;
                         }
 
                         //mergelocators for retrieving the correct locator match when merging

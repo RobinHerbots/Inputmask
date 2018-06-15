@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.7
+* Version: 4.0.1-beta.8
 */
 
 !function(modules) {
@@ -472,7 +472,8 @@
                                                         setMergeLocators(altMatch2, altMatch);
                                                         break;
                                                     }
-                                                    if (target = altMatch2, null === (source = altMatch).match.fn && null !== target.match.fn && target.match.fn.test(source.match.def, getMaskSet(), pos, !1, opts, !1)) {
+                                                    if (target = altMatch2, sloc = (source = altMatch).locator.slice(source.alternation).join(""), 
+                                                    tloc = target.locator.slice(target.alternation).join(""), sloc == tloc && null === source.match.fn && null !== target.match.fn && target.match.fn.test(source.match.def, getMaskSet(), pos, !1, opts, !1)) {
                                                         setMergeLocators(altMatch, altMatch2) && (dropMatch = !0, malternateMatches.splice(malternateMatches.indexOf(altMatch2), 0, altMatch));
                                                         break;
                                                     }
@@ -502,7 +503,7 @@
                                 }
                             } else if (match = resolveTestFromToken(match, ndxInitializer, loopNdx, quantifierRecurse)) return !0;
                         } else testPos++;
-                        var source, target;
+                        var source, target, sloc, tloc;
                     }
                     for (var tndx = ndxInitializer.length > 0 ? ndxInitializer.shift() : 0; tndx < maskToken.matches.length; tndx++) if (!0 !== maskToken.matches[tndx].isQuantifier) {
                         var match = handleMatch(maskToken.matches[tndx], [ tndx ].concat(loopNdx), quantifierRecurse);
