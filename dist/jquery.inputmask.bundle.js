@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.8
+* Version: 4.0.1-beta.9
 */
 
 !function(modules) {
@@ -2383,6 +2383,10 @@
                     nptmask.mask(this);
                 });
             } else {
+                if (Array.isArray(fn)) return options.alias = fn, nptmask = new Inputmask(options), 
+                this.each(function() {
+                    nptmask.mask(this);
+                });
                 if ("object" == (void 0 === fn ? "undefined" : _typeof(fn))) return nptmask = new Inputmask(fn), 
                 void 0 === fn.mask && void 0 === fn.alias ? this.each(function() {
                     if (void 0 !== this.inputmask) return this.inputmask.option(fn);

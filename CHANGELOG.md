@@ -7,6 +7,8 @@
 - update dependencies
 
 ### Fixed
+- Multiple alternators #1553
+- jquery.inputmask: clearIncomplete and placeholder don't appear to do anything when array of masks used #1892
 - Problem with delete masked date on iOS #1899
 - Autofill corrupts input on email mask #1908(gl)
 
