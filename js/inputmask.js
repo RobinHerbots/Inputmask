@@ -2401,7 +2401,7 @@
                     var input = this;
                     mouseEnter = true;
                     if (document.activeElement !== input && opts.showMaskOnHover) {
-                        input.placeholder = getBuffer().join("");
+                        input.placeholder = (isRTL ? getBuffer().slice().reverse() : getBuffer()).join("");
                     }
                 },
                 submitEvent: function (e) { //trigger change on submit if any

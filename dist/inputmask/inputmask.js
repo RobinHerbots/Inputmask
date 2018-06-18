@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.9
+* Version: 4.0.1-beta.10
 */
 
 !function(factory) {
@@ -856,7 +856,7 @@
                 }
             },
             mouseenterEvent: function(e) {
-                mouseEnter = !0, document.activeElement !== this && opts.showMaskOnHover && (this.placeholder = getBuffer().join(""));
+                mouseEnter = !0, document.activeElement !== this && opts.showMaskOnHover && (this.placeholder = (isRTL ? getBuffer().slice().reverse() : getBuffer()).join(""));
             },
             submitEvent: function(e) {
                 undoValue !== getBuffer().join("") && $el.trigger("change"), opts.clearMaskOnLostFocus && -1 === getLastValidPosition() && el.inputmask._valueGet && el.inputmask._valueGet() === getBufferTemplate().join("") && el.inputmask._valueSet(""), 
