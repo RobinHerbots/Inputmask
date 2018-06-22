@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.10
+* Version: 4.0.1-beta.11
 */
 
 !function(factory) {
@@ -69,7 +69,7 @@
             preValidation: function(buffer, pos, c, isSelection, opts, maskset) {
                 if ("-" === c || c === opts.negationSymbol.front) return !0 === opts.allowMinus && (opts.isNegative = opts.isNegative === undefined || !opts.isNegative, 
                 "" === buffer.join("") || {
-                    caret: pos,
+                    caret: maskset.validPositions[pos] ? pos : undefined,
                     dopost: !0
                 });
                 if (!1 === isSelection && c === opts.radixPoint && opts.digits !== undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0)) {
@@ -133,7 +133,7 @@
                 }
                 opts.numericInput && (caretPos = processValue.length - caretPos - 1, processValue = processValue.reverse());
                 var rslt = {
-                    caret: charAtPos === undefined || currentResult.pos !== undefined ? caretPos + (opts.numericInput ? -1 : 1) : caretPos,
+                    caret: charAtPos !== undefined && currentResult.pos === undefined || caretPos === undefined ? caretPos : caretPos + (opts.numericInput ? -1 : 1),
                     buffer: processValue,
                     refreshFromBuffer: currentResult.dopost || buffer.join("") !== processValue.join("")
                 };

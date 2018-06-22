@@ -160,7 +160,7 @@
                     opts.isNegative = opts.isNegative === undefined ? true : !opts.isNegative;
                     if (buffer.join("") === "") return true;
                     return {
-                        caret: pos,
+                        caret: maskset.validPositions[pos] ? pos : undefined,
                         dopost: true
                     };
                 }
@@ -324,7 +324,7 @@
                 }
 
                 var rslt = {
-                    caret: (charAtPos === undefined || currentResult.pos !== undefined) ? caretPos + (opts.numericInput ? -1 : 1) : caretPos,
+                    caret: (charAtPos === undefined || currentResult.pos !== undefined) && caretPos !== undefined ? caretPos + (opts.numericInput ? -1 : 1) : caretPos,
                     buffer: processValue,
                     refreshFromBuffer: currentResult.dopost || buffer.join("") !== processValue.join("")
                 };

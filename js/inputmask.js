@@ -2519,14 +2519,13 @@
                 return unmaskedValue;
             }
 
-            function translatePosition(pos) {
-                if (isRTL && typeof pos === "number" && (!opts.greedy || opts.placeholder !== "") && el) {
-                    pos = el.inputmask._valueGet().length - pos;
-                }
-                return pos;
-            }
-
             function caret(input, begin, end, notranslate) {
+                function translatePosition(pos) {
+                    if (isRTL && typeof pos === "number" && (!opts.greedy || opts.placeholder !== "") && el) {
+                        pos = el.inputmask._valueGet().length - pos;
+                    }
+                    return pos;
+                }
                 var range;
                 if (begin !== undefined) {
                     if ($.isArray(begin)) {

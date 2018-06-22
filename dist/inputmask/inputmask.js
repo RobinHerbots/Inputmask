@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.10
+* Version: 4.0.1-beta.11
 */
 
 !function(factory) {
@@ -913,11 +913,11 @@
             }
             return unmaskedValue;
         }
-        function translatePosition(pos) {
-            return !isRTL || "number" != typeof pos || opts.greedy && "" === opts.placeholder || !el || (pos = el.inputmask._valueGet().length - pos), 
-            pos;
-        }
         function caret(input, begin, end, notranslate) {
+            function translatePosition(pos) {
+                return !isRTL || "number" != typeof pos || opts.greedy && "" === opts.placeholder || !el || (pos = el.inputmask._valueGet().length - pos), 
+                pos;
+            }
             var range;
             if (begin === undefined) return "selectionStart" in input ? (begin = input.selectionStart, 
             end = input.selectionEnd) : window.getSelection ? (range = window.getSelection().getRangeAt(0)).commonAncestorContainer.parentNode !== input && range.commonAncestorContainer !== input || (begin = range.startOffset, 
