@@ -178,7 +178,7 @@
 
                 return true;
             },
-            postValidation: function (buffer, currentResult, opts) {
+            postValidation: function (buffer, pos, currentResult, opts) {
                 function buildPostMask(buffer, opts) {
                     //define base for formatter
                     var postMask = "";

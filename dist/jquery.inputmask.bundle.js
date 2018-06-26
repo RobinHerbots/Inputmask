@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.11
+* Version: 4.0.1-beta.12
 */
 
 !function(modules) {
@@ -189,7 +189,7 @@
                     monthNames: [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ],
                     ordinalSuffix: [ "st", "nd", "rd", "th" ]
                 },
-                postValidation: function(buffer, currentResult, opts) {
+                postValidation: function(buffer, pos, currentResult, opts) {
                     var result = currentResult, dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
                     return result && dateParts.date.getTime() == dateParts.date.getTime() && (result = (result = function(dateParts, currentResult) {
                         return (!isFinite(dateParts.rawday) || "29" == dateParts.day && !isFinite(dateParts.rawyear) || new Date(dateParts.date.getFullYear(), isFinite(dateParts.rawmonth) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day) && currentResult;
@@ -204,7 +204,13 @@
                         }
                         return result && opts.max && opts.max.date.getTime() == opts.max.date.getTime() && (result = opts.max.date.getTime() >= dateParts.date.getTime()), 
                         result;
-                    }(dateParts, opts)), result;
+                    }(dateParts, opts)), result && currentResult.pos !== pos ? {
+                        buffer: parse(opts.inputFormat, dateParts, opts),
+                        refreshFromBuffer: {
+                            start: pos,
+                            end: currentResult.pos
+                        }
+                    } : result;
                 },
                 onKeyDown: function(e, buffer, caretPos, opts) {
                     if (e.ctrlKey && e.keyCode === Inputmask.keyCode.RIGHT) {
@@ -673,7 +679,7 @@
                     (!strict || !0 === fromSetValid) && !1 === result && !0 !== validateOnly)) {
                         var currentPosValid = getMaskSet().validPositions[maskPos];
                         if (!currentPosValid || null !== currentPosValid.match.fn || currentPosValid.match.def !== c && c !== opts.skipOptionalPartCharacter) {
-                            if ((opts.insertMode || getMaskSet().validPositions[seekNext(maskPos)] === undefined) && !isMask(maskPos, !0)) for (var nPos = maskPos + 1, snPos = seekNext(maskPos); nPos <= snPos; nPos++) if (!1 !== (result = _isValid(nPos, c, strict))) {
+                            if (opts.regex || (opts.insertMode || getMaskSet().validPositions[seekNext(maskPos)] === undefined) && !isMask(maskPos, !0)) for (var nPos = maskPos + 1, snPos = seekNext(maskPos); nPos <= snPos; nPos++) if (!1 !== (result = _isValid(nPos, c, strict))) {
                                 result = trackbackPositions(maskPos, result.pos !== undefined ? result.pos : nPos) || result, 
                                 maskPos = nPos;
                                 break;
@@ -688,7 +694,7 @@
                     });
                 }
                 if ($.isFunction(opts.postValidation) && !1 !== result && !strict && !0 !== fromSetValid && !0 !== validateOnly) {
-                    var postResult = opts.postValidation(getBuffer(!0), result, opts);
+                    var postResult = opts.postValidation(getBuffer(!0), pos.begin !== undefined ? isRTL ? pos.end : pos.begin : pos, result, opts);
                     if (postResult !== undefined) {
                         if (postResult.refreshFromBuffer && postResult.buffer) {
                             var refresh = postResult.refreshFromBuffer;
@@ -2018,7 +2024,7 @@
                     }
                     return !0;
                 },
-                postValidation: function(buffer, currentResult, opts) {
+                postValidation: function(buffer, pos, currentResult, opts) {
                     var suffix = opts.suffix.split(""), prefix = opts.prefix.split("");
                     if (currentResult.pos === undefined && currentResult.caret !== undefined && !0 !== currentResult.dopost) return currentResult;
                     var caretPos = currentResult.caret !== undefined ? currentResult.caret : currentResult.pos, maskedValue = buffer.slice();

@@ -240,11 +240,18 @@
                     ],
                     ordinalSuffix: ["st", "nd", "rd", "th"]
                 },
-                postValidation: function (buffer, currentResult, opts) {
+                postValidation: function (buffer, pos, currentResult, opts) {
                     var result = currentResult, dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
                     if (result && dateParts.date.getTime() === dateParts.date.getTime()) { //check for a valid date ~ an invalid date returns NaN which isn't equal
                         result = isValidDate(dateParts, result);
                         result = result && isDateInRange(dateParts, opts);
+                    }
+
+                    if (result && currentResult.pos !== pos) {
+                        return {
+                            buffer: parse(opts.inputFormat, dateParts, opts),
+                            refreshFromBuffer: {start: pos, end: currentResult.pos}
+                        };
                     }
 
                     return result;

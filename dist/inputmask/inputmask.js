@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.11
+* Version: 4.0.1-beta.12
 */
 
 !function(factory) {
@@ -441,7 +441,7 @@
                 (!strict || !0 === fromSetValid) && !1 === result && !0 !== validateOnly)) {
                     var currentPosValid = getMaskSet().validPositions[maskPos];
                     if (!currentPosValid || null !== currentPosValid.match.fn || currentPosValid.match.def !== c && c !== opts.skipOptionalPartCharacter) {
-                        if ((opts.insertMode || getMaskSet().validPositions[seekNext(maskPos)] === undefined) && !isMask(maskPos, !0)) for (var nPos = maskPos + 1, snPos = seekNext(maskPos); nPos <= snPos; nPos++) if (!1 !== (result = _isValid(nPos, c, strict))) {
+                        if (opts.regex || (opts.insertMode || getMaskSet().validPositions[seekNext(maskPos)] === undefined) && !isMask(maskPos, !0)) for (var nPos = maskPos + 1, snPos = seekNext(maskPos); nPos <= snPos; nPos++) if (!1 !== (result = _isValid(nPos, c, strict))) {
                             result = trackbackPositions(maskPos, result.pos !== undefined ? result.pos : nPos) || result, 
                             maskPos = nPos;
                             break;
@@ -456,7 +456,7 @@
                 });
             }
             if ($.isFunction(opts.postValidation) && !1 !== result && !strict && !0 !== fromSetValid && !0 !== validateOnly) {
-                var postResult = opts.postValidation(getBuffer(!0), result, opts);
+                var postResult = opts.postValidation(getBuffer(!0), pos.begin !== undefined ? isRTL ? pos.end : pos.begin : pos, result, opts);
                 if (postResult !== undefined) {
                     if (postResult.refreshFromBuffer && postResult.buffer) {
                         var refresh = postResult.refreshFromBuffer;

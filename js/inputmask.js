@@ -97,7 +97,7 @@
                 ignorables: [8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 0, 229],
                 isComplete: null, //override for isComplete - args => buffer, opts - return true || false
                 preValidation: null, //hook to preValidate the input.  Usefull for validating regardless the definition.	args => buffer, pos, char, isSelection, opts => return true/false/command object
-                postValidation: null, //hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, currentResult, opts => return true/false/json
+                postValidation: null, //hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, pos, currentResult, opts => return true/false/json
                 staticDefinitionSymbol: undefined, //specify a definitionSymbol for static content, used to make matches for alternators
                 jitMasking: false, //just in time masking ~ only mask while typing, can n (number), true or false
                 nullable: true, //return nothing instead of the buffertemplate when the user hasn't entered anything.
@@ -1595,7 +1595,7 @@
                                 result = {
                                     "caret": seekNext(maskPos)
                                 };
-                            } else if ((opts.insertMode || getMaskSet().validPositions[seekNext(maskPos)] === undefined) && !isMask(maskPos, true)) { //does the input match on a further position?
+                            } else if (opts.regex || ((opts.insertMode || getMaskSet().validPositions[seekNext(maskPos)] === undefined) && !isMask(maskPos, true))) { //does the input match on a further position?
                                 for (var nPos = maskPos + 1, snPos = seekNext(maskPos); nPos <= snPos; nPos++) {
                                     // if (!isMask(nPos, true)) {
                                     // 	continue;
@@ -1620,7 +1620,7 @@
                     }
                 }
                 if ($.isFunction(opts.postValidation) && result !== false && !strict && fromSetValid !== true && validateOnly !== true) {
-                    var postResult = opts.postValidation(getBuffer(true), result, opts);
+                    var postResult = opts.postValidation(getBuffer(true), pos.begin !== undefined ? (isRTL ? pos.end : pos.begin) : pos, result, opts);
                     if (postResult !== undefined) {
                         if (postResult.refreshFromBuffer && postResult.buffer) {
                             var refresh = postResult.refreshFromBuffer;
@@ -2526,6 +2526,7 @@
                     }
                     return pos;
                 }
+
                 var range;
                 if (begin !== undefined) {
                     if ($.isArray(begin)) {

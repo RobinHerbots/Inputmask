@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.11
+* Version: 4.0.1-beta.12
 */
 
 !function(factory) {
@@ -80,7 +80,7 @@
                 }
                 return !0;
             },
-            postValidation: function(buffer, currentResult, opts) {
+            postValidation: function(buffer, pos, currentResult, opts) {
                 var suffix = opts.suffix.split(""), prefix = opts.prefix.split("");
                 if (currentResult.pos === undefined && currentResult.caret !== undefined && !0 !== currentResult.dopost) return currentResult;
                 var caretPos = currentResult.caret !== undefined ? currentResult.caret : currentResult.pos, maskedValue = buffer.slice();

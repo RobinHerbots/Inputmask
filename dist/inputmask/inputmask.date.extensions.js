@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.11
+* Version: 4.0.1-beta.12
 */
 
 !function(factory) {
@@ -143,7 +143,7 @@
                 monthNames: [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ],
                 ordinalSuffix: [ "st", "nd", "rd", "th" ]
             },
-            postValidation: function(buffer, currentResult, opts) {
+            postValidation: function(buffer, pos, currentResult, opts) {
                 var result = currentResult, dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
                 return result && dateParts.date.getTime() == dateParts.date.getTime() && (result = (result = function(dateParts, currentResult) {
                     return (!isFinite(dateParts.rawday) || "29" == dateParts.day && !isFinite(dateParts.rawyear) || new Date(dateParts.date.getFullYear(), isFinite(dateParts.rawmonth) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day) && currentResult;
@@ -158,7 +158,13 @@
                     }
                     return result && opts.max && opts.max.date.getTime() == opts.max.date.getTime() && (result = opts.max.date.getTime() >= dateParts.date.getTime()), 
                     result;
-                }(dateParts, opts)), result;
+                }(dateParts, opts)), result && currentResult.pos !== pos ? {
+                    buffer: parse(opts.inputFormat, dateParts, opts),
+                    refreshFromBuffer: {
+                        start: pos,
+                        end: currentResult.pos
+                    }
+                } : result;
             },
             onKeyDown: function(e, buffer, caretPos, opts) {
                 if (e.ctrlKey && e.keyCode === Inputmask.keyCode.RIGHT) {

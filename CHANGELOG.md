@@ -2,11 +2,13 @@
 
 ## [UNRELEASED]
 ### Updates
+- pass initial validation position to postvalidation, to allow prefills in the datetime alias
 - remove caret selection for insertMode => use inputmask.css for visualization
 - update nuget package
 - update dependencies
 
 ### Fixed
+- Behaviour of v3 with hours not possible anymore #1918
 - Multiple alternators #1553
 - jquery.inputmask: clearIncomplete and placeholder don't appear to do anything when array of masks used #1892
 - Problem with delete masked date on iOS #1899
