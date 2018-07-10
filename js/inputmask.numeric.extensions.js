@@ -354,7 +354,7 @@
                 if (e) {
                     switch (e.type) {
                         case "keydown":
-                            return opts.postValidation(buffer, {
+                            return opts.postValidation(buffer, caretPos, {
                                 caret: caretPos,
                                 dopost: true
                             }, opts);
@@ -368,21 +368,21 @@
                                 }));
                                 if (opts.min !== null && unmasked < opts.min) {
                                     opts.isNegative = opts.min < 0;
-                                    return opts.postValidation(opts.min.toString().replace(".", opts.radixPoint).split(""), { //TODO needs fix for MIN_VALUE & MAX_VALUE
+                                    return opts.postValidation(opts.min.toString().replace(".", opts.radixPoint).split(""), caretPos, { //TODO needs fix for MIN_VALUE & MAX_VALUE
                                         caret: caretPos,
                                         dopost: true,
                                         placeholder: "0"
                                     }, opts);
                                 } else if (opts.max !== null && unmasked > opts.max) {
                                     opts.isNegative = opts.max < 0;
-                                    return opts.postValidation(opts.max.toString().replace(".", opts.radixPoint).split(""), { //TODO needs fix for MIN_VALUE & MAX_VALUE
+                                    return opts.postValidation(opts.max.toString().replace(".", opts.radixPoint).split(""), caretPos, { //TODO needs fix for MIN_VALUE & MAX_VALUE
                                         caret: caretPos,
                                         dopost: true,
                                         placeholder: "0"
                                     }, opts);
                                 }
                             }
-                            return opts.postValidation(buffer, {
+                            return opts.postValidation(buffer, caretPos, {
                                 caret: caretPos,
                                 // dopost: true,
                                 placeholder: "0",

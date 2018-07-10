@@ -1521,9 +1521,10 @@
                 }
 
                 function _isValid(position, c, strict) {
+                    // console.log("pos " + position + " jitpos " + jitPos + " offset " + jitOffset);
                     var rslt = false;
 
-                    $.each(getTests(position), function (ndx, tst) {
+                    $.each(getTests(/*(jitPos && position > jitPos) ? (position + jitOffset - 1) : */position), function (ndx, tst) {
                         var test = tst.match;
                         //make sure the buffer is set and correct
                         getBuffer(true);

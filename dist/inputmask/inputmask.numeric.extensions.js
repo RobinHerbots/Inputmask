@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.12
+* Version: 4.0.1-beta.14
 */
 
 !function(factory) {
@@ -142,7 +142,7 @@
             onBeforeWrite: function(e, buffer, caretPos, opts) {
                 if (e) switch (e.type) {
                   case "keydown":
-                    return opts.postValidation(buffer, {
+                    return opts.postValidation(buffer, caretPos, {
                         caret: caretPos,
                         dopost: !0
                     }, opts);
@@ -162,19 +162,19 @@
                         if (unmasked = opts.onUnMask(buffer.join(""), undefined, $.extend({}, opts, {
                             unmaskAsNumber: !0
                         })), null !== opts.min && unmasked < opts.min) return opts.isNegative = opts.min < 0, 
-                        opts.postValidation(opts.min.toString().replace(".", opts.radixPoint).split(""), {
+                        opts.postValidation(opts.min.toString().replace(".", opts.radixPoint).split(""), caretPos, {
                             caret: caretPos,
                             dopost: !0,
                             placeholder: "0"
                         }, opts);
                         if (null !== opts.max && unmasked > opts.max) return opts.isNegative = opts.max < 0, 
-                        opts.postValidation(opts.max.toString().replace(".", opts.radixPoint).split(""), {
+                        opts.postValidation(opts.max.toString().replace(".", opts.radixPoint).split(""), caretPos, {
                             caret: caretPos,
                             dopost: !0,
                             placeholder: "0"
                         }, opts);
                     }
-                    return opts.postValidation(buffer, {
+                    return opts.postValidation(buffer, caretPos, {
                         caret: caretPos,
                         placeholder: "0",
                         event: "blur"
