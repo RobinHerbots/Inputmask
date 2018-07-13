@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.15
+* Version: 4.0.1-beta.16
 */
 
 !function(factory) {
@@ -382,8 +382,9 @@
             strict = !0 === strict;
             var maskPos = pos;
             function _isValid(position, c, strict) {
-                var rslt = !1, tstPosition = jitPos !== undefined && position >= jitPos ? position + jitOffset : position;
-                return $.each(getTests(tstPosition), function(ndx, tst) {
+                var rslt = !1, tstPos = position;
+                return jitPos !== undefined && tstPos >= jitPos && getMaskSet().validPositions[jitPos + jitOffset] == undefined && (tstPos += jitOffset), 
+                $.each(getTests(tstPos), function(ndx, tst) {
                     var test = tst.match;
                     if (getBuffer(!0), !1 !== (rslt = null != test.fn ? test.fn.test(c, getMaskSet(), position, strict, opts, isSelection(pos)) : (c === test.def || c === opts.skipOptionalPartCharacter) && "" !== test.def && {
                         c: getPlaceholder(position, test, !0) || test.def,

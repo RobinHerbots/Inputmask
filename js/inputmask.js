@@ -1521,14 +1521,16 @@
                 }
 
                 function _isValid(position, c, strict) {
-                    // console.log("pos " + position + " jitpos " + jitPos + " offset " + jitOffset);
                     var rslt = false;
 
                     //reposition with jitoffset
-                    var tstPosition = (jitPos !== undefined && position >= jitPos) ? (position + jitOffset) : position;
-                    // console.log("validated pos " + tstPosition);
+                    var tstPos = position;
+                    // console.log("pos " + tstPos + " jitpos " + jitPos + " offset " + jitOffset);
+                    if (jitPos !== undefined && tstPos >= jitPos && getMaskSet().validPositions[jitPos + jitOffset] == undefined)
+                        tstPos += jitOffset;
+                    // console.log("validated pos " + tstPos);
 
-                    $.each(getTests(tstPosition), function (ndx, tst) {
+                    $.each(getTests(tstPos), function (ndx, tst) {
                         var test = tst.match;
                         //make sure the buffer is set and correct
                         getBuffer(true);
