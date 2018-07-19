@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.16
+* Version: 4.0.1-beta.17
 */
 
 !function(modules) {
@@ -144,7 +144,7 @@
 
               default:
                 mask += Inputmask.escapeRegex(match[0]);
-            } else if (formatCode[match[0]]) {
+            } else if (formatCode[match[0]] && formatCode[match[0]][3]) {
                 var getFn = formatCode[match[0]][3];
                 mask += getFn.call(dateObjValue.date);
             } else mask += match[0];

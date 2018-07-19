@@ -146,7 +146,7 @@
                     }
                 }
                 else {
-                    if (formatCode[match[0]]) {
+                    if (formatCode[match[0]] && formatCode[match[0]][3]) {
                         var getFn = formatCode[match[0]][3];
                         mask += getFn.call(dateObjValue.date);
                     }
