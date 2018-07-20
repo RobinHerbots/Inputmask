@@ -8,6 +8,7 @@
 - update dependencies
 
 ### Fixed
+- Changes for min/max options do not get picked up. #1931
 - Behaviour of v3 with hours not possible anymore #1918
 - Multiple alternators #1553
 - jquery.inputmask: clearIncomplete and placeholder don't appear to do anything when array of masks used #1892
