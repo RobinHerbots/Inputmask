@@ -250,7 +250,7 @@
                         result = result && isDateInRange(dateParts, opts);
                     }
 
-                    if (result && currentResult.pos !== pos) {
+                    if (pos && result && currentResult.pos !== pos) {
                         return {
                             buffer: parse(opts.inputFormat, dateParts, opts),
                             refreshFromBuffer: {start: pos, end: currentResult.pos}
@@ -281,11 +281,11 @@
                     }
                 },
                 onUnMask: function (maskedValue, unmaskedValue, opts) {
-                    if (opts.postValidation(maskedValue.split(""), 0, true, opts) === true) {
+                    if (this.isComplete(maskedValue)) {
                         return parse(opts.outputFormat, analyseMask(maskedValue, opts.inputFormat, opts), opts);
                     }
 
-                    return unmaskedValue;
+                    return maskedValue;
                 },
                 casing: function (elem, test, pos, validPositions) {
                     if (test.nativeDef.indexOf("[ap]") == 0) return elem.toLowerCase();
