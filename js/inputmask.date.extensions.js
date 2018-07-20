@@ -202,6 +202,8 @@
                 }
 
                 return dateObj;
+            } else if (mask && typeof mask === "object" && mask.hasOwnProperty("date")) {
+                return mask;
             }
             return undefined;
         }
@@ -216,8 +218,8 @@
                     opts.displayFormat = formatAlias[opts.displayFormat] || opts.displayFormat || opts.inputFormat; //resolve possible formatAkias
                     opts.outputFormat = formatAlias[opts.outputFormat] || opts.outputFormat || opts.inputFormat; //resolve possible formatAkias
                     opts.placeholder = opts.placeholder !== "" ? opts.placeholder : opts.inputFormat.replace(/[\[\]]/, "");
-                    opts.min = analyseMask(opts.min, opts.inputFormat, opts);
-                    opts.max = analyseMask(opts.max, opts.inputFormat, opts);
+                    // opts.min = analyseMask(opts.min, opts.inputFormat, opts);
+                    // opts.max = analyseMask(opts.max, opts.inputFormat, opts);
                     opts.regex = parse(opts.inputFormat, undefined, opts);
                     // console.log(opts.regex);
                     return null; //migrate to regex mask
@@ -241,6 +243,9 @@
                     ordinalSuffix: ["st", "nd", "rd", "th"]
                 },
                 postValidation: function (buffer, pos, currentResult, opts) {
+                    opts.min = analyseMask(opts.min, opts.inputFormat, opts);
+                    opts.max = analyseMask(opts.max, opts.inputFormat, opts);
+
                     var result = currentResult, dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
                     if (result && dateParts.date.getTime() === dateParts.date.getTime()) { //check for a valid date ~ an invalid date returns NaN which isn't equal
                         result = isValidDate(dateParts, result);

@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.17
+* Version: 4.0.1-beta.20
 */
 
 !function(factory) {
@@ -121,6 +121,7 @@
             }
             return dateObj;
         }
+        if (mask && "object" == typeof mask && mask.hasOwnProperty("date")) return mask;
     }
     return Inputmask.extendAliases({
         datetime: {
@@ -129,7 +130,6 @@
                 opts.displayFormat = formatAlias[opts.displayFormat] || opts.displayFormat || opts.inputFormat, 
                 opts.outputFormat = formatAlias[opts.outputFormat] || opts.outputFormat || opts.inputFormat, 
                 opts.placeholder = "" !== opts.placeholder ? opts.placeholder : opts.inputFormat.replace(/[\[\]]/, ""), 
-                opts.min = analyseMask(opts.min, opts.inputFormat, opts), opts.max = analyseMask(opts.max, opts.inputFormat, opts), 
                 opts.regex = parse(opts.inputFormat, void 0, opts), null;
             },
             placeholder: "",
@@ -144,6 +144,7 @@
                 ordinalSuffix: [ "st", "nd", "rd", "th" ]
             },
             postValidation: function(buffer, pos, currentResult, opts) {
+                opts.min = analyseMask(opts.min, opts.inputFormat, opts), opts.max = analyseMask(opts.max, opts.inputFormat, opts);
                 var result = currentResult, dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
                 return result && dateParts.date.getTime() == dateParts.date.getTime() && (result = (result = function(dateParts, currentResult) {
                     return (!isFinite(dateParts.rawday) || "29" == dateParts.day && !isFinite(dateParts.rawyear) || new Date(dateParts.date.getFullYear(), isFinite(dateParts.rawmonth) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day) && currentResult;
