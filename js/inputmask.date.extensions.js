@@ -125,7 +125,7 @@
 
         //parse the given format and return a mask pattern
         //when a dateObjValue is passed a datestring in the requested format is returned
-        function parse(format, dateObjValue, opts) {
+        function parse(format, dateObjValue, opts, raw) {
             //parse format to regex string
             var mask = "", match;
             while (match = getTokenizer(opts).exec(format)) {
@@ -146,9 +146,13 @@
                     }
                 }
                 else {
-                    if (formatCode[match[0]] && formatCode[match[0]][3]) {
-                        var getFn = formatCode[match[0]][3];
-                        mask += getFn.call(dateObjValue.date);
+                    if (formatCode[match[0]]) {
+                        if (raw !== true && formatCode[match[0]][3]) {
+                            var getFn = formatCode[match[0]][3];
+                            mask += getFn.call(dateObjValue.date);
+                        }
+                        else if (formatCode[match[0]][2]) mask += dateObjValue["raw" + formatCode[match[0]][2]];
+                        else mask += match[0];
                     }
                     else mask += match[0];
                 }
@@ -281,11 +285,7 @@
                     }
                 },
                 onUnMask: function (maskedValue, unmaskedValue, opts) {
-                    if (this.isComplete(maskedValue)) {
-                        return parse(opts.outputFormat, analyseMask(maskedValue, opts.inputFormat, opts), opts);
-                    }
-
-                    return maskedValue;
+                    return parse(opts.outputFormat, analyseMask(maskedValue, opts.inputFormat, opts), opts, true);
                 },
                 casing: function (elem, test, pos, validPositions) {
                     if (test.nativeDef.indexOf("[ap]") == 0) return elem.toLowerCase();

@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.22
+* Version: 4.0.1-beta.23
 */
 
 !function(modules) {
@@ -135,7 +135,7 @@
             }
             return opts.tokenizer;
         }
-        function parse(format, dateObjValue, opts) {
+        function parse(format, dateObjValue, opts, raw) {
             for (var match, mask = ""; match = getTokenizer(opts).exec(format); ) if (void 0 === dateObjValue) if (formatCode[match[0]]) mask += "(" + formatCode[match[0]][0] + ")"; else switch (match[0]) {
               case "[":
                 mask += "(";
@@ -147,10 +147,10 @@
 
               default:
                 mask += Inputmask.escapeRegex(match[0]);
-            } else if (formatCode[match[0]] && formatCode[match[0]][3]) {
+            } else if (formatCode[match[0]]) if (!0 !== raw && formatCode[match[0]][3]) {
                 var getFn = formatCode[match[0]][3];
                 mask += getFn.call(dateObjValue.date);
-            } else mask += match[0];
+            } else formatCode[match[0]][2] ? mask += dateObjValue["raw" + formatCode[match[0]][2]] : mask += match[0]; else mask += match[0];
             return mask;
         }
         function pad(val, len) {
@@ -235,7 +235,7 @@
                     }
                 },
                 onUnMask: function(maskedValue, unmaskedValue, opts) {
-                    return this.isComplete(maskedValue) ? parse(opts.outputFormat, analyseMask(maskedValue, opts.inputFormat, opts), opts) : maskedValue;
+                    return parse(opts.outputFormat, analyseMask(maskedValue, opts.inputFormat, opts), opts, !0);
                 },
                 casing: function(elem, test, pos, validPositions) {
                     return 0 == test.nativeDef.indexOf("[ap]") ? elem.toLowerCase() : 0 == test.nativeDef.indexOf("[AP]") ? elem.toUpperCase() : elem;
