@@ -218,8 +218,6 @@
                     opts.displayFormat = formatAlias[opts.displayFormat] || opts.displayFormat || opts.inputFormat; //resolve possible formatAkias
                     opts.outputFormat = formatAlias[opts.outputFormat] || opts.outputFormat || opts.inputFormat; //resolve possible formatAkias
                     opts.placeholder = opts.placeholder !== "" ? opts.placeholder : opts.inputFormat.replace(/[\[\]]/, "");
-                    // opts.min = analyseMask(opts.min, opts.inputFormat, opts);
-                    // opts.max = analyseMask(opts.max, opts.inputFormat, opts);
                     opts.regex = parse(opts.inputFormat, undefined, opts);
                     // console.log(opts.regex);
                     return null; //migrate to regex mask
@@ -283,7 +281,11 @@
                     }
                 },
                 onUnMask: function (maskedValue, unmaskedValue, opts) {
-                    return parse(opts.outputFormat, analyseMask(maskedValue, opts.inputFormat, opts), opts);
+                    if (opts.postValidation(maskedValue.split(""), 0, true, opts) === true) {
+                        return parse(opts.outputFormat, analyseMask(maskedValue, opts.inputFormat, opts), opts);
+                    }
+
+                    return unmaskedValue;
                 },
                 casing: function (elem, test, pos, validPositions) {
                     if (test.nativeDef.indexOf("[ap]") == 0) return elem.toLowerCase();

@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.20
+* Version: 4.0.1-beta.21
 */
 
 !function(factory) {
@@ -174,7 +174,7 @@
                 }
             },
             onUnMask: function(maskedValue, unmaskedValue, opts) {
-                return parse(opts.outputFormat, analyseMask(maskedValue, opts.inputFormat, opts), opts);
+                return !0 === opts.postValidation(maskedValue.split(""), 0, !0, opts) ? parse(opts.outputFormat, analyseMask(maskedValue, opts.inputFormat, opts), opts) : unmaskedValue;
             },
             casing: function(elem, test, pos, validPositions) {
                 return 0 == test.nativeDef.indexOf("[ap]") ? elem.toLowerCase() : 0 == test.nativeDef.indexOf("[AP]") ? elem.toUpperCase() : elem;
