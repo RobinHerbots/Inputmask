@@ -2,7 +2,7 @@
 ## Definitions
 - A   :     alphabetical uppercasing
 - &   :     alfanumeric uppercasing
-- #  :     hexadecimal
+- \#  :     hexadecimal
 
 ## Aliases
 ### URL
