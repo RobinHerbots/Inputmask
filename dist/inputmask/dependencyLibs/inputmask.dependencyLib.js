@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.24
+* Version: 4.0.1-beta.25
 */
 
 !function(factory) {
@@ -16,7 +16,7 @@
         return elem instanceof Element;
     }
     function DependencyLib(elem) {
-        return elem instanceof DependencyLib ? elem : this instanceof DependencyLib ? void (void 0 !== elem && null !== elem && elem !== window && (this[0] = elem.nodeName ? elem : void 0 !== elem[0] && elem[0].nodeName ? elem[0] : document.querySelector(elem), 
+        return elem instanceof DependencyLib ? elem : this instanceof DependencyLib ? void (null != elem && elem !== window && (this[0] = elem.nodeName ? elem : void 0 !== elem[0] && elem[0].nodeName ? elem[0] : document.querySelector(elem), 
         void 0 !== this[0] && null !== this[0] && (this[0].eventRegistry = this[0].eventRegistry || {}))) : new DependencyLib(elem);
     }
     return DependencyLib.prototype = {
@@ -44,15 +44,15 @@
                 }
                 function resolveNamespace(ev, namespace) {
                     var hndx, hndL, evts = [];
-                    if (ev.length > 0) if (void 0 === handler) for (hndx = 0, hndL = eventRegistry[ev][namespace].length; hndx < hndL; hndx++) evts.push({
+                    if (0 < ev.length) if (void 0 === handler) for (hndx = 0, hndL = eventRegistry[ev][namespace].length; hndx < hndL; hndx++) evts.push({
                         ev: ev,
-                        namespace: namespace && namespace.length > 0 ? namespace : "global",
+                        namespace: namespace && 0 < namespace.length ? namespace : "global",
                         handler: eventRegistry[ev][namespace][hndx]
                     }); else evts.push({
                         ev: ev,
-                        namespace: namespace && namespace.length > 0 ? namespace : "global",
+                        namespace: namespace && 0 < namespace.length ? namespace : "global",
                         handler: handler
-                    }); else if (namespace.length > 0) for (var evNdx in eventRegistry) for (var nmsp in eventRegistry[evNdx]) if (nmsp === namespace) if (void 0 === handler) for (hndx = 0, 
+                    }); else if (0 < namespace.length) for (var evNdx in eventRegistry) for (var nmsp in eventRegistry[evNdx]) if (nmsp === namespace) if (void 0 === handler) for (hndx = 0, 
                     hndL = eventRegistry[evNdx][nmsp].length; hndx < hndL; hndx++) evts.push({
                         ev: evNdx,
                         namespace: nmsp,
@@ -86,7 +86,7 @@
                         events.type && DependencyLib.extend(evnt, events), elem.dispatchEvent(evnt);
                     } else (evnt = document.createEventObject()).eventType = ev, evnt.detail = arguments[1], 
                     events.type && DependencyLib.extend(evnt, events), elem.fireEvent("on" + evnt.eventType, evnt);
-                } else if (void 0 !== eventRegistry[ev]) if (arguments[0] = arguments[0].type ? arguments[0] : DependencyLib.Event(arguments[0]), 
+                } else if (void 0 !== eventRegistry[ev]) if (events = events.type ? events : DependencyLib.Event(events), 
                 "global" === namespace) for (var nmsp in eventRegistry[ev]) for (i = 0; i < eventRegistry[ev][nmsp].length; i++) eventRegistry[ev][nmsp][i].apply(elem, arguments); else for (i = 0; i < eventRegistry[ev][namespace].length; i++) eventRegistry[ev][namespace][i].apply(elem, arguments);
             }
             return this;
@@ -113,7 +113,7 @@
         var i = 0;
         if (function(obj) {
             var length = "length" in obj && obj.length, ltype = typeof obj;
-            return "function" !== ltype && !isWindow(obj) && (!(1 !== obj.nodeType || !length) || "array" === ltype || 0 === length || "number" == typeof length && length > 0 && length - 1 in obj);
+            return "function" !== ltype && !isWindow(obj) && (!(1 !== obj.nodeType || !length) || "array" === ltype || 0 === length || "number" == typeof length && 0 < length && length - 1 in obj);
         }(obj)) for (var length = obj.length; i < length && !1 !== callback.call(obj[i], i, obj[i]); i++) ; else for (i in obj) if (!1 === callback.call(obj[i], i, obj[i])) break;
         return obj;
     }, DependencyLib.data = function(owner, key, value) {
@@ -128,5 +128,5 @@
         var evt = document.createEvent("CustomEvent");
         return evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail), 
         evt;
-    }, DependencyLib.Event.prototype = window.Event.prototype), DependencyLib;
+    }).prototype = window.Event.prototype, DependencyLib;
 });
