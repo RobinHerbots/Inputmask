@@ -856,6 +856,10 @@
                         test = testPos.match;
                         ndxIntlzr = testPos.locator.slice();
                         maskTemplate.push(includeMode === true ? testPos.input : includeMode === false ? test.nativeDef : getPlaceholder(pos, test));
+                        if (test.jit && test.optionalQuantifier !== undefined) {
+                            jitPos = pos;
+                            jitOffset = 0;
+                        }
                     } else {
                         testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
                         test = testPos.match;
@@ -864,7 +868,7 @@
                         if (jitMasking === false || jitMasking === undefined || pos < lvp || (typeof jitMasking === "number" && isFinite(jitMasking) && jitMasking > pos)) {
                             maskTemplate.push(includeMode === false ? test.nativeDef : getPlaceholder(pos, test));
                         } else if (test.jit && test.optionalQuantifier !== undefined) {
-                            jitPos = pos;
+                            if (jitPos === undefined) jitPos = pos;
                             jitOffset++;
                         }
                     }
@@ -1318,7 +1322,7 @@
                     return $.extend(true, [], matches);
                 }
                 getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
-                // console.log(pos + " - " + JSON.stringify(matches));
+                console.log(pos + " - " + JSON.stringify(matches));
                 return getMaskSet().tests[pos];
             }
 
@@ -1526,8 +1530,8 @@
                     //reposition with jitoffset
                     var tstPos = position;
                     // console.log("pos " + tstPos + " jitpos " + jitPos + " offset " + jitOffset);
-                    if (jitPos !== undefined && tstPos >= jitPos && getMaskSet().validPositions[jitPos + jitOffset] == undefined)
-                        tstPos += jitOffset;
+                    if (jitPos !== undefined && tstPos >= jitPos && getMaskSet().validPositions[jitPos + jitOffset - 1] == undefined)
+                        tstPos += jitOffset - 1;
                     // console.log("validated pos " + tstPos);
 
                     $.each(getTests(tstPos), function (ndx, tst) {
