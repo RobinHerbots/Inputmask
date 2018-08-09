@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.25
+* Version: 4.0.1-beta.29
 */
 
 !function(modules) {
@@ -326,20 +326,17 @@
         }
         function maskScope(actionObj, maskset, opts) {
             maskset = maskset || this.maskset, opts = opts || this.opts;
-            var undoValue, $el, maxLength, colorMask, jitPos, inputmask = this, el = this.el, isRTL = this.isRTL, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, mouseEnter = !1, jitOffset = 0, originalPlaceholder = "";
+            var undoValue, $el, maxLength, colorMask, inputmask = this, el = this.el, isRTL = this.isRTL, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, mouseEnter = !1, originalPlaceholder = "";
             function getMaskTemplate(baseOnInput, minimalPos, includeMode, noJit, clearOptionalTail) {
-                !0 !== noJit && (jitPos = undefined, jitOffset = 0);
                 var greedy = opts.greedy;
                 clearOptionalTail && (opts.greedy = !1), minimalPos = minimalPos || 0;
                 var ndxIntlzr, test, testPos, maskTemplate = [], pos = 0, lvp = getLastValidPosition();
                 do {
                     if (!0 === baseOnInput && getMaskSet().validPositions[pos]) testPos = clearOptionalTail && !0 === getMaskSet().validPositions[pos].match.optionality && getMaskSet().validPositions[pos + 1] === undefined && (!0 === getMaskSet().validPositions[pos].generatedInput || getMaskSet().validPositions[pos].input == opts.skipOptionalPartCharacter && 0 < pos) ? determineTestTemplate(pos, getTests(pos, ndxIntlzr, pos - 1)) : getMaskSet().validPositions[pos], 
-                    test = testPos.match, ndxIntlzr = testPos.locator.slice(), maskTemplate.push(!0 === includeMode ? testPos.input : !1 === includeMode ? test.nativeDef : getPlaceholder(pos, test)), 
-                    test.jit && test.optionalQuantifier !== undefined && (jitPos = pos, jitOffset = 0); else {
+                    test = testPos.match, ndxIntlzr = testPos.locator.slice(), maskTemplate.push(!0 === includeMode ? testPos.input : !1 === includeMode ? test.nativeDef : getPlaceholder(pos, test)); else {
                         testPos = getTestTemplate(pos, ndxIntlzr, pos - 1), test = testPos.match, ndxIntlzr = testPos.locator.slice();
                         var jitMasking = !0 !== noJit && (!1 !== opts.jitMasking ? opts.jitMasking : test.jit);
-                        !1 === jitMasking || jitMasking === undefined || pos < lvp || "number" == typeof jitMasking && isFinite(jitMasking) && pos < jitMasking ? maskTemplate.push(!1 === includeMode ? test.nativeDef : getPlaceholder(pos, test)) : test.jit && test.optionalQuantifier !== undefined && (jitPos === undefined && (jitPos = pos), 
-                        jitOffset++);
+                        (!1 === jitMasking || jitMasking === undefined || pos < lvp || "number" == typeof jitMasking && isFinite(jitMasking) && pos < jitMasking) && maskTemplate.push(!1 === includeMode ? test.nativeDef : getPlaceholder(pos, test));
                     }
                     "auto" === opts.keepStatic && test.newBlockMarker && null !== test.fn && (opts.keepStatic = pos - 1), 
                     pos++;
@@ -397,7 +394,7 @@
                 return valid;
             }
             function getTests(pos, ndxIntlzr, tstPs) {
-                var latestMatch, maskTokens = getMaskSet().maskToken, testPos = ndxIntlzr ? tstPs : 0, ndxInitializer = ndxIntlzr ? ndxIntlzr.slice() : [ 0 ], matches = [], insertStop = !1, cacheDependency = ndxIntlzr ? ndxIntlzr.join("") : "";
+                var latestMatch, maskTokens = getMaskSet().maskToken, testPos = ndxIntlzr ? tstPs : 0, ndxInitializer = ndxIntlzr ? ndxIntlzr.slice() : [ 0 ], matches = [], insertStop = !1, cacheDependency = ndxIntlzr ? ndxIntlzr.join("") : "", offset = 0;
                 function resolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) {
                     function handleMatch(match, loopNdx, quantifierRecurse) {
                         function isFirstMatch(latestMatch, tokenGroup) {
@@ -514,13 +511,13 @@
                                 var tokenGroup = maskToken.matches[$.inArray(qt, maskToken.matches) - 1];
                                 if (match = handleMatch(tokenGroup, [ qndx ].concat(loopNdx), tokenGroup)) {
                                     if ((latestMatch = matches[matches.length - 1].match).optionalQuantifier = qndx > qt.quantifier.min - 1, 
-                                    latestMatch.jit = qndx + tokenGroup.matches.indexOf(latestMatch) >= qt.quantifier.jit, 
-                                    isFirstMatch(latestMatch, tokenGroup) && qndx > qt.quantifier.min - 1) {
+                                    latestMatch.jit = (qndx || 1) * tokenGroup.matches.indexOf(latestMatch) >= qt.quantifier.jit, 
+                                    isFirstMatch(latestMatch, tokenGroup) && latestMatch.optionalQuantifier) {
                                         insertStop = !0, testPos = pos;
                                         break;
                                     }
-                                    if (qt.quantifier.jit !== undefined && isNaN(qt.quantifier.max) && latestMatch.optionalQuantifier && getMaskSet().validPositions[pos - 1] === undefined) {
-                                        matches.pop(), insertStop = !0, testPos = pos, cacheDependency = undefined;
+                                    if (latestMatch.jit && !latestMatch.optionalQuantifier) {
+                                        offset = tokenGroup.matches.indexOf(latestMatch), testPos = pos, insertStop = !0;
                                         break;
                                     }
                                     return !0;
@@ -529,7 +526,7 @@
                         } else testPos++;
                         var source, target, sloc, tloc;
                     }
-                    for (var tndx = 0 < ndxInitializer.length ? ndxInitializer.shift() : 0; tndx < maskToken.matches.length; tndx++) if (!0 !== maskToken.matches[tndx].isQuantifier) {
+                    for (var tndx = 0 < ndxInitializer.length ? ndxInitializer.shift() : 0; tndx < maskToken.matches.length; tndx = tndx + 1 + offset) if (!(offset = 0) !== maskToken.matches[tndx].isQuantifier) {
                         var match = handleMatch(maskToken.matches[tndx], [ tndx ].concat(loopNdx), quantifierRecurse);
                         if (match && testPos === pos) return match;
                         if (pos < testPos) break;
@@ -563,7 +560,7 @@
                     mloc: {},
                     cd: cacheDependency
                 }), ndxIntlzr !== undefined && getMaskSet().tests[pos] ? $.extend(!0, [], matches) : (getMaskSet().tests[pos] = $.extend(!0, [], matches), 
-                console.log(pos + " - " + JSON.stringify(matches)), getMaskSet().tests[pos]);
+                getMaskSet().tests[pos]);
             }
             function getBufferTemplate() {
                 return getMaskSet()._buffer === undefined && (getMaskSet()._buffer = getMaskTemplate(!1, 1), 
@@ -638,9 +635,8 @@
                 strict = !0 === strict;
                 var maskPos = pos;
                 function _isValid(position, c, strict) {
-                    var rslt = !1, tstPos = position;
-                    return jitPos !== undefined && jitPos <= tstPos && getMaskSet().validPositions[jitPos + jitOffset - 1] == undefined && (tstPos += jitOffset - 1), 
-                    $.each(getTests(tstPos), function(ndx, tst) {
+                    var rslt = !1;
+                    return $.each(getTests(position), function(ndx, tst) {
                         var test = tst.match;
                         if (getBuffer(!0), !1 !== (rslt = null != test.fn ? test.fn.test(c, getMaskSet(), position, strict, opts, isSelection(pos)) : (c === test.def || c === opts.skipOptionalPartCharacter) && "" !== test.def && {
                             c: getPlaceholder(position, test, !0) || test.def,
@@ -698,7 +694,7 @@
                     (!strict || !0 === fromSetValid) && !1 === result && !0 !== validateOnly)) {
                         var currentPosValid = getMaskSet().validPositions[maskPos];
                         if (!currentPosValid || null !== currentPosValid.match.fn || currentPosValid.match.def !== c && c !== opts.skipOptionalPartCharacter) {
-                            if (opts.regex || (opts.insertMode || getMaskSet().validPositions[seekNext(maskPos)] === undefined) && !isMask(maskPos, !0)) for (var nPos = maskPos + 1, snPos = seekNext(maskPos); nPos <= snPos; nPos++) if (!1 !== (result = _isValid(nPos, c, strict))) {
+                            if ((opts.insertMode || getMaskSet().validPositions[seekNext(maskPos)] === undefined) && !isMask(maskPos, !0)) for (var nPos = maskPos + 1, snPos = seekNext(maskPos); nPos <= snPos; nPos++) if (!1 !== (result = _isValid(nPos, c, strict))) {
                                 result = trackbackPositions(maskPos, result.pos !== undefined ? result.pos : nPos) || result, 
                                 maskPos = nPos;
                                 break;

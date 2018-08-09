@@ -827,18 +827,11 @@
                 maxLength,
                 mouseEnter = false,
                 colorMask,
-                jitPos,
-                jitOffset = 0,
                 originalPlaceholder = "";
 
             //maskset helperfunctions
             function getMaskTemplate(baseOnInput, minimalPos, includeMode, noJit, clearOptionalTail) {
                 //includeMode true => input, undefined => placeholder, false => mask
-
-                if (noJit !== true) {
-                    jitPos = undefined;
-                    jitOffset = 0;
-                }
 
                 var greedy = opts.greedy;
                 if (clearOptionalTail) opts.greedy = false;
@@ -856,10 +849,6 @@
                         test = testPos.match;
                         ndxIntlzr = testPos.locator.slice();
                         maskTemplate.push(includeMode === true ? testPos.input : includeMode === false ? test.nativeDef : getPlaceholder(pos, test));
-                        if (test.jit && test.optionalQuantifier !== undefined) {
-                            jitPos = pos;
-                            jitOffset = 0;
-                        }
                     } else {
                         testPos = getTestTemplate(pos, ndxIntlzr, pos - 1);
                         test = testPos.match;
@@ -867,9 +856,6 @@
                         var jitMasking = noJit === true ? false : (opts.jitMasking !== false ? opts.jitMasking : test.jit);
                         if (jitMasking === false || jitMasking === undefined || pos < lvp || (typeof jitMasking === "number" && isFinite(jitMasking) && jitMasking > pos)) {
                             maskTemplate.push(includeMode === false ? test.nativeDef : getPlaceholder(pos, test));
-                        } else if (test.jit && test.optionalQuantifier !== undefined) {
-                            if (jitPos === undefined) jitPos = pos;
-                            jitOffset++;
                         }
                     }
                     if (opts.keepStatic === "auto") {
@@ -985,7 +971,8 @@
                     matches = [],
                     insertStop = false,
                     latestMatch,
-                    cacheDependency = ndxIntlzr ? ndxIntlzr.join("") : "";
+                    cacheDependency = ndxIntlzr ? ndxIntlzr.join("") : "",
+                    offset = 0;
 
                 function resolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) { //ndxInitializer contains a set of indexes to speedup searches in the mtokens
                     function handleMatch(match, loopNdx, quantifierRecurse) {
@@ -1217,17 +1204,16 @@
                                         //TODO FIX RECURSIVE QUANTIFIERS
                                         latestMatch.optionalQuantifier = qndx > (qt.quantifier.min - 1);
                                         // console.log(pos + " " + qt.quantifier.min + " " + latestMatch.optionalQuantifier);
-                                        latestMatch.jit = qndx + tokenGroup.matches.indexOf(latestMatch) >= qt.quantifier.jit;
-                                        if (isFirstMatch(latestMatch, tokenGroup) && qndx > (qt.quantifier.min - 1)) {
+                                        latestMatch.jit = (qndx || 1) * tokenGroup.matches.indexOf(latestMatch) >= qt.quantifier.jit;
+                                        if (isFirstMatch(latestMatch, tokenGroup) && latestMatch.optionalQuantifier) {
                                             insertStop = true;
                                             testPos = pos; //match the position after the group
                                             break; //stop quantifierloop && search for next possible match
                                         }
-                                        if (qt.quantifier.jit !== undefined && isNaN(qt.quantifier.max) && latestMatch.optionalQuantifier && getMaskSet().validPositions[pos - 1] === undefined) {
-                                            matches.pop()
-                                            insertStop = true;
+                                        if (latestMatch.jit && !latestMatch.optionalQuantifier) {
+                                            offset = tokenGroup.matches.indexOf(latestMatch);
                                             testPos = pos; //match the position after the group
-                                            cacheDependency = undefined; //enforce revalidation when requested
+                                            insertStop = true;
                                             break; //stop quantifierloop && search for next possible match
                                         }
                                         return true;
@@ -1242,7 +1228,9 @@
                         }
                     }
 
-                    for (var tndx = (ndxInitializer.length > 0 ? ndxInitializer.shift() : 0); tndx < maskToken.matches.length; tndx++) {
+                    //the offset is set in the quantifierloop when git masking is used
+                    for (var tndx = (ndxInitializer.length > 0 ? ndxInitializer.shift() : 0); tndx < maskToken.matches.length; tndx = tndx + 1 + offset) {
+                        offset = 0; //reset offset
                         if (maskToken.matches[tndx].isQuantifier !== true) {
                             var match = handleMatch(maskToken.matches[tndx], [tndx].concat(loopNdx), quantifierRecurse);
                             if (match && testPos === pos) {
@@ -1322,7 +1310,7 @@
                     return $.extend(true, [], matches);
                 }
                 getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
-                console.log(pos + " - " + JSON.stringify(matches));
+                // console.log(pos + " - " + JSON.stringify(matches));
                 return getMaskSet().tests[pos];
             }
 
@@ -1527,14 +1515,7 @@
                 function _isValid(position, c, strict) {
                     var rslt = false;
 
-                    //reposition with jitoffset
-                    var tstPos = position;
-                    // console.log("pos " + tstPos + " jitpos " + jitPos + " offset " + jitOffset);
-                    if (jitPos !== undefined && tstPos >= jitPos && getMaskSet().validPositions[jitPos + jitOffset - 1] == undefined)
-                        tstPos += jitOffset - 1;
-                    // console.log("validated pos " + tstPos);
-
-                    $.each(getTests(tstPos), function (ndx, tst) {
+                    $.each(getTests(position), function (ndx, tst) {
                         var test = tst.match;
                         //make sure the buffer is set and correct
                         getBuffer(true);
@@ -1606,7 +1587,7 @@
                                 result = {
                                     "caret": seekNext(maskPos)
                                 };
-                            } else if (opts.regex || ((opts.insertMode || getMaskSet().validPositions[seekNext(maskPos)] === undefined) && !isMask(maskPos, true))) { //does the input match on a further position?
+                            } else if ((opts.insertMode || getMaskSet().validPositions[seekNext(maskPos)] === undefined) && !isMask(maskPos, true)) { //does the input match on a further position?
                                 for (var nPos = maskPos + 1, snPos = seekNext(maskPos); nPos <= snPos; nPos++) {
                                     // if (!isMask(nPos, true)) {
                                     // 	continue;
