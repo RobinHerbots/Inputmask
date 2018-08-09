@@ -2,7 +2,7 @@
 
 ## [UNRELEASED]
 ### Updates
-- enhance gettests to
+- enhance gettests for jit enabled quantifiers
 - pass initial validation position to postvalidation, to allow prefills in the datetime alias
 - remove caret selection for insertMode => use inputmask.css for visualization
 - update nuget package
