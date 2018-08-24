@@ -2542,8 +2542,10 @@
 
                         input.inputmask.caretPos = {begin: begin, end: end}; //track caret internally
                         if ("selectionStart" in input) {
-                            input.selectionStart = begin;
-                            input.selectionEnd = end;
+                            if (input === document.activeElement) {
+                              input.selectionStart = begin;
+                              input.selectionEnd = end;
+                            }
                         } else if (window.getSelection) {
                             range = document.createRange();
                             if (input.firstChild === undefined || input.firstChild === null) {
