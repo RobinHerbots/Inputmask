@@ -1716,7 +1716,7 @@
                                 begin: begin,
                                 end: end
                             })))) {
-                            while (getTest(posMatch).match.def !== "") {
+                            while (getTest(posMatch).match.def !== "") { //loop needed to match further positions
                                 if (needsValidation === false && positionsClone[posMatch] && positionsClone[posMatch].match.nativeDef === t.match.nativeDef) { //obvious match
                                     getMaskSet().validPositions[posMatch] = $.extend(true, {}, positionsClone[posMatch]);
                                     getMaskSet().validPositions[posMatch].input = t.input;
@@ -1730,7 +1730,6 @@
                                     needsValidation = true;
                                 } else {
                                     valid = t.generatedInput === true || (t.input === opts.radixPoint && opts.numericInput === true);
-                                    if (!valid && getTest(posMatch).match.def === "") break;
                                 }
                                 if (valid) break;
                                 posMatch++;

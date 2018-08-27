@@ -6,15 +6,29 @@
     <link href="css/inputmask.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-<input id="test1" name="test1"/>
+<input id="test1" name="test1"/><br/>
+<input id="test2" name="test2"/><br/>
+<input id="test3" name="test3"/><br/>
 <br/>
 <script type="text/javascript" src="node_modules/jquery/dist/jquery.js" charset="utf-8"></script>
 <script type="text/javascript" src="dist/jquery.inputmask.bundle.js" charset="utf-8"></script>
 <script>
 	console.log(navigator.userAgent);
-	$("#test1").inputmask("currency", {
-	    colorMask: true
-	});
+    $("#test1").inputmask("datetime", {
+        inputFormat: "dd/mm/yyyy",
+        outputFormat: "mm-yyyy-dd",
+        inputEventOnly: true
+    });
+    $("#test2").inputmask("datetime", {
+        inputFormat: "dd/mm/yyyy",
+        outputFormat: "mm-yyyy-dd",
+        inputEventOnly: true
+    });
+    $("#test3").inputmask("datetime", {
+        inputFormat: "dd/mm/yyyy",
+        outputFormat: "mm-yyyy-dd",
+        inputEventOnly: true
+    });
 </script>
 </body>
 </html>
