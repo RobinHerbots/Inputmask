@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.33
+* Version: 4.0.1-beta.34
 */
 
 !function(factory) {
@@ -931,22 +931,24 @@
                 if (input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0, input.inputmask.caretPos = {
                     begin: begin,
                     end: end
-                }, "selectionStart" in input) input.selectionStart = begin, input.selectionEnd = end; else if (window.getSelection) {
-                    if (range = document.createRange(), input.firstChild === undefined || null === input.firstChild) {
-                        var textNode = document.createTextNode("");
-                        input.appendChild(textNode);
-                    }
-                    range.setStart(input.firstChild, begin < input.inputmask._valueGet().length ? begin : input.inputmask._valueGet().length), 
-                    range.setEnd(input.firstChild, end < input.inputmask._valueGet().length ? end : input.inputmask._valueGet().length), 
-                    range.collapse(!0);
-                    var sel = window.getSelection();
-                    sel.removeAllRanges(), sel.addRange(range);
-                } else input.createTextRange && ((range = input.createTextRange()).collapse(!0), 
-                range.moveEnd("character", end), range.moveStart("character", begin), range.select());
-                renderColorMask(input, {
-                    begin: begin,
-                    end: end
-                });
+                }, input === document.activeElement) {
+                    if ("selectionStart" in input) input.selectionStart = begin, input.selectionEnd = end; else if (window.getSelection) {
+                        if (range = document.createRange(), input.firstChild === undefined || null === input.firstChild) {
+                            var textNode = document.createTextNode("");
+                            input.appendChild(textNode);
+                        }
+                        range.setStart(input.firstChild, begin < input.inputmask._valueGet().length ? begin : input.inputmask._valueGet().length), 
+                        range.setEnd(input.firstChild, end < input.inputmask._valueGet().length ? end : input.inputmask._valueGet().length), 
+                        range.collapse(!0);
+                        var sel = window.getSelection();
+                        sel.removeAllRanges(), sel.addRange(range);
+                    } else input.createTextRange && ((range = input.createTextRange()).collapse(!0), 
+                    range.moveEnd("character", end), range.moveStart("character", begin), range.select());
+                    renderColorMask(input, {
+                        begin: begin,
+                        end: end
+                    });
+                }
             }
         }
         function determineLastRequiredPosition(returnDefinition) {

@@ -2540,36 +2540,36 @@
                         input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0;
 
                         input.inputmask.caretPos = {begin: begin, end: end}; //track caret internally
-                        if ("selectionStart" in input) {
-                            if (input === document.activeElement) {
-                              input.selectionStart = begin;
-                              input.selectionEnd = end;
+                        if (input === document.activeElement) {
+                            if ("selectionStart" in input) {
+                                input.selectionStart = begin;
+                                input.selectionEnd = end;
+                            } else if (window.getSelection) {
+                                range = document.createRange();
+                                if (input.firstChild === undefined || input.firstChild === null) {
+                                    var textNode = document.createTextNode("");
+                                    input.appendChild(textNode);
+                                }
+                                range.setStart(input.firstChild, begin < input.inputmask._valueGet().length ? begin : input.inputmask._valueGet().length);
+                                range.setEnd(input.firstChild, end < input.inputmask._valueGet().length ? end : input.inputmask._valueGet().length);
+                                range.collapse(true);
+                                var sel = window.getSelection();
+                                sel.removeAllRanges();
+                                sel.addRange(range);
+                                //input.focus();
+                            } else if (input.createTextRange) {
+                                range = input.createTextRange();
+                                range.collapse(true);
+                                range.moveEnd("character", end);
+                                range.moveStart("character", begin);
+                                range.select();
                             }
-                        } else if (window.getSelection) {
-                            range = document.createRange();
-                            if (input.firstChild === undefined || input.firstChild === null) {
-                                var textNode = document.createTextNode("");
-                                input.appendChild(textNode);
-                            }
-                            range.setStart(input.firstChild, begin < input.inputmask._valueGet().length ? begin : input.inputmask._valueGet().length);
-                            range.setEnd(input.firstChild, end < input.inputmask._valueGet().length ? end : input.inputmask._valueGet().length);
-                            range.collapse(true);
-                            var sel = window.getSelection();
-                            sel.removeAllRanges();
-                            sel.addRange(range);
-                            //input.focus();
-                        } else if (input.createTextRange) {
-                            range = input.createTextRange();
-                            range.collapse(true);
-                            range.moveEnd("character", end);
-                            range.moveStart("character", begin);
-                            range.select();
-                        }
 
-                        renderColorMask(input, {
-                            begin: begin,
-                            end: end
-                        });
+                            renderColorMask(input, {
+                                begin: begin,
+                                end: end
+                            });
+                        }
                     }
                 } else {
                     if ("selectionStart" in input) {

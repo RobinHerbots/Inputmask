@@ -11,6 +11,7 @@
 - update dependencies
 
 ### Fixed
+- Element keeps the focus to itself in ie11 #1846
 - Changes for min/max options do not get picked up. #1931
 - Behaviour of v3 with hours not possible anymore #1918
 - Multiple alternators #1553
