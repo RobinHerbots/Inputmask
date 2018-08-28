@@ -3,7 +3,7 @@
 ## [UNRELEASED]
 
 ### Updates
-- remove phone alias (moved code to misc folder ~ use https://github.com/andr-04/inputmask-multi instead)
+- remove phone alias (moved code to misc folder ~ use https://github.com/andr-04/inputmask-multi instead) #1981
 - enhance gettests for jit enabled quantifiers
 - pass initial validation position to postvalidation, to allow prefills in the datetime alias
 - remove caret selection for insertMode => use inputmask.css for visualization
