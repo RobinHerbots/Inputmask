@@ -96,7 +96,6 @@
 <script src="javascripts/scale.fix.js"></script>
 <script src="https://code.jquery.com/jquery-1.10.0.min.js"></script>
 <script src="https://rawgit.com/RobinHerbots/Inputmask/4.x/dist/jquery.inputmask.bundle.js"></script>
-<script src="https://rawgit.com/RobinHerbots/Inputmask/4.x/dist/inputmask/phone-codes/phone.js"></script>
 <script language="javascript">
     var defaultScope = new function () {
         this.ready = function () {
@@ -141,9 +140,6 @@
                         },
                         onKeyValidation: function (result, opts) {
                             var eventIdenticators = $(this).next().next(".eventIndicator").children("span");
-                            if (this.id == "phone" && $(this).inputmask("getmetadata")) {
-                                $(this).next().text($(this).inputmask("getmetadata")["cd"]);
-                            }
                             $.each(eventIdenticators, function (ndx, lmnt) {
                                 var $lmnt = $(lmnt);
                                 if ($lmnt.hasClass("keyvalidation")) {
