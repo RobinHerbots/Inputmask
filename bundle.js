@@ -3,7 +3,7 @@
 import "./js/inputmask.date.extensions";
 import "./js/inputmask.extensions";
 import "./js/inputmask.numeric.extensions";
-import "./js/inputmask.phone.extensions";
+// import "./js/inputmask.phone.extensions";
 
 // import "./js/phone-codes/phone-be";
 // import "./js/phone-codes/phone-nl";

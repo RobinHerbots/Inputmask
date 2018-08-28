@@ -51,9 +51,6 @@ If you want to include the Inputmask and all extensions. (with jQuery as depende
 ```html
 <script src="jquery.js"></script>
 <script src="dist/jquery.inputmask.bundle.js"></script>
-<script src="dist/inputmask/phone-codes/phone.js"></script>
-<script src="dist/inputmask/phone-codes/phone-be.js"></script>
-<script src="dist/inputmask/phone-codes/phone-ru.js"></script>
 ```
 For individual extensions. (with jQuery as dependencylib)
 ```html
@@ -62,11 +59,7 @@ For individual extensions. (with jQuery as dependencylib)
 <script src="dist/inputmask/inputmask.extensions.js"></script>
 <script src="dist/inputmask/inputmask.numeric.extensions.js"></script>
 <script src="dist/inputmask/inputmask.date.extensions.js"></script>
-<script src="dist/inputmask/inputmask.phone.extensions.js"></script>
 <script src="dist/inputmask/jquery.inputmask.js"></script>
-<script src="dist/inputmask/phone-codes/phone.js"></script>
-<script src="dist/inputmask/phone-codes/phone-be.js"></script>
-<script src="dist/inputmask/phone-codes/phone-ru.js"></script>
 ```
 
 For individual extensions. (with vanilla dependencylib)
@@ -76,10 +69,6 @@ For individual extensions. (with vanilla dependencylib)
 <script src="dist/inputmask/inputmask.extensions.js"></script>
 <script src="dist/inputmask/inputmask.numeric.extensions.js"></script>
 <script src="dist/inputmask/inputmask.date.extensions.js"></script>
-<script src="dist/inputmask/inputmask.phone.extensions.js"></script>
-<script src="dist/inputmask/phone-codes/phone.js"></script>
-<script src="dist/inputmask/phone-codes/phone-be.js"></script>
-<script src="dist/inputmask/phone-codes/phone-ru.js"></script>
 ```
 
 If you like to automatically bind the inputmask to the inputs marked with the data-inputmask- ... attributes you may also want to include the inputmask.binding.js
@@ -1245,7 +1234,6 @@ When cloning a inputmask, the inputmask reactivates on the first event (mouseent
 # jquery.inputmask extensions
 ## [date & datetime extensions](README_date.md)
 ## [numeric extensions](README_numeric.md)
-## [phone extensions](README_phone.md)
 ## [other extensions](README_other.md)
 
 [npm-url]: https://npmjs.org/package/inputmask

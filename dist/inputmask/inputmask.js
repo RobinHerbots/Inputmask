@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.29
+* Version: 4.0.1-beta.33
 */
 
 !function(factory) {
@@ -514,7 +514,7 @@
                                 var result = isValid(posMatch, t.input, !0, !0);
                                 valid = !1 !== result, j = result.caret || result.insert ? getLastValidPosition() : posMatch + 1, 
                                 needsValidation = !0;
-                            } else if (!(valid = !0 === t.generatedInput || t.input === opts.radixPoint && !0 === opts.numericInput) && "" === getTest(posMatch).match.def) break;
+                            } else valid = !0 === t.generatedInput || t.input === opts.radixPoint && !0 === opts.numericInput;
                             if (valid) break;
                             posMatch++;
                         }

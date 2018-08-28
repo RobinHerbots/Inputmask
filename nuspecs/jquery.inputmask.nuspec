@@ -26,22 +26,6 @@
                <file src="..\dist\min\inputmask\global\document.min.js" target="content\Scripts\inputmask\global\document.min.js" />
                <file src="..\dist\inputmask\global\window.js" target="content\Scripts\inputmask\global\window.js" />
                <file src="..\dist\min\inputmask\global\window.min.js" target="content\Scripts\inputmask\global\window.min.js" />
-               <file src="..\dist\inputmask\phone-codes\phone-be.js" target="content\Scripts\inputmask\phone-codes\phone-be.js" />
-               <file src="..\dist\min\inputmask\phone-codes\phone-be.min.js" target="content\Scripts\inputmask\phone-codes\phone-be.min.js" />
-               <file src="..\dist\inputmask\phone-codes\phone-nl.js" target="content\Scripts\inputmask\phone-codes\phone-nl.js" />
-               <file src="..\dist\min\inputmask\phone-codes\phone-nl.min.js" target="content\Scripts\inputmask\phone-codes\phone-nl.min.js" />
-               <file src="..\dist\inputmask\phone-codes\phone-ru.js" target="content\Scripts\inputmask\phone-codes\phone-ru.js" />
-               <file src="..\dist\min\inputmask\phone-codes\phone-ru.min.js" target="content\Scripts\inputmask\phone-codes\phone-ru.min.js" />
-               <file src="..\dist\inputmask\phone-codes\phone-hu.js" target="content\Scripts\inputmask\phone-codes\phone-hu.js" />
-               <file src="..\dist\min\inputmask\phone-codes\phone-hu.min.js" target="content\Scripts\inputmask\phone-codes\phone-hu.min.js" />
-               <file src="..\dist\inputmask\phone-codes\phone-ca.js" target="content\Scripts\inputmask\phone-codes\phone-ca.js" />
-               <file src="..\dist\min\inputmask\phone-codes\phone-ca.min.js" target="content\Scripts\inputmask\phone-codes\phone-ca.min.js" />
-               <file src="..\dist\inputmask\phone-codes\phone-it.js" target="content\Scripts\inputmask\phone-codes\phone-it.js" />
-               <file src="..\dist\min\inputmask\phone-codes\phone-it.min.js" target="content\Scripts\inputmask\phone-codes\phone-it.min.js" />
-               <file src="..\dist\inputmask\phone-codes\phone-mx.js" target="content\Scripts\inputmask\phone-codes\phone-mx.js" />
-               <file src="..\dist\min\inputmask\phone-codes\phone-mx.min.js" target="content\Scripts\inputmask\phone-codes\phone-mx.min.js" />
-               <file src="..\dist\inputmask\phone-codes\phone.js" target="content\Scripts\inputmask\phone-codes\phone.js" />
-               <file src="..\dist\min\inputmask\phone-codes\phone.min.js" target="content\Scripts\inputmask\phone-codes\phone.min.js" />
                <file src="..\dist\inputmask\inputmask.date.extensions.js" target="content\Scripts\inputmask\inputmask.date.extensions.js" />
                <file src="..\dist\min\inputmask\inputmask.date.extensions.min.js" target="content\Scripts\inputmask\inputmask.date.extensions.min.js" />
                <file src="..\dist\inputmask\inputmask.extensions.js" target="content\Scripts\inputmask\inputmask.extensions.js" />
@@ -50,8 +34,6 @@
                <file src="..\dist\min\inputmask\inputmask.min.js" target="content\Scripts\inputmask\inputmask.min.js" />
                <file src="..\dist\inputmask\inputmask.numeric.extensions.js" target="content\Scripts\inputmask\inputmask.numeric.extensions.js" />
                <file src="..\dist\min\inputmask\inputmask.numeric.extensions.min.js" target="content\Scripts\inputmask\inputmask.numeric.extensions.min.js" />
-               <file src="..\dist\inputmask\inputmask.phone.extensions.js" target="content\Scripts\inputmask\inputmask.phone.extensions.js" />
-               <file src="..\dist\min\inputmask\inputmask.phone.extensions.min.js" target="content\Scripts\inputmask\inputmask.phone.extensions.min.js" />
                <file src="..\dist\inputmask\jquery.inputmask.js" target="content\Scripts\inputmask\jquery.inputmask.js" />
                <file src="..\dist\min\inputmask\jquery.inputmask.min.js" target="content\Scripts\inputmask\jquery.inputmask.min.js" />
                <file src="..\dist\jquery.inputmask.bundle.js" target="content\Scripts\jquery.inputmask.bundle.js" />

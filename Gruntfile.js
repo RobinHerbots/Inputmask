@@ -72,7 +72,7 @@ module.exports = function (grunt) {
         clean: ["dist"],
         bump: {
             options: {
-                files: ['package.json', 'bower.json', 'composer.json', 'component.json'],
+                files: ['package.json', 'bower.json', 'composer.json'],
                 updateConfigs: ['pkg'],
                 commit: false,
                 createTag: false,

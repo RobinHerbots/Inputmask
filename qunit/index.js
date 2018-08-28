@@ -5,11 +5,11 @@ import "../css/inputmask.css";
 import "../js/inputmask.date.extensions";
 import "../js/inputmask.extensions";
 import "../js/inputmask.numeric.extensions";
-import "../js/inputmask.phone.extensions";
-import "../js/phone-codes/phone-be";
-import "../js/phone-codes/phone-nl";
-import "../js/phone-codes/phone-ru";
-import "../js/phone-codes/phone";
+// import "../js/inputmask.phone.extensions";
+// import "../js/phone-codes/phone-be";
+// import "../js/phone-codes/phone-nl";
+// import "../js/phone-codes/phone-ru";
+// import "../js/phone-codes/phone";
 import "../js/jquery.inputmask";
 
 import Inputmask from "../js/inputmask";
@@ -50,13 +50,13 @@ import tests_numericinput from "./tests_numericinput";
 import tests_option from "./tests_option";
 import tests_optional from "./tests_optional";
 import tests_paste from "./tests_paste";
-import tests_phone from "./tests_phone";
+// import tests_phone from "./tests_phone";
 import tests_regex from "./tests_regex";
 import tests_setvalue from "./tests_setvalue";
-import tests_phone_world from "./tests_phone_world";
-import tests_phonebe from "./tests_phonebe";
-import tests_phonenl from "./tests_phonenl";
-import tests_phoneru from "./tests_phoneru";
+// import tests_phone_world from "./tests_phone_world";
+// import tests_phonebe from "./tests_phonebe";
+// import tests_phonenl from "./tests_phonenl";
+// import tests_phoneru from "./tests_phoneru";
 
 //inject simulater code
 simulator(dependencyLib, Inputmask);
@@ -82,7 +82,7 @@ tests_numericinput(qunit, dependencyLib, Inputmask);
 tests_option(qunit, dependencyLib, Inputmask);
 tests_optional(qunit, dependencyLib, Inputmask);
 tests_paste(qunit, dependencyLib, Inputmask);
-tests_phone(qunit, dependencyLib, Inputmask);
+// tests_phone(qunit, dependencyLib, Inputmask);
 tests_regex(qunit, dependencyLib, Inputmask);
 tests_setvalue(qunit, dependencyLib, Inputmask);
 
