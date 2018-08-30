@@ -425,4 +425,19 @@ export default function (qunit, $, Inputmask) {
         $("#testmask").Type("a");
         assert.equal(testmask.value, "a_", "Result " + testmask.value);
     });
+
+    qunit.test("Loop trigger in gettests", function (assert) {
+        var $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask({
+            "mask": "(99) 99999-9999[ ]",
+            "repeat": "*"
+        }).mask(testmask);
+
+        testmask.focus();
+        $("#testmask").trigger("click");
+        $("#testmask").Type("12123451234");
+        assert.equal(testmask.value, "(12) 12345-1234", "Result " + testmask.value);
+    });
 };

@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.35
+* Version: 4.0.1-beta.36
 */
 
 !function(modules) {
@@ -295,7 +295,7 @@
                         function isFirstMatch(latestMatch, tokenGroup) {
                             var firstMatch = 0 === $.inArray(latestMatch, tokenGroup.matches);
                             return firstMatch || $.each(tokenGroup.matches, function(ndx, match) {
-                                if (!0 === match.isQuantifier ? firstMatch = isFirstMatch(latestMatch, tokenGroup.matches[ndx - 1]) : !0 === match.isOptional ? firstMatch = isFirstMatch(latestMatch, match) : !0 === match.isAlternate && (firstMatch = isFirstMatch(latestMatch, match)), 
+                                if (!0 === match.isQuantifier ? firstMatch = isFirstMatch(latestMatch, tokenGroup.matches[ndx - 1]) : match.hasOwnProperty("matches") && (firstMatch = isFirstMatch(latestMatch, match)), 
                                 firstMatch) return !1;
                             }), firstMatch;
                         }

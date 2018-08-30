@@ -3,7 +3,7 @@
 ## [UNRELEASED]
 
 ### Updates
-- remove phone alias (moved code to misc folder ~ use https://github.com/andr-04/inputmask-multi instead) #1981
+- <strong>remove phone alias</strong> (moved code to misc folder ~ use https://github.com/andr-04/inputmask-multi instead) #1981
 - enhance gettests for jit enabled quantifiers
 - pass initial validation position to postvalidation, to allow prefills in the datetime alias
 - remove caret selection for insertMode => use inputmask.css for visualization
@@ -11,6 +11,7 @@
 - update dependencies
 
 ### Fixed
+- Fix endless loop for quantifiers (see tests_dynamic.js - latest unittests) #1983
 - Element keeps the focus to itself in ie11 #1846
 - Changes for min/max options do not get picked up. #1931
 - Behaviour of v3 with hours not possible anymore #1918

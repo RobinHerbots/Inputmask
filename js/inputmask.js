@@ -981,8 +981,7 @@
                             if (!firstMatch) {
                                 $.each(tokenGroup.matches, function (ndx, match) {
                                     if (match.isQuantifier === true) firstMatch = isFirstMatch(latestMatch, tokenGroup.matches[ndx - 1]);
-                                    else if (match.isOptional === true) firstMatch = isFirstMatch(latestMatch, match);
-                                    else if (match.isAlternate === true) firstMatch = isFirstMatch(latestMatch, match);
+                                    else if (match.hasOwnProperty("matches")) firstMatch = isFirstMatch(latestMatch, match);
                                     if (firstMatch) return false;
                                 });
                             }
