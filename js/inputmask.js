@@ -1067,7 +1067,7 @@
                             return false;
                         }
 
-                        if (testPos > 5000) {
+                        if (testPos > 500 && quantifierRecurse !== undefined) {
                             throw "Inputmask: There is probably an error in your mask definition or in the code. Create an issue on github with an example of the mask you are using. " + getMaskSet().mask;
                         }
                         if (testPos === pos && match.matches === undefined) {
@@ -1205,7 +1205,7 @@
                                         latestMatch.optionalQuantifier = qndx > (qt.quantifier.min - 1);
                                         // console.log(pos + " " + qt.quantifier.min + " " + latestMatch.optionalQuantifier);
                                         latestMatch.jit = (qndx || 1) * tokenGroup.matches.indexOf(latestMatch) >= qt.quantifier.jit;
-                                        if (isFirstMatch(latestMatch, tokenGroup) && latestMatch.optionalQuantifier) {
+                                        if (latestMatch.optionalQuantifier && isFirstMatch(latestMatch, tokenGroup)) {
                                             insertStop = true;
                                             testPos = pos; //match the position after the group
                                             break; //stop quantifierloop && search for next possible match
@@ -1216,6 +1216,7 @@
                                             insertStop = true;
                                             break; //stop quantifierloop && search for next possible match
                                         }
+
                                         return true;
                                     }
                                 }
@@ -1732,6 +1733,9 @@
                                     valid = t.generatedInput === true || (t.input === opts.radixPoint && opts.numericInput === true);
                                 }
                                 if (valid) break;
+                                if (!valid && posMatch > end && isMask(posMatch, true) && (t.match.fn !== null || posMatch > getMaskSet().maskLength)) {
+                                    break;
+                                }
                                 posMatch++;
                             }
                             if (getTest(posMatch).match.def == "")

@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.34
+* Version: 4.0.1-beta.35
 */
 
 !function(factory) {
@@ -189,7 +189,7 @@
                         }
                         return !1;
                     }
-                    if (5e3 < testPos) throw "Inputmask: There is probably an error in your mask definition or in the code. Create an issue on github with an example of the mask you are using. " + getMaskSet().mask;
+                    if (500 < testPos && quantifierRecurse !== undefined) throw "Inputmask: There is probably an error in your mask definition or in the code. Create an issue on github with an example of the mask you are using. " + getMaskSet().mask;
                     if (testPos === pos && match.matches === undefined) return matches.push({
                         match: match,
                         locator: loopNdx.reverse(),
@@ -258,7 +258,7 @@
                             if (match = handleMatch(tokenGroup, [ qndx ].concat(loopNdx), tokenGroup)) {
                                 if ((latestMatch = matches[matches.length - 1].match).optionalQuantifier = qndx > qt.quantifier.min - 1, 
                                 latestMatch.jit = (qndx || 1) * tokenGroup.matches.indexOf(latestMatch) >= qt.quantifier.jit, 
-                                isFirstMatch(latestMatch, tokenGroup) && latestMatch.optionalQuantifier) {
+                                latestMatch.optionalQuantifier && isFirstMatch(latestMatch, tokenGroup)) {
                                     insertStop = !0, testPos = pos;
                                     break;
                                 }
@@ -516,6 +516,7 @@
                                 needsValidation = !0;
                             } else valid = !0 === t.generatedInput || t.input === opts.radixPoint && !0 === opts.numericInput;
                             if (valid) break;
+                            if (!valid && end < posMatch && isMask(posMatch, !0) && (null !== t.match.fn || posMatch > getMaskSet().maskLength)) break;
                             posMatch++;
                         }
                         "" == getTest(posMatch).match.def && (valid = !1), posMatch = j;
