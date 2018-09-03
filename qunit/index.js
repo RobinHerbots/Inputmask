@@ -12,7 +12,7 @@ import "../js/inputmask.numeric.extensions";
 // import "../js/phone-codes/phone";
 import "../js/jquery.inputmask";
 
-import Inputmask from "../js/inputmask";
+import Inputmask from "../dist/inputmask/inputmask";
 import dependencyLib from "../js/dependencyLibs/inputmask.dependencyLib";
 import jQuery from "jquery";
 

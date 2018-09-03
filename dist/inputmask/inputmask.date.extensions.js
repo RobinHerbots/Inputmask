@@ -3,13 +3,20 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.37
+* Version: 4.0.1-beta.38
 */
 
-!function(factory) {
-    "function" == typeof define && define.amd ? define([ "./inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask")) : factory(window.Inputmask);
-}(function(Inputmask) {
-    var $ = Inputmask.dependencyLib, formatCode = {
+(function(factory) {
+    if (typeof define === "function" && define.amd) {
+        define([ "./inputmask" ], factory);
+    } else if (typeof exports === "object") {
+        module.exports = factory(require("./inputmask"));
+    } else {
+        factory(window.Inputmask);
+    }
+})(function(Inputmask) {
+    var $ = Inputmask.dependencyLib;
+    var formatCode = {
         d: [ "[1-9]|[12][0-9]|3[01]", Date.prototype.setDate, "day", Date.prototype.getDate ],
         dd: [ "0[1-9]|[12][0-9]|3[01]", Date.prototype.setDate, "day", function() {
             return pad(Date.prototype.getDate.call(this), 2);
@@ -70,72 +77,125 @@
     function getTokenizer(opts) {
         if (!opts.tokenizer) {
             var tokens = [];
-            for (var ndx in formatCode) -1 === tokens.indexOf(ndx[0]) && tokens.push(ndx[0]);
-            opts.tokenizer = "(" + tokens.join("+|") + ")+?|.", opts.tokenizer = new RegExp(opts.tokenizer, "g");
+            for (var ndx in formatCode) {
+                if (tokens.indexOf(ndx[0]) === -1) tokens.push(ndx[0]);
+            }
+            opts.tokenizer = "(" + tokens.join("+|") + ")+?|.";
+            opts.tokenizer = new RegExp(opts.tokenizer, "g");
         }
         return opts.tokenizer;
     }
+    function isValidDate(dateParts, currentResult) {
+        return !isFinite(dateParts.rawday) || dateParts.day == "29" && !isFinite(dateParts.rawyear) || new Date(dateParts.date.getFullYear(), isFinite(dateParts.rawmonth) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day ? currentResult : false;
+    }
+    function isDateInRange(dateParts, opts) {
+        var result = true;
+        if (opts.min) {
+            if (dateParts["rawyear"]) {
+                var rawYear = dateParts["rawyear"].replace(/[^0-9]/g, ""), minYear = opts.min.year.substr(0, rawYear.length);
+                result = minYear <= rawYear;
+            }
+            if (dateParts["year"] === dateParts["rawyear"]) {
+                if (opts.min.date.getTime() === opts.min.date.getTime()) {
+                    result = opts.min.date.getTime() <= dateParts.date.getTime();
+                }
+            }
+        }
+        if (result && opts.max && opts.max.date.getTime() === opts.max.date.getTime()) {
+            result = opts.max.date.getTime() >= dateParts.date.getTime();
+        }
+        return result;
+    }
     function parse(format, dateObjValue, opts, raw) {
-        for (var match, mask = ""; match = getTokenizer(opts).exec(format); ) {
-            if (void 0 === dateObjValue) if (formatCode[match[0]]) mask += "(" + formatCode[match[0]][0] + ")"; else switch (match[0]) {
-              case "[":
-                mask += "(";
-                break;
+        var mask = "", match;
+        while (match = getTokenizer(opts).exec(format)) {
+            if (dateObjValue === undefined) {
+                if (formatCode[match[0]]) {
+                    mask += "(" + formatCode[match[0]][0] + ")";
+                } else {
+                    switch (match[0]) {
+                      case "[":
+                        mask += "(";
+                        break;
 
-              case "]":
-                mask += ")?";
-                break;
+                      case "]":
+                        mask += ")?";
+                        break;
 
-              default:
-                mask += Inputmask.escapeRegex(match[0]);
-            } else if (formatCode[match[0]]) if (!0 !== raw && formatCode[match[0]][3]) mask += formatCode[match[0]][3].call(dateObjValue.date); else formatCode[match[0]][2] ? mask += dateObjValue["raw" + formatCode[match[0]][2]] : mask += match[0]; else mask += match[0];
+                      default:
+                        mask += Inputmask.escapeRegex(match[0]);
+                    }
+                }
+            } else {
+                if (formatCode[match[0]]) {
+                    if (raw !== true && formatCode[match[0]][3]) {
+                        var getFn = formatCode[match[0]][3];
+                        mask += getFn.call(dateObjValue.date);
+                    } else if (formatCode[match[0]][2]) mask += dateObjValue["raw" + formatCode[match[0]][2]]; else mask += match[0];
+                } else mask += match[0];
+            }
         }
         return mask;
     }
     function pad(val, len) {
-        for (val = String(val), len = len || 2; val.length < len; ) val = "0" + val;
+        val = String(val);
+        len = len || 2;
+        while (val.length < len) val = "0" + val;
         return val;
     }
     function analyseMask(maskString, format, opts) {
-        var targetProp, match, dateOperation, targetValidator, dateObj = {
+        var dateObj = {
             date: new Date(1, 0, 1)
-        }, mask = maskString;
+        }, targetProp, mask = maskString, match, dateOperation, targetValidator;
         function extendProperty(value) {
             var correctedValue;
             if (opts.min && opts.min[targetProp] || opts.max && opts.max[targetProp]) {
                 var min = opts.min && opts.min[targetProp] || opts.max[targetProp], max = opts.max && opts.max[targetProp] || opts.min[targetProp];
-                for (correctedValue = value.replace(/[^0-9]/g, ""), correctedValue += (min.indexOf(correctedValue) < max.indexOf(correctedValue) ? max : min).toString().substr(correctedValue.length); !new RegExp(targetValidator).test(correctedValue); ) correctedValue--;
+                correctedValue = value.replace(/[^0-9]/g, "");
+                correctedValue += (min.indexOf(correctedValue) < max.indexOf(correctedValue) ? max : min).toString().substr(correctedValue.length);
+                while (!new RegExp(targetValidator).test(correctedValue)) {
+                    correctedValue--;
+                }
             } else correctedValue = value.replace(/[^0-9]/g, "0");
             return correctedValue;
         }
         function setValue(dateObj, value, opts) {
-            dateObj[targetProp] = extendProperty(value), dateObj["raw" + targetProp] = value, 
-            void 0 !== dateOperation && dateOperation.call(dateObj.date, "month" == targetProp ? parseInt(dateObj[targetProp]) - 1 : dateObj[targetProp]);
+            dateObj[targetProp] = extendProperty(value);
+            dateObj["raw" + targetProp] = value;
+            if (dateOperation !== undefined) dateOperation.call(dateObj.date, targetProp == "month" ? parseInt(dateObj[targetProp]) - 1 : dateObj[targetProp]);
         }
-        if ("string" == typeof mask) {
-            for (;match = getTokenizer(opts).exec(format); ) {
+        if (typeof mask === "string") {
+            while (match = getTokenizer(opts).exec(format)) {
                 var value = mask.slice(0, match[0].length);
-                formatCode.hasOwnProperty(match[0]) && (targetValidator = formatCode[match[0]][0], 
-                targetProp = formatCode[match[0]][2], dateOperation = formatCode[match[0]][1], setValue(dateObj, value)), 
+                if (formatCode.hasOwnProperty(match[0])) {
+                    targetValidator = formatCode[match[0]][0];
+                    targetProp = formatCode[match[0]][2];
+                    dateOperation = formatCode[match[0]][1];
+                    setValue(dateObj, value, opts);
+                }
                 mask = mask.slice(value.length);
             }
             return dateObj;
+        } else if (mask && typeof mask === "object" && mask.hasOwnProperty("date")) {
+            return mask;
         }
-        if (mask && "object" == typeof mask && mask.hasOwnProperty("date")) return mask;
+        return undefined;
     }
-    return Inputmask.extendAliases({
+    Inputmask.extendAliases({
         datetime: {
             mask: function(opts) {
-                return formatCode.S = opts.i18n.ordinalSuffix.join("|"), opts.inputFormat = formatAlias[opts.inputFormat] || opts.inputFormat, 
-                opts.displayFormat = formatAlias[opts.displayFormat] || opts.displayFormat || opts.inputFormat, 
-                opts.outputFormat = formatAlias[opts.outputFormat] || opts.outputFormat || opts.inputFormat, 
-                opts.placeholder = "" !== opts.placeholder ? opts.placeholder : opts.inputFormat.replace(/[\[\]]/, ""), 
-                opts.regex = parse(opts.inputFormat, void 0, opts), null;
+                formatCode.S = opts.i18n.ordinalSuffix.join("|");
+                opts.inputFormat = formatAlias[opts.inputFormat] || opts.inputFormat;
+                opts.displayFormat = formatAlias[opts.displayFormat] || opts.displayFormat || opts.inputFormat;
+                opts.outputFormat = formatAlias[opts.outputFormat] || opts.outputFormat || opts.inputFormat;
+                opts.placeholder = opts.placeholder !== "" ? opts.placeholder : opts.inputFormat.replace(/[\[\]]/, "");
+                opts.regex = parse(opts.inputFormat, undefined, opts);
+                return null;
             },
             placeholder: "",
             inputFormat: "isoDateTime",
-            displayFormat: void 0,
-            outputFormat: void 0,
+            displayFormat: undefined,
+            outputFormat: undefined,
             min: null,
             max: null,
             i18n: {
@@ -144,42 +204,53 @@
                 ordinalSuffix: [ "st", "nd", "rd", "th" ]
             },
             postValidation: function(buffer, pos, currentResult, opts) {
-                opts.min = analyseMask(opts.min, opts.inputFormat, opts), opts.max = analyseMask(opts.max, opts.inputFormat, opts);
+                opts.min = analyseMask(opts.min, opts.inputFormat, opts);
+                opts.max = analyseMask(opts.max, opts.inputFormat, opts);
                 var result = currentResult, dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
-                return result && dateParts.date.getTime() == dateParts.date.getTime() && (result = (result = function(dateParts, currentResult) {
-                    return (!isFinite(dateParts.rawday) || "29" == dateParts.day && !isFinite(dateParts.rawyear) || new Date(dateParts.date.getFullYear(), isFinite(dateParts.rawmonth) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day) && currentResult;
-                }(dateParts, result)) && function(dateParts, opts) {
-                    var result = !0;
-                    if (opts.min) {
-                        if (dateParts.rawyear) {
-                            var rawYear = dateParts.rawyear.replace(/[^0-9]/g, "");
-                            result = opts.min.year.substr(0, rawYear.length) <= rawYear;
+                if (result && dateParts.date.getTime() === dateParts.date.getTime()) {
+                    result = isValidDate(dateParts, result);
+                    result = result && isDateInRange(dateParts, opts);
+                }
+                if (pos && result && currentResult.pos !== pos) {
+                    return {
+                        buffer: parse(opts.inputFormat, dateParts, opts),
+                        refreshFromBuffer: {
+                            start: pos,
+                            end: currentResult.pos
                         }
-                        dateParts.year === dateParts.rawyear && opts.min.date.getTime() == opts.min.date.getTime() && (result = opts.min.date.getTime() <= dateParts.date.getTime());
-                    }
-                    return result && opts.max && opts.max.date.getTime() == opts.max.date.getTime() && (result = opts.max.date.getTime() >= dateParts.date.getTime()), 
-                    result;
-                }(dateParts, opts)), pos && result && currentResult.pos !== pos ? {
-                    buffer: parse(opts.inputFormat, dateParts, opts),
-                    refreshFromBuffer: {
-                        start: pos,
-                        end: currentResult.pos
-                    }
-                } : result;
+                    };
+                }
+                return result;
             },
             onKeyDown: function(e, buffer, caretPos, opts) {
+                var input = this;
                 if (e.ctrlKey && e.keyCode === Inputmask.keyCode.RIGHT) {
-                    for (var match, today = new Date(), date = ""; match = getTokenizer(opts).exec(opts.inputFormat); ) "d" === match[0].charAt(0) ? date += pad(today.getDate(), match[0].length) : "m" === match[0].charAt(0) ? date += pad(today.getMonth() + 1, match[0].length) : "yyyy" === match[0] ? date += today.getFullYear().toString() : "y" === match[0].charAt(0) && (date += pad(today.getYear(), match[0].length));
-                    this.inputmask._valueSet(date), $(this).trigger("setvalue");
+                    var today = new Date(), match, date = "";
+                    while (match = getTokenizer(opts).exec(opts.inputFormat)) {
+                        if (match[0].charAt(0) === "d") {
+                            date += pad(today.getDate(), match[0].length);
+                        } else if (match[0].charAt(0) === "m") {
+                            date += pad(today.getMonth() + 1, match[0].length);
+                        } else if (match[0] === "yyyy") {
+                            date += today.getFullYear().toString();
+                        } else if (match[0].charAt(0) === "y") {
+                            date += pad(today.getYear(), match[0].length);
+                        }
+                    }
+                    input.inputmask._valueSet(date);
+                    $(input).trigger("setvalue");
                 }
             },
             onUnMask: function(maskedValue, unmaskedValue, opts) {
-                return parse(opts.outputFormat, analyseMask(maskedValue, opts.inputFormat, opts), opts, !0);
+                return parse(opts.outputFormat, analyseMask(maskedValue, opts.inputFormat, opts), opts, true);
             },
             casing: function(elem, test, pos, validPositions) {
-                return 0 == test.nativeDef.indexOf("[ap]") ? elem.toLowerCase() : 0 == test.nativeDef.indexOf("[AP]") ? elem.toUpperCase() : elem;
+                if (test.nativeDef.indexOf("[ap]") == 0) return elem.toLowerCase();
+                if (test.nativeDef.indexOf("[AP]") == 0) return elem.toUpperCase();
+                return elem;
             },
-            insertMode: !1
+            insertMode: false
         }
-    }), Inputmask;
+    });
+    return Inputmask;
 });

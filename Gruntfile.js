@@ -26,6 +26,7 @@ module.exports = function (grunt) {
                     banner: createBanner(dstFile),
                     beautify: true,
                     mangle: false,
+                    compress: false,
                     preserveComments: false,
                     ASCIIOnly: true
                 }
@@ -35,6 +36,8 @@ module.exports = function (grunt) {
                 src: srcFiles[srcNdx],
                 options: {
                     banner: createBanner(dstFileMin),
+                    mangle: false,
+                    compress: false,
                     preserveComments: false,
                     ASCIIOnly: true
                 }
@@ -48,6 +51,7 @@ module.exports = function (grunt) {
                 banner: createBanner("jquery.inputmask.bundle.js"),
                 beautify: true,
                 mangle: false,
+                compress: false,
                 preserveComments: false,
                 ASCIIOnly: true
             }
@@ -57,6 +61,8 @@ module.exports = function (grunt) {
             src: "build/bundle.js",
             options: {
                 banner: createBanner("jquery.inputmask.bundle.js"),
+                mangle: false,
+                compress: false,
                 preserveComments: false,
                 ASCIIOnly: true
             }

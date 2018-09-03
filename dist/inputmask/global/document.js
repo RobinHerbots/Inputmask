@@ -3,9 +3,9 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.37
+* Version: 4.0.1-beta.38
 */
 
-"function" == typeof define && define.amd ? define(function() {
+if (typeof define === "function" && define.amd) define(function() {
     return document;
-}) : "object" == typeof exports && (module.exports = document);
+}); else if (typeof exports === "object") module.exports = document;
