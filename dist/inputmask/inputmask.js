@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.36
+* Version: 4.0.1-beta.37
 */
 
 !function(factory) {
@@ -77,13 +77,14 @@
         function getMaskTemplate(baseOnInput, minimalPos, includeMode, noJit, clearOptionalTail) {
             var greedy = opts.greedy;
             clearOptionalTail && (opts.greedy = !1), minimalPos = minimalPos || 0;
-            var ndxIntlzr, test, testPos, maskTemplate = [], pos = 0, lvp = getLastValidPosition();
+            var ndxIntlzr, test, testPos, maskTemplate = [], pos = 0;
+            getLastValidPosition();
             do {
                 if (!0 === baseOnInput && getMaskSet().validPositions[pos]) test = (testPos = clearOptionalTail && !0 === getMaskSet().validPositions[pos].match.optionality && getMaskSet().validPositions[pos + 1] === undefined && (!0 === getMaskSet().validPositions[pos].generatedInput || getMaskSet().validPositions[pos].input == opts.skipOptionalPartCharacter && 0 < pos) ? determineTestTemplate(pos, getTests(pos, ndxIntlzr, pos - 1)) : getMaskSet().validPositions[pos]).match, 
                 ndxIntlzr = testPos.locator.slice(), maskTemplate.push(!0 === includeMode ? testPos.input : !1 === includeMode ? test.nativeDef : getPlaceholder(pos, test)); else {
                     test = (testPos = getTestTemplate(pos, ndxIntlzr, pos - 1)).match, ndxIntlzr = testPos.locator.slice();
                     var jitMasking = !0 !== noJit && (!1 !== opts.jitMasking ? opts.jitMasking : test.jit);
-                    (!1 === jitMasking || jitMasking === undefined || pos < lvp || "number" == typeof jitMasking && isFinite(jitMasking) && pos < jitMasking) && maskTemplate.push(!1 === includeMode ? test.nativeDef : getPlaceholder(pos, test));
+                    (!1 === jitMasking || jitMasking === undefined || "number" == typeof jitMasking && isFinite(jitMasking) && pos < jitMasking) && maskTemplate.push(!1 === includeMode ? test.nativeDef : getPlaceholder(pos, test));
                 }
                 "auto" === opts.keepStatic && test.newBlockMarker && null !== test.fn && (opts.keepStatic = pos - 1), 
                 pos++;
@@ -1607,5 +1608,5 @@
         UP: 38,
         X: 88,
         CONTROL: 17
-    }, Inputmask;
+    }, Inputmask.dependencyLib = $, Inputmask;
 });

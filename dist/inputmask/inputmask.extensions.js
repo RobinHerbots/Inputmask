@@ -3,12 +3,12 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.36
+* Version: 4.0.1-beta.37
 */
 
 !function(factory) {
-    "function" == typeof define && define.amd ? define([ "./dependencyLibs/inputmask.dependencyLib", "./inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./dependencyLibs/inputmask.dependencyLib"), require("./inputmask")) : factory(window.dependencyLib || jQuery, window.Inputmask);
-}(function($, Inputmask) {
+    "function" == typeof define && define.amd ? define([ "./inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("./inputmask")) : factory(window.Inputmask);
+}(function(Inputmask) {
     return Inputmask.extendDefinitions({
         A: {
             validator: "[A-Za-zА-яЁёÀ-ÿµ]",
