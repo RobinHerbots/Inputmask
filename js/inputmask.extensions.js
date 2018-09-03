@@ -9,14 +9,14 @@
  */
 (function (factory) {
     if (typeof define === "function" && define.amd) {
-        define(["./dependencyLibs/inputmask.dependencyLib", "./inputmask"], factory);
+        define(["./inputmask"], factory);
     } else if (typeof exports === "object") {
-        module.exports = factory(require("./dependencyLibs/inputmask.dependencyLib"), require("./inputmask"));
+        module.exports = factory(require("./inputmask"));
     } else {
-        factory(window.dependencyLib || jQuery, window.Inputmask);
+        factory(window.Inputmask);
     }
 }
-(function ($, Inputmask) {
+(function (Inputmask) {
     //extra definitions
     Inputmask.extendDefinitions({
         "A": {
