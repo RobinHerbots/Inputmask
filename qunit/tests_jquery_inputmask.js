@@ -1,4 +1,4 @@
-export default function(qunit, $, Inputmask) {
+export default function (qunit, $, Inputmask) {
 	qunit.module("jquery.inputmask plugin");
 	qunit.test("", function(assert) {
 		var $fixture = $("#qunit-fixture");

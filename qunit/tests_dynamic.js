@@ -1,4 +1,5 @@
-export default function (qunit, $, Inputmask) {
+export default function (qunit, Inputmask) {
+    var $ = Inputmask.dependencyLib;
 
     qunit.module("Dynamic Masks");
     qunit.test("inputmask(\"9-a{3}9{3}\" - simple dynamic mask", function (assert) {

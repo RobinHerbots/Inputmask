@@ -1,4 +1,5 @@
-export default function (qunit, $, Inputmask) {
+export default function (qunit, Inputmask) {
+    var $ = Inputmask.dependencyLib;
     qunit.module("inputEventOnly: true");
 
     qunit.test("XXX-9999-9999-XXX-XXX - gersteba", function (assert) {

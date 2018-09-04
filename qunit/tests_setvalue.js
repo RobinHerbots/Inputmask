@@ -1,4 +1,5 @@
-export default function (qunit, $, Inputmask) {
+export default function (qunit, Inputmask) {
+    var $ = Inputmask.dependencyLib;
     qunit.module("Set value with fn.val");
     qunit.test("inputmask(\"decimal\") ~ value=\"123.45\"", function (assert) {
         var $fixture = $("#qunit-fixture");

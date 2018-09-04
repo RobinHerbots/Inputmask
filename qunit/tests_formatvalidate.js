@@ -1,4 +1,5 @@
-export default function (qunit, $, Inputmask) {
+export default function (qunit, Inputmask) {
+    var $ = Inputmask.dependencyLib;
     qunit.module("Value formatting");
     qunit.test("Inputmask.format(\"2331973\", { alias: \"datetime\"})", function (assert) {
         var formattedValue = Inputmask.format("2331973", {

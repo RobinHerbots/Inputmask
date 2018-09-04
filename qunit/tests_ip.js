@@ -1,4 +1,5 @@
-export default function(qunit, $, Inputmask) {
+export default function (qunit, Inputmask) {
+    var $ = Inputmask.dependencyLib;
 
 	qunit.module("IP - masks");
 	qunit.test("inputmask(\"ip\" - 10.10.10.10", function(assert) {

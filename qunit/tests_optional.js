@@ -1,4 +1,5 @@
-export default function (qunit, $, Inputmask) {
+export default function (qunit, Inputmask) {
+    var $ = Inputmask.dependencyLib;
 
 	qunit.module("Optional");
 	qunit.test("inputmask(\"(99) 9999[9]-99999\") - input 121234-12345", function (assert) {

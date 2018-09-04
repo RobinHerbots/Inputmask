@@ -1,4 +1,5 @@
-export default function (qunit, $, Inputmask) {
+export default function (qunit, Inputmask) {
+    var $ = Inputmask.dependencyLib;
 	qunit.module("Extra options after masking");
 
 	qunit.test("decimal alias add suffix later - gkostov", function (assert) {

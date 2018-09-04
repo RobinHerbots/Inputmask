@@ -1,4 +1,5 @@
-export default function (qunit, $, Inputmask) {
+export default function (qunit, Inputmask) {
+    var $ = Inputmask.dependencyLib;
 	qunit.module("JIT Masking");
 
 	qunit.test("'(.999){*}', { jitMasking: true, numericInput: true   }", function (assert) {

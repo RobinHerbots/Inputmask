@@ -1,4 +1,5 @@
-export default function (qunit, $, Inputmask) {
+export default function (qunit, Inputmask) {
+    var $ = Inputmask.dependencyLib;
     qunit.module("Simple masking");
 
     qunit.test("inputmask(\"99-99-99\", { clearMaskOnLostFocus: false}", function (assert) {

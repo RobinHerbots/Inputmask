@@ -1,4 +1,5 @@
-export default function(qunit, $, Inputmask) {
+export default function (qunit, Inputmask) {
+    var $ = Inputmask.dependencyLib;
 	qunit.module("Attribute options");
 
 	qunit.test("data-inputmask=\"'alias':'integer', 'integerDigits': 3, 'allowMinus': false, 'allowPlus': false\" - StennikovDmitriy", function(assert) {
