@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1-beta.38
+* Version: 4.0.1-beta.39
 */
 
 (function(factory) {
@@ -725,7 +725,7 @@
     function maskScope(actionObj, maskset, opts) {
         maskset = maskset || this.maskset;
         opts = opts || this.opts;
-        var inputmask = this, el = this.el, isRTL = this.isRTL, undoValue, $el, skipKeyPressEvent = false, skipInputEvent = false, ignorable = false, maxLength, mouseEnter = false, colorMask, originalPlaceholder = "";
+        var inputmask = this, el = this.el, isRTL = this.isRTL, undoValue, $el, skipKeyPressEvent = false, skipInputEvent = false, ignorable = false, maxLength, mouseEnter = false, colorMask, originalPlaceholder;
         function getMaskTemplate(baseOnInput, minimalPos, includeMode, noJit, clearOptionalTail) {
             var greedy = opts.greedy;
             if (clearOptionalTail) opts.greedy = false;
@@ -1913,6 +1913,7 @@
                 mouseEnter = false;
                 if (opts.clearMaskOnLostFocus && document.activeElement !== input) {
                     input.placeholder = originalPlaceholder;
+                    if (input.placeholder === "") input.removeAttribute("placeholder");
                 }
             },
             clickEvent: function(e, tabbed) {
@@ -1997,6 +1998,7 @@
                 var $input = $(this), input = this;
                 if (input.inputmask) {
                     input.placeholder = originalPlaceholder;
+                    if (input.placeholder === "") input.removeAttribute("placeholder");
                     var nptValue = input.inputmask._valueGet(), buffer = getBuffer().slice();
                     if (nptValue !== "" || colorMask !== undefined) {
                         if (opts.clearMaskOnLostFocus) {

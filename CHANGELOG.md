@@ -11,6 +11,7 @@
 - update dependencies
 
 ### Fixed
+- When blur input, inputmask adds attr placeholder to input - #1992
 - Fix endless loop for quantifiers (see tests_dynamic.js - latest unittests) #1983
 - Element keeps the focus to itself in ie11 #1846
 - Changes for min/max options do not get picked up. #1931

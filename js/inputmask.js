@@ -828,7 +828,7 @@
                 maxLength,
                 mouseEnter = false,
                 colorMask,
-                originalPlaceholder = "";
+                originalPlaceholder;
 
             //maskset helperfunctions
             function getMaskTemplate(baseOnInput, minimalPos, includeMode, noJit, clearOptionalTail) {
@@ -2265,6 +2265,7 @@
                     mouseEnter = false;
                     if (opts.clearMaskOnLostFocus && document.activeElement !== input) {
                         input.placeholder = originalPlaceholder;
+                        if(input.placeholder === "") input.removeAttribute("placeholder");
                     }
                 },
                 clickEvent: function (e, tabbed) {
@@ -2358,6 +2359,7 @@
                         input = this;
                     if (input.inputmask) {
                         input.placeholder = originalPlaceholder;
+                        if(input.placeholder === "") input.removeAttribute("placeholder");
                         var nptValue = input.inputmask._valueGet(),
                             buffer = getBuffer().slice();
 
