@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.1
+* Version: 4.0.2
 */
 
 (function(factory) {
@@ -17,11 +17,11 @@
 })(function(Inputmask) {
     Inputmask.extendDefinitions({
         A: {
-            validator: "[A-Za-zА-яЁёÀ-ÿµ]",
+            validator: "[A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
             casing: "upper"
         },
         "&": {
-            validator: "[0-9A-Za-zА-яЁёÀ-ÿµ]",
+            validator: "[0-9A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
             casing: "upper"
         },
         "#": {
@@ -67,7 +67,7 @@
             },
             definitions: {
                 "*": {
-                    validator: "[0-9１-９A-Za-zА-яЁёÀ-ÿµ!#$%&'*+/=?^_`{|}~-]"
+                    validator: "[0-9\uff11-\uff19A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5!#$%&'*+/=?^_`{|}~-]"
                 },
                 "-": {
                     validator: "[0-9A-Za-z-]"

@@ -55,7 +55,7 @@ module.exports = {
         filename: "./qunit.js"
     },
     externals: {
-        "qunitjs": "QUnit"
+        "qunit": "QUnit"
     },
     module: {
         rules: [

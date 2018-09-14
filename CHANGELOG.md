@@ -1,6 +1,8 @@
 # Change Log
 
-## [4.0.1 - 2018-09-14]
+## [4.0.2 - 2018-09-14]
+
+(4.0.1 => 4.0.2 rebuild dist with newer version of uglify #2000)
 
 ### Updates
 - <strong>remove phone alias</strong> (~ use https://github.com/RobinHerbots/inputmask.phone or https://github.com/andr-04/inputmask-multi instead) #1981

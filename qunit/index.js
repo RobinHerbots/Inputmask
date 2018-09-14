@@ -1,4 +1,4 @@
-import "../node_modules/qunitjs/qunit/qunit.css";
+import "../node_modules/qunit/qunit/qunit.css";
 import "../css/inputmask.css";
 
 //extensions
@@ -21,7 +21,7 @@ import jQuery from "jquery";
 if (Inputmask.dependencyLib === jQuery)
     window.jQuery = Inputmask.dependencyLib;
 
-import qunit from "qunitjs";
+import qunit from "qunit";
 import "./prototypeExtensions.js";
 import simulator from "./simulator.js";
 

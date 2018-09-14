@@ -27,8 +27,10 @@ module.exports = function (grunt) {
                     beautify: true,
                     mangle: false,
                     compress: false,
-                    preserveComments: false,
-                    ASCIIOnly: true
+                    output: {
+                        ascii_only : true,
+                        comments: false
+                    }
                 }
             };
             uglifyConfig[dstFileMin] = {
@@ -38,8 +40,10 @@ module.exports = function (grunt) {
                     banner: createBanner(dstFileMin),
                     mangle: false,
                     compress: false,
-                    preserveComments: false,
-                    ASCIIOnly: true
+                    output: {
+                        ascii_only : true,
+                        comments: false
+                    }
                 }
             };
         }
@@ -52,8 +56,10 @@ module.exports = function (grunt) {
                 beautify: true,
                 mangle: false,
                 compress: false,
-                preserveComments: false,
-                ASCIIOnly: true
+                output: {
+                    ascii_only : true,
+                    comments: false
+                }
             }
         };
         uglifyConfig["bundlemin"] = {
@@ -63,8 +69,10 @@ module.exports = function (grunt) {
                 banner: createBanner("jquery.inputmask.bundle.js"),
                 mangle: false,
                 compress: false,
-                preserveComments: false,
-                ASCIIOnly: true
+                output: {
+                    ascii_only : true,
+                    comments: false
+                }
             }
         };
 
