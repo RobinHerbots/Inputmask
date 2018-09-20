@@ -7,15 +7,16 @@
  */
 (function (factory) {
     if (typeof define === "function" && define.amd) {
-        define(["./dependencyLibs/inputmask.dependencyLib", "./global/window", "./global/document"], factory);
+        define(["./dependencyLibs/inputmask.dependencyLib", "./global/window"], factory);
     } else if (typeof exports === "object") {
-        module.exports = factory(require("./dependencyLibs/inputmask.dependencyLib"), require("./global/window"), require("./global/document"));
+        module.exports = factory(require("./dependencyLibs/inputmask.dependencyLib"), require("./global/window"));
     } else {
-        window.Inputmask = factory(window.dependencyLib || jQuery, window, document);
+        window.Inputmask = factory(window.dependencyLib || jQuery, window);
     }
 }
-(function ($, window, document, undefined) {
-        var ua = navigator.userAgent,
+(function ($, window, undefined) {
+        var document = window.document,
+            ua = navigator.userAgent,
             mobile = isInputEventSupported("touchstart"), //not entirely correct but will currently do
             iemobile = /iemobile/i.test(ua),
             iphone = /iphone/i.test(ua) && !iemobile;
@@ -2265,7 +2266,7 @@
                     mouseEnter = false;
                     if (opts.clearMaskOnLostFocus && document.activeElement !== input) {
                         input.placeholder = originalPlaceholder;
-                        if(input.placeholder === "") input.removeAttribute("placeholder");
+                        if (input.placeholder === "") input.removeAttribute("placeholder");
                     }
                 },
                 clickEvent: function (e, tabbed) {
@@ -2359,7 +2360,7 @@
                         input = this;
                     if (input.inputmask) {
                         input.placeholder = originalPlaceholder;
-                        if(input.placeholder === "") input.removeAttribute("placeholder");
+                        if (input.placeholder === "") input.removeAttribute("placeholder");
                         var nptValue = input.inputmask._valueGet(),
                             buffer = getBuffer().slice();
 

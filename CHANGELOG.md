@@ -1,5 +1,11 @@
 # Change Log
 
+## [UNRELEASED]
+
+### Updates
+
+### Fixed
+
 ## [4.0.2 - 2018-09-14]
 
 (4.0.1 => 4.0.2 rebuild dist with newer version of uglify #2000)

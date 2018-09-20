@@ -6,14 +6,15 @@
  */
 (function (factory) {
     if (typeof define === "function" && define.amd) {
-        define(["jqlite", "../global/window", "../global/document"], factory);
+        define(["jqlite", "../global/window"], factory);
     } else if (typeof exports === "object") {
-        module.exports = factory(require("jqlite"), require("../global/window"), require("../global/document"));
+        module.exports = factory(require("jqlite"), require("../global/window"));
     } else {
-        window.dependencyLib = factory(jqlite, window, document);
+        window.dependencyLib = factory(jqlite, window);
     }
 }
-(function ($, window, document) {
+(function ($, window) {
+    var document = window.document;
     // Use a stripped-down indexOf as it's faster than native
     // http://jsperf.com/thor-indexof-vs-for/5
     function indexOf(list, elem) {

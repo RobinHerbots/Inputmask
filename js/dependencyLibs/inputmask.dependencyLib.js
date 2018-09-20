@@ -6,15 +6,15 @@
  */
 (function (factory) {
     if (typeof define === "function" && define.amd) {
-        define(["../global/window", "../global/document"], factory);
+        define(["../global/window"], factory);
     } else if (typeof exports === "object") {
-        module.exports = factory(require("../global/window"), require("../global/document"));
+        module.exports = factory(require("../global/window"));
     } else {
-        window.dependencyLib = factory(window, document);
+        window.dependencyLib = factory(window);
     }
 }
-(function (window, document) {
-
+(function (window) {
+    var document = window.document;
     //helper functions
 
     // Use a stripped-down indexOf as it's faster than native
