@@ -173,16 +173,10 @@
             var dateObj = {"date": new Date(1, 0, 1)}, targetProp, mask = maskString, match, dateOperation, targetValidator;
 
             function extendProperty(value) {
-                var correctedValue;
-                if (opts.min && opts.min[targetProp] || opts.max && opts.max[targetProp]) {
-                    var min = opts.min && opts.min[targetProp] || opts.max[targetProp],
-                        max = opts.max && opts.max[targetProp] || opts.min[targetProp];
-                    correctedValue = value.replace(/[^0-9]/g, "");
-                    correctedValue += (min.indexOf(correctedValue) < max.indexOf(correctedValue) ? max : min).toString().substr(correctedValue.length);
-                    while (!(new RegExp(targetValidator)).test(correctedValue)) {
-                        correctedValue--;
-                    }
-                } else correctedValue = value.replace(/[^0-9]/g, "0");
+                var correctedValue = value.replace(/[^0-9]/g, "0");
+                while (!(new RegExp(targetValidator)).test(correctedValue)) {
+                    correctedValue--;
+                }
                 return correctedValue;
             }
 
