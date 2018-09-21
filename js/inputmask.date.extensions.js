@@ -174,6 +174,8 @@
 
             function extendProperty(value) {
                 var correctedValue = value.replace(/[^0-9]/g, "0");
+                var min = opts.min && opts.min[targetProp] || opts.max[targetProp];
+                correctedValue = correctedValue < min ? min : correctedValue;
                 while (!(new RegExp(targetValidator)).test(correctedValue)) {
                     correctedValue--;
                 }
