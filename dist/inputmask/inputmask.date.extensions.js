@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.2
+* Version: 4.0.3-beta.0
 */
 
 (function(factory) {
@@ -148,15 +148,11 @@
             date: new Date(1, 0, 1)
         }, targetProp, mask = maskString, match, dateOperation, targetValidator;
         function extendProperty(value) {
-            var correctedValue;
-            if (opts.min && opts.min[targetProp] || opts.max && opts.max[targetProp]) {
-                var min = opts.min && opts.min[targetProp] || opts.max[targetProp], max = opts.max && opts.max[targetProp] || opts.min[targetProp];
-                correctedValue = value.replace(/[^0-9]/g, "");
-                correctedValue += (min.indexOf(correctedValue) < max.indexOf(correctedValue) ? max : min).toString().substr(correctedValue.length);
-                while (!new RegExp(targetValidator).test(correctedValue)) {
-                    correctedValue--;
-                }
-            } else correctedValue = value.replace(/[^0-9]/g, "0");
+            var correctedValue = value.replace(/[^0-9]/g, "0");
+            if (correctedValue != value) {
+                var enteredPart = value.replace(/[^0-9]/g, ""), min = (opts.min && opts.min[targetProp] || value).toString(), max = (opts.max && opts.max[targetProp] || value).toString();
+                correctedValue = enteredPart + (enteredPart < min.slice(0, enteredPart.length) ? min.slice(enteredPart.length) : enteredPart > max.slice(0, enteredPart.length) ? max.slice(enteredPart.length) : correctedValue.toString().slice(enteredPart.length));
+            }
             return correctedValue;
         }
         function setValue(dateObj, value, opts) {

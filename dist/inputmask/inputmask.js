@@ -3,19 +3,19 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.2
+* Version: 4.0.3-beta.0
 */
 
 (function(factory) {
     if (typeof define === "function" && define.amd) {
-        define([ "./dependencyLibs/inputmask.dependencyLib", "./global/window", "./global/document" ], factory);
+        define([ "./dependencyLibs/inputmask.dependencyLib", "./global/window" ], factory);
     } else if (typeof exports === "object") {
-        module.exports = factory(require("./dependencyLibs/inputmask.dependencyLib"), require("./global/window"), require("./global/document"));
+        module.exports = factory(require("./dependencyLibs/inputmask.dependencyLib"), require("./global/window"));
     } else {
-        window.Inputmask = factory(window.dependencyLib || jQuery, window, document);
+        window.Inputmask = factory(window.dependencyLib || jQuery, window);
     }
-})(function($, window, document, undefined) {
-    var ua = navigator.userAgent, mobile = isInputEventSupported("touchstart"), iemobile = /iemobile/i.test(ua), iphone = /iphone/i.test(ua) && !iemobile;
+})(function($, window, undefined) {
+    var document = window.document, ua = navigator.userAgent, mobile = isInputEventSupported("touchstart"), iemobile = /iemobile/i.test(ua), iphone = /iphone/i.test(ua) && !iemobile;
     function Inputmask(alias, options, internal) {
         if (!(this instanceof Inputmask)) {
             return new Inputmask(alias, options, internal);

@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.2
+* Version: 4.0.3-beta.0
 */
 
 (function(modules) {
@@ -73,8 +73,8 @@
 })([ function(module, exports, __webpack_require__) {
     "use strict";
     __webpack_require__(1);
+    __webpack_require__(6);
     __webpack_require__(7);
-    __webpack_require__(8);
     var _inputmask = __webpack_require__(2);
     var _inputmask2 = _interopRequireDefault(_inputmask);
     var _inputmask3 = __webpack_require__(3);
@@ -87,7 +87,7 @@
         };
     }
     if (_inputmask4.default === _jquery2.default) {
-        __webpack_require__(9);
+        __webpack_require__(8);
     }
     window.Inputmask = _inputmask2.default;
 }, function(module, exports, __webpack_require__) {
@@ -195,12 +195,12 @@
     };
     (function(factory) {
         if (true) {
-            !(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(3), __webpack_require__(5), __webpack_require__(6) ], 
+            !(__WEBPACK_AMD_DEFINE_ARRAY__ = [ __webpack_require__(3), __webpack_require__(5) ], 
             __WEBPACK_AMD_DEFINE_FACTORY__ = factory, __WEBPACK_AMD_DEFINE_RESULT__ = typeof __WEBPACK_AMD_DEFINE_FACTORY__ === "function" ? __WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__) : __WEBPACK_AMD_DEFINE_FACTORY__, 
             __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
         } else {}
-    })(function($, window, document, undefined) {
-        var ua = navigator.userAgent, mobile = isInputEventSupported("touchstart"), iemobile = /iemobile/i.test(ua), iphone = /iphone/i.test(ua) && !iemobile;
+    })(function($, window, undefined) {
+        var document = window.document, ua = navigator.userAgent, mobile = isInputEventSupported("touchstart"), iemobile = /iemobile/i.test(ua), iphone = /iphone/i.test(ua) && !iemobile;
         function Inputmask(alias, options, internal) {
             if (!(this instanceof Inputmask)) {
                 return new Inputmask(alias, options, internal);
@@ -2945,18 +2945,7 @@
         return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
     };
     if (true) !(__WEBPACK_AMD_DEFINE_RESULT__ = function() {
-        return window;
-    }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)); else {}
-}, function(module, exports, __webpack_require__) {
-    "use strict";
-    var __WEBPACK_AMD_DEFINE_RESULT__;
-    var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
-        return typeof obj;
-    } : function(obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-    };
-    if (true) !(__WEBPACK_AMD_DEFINE_RESULT__ = function() {
-        return document;
+        return window || new (eval("require('jsdom')")("").window)();
     }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)); else {}
 }, function(module, exports, __webpack_require__) {
     "use strict";
@@ -3108,15 +3097,11 @@
                 date: new Date(1, 0, 1)
             }, targetProp, mask = maskString, match, dateOperation, targetValidator;
             function extendProperty(value) {
-                var correctedValue;
-                if (opts.min && opts.min[targetProp] || opts.max && opts.max[targetProp]) {
-                    var min = opts.min && opts.min[targetProp] || opts.max[targetProp], max = opts.max && opts.max[targetProp] || opts.min[targetProp];
-                    correctedValue = value.replace(/[^0-9]/g, "");
-                    correctedValue += (min.indexOf(correctedValue) < max.indexOf(correctedValue) ? max : min).toString().substr(correctedValue.length);
-                    while (!new RegExp(targetValidator).test(correctedValue)) {
-                        correctedValue--;
-                    }
-                } else correctedValue = value.replace(/[^0-9]/g, "0");
+                var correctedValue = value.replace(/[^0-9]/g, "0");
+                if (correctedValue != value) {
+                    var enteredPart = value.replace(/[^0-9]/g, ""), min = (opts.min && opts.min[targetProp] || value).toString(), max = (opts.max && opts.max[targetProp] || value).toString();
+                    correctedValue = enteredPart + (enteredPart < min.slice(0, enteredPart.length) ? min.slice(enteredPart.length) : enteredPart > max.slice(0, enteredPart.length) ? max.slice(enteredPart.length) : correctedValue.toString().slice(enteredPart.length));
+                }
                 return correctedValue;
             }
             function setValue(dateObj, value, opts) {

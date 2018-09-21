@@ -5,6 +5,7 @@
 ### Updates
 
 ### Fixed
+- incorrect work min max date - #2011, #2013
 
 ## [4.0.2 - 2018-09-14]
 
