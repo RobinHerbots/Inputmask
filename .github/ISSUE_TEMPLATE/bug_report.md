@@ -17,8 +17,8 @@ Steps to reproduce the behavior:
 **Expected behavior**
 A clear and concise description of what you expected to happen.
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**Live example**
+Add a link to a codepen, jsfiddle or other example page which shows the problem
 
 **Desktop (please complete the following information):**
  - OS: [e.g. iOS]
