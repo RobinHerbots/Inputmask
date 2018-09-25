@@ -17,6 +17,7 @@
 (function ($, window, undefined) {
         var document = window.document,
             ua = navigator.userAgent,
+            ie = (ua.indexOf('MSIE ') > 0) || (ua.indexOf('Trident/') > 0),
             mobile = isInputEventSupported("touchstart"), //not entirely correct but will currently do
             iemobile = /iemobile/i.test(ua),
             iphone = /iphone/i.test(ua) && !iemobile;
@@ -1868,6 +1869,23 @@
                 return opts.placeholder.charAt(pos % opts.placeholder.length);
             }
 
+            function HandleNativePlaceholder(npt, value) {
+                if (ie && npt.inputmask._valueGet() !== value) {
+                    var buffer = getBuffer().slice(),
+                        nptValue = npt.inputmask._valueGet();
+                    if (nptValue !== value) {
+                        if (getLastValidPosition() === -1 && nptValue === getBufferTemplate().join("")) {
+                            buffer = [];
+                        } else { //clearout optional tail of the mask
+                            clearOptionalTail(buffer);
+                        }
+                        writeBuffer(npt, buffer);
+                    }
+                } else if (npt.placeholder !== value) {
+                    npt.placeholder = value;
+                    if (npt.placeholder === "") npt.removeAttribute("placeholder");
+                }
+            }
 
             var EventRuler = {
                 on: function (input, eventName, eventHandler) {
@@ -1887,6 +1905,7 @@
                                         skipInputEvent = false;
                                         return e.preventDefault();
                                     }
+
                                     if (mobile) {
                                         var args = arguments;
                                         setTimeout(function () { //needed for caret selection when entering a char on Android 8 - #1818
@@ -2265,8 +2284,7 @@
                     var input = this;
                     mouseEnter = false;
                     if (opts.clearMaskOnLostFocus && document.activeElement !== input) {
-                        input.placeholder = originalPlaceholder;
-                        if (input.placeholder === "") input.removeAttribute("placeholder");
+                        HandleNativePlaceholder(input, originalPlaceholder);
                     }
                 },
                 clickEvent: function (e, tabbed) {
@@ -2359,8 +2377,7 @@
                     var $input = $(this),
                         input = this;
                     if (input.inputmask) {
-                        input.placeholder = originalPlaceholder;
-                        if (input.placeholder === "") input.removeAttribute("placeholder");
+                        HandleNativePlaceholder(input, originalPlaceholder);
                         var nptValue = input.inputmask._valueGet(),
                             buffer = getBuffer().slice();
 
@@ -2399,7 +2416,7 @@
                     var input = this;
                     mouseEnter = true;
                     if (document.activeElement !== input && opts.showMaskOnHover) {
-                        input.placeholder = (isRTL ? getBuffer().slice().reverse() : getBuffer()).join("");
+                        HandleNativePlaceholder(input, (isRTL ? getBuffer().slice().reverse() : getBuffer()).join(""));
                     }
                 },
                 submitEvent: function (e) { //trigger change on submit if any

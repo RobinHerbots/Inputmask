@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.3-beta.0
+* Version: 4.0.3-beta.1
 */
 
 (function(modules) {
@@ -200,7 +200,7 @@
             __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
         } else {}
     })(function($, window, undefined) {
-        var document = window.document, ua = navigator.userAgent, mobile = isInputEventSupported("touchstart"), iemobile = /iemobile/i.test(ua), iphone = /iphone/i.test(ua) && !iemobile;
+        var document = window.document, ua = navigator.userAgent, ie = ua.indexOf("MSIE ") > 0 || ua.indexOf("Trident/") > 0, mobile = isInputEventSupported("touchstart"), iemobile = /iemobile/i.test(ua), iphone = /iphone/i.test(ua) && !iemobile;
         function Inputmask(alias, options, internal) {
             if (!(this instanceof Inputmask)) {
                 return new Inputmask(alias, options, internal);
@@ -1764,6 +1764,22 @@
                 }
                 return opts.placeholder.charAt(pos % opts.placeholder.length);
             }
+            function HandleNativePlaceholder(npt, value) {
+                if (ie && npt.inputmask._valueGet() !== value) {
+                    var buffer = getBuffer().slice(), nptValue = npt.inputmask._valueGet();
+                    if (nptValue !== value) {
+                        if (getLastValidPosition() === -1 && nptValue === getBufferTemplate().join("")) {
+                            buffer = [];
+                        } else {
+                            clearOptionalTail(buffer);
+                        }
+                        writeBuffer(npt, buffer);
+                    }
+                } else if (npt.placeholder !== value) {
+                    npt.placeholder = value;
+                    if (npt.placeholder === "") npt.removeAttribute("placeholder");
+                }
+            }
             var EventRuler = {
                 on: function on(input, eventName, eventHandler) {
                     var ev = function ev(e) {
@@ -2103,8 +2119,7 @@
                     var input = this;
                     mouseEnter = false;
                     if (opts.clearMaskOnLostFocus && document.activeElement !== input) {
-                        input.placeholder = originalPlaceholder;
-                        if (input.placeholder === "") input.removeAttribute("placeholder");
+                        HandleNativePlaceholder(input, originalPlaceholder);
                     }
                 },
                 clickEvent: function clickEvent(e, tabbed) {
@@ -2188,8 +2203,7 @@
                 blurEvent: function blurEvent(e) {
                     var $input = $(this), input = this;
                     if (input.inputmask) {
-                        input.placeholder = originalPlaceholder;
-                        if (input.placeholder === "") input.removeAttribute("placeholder");
+                        HandleNativePlaceholder(input, originalPlaceholder);
                         var nptValue = input.inputmask._valueGet(), buffer = getBuffer().slice();
                         if (nptValue !== "" || colorMask !== undefined) {
                             if (opts.clearMaskOnLostFocus) {
@@ -2224,7 +2238,7 @@
                     var input = this;
                     mouseEnter = true;
                     if (document.activeElement !== input && opts.showMaskOnHover) {
-                        input.placeholder = (isRTL ? getBuffer().slice().reverse() : getBuffer()).join("");
+                        HandleNativePlaceholder(input, (isRTL ? getBuffer().slice().reverse() : getBuffer()).join(""));
                     }
                 },
                 submitEvent: function submitEvent(e) {
