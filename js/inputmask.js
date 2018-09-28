@@ -1214,6 +1214,7 @@
                                         }
                                         if (latestMatch.jit && !latestMatch.optionalQuantifier) {
                                             offset = tokenGroup.matches.indexOf(latestMatch);
+                                            // console.log(qndx + " - " + offset);
                                             testPos = pos; //match the position after the group
                                             insertStop = true;
                                             break; //stop quantifierloop && search for next possible match

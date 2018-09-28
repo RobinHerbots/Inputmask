@@ -1925,11 +1925,12 @@ export default function (qunit, Inputmask) {
             groupSeparator: '.',
             autoGroup: true,
             digits: 2,
-            removeMaskOnSubmit: false
+            removeMaskOnSubmit: false,
+            enforceDigitsOnBlur: true
         }).mask(testmask);
 
         $(testmask).val("0.50");
-
+        testmask.blur();
         assert.equal(testmask.inputmask._valueGet(), "0,50", "Result " + testmask.inputmask._valueGet());
     });
 
@@ -2064,5 +2065,24 @@ export default function (qunit, Inputmask) {
         testmask.blur();
 
         assert.equal(testmask.value, "(123.000)", "Result " + testmask.value);
+    });
+
+    qunit.test("numeric rounding with digits 0 - dianavele", function (assert) {
+        var $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" value="123,67"/>');
+        var testmask = document.getElementById("testmask");
+        Inputmask("numeric", {
+            radixPoint: ",",
+            groupSeparator: ".",
+            digits: 0,
+            showMaskOnHover: false,
+            showMaskOnFocus: false,
+            placeholder: '0',
+            digitsOptional: false,
+            autoGroup: true,
+            clearMaskOnLostFocus: false
+        }).mask(testmask);
+
+        assert.equal(testmask.value, "124", "Result " + testmask.value);
     });
 };

@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.3-beta.1
+* Version: 4.0.3-beta.2
 */
 
 (function(modules) {
@@ -3238,14 +3238,14 @@
             }
             return escapedTxt;
         }
-        function alignDigits(buffer, opts) {
-            if (opts.numericInput) {
+        function alignDigits(buffer, digits, opts) {
+            if (digits > 0) {
                 var radixPosition = $.inArray(opts.radixPoint, buffer);
                 if (radixPosition === -1) {
                     buffer.push(opts.radixPoint);
                     radixPosition = buffer.length - 1;
                 }
-                for (var i = 1; i <= opts.digits; i++) {
+                for (var i = 1; i <= digits; i++) {
                     buffer[radixPosition + i] = buffer[radixPosition + i] || "0";
                 }
             }
@@ -3713,6 +3713,17 @@
                     } else {
                         initialValue = initialValue.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "");
                     }
+                    var digits = 0;
+                    if (opts.radixPoint !== "" && initialValue.indexOf(opts.radixPoint) !== -1) {
+                        var valueParts = initialValue.split(opts.radixPoint), digits = valueParts[1].match(new RegExp("\\d*"))[0].length, digitsFactor = Math.pow(10, digits || 1);
+                        if (isFinite(opts.digits)) {
+                            digits = parseInt(opts.digits);
+                            digitsFactor = Math.pow(10, digits);
+                        }
+                        initialValue = initialValue.replace(Inputmask.escapeRegex(opts.radixPoint), ".");
+                        if (isFinite(initialValue)) initialValue = Math.round(parseFloat(initialValue) * digitsFactor) / digitsFactor;
+                        initialValue = initialValue.toString().replace(".", opts.radixPoint);
+                    }
                     if (opts.digits === 0) {
                         if (initialValue.indexOf(".") !== -1) {
                             initialValue = initialValue.substring(0, initialValue.indexOf("."));
@@ -3720,18 +3731,7 @@
                             initialValue = initialValue.substring(0, initialValue.indexOf(","));
                         }
                     }
-                    if (opts.radixPoint !== "" && isFinite(opts.digits)) {
-                        if (initialValue.indexOf(opts.radixPoint) !== -1) {
-                            var valueParts = initialValue.split(opts.radixPoint), decPart = valueParts[1].match(new RegExp("\\d*"))[0];
-                            if (parseInt(opts.digits) < decPart.toString().length) {
-                                var digitsFactor = Math.pow(10, parseInt(opts.digits));
-                                initialValue = initialValue.replace(Inputmask.escapeRegex(opts.radixPoint), ".");
-                                initialValue = Math.round(parseFloat(initialValue) * digitsFactor) / digitsFactor;
-                                initialValue = initialValue.toString().replace(".", opts.radixPoint);
-                            }
-                        }
-                    }
-                    return alignDigits(initialValue.toString().split(""), opts).join("");
+                    return alignDigits(initialValue.toString().split(""), digits, opts).join("");
                 },
                 onKeyDown: function onKeyDown(e, buffer, caretPos, opts) {
                     var $input = $(this);
