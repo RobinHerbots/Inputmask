@@ -1117,6 +1117,13 @@ If you don't use data attributes you can disable the import by specifying import
 
 Default: true
 
+### shiftPositions
+Shift position of the mask entries on entry and deletion.
+In some cases shift the mask enties isn't desired.  
+Ex. date masks.  Shifting month to day makes no sense
+
+Default: true
+
 ## General
 ### set a value and apply mask
 this can be done with the traditional jquery.val function (all browsers) or JavaScript value property for browsers which implement lookupGetter or getOwnPropertyDescriptor

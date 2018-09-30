@@ -110,7 +110,8 @@
                 inputmode: "verbatim", //specify the inputmode  - already in place for when browsers will support it
                 colorMask: false, //enable css styleable mask
                 disablePredictiveText: false, //disable Predictive Text on mobile devices
-                importDataAttributes: true //import data-inputmask attributes
+                importDataAttributes: true, //import data-inputmask attributes
+                shiftPositions: true //shift position of the mask entries on entry and deletion.
             },
             definitions: {
                 "9": { //\uFF11-\uFF19 #1606
