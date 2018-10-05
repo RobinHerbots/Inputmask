@@ -1331,6 +1331,7 @@
             function getBuffer(noCache) {
                 if (getMaskSet().buffer === undefined || noCache === true) {
                     getMaskSet().buffer = getMaskTemplate(true, getLastValidPosition(), true);
+                    if (getMaskSet()._buffer === undefined) getMaskSet()._buffer = getMaskSet().buffer.slice();
                 }
                 return getMaskSet().buffer;
             }
@@ -1728,7 +1729,7 @@
                                     trackbackPositions(undefined, posMatch, true);
                                     j = posMatch + 1;
                                     valid = true;
-                                } else if (positionCanMatchDefinition(posMatch, t.match.def)) { //validated match
+                                } else if (opts.shiftPositions && positionCanMatchDefinition(posMatch, t.match.def)) { //validated match
                                     var result = isValid(posMatch, t.input, true, true);
                                     valid = result !== false;
                                     j = (result.caret || result.insert) ? getLastValidPosition() : posMatch + 1;

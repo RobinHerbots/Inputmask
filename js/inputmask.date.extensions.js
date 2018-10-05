@@ -292,7 +292,8 @@
                     if (test.nativeDef.indexOf("[AP]") == 0) return elem.toUpperCase();
                     return elem;
                 },
-                insertMode: false
+                insertMode: false,
+                shiftPositions: false
             }
         });
 

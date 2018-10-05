@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.3-beta.2
+* Version: 4.0.3-beta.3
 */
 
 (function(factory) {
@@ -95,7 +95,8 @@
             inputmode: "verbatim",
             colorMask: false,
             disablePredictiveText: false,
-            importDataAttributes: true
+            importDataAttributes: true,
+            shiftPositions: true
         },
         definitions: {
             9: {
@@ -1129,6 +1130,7 @@
         function getBuffer(noCache) {
             if (getMaskSet().buffer === undefined || noCache === true) {
                 getMaskSet().buffer = getMaskTemplate(true, getLastValidPosition(), true);
+                if (getMaskSet()._buffer === undefined) getMaskSet()._buffer = getMaskSet().buffer.slice();
             }
             return getMaskSet().buffer;
         }
@@ -1458,7 +1460,7 @@
                                 trackbackPositions(undefined, posMatch, true);
                                 j = posMatch + 1;
                                 valid = true;
-                            } else if (positionCanMatchDefinition(posMatch, t.match.def)) {
+                            } else if (opts.shiftPositions && positionCanMatchDefinition(posMatch, t.match.def)) {
                                 var result = isValid(posMatch, t.input, true, true);
                                 valid = result !== false;
                                 j = result.caret || result.insert ? getLastValidPosition() : posMatch + 1;
