@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
-    <metadata>
+    <metadata minClientVersion="3.3.0">
         <id>inputmask</id>
         <version>0.0.0</version>
         <title>Inputmask</title>
@@ -12,9 +12,13 @@
         <description>Inputmask is a javascript library which creates an input mask.  Inputmask can run against vanilla javascript, jQuery and jqlite.</description>
         <summary>Inputmask is a javascript library which creates an input mask.  Inputmask can run against vanilla javascript, jQuery and jqlite.</summary>
         <tags>jQuery, plugins, input, form, inputmask, mask</tags>
+        <contentFiles>
+            <files include="Scripts\inputmask\**\*" buildAction="None" />
+        </contentFiles>
     </metadata>
     <files>
         <file src="..\dist\**\*" target="content\Scripts\inputmask" />
+        <file src="..\dist\**\*" target="contentFiles\Scripts\inputmask\any\any" />
         <file src="Readme.txt" target="Readme.txt" />
     </files>
 </package>
