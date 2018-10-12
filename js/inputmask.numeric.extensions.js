@@ -554,20 +554,30 @@
                         initialValue = initialValue.replace(".", opts.radixPoint);
                     }
                 }
-                var kommaMatches = initialValue.match(/,/g);
-                var dotMatches = initialValue.match(/\./g);
-                if (dotMatches && kommaMatches) {
-                    if (dotMatches.length > kommaMatches.length) {
-                        initialValue = initialValue.replace(/\./g, "");
+                var kommaMatches = initialValue.match(/,/g) || [],
+                    dotMatches = initialValue.match(/\./g) || [];
+                if (dotMatches.length > kommaMatches.length && kommaMatches.length !== 0) {
+                    initialValue = initialValue.replace(/\./g, "");
+                    if (opts.radixPoint !== "")
                         initialValue = initialValue.replace(",", opts.radixPoint);
-                    } else if (kommaMatches.length > dotMatches.length) {
-                        initialValue = initialValue.replace(/,/g, "");
+                } else if (kommaMatches.length > dotMatches.length && dotMatches.length !== 0) {
+                    initialValue = initialValue.replace(/,/g, "");
+                    if (opts.radixPoint !== "")
                         initialValue = initialValue.replace(".", opts.radixPoint);
-                    } else { //equal
-                        initialValue = initialValue.indexOf(".") < initialValue.indexOf(",") ? initialValue.replace(/\./g, "") : initialValue.replace(/,/g, "");
+                } else if (kommaMatches === dotMatches) {
+                    if (initialValue.indexOf(".") < initialValue.indexOf(",")) {
+                        initialValue = initialValue.replace(/\./g, "");
+                        if (opts.radixPoint !== "")
+                            initialValue = initialValue.replace(",", opts.radixPoint);
+                    } else {
+                        initialValue = initialValue.replace(/,/g, "");
+                        if (opts.radixPoint !== "")
+                            initialValue = initialValue.replace(".", opts.radixPoint);
                     }
                 } else {
-                    initialValue = initialValue.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "");
+
+                    initialValue = initialValue.replace(new RegExp(Inputmask.escapeRegex(initialValue.indexOf("0") === 0 ? opts.radixPoint : opts.groupSeparator), "g"), "");
+                    initialValue = initialValue.replace(new RegExp(Inputmask.escapeRegex(initialValue.indexOf("0") === 0 ? opts.radixPoint : opts.groupSeparator), "g"), "");
                 }
 
                 var digits = 0;

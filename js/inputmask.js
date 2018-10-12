@@ -1642,6 +1642,7 @@
 
             //fill in best positions according the current input
             function trackbackPositions(originalPos, newPos, fillOnly) {
+                console.log("trackbackPositions");
                 var result;
                 if (originalPos === undefined) {
                     //find previous valid
@@ -1660,6 +1661,7 @@
                                 "input": getPlaceholder(ps, bestMatch.match, true) || bestMatch.match.def
                             });
                             bestMatch.generatedInput = true;
+//                            console.log("trackbackPositions " + bestMatch.input);
                             revalidateMask(ps, bestMatch, true);
                             if (fillOnly !== true) {
                                 //revalidate the new position to update the locator value
@@ -1802,10 +1804,6 @@
                 }
 
                 return position;
-            }
-
-            function getBufferElement(position) {
-                return getMaskSet().validPositions[position] === undefined ? getPlaceholder(position) : getMaskSet().validPositions[position].input;
             }
 
             function writeBuffer(input, buffer, caretPos, event, triggerEvents) {

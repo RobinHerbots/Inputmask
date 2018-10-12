@@ -5,6 +5,7 @@
 ### Updates
 
 ### Fixed
+- digits: 3 - error on transform #2022
 - "Can not read property 'join' of undefined" when using Inputmask.format #2019
 - Inputmask numeric does no round up when digits is 0 #2018
 - Strange Calendar popup issue in IE Only when used with Daterangepicker #1965

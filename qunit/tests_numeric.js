@@ -2085,4 +2085,24 @@ export default function (qunit, Inputmask) {
 
         assert.equal(testmask.value, "124", "Result " + testmask.value);
     });
+
+    qunit.test("set 0.001 - ghost", function (assert) {
+        var $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" value="0.001"/>');
+        var testmask = document.getElementById("testmask");
+        Inputmask("numeric", {
+            digits: 3,
+            digitsOptional: false,
+            suffix: ' €',
+            rightAlign: 0,
+            groupSeparator: '.',
+            radixPoint: ',',
+            placeholder: '0',
+            autoGroup: true,
+            autoUnmask: true,
+            removeMaskOnSubmit: true,
+        }).mask(testmask);
+
+        assert.equal(testmask.value, "0,001", "Result " + testmask.value);
+    });
 };
