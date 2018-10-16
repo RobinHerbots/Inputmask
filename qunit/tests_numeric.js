@@ -935,7 +935,7 @@ export default function (qunit, Inputmask) {
         $("#testmask").val("-5.000,77");
         $(testmask).trigger("blur");
 
-        assert.equal(testmask.value, "-5000", "Result " + testmask.value);
+        assert.equal(testmask.value, "-5001", "Result " + testmask.value);
 
     });
 
@@ -995,7 +995,8 @@ export default function (qunit, Inputmask) {
             autoGroup: true,
             digits: 2,
             radixPoint: ',',
-            groupSize: 3
+            groupSize: 3,
+            inputType: "number"
         }).mask(testmask);
 
         $("#testmask").val("8100000.00");
@@ -1014,7 +1015,8 @@ export default function (qunit, Inputmask) {
             autoGroup: true,
             digits: 2,
             radixPoint: ',',
-            groupSize: 3
+            groupSize: 3,
+            inputType: "number"
         }).mask(testmask);
 
         $("#testmask").val("12345678.12");
@@ -1052,7 +1054,8 @@ export default function (qunit, Inputmask) {
             autoGroup: true,
             digits: 2,
             radixPoint: ',',
-            groupSize: 3
+            groupSize: 3,
+            inputType: "number"
         }).mask(testmask);
 
         $("#testmask").val(8100000.00);
@@ -1071,7 +1074,8 @@ export default function (qunit, Inputmask) {
             digits: 2,
             digitsOptional: false,
             radixPoint: ',',
-            groupSize: 3
+            groupSize: 3,
+            inputType: "number"
         }).mask(testmask);
 
         $("#testmask").val(8100000.00);
@@ -1091,7 +1095,8 @@ export default function (qunit, Inputmask) {
             autoGroup: true,
             digits: 2,
             radixPoint: ",",
-            groupSize: 3
+            groupSize: 3,
+            inputType: "number"
         }).mask(testmask);
 
         $("#testmask").val("810000.00");
@@ -1926,7 +1931,8 @@ export default function (qunit, Inputmask) {
             autoGroup: true,
             digits: 2,
             removeMaskOnSubmit: false,
-            enforceDigitsOnBlur: true
+            enforceDigitsOnBlur: true,
+            inputType: "number"
         }).mask(testmask);
 
         $(testmask).val("0.50");
@@ -1959,7 +1965,8 @@ export default function (qunit, Inputmask) {
             groupSeparator: '.',
             autoGroup: true,
             digits: 2,
-            removeMaskOnSubmit: false
+            removeMaskOnSubmit: false,
+            inputType: "number"
         }).mask(testmask);
 
         $(testmask).val("1234.56");
@@ -1971,7 +1978,7 @@ export default function (qunit, Inputmask) {
         var $fixture = $("#qunit-fixture");
         $fixture.append('<input type="text" id="testmask" />');
         var testmask = document.getElementById("testmask");
-        Inputmask("currency", {radixPoint: ","}).mask(testmask);
+        Inputmask("currency", {radixPoint: ",", inputType: "number"}).mask(testmask);
 
         $(testmask).val("100.00");
 
@@ -2027,12 +2034,13 @@ export default function (qunit, Inputmask) {
         var $fixture = $("#qunit-fixture");
         $fixture.append('<input type="text" id="testmask" />');
         var testmask = document.getElementById("testmask");
-        Inputmask(  {
+        Inputmask({
             max: '99999999.99',
             alias: 'currency',
             prefix: '',
             allowPlus: false,
-            autoUnmask: true}).mask(testmask);
+            autoUnmask: true
+        }).mask(testmask);
 
         $(testmask).Type("1.23");
         $.caret(testmask, 0);
@@ -2049,7 +2057,7 @@ export default function (qunit, Inputmask) {
         var testmask = document.getElementById("testmask");
         Inputmask("numeric", {
             rightAlign: false,
-            autoGroup:  true,
+            autoGroup: true,
             groupSize: 3,
             digits: 3,
             enforceDigitsOnBlur: true,
@@ -2101,6 +2109,7 @@ export default function (qunit, Inputmask) {
             autoGroup: true,
             autoUnmask: true,
             removeMaskOnSubmit: true,
+            inputType: "number"
         }).mask(testmask);
 
         assert.equal(testmask.value, "0,001", "Result " + testmask.value);

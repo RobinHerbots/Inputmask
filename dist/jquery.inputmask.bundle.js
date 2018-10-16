@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.3-beta.3
+* Version: 4.0.3-beta.4
 */
 
 (function(modules) {
@@ -1579,6 +1579,7 @@
                 return result;
             }
             function trackbackPositions(originalPos, newPos, fillOnly) {
+                console.log("trackbackPositions");
                 var result;
                 if (originalPos === undefined) {
                     for (originalPos = newPos - 1; originalPos > 0; originalPos--) {
@@ -1706,9 +1707,6 @@
                 while (--position > 0 && (newBlock === true && getTest(position).match.newBlockMarker !== true || newBlock !== true && !isMask(position) && (tests = getTests(position), 
                 tests.length < 2 || tests.length === 2 && tests[1].match.def === ""))) {}
                 return position;
-            }
-            function getBufferElement(position) {
-                return getMaskSet().validPositions[position] === undefined ? getPlaceholder(position) : getMaskSet().validPositions[position].input;
             }
             function writeBuffer(input, buffer, caretPos, event, triggerEvents) {
                 if (event && $.isFunction(opts.onBeforeWrite)) {
@@ -3345,6 +3343,7 @@
                 insertMode: true,
                 autoUnmask: false,
                 unmaskAsNumber: false,
+                inputType: "text",
                 inputmode: "numeric",
                 preValidation: function preValidation(buffer, pos, c, isSelection, opts, maskset) {
                     if (c === "-" || c === opts.negationSymbol.front) {
@@ -3691,48 +3690,28 @@
                 },
                 onBeforeMask: function onBeforeMask(initialValue, opts) {
                     opts.isNegative = undefined;
-                    if (typeof initialValue == "number" && opts.radixPoint !== "") {
-                        initialValue = initialValue.toString().replace(".", opts.radixPoint);
+                    var radixPoint = opts.radixPoint || ",";
+                    if ((typeof initialValue == "number" || opts.inputType === "number") && radixPoint !== "") {
+                        initialValue = initialValue.toString().replace(".", radixPoint);
                     }
-                    initialValue = initialValue.toString().charAt(initialValue.length - 1) === opts.radixPoint ? initialValue.toString().substr(0, initialValue.length - 1) : initialValue.toString();
-                    if (opts.radixPoint !== "" && isFinite(initialValue)) {
-                        var vs = initialValue.split("."), groupSize = opts.groupSeparator !== "" ? parseInt(opts.groupSize) : 0;
-                        if (vs.length === 2 && (vs[0].length > groupSize || vs[1].length > groupSize || vs[0].length <= groupSize && vs[1].length < groupSize)) {
-                            initialValue = initialValue.replace(".", opts.radixPoint);
-                        }
-                    }
-                    var kommaMatches = initialValue.match(/,/g);
-                    var dotMatches = initialValue.match(/\./g);
-                    if (dotMatches && kommaMatches) {
-                        if (dotMatches.length > kommaMatches.length) {
-                            initialValue = initialValue.replace(/\./g, "");
-                            initialValue = initialValue.replace(",", opts.radixPoint);
-                        } else if (kommaMatches.length > dotMatches.length) {
-                            initialValue = initialValue.replace(/,/g, "");
-                            initialValue = initialValue.replace(".", opts.radixPoint);
-                        } else {
-                            initialValue = initialValue.indexOf(".") < initialValue.indexOf(",") ? initialValue.replace(/\./g, "") : initialValue.replace(/,/g, "");
-                        }
-                    } else {
-                        initialValue = initialValue.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "");
-                    }
+                    var valueParts = initialValue.split(radixPoint), integerPart = valueParts[0].replace(/[^\-0-9]/g, ""), decimalPart = valueParts.length > 1 ? valueParts[1].replace(/[^0-9]/g, "") : "";
+                    initialValue = integerPart + (decimalPart !== "" ? radixPoint + decimalPart : decimalPart);
                     var digits = 0;
-                    if (opts.radixPoint !== "" && initialValue.indexOf(opts.radixPoint) !== -1) {
-                        var valueParts = initialValue.split(opts.radixPoint), digits = valueParts[1].match(new RegExp("\\d*"))[0].length, digitsFactor = Math.pow(10, digits || 1);
-                        if (isFinite(opts.digits)) {
-                            digits = parseInt(opts.digits);
-                            digitsFactor = Math.pow(10, digits);
+                    if (radixPoint !== "") {
+                        digits = decimalPart.length;
+                        if (decimalPart !== "") {
+                            var digitsFactor = Math.pow(10, digits || 1);
+                            if (isFinite(opts.digits)) {
+                                digits = parseInt(opts.digits);
+                                digitsFactor = Math.pow(10, digits);
+                            }
+                            initialValue = initialValue.replace(Inputmask.escapeRegex(radixPoint), ".");
+                            if (isFinite(initialValue)) initialValue = Math.round(parseFloat(initialValue) * digitsFactor) / digitsFactor;
+                            initialValue = initialValue.toString().replace(".", radixPoint);
                         }
-                        initialValue = initialValue.replace(Inputmask.escapeRegex(opts.radixPoint), ".");
-                        if (isFinite(initialValue)) initialValue = Math.round(parseFloat(initialValue) * digitsFactor) / digitsFactor;
-                        initialValue = initialValue.toString().replace(".", opts.radixPoint);
                     }
-                    if (opts.digits === 0) {
-                        if (initialValue.indexOf(".") !== -1) {
-                            initialValue = initialValue.substring(0, initialValue.indexOf("."));
-                        } else if (initialValue.indexOf(",") !== -1) {
-                            initialValue = initialValue.substring(0, initialValue.indexOf(","));
-                        }
+                    if (opts.digits === 0 && initialValue.indexOf(Inputmask.escapeRegex(radixPoint)) !== -1) {
+                        initialValue = initialValue.substring(0, initialValue.indexOf(Inputmask.escapeRegex(radixPoint)));
                     }
                     return alignDigits(initialValue.toString().split(""), digits, opts).join("");
                 },
