@@ -1213,14 +1213,6 @@
                                             testPos = pos; //match the position after the group
                                             break; //stop quantifierloop && search for next possible match
                                         }
-                                        if (latestMatch.jit && !latestMatch.optionalQuantifier) {
-                                            offset = tokenGroup.matches.indexOf(latestMatch);
-                                            // console.log(qndx + " - " + offset);
-                                            testPos = pos; //match the position after the group
-                                            insertStop = true;
-                                            break; //stop quantifierloop && search for next possible match
-                                        }
-
                                         return true;
                                     }
                                 }
@@ -1234,8 +1226,7 @@
                     }
 
                     //the offset is set in the quantifierloop when git masking is used
-                    for (var tndx = (ndxInitializer.length > 0 ? ndxInitializer.shift() : 0); tndx < maskToken.matches.length; tndx = tndx + 1 + offset) {
-                        offset = 0; //reset offset
+                    for (var tndx = (ndxInitializer.length > 0 ? ndxInitializer.shift() : 0); tndx < maskToken.matches.length; tndx++) {
                         if (maskToken.matches[tndx].isQuantifier !== true) {
                             var match = handleMatch(maskToken.matches[tndx], [tndx].concat(loopNdx), quantifierRecurse);
                             if (match && testPos === pos) {
@@ -1642,7 +1633,7 @@
 
             //fill in best positions according the current input
             function trackbackPositions(originalPos, newPos, fillOnly) {
-                console.log("trackbackPositions");
+                // console.log("trackbackPositions");
                 var result;
                 if (originalPos === undefined) {
                     //find previous valid
