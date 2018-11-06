@@ -64,8 +64,8 @@ const rules = {
 
 module.exports = {
     entry: {
-        "dist/inputmask.bundle": "./bundle.js",
-        "dist/inputmask.bundle.min": "./bundle.js",
+        "dist/inputmask": "./bundle.js",
+        "dist/inputmask.min": "./bundle.js",
         "qunit/qunit": "./qunit/index.js"
     },
     output: {

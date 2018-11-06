@@ -10,8 +10,8 @@ webPackJqueryConfig.resolve.alias = {
 };
 
 webPackJqueryConfig.entry = {
-    "dist/jquery.inputmask.bundle": "./bundle.jquery.js",
-    "dist/jquery.inputmask.bundle.min": "./bundle.jquery.js"
+    "dist/jquery.inputmask": "./bundle.jquery.js",
+    "dist/jquery.inputmask.min": "./bundle.jquery.js"
 };
 
 module.exports = webPackJqueryConfig;

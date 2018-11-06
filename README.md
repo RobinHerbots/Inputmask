@@ -42,12 +42,12 @@ Include the js-files which you can find in the `dist` folder.
 Inputmask with jQuery as dependencylib.
 ```html
 <script src="jquery.js"></script>
-<script src="dist/jquery.inputmask.bundle.js"></script>
+<script src="dist/jquery.inputmask.js"></script>
 ```
 
 Inputmask with vanilla dependencylib.
 ```html
-<script src="dist/inputmask.bundle.js"></script>
+<script src="dist/inputmask.js"></script>
 ```
 
 If you like to automatically bind the inputmask to the inputs marked with the data-inputmask- ... attributes you may also want to include the inputmask.binding.js
