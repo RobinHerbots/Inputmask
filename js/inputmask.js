@@ -975,8 +975,7 @@
                     matches = [],
                     insertStop = false,
                     latestMatch,
-                    cacheDependency = ndxIntlzr ? ndxIntlzr.join("") : "",
-                    offset = 0;
+                    cacheDependency = ndxIntlzr ? ndxIntlzr.join("") : "";
 
                 function resolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) { //ndxInitializer contains a set of indexes to speedup searches in the mtokens
                     function handleMatch(match, loopNdx, quantifierRecurse) {
@@ -1041,8 +1040,8 @@
 
                         function staticCanMatchDefinition(source, target) {
                             var sloc = source.locator.slice(source.alternation).join(""),
-                                tloc = target.locator.slice(target.alternation).join(""), canMatch = sloc == tloc,
-                                canMatch = canMatch && source.match.fn === null && target.match.fn !== null ? target.match.fn.test(source.match.def, getMaskSet(), pos, false, opts, false) : false;
+                                tloc = target.locator.slice(target.alternation).join(""), canMatch = sloc == tloc;
+                            canMatch = canMatch && source.match.fn === null && target.match.fn !== null ? target.match.fn.test(source.match.def, getMaskSet(), pos, false, opts, false) : false;
 
                             return canMatch;
                         }
@@ -1213,6 +1212,9 @@
                                             testPos = pos; //match the position after the group
                                             break; //stop quantifierloop && search for next possible match
                                         }
+                                        if (latestMatch.jit && !latestMatch.optionalQuantifier) {
+                                            latestMatch.jitOffset = tokenGroup.matches.indexOf(latestMatch);
+                                        }
                                         return true;
                                     }
                                 }
@@ -1306,7 +1308,7 @@
                     return $.extend(true, [], matches);
                 }
                 getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
-                // console.log(pos + " - " + JSON.stringify(matches));
+                console.log(pos + " - " + JSON.stringify(matches));
                 return getMaskSet().tests[pos];
             }
 
