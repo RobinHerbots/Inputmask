@@ -36,14 +36,6 @@ Demo page see [http://robinherbots.github.io/Inputmask](http://robinherbots.gith
 Thanks to [Jetbrains](https://www.jetbrains.com/) for providing a free license for their excellent Webstorm IDE.
 
 ## Setup
-### dependencyLibs
-Inputmask can run against different javascript libraries.
-You can choose between:
-- inputmask.dependencyLib (vanilla)
-- inputmask.dependencyLib.jquery
-- inputmask.dependencyLib.jqlite
-- .... (others are welcome)
-
 ### Classic web with <script\> tag
 Include the js-files which you can find in the `dist` folder.
 
