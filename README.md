@@ -47,28 +47,15 @@ You can choose between:
 ### Classic web with <script\> tag
 Include the js-files which you can find in the `dist` folder.
 
-If you want to include the Inputmask and all extensions. (with jQuery as dependencylib)
+Inputmask with jQuery as dependencylib.
 ```html
 <script src="jquery.js"></script>
 <script src="dist/jquery.inputmask.bundle.js"></script>
 ```
-For individual extensions. (with jQuery as dependencylib)
-```html
-<script src="jquery.js"></script>
-<script src="dist/inputmask/inputmask.js"></script>
-<script src="dist/inputmask/inputmask.extensions.js"></script>
-<script src="dist/inputmask/inputmask.numeric.extensions.js"></script>
-<script src="dist/inputmask/inputmask.date.extensions.js"></script>
-<script src="dist/inputmask/jquery.inputmask.js"></script>
-```
 
-For individual extensions. (with vanilla dependencylib)
+Inputmask with vanilla dependencylib.
 ```html
-<script src="dist/inputmask/dependencyLibs/inputmask.dependencyLib.js"></script>
-<script src="dist/inputmask/inputmask.js"></script>
-<script src="dist/inputmask/inputmask.extensions.js"></script>
-<script src="dist/inputmask/inputmask.numeric.extensions.js"></script>
-<script src="dist/inputmask/inputmask.date.extensions.js"></script>
+<script src="dist/inputmask.bundle.js"></script>
 ```
 
 If you like to automatically bind the inputmask to the inputs marked with the data-inputmask- ... attributes you may also want to include the inputmask.binding.js
@@ -98,31 +85,7 @@ var Inputmask = require('inputmask');
 import Inputmask from "inputmask";
 ```
 
-For individual extensions.
-Every extension exports the Inputmask, so you only need to import the extensions.
-See example.
-```
-require("inputmask/dist/inputmask/inputmask.numeric.extensions");
-var Inputmask = require("inputmask/dist/inputmask/inputmask.date.extensions");
-
-//es6
-import "inputmask/dist/inputmask/inputmask.numeric.extensions";
-import Inputmask from "inputmask/dist/inputmask/inputmask.date.extensions";
-```
-
-#### Selecting the dependencyLib
-By default the vanilla dependencyLib is used.  You can select another dependency
-by creating an alias in the webpack.config.
-
-```
- resolve: {
-        alias: {
-            "./dependencyLibs/inputmask.dependencyLib": "./dependencyLibs/inputmask.dependencyLib.jquery"
-        }
-    },
-```
 ## Usage
-
 ### via Inputmask class
 
 ```javascript

@@ -7,6 +7,7 @@
 - README_numeric.md => Setting initial values
 
 ### Updates
+- package & bundling
 
 ### Fixed
 - digits: 3 - error on transform #2022
