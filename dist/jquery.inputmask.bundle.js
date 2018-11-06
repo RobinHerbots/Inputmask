@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.3-beta.6
+* Version: 4.0.3-beta.7
 */
 
 (function(modules) {
@@ -1017,7 +1017,7 @@
                 return valid;
             }
             function getTests(pos, ndxIntlzr, tstPs) {
-                var maskTokens = getMaskSet().maskToken, testPos = ndxIntlzr ? tstPs : 0, ndxInitializer = ndxIntlzr ? ndxIntlzr.slice() : [ 0 ], matches = [], insertStop = false, latestMatch, cacheDependency = ndxIntlzr ? ndxIntlzr.join("") : "", offset = 0;
+                var maskTokens = getMaskSet().maskToken, testPos = ndxIntlzr ? tstPs : 0, ndxInitializer = ndxIntlzr ? ndxIntlzr.slice() : [ 0 ], matches = [], insertStop = false, latestMatch, cacheDependency = ndxIntlzr ? ndxIntlzr.join("") : "";
                 function resolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) {
                     function handleMatch(match, loopNdx, quantifierRecurse) {
                         function isFirstMatch(latestMatch, tokenGroup) {
@@ -1075,7 +1075,8 @@
                             return source.match.def === target.match.nativeDef;
                         }
                         function staticCanMatchDefinition(source, target) {
-                            var sloc = source.locator.slice(source.alternation).join(""), tloc = target.locator.slice(target.alternation).join(""), canMatch = sloc == tloc, canMatch = canMatch && source.match.fn === null && target.match.fn !== null ? target.match.fn.test(source.match.def, getMaskSet(), pos, false, opts, false) : false;
+                            var sloc = source.locator.slice(source.alternation).join(""), tloc = target.locator.slice(target.alternation).join(""), canMatch = sloc == tloc;
+                            canMatch = canMatch && source.match.fn === null && target.match.fn !== null ? target.match.fn.test(source.match.def, getMaskSet(), pos, false, opts, false) : false;
                             return canMatch;
                         }
                         function setMergeLocators(targetMatch, altMatch) {
@@ -1215,6 +1216,9 @@
                                             testPos = pos;
                                             break;
                                         }
+                                        if (latestMatch.jit && !latestMatch.optionalQuantifier) {
+                                            latestMatch.jitOffset = tokenGroup.matches.indexOf(latestMatch);
+                                        }
                                         return true;
                                     }
                                 }
@@ -1300,6 +1304,7 @@
                     return $.extend(true, [], matches);
                 }
                 getMaskSet().tests[pos] = $.extend(true, [], matches);
+                console.log(pos + " - " + JSON.stringify(matches));
                 return getMaskSet().tests[pos];
             }
             function getBufferTemplate() {
