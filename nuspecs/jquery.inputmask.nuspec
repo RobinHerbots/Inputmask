@@ -14,8 +14,7 @@
         <tags>jQuery, plugins, input, form, inputmask, mask</tags>
     </metadata>
     <files>
-        <file src="..\dist\inputmask\**\*" target="content\Scripts\inputmask" />
-        <file src="..\dist\min\inputmask\**\*" target="content\Scripts\inputmask\min" />
+        <file src="..\dist\**\*" target="content\Scripts\inputmask" />
         <file src="Readme.txt" target="Readme.txt" />
     </files>
 </package>
