@@ -10,3 +10,4 @@ npm-debug.log
 qunit/qunit.js
 qunit/qunit.js.map
 package-lock.json
+**/*.map

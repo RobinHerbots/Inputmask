@@ -1,10 +1,19 @@
 'use strict';
 
-let webpack = require('webpack');
-let path = require('path');
+const webpack = require('webpack');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const path = require('path');
 
 function _path(p) {
     return path.join(__dirname, p);
+}
+
+function createBanner() {
+    return "[name]\n" +
+        "<%= pkg.homepage %>\n" +
+        "Copyright (c) 2010 - <%= grunt.template.today('yyyy') %> <%= pkg.author.name %>\n" +
+        "Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)\n" +
+        "Version: <%= pkg.version %>";
 }
 
 const rules = {
@@ -54,14 +63,34 @@ const rules = {
 }
 
 module.exports = {
-    entry: "./bundle.js",
+    entry: {
+        "dist/inputmask.bundle": "./bundle.js",
+        "dist/inputmask.bundle.min": "./bundle.js",
+        "qunit/qunit": "./qunit/index.js"
+    },
     output: {
         path: __dirname,
-        filename: "build/bundle.js"
+        filename: "[name].js",
+        libraryTarget: "umd"
     },
     externals: {
-        // "jquery": "jQuery"
-        // "jqlite": "jqlite"
+        "jquery": "jQuery",
+        "jqlite": "jqlite",
+        "qunit": "QUnit"
+    },
+    optimization: {
+        minimize: true,
+        minimizer: [new UglifyJsPlugin({
+            include: /\.min\.js$/,
+            uglifyOptions: {
+                mangle: false,
+                compress: false,
+                output: {
+                    ascii_only: true,
+                }
+            },
+            extractComments: true
+        })]
     },
     module: {
         rules: [
@@ -86,9 +115,12 @@ module.exports = {
             // sources naming
             moduleFilenameTemplate: '[absolute-resource-path]',
             fallbackModuleFilenameTemplate: '[absolute-resource-path]',
-        // }),
-        // new webpack.LoaderOptionsPlugin({
-        //     debug: true
+            // }),
+            // new webpack.LoaderOptionsPlugin({
+            //     debug: true
+        }),
+        new webpack.BannerPlugin({
+            banner: createBanner()
         })
     ],
     bail: true,

@@ -1,88 +1,10 @@
 const webpackConfig = require('./webpack.config');
-const buildWebpackConfig = require('./webpackbuild.config');
-const qunitWebpackConfig = require('./qunit/webpack.config');
+const webpackJqueryConfig = require('./webpack.jqueryconfig');
 
 module.exports = function (grunt) {
-    function createBanner(fileName) {
-        return "/*!\n" +
-            "* " + fileName + "\n" +
-            "* <%= pkg.homepage %>\n" +
-            "* Copyright (c) 2010 - <%= grunt.template.today('yyyy') %> <%= pkg.author.name %>\n" +
-            "* Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)\n" +
-            "* Version: <%= pkg.version %>\n" +
-            "*/\n";
-    }
-
-    function createUglifyConfig(path) {
-        var uglifyConfig = {};
-        var srcFiles = grunt.file.expand(path + "/**/*.js");
-        for (var srcNdx in srcFiles) {
-            var dstFile = srcFiles[srcNdx].replace("js/", ""),
-                dstFileMin = dstFile.replace(".js", ".min.js");
-            uglifyConfig[dstFile] = {
-                dest: 'dist/inputmask/' + dstFile,
-                src: srcFiles[srcNdx],
-                options: {
-                    banner: createBanner(dstFile),
-                    beautify: true,
-                    mangle: false,
-                    compress: false,
-                    output: {
-                        ascii_only : true,
-                        comments: false
-                    }
-                }
-            };
-            uglifyConfig[dstFileMin] = {
-                dest: "dist/min/inputmask/" + dstFileMin,
-                src: srcFiles[srcNdx],
-                options: {
-                    banner: createBanner(dstFileMin),
-                    mangle: false,
-                    compress: false,
-                    output: {
-                        ascii_only : true,
-                        comments: false
-                    }
-                }
-            };
-        }
-
-        uglifyConfig["bundle"] = {
-            dest: "dist/jquery.inputmask.bundle.js",
-            src: "build/bundle.js",
-            options: {
-                banner: createBanner("jquery.inputmask.bundle.js"),
-                beautify: true,
-                mangle: false,
-                compress: false,
-                output: {
-                    ascii_only : true,
-                    comments: false
-                }
-            }
-        };
-        uglifyConfig["bundlemin"] = {
-            dest: "dist/min/jquery.inputmask.bundle.min.js",
-            src: "build/bundle.js",
-            options: {
-                banner: createBanner("jquery.inputmask.bundle.js"),
-                mangle: false,
-                compress: false,
-                output: {
-                    ascii_only : true,
-                    comments: false
-                }
-            }
-        };
-
-        return uglifyConfig;
-    }
-
 // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON("package.json"),
-        uglify: createUglifyConfig("js"),
         clean: ["dist"],
         bump: {
             options: {
@@ -149,8 +71,7 @@ module.exports = function (grunt) {
         },
         webpack: {
             main: webpackConfig,
-            build: buildWebpackConfig,
-            qunit: qunitWebpackConfig
+            jquery: webpackJqueryConfig
         }
     });
 
@@ -162,10 +83,10 @@ module.exports = function (grunt) {
         grunt.config('release.options.npmtag', "next");
         grunt.task.run('release');
     });
-    grunt.registerTask('validate', ['webpack:qunit', 'eslint']);
-    grunt.registerTask('build', ['bump:prerelease', 'clean', 'webpack:build', 'uglify']);
-    grunt.registerTask('build:patch', ['bump:patch', 'clean', 'webpack:build', 'uglify']);
-    grunt.registerTask('build:minor', ['bump:minor', 'clean', 'webpack:build', 'uglify']);
-    grunt.registerTask('build:major', ['bump:major', 'clean', 'webpack:build', 'uglify']);
+    grunt.registerTask('validate', ['webpack:main', 'eslint']);
+    grunt.registerTask('build', ['bump:prerelease', 'clean', 'webpack']);
+    grunt.registerTask('build:patch', ['bump:patch', 'clean', 'webpack']);
+    grunt.registerTask('build:minor', ['bump:minor', 'clean', 'webpack']);
+    grunt.registerTask('build:major', ['bump:major', 'clean', 'webpack']);
     grunt.registerTask('default', ["availabletasks"]);
 };

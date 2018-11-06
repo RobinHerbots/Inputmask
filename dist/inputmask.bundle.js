@@ -1,5 +1,5 @@
 /*!
- * dist/jquery.inputmask.bundle
+ * dist/inputmask.bundle
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2018 Robin Herbots
  * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
@@ -14,7 +14,7 @@
 		var a = typeof exports === 'object' ? factory(require("jQuery")) : factory(root["jQuery"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(window, function(__WEBPACK_EXTERNAL_MODULE__5__) {
+})(window, function(__WEBPACK_EXTERNAL_MODULE__4__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -110,34 +110,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 __webpack_require__(1);
 
-var _inputmask = __webpack_require__(4);
-
-var _inputmask2 = _interopRequireDefault(_inputmask);
-
-var _jquery = __webpack_require__(5);
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-if (_inputmask2.default === _jquery2.default) {
-    __webpack_require__(9);
-}
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-__webpack_require__(2);
+__webpack_require__(6);
 
 __webpack_require__(7);
 
-__webpack_require__(8);
-
-var _inputmask = __webpack_require__(3);
+var _inputmask = __webpack_require__(2);
 
 var _inputmask2 = _interopRequireDefault(_inputmask);
 
@@ -148,7 +125,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 window.Inputmask = _inputmask2.default;
 
 /***/ }),
-/* 2 */
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -167,7 +144,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
  */
 (function (factory) {
     if (true) {
-        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -261,7 +238,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 });
 
 /***/ }),
-/* 3 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -278,7 +255,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
  */
 (function (factory) {
     if (true) {
-        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(4), __webpack_require__(6)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(5)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -3529,7 +3506,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 });
 
 /***/ }),
-/* 4 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3539,7 +3516,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 (function (factory) {
 	if (true) {
-		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(4)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -3549,13 +3526,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 });
 
 /***/ }),
-/* 5 */
+/* 4 */
 /***/ (function(module, exports) {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__5__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__4__;
 
 /***/ }),
-/* 6 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3569,7 +3546,7 @@ if (true) !(__WEBPACK_AMD_DEFINE_RESULT__ = (function () {
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));else {}
 
 /***/ }),
-/* 7 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3588,7 +3565,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
  */
 (function (factory) {
     if (true) {
-        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -3874,7 +3851,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 });
 
 /***/ }),
-/* 8 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3893,7 +3870,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
  */
 (function (factory) {
     if (true) {
-        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -4494,110 +4471,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     return Inputmask;
 });
 
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-/*
- * Input Mask plugin for jquery
- * http://github.com/RobinHerbots/jquery.inputmask
- * Copyright (c) 2010 -	Robin Herbots
- * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
- * Version: 0.0.0-dev
- */
-
-(function (factory) {
-    if (true) {
-        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(3)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-    } else {}
-})(function ($, Inputmask) {
-    if ($.fn.inputmask === undefined) {
-        //jquery plugin
-        $.fn.inputmask = function (fn, options) {
-            var nptmask,
-                input = this[0];
-            if (options === undefined) options = {};
-            if (typeof fn === "string") {
-                switch (fn) {
-                    case "unmaskedvalue":
-                        return input && input.inputmask ? input.inputmask.unmaskedvalue() : $(input).val();
-                    case "remove":
-                        return this.each(function () {
-                            if (this.inputmask) this.inputmask.remove();
-                        });
-                    case "getemptymask":
-                        return input && input.inputmask ? input.inputmask.getemptymask() : "";
-                    case "hasMaskedValue":
-                        //check whether the returned value is masked or not; currently only works reliable when using jquery.val fn to retrieve the value
-                        return input && input.inputmask ? input.inputmask.hasMaskedValue() : false;
-                    case "isComplete":
-                        return input && input.inputmask ? input.inputmask.isComplete() : true;
-                    case "getmetadata":
-                        //return mask metadata if exists
-                        return input && input.inputmask ? input.inputmask.getmetadata() : undefined;
-                    case "setvalue":
-                        Inputmask.setValue(input, options);
-                        break;
-                    case "option":
-                        if (typeof options === "string") {
-                            if (input && input.inputmask !== undefined) {
-                                return input.inputmask.option(options);
-                            }
-                        } else {
-                            return this.each(function () {
-                                if (this.inputmask !== undefined) {
-                                    return this.inputmask.option(options);
-                                }
-                            });
-                        }
-                        break;
-                    default:
-                        options.alias = fn;
-                        nptmask = new Inputmask(options);
-                        return this.each(function () {
-                            nptmask.mask(this);
-                        });
-                }
-            } else if (Array.isArray(fn)) {
-                options.alias = fn;
-                nptmask = new Inputmask(options);
-                return this.each(function () {
-                    nptmask.mask(this);
-                });
-            } else if ((typeof fn === "undefined" ? "undefined" : _typeof(fn)) == "object") {
-                nptmask = new Inputmask(fn);
-                if (fn.mask === undefined && fn.alias === undefined) {
-                    return this.each(function () {
-                        if (this.inputmask !== undefined) {
-                            return this.inputmask.option(fn);
-                        } else nptmask.mask(this);
-                    });
-                } else {
-                    return this.each(function () {
-                        nptmask.mask(this);
-                    });
-                }
-            } else if (fn === undefined) {
-                //look for data-inputmask atributes
-                return this.each(function () {
-                    nptmask = new Inputmask(options);
-                    nptmask.mask(this);
-                });
-            }
-        };
-    }
-    return $.fn.inputmask;
-});
-
 /***/ })
 /******/ ]);
 });
-//# sourceMappingURL=jquery.inputmask.bundle.js.map
+//# sourceMappingURL=inputmask.bundle.js.map
