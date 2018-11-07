@@ -1,5 +1,5 @@
 /*!
- * dist/jquery.inputmask
+ * dist/jquery.inputmask.bundle
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2018 Robin Herbots
  * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
@@ -98,7 +98,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -3513,7 +3513,1092 @@ if (true) !(__WEBPACK_AMD_DEFINE_RESULT__ = (function () {
 }).call(exports, __webpack_require__, exports, module),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));else {}
 
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(6);
+
+var _inputmask = __webpack_require__(3);
+
+var _inputmask2 = _interopRequireDefault(_inputmask);
+
+var _jquery = __webpack_require__(1);
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+if (_inputmask2.default === _jquery2.default) {
+    __webpack_require__(0);
+}
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(7);
+
+__webpack_require__(8);
+
+__webpack_require__(9);
+
+var _inputmask = __webpack_require__(2);
+
+var _inputmask2 = _interopRequireDefault(_inputmask);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// import "./css/inputmask.css";
+
+window.Inputmask = _inputmask2.default;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+/*
+ Input Mask plugin extensions
+ http://github.com/RobinHerbots/jquery.inputmask
+ Copyright (c) 2010 -  Robin Herbots
+ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
+ Version: 0.0.0-dev
+
+ Optional extensions on the jquery.inputmask base
+ */
+(function (factory) {
+    if (true) {
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    } else {}
+})(function (Inputmask) {
+    //extra definitions
+    Inputmask.extendDefinitions({
+        "A": {
+            validator: "[A-Za-z\u0410-\u044F\u0401\u0451\xC0-\xFF\xB5]",
+            casing: "upper" //auto uppercasing
+        },
+        "&": { //alfanumeric uppercasing
+            validator: "[0-9A-Za-z\u0410-\u044F\u0401\u0451\xC0-\xFF\xB5]",
+            casing: "upper"
+        },
+        "#": { //hexadecimal
+            validator: "[0-9A-Fa-f]",
+            casing: "upper"
+        }
+    });
+    Inputmask.extendAliases({
+        "cssunit": {
+            regex: '[+-]?[0-9]+\\.?([0-9]+)?(px|em|rem|ex|%|in|cm|mm|pt|pc)'
+        },
+        "url": { //needs update => https://en.wikipedia.org/wiki/URL
+            regex: "(https?|ftp)//.*",
+            autoUnmask: false
+        },
+        "ip": { //ip-address mask
+            mask: "i[i[i]].i[i[i]].i[i[i]].i[i[i]]",
+            definitions: {
+                "i": {
+                    validator: function validator(chrs, maskset, pos, strict, opts) {
+                        if (pos - 1 > -1 && maskset.buffer[pos - 1] !== ".") {
+                            chrs = maskset.buffer[pos - 1] + chrs;
+                            if (pos - 2 > -1 && maskset.buffer[pos - 2] !== ".") {
+                                chrs = maskset.buffer[pos - 2] + chrs;
+                            } else chrs = "0" + chrs;
+                        } else chrs = "00" + chrs;
+                        return new RegExp("25[0-5]|2[0-4][0-9]|[01][0-9][0-9]").test(chrs);
+                    }
+                }
+            },
+            onUnMask: function onUnMask(maskedValue, unmaskedValue, opts) {
+                return maskedValue;
+            },
+            inputmode: "numeric"
+        },
+        "email": {
+            //https://en.wikipedia.org/wiki/Domain_name#Domain_name_space
+            //https://en.wikipedia.org/wiki/Hostname#Restrictions_on_valid_host_names
+            //should be extended with the toplevel domains at the end
+            mask: "*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@-{1,63}.-{1,63}[.-{1,63}][.-{1,63}]",
+            greedy: false,
+            casing: "lower",
+            onBeforePaste: function onBeforePaste(pastedValue, opts) {
+                pastedValue = pastedValue.toLowerCase();
+                return pastedValue.replace("mailto:", "");
+            },
+            definitions: {
+                "*": {
+                    validator: "[0-9\uFF11-\uFF19A-Za-z\u0410-\u044F\u0401\u0451\xC0-\xFF\xB5!#$%&'*+/=?^_`{|}~-]"
+                },
+                "-": {
+                    validator: "[0-9A-Za-z\-]"
+                }
+            },
+            onUnMask: function onUnMask(maskedValue, unmaskedValue, opts) {
+                return maskedValue;
+            },
+            inputmode: "email"
+        },
+        "mac": {
+            mask: "##:##:##:##:##:##"
+        },
+        //https://en.wikipedia.org/wiki/Vehicle_identification_number
+        // see issue #1199
+        "vin": {
+            mask: "V{13}9{4}",
+            definitions: {
+                'V': {
+                    validator: "[A-HJ-NPR-Za-hj-npr-z\\d]",
+                    casing: "upper"
+                }
+            },
+            clearIncomplete: true,
+            autoUnmask: true
+        }
+    });
+    return Inputmask;
+});
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+/*
+ Input Mask plugin extensions
+ http://github.com/RobinHerbots/jquery.inputmask
+ Copyright (c) 2010 -  Robin Herbots
+ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
+ Version: 0.0.0-dev
+
+ Optional extensions on the jquery.inputmask base
+ */
+(function (factory) {
+    if (true) {
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    } else {}
+})(function (Inputmask) {
+    var $ = Inputmask.dependencyLib;
+    var //supported codes for formatting
+    //http://blog.stevenlevithan.com/archives/date-time-format
+    //https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings?view=netframework-4.7
+    formatCode = { //regex, valueSetter, type, displayformatter
+        d: ["[1-9]|[12][0-9]|3[01]", Date.prototype.setDate, "day", Date.prototype.getDate], //Day of the month as digits; no leading zero for single-digit days.
+        dd: ["0[1-9]|[12][0-9]|3[01]", Date.prototype.setDate, "day", function () {
+            return pad(Date.prototype.getDate.call(this), 2);
+        }], //Day of the month as digits; leading zero for single-digit days.
+        ddd: [""], //Day of the week as a three-letter abbreviation.
+        dddd: [""], //Day of the week as its full name.
+        m: ["[1-9]|1[012]", Date.prototype.setMonth, "month", function () {
+            return Date.prototype.getMonth.call(this) + 1;
+        }], //Month as digits; no leading zero for single-digit months.
+        mm: ["0[1-9]|1[012]", Date.prototype.setMonth, "month", function () {
+            return pad(Date.prototype.getMonth.call(this) + 1, 2);
+        }], //Month as digits; leading zero for single-digit months.
+        mmm: [""], //Month as a three-letter abbreviation.
+        mmmm: [""], //Month as its full name.
+        yy: ["[0-9]{2}", Date.prototype.setFullYear, "year", function () {
+            return pad(Date.prototype.getFullYear.call(this), 2);
+        }], //Year as last two digits; leading zero for years less than 10.
+        yyyy: ["[0-9]{4}", Date.prototype.setFullYear, "year", function () {
+            return pad(Date.prototype.getFullYear.call(this), 4);
+        }],
+        h: ["[1-9]|1[0-2]", Date.prototype.setHours, "hours", Date.prototype.getHours], //Hours; no leading zero for single-digit hours (12-hour clock).
+        hh: ["0[1-9]|1[0-2]", Date.prototype.setHours, "hours", function () {
+            return pad(Date.prototype.getHours.call(this), 2);
+        }], //Hours; leading zero for single-digit hours (12-hour clock).
+        hhh: ["[0-9]+", Date.prototype.setHours, "hours", Date.prototype.getHours], //Hours; no limit
+        H: ["1?[0-9]|2[0-3]", Date.prototype.setHours, "hours", Date.prototype.getHours], //Hours; no leading zero for single-digit hours (24-hour clock).
+        HH: ["[01][0-9]|2[0-3]", Date.prototype.setHours, "hours", function () {
+            return pad(Date.prototype.getHours.call(this), 2);
+        }], //Hours; leading zero for single-digit hours (24-hour clock).
+        HHH: ["[0-9]+", Date.prototype.setHours, "hours", Date.prototype.getHours], //Hours; no limit
+        M: ["[1-5]?[0-9]", Date.prototype.setMinutes, "minutes", Date.prototype.getMinutes], //Minutes; no leading zero for single-digit minutes. Uppercase M unlike CF timeFormat's m to avoid conflict with months.
+        MM: ["[0-5][0-9]", Date.prototype.setMinutes, "minutes", function () {
+            return pad(Date.prototype.getMinutes.call(this), 2);
+        }], //Minutes; leading zero for single-digit minutes. Uppercase MM unlike CF timeFormat's mm to avoid conflict with months.
+        s: ["[1-5]?[0-9]", Date.prototype.setSeconds, "seconds", Date.prototype.getSeconds], //Seconds; no leading zero for single-digit seconds.
+        ss: ["[0-5][0-9]", Date.prototype.setSeconds, "seconds", function () {
+            return pad(Date.prototype.getSeconds.call(this), 2);
+        }], //Seconds; leading zero for single-digit seconds.
+        l: ["[0-9]{3}", Date.prototype.setMilliseconds, "milliseconds", function () {
+            return pad(Date.prototype.getMilliseconds.call(this), 3);
+        }], //Milliseconds. 3 digits.
+        L: ["[0-9]{2}", Date.prototype.setMilliseconds, "milliseconds", function () {
+            return pad(Date.prototype.getMilliseconds.call(this), 2);
+        }], //Milliseconds. 2 digits.
+        t: ["[ap]"], //Lowercase, single-character time marker string: a or p.
+        tt: ["[ap]m"], //two-character time marker string: am or pm.
+        T: ["[AP]"], //single-character time marker string: A or P.
+        TT: ["[AP]M"], //two-character time marker string: AM or PM.
+        Z: [""], //US timezone abbreviation, e.g. EST or MDT. With non-US timezones or in the Opera browser, the GMT/UTC offset is returned, e.g. GMT-0500
+        o: [""], //GMT/UTC timezone offset, e.g. -0500 or +0230.
+        S: [""] //The date's ordinal suffix (st, nd, rd, or th).
+    },
+        formatAlias = {
+        isoDate: "yyyy-mm-dd", //2007-06-09
+        isoTime: "HH:MM:ss", //17:46:21
+        isoDateTime: "yyyy-mm-dd'T'HH:MM:ss", //2007-06-09T17:46:21
+        isoUtcDateTime: "UTC:yyyy-mm-dd'T'HH:MM:ss'Z'" //2007-06-09T22:46:21Z
+    };
+
+    function getTokenizer(opts) {
+        if (!opts.tokenizer) {
+            var tokens = [];
+            for (var ndx in formatCode) {
+                if (tokens.indexOf(ndx[0]) === -1) tokens.push(ndx[0]);
+            }
+            opts.tokenizer = "(" + tokens.join("+|") + ")+?|.";
+            opts.tokenizer = new RegExp(opts.tokenizer, "g");
+        }
+
+        return opts.tokenizer;
+    }
+
+    function isValidDate(dateParts, currentResult) {
+        return !isFinite(dateParts.rawday) || dateParts.day == "29" && !isFinite(dateParts.rawyear) || new Date(dateParts.date.getFullYear(), isFinite(dateParts.rawmonth) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day ? currentResult : false; //take corrective action if possible
+    }
+
+    function isDateInRange(dateParts, opts) {
+        var result = true;
+        if (opts.min) {
+            if (dateParts["rawyear"]) {
+                var rawYear = dateParts["rawyear"].replace(/[^0-9]/g, ""),
+                    minYear = opts.min.year.substr(0, rawYear.length);
+                result = minYear <= rawYear;
+            }
+            if (dateParts["year"] === dateParts["rawyear"]) {
+                if (opts.min.date.getTime() === opts.min.date.getTime()) {
+                    result = opts.min.date.getTime() <= dateParts.date.getTime();
+                }
+            }
+        }
+
+        if (result && opts.max && opts.max.date.getTime() === opts.max.date.getTime()) {
+            result = opts.max.date.getTime() >= dateParts.date.getTime();
+        }
+        return result;
+    }
+
+    //parse the given format and return a mask pattern
+    //when a dateObjValue is passed a datestring in the requested format is returned
+    function parse(format, dateObjValue, opts, raw) {
+        //parse format to regex string
+        var mask = "",
+            match;
+        while (match = getTokenizer(opts).exec(format)) {
+            if (dateObjValue === undefined) {
+                if (formatCode[match[0]]) {
+                    mask += "(" + formatCode[match[0]][0] + ")";
+                } else {
+                    switch (match[0]) {
+                        case "[":
+                            mask += "(";
+                            break;
+                        case "]":
+                            mask += ")?";
+                            break;
+                        default:
+                            mask += Inputmask.escapeRegex(match[0]);
+                    }
+                }
+            } else {
+                if (formatCode[match[0]]) {
+                    if (raw !== true && formatCode[match[0]][3]) {
+                        var getFn = formatCode[match[0]][3];
+                        mask += getFn.call(dateObjValue.date);
+                    } else if (formatCode[match[0]][2]) mask += dateObjValue["raw" + formatCode[match[0]][2]];else mask += match[0];
+                } else mask += match[0];
+            }
+        }
+        return mask;
+    }
+
+    //padding function
+    function pad(val, len) {
+        val = String(val);
+        len = len || 2;
+        while (val.length < len) {
+            val = "0" + val;
+        }return val;
+    }
+
+    function analyseMask(maskString, format, opts) {
+        var dateObj = { "date": new Date(1, 0, 1) },
+            targetProp,
+            mask = maskString,
+            match,
+            dateOperation,
+            targetValidator;
+
+        function extendProperty(value) {
+            var correctedValue = value.replace(/[^0-9]/g, "0");
+            if (correctedValue != value) {
+                //only do correction on incomplete values
+                //determine best validation match
+                var enteredPart = value.replace(/[^0-9]/g, ""),
+                    min = (opts.min && opts.min[targetProp] || value).toString(),
+                    max = (opts.max && opts.max[targetProp] || value).toString();
+
+                correctedValue = enteredPart + (enteredPart < min.slice(0, enteredPart.length) ? min.slice(enteredPart.length) : enteredPart > max.slice(0, enteredPart.length) ? max.slice(enteredPart.length) : correctedValue.toString().slice(enteredPart.length));
+            }
+            return correctedValue;
+        }
+
+        function setValue(dateObj, value, opts) {
+            dateObj[targetProp] = extendProperty(value);
+            dateObj["raw" + targetProp] = value;
+
+            if (dateOperation !== undefined) dateOperation.call(dateObj.date, targetProp == "month" ? parseInt(dateObj[targetProp]) - 1 : dateObj[targetProp]);
+        }
+
+        if (typeof mask === "string") {
+            while (match = getTokenizer(opts).exec(format)) {
+                var value = mask.slice(0, match[0].length);
+                if (formatCode.hasOwnProperty(match[0])) {
+                    targetValidator = formatCode[match[0]][0];
+                    targetProp = formatCode[match[0]][2];
+                    dateOperation = formatCode[match[0]][1];
+                    setValue(dateObj, value, opts);
+                }
+                mask = mask.slice(value.length);
+            }
+
+            return dateObj;
+        } else if (mask && (typeof mask === "undefined" ? "undefined" : _typeof(mask)) === "object" && mask.hasOwnProperty("date")) {
+            return mask;
+        }
+        return undefined;
+    }
+
+    Inputmask.extendAliases({
+        "datetime": {
+            mask: function mask(opts) {
+                //localize
+                formatCode.S = opts.i18n.ordinalSuffix.join("|");
+
+                opts.inputFormat = formatAlias[opts.inputFormat] || opts.inputFormat; //resolve possible formatAlias
+                opts.displayFormat = formatAlias[opts.displayFormat] || opts.displayFormat || opts.inputFormat; //resolve possible formatAlias
+                opts.outputFormat = formatAlias[opts.outputFormat] || opts.outputFormat || opts.inputFormat; //resolve possible formatAlias
+                opts.placeholder = opts.placeholder !== "" ? opts.placeholder : opts.inputFormat.replace(/[\[\]]/, "");
+                opts.regex = parse(opts.inputFormat, undefined, opts);
+                // console.log(opts.regex);
+                return null; //migrate to regex mask
+            },
+            placeholder: "", //set default as none (~ auto); when a custom placeholder is passed it will be used
+            inputFormat: "isoDateTime", //format used to input the date
+            displayFormat: undefined, //visual format when the input looses focus
+            outputFormat: undefined, //unmasking format
+            min: null, //needs to be in the same format as the inputfornat
+            max: null, //needs to be in the same format as the inputfornat,
+            // Internationalization strings
+            i18n: {
+                dayNames: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+                monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+                ordinalSuffix: ["st", "nd", "rd", "th"]
+            },
+            postValidation: function postValidation(buffer, pos, currentResult, opts) {
+                opts.min = analyseMask(opts.min, opts.inputFormat, opts);
+                opts.max = analyseMask(opts.max, opts.inputFormat, opts);
+
+                var result = currentResult,
+                    dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
+                if (result && dateParts.date.getTime() === dateParts.date.getTime()) {
+                    //check for a valid date ~ an invalid date returns NaN which isn't equal
+                    result = isValidDate(dateParts, result);
+                    result = result && isDateInRange(dateParts, opts);
+                }
+
+                if (pos && result && currentResult.pos !== pos) {
+                    return {
+                        buffer: parse(opts.inputFormat, dateParts, opts),
+                        refreshFromBuffer: { start: pos, end: currentResult.pos }
+                    };
+                }
+
+                return result;
+            },
+            onKeyDown: function onKeyDown(e, buffer, caretPos, opts) {
+                var input = this;
+                if (e.ctrlKey && e.keyCode === Inputmask.keyCode.RIGHT) {
+                    var today = new Date(),
+                        match,
+                        date = "";
+
+                    while (match = getTokenizer(opts).exec(opts.inputFormat)) {
+                        if (match[0].charAt(0) === "d") {
+                            date += pad(today.getDate(), match[0].length);
+                        } else if (match[0].charAt(0) === "m") {
+                            date += pad(today.getMonth() + 1, match[0].length);
+                        } else if (match[0] === "yyyy") {
+                            date += today.getFullYear().toString();
+                        } else if (match[0].charAt(0) === "y") {
+                            date += pad(today.getYear(), match[0].length);
+                        }
+                    }
+
+                    input.inputmask._valueSet(date);
+                    $(input).trigger("setvalue");
+                }
+            },
+            onUnMask: function onUnMask(maskedValue, unmaskedValue, opts) {
+                return parse(opts.outputFormat, analyseMask(maskedValue, opts.inputFormat, opts), opts, true);
+            },
+            casing: function casing(elem, test, pos, validPositions) {
+                if (test.nativeDef.indexOf("[ap]") == 0) return elem.toLowerCase();
+                if (test.nativeDef.indexOf("[AP]") == 0) return elem.toUpperCase();
+                return elem;
+            },
+            insertMode: false,
+            shiftPositions: false
+        }
+    });
+
+    return Inputmask;
+});
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+/*
+ Input Mask plugin extensions
+ http://github.com/RobinHerbots/jquery.inputmask
+ Copyright (c) 2010 - Robin Herbots
+ Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
+ Version: 0.0.0-dev
+
+ Optional extensions on the jquery.inputmask base
+ */
+(function (factory) {
+    if (true) {
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    } else {}
+})(function (Inputmask) {
+    var $ = Inputmask.dependencyLib;
+
+    function autoEscape(txt, opts) {
+        var escapedTxt = "";
+        for (var i = 0; i < txt.length; i++) {
+            if (Inputmask.prototype.definitions[txt.charAt(i)] || opts.definitions[txt.charAt(i)] || opts.optionalmarker.start === txt.charAt(i) || opts.optionalmarker.end === txt.charAt(i) || opts.quantifiermarker.start === txt.charAt(i) || opts.quantifiermarker.end === txt.charAt(i) || opts.groupmarker.start === txt.charAt(i) || opts.groupmarker.end === txt.charAt(i) || opts.alternatormarker === txt.charAt(i)) {
+                escapedTxt += "\\" + txt.charAt(i);
+            } else escapedTxt += txt.charAt(i);
+        }
+        return escapedTxt;
+    }
+
+    function alignDigits(buffer, digits, opts) {
+        if (digits > 0) {
+            var radixPosition = $.inArray(opts.radixPoint, buffer);
+            if (radixPosition === -1) {
+                buffer.push(opts.radixPoint);
+                radixPosition = buffer.length - 1;
+            }
+            for (var i = 1; i <= digits; i++) {
+                buffer[radixPosition + i] = buffer[radixPosition + i] || "0";
+            }
+        }
+        return buffer;
+    }
+
+    //number aliases
+    Inputmask.extendAliases({
+        "numeric": {
+            mask: function mask(opts) {
+                if (opts.repeat !== 0 && isNaN(opts.integerDigits)) {
+                    opts.integerDigits = opts.repeat;
+                }
+                opts.repeat = 0;
+                if (opts.groupSeparator === opts.radixPoint && opts.digits && opts.digits !== "0") {
+                    //treat equal separator and radixpoint
+                    if (opts.radixPoint === ".") {
+                        opts.groupSeparator = ",";
+                    } else if (opts.radixPoint === ",") {
+                        opts.groupSeparator = ".";
+                    } else opts.groupSeparator = "";
+                }
+                if (opts.groupSeparator === " ") {
+                    //prevent conflict with default skipOptionalPartCharacter
+                    opts.skipOptionalPartCharacter = undefined;
+                }
+                opts.autoGroup = opts.autoGroup && opts.groupSeparator !== "";
+                if (opts.autoGroup) {
+                    if (typeof opts.groupSize == "string" && isFinite(opts.groupSize)) opts.groupSize = parseInt(opts.groupSize);
+                    if (isFinite(opts.integerDigits)) {
+                        var seps = Math.floor(opts.integerDigits / opts.groupSize);
+                        var mod = opts.integerDigits % opts.groupSize;
+                        opts.integerDigits = parseInt(opts.integerDigits) + (mod === 0 ? seps - 1 : seps);
+                        if (opts.integerDigits < 1) {
+                            opts.integerDigits = "*";
+                        }
+                    }
+                }
+
+                //enforce placeholder to single
+                if (opts.placeholder.length > 1) {
+                    opts.placeholder = opts.placeholder.charAt(0);
+                }
+                //only allow radixfocus when placeholder = 0
+                if (opts.positionCaretOnClick === "radixFocus" && opts.placeholder === "" && opts.integerOptional === false) {
+                    opts.positionCaretOnClick = "lvp";
+                }
+                opts.definitions[";"] = opts.definitions["~"]; //clone integer def for decimals
+                opts.definitions[";"].definitionSymbol = "~";
+
+                if (opts.numericInput === true) {
+                    //finance people input style
+                    opts.positionCaretOnClick = opts.positionCaretOnClick === "radixFocus" ? "lvp" : opts.positionCaretOnClick;
+                    opts.digitsOptional = false;
+                    if (isNaN(opts.digits)) opts.digits = 2;
+                    opts.decimalProtect = false;
+                }
+
+                var mask = "[+]";
+                mask += autoEscape(opts.prefix, opts);
+
+                if (opts.integerOptional === true) {
+                    mask += "~{1," + opts.integerDigits + "}";
+                } else mask += "~{" + opts.integerDigits + "}";
+
+                if (opts.digits !== undefined) {
+                    var radixDef = opts.decimalProtect ? ":" : opts.radixPoint;
+                    var dq = opts.digits.toString().split(",");
+                    if (isFinite(dq[0]) && dq[1] && isFinite(dq[1])) {
+                        mask += radixDef + ";{" + opts.digits + "}";
+                    } else if (isNaN(opts.digits) || parseInt(opts.digits) > 0) {
+                        if (opts.digitsOptional) {
+                            mask += "[" + radixDef + ";{1," + opts.digits + "}]";
+                        } else mask += radixDef + ";{" + opts.digits + "}";
+                    }
+                }
+                mask += autoEscape(opts.suffix, opts);
+                mask += "[-]";
+
+                opts.greedy = false; //enforce greedy false
+
+
+                // console.log(mask);
+                return mask;
+            },
+            placeholder: "",
+            greedy: false,
+            digits: "*", //number of fractionalDigits
+            digitsOptional: true,
+            enforceDigitsOnBlur: false,
+            radixPoint: ".",
+            positionCaretOnClick: "radixFocus",
+            groupSize: 3,
+            groupSeparator: "",
+            autoGroup: false,
+            allowMinus: true,
+            negationSymbol: {
+                front: "-", //"("
+                back: "" //")"
+            },
+            integerDigits: "+", //number of integerDigits
+            integerOptional: true,
+            prefix: "",
+            suffix: "",
+            rightAlign: true,
+            decimalProtect: true, //do not allow assumption of decimals input without entering the radixpoint
+            min: null, //minimum value
+            max: null, //maximum value
+            step: 1,
+            insertMode: true,
+            autoUnmask: false,
+            unmaskAsNumber: false,
+            inputType: "text", //number ~ indicates whether the value passed for initialization is text or a number
+            inputmode: "numeric",
+            preValidation: function preValidation(buffer, pos, c, isSelection, opts, maskset) {
+                if (c === "-" || c === opts.negationSymbol.front) {
+                    if (opts.allowMinus !== true) return false;
+                    opts.isNegative = opts.isNegative === undefined ? true : !opts.isNegative;
+                    if (buffer.join("") === "") return true;
+                    return {
+                        caret: maskset.validPositions[pos] ? pos : undefined,
+                        dopost: true
+                    };
+                }
+                if (isSelection === false && c === opts.radixPoint && opts.digits !== undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0)) {
+                    var radixPos = $.inArray(opts.radixPoint, buffer);
+                    if (radixPos !== -1 && maskset.validPositions[radixPos] !== undefined) {
+                        if (opts.numericInput === true) {
+                            return pos === radixPos;
+                        }
+                        return {
+                            "caret": radixPos + 1
+                        };
+                    }
+                }
+
+                return true;
+            },
+            postValidation: function postValidation(buffer, pos, currentResult, opts) {
+                function buildPostMask(buffer, opts) {
+                    //define base for formatter
+                    var postMask = "";
+                    postMask += "(" + opts.groupSeparator + "*{" + opts.groupSize + "}){*}";
+                    if (opts.radixPoint !== "") {
+                        var radixSplit = buffer.join("").split(opts.radixPoint);
+                        if (radixSplit[1]) {
+                            postMask += opts.radixPoint + "*{" + radixSplit[1].match(/^\d*\??\d*/)[0].length + "}";
+                        }
+                    }
+
+                    return postMask;
+                }
+
+                var suffix = opts.suffix.split(""),
+                    prefix = opts.prefix.split("");
+
+                if (currentResult.pos === undefined && currentResult.caret !== undefined && currentResult.dopost !== true) return currentResult;
+
+                var caretPos = currentResult.caret !== undefined ? currentResult.caret : currentResult.pos;
+                var maskedValue = buffer.slice();
+                if (opts.numericInput) {
+                    caretPos = maskedValue.length - caretPos - 1;
+                    maskedValue = maskedValue.reverse();
+                }
+                //mark caretPos
+                var charAtPos = maskedValue[caretPos];
+                if (charAtPos === opts.groupSeparator) {
+                    caretPos += 1;
+                    charAtPos = maskedValue[caretPos];
+                }
+
+                if (caretPos === maskedValue.length - opts.suffix.length - 1 && charAtPos === opts.radixPoint) return currentResult;
+
+                if (charAtPos !== undefined) {
+                    if (charAtPos !== opts.radixPoint && charAtPos !== opts.negationSymbol.front && charAtPos !== opts.negationSymbol.back) {
+                        maskedValue[caretPos] = "?";
+                        if (opts.prefix.length > 0 && caretPos >= (opts.isNegative === false ? 1 : 0) && caretPos < opts.prefix.length - 1 + (opts.isNegative === false ? 1 : 0)) {
+                            prefix[caretPos - (opts.isNegative === false ? 1 : 0)] = "?";
+                        } else if (opts.suffix.length > 0 && caretPos >= maskedValue.length - opts.suffix.length - (opts.isNegative === false ? 1 : 0)) {
+                            suffix[caretPos - (maskedValue.length - opts.suffix.length - (opts.isNegative === false ? 1 : 0))] = "?";
+                        }
+                    }
+                }
+                //make numeric
+                prefix = prefix.join("");
+                suffix = suffix.join("");
+                var processValue = maskedValue.join("").replace(prefix, "");
+                processValue = processValue.replace(suffix, "");
+                processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "");
+                //strip negation symbol
+                processValue = processValue.replace(new RegExp("[-" + Inputmask.escapeRegex(opts.negationSymbol.front) + "]", "g"), "");
+                processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.negationSymbol.back) + "$"), "");
+                //strip placeholder at the end
+                if (isNaN(opts.placeholder)) {
+                    processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.placeholder), "g"), "");
+                }
+
+                //strip leading zeroes
+                if (processValue.length > 1 && processValue.indexOf(opts.radixPoint) !== 1) {
+                    if (charAtPos === "0") {
+                        processValue = processValue.replace(/^\?/g, "");
+                    }
+                    processValue = processValue.replace(/^0/g, "");
+                }
+
+                if (processValue.charAt(0) === opts.radixPoint && opts.radixPoint !== "" && opts.numericInput !== true) {
+                    processValue = "0" + processValue;
+                }
+
+                if (processValue !== "") {
+                    processValue = processValue.split("");
+                    //handle digits
+                    if ((!opts.digitsOptional || opts.enforceDigitsOnBlur && currentResult.event === "blur") && isFinite(opts.digits)) {
+                        var radixPosition = $.inArray(opts.radixPoint, processValue);
+                        var rpb = $.inArray(opts.radixPoint, maskedValue);
+                        if (radixPosition === -1) {
+                            processValue.push(opts.radixPoint);
+                            radixPosition = processValue.length - 1;
+                        }
+                        for (var i = 1; i <= opts.digits; i++) {
+                            if ((!opts.digitsOptional || opts.enforceDigitsOnBlur && currentResult.event === "blur") && (processValue[radixPosition + i] === undefined || processValue[radixPosition + i] === opts.placeholder.charAt(0))) {
+                                processValue[radixPosition + i] = currentResult.placeholder || opts.placeholder.charAt(0);
+                            } else if (rpb !== -1 && maskedValue[rpb + i] !== undefined) {
+                                processValue[radixPosition + i] = processValue[radixPosition + i] || maskedValue[rpb + i];
+                            }
+                        }
+                    }
+
+                    if (opts.autoGroup === true && opts.groupSeparator !== "" && (charAtPos !== opts.radixPoint || currentResult.pos !== undefined || currentResult.dopost)) {
+                        var addRadix = processValue[processValue.length - 1] === opts.radixPoint && currentResult.c === opts.radixPoint;
+                        processValue = Inputmask(buildPostMask(processValue, opts), {
+                            numericInput: true,
+                            jitMasking: true,
+                            definitions: {
+                                "*": {
+                                    validator: "[0-9?]",
+                                    cardinality: 1
+                                }
+                            }
+                        }).format(processValue.join(""));
+                        if (addRadix) processValue += opts.radixPoint;
+                        if (processValue.charAt(0) === opts.groupSeparator) {
+                            processValue.substr(1);
+                        }
+                    } else processValue = processValue.join("");
+                }
+
+                if (opts.isNegative && currentResult.event === "blur") {
+                    opts.isNegative = processValue !== "0";
+                }
+
+                processValue = prefix + processValue;
+                processValue += suffix;
+                if (opts.isNegative) {
+                    processValue = opts.negationSymbol.front + processValue;
+                    processValue += opts.negationSymbol.back;
+                }
+                processValue = processValue.split("");
+                //unmark position
+                if (charAtPos !== undefined) {
+                    if (charAtPos !== opts.radixPoint && charAtPos !== opts.negationSymbol.front && charAtPos !== opts.negationSymbol.back) {
+                        caretPos = $.inArray("?", processValue);
+                        if (caretPos > -1) {
+                            processValue[caretPos] = charAtPos;
+                        } else caretPos = currentResult.caret || 0;
+                    } else if (charAtPos === opts.radixPoint || charAtPos === opts.negationSymbol.front || charAtPos === opts.negationSymbol.back) {
+                        var newCaretPos = $.inArray(charAtPos, processValue);
+                        if (newCaretPos !== -1) caretPos = newCaretPos;
+                        // else charAtPos = undefined;
+                    }
+                }
+
+                if (opts.numericInput) {
+                    caretPos = processValue.length - caretPos - 1;
+                    processValue = processValue.reverse();
+                }
+
+                var rslt = {
+                    caret: (charAtPos === undefined || currentResult.pos !== undefined) && caretPos !== undefined ? caretPos + (opts.numericInput ? -1 : 1) : caretPos,
+                    buffer: processValue,
+                    refreshFromBuffer: currentResult.dopost || buffer.join("") !== processValue.join("")
+                };
+
+                return rslt.refreshFromBuffer ? rslt : currentResult;
+            },
+            onBeforeWrite: function onBeforeWrite(e, buffer, caretPos, opts) {
+                function parseMinMaxOptions(opts) {
+                    if (opts.parseMinMaxOptions === undefined) {
+                        //convert min and max options
+                        if (opts.min !== null) {
+                            opts.min = opts.min.toString().replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "");
+                            if (opts.radixPoint === ",") opts.min = opts.min.replace(opts.radixPoint, ".");
+                            opts.min = isFinite(opts.min) ? parseFloat(opts.min) : NaN;
+                            if (isNaN(opts.min)) opts.min = Number.MIN_VALUE;
+                        }
+                        if (opts.max !== null) {
+                            opts.max = opts.max.toString().replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "");
+                            if (opts.radixPoint === ",") opts.max = opts.max.replace(opts.radixPoint, ".");
+                            opts.max = isFinite(opts.max) ? parseFloat(opts.max) : NaN;
+                            if (isNaN(opts.max)) opts.max = Number.MAX_VALUE;
+                        }
+                        opts.parseMinMaxOptions = "done";
+                    }
+                }
+
+                if (e) {
+                    switch (e.type) {
+                        case "keydown":
+                            return opts.postValidation(buffer, caretPos, {
+                                caret: caretPos,
+                                dopost: true
+                            }, opts);
+                        case "blur":
+                        case "checkval":
+                            var unmasked;
+                            parseMinMaxOptions(opts);
+                            if (opts.min !== null || opts.max !== null) {
+                                unmasked = opts.onUnMask(buffer.join(""), undefined, $.extend({}, opts, {
+                                    unmaskAsNumber: true
+                                }));
+                                if (opts.min !== null && unmasked < opts.min) {
+                                    opts.isNegative = opts.min < 0;
+                                    return opts.postValidation(opts.min.toString().replace(".", opts.radixPoint).split(""), caretPos, { //TODO needs fix for MIN_VALUE & MAX_VALUE
+                                        caret: caretPos,
+                                        dopost: true,
+                                        placeholder: "0"
+                                    }, opts);
+                                } else if (opts.max !== null && unmasked > opts.max) {
+                                    opts.isNegative = opts.max < 0;
+                                    return opts.postValidation(opts.max.toString().replace(".", opts.radixPoint).split(""), caretPos, { //TODO needs fix for MIN_VALUE & MAX_VALUE
+                                        caret: caretPos,
+                                        dopost: true,
+                                        placeholder: "0"
+                                    }, opts);
+                                }
+                            }
+                            return opts.postValidation(buffer, caretPos, {
+                                caret: caretPos,
+                                // dopost: true,
+                                placeholder: "0",
+                                event: "blur"
+                            }, opts);
+                        case "_checkval":
+                            return {
+                                caret: caretPos
+                            };
+                        default:
+                            break;
+                    }
+                }
+            },
+            regex: {
+                integerPart: function integerPart(opts, emptyCheck) {
+                    return emptyCheck ? new RegExp("[" + Inputmask.escapeRegex(opts.negationSymbol.front) + "\+]?") : new RegExp("[" + Inputmask.escapeRegex(opts.negationSymbol.front) + "\+]?\\d+");
+                },
+                integerNPart: function integerNPart(opts) {
+                    return new RegExp("[\\d" + Inputmask.escapeRegex(opts.groupSeparator) + Inputmask.escapeRegex(opts.placeholder.charAt(0)) + "]+");
+                }
+            },
+            definitions: {
+                "~": {
+                    validator: function validator(chrs, maskset, pos, strict, opts, isSelection) {
+                        var isValid, l;
+                        if (chrs === "k" || chrs === "m") {
+                            isValid = {
+                                insert: [],
+                                c: 0
+                            };
+
+                            for (var i = 0, l = chrs === "k" ? 2 : 5; i < l; i++) {
+                                isValid.insert.push({ pos: pos + i, c: 0 });
+                            }
+                            isValid.pos = pos + l;
+                            return isValid;
+                        }
+                        isValid = strict ? new RegExp("[0-9" + Inputmask.escapeRegex(opts.groupSeparator) + "]").test(chrs) : new RegExp("[0-9]").test(chrs);
+                        if (isValid === true) {
+                            if (opts.numericInput !== true && maskset.validPositions[pos] !== undefined && maskset.validPositions[pos].match.def === "~" && !isSelection) {
+                                var processValue = maskset.buffer.join("");
+                                //strip negation symbol
+                                processValue = processValue.replace(new RegExp("[-" + Inputmask.escapeRegex(opts.negationSymbol.front) + "]", "g"), "");
+                                processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.negationSymbol.back) + "$"), "");
+                                //filter 0 after radixpoint
+                                var pvRadixSplit = processValue.split(opts.radixPoint);
+                                if (pvRadixSplit.length > 1) {
+                                    pvRadixSplit[1] = pvRadixSplit[1].replace(/0/g, opts.placeholder.charAt(0));
+                                }
+                                //filter 0 before radixpoint
+                                if (pvRadixSplit[0] === "0") {
+                                    pvRadixSplit[0] = pvRadixSplit[0].replace(/0/g, opts.placeholder.charAt(0));
+                                }
+                                processValue = pvRadixSplit[0] + opts.radixPoint + pvRadixSplit[1] || "";
+                                var bufferTemplate = maskset._buffer.join(""); //getBuffer().slice(lvp).join('');
+                                if (processValue === opts.radixPoint) {
+                                    processValue = bufferTemplate;
+                                }
+                                while (processValue.match(Inputmask.escapeRegex(bufferTemplate) + "$") === null) {
+                                    bufferTemplate = bufferTemplate.slice(1);
+                                }
+                                // if (processValue !== opts.radixPoint) {
+                                processValue = processValue.replace(bufferTemplate, "");
+                                // }
+                                processValue = processValue.split("");
+
+                                if (processValue[pos] === undefined) {
+                                    isValid = {
+                                        "pos": pos,
+                                        "remove": pos
+                                    };
+                                } else {
+                                    isValid = {
+                                        pos: pos
+                                    };
+                                }
+                            }
+                        } else if (!strict && chrs === opts.radixPoint && maskset.validPositions[pos - 1] === undefined) {
+                            isValid = {
+                                insert: {
+                                    pos: pos,
+                                    c: 0
+                                },
+                                pos: pos + 1
+                            };
+                        }
+                        return isValid;
+                    },
+                    cardinality: 1
+                },
+                "+": {
+                    validator: function validator(chrs, maskset, pos, strict, opts) {
+                        return opts.allowMinus && (chrs === "-" || chrs === opts.negationSymbol.front);
+                    },
+                    cardinality: 1,
+                    placeholder: ""
+                },
+                "-": {
+                    validator: function validator(chrs, maskset, pos, strict, opts) {
+                        return opts.allowMinus && chrs === opts.negationSymbol.back;
+                    },
+                    cardinality: 1,
+                    placeholder: ""
+                },
+                ":": {
+                    validator: function validator(chrs, maskset, pos, strict, opts) {
+                        var radix = "[" + Inputmask.escapeRegex(opts.radixPoint) + "]";
+                        var isValid = new RegExp(radix).test(chrs);
+                        if (isValid && maskset.validPositions[pos] && maskset.validPositions[pos].match.placeholder === opts.radixPoint) {
+                            isValid = {
+                                "caret": pos + 1
+                            };
+                        }
+
+                        return isValid;
+                    },
+                    cardinality: 1,
+                    placeholder: function placeholder(opts) {
+                        return opts.radixPoint;
+                    }
+                }
+            },
+            onUnMask: function onUnMask(maskedValue, unmaskedValue, opts) {
+                if (unmaskedValue === "" && opts.nullable === true) {
+                    return unmaskedValue;
+                }
+                var processValue = maskedValue.replace(opts.prefix, "");
+                processValue = processValue.replace(opts.suffix, "");
+                processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), "");
+                if (opts.placeholder.charAt(0) !== "") {
+                    processValue = processValue.replace(new RegExp(opts.placeholder.charAt(0), "g"), "0");
+                }
+                if (opts.unmaskAsNumber) {
+                    if (opts.radixPoint !== "" && processValue.indexOf(opts.radixPoint) !== -1) processValue = processValue.replace(Inputmask.escapeRegex.call(this, opts.radixPoint), ".");
+                    processValue = processValue.replace(new RegExp("^" + Inputmask.escapeRegex(opts.negationSymbol.front)), "-");
+                    processValue = processValue.replace(new RegExp(Inputmask.escapeRegex(opts.negationSymbol.back) + "$"), "");
+                    return Number(processValue);
+                }
+                return processValue;
+            },
+            isComplete: function isComplete(buffer, opts) {
+                var maskedValue = (opts.numericInput ? buffer.slice().reverse() : buffer).join("");
+                maskedValue = maskedValue.replace(new RegExp("^" + Inputmask.escapeRegex(opts.negationSymbol.front)), "-");
+                maskedValue = maskedValue.replace(new RegExp(Inputmask.escapeRegex(opts.negationSymbol.back) + "$"), "");
+                maskedValue = maskedValue.replace(opts.prefix, "");
+                maskedValue = maskedValue.replace(opts.suffix, "");
+                maskedValue = maskedValue.replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator) + "([0-9]{3})", "g"), "$1");
+                if (opts.radixPoint === ",") maskedValue = maskedValue.replace(Inputmask.escapeRegex(opts.radixPoint), ".");
+                return isFinite(maskedValue);
+            },
+            onBeforeMask: function onBeforeMask(initialValue, opts) {
+                opts.isNegative = undefined;
+                var radixPoint = opts.radixPoint || ",";
+
+                if ((typeof initialValue == "number" || opts.inputType === "number") && radixPoint !== "") {
+                    initialValue = initialValue.toString().replace(".", radixPoint);
+                }
+
+                var valueParts = initialValue.split(radixPoint),
+                    integerPart = valueParts[0].replace(/[^\-0-9]/g, ""),
+                    decimalPart = valueParts.length > 1 ? valueParts[1].replace(/[^0-9]/g, "") : "";
+
+                initialValue = integerPart + (decimalPart !== "" ? radixPoint + decimalPart : decimalPart);
+
+                var digits = 0;
+                if (radixPoint !== "") {
+                    digits = decimalPart.length;
+                    if (decimalPart !== "") {
+                        var digitsFactor = Math.pow(10, digits || 1);
+                        if (isFinite(opts.digits)) {
+                            digits = parseInt(opts.digits);
+                            digitsFactor = Math.pow(10, digits);
+                        }
+
+                        //make the initialValue a valid javascript number for the parsefloat
+                        initialValue = initialValue.replace(Inputmask.escapeRegex(radixPoint), ".");
+                        if (isFinite(initialValue)) initialValue = Math.round(parseFloat(initialValue) * digitsFactor) / digitsFactor;
+                        initialValue = initialValue.toString().replace(".", radixPoint);
+                    }
+                }
+                //this needs to be in a separate part and not directly in decimalPart to allow rounding
+                if (opts.digits === 0 && initialValue.indexOf(Inputmask.escapeRegex(radixPoint)) !== -1) {
+                    initialValue = initialValue.substring(0, initialValue.indexOf(Inputmask.escapeRegex(radixPoint)));
+                }
+                return alignDigits(initialValue.toString().split(""), digits, opts).join("");
+            },
+            onKeyDown: function onKeyDown(e, buffer, caretPos, opts) {
+                //TODO FIXME
+                var $input = $(this);
+                if (e.ctrlKey) {
+                    switch (e.keyCode) {
+                        case Inputmask.keyCode.UP:
+                            $input.val(parseFloat(this.inputmask.unmaskedvalue()) + parseInt(opts.step));
+                            $input.trigger("setvalue");
+                            break;
+                        case Inputmask.keyCode.DOWN:
+                            $input.val(parseFloat(this.inputmask.unmaskedvalue()) - parseInt(opts.step));
+                            $input.trigger("setvalue");
+                            break;
+                    }
+                }
+            }
+        },
+        "currency": {
+            prefix: "$ ",
+            groupSeparator: ",",
+            alias: "numeric",
+            placeholder: "0",
+            autoGroup: true,
+            digits: 2,
+            digitsOptional: false,
+            clearMaskOnLostFocus: false
+        },
+        "decimal": {
+            alias: "numeric"
+        },
+        "integer": {
+            alias: "numeric",
+            digits: 0,
+            radixPoint: ""
+        },
+        "percentage": {
+            alias: "numeric",
+            digits: 2,
+            digitsOptional: true,
+            radixPoint: ".",
+            placeholder: "0",
+            autoGroup: false,
+            min: 0,
+            max: 100,
+            suffix: " %",
+            allowMinus: false
+        }
+    });
+    return Inputmask;
+});
+
 /***/ })
 /******/ ]);
 });
-//# sourceMappingURL=jquery.inputmask.js.map
+//# sourceMappingURL=jquery.inputmask.bundle.js.map

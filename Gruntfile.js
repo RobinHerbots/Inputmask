@@ -83,7 +83,7 @@ module.exports = function (grunt) {
         grunt.config('release.options.npmtag', "next");
         grunt.task.run('release');
     });
-    grunt.registerTask('validate', ['webpack:main', 'eslint']);
+    grunt.registerTask('validate', ['webpack', 'eslint']);
     grunt.registerTask('build', ['bump:prerelease', 'clean', 'webpack']);
     grunt.registerTask('build:patch', ['bump:patch', 'clean', 'webpack']);
     grunt.registerTask('build:minor', ['bump:minor', 'clean', 'webpack']);
