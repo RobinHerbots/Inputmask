@@ -1,9 +1,9 @@
 // import "./css/inputmask.css";
 
-import "./js/inputmask.extensions";
-import "./js/inputmask.date.extensions";
-import "./js/inputmask.numeric.extensions";
-import im from "./js/inputmask.js";
+import "./lib/inputmask.extensions";
+import "./lib/inputmask.date.extensions";
+import "./lib/inputmask.numeric.extensions";
+import im from "./lib/inputmask.js";
 
 window.Inputmask = im;
 
