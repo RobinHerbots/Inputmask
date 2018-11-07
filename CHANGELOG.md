@@ -1,12 +1,13 @@
 # Change Log
 
-## [UNRELEASED]
+## [4.0.3 - 2018-11-07]
 
 ### Addition
 - numeric.extensions - add inputType option to specify the type of initial value
 - README_numeric.md => Setting initial values
 
 ### Updates
+- fix window.js for node
 
 ### Fixed
 - digits: 3 - error on transform #2022
