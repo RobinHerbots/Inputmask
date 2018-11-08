@@ -64,8 +64,8 @@ const rules = {
 
 module.exports = {
     entry: {
-        "dist/inputmask": "./lib/inputmask.js",
-        "dist/inputmask.min": "./lib/inputmask.js",
+        "dist/inputmask/inputmask": "./lib/inputmask.js",
+        "dist/inputmask/inputmask.min": "./lib/inputmask.js",
         "dist/inputmask.bundle": "./bundle.js",
         "dist/inputmask.bundle.min": "./bundle.js",
         "qunit/qunit": "./qunit/index.js"
@@ -85,13 +85,31 @@ module.exports = {
         minimizer: [new UglifyJsPlugin({
             include: /\.min\.js$/,
             uglifyOptions: {
-                mangle: false,
+                mangle: {
+                    keep_fnames: true
+                },
                 compress: false,
                 output: {
                     ascii_only: true,
+                    beautify: false,
+                    comments: /^!/
                 }
             },
-            extractComments: true
+            extractComments: false
+        }), new UglifyJsPlugin({
+            exclude: /\.min\.js$/,
+            uglifyOptions: {
+                mangle: {
+                    keep_fnames: true
+                },
+                compress: false,
+                output: {
+                    ascii_only: true,
+                    beautify: true,
+                    comments: /^!/
+                }
+            },
+            extractComments: false
         })]
     },
     module: {
@@ -122,7 +140,8 @@ module.exports = {
             //     debug: true
         }),
         new webpack.BannerPlugin({
-            banner: createBanner()
+            banner: createBanner(),
+            entryOnly: true
         })
     ],
     bail: true,
