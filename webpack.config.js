@@ -88,7 +88,9 @@ module.exports = {
                 mangle: {
                     keep_fnames: true
                 },
-                compress: false,
+                compress: {
+                    keep_fnames: true
+                },
                 output: {
                     ascii_only: true,
                     beautify: false,
@@ -102,7 +104,9 @@ module.exports = {
                 mangle: {
                     keep_fnames: true
                 },
-                compress: false,
+                compress: {
+                    keep_fnames: true
+                },
                 output: {
                     ascii_only: true,
                     beautify: true,
