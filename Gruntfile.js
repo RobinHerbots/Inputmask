@@ -72,6 +72,15 @@ module.exports = function (grunt) {
         webpack: {
             main: webpackConfig,
             jquery: webpackJqueryConfig
+        },
+        copy: {
+            extensions: {
+                files: [
+                    {src: 'lib/inputmask.extensions.js', dest: 'dist/inputmask/inputmask.extensions.js'},
+                    {src: 'lib/inputmask.date.extensions.js', dest: 'dist/inputmask/inputmask.date.extensions.js'},
+                    {src: 'lib/inputmask.numeric.extensions.js', dest: 'dist/inputmask/inputmask.numeric.extensions.js'}
+                ]
+            }
         }
     });
 
@@ -83,10 +92,10 @@ module.exports = function (grunt) {
         grunt.config('release.options.npmtag', "next");
         grunt.task.run('release');
     });
-    grunt.registerTask('validate', ['webpack:main', 'eslint']);
-    grunt.registerTask('build', ['bump:prerelease', 'clean', 'webpack']);
-    grunt.registerTask('build:patch', ['bump:patch', 'clean', 'webpack']);
-    grunt.registerTask('build:minor', ['bump:minor', 'clean', 'webpack']);
-    grunt.registerTask('build:major', ['bump:major', 'clean', 'webpack']);
+    grunt.registerTask('validate', ['webpack', 'copy', 'eslint']);
+    grunt.registerTask('build', ['bump:prerelease', 'clean', 'webpack', 'copy']);
+    grunt.registerTask('build:patch', ['bump:patch', 'clean', 'webpack', 'copy']);
+    grunt.registerTask('build:minor', ['bump:minor', 'clean', 'webpack', 'copy']);
+    grunt.registerTask('build:major', ['bump:major', 'clean', 'webpack', 'copy']);
     grunt.registerTask('default', ["availabletasks"]);
 };

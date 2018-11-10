@@ -2,12 +2,12 @@ import "../node_modules/qunit/qunit/qunit.css";
 import "../css/inputmask.css";
 
 //extensions
-import "../js/inputmask.date.extensions";
-import "../js/inputmask.extensions";
-import "../js/inputmask.numeric.extensions";
-import "../js/jquery.inputmask";
+import "../lib/inputmask.date.extensions";
+import "../lib/inputmask.extensions";
+import "../lib/inputmask.numeric.extensions";
+import "../lib/jquery.inputmask";
 
-import Inputmask from "../js/inputmask";
+import Inputmask from "../lib/inputmask";
 
 // import "../dist/inputmask/inputmask.date.extensions";
 // import "../dist/inputmask/inputmask.extensions";
