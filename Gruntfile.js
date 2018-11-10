@@ -76,9 +76,7 @@ module.exports = function (grunt) {
         copy: {
             extensions: {
                 files: [
-                    {src: 'lib/inputmask.extensions.js', dest: 'dist/inputmask/inputmask.extensions.js'},
-                    {src: 'lib/inputmask.date.extensions.js', dest: 'dist/inputmask/inputmask.date.extensions.js'},
-                    {src: 'lib/inputmask.numeric.extensions.js', dest: 'dist/inputmask/inputmask.numeric.extensions.js'}
+                    {src: 'lib/bindings/inputmask.binding.js', dest: 'dist/bindings/inputmask.binding.js'}
                 ]
             }
         }

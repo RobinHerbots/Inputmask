@@ -1,16 +1,16 @@
 /*!
- * dist/jquery.inputmask.bundle
+ * dist/jquery.inputmask
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2018 Robin Herbots
  * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
- * Version: 5.0.0-beta.29
+ * Version: 5.0.0-beta.31
  */
 !function webpackUniversalModuleDefinition(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jQuery")); else if ("function" == typeof define && define.amd) define([ "jQuery" ], t); else {
         var a = "object" == typeof exports ? t(require("jQuery")) : t(e.jQuery);
         for (var i in a) ("object" == typeof exports ? exports : e)[i] = a[i];
     }
-}(window, function(__WEBPACK_EXTERNAL_MODULE__1__) {
+}(window, function(__WEBPACK_EXTERNAL_MODULE__5__) {
     return function(a) {
         var i = {};
         function __webpack_require__(e) {
@@ -53,71 +53,103 @@
             return __webpack_require__.d(t, "a", t), t;
         }, __webpack_require__.o = function(e, t) {
             return Object.prototype.hasOwnProperty.call(e, t);
-        }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 5);
+        }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 0);
     }([ function(e, t, a) {
         "use strict";
-        var i, n, r, o = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(e) {
-            return typeof e;
-        } : function(e) {
-            return e && "function" == typeof Symbol && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
-        };
-        n = [ a(1), a(2) ], void 0 === (r = "function" == typeof (i = function(n, r) {
-            return void 0 === n.fn.inputmask && (n.fn.inputmask = function(e, t) {
-                var a, i = this[0];
-                if (void 0 === t && (t = {}), "string" == typeof e) switch (e) {
-                  case "unmaskedvalue":
-                    return i && i.inputmask ? i.inputmask.unmaskedvalue() : n(i).val();
-
-                  case "remove":
-                    return this.each(function() {
-                        this.inputmask && this.inputmask.remove();
-                    });
-
-                  case "getemptymask":
-                    return i && i.inputmask ? i.inputmask.getemptymask() : "";
-
-                  case "hasMaskedValue":
-                    return !(!i || !i.inputmask) && i.inputmask.hasMaskedValue();
-
-                  case "isComplete":
-                    return !i || !i.inputmask || i.inputmask.isComplete();
-
-                  case "getmetadata":
-                    return i && i.inputmask ? i.inputmask.getmetadata() : void 0;
-
-                  case "setvalue":
-                    r.setValue(i, t);
-                    break;
-
-                  case "option":
-                    if ("string" != typeof t) return this.each(function() {
-                        if (void 0 !== this.inputmask) return this.inputmask.option(t);
-                    });
-                    if (i && void 0 !== i.inputmask) return i.inputmask.option(t);
-                    break;
-
-                  default:
-                    return t.alias = e, a = new r(t), this.each(function() {
-                        a.mask(this);
-                    });
-                } else {
-                    if (Array.isArray(e)) return t.alias = e, a = new r(t), this.each(function() {
-                        a.mask(this);
-                    });
-                    if ("object" == (void 0 === e ? "undefined" : o(e))) return a = new r(e), void 0 === e.mask && void 0 === e.alias ? this.each(function() {
-                        if (void 0 !== this.inputmask) return this.inputmask.option(e);
-                        a.mask(this);
-                    }) : this.each(function() {
-                        a.mask(this);
-                    });
-                    if (void 0 === e) return this.each(function() {
-                        (a = new r(t)).mask(this);
-                    });
+        a(1);
+        var i = _interopRequireDefault(a(4)), n = _interopRequireDefault(a(5));
+        function _interopRequireDefault(e) {
+            return e && e.__esModule ? e : {
+                default: e
+            };
+        }
+        i.default === n.default && a(9);
+    }, function(e, t, a) {
+        "use strict";
+        a(2), a(7), a(8);
+        var i = function _interopRequireDefault(e) {
+            return e && e.__esModule ? e : {
+                default: e
+            };
+        }(a(3));
+        window.Inputmask = i.default;
+    }, function(e, t, a) {
+        "use strict";
+        var i, n, r;
+        "function" == typeof Symbol && Symbol.iterator;
+        n = [ a(3) ], void 0 === (r = "function" == typeof (i = function(e) {
+            return e.extendDefinitions({
+                A: {
+                    validator: "[A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
+                    casing: "upper"
+                },
+                "&": {
+                    validator: "[0-9A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
+                    casing: "upper"
+                },
+                "#": {
+                    validator: "[0-9A-Fa-f]",
+                    casing: "upper"
                 }
-            }), n.fn.inputmask;
+            }), e.extendAliases({
+                cssunit: {
+                    regex: "[+-]?[0-9]+\\.?([0-9]+)?(px|em|rem|ex|%|in|cm|mm|pt|pc)"
+                },
+                url: {
+                    regex: "(https?|ftp)//.*",
+                    autoUnmask: !1
+                },
+                ip: {
+                    mask: "i[i[i]].i[i[i]].i[i[i]].i[i[i]]",
+                    definitions: {
+                        i: {
+                            validator: function validator(e, t, a, i, n) {
+                                return e = -1 < a - 1 && "." !== t.buffer[a - 1] ? (e = t.buffer[a - 1] + e, -1 < a - 2 && "." !== t.buffer[a - 2] ? t.buffer[a - 2] + e : "0" + e) : "00" + e, 
+                                new RegExp("25[0-5]|2[0-4][0-9]|[01][0-9][0-9]").test(e);
+                            }
+                        }
+                    },
+                    onUnMask: function onUnMask(e, t, a) {
+                        return e;
+                    },
+                    inputmode: "numeric"
+                },
+                email: {
+                    mask: "*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@-{1,63}.-{1,63}[.-{1,63}][.-{1,63}]",
+                    greedy: !1,
+                    casing: "lower",
+                    onBeforePaste: function onBeforePaste(e, t) {
+                        return (e = e.toLowerCase()).replace("mailto:", "");
+                    },
+                    definitions: {
+                        "*": {
+                            validator: "[0-9\uff11-\uff19A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5!#$%&'*+/=?^_`{|}~-]"
+                        },
+                        "-": {
+                            validator: "[0-9A-Za-z-]"
+                        }
+                    },
+                    onUnMask: function onUnMask(e, t, a) {
+                        return e;
+                    },
+                    inputmode: "email"
+                },
+                mac: {
+                    mask: "##:##:##:##:##:##"
+                },
+                vin: {
+                    mask: "V{13}9{4}",
+                    definitions: {
+                        V: {
+                            validator: "[A-HJ-NPR-Za-hj-npr-z\\d]",
+                            casing: "upper"
+                        }
+                    },
+                    clearIncomplete: !0,
+                    autoUnmask: !0
+                }
+            }), e;
         }) ? i.apply(t, n) : i) || (e.exports = r);
-    }, function(e, t) {
-        e.exports = __WEBPACK_EXTERNAL_MODULE__1__;
     }, function(e, t, a) {
         "use strict";
         var i, n, r, T = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(e) {
@@ -125,7 +157,7 @@
         } : function(e) {
             return e && "function" == typeof Symbol && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
         };
-        n = [ a(3), a(4) ], void 0 === (r = "function" == typeof (i = function(L, M, V) {
+        n = [ a(4), a(6) ], void 0 === (r = "function" == typeof (i = function(L, M, V) {
             var S = M.document, e = navigator.userAgent, x = 0 < e.indexOf("MSIE ") || 0 < e.indexOf("Trident/"), P = isInputEventSupported("touchstart"), _ = /iemobile/i.test(e), E = /iphone/i.test(e) && !_;
             function Inputmask(e, t, a) {
                 if (!(this instanceof Inputmask)) return new Inputmask(e, t, a);
@@ -1680,9 +1712,11 @@
         "use strict";
         var i, n, r;
         "function" == typeof Symbol && Symbol.iterator;
-        n = [ a(1) ], void 0 === (r = "function" == typeof (i = function(e) {
+        n = [ a(5) ], void 0 === (r = "function" == typeof (i = function(e) {
             return e;
         }) ? i.apply(t, n) : i) || (e.exports = r);
+    }, function(e, t) {
+        e.exports = __WEBPACK_EXTERNAL_MODULE__5__;
     }, function(module, exports, __webpack_require__) {
         "use strict";
         var __WEBPACK_AMD_DEFINE_RESULT__, _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(e) {
@@ -1695,108 +1729,12 @@
         }.call(exports, __webpack_require__, exports, module), void 0 === __WEBPACK_AMD_DEFINE_RESULT__ || (module.exports = __WEBPACK_AMD_DEFINE_RESULT__);
     }, function(e, t, a) {
         "use strict";
-        a(6);
-        var i = _interopRequireDefault(a(3)), n = _interopRequireDefault(a(1));
-        function _interopRequireDefault(e) {
-            return e && e.__esModule ? e : {
-                default: e
-            };
-        }
-        i.default === n.default && a(0);
-    }, function(e, t, a) {
-        "use strict";
-        a(7), a(8), a(9);
-        var i = function _interopRequireDefault(e) {
-            return e && e.__esModule ? e : {
-                default: e
-            };
-        }(a(2));
-        window.Inputmask = i.default;
-    }, function(e, t, a) {
-        "use strict";
-        var i, n, r;
-        "function" == typeof Symbol && Symbol.iterator;
-        n = [ a(2) ], void 0 === (r = "function" == typeof (i = function(e) {
-            return e.extendDefinitions({
-                A: {
-                    validator: "[A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
-                    casing: "upper"
-                },
-                "&": {
-                    validator: "[0-9A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
-                    casing: "upper"
-                },
-                "#": {
-                    validator: "[0-9A-Fa-f]",
-                    casing: "upper"
-                }
-            }), e.extendAliases({
-                cssunit: {
-                    regex: "[+-]?[0-9]+\\.?([0-9]+)?(px|em|rem|ex|%|in|cm|mm|pt|pc)"
-                },
-                url: {
-                    regex: "(https?|ftp)//.*",
-                    autoUnmask: !1
-                },
-                ip: {
-                    mask: "i[i[i]].i[i[i]].i[i[i]].i[i[i]]",
-                    definitions: {
-                        i: {
-                            validator: function validator(e, t, a, i, n) {
-                                return e = -1 < a - 1 && "." !== t.buffer[a - 1] ? (e = t.buffer[a - 1] + e, -1 < a - 2 && "." !== t.buffer[a - 2] ? t.buffer[a - 2] + e : "0" + e) : "00" + e, 
-                                new RegExp("25[0-5]|2[0-4][0-9]|[01][0-9][0-9]").test(e);
-                            }
-                        }
-                    },
-                    onUnMask: function onUnMask(e, t, a) {
-                        return e;
-                    },
-                    inputmode: "numeric"
-                },
-                email: {
-                    mask: "*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@-{1,63}.-{1,63}[.-{1,63}][.-{1,63}]",
-                    greedy: !1,
-                    casing: "lower",
-                    onBeforePaste: function onBeforePaste(e, t) {
-                        return (e = e.toLowerCase()).replace("mailto:", "");
-                    },
-                    definitions: {
-                        "*": {
-                            validator: "[0-9\uff11-\uff19A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5!#$%&'*+/=?^_`{|}~-]"
-                        },
-                        "-": {
-                            validator: "[0-9A-Za-z-]"
-                        }
-                    },
-                    onUnMask: function onUnMask(e, t, a) {
-                        return e;
-                    },
-                    inputmode: "email"
-                },
-                mac: {
-                    mask: "##:##:##:##:##:##"
-                },
-                vin: {
-                    mask: "V{13}9{4}",
-                    definitions: {
-                        V: {
-                            validator: "[A-HJ-NPR-Za-hj-npr-z\\d]",
-                            casing: "upper"
-                        }
-                    },
-                    clearIncomplete: !0,
-                    autoUnmask: !0
-                }
-            }), e;
-        }) ? i.apply(t, n) : i) || (e.exports = r);
-    }, function(e, t, a) {
-        "use strict";
         var i, n, r, c = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(e) {
             return typeof e;
         } : function(e) {
             return e && "function" == typeof Symbol && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
         };
-        n = [ a(2) ], void 0 === (r = "function" == typeof (i = function(s) {
+        n = [ a(3) ], void 0 === (r = "function" == typeof (i = function(s) {
             var l = s.dependencyLib, u = {
                 d: [ "[1-9]|[12][0-9]|3[01]", Date.prototype.setDate, "day", Date.prototype.getDate ],
                 dd: [ "0[1-9]|[12][0-9]|3[01]", Date.prototype.setDate, "day", function() {
@@ -1973,7 +1911,7 @@
         "use strict";
         var i, n, r;
         "function" == typeof Symbol && Symbol.iterator;
-        n = [ a(2) ], void 0 === (r = "function" == typeof (i = function(k) {
+        n = [ a(3) ], void 0 === (r = "function" == typeof (i = function(k) {
             var h = k.dependencyLib;
             function autoEscape(e, t) {
                 for (var a = "", i = 0; i < e.length; i++) k.prototype.definitions[e.charAt(i)] || t.definitions[e.charAt(i)] || t.optionalmarker.start === e.charAt(i) || t.optionalmarker.end === e.charAt(i) || t.quantifiermarker.start === e.charAt(i) || t.quantifiermarker.end === e.charAt(i) || t.groupmarker.start === e.charAt(i) || t.groupmarker.end === e.charAt(i) || t.alternatormarker === e.charAt(i) ? a += "\\" + e.charAt(i) : a += e.charAt(i);
@@ -2298,6 +2236,68 @@
                     allowMinus: !1
                 }
             }), k;
+        }) ? i.apply(t, n) : i) || (e.exports = r);
+    }, function(e, t, a) {
+        "use strict";
+        var i, n, r, o = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(e) {
+            return typeof e;
+        } : function(e) {
+            return e && "function" == typeof Symbol && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
+        };
+        n = [ a(5), a(3) ], void 0 === (r = "function" == typeof (i = function(n, r) {
+            return void 0 === n.fn.inputmask && (n.fn.inputmask = function(e, t) {
+                var a, i = this[0];
+                if (void 0 === t && (t = {}), "string" == typeof e) switch (e) {
+                  case "unmaskedvalue":
+                    return i && i.inputmask ? i.inputmask.unmaskedvalue() : n(i).val();
+
+                  case "remove":
+                    return this.each(function() {
+                        this.inputmask && this.inputmask.remove();
+                    });
+
+                  case "getemptymask":
+                    return i && i.inputmask ? i.inputmask.getemptymask() : "";
+
+                  case "hasMaskedValue":
+                    return !(!i || !i.inputmask) && i.inputmask.hasMaskedValue();
+
+                  case "isComplete":
+                    return !i || !i.inputmask || i.inputmask.isComplete();
+
+                  case "getmetadata":
+                    return i && i.inputmask ? i.inputmask.getmetadata() : void 0;
+
+                  case "setvalue":
+                    r.setValue(i, t);
+                    break;
+
+                  case "option":
+                    if ("string" != typeof t) return this.each(function() {
+                        if (void 0 !== this.inputmask) return this.inputmask.option(t);
+                    });
+                    if (i && void 0 !== i.inputmask) return i.inputmask.option(t);
+                    break;
+
+                  default:
+                    return t.alias = e, a = new r(t), this.each(function() {
+                        a.mask(this);
+                    });
+                } else {
+                    if (Array.isArray(e)) return t.alias = e, a = new r(t), this.each(function() {
+                        a.mask(this);
+                    });
+                    if ("object" == (void 0 === e ? "undefined" : o(e))) return a = new r(e), void 0 === e.mask && void 0 === e.alias ? this.each(function() {
+                        if (void 0 !== this.inputmask) return this.inputmask.option(e);
+                        a.mask(this);
+                    }) : this.each(function() {
+                        a.mask(this);
+                    });
+                    if (void 0 === e) return this.each(function() {
+                        (a = new r(t)).mask(this);
+                    });
+                }
+            }), n.fn.inputmask;
         }) ? i.apply(t, n) : i) || (e.exports = r);
     } ]);
 });

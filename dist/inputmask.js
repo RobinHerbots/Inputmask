@@ -1,9 +1,9 @@
 /*!
- * dist/inputmask.bundle
+ * dist/inputmask
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2018 Robin Herbots
  * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
- * Version: 5.0.0-beta.29
+ * Version: 5.0.0-beta.31
  */
 !function webpackUniversalModuleDefinition(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -53,15 +53,101 @@
             return __webpack_require__.d(t, "a", t), t;
         }, __webpack_require__.o = function(e, t) {
             return Object.prototype.hasOwnProperty.call(e, t);
-        }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 3);
+        }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 0);
     }([ function(e, t, a) {
+        "use strict";
+        a(1), a(5), a(6);
+        var n = function _interopRequireDefault(e) {
+            return e && e.__esModule ? e : {
+                default: e
+            };
+        }(a(2));
+        window.Inputmask = n.default;
+    }, function(e, t, a) {
+        "use strict";
+        var n, i, r;
+        "function" == typeof Symbol && Symbol.iterator;
+        i = [ a(2) ], void 0 === (r = "function" == typeof (n = function(e) {
+            return e.extendDefinitions({
+                A: {
+                    validator: "[A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
+                    casing: "upper"
+                },
+                "&": {
+                    validator: "[0-9A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
+                    casing: "upper"
+                },
+                "#": {
+                    validator: "[0-9A-Fa-f]",
+                    casing: "upper"
+                }
+            }), e.extendAliases({
+                cssunit: {
+                    regex: "[+-]?[0-9]+\\.?([0-9]+)?(px|em|rem|ex|%|in|cm|mm|pt|pc)"
+                },
+                url: {
+                    regex: "(https?|ftp)//.*",
+                    autoUnmask: !1
+                },
+                ip: {
+                    mask: "i[i[i]].i[i[i]].i[i[i]].i[i[i]]",
+                    definitions: {
+                        i: {
+                            validator: function validator(e, t, a, n, i) {
+                                return e = -1 < a - 1 && "." !== t.buffer[a - 1] ? (e = t.buffer[a - 1] + e, -1 < a - 2 && "." !== t.buffer[a - 2] ? t.buffer[a - 2] + e : "0" + e) : "00" + e, 
+                                new RegExp("25[0-5]|2[0-4][0-9]|[01][0-9][0-9]").test(e);
+                            }
+                        }
+                    },
+                    onUnMask: function onUnMask(e, t, a) {
+                        return e;
+                    },
+                    inputmode: "numeric"
+                },
+                email: {
+                    mask: "*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@-{1,63}.-{1,63}[.-{1,63}][.-{1,63}]",
+                    greedy: !1,
+                    casing: "lower",
+                    onBeforePaste: function onBeforePaste(e, t) {
+                        return (e = e.toLowerCase()).replace("mailto:", "");
+                    },
+                    definitions: {
+                        "*": {
+                            validator: "[0-9\uff11-\uff19A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5!#$%&'*+/=?^_`{|}~-]"
+                        },
+                        "-": {
+                            validator: "[0-9A-Za-z-]"
+                        }
+                    },
+                    onUnMask: function onUnMask(e, t, a) {
+                        return e;
+                    },
+                    inputmode: "email"
+                },
+                mac: {
+                    mask: "##:##:##:##:##:##"
+                },
+                vin: {
+                    mask: "V{13}9{4}",
+                    definitions: {
+                        V: {
+                            validator: "[A-HJ-NPR-Za-hj-npr-z\\d]",
+                            casing: "upper"
+                        }
+                    },
+                    clearIncomplete: !0,
+                    autoUnmask: !0
+                }
+            }), e;
+        }) ? n.apply(t, i) : n) || (e.exports = r);
+    }, function(e, t, a) {
         "use strict";
         var n, i, r, T = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(e) {
             return typeof e;
         } : function(e) {
             return e && "function" == typeof Symbol && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
         };
-        i = [ a(1), a(2) ], void 0 === (r = "function" == typeof (n = function(F, M, V) {
+        i = [ a(3), a(4) ], void 0 === (r = "function" == typeof (n = function(F, M, V) {
             var S = M.document, e = navigator.userAgent, x = 0 < e.indexOf("MSIE ") || 0 < e.indexOf("Trident/"), P = isInputEventSupported("touchstart"), _ = /iemobile/i.test(e), E = /iphone/i.test(e) && !_;
             function Inputmask(e, t, a) {
                 if (!(this instanceof Inputmask)) return new Inputmask(e, t, a);
@@ -1619,7 +1705,7 @@
         } : function(e) {
             return e && "function" == typeof Symbol && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
         };
-        i = [ a(2) ], void 0 === (r = "function" == typeof (n = function(t) {
+        i = [ a(4) ], void 0 === (r = "function" == typeof (n = function(t) {
             var f = t.document;
             function isWindow(e) {
                 return null != e && e === e.window;
@@ -1741,98 +1827,12 @@
         }.call(exports, __webpack_require__, exports, module), void 0 === __WEBPACK_AMD_DEFINE_RESULT__ || (module.exports = __WEBPACK_AMD_DEFINE_RESULT__);
     }, function(e, t, a) {
         "use strict";
-        a(4), a(5), a(6);
-        var n = function _interopRequireDefault(e) {
-            return e && e.__esModule ? e : {
-                default: e
-            };
-        }(a(0));
-        window.Inputmask = n.default;
-    }, function(e, t, a) {
-        "use strict";
-        var n, i, r;
-        "function" == typeof Symbol && Symbol.iterator;
-        i = [ a(0) ], void 0 === (r = "function" == typeof (n = function(e) {
-            return e.extendDefinitions({
-                A: {
-                    validator: "[A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
-                    casing: "upper"
-                },
-                "&": {
-                    validator: "[0-9A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
-                    casing: "upper"
-                },
-                "#": {
-                    validator: "[0-9A-Fa-f]",
-                    casing: "upper"
-                }
-            }), e.extendAliases({
-                cssunit: {
-                    regex: "[+-]?[0-9]+\\.?([0-9]+)?(px|em|rem|ex|%|in|cm|mm|pt|pc)"
-                },
-                url: {
-                    regex: "(https?|ftp)//.*",
-                    autoUnmask: !1
-                },
-                ip: {
-                    mask: "i[i[i]].i[i[i]].i[i[i]].i[i[i]]",
-                    definitions: {
-                        i: {
-                            validator: function validator(e, t, a, n, i) {
-                                return e = -1 < a - 1 && "." !== t.buffer[a - 1] ? (e = t.buffer[a - 1] + e, -1 < a - 2 && "." !== t.buffer[a - 2] ? t.buffer[a - 2] + e : "0" + e) : "00" + e, 
-                                new RegExp("25[0-5]|2[0-4][0-9]|[01][0-9][0-9]").test(e);
-                            }
-                        }
-                    },
-                    onUnMask: function onUnMask(e, t, a) {
-                        return e;
-                    },
-                    inputmode: "numeric"
-                },
-                email: {
-                    mask: "*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@-{1,63}.-{1,63}[.-{1,63}][.-{1,63}]",
-                    greedy: !1,
-                    casing: "lower",
-                    onBeforePaste: function onBeforePaste(e, t) {
-                        return (e = e.toLowerCase()).replace("mailto:", "");
-                    },
-                    definitions: {
-                        "*": {
-                            validator: "[0-9\uff11-\uff19A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5!#$%&'*+/=?^_`{|}~-]"
-                        },
-                        "-": {
-                            validator: "[0-9A-Za-z-]"
-                        }
-                    },
-                    onUnMask: function onUnMask(e, t, a) {
-                        return e;
-                    },
-                    inputmode: "email"
-                },
-                mac: {
-                    mask: "##:##:##:##:##:##"
-                },
-                vin: {
-                    mask: "V{13}9{4}",
-                    definitions: {
-                        V: {
-                            validator: "[A-HJ-NPR-Za-hj-npr-z\\d]",
-                            casing: "upper"
-                        }
-                    },
-                    clearIncomplete: !0,
-                    autoUnmask: !0
-                }
-            }), e;
-        }) ? n.apply(t, i) : n) || (e.exports = r);
-    }, function(e, t, a) {
-        "use strict";
         var n, i, r, c = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(e) {
             return typeof e;
         } : function(e) {
             return e && "function" == typeof Symbol && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
         };
-        i = [ a(0) ], void 0 === (r = "function" == typeof (n = function(s) {
+        i = [ a(2) ], void 0 === (r = "function" == typeof (n = function(s) {
             var l = s.dependencyLib, u = {
                 d: [ "[1-9]|[12][0-9]|3[01]", Date.prototype.setDate, "day", Date.prototype.getDate ],
                 dd: [ "0[1-9]|[12][0-9]|3[01]", Date.prototype.setDate, "day", function() {
@@ -2009,7 +2009,7 @@
         "use strict";
         var n, i, r;
         "function" == typeof Symbol && Symbol.iterator;
-        i = [ a(0) ], void 0 === (r = "function" == typeof (n = function(k) {
+        i = [ a(2) ], void 0 === (r = "function" == typeof (n = function(k) {
             var h = k.dependencyLib;
             function autoEscape(e, t) {
                 for (var a = "", n = 0; n < e.length; n++) k.prototype.definitions[e.charAt(n)] || t.definitions[e.charAt(n)] || t.optionalmarker.start === e.charAt(n) || t.optionalmarker.end === e.charAt(n) || t.quantifiermarker.start === e.charAt(n) || t.quantifiermarker.end === e.charAt(n) || t.groupmarker.start === e.charAt(n) || t.groupmarker.end === e.charAt(n) || t.alternatormarker === e.charAt(n) ? a += "\\" + e.charAt(n) : a += e.charAt(n);
