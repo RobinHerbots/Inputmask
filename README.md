@@ -36,6 +36,14 @@ Demo page see [http://robinherbots.github.io/Inputmask](http://robinherbots.gith
 Thanks to [Jetbrains](https://www.jetbrains.com/) for providing a free license for their excellent Webstorm IDE.
 
 ## Setup
+### dependencyLibs
+Inputmask can run against different javascript libraries.
+You can choose between:
+- inputmask.dependencyLib (vanilla)
+- inputmask.dependencyLib.jquery
+- inputmask.dependencyLib.jqlite
+- .... (others are welcome)
+
 ### Classic web with <script\> tag
 Include the js-files which you can find in the `dist` folder.
 
@@ -53,7 +61,7 @@ Inputmask with vanilla dependencylib.
 If you like to automatically bind the inputmask to the inputs marked with the data-inputmask- ... attributes you may also want to include the inputmask.binding.js
 
 ```html
-<script src="dist/inputmask/bindings/inputmask.binding.js"></script>
+<script src="dist/bindings/inputmask.binding.js"></script>
 ```
 
 ### webpack
@@ -76,7 +84,29 @@ var Inputmask = require('inputmask');
 //es6
 import Inputmask from "inputmask";
 ```
+For individual extensions.
+Every extension exports the Inputmask, so you only need to import the extensions.
+See example.
+```
+require("inputmask/lib/inputmask.numeric.extensions");
+var Inputmask = require("inputmask/lib/inputmask.date.extensions");
 
+//es6
+import "inputmask/lib/inputmask.numeric.extensions";
+import Inputmask from "inputmask/lib/inputmask.date.extensions";
+```
+
+#### Selecting the dependencyLib
+By default the vanilla dependencyLib is used.  You can select another dependency
+by creating an alias in the webpack.config.
+
+```
+ resolve: {
+        alias: {
+            "./dependencyLibs/inputmask.dependencyLib": "./dependencyLibs/inputmask.dependencyLib.jquery"
+        }
+    },
+```
 ## Usage
 ### via Inputmask class
 
