@@ -82,7 +82,7 @@ module.exports = {
         minimize: true,
         minimizer: [new UglifyJsPlugin({
             include: /\.min\.js$/,
-            sourceMap: true,
+            sourceMap: false,
             uglifyOptions: {
                 mangle: {
                     keep_fnames: true

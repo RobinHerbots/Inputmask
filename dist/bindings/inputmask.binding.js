@@ -2,7 +2,7 @@
  Input Mask plugin binding
  http://github.com/RobinHerbots/jquery.inputmask
  Copyright (c) Robin Herbots
- Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
+ Licensed under the MIT license
  */
 (function (factory) {
 	if (typeof define === "function" && define.amd) {
