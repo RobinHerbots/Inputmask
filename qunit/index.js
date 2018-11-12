@@ -1,21 +1,6 @@
 import "../node_modules/qunit/qunit/qunit.css";
 import "../css/inputmask.css";
-
-//extensions
-import "../lib/inputmask.date.extensions";
-import "../lib/inputmask.extensions";
-import "../lib/inputmask.numeric.extensions";
-import "../lib/jquery.inputmask";
-
-import Inputmask from "../lib/inputmask";
-
-// import "../dist/inputmask/inputmask.date.extensions";
-// import "../dist/inputmask/inputmask.extensions";
-// import "../dist/inputmask/inputmask.numeric.extensions";
-// import "../dist/inputmask/jquery.inputmask";
-//
-// import Inputmask from "../dist/inputmask/inputmask";
-
+import Inputmask from "../index";
 import jQuery from "jquery";
 
 if (Inputmask.dependencyLib === jQuery)

@@ -12,7 +12,7 @@ function createBanner() {
     return "[name]\n" +
         "<%= pkg.homepage %>\n" +
         "Copyright (c) 2010 - <%= grunt.template.today('yyyy') %> <%= pkg.author.name %>\n" +
-        "Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)\n" +
+        "Licensed under the <%= pkg.license %> license\n" +
         "Version: <%= pkg.version %>";
 }
 
@@ -82,6 +82,7 @@ module.exports = {
         minimize: true,
         minimizer: [new UglifyJsPlugin({
             include: /\.min\.js$/,
+            sourceMap: true,
             uglifyOptions: {
                 mangle: {
                     keep_fnames: true
@@ -98,6 +99,7 @@ module.exports = {
             extractComments: false
         }), new UglifyJsPlugin({
             exclude: /\.min\.js$/,
+            sourceMap: true,
             uglifyOptions: {
                 mangle: {
                     keep_fnames: true
@@ -130,17 +132,8 @@ module.exports = {
             // "./dependencyLibs/inputmask.dependencyLib": "./dependencyLibs/inputmask.dependencyLib.jqlite"
         }
     },
+    devtool: "source-map",
     plugins: [
-        new webpack.SourceMapDevToolPlugin({
-            // file and reference
-            filename: '[file].map',
-            // sources naming
-            moduleFilenameTemplate: '[absolute-resource-path]',
-            fallbackModuleFilenameTemplate: '[absolute-resource-path]',
-            // }),
-            // new webpack.LoaderOptionsPlugin({
-            //     debug: true
-        }),
         new webpack.BannerPlugin({
             banner: createBanner(),
             entryOnly: true

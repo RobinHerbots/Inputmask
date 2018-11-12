@@ -2,8 +2,8 @@
  * dist/inputmask
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2018 Robin Herbots
- * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
- * Version: 5.0.0-beta.31
+ * Licensed under the MIT license
+ * Version: 5.0.0-beta.45
  */
 !function webpackUniversalModuleDefinition(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -56,13 +56,7 @@
         }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 0);
     }([ function(e, t, a) {
         "use strict";
-        a(1), a(5), a(6);
-        var n = function _interopRequireDefault(e) {
-            return e && e.__esModule ? e : {
-                default: e
-            };
-        }(a(2));
-        window.Inputmask = n.default;
+        a(1), a(5), a(6), e.exports = a(2);
     }, function(e, t, a) {
         "use strict";
         var n, i, r;
@@ -1696,7 +1690,7 @@
                 UP: 38,
                 X: 88,
                 CONTROL: 17
-            }, Inputmask.dependencyLib = F, M.Inputmask = Inputmask;
+            }, Inputmask.dependencyLib = F, Inputmask;
         }) ? n.apply(t, i) : n) || (e.exports = r);
     }, function(e, t, a) {
         "use strict";
@@ -2337,3 +2331,4 @@
         }) ? n.apply(t, i) : n) || (e.exports = r);
     } ]);
 });
+//# sourceMappingURL=inputmask.js.map

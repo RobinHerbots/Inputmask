@@ -1,3 +1,5 @@
+require("../lib/jquery.inputmask");
+
 export default function (qunit, $, Inputmask) {
 	qunit.module("jquery.inputmask plugin");
 	qunit.test("", function(assert) {

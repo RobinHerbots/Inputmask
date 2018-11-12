@@ -2,8 +2,8 @@
  * dist/jquery.inputmask
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2018 Robin Herbots
- * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
- * Version: 5.0.0-beta.31
+ * Licensed under the MIT license
+ * Version: 5.0.0-beta.45
  */
 !function webpackUniversalModuleDefinition(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jQuery")); else if ("function" == typeof define && define.amd) define([ "jQuery" ], t); else {
@@ -56,23 +56,11 @@
         }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 0);
     }([ function(e, t, a) {
         "use strict";
-        a(1);
-        var i = _interopRequireDefault(a(4)), n = _interopRequireDefault(a(5));
-        function _interopRequireDefault(e) {
-            return e && e.__esModule ? e : {
-                default: e
-            };
-        }
-        i.default === n.default && a(9);
+        var i = a(1);
+        a(4) === a(5) && a(9), e.exports = i;
     }, function(e, t, a) {
         "use strict";
-        a(2), a(7), a(8);
-        var i = function _interopRequireDefault(e) {
-            return e && e.__esModule ? e : {
-                default: e
-            };
-        }(a(3));
-        window.Inputmask = i.default;
+        a(2), a(7), a(8), e.exports = a(3);
     }, function(e, t, a) {
         "use strict";
         var i, n, r;
@@ -1706,7 +1694,7 @@
                 UP: 38,
                 X: 88,
                 CONTROL: 17
-            }, Inputmask.dependencyLib = L, M.Inputmask = Inputmask;
+            }, Inputmask.dependencyLib = L, Inputmask;
         }) ? i.apply(t, n) : i) || (e.exports = r);
     }, function(e, t, a) {
         "use strict";
@@ -2301,3 +2289,4 @@
         }) ? i.apply(t, n) : i) || (e.exports = r);
     } ]);
 });
+//# sourceMappingURL=jquery.inputmask.js.map

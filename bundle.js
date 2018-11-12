@@ -1,10 +1,6 @@
 // import "./css/inputmask.css";
 
-import "./lib/inputmask.extensions";
-import "./lib/inputmask.date.extensions";
-import "./lib/inputmask.numeric.extensions";
-import im from "./lib/inputmask.js";
-
-window.Inputmask = im;
-
-
+require("./lib/extensions/inputmask.extensions");
+require("./lib/extensions/inputmask.date.extensions");
+require("./lib/extensions/inputmask.numeric.extensions");
+module.exports = require("./lib/inputmask.js");
