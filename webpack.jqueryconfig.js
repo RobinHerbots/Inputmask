@@ -1,8 +1,7 @@
 'use strict';
-let $ = require("./lib/dependencyLibs/inputmask.dependencyLib");
-let webpackconfig = require('./webpack.config');
-
-let webPackJqueryConfig = $.extend(true, {}, webpackconfig);
+var $ = require("./lib/dependencyLibs/inputmask.dependencyLib"),
+    webpackconfig = require('./webpack.config'),
+    webPackJqueryConfig = $.extend(true, {}, webpackconfig);
 
 webPackJqueryConfig.resolve.alias = {
     "./lib/dependencyLibs/inputmask.dependencyLib": "./lib/dependencyLibs/inputmask.dependencyLib.jquery",

@@ -1,8 +1,8 @@
 'use strict';
 
-const webpack = require('webpack');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const path = require('path');
+var webpack = require('webpack'),
+    UglifyJsPlugin = require('uglifyjs-webpack-plugin'),
+    path = require('path');
 
 function _path(p) {
     return path.join(__dirname, p);
@@ -16,7 +16,7 @@ function createBanner() {
         "Version: <%= pkg.version %>";
 }
 
-const rules = {
+var rules = {
     sourceMap: {
         enforce: 'pre',
         test: /\.js$/,

@@ -1,5 +1,5 @@
-const webpackConfig = require('./webpack.config');
-const webpackJqueryConfig = require('./webpack.jqueryconfig');
+var webpackConfig = require('./webpack.config');
+var webpackJqueryConfig = require('./webpack.jqueryconfig');
 
 module.exports = function (grunt) {
 // Project configuration.
