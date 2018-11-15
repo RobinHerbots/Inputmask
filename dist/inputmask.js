@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2018 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.80
+ * Version: 5.0.0-beta.82
  */
 !function webpackUniversalModuleDefinition(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -59,8 +59,8 @@
         a(1), a(5), a(6), e.exports = a(2);
     }, function(e, t, a) {
         "use strict";
-        var n;
-        e.exports = ((n = a(2)).extendDefinitions({
+        var n = a(2);
+        n.extendDefinitions({
             A: {
                 validator: "[A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
                 casing: "upper"
@@ -130,7 +130,7 @@
                 clearIncomplete: !0,
                 autoUnmask: !0
             }
-        }), n);
+        }), e.exports = n;
     }, function(e, t, a) {
         "use strict";
         var T = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(e) {
@@ -1816,80 +1816,79 @@
         }.call(exports, __webpack_require__, exports, module), void 0 === __WEBPACK_AMD_DEFINE_RESULT__ || (module.exports = __WEBPACK_AMD_DEFINE_RESULT__);
     }, function(e, t, a) {
         "use strict";
-        var c = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(e) {
+        var u = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(e) {
             return typeof e;
         } : function(e) {
             return e && "function" == typeof Symbol && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
+        }, s = a(2), l = s.dependencyLib, c = {
+            d: [ "[1-9]|[12][0-9]|3[01]", Date.prototype.setDate, "day", Date.prototype.getDate ],
+            dd: [ "0[1-9]|[12][0-9]|3[01]", Date.prototype.setDate, "day", function() {
+                return pad(Date.prototype.getDate.call(this), 2);
+            } ],
+            ddd: [ "" ],
+            dddd: [ "" ],
+            m: [ "[1-9]|1[012]", Date.prototype.setMonth, "month", function() {
+                return Date.prototype.getMonth.call(this) + 1;
+            } ],
+            mm: [ "0[1-9]|1[012]", Date.prototype.setMonth, "month", function() {
+                return pad(Date.prototype.getMonth.call(this) + 1, 2);
+            } ],
+            mmm: [ "" ],
+            mmmm: [ "" ],
+            yy: [ "[0-9]{2}", Date.prototype.setFullYear, "year", function() {
+                return pad(Date.prototype.getFullYear.call(this), 2);
+            } ],
+            yyyy: [ "[0-9]{4}", Date.prototype.setFullYear, "year", function() {
+                return pad(Date.prototype.getFullYear.call(this), 4);
+            } ],
+            h: [ "[1-9]|1[0-2]", Date.prototype.setHours, "hours", Date.prototype.getHours ],
+            hh: [ "0[1-9]|1[0-2]", Date.prototype.setHours, "hours", function() {
+                return pad(Date.prototype.getHours.call(this), 2);
+            } ],
+            hhh: [ "[0-9]+", Date.prototype.setHours, "hours", Date.prototype.getHours ],
+            H: [ "1?[0-9]|2[0-3]", Date.prototype.setHours, "hours", Date.prototype.getHours ],
+            HH: [ "[01][0-9]|2[0-3]", Date.prototype.setHours, "hours", function() {
+                return pad(Date.prototype.getHours.call(this), 2);
+            } ],
+            HHH: [ "[0-9]+", Date.prototype.setHours, "hours", Date.prototype.getHours ],
+            M: [ "[1-5]?[0-9]", Date.prototype.setMinutes, "minutes", Date.prototype.getMinutes ],
+            MM: [ "[0-5][0-9]", Date.prototype.setMinutes, "minutes", function() {
+                return pad(Date.prototype.getMinutes.call(this), 2);
+            } ],
+            s: [ "[1-5]?[0-9]", Date.prototype.setSeconds, "seconds", Date.prototype.getSeconds ],
+            ss: [ "[0-5][0-9]", Date.prototype.setSeconds, "seconds", function() {
+                return pad(Date.prototype.getSeconds.call(this), 2);
+            } ],
+            l: [ "[0-9]{3}", Date.prototype.setMilliseconds, "milliseconds", function() {
+                return pad(Date.prototype.getMilliseconds.call(this), 3);
+            } ],
+            L: [ "[0-9]{2}", Date.prototype.setMilliseconds, "milliseconds", function() {
+                return pad(Date.prototype.getMilliseconds.call(this), 2);
+            } ],
+            t: [ "[ap]" ],
+            tt: [ "[ap]m" ],
+            T: [ "[AP]" ],
+            TT: [ "[AP]M" ],
+            Z: [ "" ],
+            o: [ "" ],
+            S: [ "" ]
+        }, n = {
+            isoDate: "yyyy-mm-dd",
+            isoTime: "HH:MM:ss",
+            isoDateTime: "yyyy-mm-dd'T'HH:MM:ss",
+            isoUtcDateTime: "UTC:yyyy-mm-dd'T'HH:MM:ss'Z'"
         };
-        e.exports = function(s) {
-            var l = s.dependencyLib, u = {
-                d: [ "[1-9]|[12][0-9]|3[01]", Date.prototype.setDate, "day", Date.prototype.getDate ],
-                dd: [ "0[1-9]|[12][0-9]|3[01]", Date.prototype.setDate, "day", function() {
-                    return pad(Date.prototype.getDate.call(this), 2);
-                } ],
-                ddd: [ "" ],
-                dddd: [ "" ],
-                m: [ "[1-9]|1[012]", Date.prototype.setMonth, "month", function() {
-                    return Date.prototype.getMonth.call(this) + 1;
-                } ],
-                mm: [ "0[1-9]|1[012]", Date.prototype.setMonth, "month", function() {
-                    return pad(Date.prototype.getMonth.call(this) + 1, 2);
-                } ],
-                mmm: [ "" ],
-                mmmm: [ "" ],
-                yy: [ "[0-9]{2}", Date.prototype.setFullYear, "year", function() {
-                    return pad(Date.prototype.getFullYear.call(this), 2);
-                } ],
-                yyyy: [ "[0-9]{4}", Date.prototype.setFullYear, "year", function() {
-                    return pad(Date.prototype.getFullYear.call(this), 4);
-                } ],
-                h: [ "[1-9]|1[0-2]", Date.prototype.setHours, "hours", Date.prototype.getHours ],
-                hh: [ "0[1-9]|1[0-2]", Date.prototype.setHours, "hours", function() {
-                    return pad(Date.prototype.getHours.call(this), 2);
-                } ],
-                hhh: [ "[0-9]+", Date.prototype.setHours, "hours", Date.prototype.getHours ],
-                H: [ "1?[0-9]|2[0-3]", Date.prototype.setHours, "hours", Date.prototype.getHours ],
-                HH: [ "[01][0-9]|2[0-3]", Date.prototype.setHours, "hours", function() {
-                    return pad(Date.prototype.getHours.call(this), 2);
-                } ],
-                HHH: [ "[0-9]+", Date.prototype.setHours, "hours", Date.prototype.getHours ],
-                M: [ "[1-5]?[0-9]", Date.prototype.setMinutes, "minutes", Date.prototype.getMinutes ],
-                MM: [ "[0-5][0-9]", Date.prototype.setMinutes, "minutes", function() {
-                    return pad(Date.prototype.getMinutes.call(this), 2);
-                } ],
-                s: [ "[1-5]?[0-9]", Date.prototype.setSeconds, "seconds", Date.prototype.getSeconds ],
-                ss: [ "[0-5][0-9]", Date.prototype.setSeconds, "seconds", function() {
-                    return pad(Date.prototype.getSeconds.call(this), 2);
-                } ],
-                l: [ "[0-9]{3}", Date.prototype.setMilliseconds, "milliseconds", function() {
-                    return pad(Date.prototype.getMilliseconds.call(this), 3);
-                } ],
-                L: [ "[0-9]{2}", Date.prototype.setMilliseconds, "milliseconds", function() {
-                    return pad(Date.prototype.getMilliseconds.call(this), 2);
-                } ],
-                t: [ "[ap]" ],
-                tt: [ "[ap]m" ],
-                T: [ "[AP]" ],
-                TT: [ "[AP]M" ],
-                Z: [ "" ],
-                o: [ "" ],
-                S: [ "" ]
-            }, t = {
-                isoDate: "yyyy-mm-dd",
-                isoTime: "HH:MM:ss",
-                isoDateTime: "yyyy-mm-dd'T'HH:MM:ss",
-                isoUtcDateTime: "UTC:yyyy-mm-dd'T'HH:MM:ss'Z'"
-            };
-            function getTokenizer(e) {
-                if (!e.tokenizer) {
-                    var t = [];
-                    for (var a in u) -1 === t.indexOf(a[0]) && t.push(a[0]);
-                    e.tokenizer = "(" + t.join("+|") + ")+?|.", e.tokenizer = new RegExp(e.tokenizer, "g");
-                }
-                return e.tokenizer;
+        function getTokenizer(e) {
+            if (!e.tokenizer) {
+                var t = [];
+                for (var a in c) -1 === t.indexOf(a[0]) && t.push(a[0]);
+                e.tokenizer = "(" + t.join("+|") + ")+?|.", e.tokenizer = new RegExp(e.tokenizer, "g");
             }
-            function parse(e, t, a, n) {
-                for (var i, r = ""; i = getTokenizer(a).exec(e); ) if (void 0 === t) if (u[i[0]]) r += "(" + u[i[0]][0] + ")"; else switch (i[0]) {
+            return e.tokenizer;
+        }
+        function parse(e, t, a, n) {
+            for (var i, r = ""; i = getTokenizer(a).exec(e); ) {
+                if (void 0 === t) if (c[i[0]]) r += "(" + c[i[0]][0] + ")"; else switch (i[0]) {
                   case "[":
                     r += "(";
                     break;
@@ -1900,428 +1899,423 @@
 
                   default:
                     r += s.escapeRegex(i[0]);
-                } else if (u[i[0]]) if (!0 !== n && u[i[0]][3]) {
-                    var o = u[i[0]][3];
-                    r += o.call(t.date);
-                } else u[i[0]][2] ? r += t["raw" + u[i[0]][2]] : r += i[0]; else r += i[0];
-                return r;
+                } else if (c[i[0]]) if (!0 !== n && c[i[0]][3]) r += c[i[0]][3].call(t.date); else c[i[0]][2] ? r += t["raw" + c[i[0]][2]] : r += i[0]; else r += i[0];
             }
-            function pad(e, t) {
-                for (e = String(e), t = t || 2; e.length < t; ) e = "0" + e;
-                return e;
-            }
-            function analyseMask(e, t, r) {
-                var o, a, n, i = {
-                    date: new Date(1, 0, 1)
-                }, s = e;
-                function setValue(e, t, a) {
-                    e[o] = function extendProperty(e) {
-                        var t = e.replace(/[^0-9]/g, "0");
-                        if (t != e) {
-                            var a = e.replace(/[^0-9]/g, ""), n = (r.min && r.min[o] || e).toString(), i = (r.max && r.max[o] || e).toString();
-                            t = a + (a < n.slice(0, a.length) ? n.slice(a.length) : a > i.slice(0, a.length) ? i.slice(a.length) : t.toString().slice(a.length));
-                        }
-                        return t;
-                    }(t), e["raw" + o] = t, void 0 !== n && n.call(e.date, "month" == o ? parseInt(e[o]) - 1 : e[o]);
-                }
-                if ("string" == typeof s) {
-                    for (;a = getTokenizer(r).exec(t); ) {
-                        var l = s.slice(0, a[0].length);
-                        u.hasOwnProperty(a[0]) && (u[a[0]][0], o = u[a[0]][2], n = u[a[0]][1], setValue(i, l)), 
-                        s = s.slice(l.length);
+            return r;
+        }
+        function pad(e, t) {
+            for (e = String(e), t = t || 2; e.length < t; ) e = "0" + e;
+            return e;
+        }
+        function analyseMask(e, t, r) {
+            var o, a, n, i = {
+                date: new Date(1, 0, 1)
+            }, s = e;
+            function setValue(e, t, a) {
+                e[o] = function extendProperty(e) {
+                    var t = e.replace(/[^0-9]/g, "0");
+                    if (t != e) {
+                        var a = e.replace(/[^0-9]/g, ""), n = (r.min && r.min[o] || e).toString(), i = (r.max && r.max[o] || e).toString();
+                        t = a + (a < n.slice(0, a.length) ? n.slice(a.length) : a > i.slice(0, a.length) ? i.slice(a.length) : t.toString().slice(a.length));
                     }
-                    return i;
-                }
-                if (s && "object" === (void 0 === s ? "undefined" : c(s)) && s.hasOwnProperty("date")) return s;
+                    return t;
+                }(t), e["raw" + o] = t, void 0 !== n && n.call(e.date, "month" == o ? parseInt(e[o]) - 1 : e[o]);
             }
-            return s.extendAliases({
-                datetime: {
-                    mask: function mask(e) {
-                        return u.S = e.i18n.ordinalSuffix.join("|"), e.inputFormat = t[e.inputFormat] || e.inputFormat, 
-                        e.displayFormat = t[e.displayFormat] || e.displayFormat || e.inputFormat, e.outputFormat = t[e.outputFormat] || e.outputFormat || e.inputFormat, 
-                        e.placeholder = "" !== e.placeholder ? e.placeholder : e.inputFormat.replace(/[\[\]]/, ""), 
-                        e.regex = parse(e.inputFormat, void 0, e), null;
-                    },
-                    placeholder: "",
-                    inputFormat: "isoDateTime",
-                    displayFormat: void 0,
-                    outputFormat: void 0,
-                    min: null,
-                    max: null,
-                    i18n: {
-                        dayNames: [ "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" ],
-                        monthNames: [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ],
-                        ordinalSuffix: [ "st", "nd", "rd", "th" ]
-                    },
-                    postValidation: function postValidation(e, t, a, n) {
-                        n.min = analyseMask(n.min, n.inputFormat, n), n.max = analyseMask(n.max, n.inputFormat, n);
-                        var i = a, r = analyseMask(e.join(""), n.inputFormat, n);
-                        return i && r.date.getTime() == r.date.getTime() && (i = (i = function isValidDate(e, t) {
-                            return (!isFinite(e.rawday) || "29" == e.day && !isFinite(e.rawyear) || new Date(e.date.getFullYear(), isFinite(e.rawmonth) ? e.month : e.date.getMonth() + 1, 0).getDate() >= e.day) && t;
-                        }(r, i)) && function isDateInRange(e, t) {
-                            var a = !0;
-                            if (t.min) {
-                                if (e.rawyear) {
-                                    var n = e.rawyear.replace(/[^0-9]/g, ""), i = t.min.year.substr(0, n.length);
-                                    a = i <= n;
-                                }
-                                e.year === e.rawyear && t.min.date.getTime() == t.min.date.getTime() && (a = t.min.date.getTime() <= e.date.getTime());
-                            }
-                            return a && t.max && t.max.date.getTime() == t.max.date.getTime() && (a = t.max.date.getTime() >= e.date.getTime()), 
-                            a;
-                        }(r, n)), t && i && a.pos !== t ? {
-                            buffer: parse(n.inputFormat, r, n),
-                            refreshFromBuffer: {
-                                start: t,
-                                end: a.pos
-                            }
-                        } : i;
-                    },
-                    onKeyDown: function onKeyDown(e, t, a, n) {
-                        if (e.ctrlKey && e.keyCode === s.keyCode.RIGHT) {
-                            for (var i, r = new Date(), o = ""; i = getTokenizer(n).exec(n.inputFormat); ) "d" === i[0].charAt(0) ? o += pad(r.getDate(), i[0].length) : "m" === i[0].charAt(0) ? o += pad(r.getMonth() + 1, i[0].length) : "yyyy" === i[0] ? o += r.getFullYear().toString() : "y" === i[0].charAt(0) && (o += pad(r.getYear(), i[0].length));
-                            this.inputmask._valueSet(o), l(this).trigger("setvalue");
-                        }
-                    },
-                    onUnMask: function onUnMask(e, t, a) {
-                        return parse(a.outputFormat, analyseMask(e, a.inputFormat, a), a, !0);
-                    },
-                    casing: function casing(e, t, a, n) {
-                        return 0 == t.nativeDef.indexOf("[ap]") ? e.toLowerCase() : 0 == t.nativeDef.indexOf("[AP]") ? e.toUpperCase() : e;
-                    },
-                    insertMode: !1,
-                    shiftPositions: !1
+            if ("string" == typeof s) {
+                for (;a = getTokenizer(r).exec(t); ) {
+                    var l = s.slice(0, a[0].length);
+                    c.hasOwnProperty(a[0]) && (c[a[0]][0], o = c[a[0]][2], n = c[a[0]][1], setValue(i, l)), 
+                    s = s.slice(l.length);
                 }
-            }), s;
-        }(a(2));
+                return i;
+            }
+            if (s && "object" === (void 0 === s ? "undefined" : u(s)) && s.hasOwnProperty("date")) return s;
+        }
+        s.extendAliases({
+            datetime: {
+                mask: function mask(e) {
+                    return c.S = e.i18n.ordinalSuffix.join("|"), e.inputFormat = n[e.inputFormat] || e.inputFormat, 
+                    e.displayFormat = n[e.displayFormat] || e.displayFormat || e.inputFormat, e.outputFormat = n[e.outputFormat] || e.outputFormat || e.inputFormat, 
+                    e.placeholder = "" !== e.placeholder ? e.placeholder : e.inputFormat.replace(/[\[\]]/, ""), 
+                    e.regex = parse(e.inputFormat, void 0, e), null;
+                },
+                placeholder: "",
+                inputFormat: "isoDateTime",
+                displayFormat: void 0,
+                outputFormat: void 0,
+                min: null,
+                max: null,
+                i18n: {
+                    dayNames: [ "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" ],
+                    monthNames: [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ],
+                    ordinalSuffix: [ "st", "nd", "rd", "th" ]
+                },
+                postValidation: function postValidation(e, t, a, n) {
+                    n.min = analyseMask(n.min, n.inputFormat, n), n.max = analyseMask(n.max, n.inputFormat, n);
+                    var i = a, r = analyseMask(e.join(""), n.inputFormat, n);
+                    return i && r.date.getTime() == r.date.getTime() && (i = (i = function isValidDate(e, t) {
+                        return (!isFinite(e.rawday) || "29" == e.day && !isFinite(e.rawyear) || new Date(e.date.getFullYear(), isFinite(e.rawmonth) ? e.month : e.date.getMonth() + 1, 0).getDate() >= e.day) && t;
+                    }(r, i)) && function isDateInRange(e, t) {
+                        var a = !0;
+                        if (t.min) {
+                            if (e.rawyear) {
+                                var n = e.rawyear.replace(/[^0-9]/g, "");
+                                a = t.min.year.substr(0, n.length) <= n;
+                            }
+                            e.year === e.rawyear && t.min.date.getTime() == t.min.date.getTime() && (a = t.min.date.getTime() <= e.date.getTime());
+                        }
+                        return a && t.max && t.max.date.getTime() == t.max.date.getTime() && (a = t.max.date.getTime() >= e.date.getTime()), 
+                        a;
+                    }(r, n)), t && i && a.pos !== t ? {
+                        buffer: parse(n.inputFormat, r, n),
+                        refreshFromBuffer: {
+                            start: t,
+                            end: a.pos
+                        }
+                    } : i;
+                },
+                onKeyDown: function onKeyDown(e, t, a, n) {
+                    if (e.ctrlKey && e.keyCode === s.keyCode.RIGHT) {
+                        for (var i, r = new Date(), o = ""; i = getTokenizer(n).exec(n.inputFormat); ) "d" === i[0].charAt(0) ? o += pad(r.getDate(), i[0].length) : "m" === i[0].charAt(0) ? o += pad(r.getMonth() + 1, i[0].length) : "yyyy" === i[0] ? o += r.getFullYear().toString() : "y" === i[0].charAt(0) && (o += pad(r.getYear(), i[0].length));
+                        this.inputmask._valueSet(o), l(this).trigger("setvalue");
+                    }
+                },
+                onUnMask: function onUnMask(e, t, a) {
+                    return parse(a.outputFormat, analyseMask(e, a.inputFormat, a), a, !0);
+                },
+                casing: function casing(e, t, a, n) {
+                    return 0 == t.nativeDef.indexOf("[ap]") ? e.toLowerCase() : 0 == t.nativeDef.indexOf("[AP]") ? e.toUpperCase() : e;
+                },
+                insertMode: !1,
+                shiftPositions: !1
+            }
+        }), e.exports = s;
     }, function(e, t, a) {
         "use strict";
-        e.exports = function(k) {
-            var h = k.dependencyLib;
-            function autoEscape(e, t) {
-                for (var a = "", n = 0; n < e.length; n++) k.prototype.definitions[e.charAt(n)] || t.definitions[e.charAt(n)] || t.optionalmarker.start === e.charAt(n) || t.optionalmarker.end === e.charAt(n) || t.quantifiermarker.start === e.charAt(n) || t.quantifiermarker.end === e.charAt(n) || t.groupmarker.start === e.charAt(n) || t.groupmarker.end === e.charAt(n) || t.alternatormarker === e.charAt(n) ? a += "\\" + e.charAt(n) : a += e.charAt(n);
-                return a;
-            }
-            return k.extendAliases({
-                numeric: {
-                    mask: function mask(e) {
-                        if (0 !== e.repeat && isNaN(e.integerDigits) && (e.integerDigits = e.repeat), e.repeat = 0, 
-                        e.groupSeparator === e.radixPoint && e.digits && "0" !== e.digits && ("." === e.radixPoint ? e.groupSeparator = "," : "," === e.radixPoint ? e.groupSeparator = "." : e.groupSeparator = ""), 
-                        " " === e.groupSeparator && (e.skipOptionalPartCharacter = void 0), e.autoGroup = e.autoGroup && "" !== e.groupSeparator, 
-                        e.autoGroup && ("string" == typeof e.groupSize && isFinite(e.groupSize) && (e.groupSize = parseInt(e.groupSize)), 
-                        isFinite(e.integerDigits))) {
-                            var t = Math.floor(e.integerDigits / e.groupSize), a = e.integerDigits % e.groupSize;
-                            e.integerDigits = parseInt(e.integerDigits) + (0 === a ? t - 1 : t), e.integerDigits < 1 && (e.integerDigits = "*");
-                        }
-                        1 < e.placeholder.length && (e.placeholder = e.placeholder.charAt(0)), "radixFocus" === e.positionCaretOnClick && "" === e.placeholder && !1 === e.integerOptional && (e.positionCaretOnClick = "lvp"), 
-                        e.definitions[";"] = e.definitions["~"], e.definitions[";"].definitionSymbol = "~", 
-                        !0 === e.numericInput && (e.positionCaretOnClick = "radixFocus" === e.positionCaretOnClick ? "lvp" : e.positionCaretOnClick, 
-                        e.digitsOptional = !1, isNaN(e.digits) && (e.digits = 2), e.decimalProtect = !1);
-                        var mask = "[+]";
-                        if (mask += autoEscape(e.prefix, e), !0 === e.integerOptional ? mask += "~{1," + e.integerDigits + "}" : mask += "~{" + e.integerDigits + "}", 
-                        void 0 !== e.digits) {
-                            var n = e.decimalProtect ? ":" : e.radixPoint, i = e.digits.toString().split(",");
-                            isFinite(i[0]) && i[1] && isFinite(i[1]) ? mask += n + ";{" + e.digits + "}" : (isNaN(e.digits) || 0 < parseInt(e.digits)) && (e.digitsOptional ? mask += "[" + n + ";{1," + e.digits + "}]" : mask += n + ";{" + e.digits + "}");
-                        }
-                        return mask += autoEscape(e.suffix, e), mask += "[-]", e.greedy = !1, mask;
-                    },
-                    placeholder: "",
-                    greedy: !1,
-                    digits: "*",
-                    digitsOptional: !0,
-                    enforceDigitsOnBlur: !1,
-                    radixPoint: ".",
-                    positionCaretOnClick: "radixFocus",
-                    groupSize: 3,
-                    groupSeparator: "",
-                    autoGroup: !1,
-                    allowMinus: !0,
-                    negationSymbol: {
-                        front: "-",
-                        back: ""
-                    },
-                    integerDigits: "+",
-                    integerOptional: !0,
-                    prefix: "",
-                    suffix: "",
-                    rightAlign: !0,
-                    decimalProtect: !0,
-                    min: null,
-                    max: null,
-                    step: 1,
-                    insertMode: !0,
-                    autoUnmask: !1,
-                    unmaskAsNumber: !1,
-                    inputType: "text",
-                    inputmode: "numeric",
-                    preValidation: function preValidation(e, t, a, n, i, r) {
-                        if ("-" === a || a === i.negationSymbol.front) return !0 === i.allowMinus && (i.isNegative = void 0 === i.isNegative || !i.isNegative, 
-                        "" === e.join("") || {
-                            caret: r.validPositions[t] ? t : void 0,
-                            dopost: !0
-                        });
-                        if (!1 === n && a === i.radixPoint && void 0 !== i.digits && (isNaN(i.digits) || 0 < parseInt(i.digits))) {
-                            var o = h.inArray(i.radixPoint, e);
-                            if (-1 !== o && void 0 !== r.validPositions[o]) return !0 === i.numericInput ? t === o : {
-                                caret: o + 1
-                            };
-                        }
-                        return !0;
-                    },
-                    postValidation: function postValidation(e, t, a, n) {
-                        var i = n.suffix.split(""), r = n.prefix.split("");
-                        if (void 0 === a.pos && void 0 !== a.caret && !0 !== a.dopost) return a;
-                        var o = void 0 !== a.caret ? a.caret : a.pos, s = e.slice();
-                        n.numericInput && (o = s.length - o - 1, s = s.reverse());
-                        var l = s[o];
-                        if (l === n.groupSeparator && (l = s[o += 1]), o === s.length - n.suffix.length - 1 && l === n.radixPoint) return a;
-                        void 0 !== l && l !== n.radixPoint && l !== n.negationSymbol.front && l !== n.negationSymbol.back && (s[o] = "?", 
-                        0 < n.prefix.length && o >= (!1 === n.isNegative ? 1 : 0) && o < n.prefix.length - 1 + (!1 === n.isNegative ? 1 : 0) ? r[o - (!1 === n.isNegative ? 1 : 0)] = "?" : 0 < n.suffix.length && o >= s.length - n.suffix.length - (!1 === n.isNegative ? 1 : 0) && (i[o - (s.length - n.suffix.length - (!1 === n.isNegative ? 1 : 0))] = "?")), 
-                        r = r.join(""), i = i.join("");
-                        var u = s.join("").replace(r, "");
-                        if (u = (u = (u = (u = u.replace(i, "")).replace(new RegExp(k.escapeRegex(n.groupSeparator), "g"), "")).replace(new RegExp("[-" + k.escapeRegex(n.negationSymbol.front) + "]", "g"), "")).replace(new RegExp(k.escapeRegex(n.negationSymbol.back) + "$"), ""), 
-                        isNaN(n.placeholder) && (u = u.replace(new RegExp(k.escapeRegex(n.placeholder), "g"), "")), 
-                        1 < u.length && 1 !== u.indexOf(n.radixPoint) && ("0" === l && (u = u.replace(/^\?/g, "")), 
-                        u = u.replace(/^0/g, "")), u.charAt(0) === n.radixPoint && "" !== n.radixPoint && !0 !== n.numericInput && (u = "0" + u), 
-                        "" !== u) {
-                            if (u = u.split(""), (!n.digitsOptional || n.enforceDigitsOnBlur && "blur" === a.event) && isFinite(n.digits)) {
-                                var c = h.inArray(n.radixPoint, u), p = h.inArray(n.radixPoint, s);
-                                -1 === c && (u.push(n.radixPoint), c = u.length - 1);
-                                for (var f = 1; f <= n.digits; f++) n.digitsOptional && (!n.enforceDigitsOnBlur || "blur" !== a.event) || void 0 !== u[c + f] && u[c + f] !== n.placeholder.charAt(0) ? -1 !== p && void 0 !== s[p + f] && (u[c + f] = u[c + f] || s[p + f]) : u[c + f] = a.placeholder || n.placeholder.charAt(0);
-                            }
-                            if (!0 !== n.autoGroup || "" === n.groupSeparator || l === n.radixPoint && void 0 === a.pos && !a.dopost) u = u.join(""); else {
-                                var d = u[u.length - 1] === n.radixPoint && a.c === n.radixPoint;
-                                u = k(function buildPostMask(e, t) {
-                                    var a = "";
-                                    if (a += "(" + t.groupSeparator + "*{" + t.groupSize + "}){*}", "" !== t.radixPoint) {
-                                        var n = e.join("").split(t.radixPoint);
-                                        n[1] && (a += t.radixPoint + "*{" + n[1].match(/^\d*\??\d*/)[0].length + "}");
-                                    }
-                                    return a;
-                                }(u, n), {
-                                    numericInput: !0,
-                                    jitMasking: !0,
-                                    definitions: {
-                                        "*": {
-                                            validator: "[0-9?]",
-                                            cardinality: 1
-                                        }
-                                    }
-                                }).format(u.join("")), d && (u += n.radixPoint), u.charAt(0) === n.groupSeparator && u.substr(1);
-                            }
-                        }
-                        if (n.isNegative && "blur" === a.event && (n.isNegative = "0" !== u), u = r + u, 
-                        u += i, n.isNegative && (u = n.negationSymbol.front + u, u += n.negationSymbol.back), 
-                        u = u.split(""), void 0 !== l) if (l !== n.radixPoint && l !== n.negationSymbol.front && l !== n.negationSymbol.back) -1 < (o = h.inArray("?", u)) ? u[o] = l : o = a.caret || 0; else if (l === n.radixPoint || l === n.negationSymbol.front || l === n.negationSymbol.back) {
-                            var g = h.inArray(l, u);
-                            -1 !== g && (o = g);
-                        }
-                        n.numericInput && (o = u.length - o - 1, u = u.reverse());
-                        var m = {
-                            caret: void 0 !== l && void 0 === a.pos || void 0 === o ? o : o + (n.numericInput ? -1 : 1),
-                            buffer: u,
-                            refreshFromBuffer: a.dopost || e.join("") !== u.join("")
+        var k = a(2), h = k.dependencyLib;
+        function autoEscape(e, t) {
+            for (var a = "", n = 0; n < e.length; n++) k.prototype.definitions[e.charAt(n)] || t.definitions[e.charAt(n)] || t.optionalmarker.start === e.charAt(n) || t.optionalmarker.end === e.charAt(n) || t.quantifiermarker.start === e.charAt(n) || t.quantifiermarker.end === e.charAt(n) || t.groupmarker.start === e.charAt(n) || t.groupmarker.end === e.charAt(n) || t.alternatormarker === e.charAt(n) ? a += "\\" + e.charAt(n) : a += e.charAt(n);
+            return a;
+        }
+        k.extendAliases({
+            numeric: {
+                mask: function mask(e) {
+                    if (0 !== e.repeat && isNaN(e.integerDigits) && (e.integerDigits = e.repeat), e.repeat = 0, 
+                    e.groupSeparator === e.radixPoint && e.digits && "0" !== e.digits && ("." === e.radixPoint ? e.groupSeparator = "," : "," === e.radixPoint ? e.groupSeparator = "." : e.groupSeparator = ""), 
+                    " " === e.groupSeparator && (e.skipOptionalPartCharacter = void 0), e.autoGroup = e.autoGroup && "" !== e.groupSeparator, 
+                    e.autoGroup && ("string" == typeof e.groupSize && isFinite(e.groupSize) && (e.groupSize = parseInt(e.groupSize)), 
+                    isFinite(e.integerDigits))) {
+                        var t = Math.floor(e.integerDigits / e.groupSize), a = e.integerDigits % e.groupSize;
+                        e.integerDigits = parseInt(e.integerDigits) + (0 === a ? t - 1 : t), e.integerDigits < 1 && (e.integerDigits = "*");
+                    }
+                    1 < e.placeholder.length && (e.placeholder = e.placeholder.charAt(0)), "radixFocus" === e.positionCaretOnClick && "" === e.placeholder && !1 === e.integerOptional && (e.positionCaretOnClick = "lvp"), 
+                    e.definitions[";"] = e.definitions["~"], e.definitions[";"].definitionSymbol = "~", 
+                    !0 === e.numericInput && (e.positionCaretOnClick = "radixFocus" === e.positionCaretOnClick ? "lvp" : e.positionCaretOnClick, 
+                    e.digitsOptional = !1, isNaN(e.digits) && (e.digits = 2), e.decimalProtect = !1);
+                    var mask = "[+]";
+                    if (mask += autoEscape(e.prefix, e), !0 === e.integerOptional ? mask += "~{1," + e.integerDigits + "}" : mask += "~{" + e.integerDigits + "}", 
+                    void 0 !== e.digits) {
+                        var n = e.decimalProtect ? ":" : e.radixPoint, i = e.digits.toString().split(",");
+                        isFinite(i[0]) && i[1] && isFinite(i[1]) ? mask += n + ";{" + e.digits + "}" : (isNaN(e.digits) || 0 < parseInt(e.digits)) && (e.digitsOptional ? mask += "[" + n + ";{1," + e.digits + "}]" : mask += n + ";{" + e.digits + "}");
+                    }
+                    return mask += autoEscape(e.suffix, e), mask += "[-]", e.greedy = !1, mask;
+                },
+                placeholder: "",
+                greedy: !1,
+                digits: "*",
+                digitsOptional: !0,
+                enforceDigitsOnBlur: !1,
+                radixPoint: ".",
+                positionCaretOnClick: "radixFocus",
+                groupSize: 3,
+                groupSeparator: "",
+                autoGroup: !1,
+                allowMinus: !0,
+                negationSymbol: {
+                    front: "-",
+                    back: ""
+                },
+                integerDigits: "+",
+                integerOptional: !0,
+                prefix: "",
+                suffix: "",
+                rightAlign: !0,
+                decimalProtect: !0,
+                min: null,
+                max: null,
+                step: 1,
+                insertMode: !0,
+                autoUnmask: !1,
+                unmaskAsNumber: !1,
+                inputType: "text",
+                inputmode: "numeric",
+                preValidation: function preValidation(e, t, a, n, i, r) {
+                    if ("-" === a || a === i.negationSymbol.front) return !0 === i.allowMinus && (i.isNegative = void 0 === i.isNegative || !i.isNegative, 
+                    "" === e.join("") || {
+                        caret: r.validPositions[t] ? t : void 0,
+                        dopost: !0
+                    });
+                    if (!1 === n && a === i.radixPoint && void 0 !== i.digits && (isNaN(i.digits) || 0 < parseInt(i.digits))) {
+                        var o = h.inArray(i.radixPoint, e);
+                        if (-1 !== o && void 0 !== r.validPositions[o]) return !0 === i.numericInput ? t === o : {
+                            caret: o + 1
                         };
-                        return m.refreshFromBuffer ? m : a;
-                    },
-                    onBeforeWrite: function onBeforeWrite(e, t, a, n) {
-                        if (e) switch (e.type) {
-                          case "keydown":
-                            return n.postValidation(t, a, {
-                                caret: a,
-                                dopost: !0
-                            }, n);
-
-                          case "blur":
-                          case "checkval":
-                            var i;
-                            if (function parseMinMaxOptions(e) {
-                                void 0 === e.parseMinMaxOptions && (null !== e.min && (e.min = e.min.toString().replace(new RegExp(k.escapeRegex(e.groupSeparator), "g"), ""), 
-                                "," === e.radixPoint && (e.min = e.min.replace(e.radixPoint, ".")), e.min = isFinite(e.min) ? parseFloat(e.min) : NaN, 
-                                isNaN(e.min) && (e.min = Number.MIN_VALUE)), null !== e.max && (e.max = e.max.toString().replace(new RegExp(k.escapeRegex(e.groupSeparator), "g"), ""), 
-                                "," === e.radixPoint && (e.max = e.max.replace(e.radixPoint, ".")), e.max = isFinite(e.max) ? parseFloat(e.max) : NaN, 
-                                isNaN(e.max) && (e.max = Number.MAX_VALUE)), e.parseMinMaxOptions = "done");
-                            }(n), null !== n.min || null !== n.max) {
-                                if (i = n.onUnMask(t.join(""), void 0, h.extend({}, n, {
-                                    unmaskAsNumber: !0
-                                })), null !== n.min && i < n.min) return n.isNegative = n.min < 0, n.postValidation(n.min.toString().replace(".", n.radixPoint).split(""), a, {
-                                    caret: a,
-                                    dopost: !0,
-                                    placeholder: "0"
-                                }, n);
-                                if (null !== n.max && i > n.max) return n.isNegative = n.max < 0, n.postValidation(n.max.toString().replace(".", n.radixPoint).split(""), a, {
-                                    caret: a,
-                                    dopost: !0,
-                                    placeholder: "0"
-                                }, n);
-                            }
-                            return n.postValidation(t, a, {
-                                caret: a,
-                                placeholder: "0",
-                                event: "blur"
-                            }, n);
-
-                          case "_checkval":
-                            return {
-                                caret: a
-                            };
+                    }
+                    return !0;
+                },
+                postValidation: function postValidation(e, t, a, n) {
+                    var i = n.suffix.split(""), r = n.prefix.split("");
+                    if (void 0 === a.pos && void 0 !== a.caret && !0 !== a.dopost) return a;
+                    var o = void 0 !== a.caret ? a.caret : a.pos, s = e.slice();
+                    n.numericInput && (o = s.length - o - 1, s = s.reverse());
+                    var l = s[o];
+                    if (l === n.groupSeparator && (l = s[o += 1]), o === s.length - n.suffix.length - 1 && l === n.radixPoint) return a;
+                    void 0 !== l && l !== n.radixPoint && l !== n.negationSymbol.front && l !== n.negationSymbol.back && (s[o] = "?", 
+                    0 < n.prefix.length && o >= (!1 === n.isNegative ? 1 : 0) && o < n.prefix.length - 1 + (!1 === n.isNegative ? 1 : 0) ? r[o - (!1 === n.isNegative ? 1 : 0)] = "?" : 0 < n.suffix.length && o >= s.length - n.suffix.length - (!1 === n.isNegative ? 1 : 0) && (i[o - (s.length - n.suffix.length - (!1 === n.isNegative ? 1 : 0))] = "?")), 
+                    r = r.join(""), i = i.join("");
+                    var u = s.join("").replace(r, "");
+                    if (u = (u = (u = (u = u.replace(i, "")).replace(new RegExp(k.escapeRegex(n.groupSeparator), "g"), "")).replace(new RegExp("[-" + k.escapeRegex(n.negationSymbol.front) + "]", "g"), "")).replace(new RegExp(k.escapeRegex(n.negationSymbol.back) + "$"), ""), 
+                    isNaN(n.placeholder) && (u = u.replace(new RegExp(k.escapeRegex(n.placeholder), "g"), "")), 
+                    1 < u.length && 1 !== u.indexOf(n.radixPoint) && ("0" === l && (u = u.replace(/^\?/g, "")), 
+                    u = u.replace(/^0/g, "")), u.charAt(0) === n.radixPoint && "" !== n.radixPoint && !0 !== n.numericInput && (u = "0" + u), 
+                    "" !== u) {
+                        if (u = u.split(""), (!n.digitsOptional || n.enforceDigitsOnBlur && "blur" === a.event) && isFinite(n.digits)) {
+                            var c = h.inArray(n.radixPoint, u), p = h.inArray(n.radixPoint, s);
+                            -1 === c && (u.push(n.radixPoint), c = u.length - 1);
+                            for (var f = 1; f <= n.digits; f++) n.digitsOptional && (!n.enforceDigitsOnBlur || "blur" !== a.event) || void 0 !== u[c + f] && u[c + f] !== n.placeholder.charAt(0) ? -1 !== p && void 0 !== s[p + f] && (u[c + f] = u[c + f] || s[p + f]) : u[c + f] = a.placeholder || n.placeholder.charAt(0);
                         }
-                    },
-                    regex: {
-                        integerPart: function integerPart(e, t) {
-                            return t ? new RegExp("[" + k.escapeRegex(e.negationSymbol.front) + "+]?") : new RegExp("[" + k.escapeRegex(e.negationSymbol.front) + "+]?\\d+");
-                        },
-                        integerNPart: function integerNPart(e) {
-                            return new RegExp("[\\d" + k.escapeRegex(e.groupSeparator) + k.escapeRegex(e.placeholder.charAt(0)) + "]+");
-                        }
-                    },
-                    definitions: {
-                        "~": {
-                            validator: function validator(e, t, a, n, i, r) {
-                                var o;
-                                if ("k" === e || "m" === e) {
-                                    o = {
-                                        insert: [],
-                                        c: 0
-                                    };
-                                    for (var s = 0, l = "k" === e ? 2 : 5; s < l; s++) o.insert.push({
-                                        pos: a + s,
-                                        c: 0
-                                    });
-                                    return o.pos = a + l, o;
+                        if (!0 !== n.autoGroup || "" === n.groupSeparator || l === n.radixPoint && void 0 === a.pos && !a.dopost) u = u.join(""); else {
+                            var d = u[u.length - 1] === n.radixPoint && a.c === n.radixPoint;
+                            u = k(function buildPostMask(e, t) {
+                                var a = "";
+                                if (a += "(" + t.groupSeparator + "*{" + t.groupSize + "}){*}", "" !== t.radixPoint) {
+                                    var n = e.join("").split(t.radixPoint);
+                                    n[1] && (a += t.radixPoint + "*{" + n[1].match(/^\d*\??\d*/)[0].length + "}");
                                 }
-                                if (!0 === (o = n ? new RegExp("[0-9" + k.escapeRegex(i.groupSeparator) + "]").test(e) : new RegExp("[0-9]").test(e))) {
-                                    if (!0 !== i.numericInput && void 0 !== t.validPositions[a] && "~" === t.validPositions[a].match.def && !r) {
-                                        var u = t.buffer.join(""), c = (u = (u = u.replace(new RegExp("[-" + k.escapeRegex(i.negationSymbol.front) + "]", "g"), "")).replace(new RegExp(k.escapeRegex(i.negationSymbol.back) + "$"), "")).split(i.radixPoint);
-                                        1 < c.length && (c[1] = c[1].replace(/0/g, i.placeholder.charAt(0))), "0" === c[0] && (c[0] = c[0].replace(/0/g, i.placeholder.charAt(0))), 
-                                        u = c[0] + i.radixPoint + c[1] || "";
-                                        var p = t._buffer.join("");
-                                        for (u === i.radixPoint && (u = p); null === u.match(k.escapeRegex(p) + "$"); ) p = p.slice(1);
-                                        o = void 0 === (u = (u = u.replace(p, "")).split(""))[a] ? {
-                                            pos: a,
-                                            remove: a
-                                        } : {
-                                            pos: a
-                                        };
+                                return a;
+                            }(u, n), {
+                                numericInput: !0,
+                                jitMasking: !0,
+                                definitions: {
+                                    "*": {
+                                        validator: "[0-9?]",
+                                        cardinality: 1
                                     }
-                                } else n || e !== i.radixPoint || void 0 !== t.validPositions[a - 1] || (o = {
-                                    insert: {
-                                        pos: a,
-                                        c: 0
-                                    },
-                                    pos: a + 1
-                                });
-                                return o;
-                            },
-                            cardinality: 1
-                        },
-                        "+": {
-                            validator: function validator(e, t, a, n, i) {
-                                return i.allowMinus && ("-" === e || e === i.negationSymbol.front);
-                            },
-                            cardinality: 1,
-                            placeholder: ""
-                        },
-                        "-": {
-                            validator: function validator(e, t, a, n, i) {
-                                return i.allowMinus && e === i.negationSymbol.back;
-                            },
-                            cardinality: 1,
-                            placeholder: ""
-                        },
-                        ":": {
-                            validator: function validator(e, t, a, n, i) {
-                                var r = "[" + k.escapeRegex(i.radixPoint) + "]", o = new RegExp(r).test(e);
-                                return o && t.validPositions[a] && t.validPositions[a].match.placeholder === i.radixPoint && (o = {
-                                    caret: a + 1
-                                }), o;
-                            },
-                            cardinality: 1,
-                            placeholder: function placeholder(e) {
-                                return e.radixPoint;
-                            }
+                                }
+                            }).format(u.join("")), d && (u += n.radixPoint), u.charAt(0) === n.groupSeparator && u.substr(1);
                         }
-                    },
-                    onUnMask: function onUnMask(e, t, a) {
-                        if ("" === t && !0 === a.nullable) return t;
-                        var n = e.replace(a.prefix, "");
-                        return n = (n = n.replace(a.suffix, "")).replace(new RegExp(k.escapeRegex(a.groupSeparator), "g"), ""), 
-                        "" !== a.placeholder.charAt(0) && (n = n.replace(new RegExp(a.placeholder.charAt(0), "g"), "0")), 
-                        a.unmaskAsNumber ? ("" !== a.radixPoint && -1 !== n.indexOf(a.radixPoint) && (n = n.replace(k.escapeRegex.call(this, a.radixPoint), ".")), 
-                        n = (n = n.replace(new RegExp("^" + k.escapeRegex(a.negationSymbol.front)), "-")).replace(new RegExp(k.escapeRegex(a.negationSymbol.back) + "$"), ""), 
-                        Number(n)) : n;
-                    },
-                    isComplete: function isComplete(e, t) {
-                        var a = (t.numericInput ? e.slice().reverse() : e).join("");
-                        return a = (a = (a = (a = (a = a.replace(new RegExp("^" + k.escapeRegex(t.negationSymbol.front)), "-")).replace(new RegExp(k.escapeRegex(t.negationSymbol.back) + "$"), "")).replace(t.prefix, "")).replace(t.suffix, "")).replace(new RegExp(k.escapeRegex(t.groupSeparator) + "([0-9]{3})", "g"), "$1"), 
-                        "," === t.radixPoint && (a = a.replace(k.escapeRegex(t.radixPoint), ".")), isFinite(a);
-                    },
-                    onBeforeMask: function onBeforeMask(e, t) {
-                        t.isNegative = void 0;
-                        var a = t.radixPoint || ",";
-                        "number" != typeof e && "number" !== t.inputType || "" === a || (e = e.toString().replace(".", a));
-                        var n = e.split(a), i = n[0].replace(/[^\-0-9]/g, ""), r = 1 < n.length ? n[1].replace(/[^0-9]/g, "") : "";
-                        e = i + ("" !== r ? a + r : r);
-                        var o = 0;
-                        if ("" !== a && (o = r.length, "" !== r)) {
-                            var s = Math.pow(10, o || 1);
-                            isFinite(t.digits) && (o = parseInt(t.digits), s = Math.pow(10, o)), e = e.replace(k.escapeRegex(a), "."), 
-                            isFinite(e) && (e = Math.round(parseFloat(e) * s) / s), e = e.toString().replace(".", a);
-                        }
-                        return 0 === t.digits && -1 !== e.indexOf(k.escapeRegex(a)) && (e = e.substring(0, e.indexOf(k.escapeRegex(a)))), 
-                        function alignDigits(e, t, a) {
-                            if (0 < t) {
-                                var n = h.inArray(a.radixPoint, e);
-                                -1 === n && (e.push(a.radixPoint), n = e.length - 1);
-                                for (var i = 1; i <= t; i++) e[n + i] = e[n + i] || "0";
-                            }
-                            return e;
-                        }(e.toString().split(""), o, t).join("");
-                    },
-                    onKeyDown: function onKeyDown(e, t, a, n) {
-                        var i = h(this);
-                        if (e.ctrlKey) switch (e.keyCode) {
-                          case k.keyCode.UP:
-                            i.val(parseFloat(this.inputmask.unmaskedvalue()) + parseInt(n.step)), i.trigger("setvalue");
-                            break;
+                    }
+                    if (n.isNegative && "blur" === a.event && (n.isNegative = "0" !== u), u = r + u, 
+                    u += i, n.isNegative && (u = n.negationSymbol.front + u, u += n.negationSymbol.back), 
+                    u = u.split(""), void 0 !== l) if (l !== n.radixPoint && l !== n.negationSymbol.front && l !== n.negationSymbol.back) -1 < (o = h.inArray("?", u)) ? u[o] = l : o = a.caret || 0; else if (l === n.radixPoint || l === n.negationSymbol.front || l === n.negationSymbol.back) {
+                        var g = h.inArray(l, u);
+                        -1 !== g && (o = g);
+                    }
+                    n.numericInput && (o = u.length - o - 1, u = u.reverse());
+                    var m = {
+                        caret: void 0 !== l && void 0 === a.pos || void 0 === o ? o : o + (n.numericInput ? -1 : 1),
+                        buffer: u,
+                        refreshFromBuffer: a.dopost || e.join("") !== u.join("")
+                    };
+                    return m.refreshFromBuffer ? m : a;
+                },
+                onBeforeWrite: function onBeforeWrite(e, t, a, n) {
+                    if (e) switch (e.type) {
+                      case "keydown":
+                        return n.postValidation(t, a, {
+                            caret: a,
+                            dopost: !0
+                        }, n);
 
-                          case k.keyCode.DOWN:
-                            i.val(parseFloat(this.inputmask.unmaskedvalue()) - parseInt(n.step)), i.trigger("setvalue");
+                      case "blur":
+                      case "checkval":
+                        var i;
+                        if (function parseMinMaxOptions(e) {
+                            void 0 === e.parseMinMaxOptions && (null !== e.min && (e.min = e.min.toString().replace(new RegExp(k.escapeRegex(e.groupSeparator), "g"), ""), 
+                            "," === e.radixPoint && (e.min = e.min.replace(e.radixPoint, ".")), e.min = isFinite(e.min) ? parseFloat(e.min) : NaN, 
+                            isNaN(e.min) && (e.min = Number.MIN_VALUE)), null !== e.max && (e.max = e.max.toString().replace(new RegExp(k.escapeRegex(e.groupSeparator), "g"), ""), 
+                            "," === e.radixPoint && (e.max = e.max.replace(e.radixPoint, ".")), e.max = isFinite(e.max) ? parseFloat(e.max) : NaN, 
+                            isNaN(e.max) && (e.max = Number.MAX_VALUE)), e.parseMinMaxOptions = "done");
+                        }(n), null !== n.min || null !== n.max) {
+                            if (i = n.onUnMask(t.join(""), void 0, h.extend({}, n, {
+                                unmaskAsNumber: !0
+                            })), null !== n.min && i < n.min) return n.isNegative = n.min < 0, n.postValidation(n.min.toString().replace(".", n.radixPoint).split(""), a, {
+                                caret: a,
+                                dopost: !0,
+                                placeholder: "0"
+                            }, n);
+                            if (null !== n.max && i > n.max) return n.isNegative = n.max < 0, n.postValidation(n.max.toString().replace(".", n.radixPoint).split(""), a, {
+                                caret: a,
+                                dopost: !0,
+                                placeholder: "0"
+                            }, n);
+                        }
+                        return n.postValidation(t, a, {
+                            caret: a,
+                            placeholder: "0",
+                            event: "blur"
+                        }, n);
+
+                      case "_checkval":
+                        return {
+                            caret: a
+                        };
+                    }
+                },
+                regex: {
+                    integerPart: function integerPart(e, t) {
+                        return t ? new RegExp("[" + k.escapeRegex(e.negationSymbol.front) + "+]?") : new RegExp("[" + k.escapeRegex(e.negationSymbol.front) + "+]?\\d+");
+                    },
+                    integerNPart: function integerNPart(e) {
+                        return new RegExp("[\\d" + k.escapeRegex(e.groupSeparator) + k.escapeRegex(e.placeholder.charAt(0)) + "]+");
+                    }
+                },
+                definitions: {
+                    "~": {
+                        validator: function validator(e, t, a, n, i, r) {
+                            var o;
+                            if ("k" === e || "m" === e) {
+                                o = {
+                                    insert: [],
+                                    c: 0
+                                };
+                                for (var s = 0, l = "k" === e ? 2 : 5; s < l; s++) o.insert.push({
+                                    pos: a + s,
+                                    c: 0
+                                });
+                                return o.pos = a + l, o;
+                            }
+                            if (!0 === (o = n ? new RegExp("[0-9" + k.escapeRegex(i.groupSeparator) + "]").test(e) : new RegExp("[0-9]").test(e))) {
+                                if (!0 !== i.numericInput && void 0 !== t.validPositions[a] && "~" === t.validPositions[a].match.def && !r) {
+                                    var u = t.buffer.join(""), c = (u = (u = u.replace(new RegExp("[-" + k.escapeRegex(i.negationSymbol.front) + "]", "g"), "")).replace(new RegExp(k.escapeRegex(i.negationSymbol.back) + "$"), "")).split(i.radixPoint);
+                                    1 < c.length && (c[1] = c[1].replace(/0/g, i.placeholder.charAt(0))), "0" === c[0] && (c[0] = c[0].replace(/0/g, i.placeholder.charAt(0))), 
+                                    u = c[0] + i.radixPoint + c[1] || "";
+                                    var p = t._buffer.join("");
+                                    for (u === i.radixPoint && (u = p); null === u.match(k.escapeRegex(p) + "$"); ) p = p.slice(1);
+                                    o = void 0 === (u = (u = u.replace(p, "")).split(""))[a] ? {
+                                        pos: a,
+                                        remove: a
+                                    } : {
+                                        pos: a
+                                    };
+                                }
+                            } else n || e !== i.radixPoint || void 0 !== t.validPositions[a - 1] || (o = {
+                                insert: {
+                                    pos: a,
+                                    c: 0
+                                },
+                                pos: a + 1
+                            });
+                            return o;
+                        },
+                        cardinality: 1
+                    },
+                    "+": {
+                        validator: function validator(e, t, a, n, i) {
+                            return i.allowMinus && ("-" === e || e === i.negationSymbol.front);
+                        },
+                        cardinality: 1,
+                        placeholder: ""
+                    },
+                    "-": {
+                        validator: function validator(e, t, a, n, i) {
+                            return i.allowMinus && e === i.negationSymbol.back;
+                        },
+                        cardinality: 1,
+                        placeholder: ""
+                    },
+                    ":": {
+                        validator: function validator(e, t, a, n, i) {
+                            var r = "[" + k.escapeRegex(i.radixPoint) + "]", o = new RegExp(r).test(e);
+                            return o && t.validPositions[a] && t.validPositions[a].match.placeholder === i.radixPoint && (o = {
+                                caret: a + 1
+                            }), o;
+                        },
+                        cardinality: 1,
+                        placeholder: function placeholder(e) {
+                            return e.radixPoint;
                         }
                     }
                 },
-                currency: {
-                    prefix: "$ ",
-                    groupSeparator: ",",
-                    alias: "numeric",
-                    placeholder: "0",
-                    autoGroup: !0,
-                    digits: 2,
-                    digitsOptional: !1,
-                    clearMaskOnLostFocus: !1
+                onUnMask: function onUnMask(e, t, a) {
+                    if ("" === t && !0 === a.nullable) return t;
+                    var n = e.replace(a.prefix, "");
+                    return n = (n = n.replace(a.suffix, "")).replace(new RegExp(k.escapeRegex(a.groupSeparator), "g"), ""), 
+                    "" !== a.placeholder.charAt(0) && (n = n.replace(new RegExp(a.placeholder.charAt(0), "g"), "0")), 
+                    a.unmaskAsNumber ? ("" !== a.radixPoint && -1 !== n.indexOf(a.radixPoint) && (n = n.replace(k.escapeRegex.call(this, a.radixPoint), ".")), 
+                    n = (n = n.replace(new RegExp("^" + k.escapeRegex(a.negationSymbol.front)), "-")).replace(new RegExp(k.escapeRegex(a.negationSymbol.back) + "$"), ""), 
+                    Number(n)) : n;
                 },
-                decimal: {
-                    alias: "numeric"
+                isComplete: function isComplete(e, t) {
+                    var a = (t.numericInput ? e.slice().reverse() : e).join("");
+                    return a = (a = (a = (a = (a = a.replace(new RegExp("^" + k.escapeRegex(t.negationSymbol.front)), "-")).replace(new RegExp(k.escapeRegex(t.negationSymbol.back) + "$"), "")).replace(t.prefix, "")).replace(t.suffix, "")).replace(new RegExp(k.escapeRegex(t.groupSeparator) + "([0-9]{3})", "g"), "$1"), 
+                    "," === t.radixPoint && (a = a.replace(k.escapeRegex(t.radixPoint), ".")), isFinite(a);
                 },
-                integer: {
-                    alias: "numeric",
-                    digits: 0,
-                    radixPoint: ""
+                onBeforeMask: function onBeforeMask(e, t) {
+                    t.isNegative = void 0;
+                    var a = t.radixPoint || ",";
+                    "number" != typeof e && "number" !== t.inputType || "" === a || (e = e.toString().replace(".", a));
+                    var n = e.split(a), i = n[0].replace(/[^\-0-9]/g, ""), r = 1 < n.length ? n[1].replace(/[^0-9]/g, "") : "";
+                    e = i + ("" !== r ? a + r : r);
+                    var o = 0;
+                    if ("" !== a && (o = r.length, "" !== r)) {
+                        var s = Math.pow(10, o || 1);
+                        isFinite(t.digits) && (o = parseInt(t.digits), s = Math.pow(10, o)), e = e.replace(k.escapeRegex(a), "."), 
+                        isFinite(e) && (e = Math.round(parseFloat(e) * s) / s), e = e.toString().replace(".", a);
+                    }
+                    return 0 === t.digits && -1 !== e.indexOf(k.escapeRegex(a)) && (e = e.substring(0, e.indexOf(k.escapeRegex(a)))), 
+                    function alignDigits(e, t, a) {
+                        if (0 < t) {
+                            var n = h.inArray(a.radixPoint, e);
+                            -1 === n && (e.push(a.radixPoint), n = e.length - 1);
+                            for (var i = 1; i <= t; i++) e[n + i] = e[n + i] || "0";
+                        }
+                        return e;
+                    }(e.toString().split(""), o, t).join("");
                 },
-                percentage: {
-                    alias: "numeric",
-                    digits: 2,
-                    digitsOptional: !0,
-                    radixPoint: ".",
-                    placeholder: "0",
-                    autoGroup: !1,
-                    min: 0,
-                    max: 100,
-                    suffix: " %",
-                    allowMinus: !1
+                onKeyDown: function onKeyDown(e, t, a, n) {
+                    var i = h(this);
+                    if (e.ctrlKey) switch (e.keyCode) {
+                      case k.keyCode.UP:
+                        i.val(parseFloat(this.inputmask.unmaskedvalue()) + parseInt(n.step)), i.trigger("setvalue");
+                        break;
+
+                      case k.keyCode.DOWN:
+                        i.val(parseFloat(this.inputmask.unmaskedvalue()) - parseInt(n.step)), i.trigger("setvalue");
+                    }
                 }
-            }), k;
-        }(a(2));
+            },
+            currency: {
+                prefix: "$ ",
+                groupSeparator: ",",
+                alias: "numeric",
+                placeholder: "0",
+                autoGroup: !0,
+                digits: 2,
+                digitsOptional: !1,
+                clearMaskOnLostFocus: !1
+            },
+            decimal: {
+                alias: "numeric"
+            },
+            integer: {
+                alias: "numeric",
+                digits: 0,
+                radixPoint: ""
+            },
+            percentage: {
+                alias: "numeric",
+                digits: 2,
+                digitsOptional: !0,
+                radixPoint: ".",
+                placeholder: "0",
+                autoGroup: !1,
+                min: 0,
+                max: 100,
+                suffix: " %",
+                allowMinus: !1
+            }
+        }), e.exports = k;
     } ]);
 });
 //# sourceMappingURL=inputmask.js.map
