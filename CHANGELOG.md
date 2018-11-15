@@ -4,6 +4,7 @@
 
 ### Updates
 - package & bundling
+- rework jit enabled quantifiers
 
 ## [4.0.3 - 2018-11-07]
 

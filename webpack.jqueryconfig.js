@@ -4,7 +4,6 @@ var $ = require("./lib/dependencyLibs/inputmask.dependencyLib"),
     webPackJqueryConfig = $.extend(true, {}, webpackconfig);
 
 webPackJqueryConfig.resolve.alias = {
-    "./lib/dependencyLibs/inputmask.dependencyLib": "./lib/dependencyLibs/inputmask.dependencyLib.jquery",
     "./dependencyLibs/inputmask.dependencyLib": "./dependencyLibs/inputmask.dependencyLib.jquery"
 };
 

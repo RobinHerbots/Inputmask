@@ -74,7 +74,12 @@ module.exports = {
         libraryTarget: "umd"
     },
     externals: {
-        "jquery": "jQuery",
+        "jquery": {
+            commonjs: "jquery",
+            commonjs2: "jquery",
+            amd: "jquery",
+            root: "jQuery"
+        },
         "jqlite": "jqlite",
         "qunit": "QUnit"
     },
@@ -126,9 +131,7 @@ module.exports = {
     },
     resolve: {
         alias: {
-            // "./js/dependencyLibs/inputmask.dependencyLib": "./js/dependencyLibs/inputmask.dependencyLib.jquery",
             // "./dependencyLibs/inputmask.dependencyLib": "./dependencyLibs/inputmask.dependencyLib.jquery"
-            // "./js/dependencyLibs/inputmask.dependencyLib": "./js/dependencyLibs/inputmask.dependencyLib.jqlite",
             // "./dependencyLibs/inputmask.dependencyLib": "./dependencyLibs/inputmask.dependencyLib.jqlite"
         }
     },
