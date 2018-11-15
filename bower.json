@@ -11,8 +11,11 @@
   "ignore": [
     "**/*",
     "!index.js",
+    "!bundle.js",
+    "!bundle.jquery.js",
     "!css/**/*",
-    "!dist/**/*"
+    "!dist/**/*",
+    "!lib/**/*"
   ],
   "dependencies": {
     "jquery": ">=1.7"
