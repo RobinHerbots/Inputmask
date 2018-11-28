@@ -1,10 +1,16 @@
 # Change Log
 
 ## [5.0.0 - UNRELEASED]
+### Addition
+- add url as supported input type
 
 ### Updates
 - package & bundling
 - rework jit enabled quantifiers
+
+### Fixed
+- restore greedy functionality
+- fix focus and mouseenter behavior in IE
 
 ## [4.0.3 - 2018-11-07]
 

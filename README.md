@@ -170,6 +170,7 @@ $(document).ready(function(){
 - `<input type="text">`
 - `<input type="search">`
 - `<input type="tel">`
+- `<input type="url">`
 - `<input type="password">`
 - `<div contenteditable="true">` (and all others supported by contenteditable)
 - `<textarea>`
@@ -1221,9 +1222,12 @@ $(document).ready(function(){
 ```
 
 ## jQuery.clone
-When cloning a inputmask, the inputmask reactivates on the first event (mouseenter, focus, ...) that happens to the input. If you want to set a value on the cloned inputmask and you want to directly reactivate the masking you have to use $(input).inputmask("setvalue", value)
+When cloning a inputmask, the inputmask reactivates on the first event (mouseenter, focus, ...) that happens to the input. If you want to set a value on the cloned inputmask and you want to directly reactivate the masking you have to use $(input).inputmask("setvalue", value)  
 
-# jquery.inputmask extensions
+Be sure to pass true in the jQuery.clone fn to clone with data and events and use jQuery as dependencyLib
+(https://api.jquery.com/clone/)
+
+# Extensions
 ## [date & datetime extensions](README_date.md)
 ## [numeric extensions](README_numeric.md)
 ## [other extensions](README_other.md)
