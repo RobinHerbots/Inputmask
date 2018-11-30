@@ -88,12 +88,12 @@ For individual extensions.
 Every extension exports the Inputmask, so you only need to import the extensions.
 See example.
 ```
-require("inputmask/lib/inputmask.numeric.extensions");
-var Inputmask = require("inputmask/lib/inputmask.date.extensions");
+require("inputmask/lib/extensions/inputmask.numeric.extensions");
+var Inputmask = require("inputmask/lib/extensions/inputmask.date.extensions");
 
 //es6
-import "inputmask/lib/inputmask.numeric.extensions";
-import Inputmask from "inputmask/lib/inputmask.date.extensions";
+import "inputmask/lib/extensions/inputmask.numeric.extensions";
+import Inputmask from "inputmask/lib/extensions/inputmask.date.extensions";
 ```
 
 #### Selecting the dependencyLib
