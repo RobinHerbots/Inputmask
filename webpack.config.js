@@ -89,11 +89,14 @@ module.exports = {
             include: /\.min\.js$/,
             sourceMap: false,
             uglifyOptions: {
-                mangle: {
-                    keep_fnames: true
-                },
+                warnings: "verbose",
+                mangle: false,
                 compress: {
-                    keep_fnames: true
+                    keep_fnames: true,
+                    unused: false,
+                    typeofs: false,
+                    dead_code: false,
+                    collapse_vars: false
                 },
                 output: {
                     ascii_only: true,
@@ -106,11 +109,14 @@ module.exports = {
             exclude: /\.min\.js$/,
             sourceMap: true,
             uglifyOptions: {
-                mangle: {
-                    keep_fnames: true
-                },
+                warnings: "verbose",
+                mangle: false,
                 compress: {
-                    keep_fnames: true
+                    keep_fnames: true,
+                    unused: false,
+                    typeofs: false,
+                    dead_code: false,
+                    collapse_vars: false
                 },
                 output: {
                     ascii_only: true,
