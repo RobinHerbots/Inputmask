@@ -1,5 +1,16 @@
 # Change Log
 
+## [4.0.4 - 2018-12-03]
+### Addition
+- add url as supported input type
+
+### Updates
+- rework jit enabled quantifiers
+
+### Fixed
+- restore greedy functionality
+- fix focus and mouseenter behavior in IE
+
 ## [4.0.3 - 2018-11-07]
 
 ### Addition

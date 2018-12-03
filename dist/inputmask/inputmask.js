@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2018 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.3
+* Version: 4.0.4
 */
 
 (function(factory) {
@@ -80,7 +80,7 @@
             keepStatic: null,
             positionCaretOnTab: true,
             tabThrough: false,
-            supportsInputType: [ "text", "tel", "password", "search" ],
+            supportsInputType: [ "text", "tel", "url", "password", "search" ],
             ignorables: [ 8, 9, 13, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 0, 229 ],
             isComplete: null,
             preValidation: null,
@@ -668,7 +668,8 @@
                     tests: {},
                     excludes: {},
                     metadata: metadata,
-                    maskLength: undefined
+                    maskLength: undefined,
+                    jitOffset: {}
                 };
                 if (nocache !== true) {
                     Inputmask.prototype.masksCache[maskdefKey] = masksetDefinition;
@@ -803,7 +804,7 @@
                 var tst = tests[ndx];
                 tstLocator = getLocator(tst, targetLocator.length);
                 var distance = Math.abs(tstLocator - targetLocator);
-                if (closest === undefined || tstLocator !== "" && distance < closest || bestMatch && bestMatch.match.optionality && bestMatch.match.newBlockMarker === "master" && (!tst.match.optionality || !tst.match.newBlockMarker) || bestMatch && bestMatch.match.optionalQuantifier && !tst.match.optionalQuantifier) {
+                if (closest === undefined || tstLocator !== "" && distance < closest || bestMatch && !opts.greedy && bestMatch.match.optionality && bestMatch.match.newBlockMarker === "master" && (!tst.match.optionality || !tst.match.newBlockMarker) || bestMatch && bestMatch.match.optionalQuantifier && !tst.match.optionalQuantifier) {
                     closest = distance;
                     bestMatch = tst;
                 }
@@ -1020,15 +1021,15 @@
                                 match = handleMatch(tokenGroup, [ qndx ].concat(loopNdx), tokenGroup);
                                 if (match) {
                                     latestMatch = matches[matches.length - 1].match;
-                                    latestMatch.optionalQuantifier = qndx > qt.quantifier.min - 1;
+                                    latestMatch.optionalQuantifier = qndx >= qt.quantifier.min;
                                     latestMatch.jit = (qndx || 1) * tokenGroup.matches.indexOf(latestMatch) >= qt.quantifier.jit;
                                     if (latestMatch.optionalQuantifier && isFirstMatch(latestMatch, tokenGroup)) {
                                         insertStop = true;
                                         testPos = pos;
                                         break;
                                     }
-                                    if (latestMatch.jit && !latestMatch.optionalQuantifier) {
-                                        latestMatch.jitOffset = tokenGroup.matches.indexOf(latestMatch);
+                                    if (latestMatch.jit) {
+                                        getMaskSet().jitOffset[pos] = tokenGroup.matches.indexOf(latestMatch);
                                     }
                                     return true;
                                 }
@@ -1344,13 +1345,18 @@
                             result = {
                                 caret: seekNext(maskPos)
                             };
-                        } else if ((opts.insertMode || getMaskSet().validPositions[seekNext(maskPos)] === undefined) && !isMask(maskPos, true)) {
-                            for (var nPos = maskPos + 1, snPos = seekNext(maskPos); nPos <= snPos; nPos++) {
-                                result = _isValid(nPos, c, strict);
-                                if (result !== false) {
-                                    result = trackbackPositions(maskPos, result.pos !== undefined ? result.pos : nPos) || result;
-                                    maskPos = nPos;
-                                    break;
+                        } else {
+                            if ((opts.insertMode || getMaskSet().validPositions[seekNext(maskPos)] === undefined) && (!isMask(maskPos, true) || getMaskSet().jitOffset[maskPos])) {
+                                if (getMaskSet().jitOffset[maskPos] && getMaskSet().validPositions[seekNext(maskPos)] === undefined) {
+                                    result = isValid(maskPos + getMaskSet().jitOffset[maskPos], c, strict);
+                                    if (result !== false) result.caret = maskPos;
+                                } else for (var nPos = maskPos + 1, snPos = seekNext(maskPos); nPos <= snPos; nPos++) {
+                                    result = _isValid(nPos, c, strict);
+                                    if (result !== false) {
+                                        result = trackbackPositions(maskPos, result.pos !== undefined ? result.pos : nPos) || result;
+                                        maskPos = nPos;
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -1570,15 +1576,18 @@
             return opts.placeholder.charAt(pos % opts.placeholder.length);
         }
         function HandleNativePlaceholder(npt, value) {
-            if (ie && npt.inputmask._valueGet() !== value) {
-                var buffer = getBuffer().slice(), nptValue = npt.inputmask._valueGet();
-                if (nptValue !== value) {
-                    if (getLastValidPosition() === -1 && nptValue === getBufferTemplate().join("")) {
-                        buffer = [];
-                    } else {
-                        clearOptionalTail(buffer);
+            if (ie) {
+                if (npt.inputmask._valueGet() !== value) {
+                    var buffer = getBuffer().slice(), nptValue = npt.inputmask._valueGet();
+                    if (nptValue !== value) {
+                        var lvp = getLastValidPosition();
+                        if (lvp === -1 && nptValue === getBufferTemplate().join("")) {
+                            buffer = [];
+                        } else if (lvp !== -1) {
+                            clearOptionalTail(buffer);
+                        }
+                        writeBuffer(npt, buffer);
                     }
-                    writeBuffer(npt, buffer);
                 }
             } else if (npt.placeholder !== value) {
                 npt.placeholder = value;
@@ -1908,8 +1917,8 @@
             },
             focusEvent: function(e) {
                 var input = this, nptValue = input.inputmask._valueGet();
-                if (opts.showMaskOnFocus && (!opts.showMaskOnHover || opts.showMaskOnHover && nptValue === "")) {
-                    if (input.inputmask._valueGet() !== getBuffer().join("")) {
+                if (opts.showMaskOnFocus) {
+                    if (nptValue !== getBuffer().join("")) {
                         writeBuffer(input, getBuffer(), seekNext(getLastValidPosition()));
                     } else if (mouseEnter === false) {
                         caret(input, seekNext(getLastValidPosition()));
