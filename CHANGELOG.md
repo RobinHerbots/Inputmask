@@ -2,10 +2,18 @@
 
 ## [5.0.0 - UNRELEASED]
 ### Addition
-- add url as supported input type
 
 ### Updates
 - package & bundling
+
+### Fixed
+- Unmasked value of datetime alias, if empty, returns the placeholder #2039
+
+## [4.0.4 - 2018-12-03]
+### Addition
+- add url as supported input type
+
+### Updates
 - rework jit enabled quantifiers
 
 ### Fixed
