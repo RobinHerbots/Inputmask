@@ -5,6 +5,7 @@
 
 ### Updates
 - package & bundling
+- enhance regex alternations. ex: [01][0-9]|2[0-3] => ([01][0-9]|2[0-3])
 
 ### Fixed
 - Unmasked value of datetime alias, if empty, returns the placeholder #2039
