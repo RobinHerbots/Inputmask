@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2018 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.85
+ * Version: 5.0.0-beta.87
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1883,16 +1883,16 @@
             } ],
             hhh: [ "[0-9]+", Date.prototype.setHours, "hours", Date.prototype.getHours ],
             H: [ "1?[0-9]|2[0-3]", Date.prototype.setHours, "hours", Date.prototype.getHours ],
-            HH: [ "[01][0-9]|2[0-3]", Date.prototype.setHours, "hours", function() {
+            HH: [ "0[0-9]|1[0-9]|2[0-3]", Date.prototype.setHours, "hours", function() {
                 return pad(Date.prototype.getHours.call(this), 2);
             } ],
             HHH: [ "[0-9]+", Date.prototype.setHours, "hours", Date.prototype.getHours ],
             M: [ "[1-5]?[0-9]", Date.prototype.setMinutes, "minutes", Date.prototype.getMinutes ],
-            MM: [ "[0-5][0-9]", Date.prototype.setMinutes, "minutes", function() {
+            MM: [ "0[0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]", Date.prototype.setMinutes, "minutes", function() {
                 return pad(Date.prototype.getMinutes.call(this), 2);
             } ],
             s: [ "[1-5]?[0-9]", Date.prototype.setSeconds, "seconds", Date.prototype.getSeconds ],
-            ss: [ "[0-5][0-9]", Date.prototype.setSeconds, "seconds", function() {
+            ss: [ "0[0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]", Date.prototype.setSeconds, "seconds", function() {
                 return pad(Date.prototype.getSeconds.call(this), 2);
             } ],
             l: [ "[0-9]{3}", Date.prototype.setMilliseconds, "milliseconds", function() {
