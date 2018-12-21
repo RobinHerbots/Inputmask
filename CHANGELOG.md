@@ -8,6 +8,7 @@
 - enhance regex alternations. ex: [01][0-9]|2[0-3] => ([01][0-9]|2[0-3])
 
 ### Fixed
+- Behaviour of v3 with hours not possible anymore #1918
 - Unmasked value of datetime alias, if empty, returns the placeholder #2039
 
 ## [4.0.4 - 2018-12-03]
