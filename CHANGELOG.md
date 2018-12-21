@@ -1,5 +1,9 @@
 # Change Log
 
+## [4.0.5 - 2018-12-21]
+### Fixed
+Behaviour of v3 with hours not possible anymore #1918
+
 ## [4.0.4 - 2018-12-03]
 ### Addition
 - add url as supported input type
