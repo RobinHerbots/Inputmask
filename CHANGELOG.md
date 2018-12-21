@@ -1,12 +1,24 @@
 # Change Log
 
-## [UNRELEASED]
+## [4.0.4 - 2018-12-03]
+### Addition
+- add url as supported input type
+
+### Updates
+- rework jit enabled quantifiers
+
+### Fixed
+- restore greedy functionality
+- fix focus and mouseenter behavior in IE
+
+## [4.0.3 - 2018-11-07]
 
 ### Addition
 - numeric.extensions - add inputType option to specify the type of initial value
 - README_numeric.md => Setting initial values
 
 ### Updates
+- fix window.js for node
 
 ### Fixed
 - digits: 3 - error on transform #2022
