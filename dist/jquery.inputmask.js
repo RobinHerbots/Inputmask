@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2018 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.87
+ * Version: 5.0.0-beta.88
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -832,9 +832,9 @@
                             end: ndx
                         } : caret(input), forwardPosition, c = String.fromCharCode(k), offset = 0;
                         if (opts._radixDance && opts.numericInput) {
-                            var caretPos = getBuffer().indexOf(opts.radixPoint.charAt(0)) + 1;
-                            pos.begin <= caretPos && (k === opts.radixPoint.charCodeAt(0) && (offset = 1), pos.begin -= 1, 
-                            pos.end -= 1);
+                            var radixPos = getBuffer().indexOf(opts.radixPoint.charAt(0)) + 1;
+                            pos.begin <= radixPos && (1 < radixPos || c == opts.radixPoint) && (c == opts.radixPoint && 1 < radixPos && (offset = 1), 
+                            pos.begin -= 1, pos.end -= 1);
                         }
                         getMaskSet().writeOutBuffer = !0;
                         var valResult = isValid(pos, c, strict);
@@ -2060,13 +2060,13 @@
                     "radixFocus" === opts.positionCaretOnClick && "" === opts.placeholder && (opts.positionCaretOnClick = "lvp"), 
                     !0 === opts.numericInput ? (opts.positionCaretOnClick = "radixFocus" === opts.positionCaretOnClick ? "lvp" : opts.positionCaretOnClick, 
                     opts.digitsOptional = !1, isNaN(opts.digits) && (opts.digits = 2), opts._radixDance = !1) : opts.numericInput = !0;
-                    var mask = "[+]";
-                    if (mask += autoEscape(opts.prefix, opts), mask += "(" + opts.groupSeparator + "999){+|1}", 
+                    var mask = "";
+                    if (mask += autoEscape(opts.prefix, opts), "" !== opts.groupSeparator ? mask += "(" + opts.groupSeparator + "999){+|1}" : mask += "9{+}", 
                     void 0 !== opts.digits) {
                         var dq = opts.digits.toString().split(",");
-                        isFinite(dq[0]) && dq[1] && isFinite(dq[1]) ? mask += opts.radixPoint + "9{" + opts.digits + "}" : (isNaN(opts.digits) || 0 < parseInt(opts.digits)) && (opts.digitsOptional ? mask += "[" + opts.radixPoint + "9{1," + opts.digits + "}]" : mask += opts.radixPoint + "9{" + opts.digits + "}");
+                        isFinite(dq[0]) && dq[1] && isFinite(dq[1]) ? mask += opts.radixPoint + "0{" + opts.digits + "}" : (isNaN(opts.digits) || 0 < parseInt(opts.digits)) && (opts.digitsOptional ? mask += "[" + opts.radixPoint + "0{1," + opts.digits + "}]" : mask += opts.radixPoint + "0{" + opts.digits + "}");
                     }
-                    return mask += autoEscape(opts.suffix, opts), mask += "[-]", opts.greedy = !1, console.log(mask), 
+                    return mask += autoEscape(opts.suffix, opts), mask += "", opts.greedy = !1, console.log(mask), 
                     mask;
                 },
                 placeholder: "0",
@@ -2095,6 +2095,11 @@
                 autoUnmask: !1,
                 unmaskAsNumber: !1,
                 inputmode: "numeric",
+                definitions: {
+                    0: {
+                        validator: "[0-9\uff11-\uff19]"
+                    }
+                },
                 preValidation: function preValidation(buffer, pos, c, isSelection, opts, maskset) {
                     return !0;
                 },
@@ -2120,22 +2125,6 @@
                             unmaskAsNumber: !0
                         })), null !== opts.min && unmasked < opts.min ? (this.value = opts.min, $(this).trigger("setvalue")) : null !== opts.max && unmasked > opts.max && (this.value = opts.max, 
                         $(this).trigger("setvalue")));
-                    }
-                },
-                definitions: {
-                    "+": {
-                        validator: function validator(chrs, maskset, pos, strict, opts) {
-                            return console.log("+"), opts.allowMinus && ("-" === chrs || chrs === opts.negationSymbol.front);
-                        },
-                        cardinality: 1,
-                        placeholder: ""
-                    },
-                    "-": {
-                        validator: function validator(chrs, maskset, pos, strict, opts) {
-                            return console.log("-"), opts.allowMinus && chrs === opts.negationSymbol.back;
-                        },
-                        cardinality: 1,
-                        placeholder: ""
                     }
                 },
                 onUnMask: function onUnMask(maskedValue, unmaskedValue, opts) {

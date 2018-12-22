@@ -4,6 +4,7 @@
 ### Addition
 
 ### Updates
+- refactor numeric alias (ongoing)
 - package & bundling
 - enhance regex alternations. ex: [01][0-9]|2[0-3] => ([01][0-9]|2[0-3])
 
