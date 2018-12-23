@@ -1,9 +1,9 @@
 /*!
  * dist/inputmask
- * <%= pkg.homepage %>
- * Copyright (c) 2010 - <%= grunt.template.today('yyyy') %> <%= pkg.author.name %>
- * Licensed under the <%= pkg.license %> license
- * Version: <%= pkg.version %>
+ * https://github.com/RobinHerbots/Inputmask
+ * Copyright (c) 2010 - 2018 Robin Herbots
+ * Licensed under the MIT license
+ * Version: 5.0.0-beta.89
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -2322,6 +2322,15 @@
                 max: 100,
                 suffix: " %",
                 allowMinus: !1
+            },
+            indianns: {
+                alias: "numeric",
+                mask: "(,99){*|1}(,999){1|1}.00",
+                positionCaretOnClick: "radixFocus",
+                _radixDance: !0,
+                radixPoint: ".",
+                numericInput: !0,
+                placeholder: "0"
             }
         }), module.exports = Inputmask;
     } ]);

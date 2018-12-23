@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2018 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.88
+ * Version: 5.0.0-beta.89
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -651,8 +651,7 @@
                 if (pos.begin > pos.end && (begin = pos.end, end = pos.begin), validatedPos = void 0 !== validatedPos ? validatedPos : begin, 
                 begin !== end || opts.insertMode && void 0 !== getMaskSet().validPositions[validatedPos] && void 0 === fromSetValid) {
                     var positionsClone = $.extend(!0, {}, getMaskSet().validPositions), lvp = getLastValidPosition(void 0, !0), i;
-                    for (getMaskSet().p = begin, i = lvp; begin <= i; i--) getMaskSet().validPositions[i] && "+" === getMaskSet().validPositions[i].match.nativeDef && (opts.isNegative = !1), 
-                    delete getMaskSet().validPositions[i];
+                    for (getMaskSet().p = begin, i = lvp; begin <= i; i--) delete getMaskSet().validPositions[i];
                     var valid = !0, j = validatedPos, vps = getMaskSet().validPositions, needsValidation = !1, posMatch = j, i = j;
                     for (validTest && (getMaskSet().validPositions[validatedPos] = $.extend(!0, {}, validTest), 
                     posMatch++, j++, begin < end && i++); i <= lvp; i++) {
@@ -2101,6 +2100,12 @@
                     }
                 },
                 preValidation: function preValidation(buffer, pos, c, isSelection, opts, maskset) {
+                    if (!1 === isSelection && c === opts.radixPoint && void 0 !== opts.digits && (isNaN(opts.digits) || 0 < parseInt(opts.digits))) {
+                        var radixPos = $.inArray(opts.radixPoint, buffer);
+                        if (radixPos !== pos) return {
+                            caret: opts._radixDance && radixPos < pos ? radixPos : radixPos - 1
+                        };
+                    }
                     return !0;
                 },
                 postValidation: function postValidation(buffer, pos, currentResult, opts) {
@@ -2204,6 +2209,15 @@
                 max: 100,
                 suffix: " %",
                 allowMinus: !1
+            },
+            indianns: {
+                alias: "numeric",
+                mask: "(,99){*|1}(,999){1|1}.00",
+                positionCaretOnClick: "radixFocus",
+                _radixDance: !0,
+                radixPoint: ".",
+                numericInput: !0,
+                placeholder: "0"
             }
         }), module.exports = Inputmask;
     }, function(module, exports, __webpack_require__) {
