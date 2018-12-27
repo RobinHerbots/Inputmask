@@ -2,7 +2,7 @@
 
 ## [5.0.0 - UNRELEASED]
 ### Addition
-- add indian numbering support in numeric alias
+- add indian numbering support in numeric alias (indianns alias)
 
 ### Updates
 - refactor numeric alias (ongoing)
