@@ -10,6 +10,7 @@
 - enhance regex alternations. ex: [01][0-9]|2[0-3] => ([01][0-9]|2[0-3])
 
 ### Fixed
+- Document bug with disabled inputs caused by Firefox 64 and older #2045
 - Behaviour of v3 with hours not possible anymore #1918
 - Unmasked value of datetime alias, if empty, returns the placeholder #2039
 
