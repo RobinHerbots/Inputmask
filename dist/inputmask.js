@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2018 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.91
+ * Version: 5.0.0-beta.92
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -932,7 +932,6 @@
                     }
                 },
                 setValueEvent: function setValueEvent(e) {
-                    this.inputmask.refreshValue = !1;
                     var input = this, value = e && e.detail ? e.detail[0] : arguments[1], value = value || this.inputmask._valueGet(!0);
                     applyInputValue(this, value);
                 },
@@ -1033,7 +1032,7 @@
                 },
                 resetEvent: function resetEvent(e) {
                     el.inputmask.refreshValue = !0, setTimeout(function() {
-                        $el.trigger("setvalue");
+                        applyInputValue(el, input.inputmask._valueGet(!0));
                     }, 0);
                 }
             }, valueBuffer;
@@ -1280,8 +1279,8 @@
                         }
                         function installNativeValueSetFallback(npt) {
                             EventRuler.on(npt, "mouseenter", function(event) {
-                                var $input = $(this), input = this, value = this.inputmask._valueGet();
-                                value !== getBuffer().join("") && applyInputValue(this, value);
+                                var input = this, value = this.inputmask._valueGet(!0);
+                                value !== (isRTL ? getBuffer().reverse() : getBuffer()).join("") && applyInputValue(this, value);
                             });
                         }
                         if (!npt.inputmask.__valueGet) {
