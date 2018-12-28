@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2018 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.90
+ * Version: 5.0.0-beta.91
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -938,9 +938,7 @@
                 setValueEvent: function setValueEvent(e) {
                     this.inputmask.refreshValue = !1;
                     var input = this, value = e && e.detail ? e.detail[0] : arguments[1], value = value || this.inputmask._valueGet(!0);
-                    $.isFunction(opts.onBeforeMask) && (value = opts.onBeforeMask.call(inputmask, value, opts) || value), 
-                    value = value.split(""), checkVal(this, !0, !1, value), undoValue = getBuffer().join(""), 
-                    (opts.clearMaskOnLostFocus || opts.clearIncomplete) && this.inputmask._valueGet() === getBufferTemplate().join("") && this.inputmask._valueSet("");
+                    applyInputValue(this, value);
                 },
                 focusEvent: function focusEvent(e) {
                     var input = this, nptValue = this.inputmask._valueGet();
@@ -1074,7 +1072,7 @@
             function unmaskedvalue(input) {
                 if (input) {
                     if (void 0 === input.inputmask) return input.value;
-                    input.inputmask && input.inputmask.refreshValue && EventHandlers.setValueEvent.call(input);
+                    input.inputmask && input.inputmask.refreshValue && applyInputValue(input, input.inputmask._valueGet(!0));
                 }
                 var umValue = [], vps = getMaskSet().validPositions;
                 for (var pndx in vps) vps[pndx].match && null != vps[pndx].match.fn && umValue.push(vps[pndx].input);
@@ -1244,6 +1242,11 @@
                     template.innerHTML = maskTemplate.join(""), input.inputmask.positionColorMask(input, template);
                 }
             }
+            function applyInputValue(input, value) {
+                input.inputmask.refreshValue = !1, $.isFunction(opts.onBeforeMask) && (value = opts.onBeforeMask.call(inputmask, value, opts) || value), 
+                value = value.split(""), checkVal(input, !0, !1, value), undoValue = getBuffer().join(""), 
+                (opts.clearMaskOnLostFocus || opts.clearIncomplete) && input.inputmask._valueGet() === getBufferTemplate().join("") && input.inputmask._valueSet("");
+            }
             function mask(elem) {
                 function isElementTypeSupported(input, opts) {
                     function patchValueProperty(npt) {
@@ -1266,7 +1269,7 @@
                                     },
                                     set: function set(elem, value) {
                                         var $elem = $(elem), result;
-                                        return result = valhookSet(elem, value), elem.inputmask && $elem.trigger("setvalue", [ value ]), 
+                                        return result = valhookSet(elem, value), elem.inputmask && applyInputValue(elem, value), 
                                         result;
                                     },
                                     inputmaskpatch: !0
@@ -1277,12 +1280,12 @@
                             return this.inputmask ? this.inputmask.opts.autoUnmask ? this.inputmask.unmaskedvalue() : -1 !== getLastValidPosition() || !0 !== opts.nullable ? document.activeElement === this && opts.clearMaskOnLostFocus ? (isRTL ? clearOptionalTail(getBuffer().slice()).reverse() : clearOptionalTail(getBuffer().slice())).join("") : valueGet.call(this) : "" : valueGet.call(this);
                         }
                         function setter(value) {
-                            valueSet.call(this, value), this.inputmask && $(this).trigger("setvalue", [ value ]);
+                            valueSet.call(this, value), this.inputmask && applyInputValue(this, value);
                         }
                         function installNativeValueSetFallback(npt) {
                             EventRuler.on(npt, "mouseenter", function(event) {
                                 var $input = $(this), input = this, value = this.inputmask._valueGet();
-                                value !== getBuffer().join("") && $input.trigger("setvalue");
+                                value !== getBuffer().join("") && applyInputValue(this, value);
                             });
                         }
                         if (!npt.inputmask.__valueGet) {
