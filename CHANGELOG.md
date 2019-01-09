@@ -1,8 +1,12 @@
 # Change Log
 
-## [4.0.4 - 2019-01-09]
+## [4.0.6 - 2019-01-09]
 ### Fixed
 Original placeholder disappear when mouseout in IE #2047
+
+## [4.0.5 - 2018-12-21]
+### Fixed
+Behaviour of v3 with hours not possible anymore #1918
 
 ## [4.0.4 - 2018-12-03]
 ### Addition
