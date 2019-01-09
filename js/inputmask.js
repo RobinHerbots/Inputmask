@@ -1871,7 +1871,7 @@ function maskScope(actionObj, maskset, opts) {
 
     function HandleNativePlaceholder(npt, value) {
         if (ie) {
-            if (npt.inputmask._valueGet() !== value) {
+            if (npt.inputmask._valueGet() !== value && (npt.placeholder !== value || npt.placeholder === "")) {
                 var buffer = getBuffer().slice(),
                     nptValue = npt.inputmask._valueGet();
                 if (nptValue !== value) {

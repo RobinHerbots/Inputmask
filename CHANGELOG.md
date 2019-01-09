@@ -1,5 +1,9 @@
 # Change Log
 
+## [4.0.4 - 2019-01-09]
+### Fixed
+Original placeholder disappear when mouseout in IE #2047
+
 ## [4.0.4 - 2018-12-03]
 ### Addition
 - add url as supported input type
