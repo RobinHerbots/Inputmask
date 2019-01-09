@@ -1,9 +1,9 @@
 /*!
  * dist/jquery.inputmask
  * https://github.com/RobinHerbots/Inputmask
- * Copyright (c) 2010 - 2018 Robin Herbots
+ * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.92
+ * Version: 5.0.0-beta.93
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -733,7 +733,7 @@
             }
             function HandleNativePlaceholder(npt, value) {
                 if (ie) {
-                    if (npt.inputmask._valueGet() !== value) {
+                    if (npt.inputmask._valueGet() !== value && (npt.placeholder !== value || "" === npt.placeholder)) {
                         var buffer = getBuffer().slice(), nptValue = npt.inputmask._valueGet();
                         if (nptValue !== value) {
                             var lvp = getLastValidPosition();
