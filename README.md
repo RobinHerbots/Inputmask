@@ -353,8 +353,10 @@ The return value of a validator can be true,  false or a command object.
   - pos or [pos1, pos2]
 
 - insert : position(s) to add :
-  - { pos : position to insert, c : character to insert }
-  - [{ pos : position to insert, c : character to insert }, { ...}, ... ]
+  - { pos : position to insert, c : character to insert, fromIsValid : true/false, strict : true/false }
+  - [{ pos : position to insert, c : character to insert, fromIsValid : true/false, strict : true/false }, { ...}, ... ]
+  
+  fromIsValid & strict 
 
 - refreshFromBuffer :
   - true => refresh validPositions from the complete buffer

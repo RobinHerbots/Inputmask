@@ -28,7 +28,7 @@ var rules = {
         exclude: /(node_modules)/,
         options: {
             presets: [
-                'env'
+                ['@babel/preset-env']
             ],
             passPerPreset: true,
         },
