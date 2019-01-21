@@ -1,9 +1,9 @@
 /*!
  * dist/inputmask
- * https://github.com/RobinHerbots/Inputmask
- * Copyright (c) 2010 - 2019 Robin Herbots
- * Licensed under the MIT license
- * Version: 5.0.0-beta.99
+ * <%= pkg.homepage %>
+ * Copyright (c) 2010 - <%= grunt.template.today('yyyy') %> <%= pkg.author.name %>
+ * Licensed under the <%= pkg.license %> license
+ * Version: <%= pkg.version %>
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -449,7 +449,7 @@
                     mloc: {},
                     cd: cacheDependency
                 }), void 0 !== ndxIntlzr && getMaskSet().tests[pos] ? $.extend(!0, [], matches) : (getMaskSet().tests[pos] = $.extend(!0, [], matches), 
-                getMaskSet().tests[pos]);
+                console.log(pos + " - " + JSON.stringify(matches)), getMaskSet().tests[pos]);
             }
             function getBufferTemplate() {
                 return void 0 === getMaskSet()._buffer && (getMaskSet()._buffer = getMaskTemplate(!1, 1), 
@@ -615,9 +615,10 @@
                     var postResult = opts.postValidation(getBuffer(!0), void 0 !== pos.begin ? isRTL ? pos.end : pos.begin : pos, result, opts);
                     void 0 !== postResult && (result = !0 === postResult ? result : postResult);
                 }
-                return result && void 0 === result.pos && (result.pos = maskPos), !1 !== result && !0 !== validateOnly || (resetMaskSet(!0), 
-                getMaskSet().validPositions = $.extend(!0, {}, positionsClone)), console.log("returned result " + JSON.stringify(result)), 
-                processCommandObject(result);
+                result && void 0 === result.pos && (result.pos = maskPos), !1 !== result && !0 !== validateOnly || (resetMaskSet(!0), 
+                getMaskSet().validPositions = $.extend(!0, {}, positionsClone));
+                var endResult = processCommandObject(result);
+                return console.log("returned result " + JSON.stringify(endResult)), endResult;
             }
             function trackbackPositions(originalPos, newPos, fillOnly) {
                 var result;
@@ -2228,13 +2229,23 @@
                     }
                 },
                 preValidation: function preValidation(buffer, pos, c, isSelection, opts, maskset) {
-                    if ("-" === c || c === opts.negationSymbol.front) return !0 === opts.allowMinus && {
-                        insert: {
-                            pos: buffer.length,
-                            c: c,
-                            fromIsValid: !0
-                        }
-                    };
+                    if ("-" === c || c === opts.negationSymbol.front) {
+                        if (!0 !== opts.allowMinus) return !1;
+                        var isNegative = !1;
+                        return $.each(maskset.validPositions, function(ndx, tst) {
+                            if ("+" === tst.match.def) return isNegative = !0, !1;
+                        }), isNegative ? {
+                            remove: buffer.length - 1,
+                            caret: pos + 1
+                        } : {
+                            insert: {
+                                pos: buffer.length,
+                                c: c,
+                                fromIsValid: !0
+                            },
+                            caret: pos + 1
+                        };
+                    }
                     if (!1 === isSelection && c === opts.radixPoint && void 0 !== opts.digits && (isNaN(opts.digits) || 0 < parseInt(opts.digits))) {
                         var radixPos = $.inArray(opts.radixPoint, buffer);
                         if (radixPos !== pos) return {
