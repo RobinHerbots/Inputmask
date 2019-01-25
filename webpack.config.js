@@ -84,7 +84,7 @@ module.exports = {
         "qunit": "QUnit"
     },
     optimization: {
-        minimize: true,
+        minimize: false,
         minimizer: [new UglifyJsPlugin({
             include: /\.min\.js$/,
             sourceMap: false,

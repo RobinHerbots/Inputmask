@@ -1,6 +1,6 @@
 {
   "name": "inputmask",
-  "version": "5.0.0-beta.99",
+  "version": "5.0.0-beta.101",
   "description": "Inputmask is a javascript library which creates an input mask.  Inputmask can run against vanilla javascript, jQuery and jqlite.",
   "main": "index.js",
   "files": [
