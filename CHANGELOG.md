@@ -5,7 +5,7 @@
 - add indian numbering support in numeric alias (indianns alias)
 
 ### Updates
-- refactor numeric alias (ongoing)
+- refactor numeric alias (ongoing - 2)
 - package & bundling
 - enhance regex alternations. ex: [01][0-9]|2[0-3] => ([01][0-9]|2[0-3])
 

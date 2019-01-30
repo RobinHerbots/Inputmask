@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.101
+ * Version: 5.0.0-beta.102
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -1396,6 +1396,12 @@ function maskScope(actionObj, maskset, opts) {
       }
     }
 
+    if (valid === false) {
+      if (getMaskSet().jitOffset[pos] !== undefined) {
+        valid = positionCanMatchDefinition(pos + getMaskSet().jitOffset[pos], def);
+      }
+    }
+
     return valid;
   }
 
@@ -1792,8 +1798,8 @@ function maskScope(actionObj, maskset, opts) {
     }
 
     getMaskSet().tests[pos] = $.extend(true, [], matches); //set a clone to prevent overwriting some props
+    // console.log(pos + " - " + JSON.stringify(matches));
 
-    console.log(pos + " - " + JSON.stringify(matches));
     return getMaskSet().tests[pos];
   }
 
@@ -2125,11 +2131,8 @@ function maskScope(actionObj, maskset, opts) {
 
     if (result === true) {
       //preValidation result
-      trackbackPositions(undefined, maskPos, true);
-
       if (maxLength === undefined || maskPos < maxLength) {
-        result = _isValid(maskPos, c, strict);
-        console.log(maskPos + " " + c + " " + JSON.stringify(getMaskSet().jitOffset));
+        result = _isValid(maskPos, c, strict); // console.log(maskPos + " " + c + " " + JSON.stringify(getMaskSet().jitOffset))
 
         if ((!strict || fromIsValid === true) && result === false && validateOnly !== true) {
           var currentPosValid = getMaskSet().validPositions[maskPos];
@@ -2192,18 +2195,16 @@ function maskScope(actionObj, maskset, opts) {
     if (result === false || validateOnly === true) {
       resetMaskSet(true);
       getMaskSet().validPositions = $.extend(true, {}, positionsClone); //revert validation changes
-    }
+    } else trackbackPositions(undefined, maskPos, true);
 
-    var endResult = processCommandObject(result);
-    console.log("returned result " + JSON.stringify(endResult));
+    var endResult = processCommandObject(result); // console.log("returned result " + JSON.stringify(endResult));
+
     return endResult;
   } //fill in best positions according the current input
 
 
   function trackbackPositions(originalPos, newPos, fillOnly) {
-    console.log("trackbackPositions " + originalPos + " " + newPos);
-    var result;
-
+    // console.log("trackbackPositions " + originalPos + " " + newPos);
     if (originalPos === undefined) {
       //find previous valid
       for (originalPos = newPos - 1; originalPos > 0; originalPos--) {
@@ -2218,24 +2219,26 @@ function maskScope(actionObj, maskset, opts) {
         if (vp) {
           var tests = getTests(ps).slice();
           if (tests[tests.length - 1].match.def === "") tests.pop();
-          var bestMatch = determineTestTemplate(ps, tests);
-          bestMatch = $.extend({}, bestMatch, {
-            "input": getPlaceholder(ps, bestMatch.match, true) || bestMatch.match.def
-          });
-          bestMatch.generatedInput = true;
-          revalidateMask(ps, bestMatch, true);
+          var bestMatch = determineTestTemplate(ps, tests),
+              np;
 
-          if (fillOnly !== true) {
-            //revalidate the new position to update the locator value
-            var cvpInput = getMaskSet().validPositions[newPos].input;
-            getMaskSet().validPositions[newPos] = undefined;
-            result = isValid(newPos, cvpInput, true, true);
+          if (bestMatch && (bestMatch.match.jit !== true || bestMatch.match.newBlockMarker === "master" && (np = getMaskSet().validPositions[ps + 1]) && np.match.optionalQuantifier === true)) {
+            bestMatch = $.extend({}, bestMatch, {
+              "input": getPlaceholder(ps, bestMatch.match, true) || bestMatch.match.def
+            });
+            bestMatch.generatedInput = true;
+            revalidateMask(ps, bestMatch, true);
+
+            if (fillOnly !== true) {
+              //revalidate the new position to update the locator value
+              var cvpInput = getMaskSet().validPositions[newPos].input;
+              getMaskSet().validPositions[newPos] = undefined;
+              return isValid(newPos, cvpInput, true, true);
+            }
           }
         }
       }
     }
-
-    return result;
   }
 
   function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
@@ -2305,8 +2308,10 @@ function maskScope(actionObj, maskset, opts) {
             } else if (opts.shiftPositions && positionCanMatchDefinition(posMatch, t.match.def)) {
               //validated match
               var result = isValid(posMatch, t.input, true, true);
-              valid = result !== false;
-              j = result.caret || result.insert ? getLastValidPosition() : posMatch + 1;
+              valid = result !== false; // console.log("match " + posMatch + " " + t.input + " " + JSON.stringify(result));
+              // j = (result.caret || result.insert) ? getLastValidPosition() : (result.pos || posMatch) + 1;
+
+              j = (result.pos || posMatch) + 1;
               needsValidation = true;
             } else {
               valid = t.generatedInput === true || t.input === opts.radixPoint && opts.numericInput === true;
@@ -4412,6 +4417,14 @@ function alignDigits(buffer, opts) {
   }
 
   return buffer;
+}
+
+function GetLastValidPosition(maskset) {
+  var posNdx;
+
+  for (posNdx in maskset.validPositions) {}
+
+  return posNdx;
 } //number aliases
 
 
@@ -4531,11 +4544,11 @@ Inputmask.extendAliases({
           }
         });
         return isNegative ? {
-          remove: buffer.length - 1,
+          remove: GetLastValidPosition(maskset),
           caret: radixPos >= pos ? pos + 1 : pos
         } : {
           insert: {
-            pos: buffer.length,
+            pos: parseInt(GetLastValidPosition(maskset)) + 1,
             c: c,
             fromIsValid: true
           },
