@@ -27,7 +27,7 @@ export default function (qunit, Inputmask) {
     });
 
 
-    qunit.test("integer  type 124 correct to 1234", function (assert) {
+    qunit.test("integer type 124 correct to 1234", function (assert) {
         var $fixture = $("#qunit-fixture");
         $fixture.append('<input type="text" id="testmask" />');
         var testmask = document.getElementById("testmask");
@@ -1756,7 +1756,8 @@ export default function (qunit, Inputmask) {
     });
 
     qunit.test("decimal minvalue 0,3 - enter 0,2 - Aifz", function (assert) {
-        var $fixture = $("#qunit-fixture");
+        var done = assert.async(),
+            $fixture = $("#qunit-fixture");
         $fixture.append('<input type="text" id="testmask" />');
         var testmask = document.getElementById("testmask");
         Inputmask({
@@ -1769,8 +1770,11 @@ export default function (qunit, Inputmask) {
         }).mask(testmask);
         testmask.focus();
         $("#testmask").Type("0,2");
-        testmask.blur();
-        assert.equal($(testmask).val(), "0,3", "Result " + $(testmask).val());
+        setTimeout(function () {
+            testmask.blur();
+            assert.equal($(testmask).val(), "0,3", "Result " + $(testmask).val());
+            done();
+        }, 100);
     });
 
     qunit.test("currency max = 100 - type 200 - zigtechjs", function (assert) {

@@ -17,11 +17,11 @@ function createBanner() {
 }
 
 var rules = {
-    sourceMap: {
-        enforce: 'pre',
-        test: /\.js$/,
-        loader: 'source-map-loader',
-    },
+    // sourceMap: {
+    //     enforce: 'pre',
+    //     test: /\.js$/,
+    //     loader: 'source-map-loader',
+    // },
     js: {
         test: /\.js$/,
         loader: 'babel-loader',
@@ -84,7 +84,7 @@ module.exports = {
         "qunit": "QUnit"
     },
     optimization: {
-        minimize: false,
+        minimize: true,
         minimizer: [new UglifyJsPlugin({
             include: /\.min\.js$/,
             sourceMap: false,
@@ -129,7 +129,7 @@ module.exports = {
     },
     module: {
         rules: [
-            rules.sourceMap,
+            // rules.sourceMap,
             rules.js,
             // rules.ts,
             rules.styles
