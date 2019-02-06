@@ -3241,9 +3241,8 @@ function maskScope(actionObj, maskset, opts) {
         }; //track caret internally
 
         if (input === document.activeElement) {
-          if ("selectionStart" in input) {
-            input.selectionStart = begin;
-            input.selectionEnd = end;
+          if ("setSelectionRange" in input) {
+            input.setSelectionRange(begin, end);
           } else if (window.getSelection) {
             range = document.createRange();
 
@@ -3273,7 +3272,7 @@ function maskScope(actionObj, maskset, opts) {
         }
       }
     } else {
-      if ("selectionStart" in input) {
+      if ("selectionStart" in input && "selectionEnd" in input) {
         begin = input.selectionStart;
         end = input.selectionEnd;
       } else if (window.getSelection) {
