@@ -10,8 +10,7 @@ export default function ($, Inputmask) {
             // }
 
             if (input.setSelectionRange) {
-                input.selectionStart = begin;
-                input.selectionEnd = end;
+                input.setSelectionRange(begin, end);
             } else if (window.getSelection) {
                 range = document.createRange();
                 if (input.firstChild === undefined) {
@@ -34,7 +33,7 @@ export default function ($, Inputmask) {
 
             }
         } else {
-            if (input.setSelectionRange) {
+            if ("selectionStart" in input && "selectionEnd" in input) {
                 begin = input.selectionStart;
                 end = input.selectionEnd;
             } else if (window.getSelection) {
