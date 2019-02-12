@@ -1,1 +1,1 @@
-module.exports = require("./bundle.jquery");
+module.exports = require("./bundle");
