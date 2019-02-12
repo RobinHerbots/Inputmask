@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.127
+ * Version: 5.0.0-beta.128
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -2125,6 +2125,10 @@
                     dayNames: [ "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" ],
                     monthNames: [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ],
                     ordinalSuffix: [ "st", "nd", "rd", "th" ]
+                },
+                preValidation: function preValidation(buffer, pos, c, isSelection, opts, maskset) {
+                    var dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
+                    return !0;
                 },
                 postValidation: function postValidation(buffer, pos, currentResult, opts) {
                     opts.min = analyseMask(opts.min, opts.inputFormat, opts), opts.max = analyseMask(opts.max, opts.inputFormat, opts);
