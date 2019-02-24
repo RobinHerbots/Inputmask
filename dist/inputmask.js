@@ -1,9 +1,9 @@
 /*!
  * dist/inputmask
- * https://github.com/RobinHerbots/Inputmask
- * Copyright (c) 2010 - 2019 Robin Herbots
- * Licensed under the MIT license
- * Version: 5.0.0-beta.130
+ * <%= pkg.homepage %>
+ * Copyright (c) 2010 - <%= grunt.template.today('yyyy') %> <%= pkg.author.name %>
+ * Licensed under the <%= pkg.license %> license
+ * Version: <%= pkg.version %>
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -2106,6 +2106,9 @@
             }
             if (mask && "object" === _typeof(mask) && mask.hasOwnProperty("date")) return mask;
         }
+        function determinFormatCode(pos, opts) {
+            for (;match = getTokenizer(opts).exec(opts.inputFormat); ) ;
+        }
         Inputmask.extendAliases({
             datetime: {
                 mask: function mask(opts) {
@@ -2127,7 +2130,7 @@
                     ordinalSuffix: [ "st", "nd", "rd", "th" ]
                 },
                 preValidation: function preValidation(buffer, pos, c, isSelection, opts, maskset) {
-                    var dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
+                    var formatCode = determinFormatCode(pos, opts);
                     return !0;
                 },
                 postValidation: function postValidation(buffer, pos, currentResult, opts) {
