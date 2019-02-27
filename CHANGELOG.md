@@ -10,6 +10,7 @@
 - enhance regex alternations. ex: [01][0-9]|2[0-3] => ([01][0-9]|2[0-3])
 
 ### Fixed
+- No leading zero for single-digit hours KO #2061
 - Only 1st placeholder is displayed for fields with same alias numeric #2060
 - Original placeholder disappear when mouseout in IE #2047
 - Document bug with disabled inputs caused by Firefox 64 and older #2045

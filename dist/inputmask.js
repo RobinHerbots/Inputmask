@@ -1,9 +1,9 @@
 /*!
  * dist/inputmask
- * <%= pkg.homepage %>
- * Copyright (c) 2010 - <%= grunt.template.today('yyyy') %> <%= pkg.author.name %>
- * Licensed under the <%= pkg.license %> license
- * Version: <%= pkg.version %>
+ * https://github.com/RobinHerbots/Inputmask
+ * Copyright (c) 2010 - 2019 Robin Herbots
+ * Licensed under the MIT license
+ * Version: 5.0.0-beta.131
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -2106,9 +2106,6 @@
             }
             if (mask && "object" === _typeof(mask) && mask.hasOwnProperty("date")) return mask;
         }
-        function determinFormatCode(pos, opts) {
-            for (;match = getTokenizer(opts).exec(opts.inputFormat); ) ;
-        }
         Inputmask.extendAliases({
             datetime: {
                 mask: function mask(opts) {
@@ -2130,11 +2127,29 @@
                     ordinalSuffix: [ "st", "nd", "rd", "th" ]
                 },
                 preValidation: function preValidation(buffer, pos, c, isSelection, opts, maskset) {
-                    var formatCode = determinFormatCode(pos, opts);
+                    var calcPos = 0, targetMatch, targetValidator;
+                    if (isNaN(c)) {
+                        for (;match = getTokenizer(opts).exec(opts.inputFormat); ) if (calcPos += match[0].length, 
+                        pos <= calcPos) {
+                            targetMatch = match, match = getTokenizer(opts).exec(opts.inputFormat);
+                            break;
+                        }
+                        if (match[0] === c) return buffer[pos] = buffer[pos - 1], buffer[pos - 1] = "0", 
+                        {
+                            fuzzy: !0,
+                            buffer: buffer,
+                            refreshFromBuffer: {
+                                start: pos - 1,
+                                end: pos + 1
+                            },
+                            pos: pos + 1
+                        };
+                    }
                     return !0;
                 },
                 postValidation: function postValidation(buffer, pos, currentResult, opts) {
-                    opts.min = analyseMask(opts.min, opts.inputFormat, opts), opts.max = analyseMask(opts.max, opts.inputFormat, opts);
+                    opts.min = analyseMask(opts.min, opts.inputFormat, opts), opts.max = analyseMask(opts.max, opts.inputFormat, opts), 
+                    currentResult.fuzzy && (buffer = currentResult.buffer, pos = currentResult.pos);
                     var result = currentResult, dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
                     return result && dateParts.date.getTime() == dateParts.date.getTime() && (result = isValidDate(dateParts, result), 
                     result = result && isDateInRange(dateParts, opts)), pos && result && currentResult.pos !== pos ? {
