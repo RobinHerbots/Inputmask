@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.132
+ * Version: 5.0.0-beta.133
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -2134,7 +2134,7 @@
                             targetMatch = match, match = getTokenizer(opts).exec(opts.inputFormat);
                             break;
                         }
-                        if (match[0] === c && 1 < targetMatch[0].length) return buffer[pos] = buffer[pos - 1], 
+                        if (match && match[0] === c && 1 < targetMatch[0].length) return buffer[pos] = buffer[pos - 1], 
                         buffer[pos - 1] = "0", {
                             fuzzy: !0,
                             buffer: buffer,
