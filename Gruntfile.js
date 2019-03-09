@@ -1,4 +1,4 @@
-var webpackConfig = require('./webpack.config');
+var webpackBuildConfig = require('./webpack.buildconfig');
 var webpackJqueryConfig = require('./webpack.jqueryconfig');
 
 module.exports = function (grunt) {
@@ -70,7 +70,7 @@ module.exports = function (grunt) {
             }
         },
         webpack: {
-            main: webpackConfig,
+            main: webpackBuildConfig,
             jquery: webpackJqueryConfig
         },
         copy: {
