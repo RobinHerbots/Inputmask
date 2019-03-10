@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.136
+ * Version: 5.0.0-beta.137
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1394,17 +1394,20 @@
                 return getBufferTemplate().join("");
 
               case "remove":
-                var valueProperty;
-                if (el && el.inputmask) $.data(el, "_inputmask_opts", null), $el = $(el), el.inputmask._valueSet(opts.autoUnmask ? unmaskedvalue(el) : el.inputmask._valueGet(opts.autoUnmask), opts.autoUnmask), 
-                EventRuler.off(el), el.inputmask.colorMask && (colorMask = el.inputmask.colorMask, 
-                colorMask.removeChild(el), colorMask.parentNode.insertBefore(el, colorMask), colorMask.parentNode.removeChild(colorMask)), 
-                Object.getOwnPropertyDescriptor && Object.getPrototypeOf ? (valueProperty = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), "value"), 
-                valueProperty && el.inputmask.__valueGet && Object.defineProperty(el, "value", {
-                    get: el.inputmask.__valueGet,
-                    set: el.inputmask.__valueSet,
-                    configurable: !0
-                })) : document.__lookupGetter__ && el.__lookupGetter__("value") && el.inputmask.__valueGet && (el.__defineGetter__("value", el.inputmask.__valueGet), 
-                el.__defineSetter__("value", el.inputmask.__valueSet)), el.inputmask = void 0;
+                if (el && el.inputmask) {
+                    $.data(el, "_inputmask_opts", null), $el = $(el);
+                    var cv = opts.autoUnmask ? unmaskedvalue(el) : el.inputmask._valueGet(opts.autoUnmask), valueProperty;
+                    cv !== getBufferTemplate().join("") ? el.inputmask._valueSet(cv, opts.autoUnmask) : el.inputmask._valueSet(""), 
+                    EventRuler.off(el), el.inputmask.colorMask && (colorMask = el.inputmask.colorMask, 
+                    colorMask.removeChild(el), colorMask.parentNode.insertBefore(el, colorMask), colorMask.parentNode.removeChild(colorMask)), 
+                    Object.getOwnPropertyDescriptor && Object.getPrototypeOf ? (valueProperty = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), "value"), 
+                    valueProperty && el.inputmask.__valueGet && Object.defineProperty(el, "value", {
+                        get: el.inputmask.__valueGet,
+                        set: el.inputmask.__valueSet,
+                        configurable: !0
+                    })) : document.__lookupGetter__ && el.__lookupGetter__("value") && el.inputmask.__valueGet && (el.__defineGetter__("value", el.inputmask.__valueGet), 
+                    el.__defineSetter__("value", el.inputmask.__valueSet)), el.inputmask = void 0;
+                }
                 return el;
                 break;
 
