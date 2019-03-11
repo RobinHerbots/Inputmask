@@ -633,6 +633,9 @@ Inputmask.prototype = {
         }
         // console.log(JSON.stringify(maskTokens));
         return maskTokens;
+    },
+    positionColorMask: function (input, template) {
+        input.style.left = template.offsetLeft + "px";
     }
 };
 
@@ -2807,10 +2810,6 @@ function maskScope(actionObj, maskset, opts) {
             caret(input, findCaretPos(e.clientX));
             return EventHandlers.clickEvent.call(input, [e]);
         });
-    }
-
-    Inputmask.prototype.positionColorMask = function (input, template) {
-        input.style.left = template.offsetLeft + "px";
     }
 
     function renderColorMask(input, caretPos, clear) {
