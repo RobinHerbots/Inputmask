@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.140
+ * Version: 5.0.0-beta.141
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1275,8 +1275,8 @@
                     var input = this, $input = $(input), k = e.which || e.charCode || e.keyCode;
                     function hanndleRadixDance(pos, c) {
                         if (opts._radixDance && opts.numericInput) {
-                            var radixPos = getBuffer().indexOf(opts.radixPoint.charAt(0)) + 1;
-                            pos.begin <= radixPos && (1 < radixPos || c == opts.radixPoint) && (c == opts.radixPoint && 1 < radixPos && (offset = 1), 
+                            var radixPos = getBuffer().indexOf(opts.radixPoint.charAt(0));
+                            pos.begin <= radixPos && (0 < radixPos || c == opts.radixPoint) && (c == opts.radixPoint && 0 < radixPos && (offset = 1), 
                             pos.begin -= 1, pos.end -= 1);
                         }
                         return pos;
@@ -2167,7 +2167,7 @@
                 },
                 preValidation: function preValidation(buffer, pos, c, isSelection, opts, maskset) {
                     var radixPos = $.inArray(opts.radixPoint, buffer);
-                    if ("-" !== c && c !== opts.negationSymbol.front) return !0 !== opts._radixDance || !1 !== isSelection || c !== opts.radixPoint || void 0 === opts.digits || !(isNaN(opts.digits) || 0 < parseInt(opts.digits)) || radixPos === pos || {
+                    if ("-" !== c && c !== opts.negationSymbol.front) return -1 === radixPos || !0 !== opts._radixDance || !1 !== isSelection || c !== opts.radixPoint || void 0 === opts.digits || !(isNaN(opts.digits) || 0 < parseInt(opts.digits)) || radixPos === pos || {
                         caret: opts._radixDance && radixPos < pos ? radixPos : radixPos - 1
                     };
                     if (!0 !== opts.allowMinus) return !1;
