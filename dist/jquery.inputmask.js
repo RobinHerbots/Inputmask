@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.141
+ * Version: 5.0.0-beta.142
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1502,7 +1502,7 @@
                     var charCodeNdx = getMaskTemplate(!0, 0, !1).slice(ndx, seekNext(ndx)).join("").replace(/'/g, "").indexOf(charCodes);
                     return -1 !== charCodeNdx && !isMask(ndx) && (getTest(ndx).match.nativeDef === charCodes.charAt(0) || null === getTest(ndx).match.fn && getTest(ndx).match.nativeDef === "'" + charCodes.charAt(0) || " " === getTest(ndx).match.nativeDef && (getTest(ndx + 1).match.nativeDef === charCodes.charAt(0) || null === getTest(ndx + 1).match.fn && getTest(ndx + 1).match.nativeDef === "'" + charCodes.charAt(0)));
                 }
-                if (resetMaskSet(), strict || !0 === opts.autoUnmask) initialNdx = seekNext(initialNdx); else {
+                if (resetMaskSet(), !strict) {
                     var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(""), matches = inputValue.join("").match(new RegExp("^" + Inputmask.escapeRegex(staticInput), "g"));
                     matches && 0 < matches.length && (inputValue.splice(0, matches.length * staticInput.length), 
                     initialNdx = seekNext(initialNdx));
@@ -1510,19 +1510,30 @@
                 -1 === initialNdx ? (getMaskSet().p = seekNext(initialNdx), initialNdx = 0) : getMaskSet().p = initialNdx, 
                 inputmask.caretPos = {
                     begin: initialNdx
-                }, $.each(inputValue, function(ndx, charCode) {
+                };
+                var staticMatches = [], sndx, validPos, nextValid;
+                if ($.each(inputValue, function(ndx, charCode) {
                     if (void 0 !== charCode) if (void 0 === getMaskSet().validPositions[ndx] && inputValue[ndx] === getPlaceholder(ndx) && isMask(ndx, !0) && !1 === isValid(ndx, inputValue[ndx], !0, void 0, void 0, !0)) getMaskSet().p++; else {
                         var keypress = new $.Event("_checkval");
                         keypress.which = charCode.charCodeAt(0), charCodes += charCode;
                         var lvp = getLastValidPosition(void 0, !0);
                         isTemplateMatch(initialNdx, charCodes) ? result = EventHandlers.keypressEvent.call(input, keypress, !0, !1, strict, lvp + 1) : (result = EventHandlers.keypressEvent.call(input, keypress, !0, !1, strict, inputmask.caretPos.begin), 
-                        result && (initialNdx = inputmask.caretPos.begin + 1, charCodes = "")), result && (writeBuffer(void 0, getBuffer(), result.forwardPosition, keypress, !1), 
+                        result && (initialNdx = inputmask.caretPos.begin + 1, charCodes = "")), result && (result.pos && null === getMaskSet().validPositions[result.pos].match.fn && (staticMatches.push(result.pos), 
+                        result.forwardPosition = result.pos + 1), writeBuffer(void 0, getBuffer(), result.forwardPosition, keypress, !1), 
                         inputmask.caretPos = {
                             begin: result.forwardPosition,
                             end: result.forwardPosition
                         });
                     }
-                }), writeOut && writeBuffer(input, getBuffer(), result ? result.forwardPosition : void 0, initiatingEvent || new $.Event("checkval"), initiatingEvent && "input" === initiatingEvent.type);
+                }), 0 < staticMatches.length) if (isComplete(getBuffer())) for (;sndx = staticMatches.pop(); ) validPos = getMaskSet().validPositions[sndx], 
+                validPos.generatedInput = !0; else for (;sndx = staticMatches.pop(); ) {
+                    var keypress = new $.Event("_checkval"), nextSndx = sndx + 1;
+                    for (validPos = getMaskSet().validPositions[sndx], validPos.generatedInput = !0, 
+                    keypress.which = validPos.input.charCodeAt(0); (nextValid = getMaskSet().validPositions[nextSndx]) && nextValid.input === validPos.input; ) nextSndx++;
+                    if (EventHandlers.keypressEvent.call(input, keypress, !0, !1, strict, nextSndx), 
+                    isComplete(getBuffer())) break;
+                }
+                writeOut && writeBuffer(input, getBuffer(), result ? result.forwardPosition : void 0, initiatingEvent || new $.Event("checkval"), initiatingEvent && "input" === initiatingEvent.type);
             }
             function unmaskedvalue(input) {
                 if (input) {
@@ -2110,13 +2121,15 @@
                     opts.positionCaretOnClick = "radixFocus" === opts.positionCaretOnClick ? "lvp" : opts.positionCaretOnClick, 
                     opts.digitsOptional = !1, isNaN(opts.digits) && (opts.digits = 2), opts._radixDance = !1) : (opts.__financeInput = !1, 
                     opts.numericInput = !0);
-                    var mask = "[+]";
+                    var mask = "[+]", altMask;
                     if (mask += autoEscape(opts.prefix, opts), "" !== opts.groupSeparator ? mask += "(" + opts.groupSeparator + "999){+|1}" : mask += "9{+}", 
                     void 0 !== opts.digits) {
                         var dq = opts.digits.toString().split(",");
-                        isFinite(dq[0]) && dq[1] && isFinite(dq[1]) ? mask += opts.radixPoint + decimalDef + "{" + opts.digits + "}" : (isNaN(opts.digits) || 0 < parseInt(opts.digits)) && (opts.digitsOptional ? mask += "[" + opts.radixPoint + decimalDef + "{1," + opts.digits + "}]" : mask += opts.radixPoint + decimalDef + "{" + opts.digits + "}");
+                        isFinite(dq[0]) && dq[1] && isFinite(dq[1]) ? mask += opts.radixPoint + decimalDef + "{" + opts.digits + "}" : (isNaN(opts.digits) || 0 < parseInt(opts.digits)) && (opts.digitsOptional ? (altMask = mask + opts.radixPoint + decimalDef + "{1," + opts.digits + "}", 
+                        opts.keepStatic = !0) : mask += opts.radixPoint + decimalDef + "{" + opts.digits + "}");
                     }
-                    return mask += autoEscape(opts.suffix, opts), mask += "[-]", opts.greedy = !1, mask;
+                    return mask += autoEscape(opts.suffix, opts), mask += "[-]", altMask && (mask = [ altMask + autoEscape(opts.suffix, opts) + "[-]", mask ]), 
+                    opts.greedy = !1, console.log(mask), mask;
                 },
                 placeholder: "0",
                 greedy: !1,
