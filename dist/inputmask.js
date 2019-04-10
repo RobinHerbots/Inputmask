@@ -1609,7 +1609,7 @@
                 },
                 resetEvent: function resetEvent(e) {
                     el.inputmask.refreshValue = !0, setTimeout(function() {
-                        applyInputValue(el, input.inputmask._valueGet(!0));
+                        applyInputValue(el, el.inputmask._valueGet(!0));
                     }, 0);
                 }
             }, valueBuffer;
