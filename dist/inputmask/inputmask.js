@@ -562,6 +562,9 @@
                 reverseTokens(maskTokens[0]);
             }
             return maskTokens;
+        },
+        positionColorMask: function(input, template) {
+            input.style.left = template.offsetLeft + "px";
         }
     };
     Inputmask.extendDefaults = function(options) {
@@ -1908,7 +1911,7 @@
                 this.inputmask.refreshValue = false;
                 var input = this, value = e && e.detail ? e.detail[0] : arguments[1], value = value || input.inputmask._valueGet(true);
                 if ($.isFunction(opts.onBeforeMask)) value = opts.onBeforeMask.call(inputmask, value, opts) || value;
-                value = value.split("");
+                value = value.toString().split("");
                 checkVal(input, true, false, value);
                 undoValue = getBuffer().join("");
                 if ((opts.clearMaskOnLostFocus || opts.clearIncomplete) && input.inputmask._valueGet() === getBufferTemplate().join("")) {
@@ -2373,9 +2376,6 @@
                 return EventHandlers.clickEvent.call(input, [ e ]);
             });
         }
-        Inputmask.prototype.positionColorMask = function(input, template) {
-            input.style.left = template.offsetLeft + "px";
-        };
         function renderColorMask(input, caretPos, clear) {
             var maskTemplate = [], isStatic = false, test, testPos, ndxIntlzr, pos = 0;
             function setEntry(entry) {
