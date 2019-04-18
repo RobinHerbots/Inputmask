@@ -87,7 +87,7 @@
                 var eventRegistry = this[0].eventRegistry,
                     elem = this[0];
 
-                function addEvent(ev, namespace) {
+                var addEvent = function (ev, namespace) {
                     //register domevent
                     if (elem.addEventListener) { // all browsers except IE before version 9
                         elem.addEventListener(ev, handler, false);
@@ -97,7 +97,7 @@
                     eventRegistry[ev] = eventRegistry[ev] || {};
                     eventRegistry[ev][namespace] = eventRegistry[ev][namespace] || [];
                     eventRegistry[ev][namespace].push(handler);
-                }
+                };
 
                 var _events = events.split(" ");
                 for (var endx = 0; endx < _events.length; endx++) {
@@ -114,7 +114,7 @@
                 var eventRegistry = this[0].eventRegistry,
                     elem = this[0];
 
-                function removeEvent(ev, namespace, handler) {
+                var removeEvent = function (ev, namespace, handler) {
                     if (ev in eventRegistry === true) {
                         //unbind to dom events
                         if (elem.removeEventListener) { // all browsers except IE before version 9
@@ -130,9 +130,9 @@
                             eventRegistry[ev][namespace].splice(eventRegistry[ev][namespace].indexOf(handler), 1);
                         }
                     }
-                }
+                };
 
-                function resolveNamespace(ev, namespace) {
+                var resolveNamespace = function (ev, namespace) {
                     var evts = [],
                         hndx, hndL;
                     if (ev.length > 0) {
@@ -176,7 +176,7 @@
                     }
 
                     return evts;
-                }
+                };
 
                 var _events = events.split(" ");
                 for (var endx = 0; endx < _events.length; endx++) {
