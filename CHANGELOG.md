@@ -1,12 +1,17 @@
 # Change Log
 
+## [4.0.7 - 2019-04-24]
+### Fixed
+- Fix memory leak by moving the "positionColorMask" declaration outside of function scope
+- Call .toString() on values that could be numbers
+
 ## [4.0.6 - 2019-01-09]
 ### Fixed
-Original placeholder disappear when mouseout in IE #2047
+- Original placeholder disappear when mouseout in IE #2047
 
 ## [4.0.5 - 2018-12-21]
 ### Fixed
-Behaviour of v3 with hours not possible anymore #1918
+- Behaviour of v3 with hours not possible anymore #1918
 
 ## [4.0.4 - 2018-12-03]
 ### Addition
