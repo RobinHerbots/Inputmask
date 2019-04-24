@@ -1,9 +1,9 @@
 /*!
  * dist/jquery.inputmask
- * https://github.com/RobinHerbots/Inputmask
- * Copyright (c) 2010 - 2019 Robin Herbots
- * Licensed under the MIT license
- * Version: 5.0.0-beta.143
+ * <%= pkg.homepage %>
+ * Copyright (c) 2010 - <%= grunt.template.today('yyyy') %> <%= pkg.author.name %>
+ * Licensed under the <%= pkg.license %> license
+ * Version: <%= pkg.version %>
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -159,12 +159,13 @@
             !1);
         }
         function importAttributeOptions(npt, opts, userOptions, dataAttribute) {
+            function importOption(option, optionData) {
+                optionData = void 0 !== optionData ? optionData : npt.getAttribute(dataAttribute + "-" + option), 
+                null !== optionData && ("string" == typeof optionData && (0 === option.indexOf("on") ? optionData = window[optionData] : "false" === optionData ? optionData = !1 : "true" === optionData && (optionData = !0)), 
+                userOptions[option] = optionData);
+            }
             if (!0 === opts.importDataAttributes) {
-                var importOption = function importOption(option, optionData) {
-                    optionData = void 0 !== optionData ? optionData : npt.getAttribute(dataAttribute + "-" + option), 
-                    null !== optionData && ("string" == typeof optionData && (0 === option.indexOf("on") ? optionData = window[optionData] : "false" === optionData ? optionData = !1 : "true" === optionData && (optionData = !0)), 
-                    userOptions[option] = optionData);
-                }, attrOptions = npt.getAttribute(dataAttribute), option, dataoptions, optionData, p;
+                var attrOptions = npt.getAttribute(dataAttribute), option, dataoptions, optionData, p;
                 if (attrOptions && "" !== attrOptions && (attrOptions = attrOptions.replace(/'/g, '"'), 
                 dataoptions = JSON.parse("{" + attrOptions + "}")), dataoptions) for (p in optionData = void 0, 
                 dataoptions) if ("alias" === p.toLowerCase()) {
@@ -401,15 +402,15 @@
         function generateMaskSet(opts, nocache) {
             var ms;
             function generateMask(mask, metadata, opts) {
-                var regexMask = !1;
+                var regexMask = !1, masksetDefinition, maskdefKey;
                 if (null !== mask && "" !== mask || (regexMask = null !== opts.regex, mask = regexMask ? (mask = opts.regex, 
                 mask.replace(/^(\^)(.*)(\$)$/, "$2")) : (regexMask = !0, ".*")), 1 === mask.length && !1 === opts.greedy && 0 !== opts.repeat && (opts.placeholder = ""), 
                 0 < opts.repeat || "*" === opts.repeat || "+" === opts.repeat) {
                     var repeatStart = "*" === opts.repeat ? 0 : "+" === opts.repeat ? 1 : opts.repeat;
                     mask = opts.groupmarker[0] + mask + opts.groupmarker[1] + opts.quantifiermarker[0] + repeatStart + "," + opts.repeat + opts.quantifiermarker[1];
                 }
-                var masksetDefinition, maskdefKey = regexMask ? "regex_" + opts.regex : opts.numericInput ? mask.split("").reverse().join("") : mask;
-                return void 0 === Inputmask.prototype.masksCache[maskdefKey] || !0 === nocache ? (masksetDefinition = {
+                return maskdefKey = regexMask ? "regex_" + opts.regex : opts.numericInput ? mask.split("").reverse().join("") : mask, 
+                !1 !== opts.keepStatic && (maskdefKey = "ks_" + maskdefKey), void 0 === Inputmask.prototype.masksCache[maskdefKey] || !0 === nocache ? (masksetDefinition = {
                     mask: mask,
                     maskToken: Inputmask.prototype.analyseMask(mask, regexMask, opts),
                     validPositions: {},
@@ -445,7 +446,7 @@
             ms;
         }
         function analyseMask(mask, regexMask, opts) {
-            var tokenizer = /(?:[?*+]|\{[0-9\+\*]+(?:,[0-9\+\*]*)?(?:\|[0-9\+\*]*)?\})|[^.?*+^${[]()|\\]+|./g, regexTokenizer = /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?[:=!]?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g, escaped = !1, currentToken = new MaskToken(), match, m, openenings = [], maskTokens = [], openingToken, currentOpeningToken, alternator, lastMatch, groupToken, closeRegexGroup = !1;
+            var tokenizer = /(?:[?*+]|\{[0-9+*]+(?:,[0-9+*]*)?(?:\|[0-9+*]*)?\})|[^.?*+^${[]()|\\]+|./g, regexTokenizer = /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?[:=!]?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g, escaped = !1, currentToken = new MaskToken(), match, m, openenings = [], maskTokens = [], openingToken, currentOpeningToken, alternator, lastMatch, closeRegexGroup = !1;
             function MaskToken(isGroup, isOptional, isQuantifier, isAlternator) {
                 this.matches = [], this.openGroup = isGroup || !1, this.alternatorGroup = !1, this.isGroup = isGroup || !1, 
                 this.isOptional = isOptional || !1, this.isQuantifier = isQuantifier || !1, this.isAlternator = isAlternator || !1, 
@@ -548,6 +549,11 @@
                     }
                 } else currentToken.matches.push(openingToken); else defaultCase();
             }
+            function groupQuantifier(matches) {
+                var lastMatch = matches.pop();
+                return lastMatch.isQuantifier && (lastMatch = groupify([ matches.pop(), lastMatch ])), 
+                lastMatch;
+            }
             for (regexMask && (opts.optionalmarker[0] = void 0, opts.optionalmarker[1] = void 0); match = regexMask ? regexTokenizer.exec(mask) : tokenizer.exec(mask); ) {
                 if (m = match[0], regexMask) switch (m.charAt(0)) {
                   case "?":
@@ -616,11 +622,6 @@
                     break;
 
                   case opts.alternatormarker:
-                    var groupQuantifier = function groupQuantifier(matches) {
-                        var lastMatch = matches.pop();
-                        return lastMatch.isQuantifier && (lastMatch = groupify([ matches.pop(), lastMatch ])), 
-                        lastMatch;
-                    };
                     if (0 < openenings.length) {
                         currentOpeningToken = openenings[openenings.length - 1];
                         var subToken = currentOpeningToken.matches[currentOpeningToken.matches.length - 1];
@@ -1518,7 +1519,7 @@
                         keypress.which = charCode.charCodeAt(0), charCodes += charCode;
                         var lvp = getLastValidPosition(void 0, !0);
                         isTemplateMatch(initialNdx, charCodes) ? result = EventHandlers.keypressEvent.call(input, keypress, !0, !1, strict, lvp + 1) : (result = EventHandlers.keypressEvent.call(input, keypress, !0, !1, strict, inputmask.caretPos.begin), 
-                        result && (initialNdx = inputmask.caretPos.begin + 1, charCodes = "")), result && (result.pos && null === getMaskSet().validPositions[result.pos].match.fn && (staticMatches.push(result.pos), 
+                        result && (initialNdx = inputmask.caretPos.begin + 1, charCodes = "")), result && (result.pos && getMaskSet().validPositions[result.pos] && null === getMaskSet().validPositions[result.pos].match.fn && (staticMatches.push(result.pos), 
                         result.forwardPosition = result.pos + 1), writeBuffer(void 0, getBuffer(), result.forwardPosition, keypress, !1), 
                         inputmask.caretPos = {
                             begin: result.forwardPosition,
@@ -2000,7 +2001,7 @@
         function analyseMask(maskString, format, opts) {
             var dateObj = {
                 date: new Date(1, 0, 1)
-            }, targetProp, mask = maskString, match, dateOperation, targetValidator;
+            }, targetProp, mask = maskString, match, dateOperation;
             function extendProperty(value) {
                 var correctedValue = value.replace(/[^0-9]/g, "0");
                 return correctedValue;
@@ -2012,9 +2013,8 @@
             if ("string" == typeof mask) {
                 for (;match = getTokenizer(opts).exec(format); ) {
                     var value = mask.slice(0, match[0].length);
-                    formatCode.hasOwnProperty(match[0]) && (targetValidator = formatCode[match[0]][0], 
-                    targetProp = formatCode[match[0]][2], dateOperation = formatCode[match[0]][1], setValue(dateObj, value, opts)), 
-                    mask = mask.slice(value.length);
+                    formatCode.hasOwnProperty(match[0]) && (targetProp = formatCode[match[0]][2], dateOperation = formatCode[match[0]][1], 
+                    setValue(dateObj, value, opts)), mask = mask.slice(value.length);
                 }
                 return dateObj;
             }
@@ -2026,7 +2026,7 @@
                     return formatCode.S = opts.i18n.ordinalSuffix.join("|"), opts.inputFormat = formatAlias[opts.inputFormat] || opts.inputFormat, 
                     opts.displayFormat = formatAlias[opts.displayFormat] || opts.displayFormat || opts.inputFormat, 
                     opts.outputFormat = formatAlias[opts.outputFormat] || opts.outputFormat || opts.inputFormat, 
-                    opts.placeholder = "" !== opts.placeholder ? opts.placeholder : opts.inputFormat.replace(/[\[\]]/, ""), 
+                    opts.placeholder = "" !== opts.placeholder ? opts.placeholder : opts.inputFormat.replace(/[[\]]/, ""), 
                     opts.regex = parse(opts.inputFormat, void 0, opts), null;
                 },
                 placeholder: "",
@@ -2041,7 +2041,7 @@
                     ordinalSuffix: [ "st", "nd", "rd", "th" ]
                 },
                 preValidation: function preValidation(buffer, pos, c, isSelection, opts, maskset) {
-                    var calcPos = 0, targetMatch, targetValidator;
+                    var calcPos = 0, targetMatch, match;
                     if (isNaN(c) && buffer[pos] !== c) {
                         for (;match = getTokenizer(opts).exec(opts.inputFormat); ) if (calcPos += match[0].length, 
                         pos <= calcPos) {
@@ -2125,10 +2125,10 @@
                     if (mask += autoEscape(opts.prefix, opts), "" !== opts.groupSeparator ? mask += "(" + opts.groupSeparator + "999){+|1}" : mask += "9{+}", 
                     void 0 !== opts.digits) {
                         var dq = opts.digits.toString().split(",");
-                        isFinite(dq[0]) && dq[1] && isFinite(dq[1]) ? mask += opts.radixPoint + decimalDef + "{" + opts.digits + "}" : (isNaN(opts.digits) || 0 < parseInt(opts.digits)) && (opts.digitsOptional ? (altMask = mask + opts.radixPoint + decimalDef + "{1," + opts.digits + "}", 
+                        isFinite(dq[0]) && dq[1] && isFinite(dq[1]) ? mask += opts.radixPoint + decimalDef + "{" + opts.digits + "}" : (isNaN(opts.digits) || 0 < parseInt(opts.digits)) && (opts.digitsOptional ? (altMask = mask + opts.radixPoint + decimalDef + "{0," + opts.digits + "}", 
                         opts.keepStatic = !0) : mask += opts.radixPoint + decimalDef + "{" + opts.digits + "}");
                     }
-                    return mask += autoEscape(opts.suffix, opts), mask += "[-]", altMask && (mask = [ altMask + autoEscape(opts.suffix, opts) + "[-]", mask ]), 
+                    return mask += autoEscape(opts.suffix, opts), mask += "[-]", altMask && (mask = altMask + autoEscape(opts.suffix, opts) + "[-]"), 
                     opts.greedy = !1, console.log(mask), mask;
                 },
                 placeholder: "0",
