@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.144
+ * Version: 5.0.0-beta.145
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1702,7 +1702,7 @@
             }
             function applyInputValue(input, value) {
                 input.inputmask.refreshValue = !1, $.isFunction(opts.onBeforeMask) && (value = opts.onBeforeMask.call(inputmask, value, opts) || value), 
-                value = value.split(""), checkVal(input, !0, !1, value), undoValue = getBuffer().join(""), 
+                value = value.toString().split(""), checkVal(input, !0, !1, value), undoValue = getBuffer().join(""), 
                 (opts.clearMaskOnLostFocus || opts.clearIncomplete) && input.inputmask._valueGet() === getBufferTemplate().join("") && input.inputmask._valueSet("");
             }
             function mask(elem) {
