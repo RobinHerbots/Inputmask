@@ -2264,7 +2264,7 @@ function maskScope(actionObj, maskset, opts) {
                 value = value || input.inputmask._valueGet(true);
 
             if ($.isFunction(opts.onBeforeMask)) value = opts.onBeforeMask.call(inputmask, value, opts) || value;
-            value = value.split("");
+            value = value.toString().split("");
             checkVal(input, true, false, value);
             undoValue = getBuffer().join("");
             if ((opts.clearMaskOnLostFocus || opts.clearIncomplete) && input.inputmask._valueGet() === getBufferTemplate().join("")) {
