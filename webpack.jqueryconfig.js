@@ -1,4 +1,3 @@
-"use strict";
 var $ = require("./lib/dependencyLibs/inputmask.dependencyLib"),
 	webpackconfig = require("./webpack.config"),
 	webPackJqueryConfig = $.extend(true, {}, webpackconfig);

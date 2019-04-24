@@ -42,6 +42,7 @@
   "globals": {
     "Inputmask": true,
     "jQuery": false,
-    "define": false
+    "define": false,
+    "require": false
   }
 }

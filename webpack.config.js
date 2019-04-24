@@ -1,12 +1,5 @@
-"use strict";
-
 var webpack = require("webpack"),
-	UglifyJsPlugin = require("uglifyjs-webpack-plugin"),
-	path = require("path");
-
-function _path(p) {
-	return path.join(__dirname, p);
-}
+	UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 function createBanner() {
 	return "[name]\n" +
