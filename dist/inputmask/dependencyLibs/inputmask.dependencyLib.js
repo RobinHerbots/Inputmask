@@ -3,7 +3,7 @@
 * https://github.com/RobinHerbots/Inputmask
 * Copyright (c) 2010 - 2019 Robin Herbots
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
-* Version: 4.0.7
+* Version: 4.0.8
 */
 
 (function(factory) {
@@ -62,7 +62,7 @@
         on: function(events, handler) {
             if (isValidElement(this[0])) {
                 var eventRegistry = this[0].eventRegistry, elem = this[0];
-                function addEvent(ev, namespace) {
+                var addEvent = function(ev, namespace) {
                     if (elem.addEventListener) {
                         elem.addEventListener(ev, handler, false);
                     } else if (elem.attachEvent) {
@@ -71,7 +71,7 @@
                     eventRegistry[ev] = eventRegistry[ev] || {};
                     eventRegistry[ev][namespace] = eventRegistry[ev][namespace] || [];
                     eventRegistry[ev][namespace].push(handler);
-                }
+                };
                 var _events = events.split(" ");
                 for (var endx = 0; endx < _events.length; endx++) {
                     var nsEvent = _events[endx].split("."), ev = nsEvent[0], namespace = nsEvent[1] || "global";
@@ -83,7 +83,7 @@
         off: function(events, handler) {
             if (isValidElement(this[0])) {
                 var eventRegistry = this[0].eventRegistry, elem = this[0];
-                function removeEvent(ev, namespace, handler) {
+                var removeEvent = function(ev, namespace, handler) {
                     if (ev in eventRegistry === true) {
                         if (elem.removeEventListener) {
                             elem.removeEventListener(ev, handler, false);
@@ -98,8 +98,8 @@
                             eventRegistry[ev][namespace].splice(eventRegistry[ev][namespace].indexOf(handler), 1);
                         }
                     }
-                }
-                function resolveNamespace(ev, namespace) {
+                };
+                var resolveNamespace = function(ev, namespace) {
                     var evts = [], hndx, hndL;
                     if (ev.length > 0) {
                         if (handler === undefined) {
@@ -141,7 +141,7 @@
                         }
                     }
                     return evts;
-                }
+                };
                 var _events = events.split(" ");
                 for (var endx = 0; endx < _events.length; endx++) {
                     var nsEvent = _events[endx].split("."), offEvents = resolveNamespace(nsEvent[0], nsEvent[1]);
