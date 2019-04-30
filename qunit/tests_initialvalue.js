@@ -152,4 +152,14 @@ export default function (qunit, Inputmask) {
 
         assert.equal(testmask.value, "facebook.com/EVENT", "Result " + testmask.value);
     });
+    qunit.test("f\\\\acebook.com/&{0,20} value=\"event\"", function (assert) {
+        var $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" value="facebook.com/EVENT" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask(
+            {mask:'f\\acebook.com/&{0,20}'}
+        ).mask(testmask);
+
+        assert.equal(testmask.value, "facebook.com/EVENT", "Result " + testmask.value);
+    });
 };

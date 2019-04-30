@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.145
+ * Version: 5.0.0-beta.146
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -11,52 +11,7 @@
         for (var i in a) ("object" == typeof exports ? exports : root)[i] = a[i];
     }
 }(window, function(__WEBPACK_EXTERNAL_MODULE__5__) {
-    return function(modules) {
-        var installedModules = {};
-        function __webpack_require__(moduleId) {
-            if (installedModules[moduleId]) return installedModules[moduleId].exports;
-            var module = installedModules[moduleId] = {
-                i: moduleId,
-                l: !1,
-                exports: {}
-            };
-            return modules[moduleId].call(module.exports, module, module.exports, __webpack_require__), 
-            module.l = !0, module.exports;
-        }
-        return __webpack_require__.m = modules, __webpack_require__.c = installedModules, 
-        __webpack_require__.d = function(exports, name, getter) {
-            __webpack_require__.o(exports, name) || Object.defineProperty(exports, name, {
-                enumerable: !0,
-                get: getter
-            });
-        }, __webpack_require__.r = function(exports) {
-            "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(exports, Symbol.toStringTag, {
-                value: "Module"
-            }), Object.defineProperty(exports, "__esModule", {
-                value: !0
-            });
-        }, __webpack_require__.t = function(value, mode) {
-            if (1 & mode && (value = __webpack_require__(value)), 8 & mode) return value;
-            if (4 & mode && "object" == typeof value && value && value.__esModule) return value;
-            var ns = Object.create(null);
-            if (__webpack_require__.r(ns), Object.defineProperty(ns, "default", {
-                enumerable: !0,
-                value: value
-            }), 2 & mode && "string" != typeof value) for (var key in value) __webpack_require__.d(ns, key, function(key) {
-                return value[key];
-            }.bind(null, key));
-            return ns;
-        }, __webpack_require__.n = function(module) {
-            var getter = module && module.__esModule ? function getDefault() {
-                return module.default;
-            } : function getModuleExports() {
-                return module;
-            };
-            return __webpack_require__.d(getter, "a", getter), getter;
-        }, __webpack_require__.o = function(object, property) {
-            return Object.prototype.hasOwnProperty.call(object, property);
-        }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 0);
-    }([ function(module, exports, __webpack_require__) {
+    return modules = [ function(module, exports, __webpack_require__) {
         var im = __webpack_require__(1), jQuery = __webpack_require__(5);
         im.dependencyLib === jQuery && __webpack_require__(11), module.exports = im;
     }, function(module, exports, __webpack_require__) {
@@ -181,8 +136,8 @@
                     importOption(option, optionData);
                 }
             }
-            return $.extend(!0, opts, userOptions), ("rtl" === npt.dir || opts.rightAlign) && (npt.style.textAlign = "right"), 
-            ("rtl" === npt.dir || opts.numericInput) && (npt.dir = "ltr", npt.removeAttribute("dir"), 
+            return $.extend(!0, opts, userOptions), "rtl" !== npt.dir && !opts.rightAlign || (npt.style.textAlign = "right"), 
+            "rtl" !== npt.dir && !opts.numericInput || (npt.dir = "ltr", npt.removeAttribute("dir"), 
             opts.isRTL = !0), Object.keys(userOptions).length;
         }
         Inputmask.prototype = {
@@ -677,7 +632,7 @@
                         var jitMasking = !0 !== noJit && (!1 !== opts.jitMasking ? opts.jitMasking : test.jit);
                         (!1 === jitMasking || void 0 === jitMasking || "number" == typeof jitMasking && isFinite(jitMasking) && pos < jitMasking) && maskTemplate.push(!1 === includeMode ? test.nativeDef : getPlaceholder(pos, test));
                     }
-                    "auto" === opts.keepStatic && test.newBlockMarker && null !== test.fn && (opts.keepStatic = pos - 1), 
+                    "auto" !== opts.keepStatic || test.newBlockMarker && null !== test.fn && (opts.keepStatic = pos - 1), 
                     pos++;
                 } while ((void 0 === maxLength || pos < maxLength) && (null !== test.fn || "" !== test.def) || pos < minimalPos);
                 return "" === maskTemplate[maskTemplate.length - 1] && maskTemplate.pop(), !1 === includeMode && void 0 !== getMaskSet().maskLength || (getMaskSet().maskLength = pos - 1), 
@@ -731,7 +686,7 @@
                     valid = !0;
                     break;
                 }
-                return !1 === valid && void 0 !== getMaskSet().jitOffset[pos] && (valid = positionCanMatchDefinition(pos + getMaskSet().jitOffset[pos], def)), 
+                return !1 !== valid || void 0 !== getMaskSet().jitOffset[pos] && (valid = positionCanMatchDefinition(pos + getMaskSet().jitOffset[pos], def)), 
                 valid;
             }
             function getTests(pos, ndxIntlzr, tstPs) {
@@ -895,7 +850,7 @@
                         if (match && testPos === pos || pos < testPos) break;
                     }
                 }
-                return (0 === matches.length || insertStop) && matches.push({
+                return 0 !== matches.length && !insertStop || matches.push({
                     match: {
                         fn: null,
                         optionality: !1,
@@ -1197,6 +1152,52 @@
                     }
                 } else npt.placeholder !== value && (npt.placeholder = value, "" === npt.placeholder && npt.removeAttribute("placeholder"));
             }
+            function determineNewCaretPosition(selectedCaret, tabbed) {
+                function doRadixFocus(clickPos) {
+                    if ("" !== opts.radixPoint) {
+                        var vps = getMaskSet().validPositions;
+                        if (void 0 === vps[clickPos] || vps[clickPos].input === getPlaceholder(clickPos)) {
+                            if (clickPos < seekNext(-1)) return !0;
+                            var radixPos = $.inArray(opts.radixPoint, getBuffer());
+                            if (-1 !== radixPos) {
+                                for (var vp in vps) if (vps[vp] && radixPos < vp && vps[vp].input !== getPlaceholder(vp)) return !1;
+                                return !0;
+                            }
+                        }
+                    }
+                    return !1;
+                }
+                if (tabbed && (isRTL ? selectedCaret.end = selectedCaret.begin : selectedCaret.begin = selectedCaret.end), 
+                selectedCaret.begin === selectedCaret.end) switch (opts.positionCaretOnClick) {
+                  case "none":
+                    break;
+
+                  case "select":
+                    return {
+                        begin: 0,
+                        end: getBuffer().length
+                    };
+
+                  case "ignore":
+                    return seekNext(getLastValidPosition());
+
+                  case "radixFocus":
+                    if (doRadixFocus(selectedCaret.begin)) {
+                        var radixPos = getBuffer().join("").indexOf(opts.radixPoint);
+                        return opts.numericInput ? seekNext(radixPos) : radixPos;
+                    }
+
+                  default:
+                    var clickPosition = selectedCaret.begin, lvclickPosition = getLastValidPosition(clickPosition, !0), lastPosition = seekNext(lvclickPosition);
+                    if (clickPosition < lastPosition) return isMask(clickPosition, !0) || isMask(clickPosition - 1, !0) ? clickPosition : seekNext(clickPosition);
+                    var lvp = getMaskSet().validPositions[lvclickPosition], tt = getTestTemplate(lastPosition, lvp ? lvp.match.locator : void 0, lvp), placeholder = getPlaceholder(lastPosition, tt.match);
+                    if ("" !== placeholder && getBuffer()[lastPosition] !== placeholder && !0 !== tt.match.optionalQuantifier && !0 !== tt.match.newBlockMarker || !isMask(lastPosition, opts.keepStatic) && tt.match.def === placeholder) {
+                        var newPos = seekNext(lastPosition);
+                        (newPos <= clickPosition || clickPosition === lastPosition) && (lastPosition = newPos);
+                    }
+                    return lastPosition;
+                }
+            }
             var EventRuler = {
                 on: function on(input, eventName, eventHandler) {
                     var ev = function ev(e) {
@@ -1399,56 +1400,11 @@
                     mouseEnter = !1, opts.clearMaskOnLostFocus && document.activeElement !== this && HandleNativePlaceholder(this, originalPlaceholder);
                 },
                 clickEvent: function clickEvent(e, tabbed) {
-                    function doRadixFocus(clickPos) {
-                        if ("" !== opts.radixPoint) {
-                            var vps = getMaskSet().validPositions;
-                            if (void 0 === vps[clickPos] || vps[clickPos].input === getPlaceholder(clickPos)) {
-                                if (clickPos < seekNext(-1)) return !0;
-                                var radixPos = $.inArray(opts.radixPoint, getBuffer());
-                                if (-1 !== radixPos) {
-                                    for (var vp in vps) if (vps[vp] && radixPos < vp && vps[vp].input !== getPlaceholder(vp)) return !1;
-                                    return !0;
-                                }
-                            }
-                        }
-                        return !1;
-                    }
                     var input = this;
                     setTimeout(function() {
                         if (document.activeElement === input) {
-                            var selectedCaret = caret(input);
-                            if (tabbed && (isRTL ? selectedCaret.end = selectedCaret.begin : selectedCaret.begin = selectedCaret.end), 
-                            selectedCaret.begin === selectedCaret.end) switch (opts.positionCaretOnClick) {
-                              case "none":
-                                break;
-
-                              case "select":
-                                caret(input, 0, getBuffer().length);
-                                break;
-
-                              case "ignore":
-                                caret(input, seekNext(getLastValidPosition()));
-                                break;
-
-                              case "radixFocus":
-                                if (doRadixFocus(selectedCaret.begin)) {
-                                    var radixPos = getBuffer().join("").indexOf(opts.radixPoint);
-                                    caret(input, opts.numericInput ? seekNext(radixPos) : radixPos);
-                                    break;
-                                }
-
-                              default:
-                                var clickPosition = selectedCaret.begin, lvclickPosition = getLastValidPosition(clickPosition, !0), lastPosition = seekNext(lvclickPosition);
-                                if (clickPosition < lastPosition) caret(input, isMask(clickPosition, !0) || isMask(clickPosition - 1, !0) ? clickPosition : seekNext(clickPosition)); else {
-                                    var lvp = getMaskSet().validPositions[lvclickPosition], tt = getTestTemplate(lastPosition, lvp ? lvp.match.locator : void 0, lvp), placeholder = getPlaceholder(lastPosition, tt.match);
-                                    if ("" !== placeholder && getBuffer()[lastPosition] !== placeholder && !0 !== tt.match.optionalQuantifier && !0 !== tt.match.newBlockMarker || !isMask(lastPosition, opts.keepStatic) && tt.match.def === placeholder) {
-                                        var newPos = seekNext(lastPosition);
-                                        (newPos <= clickPosition || clickPosition === lastPosition) && (lastPosition = newPos);
-                                    }
-                                    caret(input, lastPosition);
-                                }
-                                break;
-                            }
+                            var newCaretPosition = determineNewCaretPosition(caret(input), tabbed);
+                            void 0 !== newCaretPosition && caret(input, newCaretPosition);
                         }
                     }, 0);
                 },
@@ -1492,16 +1448,15 @@
             function checkVal(input, writeOut, strict, nptvl, initiatingEvent) {
                 var inputmask = this || input.inputmask, inputValue = nptvl.slice(), charCodes = "", initialNdx = -1, result = void 0;
                 function isTemplateMatch(ndx, charCodes) {
-                    var charCodeNdx = getMaskTemplate(!0, 0, !1).slice(ndx, seekNext(ndx)).join("").replace(/'/g, "").indexOf(charCodes);
-                    return -1 !== charCodeNdx && !isMask(ndx) && (getTest(ndx).match.nativeDef === charCodes.charAt(0) || null === getTest(ndx).match.fn && getTest(ndx).match.nativeDef === "'" + charCodes.charAt(0) || " " === getTest(ndx).match.nativeDef && (getTest(ndx + 1).match.nativeDef === charCodes.charAt(0) || null === getTest(ndx + 1).match.fn && getTest(ndx + 1).match.nativeDef === "'" + charCodes.charAt(0)));
+                    if (opts.regex) return !1;
+                    for (var targetTemplate = getMaskTemplate(!0, 0, !1).slice(ndx, seekNext(ndx)).join("").replace(/'/g, ""), charCodeNdx = targetTemplate.indexOf(charCodes); 0 < charCodeNdx && " " === targetTemplate[charCodeNdx - 1]; ) charCodeNdx--;
+                    var match = 0 === charCodeNdx && !isMask(ndx) && (getTest(ndx).match.nativeDef === charCodes.charAt(0) || null === getTest(ndx).match.fn && getTest(ndx).match.nativeDef === "'" + charCodes.charAt(0) || " " === getTest(ndx).match.nativeDef && (getTest(ndx + 1).match.nativeDef === charCodes.charAt(0) || null === getTest(ndx + 1).match.fn && getTest(ndx + 1).match.nativeDef === "'" + charCodes.charAt(0)));
+                    return !match && 0 < charCodeNdx && (inputmask.caretPos = {
+                        begin: seekNext(charCodeNdx)
+                    }), match;
                 }
-                if (resetMaskSet(), !strict) {
-                    var staticInput = getBufferTemplate().slice(0, seekNext(-1)).join(""), matches = inputValue.join("").match(new RegExp("^" + Inputmask.escapeRegex(staticInput), "g"));
-                    matches && 0 < matches.length && (inputValue.splice(0, matches.length * staticInput.length), 
-                    initialNdx = seekNext(initialNdx));
-                }
-                -1 === initialNdx ? (getMaskSet().p = seekNext(initialNdx), initialNdx = 0) : getMaskSet().p = initialNdx, 
-                inputmask.caretPos = {
+                resetMaskSet(), initialNdx = opts.radixPoint ? determineNewCaretPosition(0) : 0, 
+                getMaskSet().p = initialNdx, inputmask.caretPos = {
                     begin: initialNdx
                 };
                 var staticMatches = [], sndx, validPos, nextValid;
@@ -1812,7 +1767,7 @@
                     var initialValue = $.isFunction(opts.onBeforeMask) && opts.onBeforeMask.call(inputmask, el.inputmask._valueGet(!0), opts) || el.inputmask._valueGet(!0);
                     "" !== initialValue && checkVal(el, !0, !1, initialValue.split(""));
                     var buffer = getBuffer().slice();
-                    undoValue = buffer.join(""), !1 === isComplete(buffer) && opts.clearIncomplete && resetMaskSet(), 
+                    undoValue = buffer.join(""), !1 !== isComplete(buffer) || opts.clearIncomplete && resetMaskSet(), 
                     opts.clearMaskOnLostFocus && document.activeElement !== el && (-1 === getLastValidPosition() ? buffer = [] : clearOptionalTail(buffer)), 
                     (!1 === opts.clearMaskOnLostFocus || opts.showMaskOnFocus && document.activeElement === el || "" !== el.inputmask._valueGet(!0)) && writeBuffer(el, buffer), 
                     document.activeElement === el && caret(el, seekNext(getLastValidPosition()));
@@ -1857,7 +1812,7 @@
                     EventRuler.off(el), el.inputmask.colorMask && (colorMask = el.inputmask.colorMask, 
                     colorMask.removeChild(el), colorMask.parentNode.insertBefore(el, colorMask), colorMask.parentNode.removeChild(colorMask)), 
                     Object.getOwnPropertyDescriptor && Object.getPrototypeOf ? (valueProperty = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), "value"), 
-                    valueProperty && el.inputmask.__valueGet && Object.defineProperty(el, "value", {
+                    !valueProperty || el.inputmask.__valueGet && Object.defineProperty(el, "value", {
                         get: el.inputmask.__valueGet,
                         set: el.inputmask.__valueSet,
                         configurable: !0
@@ -1960,7 +1915,7 @@
                     var rawYear = dateParts.rawyear.replace(/[^0-9]/g, ""), minYear = opts.min.year.substr(0, rawYear.length);
                     result = minYear <= rawYear;
                 }
-                dateParts.year === dateParts.rawyear && opts.min.date.getTime() == opts.min.date.getTime() && (result = opts.min.date.getTime() <= dateParts.date.getTime());
+                dateParts.year !== dateParts.rawyear || opts.min.date.getTime() == opts.min.date.getTime() && (result = opts.min.date.getTime() <= dateParts.date.getTime());
             }
             return result && opts.max && opts.max.date.getTime() == opts.max.date.getTime() && (result = opts.max.date.getTime() >= dateParts.date.getTime()), 
             result;
@@ -2377,6 +2332,49 @@
                 });
             }
         });
-    } ]);
+    } ], installedModules = {}, __webpack_require__.m = modules, __webpack_require__.c = installedModules, 
+    __webpack_require__.d = function(exports, name, getter) {
+        __webpack_require__.o(exports, name) || Object.defineProperty(exports, name, {
+            enumerable: !0,
+            get: getter
+        });
+    }, __webpack_require__.r = function(exports) {
+        "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(exports, Symbol.toStringTag, {
+            value: "Module"
+        }), Object.defineProperty(exports, "__esModule", {
+            value: !0
+        });
+    }, __webpack_require__.t = function(value, mode) {
+        if (1 & mode && (value = __webpack_require__(value)), 8 & mode) return value;
+        if (4 & mode && "object" == typeof value && value && value.__esModule) return value;
+        var ns = Object.create(null);
+        if (__webpack_require__.r(ns), Object.defineProperty(ns, "default", {
+            enumerable: !0,
+            value: value
+        }), 2 & mode && "string" != typeof value) for (var key in value) __webpack_require__.d(ns, key, function(key) {
+            return value[key];
+        }.bind(null, key));
+        return ns;
+    }, __webpack_require__.n = function(module) {
+        var getter = module && module.__esModule ? function getDefault() {
+            return module.default;
+        } : function getModuleExports() {
+            return module;
+        };
+        return __webpack_require__.d(getter, "a", getter), getter;
+    }, __webpack_require__.o = function(object, property) {
+        return Object.prototype.hasOwnProperty.call(object, property);
+    }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 0);
+    function __webpack_require__(moduleId) {
+        if (installedModules[moduleId]) return installedModules[moduleId].exports;
+        var module = installedModules[moduleId] = {
+            i: moduleId,
+            l: !1,
+            exports: {}
+        };
+        return modules[moduleId].call(module.exports, module, module.exports, __webpack_require__), 
+        module.l = !0, module.exports;
+    }
+    var modules, installedModules;
 });
 //# sourceMappingURL=jquery.inputmask.js.map
