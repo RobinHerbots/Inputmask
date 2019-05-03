@@ -33,14 +33,6 @@ Default: {
   back: "" //")"
 }
 
-### integerDigits
-Number of integerDigits
-Default: "+"
-
-### integerOptional
-Specify wheter the integerdigits are optional.
-Default: true
-
 ### prefix
 Define a prefix.
 Default: ""

@@ -1,6 +1,13 @@
 export default function (qunit, Inputmask) {
     var $ = Inputmask.dependencyLib;
 
+	qunit.module("Numeric.Extensions - numeric");
+	qunit.module("Numeric.Extensions - currency");
+	qunit.module("Numeric.Extensions - decimal");
+	qunit.module("Numeric.Extensions - integer");
+	qunit.module("Numeric.Extensions - percentage");
+	qunit.module("Numeric.Extensions - indianns");
+
     qunit.module("Numeric.Extensions");
 
     qunit.test("€ Currency precision 2", function (assert) {
@@ -51,7 +58,6 @@ export default function (qunit, Inputmask) {
         Inputmask("numeric", {
             groupSeparator: ",",
             autoGroup: true,
-            integerDigits: 9
         }).mask(testmask);
 
         testmask.focus();
@@ -175,131 +181,7 @@ export default function (qunit, Inputmask) {
 
     });
 
-    qunit.test("integer alias with integerDigits 9 & autogroup - type 123456789 - gigermocas", function (assert) {
-        var $fixture = $("#qunit-fixture");
-        $fixture.append('<input type="text" id="testmask" />');
-        var testmask = document.getElementById("testmask");
-        Inputmask("integer", {
-            groupSeparator: ",",
-            autoGroup: true,
-            integerDigits: 9
-        }).mask(testmask);
-
-        testmask.focus();
-        $("#testmask").Type("123456789");
-
-        assert.equal(testmask.value, "123,456,789", "Result " + testmask.value);
-
-    });
-
-    qunit.test("integer alias with integerDigits 9 & autogroup - type 1234567890123456789 - gigermocas", function (assert) {
-        var $fixture = $("#qunit-fixture");
-        $fixture.append('<input type="text" id="testmask" />');
-        var testmask = document.getElementById("testmask");
-        Inputmask("integer", {
-            groupSeparator: ",",
-            autoGroup: true,
-            integerDigits: 9
-        }).mask(testmask);
-
-        testmask.focus();
-        $("#testmask").Type("1234567890123456789");
-
-        assert.equal(testmask.value, "123,456,789", "Result " + testmask.value);
-
-    });
-
-    qunit.test("integer alias with integerDigits 4 & autogroup - type 1234567890123456789 - gigermocas", function (assert) {
-        var $fixture = $("#qunit-fixture");
-        $fixture.append('<input type="text" id="testmask" />');
-        var testmask = document.getElementById("testmask");
-        Inputmask("integer", {
-            groupSeparator: ",",
-            autoGroup: true,
-            integerDigits: 4
-        }).mask(testmask);
-
-        testmask.focus();
-        $("#testmask").Type("1234567890123456789");
-
-        assert.equal(testmask.value, "1,234", "Result " + testmask.value);
-
-    });
-
-    qunit.test("decimal alias with integerDigits 9 & autogroup - type 123456789 - gigermocas", function (assert) {
-        var $fixture = $("#qunit-fixture");
-        $fixture.append('<input type="text" id="testmask" />');
-        var testmask = document.getElementById("testmask");
-        Inputmask("decimal", {
-            groupSeparator: ",",
-            autoGroup: true,
-            integerDigits: 9
-        }).mask(testmask);
-
-        testmask.focus();
-        $("#testmask").Type("123456789");
-
-        assert.equal(testmask.value, "123,456,789", "Result " + testmask.value);
-
-    });
-
-    qunit.test("decimal alias with integerDigits 4 & autogroup - type 1234 - gigermocas", function (assert) {
-        var $fixture = $("#qunit-fixture");
-        $fixture.append('<input type="text" id="testmask" />');
-        var testmask = document.getElementById("testmask");
-        Inputmask("decimal", {
-            groupSeparator: ",",
-            autoGroup: true,
-            integerDigits: 4
-        }).mask(testmask);
-
-        testmask.focus();
-        $("#testmask").Type("1234");
-
-        assert.equal(testmask.value, "1,234", "Result " + testmask.value);
-
-    });
-
-    qunit.test("numeric alias with allowMinus:false type=text - vijjj", function (assert) {
-        var $fixture = $("#qunit-fixture");
-        $fixture.append('<input type="text" id="testmask" />');
-        var testmask = document.getElementById("testmask");
-        Inputmask("numeric", {
-            radixPoint: ".",
-            integerDigits: 6,
-            allowMinus: false
-        }).mask(testmask);
-
-        testmask.focus();
-        $("#testmask").Type("123456");
-        $.caret(testmask, 0);
-        $("#testmask").SendKey("-");
-
-        assert.equal(testmask.value, "123456", "Result " + testmask.value);
-
-    });
-
-    qunit.test("numeric alias with allowMinus:false type=number - mask not applied - MartinVerges", function (assert) {
-        var $fixture = $("#qunit-fixture");
-        $fixture.append('<input type="number" id="testmask" />');
-        var testmask = document.getElementById("testmask");
-        Inputmask("numeric", {
-            radixPoint: ".",
-            integerDigits: 6,
-            allowMinus: false
-        }).mask(testmask);
-
-        testmask.focus();
-        $("#testmask").Type("123456");
-        $("#testmask").SendKey("-");
-
-        //IE7 does not know type=number and treats as type=text
-        //noinspection JSUnresolvedFunction
-        assert.ok(testmask.value === "" || testmask.value === "123456-", "Result " + testmask.value);
-
-    });
-
-    qunit.test("inputmask(\"numeric\", { prefix: \"€ \" }\") - input 12345.12", function (assert) {
+      qunit.test("inputmask(\"numeric\", { prefix: \"€ \" }\") - input 12345.12", function (assert) {
         var $fixture = $("#qunit-fixture");
         $fixture.append('<input type="text" id="testmask" />');
         var testmask = document.getElementById("testmask");
@@ -888,7 +770,6 @@ export default function (qunit, Inputmask) {
         $fixture.append('<input type="text" id="testmask" />');
         var testmask = document.getElementById("testmask");
         Inputmask('decimal', {
-            integerDigits: 10,
             groupSeparator: '.',
             autoGroup: true,
             digits: 2,
@@ -908,7 +789,6 @@ export default function (qunit, Inputmask) {
         $fixture.append('<input type="text" id="testmask" />');
         var testmask = document.getElementById("testmask");
         Inputmask('decimal', {
-            integerDigits: 10,
             groupSeparator: '.',
             autoGroup: true,
             digits: 2,
@@ -985,126 +865,6 @@ export default function (qunit, Inputmask) {
         }, 0);
     });
 
-    qunit.test("inputmask(\"decimal\") - '8100000.00' - ManRueda", function (assert) {
-        var $fixture = $("#qunit-fixture");
-        $fixture.append('<input type="text" id="testmask" />');
-        var testmask = document.getElementById("testmask");
-        Inputmask('decimal', {
-            integerDigits: 6,
-            groupSeparator: '.',
-            autoGroup: true,
-            digits: 2,
-            radixPoint: ',',
-            groupSize: 3,
-            inputType: "number"
-        }).mask(testmask);
-
-        $("#testmask").val("8100000.00");
-
-        assert.equal(testmask.value, "810.000,00", "Result " + testmask.value);
-
-    });
-
-    qunit.test("inputmask(\"decimal\") - '12345678.12' - ManRueda", function (assert) {
-        var $fixture = $("#qunit-fixture");
-        $fixture.append('<input type="text" id="testmask" />');
-        var testmask = document.getElementById("testmask");
-        Inputmask('decimal', {
-            integerDigits: 6,
-            groupSeparator: '.',
-            autoGroup: true,
-            digits: 2,
-            radixPoint: ',',
-            groupSize: 3,
-            inputType: "number"
-        }).mask(testmask);
-
-        $("#testmask").val("12345678.12");
-
-        assert.equal(testmask.value, "123.456,12", "Result " + testmask.value);
-
-    });
-
-    qunit.test("inputmask(\"decimal\") - '8100000,00' - ManRueda", function (assert) {
-        var $fixture = $("#qunit-fixture");
-        $fixture.append('<input type="text" id="testmask" />');
-        var testmask = document.getElementById("testmask");
-        Inputmask('decimal', {
-            integerDigits: 6,
-            groupSeparator: '.',
-            autoGroup: true,
-            digits: 2,
-            radixPoint: ',',
-            groupSize: 3
-        }).mask(testmask);
-
-        $("#testmask").val("8100000,00");
-
-        assert.equal(testmask.value, "810.000,00", "Result " + testmask.value);
-
-    });
-
-    qunit.test("inputmask(\"decimal\") - 8100000.00 - ManRueda", function (assert) {
-        var $fixture = $("#qunit-fixture");
-        $fixture.append('<input type="text" id="testmask" />');
-        var testmask = document.getElementById("testmask");
-        Inputmask('decimal', {
-            integerDigits: 6,
-            groupSeparator: '.',
-            autoGroup: true,
-            digits: 2,
-            radixPoint: ',',
-            groupSize: 3,
-            inputType: "number"
-        }).mask(testmask);
-
-        $("#testmask").val(8100000.00);
-        assert.equal(testmask.value, "810.000", "Result " + testmask.value);
-
-    });
-
-    qunit.test("inputmask(\"decimal\") - 8100000.00 digitsoptional false - ManRueda", function (assert) {
-        var $fixture = $("#qunit-fixture");
-        $fixture.append('<input type="text" id="testmask" />');
-        var testmask = document.getElementById("testmask");
-        Inputmask('decimal', {
-            integerDigits: 6,
-            groupSeparator: '.',
-            autoGroup: true,
-            digits: 2,
-            digitsOptional: false,
-            radixPoint: ',',
-            groupSize: 3,
-            inputType: "number"
-        }).mask(testmask);
-
-        $("#testmask").val(8100000.00);
-        $(testmask).trigger("blur");
-
-        assert.equal(testmask.value, "810.000,00", "Result " + testmask.value);
-
-    });
-
-    qunit.test("inputmask(\"decimal\") - 810000.00 - ManRueda", function (assert) {
-        var $fixture = $("#qunit-fixture");
-        $fixture.append('<input type="text" id="testmask" />');
-        var testmask = document.getElementById("testmask");
-        Inputmask("decimal", {
-            integerDigits: 6,
-            groupSeparator: ".",
-            autoGroup: true,
-            digits: 2,
-            radixPoint: ",",
-            groupSize: 3,
-            inputType: "number"
-        }).mask(testmask);
-
-        $("#testmask").val("810000.00");
-
-        assert.equal(testmask.value, "810.000,00", "Result " + testmask.value);
-
-    });
-
 
     qunit.test("inputmask(\"decimal\") - 123456   78 - babupca", function (assert) {
         var done = assert.async(),
@@ -1113,7 +873,6 @@ export default function (qunit, Inputmask) {
         var testmask = document.getElementById("testmask");
         Inputmask({
             alias: "decimal",
-            integerDigits: 6,
             digits: 3,
             allowMinus: false,
             digitsOptional: false,
@@ -1397,7 +1156,6 @@ export default function (qunit, Inputmask) {
         $fixture.append('<input type="text" id="testmask" />');
         var testmask = document.getElementById("testmask");
         Inputmask("decimal", {
-            integerDigits: 5,
             digits: 2,
             allowMinus: false,
             allowPlus: false
@@ -1418,7 +1176,6 @@ export default function (qunit, Inputmask) {
         var testmask = document.getElementById("testmask");
         Inputmask("decimal", {
             allowMinus: true,
-            integerDigits: 12,
             digits: 2,
             radixPoint: ",",
             autoGroup: true,
@@ -1442,7 +1199,6 @@ export default function (qunit, Inputmask) {
         var testmask = document.getElementById("testmask");
         Inputmask("decimal", {
             allowMinus: true,
-            integerDigits: 12,
             digits: 2,
             radixPoint: ",",
             autoGroup: true,
@@ -1467,7 +1223,6 @@ export default function (qunit, Inputmask) {
         var testmask = document.getElementById("testmask");
         Inputmask("decimal", {
             allowMinus: true,
-            integerDigits: 12,
             digits: 2,
             radixPoint: ",",
             autoGroup: true,
@@ -1491,7 +1246,6 @@ export default function (qunit, Inputmask) {
         var testmask = document.getElementById("testmask");
         Inputmask("decimal", {
             allowMinus: true,
-            integerDigits: 12,
             digits: 2,
             radixPoint: ",",
             autoGroup: true,
@@ -1587,7 +1341,6 @@ export default function (qunit, Inputmask) {
         $fixture.append('<input type="text" id="testmask" />');
         var testmask = document.getElementById("testmask");
         Inputmask("numeric", {
-            integerDigits: 2,
             digits: 2,
             placeholder: "_",
             digitsOptional: false
