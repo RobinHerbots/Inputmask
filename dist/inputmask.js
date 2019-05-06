@@ -2560,6 +2560,11 @@ module.exports = function maskScope(actionObj, maskset, opts) {
           var refresh = commandObj.refreshFromBuffer;
           refreshFromBuffer(refresh === true ? refresh : refresh.start, refresh.end, commandObj.buffer);
         }
+
+        if (commandObj.rewritePosition !== undefined) {
+          maskPos = commandObj.rewritePosition;
+          commandObj = true;
+        }
       }
 
       return commandObj;
@@ -2610,6 +2615,7 @@ module.exports = function maskScope(actionObj, maskset, opts) {
 
     if ($.isFunction(opts.preValidation) && !strict && fromIsValid !== true && validateOnly !== true) {
       result = opts.preValidation(getBuffer(), maskPos, c, isSelection(pos), opts, getMaskSet());
+      result = processCommandObject(result);
     }
 
     if (result === true) {
@@ -3227,20 +3233,6 @@ module.exports = function maskScope(actionObj, maskset, opts) {
           $input = $(input),
           k = e.which || e.charCode || e.keyCode;
 
-      function hanndleRadixDance(pos, c) {
-        if (opts._radixDance && opts.numericInput) {
-          var radixPos = getBuffer().indexOf(opts.radixPoint.charAt(0));
-
-          if (pos.begin <= radixPos && (radixPos > 0 || c == opts.radixPoint)) {
-            if (c == opts.radixPoint && radixPos > 0) offset = 1;
-            pos.begin -= 1;
-            pos.end -= 1;
-          }
-        }
-
-        return pos;
-      }
-
       if (checkval !== true && !(e.ctrlKey && e.altKey) && (e.ctrlKey || e.metaKey || ignorable)) {
         if (k === Inputmask.keyCode.ENTER && undoValue !== getBuffer().join("")) {
           undoValue = getBuffer().join(""); // e.preventDefault();
@@ -3259,9 +3251,7 @@ module.exports = function maskScope(actionObj, maskset, opts) {
           end: ndx
         } : caret(input),
             forwardPosition,
-            c = String.fromCharCode(k),
-            offset = 0;
-        pos = hanndleRadixDance(pos, c);
+            c = String.fromCharCode(k);
         getMaskSet().writeOutBuffer = true;
         var valResult = isValid(pos, c, strict);
 
@@ -3271,7 +3261,7 @@ module.exports = function maskScope(actionObj, maskset, opts) {
           getMaskSet().p = forwardPosition; //needed for checkval
         }
 
-        forwardPosition = (opts.numericInput && valResult.caret === undefined ? seekPrevious(forwardPosition) : forwardPosition) + offset;
+        forwardPosition = opts.numericInput && valResult.caret === undefined ? seekPrevious(forwardPosition) : forwardPosition;
 
         if (writeOut !== false) {
           setTimeout(function () {
@@ -5073,11 +5063,9 @@ function genMask(opts) {
 }
 
 function hanndleRadixDance(pos, c, radixPos, opts) {
-  if (opts._radixDance2 && opts.numericInput) {
-    if (pos.begin <= radixPos && (radixPos > 0 || c == opts.radixPoint)) {
-      // if (c == opts.radixPoint && radixPos > 0) offset = 1;
-      pos.begin -= 1;
-      pos.end -= 1;
+  if (opts._radixDance && opts.numericInput) {
+    if (pos <= radixPos && (radixPos > 0 || c == opts.radixPoint)) {
+      pos -= 1;
     }
   }
 
@@ -5099,7 +5087,7 @@ Inputmask.extendAliases({
     enforceDigitsOnBlur: false,
     radixPoint: ".",
     positionCaretOnClick: "radixFocus",
-    _radixDance2: true,
+    _radixDance: true,
     groupSeparator: "",
     allowMinus: true,
     negationSymbol: {
@@ -5175,7 +5163,9 @@ Inputmask.extendAliases({
         };
       }
 
-      return true;
+      return {
+        rewritePosition: pos
+      };
     },
     postValidation: function postValidation(buffer, pos, currentResult, opts) {
       return currentResult;
