@@ -2,11 +2,101 @@ export default function (qunit, Inputmask) {
     var $ = Inputmask.dependencyLib;
 
 	qunit.module("Numeric.Extensions - numeric");
+    qunit.test("numeric - type 1234.56", function (assert) {
+        var done = assert.async(),
+            $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask("numeric").mask(testmask);
+
+        testmask.focus();
+        $("#testmask").trigger("click");
+        setTimeout(function () {
+            $("#testmask").Type("1234.56");
+            assert.equal(testmask.value, "1234.56", "Result " + testmask.value);
+            done();
+        }, 0);
+    });
 	qunit.module("Numeric.Extensions - currency");
+    qunit.test("currency - type 1234.56", function (assert) {
+        var done = assert.async(),
+            $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask("currency").mask(testmask);
+
+        testmask.focus();
+        $("#testmask").trigger("click");
+        setTimeout(function () {
+            $("#testmask").Type("1234.56");
+            assert.equal(testmask.value, "$ 1,234.56", "Result " + testmask.value);
+            done();
+        }, 0);
+    });
 	qunit.module("Numeric.Extensions - decimal");
+    qunit.test("decimal - type 1234.56", function (assert) {
+        var done = assert.async(),
+            $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask("decimal").mask(testmask);
+
+        testmask.focus();
+        $("#testmask").trigger("click");
+        setTimeout(function () {
+            $("#testmask").Type("1234.56");
+            assert.equal(testmask.value, "1234.56", "Result " + testmask.value);
+            done();
+        }, 0);
+    });
 	qunit.module("Numeric.Extensions - integer");
+    qunit.test("integer - type 1234.56", function (assert) {
+        var done = assert.async(),
+            $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask("integer").mask(testmask);
+
+        testmask.focus();
+        $("#testmask").trigger("click");
+        setTimeout(function () {
+            $("#testmask").Type("1234.56");
+            assert.equal(testmask.value, "123456", "Result " + testmask.value);
+            done();
+        }, 0);
+    });
 	qunit.module("Numeric.Extensions - percentage");
+    qunit.test("percentage - type 1234.56", function (assert) {
+        var done = assert.async(),
+            $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask("percentage").mask(testmask);
+
+        testmask.focus();
+        $("#testmask").trigger("click");
+        setTimeout(function () {
+            $("#testmask").Type("1234.56");
+            assert.equal(testmask.value, "1,234.56", "Result " + testmask.value);
+            done();
+        }, 0);
+    });
 	qunit.module("Numeric.Extensions - indianns");
+    qunit.test("indianns - type 1234567.89", function (assert) {
+        var done = assert.async(),
+            $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask("indianns").mask(testmask);
+
+        testmask.focus();
+        $("#testmask").trigger("click");
+        setTimeout(function () {
+            $("#testmask").Type("1234567.89");
+            assert.equal(testmask.value, "12,34,567.89", "Result " + testmask.value);
+            done();
+        }, 0);
+    });
 
     qunit.module("Numeric.Extensions");
 

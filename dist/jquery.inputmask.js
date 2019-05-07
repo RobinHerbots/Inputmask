@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.147
+ * Version: 5.0.0-beta.148
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1793,9 +1793,9 @@
                 } : isRTL ? getBuffer().slice().reverse().join("") : getBuffer().join("");
 
               case "isValid":
-                actionObj.value ? (valueBuffer = actionObj.value.split(""), checkVal.call(this, void 0, !0, !0, valueBuffer)) : actionObj.value = getBuffer().join("");
+                actionObj.value ? (valueBuffer = actionObj.value.split(""), checkVal.call(this, void 0, !0, !0, valueBuffer)) : actionObj.value = isRTL ? getBuffer().slice().reverse().join("") : getBuffer().join("");
                 for (var buffer = getBuffer(), rl = determineLastRequiredPosition(), lmib = buffer.length - 1; rl < lmib && !isMask(lmib); lmib--) ;
-                return buffer.splice(rl, lmib + 1 - rl), isComplete(buffer) && actionObj.value === getBuffer().join("");
+                return buffer.splice(rl, lmib + 1 - rl), isComplete(buffer) && actionObj.value === (isRTL ? getBuffer().slice().reverse().join("") : getBuffer().join(""));
 
               case "getemptymask":
                 return getBufferTemplate().join("");
@@ -2246,8 +2246,7 @@
             },
             integer: {
                 alias: "numeric",
-                digits: 0,
-                radixPoint: ""
+                digits: 0
             },
             percentage: {
                 alias: "numeric",
@@ -2266,6 +2265,8 @@
                 _mask: function _mask(opts) {
                     return "(" + opts.groupSeparator + "99){*|1}(" + opts.groupSeparator + "999){1|1}";
                 },
+                groupSeparator: ",",
+                radixPoint: ".",
                 placeholder: "0",
                 digits: 2,
                 digitsOptional: !1
