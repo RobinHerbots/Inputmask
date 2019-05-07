@@ -2807,7 +2807,9 @@ module.exports = function maskScope(actionObj, maskset, opts) {
               j = (result.pos || posMatch) + 1;
               needsValidation = true;
             } else {
-              valid = t.generatedInput === true || t.input === opts.radixPoint && opts.numericInput === true;
+              valid = t.generatedInput === true
+              /*|| (t.input === opts.radixPoint && opts.numericInput === true)*/
+              ;
             }
 
             if (valid) break;
@@ -4444,7 +4446,7 @@ module.exports = function maskScope(actionObj, maskset, opts) {
           valueBuffer = actionObj.value.split("");
           checkVal.call(this, undefined, true, true, valueBuffer);
         } else {
-          actionObj.value = getBuffer().join("");
+          actionObj.value = isRTL ? getBuffer().slice().reverse().join("") : getBuffer().join("");
         }
 
         var buffer = getBuffer();
@@ -4456,7 +4458,7 @@ module.exports = function maskScope(actionObj, maskset, opts) {
         }
 
         buffer.splice(rl, lmib + 1 - rl);
-        return isComplete(buffer) && actionObj.value === getBuffer().join("");
+        return isComplete(buffer) && actionObj.value === (isRTL ? getBuffer().slice().reverse().join("") : getBuffer().join(""));
 
       case "getemptymask":
         return getBufferTemplate().join("");
@@ -4975,7 +4977,9 @@ function alignDigits(buffer, digits, opts) {
 function GetLastValidPosition(maskset) {
   var posNdx;
 
-  for (posNdx in maskset.validPositions) {}
+  for (posNdx in maskset.validPositions) {
+    ;
+  }
 
   return posNdx;
 }
@@ -5070,6 +5074,23 @@ function hanndleRadixDance(pos, c, radixPos, opts) {
   }
 
   return pos;
+}
+
+function decimalValidator(chrs, maskset, pos, strict, opts) {
+  var radixPos = maskset.buffer.indexOf(opts.radixPoint),
+      result = radixPos !== -1 && new RegExp("[0-9\uFF11-\uFF19]").test(chrs);
+
+  if (result && maskset.validPositions[radixPos] == undefined) {
+    return {
+      insert: {
+        pos: radixPos,
+        c: opts.radixPoint
+      },
+      pos: pos
+    };
+  }
+
+  return result;
 } //number aliases
 
 
@@ -5110,14 +5131,10 @@ Inputmask.extendAliases({
     inputmode: "numeric",
     definitions: {
       "0": {
-        validator: function validator(chrs, maskset, pos, strict, opts) {
-          return maskset.buffer.indexOf(opts.radixPoint) !== -1 && new RegExp("[0-9\uFF11-\uFF19]").test(chrs);
-        }
+        validator: decimalValidator
       },
       "1": {
-        validator: function validator(chrs, maskset, pos, strict, opts) {
-          return maskset.buffer.indexOf(opts.radixPoint) !== -1 && new RegExp("[0-9\uFF11-\uFF19]").test(chrs);
-        },
+        validator: decimalValidator,
         definitionSymbol: "*"
       },
       "+": {
@@ -5159,7 +5176,7 @@ Inputmask.extendAliases({
 
       if (radixPos !== -1 && opts._radixDance === true && isSelection === false && c === opts.radixPoint && opts.digits !== undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0) && radixPos !== pos) {
         return {
-          "caret": opts._radixDance && pos > radixPos ? radixPos : radixPos - 1
+          "caret": opts._radixDance && pos === radixPos - 1 ? radixPos + 1 : radixPos
         };
       }
 
@@ -5331,8 +5348,7 @@ Inputmask.extendAliases({
   },
   "integer": {
     alias: "numeric",
-    digits: 0,
-    radixPoint: ""
+    digits: 0
   },
   "percentage": {
     alias: "numeric",
