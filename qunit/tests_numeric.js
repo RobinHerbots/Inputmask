@@ -17,6 +17,24 @@ export default function (qunit, Inputmask) {
             done();
         }, 0);
     });
+
+    qunit.test("numeric - type 1234.56 + type 7 between 12", function (assert) {
+        var done = assert.async(),
+            $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask("numeric").mask(testmask);
+
+        testmask.focus();
+        $("#testmask").trigger("click");
+        setTimeout(function () {
+            $("#testmask").Type("1234.56");
+            $.caret(testmask, 1);
+            $("#testmask").Type("7");
+            assert.equal(testmask.value, "17234.56", "Result " + testmask.value);
+            done();
+        }, 0);
+    });
 	qunit.module("Numeric.Extensions - currency");
     qunit.test("currency - type 1234.56", function (assert) {
         var done = assert.async(),
@@ -30,6 +48,24 @@ export default function (qunit, Inputmask) {
         setTimeout(function () {
             $("#testmask").Type("1234.56");
             assert.equal(testmask.value, "$ 1,234.56", "Result " + testmask.value);
+            done();
+        }, 0);
+    });
+
+    qunit.test("currency - type 1234.56 + type 7 between 12", function (assert) {
+        var done = assert.async(),
+            $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask("currency").mask(testmask);
+
+        testmask.focus();
+        $("#testmask").trigger("click");
+        setTimeout(function () {
+            $("#testmask").Type("1234.56");
+            $.caret(testmask, 3);
+            $("#testmask").Type("7");
+            assert.equal(testmask.value, "$ 17,234.56", "Result " + testmask.value);
             done();
         }, 0);
     });
@@ -49,8 +85,26 @@ export default function (qunit, Inputmask) {
             done();
         }, 0);
     });
+
+    qunit.test("decimal - type 1234.56 + type 7 between 12", function (assert) {
+        var done = assert.async(),
+            $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask("decimal").mask(testmask);
+
+        testmask.focus();
+        $("#testmask").trigger("click");
+        setTimeout(function () {
+            $("#testmask").Type("1234.56");
+            $.caret(testmask, 1);
+            $("#testmask").Type("7");
+            assert.equal(testmask.value, "17234.56", "Result " + testmask.value);
+            done();
+        }, 0);
+    });
 	qunit.module("Numeric.Extensions - integer");
-    qunit.test("integer - type 1234.56", function (assert) {
+    qunit.test("integer - type 1234", function (assert) {
         var done = assert.async(),
             $fixture = $("#qunit-fixture");
         $fixture.append('<input type="text" id="testmask" />');
@@ -60,13 +114,31 @@ export default function (qunit, Inputmask) {
         testmask.focus();
         $("#testmask").trigger("click");
         setTimeout(function () {
-            $("#testmask").Type("1234.56");
-            assert.equal(testmask.value, "123456", "Result " + testmask.value);
+            $("#testmask").Type("1234");
+            assert.equal(testmask.value, "1234", "Result " + testmask.value);
+            done();
+        }, 0);
+    });
+
+    qunit.test("integer - type 1234 + type 7 between 12", function (assert) {
+        var done = assert.async(),
+            $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask("integer").mask(testmask);
+
+        testmask.focus();
+        $("#testmask").trigger("click");
+        setTimeout(function () {
+            $("#testmask").Type("1234");
+            $.caret(testmask, 1);
+            $("#testmask").Type("7");
+            assert.equal(testmask.value, "17234", "Result " + testmask.value);
             done();
         }, 0);
     });
 	qunit.module("Numeric.Extensions - percentage");
-    qunit.test("percentage - type 1234.56", function (assert) {
+    qunit.test("percentage - type 25", function (assert) {
         var done = assert.async(),
             $fixture = $("#qunit-fixture");
         $fixture.append('<input type="text" id="testmask" />');
@@ -76,8 +148,26 @@ export default function (qunit, Inputmask) {
         testmask.focus();
         $("#testmask").trigger("click");
         setTimeout(function () {
-            $("#testmask").Type("1234.56");
-            assert.equal(testmask.value, "1,234.56", "Result " + testmask.value);
+            $("#testmask").Type("25");
+            assert.equal(testmask.value, "25 %", "Result " + testmask.value);
+            done();
+        }, 0);
+    });
+
+    qunit.test("percentage - type 5 + type 7 before 5", function (assert) {
+        var done = assert.async(),
+            $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask("percentage").mask(testmask);
+
+        testmask.focus();
+        $("#testmask").trigger("click");
+        setTimeout(function () {
+            $("#testmask").Type("5");
+            $.caret(testmask, 0);
+            $("#testmask").Type("7");
+            assert.equal(testmask.value, "75 %", "Result " + testmask.value);
             done();
         }, 0);
     });
@@ -94,6 +184,24 @@ export default function (qunit, Inputmask) {
         setTimeout(function () {
             $("#testmask").Type("1234567.89");
             assert.equal(testmask.value, "12,34,567.89", "Result " + testmask.value);
+            done();
+        }, 0);
+    });
+
+    qunit.test("indianns - type 1234567.89 + type 7 between 12", function (assert) {
+        var done = assert.async(),
+            $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask("indianns").mask(testmask);
+
+        testmask.focus();
+        $("#testmask").trigger("click");
+        setTimeout(function () {
+            $("#testmask").Type("1234567.89");
+            $.caret(testmask, 1);
+            $("#testmask").Type("7");
+            assert.equal(testmask.value, "1,72,34,567.89", "Result " + testmask.value);
             done();
         }, 0);
     });

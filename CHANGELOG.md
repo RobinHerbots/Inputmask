@@ -12,6 +12,7 @@
     - rewritePosition
 
 ### Fixed
+- Chrome autofill does not work with Inputmask #1330
 - Paste in inputmask #2088
 - The first character is truncated when masking. #2089
 - No leading zero for single-digit hours KO #2061
