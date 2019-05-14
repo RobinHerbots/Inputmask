@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.150
+ * Version: 5.0.0-beta.151
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1230,10 +1230,10 @@
                                     break;
 
                                   case "click":
-                                    if (iemobile || iphone) return args = arguments, setTimeout(function() {
+                                  case "focus":
+                                    return args = arguments, setTimeout(function() {
                                         eventHandler.apply(that, args);
                                     }, 0), !1;
-                                    break;
                                 }
                                 var returnVal = eventHandler.apply(that, arguments);
                                 return !1 === returnVal && (e.preventDefault(), e.stopPropagation()), returnVal;
@@ -1387,12 +1387,10 @@
                     value = value || this.inputmask._valueGet(!0), applyInputValue(this, value);
                 },
                 focusEvent: function focusEvent(e) {
-                    var input = this, nptValue = input.inputmask._valueGet();
-                    setTimeout(function() {
-                        opts.showMaskOnFocus && (nptValue !== getBuffer().join("") ? writeBuffer(input, getBuffer(), seekNext(getLastValidPosition())) : !1 === mouseEnter && caret(input, seekNext(getLastValidPosition()))), 
-                        !0 === opts.positionCaretOnTab && !1 === mouseEnter && EventHandlers.clickEvent.apply(input, [ e, !0 ]), 
-                        undoValue = getBuffer().join("");
-                    }, 0);
+                    var input = this, nptValue = this.inputmask._valueGet();
+                    opts.showMaskOnFocus && (nptValue !== getBuffer().join("") ? writeBuffer(this, getBuffer(), seekNext(getLastValidPosition())) : !1 === mouseEnter && caret(this, seekNext(getLastValidPosition()))), 
+                    !0 === opts.positionCaretOnTab && !1 === mouseEnter && EventHandlers.clickEvent.apply(this, [ e, !0 ]), 
+                    undoValue = getBuffer().join("");
                 },
                 mouseleaveEvent: function mouseleaveEvent() {
                     var input = this;
@@ -1400,12 +1398,10 @@
                 },
                 clickEvent: function clickEvent(e, tabbed) {
                     var input = this;
-                    setTimeout(function() {
-                        if (document.activeElement === input) {
-                            var newCaretPosition = determineNewCaretPosition(caret(input), tabbed);
-                            void 0 !== newCaretPosition && caret(input, newCaretPosition);
-                        }
-                    }, 0);
+                    if (document.activeElement === this) {
+                        var newCaretPosition = determineNewCaretPosition(caret(this), tabbed);
+                        void 0 !== newCaretPosition && caret(this, newCaretPosition);
+                    }
                 },
                 cutEvent: function cutEvent(e) {
                     var input = this, pos = caret(this), ev = e.originalEvent || e, clipboardData = window.clipboardData || ev.clipboardData, clipData = isRTL ? getBuffer().slice(pos.end, pos.begin) : getBuffer().slice(pos.begin, pos.end);
