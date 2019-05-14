@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.151
+ * Version: 5.0.0-beta.152
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -957,7 +957,7 @@
                 }
                 function mergeLocators(pos, tests) {
                     var locator = [];
-                    return $.isArray(tests) || (tests = [ tests ]), 0 < tests.length && (void 0 === tests[0].alternation ? (locator = determineTestTemplate(pos, tests.slice()).locator.slice(), 
+                    return $.isArray(tests) || (tests = [ tests ]), 0 < tests.length && (void 0 === tests[0].alternation || !0 === opts.keepStatic ? (locator = determineTestTemplate(pos, tests.slice()).locator.slice(), 
                     0 === locator.length && (locator = tests[0].locator.slice())) : $.each(tests, function(ndx, tst) {
                         if ("" !== tst.def) if (0 === locator.length) locator = tst.locator.slice(); else for (var i = 0; i < locator.length; i++) tst.locator[i] && -1 === locator[i].toString().indexOf(tst.locator[i]) && (locator[i] += "," + tst.locator[i]);
                     })), locator;
@@ -986,7 +986,7 @@
                     mloc: {},
                     cd: cacheDependency
                 }), void 0 !== ndxIntlzr && getMaskSet().tests[pos] ? $.extend(!0, [], matches) : (getMaskSet().tests[pos] = $.extend(!0, [], matches), 
-                getMaskSet().tests[pos]);
+                console.log(pos + " - " + JSON.stringify(matches)), getMaskSet().tests[pos]);
             }
             function getBufferTemplate() {
                 return void 0 === getMaskSet()._buffer && (getMaskSet()._buffer = getMaskTemplate(!1, 1), 
@@ -1039,6 +1039,14 @@
             }
             function alternate(pos, c, strict, fromIsValid, rAltPos) {
                 var validPsClone = $.extend(!0, {}, getMaskSet().validPositions), lastAlt, alternation, isValidRslt = !1, altPos, prevAltPos, i, validPos, decisionPos, lAltPos = void 0 !== rAltPos ? rAltPos : getLastValidPosition();
+                function insertPosition(insert) {
+                    if (insert && isValidRslt && void 0 !== c) {
+                        var targetLvp = getLastValidPosition(pos) + 1;
+                        for (i = decisionPos; i < getLastValidPosition() + 1; i++) validPos = getMaskSet().validPositions[i], 
+                        (void 0 === validPos || null == validPos.match.fn) && i < pos + posOffset && posOffset++;
+                        pos += posOffset, isValidRslt = isValid(targetLvp < pos ? targetLvp : pos, c, strict, fromIsValid, !0);
+                    }
+                }
                 if (-1 === lAltPos && void 0 === rAltPos) lastAlt = 0, prevAltPos = getTest(lastAlt), 
                 alternation = prevAltPos.alternation; else for (;0 <= lAltPos; lAltPos--) if (altPos = getMaskSet().validPositions[lAltPos], 
                 altPos && void 0 !== altPos.alternation) {
@@ -1055,17 +1063,12 @@
                     delete getMaskSet().validPositions[i];
                     for (;getMaskSet().excludes[decisionPos] && getMaskSet().excludes[decisionPos].length < 10; ) {
                         var posOffset = -1 * staticInputsBeforePos, validInputs = validInputsClone.slice();
-                        for (getMaskSet().tests[decisionPos] = void 0, resetMaskSet(!0), isValidRslt = !0; 0 < validInputs.length; ) {
+                        for (getMaskSet().tests[decisionPos] = void 0, resetMaskSet(!0), isValidRslt = !0, 
+                        insertPosition(0 === pos); 0 < validInputs.length; ) {
                             var input = validInputs.shift();
-                            if (!(isValidRslt = isValid(getLastValidPosition(void 0, !0) + 1, input, !1, fromIsValid, !0))) break;
+                            if (!(isValidRslt = isValid(isValidRslt.caret || getLastValidPosition(void 0, !0) + 1, input, !1, fromIsValid, !0))) break;
                         }
-                        if (isValidRslt && void 0 !== c) {
-                            var targetLvp = getLastValidPosition(pos) + 1;
-                            for (i = decisionPos; i < getLastValidPosition() + 1; i++) validPos = getMaskSet().validPositions[i], 
-                            (void 0 === validPos || null == validPos.match.fn) && i < pos + posOffset && posOffset++;
-                            pos += posOffset, isValidRslt = isValid(targetLvp < pos ? targetLvp : pos, c, strict, fromIsValid, !0);
-                        }
-                        if (isValidRslt) break;
+                        if (insertPosition(0 < pos), isValidRslt) break;
                         if (resetMaskSet(), prevAltPos = getTest(decisionPos), getMaskSet().validPositions = $.extend(!0, {}, validPsClone), 
                         !getMaskSet().excludes[decisionPos]) {
                             isValidRslt = alternate(pos, c, strict, fromIsValid, decisionPos - 1);
@@ -2161,7 +2164,7 @@
             return escapedTxt;
         }
         function alignDigits(buffer, digits, opts) {
-            if (0 < buffer.length) {
+            if (0 < digits && !opts.digitsOptional && 0 < buffer.length) {
                 var radixPosition = $.inArray(opts.radixPoint, buffer);
                 -1 === radixPosition && (buffer.push(opts.radixPoint), radixPosition = buffer.length - 1);
                 for (var i = 1; i <= digits; i++) buffer[radixPosition + i] = buffer[radixPosition + i] || "0";
@@ -2199,8 +2202,8 @@
                 isFinite(dq[0]) && dq[1] && isFinite(dq[1]) ? mask += opts.radixPoint + decimalDef + "{" + opts.digits + "}" : (isNaN(opts.digits) || 0 < parseInt(opts.digits)) && (opts.digitsOptional ? (altMask = mask + opts.radixPoint + decimalDef + "{0," + opts.digits + "}", 
                 opts.keepStatic = !0) : mask += opts.radixPoint + decimalDef + "{" + opts.digits + "}");
             }
-            return mask += autoEscape(opts.suffix, opts), mask += "[-]", altMask && (mask = altMask + autoEscape(opts.suffix, opts) + "[-]"), 
-            opts.greedy = !1, parseMinMaxOptions(opts), mask;
+            return mask += autoEscape(opts.suffix, opts), mask += "[-]", altMask && (mask = [ altMask + autoEscape(opts.suffix, opts) + "[-]", mask ]), 
+            opts.greedy = !1, parseMinMaxOptions(opts), console.log(mask), mask;
         }
         function hanndleRadixDance(pos, c, radixPos, opts) {
             return opts._radixDance && opts.numericInput && pos <= radixPos && (0 < radixPos || c == opts.radixPoint) && (pos -= 1), 
@@ -2318,7 +2321,6 @@
                     isFinite(maskedValue);
                 },
                 onBeforeMask: function onBeforeMask(initialValue, opts) {
-                    opts.isNegative = void 0;
                     var radixPoint = opts.radixPoint || ",";
                     "number" != typeof initialValue && "number" !== opts.inputType || "" === radixPoint || (initialValue = initialValue.toString().replace(".", radixPoint));
                     var valueParts = initialValue.split(radixPoint), integerPart = valueParts[0].replace(/[^\-0-9]/g, ""), decimalPart = 1 < valueParts.length ? valueParts[1].replace(/[^0-9]/g, "") : "";
