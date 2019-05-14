@@ -217,7 +217,6 @@ export default function (qunit, Inputmask) {
 	});
 
 
-
 	qunit.test("inputmask({ mask: [\"99999\", \"99999-9999\", \"999999-9999\"]]}) - input 123456 (rtl)", function (assert) {
 		var done = assert.async(),
 			$fixture = $("#qunit-fixture");
@@ -398,16 +397,19 @@ export default function (qunit, Inputmask) {
 		}, 0);
 	});
 	qunit.test("[\"+7(999)999-99-99\",\"+380(99)999-99-99\",\"+375(99)999-99-99\"] - andychups", function (assert) {
-		var $fixture = $("#qunit-fixture");
+		var done = assert.async(),
+			$fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask(["+7(999)999-99-99", "+380(99)999-99-99", "+375(99)999-99-99"], {
 			keepStatic: false
 		}).mask(testmask);
 		testmask.focus();
-		$("#testmask").trigger("click");
-		assert.equal(testmask.inputmask._valueGet(), "+_(___)___-__-__", "Result " + testmask.inputmask._valueGet());
-
+		setTimeout(function () {
+			$("#testmask").trigger("click");
+			assert.equal(testmask.inputmask._valueGet(), "+_(___)___-__-__", "Result " + testmask.inputmask._valueGet());
+			done();
+		}, 0);
 	});
 
 	qunit.test("(9{4} 9{4} 9{4} 9{4})|(9{4} 9{6} 9[5])|(9{9} 9{9}) - 1234123412341234 - necrosisoff ", function (assert) {
