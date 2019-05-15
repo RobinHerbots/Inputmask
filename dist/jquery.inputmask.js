@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.154
+ * Version: 5.0.0-beta.155
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1000,7 +1000,7 @@
                     var rslt = !1;
                     return $.each(getTests(position), function(ndx, tst) {
                         var test = tst.match;
-                        if (getBuffer(!0), rslt = test.fn.test(c, getMaskSet(), position, strict, opts, isSelection(pos)) || c === opts.skipOptionalPartCharacter && "" !== test.def && {
+                        if (getBuffer(!0), rslt = null != test.fn ? test.fn.test(c, getMaskSet(), position, strict, opts, isSelection(pos)) : c === opts.skipOptionalPartCharacter && "" !== test.def && {
                             c: getPlaceholder(position, test, !0) || test.def,
                             pos: position
                         }, !1 !== rslt) {
