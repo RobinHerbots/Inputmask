@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.152
+ * Version: 5.0.0-beta.153
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1457,19 +1457,19 @@
                 getMaskSet().p = initialNdx, inputmask.caretPos = {
                     begin: initialNdx
                 };
-                var staticMatches = [], sndx, validPos, nextValid;
+                var staticMatches = [], prevCaretPos = inputmask.caretPos, sndx, validPos, nextValid;
                 if ($.each(inputValue, function(ndx, charCode) {
                     if (void 0 !== charCode) if (void 0 === getMaskSet().validPositions[ndx] && inputValue[ndx] === getPlaceholder(ndx) && isMask(ndx, !0) && !1 === isValid(ndx, inputValue[ndx], !0, void 0, void 0, !0)) getMaskSet().p++; else {
                         var keypress = new $.Event("_checkval");
                         keypress.which = charCode.charCodeAt(0), charCodes += charCode;
                         var lvp = getLastValidPosition(void 0, !0);
                         isTemplateMatch(initialNdx, charCodes) ? result = EventHandlers.keypressEvent.call(input, keypress, !0, !1, strict, lvp + 1) : (result = EventHandlers.keypressEvent.call(input, keypress, !0, !1, strict, inputmask.caretPos.begin), 
-                        result && (initialNdx = inputmask.caretPos.begin + 1, charCodes = "")), result && (result.pos && getMaskSet().validPositions[result.pos] && null === getMaskSet().validPositions[result.pos].match.fn && (staticMatches.push(result.pos), 
+                        result && (initialNdx = inputmask.caretPos.begin + 1, charCodes = "")), result ? (result.pos && getMaskSet().validPositions[result.pos] && null === getMaskSet().validPositions[result.pos].match.fn && (staticMatches.push(result.pos), 
                         result.forwardPosition = result.pos + 1), writeBuffer(void 0, getBuffer(), result.forwardPosition, keypress, !1), 
                         inputmask.caretPos = {
                             begin: result.forwardPosition,
                             end: result.forwardPosition
-                        });
+                        }, prevCaretPos = inputmask.caretPos) : inputmask.caretPos = prevCaretPos;
                     }
                 }), 0 < staticMatches.length) if (isComplete(getBuffer())) for (;sndx = staticMatches.pop(); ) validPos = getMaskSet().validPositions[sndx], 
                 validPos.generatedInput = !0; else for (;sndx = staticMatches.pop(); ) {
@@ -2087,7 +2087,7 @@
         }
         function decimalValidator(chrs, maskset, pos, strict, opts) {
             var radixPos = maskset.buffer.indexOf(opts.radixPoint), result = -1 !== radixPos && new RegExp("[0-9\uff11-\uff19]").test(chrs);
-            return result && null == maskset.validPositions[radixPos] ? {
+            return opts._radixDance && result && null == maskset.validPositions[radixPos] ? {
                 insert: {
                     pos: radixPos === pos ? radixPos + 1 : radixPos,
                     c: opts.radixPoint
