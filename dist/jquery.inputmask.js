@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.155
+ * Version: 5.0.0-beta.156
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -424,7 +424,7 @@
                     nativeDef: element
                 }) : (escaped && (element = element[element.length - 1]), $.each(element.split(""), function(ndx, lmnt) {
                     prevMatch = mtoken.matches[position - 1], mtoken.matches.splice(position++, 0, {
-                        fn: new RegExp("[" + (opts.staticDefinitionSymbol || lmnt) + "]", opts.casing ? "i" : ""),
+                        fn: /[a-z]/i.test(opts.staticDefinitionSymbol || lmnt) ? new RegExp("[" + (opts.staticDefinitionSymbol || lmnt) + "]", opts.casing ? "i" : "") : null,
                         static: !0,
                         optionality: !1,
                         newBlockMarker: void 0 === prevMatch ? "master" : prevMatch.def !== lmnt && !0 !== prevMatch.static,
@@ -447,7 +447,7 @@
                         placeholder: maskdef.placeholder,
                         nativeDef: element
                     }) : (mtoken.matches.splice(position++, 0, {
-                        fn: new RegExp("[" + (opts.staticDefinitionSymbol || element) + "]", opts.casing ? "i" : ""),
+                        fn: /[a-z]/i.test(opts.staticDefinitionSymbol || element) ? new RegExp("[" + (opts.staticDefinitionSymbol || element) + "]", opts.casing ? "i" : "") : null,
                         static: !0,
                         optionality: !1,
                         newBlockMarker: void 0 === prevMatch ? "master" : prevMatch.def !== element && !0 !== prevMatch.static,
@@ -1000,7 +1000,7 @@
                     var rslt = !1;
                     return $.each(getTests(position), function(ndx, tst) {
                         var test = tst.match;
-                        if (getBuffer(!0), rslt = null != test.fn ? test.fn.test(c, getMaskSet(), position, strict, opts, isSelection(pos)) : c === opts.skipOptionalPartCharacter && "" !== test.def && {
+                        if (getBuffer(!0), rslt = null != test.fn ? test.fn.test(c, getMaskSet(), position, strict, opts, isSelection(pos)) : (c === test.def || c === opts.skipOptionalPartCharacter) && "" !== test.def && {
                             c: getPlaceholder(position, test, !0) || test.def,
                             pos: position
                         }, !1 !== rslt) {
