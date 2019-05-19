@@ -14,6 +14,7 @@
 
 ### Fixed
 - Can't insert more than 2 letters in Firefox #2114
+- InputMask not getting fresh placeholder value #2111
 - Chrome autofill does not work with Inputmask #1330
 - Paste in inputmask #2088
 - The first character is truncated when masking. #2089

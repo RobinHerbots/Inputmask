@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.157
+ * Version: 5.0.0-beta.158
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1432,7 +1432,8 @@
                 },
                 mouseenterEvent: function mouseenterEvent() {
                     var input = this;
-                    mouseEnter = !0, document.activeElement !== this && opts.showMaskOnHover && HandleNativePlaceholder(this, (isRTL ? getBuffer().slice().reverse() : getBuffer()).join(""));
+                    mouseEnter = !0, document.activeElement !== this && (this.placeholder !== originalPlaceholder && (originalPlaceholder = this.placeholder), 
+                    opts.showMaskOnHover && HandleNativePlaceholder(this, (isRTL ? getBuffer().slice().reverse() : getBuffer()).join("")));
                 },
                 submitEvent: function submitEvent() {
                     undoValue !== getBuffer().join("") && $el.trigger("change"), opts.clearMaskOnLostFocus && -1 === getLastValidPosition() && el.inputmask._valueGet && el.inputmask._valueGet() === getBufferTemplate().join("") && el.inputmask._valueSet(""), 
