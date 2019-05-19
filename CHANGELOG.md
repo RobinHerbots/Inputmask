@@ -13,6 +13,7 @@
     - rewritePosition
 
 ### Fixed
+- Can't insert more than 2 letters in Firefox #2114
 - Chrome autofill does not work with Inputmask #1330
 - Paste in inputmask #2088
 - The first character is truncated when masking. #2089
