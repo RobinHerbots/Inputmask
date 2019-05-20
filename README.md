@@ -28,7 +28,6 @@ Highlights:
 - JIT-masking
 - value formatting / validating without input element
 - AMD/CommonJS support
-- AMD/CommonJS support
 - dependencyLibs: vanilla javascript, jQuery, jqlite
 - [Android support](README_android.md)
 
