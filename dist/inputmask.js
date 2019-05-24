@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.159
+ * Version: 5.0.0-beta.160
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -2209,7 +2209,7 @@
                 opts.keepStatic = !0) : mask += opts.radixPoint + decimalDef + "{" + opts.digits + "}");
             }
             return mask += autoEscape(opts.suffix, opts), mask += "[-]", altMask && (mask = [ altMask + autoEscape(opts.suffix, opts) + "[-]", mask ]), 
-            opts.greedy = !1, parseMinMaxOptions(opts), console.log(mask), mask;
+            opts.greedy = !1, parseMinMaxOptions(opts), mask;
         }
         function hanndleRadixDance(pos, c, radixPos, opts) {
             return opts._radixDance && opts.numericInput && pos <= radixPos && (0 < radixPos || c == opts.radixPoint) && (pos -= 1), 
@@ -2340,6 +2340,19 @@
                     }
                     return 0 === opts.digits && -1 !== initialValue.indexOf(Inputmask.escapeRegex(radixPoint)) && (initialValue = initialValue.substring(0, initialValue.indexOf(Inputmask.escapeRegex(radixPoint)))), 
                     alignDigits(initialValue.toString().split(""), digits, opts).join("");
+                },
+                onBeforeWrite: function onBeforeWrite(e, buffer, caretPos, opts) {
+                    var numberMatches = new RegExp("^" + Inputmask.escapeRegex(opts.prefix) + "(?<number>.*)" + Inputmask.escapeRegex(opts.suffix) + "$").exec(buffer.slice().reverse().join("")), number = numberMatches.groups.number;
+                    number = number.split(opts.radixPoint.charAt(0))[0];
+                    var leadingzeroes = new RegExp("^[0" + opts.groupSeparator + "]*").exec(number);
+                    if (0 < leadingzeroes[0].length) {
+                        var buf = buffer.slice().reverse(), caretNdx = buf.join("").indexOf(leadingzeroes[0]);
+                        return buf.splice(caretNdx, leadingzeroes[0].length), {
+                            refreshFromBuffer: !0,
+                            buffer: buf.reverse(),
+                            caret: buf.length - caretNdx
+                        };
+                    }
                 },
                 onKeyDown: function onKeyDown(e, buffer, caretPos, opts) {
                     var $input = $(this);
