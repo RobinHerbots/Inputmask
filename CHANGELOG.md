@@ -13,6 +13,7 @@
     - rewritePosition
 
 ### Fixed
+- No message with HTML5 validation #841
 - Manual input via virtual keyboard doesn't work #2116
 - Can't insert more than 2 letters in Firefox #2114
 - InputMask not getting fresh placeholder value #2111
