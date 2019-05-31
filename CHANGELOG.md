@@ -6,7 +6,7 @@
 
 ### Updates
 - Casing option will also allow case insensitive entry for static symbols
-- refactor numeric alias (ongoing - 5)
+- refactor numeric alias (ongoing - 6)
 - package & bundling
 - enhance regex alternations. ex: [01][0-9]|2[0-3] => ([01][0-9]|2[0-3])
 - extend command object
