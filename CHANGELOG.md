@@ -13,6 +13,7 @@
     - rewritePosition
 
 ### Fixed
+- im-insert not valid html #2122
 - No message with HTML5 validation #841
 - Manual input via virtual keyboard doesn't work #2116
 - Can't insert more than 2 letters in Firefox #2114
