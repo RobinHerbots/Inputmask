@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.165
+ * Version: 5.0.0-beta.167
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1007,7 +1007,7 @@
                 var i, p;
                 if (!0 === start) resetMaskSet(), start = 0, end = buffer.length; else for (i = start; i < end; i++) delete getMaskSet().validPositions[i];
                 for (p = start, i = start; i < end; i++) if (resetMaskSet(!0), buffer[i] !== opts.skipOptionalPartCharacter) {
-                    var valResult = isValid(p, buffer[i], buffer[i] !== opts.negationSymbol.front, buffer[i] !== opts.negationSymbol.front);
+                    var valResult = isValid(p, buffer[i], !opts.negationSymbol || [ i ] !== opts.negationSymbol.front, !opts.negationSymbol || [ i ] !== opts.negationSymbol.front);
                     !1 !== valResult && (resetMaskSet(!0), p = void 0 !== valResult.caret ? valResult.caret : valResult.pos + 1);
                 }
             }
@@ -1611,7 +1611,7 @@
                         }, prevCaretPos = inputmask.caretPos) : inputmask.caretPos = prevCaretPos;
                     }
                 }), 0 < staticMatches.length) if (isComplete(getBuffer())) for (;sndx = staticMatches.pop(); ) validPos = getMaskSet().validPositions[sndx], 
-                validPos.generatedInput = !0; else for (;sndx = staticMatches.pop(); ) {
+                validPos && (validPos.generatedInput = !0); else for (;sndx = staticMatches.pop(); ) {
                     var keypress = new $.Event("_checkval"), nextSndx = sndx + 1;
                     for (validPos = getMaskSet().validPositions[sndx], validPos.generatedInput = !0, 
                     keypress.which = validPos.input.charCodeAt(0); (nextValid = getMaskSet().validPositions[nextSndx]) && nextValid.input === validPos.input; ) nextSndx++;
@@ -2186,12 +2186,18 @@
             }
             return buffer;
         }
-        function FindPlusValidator(maskset) {
+        function findValidator(symbol, maskset) {
             var posNdx = 0;
             for (posNdx in maskset.validPositions) ;
             for (var tstNdx in posNdx = parseInt(posNdx), maskset.tests) if (tstNdx = parseInt(tstNdx), 
-            posNdx <= tstNdx) for (var ndx = 0, ndxl = maskset.tests[tstNdx].length; ndx < ndxl; ndx++) if (void 0 === maskset.validPositions[tstNdx] && "+" === maskset.tests[tstNdx][ndx].match.def) return tstNdx + (void 0 !== maskset.validPositions[tstNdx] ? 1 : 0);
+            posNdx <= tstNdx) for (var ndx = 0, ndxl = maskset.tests[tstNdx].length; ndx < ndxl; ndx++) if (void 0 === maskset.validPositions[tstNdx] && maskset.tests[tstNdx][ndx].match.def === symbol) return tstNdx + (void 0 !== maskset.validPositions[tstNdx] ? 1 : 0);
             return posNdx;
+        }
+        function findValid(symbol, maskset) {
+            var ret = -1;
+            return $.each(maskset.validPositions, function(ndx, tst) {
+                if (tst.match.def === symbol) return ret = parseInt(ndx), !1;
+            }), ret;
         }
         function parseMinMaxOptions(opts) {
             void 0 === opts.parseMinMaxOptions && (null !== opts.min && (opts.min = opts.min.toString().replace(new RegExp(Inputmask.escapeRegex(opts.groupSeparator), "g"), ""), 
@@ -2292,18 +2298,20 @@
                         rewritePosition: pos
                     };
                     if (!0 !== opts.allowMinus) return !1;
-                    var isNegative = !1;
-                    return $.each(maskset.validPositions, function(ndx, tst) {
-                        if ("+" === tst.match.def) return isNegative = ndx, !1;
-                    }), !1 !== isNegative ? {
-                        remove: parseInt(isNegative),
+                    var isNegative = !1, front = findValid("+", maskset), back = findValid("-", maskset);
+                    return -1 !== front && (isNegative = [ front, back ]), !1 !== isNegative ? {
+                        remove: isNegative,
                         caret: pos < radixPos ? pos + 1 : pos
                     } : {
-                        insert: {
-                            pos: FindPlusValidator(maskset),
-                            c: c,
+                        insert: [ {
+                            pos: findValidator("+", maskset),
+                            c: opts.negationSymbol.front,
                             fromIsValid: !0
-                        },
+                        }, {
+                            pos: findValidator("-", maskset),
+                            c: opts.negationSymbol.back,
+                            fromIsValid: !0
+                        } ],
                         caret: pos < radixPos ? pos + 1 : pos
                     };
                 },
@@ -2352,16 +2360,18 @@
                     alignDigits(initialValue.toString().split(""), digits, opts).join("");
                 },
                 onBeforeWrite: function onBeforeWrite(e, buffer, caretPos, opts) {
-                    var numberMatches = new RegExp("^" + opts.negationSymbol.front + "?" + Inputmask.escapeRegex(opts.prefix) + "(?<number>.*)" + Inputmask.escapeRegex(opts.suffix) + opts.negationSymbol.back + "?$").exec(buffer.slice().reverse().join("")), number = numberMatches ? numberMatches.groups.number : "";
-                    number = number.split(opts.radixPoint.charAt(0))[0];
-                    var leadingzeroes = new RegExp("^[0" + opts.groupSeparator + "]*").exec(number);
-                    if (1 < leadingzeroes[0].length || 0 < leadingzeroes[0].length && leadingzeroes[0].length < number.length) {
-                        var buf = buffer.slice().reverse(), caretNdx = buf.join("").indexOf(leadingzeroes[0]);
-                        return buf.splice(caretNdx, leadingzeroes[0].length), {
-                            refreshFromBuffer: !0,
-                            buffer: buf.reverse(),
-                            caret: buf.length - caretNdx
-                        };
+                    var numberMatches = new RegExp("^" + ("" != opts.negationSymbol.front ? Inputmask.escapeRegex(opts.negationSymbol.front) + "?" : "") + Inputmask.escapeRegex(opts.prefix) + "(?<number>.*)" + Inputmask.escapeRegex(opts.suffix) + ("" != opts.negationSymbol.back ? Inputmask.escapeRegex(opts.negationSymbol.back) + "?" : "") + "$").exec(buffer.slice().reverse().join("")), number = numberMatches ? numberMatches.groups.number : "";
+                    if (number) {
+                        number = number.split(opts.radixPoint.charAt(0))[0];
+                        var leadingzeroes = new RegExp("^[0" + opts.groupSeparator + "]*").exec(number);
+                        if (1 < leadingzeroes[0].length || 0 < leadingzeroes[0].length && leadingzeroes[0].length < number.length) {
+                            var buf = buffer.slice().reverse(), caretNdx = buf.join("").indexOf(leadingzeroes[0]);
+                            return buf.splice(caretNdx, leadingzeroes[0].length), {
+                                refreshFromBuffer: !0,
+                                buffer: buf.reverse(),
+                                caret: buf.length - caretNdx
+                            };
+                        }
                     }
                 },
                 onKeyDown: function onKeyDown(e, buffer, caretPos, opts) {
