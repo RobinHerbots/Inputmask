@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.168
+ * Version: 5.0.0-beta.169
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -102,7 +102,7 @@
             !0 !== internal && ($.isPlainObject(alias) ? options = alias : (options = options || {}, 
             alias && (options.alias = alias)), this.opts = $.extend(!0, {}, this.defaults, options), 
             this.noMasksCache = options && void 0 !== options.definitions, this.userOptions = options || {}, 
-            this.isRTL = this.opts.numericInput, resolveAlias(this.opts.alias, options, this.opts));
+            resolveAlias(this.opts.alias, options, this.opts), this.isRTL = this.opts.numericInput);
         }
         function resolveAlias(aliasStr, options, opts) {
             var aliasDefinition = Inputmask.prototype.aliases[aliasStr];
@@ -748,7 +748,7 @@
         }
         module.exports = function maskScope(actionObj, maskset, opts) {
             maskset = maskset || this.maskset, opts = opts || this.opts;
-            var inputmask = this, el = this.el, isRTL = this.isRTL, undoValue, $el, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, maxLength, mouseEnter = !1, colorMask, originalPlaceholder, focusDelay = 0;
+            var inputmask = this, el = this.el, isRTL = this.isRTL || (this.isRTL = opts.numericInput), undoValue, $el, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, maxLength, mouseEnter = !1, colorMask, originalPlaceholder, focusDelay = 0;
             function getMaskTemplate(baseOnInput, minimalPos, includeMode, noJit, clearOptionalTail) {
                 var greedy = opts.greedy;
                 clearOptionalTail && (opts.greedy = !1), minimalPos = minimalPos || 0;
@@ -1934,7 +1934,7 @@
                 } : isRTL ? getBuffer().slice().reverse().join("") : getBuffer().join("");
 
               case "isValid":
-                actionObj.value ? (valueBuffer = actionObj.value.split(""), checkVal.call(this, void 0, !0, !0, valueBuffer)) : actionObj.value = isRTL ? getBuffer().slice().reverse().join("") : getBuffer().join("");
+                actionObj.value ? (valueBuffer = actionObj.value.split(""), checkVal.call(this, void 0, !0, !1, valueBuffer)) : actionObj.value = isRTL ? getBuffer().slice().reverse().join("") : getBuffer().join("");
                 for (var buffer = getBuffer(), rl = determineLastRequiredPosition(), lmib = buffer.length - 1; rl < lmib && !isMask(lmib); lmib--) ;
                 return buffer.splice(rl, lmib + 1 - rl), isComplete(buffer) && actionObj.value === (isRTL ? getBuffer().slice().reverse().join("") : getBuffer().join(""));
 

@@ -372,7 +372,6 @@ export default function (qunit, Inputmask) {
             groupSeparator: ',',
             placeholder: '0.00',
             numericInput: true,
-            autoGroup: true
         }).mask(testmask);
 
         assert.equal(testmask.value, "$ 4,545.56", "Result " + testmask.value);

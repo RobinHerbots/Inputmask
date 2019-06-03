@@ -216,7 +216,6 @@ export default function (qunit, Inputmask) {
 		Inputmask("numeric", {
 			groupSeparator: ",",
 			placeholder: "0",
-			autoGroup: true,
 			digits: 2,
 			digitsOptional: false,
 			prefix: "€ "
@@ -238,7 +237,6 @@ export default function (qunit, Inputmask) {
 		var testmask = document.getElementById("testmask");
 		Inputmask("numeric", {
 			groupSeparator: ",",
-			autoGroup: true
 		}).mask(testmask);
 
 		testmask.focus();
@@ -256,7 +254,6 @@ export default function (qunit, Inputmask) {
 		var testmask = document.getElementById("testmask");
 		Inputmask("numeric", {
 			groupSeparator: ",",
-			autoGroup: true,
 		}).mask(testmask);
 
 		testmask.focus();
@@ -276,7 +273,6 @@ export default function (qunit, Inputmask) {
 		var testmask = document.getElementById("testmask");
 		Inputmask("numeric", {
 			groupSeparator: ",",
-			autoGroup: true,
 			placeholder: "0"
 		}).mask(testmask);
 
@@ -296,7 +292,6 @@ export default function (qunit, Inputmask) {
 		var testmask = document.getElementById("testmask");
 		Inputmask("numeric", {
 			groupSeparator: ",",
-			autoGroup: true,
 			placeholder: "0",
 			prefix: "€ "
 		}).mask(testmask);
@@ -318,7 +313,6 @@ export default function (qunit, Inputmask) {
 		var testmask = document.getElementById("testmask");
 		Inputmask("numeric", {
 			groupSeparator: ",",
-			autoGroup: true,
 			placeholder: "0",
 			prefix: "€ "
 		}).mask(testmask);
@@ -340,7 +334,6 @@ export default function (qunit, Inputmask) {
 		var testmask = document.getElementById("testmask");
 		Inputmask("numeric", {
 			groupSeparator: ",",
-			autoGroup: true,
 			placeholder: "0",
 			prefix: "€ "
 		}).mask(testmask);
@@ -356,13 +349,11 @@ export default function (qunit, Inputmask) {
 		}, 0);
 	});
 
-	qunit.test("numeric placeholder 0 autoGroup: false prefix € type 0.123 + add 123 in front - Webunity", function (assert) {
+	qunit.test("numeric placeholder 0 prefix € type 0.123 + add 123 in front - Webunity", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("numeric", {
-			groupSeparator: ",",
-			autoGroup: false,
 			placeholder: "0",
 			prefix: "€ "
 		}).mask(testmask);
@@ -376,13 +367,12 @@ export default function (qunit, Inputmask) {
 
 	});
 
-	qunit.test("numeric placeholder 0 autoGroup: true prefix € type 0.123 + add 123 in front - Webunity", function (assert) {
+	qunit.test("numeric placeholder 0 prefix € type 0.123 + add 123 in front - Webunity", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("numeric", {
 			groupSeparator: ",",
-			autoGroup: true,
 			placeholder: "0",
 			prefix: "€ "
 		}).mask(testmask);
@@ -411,12 +401,11 @@ export default function (qunit, Inputmask) {
 
 	});
 
-	qunit.test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - input 12345.123", function (assert) {
+	qunit.test("inputmask(\"decimal\", { groupSeparator: \",\" }\") - input 12345.123", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal", {
-			autoGroup: true,
 			groupSeparator: ","
 		}).mask(testmask);
 
@@ -436,13 +425,12 @@ export default function (qunit, Inputmask) {
 
 	});
 
-	qunit.test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\", decimalProtect: true }\") - input 12345.123 + remove .123", function (assert) {
+	qunit.test("inputmask(\"decimal\", { groupSeparator: \",\", decimalProtect: true }\") - input 12345.123 + remove .123", function (assert) {
 		var done = assert.async(),
 			$fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal", {
-			autoGroup: true,
 			groupSeparator: ",",
 			decimalProtect: true
 		}).mask(testmask);
