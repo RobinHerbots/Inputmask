@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.170
+ * Version: 5.0.0-beta.171
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -881,7 +881,7 @@
             }
             function refreshFromBuffer(start, end, buffer) {
                 var i, p;
-                if (!0 === start) resetMaskSet(), start = 0, end = buffer.length; else for (i = start; i < end; i++) delete getMaskSet().validPositions[i];
+                if (!0 === start) resetMaskSet(), getMaskSet().tests = {}, start = 0, end = buffer.length; else for (i = start; i < end; i++) delete getMaskSet().validPositions[i];
                 for (p = start, i = start; i < end; i++) if (resetMaskSet(!0), buffer[i] !== opts.skipOptionalPartCharacter) {
                     var valResult = isValid(p, buffer[i], !opts.negationSymbol || [ i ] !== opts.negationSymbol.front, !opts.negationSymbol || [ i ] !== opts.negationSymbol.front);
                     !1 !== valResult && (resetMaskSet(!0), p = void 0 !== valResult.caret ? valResult.caret : valResult.pos + 1);
@@ -2092,7 +2092,7 @@
             var decimalDef = "0";
             !0 === opts.numericInput && void 0 === opts.__financeInput ? (decimalDef = "1", 
             opts.positionCaretOnClick = "radixFocus" === opts.positionCaretOnClick ? "lvp" : opts.positionCaretOnClick, 
-            opts.digitsOptional = !1, isNaN(opts.digits) && (opts.digits = 2), opts._radixDance = !1) : (opts.__financeInput = !1, 
+            isNaN(opts.digits) && (opts.digits = 2), opts._radixDance = !1) : (opts.__financeInput = !1, 
             opts.numericInput = !0);
             var mask = "[+]", altMask;
             if (mask += autoEscape(opts.prefix, opts), "" !== opts.groupSeparator ? mask += opts._mask(opts) : mask += "9{+}", 
@@ -2237,19 +2237,31 @@
                     alignDigits(initialValue.toString().split(""), digits, opts).join("");
                 },
                 onBeforeWrite: function onBeforeWrite(e, buffer, caretPos, opts) {
-                    var numberMatches = new RegExp("^" + ("" != opts.negationSymbol.front ? Inputmask.escapeRegex(opts.negationSymbol.front) + "?" : "") + Inputmask.escapeRegex(opts.prefix) + "(?<number>.*)" + Inputmask.escapeRegex(opts.suffix) + ("" != opts.negationSymbol.back ? Inputmask.escapeRegex(opts.negationSymbol.back) + "?" : "") + "$").exec(buffer.slice().reverse().join("")), number = numberMatches ? numberMatches.groups.number : "";
+                    var result, numberMatches = new RegExp("^" + ("" != opts.negationSymbol.front ? Inputmask.escapeRegex(opts.negationSymbol.front) + "?" : "") + Inputmask.escapeRegex(opts.prefix) + "(?<number>.*)" + Inputmask.escapeRegex(opts.suffix) + ("" != opts.negationSymbol.back ? Inputmask.escapeRegex(opts.negationSymbol.back) + "?" : "") + "$").exec(buffer.slice().reverse().join("")), number = numberMatches ? numberMatches.groups.number : "";
                     if (number) {
                         number = number.split(opts.radixPoint.charAt(0))[0];
                         var leadingzeroes = new RegExp("^[0" + opts.groupSeparator + "]*").exec(number);
                         if (1 < leadingzeroes[0].length || 0 < leadingzeroes[0].length && leadingzeroes[0].length < number.length) {
                             var buf = buffer.slice().reverse(), caretNdx = buf.join("").indexOf(leadingzeroes[0]);
-                            return buf.splice(caretNdx, leadingzeroes[0].length), {
+                            buf.splice(caretNdx, leadingzeroes[0].length);
+                            var newCaretPos = buf.length - caretNdx;
+                            result = {
                                 refreshFromBuffer: !0,
                                 buffer: buf.reverse(),
-                                caret: buf.length - caretNdx
+                                caret: caretPos < newCaretPos ? caretPos : newCaretPos
                             };
                         }
                     }
+                    if (e) switch (e.type) {
+                      case "blur":
+                      case "checkval":
+                        "" !== opts.radixPoint && buffer[0] === opts.radixPoint && (result && result.buffer ? result.buffer.shift() : (buffer.shift(), 
+                        result = {
+                            refreshFromBuffer: !0,
+                            buffer: buffer
+                        }));
+                    }
+                    return result;
                 },
                 onKeyDown: function onKeyDown(e, buffer, caretPos, opts) {
                     var $input = $(this);

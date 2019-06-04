@@ -41,10 +41,6 @@ Default: ""
 Define a suffix.
 Default: ""
 
-### decimalProtect
-Do not allow assumption of decimals input without entering the radixpoint.
-Default: true
-
 ### min
 Minimum value
 Default: undefined

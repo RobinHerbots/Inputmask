@@ -425,14 +425,13 @@ export default function (qunit, Inputmask) {
 
 	});
 
-	qunit.test("inputmask(\"decimal\", { groupSeparator: \",\", decimalProtect: true }\") - input 12345.123 + remove .123", function (assert) {
+	qunit.test("inputmask(\"decimal\", { groupSeparator: \",\"}\") - input 12345.123 + remove .123", function (assert) {
 		var done = assert.async(),
 			$fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal", {
-			groupSeparator: ",",
-			decimalProtect: true
+			groupSeparator: ","
 		}).mask(testmask);
 
 		testmask.focus();
@@ -489,14 +488,12 @@ export default function (qunit, Inputmask) {
 		assert.equal(testmask.value, "12,345.789", "Result " + testmask.value);
 
 	});
-	qunit.test("inputmask(\"decimal\", { autoGroup: false, groupSeparator: \",\", decimalProtect: true  }\") - input 12345.123 + remove .123", function (assert) {
+	qunit.test("inputmask(\"decimal\", { autoGroup: false, groupSeparator: \",\" }\") - input 12345.123 + remove .123", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal", {
-			autoGroup: false,
 			groupSeparator: ",",
-			decimalProtect: true
 		}).mask(testmask);
 
 		testmask.focus();
@@ -515,15 +512,11 @@ export default function (qunit, Inputmask) {
 		assert.equal(testmask.value, "12345", "Result " + testmask.value);
 
 	});
-	qunit.test("inputmask(\"decimal\", { autoGroup: false, groupSeparator: \",\", decimalProtect: false  }\") - input 12345.123 + remove .123", function (assert) {
+	qunit.test("inputmask(\"decimal\") - input 12345.123 + remove .123", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("decimal", {
-			autoGroup: false,
-			groupSeparator: ",",
-			decimalProtect: false
-		}).mask(testmask);
+		Inputmask("decimal", {}).mask(testmask);
 
 		testmask.focus();
 
@@ -541,15 +534,11 @@ export default function (qunit, Inputmask) {
 		assert.equal(testmask.value, "12345", "Result " + testmask.value);
 
 	});
-	qunit.test("inputmask(\"decimal\", { autoGroup: false, groupSeparator: \",\", decimalProtect: true  }\") - input 12345.123 + replace .123 => .789", function (assert) {
+	qunit.test("inputmask(\"decimal\") - input 12345.123 + replace .123 => .789", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("decimal", {
-			autoGroup: false,
-			groupSeparator: ",",
-			decimalProtect: true
-		}).mask(testmask);
+		Inputmask("decimal", {}).mask(testmask);
 
 		testmask.focus();
 
@@ -598,13 +587,12 @@ export default function (qunit, Inputmask) {
 
 	});
 
-	qunit.test("inputmask(\"decimal, { repeat: 5, decimalProtect: true }\") - maxlength 10", function (assert) {
+	qunit.test("inputmask(\"decimal, { repeat: 5 }\") - maxlength 10", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" maxlength=\"10\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal", {
-			repeat: 5,
-			decimalProtect: true
+			repeat: 5
 		}).mask(testmask);
 
 		testmask.focus();
@@ -615,13 +603,12 @@ export default function (qunit, Inputmask) {
 
 	});
 
-	qunit.test("inputmask(\"decimal, { repeat: 5, decimalProtect: false }\") - maxlength 10", function (assert) {
+	qunit.test("inputmask(\"decimal, { repeat: 5}\") - maxlength 10", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" maxlength=\"10\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal", {
 			repeat: 5,
-			decimalProtect: false
 		}).mask(testmask);
 
 		testmask.focus();
@@ -761,7 +748,6 @@ export default function (qunit, Inputmask) {
 			groupSize: 3,
 			digits: 2,
 			autoGroup: true,
-			allowPlus: false,
 			allowMinus: true
 		}).mask(testmask);
 
@@ -784,7 +770,6 @@ export default function (qunit, Inputmask) {
 			groupSize: 3,
 			digits: 2,
 			autoGroup: true,
-			allowPlus: false,
 			allowMinus: true
 		}).mask(testmask);
 
@@ -807,7 +792,6 @@ export default function (qunit, Inputmask) {
 			groupSize: 3,
 			digits: 2,
 			autoGroup: true,
-			allowPlus: true,
 			allowMinus: true
 		}).mask(testmask);
 
@@ -828,7 +812,6 @@ export default function (qunit, Inputmask) {
 			groupSize: 3,
 			digits: 2,
 			autoGroup: true,
-			allowPlus: true,
 			allowMinus: true
 		}).mask(testmask);
 
@@ -851,7 +834,6 @@ export default function (qunit, Inputmask) {
 			groupSize: 3,
 			digits: 2,
 			autoGroup: true,
-			allowPlus: true,
 			allowMinus: true
 		}).mask(testmask);
 
@@ -1031,10 +1013,7 @@ export default function (qunit, Inputmask) {
 			radixPoint: ",",
 			digits: 2,
 			digitsOptional: false,
-			autoGroup: true,
 			groupSeparator: " ",
-			groupSize: 3,
-			allowPlus: false,
 			allowMinus: false
 		}).mask(testmask);
 		testmask.focus();
@@ -1360,8 +1339,7 @@ export default function (qunit, Inputmask) {
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal", {
 			digits: 2,
-			allowMinus: false,
-			allowPlus: false
+			allowMinus: false
 		}).mask(testmask);
 
 		testmask.focus();
@@ -1643,7 +1621,6 @@ export default function (qunit, Inputmask) {
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("currency", {
-			allowPlus: false,
 			allowMinus: false,
 			rightAlign: false,
 			groupSeparator: ".",
@@ -1754,8 +1731,6 @@ export default function (qunit, Inputmask) {
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal", {
 			radixPoint: ",",
-			groupSeparator: ".",
-			autoGroup: true,
 			repeat: 10,
 			digits: "2",
 			autoUnmask: true,
@@ -1998,7 +1973,6 @@ export default function (qunit, Inputmask) {
 			max: "99999999.99",
 			alias: "currency",
 			prefix: "",
-			allowPlus: false,
 			autoUnmask: true
 		}).mask(testmask);
 
