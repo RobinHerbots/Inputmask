@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.169
+ * Version: 5.0.0-beta.170
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -966,7 +966,7 @@
                         if ("" !== tst.def) if (0 === locator.length) locator = tst.locator.slice(); else for (var i = 0; i < locator.length; i++) tst.locator[i] && -1 === locator[i].toString().indexOf(tst.locator[i]) && (locator[i] += "," + tst.locator[i]);
                     })), locator;
                 }
-                if (-1 < pos) {
+                if (-1 < pos && (void 0 === maxLength || pos < maxLength)) {
                     if (void 0 === ndxIntlzr) {
                         for (var previousPos = pos - 1, test; void 0 === (test = getMaskSet().validPositions[previousPos] || getMaskSet().tests[previousPos]) && -1 < previousPos; ) previousPos--;
                         void 0 !== test && -1 < previousPos && (ndxInitializer = mergeLocators(previousPos, test), 
@@ -1148,7 +1148,8 @@
                             if (opts.insertMode || void 0 === getMaskSet().validPositions[seekNext(maskPos)]) {
                                 var skip = !1;
                                 if (getMaskSet().jitOffset[maskPos] && void 0 === getMaskSet().validPositions[seekNext(maskPos)] && (result = isValid(maskPos + getMaskSet().jitOffset[maskPos], c, !0), 
-                                !1 !== result && (result.caret = maskPos, skip = !0)), !skip && !isMask(maskPos, !0)) for (var nPos = maskPos + 1, snPos = seekNext(maskPos); nPos <= snPos; nPos++) if (result = _isValid(nPos, c, strict), 
+                                !1 !== result && (!0 !== fromAlternate && (result.caret = maskPos), skip = !0)), 
+                                !skip && !isMask(maskPos, !0)) for (var nPos = maskPos + 1, snPos = seekNext(maskPos); nPos <= snPos; nPos++) if (result = _isValid(nPos, c, strict), 
                                 !1 !== result) {
                                     result = trackbackPositions(maskPos, void 0 !== result.pos ? result.pos : nPos) || result, 
                                     maskPos = nPos;
