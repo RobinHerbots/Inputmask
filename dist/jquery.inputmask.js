@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.172
+ * Version: 5.0.0-beta.173
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1472,20 +1472,20 @@
                         keypress.which = charCode.charCodeAt(0), charCodes += charCode;
                         var lvp = getLastValidPosition(void 0, !0);
                         isTemplateMatch(initialNdx, charCodes) ? result = EventHandlers.keypressEvent.call(input, keypress, !0, !1, strict, lvp + 1) : (result = EventHandlers.keypressEvent.call(input, keypress, !0, !1, strict, inputmask.caretPos.begin), 
-                        result && (initialNdx = inputmask.caretPos.begin + 1, charCodes = "")), result ? (result.pos && maskset.validPositions[result.pos] && !0 === maskset.validPositions[result.pos].match.static && (staticMatches.push(result.pos), 
-                        result.forwardPosition = result.pos + 1), writeBuffer(void 0, getBuffer(), result.forwardPosition, keypress, !1), 
+                        result && (initialNdx = inputmask.caretPos.begin + 1, charCodes = "")), result ? (void 0 !== result.pos && maskset.validPositions[result.pos] && !0 === maskset.validPositions[result.pos].match.static && (staticMatches.push(result.pos), 
+                        isRTL || (result.forwardPosition = result.pos + 1)), writeBuffer(void 0, getBuffer(), result.forwardPosition, keypress, !1), 
                         inputmask.caretPos = {
                             begin: result.forwardPosition,
                             end: result.forwardPosition
                         }, prevCaretPos = inputmask.caretPos) : inputmask.caretPos = prevCaretPos;
                     }
-                }), 0 < staticMatches.length) if (isComplete(getBuffer())) for (;sndx = staticMatches.pop(); ) validPos = maskset.validPositions[sndx], 
-                validPos && (validPos.generatedInput = !0); else for (;sndx = staticMatches.pop(); ) {
+                }), 0 < staticMatches.length) if (!isComplete(getBuffer()) || staticMatches.length < seekNext(0)) for (;void 0 !== (sndx = staticMatches.pop()); ) {
                     var keypress = new $.Event("_checkval"), nextSndx = sndx + 1;
                     for (validPos = maskset.validPositions[sndx], validPos.generatedInput = !0, keypress.which = validPos.input.charCodeAt(0); (nextValid = maskset.validPositions[nextSndx]) && nextValid.input === validPos.input; ) nextSndx++;
-                    if (EventHandlers.keypressEvent.call(input, keypress, !0, !1, strict, nextSndx), 
-                    isComplete(getBuffer())) break;
-                }
+                    result = EventHandlers.keypressEvent.call(input, keypress, !0, !1, strict, nextSndx), 
+                    result && void 0 !== result.pos && result.pos !== sndx && maskset.validPositions[result.pos] && !0 === maskset.validPositions[result.pos].match.static && staticMatches.push(result.pos);
+                } else for (;sndx = staticMatches.pop(); ) validPos = maskset.validPositions[sndx], 
+                validPos && (validPos.generatedInput = !0);
                 writeOut && writeBuffer(input, getBuffer(), result ? result.forwardPosition : void 0, initiatingEvent || new $.Event("checkval"), initiatingEvent && "input" === initiatingEvent.type);
             }
             function unmaskedvalue(input) {
@@ -1769,11 +1769,9 @@
                 EventRuler.on(el, "keypress", EventHandlers.keypressEvent)), EventRuler.on(el, "input", EventHandlers.inputFallBackEvent), 
                 EventRuler.on(el, "beforeinput", EventHandlers.beforeInputEvent)), EventRuler.on(el, "setvalue", EventHandlers.setValueEvent), 
                 undoValue = getBufferTemplate().join(""), "" !== el.inputmask._valueGet(!0) || !1 === opts.clearMaskOnLostFocus || document.activeElement === el)) {
-                    var initialValue = $.isFunction(opts.onBeforeMask) && opts.onBeforeMask.call(inputmask, el.inputmask._valueGet(!0), opts) || el.inputmask._valueGet(!0);
-                    "" !== initialValue && checkVal(el, !0, !1, initialValue.split(""));
+                    applyInputValue(el, el.inputmask._valueGet(!0), opts);
                     var buffer = getBuffer().slice();
-                    undoValue = buffer.join(""), !1 !== isComplete(buffer) || opts.clearIncomplete && resetMaskSet(), 
-                    opts.clearMaskOnLostFocus && document.activeElement !== el && (-1 === getLastValidPosition() ? buffer = [] : clearOptionalTail(buffer)), 
+                    !1 !== isComplete(buffer) || opts.clearIncomplete && resetMaskSet(), opts.clearMaskOnLostFocus && document.activeElement !== el && (-1 === getLastValidPosition() ? buffer = [] : clearOptionalTail(buffer)), 
                     (!1 === opts.clearMaskOnLostFocus || opts.showMaskOnFocus && document.activeElement === el || "" !== el.inputmask._valueGet(!0)) && writeBuffer(el, buffer), 
                     document.activeElement === el && caret(el, seekNext(getLastValidPosition()));
                 }
@@ -1802,7 +1800,8 @@
                 } : isRTL ? getBuffer().slice().reverse().join("") : getBuffer().join("");
 
               case "isValid":
-                actionObj.value ? (valueBuffer = actionObj.value.split(""), checkVal.call(this, void 0, !0, !1, valueBuffer)) : actionObj.value = isRTL ? getBuffer().slice().reverse().join("") : getBuffer().join("");
+                actionObj.value ? (valueBuffer = ($.isFunction(opts.onBeforeMask) && opts.onBeforeMask.call(inputmask, actionObj.value, opts) || actionObj.value).split(""), 
+                checkVal.call(this, void 0, !0, !1, valueBuffer)) : actionObj.value = isRTL ? getBuffer().slice().reverse().join("") : getBuffer().join("");
                 for (var buffer = getBuffer(), rl = determineLastRequiredPosition(), lmib = buffer.length - 1; rl < lmib && !isMask(lmib); lmib--) ;
                 return buffer.splice(rl, lmib + 1 - rl), isComplete(buffer) && actionObj.value === (isRTL ? getBuffer().slice().reverse().join("") : getBuffer().join(""));
 

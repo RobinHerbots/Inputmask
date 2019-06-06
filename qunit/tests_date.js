@@ -605,6 +605,6 @@ export default function (qunit, Inputmask) {
 
         testmask.focus();
         $("#testmask").val("1230");
-        assert.equal(testmask.value, "10:MM", "Result " + testmask.value);
+        assert.equal(testmask.value, "11:MM", "Result " + testmask.value);
     });
 };

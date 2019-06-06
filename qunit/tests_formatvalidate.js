@@ -132,9 +132,7 @@ export default function (qunit, Inputmask) {
         var isValid = Inputmask.isValid("123,456.78", {
             alias: "decimal",
             radixPoint: ".",
-            groupSeparator: ",",
-            groupSize: 3,
-            autoGroup: true
+            groupSeparator: ","
         });
         assert.equal(isValid, true, "Result " + isValid);
     });
@@ -151,8 +149,7 @@ export default function (qunit, Inputmask) {
         var isValid = Inputmask.isValid("12,1.45", {
             alias: "decimal",
             radixPoint: ".",
-            groupSeparator: ",",
-            groupSize: 3
+            groupSeparator: ","
         });
         assert.equal(isValid, false, "Result " + isValid);
     });
@@ -160,9 +157,7 @@ export default function (qunit, Inputmask) {
         var isValid = Inputmask.isValid("12,345.67", {
             alias: "decimal",
             radixPoint: ".",
-            groupSeparator: ",",
-            groupSize: 3,
-            autoGroup: true
+            groupSeparator: ","
         });
         assert.equal(isValid, true, "Result " + isValid);
     });

@@ -446,12 +446,11 @@ export default function (qunit, Inputmask) {
 			done();
 		}, 0);
 	});
-	qunit.test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - input 12345.123 + replace .123 => .789", function (assert) {
+	qunit.test("inputmask(\"decimal\", { groupSeparator: \",\" }\") - input 12345.123 + replace .123 => .789", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal", {
-			autoGroup: true,
 			groupSeparator: ","
 		}).mask(testmask);
 
@@ -464,17 +463,16 @@ export default function (qunit, Inputmask) {
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
-		$("#testmask").Type(".789");
+		$("#testmask").Type("789");
 
 		assert.equal(testmask.value, "12,345.789", "Result " + testmask.value);
 
 	});
-	qunit.test("inputmask(\"decimal\", { autoGroup: true, groupSeparator: \",\" }\") - input 12345.123 + select replace .123 => .789", function (assert) {
+	qunit.test("inputmask(\"decimal\", { groupSeparator: \",\" }\") - input 12345.123 + select replace .123 => .789", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal", {
-			autoGroup: true,
 			groupSeparator: ","
 		}).mask(testmask);
 
@@ -488,7 +486,7 @@ export default function (qunit, Inputmask) {
 		assert.equal(testmask.value, "12,345.789", "Result " + testmask.value);
 
 	});
-	qunit.test("inputmask(\"decimal\", { autoGroup: false, groupSeparator: \",\" }\") - input 12345.123 + remove .123", function (assert) {
+	qunit.test("inputmask(\"decimal\", { groupSeparator: \",\" }\") - input 12345.123 + remove .123", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
@@ -508,7 +506,7 @@ export default function (qunit, Inputmask) {
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
-
+		$(testmask).trigger("blur");
 		assert.equal(testmask.value, "12345", "Result " + testmask.value);
 
 	});
