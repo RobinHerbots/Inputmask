@@ -507,7 +507,7 @@ export default function (qunit, Inputmask) {
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 		$(testmask).trigger("blur");
-		assert.equal(testmask.value, "12345", "Result " + testmask.value);
+		assert.equal(testmask.value, "12,345", "Result " + testmask.value);
 
 	});
 	qunit.test("inputmask(\"decimal\") - input 12345.123 + remove .123", function (assert) {
@@ -528,7 +528,7 @@ export default function (qunit, Inputmask) {
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
-
+		$(testmask).trigger("blur");
 		assert.equal(testmask.value, "12345", "Result " + testmask.value);
 
 	});
