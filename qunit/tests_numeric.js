@@ -549,7 +549,7 @@ export default function (qunit, Inputmask) {
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
-		$("#testmask").Type(".789");
+		$("#testmask").Type("789");
 
 		assert.equal(testmask.value, "12345.789", "Result " + testmask.value);
 
@@ -707,7 +707,7 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		$("#testmask").Type("123");
 		$.caret(testmask, 0, 3);
-		$("#testmask").Type(",,..");
+		$("#testmask").Type(",,...");
 		$("#testmask").Type("45");
 
 		assert.equal(testmask.value, "0.45", "Result " + testmask.value);
@@ -780,16 +780,14 @@ export default function (qunit, Inputmask) {
 
 	});
 
-	qunit.test("decimal alias with plus or minus & autogroup - type -123456 - YoussefTaghlabi", function (assert) {
+	qunit.test("decimal alias with minus - type -123456 - YoussefTaghlabi", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal", {
 			radixPoint: ".",
 			groupSeparator: ",",
-			groupSize: 3,
 			digits: 2,
-			autoGroup: true,
 			allowMinus: true
 		}).mask(testmask);
 
