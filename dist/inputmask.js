@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.173
+ * Version: 5.0.0-beta.189
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -748,7 +748,7 @@
         }
         module.exports = function maskScope(actionObj, maskset, opts) {
             maskset = maskset || this.maskset, opts = opts || this.opts;
-            var inputmask = this, el = this.el, isRTL = this.isRTL || (this.isRTL = opts.numericInput), undoValue, $el, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, maxLength, mouseEnter = !1, colorMask, originalPlaceholder, focusDelay = 0;
+            var inputmask = this, el = this.el, isRTL = this.isRTL || (this.isRTL = opts.numericInput), undoValue, $el, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, maxLength, mouseEnter = !1, colorMask, originalPlaceholder;
             function getMaskTemplate(baseOnInput, minimalPos, includeMode, noJit, clearOptionalTail) {
                 var greedy = opts.greedy;
                 clearOptionalTail && (opts.greedy = !1), minimalPos = minimalPos || 0;
@@ -1101,7 +1101,7 @@
                         $.each(commandObj.insert.sort(function(a, b) {
                             return a.pos - b.pos;
                         }), function(ndx, lmnt) {
-                            isValid(lmnt.pos, lmnt.c, void 0 === lmnt.strict || lmnt.strict, void 0 !== lmnt.fromIsValid ? lmnt.fromIsValid : fromIsValid);
+                            "" !== lmnt.c && isValid(lmnt.pos, lmnt.c, void 0 === lmnt.strict || lmnt.strict, void 0 !== lmnt.fromIsValid ? lmnt.fromIsValid : fromIsValid);
                         }), commandObj.insert = void 0), commandObj.refreshFromBuffer && commandObj.buffer) {
                             var refresh = commandObj.refreshFromBuffer;
                             refreshFromBuffer(!0 === refresh ? refresh : refresh.start, refresh.end, commandObj.buffer), 
@@ -1196,7 +1196,7 @@
                     var positionsClone = $.extend(!0, {}, maskset.validPositions), lvp = getLastValidPosition(void 0, !0), i;
                     for (maskset.p = begin, i = lvp; begin <= i; i--) delete maskset.validPositions[i], 
                     void 0 === validTest && delete maskset.tests[i + 1];
-                    var valid = !0, j = validatedPos, needsValidation = !1, posMatch = j;
+                    var valid = !0, j = validatedPos, needsValidation = 0 === validatedPos, posMatch = j;
                     for (i = j, validTest && (maskset.validPositions[validatedPos] = $.extend(!0, {}, validTest), 
                     posMatch++, j++, begin < end && i++); i <= lvp; i++) {
                         var t = positionsClone[i];
@@ -1363,10 +1363,7 @@
                                   case "focus":
                                     return args = arguments, setTimeout(function() {
                                         eventHandler.apply(that, args);
-                                    }, focusDelay), focusDelay = 0, !1;
-
-                                  case "invalid":
-                                    focusDelay = 1e3;
+                                    }, 0), !1;
                                 }
                                 var returnVal = eventHandler.apply(that, arguments);
                                 return !1 === returnVal && (e.preventDefault(), e.stopPropagation()), returnVal;
@@ -1383,7 +1380,7 @@
                     $.each(events, function(eventName, evArr) {
                         for (;0 < evArr.length; ) {
                             var ev = evArr.pop();
-                            -1 !== $.inArray(eventName, [ "submit", "reset", "invalid" ]) ? null !== input.form && $(input.form).off(eventName, ev) : $(input).off(eventName, ev);
+                            -1 !== $.inArray(eventName, [ "submit", "reset" ]) ? null !== input.form && $(input.form).off(eventName, ev) : $(input).off(eventName, ev);
                         }
                         delete input.inputmask.events[eventName];
                     }));
@@ -1481,7 +1478,8 @@
                             entries = opts.radixPoint))), writeBuffer(input, getBuffer(), {
                                 begin: selection.begin + offset,
                                 end: selection.end + offset
-                            }), 0 < entries.length) $.each(entries.split(""), function(ndx, entry) {
+                            }), 0 < entries.length) document.activeElement !== input && caret(input, selection), 
+                            $.each(entries.split(""), function(ndx, entry) {
                                 var keypress = new $.Event("keypress");
                                 keypress.which = entry.charCodeAt(0), ignorable = !1, EventHandlers.keypressEvent.call(input, keypress);
                             }); else {
@@ -1572,8 +1570,7 @@
                     el.inputmask.refreshValue = !0, setTimeout(function() {
                         applyInputValue(el, el.inputmask._valueGet(!0));
                     }, 0);
-                },
-                invalidEvent: function invalidEvent(e) {}
+                }
             }, valueBuffer;
             function checkVal(input, writeOut, strict, nptvl, initiatingEvent) {
                 var inputmask = this || input.inputmask, inputValue = nptvl.slice(), charCodes = "", initialNdx = -1, result = void 0;
@@ -1883,9 +1880,10 @@
                 !0 === opts.colorMask && initializeColorMask(el), mobile && ("inputmode" in el && (el.inputmode = opts.inputmode, 
                 el.setAttribute("inputmode", opts.inputmode)), !0 === opts.disablePredictiveText && ("autocorrect" in el ? el.autocorrect = !1 : (!0 !== opts.colorMask && initializeColorMask(el), 
                 el.type = "password"))), !0 === isSupported && (el.setAttribute("data-im-insert", opts.insertMode), 
+                opts.showMaskOnFocus = opts.showMaskOnFocus && -1 === [ "cc-number", "cc-exp" ].indexOf(el.autocomplete), 
                 EventRuler.on(el, "submit", EventHandlers.submitEvent), EventRuler.on(el, "reset", EventHandlers.resetEvent), 
-                EventRuler.on(el, "invalid", EventHandlers.invalidEvent), EventRuler.on(el, "blur", EventHandlers.blurEvent), 
-                EventRuler.on(el, "focus", EventHandlers.focusEvent), !0 !== opts.colorMask && (EventRuler.on(el, "click", EventHandlers.clickEvent), 
+                EventRuler.on(el, "blur", EventHandlers.blurEvent), EventRuler.on(el, "focus", EventHandlers.focusEvent), 
+                !0 !== opts.colorMask && (EventRuler.on(el, "click", EventHandlers.clickEvent), 
                 EventRuler.on(el, "mouseleave", EventHandlers.mouseleaveEvent), EventRuler.on(el, "mouseenter", EventHandlers.mouseenterEvent)), 
                 EventRuler.on(el, "paste", EventHandlers.pasteEvent), EventRuler.on(el, "cut", EventHandlers.cutEvent), 
                 EventRuler.on(el, "complete", opts.oncomplete), EventRuler.on(el, "incomplete", opts.onincomplete), 
@@ -2179,9 +2177,11 @@
         }
         function findValidator(symbol, maskset) {
             var posNdx = 0;
-            for (posNdx in maskset.validPositions) ;
-            for (var tstNdx in posNdx = parseInt(posNdx), maskset.tests) if (tstNdx = parseInt(tstNdx), 
-            posNdx <= tstNdx) for (var ndx = 0, ndxl = maskset.tests[tstNdx].length; ndx < ndxl; ndx++) if (void 0 === maskset.validPositions[tstNdx] && maskset.tests[tstNdx][ndx].match.def === symbol) return tstNdx + (void 0 !== maskset.validPositions[tstNdx] ? 1 : 0);
+            if ("+" === symbol) {
+                for (posNdx in maskset.validPositions) ;
+                posNdx = parseInt(posNdx);
+            }
+            for (var tstNdx in maskset.tests) if (tstNdx = parseInt(tstNdx), posNdx <= tstNdx) for (var ndx = 0, ndxl = maskset.tests[tstNdx].length; ndx < ndxl; ndx++) if ((void 0 === maskset.validPositions[tstNdx] || "-" === symbol) && maskset.tests[tstNdx][ndx].match.def === symbol) return tstNdx + (void 0 !== maskset.validPositions[tstNdx] && "-" !== symbol ? 1 : 0);
             return posNdx;
         }
         function findValid(symbol, maskset) {
@@ -2219,7 +2219,7 @@
             opts.greedy = !1, parseMinMaxOptions(opts), mask;
         }
         function hanndleRadixDance(pos, c, radixPos, opts) {
-            return opts._radixDance && opts.numericInput && pos <= radixPos && (0 < radixPos || c == opts.radixPoint) && (pos -= 1), 
+            return opts._radixDance && opts.numericInput && c !== opts.negationSymbol.back && pos <= radixPos && (0 < radixPos || c == opts.radixPoint) && (pos -= 1), 
             pos;
         }
         function decimalValidator(chrs, maskset, pos, strict, opts) {
@@ -2301,7 +2301,7 @@
                         }, {
                             pos: findValidator("-", maskset),
                             c: opts.negationSymbol.back,
-                            fromIsValid: !0
+                            fromIsValid: void 0
                         } ],
                         caret: pos < radixPos ? pos + 1 : pos
                     };
@@ -2352,20 +2352,7 @@
                 },
                 onBeforeWrite: function onBeforeWrite(e, buffer, caretPos, opts) {
                     var result, numberMatches = new RegExp("^" + ("" != opts.negationSymbol.front ? Inputmask.escapeRegex(opts.negationSymbol.front) + "?" : "") + Inputmask.escapeRegex(opts.prefix) + "(?<number>.*)" + Inputmask.escapeRegex(opts.suffix) + ("" != opts.negationSymbol.back ? Inputmask.escapeRegex(opts.negationSymbol.back) + "?" : "") + "$").exec(buffer.slice().reverse().join("")), number = numberMatches ? numberMatches.groups.number : "";
-                    if (number) {
-                        number = number.split(opts.radixPoint.charAt(0))[0];
-                        var leadingzeroes = new RegExp("^[0" + opts.groupSeparator + "]*").exec(number);
-                        if (1 < leadingzeroes[0].length || 0 < leadingzeroes[0].length && leadingzeroes[0].length < number.length) {
-                            var buf = buffer.slice().reverse(), caretNdx = buf.join("").indexOf(leadingzeroes[0]);
-                            buf.splice(caretNdx, leadingzeroes[0].length);
-                            var newCaretPos = buf.length - caretNdx;
-                            result = {
-                                refreshFromBuffer: !0,
-                                buffer: buf.reverse(),
-                                caret: caretPos < newCaretPos ? caretPos : newCaretPos
-                            };
-                        }
-                    }
+                    if (0) var newCaretPos, buf, caretNdx, leadingzeroes;
                     if (e) switch (e.type) {
                       case "blur":
                       case "checkval":
