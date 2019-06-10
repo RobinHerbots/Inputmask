@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.183
+ * Version: 5.0.0-beta.184
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1348,9 +1348,6 @@
                                     if (mobile) return args = arguments, setTimeout(function() {
                                         eventHandler.apply(that, args), caret(that, that.inputmask.caretPos, void 0, !0);
                                     }, 0), !1;
-                                    if ("cc-number" === that.autocomplete || "cc-exp" === that.autocomplete) return setTimeout(function() {
-                                        applyInputValue(el, el.inputmask._valueGet(!0));
-                                    }, 100), !1;
                                     break;
 
                                   case "keydown":
@@ -1366,8 +1363,7 @@
                                   case "focus":
                                     return args = arguments, setTimeout(function() {
                                         eventHandler.apply(that, args);
-                                    }, "cc-number" === that.autocomplete || "cc-exp" === that.autocomplete ? 1e3 : 0), 
-                                    !1;
+                                    }, 0), !1;
                                 }
                                 var returnVal = eventHandler.apply(that, arguments);
                                 return !1 === returnVal && (e.preventDefault(), e.stopPropagation()), returnVal;
@@ -1522,7 +1518,7 @@
                 },
                 focusEvent: function focusEvent(e) {
                     var input = this, nptValue = this.inputmask._valueGet();
-                    opts.showMaskOnFocus && (nptValue !== getBuffer().join("") ? writeBuffer(this, getBuffer(), seekNext(getLastValidPosition())) : !1 === mouseEnter && caret(this, seekNext(getLastValidPosition()))), 
+                    console.log(nptValue), opts.showMaskOnFocus && (nptValue !== getBuffer().join("") ? writeBuffer(this, getBuffer(), seekNext(getLastValidPosition())) : !1 === mouseEnter && caret(this, seekNext(getLastValidPosition()))), 
                     !0 === opts.positionCaretOnTab && !1 === mouseEnter && EventHandlers.clickEvent.apply(this, [ e, !0 ]), 
                     undoValue = getBuffer().join("");
                 },
