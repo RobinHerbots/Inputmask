@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.180
+ * Version: 5.0.0-beta.182
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1345,10 +1345,12 @@
                                 switch (e.type) {
                                   case "input":
                                     if (!0 === skipInputEvent) return skipInputEvent = !1, e.preventDefault();
-                                    if (mobile || "cc-number" === that.autocomplete || "cc-exp" === that.autocomplete) return args = arguments, 
-                                    setTimeout(function() {
+                                    if (mobile) return args = arguments, setTimeout(function() {
                                         eventHandler.apply(that, args), caret(that, that.inputmask.caretPos, void 0, !0);
                                     }, 0), !1;
+                                    if ("cc-number" === that.autocomplete || "cc-exp" === that.autocomplete) return setTimeout(function() {
+                                        applyInputValue(el, el.inputmask._valueGet(!0));
+                                    }, 100), !1;
                                     break;
 
                                   case "keydown":
