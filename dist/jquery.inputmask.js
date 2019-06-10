@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.179
+ * Version: 5.0.0-beta.180
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -198,8 +198,7 @@
                 colorMask: !1,
                 disablePredictiveText: !1,
                 importDataAttributes: !0,
-                shiftPositions: !0,
-                autocompleteDisableFocus: [ "cc-number", "cc-exp" ]
+                shiftPositions: !0
             },
             definitions: {
                 9: {
@@ -1210,7 +1209,6 @@
                     return lastPosition;
                 }
             }
-            opts.showMaskOnFocus = opts.showMaskOnFocus && -1 === opts.autocompleteDisableFocus.indexOf(el.autocomplete);
             var EventRuler = {
                 on: function on(input, eventName, eventHandler) {
                     var ev = function ev(e) {
@@ -1223,7 +1221,8 @@
                                 switch (e.type) {
                                   case "input":
                                     if (!0 === skipInputEvent) return skipInputEvent = !1, e.preventDefault();
-                                    if (mobile) return args = arguments, setTimeout(function() {
+                                    if (mobile || "cc-number" === that.autocomplete || "cc-exp" === that.autocomplete) return args = arguments, 
+                                    setTimeout(function() {
                                         eventHandler.apply(that, args), caret(that, that.inputmask.caretPos, void 0, !0);
                                     }, 0), !1;
                                     break;
