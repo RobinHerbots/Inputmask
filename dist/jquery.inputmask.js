@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.182
+ * Version: 5.0.0-beta.183
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1242,7 +1242,8 @@
                                   case "focus":
                                     return args = arguments, setTimeout(function() {
                                         eventHandler.apply(that, args);
-                                    }, 0), !1;
+                                    }, "cc-number" === that.autocomplete || "cc-exp" === that.autocomplete ? 1e3 : 0), 
+                                    !1;
                                 }
                                 var returnVal = eventHandler.apply(that, arguments);
                                 return !1 === returnVal && (e.preventDefault(), e.stopPropagation()), returnVal;
