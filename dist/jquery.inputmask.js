@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.185
+ * Version: 5.0.0-beta.186
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1394,7 +1394,7 @@
                 },
                 focusEvent: function focusEvent(e) {
                     var input = this, nptValue = this.inputmask._valueGet();
-                    console.log(nptValue), opts.showMaskOnFocus && (nptValue !== getBuffer().join("") ? writeBuffer(this, getBuffer(), seekNext(getLastValidPosition())) : !1 === mouseEnter && caret(this, seekNext(getLastValidPosition()))), 
+                    opts.showMaskOnFocus && (nptValue !== getBuffer().join("") ? writeBuffer(this, getBuffer(), seekNext(getLastValidPosition())) : !1 === mouseEnter && caret(this, seekNext(getLastValidPosition()))), 
                     !0 === opts.positionCaretOnTab && !1 === mouseEnter && EventHandlers.clickEvent.apply(this, [ e, !0 ]), 
                     undoValue = getBuffer().join("");
                 },
@@ -1755,7 +1755,7 @@
                 !0 === opts.colorMask && initializeColorMask(el), mobile && ("inputmode" in el && (el.inputmode = opts.inputmode, 
                 el.setAttribute("inputmode", opts.inputmode)), !0 === opts.disablePredictiveText && ("autocorrect" in el ? el.autocorrect = !1 : (!0 !== opts.colorMask && initializeColorMask(el), 
                 el.type = "password"))), !0 === isSupported && (el.setAttribute("data-im-insert", opts.insertMode), 
-                opts.showMaskOnFocus = opts.showMaskOnFocus || -1 !== [ "cc-number", "cc-exp" ].indexOf(el.autocomplete), 
+                opts.showMaskOnFocus = opts.showMaskOnFocus && -1 !== [ "cc-number", "cc-exp" ].indexOf(el.autocomplete), 
                 EventRuler.on(el, "submit", EventHandlers.submitEvent), EventRuler.on(el, "reset", EventHandlers.resetEvent), 
                 EventRuler.on(el, "blur", EventHandlers.blurEvent), EventRuler.on(el, "focus", EventHandlers.focusEvent), 
                 !0 !== opts.colorMask && (EventRuler.on(el, "click", EventHandlers.clickEvent), 
