@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.193
+ * Version: 5.0.0-beta.194
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -2232,6 +2232,11 @@
                 pos: pos
             } : result;
         }
+        function checkForLeadingZeroes(buffer, opts, strict) {
+            var numberMatches = new RegExp("(^" + ("" != opts.negationSymbol.front ? Inputmask.escapeRegex(opts.negationSymbol.front) + "?" : "") + Inputmask.escapeRegex(opts.prefix) + ")(.*)(" + Inputmask.escapeRegex(opts.suffix) + ("" != opts.negationSymbol.back ? Inputmask.escapeRegex(opts.negationSymbol.back) + "?" : "") + "$)").exec(buffer.slice().reverse().join("")), number = numberMatches ? numberMatches[2] : "", leadingzeroes = !1;
+            return number && (number = number.split(opts.radixPoint.charAt(0))[0], leadingzeroes = new RegExp("^[0" + opts.groupSeparator + "]*").exec(number)), 
+            !(!leadingzeroes || leadingzeroes[0].length > strict) && leadingzeroes;
+        }
         Inputmask.extendAliases({
             numeric: {
                 mask: genMask,
@@ -2286,7 +2291,7 @@
                     if (pos = hanndleRadixDance(pos, c, radixPos, opts), "-" !== c && c !== opts.negationSymbol.front) return -1 !== radixPos && !0 === opts._radixDance && !1 === isSelection && c === opts.radixPoint && void 0 !== opts.digits && (isNaN(opts.digits) || 0 < parseInt(opts.digits)) && radixPos !== pos ? {
                         caret: opts._radixDance && pos === radixPos - 1 ? radixPos + 1 : radixPos
                     } : {
-                        rewritePosition: isSelection ? caretPos.begin - 1 : pos
+                        rewritePosition: isSelection ? checkForLeadingZeroes(buffer, opts, !0) ? radixPos : caretPos.begin - 1 : pos
                     };
                     if (!0 !== opts.allowMinus) return !1;
                     var isNegative = !1, front = findValid("+", maskset), back = findValid("-", maskset);
@@ -2351,8 +2356,17 @@
                     alignDigits(initialValue.toString().split(""), digits, opts).join("");
                 },
                 onBeforeWrite: function onBeforeWrite(e, buffer, caretPos, opts) {
-                    var result, numberMatches = new RegExp("(^" + ("" != opts.negationSymbol.front ? Inputmask.escapeRegex(opts.negationSymbol.front) + "?" : "") + Inputmask.escapeRegex(opts.prefix) + ")(.*)(" + Inputmask.escapeRegex(opts.suffix) + ("" != opts.negationSymbol.back ? Inputmask.escapeRegex(opts.negationSymbol.back) + "?" : "") + "$)").exec(buffer.slice().reverse().join("")), number = numberMatches ? numberMatches[2] : "";
-                    if (0) var newCaretPos, buf, caretNdx, leadingzeroes;
+                    var result, leadingzeroes = checkForLeadingZeroes(buffer, opts);
+                    if (leadingzeroes) {
+                        var buf = buffer.slice().reverse(), caretNdx = buf.join("").indexOf(leadingzeroes[0]);
+                        buf.splice(caretNdx, leadingzeroes[0].length);
+                        var newCaretPos = buf.length - caretNdx;
+                        result = {
+                            refreshFromBuffer: !0,
+                            buffer: buf.reverse(),
+                            caret: caretPos < newCaretPos ? caretPos : newCaretPos
+                        };
+                    }
                     if (e) switch (e.type) {
                       case "blur":
                       case "checkval":
