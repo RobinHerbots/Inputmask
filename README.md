@@ -1013,7 +1013,7 @@ $(selector).inputmask({
 Hook to postValidate the result from isValid.  Usefull for validating the entry as a whole.  Args => buffer, pos, currentResult, opts<br>Return => true|false|command object
 
 ### preValidation
-Hook to preValidate the input.  Useful for validating regardless the definition. Args => buffer, pos, char, isSelection, opts => return true/false/command object
+Hook to preValidate the input.  Useful for validating regardless the definition. Args => buffer, pos, char, isSelection, opts, maskset, caretPos => return true/false/command object
 When return true, the normal validation kicks in, otherwise it is skipped.
 
 ### staticDefinitionSymbol

@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.192
+ * Version: 5.0.0-beta.193
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1007,7 +1007,7 @@
                 }
                 void 0 !== pos.begin && (maskPos = isRTL ? pos.end : pos.begin);
                 var result = !0, positionsClone = $.extend(!0, {}, maskset.validPositions);
-                if ($.isFunction(opts.preValidation) && !strict && !0 !== fromIsValid && !0 !== validateOnly && !0 !== fromAlternate && (result = opts.preValidation(getBuffer(), maskPos, c, isSelection(pos), opts, maskset), 
+                if ($.isFunction(opts.preValidation) && !strict && !0 !== fromIsValid && !0 !== validateOnly && !0 !== fromAlternate && (result = opts.preValidation(getBuffer(), maskPos, c, isSelection(pos), opts, maskset, pos), 
                 result = processCommandObject(result)), !0 === result) {
                     if ((void 0 === maxLength || maskPos < maxLength) && (result = _isValid(maskPos, c, strict), 
                     (!strict || !0 === fromIsValid) && !1 === result && !0 !== validateOnly)) {
@@ -2157,12 +2157,12 @@
                         }
                     }
                 },
-                preValidation: function preValidation(buffer, pos, c, isSelection, opts, maskset) {
+                preValidation: function preValidation(buffer, pos, c, isSelection, opts, maskset, caretPos) {
                     var radixPos = $.inArray(opts.radixPoint, buffer);
                     if (pos = hanndleRadixDance(pos, c, radixPos, opts), "-" !== c && c !== opts.negationSymbol.front) return -1 !== radixPos && !0 === opts._radixDance && !1 === isSelection && c === opts.radixPoint && void 0 !== opts.digits && (isNaN(opts.digits) || 0 < parseInt(opts.digits)) && radixPos !== pos ? {
                         caret: opts._radixDance && pos === radixPos - 1 ? radixPos + 1 : radixPos
                     } : {
-                        rewritePosition: pos
+                        rewritePosition: isSelection ? caretPos.begin - 1 : pos
                     };
                     if (!0 !== opts.allowMinus) return !1;
                     var isNegative = !1, front = findValid("+", maskset), back = findValid("-", maskset);
