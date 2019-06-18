@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.194
+ * Version: 5.0.0-beta.195
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -133,8 +133,8 @@
                     importOption(option, optionData);
                 }
             }
-            return $.extend(!0, opts, userOptions), ("rtl" === npt.dir || opts.rightAlign) && (npt.style.textAlign = "right"), 
-            ("rtl" === npt.dir || opts.numericInput) && (npt.dir = "ltr", npt.removeAttribute("dir"), 
+            return $.extend(!0, opts, userOptions), "rtl" !== npt.dir && !opts.rightAlign || (npt.style.textAlign = "right"), 
+            "rtl" !== npt.dir && !opts.numericInput || (npt.dir = "ltr", npt.removeAttribute("dir"), 
             opts.isRTL = !0), Object.keys(userOptions).length;
         }
         Inputmask.prototype = {
@@ -407,14 +407,14 @@
                 }
                 return this;
             },
-            trigger: function trigger(events) {
+            trigger: function trigger(events, argument_1) {
                 if (isValidElement(this[0])) for (var eventRegistry = this[0].eventRegistry, elem = this[0], _events = "string" == typeof events ? events.split(" ") : [ events.type ], endx = 0; endx < _events.length; endx++) {
                     var nsEvent = _events[endx].split("."), ev = nsEvent[0], namespace = nsEvent[1] || "global";
                     if (void 0 !== document && "global" === namespace) {
                         var evnt, i, params = {
                             bubbles: !0,
                             cancelable: !0,
-                            detail: arguments[1]
+                            detail: argument_1
                         };
                         if (document.createEvent) {
                             try {
@@ -423,7 +423,7 @@
                                 evnt = document.createEvent("CustomEvent"), evnt.initCustomEvent(ev, params.bubbles, params.cancelable, params.detail);
                             }
                             events.type && DependencyLib.extend(evnt, events), elem.dispatchEvent(evnt);
-                        } else evnt = document.createEventObject(), evnt.eventType = ev, evnt.detail = arguments[1], 
+                        } else evnt = document.createEventObject(), evnt.eventType = ev, evnt.detail = argument_1, 
                         events.type && DependencyLib.extend(evnt, events), elem.fireEvent("on" + evnt.eventType, evnt);
                     } else if (void 0 !== eventRegistry[ev]) if (events = events.type ? events : DependencyLib.Event(events), 
                     events.detail = arguments.slice(1), "global" === namespace) for (var nmsp in eventRegistry[ev]) for (i = 0; i < eventRegistry[ev][nmsp].length; i++) eventRegistry[ev][nmsp][i].apply(elem, arguments); else for (i = 0; i < eventRegistry[ev][namespace].length; i++) eventRegistry[ev][namespace][i].apply(elem, arguments);
@@ -974,7 +974,7 @@
                         if (match && testPos === pos || pos < testPos) break;
                     }
                 }
-                return (0 === matches.length || insertStop) && matches.push({
+                return 0 !== matches.length && !insertStop || matches.push({
                     match: {
                         fn: null,
                         static: !0,
@@ -1037,6 +1037,7 @@
                 return isMatch;
             }
             function alternate(pos, c, strict, fromIsValid, rAltPos) {
+                console.log("Alternate " + JSON.stringify(arguments));
                 var validPsClone = $.extend(!0, {}, maskset.validPositions), lastAlt, alternation, isValidRslt = !1, returnRslt = !1, altPos, prevAltPos, i, validPos, decisionPos, lAltPos = void 0 !== rAltPos ? rAltPos : getLastValidPosition();
                 function insertPosition(insert) {
                     if (insert && isValidRslt && void 0 !== c) {
@@ -1387,7 +1388,7 @@
                 }
             }, EventHandlers = {
                 keydownEvent: function keydownEvent(e) {
-                    var input = this, $input = $(this), k = e.keyCode, pos = caret(this), kdResult = opts.onKeyDown.call(this, e, getBuffer(), pos.begin, opts);
+                    var input = this, $input = $(this), k = e.keyCode, pos = caret(this), kdResult = opts.onKeyDown.call(this, e, getBuffer(), pos, opts);
                     if (void 0 !== kdResult) return kdResult;
                     if (k === Inputmask.keyCode.BACKSPACE || k === Inputmask.keyCode.DELETE || iphone && k === Inputmask.keyCode.BACKSPACE_SAFARI || e.ctrlKey && k === Inputmask.keyCode.X && !isInputEventSupported("cut")) e.preventDefault(), 
                     handleRemove(this, k, pos), writeBuffer(this, getBuffer(!0), maskset.p, e, this.inputmask._valueGet() !== getBuffer().join("")); else if (k === Inputmask.keyCode.END || k === Inputmask.keyCode.PAGE_DOWN) {
@@ -1441,7 +1442,7 @@
                     var pasteValue = inputValue;
                     if ($.isFunction(opts.onBeforePaste)) {
                         if (pasteValue = opts.onBeforePaste.call(inputmask, inputValue, opts), !1 === pasteValue) return e.preventDefault();
-                        pasteValue || (pasteValue = inputValue);
+                        pasteValue = pasteValue || inputValue;
                     }
                     return checkVal(this, !1, !1, pasteValue.toString().split("")), writeBuffer(this, getBuffer(), seekNext(getLastValidPosition()), e, undoValue !== getBuffer().join("")), 
                     e.preventDefault();
@@ -1513,9 +1514,9 @@
                         }
                     }
                 },
-                setValueEvent: function setValueEvent(e) {
-                    var input = this, value = e && e.detail ? e.detail[0] : arguments[1];
-                    value = value || this.inputmask._valueGet(!0), applyInputValue(this, value), (e.detail && void 0 !== e.detail[1] || void 0 !== arguments[2]) && caret(this, e.detail ? e.detail[1] : arguments[2]);
+                setValueEvent: function setValueEvent(e, argument_1, argument_2) {
+                    var input = this, value = e && e.detail ? e.detail[0] : argument_1;
+                    value = value || this.inputmask._valueGet(!0), applyInputValue(this, value), (e.detail && void 0 !== e.detail[1] || void 0 !== argument_2) && caret(this, e.detail ? e.detail[1] : argument_2);
                 },
                 focusEvent: function focusEvent(e) {
                     var input = this, nptValue = this.inputmask._valueGet();
@@ -2232,10 +2233,10 @@
                 pos: pos
             } : result;
         }
-        function checkForLeadingZeroes(buffer, opts, strict) {
+        function checkForLeadingZeroes(buffer, opts) {
             var numberMatches = new RegExp("(^" + ("" != opts.negationSymbol.front ? Inputmask.escapeRegex(opts.negationSymbol.front) + "?" : "") + Inputmask.escapeRegex(opts.prefix) + ")(.*)(" + Inputmask.escapeRegex(opts.suffix) + ("" != opts.negationSymbol.back ? Inputmask.escapeRegex(opts.negationSymbol.back) + "?" : "") + "$)").exec(buffer.slice().reverse().join("")), number = numberMatches ? numberMatches[2] : "", leadingzeroes = !1;
             return number && (number = number.split(opts.radixPoint.charAt(0))[0], leadingzeroes = new RegExp("^[0" + opts.groupSeparator + "]*").exec(number)), 
-            !(!leadingzeroes || leadingzeroes[0].length > strict) && leadingzeroes;
+            !(!leadingzeroes || !(1 < leadingzeroes[0].length || 0 < leadingzeroes[0].length && leadingzeroes[0].length < number.length)) && leadingzeroes;
         }
         Inputmask.extendAliases({
             numeric: {
@@ -2291,7 +2292,7 @@
                     if (pos = hanndleRadixDance(pos, c, radixPos, opts), "-" !== c && c !== opts.negationSymbol.front) return -1 !== radixPos && !0 === opts._radixDance && !1 === isSelection && c === opts.radixPoint && void 0 !== opts.digits && (isNaN(opts.digits) || 0 < parseInt(opts.digits)) && radixPos !== pos ? {
                         caret: opts._radixDance && pos === radixPos - 1 ? radixPos + 1 : radixPos
                     } : {
-                        rewritePosition: isSelection ? checkForLeadingZeroes(buffer, opts, !0) ? radixPos : caretPos.begin - 1 : pos
+                        rewritePosition: isSelection && caretPos.end < radixPos ? radixPos : pos
                     };
                     if (!0 !== opts.allowMinus) return !1;
                     var isNegative = !1, front = findValid("+", maskset), back = findValid("-", maskset);
@@ -2389,12 +2390,12 @@
                         return this.inputmask.__valueSet.call(this, parseFloat(this.inputmask.unmaskedvalue()) - parseInt(opts.step)), 
                         $input.trigger("setvalue"), !1;
                     }
-                    if ((e.keyCode === Inputmask.keyCode.DELETE || e.keyCode === Inputmask.keyCode.BACKSPACE || e.keyCode === Inputmask.keyCode.BACKSPACE_SAFARI) && !0 === opts._radixDance && !opts.digitsOptional) {
+                    if (!(e.shiftKey || e.keyCode !== Inputmask.keyCode.DELETE && e.keyCode !== Inputmask.keyCode.BACKSPACE && e.keyCode !== Inputmask.keyCode.BACKSPACE_SAFARI || !0 !== opts._radixDance || opts.digitsOptional)) {
                         var radixPos = $.inArray(opts.radixPoint, buffer);
-                        if (-1 !== radixPos && (caretPos < radixPos || e.keyCode === Inputmask.keyCode.DELETE && caretPos === radixPos)) {
-                            e.keyCode !== Inputmask.keyCode.BACKSPACE && e.keyCode !== Inputmask.keyCode.BACKSPACE_SAFARI || caretPos++;
+                        if (-1 !== radixPos && (caretPos.begin < radixPos || e.keyCode === Inputmask.keyCode.DELETE && caretPos.begin === radixPos)) {
+                            e.keyCode !== Inputmask.keyCode.BACKSPACE && e.keyCode !== Inputmask.keyCode.BACKSPACE_SAFARI || caretPos.begin++;
                             var bffr = buffer.slice().reverse();
-                            return bffr.splice(bffr.length - caretPos, 1), $input.trigger("setvalue", [ alignDigits(bffr, opts.digits, opts).join(""), caretPos ]), 
+                            return bffr.splice(bffr.length - caretPos.begin, 1), $input.trigger("setvalue", [ alignDigits(bffr, opts.digits, opts).join(""), caretPos.begin ]), 
                             !1;
                         }
                     }
