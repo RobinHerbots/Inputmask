@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.197
+ * Version: 5.0.0-beta.198
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1240,7 +1240,7 @@
                                   case "focus":
                                     return args = arguments, setTimeout(function() {
                                         eventHandler.apply(that, args);
-                                    }, 0), !1;
+                                    }, 0), !0;
                                 }
                                 var returnVal = eventHandler.apply(that, arguments);
                                 return !1 === returnVal && (e.preventDefault(), e.stopPropagation()), returnVal;
@@ -1397,7 +1397,7 @@
                 focusEvent: function focusEvent(e) {
                     var input = this, nptValue = this.inputmask._valueGet();
                     opts.showMaskOnFocus && nptValue !== getBuffer().join("") && writeBuffer(this, getBuffer(), seekNext(getLastValidPosition())), 
-                    !0 !== opts.positionCaretOnTab || !1 !== mouseEnter || isComplete(getBuffer()) || EventHandlers.clickEvent.apply(this, [ e, !0 ]), 
+                    !0 !== opts.positionCaretOnTab || !1 !== mouseEnter || isComplete(getBuffer()) && -1 !== getLastValidPosition() || EventHandlers.clickEvent.apply(this, [ e, !0 ]), 
                     undoValue = getBuffer().join("");
                 },
                 mouseleaveEvent: function mouseleaveEvent() {
