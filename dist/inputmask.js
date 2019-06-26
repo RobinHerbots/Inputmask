@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.203
+ * Version: 5.0.0-beta.204
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -15,6 +15,11 @@
         __webpack_require__(1), __webpack_require__(7), __webpack_require__(8), module.exports = __webpack_require__(2);
     }, function(module, exports, __webpack_require__) {
         var Inputmask = __webpack_require__(2);
+        function ipValidator(chrs, maskset, pos, strict, opts) {
+            return chrs = -1 < pos - 1 && "." !== maskset.buffer[pos - 1] ? (chrs = maskset.buffer[pos - 1] + chrs, 
+            -1 < pos - 2 && "." !== maskset.buffer[pos - 2] ? maskset.buffer[pos - 2] + chrs : "0" + chrs) : "00" + chrs, 
+            new RegExp("25[0-5]|2[0-4][0-9]|[01][0-9][0-9]").test(chrs);
+        }
         Inputmask.extendDefinitions({
             A: {
                 validator: "[A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
@@ -37,14 +42,19 @@
                 autoUnmask: !1
             },
             ip: {
-                mask: "i[i[i]].i[i[i]].i[i[i]].i[i[i]]",
+                mask: "i[i[i]].j[j[j]].k[k[k]].l[l[l]]",
                 definitions: {
                     i: {
-                        validator: function validator(chrs, maskset, pos, strict, opts) {
-                            return chrs = -1 < pos - 1 && "." !== maskset.buffer[pos - 1] ? (chrs = maskset.buffer[pos - 1] + chrs, 
-                            -1 < pos - 2 && "." !== maskset.buffer[pos - 2] ? maskset.buffer[pos - 2] + chrs : "0" + chrs) : "00" + chrs, 
-                            new RegExp("25[0-5]|2[0-4][0-9]|[01][0-9][0-9]").test(chrs);
-                        }
+                        validator: ipValidator
+                    },
+                    j: {
+                        validator: ipValidator
+                    },
+                    k: {
+                        validator: ipValidator
+                    },
+                    l: {
+                        validator: ipValidator
                     }
                 },
                 onUnMask: function onUnMask(maskedValue, unmaskedValue, opts) {
