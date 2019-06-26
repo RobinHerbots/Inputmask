@@ -5,9 +5,10 @@
 - add indian numbering support in numeric alias (indianns alias)
 
 ### Updates
+- ignore generated statics in revalidateMask
 - fix mask curruption when alternating and using jitmasking
 - Casing option will also allow case insensitive entry for static symbols
-- refactor numeric alias (ongoing - 8)
+- refactor numeric alias
 - package & bundling
 - enhance regex alternations. ex: [01][0-9]|2[0-3] => ([01][0-9]|2[0-3])
 - extend command object
