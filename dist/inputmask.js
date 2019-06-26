@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.200
+ * Version: 5.0.0-beta.203
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -894,7 +894,7 @@
                                     if ("string" == typeof altIndex) altIndexArr = altIndex.split(","); else for (amndx = 0; amndx < alternateToken.matches.length; amndx++) altIndexArr.push(amndx.toString());
                                     if (maskset.excludes[pos]) {
                                         for (var altIndexArrClone = altIndexArr.slice(), i = 0, el = maskset.excludes[pos].length; i < el; i++) altIndexArr.splice(altIndexArr.indexOf(maskset.excludes[pos][i].toString()), 1);
-                                        0 === altIndexArr.length && (maskset.excludes[pos] = void 0, altIndexArr = altIndexArrClone);
+                                        0 === altIndexArr.length && (delete maskset.excludes[pos], altIndexArr = altIndexArrClone);
                                     }
                                     (!0 === opts.keepStatic || isFinite(parseInt(opts.keepStatic)) && currentPos >= opts.keepStatic) && (altIndexArr = altIndexArr.slice(0, 1));
                                     for (var unMatchedAlternation = !1, ndx = 0; ndx < altIndexArr.length; ndx++) {
@@ -1037,7 +1037,6 @@
                 return isMatch;
             }
             function alternate(pos, c, strict, fromIsValid, rAltPos) {
-                console.log("Alternate " + JSON.stringify(arguments));
                 var validPsClone = $.extend(!0, {}, maskset.validPositions), lastAlt, alternation, isValidRslt = !1, returnRslt = !1, altPos, prevAltPos, i, validPos, decisionPos, lAltPos = void 0 !== rAltPos ? rAltPos : getLastValidPosition();
                 function insertPosition(insert) {
                     if (insert && isValidRslt && void 0 !== c) {
@@ -1069,18 +1068,18 @@
                         if (insertPosition(0 < pos), isValidRslt) break;
                         if (resetMaskSet(), prevAltPos = getTest(decisionPos), maskset.validPositions = $.extend(!0, {}, validPsClone), 
                         !maskset.excludes[decisionPos]) {
-                            isValidRslt = alternate(pos, c, strict, fromIsValid, decisionPos - 1);
+                            returnRslt = alternate(pos, c, strict, fromIsValid, decisionPos - 1);
                             break;
                         }
                         var decisionTaker = getDecisionTaker(prevAltPos);
                         if (-1 !== maskset.excludes[decisionPos].indexOf(decisionTaker)) {
-                            isValidRslt = alternate(pos, c, strict, fromIsValid, decisionPos - 1);
+                            returnRslt = alternate(pos, c, strict, fromIsValid, decisionPos - 1);
                             break;
                         }
                         for (maskset.excludes[decisionPos].push(decisionTaker), i = decisionPos; i < getLastValidPosition(void 0, !0) + 1; i++) delete maskset.validPositions[i];
                     }
                 }
-                return maskset.excludes[decisionPos] = void 0, returnRslt;
+                return delete maskset.excludes[decisionPos], returnRslt;
             }
             function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly) {
                 function isSelection(posObj) {
@@ -1201,12 +1200,12 @@
                     for (i = j, validTest && (maskset.validPositions[validatedPos] = $.extend(!0, {}, validTest), 
                     posMatch++, j++, begin < end && i++); i <= lvp; i++) {
                         var t = positionsClone[i];
-                        if (void 0 !== t && (end <= i || begin <= i && !0 !== t.generatedInput && IsEnclosedStatic(i, positionsClone, {
+                        if (void 0 !== t && !0 !== t.generatedInput && (end <= i || begin <= i && IsEnclosedStatic(i, positionsClone, {
                             begin: begin,
                             end: end
                         }))) {
                             for (;"" !== getTest(posMatch).match.def; ) {
-                                if (!1 === needsValidation && positionsClone[posMatch] && positionsClone[posMatch].match.nativeDef === t.match.nativeDef) maskset.validPositions[posMatch] = $.extend(!0, {}, positionsClone[posMatch]), 
+                                if (!1 === needsValidation && positionsClone[posMatch] && positionsClone[posMatch].match.nativeDef === t.match.nativeDef && !0 !== t.generatedInput) maskset.validPositions[posMatch] = $.extend(!0, {}, positionsClone[posMatch]), 
                                 maskset.validPositions[posMatch].input = t.input, trackbackPositions(void 0, posMatch, !0), 
                                 j = posMatch + 1, valid = !0; else if (opts.shiftPositions && (positionCanMatchDefinition(posMatch, t.match.def) || "+" === t.match.def)) {
                                     "+" === t.match.def && getBuffer(!0);
