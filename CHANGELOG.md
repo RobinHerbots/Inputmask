@@ -15,6 +15,7 @@
     - rewritePosition
 
 ### Fixed
+- Char before quantifier gets duplicated in tests #2152
 - FireFox - mask placeholder doesn't disappear #2138
 - im-insert not valid html #2122
 - No message with HTML5 validation #841
