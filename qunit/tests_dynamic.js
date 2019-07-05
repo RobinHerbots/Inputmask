@@ -445,4 +445,20 @@ export default function (qunit, Inputmask) {
 		$("#testmask").Type("12123451234");
 		assert.equal(testmask.value, "(12) 12345-1234", "Result " + testmask.value);
 	});
+
+	qunit.test("Char before quantifier gets duplicated in tests #2152", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("9{*}.aaa", {
+			numericInput:false
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").trigger("click");
+		$("#testmask").Type("123abc");
+		$.caret(testmask, 1);
+		$("#testmask").Type(".");
+		assert.equal(testmask.value, "123.abc", "Result " + testmask.value);
+	});
 };
