@@ -1108,7 +1108,7 @@ Default: true
 
 ### shiftPositions
 Shift position of the mask entries on entry and deletion.
-In some cases shift the mask enties isn't desired.  
+In some cases shift the mask entries isn't desired.  
 Ex. date masks.  Shifting month to day makes no sense
 
 Default: true
