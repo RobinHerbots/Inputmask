@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.204
+ * Version: 5.0.0-beta.205
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -407,7 +407,7 @@
                 }
                 opts.mask = opts.mask.pop();
             }
-            return ms = opts.mask && void 0 !== opts.mask.mask && !$.isFunction(opts.mask.mask) ? generateMask(opts.mask.mask, opts.mask, opts) : generateMask(opts.mask, opts.mask, opts), 
+            return null === opts.keepStatic && (opts.keepStatic = !1), ms = opts.mask && void 0 !== opts.mask.mask && !$.isFunction(opts.mask.mask) ? generateMask(opts.mask.mask, opts.mask, opts) : generateMask(opts.mask, opts.mask, opts), 
             ms;
         }
         function analyseMask(mask, regexMask, opts) {
@@ -691,12 +691,12 @@
             function getTest(pos, tests) {
                 return maskset.validPositions[pos] ? maskset.validPositions[pos] : (tests || getTests(pos))[0];
             }
-            function positionCanMatchDefinition(pos, def) {
-                for (var valid = !1, tests = getTests(pos), tndx = 0; tndx < tests.length; tndx++) if (tests[tndx].match && tests[tndx].match.def === def) {
+            function positionCanMatchDefinition(pos, testDefinition, opts) {
+                for (var valid = !1, tests = getTests(pos), defProp = opts.shiftPositions ? "def" : "nativeDef", tndx = 0; tndx < tests.length; tndx++) if (tests[tndx].match && tests[tndx].match[defProp] === testDefinition.match[defProp]) {
                     valid = !0;
                     break;
                 }
-                return !1 === valid && void 0 !== maskset.jitOffset[pos] && (valid = positionCanMatchDefinition(pos + maskset.jitOffset[pos], def)), 
+                return !1 === valid && void 0 !== maskset.jitOffset[pos] && (valid = positionCanMatchDefinition(pos + maskset.jitOffset[pos], testDefinition, opts)), 
                 valid;
             }
             function getTests(pos, ndxIntlzr, tstPs) {
@@ -1082,7 +1082,7 @@
                     var positionsClone = $.extend(!0, {}, maskset.validPositions), lvp = getLastValidPosition(void 0, !0), i;
                     for (maskset.p = begin, i = lvp; begin <= i; i--) delete maskset.validPositions[i], 
                     void 0 === validTest && delete maskset.tests[i + 1];
-                    var valid = !0, j = validatedPos, needsValidation = 0 === validatedPos, posMatch = j;
+                    var valid = !0, j = validatedPos, posMatch = j;
                     for (i = j, validTest && (maskset.validPositions[validatedPos] = $.extend(!0, {}, validTest), 
                     posMatch++, j++, begin < end && i++); i <= lvp; i++) {
                         var t = positionsClone[i];
@@ -1091,15 +1091,13 @@
                             end: end
                         }))) {
                             for (;"" !== getTest(posMatch).match.def; ) {
-                                if (!1 === needsValidation && positionsClone[posMatch] && positionsClone[posMatch].match.nativeDef === t.match.nativeDef && !0 !== t.generatedInput) maskset.validPositions[posMatch] = $.extend(!0, {}, positionsClone[posMatch]), 
-                                maskset.validPositions[posMatch].input = t.input, trackbackPositions(void 0, posMatch, !0), 
-                                j = posMatch + 1, valid = !0; else if (opts.shiftPositions && (positionCanMatchDefinition(posMatch, t.match.def) || "+" === t.match.def)) {
+                                if (positionCanMatchDefinition(posMatch, t, opts) || "+" === t.match.def) {
                                     "+" === t.match.def && getBuffer(!0);
                                     var result = isValid(posMatch, t.input, "+" !== t.match.def, "+" !== t.match.def);
-                                    valid = !1 !== result, j = (result.pos || posMatch) + 1, needsValidation = !0;
+                                    if (valid = !1 !== result, j = (result.pos || posMatch) + 1, !valid) break;
                                 } else valid = !0 === t.generatedInput;
                                 if (valid) break;
-                                if (!valid && end < posMatch && isMask(posMatch, !0) && (!0 !== t.match.static || posMatch > maskset.maskLength)) break;
+                                if (!valid && posMatch > maskset.maskLength) break;
                                 posMatch++;
                             }
                             "" == getTest(posMatch).match.def && (valid = !1), posMatch = j;
@@ -1595,7 +1593,7 @@
                 if (k === Inputmask.keyCode.BACKSPACE && pos.end - pos.begin < 1 ? (pos.begin = seekPrevious(pos.begin), 
                 void 0 !== maskset.validPositions[pos.begin] && maskset.validPositions[pos.begin].input === opts.groupSeparator && pos.begin--) : k === Inputmask.keyCode.DELETE && pos.begin === pos.end && (pos.end = isMask(pos.end, !0) && maskset.validPositions[pos.end] && maskset.validPositions[pos.end].input !== opts.radixPoint ? pos.end + 1 : seekNext(pos.end) + 1, 
                 void 0 !== maskset.validPositions[pos.begin] && maskset.validPositions[pos.begin].input === opts.groupSeparator && pos.end++), 
-                revalidateMask(pos), !0 !== strict && !1 !== opts.keepStatic || null !== opts.regex) {
+                revalidateMask(pos), !0 !== strict && !1 !== opts.keepStatic || null !== opts.regex && -1 !== getTest(pos.begin).match.def.indexOf("|")) {
                     var result = alternate(!0);
                     if (result) {
                         var newPos = void 0 !== result.caret ? result.caret : result.pos ? seekNext(result.pos.begin ? result.pos.begin : result.pos) : getLastValidPosition(-1, !0);

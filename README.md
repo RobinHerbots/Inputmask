@@ -1107,11 +1107,15 @@ If you don't use data attributes you can disable the import by specifying import
 Default: true
 
 ### shiftPositions
-Shift position of the mask entries on entry and deletion.
-In some cases shift the mask entries isn't desired.  
+Alter the behavior of the char shifting on entry or deletion.
+
+In some cases shifting the mask entries or deletion should be more restrictive.  
 Ex. date masks.  Shifting month to day makes no sense
 
 Default: true
+
+true = shift on the "def" match
+false = shift on the "nativeDef" match
 
 ## General
 ### set a value and apply mask
