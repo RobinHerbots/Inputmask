@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.205
+ * Version: 5.0.0-beta.206
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1147,11 +1147,11 @@
                     (!strict || !0 === fromIsValid) && !1 === result && !0 !== validateOnly)) {
                         var currentPosValid = maskset.validPositions[maskPos];
                         if (!currentPosValid || !0 !== currentPosValid.match.static || currentPosValid.match.def !== c && c !== opts.skipOptionalPartCharacter) {
-                            if (opts.insertMode || void 0 === maskset.validPositions[seekNext(maskPos)]) {
+                            if (opts.insertMode || void 0 === maskset.validPositions[seekNext(maskPos)] || pos.end > maskPos) {
                                 var skip = !1;
                                 if (maskset.jitOffset[maskPos] && void 0 === maskset.validPositions[seekNext(maskPos)] && (result = isValid(maskPos + maskset.jitOffset[maskPos], c, !0), 
                                 !1 !== result && (!0 !== fromAlternate && (result.caret = maskPos), skip = !0)), 
-                                !skip && !isMask(maskPos, !0)) for (var nPos = maskPos + 1, snPos = seekNext(maskPos); nPos <= snPos; nPos++) if (result = _isValid(nPos, c, strict), 
+                                pos.end > maskPos && (maskset.validPositions[maskPos] = void 0), !skip && !isMask(maskPos, !0)) for (var nPos = maskPos + 1, snPos = seekNext(maskPos); nPos <= snPos; nPos++) if (result = _isValid(nPos, c, strict), 
                                 !1 !== result) {
                                     result = trackbackPositions(maskPos, void 0 !== result.pos ? result.pos : nPos) || result, 
                                     maskPos = nPos;
@@ -2166,7 +2166,8 @@
                     return 0 == test.nativeDef.indexOf("[ap]") ? elem.toLowerCase() : 0 == test.nativeDef.indexOf("[AP]") ? elem.toUpperCase() : elem;
                 },
                 insertMode: !1,
-                shiftPositions: !1
+                shiftPositions: !1,
+                keepStatic: !1
             }
         }), module.exports = Inputmask;
     }, function(module, exports, __webpack_require__) {

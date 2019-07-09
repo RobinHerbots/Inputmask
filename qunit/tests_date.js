@@ -197,6 +197,23 @@ export default function (qunit, Inputmask) {
         assert.equal(testmask.value, "01/01/1939", "Result " + testmask.value);
     });
 
+    qunit.test("overtype fuzzy valid entry", function (assert) {
+        var $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask("datetime", {
+            inputFormat: "dd/mm/yyyy"
+        }).mask(testmask);
+
+        testmask.focus();
+        $("#testmask").Type("2331973");
+        $.caret(testmask, 0, "23/03/1973".length);
+        $("#testmask").Type("882018");
+
+        assert.equal(testmask.value, "08/08/2018", "Result " + testmask.value);
+    });
+
+
     qunit.module("Date.Extensions - mm/dd/yyyy");
     qunit.test("valid entry", function (assert) {
         var $fixture = $("#qunit-fixture");
@@ -387,6 +404,22 @@ export default function (qunit, Inputmask) {
         assert.equal(testmask.value, "01/01/1939", "Result " + testmask.value);
     });
 
+    qunit.test("overtype fuzzy valid entry", function (assert) {
+        var $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask("datetime", {
+            inputFormat: "mm/dd/yyyy"
+        }).mask(testmask);
+
+        testmask.focus();
+        $("#testmask").Type("3231973");
+        $.caret(testmask, 0, "03/23/1973".length);
+        $("#testmask").Type("882018");
+
+        assert.equal(testmask.value, "08/08/2018", "Result " + testmask.value);
+    });
+
     qunit.module("Date.Extensions - dd.mm.yyyy");
     qunit.test("valid entry", function (assert) {
         var $fixture = $("#qunit-fixture");
@@ -575,6 +608,22 @@ export default function (qunit, Inputmask) {
         testmask.focus();
         $("#testmask").val("01011939");
         assert.equal(testmask.value, "01.01.1939", "Result " + testmask.value);
+    });
+
+    qunit.test("overtype fuzzy valid entry", function (assert) {
+        var $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask("datetime", {
+            inputFormat: "dd.mm.yyyy"
+        }).mask(testmask);
+
+        testmask.focus();
+        $("#testmask").Type("2331973");
+        $.caret(testmask, 0, "23.03.1973".length);
+        $("#testmask").Type("882018");
+
+        assert.equal(testmask.value, "08.08.2018", "Result " + testmask.value);
     });
 
     qunit.module("Date.Extensions - misc");
