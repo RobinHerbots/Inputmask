@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.206
+ * Version: 5.0.0-beta.207
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1395,19 +1395,25 @@
                 }
             }, EventHandlers = {
                 keydownEvent: function keydownEvent(e) {
-                    var input = this, $input = $(this), k = e.keyCode, pos = caret(this), kdResult = opts.onKeyDown.call(this, e, getBuffer(), pos, opts);
+                    var input = this, $input = $(input), k = e.keyCode, pos = caret(input), kdResult = opts.onKeyDown.call(this, e, getBuffer(), pos, opts);
                     if (void 0 !== kdResult) return kdResult;
                     if (k === Inputmask.keyCode.BACKSPACE || k === Inputmask.keyCode.DELETE || iphone && k === Inputmask.keyCode.BACKSPACE_SAFARI || e.ctrlKey && k === Inputmask.keyCode.X && !isInputEventSupported("cut")) e.preventDefault(), 
-                    handleRemove(this, k, pos), writeBuffer(this, getBuffer(!0), maskset.p, e, this.inputmask._valueGet() !== getBuffer().join("")); else if (k === Inputmask.keyCode.END || k === Inputmask.keyCode.PAGE_DOWN) {
+                    handleRemove(input, k, pos), writeBuffer(input, getBuffer(!0), maskset.p, e, input.inputmask._valueGet() !== getBuffer().join("")); else if (k === Inputmask.keyCode.END || k === Inputmask.keyCode.PAGE_DOWN) {
                         e.preventDefault();
                         var caretPos = seekNext(getLastValidPosition());
-                        caret(this, e.shiftKey ? pos.begin : caretPos, caretPos, !0);
+                        caret(input, e.shiftKey ? pos.begin : caretPos, caretPos, !0);
                     } else k === Inputmask.keyCode.HOME && !e.shiftKey || k === Inputmask.keyCode.PAGE_UP ? (e.preventDefault(), 
-                    caret(this, 0, e.shiftKey ? pos.begin : 0, !0)) : (opts.undoOnEscape && k === Inputmask.keyCode.ESCAPE || 90 === k && e.ctrlKey) && !0 !== e.altKey ? (checkVal(this, !0, !1, undoValue.split("")), 
-                    $input.trigger("click")) : k !== Inputmask.keyCode.INSERT || e.shiftKey || e.ctrlKey ? !0 === opts.tabThrough && k === Inputmask.keyCode.TAB && (!0 === e.shiftKey ? (!0 === getTest(pos.begin).match.static && (pos.begin = seekNext(pos.begin)), 
+                    caret(input, 0, e.shiftKey ? pos.begin : 0, !0)) : (opts.undoOnEscape && k === Inputmask.keyCode.ESCAPE || 90 === k && e.ctrlKey) && !0 !== e.altKey ? (checkVal(input, !0, !1, undoValue.split("")), 
+                    $input.trigger("click")) : k !== Inputmask.keyCode.INSERT || e.shiftKey || e.ctrlKey ? !0 === opts.tabThrough && k === Inputmask.keyCode.TAB ? (!0 === e.shiftKey ? (!0 === getTest(pos.begin).match.static && (pos.begin = seekNext(pos.begin)), 
                     pos.end = seekPrevious(pos.begin, !0), pos.begin = seekPrevious(pos.end, !0)) : (pos.begin = seekNext(pos.begin, !0), 
                     pos.end = seekNext(pos.begin, !0), pos.end < maskset.maskLength && pos.end--), pos.begin < maskset.maskLength && (e.preventDefault(), 
-                    caret(this, pos.begin, pos.end))) : (opts.insertMode = !opts.insertMode, this.setAttribute("data-im-insert", opts.insertMode));
+                    caret(input, pos.begin, pos.end))) : e.shiftKey || !1 === opts.insertMode && (k === Inputmask.keyCode.RIGHT ? setTimeout(function() {
+                        var caretPos = caret(input);
+                        caret(input, caretPos.begin);
+                    }, 0) : k === Inputmask.keyCode.LEFT && setTimeout(function() {
+                        var caretPos = caret(input);
+                        caret(input, isRTL ? caretPos.begin + 1 : caretPos.begin - 1);
+                    }, 0)) : (opts.insertMode = !opts.insertMode, caret(input, pos.begin, pos.end));
                     ignorable = -1 !== $.inArray(k, opts.ignorables);
                 },
                 keypressEvent: function keypressEvent(e, checkval, writeOut, strict, ndx) {
@@ -1652,7 +1658,8 @@
                     begin = notranslate ? begin : translatePosition(begin), end = notranslate ? end : translatePosition(end), 
                     end = "number" == typeof end ? end : begin;
                     var scrollCalc = parseInt(((input.ownerDocument.defaultView || window).getComputedStyle ? (input.ownerDocument.defaultView || window).getComputedStyle(input, null) : input.currentStyle).fontSize) * end;
-                    if (input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0, input.inputmask.caretPos = {
+                    if (input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0, !1 === opts.insertMode && begin === end && end++, 
+                    input.inputmask.caretPos = {
                         begin: begin,
                         end: end
                     }, input === document.activeElement) {
@@ -1887,8 +1894,7 @@
                 maxLength = void 0 !== el ? el.maxLength : void 0, -1 === maxLength && (maxLength = void 0), 
                 !0 === opts.colorMask && initializeColorMask(el), mobile && ("inputmode" in el && (el.inputmode = opts.inputmode, 
                 el.setAttribute("inputmode", opts.inputmode)), !0 === opts.disablePredictiveText && ("autocorrect" in el ? el.autocorrect = !1 : (!0 !== opts.colorMask && initializeColorMask(el), 
-                el.type = "password"))), !0 === isSupported && (el.setAttribute("data-im-insert", opts.insertMode), 
-                opts.showMaskOnFocus = opts.showMaskOnFocus && -1 === [ "cc-number", "cc-exp" ].indexOf(el.autocomplete), 
+                el.type = "password"))), !0 === isSupported && (opts.showMaskOnFocus = opts.showMaskOnFocus && -1 === [ "cc-number", "cc-exp" ].indexOf(el.autocomplete), 
                 EventRuler.on(el, "submit", EventHandlers.submitEvent), EventRuler.on(el, "reset", EventHandlers.resetEvent), 
                 EventRuler.on(el, "blur", EventHandlers.blurEvent), EventRuler.on(el, "focus", EventHandlers.focusEvent), 
                 !0 !== opts.colorMask && (EventRuler.on(el, "click", EventHandlers.clickEvent), 

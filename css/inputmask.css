@@ -62,8 +62,3 @@ div.im-colormask > div {
     display: inline-block;
     width: 100px; /*calculated*/
 }
-
-[data-im-insert="false"] {
-    caret-color: red;
-    caret-shape: block;
-}

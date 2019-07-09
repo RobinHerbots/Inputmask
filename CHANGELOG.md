@@ -13,6 +13,7 @@
 - enhance regex alternations. ex: [01][0-9]|2[0-3] => ([01][0-9]|2[0-3])
 - extend command object
     - rewritePosition
+- revert insert-mode caret as selection instead of colored caret
 
 ### Fixed
 - Char before quantifier gets duplicated in tests #2152
