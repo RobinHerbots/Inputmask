@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.207
+ * Version: 5.0.0-beta.208
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1648,7 +1648,8 @@
                 range.commonAncestorContainer.parentNode !== input && range.commonAncestorContainer !== input || (begin = range.startOffset, 
                 end = range.endOffset)) : document.selection && document.selection.createRange && (range = document.selection.createRange(), 
                 begin = 0 - range.duplicate().moveStart("character", -input.inputmask._valueGet().length), 
-                end = begin + range.text.length), {
+                end = begin + range.text.length), !1 === opts.insertMode && begin === end - 1 && end--, 
+                {
                     begin: notranslate ? begin : translatePosition(begin),
                     end: notranslate ? end : translatePosition(end)
                 };
@@ -1658,11 +1659,10 @@
                     begin = notranslate ? begin : translatePosition(begin), end = notranslate ? end : translatePosition(end), 
                     end = "number" == typeof end ? end : begin;
                     var scrollCalc = parseInt(((input.ownerDocument.defaultView || window).getComputedStyle ? (input.ownerDocument.defaultView || window).getComputedStyle(input, null) : input.currentStyle).fontSize) * end;
-                    if (input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0, !1 === opts.insertMode && begin === end && end++, 
-                    input.inputmask.caretPos = {
+                    if (input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0, input.inputmask.caretPos = {
                         begin: begin,
                         end: end
-                    }, input === document.activeElement) {
+                    }, !1 === opts.insertMode && begin === end && end++, input === document.activeElement) {
                         if ("setSelectionRange" in input) input.setSelectionRange(begin, end); else if (window.getSelection) {
                             if (range = document.createRange(), void 0 === input.firstChild || null === input.firstChild) {
                                 var textNode = document.createTextNode("");
