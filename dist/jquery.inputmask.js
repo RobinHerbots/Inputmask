@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.208
+ * Version: 5.0.0-beta.209
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1270,11 +1270,11 @@
                     }));
                 }
             }, EventHandlers = {
-                keydownEvent: function keydownEvent(e) {
+                keydownEvent: function keydownEvent(e, fromInputFallback) {
                     var input = this, $input = $(input), k = e.keyCode, pos = caret(input), kdResult = opts.onKeyDown.call(this, e, getBuffer(), pos, opts);
                     if (void 0 !== kdResult) return kdResult;
                     if (k === Inputmask.keyCode.BACKSPACE || k === Inputmask.keyCode.DELETE || iphone && k === Inputmask.keyCode.BACKSPACE_SAFARI || e.ctrlKey && k === Inputmask.keyCode.X && !isInputEventSupported("cut")) e.preventDefault(), 
-                    handleRemove(input, k, pos), writeBuffer(input, getBuffer(!0), maskset.p, e, input.inputmask._valueGet() !== getBuffer().join("")); else if (k === Inputmask.keyCode.END || k === Inputmask.keyCode.PAGE_DOWN) {
+                    handleRemove(input, k, pos), writeBuffer(input, getBuffer(!0), !0 === fromInputFallback && !1 === opts.insertMode ? seekPrevious(maskset.p) : maskset.p, e, input.inputmask._valueGet() !== getBuffer().join("")); else if (k === Inputmask.keyCode.END || k === Inputmask.keyCode.PAGE_DOWN) {
                         e.preventDefault();
                         var caretPos = seekNext(getLastValidPosition());
                         caret(input, e.shiftKey ? pos.begin : caretPos, caretPos, !0);
@@ -1377,7 +1377,7 @@
                                 selection.begin === selection.end - 1 ? caret(input, selection.begin) : caret(input, selection.begin, selection.end));
                                 var keydown = new $.Event("keydown");
                                 keydown.keyCode = opts.numericInput ? Inputmask.keyCode.BACKSPACE : Inputmask.keyCode.DELETE, 
-                                EventHandlers.keydownEvent.call(input, keydown);
+                                EventHandlers.keydownEvent.call(input, keydown, !0);
                             }
                             e.preventDefault();
                         }
