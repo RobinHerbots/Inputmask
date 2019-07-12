@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.209
+ * Version: 5.0.0-beta.210
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1786,10 +1786,16 @@
                         begin: caretPos,
                         end: caretPos
                     }), !0 !== clear) {
-                        for (var lvp = getLastValidPosition(); maskset.validPositions[pos] ? (testPos = maskset.validPositions[pos], 
-                        test = testPos.match, ndxIntlzr = testPos.locator.slice(), setEntry(buffer[pos])) : (testPos = getTestTemplate(pos, ndxIntlzr, pos - 1), 
-                        test = testPos.match, ndxIntlzr = testPos.locator.slice(), !1 === opts.jitMasking || pos < lvp || "number" == typeof opts.jitMasking && isFinite(opts.jitMasking) && opts.jitMasking > pos ? setEntry(getPlaceholder(pos, test)) : isStatic = !1), 
-                        pos++, (void 0 === maxLength || pos < maxLength) && (!0 !== test.static || "" !== test.def) || pos < lvp || isStatic; ) ;
+                        var lvp = getLastValidPosition();
+                        do {
+                            if (maskset.validPositions[pos]) testPos = maskset.validPositions[pos], test = testPos.match, 
+                            ndxIntlzr = testPos.locator.slice(), setEntry(buffer[pos]); else {
+                                testPos = getTestTemplate(pos, ndxIntlzr, pos - 1), test = testPos.match, ndxIntlzr = testPos.locator.slice();
+                                var jitMasking = !1 !== opts.jitMasking ? opts.jitMasking : test.jit;
+                                !1 === jitMasking || void 0 === jitMasking || "number" == typeof jitMasking && isFinite(jitMasking) && pos < jitMasking ? setEntry(getPlaceholder(pos, test)) : isStatic = !1;
+                            }
+                            pos++;
+                        } while ((void 0 === maxLength || pos < maxLength) && (!0 !== test.static || "" !== test.def) || pos < lvp || isStatic);
                         isStatic && setEntry(), setCaret();
                     }
                     var template = colorMask.getElementsByTagName("div")[0];
