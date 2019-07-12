@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.210
+ * Version: 5.0.0-beta.211
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1799,7 +1799,7 @@
                         isStatic && setEntry(), setCaret();
                     }
                     var template = colorMask.getElementsByTagName("div")[0];
-                    template.innerHTML = maskTemplate.join(""), input.inputmask.positionColorMask(input, template);
+                    template.innerHTML = (isRTL ? maskTemplate.reverse() : maskTemplate).join(""), input.inputmask.positionColorMask(input, template);
                 }
             }
             function applyInputValue(input, value) {
