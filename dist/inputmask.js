@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.211
+ * Version: 5.0.0-beta.212
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1284,7 +1284,7 @@
                 return test.def;
             }
             function HandleNativePlaceholder(npt, value) {
-                if (ie) {
+                if (ie || opts.colorMask) {
                     if (npt.inputmask._valueGet() !== value && (npt.placeholder !== value || "" === npt.placeholder)) {
                         var buffer = getBuffer().slice(), nptValue = npt.inputmask._valueGet();
                         if (nptValue !== value) {
@@ -1407,13 +1407,16 @@
                     $input.trigger("click")) : k !== Inputmask.keyCode.INSERT || e.shiftKey || e.ctrlKey ? !0 === opts.tabThrough && k === Inputmask.keyCode.TAB ? (!0 === e.shiftKey ? (!0 === getTest(pos.begin).match.static && (pos.begin = seekNext(pos.begin)), 
                     pos.end = seekPrevious(pos.begin, !0), pos.begin = seekPrevious(pos.end, !0)) : (pos.begin = seekNext(pos.begin, !0), 
                     pos.end = seekNext(pos.begin, !0), pos.end < maskset.maskLength && pos.end--), pos.begin < maskset.maskLength && (e.preventDefault(), 
-                    caret(input, pos.begin, pos.end))) : e.shiftKey || !1 === opts.insertMode && (k === Inputmask.keyCode.RIGHT ? setTimeout(function() {
+                    caret(input, pos.begin, pos.end))) : e.shiftKey || (!1 === opts.insertMode ? k === Inputmask.keyCode.RIGHT ? setTimeout(function() {
                         var caretPos = caret(input);
                         caret(input, caretPos.begin);
                     }, 0) : k === Inputmask.keyCode.LEFT && setTimeout(function() {
                         var caretPos = caret(input);
                         caret(input, isRTL ? caretPos.begin + 1 : caretPos.begin - 1);
-                    }, 0)) : (opts.insertMode = !opts.insertMode, caret(input, pos.begin, pos.end));
+                    }, 0) : !0 === opts.colorMask && (k !== Inputmask.keyCode.RIGHT && k !== Inputmask.keyCode.LEFT || setTimeout(function() {
+                        var caretPos = caret(input, void 0, void 0, !0);
+                        renderColorMask(input, caretPos);
+                    }, 0))) : (opts.insertMode = !opts.insertMode, caret(input, pos.begin, pos.end));
                     ignorable = -1 !== $.inArray(k, opts.ignorables);
                 },
                 keypressEvent: function keypressEvent(e, checkval, writeOut, strict, ndx) {
@@ -1637,11 +1640,11 @@
                 }
                 return unmaskedValue;
             }
+            function translatePosition(pos) {
+                return !isRTL || "number" != typeof pos || opts.greedy && "" === opts.placeholder || !el || (pos = el.inputmask._valueGet().length - pos), 
+                pos;
+            }
             function caret(input, begin, end, notranslate) {
-                function translatePosition(pos) {
-                    return !isRTL || "number" != typeof pos || opts.greedy && "" === opts.placeholder || !el || (pos = el.inputmask._valueGet().length - pos), 
-                    pos;
-                }
                 var range;
                 if (void 0 === begin) return "selectionStart" in input && "selectionEnd" in input ? (begin = input.selectionStart, 
                 end = input.selectionEnd) : window.getSelection ? (range = window.getSelection().getRangeAt(0), 
@@ -1743,9 +1746,10 @@
                     e.style.textTransform = computedStyle.textTransform, e.style.letterSpacing = computedStyle.letterSpacing, 
                     e.style.position = "absolute", e.style.height = "auto", e.style.width = "auto", 
                     e.style.visibility = "hidden", e.style.whiteSpace = "nowrap", document.body.appendChild(e);
-                    var inputText = input.inputmask._valueGet(), previousWidth = 0, itl;
+                    var inputText = input.inputmask.__valueGet.call(input), previousWidth = 0, itl;
                     for (caretPos = 0, itl = inputText.length; caretPos <= itl; caretPos++) {
-                        if (e.innerHTML += inputText.charAt(caretPos) || "_", e.offsetWidth >= clientx) {
+                        var ichar = inputText.charAt(caretPos);
+                        if (e.innerHTML += " " === ichar ? "_" : ichar, e.offsetWidth >= clientx) {
                             var offset1 = clientx - previousWidth, offset2 = e.offsetWidth - clientx;
                             e.innerHTML = inputText.charAt(caretPos), offset1 -= e.offsetWidth / 3, caretPos = offset1 < offset2 ? caretPos - 1 : caretPos;
                             break;
@@ -1764,39 +1768,43 @@
                 }), $(colorMask).on("mouseenter", function(e) {
                     return EventHandlers.mouseenterEvent.call(input, [ e ]);
                 }), $(colorMask).on("click", function(e) {
-                    return caret(input, findCaretPos(e.clientX)), EventHandlers.clickEvent.call(input, [ e ]);
+                    return caret(input, findCaretPos(e.clientX), void 0, !0), EventHandlers.clickEvent.call(input, [ e ]);
                 });
             }
             function renderColorMask(input, caretPos, clear) {
-                var maskTemplate = [], isStatic = !1, test, testPos, ndxIntlzr, pos = 0;
+                var maskTemplate = [], isStatic = !1, test, testPos, ndxIntlzr, pos = 0, templates_static = {
+                    start: isRTL ? "</span>" : "<span class='im-static'>",
+                    end: isRTL ? "<span class='im-static'>" : "</span>"
+                }, templates_caret = {
+                    start: '<mark class="im-caret" style="border-right-width: 1px;border-right-style: solid;">',
+                    start_select: '<mark class="im-caret-select">',
+                    end: "</mark>"
+                };
                 function setEntry(entry) {
-                    if (void 0 === entry && (entry = ""), isStatic || !0 !== test.static && void 0 !== testPos.input) if (isStatic && (!0 !== test.static && void 0 !== testPos.input || "" === test.def)) {
-                        isStatic = !1;
-                        var mtl = maskTemplate.length;
-                        maskTemplate[mtl - 1] = maskTemplate[mtl - 1] + "</span>", maskTemplate.push(entry);
-                    } else maskTemplate.push(entry); else isStatic = !0, maskTemplate.push("<span class='im-static'>" + entry);
+                    maskTemplate.push(entry);
                 }
-                function setCaret() {
-                    document.activeElement === input && (maskTemplate.splice(caretPos.begin, 0, caretPos.begin === caretPos.end || caretPos.end > maskset.maskLength ? '<mark class="im-caret" style="border-right-width: 1px;border-right-style: solid;">' : '<mark class="im-caret-select">'), 
-                    maskTemplate.splice(caretPos.end + 1, 0, "</mark>"));
+                function setCaret(begin, end, length) {
+                    document.activeElement === input && (maskTemplate.splice(begin, 0, begin === end || length > maskset.maskLength ? templates_caret.start : templates_caret.start_select), 
+                    maskTemplate.splice(end + (isRTL ? 0 : 1), 0, templates_caret.end));
                 }
                 if (void 0 !== colorMask) {
                     var buffer = getBuffer();
                     if (void 0 === caretPos ? caretPos = caret(input) : void 0 === caretPos.begin && (caretPos = {
                         begin: caretPos,
                         end: caretPos
-                    }), !0 !== clear) {
+                    }), isRTL && (caretPos.begin = translatePosition(caretPos.begin), caretPos.end = translatePosition(caretPos.end)), 
+                    !0 !== clear) {
                         var lvp = getLastValidPosition();
                         do {
                             if (maskset.validPositions[pos]) testPos = maskset.validPositions[pos], test = testPos.match, 
                             ndxIntlzr = testPos.locator.slice(), setEntry(buffer[pos]); else {
                                 testPos = getTestTemplate(pos, ndxIntlzr, pos - 1), test = testPos.match, ndxIntlzr = testPos.locator.slice();
                                 var jitMasking = !1 !== opts.jitMasking ? opts.jitMasking : test.jit;
-                                !1 === jitMasking || void 0 === jitMasking || "number" == typeof jitMasking && isFinite(jitMasking) && pos < jitMasking ? setEntry(getPlaceholder(pos, test)) : isStatic = !1;
+                                (!1 === jitMasking || void 0 === jitMasking || "number" == typeof jitMasking && isFinite(jitMasking) && pos < jitMasking) && setEntry(getPlaceholder(pos, test));
                             }
                             pos++;
-                        } while ((void 0 === maxLength || pos < maxLength) && (!0 !== test.static || "" !== test.def) || pos < lvp || isStatic);
-                        isStatic && setEntry(), setCaret();
+                        } while ((void 0 === maxLength || pos < maxLength) && (!0 !== test.static || "" !== test.def) || pos < lvp);
+                        setCaret(isRTL ? caretPos.end : caretPos.begin, isRTL ? caretPos.begin : caretPos.end, caretPos.end);
                     }
                     var template = colorMask.getElementsByTagName("div")[0];
                     template.innerHTML = (isRTL ? maskTemplate.reverse() : maskTemplate).join(""), input.inputmask.positionColorMask(input, template);
