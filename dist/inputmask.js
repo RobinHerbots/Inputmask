@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.213
+ * Version: 5.0.0-beta.214
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1741,20 +1741,24 @@
             function initializeColorMask(input) {
                 var computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
                 function findCaretPos(clientx) {
-                    var e = document.createElement("span"), caretPos;
+                    var e = document.createElement("span"), caretPos = 0;
                     for (var style in computedStyle) isNaN(style) && -1 !== style.indexOf("font") && (e.style[style] = computedStyle[style]);
                     e.style.textTransform = computedStyle.textTransform, e.style.letterSpacing = computedStyle.letterSpacing, 
                     e.style.position = "absolute", e.style.height = "auto", e.style.width = "auto", 
                     e.style.visibility = "hidden", e.style.whiteSpace = "nowrap", document.body.appendChild(e);
-                    var inputText = input.inputmask.__valueGet.call(input), previousWidth = 0, itl;
-                    for (caretPos = 0, itl = inputText.length; caretPos <= itl; caretPos++) {
+                    for (var inputText = input.inputmask.__valueGet.call(input), previousWidth = 0; e.offsetWidth < clientx; ) {
                         var ichar = inputText.charAt(caretPos);
-                        if (e.innerHTML += " " === ichar ? "_" : ichar, e.offsetWidth >= clientx) {
+                        if (e.innerHTML += " " === ichar || "" === ichar ? "_" : ichar, e.offsetWidth >= clientx) {
                             var offset1 = clientx - previousWidth, offset2 = e.offsetWidth - clientx;
-                            e.innerHTML = inputText.charAt(caretPos), offset1 -= e.offsetWidth / 3, caretPos = offset1 < offset2 ? caretPos - 1 : caretPos;
+                            caretPos = (offset1 < offset2 ? caretPos - 1 : caretPos) - 1;
                             break;
                         }
-                        previousWidth = e.offsetWidth;
+                        previousWidth = e.offsetWidth, caretPos++;
+                    }
+                    if ("right" === input.style.textAlign) {
+                        e.innerHTML = "_";
+                        var maxChars = Math.ceil(input.offsetWidth / e.offsetWidth) - 1;
+                        caretPos = inputText.length - (maxChars - caretPos) + 1;
                     }
                     return document.body.removeChild(e), caretPos;
                 }
