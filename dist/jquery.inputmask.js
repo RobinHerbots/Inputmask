@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.214
+ * Version: 5.0.0-beta.215
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1622,14 +1622,13 @@
                     e.style.textTransform = computedStyle.textTransform, e.style.letterSpacing = computedStyle.letterSpacing, 
                     e.style.position = "absolute", e.style.height = "auto", e.style.width = "auto", 
                     e.style.visibility = "hidden", e.style.whiteSpace = "nowrap", document.body.appendChild(e);
-                    for (var inputText = input.inputmask.__valueGet.call(input), previousWidth = 0; e.offsetWidth < clientx; ) {
+                    for (var inputText = input.inputmask.__valueGet.call(input); e.offsetWidth < clientx; ) {
                         var ichar = inputText.charAt(caretPos);
                         if (e.innerHTML += " " === ichar || "" === ichar ? "_" : ichar, e.offsetWidth >= clientx) {
-                            var offset1 = clientx - previousWidth, offset2 = e.offsetWidth - clientx;
-                            caretPos = (offset1 < offset2 ? caretPos - 1 : caretPos) - 1;
+                            caretPos--;
                             break;
                         }
-                        previousWidth = e.offsetWidth, caretPos++;
+                        caretPos++;
                     }
                     if ("right" === input.style.textAlign) {
                         e.innerHTML = "_";
