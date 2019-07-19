@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.215
+ * Version: 5.0.0-beta.216
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -2078,7 +2078,8 @@
             result;
         }
         function parse(format, dateObjValue, opts, raw) {
-            for (var mask = "", match; match = getTokenizer(opts).exec(format); ) if (void 0 === dateObjValue) if (formatCode[match[0]]) mask += "(" + formatCode[match[0]][0] + ")"; else switch (match[0]) {
+            var mask = "", match;
+            for (getTokenizer(opts).lastIndex = 0; match = getTokenizer(opts).exec(format); ) if (void 0 === dateObjValue) if (formatCode[match[0]]) mask += "(" + formatCode[match[0]][0] + ")"; else switch (match[0]) {
               case "[":
                 mask += "(";
                 break;
@@ -2112,7 +2113,7 @@
                 void 0 !== dateOperation && dateOperation.call(dateObj.date, "month" == targetProp ? parseInt(dateObj[targetProp]) - 1 : dateObj[targetProp]);
             }
             if ("string" == typeof mask) {
-                for (;match = getTokenizer(opts).exec(format); ) {
+                for (getTokenizer(opts).lastIndex = 0; match = getTokenizer(opts).exec(format); ) {
                     var value = mask.slice(0, match[0].length);
                     formatCode.hasOwnProperty(match[0]) && (targetProp = formatCode[match[0]][2], dateOperation = formatCode[match[0]][1], 
                     setValue(dateObj, value, opts)), mask = mask.slice(value.length);
@@ -2144,7 +2145,7 @@
                 preValidation: function preValidation(buffer, pos, c, isSelection, opts, maskset) {
                     var calcPos = 0, targetMatch, match;
                     if (isNaN(c) && buffer[pos] !== c) {
-                        for (;match = getTokenizer(opts).exec(opts.inputFormat); ) if (calcPos += match[0].length, 
+                        for (getTokenizer(opts).lastIndex = 0; match = getTokenizer(opts).exec(opts.inputFormat); ) if (calcPos += match[0].length, 
                         pos <= calcPos) {
                             targetMatch = match, match = getTokenizer(opts).exec(opts.inputFormat);
                             break;
@@ -2178,7 +2179,8 @@
                 onKeyDown: function onKeyDown(e, buffer, caretPos, opts) {
                     var input = this;
                     if (e.ctrlKey && e.keyCode === Inputmask.keyCode.RIGHT) {
-                        for (var today = new Date(), match, date = ""; match = getTokenizer(opts).exec(opts.inputFormat); ) "d" === match[0].charAt(0) ? date += pad(today.getDate(), match[0].length) : "m" === match[0].charAt(0) ? date += pad(today.getMonth() + 1, match[0].length) : "yyyy" === match[0] ? date += today.getFullYear().toString() : "y" === match[0].charAt(0) && (date += pad(today.getYear(), match[0].length));
+                        var today = new Date(), match, date = "";
+                        for (getTokenizer(opts).lastIndex = 0; match = getTokenizer(opts).exec(opts.inputFormat); ) "d" === match[0].charAt(0) ? date += pad(today.getDate(), match[0].length) : "m" === match[0].charAt(0) ? date += pad(today.getMonth() + 1, match[0].length) : "yyyy" === match[0] ? date += today.getFullYear().toString() : "y" === match[0].charAt(0) && (date += pad(today.getYear(), match[0].length));
                         this.inputmask._valueSet(date), $(this).trigger("setvalue");
                     }
                 },
