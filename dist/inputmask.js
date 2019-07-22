@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.217
+ * Version: 5.0.0-beta.218
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -853,12 +853,10 @@
                                 expanded.push(pattern.charAt(i));
                                 return expanded.join("");
                             }
-                            return opts.regex && !0 !== source.match.static && !0 !== target.match.static ? -1 !== expand(target.match.def.replace(/[[\]]/g, "")).indexOf(expand(source.match.def.replace(/[[\]]/g, ""))) : source.match.def === target.match.nativeDef;
+                            return source.match.def === target.match.nativeDef || !(!(opts.regex || source.match.fn instanceof RegExp && target.match.fn instanceof RegExp) || !0 === source.match.static || !0 === target.match.static) && -1 !== expand(target.match.fn.toString().replace(/[[\]/]/g, "")).indexOf(expand(source.match.fn.toString().replace(/[[\]/]/g, "")));
                         }
                         function staticCanMatchDefinition(source, target) {
-                            var sloc = source.locator.slice(source.alternation).join(""), tloc = target.locator.slice(target.alternation).join(""), canMatch = sloc == tloc;
-                            return canMatch = !(!canMatch || !0 !== source.match.static || !0 === target.match.static) && target.match.fn.test(source.match.def, maskset, pos, !1, opts, !1), 
-                            canMatch;
+                            return !0 === source.match.static && !0 !== target.match.static && target.match.fn.test(source.match.def, maskset, pos, !1, opts, !1);
                         }
                         function setMergeLocators(targetMatch, altMatch) {
                             if (void 0 === altMatch || targetMatch.alternation === altMatch.alternation && -1 === targetMatch.locator[targetMatch.alternation].toString().indexOf(altMatch.locator[altMatch.alternation])) {
@@ -2258,7 +2256,7 @@
             pos;
         }
         function decimalValidator(chrs, maskset, pos, strict, opts) {
-            var radixPos = maskset.buffer.indexOf(opts.radixPoint), result = -1 !== radixPos && new RegExp("[0-9\uff11-\uff19]").test(chrs);
+            var radixPos = maskset.buffer ? maskset.buffer.indexOf(opts.radixPoint) : -1, result = -1 !== radixPos && new RegExp("[0-9\uff11-\uff19]").test(chrs);
             return opts._radixDance && result && null == maskset.validPositions[radixPos] ? {
                 insert: {
                     pos: radixPos === pos ? radixPos + 1 : radixPos,
