@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.218
+ * Version: 5.0.0-beta.219
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1201,12 +1201,12 @@
                 var begin = void 0 !== pos.begin ? pos.begin : pos, end = void 0 !== pos.end ? pos.end : pos;
                 if (pos.begin > pos.end && (begin = pos.end, end = pos.begin), validatedPos = void 0 !== validatedPos ? validatedPos : begin, 
                 begin !== end || opts.insertMode && void 0 !== maskset.validPositions[validatedPos] && void 0 === fromIsValid) {
-                    var positionsClone = $.extend(!0, {}, maskset.validPositions), lvp = getLastValidPosition(void 0, !0), i;
+                    var positionsClone = $.extend(!0, {}, maskset.validPositions), lvp = void 0 === validTest && !1 === opts.insertMode ? pos.end - 1 : getLastValidPosition(void 0, !0), i;
                     for (maskset.p = begin, i = lvp; begin <= i; i--) delete maskset.validPositions[i], 
                     void 0 === validTest && delete maskset.tests[i + 1];
                     var valid = !0, j = validatedPos, posMatch = j;
-                    for (i = j, validTest && (maskset.validPositions[validatedPos] = $.extend(!0, {}, validTest), 
-                    posMatch++, j++, begin < end && i++); i <= lvp; i++) {
+                    if (i = j, validTest && (maskset.validPositions[validatedPos] = $.extend(!0, {}, validTest), 
+                    posMatch++, j++, begin < end && i++), validTest || opts.insertMode) for (;i <= lvp; i++) {
                         var t = positionsClone[i];
                         if (void 0 !== t && !0 !== t.generatedInput && (end <= i || begin <= i && IsEnclosedStatic(i, positionsClone, {
                             begin: begin,
@@ -1734,7 +1734,7 @@
                 }
                 var lvp = getLastValidPosition(pos.begin, !0);
                 if (lvp < pos.begin || -1 === pos.begin) maskset.p = seekNext(lvp); else if (!0 !== strict && (maskset.p = pos.begin, 
-                !0 !== fromIsValid)) for (;maskset.p < lvp && void 0 === maskset.validPositions[maskset.p]; ) maskset.p++;
+                !0 !== fromIsValid && 0 !== maskset.p)) for (;maskset.p < lvp && void 0 === maskset.validPositions[maskset.p]; ) maskset.p++;
             }
             function initializeColorMask(input) {
                 var computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
