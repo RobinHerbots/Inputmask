@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.219
+ * Version: 5.0.0-beta.220
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1285,8 +1285,8 @@
                         var caretPos = caret(input);
                         caret(input, caretPos.begin);
                     }, 0) : k === Inputmask.keyCode.LEFT && setTimeout(function() {
-                        var caretPos = caret(input);
-                        caret(input, isRTL ? caretPos.begin + 1 : caretPos.begin - 1);
+                        var caretPos_begin = translatePosition(input.inputmask.caretPos.begin), caretPos_end = translatePosition(input.inputmask.caretPos.end);
+                        caret(input, isRTL ? caretPos_begin + (caretPos_begin === maskset.maskLength ? 0 : 1) : caretPos_begin - (0 === caretPos_begin ? 0 : 1));
                     }, 0) : !0 === opts.colorMask && (k !== Inputmask.keyCode.RIGHT && k !== Inputmask.keyCode.LEFT || setTimeout(function() {
                         var caretPos = caret(input, void 0, void 0, !0);
                         renderColorMask(input, caretPos);
