@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.221
+ * Version: 5.0.0-beta.222
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1733,7 +1733,7 @@
                     }
                 }
                 var lvp = getLastValidPosition(pos.begin, !0);
-                if (lvp < pos.begin || -1 === pos.begin) maskset.p = seekNext(lvp); else if (!0 !== strict && (maskset.p = pos.begin, 
+                if (lvp < pos.begin || -1 === pos.begin) maskset.p = !1 === opts.insertMode ? lvp : seekNext(lvp); else if (!0 !== strict && (maskset.p = pos.begin, 
                 !0 !== fromIsValid && 0 !== maskset.p)) for (;maskset.p < lvp && void 0 === maskset.validPositions[maskset.p]; ) maskset.p++;
             }
             function initializeColorMask(input) {
