@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.222
+ * Version: 5.0.0-beta.223
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1615,11 +1615,13 @@
                             end: result.forwardPosition
                         }, prevCaretPos = inputmask.caretPos) : inputmask.caretPos = prevCaretPos;
                     }
-                }), 0 < staticMatches.length) if (!isComplete(getBuffer()) || staticMatches.length < seekNext(0)) for (;void 0 !== (sndx = staticMatches.pop()); ) {
-                    var keypress = new $.Event("_checkval"), nextSndx = sndx + 1;
-                    for (validPos = maskset.validPositions[sndx], validPos.generatedInput = !0, keypress.which = validPos.input.charCodeAt(0); (nextValid = maskset.validPositions[nextSndx]) && nextValid.input === validPos.input; ) nextSndx++;
-                    result = EventHandlers.keypressEvent.call(input, keypress, !0, !1, strict, nextSndx), 
-                    result && void 0 !== result.pos && result.pos !== sndx && maskset.validPositions[result.pos] && !0 === maskset.validPositions[result.pos].match.static && staticMatches.push(result.pos);
+                }), 0 < staticMatches.length) if (!isComplete(getBuffer()) || staticMatches.length < seekNext(0)) {
+                    for (;void 0 !== (sndx = staticMatches.pop()); ) if (sndx !== staticMatches.length) {
+                        var keypress = new $.Event("_checkval"), nextSndx = sndx + 1;
+                        for (validPos = maskset.validPositions[sndx], validPos.generatedInput = !0, keypress.which = validPos.input.charCodeAt(0); (nextValid = maskset.validPositions[nextSndx]) && nextValid.input === validPos.input; ) nextSndx++;
+                        result = EventHandlers.keypressEvent.call(input, keypress, !0, !1, strict, nextSndx), 
+                        result && void 0 !== result.pos && result.pos !== sndx && maskset.validPositions[result.pos] && !0 === maskset.validPositions[result.pos].match.static && staticMatches.push(result.pos);
+                    }
                 } else for (;sndx = staticMatches.pop(); ) validPos = maskset.validPositions[sndx], 
                 validPos && (validPos.generatedInput = !0);
                 writeOut && writeBuffer(input, getBuffer(), result ? result.forwardPosition : void 0, initiatingEvent || new $.Event("checkval"), initiatingEvent && "input" === initiatingEvent.type);
