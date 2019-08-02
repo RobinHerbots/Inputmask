@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.225
+ * Version: 5.0.0-beta.226
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1006,12 +1006,14 @@
                 void 0 === maskset._buffer && (maskset._buffer = maskset.buffer.slice())), maskset.buffer;
             }
             function refreshFromBuffer(start, end, buffer) {
-                var i, p;
-                if (!0 === start) resetMaskSet(), maskset.tests = {}, start = 0, end = buffer.length; else for (i = start; i < end; i++) delete maskset.validPositions[i];
-                for (p = start, i = start; i < end; i++) if (buffer[i] !== opts.skipOptionalPartCharacter) {
+                var i, p, skipOptionalPartCharacter = opts.skipOptionalPartCharacter;
+                if (opts.skipOptionalPartCharacter = "", !0 === start) resetMaskSet(), maskset.tests = {}, 
+                start = 0, end = buffer.length; else for (i = start; i < end; i++) delete maskset.validPositions[i];
+                for (p = start, i = start; i < end; i++) {
                     var valResult = isValid(p, buffer[i], !opts.negationSymbol || [ i ] !== opts.negationSymbol.front, !opts.negationSymbol || [ i ] !== opts.negationSymbol.front);
                     !1 !== valResult && (p = void 0 !== valResult.caret ? valResult.caret : valResult.pos + 1);
                 }
+                opts.skipOptionalPartCharacter = skipOptionalPartCharacter;
             }
             function casing(elem, test, pos) {
                 switch (opts.casing || test.casing) {
@@ -2392,12 +2394,19 @@
                     alignDigits(initialValue.toString().split(""), digits, opts).join("");
                 },
                 onBeforeWrite: function onBeforeWrite(e, buffer, caretPos, opts) {
+                    function stripBuffer(buffer) {
+                        if (!1 !== opts.__financeInput) {
+                            var position = $.inArray(opts.radixPoint, buffer);
+                            -1 !== position && buffer.splice(position, 1);
+                        }
+                        if ("" !== opts.groupSeparator) for (;-1 !== (position = buffer.indexOf(opts.groupSeparator)); ) buffer.splice(position, 1);
+                    }
                     var result, leadingzeroes = checkForLeadingZeroes(buffer, opts);
                     if (leadingzeroes) {
                         var buf = buffer.slice().reverse(), caretNdx = buf.join("").indexOf(leadingzeroes[0]);
                         buf.splice(caretNdx, leadingzeroes[0].length);
                         var newCaretPos = buf.length - caretNdx;
-                        result = {
+                        stripBuffer(buf), result = {
                             refreshFromBuffer: !0,
                             buffer: buf.reverse(),
                             caret: caretPos < newCaretPos ? caretPos : newCaretPos
@@ -2407,7 +2416,7 @@
                       case "blur":
                       case "checkval":
                         "" !== opts.radixPoint && buffer[0] === opts.radixPoint && (result && result.buffer ? result.buffer.shift() : (buffer.shift(), 
-                        result = {
+                        stripBuffer(buffer), result = {
                             refreshFromBuffer: !0,
                             buffer: buffer
                         }));
