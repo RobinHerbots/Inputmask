@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.224
+ * Version: 5.0.0-beta.225
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -2178,6 +2178,7 @@
                 autoUnmask: !1,
                 unmaskAsNumber: !1,
                 inputmode: "numeric",
+                skipOptionalPartCharacter: "",
                 definitions: {
                     0: {
                         validator: decimalValidator

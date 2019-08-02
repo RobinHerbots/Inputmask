@@ -16,6 +16,7 @@
 - revert insert-mode caret as selection instead of colored caret
 
 ### Fixed
+- Suffix and white-space groupSeparator problem #813
 - Char before quantifier gets duplicated in tests #2152
 - FireFox - mask placeholder doesn't disappear #2138
 - im-insert not valid html #2122
