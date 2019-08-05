@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.229
+ * Version: 5.0.0-beta.230
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1602,7 +1602,7 @@
                     var pend = pos.end;
                     pos.end = pos.begin, pos.begin = pend;
                 }
-                if (k === Inputmask.keyCode.BACKSPACE ? pos.end - pos.begin < 1 && (pos.begin = seekPrevious(pos.begin), 
+                if (k === Inputmask.keyCode.BACKSPACE || k === Inputmask.keyCode.DELETE && !1 === opts.insertMode ? pos.end - pos.begin < 1 && (pos.begin = seekPrevious(pos.begin), 
                 void 0 !== maskset.validPositions[pos.begin] && maskset.validPositions[pos.begin].input === opts.groupSeparator && pos.begin--) : k === Inputmask.keyCode.DELETE && pos.begin === pos.end && (pos.end = isMask(pos.end, !0) && maskset.validPositions[pos.end] && maskset.validPositions[pos.end].input !== opts.radixPoint ? pos.end + 1 : seekNext(pos.end) + 1, 
                 void 0 !== maskset.validPositions[pos.begin] && maskset.validPositions[pos.begin].input === opts.groupSeparator && pos.end++), 
                 revalidateMask(pos), !0 !== strict && !1 !== opts.keepStatic || null !== opts.regex && -1 !== getTest(pos.begin).match.def.indexOf("|")) {
@@ -1612,9 +1612,10 @@
                         (k !== Inputmask.keyCode.DELETE || pos.begin > newPos) && pos.begin;
                     }
                 }
-                var lvp = getLastValidPosition(pos.begin, !0);
-                if (lvp < pos.begin || -1 === pos.begin) maskset.p = !1 === opts.insertMode ? lvp : seekNext(lvp); else if (!0 !== strict && (maskset.p = pos.begin, 
-                !0 !== fromIsValid && 0 !== maskset.p)) for (;maskset.p < lvp && void 0 === maskset.validPositions[maskset.p]; ) maskset.p++;
+                var lvp = getLastValidPosition(pos.end, !0);
+                lvp < pos.begin ? maskset.p = !1 === opts.insertMode ? seekPrevious(lvp + 1) : seekNext(lvp) : !0 !== strict && (maskset.p = pos.begin, 
+                !1 === opts.insertMode && k === Inputmask.keyCode.DELETE && (maskset.p = pos.end + 1, 
+                void 0 === maskset.validPositions[maskset.p] && getLastValidPosition(maskset.maskLength, !0) < maskset.p && (maskset.p = seekPrevious(lvp + 1))));
             }
             function initializeColorMask(input) {
                 var computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
