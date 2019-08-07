@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.230
+ * Version: 5.0.0-beta.231
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1168,7 +1168,7 @@
                     });
                 }
                 if ($.isFunction(opts.postValidation) && !1 !== result && !strict && !0 !== fromIsValid && !0 !== validateOnly) {
-                    var postResult = opts.postValidation(getBuffer(!0), void 0 !== pos.begin ? isRTL ? pos.end : pos.begin : pos, result, opts);
+                    var postResult = opts.postValidation(getBuffer(!0), void 0 !== pos.begin ? isRTL ? pos.end : pos.begin : pos, result, opts, maskset);
                     void 0 !== postResult && (result = !0 === postResult ? result : postResult);
                 }
                 result && void 0 === result.pos && (result.pos = maskPos), !1 === result || !0 === validateOnly ? (resetMaskSet(!0), 
@@ -2146,7 +2146,7 @@
                     monthNames: [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ],
                     ordinalSuffix: [ "st", "nd", "rd", "th" ]
                 },
-                preValidation: function preValidation(buffer, pos, c, isSelection, opts, maskset) {
+                preValidation: function preValidation(buffer, pos, c, isSelection, opts, maskset, caretPos) {
                     var calcPos = 0, targetMatch, match;
                     if (isNaN(c) && buffer[pos] !== c) {
                         for (getTokenizer(opts).lastIndex = 0; match = getTokenizer(opts).exec(opts.inputFormat); ) if (calcPos += match[0].length, 
@@ -2167,9 +2167,16 @@
                     }
                     return !0;
                 },
-                postValidation: function postValidation(buffer, pos, currentResult, opts) {
+                postValidation: function postValidation(buffer, pos, currentResult, opts, maskset) {
                     opts.min = analyseMask(opts.min, opts.inputFormat, opts), opts.max = analyseMask(opts.max, opts.inputFormat, opts), 
                     currentResult.fuzzy && (buffer = currentResult.buffer, pos = currentResult.pos);
+                    var calcPos = 0, match;
+                    for (getTokenizer(opts).lastIndex = 0; (match = getTokenizer(opts).exec(opts.inputFormat)) && (calcPos += match[0].length, 
+                    !(pos < calcPos)); ) ;
+                    if (match && match[0] && void 0 !== formatCode[match[0]]) {
+                        var validator = formatCode[match[0]][0], part = buffer.slice(match.index, match.index + match[0].length);
+                        !1 === new RegExp(validator).test(part.join("")) && 2 === match[0].length && maskset.validPositions[match.index] && maskset.validPositions[match.index + 1] && (maskset.validPositions[match.index + 1].input = "0");
+                    }
                     var result = currentResult, dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
                     return result && dateParts.date.getTime() == dateParts.date.getTime() && (result = isValidDate(dateParts, result), 
                     result = result && isDateInRange(dateParts, opts)), pos && result && currentResult.pos !== pos ? {
@@ -2350,7 +2357,7 @@
                         caret: pos < radixPos ? pos + 1 : pos
                     };
                 },
-                postValidation: function postValidation(buffer, pos, currentResult, opts) {
+                postValidation: function postValidation(buffer, pos, currentResult, opts, maskset) {
                     if (null !== opts.min || null !== opts.max) {
                         var unmasked = opts.onUnMask(buffer.slice().reverse().join(""), void 0, $.extend({}, opts, {
                             unmaskAsNumber: !0
