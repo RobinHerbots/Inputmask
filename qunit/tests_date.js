@@ -654,6 +654,21 @@ export default function (qunit, Inputmask) {
 
         testmask.focus();
         $("#testmask").val("1230");
-        assert.equal(testmask.value, "11:MM", "Result " + testmask.value);
+        assert.equal(testmask.value, "10:MM", "Result " + testmask.value);
+    });
+
+    qunit.test("hh:MM TT type 99a - goto first pos - type 1", function (assert) {
+        var $fixture = $("#qunit-fixture");
+        $fixture.append('<input type="text" id="testmask" />');
+        var testmask = document.getElementById("testmask");
+        Inputmask("datetime", {
+            inputFormat: "hh:MM TT"
+        }).mask(testmask);
+
+        testmask.focus();
+        $("#testmask").Type("99a");
+        $.caret(testmask, 0);
+        $("#testmask").Type("1");
+        assert.equal(testmask.value, "10:09 AM", "Result " + testmask.value);
     });
 };

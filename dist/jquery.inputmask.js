@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.231
+ * Version: 5.0.0-beta.232
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -776,7 +776,7 @@
                                 if (-1 === altIndex || "string" == typeof altIndex) {
                                     var currentPos = testPos, ndxInitializerClone = ndxInitializer.slice(), altIndexArr = [], amndx;
                                     if ("string" == typeof altIndex) altIndexArr = altIndex.split(","); else for (amndx = 0; amndx < alternateToken.matches.length; amndx++) altIndexArr.push(amndx.toString());
-                                    if (maskset.excludes[pos]) {
+                                    if (void 0 !== maskset.excludes[pos]) {
                                         for (var altIndexArrClone = altIndexArr.slice(), i = 0, el = maskset.excludes[pos].length; i < el; i++) altIndexArr.splice(altIndexArr.indexOf(maskset.excludes[pos][i].toString()), 1);
                                         0 === altIndexArr.length && (delete maskset.excludes[pos], altIndexArr = altIndexArrClone);
                                     }
@@ -945,7 +945,7 @@
                     for (i = decisionPos; i < getLastValidPosition(void 0, !0) + 1; i++) validPos = maskset.validPositions[i], 
                     validPos && !0 !== validPos.generatedInput ? validInputsClone.push(validPos.input) : i < pos && staticInputsBeforePos++, 
                     delete maskset.validPositions[i];
-                    for (;maskset.excludes[decisionPos] && maskset.excludes[decisionPos].length < 10; ) {
+                    for (;void 0 !== maskset.excludes[decisionPos] && maskset.excludes[decisionPos].length < 10; ) {
                         var posOffset = -1 * staticInputsBeforePos, validInputs = validInputsClone.slice();
                         for (maskset.tests[decisionPos] = void 0, resetMaskSet(!0), isValidRslt = !0, insertPosition(0 === pos); 0 < validInputs.length; ) {
                             var input = validInputs.shift();
@@ -1019,25 +1019,26 @@
                 var result = !0, positionsClone = $.extend(!0, {}, maskset.validPositions);
                 if ($.isFunction(opts.preValidation) && !strict && !0 !== fromIsValid && !0 !== validateOnly && !0 !== fromAlternate && (result = opts.preValidation(getBuffer(), maskPos, c, isSelection(pos), opts, maskset, pos), 
                 result = processCommandObject(result)), !0 === result) {
-                    if ((void 0 === maxLength || maskPos < maxLength) && (result = _isValid(maskPos, c, strict), 
-                    (!strict || !0 === fromIsValid) && !1 === result && !0 !== validateOnly)) {
-                        var currentPosValid = maskset.validPositions[maskPos];
-                        if (!currentPosValid || !0 !== currentPosValid.match.static || currentPosValid.match.def !== c && c !== opts.skipOptionalPartCharacter) {
-                            if (opts.insertMode || void 0 === maskset.validPositions[seekNext(maskPos)] || pos.end > maskPos) {
-                                var skip = !1;
-                                if (maskset.jitOffset[maskPos] && void 0 === maskset.validPositions[seekNext(maskPos)] && (result = isValid(maskPos + maskset.jitOffset[maskPos], c, !0), 
-                                !1 !== result && (!0 !== fromAlternate && (result.caret = maskPos), skip = !0)), 
-                                pos.end > maskPos && (maskset.validPositions[maskPos] = void 0), !skip && !isMask(maskPos, !0)) for (var nPos = maskPos + 1, snPos = seekNext(maskPos); nPos <= snPos; nPos++) if (result = _isValid(nPos, c, strict), 
-                                !1 !== result) {
-                                    result = trackbackPositions(maskPos, void 0 !== result.pos ? result.pos : nPos) || result, 
-                                    maskPos = nPos;
-                                    break;
+                    if (void 0 === maxLength || maskPos < maxLength) {
+                        if (result = _isValid(maskPos, c, strict), (!strict || !0 === fromIsValid) && !1 === result && !0 !== validateOnly) {
+                            var currentPosValid = maskset.validPositions[maskPos];
+                            if (!currentPosValid || !0 !== currentPosValid.match.static || currentPosValid.match.def !== c && c !== opts.skipOptionalPartCharacter) {
+                                if (opts.insertMode || void 0 === maskset.validPositions[seekNext(maskPos)] || pos.end > maskPos) {
+                                    var skip = !1;
+                                    if (maskset.jitOffset[maskPos] && void 0 === maskset.validPositions[seekNext(maskPos)] && (result = isValid(maskPos + maskset.jitOffset[maskPos], c, !0), 
+                                    !1 !== result && (!0 !== fromAlternate && (result.caret = maskPos), skip = !0)), 
+                                    pos.end > maskPos && (maskset.validPositions[maskPos] = void 0), !skip && !isMask(maskPos, !0)) for (var nPos = maskPos + 1, snPos = seekNext(maskPos); nPos <= snPos; nPos++) if (result = _isValid(nPos, c, strict), 
+                                    !1 !== result) {
+                                        result = trackbackPositions(maskPos, void 0 !== result.pos ? result.pos : nPos) || result, 
+                                        maskPos = nPos;
+                                        break;
+                                    }
                                 }
-                            }
-                        } else result = {
-                            caret: seekNext(maskPos)
-                        };
-                    }
+                            } else result = {
+                                caret: seekNext(maskPos)
+                            };
+                        }
+                    } else result = !1;
                     !1 !== result || !1 === opts.keepStatic || null != opts.regex && !isComplete(getBuffer()) || strict || !0 === fromAlternate || (result = alternate(maskPos, c, strict, fromIsValid)), 
                     !0 === result && (result = {
                         pos: maskPos
