@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.232
+ * Version: 5.0.0-beta.235
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -347,7 +347,9 @@
             CONTROL: 17
         }, Inputmask.dependencyLib = $, window.Inputmask = Inputmask, module.exports = Inputmask;
     }, function(module, exports, __webpack_require__) {
-        module.exports = __webpack_require__(5);
+        var jquery = __webpack_require__(5);
+        if (void 0 === jquery) throw "jQuery not loaded!";
+        module.exports = jquery;
     }, function(module, exports) {
         module.exports = __WEBPACK_EXTERNAL_MODULE__5__;
     }, function(module, exports, __webpack_require__) {

@@ -16,6 +16,7 @@
 - revert insert-mode caret as selection instead of colored caret
 
 ### Fixed
+- Uncaught TypeError: $(...).inputmask is not a function #1933
 - 12Hr Format time Hour error #2121
 - Backspace alters value/mask in datetime #2163
 - Suffix and white-space groupSeparator problem #813
