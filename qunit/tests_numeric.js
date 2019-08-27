@@ -279,7 +279,7 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		setTimeout(function () {
 			$("#testmask").Type("00000");
-			assert.equal($("#testmask")[0].inputmask._valueGet(), "0", "Result " + testmask.value);
+			assert.equal(testmask.value, "0", "Result " + testmask.value);
 			done();
 		}, 0);
 
@@ -566,54 +566,6 @@ export default function (qunit, Inputmask) {
 		$("#testmask").Type("123456789012345");
 
 		assert.equal(testmask.value, "1234567890", "Result " + testmask.value);
-
-	});
-
-	qunit.test("inputmask(\"decimal, { repeat: 15 }\") - maxlength 10", function (assert) {
-		var $fixture = $("#qunit-fixture");
-		$fixture.append("<input type=\"text\" id=\"testmask\" maxlength=\"10\" />");
-		var testmask = document.getElementById("testmask");
-		Inputmask("decimal", {
-			repeat: 15
-		}).mask(testmask);
-
-		testmask.focus();
-
-		$("#testmask").Type("123456789012345");
-
-		assert.equal(testmask.value, "1234567890", "Result " + testmask.value);
-
-	});
-
-	qunit.test("inputmask(\"decimal, { repeat: 5 }\") - maxlength 10", function (assert) {
-		var $fixture = $("#qunit-fixture");
-		$fixture.append("<input type=\"text\" id=\"testmask\" maxlength=\"10\" />");
-		var testmask = document.getElementById("testmask");
-		Inputmask("decimal", {
-			repeat: 5
-		}).mask(testmask);
-
-		testmask.focus();
-
-		$("#testmask").Type("123456789012345");
-
-		assert.equal(testmask.value, "12345", "Result " + testmask.value);
-
-	});
-
-	qunit.test("inputmask(\"decimal, { repeat: 5}\") - maxlength 10", function (assert) {
-		var $fixture = $("#qunit-fixture");
-		$fixture.append("<input type=\"text\" id=\"testmask\" maxlength=\"10\" />");
-		var testmask = document.getElementById("testmask");
-		Inputmask("decimal", {
-			repeat: 5,
-		}).mask(testmask);
-
-		testmask.focus();
-
-		$("#testmask").Type("123456789012345");
-
-		assert.equal(testmask.value, "12345.6789", "Result " + testmask.value);
 
 	});
 
@@ -1154,7 +1106,7 @@ export default function (qunit, Inputmask) {
 			$("#testmask").Type("1234.56");
 			$.caret(testmask, 0, 10);
 			$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
-			assert.equal($("#testmask")[0].inputmask._valueGet(), "$ 0.00", "Result " + $("#testmask")[0].inputmask._valueGet());
+			assert.equal(testmask.value, "$ 0.00", "Result " + testmask.value);
 			done();
 		}, 5);
 	});
@@ -1194,7 +1146,7 @@ export default function (qunit, Inputmask) {
 			$("#testmask").Type("1234.56");
 			$.caret(testmask, 0, 7);
 			$("#testmask").SendKey("1");
-			assert.equal($("#testmask")[0].inputmask._valueGet(), "$ 1.56", "Result " + $("#testmask")[0].inputmask._valueGet());
+			assert.equal(testmask.value, "$ 1.56", "Result " + testmask.value);
 			done();
 		}, 5);
 	});
@@ -1212,7 +1164,7 @@ export default function (qunit, Inputmask) {
 			$("#testmask").Type("123.56");
 			$.caret(testmask, 0, 5);
 			$("#testmask").SendKey("1");
-			assert.equal($("#testmask")[0].inputmask._valueGet(), "$ 1.56", "Result " + $("#testmask")[0].inputmask._valueGet());
+			assert.equal(testmask.value, "$ 1.56", "Result " + testmask.value);
 			done();
 		}, 5);
 	});
@@ -1232,7 +1184,7 @@ export default function (qunit, Inputmask) {
 			$("#testmask").Type("123.56");
 			$.caret(testmask, 0, 4);
 			$("#testmask").SendKey("1");
-			assert.equal($("#testmask")[0].inputmask._valueGet(), "$1.56", "Result " + $("#testmask")[0].inputmask._valueGet());
+			assert.equal(testmask.value, "$1.56", "Result " + testmask.value);
 			done();
 		}, 5);
 	});
@@ -1249,7 +1201,7 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		$(testmask).trigger("blur");
 		setTimeout(function () {
-			assert.equal($("#testmask")[0].inputmask._valueGet(), "$ 1,000.00", "Result " + $("#testmask")[0].inputmask._valueGet());
+			assert.equal(testmask.value, "$ 1,000.00", "Result " + testmask.value);
 			done();
 		}, 5);
 	});
@@ -1269,7 +1221,7 @@ export default function (qunit, Inputmask) {
 			$("#testmask").Type("1234");
 			$("#testmask").trigger("blur");
 			setTimeout(function () {
-				assert.equal($("#testmask")[0].inputmask._valueGet(), "$ 1,000.00", "Result " + $("#testmask")[0].inputmask._valueGet());
+				assert.equal(testmask.value, "$ 1,000.00", "Result " + testmask.value);
 				done();
 			}, 0);
 		}, 5);
@@ -1288,7 +1240,7 @@ export default function (qunit, Inputmask) {
 			$("#testmask").Type("1010");
 			$.caret(testmask, 3);
 			$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
-			assert.equal($("#testmask")[0].inputmask._valueGet(), "$ 10.00", "Result " + $("#testmask")[0].inputmask._valueGet());
+			assert.equal(testmask.value, "$ 10.00", "Result " + testmask.value);
 			done();
 		}, 0);
 	});
@@ -1306,7 +1258,7 @@ export default function (qunit, Inputmask) {
 			$("#testmask").Type("1010");
 			$.caret(testmask, 6);
 			$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
-			assert.equal($("#testmask")[0].inputmask._valueGet(), "$ 100.00", "Result " + $("#testmask")[0].inputmask._valueGet());
+			assert.equal(testmask.value, "$ 100.00", "Result " + testmask.value);
 			done();
 		}, 0);
 	});
@@ -1324,7 +1276,7 @@ export default function (qunit, Inputmask) {
 			$("#testmask").Type("-1234");
 			$.caret(testmask, 0);
 			$("#testmask").SendKey(Inputmask.keyCode.DELETE);
-			assert.equal($("#testmask")[0].inputmask._valueGet(), "$ 1,234.00", "Result " + $("#testmask")[0].inputmask._valueGet());
+			assert.equal(testmask.value, "$ 1,234.00", "Result " + testmask.value);
 			done();
 		}, 0);
 	});
@@ -1343,7 +1295,7 @@ export default function (qunit, Inputmask) {
 		$("#testmask").Type("12345.12");
 		$.caret(testmask, 0);
 		$("#testmask").SendKey("6");
-		assert.equal($("#testmask")[0].inputmask._valueGet(), "12345.12", "Result " + $("#testmask")[0].inputmask._valueGet());
+		assert.equal(testmask.value, "12345.12", "Result " + testmask.value);
 
 	});
 
@@ -1366,7 +1318,7 @@ export default function (qunit, Inputmask) {
 		$("#testmask").Type("123456789");
 		$.caret(testmask, 9);
 		$("#testmask").SendKey(",");
-		assert.equal($("#testmask")[0].inputmask._valueGet(), "1 234 567,89", "Result " + $("#testmask")[0].inputmask._valueGet());
+		assert.equal(testmask.value, "1 234 567,89", "Result " + testmask.value);
 
 	});
 
@@ -1390,7 +1342,7 @@ export default function (qunit, Inputmask) {
 		$.caret(testmask, 9);
 		$("#testmask").SendKey(",");
 		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
-		assert.equal($("#testmask")[0].inputmask._valueGet(), "1 234 567,89", "Result " + $("#testmask")[0].inputmask._valueGet());
+		assert.equal(testmask.value, "1 234 567,89", "Result " + testmask.value);
 
 	});
 
@@ -1413,7 +1365,7 @@ export default function (qunit, Inputmask) {
 		$("#testmask").Type("1234567890");
 		$.caret(testmask, 11);
 		$("#testmask").SendKey(",");
-		assert.equal($("#testmask")[0].inputmask._valueGet(), "12 345 678,90", "Result " + $("#testmask")[0].inputmask._valueGet());
+		assert.equal(testmask.value, "12 345 678,90", "Result " + testmask.value);
 
 	});
 
@@ -1437,7 +1389,7 @@ export default function (qunit, Inputmask) {
 		$.caret(testmask, 11);
 		$("#testmask").SendKey(",");
 		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
-		assert.equal($("#testmask")[0].inputmask._valueGet(), "12 345 678,90", "Result " + $("#testmask")[0].inputmask._valueGet());
+		assert.equal(testmask.value, "12 345 678,90", "Result " + testmask.value);
 
 	});
 
@@ -1451,7 +1403,7 @@ export default function (qunit, Inputmask) {
 			max: 3000
 		}).mask(testmask);
 		testmask.blur();
-		assert.equal(testmask.inputmask._valueGet(), "1000", "Result " + testmask.inputmask._valueGet());
+		assert.equal(testmask.value, "1000", "Result " + testmask.value);
 	});
 
 	qunit.test("numeric alias - value=\"-1234\" minvalue = -1000", function (assert) {
@@ -1465,7 +1417,7 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 
 		testmask.blur();
-		assert.equal(testmask.inputmask._valueGet(), "-1000", "Result " + testmask.inputmask._valueGet());
+		assert.equal(testmask.value, "-1000", "Result " + testmask.value);
 	});
 
 	qunit.test("numeric alias - value=\"1000\" minvalue = 1000", function (assert) {
@@ -1478,7 +1430,7 @@ export default function (qunit, Inputmask) {
 			max: 3000
 		}).mask(testmask);
 
-		assert.equal($("#testmask")[0].inputmask._valueGet(), "1000", "Result " + $("#testmask")[0].inputmask._valueGet());
+		assert.equal(testmask.value, "1000", "Result " + testmask.value);
 
 	});
 
@@ -1492,7 +1444,7 @@ export default function (qunit, Inputmask) {
 			max: 3000
 		}).mask(testmask);
 
-		assert.equal($("#testmask")[0].inputmask._valueGet(), "-1000", "Result " + $("#testmask")[0].inputmask._valueGet());
+		assert.equal(testmask.value, "-1000", "Result " + testmask.value);
 
 	});
 
@@ -1508,7 +1460,7 @@ export default function (qunit, Inputmask) {
 		$("#testmask").Type("123.123");
 		$.caret(testmask, 4, 7);
 		$("#testmask").Type("4");
-		assert.equal($("#testmask")[0].inputmask._valueGet(), "123.4%", "Result " + $("#testmask")[0].inputmask._valueGet());
+		assert.equal(testmask.value, "123.4%", "Result " + testmask.value);
 
 	});
 
@@ -1526,7 +1478,7 @@ export default function (qunit, Inputmask) {
 		$("#testmask").trigger("click");
 		setTimeout(function () {
 			$("#testmask").Type("12");
-			assert.equal($("#testmask")[0].inputmask._valueGet(), "12.__", "Result " + $("#testmask")[0].inputmask._valueGet());
+			assert.equal(testmask.value, "12.__", "Result " + testmask.value);
 			done();
 		}, 0);
 	});
@@ -1542,7 +1494,7 @@ export default function (qunit, Inputmask) {
 			$("#testmask").Type("123.123");
 			$.caret(testmask, 0, testmask.value.length);
 			$("#testmask").SendKey(Inputmask.keyCode.DELETE);
-			assert.equal($("#testmask")[0].inputmask._valueGet(), "", "Result " + $("#testmask")[0].inputmask._valueGet());
+			assert.equal(testmask.value, "", "Result " + testmask.value);
 			done();
 		}, 0);
 	});
@@ -1581,7 +1533,7 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 		$.caret(testmask, 0, 1);
 		$("#testmask").Type("1");
-		assert.equal($("#testmask")[0].inputmask._valueGet(), "1.12", "Result " + $("#testmask")[0].inputmask._valueGet());
+		assert.equal(testmask.value, "1.12", "Result " + testmask.value);
 	});
 	qunit.test("numeric alias - digits 2 select 0 type 1 - gharlan", function (assert) {
 		var $fixture = $("#qunit-fixture");
@@ -1592,7 +1544,7 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 		$.caret(testmask, 0, 1);
 		$("#testmask").Type("1");
-		assert.equal($("#testmask")[0].inputmask._valueGet(), "1.00", "Result " + $("#testmask")[0].inputmask._valueGet());
+		assert.equal(testmask.value, "1.00", "Result " + testmask.value);
 	});
 	qunit.test("decimal alias - value 20,00 select 2 type 5 - schmulschubiak", function (assert) {
 		var $fixture = $("#qunit-fixture");
@@ -1609,7 +1561,7 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 		$.caret(testmask, 0, 1);
 		$("#testmask").Type("5");
-		assert.equal($("#testmask")[0].inputmask._valueGet(), "50,00", "Result " + $("#testmask")[0].inputmask._valueGet());
+		assert.equal(testmask.value, "50,00", "Result " + testmask.value);
 	});
 	qunit.test("currency numericInput true - type 10020 - jaisonerick", function (assert) {
 		var done = assert.async(),
@@ -1727,7 +1679,6 @@ export default function (qunit, Inputmask) {
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal", {
 			radixPoint: ",",
-			repeat: 10,
 			digits: "2",
 			autoUnmask: true,
 			suffix: " €"
@@ -1735,7 +1686,7 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		$.caret(testmask, 1);
 		$("#testmask").Type("52");
-		assert.equal($("#testmask")[0].inputmask._valueGet(), "52 €", "Result " + $("#testmask")[0].inputmask._valueGet());
+		assert.equal(testmask.value, "52 €", "Result " + testmask.value);
 	});
 
 	qunit.test("numeric + numericInput #1328 - douglasdtc", function (assert) {

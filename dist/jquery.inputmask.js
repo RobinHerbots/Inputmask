@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.232
+ * Version: 5.0.0-beta.235
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -886,8 +886,8 @@
                 if (opts.skipOptionalPartCharacter = "", !0 === start) resetMaskSet(), maskset.tests = {}, 
                 start = 0, end = buffer.length; else for (i = start; i < end; i++) delete maskset.validPositions[i];
                 for (p = start, i = start; i < end; i++) {
-                    var valResult = isValid(p, buffer[i], !opts.negationSymbol || [ i ] !== opts.negationSymbol.front, !opts.negationSymbol || [ i ] !== opts.negationSymbol.front);
-                    !1 !== valResult && (p = void 0 !== valResult.caret ? valResult.caret : valResult.pos + 1);
+                    var valResult = isValid(p, buffer[i], !opts.negationSymbol || buffer[i] !== opts.negationSymbol.front, !opts.negationSymbol || buffer[i] !== opts.negationSymbol.front);
+                    !1 !== valResult && (p = void 0 !== valResult.caret && valResult.caret > valResult.pos ? valResult.caret : valResult.pos + 1);
                 }
                 opts.skipOptionalPartCharacter = skipOptionalPartCharacter;
             }
@@ -2057,7 +2057,7 @@
                     var result = currentResult, dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
                     return result && dateParts.date.getTime() == dateParts.date.getTime() && (result = isValidDate(dateParts, result), 
                     result = result && isDateInRange(dateParts, opts)), pos && result && currentResult.pos !== pos ? {
-                        buffer: parse(opts.inputFormat, dateParts, opts),
+                        buffer: parse(opts.inputFormat, dateParts, opts).split(""),
                         refreshFromBuffer: {
                             start: pos,
                             end: currentResult.pos
@@ -2090,7 +2090,7 @@
             return escapedTxt;
         }
         function alignDigits(buffer, digits, opts) {
-            if (0 < digits && !opts.digitsOptional && 0 < buffer.length) {
+            if (0 < digits && (!opts.digitsOptional || !1 !== opts.__financeInput) && 0 < buffer.length) {
                 var radixPosition = $.inArray(opts.radixPoint, buffer);
                 -1 === radixPosition && (buffer.push(opts.radixPoint), radixPosition = buffer.length - 1);
                 for (var i = 1; i <= digits; i++) buffer[radixPosition + i] = buffer[radixPosition + i] || "0";
@@ -2109,7 +2109,7 @@
         function findValid(symbol, maskset) {
             var ret = -1;
             return $.each(maskset.validPositions, function(ndx, tst) {
-                if (tst.match.def === symbol) return ret = parseInt(ndx), !1;
+                if (tst && tst.match.def === symbol) return ret = parseInt(ndx), !1;
             }), ret;
         }
         function parseMinMaxOptions(opts) {
@@ -2210,6 +2210,7 @@
                     }
                 },
                 preValidation: function preValidation(buffer, pos, c, isSelection, opts, maskset, caretPos) {
+                    if (!1 !== opts.__financeInput && c === opts.radixPoint) return !1;
                     var radixPos = $.inArray(opts.radixPoint, buffer);
                     if (pos = hanndleRadixDance(pos, c, radixPos, opts), "-" !== c && c !== opts.negationSymbol.front) return -1 !== radixPos && !0 === opts._radixDance && !1 === isSelection && c === opts.radixPoint && void 0 !== opts.digits && (isNaN(opts.digits) || 0 < parseInt(opts.digits)) && radixPos !== pos ? {
                         caret: opts._radixDance && pos === radixPos - 1 ? radixPos + 1 : radixPos
