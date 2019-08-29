@@ -469,7 +469,7 @@ export default function (qunit, Inputmask) {
 
 	});
 	qunit.test("inputmask(\"decimal\", { groupSeparator: \",\" }\") - input 12345.123 + select replace .123 => .789", function (assert) {
-		var $fixture = $("body");
+		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal", {
@@ -942,13 +942,29 @@ export default function (qunit, Inputmask) {
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("integer", {
-			placeholder: "0"
+			placeholder: "0",
 		}).mask(testmask);
 
-		$("#testmask").val("-5.000,77");
+		testmask.value = -5000.77;
 		$(testmask).trigger("blur");
 
 		assert.equal(testmask.value, "-5001", "Result " + testmask.value);
+
+	});
+
+	qunit.test("inputmask(\"integer\") - 5.000,77 - DrSammyD", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("integer", {
+			placeholder: "0",
+			radixPoint: ","
+		}).mask(testmask);
+
+		$("#testmask").val("5.000,77");
+		$(testmask).trigger("blur");
+
+		assert.equal(testmask.value, "5001", "Result " + testmask.value);
 
 	});
 
@@ -1199,11 +1215,13 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 
 		testmask.focus();
-		$(testmask).trigger("blur");
 		setTimeout(function () {
-			assert.equal(testmask.value, "$ 1,000.00", "Result " + testmask.value);
-			done();
-		}, 5);
+			$("#testmask").trigger("blur");
+			setTimeout(function () {
+				assert.equal(testmask.value, "$ 1,000.00", "Result " + testmask.value);
+				done();
+			}, 0);
+		}, 0);
 	});
 
 	qunit.test("currency alias - max 1000 - type 1234", function (assert) {
@@ -1283,7 +1301,7 @@ export default function (qunit, Inputmask) {
 
 	qunit.test("decimal alias - type 12345.12 add 6 in front - freeze - DatXN", function (assert) {
 		var $fixture = $("#qunit-fixture");
-		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		$fixture.append("<input type=\"text\" id=\"testmask\" maxlength='8' />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal", {
 			digits: 2,
@@ -1787,7 +1805,8 @@ export default function (qunit, Inputmask) {
 	});
 
 	qunit.test("groupseparator ' ' - krajcot", function (assert) {
-		var $fixture = $("#qunit-fixture");
+		var done = assert.async(),
+			$fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("currency", {
@@ -1799,8 +1818,11 @@ export default function (qunit, Inputmask) {
 			inputEventOnly: false
 		}).mask(testmask);
 		testmask.focus();
-		testmask.blur();
-		assert.equal(testmask.inputmask._valueGet(), "0 €", "Result " + testmask.inputmask._valueGet());
+		$("#testmask").Type("0");
+		setTimeout(function() {
+			assert.equal(testmask.value, "0 €", "Result " + testmask.value);
+			done();
+		},0);
 	});
 
 	qunit.test("decimal set 0.50", function (assert) {
@@ -1819,7 +1841,7 @@ export default function (qunit, Inputmask) {
 
 		$(testmask).val("0.50");
 		testmask.blur();
-		assert.equal(testmask.inputmask._valueGet(), "0,50", "Result " + testmask.inputmask._valueGet());
+		assert.equal(testmask.value, "0,50", "Result " + testmask.value);
 	});
 
 	qunit.test("decimal set 1.000", function (assert) {
@@ -1836,7 +1858,7 @@ export default function (qunit, Inputmask) {
 
 		$(testmask).val("1.000");
 
-		assert.equal(testmask.inputmask._valueGet(), "1.000", "Result " + testmask.inputmask._valueGet());
+		assert.equal(testmask.value, "1.000", "Result " + testmask.value);
 	});
 	qunit.test("decimal set 1234.56", function (assert) {
 		var $fixture = $("#qunit-fixture");
@@ -1864,7 +1886,7 @@ export default function (qunit, Inputmask) {
 
 		$(testmask).val("100.00");
 
-		assert.equal(testmask.inputmask._valueGet(), "$ 100,00", "Result " + testmask.inputmask._valueGet());
+		assert.equal(testmask.value, "$ 100,00", "Result " + testmask.value);
 	});
 
 	qunit.test("decimal suffix: years => yers - marcelokohl", function (assert) {
@@ -1896,7 +1918,7 @@ export default function (qunit, Inputmask) {
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 		$("#testmask").Type("8");
 
-		assert.equal(testmask.inputmask._valueGet(), "38,800", "Result " + testmask.inputmask._valueGet());
+		assert.equal(testmask.value, "38,800", "Result " + testmask.value);
 	});
 
 	qunit.test("decimal type 100. delete - Borzák Attila", function (assert) {
@@ -1909,7 +1931,7 @@ export default function (qunit, Inputmask) {
 		$(testmask).Type("100.");
 		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
 
-		assert.equal(testmask.inputmask._valueGet(), "100", "Result " + testmask.inputmask._valueGet());
+		assert.equal(testmask.value, "100", "Result " + testmask.value);
 	});
 
 	qunit.test("Currency digits and delete #1351 - kousenlsn", function (assert) {
@@ -1929,7 +1951,7 @@ export default function (qunit, Inputmask) {
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 
-		assert.equal(testmask.inputmask._valueGet(), "0.00", "Result " + testmask.inputmask._valueGet());
+		assert.equal(testmask.value, "0.00", "Result " + testmask.value);
 	});
 
 	qunit.test("numeric + (negationSymbol = parentheses) + (clearIncomplete = true) + type -123. then blur", function (assert) {

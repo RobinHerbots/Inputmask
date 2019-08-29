@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.236
+ * Version: 5.0.0-beta.237
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -2240,8 +2240,14 @@
                         var unmasked = opts.onUnMask(buffer.slice().reverse().join(""), void 0, $.extend({}, opts, {
                             unmaskAsNumber: !0
                         }));
-                        if (null !== opts.min && unmasked < opts.min && unmasked.toString().length >= opts.min.toString().length) return !1;
-                        if (null !== opts.max && unmasked > opts.max) return !1;
+                        if (null !== opts.min && unmasked < opts.min && unmasked.toString().length >= opts.min.toString().length) return {
+                            refreshFromBuffer: !0,
+                            buffer: alignDigits(opts.min.toString().split(""), opts.digits, opts).reverse()
+                        };
+                        if (null !== opts.max && unmasked > opts.max) return {
+                            refreshFromBuffer: !0,
+                            buffer: alignDigits(opts.max.toString().split(""), opts.digits, opts).reverse()
+                        };
                     }
                     return currentResult;
                 },
@@ -2302,6 +2308,15 @@
                     if (e) switch (e.type) {
                       case "blur":
                       case "checkval":
+                        if (null !== opts.min) {
+                            var unmasked = opts.onUnMask(buffer.slice().reverse().join(""), void 0, $.extend({}, opts, {
+                                unmaskAsNumber: !0
+                            }));
+                            if (null !== opts.min && unmasked < opts.min) return {
+                                refreshFromBuffer: !0,
+                                buffer: alignDigits(opts.min.toString().split(""), opts.digits, opts).reverse()
+                            };
+                        }
                         if ("" !== opts.radixPoint && buffer[0] === opts.radixPoint) result && result.buffer ? result.buffer.shift() : (buffer.shift(), 
                         result = {
                             refreshFromBuffer: !0,
@@ -2327,9 +2342,15 @@
                         return this.inputmask.__valueSet.call(this, parseFloat(this.inputmask.unmaskedvalue()) - parseInt(opts.step)), 
                         $input.trigger("setvalue"), !1;
                     }
-                    if (!(e.shiftKey || e.keyCode !== Inputmask.keyCode.DELETE && e.keyCode !== Inputmask.keyCode.BACKSPACE && e.keyCode !== Inputmask.keyCode.BACKSPACE_SAFARI || !0 !== opts._radixDance || opts.digitsOptional)) {
+                    if (!e.shiftKey && (e.keyCode === Inputmask.keyCode.DELETE || e.keyCode === Inputmask.keyCode.BACKSPACE || e.keyCode === Inputmask.keyCode.BACKSPACE_SAFARI) && !0 === opts._radixDance) {
                         var radixPos = $.inArray(opts.radixPoint, buffer);
-                        if (-1 !== radixPos && (caretPos.begin < radixPos || e.keyCode === Inputmask.keyCode.DELETE && caretPos.begin === radixPos)) {
+                        if (opts.digitsOptional) {
+                            if (0 === radixPos) {
+                                var bffr = buffer.slice().reverse();
+                                return bffr.pop(), $input.trigger("setvalue", [ bffr.join(""), caretPos.begin ]), 
+                                !1;
+                            }
+                        } else if (-1 !== radixPos && (caretPos.begin < radixPos || e.keyCode === Inputmask.keyCode.DELETE && caretPos.begin === radixPos)) {
                             e.keyCode !== Inputmask.keyCode.BACKSPACE && e.keyCode !== Inputmask.keyCode.BACKSPACE_SAFARI || caretPos.begin++;
                             var bffr = buffer.slice().reverse();
                             return bffr.splice(bffr.length - caretPos.begin, 1), $input.trigger("setvalue", [ alignDigits(bffr, opts.digits, opts).join(""), caretPos.begin ]), 
