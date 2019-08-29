@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.235
+ * Version: 5.0.0-beta.236
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -947,11 +947,11 @@
                     delete maskset.validPositions[i];
                     for (;void 0 !== maskset.excludes[decisionPos] && maskset.excludes[decisionPos].length < 10; ) {
                         var posOffset = -1 * staticInputsBeforePos, validInputs = validInputsClone.slice();
-                        for (maskset.tests[decisionPos] = void 0, resetMaskSet(!0), isValidRslt = !0, insertPosition(0 === pos); 0 < validInputs.length; ) {
+                        for (maskset.tests[decisionPos] = void 0, resetMaskSet(!0), isValidRslt = !0, insertPosition(pos + posOffset === 0); 0 < validInputs.length; ) {
                             var input = validInputs.shift();
                             if (!(isValidRslt = isValid(isValidRslt.caret || getLastValidPosition(void 0, !0) + 1, input, !1, fromIsValid, !0))) break;
                         }
-                        if (insertPosition(0 < pos), isValidRslt) break;
+                        if (insertPosition(0 < pos + posOffset), isValidRslt) break;
                         if (resetMaskSet(), prevAltPos = getTest(decisionPos), maskset.validPositions = $.extend(!0, {}, validPsClone), 
                         !maskset.excludes[decisionPos]) {
                             returnRslt = alternate(pos, c, strict, fromIsValid, decisionPos - 1);
@@ -2215,7 +2215,7 @@
                     if (pos = hanndleRadixDance(pos, c, radixPos, opts), "-" !== c && c !== opts.negationSymbol.front) return -1 !== radixPos && !0 === opts._radixDance && !1 === isSelection && c === opts.radixPoint && void 0 !== opts.digits && (isNaN(opts.digits) || 0 < parseInt(opts.digits)) && radixPos !== pos ? {
                         caret: opts._radixDance && pos === radixPos - 1 ? radixPos + 1 : radixPos
                     } : {
-                        rewritePosition: isSelection && caretPos.end < radixPos && !1 === opts.__financeInput ? radixPos : pos
+                        rewritePosition: isSelection && opts.digitsOptional ? caretPos.end : pos
                     };
                     if (!0 !== opts.allowMinus) return !1;
                     var isNegative = !1, front = findValid("+", maskset), back = findValid("-", maskset);
@@ -2280,12 +2280,13 @@
                     alignDigits(initialValue.toString().split(""), digits, opts).join("");
                 },
                 onBeforeWrite: function onBeforeWrite(e, buffer, caretPos, opts) {
-                    function stripBuffer(buffer) {
-                        if (!1 !== opts.__financeInput) {
+                    function stripBuffer(buffer, stripRadix) {
+                        if (!1 !== opts.__financeInput || stripRadix) {
                             var position = $.inArray(opts.radixPoint, buffer);
                             -1 !== position && buffer.splice(position, 1);
                         }
                         if ("" !== opts.groupSeparator) for (;-1 !== (position = buffer.indexOf(opts.groupSeparator)); ) buffer.splice(position, 1);
+                        return buffer;
                     }
                     var result, leadingzeroes = checkForLeadingZeroes(buffer, opts);
                     if (leadingzeroes) {
@@ -2301,11 +2302,17 @@
                     if (e) switch (e.type) {
                       case "blur":
                       case "checkval":
-                        "" !== opts.radixPoint && buffer[0] === opts.radixPoint && (result && result.buffer ? result.buffer.shift() : (buffer.shift(), 
-                        stripBuffer(buffer), result = {
+                        if ("" !== opts.radixPoint && buffer[0] === opts.radixPoint) result && result.buffer ? result.buffer.shift() : (buffer.shift(), 
+                        result = {
                             refreshFromBuffer: !0,
-                            buffer: buffer
-                        }));
+                            buffer: stripBuffer(buffer)
+                        }); else if (buffer[buffer.length - 1] === opts.negationSymbol.front) {
+                            var nmbrMtchs = new RegExp("(^" + ("" != opts.negationSymbol.front ? Inputmask.escapeRegex(opts.negationSymbol.front) + "?" : "") + Inputmask.escapeRegex(opts.prefix) + ")(.*)(" + Inputmask.escapeRegex(opts.suffix) + ("" != opts.negationSymbol.back ? Inputmask.escapeRegex(opts.negationSymbol.back) + "?" : "") + "$)").exec(stripBuffer(buffer.slice(), !0).reverse().join("")), number = nmbrMtchs ? nmbrMtchs[2] : "";
+                            0 == number && (result = {
+                                refreshFromBuffer: !0,
+                                buffer: [ 0 ]
+                            });
+                        }
                     }
                     return result;
                 },

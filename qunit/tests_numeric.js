@@ -469,7 +469,7 @@ export default function (qunit, Inputmask) {
 
 	});
 	qunit.test("inputmask(\"decimal\", { groupSeparator: \",\" }\") - input 12345.123 + select replace .123 => .789", function (assert) {
-		var $fixture = $("#qunit-fixture");
+		var $fixture = $("body");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal", {
@@ -839,7 +839,7 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 
 		testmask.focus();
-		$("#testmask").Type("123.1");
+		$("#testmask").val("123.1");
 		$(testmask).trigger("blur");
 		setTimeout(function () {
 			assert.equal(testmask.value, "123.100", "Result " + testmask.value);
@@ -1106,7 +1106,7 @@ export default function (qunit, Inputmask) {
 			$("#testmask").Type("1234.56");
 			$.caret(testmask, 0, 10);
 			$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
-			assert.equal(testmask.value, "$ 0.00", "Result " + testmask.value);
+			assert.equal(testmask.inputmask._valueGet(true), "$ 0.00", "Result " + testmask.inputmask._valueGet(true));
 			done();
 		}, 5);
 	});
@@ -1881,7 +1881,7 @@ export default function (qunit, Inputmask) {
 
 		$(testmask).val("1");
 
-		assert.equal(testmask.inputmask._valueGet(), "1 years", "Result " + testmask.inputmask._valueGet());
+		assert.equal(testmask.value, "1 years", "Result " + testmask.value);
 	});
 
 	qunit.test("decimal type 38700 delete 7 type 8 - Borzák Attila", function (assert) {
