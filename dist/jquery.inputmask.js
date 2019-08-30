@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.237
+ * Version: 5.0.0-beta.238
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1073,9 +1073,11 @@
             function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
                 function IsEnclosedStatic(pos, valids, selection) {
                     var posMatch = valids[pos];
-                    if (void 0 === posMatch || (!0 !== posMatch.match.static || !0 === posMatch.match.optionality) && posMatch.input !== opts.radixPoint) return !1;
-                    var prevMatch = selection.begin <= pos - 1 ? valids[pos - 1] && !0 === valids[pos - 1].match.static && valids[pos - 1] : valids[pos - 1], nextMatch = selection.end > pos + 1 ? valids[pos + 1] && !0 === valids[pos + 1].match.static && valids[pos + 1] : valids[pos + 1];
-                    return prevMatch && nextMatch;
+                    if (void 0 !== posMatch && !0 === posMatch.match.static && !0 !== posMatch.match.optionality && posMatch.generatedInput) {
+                        var prevMatch = selection.begin <= pos - 1 ? valids[pos - 1] && !0 === valids[pos - 1].match.static && valids[pos - 1] : valids[pos - 1], nextMatch = selection.end > pos + 1 ? valids[pos + 1] && !0 === valids[pos + 1].match.static && valids[pos + 1] : valids[pos + 1];
+                        return prevMatch && nextMatch;
+                    }
+                    return !1;
                 }
                 var begin = void 0 !== pos.begin ? pos.begin : pos, end = void 0 !== pos.end ? pos.end : pos;
                 if (pos.begin > pos.end && (begin = pos.end, end = pos.begin), void 0 === validTest && !1 === opts.insertMode && end < maskset.maskLength && (0 === begin && 0 === end || (begin += 1, 
@@ -1110,9 +1112,10 @@
                 } else validTest && (maskset.validPositions[validatedPos] = $.extend(!0, {}, validTest));
                 return resetMaskSet(!0), !0;
             }
-            function isMask(pos, strict) {
+            function isMask(pos, strict, fuzzy) {
                 var test = getTestTemplate(pos).match;
-                if ("" === test.def && (test = getTest(pos).match), 1 != test.static) return test.fn;
+                if ("" === test.def && (test = getTest(pos).match), !0 !== test.static) return test.fn;
+                if (!0 === fuzzy && (void 0 === maskset.validPositions[pos] || !0 !== maskset.validPositions[pos].generatedInput)) return !0;
                 if (!0 !== strict && -1 < pos) {
                     var tests = getTests(pos);
                     return tests.length > 1 + ("" === tests[tests.length - 1].match.def ? 1 : 0);
@@ -1120,13 +1123,13 @@
                 return !1;
             }
             function seekNext(pos, newBlock) {
-                for (var position = pos + 1; "" !== getTest(position).match.def && (!0 === newBlock && (!0 !== getTest(position).match.newBlockMarker || !isMask(position)) || !0 !== newBlock && !isMask(position)); ) position++;
+                for (var position = pos + 1; "" !== getTest(position).match.def && (!0 === newBlock && (!0 !== getTest(position).match.newBlockMarker || !isMask(position, void 0, !0)) || !0 !== newBlock && !isMask(position, void 0, !0)); ) position++;
                 return position;
             }
             function seekPrevious(pos, newBlock) {
                 var position = pos, tests;
                 if (position <= 0) return 0;
-                for (;0 < --position && (!0 === newBlock && !0 !== getTest(position).match.newBlockMarker || !0 !== newBlock && !isMask(position) && (tests = getTests(position), 
+                for (;0 < --position && (!0 === newBlock && !0 !== getTest(position).match.newBlockMarker || !0 !== newBlock && !isMask(position, void 0, !0) && (tests = getTests(position), 
                 tests.length < 2 || 2 === tests.length && "" === tests[1].match.def)); ) ;
                 return position;
             }
@@ -1604,7 +1607,7 @@
                     pos.end = pos.begin, pos.begin = pend;
                 }
                 if (k === Inputmask.keyCode.BACKSPACE || k === Inputmask.keyCode.DELETE && !1 === opts.insertMode ? pos.end - pos.begin < 1 && (pos.begin = seekPrevious(pos.begin), 
-                void 0 !== maskset.validPositions[pos.begin] && maskset.validPositions[pos.begin].input === opts.groupSeparator && pos.begin--) : k === Inputmask.keyCode.DELETE && pos.begin === pos.end && (pos.end = isMask(pos.end, !0) && maskset.validPositions[pos.end] && maskset.validPositions[pos.end].input !== opts.radixPoint ? pos.end + 1 : seekNext(pos.end) + 1, 
+                void 0 !== maskset.validPositions[pos.begin] && maskset.validPositions[pos.begin].input === opts.groupSeparator && pos.begin--) : k === Inputmask.keyCode.DELETE && pos.begin === pos.end && (pos.end = isMask(pos.end, !0, !0) ? pos.end + 1 : seekNext(pos.end) + 1, 
                 void 0 !== maskset.validPositions[pos.begin] && maskset.validPositions[pos.begin].input === opts.groupSeparator && pos.end++), 
                 revalidateMask(pos), !0 !== strict && !1 !== opts.keepStatic || null !== opts.regex && -1 !== getTest(pos.begin).match.def.indexOf("|")) {
                     var result = alternate(!0);
@@ -2342,19 +2345,26 @@
                         return this.inputmask.__valueSet.call(this, parseFloat(this.inputmask.unmaskedvalue()) - parseInt(opts.step)), 
                         $input.trigger("setvalue"), !1;
                     }
-                    if (!e.shiftKey && (e.keyCode === Inputmask.keyCode.DELETE || e.keyCode === Inputmask.keyCode.BACKSPACE || e.keyCode === Inputmask.keyCode.BACKSPACE_SAFARI) && !0 === opts._radixDance) {
-                        var radixPos = $.inArray(opts.radixPoint, buffer);
-                        if (opts.digitsOptional) {
-                            if (0 === radixPos) {
+                    if (!e.shiftKey && (e.keyCode === Inputmask.keyCode.DELETE || e.keyCode === Inputmask.keyCode.BACKSPACE || e.keyCode === Inputmask.keyCode.BACKSPACE_SAFARI)) {
+                        if (buffer[e.keyCode === Inputmask.keyCode.DELETE ? caretPos.begin - 1 : caretPos.end] === opts.negationSymbol.front) {
+                            var bffr = buffer.slice().reverse();
+                            return "" !== opts.negationSymbol.front && bffr.shift(), "" !== opts.negationSymbol.back && bffr.pop(), 
+                            $input.trigger("setvalue", [ bffr.join(""), caretPos.begin ]), !1;
+                        }
+                        if (!0 === opts._radixDance) {
+                            var radixPos = $.inArray(opts.radixPoint, buffer);
+                            if (opts.digitsOptional) {
+                                if (0 === radixPos) {
+                                    var bffr = buffer.slice().reverse();
+                                    return bffr.pop(), $input.trigger("setvalue", [ bffr.join(""), caretPos.begin ]), 
+                                    !1;
+                                }
+                            } else if (-1 !== radixPos && (caretPos.begin < radixPos || e.keyCode === Inputmask.keyCode.DELETE && caretPos.begin === radixPos)) {
+                                e.keyCode !== Inputmask.keyCode.BACKSPACE && e.keyCode !== Inputmask.keyCode.BACKSPACE_SAFARI || caretPos.begin++;
                                 var bffr = buffer.slice().reverse();
-                                return bffr.pop(), $input.trigger("setvalue", [ bffr.join(""), caretPos.begin ]), 
+                                return bffr.splice(bffr.length - caretPos.begin, 1), $input.trigger("setvalue", [ alignDigits(bffr, opts.digits, opts).join(""), caretPos.begin ]), 
                                 !1;
                             }
-                        } else if (-1 !== radixPos && (caretPos.begin < radixPos || e.keyCode === Inputmask.keyCode.DELETE && caretPos.begin === radixPos)) {
-                            e.keyCode !== Inputmask.keyCode.BACKSPACE && e.keyCode !== Inputmask.keyCode.BACKSPACE_SAFARI || caretPos.begin++;
-                            var bffr = buffer.slice().reverse();
-                            return bffr.splice(bffr.length - caretPos.begin, 1), $input.trigger("setvalue", [ alignDigits(bffr, opts.digits, opts).join(""), caretPos.begin ]), 
-                            !1;
                         }
                     }
                 }

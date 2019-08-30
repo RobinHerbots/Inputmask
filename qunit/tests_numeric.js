@@ -673,9 +673,7 @@ export default function (qunit, Inputmask) {
 		$fixture.append("<input type=\"text\" id=\"testmask2\" />");
 		var testmask2 = document.getElementById("testmask2");
 		Inputmask("integer", {
-			autoGroup: true,
-			groupSeparator: ",",
-			groupSize: 3
+			groupSeparator: ","
 		}).mask(testmask);
 		Inputmask("(999)-999-9999").mask(testmask2);
 
@@ -695,9 +693,7 @@ export default function (qunit, Inputmask) {
 		Inputmask("decimal", {
 			radixPoint: ".",
 			groupSeparator: ",",
-			groupSize: 3,
 			digits: 2,
-			autoGroup: true,
 			allowMinus: true
 		}).mask(testmask);
 
@@ -717,9 +713,7 @@ export default function (qunit, Inputmask) {
 		Inputmask("decimal", {
 			radixPoint: ".",
 			groupSeparator: ",",
-			groupSize: 3,
 			digits: 2,
-			autoGroup: true,
 			allowMinus: true
 		}).mask(testmask);
 
@@ -757,9 +751,7 @@ export default function (qunit, Inputmask) {
 		Inputmask("decimal", {
 			radixPoint: ".",
 			groupSeparator: ",",
-			groupSize: 3,
 			digits: 2,
-			autoGroup: true,
 			allowMinus: true
 		}).mask(testmask);
 
@@ -779,9 +771,7 @@ export default function (qunit, Inputmask) {
 		Inputmask("decimal", {
 			radixPoint: ".",
 			groupSeparator: ",",
-			groupSize: 3,
 			digits: 2,
-			autoGroup: true,
 			allowMinus: true
 		}).mask(testmask);
 
@@ -904,10 +894,8 @@ export default function (qunit, Inputmask) {
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal", {
 			groupSeparator: ".",
-			autoGroup: true,
 			digits: 2,
 			radixPoint: ",",
-			groupSize: 3
 		}).mask(testmask);
 
 		$("#testmask").val("-5000,77");
@@ -923,10 +911,8 @@ export default function (qunit, Inputmask) {
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal", {
 			groupSeparator: ".",
-			autoGroup: true,
 			digits: 2,
 			radixPoint: ",",
-			groupSize: 3
 		}).mask(testmask);
 
 		$("#testmask").val("-0");
@@ -1325,9 +1311,7 @@ export default function (qunit, Inputmask) {
 			allowMinus: true,
 			digits: 2,
 			radixPoint: ",",
-			autoGroup: true,
 			groupSeparator: " ",
-			groupSize: 3,
 			rightAlign: false
 		}).mask(testmask);
 
@@ -1348,9 +1332,7 @@ export default function (qunit, Inputmask) {
 			allowMinus: true,
 			digits: 2,
 			radixPoint: ",",
-			autoGroup: true,
 			groupSeparator: " ",
-			groupSize: 3,
 			rightAlign: false
 		}).mask(testmask);
 
@@ -1372,9 +1354,7 @@ export default function (qunit, Inputmask) {
 			allowMinus: true,
 			digits: 2,
 			radixPoint: ",",
-			autoGroup: true,
 			groupSeparator: " ",
-			groupSize: 3,
 			rightAlign: false
 		}).mask(testmask);
 
@@ -1395,9 +1375,7 @@ export default function (qunit, Inputmask) {
 			allowMinus: true,
 			digits: 2,
 			radixPoint: ",",
-			autoGroup: true,
 			groupSeparator: " ",
-			groupSize: 3,
 			rightAlign: false
 		}).mask(testmask);
 
@@ -1471,7 +1449,6 @@ export default function (qunit, Inputmask) {
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal", {
-			autoGroup: true,
 			groupSeparator: ",",
 			suffix: "%"
 		}).mask(testmask);
@@ -1570,9 +1547,7 @@ export default function (qunit, Inputmask) {
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal", {
 			radixPoint: ",",
-			autoGroup: true,
 			groupSeparator: " ",
-			groupSize: 3,
 			allowMinus: false,
 			digits: 2,
 			rightAlign: false
@@ -1713,7 +1688,6 @@ export default function (qunit, Inputmask) {
 		var testmask = document.getElementById("testmask");
 		Inputmask("numeric", {
 			"groupSeparator": ".",
-			"groupSize": 3,
 			"radixPoint": ",",
 			"numericInput": true,
 			"digits": 2
@@ -1746,7 +1720,7 @@ export default function (qunit, Inputmask) {
 		$.caret(testmask, 0, 5);
 		$("#testmask").Type("0");
 
-		assert.equal(testmask.inputmask._valueGet(), "$ 0.00", "Result " + testmask.inputmask._valueGet());
+		assert.equal(testmask.value, "$ 0.00", "Result " + testmask.value);
 	});
 
 	qunit.test("numeric + groupSeparator: \"  \" backspace, - krajcot", function (assert) {
@@ -1756,14 +1730,13 @@ export default function (qunit, Inputmask) {
 		Inputmask("currency", {
 			digits: 0,
 			groupSeparator: " ",
-			autoGroup: true
 		}).mask(testmask);
 		testmask.focus();
 		$("#testmask").Type("1");
 		$.caret(testmask, 3);
 		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
 
-		assert.equal(testmask.inputmask._valueGet(), "$ 0", "Result " + testmask.inputmask._valueGet());
+		assert.equal(testmask.value, "$ 0", "Result " + testmask.value);
 	});
 
 	qunit.test("numeric + groupSeparator: \"  \" delete, - krajcot", function (assert) {
@@ -1772,15 +1745,14 @@ export default function (qunit, Inputmask) {
 		var testmask = document.getElementById("testmask");
 		Inputmask("currency", {
 			digits: 0,
-			groupSeparator: " ",
-			autoGroup: true
+			groupSeparator: " "
 		}).mask(testmask);
 		testmask.focus();
 		$("#testmask").Type("1");
 		$.caret(testmask, 2);
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 
-		assert.equal(testmask.inputmask._valueGet(), "$ 0", "Result " + testmask.inputmask._valueGet());
+		assert.equal(testmask.value, "$ 0", "Result " + testmask.value);
 	});
 
 	qunit.test("minvalue, - serGlazkov", function (assert) {
@@ -1789,7 +1761,7 @@ export default function (qunit, Inputmask) {
 		var testmask = document.getElementById("testmask");
 		Inputmask({
 			alias: "integer",
-			autoUnmask: true,
+			autoUnmask: false,
 			rightAlign: false,
 			min: 18,
 			max: 80,
@@ -1801,7 +1773,7 @@ export default function (qunit, Inputmask) {
 		$.caret(testmask, 1);
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 		$("#testmask").Type("1");
-		assert.equal(testmask.inputmask._valueGet(), "31 %", "Result " + testmask.inputmask._valueGet());
+		assert.equal(testmask.value, "31 %", "Result " + testmask.value);
 	});
 
 	qunit.test("groupseparator ' ' - krajcot", function (assert) {
@@ -1811,7 +1783,6 @@ export default function (qunit, Inputmask) {
 		var testmask = document.getElementById("testmask");
 		Inputmask("currency", {
 			groupSeparator: " ",
-			autoGroup: true,
 			suffix: " €",
 			prefix: "",
 			digits: 0,
@@ -1819,10 +1790,10 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 		testmask.focus();
 		$("#testmask").Type("0");
-		setTimeout(function() {
+		setTimeout(function () {
 			assert.equal(testmask.value, "0 €", "Result " + testmask.value);
 			done();
-		},0);
+		}, 0);
 	});
 
 	qunit.test("decimal set 0.50", function (assert) {
@@ -1832,7 +1803,6 @@ export default function (qunit, Inputmask) {
 		Inputmask("decimal", {
 			radixPoint: ",",
 			groupSeparator: ".",
-			autoGroup: true,
 			digits: 2,
 			removeMaskOnSubmit: false,
 			enforceDigitsOnBlur: true,
@@ -1851,7 +1821,6 @@ export default function (qunit, Inputmask) {
 		Inputmask("decimal", {
 			radixPoint: ",",
 			groupSeparator: ".",
-			autoGroup: true,
 			digits: 2,
 			removeMaskOnSubmit: false
 		}).mask(testmask);
@@ -1867,7 +1836,6 @@ export default function (qunit, Inputmask) {
 		Inputmask("decimal", {
 			radixPoint: ",",
 			groupSeparator: ".",
-			autoGroup: true,
 			digits: 2,
 			removeMaskOnSubmit: false,
 			inputType: "number"
@@ -1875,7 +1843,7 @@ export default function (qunit, Inputmask) {
 
 		$(testmask).val("1234.56");
 
-		assert.equal(testmask.inputmask._valueGet(), "1.234,56", "Result " + testmask.inputmask._valueGet());
+		assert.equal(testmask.value, "1.234,56", "Result " + testmask.value);
 	});
 
 	qunit.test("currency  set 100.00 - NurGuz", function (assert) {
@@ -1911,7 +1879,7 @@ export default function (qunit, Inputmask) {
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal",
-			{autoGroup: true, groupSeparator: ","}).mask(testmask);
+			{groupSeparator: ","}).mask(testmask);
 
 		$(testmask).Type("38800");
 		$.caret(testmask, 3);
@@ -1926,7 +1894,7 @@ export default function (qunit, Inputmask) {
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal",
-			{autoGroup: true, groupSeparator: ","}).mask(testmask);
+			{groupSeparator: ","}).mask(testmask);
 
 		$(testmask).Type("100.");
 		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
@@ -1960,8 +1928,6 @@ export default function (qunit, Inputmask) {
 		var testmask = document.getElementById("testmask");
 		Inputmask("numeric", {
 			rightAlign: false,
-			autoGroup: true,
-			groupSize: 3,
 			digits: 3,
 			enforceDigitsOnBlur: true,
 			groupSeparator: ",",
@@ -1990,7 +1956,6 @@ export default function (qunit, Inputmask) {
 			showMaskOnFocus: false,
 			placeholder: "0",
 			digitsOptional: false,
-			autoGroup: true,
 			clearMaskOnLostFocus: false
 		}).mask(testmask);
 
@@ -2009,7 +1974,6 @@ export default function (qunit, Inputmask) {
 			groupSeparator: ".",
 			radixPoint: ",",
 			placeholder: "0",
-			autoGroup: true,
 			autoUnmask: true,
 			removeMaskOnSubmit: true,
 			inputType: "number"
