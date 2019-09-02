@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.240
+ * Version: 5.0.0-beta.241
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1009,9 +1009,9 @@
                             var elem = void 0 !== rslt.c ? rslt.c : c, validatedPos = position;
                             return elem = elem === opts.skipOptionalPartCharacter && !0 === test.static ? getPlaceholder(position, test, !0) || test.def : elem, 
                             rslt = processCommandObject(rslt), !0 !== rslt && void 0 !== rslt.pos && rslt.pos !== position && (validatedPos = rslt.pos), 
-                            !0 !== rslt && void 0 === rslt.pos && void 0 === rslt.c ? !1 : (revalidateMask(pos, $.extend({}, tst, {
+                            !0 !== rslt && void 0 === rslt.pos && void 0 === rslt.c ? !1 : (!1 === revalidateMask(pos, $.extend({}, tst, {
                                 input: casing(elem, test, validatedPos)
-                            }), fromIsValid, validatedPos) || (rslt = !1), !1);
+                            }), fromIsValid, validatedPos) && (rslt = !1), !1);
                         }
                     }), rslt;
                 }
@@ -1073,23 +1073,20 @@
             function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
                 function IsEnclosedStatic(pos, valids, selection) {
                     var posMatch = valids[pos];
-                    if (void 0 !== posMatch && !0 === posMatch.match.static && !0 !== posMatch.match.optionality && posMatch.generatedInput) {
-                        var prevMatch = selection.begin <= pos - 1 ? valids[pos - 1] && !0 === valids[pos - 1].match.static && valids[pos - 1] : valids[pos - 1], nextMatch = selection.end > pos + 1 ? valids[pos + 1] && !0 === valids[pos + 1].match.static && valids[pos + 1] : valids[pos + 1];
-                        return prevMatch && nextMatch;
-                    }
-                    return !1;
+                    if (void 0 === posMatch || !0 !== posMatch.match.static || !0 === posMatch.match.optionality) return !1;
+                    var prevMatch = selection.begin <= pos - 1 ? valids[pos - 1] && !0 === valids[pos - 1].match.static && valids[pos - 1] : valids[pos - 1], nextMatch = selection.end > pos + 1 ? valids[pos + 1] && !0 === valids[pos + 1].match.static && valids[pos + 1] : valids[pos + 1];
+                    return prevMatch && nextMatch;
                 }
-                var begin = void 0 !== pos.begin ? pos.begin : pos, end = void 0 !== pos.end ? pos.end : pos;
+                var offset = 0, begin = void 0 !== pos.begin ? pos.begin : pos, end = void 0 !== pos.end ? pos.end : pos;
                 if (pos.begin > pos.end && (begin = pos.end, end = pos.begin), void 0 === validTest && !1 === opts.insertMode && end < maskset.maskLength && (0 === begin && 0 === end || (begin += 1, 
                 end += 1)), validatedPos = void 0 !== validatedPos ? validatedPos : begin, begin !== end || opts.insertMode && void 0 !== maskset.validPositions[validatedPos] && void 0 === fromIsValid || void 0 === validTest) {
                     var positionsClone = $.extend(!0, {}, maskset.validPositions), lvp = void 0 === validTest && !1 === opts.insertMode ? 1 < end ? end - 1 : end : getLastValidPosition(void 0, !0), i;
                     for (maskset.p = begin, i = lvp; begin <= i; i--) delete maskset.validPositions[i], 
                     void 0 === validTest && delete maskset.tests[i + 1];
-                    var valid = !0, j = validatedPos, posMatch = j;
+                    var valid = !0, j = validatedPos, posMatch = j, t;
                     if (i = j, validTest && (maskset.validPositions[validatedPos] = $.extend(!0, {}, validTest), 
                     posMatch++, j++, begin < end && i++), validTest || opts.insertMode) for (;i <= lvp; i++) {
-                        var t = positionsClone[i];
-                        if (void 0 !== t && !0 !== t.generatedInput && (end <= i || begin <= i && IsEnclosedStatic(i, positionsClone, {
+                        if (void 0 !== (t = positionsClone[i]) && !0 !== t.generatedInput && (end <= i || begin <= i && IsEnclosedStatic(i, positionsClone, {
                             begin: begin,
                             end: end
                         }))) {
@@ -1098,8 +1095,11 @@
                                     "+" === t.match.def && getBuffer(!0);
                                     var result = isValid(posMatch, t.input, "+" !== t.match.def, "+" !== t.match.def);
                                     if (valid = !1 !== result, j = (result.pos || posMatch) + 1, !valid) break;
-                                } else valid = !0 === t.generatedInput;
-                                if (valid) break;
+                                } else valid = !1;
+                                if (valid) {
+                                    void 0 === validTest && t.match.static && i === pos.begin && offset++;
+                                    break;
+                                }
                                 if (!valid && posMatch > maskset.maskLength) break;
                                 posMatch++;
                             }
@@ -1110,7 +1110,7 @@
                     if (!valid) return maskset.validPositions = $.extend(!0, {}, positionsClone), resetMaskSet(!0), 
                     !1;
                 } else validTest && (maskset.validPositions[validatedPos] = $.extend(!0, {}, validTest));
-                return resetMaskSet(!0), !0;
+                return resetMaskSet(!0), offset;
             }
             function isMask(pos, strict, fuzzy) {
                 var test = getTestTemplate(pos).match;
@@ -1606,10 +1606,11 @@
                     var pend = pos.end;
                     pos.end = pos.begin, pos.begin = pend;
                 }
+                var offset;
                 if (k === Inputmask.keyCode.BACKSPACE || k === Inputmask.keyCode.DELETE && !1 === opts.insertMode ? pos.end - pos.begin < 1 && (pos.begin = seekPrevious(pos.begin), 
                 void 0 !== maskset.validPositions[pos.begin] && maskset.validPositions[pos.begin].input === opts.groupSeparator && pos.begin--) : k === Inputmask.keyCode.DELETE && pos.begin === pos.end && (pos.end = isMask(pos.end, !0, !0) ? pos.end + 1 : seekNext(pos.end) + 1, 
                 void 0 !== maskset.validPositions[pos.begin] && maskset.validPositions[pos.begin].input === opts.groupSeparator && pos.end++), 
-                revalidateMask(pos)) {
+                !1 !== (offset = revalidateMask(pos))) {
                     if (!0 !== strict && !1 !== opts.keepStatic || null !== opts.regex && -1 !== getTest(pos.begin).match.def.indexOf("|")) {
                         var result = alternate(!0);
                         if (result) {
@@ -1618,7 +1619,7 @@
                         }
                     }
                     var lvp = getLastValidPosition(pos.end, !0);
-                    lvp < pos.begin ? maskset.p = !1 === opts.insertMode ? seekPrevious(lvp + 1) : seekNext(lvp) : !0 !== strict && (maskset.p = pos.begin, 
+                    lvp < pos.begin ? maskset.p = !1 === opts.insertMode ? seekPrevious(lvp + 1) : seekNext(lvp) : !0 !== strict && (maskset.p = k === Inputmask.keyCode.DELETE ? pos.begin + offset : pos.begin, 
                     !1 === opts.insertMode && k === Inputmask.keyCode.DELETE && (maskset.p = pos.end + 1, 
                     void 0 === maskset.validPositions[maskset.p] && getLastValidPosition(maskset.maskLength, !0) < maskset.p && (maskset.p = seekPrevious(lvp + 1))));
                 }

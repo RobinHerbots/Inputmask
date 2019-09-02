@@ -334,7 +334,7 @@ export default function (qunit, Inputmask) {
 		$("#testmask").Type("some.body@mail.com");
 		$.caret(testmask, 9);
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
-		assert.equal(testmask.value, "some.body@ail.com", "Result " + testmask.value);
+		assert.equal($.caret(testmask).begin, "some.body@".length, "Result " + $.caret(testmask).begin);
 	});
 
 	qunit.test("email mask -123@mail.com - 123 => info", function (assert) {

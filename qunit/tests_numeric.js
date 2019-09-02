@@ -549,7 +549,7 @@ export default function (qunit, Inputmask) {
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
-		$("#testmask").Type("789");
+		$("#testmask").Type(".789");
 
 		assert.equal(testmask.value, "12345.789", "Result " + testmask.value);
 
