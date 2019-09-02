@@ -793,7 +793,7 @@ $(document).ready(function(){
 ```
 
 ### insertMode
-Toggle to insert or overwrite input.<br>Default: true.<br>This option can be altered by pressing the Insert key.
+Toggle to insert or overwrite input.<br>Default: true.<br>
 
 ### clearIncomplete
 Clear the incomplete input on blur
