@@ -5,6 +5,7 @@
 - add indian numbering support in numeric alias (indianns alias)
 
 ### Updates
+- remove insert/replace mode by insert key
 - ignore generated statics in revalidateMask
 - fix mask curruption when alternating and using jitmasking
 - Casing option will also allow case insensitive entry for static symbols
