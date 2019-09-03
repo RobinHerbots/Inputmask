@@ -1342,7 +1342,7 @@ export default function (qunit, Inputmask) {
 		$.caret(testmask, 9);
 		$("#testmask").SendKey(",");
 		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
-		assert.equal(testmask.value, "1 234 567,89", "Result " + testmask.value);
+		assert.equal(testmask.value, "123 456 789", "Result " + testmask.value);
 
 	});
 
@@ -1385,8 +1385,7 @@ export default function (qunit, Inputmask) {
 		$.caret(testmask, 11);
 		$("#testmask").SendKey(",");
 		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
-		assert.equal(testmask.value, "12 345 678,90", "Result " + testmask.value);
-
+		assert.equal(testmask.value, "1 234 567 890", "Result " + testmask.value);
 	});
 
 	qunit.test("numeric alias - value=\"-1234\" minvalue = 1000", function (assert) {
