@@ -355,7 +355,6 @@ export default function (qunit, Inputmask) {
             rightAlign: false,
             showMaskOnHover: false,
             numericInput: true,
-            allowPlus: false,
             rightAlignNumerics: false,
             greedy: false
         }).mask(testmask);
