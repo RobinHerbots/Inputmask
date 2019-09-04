@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.246
+ * Version: 5.0.0-beta.247
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1291,7 +1291,7 @@
             }
             function determineNewCaretPosition(selectedCaret, tabbed) {
                 function doRadixFocus(clickPos) {
-                    if ("" !== opts.radixPoint) {
+                    if ("" !== opts.radixPoint && 0 !== opts.digits) {
                         var vps = maskset.validPositions;
                         if (void 0 === vps[clickPos] || vps[clickPos].input === getPlaceholder(clickPos)) {
                             if (clickPos < seekNext(-1)) return !0;
@@ -2252,7 +2252,7 @@
             opts.numericInput = !0);
             var mask = "[+]", altMask;
             if (mask += autoEscape(opts.prefix, opts), "" !== opts.groupSeparator ? mask += opts._mask(opts) : mask += "9{+}", 
-            void 0 !== opts.digits) {
+            void 0 !== opts.digits && 0 !== opts.digits) {
                 var dq = opts.digits.toString().split(",");
                 isFinite(dq[0]) && dq[1] && isFinite(dq[1]) ? mask += opts.radixPoint + decimalDef + "{" + opts.digits + "}" : (isNaN(opts.digits) || 0 < parseInt(opts.digits)) && (opts.digitsOptional ? (altMask = mask + opts.radixPoint + decimalDef + "{0," + opts.digits + "}", 
                 opts.keepStatic = !0) : mask += opts.radixPoint + decimalDef + "{" + opts.digits + "}");
@@ -2456,7 +2456,7 @@
                     return result;
                 },
                 onKeyDown: function onKeyDown(e, buffer, caretPos, opts) {
-                    var $input = $(this);
+                    var $input = $(this), bffr;
                     if (e.ctrlKey) switch (e.keyCode) {
                       case Inputmask.keyCode.UP:
                         return this.inputmask.__valueSet.call(this, parseFloat(this.inputmask.unmaskedvalue()) + parseInt(opts.step)), 
@@ -2467,25 +2467,17 @@
                         $input.trigger("setvalue"), !1;
                     }
                     if (!e.shiftKey && (e.keyCode === Inputmask.keyCode.DELETE || e.keyCode === Inputmask.keyCode.BACKSPACE || e.keyCode === Inputmask.keyCode.BACKSPACE_SAFARI)) {
-                        if (buffer[e.keyCode === Inputmask.keyCode.DELETE ? caretPos.begin - 1 : caretPos.end] === opts.negationSymbol.front) {
-                            var bffr = buffer.slice().reverse();
-                            return "" !== opts.negationSymbol.front && bffr.shift(), "" !== opts.negationSymbol.back && bffr.pop(), 
-                            $input.trigger("setvalue", [ bffr.join(""), caretPos.begin ]), !1;
-                        }
+                        if (buffer[e.keyCode === Inputmask.keyCode.DELETE ? caretPos.begin - 1 : caretPos.end] === opts.negationSymbol.front) return bffr = buffer.slice().reverse(), 
+                        "" !== opts.negationSymbol.front && bffr.shift(), "" !== opts.negationSymbol.back && bffr.pop(), 
+                        $input.trigger("setvalue", [ bffr.join(""), caretPos.begin ]), !1;
                         if (!0 === opts._radixDance) {
                             var radixPos = $.inArray(opts.radixPoint, buffer);
                             if (opts.digitsOptional) {
-                                if (0 === radixPos) {
-                                    var bffr = buffer.slice().reverse();
-                                    return bffr.pop(), $input.trigger("setvalue", [ bffr.join(""), caretPos.begin ]), 
-                                    !1;
-                                }
-                            } else if (-1 !== radixPos && (caretPos.begin < radixPos || e.keyCode === Inputmask.keyCode.DELETE && caretPos.begin === radixPos)) {
-                                e.keyCode !== Inputmask.keyCode.BACKSPACE && e.keyCode !== Inputmask.keyCode.BACKSPACE_SAFARI || caretPos.begin++;
-                                var bffr = buffer.slice().reverse();
-                                return bffr.splice(bffr.length - caretPos.begin, 1), $input.trigger("setvalue", [ alignDigits(bffr, opts.digits, opts).join(""), caretPos.begin ]), 
+                                if (0 === radixPos) return bffr = buffer.slice().reverse(), bffr.pop(), $input.trigger("setvalue", [ bffr.join(""), caretPos.begin ]), 
                                 !1;
-                            }
+                            } else if (-1 !== radixPos && (caretPos.begin < radixPos || e.keyCode === Inputmask.keyCode.DELETE && caretPos.begin === radixPos)) return e.keyCode !== Inputmask.keyCode.BACKSPACE && e.keyCode !== Inputmask.keyCode.BACKSPACE_SAFARI || caretPos.begin++, 
+                            bffr = buffer.slice().reverse(), bffr.splice(bffr.length - caretPos.begin, 1), $input.trigger("setvalue", [ alignDigits(bffr, opts.digits, opts).join(""), caretPos.begin ]), 
+                            !1;
                         }
                     }
                 }
@@ -2494,7 +2486,6 @@
                 prefix: "$ ",
                 groupSeparator: ",",
                 alias: "numeric",
-                placeholder: "0",
                 digits: 2,
                 digitsOptional: !1
             },
@@ -2506,10 +2497,11 @@
                 digits: 0
             },
             percentage: {
-                alias: "integer",
+                alias: "numeric",
                 min: 0,
                 max: 100,
                 suffix: " %",
+                digits: 0,
                 allowMinus: !1
             },
             indianns: {

@@ -1651,18 +1651,24 @@ export default function (qunit, Inputmask) {
 	});
 
 	qunit.test("currency max = 100 - type 200 - zigtechjs", function (assert) {
-		var $fixture = $("#qunit-fixture");
+		var done = assert.async(),
+			$fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("percentage", {
 			placeholder: "_",
 			digitsOptional: false,
-			max: 100,
+			digits: 2,
+			max: 100
 		}).mask(testmask);
 		testmask.focus();
-		$("#testmask").Type("200");
-		testmask.blur();
-		assert.equal($(testmask).val(), "100.00 %", "Result " + $(testmask).val());
+		$("#testmask").trigger("click");
+		setTimeout(function () {
+			$("#testmask").Type("200");
+			testmask.blur();
+			assert.equal(testmask.value, "100.00 %", "Result " + testmask.value);
+			done();
+		}, 0);
 	});
 
 	qunit.test("Numbers get swapped when cursor near suffix. #1278 - xklepio", function (assert) {
