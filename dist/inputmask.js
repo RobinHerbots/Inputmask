@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.245
+ * Version: 5.0.0-beta.246
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -2210,7 +2210,7 @@
             return escapedTxt;
         }
         function alignDigits(buffer, digits, opts) {
-            if (0 < digits && (!opts.digitsOptional || !1 !== opts.__financeInput) && 0 < buffer.length) {
+            if (0 < digits && 0 < buffer.length) {
                 var radixPosition = $.inArray(opts.radixPoint, buffer);
                 -1 === radixPosition && (buffer.push(opts.radixPoint), radixPosition = buffer.length - 1);
                 for (var i = 1; i <= digits; i++) buffer[radixPosition + i] = buffer[radixPosition + i] || "0";
