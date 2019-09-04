@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.242
+ * Version: 5.0.0-beta.243
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -2361,11 +2361,11 @@
                         }));
                         if (null !== opts.min && unmasked < opts.min && (unmasked.toString().length >= opts.min.toString().length || unmasked < 0)) return {
                             refreshFromBuffer: !0,
-                            buffer: alignDigits(opts.min.toString().split(""), opts.digits, opts).reverse()
+                            buffer: alignDigits(opts.min.toString().replace(".", opts.radixPoint).split(""), opts.digits, opts).reverse()
                         };
                         if (null !== opts.max && unmasked > opts.max) return {
                             refreshFromBuffer: !0,
-                            buffer: alignDigits(opts.max.toString().split(""), opts.digits, opts).reverse()
+                            buffer: alignDigits(opts.max.toString().replace(".", opts.radixPoint).split(""), opts.digits, opts).reverse()
                         };
                     }
                     return currentResult;
@@ -2401,8 +2401,12 @@
                         initialValue = initialValue.replace(Inputmask.escapeRegex(radixPoint), "."), isFinite(initialValue) && (initialValue = Math.round(parseFloat(initialValue) * digitsFactor) / digitsFactor), 
                         initialValue = initialValue.toString().replace(".", radixPoint);
                     }
-                    return 0 === opts.digits && -1 !== initialValue.indexOf(Inputmask.escapeRegex(radixPoint)) && (initialValue = initialValue.substring(0, initialValue.indexOf(Inputmask.escapeRegex(radixPoint)))), 
-                    alignDigits(initialValue.toString().split(""), digits, opts).join("");
+                    if (0 === opts.digits && -1 !== initialValue.indexOf(Inputmask.escapeRegex(radixPoint)) && (initialValue = initialValue.substring(0, initialValue.indexOf(Inputmask.escapeRegex(radixPoint)))), 
+                    null !== opts.min || null !== opts.max) {
+                        var numberValue = initialValue.toString().replace(radixPoint, ".");
+                        null !== opts.min && numberValue < opts.min ? initialValue = opts.min.toString().replace(".", radixPoint) : null !== opts.max && numberValue > opts.max && (initialValue = opts.max.toString().replace(".", radixPoint));
+                    }
+                    return alignDigits(initialValue.toString().split(""), digits, opts).join("");
                 },
                 onBeforeWrite: function onBeforeWrite(e, buffer, caretPos, opts) {
                     function stripBuffer(buffer, stripRadix) {
@@ -2433,7 +2437,7 @@
                             }));
                             if (null !== opts.min && unmasked < opts.min) return {
                                 refreshFromBuffer: !0,
-                                buffer: alignDigits(opts.min.toString().split(""), opts.digits, opts).reverse()
+                                buffer: alignDigits(opts.min.toString().replace(".", opts.radixPoint).split(""), opts.digits, opts).reverse()
                             };
                         }
                         if ("" !== opts.radixPoint && buffer[0] === opts.radixPoint) result && result.buffer ? result.buffer.shift() : (buffer.shift(), 
