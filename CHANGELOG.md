@@ -16,6 +16,7 @@
 - revert insert-mode caret as selection instead of colored caret
 
 ### Fixed
+- "setvalue" for empty value and "clearMaskOnLostFocus=false" duplicates mask suffix #2181
 - Uncaught TypeError: $(...).inputmask is not a function #1933
 - 12Hr Format time Hour error #2121
 - Backspace alters value/mask in datetime #2163
