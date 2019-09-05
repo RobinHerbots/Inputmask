@@ -88,6 +88,6 @@ Visual format when the input looses focus
 ## outputFormat
 Unmasking format
 ## min
-Minimum value. This needs to be in the same format as the inputfornat
+Minimum value. This needs to be in the same format as the inputformat
 ## max
-Maximum value. This needs to be in the same format as the inputfornat,
+Maximum value. This needs to be in the same format as the inputformat,
