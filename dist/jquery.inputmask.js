@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.250
+ * Version: 5.0.0-beta.252
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1394,25 +1394,8 @@
                         }
                     }
                 },
-                beforeInputEvent: function beforeInputEvent(e) {
-                    if (e.cancelable) {
-                        var input = this, keydown, keypress;
-                        switch (e.inputType) {
-                          case "insertText":
-                            return $.each(e.data.split(""), function(ndx, entry) {
-                                keypress = new $.Event("keypress"), keypress.which = entry.charCodeAt(0), ignorable = !1, 
-                                EventHandlers.keypressEvent.call(input, keypress);
-                            }), e.preventDefault();
-
-                          case "deleteContentBackward":
-                            return keydown = new $.Event("keydown"), keydown.keyCode = Inputmask.keyCode.BACKSPACE, 
-                            EventHandlers.keydownEvent.call(input, keydown), e.preventDefault();
-
-                          case "deleteContentForward":
-                            return keydown = new $.Event("keydown"), keydown.keyCode = Inputmask.keyCode.DELETE, 
-                            EventHandlers.keydownEvent.call(input, keydown), e.preventDefault();
-                        }
-                    }
+                compositionendEvent: function compositionendEvent(e) {
+                    $el.trigger("input");
                 },
                 setValueEvent: function setValueEvent(e, argument_1, argument_2) {
                     var input = this, value = e && e.detail ? e.detail[0] : argument_1;
@@ -1814,7 +1797,7 @@
                 EventRuler.on(el, "complete", opts.oncomplete), EventRuler.on(el, "incomplete", opts.onincomplete), 
                 EventRuler.on(el, "cleared", opts.oncleared), mobile || !0 === opts.inputEventOnly ? el.removeAttribute("maxLength") : (EventRuler.on(el, "keydown", EventHandlers.keydownEvent), 
                 EventRuler.on(el, "keypress", EventHandlers.keypressEvent)), EventRuler.on(el, "input", EventHandlers.inputFallBackEvent), 
-                EventRuler.on(el, "beforeinput", EventHandlers.beforeInputEvent)), EventRuler.on(el, "setvalue", EventHandlers.setValueEvent), 
+                EventRuler.on(el, "compositionend", EventHandlers.compositionendEvent)), EventRuler.on(el, "setvalue", EventHandlers.setValueEvent), 
                 undoValue = getBufferTemplate().join(""), "" !== el.inputmask._valueGet(!0) || !1 === opts.clearMaskOnLostFocus || document.activeElement === el)) {
                     applyInputValue(el, el.inputmask._valueGet(!0), opts);
                     var buffer = getBuffer().slice();
