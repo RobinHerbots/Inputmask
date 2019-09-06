@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.248
+ * Version: 5.0.0-beta.249
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -636,7 +636,7 @@
         }
         module.exports = function maskScope(actionObj, maskset, opts) {
             maskset = maskset || this.maskset, opts = opts || this.opts;
-            var inputmask = this, el = this.el, isRTL = this.isRTL || (this.isRTL = opts.numericInput), undoValue, $el, skipKeyPressEvent = !1, skipInputEvent = !1, ignorable = !1, maxLength, mouseEnter = !1, colorMask, originalPlaceholder = void 0;
+            var inputmask = this, el = this.el, isRTL = this.isRTL || (this.isRTL = opts.numericInput), undoValue, $el, skipKeyPressEvent = !1, skipInputEvent = !1, validationEvent = !1, ignorable = !1, maxLength, mouseEnter = !1, colorMask, originalPlaceholder = void 0;
             function getMaskTemplate(baseOnInput, minimalPos, includeMode, noJit, clearOptionalTail) {
                 var greedy = opts.greedy;
                 clearOptionalTail && (opts.greedy = !1), minimalPos = minimalPos || 0;
@@ -1241,9 +1241,12 @@
 
                                   case "click":
                                   case "focus":
-                                    return args = arguments, setTimeout(function() {
+                                    return validationEvent ? (validationEvent = !1, input.blur(), HandleNativePlaceholder(input, (isRTL ? getBuffer().slice().reverse() : getBuffer()).join("")), 
+                                    setTimeout(function() {
+                                        input.focus();
+                                    }, 3e3)) : (args = arguments, setTimeout(function() {
                                         eventHandler.apply(that, args);
-                                    }, 0), !1;
+                                    }, 0)), !1;
                                 }
                                 var returnVal = eventHandler.apply(that, arguments);
                                 return !1 === returnVal && (e.preventDefault(), e.stopPropagation()), returnVal;
@@ -1412,6 +1415,9 @@
                     opts.showMaskOnFocus && nptValue !== getBuffer().join("") && writeBuffer(this, getBuffer(), seekNext(getLastValidPosition())), 
                     !0 !== opts.positionCaretOnTab || !1 !== mouseEnter || isComplete(getBuffer()) && -1 !== getLastValidPosition() || EventHandlers.clickEvent.apply(this, [ e, !0 ]), 
                     undoValue = getBuffer().join("");
+                },
+                invalidEvent: function invalidEvent(e) {
+                    validationEvent = !0;
                 },
                 mouseleaveEvent: function mouseleaveEvent() {
                     var input = this;
@@ -1793,7 +1799,7 @@
                 el.type = "password"))), !0 === isSupported && (opts.showMaskOnFocus = opts.showMaskOnFocus && -1 === [ "cc-number", "cc-exp" ].indexOf(el.autocomplete), 
                 EventRuler.on(el, "submit", EventHandlers.submitEvent), EventRuler.on(el, "reset", EventHandlers.resetEvent), 
                 EventRuler.on(el, "blur", EventHandlers.blurEvent), EventRuler.on(el, "focus", EventHandlers.focusEvent), 
-                !0 !== opts.colorMask && (EventRuler.on(el, "click", EventHandlers.clickEvent), 
+                EventRuler.on(el, "invalid", EventHandlers.invalidEvent), !0 !== opts.colorMask && (EventRuler.on(el, "click", EventHandlers.clickEvent), 
                 EventRuler.on(el, "mouseleave", EventHandlers.mouseleaveEvent), EventRuler.on(el, "mouseenter", EventHandlers.mouseenterEvent)), 
                 EventRuler.on(el, "paste", EventHandlers.pasteEvent), EventRuler.on(el, "cut", EventHandlers.cutEvent), 
                 EventRuler.on(el, "complete", opts.oncomplete), EventRuler.on(el, "incomplete", opts.onincomplete), 
