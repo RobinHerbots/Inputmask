@@ -20,9 +20,8 @@ var rules = {
 		loader: "babel-loader",
 		exclude: /(node_modules)/,
 		options: {
-			presets: [
-				"@babel/preset-env"
-			],
+			presets: ["@babel/preset-env"],
+			plugins: ["@babel/plugin-transform-modules-commonjs"],
 			passPerPreset: true,
 		},
 	},
@@ -46,7 +45,7 @@ var rules = {
 				options: {
 					plugins: function () {
 						return [
-							require("postcss-cssnext")
+							require("postcss-preset-env")
 						];
 					}
 				}

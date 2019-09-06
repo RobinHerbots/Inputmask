@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.249
+ * Version: 5.0.0-beta.250
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -12,11 +12,14 @@
     }
 }(window, function(__WEBPACK_EXTERNAL_MODULE__5__) {
     return modules = [ function(module, exports, __webpack_require__) {
+        "use strict";
         var im = __webpack_require__(1), jQuery = __webpack_require__(5);
         im.dependencyLib === jQuery && __webpack_require__(11), module.exports = im;
     }, function(module, exports, __webpack_require__) {
+        "use strict";
         __webpack_require__(2), __webpack_require__(9), __webpack_require__(10), module.exports = __webpack_require__(3);
     }, function(module, exports, __webpack_require__) {
+        "use strict";
         var Inputmask = __webpack_require__(3);
         function ipValidator(chrs, maskset, pos, strict, opts) {
             return chrs = -1 < pos - 1 && "." !== maskset.buffer[pos - 1] ? (chrs = maskset.buffer[pos - 1] + chrs, 
@@ -101,6 +104,7 @@
             }
         }), module.exports = Inputmask;
     }, function(module, exports, __webpack_require__) {
+        "use strict";
         function _typeof(obj) {
             return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function _typeof(obj) {
                 return typeof obj;
@@ -347,12 +351,14 @@
             CONTROL: 17
         }, Inputmask.dependencyLib = $, window.Inputmask = Inputmask, module.exports = Inputmask;
     }, function(module, exports, __webpack_require__) {
+        "use strict";
         var jquery = __webpack_require__(5);
         if (void 0 === jquery) throw "jQuery not loaded!";
         module.exports = jquery;
     }, function(module, exports) {
         module.exports = __WEBPACK_EXTERNAL_MODULE__5__;
     }, function(module, exports, __webpack_require__) {
+        "use strict";
         var __WEBPACK_AMD_DEFINE_RESULT__;
         function _typeof(obj) {
             return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function _typeof(obj) {
@@ -365,6 +371,7 @@
             return "undefined" != typeof window ? window : new (eval("require('jsdom').JSDOM"))("").window;
         }.call(exports, __webpack_require__, exports, module), void 0 === __WEBPACK_AMD_DEFINE_RESULT__ || (module.exports = __WEBPACK_AMD_DEFINE_RESULT__);
     }, function(module, exports, __webpack_require__) {
+        "use strict";
         var $ = __webpack_require__(4);
         function generateMaskSet(opts, nocache) {
             var ms;
@@ -621,6 +628,7 @@
             analyseMask: analyseMask
         };
     }, function(module, exports, __webpack_require__) {
+        "use strict";
         function _typeof(obj) {
             return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function _typeof(obj) {
                 return typeof obj;
@@ -1224,7 +1232,8 @@
                             if ("setvalue" === e.type || "FORM" === this.nodeName || !(that.disabled || that.readOnly && !("keydown" === e.type && e.ctrlKey && 67 === e.keyCode || !1 === opts.tabThrough && e.keyCode === Inputmask.keyCode.TAB))) {
                                 switch (e.type) {
                                   case "input":
-                                    if (!0 === skipInputEvent) return skipInputEvent = !1, e.preventDefault();
+                                    if (!0 === skipInputEvent || e.originalEvent && "insertCompositionText" === e.originalEvent.inputType) return skipInputEvent = !1, 
+                                    e.preventDefault();
                                     if (mobile) return args = arguments, setTimeout(function() {
                                         eventHandler.apply(that, args), caret(that, that.inputmask.caretPos, void 0, !0);
                                     }, 0), !1;
@@ -1874,6 +1883,7 @@
             }
         };
     }, function(module, exports, __webpack_require__) {
+        "use strict";
         function _typeof(obj) {
             return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function _typeof(obj) {
                 return typeof obj;
@@ -2089,13 +2099,14 @@
             }
         }), module.exports = Inputmask;
     }, function(module, exports, __webpack_require__) {
+        "use strict";
         var Inputmask = __webpack_require__(3), $ = Inputmask.dependencyLib;
         function autoEscape(txt, opts) {
             for (var escapedTxt = "", i = 0; i < txt.length; i++) Inputmask.prototype.definitions[txt.charAt(i)] || opts.definitions[txt.charAt(i)] || opts.optionalmarker.start === txt.charAt(i) || opts.optionalmarker.end === txt.charAt(i) || opts.quantifiermarker.start === txt.charAt(i) || opts.quantifiermarker.end === txt.charAt(i) || opts.groupmarker.start === txt.charAt(i) || opts.groupmarker.end === txt.charAt(i) || opts.alternatormarker === txt.charAt(i) ? escapedTxt += "\\" + txt.charAt(i) : escapedTxt += txt.charAt(i);
             return escapedTxt;
         }
         function alignDigits(buffer, digits, opts) {
-            if (0 < digits && 0 < buffer.length) {
+            if (0 < digits && !opts.digitsOptional) {
                 var radixPosition = $.inArray(opts.radixPoint, buffer);
                 -1 === radixPosition && (buffer.push(opts.radixPoint), radixPosition = buffer.length - 1);
                 for (var i = 1; i <= digits; i++) buffer[radixPosition + i] = buffer[radixPosition + i] || "0";
@@ -2402,6 +2413,7 @@
             }
         }), module.exports = Inputmask;
     }, function(module, exports, __webpack_require__) {
+        "use strict";
         function _typeof(obj) {
             return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function _typeof(obj) {
                 return typeof obj;

@@ -1986,4 +1986,19 @@ export default function (qunit, Inputmask) {
 
 		assert.equal(testmask.value, "0,001", "Result " + testmask.value);
 	});
+
+	qunit.test("percentage digits: 2 max: 1000.01 - jamesRUSS2 #2177", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("percentage", {
+			digits: 2,
+			max: "1000.01"
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("9999");
+
+		assert.equal(testmask.value, "1000.01", "Result " + testmask.value);
+	});
 };
