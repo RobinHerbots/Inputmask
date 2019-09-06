@@ -1370,7 +1370,7 @@
                             }), 0 < entries.length) document.activeElement !== input && (input.focus(), caret(input, selection)), 
                             $.each(entries.split(""), function(ndx, entry) {
                                 var keypress = new $.Event("keypress");
-                                keypress.which = entry.charCodeAt(0), ignorable = !1, EventHandlers.keypressEvent.call(input, keypress);
+                                keypress.which = entry.charCodeAt(0), ignorable = !1, (!e.originalEvent || e.originalEvent.inputType !== "insertCompositionText") && EventHandlers.keypressEvent.call(input, keypress);
                             }); else {
                                 selection.begin === selection.end - 1 && (selection.begin = seekPrevious(selection.begin + 1), 
                                 selection.begin === selection.end - 1 ? caret(input, selection.begin) : caret(input, selection.begin, selection.end));
