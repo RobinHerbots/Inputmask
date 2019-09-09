@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.253
+ * Version: 5.0.0-beta.257
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -205,8 +205,6 @@
                 positionCaretOnClick: "lvp",
                 casing: null,
                 inputmode: "verbatim",
-                colorMask: !1,
-                disablePredictiveText: !1,
                 importDataAttributes: !0,
                 shiftPositions: !0
             },
@@ -297,10 +295,7 @@
             setValue: function setValue(value) {
                 this.el && $(this.el).trigger("setvalue", [ value ]);
             },
-            analyseMask: analyseMask,
-            positionColorMask: function positionColorMask(input, template) {
-                input.style.left = template.offsetLeft + "px";
-            }
+            analyseMask: analyseMask
         }, Inputmask.extendDefaults = function(options) {
             $.extend(!0, Inputmask.prototype.defaults, options);
         }, Inputmask.extendDefinitions = function(definition) {
@@ -760,7 +755,7 @@
         var $ = __webpack_require__(3), window = __webpack_require__(4), document = window.document, ua = window.navigator && window.navigator.userAgent || "", ie = 0 < ua.indexOf("MSIE ") || 0 < ua.indexOf("Trident/"), mobile = "ontouchstart" in window, iemobile = /iemobile/i.test(ua), iphone = /iphone/i.test(ua) && !iemobile;
         module.exports = function maskScope(actionObj, maskset, opts) {
             maskset = maskset || this.maskset, opts = opts || this.opts;
-            var inputmask = this, el = this.el, isRTL = this.isRTL || (this.isRTL = opts.numericInput), undoValue, $el, skipKeyPressEvent = !1, skipInputEvent = !1, validationEvent = !1, ignorable = !1, maxLength, mouseEnter = !1, colorMask, originalPlaceholder = void 0;
+            var inputmask = this, el = this.el, isRTL = this.isRTL || (this.isRTL = opts.numericInput), undoValue, $el, skipKeyPressEvent = !1, skipInputEvent = !1, validationEvent = !1, ignorable = !1, maxLength, mouseEnter = !1, originalPlaceholder = void 0;
             function getMaskTemplate(baseOnInput, minimalPos, includeMode, noJit, clearOptionalTail) {
                 var greedy = opts.greedy;
                 clearOptionalTail && (opts.greedy = !1), minimalPos = minimalPos || 0;
@@ -1261,7 +1256,7 @@
                         void 0 !== caretPos && (caretPos = void 0 !== result.caret ? result.caret : caretPos);
                     }
                 }
-                if (void 0 !== input && (input.inputmask._valueSet(buffer.join("")), void 0 === caretPos || void 0 !== event && "blur" === event.type ? renderColorMask(input, caretPos, 0 === buffer.length) : caret(input, caretPos), 
+                if (void 0 !== input && (input.inputmask._valueSet(buffer.join("")), void 0 === caretPos || void 0 !== event && "blur" === event.type || caret(input, caretPos), 
                 !0 === triggerEvents)) {
                     var $input = $(input), nptVal = input.inputmask._valueGet();
                     skipInputEvent = !0, $input.trigger("input"), setTimeout(function() {
@@ -1280,7 +1275,7 @@
                 return test.def;
             }
             function HandleNativePlaceholder(npt, value) {
-                if (ie || opts.colorMask) {
+                if (ie) {
                     if (npt.inputmask._valueGet() !== value && (npt.placeholder !== value || "" === npt.placeholder)) {
                         var buffer = getBuffer().slice(), nptValue = npt.inputmask._valueGet();
                         if (nptValue !== value) {
@@ -1407,16 +1402,13 @@
                     $input.trigger("click")) : !0 === opts.tabThrough && k === Inputmask.keyCode.TAB ? (!0 === e.shiftKey ? (!0 === getTest(pos.begin).match.static && (pos.begin = seekNext(pos.begin)), 
                     pos.end = seekPrevious(pos.begin, !0), pos.begin = seekPrevious(pos.end, !0)) : (pos.begin = seekNext(pos.begin, !0), 
                     pos.end = seekNext(pos.begin, !0), pos.end < maskset.maskLength && pos.end--), pos.begin < maskset.maskLength && (e.preventDefault(), 
-                    caret(input, pos.begin, pos.end))) : e.shiftKey || (!1 === opts.insertMode ? k === Inputmask.keyCode.RIGHT ? setTimeout(function() {
+                    caret(input, pos.begin, pos.end))) : e.shiftKey || !1 === opts.insertMode && (k === Inputmask.keyCode.RIGHT ? setTimeout(function() {
                         var caretPos = caret(input);
                         caret(input, caretPos.begin);
                     }, 0) : k === Inputmask.keyCode.LEFT && setTimeout(function() {
                         var caretPos_begin = translatePosition(input.inputmask.caretPos.begin), caretPos_end = translatePosition(input.inputmask.caretPos.end);
                         caret(input, isRTL ? caretPos_begin + (caretPos_begin === maskset.maskLength ? 0 : 1) : caretPos_begin - (0 === caretPos_begin ? 0 : 1));
-                    }, 0) : !0 === opts.colorMask && (k !== Inputmask.keyCode.RIGHT && k !== Inputmask.keyCode.LEFT || setTimeout(function() {
-                        var caretPos = caret(input, void 0, void 0, !0);
-                        renderColorMask(input, caretPos);
-                    }, 0)));
+                    }, 0));
                     ignorable = -1 !== $.inArray(k, opts.ignorables);
                 },
                 keypressEvent: function keypressEvent(e, checkval, writeOut, strict, ndx) {
@@ -1549,7 +1541,7 @@
                     if (this.inputmask) {
                         HandleNativePlaceholder(this, originalPlaceholder);
                         var nptValue = this.inputmask._valueGet(), buffer = getBuffer().slice();
-                        "" === nptValue && void 0 === colorMask || (opts.clearMaskOnLostFocus && (-1 === getLastValidPosition() && nptValue === getBufferTemplate().join("") ? buffer = [] : clearOptionalTail(buffer)), 
+                        "" !== nptValue && (opts.clearMaskOnLostFocus && (-1 === getLastValidPosition() && nptValue === getBufferTemplate().join("") ? buffer = [] : clearOptionalTail(buffer)), 
                         !1 === isComplete(buffer) && (setTimeout(function() {
                             $input.trigger("incomplete");
                         }, 0), opts.clearIncomplete && (resetMaskSet(), buffer = opts.clearMaskOnLostFocus ? [] : getBufferTemplate().slice())), 
@@ -1654,24 +1646,18 @@
                     if (input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0, input.inputmask.caretPos = {
                         begin: begin,
                         end: end
-                    }, !1 === opts.insertMode && begin === end && end++, input === document.activeElement) {
-                        if ("setSelectionRange" in input) input.setSelectionRange(begin, end); else if (window.getSelection) {
-                            if (range = document.createRange(), void 0 === input.firstChild || null === input.firstChild) {
-                                var textNode = document.createTextNode("");
-                                input.appendChild(textNode);
-                            }
-                            range.setStart(input.firstChild, begin < input.inputmask._valueGet().length ? begin : input.inputmask._valueGet().length), 
-                            range.setEnd(input.firstChild, end < input.inputmask._valueGet().length ? end : input.inputmask._valueGet().length), 
-                            range.collapse(!0);
-                            var sel = window.getSelection();
-                            sel.removeAllRanges(), sel.addRange(range);
-                        } else input.createTextRange && (range = input.createTextRange(), range.collapse(!0), 
-                        range.moveEnd("character", end), range.moveStart("character", begin), range.select());
-                        renderColorMask(input, {
-                            begin: begin,
-                            end: end
-                        });
-                    }
+                    }, !1 === opts.insertMode && begin === end && end++, input === document.activeElement) if ("setSelectionRange" in input) input.setSelectionRange(begin, end); else if (window.getSelection) {
+                        if (range = document.createRange(), void 0 === input.firstChild || null === input.firstChild) {
+                            var textNode = document.createTextNode("");
+                            input.appendChild(textNode);
+                        }
+                        range.setStart(input.firstChild, begin < input.inputmask._valueGet().length ? begin : input.inputmask._valueGet().length), 
+                        range.setEnd(input.firstChild, end < input.inputmask._valueGet().length ? end : input.inputmask._valueGet().length), 
+                        range.collapse(!0);
+                        var sel = window.getSelection();
+                        sel.removeAllRanges(), sel.addRange(range);
+                    } else input.createTextRange && (range = input.createTextRange(), range.collapse(!0), 
+                    range.moveEnd("character", end), range.moveStart("character", begin), range.select());
                 }
             }
             function determineLastRequiredPosition(returnDefinition) {
@@ -1729,81 +1715,6 @@
                     lvp < pos.begin ? maskset.p = !1 === opts.insertMode ? seekPrevious(lvp + 1) : seekNext(lvp) : !0 !== strict && (maskset.p = k === Inputmask.keyCode.DELETE ? pos.begin + offset : pos.begin, 
                     !1 === opts.insertMode && k === Inputmask.keyCode.DELETE && (maskset.p = pos.end + 1, 
                     void 0 === maskset.validPositions[maskset.p] && getLastValidPosition(maskset.maskLength, !0) < maskset.p && (maskset.p = seekPrevious(lvp + 1))));
-                }
-            }
-            function initializeColorMask(input) {
-                var computedStyle = (input.ownerDocument.defaultView || window).getComputedStyle(input, null);
-                function findCaretPos(clientx) {
-                    var e = document.createElement("span"), caretPos = 0;
-                    for (var style in computedStyle) isNaN(style) && -1 !== style.indexOf("font") && (e.style[style] = computedStyle[style]);
-                    e.style.textTransform = computedStyle.textTransform, e.style.letterSpacing = computedStyle.letterSpacing, 
-                    e.style.position = "absolute", e.style.height = "auto", e.style.width = "auto", 
-                    e.style.visibility = "hidden", e.style.whiteSpace = "nowrap", document.body.appendChild(e);
-                    for (var inputText = input.inputmask.__valueGet.call(input); e.offsetWidth < clientx; ) {
-                        var ichar = inputText.charAt(caretPos);
-                        if (e.innerHTML += " " === ichar || "" === ichar ? "_" : ichar, e.offsetWidth >= clientx) {
-                            caretPos--;
-                            break;
-                        }
-                        caretPos++;
-                    }
-                    if ("right" === input.style.textAlign) {
-                        e.innerHTML = "_";
-                        var maxChars = Math.ceil(input.offsetWidth / e.offsetWidth) - 1;
-                        caretPos = inputText.length - (maxChars - caretPos) + 1;
-                    }
-                    return document.body.removeChild(e), caretPos;
-                }
-                var template = document.createElement("div");
-                template.style.width = computedStyle.width, template.style.textAlign = computedStyle.textAlign, 
-                colorMask = document.createElement("div"), input.inputmask.colorMask = colorMask, 
-                colorMask.className = "im-colormask", input.parentNode.insertBefore(colorMask, input), 
-                input.parentNode.removeChild(input), colorMask.appendChild(input), colorMask.appendChild(template), 
-                input.style.left = template.offsetLeft + "px", $(colorMask).on("mouseleave", function(e) {
-                    return EventHandlers.mouseleaveEvent.call(input, [ e ]);
-                }), $(colorMask).on("mouseenter", function(e) {
-                    return EventHandlers.mouseenterEvent.call(input, [ e ]);
-                }), $(colorMask).on("click", function(e) {
-                    return caret(input, findCaretPos(e.clientX), void 0, !0), EventHandlers.clickEvent.call(input, [ e ]);
-                });
-            }
-            function renderColorMask(input, caretPos, clear) {
-                var maskTemplate = [], isStatic = !1, test, testPos, ndxIntlzr, pos = 0, templates_static = {
-                    start: isRTL ? "</span>" : "<span class='im-static'>",
-                    end: isRTL ? "<span class='im-static'>" : "</span>"
-                }, templates_caret = {
-                    start: '<mark class="im-caret" style="border-right-width: 1px;border-right-style: solid;">',
-                    start_select: '<mark class="im-caret-select">',
-                    end: "</mark>"
-                };
-                function setEntry(entry) {
-                    maskTemplate.push(entry);
-                }
-                function setCaret(begin, end, length) {
-                    document.activeElement === input && (maskTemplate.splice(begin, 0, begin === end || length > maskset.maskLength ? templates_caret.start : templates_caret.start_select), 
-                    maskTemplate.splice(end + (isRTL ? 0 : 1), 0, templates_caret.end));
-                }
-                if (void 0 !== colorMask) {
-                    var buffer = getBuffer();
-                    if (void 0 === caretPos ? caretPos = caret(input) : void 0 === caretPos.begin && (caretPos = {
-                        begin: caretPos,
-                        end: caretPos
-                    }), isRTL && (caretPos.begin = translatePosition(caretPos.begin), caretPos.end = translatePosition(caretPos.end)), 
-                    !0 !== clear) {
-                        var lvp = getLastValidPosition();
-                        do {
-                            if (maskset.validPositions[pos]) testPos = maskset.validPositions[pos], test = testPos.match, 
-                            ndxIntlzr = testPos.locator.slice(), setEntry(buffer[pos]); else {
-                                testPos = getTestTemplate(pos, ndxIntlzr, pos - 1), test = testPos.match, ndxIntlzr = testPos.locator.slice();
-                                var jitMasking = !1 !== opts.jitMasking ? opts.jitMasking : test.jit;
-                                (!1 === jitMasking || void 0 === jitMasking || "number" == typeof jitMasking && isFinite(jitMasking) && pos < jitMasking) && setEntry(getPlaceholder(pos, test));
-                            }
-                            pos++;
-                        } while ((void 0 === maxLength || pos < maxLength) && (!0 !== test.static || "" !== test.def) || pos < lvp);
-                        setCaret(isRTL ? caretPos.end : caretPos.begin, isRTL ? caretPos.begin : caretPos.end, caretPos.end);
-                    }
-                    var template = colorMask.getElementsByTagName("div")[0];
-                    template.innerHTML = (isRTL ? maskTemplate.reverse() : maskTemplate).join(""), input.inputmask.positionColorMask(input, template);
                 }
             }
             function applyInputValue(input, value) {
@@ -1902,13 +1813,12 @@
                 var isSupported = isElementTypeSupported(elem, opts);
                 if (!1 !== isSupported && (el = elem, $el = $(el), originalPlaceholder = el.placeholder, 
                 maxLength = void 0 !== el ? el.maxLength : void 0, -1 === maxLength && (maxLength = void 0), 
-                !0 === opts.colorMask && initializeColorMask(el), mobile && ("inputmode" in el && (el.inputmode = opts.inputmode, 
-                el.setAttribute("inputmode", opts.inputmode)), !0 === opts.disablePredictiveText && ("autocorrect" in el ? el.autocorrect = !1 : (!0 !== opts.colorMask && initializeColorMask(el), 
-                el.type = "password"))), !0 === isSupported && (opts.showMaskOnFocus = opts.showMaskOnFocus && -1 === [ "cc-number", "cc-exp" ].indexOf(el.autocomplete), 
+                "inputmode" in el && (el.inputmode = opts.inputmode, el.setAttribute("inputmode", opts.inputmode)), 
+                !0 === isSupported && (opts.showMaskOnFocus = opts.showMaskOnFocus && -1 === [ "cc-number", "cc-exp" ].indexOf(el.autocomplete), 
                 EventRuler.on(el, "submit", EventHandlers.submitEvent), EventRuler.on(el, "reset", EventHandlers.resetEvent), 
                 EventRuler.on(el, "blur", EventHandlers.blurEvent), EventRuler.on(el, "focus", EventHandlers.focusEvent), 
-                EventRuler.on(el, "invalid", EventHandlers.invalidEvent), !0 !== opts.colorMask && (EventRuler.on(el, "click", EventHandlers.clickEvent), 
-                EventRuler.on(el, "mouseleave", EventHandlers.mouseleaveEvent), EventRuler.on(el, "mouseenter", EventHandlers.mouseenterEvent)), 
+                EventRuler.on(el, "invalid", EventHandlers.invalidEvent), EventRuler.on(el, "click", EventHandlers.clickEvent), 
+                EventRuler.on(el, "mouseleave", EventHandlers.mouseleaveEvent), EventRuler.on(el, "mouseenter", EventHandlers.mouseenterEvent), 
                 EventRuler.on(el, "paste", EventHandlers.pasteEvent), EventRuler.on(el, "cut", EventHandlers.cutEvent), 
                 EventRuler.on(el, "complete", opts.oncomplete), EventRuler.on(el, "incomplete", opts.onincomplete), 
                 EventRuler.on(el, "cleared", opts.oncleared), mobile || !0 === opts.inputEventOnly ? el.removeAttribute("maxLength") : (EventRuler.on(el, "keydown", EventHandlers.keydownEvent), 
@@ -1959,9 +1869,7 @@
                     $.data(el, "_inputmask_opts", null), $el = $(el);
                     var cv = opts.autoUnmask ? unmaskedvalue(el) : el.inputmask._valueGet(opts.autoUnmask), valueProperty;
                     cv !== getBufferTemplate().join("") ? el.inputmask._valueSet(cv, opts.autoUnmask) : el.inputmask._valueSet(""), 
-                    EventRuler.off(el), el.inputmask.colorMask && (colorMask = el.inputmask.colorMask, 
-                    colorMask.removeChild(el), colorMask.parentNode.insertBefore(el, colorMask), colorMask.parentNode.removeChild(colorMask)), 
-                    Object.getOwnPropertyDescriptor && Object.getPrototypeOf ? (valueProperty = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), "value"), 
+                    EventRuler.off(el), Object.getOwnPropertyDescriptor && Object.getPrototypeOf ? (valueProperty = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), "value"), 
                     valueProperty && el.inputmask.__valueGet && Object.defineProperty(el, "value", {
                         get: el.inputmask.__valueGet,
                         set: el.inputmask.__valueSet,

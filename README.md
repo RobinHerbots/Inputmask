@@ -29,7 +29,6 @@ Highlights:
 - value formatting / validating without input element
 - AMD/CommonJS support
 - dependencyLibs: vanilla javascript, jQuery, jqlite
-- [Android support](README_android.md)
 
 Demo page see [http://robinherbots.github.io/Inputmask](http://robinherbots.github.io/Inputmask)
 
@@ -1070,33 +1069,6 @@ Default: null
 Default: "verbatim"
 Specify the inputmode  - already in place for when browsers start to  support them
 https://html.spec.whatwg.org/#input-modalities:-the-inputmode-attribute
-
-### colorMask
-Default: false
-Create a css styleable mask.
-
-You need to include the inputmask.css in your page to use this option.
-
-See the inputmask.css for more info about the used styling.
-You can override the Inputmask.prototype.positionColorMask`if you need some custom positioning.
-```
- Inputmask.prototype.positionColorMask = function (input, template) {
-                template.style.left = input.offsetLeft + "px";
-                template.zIndex = input.zIndex - 1;
-           }
-```
-
-### disablePredictiveText
-Default: false
-Disables predictive text on mobile devices.
-
-What it does.
-- changes the input type to password => disables predictive text
-- enables the colorMask option which creates a div, which surrounds the input.
-So we type in the hidden password input and render the mask in the a created div.
-
-To use the colorMask, you need to include the inputmask.css you might need to add some css-tweaks to make it all visually correct in your page.
-
 
 ### importDataAttributes
 Specify to use the data-inputmask attributes or to ignore them.

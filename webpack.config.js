@@ -10,11 +10,6 @@ function createBanner() {
 }
 
 var rules = {
-	// sourceMap: {
-	//     enforce: 'pre',
-	//     test: /\.js$/,
-	//     loader: 'source-map-loader',
-	// },
 	js: {
 		test: /\.js$/,
 		loader: "babel-loader",
@@ -24,33 +19,6 @@ var rules = {
 			plugins: ["@babel/plugin-transform-modules-commonjs"],
 			passPerPreset: true,
 		},
-	},
-	// ts: {
-	//     test: /\.tsx?$/,
-	//     loader: 'awesome-typescript-loader',
-	//     exclude: /(node_modules)/
-	// },
-	styles: {
-		test: /\.css$/,
-		use: [
-			"style-loader",
-			{
-				loader: "css-loader",
-				options: {
-					importLoaders: 1
-				}
-			},
-			{
-				loader: "postcss-loader",
-				options: {
-					plugins: function () {
-						return [
-							require("postcss-preset-env")
-						];
-					}
-				}
-			}
-		]
 	}
 };
 
@@ -121,10 +89,7 @@ module.exports = {
 	},
 	module: {
 		rules: [
-			// rules.sourceMap,
-			rules.js,
-			// rules.ts,
-			rules.styles
+			rules.js
 		]
 	},
 	resolve: {

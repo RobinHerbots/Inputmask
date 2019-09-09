@@ -5,6 +5,8 @@
 - add indian numbering support in numeric alias (indianns alias)
 
 ### Updates
+- drop colormask support
+- drop disablePredictiveText option (was hack via colorMask)
 - ignore generated statics in revalidateMask
 - fix mask curruption when alternating and using jitmasking
 - Casing option will also allow case insensitive entry for static symbols

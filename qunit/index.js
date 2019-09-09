@@ -1,5 +1,3 @@
-import "../node_modules/qunit/qunit/qunit.css";
-import "../css/inputmask.css";
 import Inputmask from "../index";
 import jQuery from "jquery";
 
