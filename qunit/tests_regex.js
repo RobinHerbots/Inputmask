@@ -197,7 +197,7 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		$("#testmask").Type("70-12-34");
 
-		assert.equal(testmask.value, "70-123-4__", "Result " + testmask.value);
+		assert.equal(testmask.value, "70-123-4___", "Result " + testmask.value);
 	});
 
 	qunit.test("inputmask({ regex: \"([0-9]|[1][0-9]|[2][0-3]?)(\\.(5|25|75))?\" - arame regex 12", function (assert) {

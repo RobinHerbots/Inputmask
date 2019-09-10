@@ -3,107 +3,15 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.258
+ * Version: 5.0.0-beta.262
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
         var a = "object" == typeof exports ? factory(require("jquery")) : factory(root.jQuery);
         for (var i in a) ("object" == typeof exports ? exports : root)[i] = a[i];
     }
-}(window, function(__WEBPACK_EXTERNAL_MODULE__5__) {
+}(window, function(__WEBPACK_EXTERNAL_MODULE__2__) {
     return modules = [ function(module, exports, __webpack_require__) {
-        "use strict";
-        var im = __webpack_require__(1), jQuery = __webpack_require__(5);
-        im.dependencyLib === jQuery && __webpack_require__(11), module.exports = im;
-    }, function(module, exports, __webpack_require__) {
-        "use strict";
-        __webpack_require__(2), __webpack_require__(9), __webpack_require__(10), module.exports = __webpack_require__(3);
-    }, function(module, exports, __webpack_require__) {
-        "use strict";
-        var Inputmask = __webpack_require__(3);
-        function ipValidator(chrs, maskset, pos, strict, opts) {
-            return chrs = -1 < pos - 1 && "." !== maskset.buffer[pos - 1] ? (chrs = maskset.buffer[pos - 1] + chrs, 
-            -1 < pos - 2 && "." !== maskset.buffer[pos - 2] ? maskset.buffer[pos - 2] + chrs : "0" + chrs) : "00" + chrs, 
-            new RegExp("25[0-5]|2[0-4][0-9]|[01][0-9][0-9]").test(chrs);
-        }
-        Inputmask.extendDefinitions({
-            A: {
-                validator: "[A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
-                casing: "upper"
-            },
-            "&": {
-                validator: "[0-9A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
-                casing: "upper"
-            },
-            "#": {
-                validator: "[0-9A-Fa-f]",
-                casing: "upper"
-            }
-        }), Inputmask.extendAliases({
-            cssunit: {
-                regex: "[+-]?[0-9]+\\.?([0-9]+)?(px|em|rem|ex|%|in|cm|mm|pt|pc)"
-            },
-            url: {
-                regex: "(https?|ftp)//.*",
-                autoUnmask: !1
-            },
-            ip: {
-                mask: "i[i[i]].j[j[j]].k[k[k]].l[l[l]]",
-                definitions: {
-                    i: {
-                        validator: ipValidator
-                    },
-                    j: {
-                        validator: ipValidator
-                    },
-                    k: {
-                        validator: ipValidator
-                    },
-                    l: {
-                        validator: ipValidator
-                    }
-                },
-                onUnMask: function onUnMask(maskedValue, unmaskedValue, opts) {
-                    return maskedValue;
-                },
-                inputmode: "numeric"
-            },
-            email: {
-                mask: "*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@-{1,63}.-{1,63}[.-{1,63}][.-{1,63}]",
-                greedy: !1,
-                casing: "lower",
-                onBeforePaste: function onBeforePaste(pastedValue, opts) {
-                    return pastedValue = pastedValue.toLowerCase(), pastedValue.replace("mailto:", "");
-                },
-                definitions: {
-                    "*": {
-                        validator: "[0-9\uff11-\uff19A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5!#$%&'*+/=?^_`{|}~-]"
-                    },
-                    "-": {
-                        validator: "[0-9A-Za-z-]"
-                    }
-                },
-                onUnMask: function onUnMask(maskedValue, unmaskedValue, opts) {
-                    return maskedValue;
-                },
-                inputmode: "email"
-            },
-            mac: {
-                mask: "##:##:##:##:##:##"
-            },
-            vin: {
-                mask: "V{13}9{4}",
-                definitions: {
-                    V: {
-                        validator: "[A-HJ-NPR-Za-hj-npr-z\\d]",
-                        casing: "upper"
-                    }
-                },
-                clearIncomplete: !0,
-                autoUnmask: !0
-            }
-        }), module.exports = Inputmask;
-    }, function(module, exports, __webpack_require__) {
         "use strict";
         function _typeof(obj) {
             return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function _typeof(obj) {
@@ -112,7 +20,7 @@
                 return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
             }, _typeof(obj);
         }
-        var $ = __webpack_require__(4), window = __webpack_require__(6), document = window.document, generateMaskSet = __webpack_require__(7).generateMaskSet, analyseMask = __webpack_require__(7).analyseMask, maskScope = __webpack_require__(8);
+        var $ = __webpack_require__(1), window = __webpack_require__(3), document = window.document, generateMaskSet = __webpack_require__(4).generateMaskSet, analyseMask = __webpack_require__(4).analyseMask, maskScope = __webpack_require__(7);
         function Inputmask(alias, options, internal) {
             if (!(this instanceof Inputmask)) return new Inputmask(alias, options, internal);
             this.el = void 0, this.events = {}, this.maskset = void 0, this.refreshValue = !1, 
@@ -347,11 +255,11 @@
         }, Inputmask.dependencyLib = $, window.Inputmask = Inputmask, module.exports = Inputmask;
     }, function(module, exports, __webpack_require__) {
         "use strict";
-        var jquery = __webpack_require__(5);
+        var jquery = __webpack_require__(2);
         if (void 0 === jquery) throw "jQuery not loaded!";
         module.exports = jquery;
     }, function(module, exports) {
-        module.exports = __WEBPACK_EXTERNAL_MODULE__5__;
+        module.exports = __WEBPACK_EXTERNAL_MODULE__2__;
     }, function(module, exports, __webpack_require__) {
         "use strict";
         var __WEBPACK_AMD_DEFINE_RESULT__;
@@ -367,7 +275,7 @@
         }.call(exports, __webpack_require__, exports, module), void 0 === __WEBPACK_AMD_DEFINE_RESULT__ || (module.exports = __WEBPACK_AMD_DEFINE_RESULT__);
     }, function(module, exports, __webpack_require__) {
         "use strict";
-        var $ = __webpack_require__(4);
+        var $ = __webpack_require__(1);
         function generateMaskSet(opts, nocache) {
             var ms;
             function generateMask(mask, metadata, opts) {
@@ -624,6 +532,94 @@
         };
     }, function(module, exports, __webpack_require__) {
         "use strict";
+        __webpack_require__(6), __webpack_require__(8), __webpack_require__(9), module.exports = __webpack_require__(0);
+    }, function(module, exports, __webpack_require__) {
+        "use strict";
+        var Inputmask = __webpack_require__(0);
+        function ipValidator(chrs, maskset, pos, strict, opts) {
+            return chrs = -1 < pos - 1 && "." !== maskset.buffer[pos - 1] ? (chrs = maskset.buffer[pos - 1] + chrs, 
+            -1 < pos - 2 && "." !== maskset.buffer[pos - 2] ? maskset.buffer[pos - 2] + chrs : "0" + chrs) : "00" + chrs, 
+            new RegExp("25[0-5]|2[0-4][0-9]|[01][0-9][0-9]").test(chrs);
+        }
+        Inputmask.extendDefinitions({
+            A: {
+                validator: "[A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
+                casing: "upper"
+            },
+            "&": {
+                validator: "[0-9A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
+                casing: "upper"
+            },
+            "#": {
+                validator: "[0-9A-Fa-f]",
+                casing: "upper"
+            }
+        }), Inputmask.extendAliases({
+            cssunit: {
+                regex: "[+-]?[0-9]+\\.?([0-9]+)?(px|em|rem|ex|%|in|cm|mm|pt|pc)"
+            },
+            url: {
+                regex: "(https?|ftp)//.*",
+                autoUnmask: !1
+            },
+            ip: {
+                mask: "i[i[i]].j[j[j]].k[k[k]].l[l[l]]",
+                definitions: {
+                    i: {
+                        validator: ipValidator
+                    },
+                    j: {
+                        validator: ipValidator
+                    },
+                    k: {
+                        validator: ipValidator
+                    },
+                    l: {
+                        validator: ipValidator
+                    }
+                },
+                onUnMask: function onUnMask(maskedValue, unmaskedValue, opts) {
+                    return maskedValue;
+                },
+                inputmode: "numeric"
+            },
+            email: {
+                mask: "*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@-{1,63}.-{1,63}[.-{1,63}][.-{1,63}]",
+                greedy: !1,
+                casing: "lower",
+                onBeforePaste: function onBeforePaste(pastedValue, opts) {
+                    return pastedValue = pastedValue.toLowerCase(), pastedValue.replace("mailto:", "");
+                },
+                definitions: {
+                    "*": {
+                        validator: "[0-9\uff11-\uff19A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5!#$%&'*+/=?^_`{|}~-]"
+                    },
+                    "-": {
+                        validator: "[0-9A-Za-z-]"
+                    }
+                },
+                onUnMask: function onUnMask(maskedValue, unmaskedValue, opts) {
+                    return maskedValue;
+                },
+                inputmode: "email"
+            },
+            mac: {
+                mask: "##:##:##:##:##:##"
+            },
+            vin: {
+                mask: "V{13}9{4}",
+                definitions: {
+                    V: {
+                        validator: "[A-HJ-NPR-Za-hj-npr-z\\d]",
+                        casing: "upper"
+                    }
+                },
+                clearIncomplete: !0,
+                autoUnmask: !0
+            }
+        }), module.exports = Inputmask;
+    }, function(module, exports, __webpack_require__) {
+        "use strict";
         function _typeof(obj) {
             return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function _typeof(obj) {
                 return typeof obj;
@@ -631,7 +627,7 @@
                 return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
             }, _typeof(obj);
         }
-        var $ = __webpack_require__(4), window = __webpack_require__(6), document = window.document, ua = window.navigator && window.navigator.userAgent || "", ie = 0 < ua.indexOf("MSIE ") || 0 < ua.indexOf("Trident/"), mobile = "ontouchstart" in window, iemobile = /iemobile/i.test(ua), iphone = /iphone/i.test(ua) && !iemobile;
+        var $ = __webpack_require__(1), window = __webpack_require__(3), document = window.document, ua = window.navigator && window.navigator.userAgent || "", ie = 0 < ua.indexOf("MSIE ") || 0 < ua.indexOf("Trident/"), mobile = "ontouchstart" in window, iemobile = /iemobile/i.test(ua), iphone = /iphone/i.test(ua) && !iemobile;
         module.exports = function maskScope(actionObj, maskset, opts) {
             maskset = maskset || this.maskset, opts = opts || this.opts;
             var inputmask = this, el = this.el, isRTL = this.isRTL || (this.isRTL = opts.numericInput), undoValue, $el, skipKeyPressEvent = !1, skipInputEvent = !1, validationEvent = !1, ignorable = !1, maxLength, mouseEnter = !1, originalPlaceholder = void 0;
@@ -1029,7 +1025,7 @@
                             };
                         }
                     } else result = !1;
-                    !1 !== result || !1 === opts.keepStatic || null != opts.regex && !isComplete(getBuffer()) || strict || !0 === fromAlternate || (result = alternate(maskPos, c, strict, fromIsValid, void 0, pos)), 
+                    !1 !== result || !1 !== opts.keepStatic && !isComplete(getBuffer()) && 0 !== maskPos || strict || !0 === fromAlternate || (result = alternate(maskPos, c, strict, fromIsValid, void 0, pos)), 
                     !0 === result && (result = {
                         pos: maskPos
                     });
@@ -1777,7 +1773,7 @@
                 return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
             }, _typeof(obj);
         }
-        var Inputmask = __webpack_require__(3), $ = Inputmask.dependencyLib, formatCode = {
+        var Inputmask = __webpack_require__(0), $ = Inputmask.dependencyLib, formatCode = {
             d: [ "[1-9]|[12][0-9]|3[01]", Date.prototype.setDate, "day", Date.prototype.getDate ],
             dd: [ "0[1-9]|[12][0-9]|3[01]", Date.prototype.setDate, "day", function() {
                 return pad(Date.prototype.getDate.call(this), 2);
@@ -1986,7 +1982,7 @@
         }), module.exports = Inputmask;
     }, function(module, exports, __webpack_require__) {
         "use strict";
-        var Inputmask = __webpack_require__(3), $ = Inputmask.dependencyLib;
+        var Inputmask = __webpack_require__(0), $ = Inputmask.dependencyLib;
         function autoEscape(txt, opts) {
             for (var escapedTxt = "", i = 0; i < txt.length; i++) Inputmask.prototype.definitions[txt.charAt(i)] || opts.definitions[txt.charAt(i)] || opts.optionalmarker.start === txt.charAt(i) || opts.optionalmarker.end === txt.charAt(i) || opts.quantifiermarker.start === txt.charAt(i) || opts.quantifiermarker.end === txt.charAt(i) || opts.groupmarker.start === txt.charAt(i) || opts.groupmarker.end === txt.charAt(i) || opts.alternatormarker === txt.charAt(i) ? escapedTxt += "\\" + txt.charAt(i) : escapedTxt += txt.charAt(i);
             return escapedTxt;
@@ -2307,7 +2303,7 @@
                 return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
             }, _typeof(obj);
         }
-        var $ = __webpack_require__(5), Inputmask = __webpack_require__(3);
+        var $ = __webpack_require__(2), Inputmask = __webpack_require__(0);
         void 0 === $.fn.inputmask && ($.fn.inputmask = function(fn, options) {
             var nptmask, input = this[0];
             if (void 0 === options && (options = {}), "string" == typeof fn) switch (fn) {
@@ -2362,6 +2358,10 @@
                 });
             }
         });
+    }, function(module, exports, __webpack_require__) {
+        "use strict";
+        var im = __webpack_require__(5), jQuery = __webpack_require__(2);
+        im.dependencyLib === jQuery && __webpack_require__(10), module.exports = im;
     } ], installedModules = {}, __webpack_require__.m = modules, __webpack_require__.c = installedModules, 
     __webpack_require__.d = function(exports, name, getter) {
         __webpack_require__.o(exports, name) || Object.defineProperty(exports, name, {
@@ -2394,7 +2394,7 @@
         return __webpack_require__.d(getter, "a", getter), getter;
     }, __webpack_require__.o = function(object, property) {
         return Object.prototype.hasOwnProperty.call(object, property);
-    }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 0);
+    }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 11);
     function __webpack_require__(moduleId) {
         if (installedModules[moduleId]) return installedModules[moduleId].exports;
         var module = installedModules[moduleId] = {
@@ -2407,4 +2407,3 @@
     }
     var modules, installedModules;
 });
-//# sourceMappingURL=jquery.inputmask.js.map

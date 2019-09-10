@@ -1,6 +1,6 @@
 {
   "name": "inputmask",
-  "version": "5.0.0-beta.258",
+  "version": "5.0.0-beta.262",
   "description": "Inputmask is a javascript library which creates an input mask.  Inputmask can run against vanilla javascript, jQuery and jqlite.",
   "main": "index.js",
   "files": [
@@ -9,8 +9,8 @@
     "lib/"
   ],
   "scripts": {
-    "start": "webpack --progress --watch --config webpack.config.js",
-    "start_jquery": "webpack --progress --watch --config webpack.jqueryconfig.js",
+    "start": "webpack --progress --watch --config-name main --config webpack.config.js",
+    "start_jquery": "webpack --progress -watch --config-name jquery --config webpack.jqueryconfig.js",
     "test": "grunt validate"
   },
   "repository": {
