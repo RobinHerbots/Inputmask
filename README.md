@@ -4,7 +4,7 @@ Copyright (c) 2010 - 2019 Robin Herbots Licensed under the MIT license ([http://
 
 [![donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZNR3EB6JTMMSS)
   
-[Make a donatioon with crypto](https://commerce.coinbase.com/checkout/9b2138a0-ad82-4155-92ba-bfc688fb6974)
+[Make a donation with crypto](https://commerce.coinbase.com/checkout/9b2138a0-ad82-4155-92ba-bfc688fb6974)
 
 [![NPM Version][npm-image]][npm-url] [![Dependency Status][david-image]][david-url] [![devDependency Status][david-dev-image]][david-dev-url]
 
