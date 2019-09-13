@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.262
+ * Version: 5.0.0-beta.263
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -230,9 +230,10 @@
             elems = elems.nodeName ? [ elems ] : elems, $.each(elems, function(ndx, el) {
                 el.inputmask ? el.inputmask.setValue(value) : $(el).trigger("setvalue", [ value ]);
             });
-        }, Inputmask.escapeRegex = function(str) {
-            var specials = [ "/", ".", "*", "+", "?", "|", "(", ")", "[", "]", "{", "}", "\\", "$", "^" ];
-            return str.replace(new RegExp("(\\" + specials.join("|\\") + ")", "gim"), "\\$1");
+        };
+        var escapeRegexRegex = new RegExp("(\\" + [ "/", ".", "*", "+", "?", "|", "(", ")", "[", "]", "{", "}", "\\", "$", "^" ].join("|\\") + ")", "gim");
+        Inputmask.escapeRegex = function(str) {
+            return str.replace(escapeRegexRegex, "\\$1");
         }, Inputmask.keyCode = {
             BACKSPACE: 8,
             BACKSPACE_SAFARI: 127,
@@ -661,11 +662,6 @@
     }, function(module, exports, __webpack_require__) {
         "use strict";
         var Inputmask = __webpack_require__(0);
-        function ipValidator(chrs, maskset, pos, strict, opts) {
-            return chrs = -1 < pos - 1 && "." !== maskset.buffer[pos - 1] ? (chrs = maskset.buffer[pos - 1] + chrs, 
-            -1 < pos - 2 && "." !== maskset.buffer[pos - 2] ? maskset.buffer[pos - 2] + chrs : "0" + chrs) : "00" + chrs, 
-            new RegExp("25[0-5]|2[0-4][0-9]|[01][0-9][0-9]").test(chrs);
-        }
         Inputmask.extendDefinitions({
             A: {
                 validator: "[A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
@@ -679,7 +675,14 @@
                 validator: "[0-9A-Fa-f]",
                 casing: "upper"
             }
-        }), Inputmask.extendAliases({
+        });
+        var ipValidatorRegex = new RegExp("25[0-5]|2[0-4][0-9]|[01][0-9][0-9]");
+        function ipValidator(chrs, maskset, pos, strict, opts) {
+            return chrs = -1 < pos - 1 && "." !== maskset.buffer[pos - 1] ? (chrs = maskset.buffer[pos - 1] + chrs, 
+            -1 < pos - 2 && "." !== maskset.buffer[pos - 2] ? maskset.buffer[pos - 2] + chrs : "0" + chrs) : "00" + chrs, 
+            ipValidatorRegex.test(chrs);
+        }
+        Inputmask.extendAliases({
             cssunit: {
                 regex: "[+-]?[0-9]+\\.?([0-9]+)?(px|em|rem|ex|%|in|cm|mm|pt|pc)"
             },
@@ -1007,7 +1010,7 @@
                 if (opts.skipOptionalPartCharacter = "", !0 === start) resetMaskSet(), maskset.tests = {}, 
                 start = 0, end = buffer.length; else for (i = start; i < end; i++) delete maskset.validPositions[i];
                 for (p = start, i = start; i < end; i++) {
-                    var valResult = isValid(p, buffer[i], !opts.negationSymbol || buffer[i] !== opts.negationSymbol.front, !opts.negationSymbol || buffer[i] !== opts.negationSymbol.front);
+                    var valResult = isValid(p, buffer[i], !0, !0);
                     !1 !== valResult && (p = void 0 !== valResult.caret && valResult.caret > valResult.pos ? valResult.caret : valResult.pos + 1);
                 }
                 opts.skipOptionalPartCharacter = skipOptionalPartCharacter;
@@ -1128,7 +1131,7 @@
                 }
                 void 0 !== pos.begin && (maskPos = isRTL ? pos.end : pos.begin);
                 var result = !0, positionsClone = $.extend(!0, {}, maskset.validPositions);
-                if ($.isFunction(opts.preValidation) && !strict && !0 !== fromIsValid && !0 !== validateOnly && !0 !== fromAlternate && (result = opts.preValidation(getBuffer(), maskPos, c, isSelection(pos), opts, maskset, pos), 
+                if ($.isFunction(opts.preValidation) && !0 !== fromIsValid && !0 !== validateOnly && !0 !== fromAlternate && (result = opts.preValidation(getBuffer(), maskPos, c, isSelection(pos), opts, maskset, pos, strict), 
                 result = processCommandObject(result)), !0 === result) {
                     if (void 0 === maxLength || maskPos < maxLength) {
                         if (result = _isValid(maskPos, c, strict), (!strict || !0 === fromIsValid) && !1 === result && !0 !== validateOnly) {
@@ -1155,8 +1158,8 @@
                         pos: maskPos
                     });
                 }
-                if ($.isFunction(opts.postValidation) && !1 !== result && !strict && !0 !== fromIsValid && !0 !== validateOnly) {
-                    var postResult = opts.postValidation(getBuffer(!0), void 0 !== pos.begin ? isRTL ? pos.end : pos.begin : pos, result, opts, maskset);
+                if ($.isFunction(opts.postValidation) && !1 !== result && !0 !== fromIsValid && !0 !== validateOnly) {
+                    var postResult = opts.postValidation(getBuffer(!0), void 0 !== pos.begin ? isRTL ? pos.end : pos.begin : pos, result, opts, maskset, strict);
                     void 0 !== postResult && (result = !0 === postResult ? result : postResult);
                 }
                 result && void 0 === result.pos && (result.pos = maskPos), !1 === result || !0 === validateOnly ? (resetMaskSet(!0), 
@@ -1578,7 +1581,7 @@
                         begin: seekNext(charCodeNdx)
                     }), match;
                 }
-                resetMaskSet(), initialNdx = opts.radixPoint ? determineNewCaretPosition(0) : 0, 
+                resetMaskSet(), maskset.tests = {}, initialNdx = opts.radixPoint ? determineNewCaretPosition(0) : 0, 
                 maskset.p = initialNdx, inputmask.caretPos = {
                     begin: initialNdx
                 };
@@ -1586,7 +1589,7 @@
                 if ($.each(inputValue, function(ndx, charCode) {
                     if (void 0 !== charCode) if (void 0 === maskset.validPositions[ndx] && inputValue[ndx] === getPlaceholder(ndx) && isMask(ndx, !0) && !1 === isValid(ndx, inputValue[ndx], !0, void 0, void 0, !0)) maskset.p++; else {
                         var keypress = new $.Event("_checkval");
-                        keypress.which = charCode.charCodeAt(0), charCodes += charCode;
+                        keypress.which = charCode.toString().charCodeAt(0), charCodes += charCode;
                         var lvp = getLastValidPosition(void 0, !0);
                         isTemplateMatch(initialNdx, charCodes) ? result = EventHandlers.keypressEvent.call(input, keypress, !0, !1, strict, lvp + 1) : (result = EventHandlers.keypressEvent.call(input, keypress, !0, !1, strict, inputmask.caretPos.begin), 
                         result && (initialNdx = inputmask.caretPos.begin + 1, charCodes = "")), result ? (void 0 !== result.pos && maskset.validPositions[result.pos] && !0 === maskset.validPositions[result.pos].match.static && (staticMatches.push(result.pos), 
@@ -2045,7 +2048,8 @@
                     monthNames: [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ],
                     ordinalSuffix: [ "st", "nd", "rd", "th" ]
                 },
-                preValidation: function preValidation(buffer, pos, c, isSelection, opts, maskset, caretPos) {
+                preValidation: function preValidation(buffer, pos, c, isSelection, opts, maskset, caretPos, strict) {
+                    if (strict) return !0;
                     var calcPos = 0, targetMatch, match;
                     if (isNaN(c) && buffer[pos] !== c) {
                         for (getTokenizer(opts).lastIndex = 0; match = getTokenizer(opts).exec(opts.inputFormat); ) if (calcPos += match[0].length, 
@@ -2066,7 +2070,8 @@
                     }
                     return !0;
                 },
-                postValidation: function postValidation(buffer, pos, currentResult, opts, maskset) {
+                postValidation: function postValidation(buffer, pos, currentResult, opts, maskset, strict) {
+                    if (strict) return !0;
                     opts.min = analyseMask(opts.min, opts.inputFormat, opts), opts.max = analyseMask(opts.max, opts.inputFormat, opts), 
                     currentResult.fuzzy && (buffer = currentResult.buffer, pos = currentResult.pos);
                     var calcPos = 0, match;
@@ -2112,8 +2117,8 @@
             for (var escapedTxt = "", i = 0; i < txt.length; i++) Inputmask.prototype.definitions[txt.charAt(i)] || opts.definitions[txt.charAt(i)] || opts.optionalmarker.start === txt.charAt(i) || opts.optionalmarker.end === txt.charAt(i) || opts.quantifiermarker.start === txt.charAt(i) || opts.quantifiermarker.end === txt.charAt(i) || opts.groupmarker.start === txt.charAt(i) || opts.groupmarker.end === txt.charAt(i) || opts.alternatormarker === txt.charAt(i) ? escapedTxt += "\\" + txt.charAt(i) : escapedTxt += txt.charAt(i);
             return escapedTxt;
         }
-        function alignDigits(buffer, digits, opts) {
-            if (0 < digits && !opts.digitsOptional) {
+        function alignDigits(buffer, digits, opts, force) {
+            if (0 < digits && (!opts.digitsOptional || force)) {
                 var radixPosition = $.inArray(opts.radixPoint, buffer);
                 -1 === radixPosition && (buffer.push(opts.radixPoint), radixPosition = buffer.length - 1);
                 for (var i = 1; i <= digits; i++) buffer[radixPosition + i] = buffer[radixPosition + i] || "0";
@@ -2178,9 +2183,13 @@
             } : result;
         }
         function checkForLeadingZeroes(buffer, opts) {
-            var numberMatches = new RegExp("(^" + ("" != opts.negationSymbol.front ? Inputmask.escapeRegex(opts.negationSymbol.front) + "?" : "") + Inputmask.escapeRegex(opts.prefix) + ")(.*)(" + Inputmask.escapeRegex(opts.suffix) + ("" != opts.negationSymbol.back ? Inputmask.escapeRegex(opts.negationSymbol.back) + "?" : "") + "$)").exec(buffer.slice().reverse().join("")), number = numberMatches ? numberMatches[2] : "", leadingzeroes = !1;
-            return number && (number = number.split(opts.radixPoint.charAt(0))[0], leadingzeroes = new RegExp("^[0" + opts.groupSeparator + "]*").exec(number)), 
-            !(!leadingzeroes || !(1 < leadingzeroes[0].length || 0 < leadingzeroes[0].length && leadingzeroes[0].length < number.length)) && leadingzeroes;
+            try {
+                var numberMatches = new RegExp("(^" + ("" !== opts.negationSymbol.front ? Inputmask.escapeRegex(opts.negationSymbol.front) + "?" : "") + Inputmask.escapeRegex(opts.prefix) + ")(.*)(" + Inputmask.escapeRegex(opts.suffix) + ("" != opts.negationSymbol.back ? Inputmask.escapeRegex(opts.negationSymbol.back) + "?" : "") + "$)").exec(buffer.slice().reverse().join("")), number = numberMatches ? numberMatches[2] : "", leadingzeroes = !1;
+                return number && (number = number.split(opts.radixPoint.charAt(0))[0], leadingzeroes = new RegExp("^[0" + opts.groupSeparator + "]*").exec(number)), 
+                !(!leadingzeroes || !(1 < leadingzeroes[0].length || 0 < leadingzeroes[0].length && leadingzeroes[0].length < number.length)) && leadingzeroes;
+            } catch (e) {
+                console.log(buffer.slice().reverse().join(""));
+            }
         }
         Inputmask.extendAliases({
             numeric: {
@@ -2232,14 +2241,14 @@
                         }
                     }
                 },
-                preValidation: function preValidation(buffer, pos, c, isSelection, opts, maskset, caretPos) {
+                preValidation: function preValidation(buffer, pos, c, isSelection, opts, maskset, caretPos, strict) {
                     if (!1 !== opts.__financeInput && c === opts.radixPoint) return !1;
                     var radixPos = $.inArray(opts.radixPoint, buffer);
-                    if (pos = hanndleRadixDance(pos, c, radixPos, opts), "-" !== c && c !== opts.negationSymbol.front) return -1 !== radixPos && !0 === opts._radixDance && !1 === isSelection && c === opts.radixPoint && void 0 !== opts.digits && (isNaN(opts.digits) || 0 < parseInt(opts.digits)) && radixPos !== pos ? {
+                    if (pos = hanndleRadixDance(pos, c, radixPos, opts), "-" !== c && c !== opts.negationSymbol.front) return !!strict || (-1 !== radixPos && !0 === opts._radixDance && !1 === isSelection && c === opts.radixPoint && void 0 !== opts.digits && (isNaN(opts.digits) || 0 < parseInt(opts.digits)) && radixPos !== pos ? {
                         caret: opts._radixDance && pos === radixPos - 1 ? radixPos + 1 : radixPos
                     } : {
                         rewritePosition: isSelection && opts.digitsOptional ? caretPos.end : pos
-                    };
+                    });
                     if (!0 !== opts.allowMinus) return !1;
                     var isNegative = !1, front = findValid("+", maskset), back = findValid("-", maskset);
                     return -1 !== front && (isNegative = [ front, back ]), !1 !== isNegative ? {
@@ -2258,7 +2267,8 @@
                         caret: pos < radixPos ? pos + 1 : pos
                     };
                 },
-                postValidation: function postValidation(buffer, pos, currentResult, opts, maskset) {
+                postValidation: function postValidation(buffer, pos, currentResult, opts, maskset, strict) {
+                    if (strict) return !0;
                     if (null !== opts.min || null !== opts.max) {
                         var unmasked = opts.onUnMask(buffer.slice().reverse().join(""), void 0, $.extend({}, opts, {
                             unmaskAsNumber: !0
@@ -2296,7 +2306,7 @@
                 onBeforeMask: function onBeforeMask(initialValue, opts) {
                     var radixPoint = opts.radixPoint || ",";
                     "number" != typeof initialValue && "number" !== opts.inputType || "" === radixPoint || (initialValue = initialValue.toString().replace(".", radixPoint));
-                    var valueParts = initialValue.split(radixPoint), integerPart = valueParts[0].replace(/[^\-0-9]/g, ""), decimalPart = 1 < valueParts.length ? valueParts[1].replace(/[^0-9]/g, "") : "";
+                    var valueParts = initialValue.split(radixPoint), integerPart = valueParts[0].replace(/[^\-0-9]/g, ""), decimalPart = 1 < valueParts.length ? valueParts[1].replace(/[^0-9]/g, "") : "", forceDigits = 1 < valueParts.length;
                     initialValue = integerPart + ("" !== decimalPart ? radixPoint + decimalPart : decimalPart);
                     var digits = 0;
                     if ("" !== radixPoint && (digits = decimalPart.length, "" !== decimalPart)) {
@@ -2310,7 +2320,7 @@
                         var numberValue = initialValue.toString().replace(radixPoint, ".");
                         null !== opts.min && numberValue < opts.min ? initialValue = opts.min.toString().replace(".", radixPoint) : null !== opts.max && numberValue > opts.max && (initialValue = opts.max.toString().replace(".", radixPoint));
                     }
-                    return alignDigits(initialValue.toString().split(""), digits, opts).join("");
+                    return alignDigits(initialValue.toString().split(""), digits, opts, forceDigits).join("");
                 },
                 onBeforeWrite: function onBeforeWrite(e, buffer, caretPos, opts) {
                     function stripBuffer(buffer, stripRadix) {

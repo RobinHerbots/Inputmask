@@ -1678,7 +1678,7 @@ export default function (qunit, Inputmask) {
 		Inputmask("decimal", {
 			radixPoint: ",",
 			digits: "2",
-			autoUnmask: true,
+			autoUnmask: false,
 			suffix: " €"
 		}).mask(testmask);
 		testmask.focus();
@@ -1741,7 +1741,7 @@ export default function (qunit, Inputmask) {
 		$.caret(testmask, 3);
 		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
 
-		assert.equal(testmask.value, "$ 0", "Result " + testmask.value);
+		assert.equal(testmask.inputmask._valueGet(true), "$ 0", "Result " + testmask.inputmask._valueGet(true));
 	});
 
 	qunit.test("numeric + groupSeparator: \"  \" delete, - krajcot", function (assert) {
@@ -1757,7 +1757,7 @@ export default function (qunit, Inputmask) {
 		$.caret(testmask, 2);
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 
-		assert.equal(testmask.value, "$ 0", "Result " + testmask.value);
+		assert.equal(testmask.inputmask._valueGet(true), "$ 0", "Result " + testmask.inputmask._valueGet(true));
 	});
 
 	qunit.test("minvalue, - serGlazkov", function (assert) {
@@ -1920,6 +1920,7 @@ export default function (qunit, Inputmask) {
 
 		$(testmask).Type("1.23");
 		$.caret(testmask, 0);
+		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
 		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
