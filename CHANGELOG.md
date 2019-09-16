@@ -18,6 +18,7 @@
 - revert insert-mode caret as selection instead of colored caret
 
 ### Fixed
+- Does not work on XHTML pages. #2187
 - isInputEventSupported method is creating a non-passive event #2185
 - No message with HTML5 validation #841
 - "setvalue" for empty value and "clearMaskOnLostFocus=false" duplicates mask suffix #2181

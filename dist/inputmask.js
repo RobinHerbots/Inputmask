@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.263
+ * Version: 5.0.0-beta.264
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1779,7 +1779,7 @@
                                         get: getter,
                                         set: setter,
                                         configurable: !0
-                                    })) : "INPUT" !== npt.tagName && (valueGet = function valueGet() {
+                                    })) : "input" !== npt.tagName.toLowerCase() && (valueGet = function valueGet() {
                                         return this.textContent;
                                     }, valueSet = function valueSet(value) {
                                         this.textContent = value;
@@ -1804,8 +1804,8 @@
                             }, patchValhook(npt.type), installNativeValueSetFallback(npt));
                         }
                     }
-                    var elementType = input.getAttribute("type"), isSupported = "INPUT" === input.tagName && -1 !== $.inArray(elementType, opts.supportsInputType) || input.isContentEditable || "TEXTAREA" === input.tagName;
-                    if (!isSupported) if ("INPUT" === input.tagName) {
+                    var elementType = input.getAttribute("type"), isSupported = "input" === input.tagName.toLowerCase() && -1 !== $.inArray(elementType, opts.supportsInputType) || input.isContentEditable || "textarea" === input.tagName.toLowerCase();
+                    if (!isSupported) if ("input" === input.tagName.toLowerCase()) {
                         var el = document.createElement("input");
                         el.setAttribute("type", elementType), isSupported = "text" === el.type, el = null;
                     } else isSupported = "partial";
