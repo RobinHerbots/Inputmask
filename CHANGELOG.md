@@ -5,6 +5,7 @@
 - add indian numbering support in numeric alias (indianns alias)
 
 ### Updates
+- refactor inputfallbackevent
 - drop colormask support
 - drop disablePredictiveText option (was hack via colorMask)
 - ignore generated statics in revalidateMask

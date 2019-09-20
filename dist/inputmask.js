@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.264
+ * Version: 5.0.0-beta.266
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1338,6 +1338,7 @@
             var EventRuler = {
                 on: function on(input, eventName, eventHandler) {
                     var ev = function ev(e) {
+                        e = e.originalEvent || e;
                         var that = this, args;
                         if (void 0 === that.inputmask && "FORM" !== this.nodeName) {
                             var imOpts = $.data(that, "_inputmask_opts");
@@ -1346,7 +1347,7 @@
                             if ("setvalue" === e.type || "FORM" === this.nodeName || !(that.disabled || that.readOnly && !("keydown" === e.type && e.ctrlKey && 67 === e.keyCode || !1 === opts.tabThrough && e.keyCode === Inputmask.keyCode.TAB))) {
                                 switch (e.type) {
                                   case "input":
-                                    if (!0 === skipInputEvent || e.originalEvent && "insertCompositionText" === e.originalEvent.inputType) return skipInputEvent = !1, 
+                                    if (!0 === skipInputEvent || e.inputType && "insertCompositionText" === e.inputType) return skipInputEvent = !1, 
                                     e.preventDefault();
                                     if (mobile) return args = arguments, setTimeout(function() {
                                         eventHandler.apply(that, args), caret(that, that.inputmask.caretPos, void 0, !0);
@@ -1441,14 +1442,14 @@
                     }
                 },
                 pasteEvent: function pasteEvent(e) {
-                    var input = this, ev = e.originalEvent || e, inputValue = this.inputmask._valueGet(!0), caretPos = caret(this), tempValue;
+                    var input = this, inputValue = this.inputmask._valueGet(!0), caretPos = caret(this), tempValue;
                     isRTL && (tempValue = caretPos.end, caretPos.end = caretPos.begin, caretPos.begin = tempValue);
                     var valueBeforeCaret = inputValue.substr(0, caretPos.begin), valueAfterCaret = inputValue.substr(caretPos.end, inputValue.length);
                     if (valueBeforeCaret === (isRTL ? getBufferTemplate().reverse() : getBufferTemplate()).slice(0, caretPos.begin).join("") && (valueBeforeCaret = ""), 
                     valueAfterCaret === (isRTL ? getBufferTemplate().reverse() : getBufferTemplate()).slice(caretPos.end).join("") && (valueAfterCaret = ""), 
                     window.clipboardData && window.clipboardData.getData) inputValue = valueBeforeCaret + window.clipboardData.getData("Text") + valueAfterCaret; else {
-                        if (!ev.clipboardData || !ev.clipboardData.getData) return !0;
-                        inputValue = valueBeforeCaret + ev.clipboardData.getData("text/plain") + valueAfterCaret;
+                        if (!e.clipboardData || !e.clipboardData.getData) return !0;
+                        inputValue = valueBeforeCaret + e.clipboardData.getData("text/plain") + valueAfterCaret;
                     }
                     var pasteValue = inputValue;
                     if ($.isFunction(opts.onBeforePaste)) {
@@ -1459,11 +1460,6 @@
                     e.preventDefault();
                 },
                 inputFallBackEvent: function inputFallBackEvent(e) {
-                    function radixPointHandler(input, inputValue, caretPos) {
-                        return "." === inputValue.charAt(caretPos.begin - 1) && "" !== opts.radixPoint && (inputValue = inputValue.split(""), 
-                        inputValue[caretPos.begin - 1] = opts.radixPoint.charAt(0), inputValue = inputValue.join("")), 
-                        inputValue;
-                    }
                     function ieMobileHandler(input, inputValue, caretPos) {
                         if (iemobile) {
                             var inputChar = inputValue.replace(getBuffer().join(""), "");
@@ -1474,35 +1470,64 @@
                         }
                         return inputValue;
                     }
-                    var input = this, inputValue = input.inputmask._valueGet();
-                    if (getBuffer().join("") !== inputValue) {
-                        var caretPos = caret(input);
-                        if (inputValue = radixPointHandler(input, inputValue, caretPos), inputValue = ieMobileHandler(input, inputValue, caretPos), 
-                        getBuffer().join("") !== inputValue) {
-                            var buffer = getBuffer().join(""), offset = !opts.numericInput && inputValue.length > buffer.length ? -1 : 0, frontPart = inputValue.substr(0, caretPos.begin), backPart = inputValue.substr(caretPos.begin), frontBufferPart = buffer.substr(0, caretPos.begin + offset), backBufferPart = buffer.substr(caretPos.begin + offset), selection = caretPos, entries = "", isEntry = !1;
-                            if (frontPart !== frontBufferPart) {
-                                var fpl = (isEntry = frontPart.length >= frontBufferPart.length) ? frontPart.length : frontBufferPart.length, i;
-                                for (i = 0; frontPart.charAt(i) === frontBufferPart.charAt(i) && i < fpl; i++) ;
-                                isEntry && (selection.begin = i - offset, entries += frontPart.slice(i, selection.end));
-                            }
-                            if (backPart !== backBufferPart && (backPart.length > backBufferPart.length ? entries += backPart.slice(0, 1) : backPart.length < backBufferPart.length && (selection.end += backBufferPart.length - backPart.length, 
-                            isEntry || "" === opts.radixPoint || "" !== backPart || frontPart.charAt(selection.begin + offset - 1) !== opts.radixPoint || (selection.begin--, 
-                            entries = opts.radixPoint))), writeBuffer(input, getBuffer(), {
-                                begin: selection.begin + offset,
-                                end: selection.end + offset
-                            }), 0 < entries.length) document.activeElement !== input && (input.focus(), caret(input, selection)), 
-                            $.each(entries.split(""), function(ndx, entry) {
+                    function analyseChanges(inputValue, buffer, caretPos) {
+                        for (var frontPart = inputValue.substr(0, caretPos.begin).split(""), backPart = inputValue.substr(caretPos.begin).split(""), frontBufferPart = buffer.substr(0, caretPos.begin).split(""), backBufferPart = buffer.substr(caretPos.begin).split(""), fpl = frontPart.length >= frontBufferPart.length ? frontPart.length : frontBufferPart.length, bpl = backPart.length >= backBufferPart.length ? backPart.length : backBufferPart.length, bl, i, action = "", data = [], marker = "~", placeholder; frontPart.length < fpl; ) frontPart.push("~");
+                        for (;frontBufferPart.length < fpl; ) frontBufferPart.push("~");
+                        for (;backPart.length < bpl; ) backPart.unshift("~");
+                        for (;backBufferPart.length < bpl; ) backBufferPart.unshift("~");
+                        var newBuffer = frontPart.concat(backPart), oldBuffer = frontBufferPart.concat(backBufferPart);
+                        for (i = 0, bl = newBuffer.length; i < bl; i++) switch (placeholder = getPlaceholder(i), 
+                        action) {
+                          case "insertText":
+                            i = bl;
+                            break;
+
+                          case "insertReplacementText":
+                            "~" === newBuffer[i] ? caretPos.end++ : i = bl;
+                            break;
+
+                          case "deleteContentForward":
+                            "~" === newBuffer[i] ? caretPos.end++ : i = bl;
+                            break;
+
+                          default:
+                            newBuffer[i] !== oldBuffer[i] && (newBuffer[i] !== placeholder && (oldBuffer[i] === placeholder && "~" === oldBuffer[i + 1] || "~" === oldBuffer[i]) ? (action = "insertText", 
+                            data.push(newBuffer[i]), caretPos.begin--, caretPos.end--) : "~" === oldBuffer[i + 1] && oldBuffer[i] === newBuffer[i + 1] ? (action = "insertText", 
+                            data.push(newBuffer[i]), caretPos.begin--, caretPos.end--) : newBuffer[i] !== placeholder && "~" !== newBuffer[i] && "~" === newBuffer[i + 1] ? (action = "insertReplacementText", 
+                            data.push(newBuffer[i]), caretPos.begin--) : "~" !== newBuffer[i] || oldBuffer[i] === placeholder && "~" !== oldBuffer[i] && isMask(i, !0) ? i = bl : (action = "deleteContentBackward", 
+                            isMask(i, !0) && caretPos.end++));
+                            break;
+                        }
+                        return {
+                            action: action,
+                            data: data,
+                            caret: caretPos
+                        };
+                    }
+                    var input = this, inputValue = input.inputmask._valueGet(!0), buffer = (isRTL ? getBuffer().slice().reverse() : getBuffer()).join(""), caretPos = caret(input, void 0, void 0, !0);
+                    if (buffer !== inputValue) {
+                        inputValue = ieMobileHandler(input, inputValue, caretPos);
+                        var changes = analyseChanges(inputValue, buffer, caretPos);
+                        switch (document.activeElement !== input && input.focus(), writeBuffer(input, getBuffer()), 
+                        caret(input, caretPos.begin, caretPos.end, !0), changes.action) {
+                          case "insertText":
+                          case "insertReplacementText":
+                            $.each(changes.data, function(ndx, entry) {
                                 var keypress = new $.Event("keypress");
                                 keypress.which = entry.charCodeAt(0), ignorable = !1, EventHandlers.keypressEvent.call(input, keypress);
-                            }); else {
-                                selection.begin === selection.end - 1 && (selection.begin = seekPrevious(selection.begin + 1), 
-                                selection.begin === selection.end - 1 ? caret(input, selection.begin) : caret(input, selection.begin, selection.end));
-                                var keydown = new $.Event("keydown");
-                                keydown.keyCode = opts.numericInput ? Inputmask.keyCode.BACKSPACE : Inputmask.keyCode.DELETE, 
-                                EventHandlers.keydownEvent.call(input, keydown, !0);
-                            }
-                            e.preventDefault();
+                            });
+                            break;
+
+                          case "deleteContentBackward":
+                            var keydown = new $.Event("keydown");
+                            keydown.keyCode = Inputmask.keyCode.BACKSPACE, EventHandlers.keydownEvent.call(input, keydown, !0);
+                            break;
+
+                          default:
+                            applyInputValue(input, inputValue);
+                            break;
                         }
+                        e.preventDefault();
                     }
                 },
                 compositionendEvent: function compositionendEvent(e) {
@@ -1534,7 +1559,7 @@
                     }
                 },
                 cutEvent: function cutEvent(e) {
-                    var input = this, pos = caret(this), ev = e.originalEvent || e, clipboardData = window.clipboardData || ev.clipboardData, clipData = isRTL ? getBuffer().slice(pos.end, pos.begin) : getBuffer().slice(pos.begin, pos.end);
+                    var input = this, pos = caret(this), clipboardData = window.clipboardData || e.clipboardData, clipData = isRTL ? getBuffer().slice(pos.end, pos.begin) : getBuffer().slice(pos.begin, pos.end);
                     clipboardData.setData("text", isRTL ? clipData.reverse().join("") : clipData.join("")), 
                     document.execCommand && document.execCommand("copy"), handleRemove(this, Inputmask.keyCode.DELETE, pos), 
                     writeBuffer(this, getBuffer(), maskset.p, e, undoValue !== getBuffer().join(""));
