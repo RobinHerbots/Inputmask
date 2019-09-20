@@ -70,7 +70,8 @@ export default function (qunit, Inputmask) {
 		$(testmask).input("123499");
 		//simulate backspace
 		$(testmask).input("12349", 5);
-		assert.ok($.caret(testmask).begin == 3, "Caret " + $.caret(testmask).begin);
+		assert.ok($.caret(testmask).begin == 4, "Caret " + $.caret(testmask).begin + " : " + testmask.value);
+		assert.ok(testmask.value == "123499", testmask.value);
 	});
 
 	qunit.test("numeric placeholder 0 - alexey-m-ukolov", function (assert) {
