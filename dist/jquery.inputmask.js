@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.268
+ * Version: 5.0.0-beta.269
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1268,11 +1268,11 @@
                     }));
                 }
             }, EventHandlers = {
-                keydownEvent: function keydownEvent(e, fromInputFallback) {
+                keydownEvent: function keydownEvent(e) {
                     var input = this, $input = $(input), k = e.keyCode, pos = caret(input), kdResult = opts.onKeyDown.call(this, e, getBuffer(), pos, opts);
                     if (void 0 !== kdResult) return kdResult;
                     if (k === Inputmask.keyCode.BACKSPACE || k === Inputmask.keyCode.DELETE || iphone && k === Inputmask.keyCode.BACKSPACE_SAFARI || e.ctrlKey && k === Inputmask.keyCode.X && !("oncut" in input)) e.preventDefault(), 
-                    handleRemove(input, k, pos), writeBuffer(input, getBuffer(!0), !0 === fromInputFallback && !1 === opts.insertMode ? seekPrevious(maskset.p) : maskset.p, e, input.inputmask._valueGet() !== getBuffer().join("")); else if (k === Inputmask.keyCode.END || k === Inputmask.keyCode.PAGE_DOWN) {
+                    handleRemove(input, k, pos), writeBuffer(input, getBuffer(!0), maskset.p, e, input.inputmask._valueGet() !== getBuffer().join("")); else if (k === Inputmask.keyCode.END || k === Inputmask.keyCode.PAGE_DOWN) {
                         e.preventDefault();
                         var caretPos = seekNext(getLastValidPosition());
                         caret(input, e.shiftKey ? pos.begin : caretPos, caretPos, !0);
@@ -1369,8 +1369,8 @@
                             newBuffer[i] !== oldBuffer[i] && (newBuffer[i] !== placeholder && (oldBuffer[i] === placeholder && "~" === oldBuffer[i + 1] || "~" === oldBuffer[i]) ? (action = "insertText", 
                             data.push(newBuffer[i]), caretPos.begin--, caretPos.end--) : "~" === oldBuffer[i + 1] && oldBuffer[i] === newBuffer[i + 1] ? (action = "insertText", 
                             data.push(newBuffer[i]), caretPos.begin--, caretPos.end--) : newBuffer[i] !== placeholder && "~" !== newBuffer[i] && ("~" === newBuffer[i + 1] || oldBuffer[i] !== newBuffer[i] && oldBuffer[i + 1] === newBuffer[i + 1]) ? (action = "insertReplacementText", 
-                            data.push(newBuffer[i]), caretPos.begin--) : "~" !== newBuffer[i] || oldBuffer[i] === placeholder && "~" !== oldBuffer[i] && isMask(i, !0) ? i = bl : (action = "deleteContentBackward", 
-                            isMask(i, !0) && caretPos.end++));
+                            data.push(newBuffer[i]), caretPos.begin--) : "~" === newBuffer[i] ? (action = "deleteContentBackward", 
+                            isMask(i, !0) && caretPos.end++) : i = bl);
                             break;
                         }
                         return {
@@ -1395,7 +1395,7 @@
 
                           case "deleteContentBackward":
                             var keydown = new $.Event("keydown");
-                            keydown.keyCode = Inputmask.keyCode.BACKSPACE, EventHandlers.keydownEvent.call(input, keydown, !0);
+                            keydown.keyCode = Inputmask.keyCode.BACKSPACE, EventHandlers.keydownEvent.call(input, keydown);
                             break;
 
                           default:
