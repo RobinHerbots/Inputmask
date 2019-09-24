@@ -123,4 +123,23 @@ export default function (qunit, Inputmask) {
 			done();
 		}, 0);
 	});
+
+	qunit.test("datetime", function (assert) {
+		var done = assert.async(),
+			$fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask({
+			alias: "datetime",
+			inputFormat: "dd/mm/yyyy",
+			inputEventOnly: true,
+		}).mask(testmask);
+
+		testmask.focus();
+		setTimeout(function () {
+			$(testmask).Type("1");
+			assert.equal(testmask.value, "1d/mm/yyyy", "Result " + testmask.value);
+			done();
+		}, 0);
+	});
 };
