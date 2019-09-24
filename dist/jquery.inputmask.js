@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.267
+ * Version: 5.0.0-beta.268
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -2097,8 +2097,6 @@
                 _mask: function _mask(opts) {
                     return "(" + opts.groupSeparator + "999){+|1}";
                 },
-                placeholder: "0",
-                greedy: !1,
                 digits: "*",
                 digitsOptional: !0,
                 enforceDigitsOnBlur: !1,
@@ -2113,14 +2111,17 @@
                 },
                 prefix: "",
                 suffix: "",
-                rightAlign: !0,
                 min: null,
                 max: null,
                 step: 1,
+                unmaskAsNumber: !1,
+                roundingFN: Math.round,
+                inputmode: "numeric",
+                placeholder: "0",
+                greedy: !1,
+                rightAlign: !0,
                 insertMode: !0,
                 autoUnmask: !1,
-                unmaskAsNumber: !1,
-                inputmode: "numeric",
                 skipOptionalPartCharacter: "",
                 definitions: {
                     0: {
@@ -2212,7 +2213,7 @@
                     if ("" !== radixPoint && (digits = decimalPart.length, "" !== decimalPart)) {
                         var digitsFactor = Math.pow(10, digits || 1);
                         isFinite(opts.digits) && (digits = parseInt(opts.digits), digitsFactor = Math.pow(10, digits)), 
-                        initialValue = initialValue.replace(Inputmask.escapeRegex(radixPoint), "."), isFinite(initialValue) && (initialValue = Math.round(parseFloat(initialValue) * digitsFactor) / digitsFactor), 
+                        initialValue = initialValue.replace(Inputmask.escapeRegex(radixPoint), "."), isFinite(initialValue) && (initialValue = opts.roundingFN(parseFloat(initialValue) * digitsFactor) / digitsFactor), 
                         initialValue = initialValue.toString().replace(".", radixPoint);
                     }
                     if (0 === opts.digits && -1 !== initialValue.indexOf(Inputmask.escapeRegex(radixPoint)) && (initialValue = initialValue.substring(0, initialValue.indexOf(Inputmask.escapeRegex(radixPoint)))), 

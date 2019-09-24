@@ -3,6 +3,7 @@
 ## [5.0.0 - UNRELEASED]
 ### Addition
 - add indian numbering support in numeric alias (indianns alias)
+- add roundingFN option to numeric alias.  (currency, decimal, ...)
 
 ### Updates
 - refactor inputfallbackevent

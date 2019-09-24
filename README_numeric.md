@@ -22,39 +22,48 @@ Default: true
 ### enforceDigitsOnBlur 
 Enforces the decimal part when leaving the input field.
 
+### radixPoint
+default: "."
+
+### positionCaretOnClick
+default: "radixFocus"
+		
+### groupSeparator
+default: ""
+		
 ### allowMinus
-Allow to enter -.
+Allow to enter -.  
 Default: true
 
 ### negationSymbol
-Define your negationSymbol.
-Default: {
-  front: "-", //"("
-  back: "" //")"
+Define your negationSymbol.  
+Default: {  
+  front: "-", //"("  
+  back: "" //")"  
 }
 
 ### prefix
-Define a prefix.
+Define a prefix.  
 Default: ""
 
 ### suffix
-Define a suffix.
+Define a suffix.  
 Default: ""
 
 ### min
-Minimum value
+Minimum value  
 Default: undefined
 
 ### max
-Maximum value
+Maximum value  
 Default: undefined
 
 ### step
-Define the step the ctrl-up & ctrl-down must take.
+Define the step the ctrl-up & ctrl-down must take.  
 Default: 1
 
 ### unmaskAsNumber
-Make unmasking returning a number instead of a string.
+Make unmasking returning a number instead of a string.  
 Default: false
 
 Be warned that using the unmaskAsNumber option together with jQuery.serialize will fail as serialize expects a string. (See issue [#1288])
@@ -62,12 +71,20 @@ Be warned that using the unmaskAsNumber option together with jQuery.serialize wi
 
 [#1288]: https://github.com/RobinHerbots/jquery.inputmask/issues/1288
 
+### roundingFN
+Set the fn for rounding the values when set.  
+Default: Math.round
+
+Other examples:
+- Math.floor 
+- fn(x) { /* do your own rounding logic */ return x; }
+
+
 
 ### inputType
 Indicates whether the value passed for initialization is text or a number
 
 Default: "text"
-
 
 ### Setting initial values
 
