@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.270
+ * Version: 5.0.0-beta.271
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -2117,6 +2117,10 @@
                 unmaskAsNumber: !1,
                 roundingFN: Math.round,
                 inputmode: "numeric",
+                shortcuts: {
+                    k: "000",
+                    m: "000000"
+                },
                 placeholder: "0",
                 greedy: !1,
                 rightAlign: !0,
@@ -2144,6 +2148,17 @@
                 },
                 preValidation: function preValidation(buffer, pos, c, isSelection, opts, maskset, caretPos, strict) {
                     if (!1 !== opts.__financeInput && c === opts.radixPoint) return !1;
+                    var pattern;
+                    if (pattern = opts.shortcuts && opts.shortcuts[c]) {
+                        if (1 < pattern.length) for (var inserts = [], i = 0; i < pattern.length; i++) inserts.push({
+                            pos: pos + i,
+                            c: pattern[i],
+                            strict: !1
+                        });
+                        return {
+                            insert: inserts
+                        };
+                    }
                     var radixPos = $.inArray(opts.radixPoint, buffer);
                     if (pos = hanndleRadixDance(pos, c, radixPos, opts), "-" !== c && c !== opts.negationSymbol.front) return !!strict || (-1 !== radixPos && !0 === opts._radixDance && !1 === isSelection && c === opts.radixPoint && void 0 !== opts.digits && (isNaN(opts.digits) || 0 < parseInt(opts.digits)) && radixPos !== pos ? {
                         caret: opts._radixDance && pos === radixPos - 1 ? radixPos + 1 : radixPos

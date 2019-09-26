@@ -4,6 +4,8 @@
 ### Addition
 - add indian numbering support in numeric alias (indianns alias)
 - add roundingFN option to numeric alias.  (currency, decimal, ...)
+- input-inputmode support via inputmode option (if supported by browser)
+- add shortcuts option in numeric alias.
 
 ### Updates
 - refactor inputfallbackevent
@@ -20,6 +22,7 @@
 - revert insert-mode caret as selection instead of colored caret
 
 ### Fixed
+- inputmode not working #2193
 - Does not work on XHTML pages. #2187
 - isInputEventSupported method is creating a non-passive event #2185
 - No message with HTML5 validation #841

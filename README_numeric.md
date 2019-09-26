@@ -79,7 +79,13 @@ Other examples:
 - Math.floor 
 - fn(x) { /* do your own rounding logic */ return x; }
 
+### shortcuts: 
+Default: {k: "000", m: "000000"}
 
+Define shortcuts. 
+This will allow typing 1k => 1000, 2m => 2000000
+ 
+To disable just pass shortcuts: null as option
 
 ### inputType
 Indicates whether the value passed for initialization is text or a number
