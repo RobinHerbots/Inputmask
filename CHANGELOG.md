@@ -22,6 +22,7 @@
 - revert insert-mode caret as selection instead of colored caret
 
 ### Fixed
+- 'Decimal'. New entered value is automatically prefixed with '.' #2189
 - inputmode not working #2193
 - Does not work on XHTML pages. #2187
 - isInputEventSupported method is creating a non-passive event #2185
