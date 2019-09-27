@@ -3048,7 +3048,7 @@ function maskScope(actionObj, maskset, opts) {
                 initializeColorMask(el);
             }
             if (mobile) {
-                if ("inputmode" in el) {
+                if ("inputMode" in el) {
                     el.inputmode = opts.inputmode;
                     el.setAttribute("inputmode", opts.inputmode);
                 }

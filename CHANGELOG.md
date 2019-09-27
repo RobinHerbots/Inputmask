@@ -1,5 +1,9 @@
 # Change Log
 
+## [4.0.9 - 2019-09-27]
+### Fixed
+- inputmode not working #2193
+
 ## [4.0.7 - 2019-04-24]
 ### Fixed
 - Fix memory leak by moving the "positionColorMask" declaration outside of function scope
