@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.275
+ * Version: 5.0.0-beta.276
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1354,7 +1354,7 @@
                         for (;backPart.length < bpl; ) backPart.unshift("~");
                         for (;backBufferPart.length < bpl; ) backBufferPart.unshift("~");
                         var newBuffer = frontPart.concat(backPart), oldBuffer = frontBufferPart.concat(backBufferPart);
-                        for (i = 0, bl = newBuffer.length; i < bl; i++) switch (placeholder = getPlaceholder(i), 
+                        for (i = 0, bl = newBuffer.length; i < bl; i++) switch (placeholder = getPlaceholder(translatePosition(i)), 
                         action) {
                           case "insertText":
                             i = bl;
@@ -1373,7 +1373,7 @@
                             data.push(newBuffer[i]), caretPos.begin--, caretPos.end--) : "~" === oldBuffer[i + 1] && oldBuffer[i] === newBuffer[i + 1] ? (action = "insertText", 
                             data.push(newBuffer[i]), caretPos.begin--, caretPos.end--) : newBuffer[i] !== placeholder && "~" !== newBuffer[i] && ("~" === newBuffer[i + 1] || oldBuffer[i] !== newBuffer[i] && oldBuffer[i + 1] === newBuffer[i + 1]) ? (action = "insertReplacementText", 
                             data.push(newBuffer[i]), caretPos.begin--) : "~" === newBuffer[i] ? (action = "deleteContentBackward", 
-                            isMask(i, !0) && caretPos.end++) : i = bl);
+                            isMask(translatePosition(i), !0) && caretPos.end++) : i = bl);
                             break;
                         }
                         return {
