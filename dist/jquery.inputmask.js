@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.274
+ * Version: 5.0.0-beta.275
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1364,7 +1364,7 @@
                             "~" === newBuffer[i] ? caretPos.end++ : i = bl;
                             break;
 
-                          case "deleteContentForward":
+                          case "deleteContentBackward":
                             "~" === newBuffer[i] ? caretPos.end++ : i = bl;
                             break;
 
@@ -1373,7 +1373,7 @@
                             data.push(newBuffer[i]), caretPos.begin--, caretPos.end--) : "~" === oldBuffer[i + 1] && oldBuffer[i] === newBuffer[i + 1] ? (action = "insertText", 
                             data.push(newBuffer[i]), caretPos.begin--, caretPos.end--) : newBuffer[i] !== placeholder && "~" !== newBuffer[i] && ("~" === newBuffer[i + 1] || oldBuffer[i] !== newBuffer[i] && oldBuffer[i + 1] === newBuffer[i + 1]) ? (action = "insertReplacementText", 
                             data.push(newBuffer[i]), caretPos.begin--) : "~" === newBuffer[i] ? (action = "deleteContentBackward", 
-                            caretPos.end++) : i = bl);
+                            isMask(i, !0) && caretPos.end++) : i = bl);
                             break;
                         }
                         return {
@@ -2309,7 +2309,7 @@
                                 !1;
                             } else if (-1 !== radixPos && (caretPos.begin < radixPos || caretPos.end < radixPos || e.keyCode === Inputmask.keyCode.DELETE && caretPos.begin === radixPos)) return caretPos.begin !== caretPos.end || e.keyCode !== Inputmask.keyCode.BACKSPACE && e.keyCode !== Inputmask.keyCode.BACKSPACE_SAFARI || caretPos.begin++, 
                             bffr = buffer.slice().reverse(), bffr.splice(bffr.length - caretPos.begin, caretPos.begin - caretPos.end + 1), 
-                            console.log(caretPos), bffr = alignDigits(bffr, opts.digits, opts).join(""), $input.trigger("setvalue", [ bffr, caretPos.begin >= bffr.length ? radixPos + 1 : caretPos.begin ]), 
+                            bffr = alignDigits(bffr, opts.digits, opts).join(""), $input.trigger("setvalue", [ bffr, caretPos.begin >= bffr.length ? radixPos + 1 : caretPos.begin ]), 
                             !1;
                         }
                     }
