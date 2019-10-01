@@ -103,7 +103,6 @@ export default function (qunit, Inputmask) {
 			groupSeparator: ".",
 			radixPoint: ",",
 			placeholder: "0",
-			autoGroup: true,
 			digits: 2,
 			digitsOptional: false,
 			clearMaskOnLostFocus: false,
@@ -112,7 +111,6 @@ export default function (qunit, Inputmask) {
 
 		testmask.focus();
 		setTimeout(function () {
-			$.caret(testmask, 0);
 			$(testmask).Type("56,03");
 			$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
 			$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
