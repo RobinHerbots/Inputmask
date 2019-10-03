@@ -8,6 +8,7 @@
 - add shortcuts option in numeric alias.
 
 ### Updates
+- add more tokens for datetime format
 - refactor inputfallbackevent
 - drop colormask support
 - drop disablePredictiveText option (was hack via colorMask)
