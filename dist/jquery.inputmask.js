@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.276
+ * Version: 5.0.0-beta.277
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1829,12 +1829,16 @@
             hh: [ "0[1-9]|1[0-2]", Date.prototype.setHours, "hours", function() {
                 return pad(Date.prototype.getHours.call(this), 2);
             } ],
-            hhh: [ "[0-9]+", Date.prototype.setHours, "hours", Date.prototype.getHours ],
+            hx: [ function(x) {
+                return "[0-9]{".concat(x, "}");
+            }, Date.prototype.setHours, "hours", Date.prototype.getHours ],
             H: [ "1?[0-9]|2[0-3]", Date.prototype.setHours, "hours", Date.prototype.getHours ],
             HH: [ "0[0-9]|1[0-9]|2[0-3]", Date.prototype.setHours, "hours", function() {
                 return pad(Date.prototype.getHours.call(this), 2);
             } ],
-            HHH: [ "[0-9]+", Date.prototype.setHours, "hours", Date.prototype.getHours ],
+            Hx: [ function(x) {
+                return "[0-9]{".concat(x, "}");
+            }, Date.prototype.setHours, "hours", Date.prototype.getHours ],
             M: [ "[1-5]?[0-9]", Date.prototype.setMinutes, "minutes", Date.prototype.getMinutes ],
             MM: [ "0[0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]", Date.prototype.setMinutes, "minutes", function() {
                 return pad(Date.prototype.getMinutes.call(this), 2);
@@ -1862,11 +1866,23 @@
             isoDateTime: "yyyy-mm-dd'T'HH:MM:ss",
             isoUtcDateTime: "UTC:yyyy-mm-dd'T'HH:MM:ss'Z'"
         };
+        function formatcode(match) {
+            var dynMatches = new RegExp("\\d+$").exec(match[0]);
+            if (dynMatches && void 0 !== dynMatches[0]) {
+                var fcode = formatCode[match[0][0] + "x"].slice("");
+                return fcode[0] = fcode[0](dynMatches[0]), fcode;
+            }
+            if (formatCode[match[0]]) return formatCode[match[0]];
+        }
         function getTokenizer(opts) {
             if (!opts.tokenizer) {
-                var tokens = [];
-                for (var ndx in formatCode) -1 === tokens.indexOf(ndx[0]) && tokens.push(ndx[0]);
-                opts.tokenizer = "(" + tokens.join("+|") + ")+?|.", opts.tokenizer = new RegExp(opts.tokenizer, "g");
+                var tokens = [], dyntokens = [];
+                for (var ndx in formatCode) if (ndx.endsWith("x")) {
+                    var dynToken = ndx[0] + "\\d+";
+                    -1 === dyntokens.indexOf(dynToken) && dyntokens.push(dynToken);
+                } else -1 === tokens.indexOf(ndx[0]) && tokens.push(ndx[0]);
+                opts.tokenizer = "(" + (0 < dyntokens.length ? dyntokens.join("|") + "|" : "") + tokens.join("+|") + ")+?|.", 
+                opts.tokenizer = new RegExp(opts.tokenizer, "g");
             }
             return opts.tokenizer;
         }
@@ -1886,8 +1902,8 @@
             result;
         }
         function parse(format, dateObjValue, opts, raw) {
-            var mask = "", match;
-            for (getTokenizer(opts).lastIndex = 0; match = getTokenizer(opts).exec(format); ) if (void 0 === dateObjValue) if (formatCode[match[0]]) mask += "(" + formatCode[match[0]][0] + ")"; else switch (match[0]) {
+            var mask = "", match, fcode;
+            for (getTokenizer(opts).lastIndex = 0; match = getTokenizer(opts).exec(format); ) if (void 0 === dateObjValue) if (fcode = formatcode(match)) mask += "(" + fcode[0] + ")"; else switch (match[0]) {
               case "[":
                 mask += "(";
                 break;
@@ -1898,10 +1914,10 @@
 
               default:
                 mask += Inputmask.escapeRegex(match[0]);
-            } else if (formatCode[match[0]]) if (!0 !== raw && formatCode[match[0]][3]) {
-                var getFn = formatCode[match[0]][3];
+            } else if (fcode = formatcode(match)) if (!0 !== raw && fcode[3]) {
+                var getFn = fcode[3];
                 mask += getFn.call(dateObjValue.date);
-            } else formatCode[match[0]][2] ? mask += dateObjValue["raw" + formatCode[match[0]][2]] : mask += match[0]; else mask += match[0];
+            } else fcode[2] ? mask += dateObjValue["raw" + fcode[2]] : mask += match[0]; else mask += match[0];
             return mask;
         }
         function pad(val, len) {
