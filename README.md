@@ -997,7 +997,22 @@ When enabled the caret position is set after the latest valid position on TAB De
 Allows for tabbing through the different parts of the masked field.<br>Default: false
 
 ### definitions
-### ignorables
+Pass custom definitions directly in the options.
+
+```
+	Inputmask({
+			mask: "V{13}9{4}",
+			definitions: {
+				"V": {
+					validator: "[A-HJ-NPR-Za-hj-npr-z\\d]",
+					casing: "upper"
+				}
+			},
+			clearIncomplete: true,
+			autoUnmask: true
+		}).mask(selector);
+```
+
 ### isComplete
 With this call-in (hook) you can override the default implementation of the isComplete function.<br>Args => buffer, opts Return => true|false
 
