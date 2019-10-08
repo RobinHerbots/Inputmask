@@ -1,3 +1,5 @@
+import keyCode from "../lib/keycode";
+
 export default function (qunit, Inputmask) {
 	var $ = Inputmask.dependencyLib;
 
@@ -74,7 +76,7 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 
 		testmask.focus();
-		$("#testmask").SendKey(Inputmask.keyCode.RIGHT, Inputmask.keyCode.CONTROL);
+		$("#testmask").SendKey(keyCode.RIGHT, keyCode.CONTROL);
 		var today = new Date();
 		today = pad(today.getDate(), 2) + "/" + pad(parseInt(today.getMonth()) + 1, 2) + "/" + today.getFullYear();
 		assert.equal(testmask.value, today, "Result " + testmask.value);
@@ -89,10 +91,10 @@ export default function (qunit, Inputmask) {
 
 		testmask.focus();
 		$("#testmask").Type("2331973");
-		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
-		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
-		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
-		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.BACKSPACE);
 
 		assert.equal(testmask.value, "23/03/yyyy", "Result " + testmask.value);
 	});
@@ -107,10 +109,10 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		$("#testmask").Type("2331973");
 		$.caret(testmask, "23/03/".length);
-		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
-		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
-		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
-		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
+		$("#testmask").SendKey(keyCode.DELETE);
+		$("#testmask").SendKey(keyCode.DELETE);
+		$("#testmask").SendKey(keyCode.DELETE);
+		$("#testmask").SendKey(keyCode.DELETE);
 
 		assert.equal(testmask.value, "23/03/yyyy", "Result " + testmask.value);
 	});
@@ -297,7 +299,7 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 
 		testmask.focus();
-		$("#testmask").SendKey(Inputmask.keyCode.RIGHT, Inputmask.keyCode.CONTROL);
+		$("#testmask").SendKey(keyCode.RIGHT, keyCode.CONTROL);
 		var today = new Date();
 		today = pad(parseInt(today.getMonth()) + 1, 2) + "/" + pad(today.getDate(), 2) + "/" + today.getFullYear();
 		assert.equal(testmask.value, today, "Result " + testmask.value);
@@ -312,10 +314,10 @@ export default function (qunit, Inputmask) {
 
 		testmask.focus();
 		$("#testmask").Type("3231973");
-		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
-		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
-		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
-		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.BACKSPACE);
 
 		assert.equal(testmask.value, "03/23/yyyy", "Result " + testmask.value);
 	});
@@ -330,10 +332,10 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		$("#testmask").Type("3231973");
 		$.caret(testmask, "03/23/".length);
-		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
-		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
-		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
-		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
+		$("#testmask").SendKey(keyCode.DELETE);
+		$("#testmask").SendKey(keyCode.DELETE);
+		$("#testmask").SendKey(keyCode.DELETE);
+		$("#testmask").SendKey(keyCode.DELETE);
 
 		assert.equal(testmask.value, "03/23/yyyy", "Result " + testmask.value);
 	});
@@ -503,7 +505,7 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 
 		testmask.focus();
-		$("#testmask").SendKey(Inputmask.keyCode.RIGHT, Inputmask.keyCode.CONTROL);
+		$("#testmask").SendKey(keyCode.RIGHT, keyCode.CONTROL);
 		var today = new Date();
 		today = pad(today.getDate(), 2) + "." + pad(parseInt(today.getMonth()) + 1, 2) + "." + today.getFullYear();
 		assert.equal(testmask.value, today, "Result " + testmask.value);
@@ -518,10 +520,10 @@ export default function (qunit, Inputmask) {
 
 		testmask.focus();
 		$("#testmask").Type("2331973");
-		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
-		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
-		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
-		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.BACKSPACE);
 
 		assert.equal(testmask.value, "23.03.yyyy", "Result " + testmask.value);
 	});
@@ -536,10 +538,10 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		$("#testmask").Type("2331973");
 		$.caret(testmask, "23.03.".length);
-		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
-		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
-		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
-		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
+		$("#testmask").SendKey(keyCode.DELETE);
+		$("#testmask").SendKey(keyCode.DELETE);
+		$("#testmask").SendKey(keyCode.DELETE);
+		$("#testmask").SendKey(keyCode.DELETE);
 
 		assert.equal(testmask.value, "23.03.yyyy", "Result " + testmask.value);
 	});

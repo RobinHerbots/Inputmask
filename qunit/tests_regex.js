@@ -1,3 +1,5 @@
+import keyCode from "../lib/keycode";
+
 export default function (qunit, Inputmask) {
 	var $ = Inputmask.dependencyLib;
 
@@ -311,7 +313,7 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 
 		testmask.focus();
-		$("#testmask").SendKey(Inputmask.keyCode.SPACE);
+		$("#testmask").SendKey(keyCode.SPACE);
 
 		assert.equal(testmask.value, " ", "Result " + testmask.value);
 	});

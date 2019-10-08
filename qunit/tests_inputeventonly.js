@@ -1,3 +1,5 @@
+import keyCode from "../lib/keycode";
+
 export default function (qunit, Inputmask) {
 	var $ = Inputmask.dependencyLib;
 	qunit.module("inputEventOnly: true");
@@ -112,9 +114,9 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		setTimeout(function () {
 			$(testmask).Type("56,03");
-			$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
-			$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
-			$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
+			$("#testmask").SendKey(keyCode.BACKSPACE);
+			$("#testmask").SendKey(keyCode.BACKSPACE);
+			$("#testmask").SendKey(keyCode.BACKSPACE);
 			$(testmask).Type("0,03");
 			assert.equal(testmask.value, "50,03", "Result " + testmask.value);
 			done();

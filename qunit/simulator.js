@@ -1,3 +1,5 @@
+import keyCode from "../lib/keycode";
+
 export default function ($, Inputmask) {
     $.caret = function (input, begin, end) {
         input = input.nodeName ? input : input[0];
@@ -56,8 +58,8 @@ export default function ($, Inputmask) {
         }
     };
     $.fn = $.fn || $.prototype;
-    $.fn.SendKey = function (keyCode, modifier) {
-        var elem = this.nodeName ? this : this[0], origCode = keyCode;
+    $.fn.SendKey = function (keycode, modifier) {
+        var elem = this.nodeName ? this : this[0], origCode = keycode;
         elem.type = "text"; //force textinput to support caret fn
 
 
@@ -75,19 +77,19 @@ export default function ($, Inputmask) {
         }
 
         var sendDummyKeydown = false;
-        if (Object.prototype.toString.call(keyCode) == '[object String]') {
-            keyCode = keyCode.charCodeAt(0);
+        if (Object.prototype.toString.call(keycode) == '[object String]') {
+            keycode = keycode.charCodeAt(0);
             sendDummyKeydown = true;
         }
 
-        switch (keyCode) {
-            case Inputmask.keyCode.LEFT:
+        switch (keycode) {
+            case keyCode.LEFT:
                 if (modifier == undefined) {
                     var pos = $.caret(this);
                     $.caret(this, pos.begin - 1);
                     break;
                 }
-            case Inputmask.keyCode.RIGHT:
+            case keyCode.RIGHT:
                 if (modifier == undefined) {
                     var pos = $.caret(this);
                     $.caret(this, pos.begin + 1);
@@ -107,13 +109,13 @@ export default function ($, Inputmask) {
                         back = currentValue.substring(caretPos.end),
                         newValue = currentValue;
 
-                    switch (keyCode) {
-                        case Inputmask.keyCode.BACKSPACE:
+                    switch (keycode) {
+                        case keyCode.BACKSPACE:
                             if (caretPos.begin === caretPos.end)
                                 front = front.substr(0, front.length - 1)
                             newValue = front + back;
                             break;
-                        case Inputmask.keyCode.DELETE:
+                        case keyCode.DELETE:
                             if (origCode !== ".") {
                                 if (caretPos.begin === caretPos.end)
                                     back = back.slice(1);
@@ -121,7 +123,7 @@ export default function ($, Inputmask) {
                                 break;
                             }
                         default:
-                            newValue = front + String.fromCharCode(keyCode) + back;
+                            newValue = front + String.fromCharCode(keycode) + back;
                             caretOffset = front.length > 0 ? 1 : 0;
                             break;
                     }
@@ -137,19 +139,19 @@ export default function ($, Inputmask) {
                         keyup = new $.Event("keyup");
 
                     if (!sendDummyKeydown) {
-                        keydown.keyCode = keyCode;
-                        if (modifier == Inputmask.keyCode.CONTROL)
+                        keydown.keyCode = keycode;
+                        if (modifier == keyCode.CONTROL)
                             keydown.ctrlKey = true;
                     }
                     trigger(elem, keydown);
                     if (!keydown.defaultPrevented) {
-                        keypress.keyCode = keyCode;
-                        if (modifier == Inputmask.keyCode.CONTROL)
+                        keypress.keyCode = keycode;
+                        if (modifier == keyCode.CONTROL)
                             keypress.ctrlKey = true;
                         trigger(elem, keypress);
                         //if (!keypress.isDefaultPrevented()) {
-                        keyup.keyCode = keyCode;
-                        if (modifier == Inputmask.keyCode.CONTROL)
+                        keyup.keyCode = keycode;
+                        if (modifier == keyCode.CONTROL)
                             keyup.ctrlKey = true;
                         trigger(elem, keyup);
                         //}

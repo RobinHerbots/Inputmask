@@ -3,15 +3,17 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.278
+ * Version: 5.0.0-beta.279
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
         var a = "object" == typeof exports ? factory(require("jquery")) : factory(root.jQuery);
         for (var i in a) ("object" == typeof exports ? exports : root)[i] = a[i];
     }
-}(window, function(__WEBPACK_EXTERNAL_MODULE__2__) {
-    return modules = [ function(module, exports, __webpack_require__) {
+}(window, function(__WEBPACK_EXTERNAL_MODULE__3__) {
+    return modules = [ function(module) {
+        module.exports = JSON.parse('{"BACKSPACE":8,"BACKSPACE_SAFARI":127,"DELETE":46,"DOWN":40,"END":35,"ENTER":13,"ESCAPE":27,"HOME":36,"INSERT":45,"LEFT":37,"PAGE_DOWN":34,"PAGE_UP":33,"RIGHT":39,"SPACE":32,"TAB":9,"UP":38,"X":88,"CONTROL":17}');
+    }, function(module, exports, __webpack_require__) {
         "use strict";
         function _typeof(obj) {
             return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function _typeof(obj) {
@@ -20,7 +22,7 @@
                 return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
             }, _typeof(obj);
         }
-        var $ = __webpack_require__(1), window = __webpack_require__(4), document = window.document, generateMaskSet = __webpack_require__(5).generateMaskSet, analyseMask = __webpack_require__(5).analyseMask, maskScope = __webpack_require__(8);
+        var $ = __webpack_require__(2), window = __webpack_require__(4), document = window.document, generateMaskSet = __webpack_require__(5).generateMaskSet, analyseMask = __webpack_require__(5).analyseMask, maskScope = __webpack_require__(8);
         function Inputmask(alias, options, internal) {
             if (!(this instanceof Inputmask)) return new Inputmask(alias, options, internal);
             this.el = void 0, this.events = {}, this.maskset = void 0, this.refreshValue = !1, 
@@ -237,13 +239,11 @@
         }, Inputmask.dependencyLib = $, window.Inputmask = Inputmask, module.exports = Inputmask;
     }, function(module, exports, __webpack_require__) {
         "use strict";
-        var jquery = __webpack_require__(2);
+        var jquery = __webpack_require__(3);
         if (void 0 === jquery) throw "jQuery not loaded!";
         module.exports = jquery;
     }, function(module, exports) {
-        module.exports = __WEBPACK_EXTERNAL_MODULE__2__;
-    }, function(module) {
-        module.exports = JSON.parse('{"BACKSPACE":8,"BACKSPACE_SAFARI":127,"DELETE":46,"DOWN":40,"END":35,"ENTER":13,"ESCAPE":27,"HOME":36,"INSERT":45,"LEFT":37,"PAGE_DOWN":34,"PAGE_UP":33,"RIGHT":39,"SPACE":32,"TAB":9,"UP":38,"X":88,"CONTROL":17}');
+        module.exports = __WEBPACK_EXTERNAL_MODULE__3__;
     }, function(module, exports, __webpack_require__) {
         "use strict";
         var __WEBPACK_AMD_DEFINE_RESULT__;
@@ -259,7 +259,7 @@
         }.call(exports, __webpack_require__, exports, module), void 0 === __WEBPACK_AMD_DEFINE_RESULT__ || (module.exports = __WEBPACK_AMD_DEFINE_RESULT__);
     }, function(module, exports, __webpack_require__) {
         "use strict";
-        var $ = __webpack_require__(1);
+        var $ = __webpack_require__(2);
         function generateMaskSet(opts, nocache) {
             var ms;
             function generateMask(mask, metadata, opts) {
@@ -516,10 +516,10 @@
         };
     }, function(module, exports, __webpack_require__) {
         "use strict";
-        __webpack_require__(7), __webpack_require__(9), __webpack_require__(10), module.exports = __webpack_require__(0);
+        __webpack_require__(7), __webpack_require__(9), __webpack_require__(10), module.exports = __webpack_require__(1);
     }, function(module, exports, __webpack_require__) {
         "use strict";
-        var Inputmask = __webpack_require__(0);
+        var Inputmask = __webpack_require__(1);
         Inputmask.extendDefinitions({
             A: {
                 validator: "[A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
@@ -613,7 +613,7 @@
                 return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
             }, _typeof(obj);
         }
-        var $ = __webpack_require__(1), window = __webpack_require__(4), document = window.document, ua = window.navigator && window.navigator.userAgent || "", ie = 0 < ua.indexOf("MSIE ") || 0 < ua.indexOf("Trident/"), mobile = "ontouchstart" in window, iemobile = /iemobile/i.test(ua), iphone = /iphone/i.test(ua) && !iemobile, keyCode = __webpack_require__(3);
+        var $ = __webpack_require__(2), window = __webpack_require__(4), document = window.document, ua = window.navigator && window.navigator.userAgent || "", ie = 0 < ua.indexOf("MSIE ") || 0 < ua.indexOf("Trident/"), mobile = "ontouchstart" in window, iemobile = /iemobile/i.test(ua), iphone = /iphone/i.test(ua) && !iemobile, keyCode = __webpack_require__(0);
         module.exports = function maskScope(actionObj, maskset, opts) {
             maskset = maskset || this.maskset, opts = opts || this.opts;
             var inputmask = this, el = this.el, isRTL = this.isRTL || (this.isRTL = opts.numericInput), undoValue, $el, skipKeyPressEvent = !1, skipInputEvent = !1, validationEvent = !1, ignorable = !1, maxLength, mouseEnter = !1, originalPlaceholder = void 0;
@@ -940,7 +940,8 @@
                         for (maskset.excludes[decisionPos].push(decisionTaker), i = decisionPos; i < getLastValidPosition(void 0, !0) + 1; i++) delete maskset.validPositions[i];
                     }
                 }
-                return delete maskset.excludes[decisionPos], returnRslt;
+                return returnRslt && !1 === opts.keepStatic || delete maskset.excludes[decisionPos], 
+                returnRslt;
             }
             function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly) {
                 function isSelection(posObj) {
@@ -992,6 +993,8 @@
                 }
                 void 0 !== pos.begin && (maskPos = isRTL ? pos.end : pos.begin);
                 var result = !0, positionsClone = $.extend(!0, {}, maskset.validPositions);
+                if (!1 === opts.keepStatic && void 0 !== maskset.excludes[maskPos] && !0 !== fromAlternate && !0 !== fromIsValid) for (var i = maskPos; i < (isRTL ? pos.begin : pos.end); i++) void 0 !== maskset.excludes[i] && (maskset.excludes[i] = void 0, 
+                delete maskset.tests[i]);
                 if ($.isFunction(opts.preValidation) && !0 !== fromIsValid && !0 !== validateOnly && !0 !== fromAlternate && (result = opts.preValidation(getBuffer(), maskPos, c, isSelection(pos), opts, maskset, pos, strict), 
                 result = processCommandObject(result)), !0 === result) {
                     if (void 0 === maxLength || maskPos < maxLength) {
@@ -1787,7 +1790,7 @@
                 return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
             }, _typeof(obj);
         }
-        var Inputmask = __webpack_require__(0), $ = Inputmask.dependencyLib, keyCode = __webpack_require__(3), formatCode = {
+        var Inputmask = __webpack_require__(1), $ = Inputmask.dependencyLib, keyCode = __webpack_require__(0), formatCode = {
             d: [ "[1-9]|[12][0-9]|3[01]", Date.prototype.setDate, "day", Date.prototype.getDate ],
             dd: [ "0[1-9]|[12][0-9]|3[01]", Date.prototype.setDate, "day", function() {
                 return pad(Date.prototype.getDate.call(this), 2);
@@ -2014,7 +2017,7 @@
         }), module.exports = Inputmask;
     }, function(module, exports, __webpack_require__) {
         "use strict";
-        var Inputmask = __webpack_require__(0), $ = Inputmask.dependencyLib, keyCode = __webpack_require__(3);
+        var Inputmask = __webpack_require__(1), $ = Inputmask.dependencyLib, keyCode = __webpack_require__(0);
         function autoEscape(txt, opts) {
             for (var escapedTxt = "", i = 0; i < txt.length; i++) Inputmask.prototype.definitions[txt.charAt(i)] || opts.definitions[txt.charAt(i)] || opts.optionalmarker.start === txt.charAt(i) || opts.optionalmarker.end === txt.charAt(i) || opts.quantifiermarker.start === txt.charAt(i) || opts.quantifiermarker.end === txt.charAt(i) || opts.groupmarker.start === txt.charAt(i) || opts.groupmarker.end === txt.charAt(i) || opts.alternatormarker === txt.charAt(i) ? escapedTxt += "\\" + txt.charAt(i) : escapedTxt += txt.charAt(i);
             return escapedTxt;
@@ -2357,7 +2360,7 @@
                 return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
             }, _typeof(obj);
         }
-        var $ = __webpack_require__(2), Inputmask = __webpack_require__(0);
+        var $ = __webpack_require__(3), Inputmask = __webpack_require__(1);
         void 0 === $.fn.inputmask && ($.fn.inputmask = function(fn, options) {
             var nptmask, input = this[0];
             if (void 0 === options && (options = {}), "string" == typeof fn) switch (fn) {
@@ -2414,7 +2417,7 @@
         });
     }, function(module, exports, __webpack_require__) {
         "use strict";
-        var im = __webpack_require__(6), jQuery = __webpack_require__(2);
+        var im = __webpack_require__(6), jQuery = __webpack_require__(3);
         im.dependencyLib === jQuery && __webpack_require__(11), module.exports = im;
     } ], installedModules = {}, __webpack_require__.m = modules, __webpack_require__.c = installedModules, 
     __webpack_require__.d = function(exports, name, getter) {
