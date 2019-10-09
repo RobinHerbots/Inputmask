@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.280
+ * Version: 5.0.0-beta.281
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1504,7 +1504,9 @@
                             $.each(changes.data, function(ndx, entry) {
                                 var keypress = new $.Event("keypress");
                                 keypress.which = entry.charCodeAt(0), ignorable = !1, EventHandlers.keypressEvent.call(input, keypress);
-                            });
+                            }), setTimeout(function() {
+                                $el.trigger("keyup");
+                            }, 0);
                             break;
 
                           case "deleteContentBackward":
