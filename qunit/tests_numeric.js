@@ -1723,7 +1723,7 @@ export default function (qunit, Inputmask) {
 		var testmask = document.getElementById("testmask");
 		Inputmask("currency").mask(testmask);
 		testmask.focus();
-		$("#testmask").Type("123");
+		$("#testmask").val("123");
 		$.caret(testmask, 0, 5);
 		$("#testmask").Type("0");
 
@@ -1946,7 +1946,7 @@ export default function (qunit, Inputmask) {
 			clearIncomplete: true
 		}).mask(testmask);
 		testmask.focus();
-		$("#testmask").Type("-123.");
+		$("#testmask").val("-123.");
 		testmask.blur();
 
 		assert.equal(testmask.value, "(123.000)", "Result " + testmask.value);
