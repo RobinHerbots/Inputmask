@@ -1,3 +1,5 @@
+import keyCode from "../lib/keycode";
+
 export default function (qunit, Inputmask) {
 	var $ = Inputmask.dependencyLib;
 
@@ -103,7 +105,7 @@ export default function (qunit, Inputmask) {
 
 		testmask.focus();
 		$("#testmask").Type("123123");
-		$("#testmask").SendKey(Inputmask.keyCode.SPACE);
+		$("#testmask").SendKey(keyCode.SPACE);
 		$("#testmask").Type("1234");
 		assert.equal(testmask.value, "123 123 1234", "Result " + testmask.value);
 	});
@@ -227,7 +229,7 @@ export default function (qunit, Inputmask) {
 
 		testmask.focus();
 		$("#testmask").Type("123456");
-		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.BACKSPACE);
 		assert.equal(testmask.inputmask.isComplete(), true, "Result " + testmask.inputmask.isComplete());
 	});
 
@@ -242,7 +244,7 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		setTimeout(function () {
 			$("#testmask").Type("123456");
-			$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
+			$("#testmask").SendKey(keyCode.BACKSPACE);
 			testmask.blur();
 			setTimeout(function () {
 				assert.equal($("#testmask")[0].inputmask._valueGet(), "12345", "Result " + $("#testmask")[0].inputmask._valueGet());
@@ -262,7 +264,7 @@ export default function (qunit, Inputmask) {
 
 		testmask.focus();
 		$("#testmask").Type("123456");
-		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.BACKSPACE);
 		setTimeout(function () {
 			assert.equal(testmask.value, "12345", "Result " + testmask.value);
 			done();
@@ -277,7 +279,7 @@ export default function (qunit, Inputmask) {
 
 		testmask.focus();
 		$("#testmask").Type("12345678901");
-		$("#testmask").SendKey(Inputmask.keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.BACKSPACE);
 		assert.equal(testmask.inputmask.isComplete(), true, "Result " + testmask.inputmask.isComplete());
 	});
 

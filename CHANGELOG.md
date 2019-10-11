@@ -8,6 +8,7 @@
 - add shortcuts option in numeric alias.
 
 ### Updates
+- add more tokens for datetime format
 - refactor inputfallbackevent
 - drop colormask support
 - drop disablePredictiveText option (was hack via colorMask)
@@ -22,6 +23,8 @@
 - revert insert-mode caret as selection instead of colored caret
 
 ### Fixed
+- bootstrap-datepicker: date bug in mobile version #2195
+- Time 24 Hours Issue. #2194
 - 'Decimal'. New entered value is automatically prefixed with '.' #2189
 - inputmode not working #2193
 - Does not work on XHTML pages. #2187

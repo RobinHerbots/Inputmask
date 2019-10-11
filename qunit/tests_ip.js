@@ -1,3 +1,5 @@
+import keyCode from "../lib/keycode";
+
 export default function (qunit, Inputmask) {
     var $ = Inputmask.dependencyLib;
 
@@ -87,7 +89,7 @@ export default function (qunit, Inputmask) {
 		$("#testmask").Type("123123123123");
 		testmask2.focus();
 		$.caret(testmask, 4);
-		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
+		$("#testmask").SendKey(keyCode.DELETE);
 		setTimeout(function() {
 			assert.equal(testmask.value, "123.23.123.123", "Result " + testmask.value);
 			done();

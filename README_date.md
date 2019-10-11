@@ -41,14 +41,14 @@ Year as 4 digits.
 Hours; no leading zero for single-digit hours (12-hour clock).
 - hh  
 Hours; leading zero for single-digit hours (12-hour clock).
-- hhh  
-Hours; no limit
+- hx  
+Hours; no limit; x = number of digits ~ use as h2, h3, ...   
 -H  
 Hours; no leading zero for single-digit hours (24-hour clock).
 - HH  
 Hours; leading zero for single-digit hours (24-hour clock).
-- HHH  
-Hours; no limit
+- Hx  
+Hours; no limit; x = number of digits ~ use as H2, H3, ...   
 - M  
 Minutes; no leading zero for single-digit minutes. Uppercase M unlike CF timeFormat's m to avoid conflict with months.
 - MM  

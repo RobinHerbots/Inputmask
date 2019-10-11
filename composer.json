@@ -1,7 +1,7 @@
 {
   "name": "robinherbots/inputmask",
   "description": "Inputmask is a javascript library which creates an input mask.  Inputmask can run against vanilla javascript, jQuery and jqlite.",
-  "version": "5.0.0-beta.276",
+  "version": "5.0.0-beta.281",
   "type": "library",
   "keywords": ["jquery", "plugins", "input", "form", "inputmask", "mask"],
   "homepage": "http://robinherbots.github.io/Inputmask",

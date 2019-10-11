@@ -1,3 +1,5 @@
+import keyCode from "../lib/keycode";
+
 export default function (qunit, Inputmask) {
 	var $ = Inputmask.dependencyLib;
 
@@ -275,7 +277,7 @@ export default function (qunit, Inputmask) {
 
 		$("#testmask").Type("abc1234");
 		$.caret(testmask, 2);
-		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
+		$("#testmask").SendKey(keyCode.DELETE);
 		assert.equal(document.getElementById("testmask").inputmask._valueGet(), "ab-1234", "Result " + document.getElementById("testmask").inputmask._valueGet());
 	});
 
@@ -333,7 +335,7 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		$("#testmask").Type("some.body@mail.com");
 		$.caret(testmask, 9);
-		$("#testmask").SendKey(Inputmask.keyCode.DELETE);
+		$("#testmask").SendKey(keyCode.DELETE);
 		assert.equal($.caret(testmask).begin, "some.body@".length, "Result " + $.caret(testmask).begin);
 	});
 
