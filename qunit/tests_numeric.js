@@ -2002,7 +2002,7 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		$("#testmask").Type("9999");
 
-		assert.equal(testmask.value, "1000.01", "Result " + testmask.value);
+		assert.equal(testmask.value, "1000.01 %", "Result " + testmask.value);
 	});
 
 	qunit.test("'Decimal'. New entered value is automatically prefixed with '.' #2189", function (assert) {
