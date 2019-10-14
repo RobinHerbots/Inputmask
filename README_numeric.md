@@ -7,6 +7,10 @@
 - integer
 - percentage
 
+The defaults are those defined in the base numeric alias.
+The currency alias and others are derived from the numeric alias and can have other defaults.
+Have a look in the inputmask.numeric.extensions.js for more details about which defaults are used. (At the end of the file)
+
 ## Options
 ### digits
 Number of fractionalDigits
