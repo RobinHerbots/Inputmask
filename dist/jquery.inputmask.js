@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.281
+ * Version: 5.0.0-beta.283
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -864,12 +864,20 @@
                 void 0 === maskset._buffer && (maskset._buffer = maskset.buffer.slice())), maskset.buffer;
             }
             function refreshFromBuffer(start, end, buffer) {
-                var i, p, skipOptionalPartCharacter = opts.skipOptionalPartCharacter;
+                var i, p, skipOptionalPartCharacter = opts.skipOptionalPartCharacter, bffr = isRTL ? buffer.slice().reverse() : buffer;
                 if (opts.skipOptionalPartCharacter = "", !0 === start) resetMaskSet(), maskset.tests = {}, 
-                start = 0, end = buffer.length; else for (i = start; i < end; i++) delete maskset.validPositions[i];
-                for (p = start, i = start; i < end; i++) {
-                    var valResult = isValid(p, buffer[i], !0, !0);
-                    !1 !== valResult && (p = void 0 !== valResult.caret && valResult.caret > valResult.pos ? valResult.caret : valResult.pos + 1);
+                start = 0, end = buffer.length, p = determineNewCaretPosition({
+                    begin: 0,
+                    end: 0
+                }, !1); else {
+                    for (i = start; i < end; i++) delete maskset.validPositions[i];
+                    p = start;
+                }
+                var keypress = new $.Event("keypress");
+                for (i = start; i < end; i++) {
+                    keypress.which = bffr[i].toString().charCodeAt(0), ignorable = !1;
+                    var valResult = EventHandlers.keypressEvent.call(el, keypress, !0, !1, !1, p);
+                    !1 !== valResult && (p = valResult.forwardPosition);
                 }
                 opts.skipOptionalPartCharacter = skipOptionalPartCharacter;
             }
@@ -2169,8 +2177,14 @@
                     var radixPos = $.inArray(opts.radixPoint, buffer);
                     if (pos = hanndleRadixDance(pos, c, radixPos, opts), "-" !== c && c !== opts.negationSymbol.front) return !!strict || (-1 !== radixPos && !0 === opts._radixDance && !1 === isSelection && c === opts.radixPoint && void 0 !== opts.digits && (isNaN(opts.digits) || 0 < parseInt(opts.digits)) && radixPos !== pos ? {
                         caret: opts._radixDance && pos === radixPos - 1 ? radixPos + 1 : radixPos
+                    } : isSelection && opts.digitsOptional ? {
+                        rewritePosition: caretPos.end
+                    } : isSelection && !opts.digitsOptional && caretPos.begin > radixPos && caretPos.end <= radixPos ? {
+                        rewritePosition: radixPos + 1
+                    } : isSelection && !opts.digitsOptional && caretPos.begin < radixPos ? {
+                        rewritePosition: caretPos.begin - 1
                     } : {
-                        rewritePosition: isSelection && opts.digitsOptional ? caretPos.end : pos
+                        rewritePosition: pos
                     });
                     if (!0 !== opts.allowMinus) return !1;
                     var isNegative = !1, front = findValid("+", maskset), back = findValid("-", maskset);
