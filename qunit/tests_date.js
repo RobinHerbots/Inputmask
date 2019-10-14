@@ -226,11 +226,11 @@ export default function (qunit, Inputmask) {
 
 		testmask.focus();
 		$("#testmask").Type("4");
-        $.caret(testmask, 0, "dd/mm/yyyy".length);
-        $("#testmask").Type("2");
+		$.caret(testmask, 0, "dd/mm/yyyy".length);
+		$("#testmask").Type("2");
 
 
-        assert.equal(testmask.value, "2d/mm/yyyy", "Result " + testmask.value);
+		assert.equal(testmask.value, "2d/mm/yyyy", "Result " + testmask.value);
 	});
 
 	qunit.module("Date.Extensions - mm/dd/yyyy");
@@ -643,6 +643,93 @@ export default function (qunit, Inputmask) {
 		$("#testmask").Type("882018");
 
 		assert.equal(testmask.value, "08.08.2018", "Result " + testmask.value);
+	});
+
+
+	qunit.module("Date.Extensions - HH:MM:ss");
+	qunit.test("HH:MM:SS - enter 111111", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "HH:MM:ss"
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("111111");
+		assert.equal(testmask.value, "11:11:11", "Result " + testmask.value);
+	});
+
+	qunit.test("HH:MM:SS - enter 222222", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "HH:MM:ss"
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("222222");
+		assert.equal(testmask.value, "22:22:22", "Result " + testmask.value);
+	});
+	qunit.test("HH:MM:SS - enter 333333", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "HH:MM:ss"
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("333333");
+		assert.equal(testmask.value, "03:33:33", "Result " + testmask.value);
+	});
+
+	qunit.test("HH:MM:SS - enter 235959", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "HH:MM:ss"
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("235959");
+		assert.equal(testmask.value, "23:59:59", "Result " + testmask.value);
+	});
+
+	qunit.test("HH:MM:SS - enter 245959", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "HH:MM:ss"
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("245959");
+		assert.equal(testmask.value, "2H:MM:ss", "Result " + testmask.value);
+	});
+
+	qunit.test("HH:MM:SS - enter 235959 - backspace all", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "HH:MM:ss"
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("235959");
+
+		$("#testmask").SendKey(keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.BACKSPACE);
+
+		assert.equal(testmask.value, "", "Result " + testmask.value);
 	});
 
 	qunit.module("Date.Extensions - misc");
