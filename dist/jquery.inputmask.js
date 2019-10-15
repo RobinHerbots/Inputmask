@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.284
+ * Version: 5.0.0-beta.285
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1003,7 +1003,7 @@
                 var result = !0, positionsClone = $.extend(!0, {}, maskset.validPositions);
                 if (!1 === opts.keepStatic && void 0 !== maskset.excludes[maskPos] && !0 !== fromAlternate && !0 !== fromIsValid) for (var i = maskPos; i < (isRTL ? pos.begin : pos.end); i++) void 0 !== maskset.excludes[i] && (maskset.excludes[i] = void 0, 
                 delete maskset.tests[i]);
-                if ($.isFunction(opts.preValidation) && !0 !== fromIsValid && !0 !== validateOnly && !0 !== fromAlternate && (result = opts.preValidation(getBuffer(), maskPos, c, isSelection(pos), opts, maskset, pos, strict), 
+                if ($.isFunction(opts.preValidation) && !0 !== fromIsValid && !0 !== validateOnly && (result = opts.preValidation(getBuffer(), maskPos, c, isSelection(pos), opts, maskset, pos, strict || fromAlternate), 
                 result = processCommandObject(result)), !0 === result) {
                     if (void 0 === maxLength || maskPos < maxLength) {
                         if (result = _isValid(maskPos, c, strict), (!strict || !0 === fromIsValid) && !1 === result && !0 !== validateOnly) {
@@ -1237,7 +1237,7 @@
 
                                   case "click":
                                   case "focus":
-                                    return validationEvent ? (validationEvent = !1, input.blur(), HandleNativePlaceholder(input, (isRTL ? getBuffer().slice().reverse() : getBuffer()).join("")), 
+                                    return validationEvent ? (validationEvent = !1, input.blur(), HandleNativePlaceholder(input, (isRTL ? getBufferTemplate().slice().reverse() : getBufferTemplate()).join("")), 
                                     setTimeout(function() {
                                         input.focus();
                                     }, 3e3)) : (args = arguments, setTimeout(function() {
@@ -1454,7 +1454,7 @@
                 mouseenterEvent: function mouseenterEvent() {
                     var input = this;
                     mouseEnter = !0, document.activeElement !== this && (null == originalPlaceholder && this.placeholder !== originalPlaceholder && (originalPlaceholder = this.placeholder), 
-                    opts.showMaskOnHover && HandleNativePlaceholder(this, (isRTL ? getBuffer().slice().reverse() : getBuffer()).join("")));
+                    opts.showMaskOnHover && HandleNativePlaceholder(this, (isRTL ? getBufferTemplate().slice().reverse() : getBufferTemplate()).join("")));
                 },
                 submitEvent: function submitEvent() {
                     undoValue !== getBuffer().join("") && $el.trigger("change"), opts.clearMaskOnLostFocus && -1 === getLastValidPosition() && el.inputmask._valueGet && el.inputmask._valueGet() === getBufferTemplate().join("") && el.inputmask._valueSet(""), 
@@ -2174,7 +2174,7 @@
                             insert: inserts
                         };
                     }
-                    var radixPos = $.inArray(opts.radixPoint, buffer);
+                    var radixPos = $.inArray(opts.radixPoint, buffer), initPos = pos;
                     if (pos = hanndleRadixDance(pos, c, radixPos, opts), "-" !== c && c !== opts.negationSymbol.front) return !!strict || (-1 !== radixPos && !0 === opts._radixDance && !1 === isSelection && c === opts.radixPoint && void 0 !== opts.digits && (isNaN(opts.digits) || 0 < parseInt(opts.digits)) && radixPos !== pos ? {
                         caret: opts._radixDance && pos === radixPos - 1 ? radixPos + 1 : radixPos
                     } : isSelection && opts.digitsOptional ? {
@@ -2190,7 +2190,7 @@
                     var isNegative = !1, front = findValid("+", maskset), back = findValid("-", maskset);
                     return -1 !== front && (isNegative = [ front, back ]), !1 !== isNegative ? {
                         remove: isNegative,
-                        caret: pos < radixPos ? pos + 1 : pos
+                        caret: initPos
                     } : {
                         insert: [ {
                             pos: findValidator("+", maskset),
@@ -2201,7 +2201,7 @@
                             c: opts.negationSymbol.back,
                             fromIsValid: void 0
                         } ],
-                        caret: pos < radixPos ? pos + 1 : pos
+                        caret: initPos
                     };
                 },
                 postValidation: function postValidation(buffer, pos, currentResult, opts, maskset, strict) {
