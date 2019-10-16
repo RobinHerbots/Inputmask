@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 - Describe the bug
- - Add a link to a codepen, jsfiddle or other example page which shows the problem
- - OS:
- - Browser
- - Inputmask version
+- Add a link to a codepen, jsfiddle or other example page which shows the problem
+- OS:
+- Browser
+- Inputmask version
