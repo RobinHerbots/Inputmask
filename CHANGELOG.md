@@ -23,6 +23,7 @@
 - revert insert-mode caret as selection instead of colored caret
 
 ### Fixed
+- NumericInput: Pasting integers without selecting results in extra 0s #2165
 - Wrong mask application on decimal field #2188
 - bootstrap-datepicker: date bug in mobile version #2195
 - Time 24 Hours Issue. #2194
