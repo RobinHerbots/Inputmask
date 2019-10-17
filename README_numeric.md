@@ -25,15 +25,16 @@ Default: true
 
 ### enforceDigitsOnBlur 
 Enforces the decimal part when leaving the input field.
+Default: false
 
 ### radixPoint
 default: "."
 
 ### positionCaretOnClick
-default: "radixFocus"
+Default: "radixFocus"
 		
 ### groupSeparator
-default: ""
+Default: ""
 		
 ### allowMinus
 Allow to enter -.  
