@@ -2017,4 +2017,20 @@ export default function (qunit, Inputmask) {
 		$("#testmask").Type("1");
 		assert.equal(testmask.value, "1", "Result " + testmask.value);
 	});
+
+
+	qunit.test("Decimal - select all type radixpoint - #2188", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("decimal",{
+			digits: 8, digitsOptional: false, max: 999999999, placeholder: '0.00000000', rightAlign: false, showMaskOnHover: false
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("123.45");
+		$.caret(testmask, 0, "0.00000000".length);
+		$("#testmask").Type(".1");
+		assert.equal(testmask.value, "0.10000000", "Result " + testmask.value);
+	});
 };

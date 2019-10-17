@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.286
+ * Version: 5.0.0-beta.287
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -2083,8 +2083,8 @@
             return mask += autoEscape(opts.suffix, opts), mask += "[-]", altMask && (mask = [ altMask + autoEscape(opts.suffix, opts) + "[-]", mask ]), 
             opts.greedy = !1, parseMinMaxOptions(opts), mask;
         }
-        function hanndleRadixDance(pos, c, radixPos, opts) {
-            return opts._radixDance && opts.numericInput && c !== opts.negationSymbol.back && pos <= radixPos && (0 < radixPos || c == opts.radixPoint) && (pos -= 1), 
+        function hanndleRadixDance(pos, c, radixPos, maskset, opts) {
+            return opts._radixDance && opts.numericInput && c !== opts.negationSymbol.back && pos <= radixPos && (0 < radixPos || c == opts.radixPoint) && (void 0 === maskset.validPositions[pos - 1] || maskset.validPositions[pos - 1].input !== opts.negationSymbol.back) && (pos -= 1), 
             pos;
         }
         function decimalValidator(chrs, maskset, pos, strict, opts) {
@@ -2175,11 +2175,18 @@
                         };
                     }
                     var radixPos = $.inArray(opts.radixPoint, buffer), initPos = pos;
-                    if (pos = hanndleRadixDance(pos, c, radixPos, opts), "-" !== c && c !== opts.negationSymbol.front) return !!strict || (-1 !== radixPos && !0 === opts._radixDance && !1 === isSelection && c === opts.radixPoint && void 0 !== opts.digits && (isNaN(opts.digits) || 0 < parseInt(opts.digits)) && radixPos !== pos ? {
+                    if (pos = hanndleRadixDance(pos, c, radixPos, maskset, opts), "-" !== c && c !== opts.negationSymbol.front) return !!strict || (-1 !== radixPos && !0 === opts._radixDance && !1 === isSelection && c === opts.radixPoint && void 0 !== opts.digits && (isNaN(opts.digits) || 0 < parseInt(opts.digits)) && radixPos !== pos ? {
                         caret: opts._radixDance && pos === radixPos - 1 ? radixPos + 1 : radixPos
                     } : isSelection && opts.digitsOptional ? {
                         rewritePosition: caretPos.end
-                    } : isSelection && !opts.digitsOptional && caretPos.begin > radixPos && caretPos.end <= radixPos ? {
+                    } : isSelection && !opts.digitsOptional && caretPos.begin > radixPos && caretPos.end <= radixPos ? c === opts.radixPoint ? {
+                        insert: {
+                            pos: radixPos + 1,
+                            c: "0",
+                            fromIsValid: !0
+                        },
+                        rewritePosition: radixPos
+                    } : {
                         rewritePosition: radixPos + 1
                     } : isSelection && !opts.digitsOptional && caretPos.begin < radixPos ? {
                         rewritePosition: caretPos.begin - 1
@@ -2201,7 +2208,7 @@
                             c: opts.negationSymbol.back,
                             fromIsValid: void 0
                         } ],
-                        caret: initPos
+                        caret: initPos + opts.negationSymbol.back.length
                     };
                 },
                 postValidation: function postValidation(buffer, pos, currentResult, opts, maskset, strict) {
@@ -2291,16 +2298,21 @@
                                 buffer: alignDigits(opts.min.toString().replace(".", opts.radixPoint).split(""), opts.digits, opts).reverse()
                             };
                         }
-                        if ("" !== opts.radixPoint && buffer[0] === opts.radixPoint) result && result.buffer ? result.buffer.shift() : (buffer.shift(), 
-                        result = {
-                            refreshFromBuffer: !0,
-                            buffer: stripBuffer(buffer)
-                        }); else if (buffer[buffer.length - 1] === opts.negationSymbol.front) {
+                        if (buffer[buffer.length - 1] === opts.negationSymbol.front) {
                             var nmbrMtchs = new RegExp("(^" + ("" != opts.negationSymbol.front ? Inputmask.escapeRegex(opts.negationSymbol.front) + "?" : "") + Inputmask.escapeRegex(opts.prefix) + ")(.*)(" + Inputmask.escapeRegex(opts.suffix) + ("" != opts.negationSymbol.back ? Inputmask.escapeRegex(opts.negationSymbol.back) + "?" : "") + "$)").exec(stripBuffer(buffer.slice(), !0).reverse().join("")), number = nmbrMtchs ? nmbrMtchs[2] : "";
                             0 == number && (result = {
                                 refreshFromBuffer: !0,
                                 buffer: [ 0 ]
                             });
+                        } else "" !== opts.radixPoint && buffer[0] === opts.radixPoint && (result && result.buffer ? result.buffer.shift() : (buffer.shift(), 
+                        result = {
+                            refreshFromBuffer: !0,
+                            buffer: stripBuffer(buffer)
+                        }));
+                        if (opts.enforceDigitsOnBlur) {
+                            result = result || {};
+                            var bffr = result && result.buffer || buffer.slice().reverse();
+                            result.refreshFromBuffer = !0, result.buffer = alignDigits(bffr, opts.digits, opts, !0).reverse();
                         }
                     }
                     return result;
