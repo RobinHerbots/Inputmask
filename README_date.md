@@ -16,7 +16,7 @@ ex:
 - mm/dd/yyyy  
 - dd.mm.yyyy HH:MM:ss  
 
-###Supported symbols
+### Supported symbols
 - d  
 Day of the month as digits; no leading zero for single-digit days.
 - dd  
@@ -33,7 +33,7 @@ Month as digits; leading zero for single-digit months.
 Month as a three-letter abbreviation.
 - mmmm  
 Month as its full name.
--yy  
+- yy  
 Year as last two digits; leading zero for years less than 10.
 - yyyy  
 Year as 4 digits.
