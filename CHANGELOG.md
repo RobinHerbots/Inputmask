@@ -23,6 +23,7 @@
 - revert insert-mode caret as selection instead of colored caret
 
 ### Fixed
+- Set currency prefix to empty by default #2066
 - NumericInput: Pasting integers without selecting results in extra 0s #2165
 - Wrong mask application on decimal field #2188
 - bootstrap-datepicker: date bug in mobile version #2195
