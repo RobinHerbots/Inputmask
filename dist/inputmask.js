@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.289
+ * Version: 5.0.0-beta.290
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1233,8 +1233,9 @@
                 }
                 return !1;
             }
-            function seekNext(pos, newBlock) {
-                for (var position = pos + 1; "" !== getTest(position).match.def && (!0 === newBlock && (!0 !== getTest(position).match.newBlockMarker || !isMask(position, void 0, !0)) || !0 !== newBlock && !isMask(position, void 0, !0)); ) position++;
+            function seekNext(pos, newBlock, fuzzy) {
+                void 0 === fuzzy && (fuzzy = !0);
+                for (var position = pos + 1; "" !== getTest(position).match.def && (!0 === newBlock && (!0 !== getTest(position).match.newBlockMarker || !isMask(position, void 0, !0)) || !0 !== newBlock && !isMask(position, void 0, fuzzy)); ) position++;
                 return position;
             }
             function seekPrevious(pos, newBlock) {
@@ -1609,29 +1610,31 @@
                 maskset.p = initialNdx, inputmask.caretPos = {
                     begin: initialNdx
                 };
-                var staticMatches = [], prevCaretPos = inputmask.caretPos, sndx, validPos, nextValid;
+                var staticMatches = [], prevCaretPos = inputmask.caretPos;
                 if ($.each(inputValue, function(ndx, charCode) {
                     if (void 0 !== charCode) if (void 0 === maskset.validPositions[ndx] && inputValue[ndx] === getPlaceholder(ndx) && isMask(ndx, !0) && !1 === isValid(ndx, inputValue[ndx], !0, void 0, void 0, !0)) maskset.p++; else {
                         var keypress = new $.Event("_checkval");
                         keypress.which = charCode.toString().charCodeAt(0), charCodes += charCode;
                         var lvp = getLastValidPosition(void 0, !0);
                         isTemplateMatch(initialNdx, charCodes) ? result = EventHandlers.keypressEvent.call(input, keypress, !0, !1, strict, lvp + 1) : (result = EventHandlers.keypressEvent.call(input, keypress, !0, !1, strict, inputmask.caretPos.begin), 
-                        result && (initialNdx = inputmask.caretPos.begin + 1, charCodes = "")), result ? (void 0 !== result.pos && maskset.validPositions[result.pos] && !0 === maskset.validPositions[result.pos].match.static && (staticMatches.push(result.pos), 
+                        result && (initialNdx = inputmask.caretPos.begin + 1, charCodes = "")), result ? (void 0 !== result.pos && maskset.validPositions[result.pos] && !0 === maskset.validPositions[result.pos].match.static && void 0 === maskset.validPositions[result.pos].alternation && (staticMatches.push(result.pos), 
                         isRTL || (result.forwardPosition = result.pos + 1)), writeBuffer(void 0, getBuffer(), result.forwardPosition, keypress, !1), 
                         inputmask.caretPos = {
                             begin: result.forwardPosition,
                             end: result.forwardPosition
                         }, prevCaretPos = inputmask.caretPos) : inputmask.caretPos = prevCaretPos;
                     }
-                }), 0 < staticMatches.length) if (!isComplete(getBuffer()) || staticMatches.length < seekNext(0)) {
-                    for (;void 0 !== (sndx = staticMatches.pop()); ) if (sndx !== staticMatches.length) {
-                        var keypress = new $.Event("_checkval"), nextSndx = sndx + 1;
-                        for (validPos = maskset.validPositions[sndx], validPos.generatedInput = !0, keypress.which = validPos.input.charCodeAt(0); (nextValid = maskset.validPositions[nextSndx]) && nextValid.input === validPos.input; ) nextSndx++;
+                }), 0 < staticMatches.length) {
+                    var sndx, validPos, nextValid = seekNext(-1, void 0, !1);
+                    if (!isComplete(getBuffer()) && staticMatches.length <= nextValid || isComplete(getBuffer()) && 0 < staticMatches.length && staticMatches.length !== nextValid && 0 === staticMatches[0]) for (var nextSndx = nextValid; void 0 !== (sndx = staticMatches.shift()); ) {
+                        var keypress = new $.Event("_checkval");
+                        if (validPos = maskset.validPositions[sndx], validPos.generatedInput = !0, keypress.which = validPos.input.charCodeAt(0), 
                         result = EventHandlers.keypressEvent.call(input, keypress, !0, !1, strict, nextSndx), 
-                        result && void 0 !== result.pos && result.pos !== sndx && maskset.validPositions[result.pos] && !0 === maskset.validPositions[result.pos].match.static && staticMatches.push(result.pos);
-                    }
-                } else for (;sndx = staticMatches.pop(); ) validPos = maskset.validPositions[sndx], 
-                validPos && (validPos.generatedInput = !0);
+                        result && void 0 !== result.pos && result.pos !== sndx && maskset.validPositions[result.pos] && !0 === maskset.validPositions[result.pos].match.static) staticMatches.push(result.pos); else if (!result) break;
+                        nextSndx++;
+                    } else for (;sndx = staticMatches.pop(); ) validPos = maskset.validPositions[sndx], 
+                    validPos && (validPos.generatedInput = !0);
+                }
                 writeOut && writeBuffer(input, getBuffer(), result ? result.forwardPosition : void 0, initiatingEvent || new $.Event("checkval"), initiatingEvent && "input" === initiatingEvent.type);
             }
             function unmaskedvalue(input) {
