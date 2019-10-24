@@ -6,6 +6,7 @@
 - add roundingFN option to numeric alias.  (currency, decimal, ...)
 - input-inputmode support via inputmode option (if supported by browser)
 - add shortcuts option in numeric alias.
+- add insertModeVisual option
 
 ### Updates
 - add more tokens for datetime format
@@ -23,6 +24,7 @@
 - revert insert-mode caret as selection instead of colored caret
 
 ### Fixed
+- DateTime - HH:MM format doesn't accept some numbers for minutes #2209
 - Set currency prefix to empty by default #2066
 - NumericInput: Pasting integers without selecting results in extra 0s #2165
 - Wrong mask application on decimal field #2188

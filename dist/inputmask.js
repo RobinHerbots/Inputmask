@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.293
+ * Version: 5.0.0-beta.294
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -84,6 +84,7 @@
                 removeMaskOnSubmit: !1,
                 clearMaskOnLostFocus: !0,
                 insertMode: !0,
+                insertModeVisual: !0,
                 clearIncomplete: !1,
                 alias: null,
                 onKeyDown: $.noop,
@@ -1189,9 +1190,9 @@
                     return prevMatch && nextMatch;
                 }
                 var offset = 0, begin = void 0 !== pos.begin ? pos.begin : pos, end = void 0 !== pos.end ? pos.end : pos;
-                if (pos.begin > pos.end && (begin = pos.end, end = pos.begin), void 0 === validTest && !1 === opts.insertMode && end < maskset.maskLength && (0 === begin && 0 === end || (begin += 1, 
+                if (pos.begin > pos.end && (begin = pos.end, end = pos.begin), void 0 === validTest && !1 === opts.insertMode && opts.insertModeVisual && end < maskset.maskLength && (0 === begin && 0 === end || (begin += 1, 
                 end += 1)), validatedPos = void 0 !== validatedPos ? validatedPos : begin, begin !== end || opts.insertMode && void 0 !== maskset.validPositions[validatedPos] && void 0 === fromIsValid || void 0 === validTest) {
-                    var positionsClone = $.extend(!0, {}, maskset.validPositions), lvp = void 0 === validTest && !1 === opts.insertMode ? 1 < end ? end - 1 : end : getLastValidPosition(void 0, !0), i;
+                    var positionsClone = $.extend(!0, {}, maskset.validPositions), lvp = void 0 === validTest && !1 === opts.insertMode && opts.insertModeVisual ? 1 < end ? end - 1 : end : getLastValidPosition(void 0, !0), i;
                     for (maskset.p = begin, i = lvp; begin <= i; i--) delete maskset.validPositions[i], 
                     void 0 === validTest && delete maskset.tests[i + 1];
                     var valid = !0, j = validatedPos, posMatch = j, t;
@@ -1404,7 +1405,7 @@
                     $input.trigger("click")) : !0 === opts.tabThrough && k === keyCode.TAB ? (!0 === e.shiftKey ? (!0 === getTest(pos.begin).match.static && (pos.begin = seekNext(pos.begin)), 
                     pos.end = seekPrevious(pos.begin, !0), pos.begin = seekPrevious(pos.end, !0)) : (pos.begin = seekNext(pos.begin, !0), 
                     pos.end = seekNext(pos.begin, !0), pos.end < maskset.maskLength && pos.end--), pos.begin < maskset.maskLength && (e.preventDefault(), 
-                    caret(input, pos.begin, pos.end))) : e.shiftKey || !1 === opts.insertMode && (k === keyCode.RIGHT ? setTimeout(function() {
+                    caret(input, pos.begin, pos.end))) : e.shiftKey || opts.insertModeVisual && !1 === opts.insertMode && (k === keyCode.RIGHT ? setTimeout(function() {
                         var caretPos = caret(input);
                         caret(input, caretPos.begin);
                     }, 0) : k === keyCode.LEFT && setTimeout(function() {
@@ -1661,7 +1662,7 @@
                 range.commonAncestorContainer.parentNode !== input && range.commonAncestorContainer !== input || (begin = range.startOffset, 
                 end = range.endOffset)) : document.selection && document.selection.createRange && (range = document.selection.createRange(), 
                 begin = 0 - range.duplicate().moveStart("character", -input.inputmask._valueGet().length), 
-                end = begin + range.text.length), !1 === opts.insertMode && begin === end - 1 && end--, 
+                end = begin + range.text.length), opts.insertModeVisual && !1 === opts.insertMode && begin === end - 1 && end--, 
                 {
                     begin: notranslate ? begin : translatePosition(begin),
                     end: notranslate ? end : translatePosition(end)
@@ -1675,7 +1676,7 @@
                     if (input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0, input.inputmask.caretPos = {
                         begin: begin,
                         end: end
-                    }, !1 === opts.insertMode && begin === end && end++, input === document.activeElement) if ("setSelectionRange" in input) input.setSelectionRange(begin, end); else if (window.getSelection) {
+                    }, opts.insertModeVisual && !1 === opts.insertMode && begin === end && end++, input === document.activeElement) if ("setSelectionRange" in input) input.setSelectionRange(begin, end); else if (window.getSelection) {
                         if (range = document.createRange(), void 0 === input.firstChild || null === input.firstChild) {
                             var textNode = document.createTextNode("");
                             input.appendChild(textNode);
@@ -1729,7 +1730,7 @@
                     pos.end = pos.begin, pos.begin = pend;
                 }
                 var offset;
-                if (k === keyCode.BACKSPACE || k === keyCode.DELETE && !1 === opts.insertMode ? pos.end - pos.begin < 1 && (pos.begin = seekPrevious(pos.begin), 
+                if (k === keyCode.BACKSPACE || k === keyCode.DELETE && !1 === opts.insertMode && opts.insertModeVisual ? pos.end - pos.begin < 1 && (pos.begin = seekPrevious(pos.begin), 
                 void 0 !== maskset.validPositions[pos.begin] && maskset.validPositions[pos.begin].input === opts.groupSeparator && pos.begin--) : k === keyCode.DELETE && pos.begin === pos.end && (pos.end = isMask(pos.end, !0, !0) ? pos.end + 1 : seekNext(pos.end) + 1, 
                 void 0 !== maskset.validPositions[pos.begin] && maskset.validPositions[pos.begin].input === opts.groupSeparator && pos.end++), 
                 !1 !== (offset = revalidateMask(pos))) {
@@ -1741,8 +1742,9 @@
                         }
                     }
                     var lvp = getLastValidPosition(pos.end, !0);
-                    lvp < pos.begin ? maskset.p = !1 === opts.insertMode ? seekPrevious(lvp + 1) : seekNext(lvp) : !0 !== strict && (maskset.p = k === keyCode.DELETE ? pos.begin + offset : pos.begin, 
-                    !1 === opts.insertMode && k === keyCode.DELETE && (maskset.p = pos.end + 1, void 0 === maskset.validPositions[maskset.p] && getLastValidPosition(maskset.maskLength, !0) < maskset.p && (maskset.p = seekPrevious(lvp + 1))));
+                    lvp < pos.begin ? maskset.p = !1 === opts.insertMode && opts.insertModeVisual ? seekPrevious(lvp + 1) : seekNext(lvp) : !0 !== strict && (maskset.p = k === keyCode.DELETE ? pos.begin + offset : pos.begin, 
+                    !1 === opts.insertMode && opts.insertModeVisual && k === keyCode.DELETE && (maskset.p = pos.end + 1, 
+                    void 0 === maskset.validPositions[maskset.p] && getLastValidPosition(maskset.maskLength, !0) < maskset.p && (maskset.p = seekPrevious(lvp + 1))));
                 }
             }
             function applyInputValue(input, value) {

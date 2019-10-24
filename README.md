@@ -796,6 +796,9 @@ $(document).ready(function(){
 ### insertMode
 Toggle to insert or overwrite input.<br>Default: true.<br>This option can be altered by pressing the Insert key.
 
+#### insertModeVisual
+Show selected caret when insertmode = false.
+
 ### clearIncomplete
 Clear the incomplete input on blur
 
