@@ -1,10 +1,10 @@
 export default function (qunit, Inputmask) {
-    var $ = Inputmask.dependencyLib;
+	var $ = Inputmask.dependencyLib;
 
 	qunit.module("Paste value");
 	qunit.test("inputmask(\"+7 (999) 999-99-99\") ~ paste \"+79114041112\"", function (assert) {
 		var done = assert.async(), $fixture = $("#qunit-fixture");
-		$fixture.append('<input type="text" id="testmask" />');
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("+7 (999) 999-99-99").mask(testmask);
 		testmask.focus();
@@ -18,7 +18,7 @@ export default function (qunit, Inputmask) {
 	});
 	qunit.test("inputmask(\"+7 (999) 999-99-99\") ~ paste \"+7 (9114041112___)\"", function (assert) {
 		var done = assert.async(), $fixture = $("#qunit-fixture");
-		$fixture.append('<input type="text" id="testmask" />');
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("+7 (999) 999-99-99").mask(testmask);
 		testmask.focus();
@@ -33,7 +33,7 @@ export default function (qunit, Inputmask) {
 
 	qunit.test("inputmask(\"+7 (999) 999-99-99\") ~ paste \"0079114041112\" - monoblaine", function (assert) {
 		var done = assert.async(), $fixture = $("#qunit-fixture");
-		$fixture.append('<input type="text" id="testmask" />');
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("+7 (999) 999-99-99", {
 			onBeforePaste: function (pastedValue) {
@@ -54,7 +54,7 @@ export default function (qunit, Inputmask) {
 
 	qunit.test("inputmask(\"+31 9999999999\") ~ paste \"3112345678\" - jason16v", function (assert) {
 		var done = assert.async(), $fixture = $("#qunit-fixture");
-		$fixture.append('<input type="text" id="testmask" />');
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("+31 9999999999").mask(testmask);
 		testmask.focus();
@@ -68,7 +68,7 @@ export default function (qunit, Inputmask) {
 
 	qunit.test("inputmask(\"+31 9999999999\") ~ paste \"+3112345678\" - jason16v", function (assert) {
 		var done = assert.async(), $fixture = $("#qunit-fixture");
-		$fixture.append('<input type="text" id="testmask" />');
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("+31 9999999999").mask(testmask);
 		testmask.focus();
@@ -82,7 +82,7 @@ export default function (qunit, Inputmask) {
 
 	qunit.test("99.999.999/9999-99 numericInput ~ paste 79100085302751__-____/..__ - imbelo", function (assert) {
 		var done = assert.async(), $fixture = $("#qunit-fixture");
-		$fixture.append('<input type="text" id="testmask" />');
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask({
 			"mask": "99.999.999/9999-99",
@@ -99,9 +99,11 @@ export default function (qunit, Inputmask) {
 
 	qunit.test("currency ~ $123.22 - sjk07", function (assert) {
 		var done = assert.async(), $fixture = $("#qunit-fixture");
-		$fixture.append('<input type="text" id="testmask" />');
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask('currency').mask(testmask);
+		Inputmask("currency", {
+			prefix: "$ "
+		}).mask(testmask);
 		testmask.focus();
 		$("#testmask").paste("$123.22");
 
@@ -113,9 +115,11 @@ export default function (qunit, Inputmask) {
 
 	qunit.test("currency ~ $-123.22 - sjk07", function (assert) {
 		var done = assert.async(), $fixture = $("#qunit-fixture");
-		$fixture.append('<input type="text" id="testmask" />');
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask('currency').mask(testmask);
+		Inputmask("currency", {
+			prefix: "$ "
+		}).mask(testmask);
 		testmask.focus();
 		$("#testmask").paste("$-123.22");
 
@@ -127,9 +131,11 @@ export default function (qunit, Inputmask) {
 
 	qunit.test("currency ~ 1000.00 - sjk07", function (assert) {
 		var done = assert.async(), $fixture = $("#qunit-fixture");
-		$fixture.append('<input type="text" id="testmask" />');
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask('currency').mask(testmask);
+		Inputmask("currency", {
+			prefix: "$ "
+		}).mask(testmask);
 		testmask.focus();
 		$("#testmask").paste("1000.00");
 
@@ -141,9 +147,11 @@ export default function (qunit, Inputmask) {
 
 	qunit.test("currency ~ -1000.00 - sjk07", function (assert) {
 		var done = assert.async(), $fixture = $("#qunit-fixture");
-		$fixture.append('<input type="text" id="testmask" />');
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask('currency').mask(testmask);
+		Inputmask("currency", {
+			prefix: "$ "
+		}).mask(testmask);
 		testmask.focus();
 		$("#testmask").paste("-1000.00");
 
@@ -155,9 +163,11 @@ export default function (qunit, Inputmask) {
 
 	qunit.test("currency ~ $1000.00 - sjk07", function (assert) {
 		var done = assert.async(), $fixture = $("#qunit-fixture");
-		$fixture.append('<input type="text" id="testmask" />');
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask('currency').mask(testmask);
+		Inputmask("currency", {
+			prefix: "$ "
+		}).mask(testmask);
 		testmask.focus();
 		$("#testmask").paste("$1000.00");
 
@@ -169,9 +179,11 @@ export default function (qunit, Inputmask) {
 
 	qunit.test("currency ~ $-1000.00 - sjk07", function (assert) {
 		var done = assert.async(), $fixture = $("#qunit-fixture");
-		$fixture.append('<input type="text" id="testmask" />');
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask('currency').mask(testmask);
+		Inputmask("currency", {
+			prefix: "$ "
+		}).mask(testmask);
 		testmask.focus();
 		$("#testmask").paste("$-1000.00");
 
@@ -183,9 +195,11 @@ export default function (qunit, Inputmask) {
 
 	qunit.test("currency ~ 000.02 - sjk07", function (assert) {
 		var done = assert.async(), $fixture = $("#qunit-fixture");
-		$fixture.append('<input type="text" id="testmask" />');
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask('currency').mask(testmask);
+		Inputmask("currency", {
+			prefix: "$ "
+		}).mask(testmask);
 		testmask.focus();
 		$("#testmask").paste("000.02");
 
@@ -198,7 +212,7 @@ export default function (qunit, Inputmask) {
 
 	qunit.test("02.999.999 ~ paste 02.024.900 - tnavarra", function (assert) {
 		var done = assert.async(), $fixture = $("#qunit-fixture");
-		$fixture.append('<input type="text" id="testmask" />');
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("02.999.999").mask(testmask);
 		testmask.focus();
@@ -212,7 +226,7 @@ export default function (qunit, Inputmask) {
 
 	qunit.test("R9999999999 ~ paste 1234567890 - s-a", function (assert) {
 		var done = assert.async(), $fixture = $("#qunit-fixture");
-		$fixture.append('<input type="text" id="testmask" />');
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("R9999999999", {
 			"placeholder": "0",

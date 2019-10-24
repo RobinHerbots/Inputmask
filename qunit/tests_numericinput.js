@@ -331,7 +331,8 @@ export default function (qunit, Inputmask) {
         $fixture.append('<input type="text" id="testmask" />');
         var testmask = document.getElementById("testmask");
         Inputmask("currency", {
-            numericInput: true
+            numericInput: true,
+            prefix: "$ "
         }).mask(testmask);
 
         testmask.focus();
@@ -373,6 +374,7 @@ export default function (qunit, Inputmask) {
             groupSeparator: ',',
             placeholder: '0.00',
             numericInput: true,
+            prefix: "$ "
         }).mask(testmask);
 
         assert.equal(testmask.value, "$ 4,545.56", "Result " + testmask.value);

@@ -43,7 +43,9 @@ export default function (qunit, Inputmask) {
 			$fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("currency").mask(testmask);
+		Inputmask("currency", {
+			prefix: "$ "
+		}).mask(testmask);
 
 		testmask.focus();
 		$("#testmask").trigger("click");
@@ -59,7 +61,9 @@ export default function (qunit, Inputmask) {
 			$fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("currency").mask(testmask);
+		Inputmask("currency", {
+			prefix: "$ "
+		}).mask(testmask);
 
 		testmask.focus();
 		$("#testmask").trigger("click");
@@ -844,7 +848,9 @@ export default function (qunit, Inputmask) {
 			$fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("currency").mask(testmask);
+		Inputmask("currency", {
+			prefix: "$ "
+		}).mask(testmask);
 
 		testmask.focus();
 		$("#testmask").trigger("click");
@@ -1030,7 +1036,9 @@ export default function (qunit, Inputmask) {
 			$fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("currency").mask(testmask);
+		Inputmask("currency", {
+			prefix: "$ "
+		}).mask(testmask);
 
 		testmask.focus();
 		$("#testmask").trigger("click");
@@ -1048,7 +1056,9 @@ export default function (qunit, Inputmask) {
 			$fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("currency").mask(testmask);
+		Inputmask("currency", {
+			prefix: "$ "
+		}).mask(testmask);
 
 		testmask.focus();
 		$("#testmask").trigger("click");
@@ -1066,7 +1076,9 @@ export default function (qunit, Inputmask) {
 			$fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("currency").mask(testmask);
+		Inputmask("currency", {
+			prefix: "$ "
+		}).mask(testmask);
 
 		testmask.focus();
 		$("#testmask").trigger("click");
@@ -1084,7 +1096,9 @@ export default function (qunit, Inputmask) {
 			$fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("currency").mask(testmask);
+		Inputmask("currency", {
+			prefix: "$ "
+		}).mask(testmask);
 
 		testmask.focus();
 		$("#testmask").trigger("click");
@@ -1102,7 +1116,9 @@ export default function (qunit, Inputmask) {
 			$fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("currency").mask(testmask);
+		Inputmask("currency", {
+			prefix: "$ "
+		}).mask(testmask);
 
 		testmask.focus();
 		$("#testmask").trigger("click");
@@ -1142,7 +1158,9 @@ export default function (qunit, Inputmask) {
 			$fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("currency").mask(testmask);
+		Inputmask("currency", {
+			prefix: "$ "
+		}).mask(testmask);
 
 		testmask.focus();
 		$("#testmask").trigger("click");
@@ -1160,7 +1178,9 @@ export default function (qunit, Inputmask) {
 			$fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("currency").mask(testmask);
+		Inputmask("currency", {
+			prefix: "$ "
+		}).mask(testmask);
 
 		testmask.focus();
 		$("#testmask").trigger("click");
@@ -1199,7 +1219,8 @@ export default function (qunit, Inputmask) {
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("currency", {
-			min: 1000
+			min: 1000,
+			prefix: "$ "
 		}).mask(testmask);
 
 		testmask.focus();
@@ -1218,7 +1239,8 @@ export default function (qunit, Inputmask) {
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("currency", {
-			max: 1000
+			max: 1000,
+			prefix: "$ "
 		}).mask(testmask);
 
 		testmask.focus();
@@ -1238,7 +1260,9 @@ export default function (qunit, Inputmask) {
 			$fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("currency").mask(testmask);
+		Inputmask("currency", {
+			prefix: "$ "
+		}).mask(testmask);
 
 		testmask.focus();
 		$("#testmask").trigger("click");
@@ -1256,7 +1280,9 @@ export default function (qunit, Inputmask) {
 			$fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("currency").mask(testmask);
+		Inputmask("currency", {
+			prefix: "$ "
+		}).mask(testmask);
 
 		testmask.focus();
 		$("#testmask").trigger("click");
@@ -1274,7 +1300,9 @@ export default function (qunit, Inputmask) {
 			$fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("currency").mask(testmask);
+		Inputmask("currency", {
+			prefix: "$ "
+		}).mask(testmask);
 
 		testmask.focus();
 		$("#testmask").trigger("click");
@@ -1500,11 +1528,15 @@ export default function (qunit, Inputmask) {
 			$fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("currency").mask(testmask);
+		Inputmask("currency", {
+			prefix: "$ "
+		}).mask(testmask);
 		$("#testmask").trigger("click");
 		setTimeout(function () {
 			$("#testmask").Type("123");
-			var isValid = Inputmask("currency").isValid(testmask.value);
+			var isValid = Inputmask("currency", {
+				prefix: "$ "
+			}).isValid(testmask.value);
 			assert.equal(isValid, true, "Result " + $(testmask).val() + " : " + isValid);
 			done();
 		}, 0);
@@ -1513,10 +1545,14 @@ export default function (qunit, Inputmask) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("currency").mask(testmask);
+		Inputmask("currency", {
+			prefix: "$ "
+		}).mask(testmask);
 
 		$("#testmask").Type("$ 99,999,999.00");
-		var isValid = Inputmask("currency").isValid(testmask.value);
+		var isValid = Inputmask("currency", {
+			prefix: "$ "
+		}).isValid(testmask.value);
 		assert.equal(isValid, true, "Result " + $(testmask).val() + " : " + isValid);
 	});
 
@@ -1605,7 +1641,9 @@ export default function (qunit, Inputmask) {
 			$fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("currency").mask(testmask);
+		Inputmask("currency", {
+			prefix: "$ "
+		}).mask(testmask);
 
 		testmask.focus();
 		$("#testmask").trigger("click");
@@ -1613,7 +1651,9 @@ export default function (qunit, Inputmask) {
 			var i, isValid;
 			for (i = 0; i < 10; i++) {
 				$("#testmask").Type("9");
-				isValid = Inputmask("currency").isValid(testmask.value);
+				isValid = Inputmask("currency", {
+					prefix: "$ "
+				}).isValid(testmask.value);
 				assert.equal(isValid, true, "Value: \"" + testmask.value + "\"; isValid: " + isValid);
 			}
 			done();
@@ -1623,7 +1663,9 @@ export default function (qunit, Inputmask) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("currency").mask(testmask);
+		Inputmask("currency", {
+			prefix: "$ "
+		}).mask(testmask);
 		testmask.focus();
 		$.caret(testmask, 5);
 		$("#testmask").Type("2");
@@ -1709,7 +1751,7 @@ export default function (qunit, Inputmask) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("currency", {negationSymbol: {front: "(", back: ")"}}).mask(testmask);
+		Inputmask("currency", {negationSymbol: {front: "(", back: ")"}, prefix: "$ "}).mask(testmask);
 		testmask.focus();
 		$.caret(testmask, 1);
 		$("#testmask").Type("-");
@@ -1721,7 +1763,9 @@ export default function (qunit, Inputmask) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("currency").mask(testmask);
+		Inputmask("currency", {
+			prefix: "$ "
+		}).mask(testmask);
 		testmask.focus();
 		$("#testmask").val("123");
 		$.caret(testmask, 0, 5);
@@ -1737,6 +1781,7 @@ export default function (qunit, Inputmask) {
 		Inputmask("currency", {
 			digits: 0,
 			groupSeparator: " ",
+			prefix: "$ "
 		}).mask(testmask);
 		testmask.focus();
 		$("#testmask").Type("1");
@@ -1752,7 +1797,8 @@ export default function (qunit, Inputmask) {
 		var testmask = document.getElementById("testmask");
 		Inputmask("currency", {
 			digits: 0,
-			groupSeparator: " "
+			groupSeparator: " ",
+			prefix: "$ "
 		}).mask(testmask);
 		testmask.focus();
 		$("#testmask").Type("1");
@@ -1857,7 +1903,7 @@ export default function (qunit, Inputmask) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("currency", {radixPoint: ",", inputType: "number"}).mask(testmask);
+		Inputmask("currency", {radixPoint: ",", inputType: "number", prefix: "$ "}).mask(testmask);
 
 		$(testmask).val("100.00");
 
@@ -2023,8 +2069,13 @@ export default function (qunit, Inputmask) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("decimal",{
-			digits: 8, digitsOptional: false, max: 999999999, placeholder: '0.00000000', rightAlign: false, showMaskOnHover: false
+		Inputmask("decimal", {
+			digits: 8,
+			digitsOptional: false,
+			max: 999999999,
+			placeholder: "0.00000000",
+			rightAlign: false,
+			showMaskOnHover: false
 		}).mask(testmask);
 
 		testmask.focus();

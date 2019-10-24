@@ -732,6 +732,17 @@ export default function (qunit, Inputmask) {
 		assert.equal(testmask.value, "", "Result " + testmask.value);
 	});
 
+	qunit.test("HH:MM - setval 14:02", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "HH:MM"
+		}).mask(testmask);
+
+		$("#testmask").val("14:02");
+		assert.equal(testmask.value, "14:02", "Result " + testmask.value);
+	});
 	qunit.module("Date.Extensions - misc");
 	qunit.test("HH:MM minmax 10:00 - 11:10 enter 1059", function (assert) {
 		var $fixture = $("#qunit-fixture");
