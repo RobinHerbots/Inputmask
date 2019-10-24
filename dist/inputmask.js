@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.294
+ * Version: 5.0.0-beta.295
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1956,14 +1956,20 @@
             } ],
             hx: [ function(x) {
                 return "[0-9]{".concat(x, "}");
-            }, Date.prototype.setHours, "hours", Date.prototype.getHours ],
+            }, Date.prototype.setHours, "hours", function(x) {
+                return Date.prototype.getHours;
+            } ],
             H: [ "1?[0-9]|2[0-3]", Date.prototype.setHours, "hours", Date.prototype.getHours ],
             HH: [ "0[0-9]|1[0-9]|2[0-3]", Date.prototype.setHours, "hours", function() {
                 return pad(Date.prototype.getHours.call(this), 2);
             } ],
             Hx: [ function(x) {
                 return "[0-9]{".concat(x, "}");
-            }, Date.prototype.setHours, "hours", Date.prototype.getHours ],
+            }, Date.prototype.setHours, "hours", function(x) {
+                return function() {
+                    return pad(Date.prototype.getHours.call(this), x);
+                };
+            } ],
             M: [ "[1-5]?[0-9]", Date.prototype.setMinutes, "minutes", Date.prototype.getMinutes ],
             MM: [ "0[0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]", Date.prototype.setMinutes, "minutes", function() {
                 return pad(Date.prototype.getMinutes.call(this), 2);
@@ -1995,7 +2001,7 @@
             var dynMatches = new RegExp("\\d+$").exec(match[0]);
             if (dynMatches && void 0 !== dynMatches[0]) {
                 var fcode = formatCode[match[0][0] + "x"].slice("");
-                return fcode[0] = fcode[0](dynMatches[0]), fcode;
+                return fcode[0] = fcode[0](dynMatches[0]), fcode[3] = fcode[3](dynMatches[0]), fcode;
             }
             if (formatCode[match[0]]) return formatCode[match[0]];
         }
