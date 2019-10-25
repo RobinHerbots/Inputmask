@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.298
+ * Version: 5.0.0-beta.300
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -119,7 +119,7 @@
                 noValuePatching: !1,
                 positionCaretOnClick: "lvp",
                 casing: null,
-                inputmode: "verbatim",
+                inputmode: "text",
                 importDataAttributes: !0,
                 shiftPositions: !0
             },
@@ -1421,7 +1421,7 @@
                         $input.trigger("change");
                     }, 0)), skipInputEvent = !0, !0;
                     if (k) {
-                        46 === k && !1 === e.shiftKey && "" !== opts.radixPoint && (k = opts.radixPoint.charCodeAt(0));
+                        44 !== k && 46 !== k || 3 !== e.location || "" === opts.radixPoint || (k = opts.radixPoint.charCodeAt(0));
                         var pos = checkval ? {
                             begin: ndx,
                             end: ndx
@@ -2157,7 +2157,8 @@
                 },
                 insertMode: !1,
                 shiftPositions: !1,
-                keepStatic: !1
+                keepStatic: !1,
+                inputmode: "numeric"
             }
         }), module.exports = Inputmask;
     }, function(module, exports, __webpack_require__) {
