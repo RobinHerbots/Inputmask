@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.300
+ * Version: 5.0.0-beta.301
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1478,6 +1478,7 @@
                         for (i = 0, bl = newBuffer.length; i < bl; i++) switch (placeholder = getPlaceholder(translatePosition(i)), 
                         action) {
                           case "insertText":
+                            oldBuffer[i - 1] === newBuffer[i] && void 0 === maskset.validPositions[0] && data.push(newBuffer[i]), 
                             i = bl;
                             break;
 
