@@ -2084,4 +2084,25 @@ export default function (qunit, Inputmask) {
 		$("#testmask").Type(".1");
 		assert.equal(testmask.value, "0.10000000", "Result " + testmask.value);
 	});
+
+
+	qunit.test("Decimal - set 0.0000001 - #2110", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("decimal", {
+			alias: 'decimal',
+			placeholder: '',
+			digits: 7,
+			digitsOptional: true,
+			groupSeparator: ' ',
+			autoGroup: true,
+			showMaskOnHover: false,
+			showMaskOnFocus: false,
+			clearIncomplete: false
+		}).mask(testmask);
+
+		$("#testmask").val("0.0000001");
+		assert.equal(testmask.value, "0.0000001", "Result " + testmask.value);
+	});
 };
