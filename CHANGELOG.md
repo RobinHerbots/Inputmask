@@ -24,6 +24,7 @@
 - revert insert-mode caret as selection instead of colored caret
 
 ### Fixed
+- If a decimal < 0.000001 (scale = 6), masked value incorrect. #2110
 - DateTime - HH:MM format doesn't accept some numbers for minutes #2209
 - Set currency prefix to empty by default #2066
 - NumericInput: Pasting integers without selecting results in extra 0s #2165
