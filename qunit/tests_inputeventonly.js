@@ -123,6 +123,17 @@ export default function (qunit, Inputmask) {
 		}, 0);
 	});
 
+	qunit.test("integer autofill 50", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\"/>");
+		var testmask = document.getElementById("testmask");
+		Inputmask("integer", {
+			inputEventOnly: true
+		}).mask(testmask);
+		$(testmask).input("50");
+		assert.equal(testmask.value, "50", "Result " + testmask.value);
+	});
+
 	qunit.test("datetime", function (assert) {
 		var done = assert.async(),
 			$fixture = $("#qunit-fixture");

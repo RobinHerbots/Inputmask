@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.301
+ * Version: 5.0.0-beta.302
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1478,7 +1478,7 @@
                         for (i = 0, bl = newBuffer.length; i < bl; i++) switch (placeholder = getPlaceholder(translatePosition(i)), 
                         action) {
                           case "insertText":
-                            oldBuffer[i - 1] === newBuffer[i] && void 0 === maskset.validPositions[0] && data.push(newBuffer[i]), 
+                            oldBuffer[i - 1] === newBuffer[i] && void 0 === maskset.validPositions[0] && isMask(i) && data.push(newBuffer[i]), 
                             i = bl;
                             break;
 
@@ -1636,7 +1636,8 @@
                     } else for (;sndx = staticMatches.pop(); ) validPos = maskset.validPositions[sndx], 
                     validPos && (validPos.generatedInput = !0);
                 }
-                writeOut && writeBuffer(input, getBuffer(), result ? result.forwardPosition : void 0, initiatingEvent || new $.Event("checkval"), initiatingEvent && "input" === initiatingEvent.type);
+                if (writeOut) for (var vndx in writeBuffer(input, getBuffer(), result ? result.forwardPosition : void 0, initiatingEvent || new $.Event("checkval"), initiatingEvent && "input" === initiatingEvent.type), 
+                maskset.validPositions) delete maskset.validPositions[vndx].generatedInput;
             }
             function unmaskedvalue(input) {
                 if (input) {
