@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.302
+ * Version: 5.0.0-beta.303
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1475,10 +1475,15 @@
                         for (;backPart.length < bpl; ) backPart.unshift("~");
                         for (;backBufferPart.length < bpl; ) backBufferPart.unshift("~");
                         var newBuffer = frontPart.concat(backPart), oldBuffer = frontBufferPart.concat(backBufferPart);
-                        for (i = 0, bl = newBuffer.length; i < bl; i++) switch (placeholder = getPlaceholder(translatePosition(i)), 
+                        for (console.log("N " + newBuffer), console.log("O " + oldBuffer), i = 0, bl = newBuffer.length; i < bl; i++) switch (placeholder = getPlaceholder(translatePosition(i)), 
                         action) {
                           case "insertText":
-                            oldBuffer[i - 1] === newBuffer[i] && void 0 === maskset.validPositions[0] && isMask(i) && data.push(newBuffer[i]), 
+                            var hasValids = !1;
+                            for (var dndx in maskset.validPositions) {
+                                hasValids = Object.hasOwnProperty.call(maskset.validPositions, dndx);
+                                break;
+                            }
+                            oldBuffer[i - 1] === newBuffer[i] && !hasValids && isMask(maskset.tests[0][0].match.optionality ? i : i - 1) && data.push(newBuffer[i]), 
                             i = bl;
                             break;
 
@@ -1508,8 +1513,9 @@
                     if (buffer !== inputValue) {
                         inputValue = ieMobileHandler(input, inputValue, caretPos);
                         var changes = analyseChanges(inputValue, buffer, caretPos);
-                        switch (document.activeElement !== input && input.focus(), writeBuffer(input, getBuffer()), 
-                        caret(input, caretPos.begin, caretPos.end, !0), changes.action) {
+                        switch (console.log(JSON.stringify(changes)), document.activeElement !== input && input.focus(), 
+                        writeBuffer(input, getBuffer()), caret(input, caretPos.begin, caretPos.end, !0), 
+                        changes.action) {
                           case "insertText":
                           case "insertReplacementText":
                             $.each(changes.data, function(ndx, entry) {
