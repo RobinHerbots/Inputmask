@@ -2105,4 +2105,25 @@ export default function (qunit, Inputmask) {
 		$("#testmask").val("0.0000001");
 		assert.equal(testmask.value, "0.0000001", "Result " + testmask.value);
 	});
+
+	qunit.test("currency type 1234.56 + backspace x4", function (assert) {
+		var done = assert.async(), $fixture = $("body");
+		$fixture.append("<input type=\"text\" id=\"testmask\"/>");
+		var testmask = document.getElementById("testmask");
+		Inputmask("currency", {
+			prefix: "$ ",
+			inputEventOnly: false
+		}).mask(testmask);
+		testmask.focus();
+		$.caret(testmask, 3);
+		setTimeout(function() {
+			$(testmask).Type("1234.56");
+			$("#testmask").SendKey(keyCode.BACKSPACE);
+			$("#testmask").SendKey(keyCode.BACKSPACE);
+			$("#testmask").SendKey(keyCode.BACKSPACE);
+			$("#testmask").SendKey(keyCode.BACKSPACE);
+			assert.equal(testmask.value, "$ 123.00", "Result " + testmask.value);
+			done();
+		},0);
+	});
 };

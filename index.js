@@ -1,1 +1,1 @@
-module.exports = require("./bundle");
+module.exports = require("./dist/inputmask");

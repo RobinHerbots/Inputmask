@@ -1,4 +1,4 @@
-import Inputmask from "../index";
+import Inputmask from "../bundle";
 import jQuery from "jquery";
 
 if (Inputmask.dependencyLib === jQuery)

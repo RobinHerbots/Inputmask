@@ -134,6 +134,44 @@ export default function (qunit, Inputmask) {
 		assert.equal(testmask.value, "50", "Result " + testmask.value);
 	});
 
+	qunit.test("currency type 123", function (assert) {
+		var done = assert.async(), $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\"/>");
+		var testmask = document.getElementById("testmask");
+		Inputmask("currency", {
+			prefix: "$ ",
+			inputEventOnly: true
+		}).mask(testmask);
+		testmask.focus();
+		$.caret(testmask, 3);
+		setTimeout(function() {
+			$(testmask).Type("123");
+			assert.equal(testmask.value, "$ 123.00", "Result " + testmask.value);
+			done();
+		},0);
+	});
+
+	qunit.test("currency type 1234.56 + backspace x4", function (assert) {
+		var done = assert.async(), $fixture = $("body");
+		$fixture.append("<input type=\"text\" id=\"testmask\"/>");
+		var testmask = document.getElementById("testmask");
+		Inputmask("currency", {
+			prefix: "$ ",
+			inputEventOnly: true
+		}).mask(testmask);
+		testmask.focus();
+		$.caret(testmask, 3);
+		setTimeout(function() {
+			$(testmask).Type("1234.56");
+			$("#testmask").SendKey(keyCode.BACKSPACE);
+			$("#testmask").SendKey(keyCode.BACKSPACE);
+			$("#testmask").SendKey(keyCode.BACKSPACE);
+			$("#testmask").SendKey(keyCode.BACKSPACE);
+			assert.equal(testmask.value, "$ 123.00", "Result " + testmask.value);
+			done();
+		},0);
+	});
+
 	qunit.test("datetime", function (assert) {
 		var done = assert.async(),
 			$fixture = $("#qunit-fixture");
