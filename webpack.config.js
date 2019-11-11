@@ -38,7 +38,12 @@ module.exports = function (env, argv) {
 			libraryTarget: "umd"
 		},
 		externals: {
-			"jquery": "jquery",
+			"jquery": {
+				commonjs: "jquery",
+				commonjs2: "jquery",
+				amd: "jquery",
+				root: "jQuery"
+			},
 			"jqlite": "jqlite",
 			"qunit": "QUnit"
 		},
