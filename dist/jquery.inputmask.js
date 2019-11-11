@@ -7,7 +7,7 @@
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
-        var a = "object" == typeof exports ? factory(require("jquery")) : factory(root.jquery);
+        var a = "object" == typeof exports ? factory(require("jquery")) : factory(root.jQuery);
         for (var i in a) ("object" == typeof exports ? exports : root)[i] = a[i];
     }
 }(window, function(__WEBPACK_EXTERNAL_MODULE__3__) {
