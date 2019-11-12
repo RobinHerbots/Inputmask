@@ -152,7 +152,7 @@ export default function (qunit, Inputmask) {
 	});
 
 	qunit.test("currency type 1234.56 + backspace x4", function (assert) {
-		var done = assert.async(), $fixture = $("body");
+		var done = assert.async(), $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\"/>");
 		var testmask = document.getElementById("testmask");
 		Inputmask("currency", {
