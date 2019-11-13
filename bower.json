@@ -1,6 +1,6 @@
 {
   "name": "inputmask",
-  "version": "5.0.0-beta.308",
+  "version": "5.0.0-beta.309",
   "main": [
 	  "./index.js",
     "./css/inputmask.css"

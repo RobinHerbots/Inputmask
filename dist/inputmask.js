@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.308
+ * Version: 5.0.0-beta.309
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -2317,40 +2317,51 @@
                         };
                     }
                     var radixPos = $.inArray(opts.radixPoint, buffer), initPos = pos;
-                    if (pos = hanndleRadixDance(pos, c, radixPos, maskset, opts), "-" !== c && c !== opts.negationSymbol.front) return !!strict || (-1 !== radixPos && !0 === opts._radixDance && !1 === isSelection && c === opts.radixPoint && void 0 !== opts.digits && (isNaN(opts.digits) || 0 < parseInt(opts.digits)) && radixPos !== pos ? {
+                    if (pos = hanndleRadixDance(pos, c, radixPos, maskset, opts), "-" === c || c === opts.negationSymbol.front) {
+                        if (!0 !== opts.allowMinus) return !1;
+                        var isNegative = !1, front = findValid("+", maskset), back = findValid("-", maskset);
+                        return -1 !== front && (isNegative = [ front, back ]), !1 !== isNegative ? {
+                            remove: isNegative,
+                            caret: initPos
+                        } : {
+                            insert: [ {
+                                pos: findValidator("+", maskset),
+                                c: opts.negationSymbol.front,
+                                fromIsValid: !0
+                            }, {
+                                pos: findValidator("-", maskset),
+                                c: opts.negationSymbol.back,
+                                fromIsValid: void 0
+                            } ],
+                            caret: initPos + opts.negationSymbol.back.length
+                        };
+                    }
+                    if (strict) return !0;
+                    if (-1 !== radixPos && !0 === opts._radixDance && !1 === isSelection && c === opts.radixPoint && void 0 !== opts.digits && (isNaN(opts.digits) || 0 < parseInt(opts.digits)) && radixPos !== pos) return {
                         caret: opts._radixDance && pos === radixPos - 1 ? radixPos + 1 : radixPos
-                    } : isSelection && opts.digitsOptional ? {
-                        rewritePosition: caretPos.end
-                    } : isSelection && !opts.digitsOptional && caretPos.begin > radixPos && caretPos.end <= radixPos ? c === opts.radixPoint ? {
-                        insert: {
-                            pos: radixPos + 1,
-                            c: "0",
-                            fromIsValid: !0
-                        },
-                        rewritePosition: radixPos
-                    } : {
-                        rewritePosition: radixPos + 1
-                    } : isSelection && !opts.digitsOptional && caretPos.begin < radixPos ? {
-                        rewritePosition: caretPos.begin - 1
-                    } : {
+                    };
+                    if (isSelection && !1 === opts.__financeInput) {
+                        if (opts.digitsOptional) return {
+                            rewritePosition: caretPos.end
+                        };
+                        if (!opts.digitsOptional) {
+                            if (caretPos.begin > radixPos && caretPos.end <= radixPos) return c === opts.radixPoint ? {
+                                insert: {
+                                    pos: radixPos + 1,
+                                    c: "0",
+                                    fromIsValid: !0
+                                },
+                                rewritePosition: radixPos
+                            } : {
+                                rewritePosition: radixPos + 1
+                            };
+                            if (caretPos.begin < radixPos) return {
+                                rewritePosition: caretPos.begin - 1
+                            };
+                        }
+                    }
+                    return {
                         rewritePosition: pos
-                    });
-                    if (!0 !== opts.allowMinus) return !1;
-                    var isNegative = !1, front = findValid("+", maskset), back = findValid("-", maskset);
-                    return -1 !== front && (isNegative = [ front, back ]), !1 !== isNegative ? {
-                        remove: isNegative,
-                        caret: initPos
-                    } : {
-                        insert: [ {
-                            pos: findValidator("+", maskset),
-                            c: opts.negationSymbol.front,
-                            fromIsValid: !0
-                        }, {
-                            pos: findValidator("-", maskset),
-                            c: opts.negationSymbol.back,
-                            fromIsValid: void 0
-                        } ],
-                        caret: initPos + opts.negationSymbol.back.length
                     };
                 },
                 postValidation: function postValidation(buffer, pos, currentResult, opts, maskset, strict) {
