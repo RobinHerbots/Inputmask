@@ -117,6 +117,7 @@ export default function (qunit, Inputmask) {
 			$("#testmask").SendKey(keyCode.BACKSPACE);
 			$("#testmask").SendKey(keyCode.BACKSPACE);
 			$("#testmask").SendKey(keyCode.BACKSPACE);
+			$("#testmask").SendKey(keyCode.BACKSPACE);
 			$(testmask).Type("0,03");
 			assert.equal(testmask.value, "50,03", "Result " + testmask.value);
 			done();
