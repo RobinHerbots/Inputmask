@@ -2126,4 +2126,23 @@ export default function (qunit, Inputmask) {
 			done();
 		},0);
 	});
+
+	qunit.test("digitsOptional: true + suffix not working as expected. can't enter decimal digits #2212", function (assert) {
+		var done = assert.async(), $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\"/>");
+		var testmask = document.getElementById("testmask");
+		Inputmask({
+			'alias': 'decimal',
+			'groupSeparator': ',',
+			'suffix': " EUR",
+			'digits': 2,
+			'digitsOptional': true, // BUG
+		}).mask(testmask);
+		testmask.focus();
+		setTimeout(function() {
+			$(testmask).Type("1234.56");
+			assert.equal(testmask.value, "1,234.56 EUR", "Result " + testmask.value);
+			done();
+		},0);
+	});
 };
