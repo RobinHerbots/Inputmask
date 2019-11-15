@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.311
+ * Version: 5.0.0-beta.312
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -996,7 +996,7 @@
                 start = 0, end = buffer.length, p = determineNewCaretPosition({
                     begin: 0,
                     end: 0
-                }, !1); else {
+                }, !1).begin; else {
                     for (i = start; i < end; i++) delete maskset.validPositions[i];
                     p = start;
                 }
@@ -1305,34 +1305,40 @@
                     return !1;
                 }
                 if (tabbed && (isRTL ? selectedCaret.end = selectedCaret.begin : selectedCaret.begin = selectedCaret.end), 
-                selectedCaret.begin === selectedCaret.end) switch (opts.positionCaretOnClick) {
-                  case "none":
-                    break;
+                selectedCaret.begin === selectedCaret.end) {
+                    switch (opts.positionCaretOnClick) {
+                      case "none":
+                        break;
 
-                  case "select":
-                    return {
-                        begin: 0,
-                        end: getBuffer().length
-                    };
+                      case "select":
+                        selectedCaret = {
+                            begin: 0,
+                            end: getBuffer().length
+                        };
 
-                  case "ignore":
-                    return seekNext(getLastValidPosition());
+                      case "ignore":
+                        selectedCaret.end = selectedCaret.begin = seekNext(getLastValidPosition());
+                        break;
 
-                  case "radixFocus":
-                    if (doRadixFocus(selectedCaret.begin)) {
-                        var radixPos = getBuffer().join("").indexOf(opts.radixPoint);
-                        return opts.numericInput ? seekNext(radixPos) : radixPos;
+                      case "radixFocus":
+                        if (doRadixFocus(selectedCaret.begin)) {
+                            var radixPos = getBuffer().join("").indexOf(opts.radixPoint);
+                            selectedCaret.end = selectedCaret.begin = opts.numericInput ? seekNext(radixPos) : radixPos;
+                            break;
+                        }
+
+                      default:
+                        var clickPosition = selectedCaret.begin, lvclickPosition = getLastValidPosition(clickPosition, !0), lastPosition = seekNext(-1 !== lvclickPosition || isMask(0) ? lvclickPosition : 0);
+                        if (clickPosition < lastPosition) selectedCaret.end = selectedCaret.begin = isMask(clickPosition, !0) || isMask(clickPosition - 1, !0) ? clickPosition : seekNext(clickPosition); else {
+                            var lvp = maskset.validPositions[lvclickPosition], tt = getTestTemplate(lastPosition, lvp ? lvp.match.locator : void 0, lvp), placeholder = getPlaceholder(lastPosition, tt.match);
+                            if ("" !== placeholder && getBuffer()[lastPosition] !== placeholder && !0 !== tt.match.optionalQuantifier && !0 !== tt.match.newBlockMarker || !isMask(lastPosition, opts.keepStatic) && tt.match.def === placeholder) {
+                                var newPos = seekNext(lastPosition);
+                                (newPos <= clickPosition || clickPosition === lastPosition) && (lastPosition = newPos);
+                            }
+                            selectedCaret.end = selectedCaret.begin = lastPosition;
+                        }
                     }
-
-                  default:
-                    var clickPosition = selectedCaret.begin, lvclickPosition = getLastValidPosition(clickPosition, !0), lastPosition = seekNext(-1 !== lvclickPosition || isMask(0) ? lvclickPosition : 0);
-                    if (clickPosition < lastPosition) return isMask(clickPosition, !0) || isMask(clickPosition - 1, !0) ? clickPosition : seekNext(clickPosition);
-                    var lvp = maskset.validPositions[lvclickPosition], tt = getTestTemplate(lastPosition, lvp ? lvp.match.locator : void 0, lvp), placeholder = getPlaceholder(lastPosition, tt.match);
-                    if ("" !== placeholder && getBuffer()[lastPosition] !== placeholder && !0 !== tt.match.optionalQuantifier && !0 !== tt.match.newBlockMarker || !isMask(lastPosition, opts.keepStatic) && tt.match.def === placeholder) {
-                        var newPos = seekNext(lastPosition);
-                        (newPos <= clickPosition || clickPosition === lastPosition) && (lastPosition = newPos);
-                    }
-                    return lastPosition;
+                    return selectedCaret;
                 }
             }
             var EventRuler = {
@@ -1473,7 +1479,7 @@
                         for (;backPart.length < bpl; ) backPart.unshift("~");
                         for (;backBufferPart.length < bpl; ) backBufferPart.unshift("~");
                         var newBuffer = frontPart.concat(backPart), oldBuffer = frontBufferPart.concat(backBufferPart);
-                        for (console.log("N " + newBuffer), console.log("O " + oldBuffer), i = 0, bl = newBuffer.length; i < bl; i++) switch (placeholder = getPlaceholder(translatePosition(i)), 
+                        for (i = 0, bl = newBuffer.length; i < bl; i++) switch (placeholder = getPlaceholder(translatePosition(i)), 
                         action) {
                           case "insertText":
                             oldBuffer[i - 1] === newBuffer[i] && caretPos.begin == newBuffer.length - 1 && data.push(newBuffer[i]), 
@@ -1506,9 +1512,8 @@
                     if (buffer !== inputValue) {
                         inputValue = ieMobileHandler(input, inputValue, caretPos);
                         var changes = analyseChanges(inputValue, buffer, caretPos);
-                        switch (console.log(JSON.stringify(changes)), document.activeElement !== input && input.focus(), 
-                        writeBuffer(input, getBuffer()), caret(input, caretPos.begin, caretPos.end, !0), 
-                        changes.action) {
+                        switch (document.activeElement !== input && input.focus(), writeBuffer(input, getBuffer()), 
+                        caret(input, caretPos.begin, caretPos.end, !0), changes.action) {
                           case "insertText":
                           case "insertReplacementText":
                             $.each(changes.data, function(ndx, entry) {
@@ -1606,8 +1611,10 @@
                         begin: seekNext(charCodeNdx)
                     }), match;
                 }
-                resetMaskSet(), maskset.tests = {}, initialNdx = opts.radixPoint ? determineNewCaretPosition(0) : 0, 
-                maskset.p = initialNdx, inputmask.caretPos = {
+                resetMaskSet(), maskset.tests = {}, initialNdx = opts.radixPoint ? determineNewCaretPosition({
+                    begin: 0,
+                    end: 0
+                }).begin : 0, maskset.p = initialNdx, inputmask.caretPos = {
                     begin: initialNdx
                 };
                 var staticMatches = [], prevCaretPos = inputmask.caretPos;
