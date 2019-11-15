@@ -2145,4 +2145,26 @@ export default function (qunit, Inputmask) {
 			done();
 		},0);
 	});
+
+	qunit.test("test add new number at the end with positionCaretOnClick: select, using END key", function (assert) {
+		var done = assert.async(),
+			$fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" value="123.45" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("decimal", {
+			positionCaretOnClick: 'select',
+			radixFocus: true,
+			digitsOptional: false,
+			digits: 2,
+			_radixDance: true,
+			numericInput: true,
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").SendKey(keyCode.END);
+		$(testmask).Type("6");
+		setTimeout(function () {
+			assert.equal(testmask.value, "1234.56", "Result " + testmask.value);
+			done();
+		}, 5);
+	});
 };
