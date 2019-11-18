@@ -2091,11 +2091,11 @@ export default function (qunit, Inputmask) {
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal", {
-			alias: 'decimal',
-			placeholder: '',
+			alias: "decimal",
+			placeholder: "",
 			digits: 7,
 			digitsOptional: true,
-			groupSeparator: ' ',
+			groupSeparator: " ",
 			autoGroup: true,
 			showMaskOnHover: false,
 			showMaskOnFocus: false,
@@ -2116,7 +2116,7 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 		testmask.focus();
 		$.caret(testmask, 3);
-		setTimeout(function() {
+		setTimeout(function () {
 			$(testmask).Type("1234.56");
 			$("#testmask").SendKey(keyCode.BACKSPACE);
 			$("#testmask").SendKey(keyCode.BACKSPACE);
@@ -2124,7 +2124,7 @@ export default function (qunit, Inputmask) {
 			$("#testmask").SendKey(keyCode.BACKSPACE);
 			assert.equal(testmask.value, "$ 123.00", "Result " + testmask.value);
 			done();
-		},0);
+		}, 0);
 	});
 
 	qunit.test("digitsOptional: true + suffix not working as expected. can't enter decimal digits #2212", function (assert) {
@@ -2132,27 +2132,27 @@ export default function (qunit, Inputmask) {
 		$fixture.append("<input type=\"text\" id=\"testmask\"/>");
 		var testmask = document.getElementById("testmask");
 		Inputmask({
-			'alias': 'decimal',
-			'groupSeparator': ',',
-			'suffix': " EUR",
-			'digits': 2,
-			'digitsOptional': true, // BUG
+			"alias": "decimal",
+			"groupSeparator": ",",
+			"suffix": " EUR",
+			"digits": 2,
+			"digitsOptional": true, // BUG
 		}).mask(testmask);
 		testmask.focus();
-		setTimeout(function() {
+		setTimeout(function () {
 			$(testmask).Type("1234.56");
 			assert.equal(testmask.value, "1,234.56 EUR", "Result " + testmask.value);
 			done();
-		},0);
+		}, 0);
 	});
 
-	qunit.test("test add new number at the end with positionCaretOnClick: select, using END key", function (assert) {
+	qunit.test("initial 12345 - add new number at the end with positionCaretOnClick: select, using END key - #2223", function (assert) {
 		var done = assert.async(),
 			$fixture = $("#qunit-fixture");
-		$fixture.append('<input type="text" id="testmask" value="123.45" />');
+		$fixture.append("<input type=\"text\" id=\"testmask\" value=\"12345\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal", {
-			positionCaretOnClick: 'select',
+			positionCaretOnClick: "select",
 			radixFocus: true,
 			digitsOptional: false,
 			digits: 2,
@@ -2160,11 +2160,80 @@ export default function (qunit, Inputmask) {
 			numericInput: true,
 		}).mask(testmask);
 		testmask.focus();
-		$("#testmask").SendKey(keyCode.END);
-		$(testmask).Type("6");
+		$("#testmask").trigger("click");
 		setTimeout(function () {
+			$("#testmask").SendKey(keyCode.END);
+			$(testmask).Type("6");
 			assert.equal(testmask.value, "1234.56", "Result " + testmask.value);
 			done();
-		}, 5);
+		}, 0);
+	});
+
+	qunit.test("initial 123.45 - add new number at the end with positionCaretOnClick: select, using END key - #2223", function (assert) {
+		var done = assert.async(),
+			$fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" value=\"123.45\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("decimal", {
+			positionCaretOnClick: "select",
+			radixFocus: true,
+			digitsOptional: false,
+			digits: 2,
+			_radixDance: true,
+			numericInput: true,
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").trigger("click");
+		setTimeout(function () {
+			$("#testmask").SendKey(keyCode.END);
+			$(testmask).Type("6");
+
+			assert.equal(testmask.value, "1234.56", "Result " + testmask.value);
+			done();
+		}, 0);
+	});
+	qunit.test("initial 12345 - add new number at the end with positionCaretOnClick: select, using RIGHT key - #2223", function (assert) {
+		var done = assert.async(),
+			$fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" value=\"12345\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("decimal", {
+			positionCaretOnClick: "select",
+			radixFocus: true,
+			digitsOptional: false,
+			digits: 2,
+			_radixDance: true,
+			numericInput: true,
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").trigger("click");
+		setTimeout(function () {
+			$("#testmask").SendKey(keyCode.RIGHT);
+			$(testmask).Type("6");
+			assert.equal(testmask.value, "1234.56", "Result " + testmask.value);
+			done();
+		}, 0);
+	});
+	qunit.test("initial 123.45 - add new number at the end with positionCaretOnClick: select, using RIGHT key - #2223", function (assert) {
+		var done = assert.async(),
+			$fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" value=\"123.45\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("decimal", {
+			positionCaretOnClick: "select",
+			radixFocus: true,
+			digitsOptional: false,
+			digits: 2,
+			_radixDance: true,
+			numericInput: true,
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").trigger("click");
+		setTimeout(function () {
+			$("#testmask").SendKey(keyCode.RIGHT);
+			$(testmask).Type("6");
+			assert.equal(testmask.value, "1234.56", "Result " + testmask.value);
+			done();
+		}, 0);
 	});
 };

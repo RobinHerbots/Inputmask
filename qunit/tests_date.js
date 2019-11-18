@@ -805,4 +805,25 @@ export default function (qunit, Inputmask) {
 
 		assert.equal(testmask.value, "2H:MM:ss", "Result " + testmask.value);
 	});
+
+	qunit.test("HH:MM:ss - Autocorrect, backspace all type 2 - #2194", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "HH:MM:ss"
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("24");
+		$.caret(testmask, "HH:".length);
+		$("#testmask").SendKey(keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.BACKSPACE);
+		$("#testmask").Type("2");
+
+
+		assert.equal(testmask.value, "2H:MM:ss", "Result " + testmask.value);
+	});
 };
