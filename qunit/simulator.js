@@ -83,7 +83,7 @@ export default function ($, Inputmask) {
 		}
 
 		switch (keycode) {
-			case keyCode.LEFT:
+			case keyCode.HOME:
 				if (modifier == undefined) {
 					var pos = $.caret(this);
 					$.caret(this, 0);

@@ -2166,7 +2166,7 @@ export default function (qunit, Inputmask) {
 			$(testmask).Type("6");
 			assert.equal(testmask.value, "1234.56", "Result " + testmask.value);
 			done();
-		}, 0);
+		}, 5);
 	});
 
 	qunit.test("initial 123.45 - add new number at the end with positionCaretOnClick: select, using END key - #2223", function (assert) {
@@ -2190,7 +2190,7 @@ export default function (qunit, Inputmask) {
 
 			assert.equal(testmask.value, "1234.56", "Result " + testmask.value);
 			done();
-		}, 0);
+		}, 5);
 	});
 	qunit.test("initial 12345 - add new number at the end with positionCaretOnClick: select, using RIGHT key - #2223", function (assert) {
 		var done = assert.async(),
@@ -2212,7 +2212,7 @@ export default function (qunit, Inputmask) {
 			$(testmask).Type("6");
 			assert.equal(testmask.value, "1234.56", "Result " + testmask.value);
 			done();
-		}, 0);
+		}, 5);
 	});
 	qunit.test("initial 123.45 - add new number at the end with positionCaretOnClick: select, using RIGHT key - #2223", function (assert) {
 		var done = assert.async(),
@@ -2234,6 +2234,6 @@ export default function (qunit, Inputmask) {
 			$(testmask).Type("6");
 			assert.equal(testmask.value, "1234.56", "Result " + testmask.value);
 			done();
-		}, 0);
+		}, 5);
 	});
 };
