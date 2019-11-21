@@ -12,3 +12,4 @@ qunit/qunit.js.map
 package-lock.json
 **/*.map
 dist/*.LICENSE
+.vscode/

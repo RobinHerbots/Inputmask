@@ -374,7 +374,7 @@ Inputmask.prototype = {
     preValidation: null,
     //hook to preValidate the input.  Usefull for validating regardless the definition.	args => buffer, pos, char, isSelection, opts, maskset, caretPos, strict => return true/false/command object
     postValidation: null,
-    //hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, pos, currentResult, opts, maskset, strict => return true/false/json
+    //hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, pos, c, currentResult, opts, maskset, strict => return true/false/json
     staticDefinitionSymbol: undefined,
     //specify a definitionSymbol for static content, used to make matches for alternators
     jitMasking: false,
@@ -2721,7 +2721,7 @@ module.exports = function maskScope(actionObj, maskset, opts) {
     }
 
     if ($.isFunction(opts.postValidation) && fromIsValid !== true && validateOnly !== true) {
-      var postResult = opts.postValidation(getBuffer(true), pos.begin !== undefined ? isRTL ? pos.end : pos.begin : pos, result, opts, maskset, strict);
+      var postResult = opts.postValidation(getBuffer(true), pos.begin !== undefined ? isRTL ? pos.end : pos.begin : pos, c, result, opts, maskset, strict);
 
       if (postResult !== undefined) {
         result = postResult === true ? result : postResult;
@@ -4944,11 +4944,29 @@ Inputmask.extendAliases({
 
       return true;
     },
-    postValidation: function postValidation(buffer, pos, currentResult, opts, maskset, strict) {
-      if (currentResult === false) {
-        var tokenMatch = getTokenMatch(pos, opts);
+    postValidation: function postValidation(buffer, pos, c, currentResult, opts, maskset, strict) {
+      var tokenMatch;
 
-        if (tokenMatch.targetMatch && tokenMatch.targetMatch.index === pos && tokenMatch.targetMatch[0].length > 1) {//FIXME
+      if (currentResult === false) {
+        tokenMatch = getTokenMatch(pos + 1, opts);
+
+        if (tokenMatch.targetMatch && tokenMatch.targetMatch.index === pos && tokenMatch.targetMatch[0].length > 1) {
+          if (tokenMatch.targetMatch && tokenMatch.targetMatch[0] && formatCode[tokenMatch.targetMatch[0]] !== undefined) {
+            var validator = formatCode[tokenMatch.targetMatch[0]][0];
+
+            if (new RegExp(validator).test("0" + c)) {
+              return {
+                insert: [{
+                  pos: pos,
+                  c: "0"
+                }, {
+                  pos: pos + 1,
+                  c: c
+                }],
+                pos: pos + 1
+              };
+            }
+          }
         }
       }
 
@@ -4961,24 +4979,14 @@ Inputmask.extendAliases({
       } //full validate target
 
 
-      var calcPos = 0,
-          match;
-      getTokenizer(opts).lastIndex = 0;
+      tokenMatch = getTokenMatch(pos, opts);
 
-      while (match = getTokenizer(opts).exec(opts.inputFormat)) {
-        calcPos += match[0].length;
+      if (tokenMatch.targetMatch && tokenMatch.targetMatch[0] && formatCode[tokenMatch.targetMatch[0]] !== undefined) {
+        var validator = formatCode[tokenMatch.targetMatch[0]][0];
+        var part = buffer.slice(tokenMatch.targetMatch.index, tokenMatch.targetMatch.index + tokenMatch.targetMatch[0].length);
 
-        if (calcPos > pos) {
-          break;
-        }
-      }
-
-      if (match && match[0] && formatCode[match[0]] !== undefined) {
-        var validator = formatCode[match[0]][0];
-        var part = buffer.slice(match.index, match.index + match[0].length);
-
-        if (new RegExp(validator).test(part.join("")) === false && match[0].length === 2 && maskset.validPositions[match.index] && maskset.validPositions[match.index + 1]) {
-          maskset.validPositions[match.index + 1].input = "0";
+        if (new RegExp(validator).test(part.join("")) === false && tokenMatch.targetMatch[0].length === 2 && maskset.validPositions[tokenMatch.targetMatch.index] && maskset.validPositions[tokenMatch.targetMatch.index + 1]) {
+          maskset.validPositions[tokenMatch.targetMatch.index + 1].input = "0";
         }
       }
 
@@ -5443,7 +5451,7 @@ Inputmask.extendAliases({
         rewritePosition: pos
       };
     },
-    postValidation: function postValidation(buffer, pos, currentResult, opts, maskset, strict) {
+    postValidation: function postValidation(buffer, pos, c, currentResult, opts, maskset, strict) {
       if (currentResult === false) return currentResult;
       if (strict) return true;
 

@@ -9,7 +9,9 @@
 - add insertModeVisual option
 
 ### Updates
-- onKeyValidation: add position to parameters 
+- postValidation
+    - add inputchar to arguments
+    - also validate when the result is false
 - change behavior of keepStatic option
     - multiple masks => default true
     - all other masks => default false
