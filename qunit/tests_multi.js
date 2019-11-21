@@ -441,4 +441,40 @@ export default function (qunit, Inputmask) {
 		assert.equal(testmask.inputmask._valueGet(), "123412341 23412341_", "Result " + testmask.inputmask._valueGet());
 
 	});
+
+	qunit.test("mask: option auto-chooses an option rather than denying input - type 3 - #2225", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask({
+			mask: [
+				"4999 9999 9999 9999",
+				"5999 9999 9999 9999",
+				"2999 9999 9999 9999",
+				"6999 9999 9999 9999 [999]",
+				"3999 999999 99999"],
+			greedy: false,
+			keepStatic: false}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("3");
+		assert.equal(testmask.inputmask._valueGet(), "3___ ______ _____", "Result " + testmask.inputmask._valueGet());
+	});
+
+	qunit.test("mask: option auto-chooses an option rather than denying input - type 1 - #2225", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask({
+			mask: [
+				"4999 9999 9999 9999",
+				"5999 9999 9999 9999",
+				"2999 9999 9999 9999",
+				"6999 9999 9999 9999 [999]",
+				"3999 999999 99999"],
+			greedy: false,
+			keepStatic: false}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("1");
+		assert.equal(testmask.inputmask._valueGet(), "", "Result " + testmask.inputmask._valueGet());
+	});
 };

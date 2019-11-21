@@ -941,7 +941,7 @@ $(document).ready(function(){
 ```
 
 ### onKeyValidation
-Callback function is executed on every keyvalidation with the key & result as parameter.
+Callback function is executed on every keyvalidation with the key, result as parameter.
 
 ```javascript
 $(document).ready(function(){
@@ -991,7 +991,7 @@ ex. $(selector).inputmask({ mask: ["+55-99-9999-9999", "+55-99-99999-9999", ], k
 
 typing 1212345123 => should result in +55-12-1234-5123 type extra 4 => switch to +55-12-12345-1234
 
-When passing multiple masks (an array of masks) keepStatic is automatically set to true unless explicitly set through the options.
+**When the option is not set, it will default to false, except for multiple masks it will default to true!!**
 
 ### positionCaretOnTab
 When enabled the caret position is set after the latest valid position on TAB Default: true

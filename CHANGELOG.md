@@ -9,6 +9,10 @@
 - add insertModeVisual option
 
 ### Updates
+- onKeyValidation: add position to parameters 
+- change behavior of keepStatic option
+    - multiple masks => default true
+    - all other masks => default false
 - add more tokens for datetime format
 - refactor inputfallbackevent
 - drop colormask support
@@ -58,6 +62,7 @@
 - Document bug with disabled inputs caused by Firefox 64 and older #2045
 - Behaviour of v3 with hours not possible anymore #1918
 - Unmasked value of datetime alias, if empty, returns the placeholder #2039
+- ...
 
 ## [4.0.4 - 2018-12-03]
 ### Addition
