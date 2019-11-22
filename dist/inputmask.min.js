@@ -2908,8 +2908,16 @@ module.exports = function maskScope(actionObj, maskset, opts) {
     }
 
     if (strict !== true && pos > -1) {
-      var tests = getTests(pos);
-      return tests.length > 1 + (tests[tests.length - 1].match.def === "" ? 1 : 0);
+      if (fuzzy) {
+        //check on the number of tests
+        var tests = getTests(pos);
+        return tests.length > 1 + (tests[tests.length - 1].match.def === "" ? 1 : 0);
+      } //else based on the template
+
+
+      var testTemplate = determineTestTemplate(pos, getTests(pos));
+      var testPlaceHolder = getPlaceholder(pos, testTemplate.match);
+      return testTemplate.match.def !== testPlaceHolder;
     }
 
     return false;
@@ -4945,33 +4953,31 @@ Inputmask.extendAliases({
       return true;
     },
     postValidation: function postValidation(buffer, pos, c, currentResult, opts, maskset, strict) {
+      if (strict) return true;
       var tokenMatch;
 
       if (currentResult === false) {
         tokenMatch = getTokenMatch(pos + 1, opts);
 
-        if (tokenMatch.targetMatch && tokenMatch.targetMatch.index === pos && tokenMatch.targetMatch[0].length > 1) {
-          if (tokenMatch.targetMatch && tokenMatch.targetMatch[0] && formatCode[tokenMatch.targetMatch[0]] !== undefined) {
-            var validator = formatCode[tokenMatch.targetMatch[0]][0];
+        if (tokenMatch.targetMatch && tokenMatch.targetMatch.index === pos && tokenMatch.targetMatch[0].length > 1 && formatCode[tokenMatch.targetMatch[0]] !== undefined) {
+          var validator = formatCode[tokenMatch.targetMatch[0]][0];
 
-            if (new RegExp(validator).test("0" + c)) {
-              return {
-                insert: [{
-                  pos: pos,
-                  c: "0"
-                }, {
-                  pos: pos + 1,
-                  c: c
-                }],
-                pos: pos + 1
-              };
-            }
+          if (new RegExp(validator).test("0" + c)) {
+            return {
+              insert: [{
+                pos: pos,
+                c: "0"
+              }, {
+                pos: pos + 1,
+                c: c
+              }],
+              pos: pos + 1
+            };
           }
         }
-      }
 
-      if (strict) return true; // opts.min = analyseMask(opts.min, opts.inputFormat, opts);
-      // opts.max = analyseMask(opts.max, opts.inputFormat, opts);
+        return currentResult;
+      }
 
       if (currentResult.fuzzy) {
         buffer = currentResult.buffer;
