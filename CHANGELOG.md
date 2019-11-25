@@ -9,23 +9,23 @@
 - add insertModeVisual option
 
 ### Updates
-- postValidation
-    - add inputchar to arguments
-    - also validate when the result is false
-- change behavior of keepStatic option
-    - multiple masks => default true
+- **postValidation**  
+    - add inputchar to arguments  
+    - also validate when the result is false**  
+- **change behavior of keepStatic option**
+    - multiple masks => default true  
     - all other masks => default false
-- add more tokens for datetime format
+- add more tokens for datetime format  
 - refactor inputfallbackevent
-- drop colormask support
-- drop disablePredictiveText option (was hack via colorMask)
+- **drop colormask support** 
+- **drop disablePredictiveText option (was hack via colorMask)**  
 - ignore generated statics in revalidateMask
 - fix mask curruption when alternating and using jitmasking
-- Casing option will also allow case insensitive entry for static symbols
-- refactor numeric alias
+- Casing option will also allow case insensitive entry for static symbols  
+- **refactor numeric alias**
 - package & bundling
 - enhance regex alternations. ex: [01][0-9]|2[0-3] => ([01][0-9]|2[0-3])
-- extend command object
+- extend command object  
     - rewritePosition
 - revert insert-mode caret as selection instead of colored caret
 

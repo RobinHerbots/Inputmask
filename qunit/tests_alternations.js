@@ -158,15 +158,17 @@ export default function (qunit, Inputmask) {
 			"+358(999)999-99-99",
 			"+373-9999-9999",
 			"+381-99-999-9999"
-		]).mask(testmask);
+		], {
+			keepStatic: false
+		}).mask(testmask);
 		testmask.focus();
 		setTimeout(function () {
-			$("#testmask").Type("112123123");
+			$("#testmask").Type("7112123123");
 			assert.equal(testmask.inputmask._valueGet(), "+371-12-123-123", "Result " + testmask.inputmask._valueGet());
 			done();
 		}, 0);
 	});
-	qunit.test("+371-99-999-999 - artemkaint", function (assert) {
+	qunit.test("+374-99-999-999 - artemkaint", function (assert) {
 		var done = assert.async(),
 			$fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
@@ -181,14 +183,43 @@ export default function (qunit, Inputmask) {
 			"+358(999)999-99-99",
 			"+373-9999-9999",
 			"+381-99-999-9999"
-		]).mask(testmask);
+		], {
+			keepStatic: false
+		}).mask(testmask);
 		testmask.focus();
 		setTimeout(function () {
-			$("#testmask").Type("412123123");
+			$("#testmask").Type("7412123123");
 			assert.equal(testmask.inputmask._valueGet(), "+374-12-123-123", "Result " + testmask.inputmask._valueGet());
 			done();
 		}, 0);
 	});
+
+	qunit.test("+358(999)999-99-99, - artemkaint", function (assert) {
+		var done = assert.async(),
+			$fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+
+		Inputmask([
+			"+371-99-999-999",
+			"+370(999)99-999",
+			"+375(99)999-99-99",
+			"+374-99-999-999",
+			"+380(99)999-99-99",
+			"+358(999)999-99-99",
+			"+373-9999-9999",
+			"+381-99-999-9999"
+		], {
+			keepStatic: false
+		}).mask(testmask);
+		testmask.focus();
+		setTimeout(function () {
+			$("#testmask").Type("51231231212");
+			assert.equal(testmask.inputmask._valueGet(), "+358(123)123-12-12", "Result " + testmask.inputmask._valueGet());
+			done();
+		}, 0);
+	});
+
 
 	qunit.test("(9)|(a9) - type 1 - ivaninDarpatov", function (assert) {
 		var $fixture = $("#qunit-fixture");
@@ -241,7 +272,7 @@ export default function (qunit, Inputmask) {
 
 		Inputmask("(9)|(09)|(19)|(2f)", {
 			definitions: {
-				"f": {validator: "[0-3]"}
+				"f": { validator: "[0-3]" }
 			}
 		}).mask(testmask);
 		testmask.focus();
@@ -256,7 +287,7 @@ export default function (qunit, Inputmask) {
 
 		Inputmask("(9)|(09)|(19)|(2f)", {
 			definitions: {
-				"f": {validator: "[0-3]"}
+				"f": { validator: "[0-3]" }
 			}
 		}).mask(testmask);
 		testmask.focus();
@@ -270,7 +301,7 @@ export default function (qunit, Inputmask) {
 
 		Inputmask("(9)|(09)|(19)|(2f)", {
 			definitions: {
-				"f": {validator: "[0-3]"}
+				"f": { validator: "[0-3]" }
 			}
 		}).mask(testmask);
 		testmask.focus();
@@ -285,7 +316,7 @@ export default function (qunit, Inputmask) {
 
 		Inputmask("(9)|(09)|(19)|(2f)", {
 			definitions: {
-				"f": {validator: "[0-3]"}
+				"f": { validator: "[0-3]" }
 			}
 		}).mask(testmask);
 		testmask.focus();
@@ -300,7 +331,7 @@ export default function (qunit, Inputmask) {
 
 		Inputmask("(9|09|19|2f)", {
 			definitions: {
-				"f": {validator: "[0-3]"}
+				"f": { validator: "[0-3]" }
 			}
 		}).mask(testmask);
 		testmask.focus();
@@ -365,7 +396,7 @@ export default function (qunit, Inputmask) {
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 
-		Inputmask({regex: "([0-9]{2})|([a-z0-9][a-z])"}).mask(testmask);
+		Inputmask({ regex: "([0-9]{2})|([a-z0-9][a-z])" }).mask(testmask);
 		testmask.focus();
 		$("#testmask").Type("a2");
 		assert.equal(testmask.inputmask._valueGet(), "a_", "Result " + testmask.inputmask._valueGet());
@@ -389,7 +420,7 @@ export default function (qunit, Inputmask) {
 
 		Inputmask("([0]9)|(19)|(2f)", {
 			definitions: {
-				"f": {validator: "[0-3]"}
+				"f": { validator: "[0-3]" }
 			}
 		}).mask(testmask);
 		testmask.focus();
@@ -404,7 +435,7 @@ export default function (qunit, Inputmask) {
 
 		Inputmask("(0{0,1}9)|(19)|(2f)", {
 			definitions: {
-				"f": {validator: "[0-3]"}
+				"f": { validator: "[0-3]" }
 			}
 		}).mask(testmask);
 		testmask.focus();
