@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.317
+ * Version: 5.0.0-beta.318
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -837,15 +837,20 @@
                             return !0 === source.match.static && !0 !== target.match.static && target.match.fn.test(source.match.def, maskset, pos, !1, opts, !1);
                         }
                         function setMergeLocators(targetMatch, altMatch) {
-                            if (void 0 === altMatch || targetMatch.alternation === altMatch.alternation && -1 === targetMatch.locator[targetMatch.alternation].toString().indexOf(altMatch.locator[altMatch.alternation])) {
+                            var alternationNdx = targetMatch.alternation, shouldMerge = void 0 === altMatch || alternationNdx === altMatch.alternation && -1 === targetMatch.locator[alternationNdx].toString().indexOf(altMatch.locator[alternationNdx]);
+                            if (!shouldMerge && alternationNdx > altMatch.alternation) for (var i = altMatch.alternation; i < alternationNdx; i++) if (targetMatch.locator[i] !== altMatch.locator[i]) {
+                                alternationNdx = i, shouldMerge = !0;
+                                break;
+                            }
+                            if (shouldMerge) {
                                 targetMatch.mloc = targetMatch.mloc || {};
-                                var locNdx = targetMatch.locator[targetMatch.alternation];
+                                var locNdx = targetMatch.locator[alternationNdx];
                                 if (void 0 !== locNdx) {
                                     if ("string" == typeof locNdx && (locNdx = locNdx.split(",")[0]), void 0 === targetMatch.mloc[locNdx] && (targetMatch.mloc[locNdx] = targetMatch.locator.slice()), 
                                     void 0 !== altMatch) {
                                         for (var ndx in altMatch.mloc) "string" == typeof ndx && (ndx = ndx.split(",")[0]), 
                                         void 0 === targetMatch.mloc[ndx] && (targetMatch.mloc[ndx] = altMatch.mloc[ndx]);
-                                        targetMatch.locator[targetMatch.alternation] = Object.keys(targetMatch.mloc).join(",");
+                                        targetMatch.locator[alternationNdx] = Object.keys(targetMatch.mloc).join(",");
                                     }
                                     return !0;
                                 }

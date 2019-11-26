@@ -199,7 +199,21 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		$("#testmask").Type("70-12-34");
 
-		assert.equal(testmask.value, "70-123-4___", "Result " + testmask.value);
+		assert.equal(testmask.value, "70-123-4__", "Result " + testmask.value);
+	});
+
+	qunit.test("inputmask({ regex: \"(([2-9][0-9])-([0-9]{3}-[0-9]{3}))|((1|30|20|70)-([0-9]{3}-[0-9]{4}))\" - mrpanacs regex 70-12-34567", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask({
+			regex: "(([2-9][0-9])-([0-9]{3}-[0-9]{3}))|((1|30|20|70)-([0-9]{3}-[0-9]{4}))"
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("70-12-34567");
+
+		assert.equal(testmask.value, "70-123-4567", "Result " + testmask.value);
 	});
 
 	qunit.test("inputmask({ regex: \"([0-9]|[1][0-9]|[2][0-3]?)(\\.(5|25|75))?\" - arame regex 12", function (assert) {
