@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.318
+ * Version: 5.0.0-beta.319
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -981,7 +981,7 @@
                     mloc: {},
                     cd: cacheDependency
                 }), void 0 !== ndxIntlzr && maskset.tests[pos] ? $.extend(!0, [], matches) : (maskset.tests[pos] = $.extend(!0, [], matches), 
-                console.log(pos + " - " + JSON.stringify(matches)), maskset.tests[pos]);
+                maskset.tests[pos]);
             }
             function getBufferTemplate() {
                 return void 0 === maskset._buffer && (maskset._buffer = getMaskTemplate(!1, 1), 
