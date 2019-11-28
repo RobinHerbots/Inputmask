@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.319
+ * Version: 5.0.0-beta.320
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -67,6 +67,7 @@
         Inputmask.prototype = {
             dataAttribute: "data-inputmask",
             defaults: {
+                _maxTestPos: 500,
                 placeholder: "_",
                 optionalmarker: [ "[", "]" ],
                 quantifiermarker: [ "{", "}" ],
@@ -733,7 +734,7 @@
                             }
                             return !1;
                         }
-                        if (500 < testPos && void 0 !== quantifierRecurse) throw "Inputmask: There is probably an error in your mask definition or in the code. Create an issue on github with an example of the mask you are using. " + maskset.mask;
+                        if (testPos > opts._maxTestPos && void 0 !== quantifierRecurse) throw "Inputmask: There is probably an error in your mask definition or in the code. Create an issue on github with an example of the mask you are using. " + maskset.mask;
                         if (testPos === pos && void 0 === match.matches) return matches.push({
                             match: match,
                             locator: loopNdx.reverse(),
@@ -1068,14 +1069,14 @@
                     return prevMatch && nextMatch;
                 }
                 var offset = 0, begin = void 0 !== pos.begin ? pos.begin : pos, end = void 0 !== pos.end ? pos.end : pos;
-                if (pos.begin > pos.end && (begin = pos.end, end = pos.begin), void 0 === validTest && !1 === opts.insertMode && opts.insertModeVisual && end < maskset.maskLength && (0 === begin && 0 === end || (begin += 1, 
-                end += 1)), validatedPos = void 0 !== validatedPos ? validatedPos : begin, begin !== end || opts.insertMode && void 0 !== maskset.validPositions[validatedPos] && void 0 === fromIsValid || void 0 === validTest) {
-                    var positionsClone = $.extend(!0, {}, maskset.validPositions), lvp = void 0 === validTest && !1 === opts.insertMode && opts.insertModeVisual ? 1 < end ? end - 1 : end : getLastValidPosition(void 0, !0), i;
+                if (pos.begin > pos.end && (begin = pos.end, end = pos.begin), validatedPos = void 0 !== validatedPos ? validatedPos : begin, 
+                begin !== end || opts.insertMode && void 0 !== maskset.validPositions[validatedPos] && void 0 === fromIsValid || void 0 === validTest) {
+                    var positionsClone = $.extend(!0, {}, maskset.validPositions), lvp = getLastValidPosition(void 0, !0), i;
                     for (maskset.p = begin, i = lvp; begin <= i; i--) delete maskset.validPositions[i], 
                     void 0 === validTest && delete maskset.tests[i + 1];
                     var valid = !0, j = validatedPos, posMatch = j, t;
-                    if (i = j, validTest && (maskset.validPositions[validatedPos] = $.extend(!0, {}, validTest), 
-                    posMatch++, j++, begin < end && i++), validTest || opts.insertMode) for (;i <= lvp; i++) {
+                    for (i = j, validTest && (maskset.validPositions[validatedPos] = $.extend(!0, {}, validTest), 
+                    posMatch++, j++, begin < end && i++); i <= lvp; i++) {
                         if (void 0 !== (t = positionsClone[i]) && !0 !== t.generatedInput && (end <= i || begin <= i && IsEnclosedStatic(i, positionsClone, {
                             begin: begin,
                             end: end
@@ -1099,7 +1100,7 @@
                     }
                     if (!valid) return maskset.validPositions = $.extend(!0, {}, positionsClone), resetMaskSet(!0), 
                     !1;
-                } else validTest && (maskset.validPositions[validatedPos] = $.extend(!0, {}, validTest));
+                } else validTest && getTest(validatedPos).match.cd === validTest.match.cd && (maskset.validPositions[validatedPos] = $.extend(!0, {}, validTest));
                 return resetMaskSet(!0), offset;
             }
             function isMask(pos, strict, fuzzy) {
@@ -1140,7 +1141,7 @@
                         void 0 !== caretPos && (caretPos = void 0 !== result.caret ? result.caret : caretPos);
                     }
                 }
-                if (void 0 !== input && (input.inputmask._valueSet(buffer.join("")), void 0 === caretPos || void 0 !== event && "blur" === event.type || caret(input, caretPos), 
+                if (void 0 !== input && (input.inputmask._valueSet(buffer.join("")), void 0 === caretPos || void 0 !== event && "blur" === event.type || caret(input, caretPos, void 0, void 0, void 0 !== event && "keydown" === event.type && (event.keyCode === keyCode.DELETE || event.keyCode === keyCode.BACKSPACE)), 
                 !0 === triggerEvents)) {
                     var $input = $(input), nptVal = input.inputmask._valueGet();
                     skipInputEvent = !0, $input.trigger("input"), setTimeout(function() {
@@ -1545,7 +1546,7 @@
                 return !isRTL || "number" != typeof pos || opts.greedy && "" === opts.placeholder || !el || (pos = el.inputmask._valueGet().length - pos), 
                 pos;
             }
-            function caret(input, begin, end, notranslate) {
+            function caret(input, begin, end, notranslate, isDelete) {
                 var range;
                 if (void 0 === begin) return "selectionStart" in input && "selectionEnd" in input ? (begin = input.selectionStart, 
                 end = input.selectionEnd) : window.getSelection ? (range = window.getSelection().getRangeAt(0), 
@@ -1566,7 +1567,8 @@
                     if (input.scrollLeft = scrollCalc > input.scrollWidth ? scrollCalc : 0, input.inputmask.caretPos = {
                         begin: begin,
                         end: end
-                    }, opts.insertModeVisual && !1 === opts.insertMode && begin === end && end++, input === document.activeElement) if ("setSelectionRange" in input) input.setSelectionRange(begin, end); else if (window.getSelection) {
+                    }, opts.insertModeVisual && !1 === opts.insertMode && begin === end && (isDelete || end++), 
+                    input === document.activeElement) if ("setSelectionRange" in input) input.setSelectionRange(begin, end); else if (window.getSelection) {
                         if (range = document.createRange(), void 0 === input.firstChild || null === input.firstChild) {
                             var textNode = document.createTextNode("");
                             input.appendChild(textNode);
@@ -1620,7 +1622,7 @@
                     pos.end = pos.begin, pos.begin = pend;
                 }
                 var offset;
-                if (k === keyCode.BACKSPACE || k === keyCode.DELETE && !1 === opts.insertMode && opts.insertModeVisual ? pos.end - pos.begin < 1 && (pos.begin = seekPrevious(pos.begin), 
+                if (k === keyCode.BACKSPACE ? pos.end - pos.begin < 1 && (pos.begin = seekPrevious(pos.begin), 
                 void 0 !== maskset.validPositions[pos.begin] && maskset.validPositions[pos.begin].input === opts.groupSeparator && pos.begin--) : k === keyCode.DELETE && pos.begin === pos.end && (pos.end = isMask(pos.end, !0, !0) ? pos.end + 1 : seekNext(pos.end) + 1, 
                 void 0 !== maskset.validPositions[pos.begin] && maskset.validPositions[pos.begin].input === opts.groupSeparator && pos.end++), 
                 !1 !== (offset = revalidateMask(pos))) {
@@ -1631,10 +1633,7 @@
                             (k !== keyCode.DELETE || pos.begin > newPos) && pos.begin;
                         }
                     }
-                    var lvp = getLastValidPosition(pos.end, !0);
-                    lvp < pos.begin ? maskset.p = !1 === opts.insertMode && opts.insertModeVisual ? seekPrevious(lvp + 1) : seekNext(lvp) : !0 !== strict && (maskset.p = k === keyCode.DELETE ? pos.begin + offset : pos.begin, 
-                    !1 === opts.insertMode && opts.insertModeVisual && k === keyCode.DELETE && (maskset.p = pos.end + 1, 
-                    void 0 === maskset.validPositions[maskset.p] && getLastValidPosition(maskset.maskLength, !0) < maskset.p && (maskset.p = seekPrevious(lvp + 1))));
+                    !0 !== strict && (maskset.p = k === keyCode.DELETE ? pos.begin + offset : pos.begin);
                 }
             }
             function applyInputValue(input, value) {
@@ -2011,16 +2010,19 @@
                     if (strict) return !0;
                     if (isNaN(c) && buffer[pos] !== c) {
                         var tokenMatch = getTokenMatch(pos, opts);
-                        if (tokenMatch.nextMatch && tokenMatch.nextMatch[0] === c && 1 < tokenMatch.targetMatch[0].length) return buffer[pos] = buffer[pos - 1], 
-                        buffer[pos - 1] = "0", {
-                            fuzzy: !0,
-                            buffer: buffer,
-                            refreshFromBuffer: {
-                                start: pos - 1,
-                                end: pos + 1
-                            },
-                            pos: pos + 1
-                        };
+                        if (tokenMatch.nextMatch && tokenMatch.nextMatch[0] === c && 1 < tokenMatch.targetMatch[0].length) {
+                            var validator = formatCode[tokenMatch.targetMatch[0]][0];
+                            if (new RegExp(validator).test("0" + buffer[pos - 1])) return buffer[pos] = buffer[pos - 1], 
+                            buffer[pos - 1] = "0", {
+                                fuzzy: !0,
+                                buffer: buffer,
+                                refreshFromBuffer: {
+                                    start: pos - 1,
+                                    end: pos + 1
+                                },
+                                pos: pos + 1
+                            };
+                        }
                     }
                     return !0;
                 },
