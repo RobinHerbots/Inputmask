@@ -28,6 +28,8 @@
 - extend command object  
     - rewritePosition
 - revert insert-mode caret as selection instead of colored caret
+    - make delete/backspace behave like normal
+    - make visual optional
 
 ### Fixed
 - Decimal - auto change comma to dot (numeric keyboard) #2098
