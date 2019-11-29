@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.321
+ * Version: 5.0.0-beta.322
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1487,7 +1487,7 @@
                         for (;backPart.length < bpl; ) backPart.unshift("~");
                         for (;backBufferPart.length < bpl; ) backBufferPart.unshift("~");
                         var newBuffer = frontPart.concat(backPart), oldBuffer = frontBufferPart.concat(backBufferPart);
-                        for (i = 0, bl = newBuffer.length; i < bl; i++) switch (placeholder = getPlaceholder(translatePosition(i)), 
+                        for (console.log("N " + newBuffer), console.log("O " + oldBuffer), i = 0, bl = newBuffer.length; i < bl; i++) switch (placeholder = getPlaceholder(translatePosition(i)), 
                         action) {
                           case "insertText":
                             oldBuffer[i - 1] === newBuffer[i] && caretPos.begin == newBuffer.length - 1 && data.push(newBuffer[i]), 
@@ -1520,8 +1520,9 @@
                     if (buffer !== inputValue) {
                         inputValue = ieMobileHandler(input, inputValue, caretPos);
                         var changes = analyseChanges(inputValue, buffer, caretPos);
-                        switch (document.activeElement !== input && input.focus(), writeBuffer(input, getBuffer()), 
-                        caret(input, caretPos.begin, caretPos.end, !0), changes.action) {
+                        switch (console.log(JSON.stringify(changes)), document.activeElement !== input && input.focus(), 
+                        writeBuffer(input, getBuffer()), caret(input, caretPos.begin, caretPos.end, !0), 
+                        changes.action) {
                           case "insertText":
                           case "insertReplacementText":
                             $.each(changes.data, function(ndx, entry) {
@@ -1678,8 +1679,7 @@
                 range.commonAncestorContainer.parentNode !== input && range.commonAncestorContainer !== input || (begin = range.startOffset, 
                 end = range.endOffset)) : document.selection && document.selection.createRange && (range = document.selection.createRange(), 
                 begin = 0 - range.duplicate().moveStart("character", -input.inputmask._valueGet().length), 
-                end = begin + range.text.length), opts.insertModeVisual && !1 === opts.insertMode && begin === end - 1 && end--, 
-                {
+                end = begin + range.text.length), {
                     begin: notranslate ? begin : translatePosition(begin),
                     end: notranslate ? end : translatePosition(end)
                 };
