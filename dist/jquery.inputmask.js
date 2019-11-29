@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.0-beta.322
+ * Version: 5.0.0-beta.323
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1008,7 +1008,7 @@
                 var result = !0, positionsClone = $.extend(!0, {}, maskset.validPositions);
                 if (!1 === opts.keepStatic && void 0 !== maskset.excludes[maskPos] && !0 !== fromAlternate && !0 !== fromIsValid) for (var i = maskPos; i < (isRTL ? pos.begin : pos.end); i++) void 0 !== maskset.excludes[i] && (maskset.excludes[i] = void 0, 
                 delete maskset.tests[i]);
-                if ($.isFunction(opts.preValidation) && !0 !== fromIsValid && !0 !== validateOnly && (result = opts.preValidation(getBuffer(), maskPos, c, isSelection(pos), opts, maskset, pos, strict || fromAlternate), 
+                if ($.isFunction(opts.preValidation) && !0 !== fromIsValid && !0 !== validateOnly && (result = opts.preValidation.call(el, getBuffer(), maskPos, c, isSelection(pos), opts, maskset, pos, strict || fromAlternate), 
                 result = processCommandObject(result)), !0 === result) {
                     if (void 0 === maxLength || maskPos < maxLength) {
                         if (result = _isValid(maskPos, c, strict), (!strict || !0 === fromIsValid) && !1 === result && !0 !== validateOnly) {
@@ -1036,7 +1036,7 @@
                     });
                 }
                 if ($.isFunction(opts.postValidation) && !0 !== fromIsValid && !0 !== validateOnly) {
-                    var postResult = opts.postValidation(getBuffer(!0), void 0 !== pos.begin ? isRTL ? pos.end : pos.begin : pos, c, result, opts, maskset, strict);
+                    var postResult = opts.postValidation.call(el, getBuffer(!0), void 0 !== pos.begin ? isRTL ? pos.end : pos.begin : pos, c, result, opts, maskset, strict);
                     void 0 !== postResult && (result = !0 === postResult ? result : postResult);
                 }
                 result && void 0 === result.pos && (result.pos = maskPos), !1 === result || !0 === validateOnly ? (resetMaskSet(!0), 
@@ -1362,7 +1362,7 @@
                         for (;backPart.length < bpl; ) backPart.unshift("~");
                         for (;backBufferPart.length < bpl; ) backBufferPart.unshift("~");
                         var newBuffer = frontPart.concat(backPart), oldBuffer = frontBufferPart.concat(backBufferPart);
-                        for (console.log("N " + newBuffer), console.log("O " + oldBuffer), i = 0, bl = newBuffer.length; i < bl; i++) switch (placeholder = getPlaceholder(translatePosition(i)), 
+                        for (i = 0, bl = newBuffer.length; i < bl; i++) switch (placeholder = getPlaceholder(translatePosition(i)), 
                         action) {
                           case "insertText":
                             oldBuffer[i - 1] === newBuffer[i] && caretPos.begin == newBuffer.length - 1 && data.push(newBuffer[i]), 
@@ -1395,9 +1395,8 @@
                     if (buffer !== inputValue) {
                         inputValue = ieMobileHandler(input, inputValue, caretPos);
                         var changes = analyseChanges(inputValue, buffer, caretPos);
-                        switch (console.log(JSON.stringify(changes)), document.activeElement !== input && input.focus(), 
-                        writeBuffer(input, getBuffer()), caret(input, caretPos.begin, caretPos.end, !0), 
-                        changes.action) {
+                        switch (document.activeElement !== input && input.focus(), writeBuffer(input, getBuffer()), 
+                        caret(input, caretPos.begin, caretPos.end, !0), changes.action) {
                           case "insertText":
                           case "insertReplacementText":
                             $.each(changes.data, function(ndx, entry) {
@@ -2254,7 +2253,7 @@
                     if (-1 !== radixPos && !0 === opts._radixDance && !1 === isSelection && c === opts.radixPoint && void 0 !== opts.digits && (isNaN(opts.digits) || 0 < parseInt(opts.digits)) && radixPos !== pos) return {
                         caret: opts._radixDance && pos === radixPos - 1 ? radixPos + 1 : radixPos
                     };
-                    if (isSelection && !1 === opts.__financeInput) {
+                    if (!1 === opts.__financeInput) if (isSelection) {
                         if (opts.digitsOptional) return {
                             rewritePosition: caretPos.end
                         };
@@ -2273,7 +2272,9 @@
                                 rewritePosition: caretPos.begin - 1
                             };
                         }
-                    }
+                    } else if (!opts.showMaskOnHover && !opts.showMaskOnFocus && !opts.digitsOptional && 0 < opts.digits && "" === this.inputmask.__valueGet.call(this)) return {
+                        rewritePosition: radixPos
+                    };
                     return {
                         rewritePosition: pos
                     };
