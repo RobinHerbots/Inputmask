@@ -1,6 +1,6 @@
 # Change Log
 
-## [5.0.0 - UNRELEASED]
+## [5.0.0 - 02/12/2019]
 ### Addition
 - add indian numbering support in numeric alias (indianns alias)
 - add roundingFN option to numeric alias.  (currency, decimal, ...)
@@ -67,6 +67,7 @@
 - Behaviour of v3 with hours not possible anymore #1918
 - Unmasked value of datetime alias, if empty, returns the placeholder #2039
 - ...
+
 
 ## [4.0.4 - 2018-12-03]
 ### Addition
