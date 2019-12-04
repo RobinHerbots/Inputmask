@@ -1,5 +1,9 @@
 # Change Log
 
+## [5.0.1 - UNRELEASED]
+### Fixed
+- datetime does not working in IE11 #2238
+
 ## [5.0.0 - 02/12/2019]
 ### Addition
 - add indian numbering support in numeric alias (indianns alias)
