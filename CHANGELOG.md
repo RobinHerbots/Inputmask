@@ -1,7 +1,12 @@
 # Change Log
 
 ## [5.0.1 - UNRELEASED]
+
+### Updates
+- jitMasking: autofill statics to improve the user experience
+
 ### Fixed
+- jitMasking and caret position with static characters #2243
 - datetime does not working in IE11 #2238
 
 ## [5.0.0 - 02/12/2019]
