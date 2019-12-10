@@ -1,6 +1,8 @@
 # Change Log
 
 ## [5.0.1 - UNRELEASED]
+### Added
+- ssn mask
 
 ### Updates
 - jitMasking: autofill statics to improve the user experience

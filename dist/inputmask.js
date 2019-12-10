@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.1-beta.2
+ * Version: 5.0.1-beta.3
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -726,8 +726,10 @@
                 autoUnmask: !0
             },
             ssn: {
-                regex: "^(\\d{3}-\\d{2}-\\d{4})$",
-                autoUnmask: !0
+                mask: "999-99-9999",
+                postValidation: function postValidation(buffer, pos, c, currentResult, opts, maskset, strict) {
+                    return /^(?!219-09-9999|078-05-1120)(?!666|000|9.{2}).{3}-(?!00).{2}-(?!0{4}).{4}$/.test(buffer.join(""));
+                }
             }
         }), module.exports = Inputmask;
     }, function(module, exports, __webpack_require__) {
