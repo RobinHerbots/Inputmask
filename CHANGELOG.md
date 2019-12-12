@@ -5,6 +5,7 @@
 - ssn mask
 
 ### Updates
+- numeric aliases: set value with jQuery.val or native input.value =
 - numeric aliases: make min/max block input instead of setting the min/max value
 - jitMasking: autofill statics to improve the user experience
 
