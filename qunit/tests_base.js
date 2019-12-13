@@ -77,26 +77,6 @@ export default function (qunit, Inputmask) {
 		$("#testmask").Type("123456789");
 	});
 
-	// qunit.test("inputmask(\"9-AAA.999\") - change event", function (assert) {
-	//     var done = assert.async(),
-	//         $fixture = $("#qunit-fixture");
-	//     $fixture.append('<input type="text" id="testmask" />');
-	//     var testmask = document.getElementById("testmask");
-	//
-	//     $("#testmask").on("change", function () {
-	//         assert.ok(true, "Change triggered");
-	//         done();
-	//     });
-	//
-	//     Inputmask("9-AAA.999").mask(testmask);
-	//
-	//     testmask.focus();
-	//     setTimeout(function () {
-	//         $("#testmask").Type("1abc12");
-	//         testmask.blur();
-	//     }, 0);
-	// });
-
 	qunit.test("inputmask(\"9-AAA.999\", { onincomplete: ... })", function (assert) {
 		var done = assert.async(),
 			$fixture = $("#qunit-fixture");
@@ -284,6 +264,21 @@ export default function (qunit, Inputmask) {
 		assert.equal(testmask.value, "124 56 78 90_", "Result " + testmask.value);
 	});
 
+	qunit.test("aaaa 9999 backspace in aaaa does nothing - Evelyne28", function (assert) {
+		var done = assert.async(),
+			$fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("aaaa 9999").mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("abcd 1234");
+		$.caret(testmask, 3);
+		$("#testmask").SendKey(keyCode.BACKSPACE);
+
+		assert.equal(testmask.value, "abd_ 1234", "Result " + testmask.value);
+		done();
+	});
 
 	qunit.module("Non-greedy masks");
 	qunit.test("inputmask(\"*\", { greedy: false, repeat: \"*\" }) - replace cd with 1", function (assert) {
@@ -367,6 +362,8 @@ export default function (qunit, Inputmask) {
 
 		assert.equal(testmask.value, "TESTTEST", "Result " + testmask.value);
 	});
+
+
 
 	qunit.module("greedy masks");
 	qunit.test("inputmask(\"*\", { greedy: true, repeat: 10, clearMaskOnLostFocus: false  })", function (assert) {
@@ -542,4 +539,6 @@ export default function (qunit, Inputmask) {
 			done();
 		}, 0);
 	});
+
+
 };

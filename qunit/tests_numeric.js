@@ -1751,7 +1751,7 @@ export default function (qunit, Inputmask) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("currency", {negationSymbol: {front: "(", back: ")"}, prefix: "$ "}).mask(testmask);
+		Inputmask("currency", { negationSymbol: { front: "(", back: ")" }, prefix: "$ " }).mask(testmask);
 		testmask.focus();
 		$.caret(testmask, 1);
 		$("#testmask").Type("-");
@@ -1903,7 +1903,7 @@ export default function (qunit, Inputmask) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("currency", {radixPoint: ",", inputType: "number", prefix: "$ "}).mask(testmask);
+		Inputmask("currency", { radixPoint: ",", inputType: "number", prefix: "$ " }).mask(testmask);
 
 		$(testmask).val("100.00");
 
@@ -1932,7 +1932,7 @@ export default function (qunit, Inputmask) {
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal",
-			{groupSeparator: ","}).mask(testmask);
+			{ groupSeparator: "," }).mask(testmask);
 
 		$(testmask).Type("38800");
 		$.caret(testmask, 3);
@@ -1947,7 +1947,7 @@ export default function (qunit, Inputmask) {
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal",
-			{groupSeparator: ","}).mask(testmask);
+			{ groupSeparator: "," }).mask(testmask);
 
 		$(testmask).Type("100.");
 		$("#testmask").SendKey(keyCode.BACKSPACE);
@@ -2235,5 +2235,28 @@ export default function (qunit, Inputmask) {
 			assert.equal(testmask.value, "1234.56", "Result " + testmask.value);
 			done();
 		}, 5);
+	});
+
+	qunit.test("numeric digitsOptional true initial value 123.4", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" value=\"123.4\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("numeric", {
+			max: 999.99,
+			digits: 2,
+			digitsOptional: true
+		}).mask(testmask);
+		assert.equal(testmask.value, "123.4", "Result " + testmask.value);
+	});
+	qunit.test("numeric digitsOptional false initial value 123.4", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" value=\"123.4\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("numeric", {
+			max: 999.99,
+			digits: 2,
+			digitsOptional: false
+		}).mask(testmask);
+		assert.equal(testmask.value, "123.40", "Result " + testmask.value);
 	});
 };
