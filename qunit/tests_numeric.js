@@ -1249,7 +1249,7 @@ export default function (qunit, Inputmask) {
 			$("#testmask").Type("1234");
 			$("#testmask").trigger("blur");
 			setTimeout(function () {
-				assert.equal(testmask.value, "$ 1,000.00", "Result " + testmask.value);
+				assert.equal(testmask.value, "$ 123.00", "Result " + testmask.value);
 				done();
 			}, 0);
 		}, 5);
@@ -1442,7 +1442,7 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 
 		testmask.blur();
-		assert.equal(testmask.value, "-1000", "Result " + testmask.value);
+		assert.equal(testmask.value, "-123", "Result " + testmask.value);
 	});
 
 	qunit.test("numeric alias - value=\"1000\" minvalue = 1000", function (assert) {
