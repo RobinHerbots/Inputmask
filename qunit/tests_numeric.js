@@ -1442,7 +1442,7 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 
 		testmask.blur();
-		assert.equal(testmask.value, "-123", "Result " + testmask.value);
+		assert.equal(testmask.value, "-1000", "Result " + testmask.value);
 	});
 
 	qunit.test("numeric alias - value=\"1000\" minvalue = 1000", function (assert) {
@@ -1703,14 +1703,15 @@ export default function (qunit, Inputmask) {
 			placeholder: "_",
 			digitsOptional: false,
 			digits: 2,
-			max: 100
+			max: 100,
+			enforceDigitsOnBlur: true
 		}).mask(testmask);
 		testmask.focus();
 		$("#testmask").trigger("click");
 		setTimeout(function () {
 			$("#testmask").Type("200");
 			testmask.blur();
-			assert.equal(testmask.value, "100.00 %", "Result " + testmask.value);
+			assert.equal(testmask.value, "20.00 %", "Result " + testmask.value);
 			done();
 		}, 0);
 	});
@@ -2048,7 +2049,7 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		$("#testmask").Type("9999");
 
-		assert.equal(testmask.value, "1000.01 %", "Result " + testmask.value);
+		assert.equal(testmask.value, "999 %", "Result " + testmask.value);
 	});
 
 	qunit.test("'Decimal'. New entered value is automatically prefixed with '.' #2189", function (assert) {
