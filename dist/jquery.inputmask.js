@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.1-beta.10
+ * Version: 5.0.1-beta.11
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -677,9 +677,15 @@
                 return maskset.validPositions[pos] ? maskset.validPositions[pos] : (tests || getTests(pos))[0];
             }
             function positionCanMatchDefinition(pos, testDefinition, opts) {
-                for (var valid = !1, tests = getTests(pos), tndx = 0; tndx < tests.length; tndx++) if (tests[tndx].match && (tests[tndx].match.nativeDef === testDefinition.match[opts.shiftPositions ? "def" : "nativeDef"] || tests[tndx].match.nativeDef === testDefinition.match.nativeDef)) {
-                    valid = !0;
-                    break;
+                for (var valid = !1, tests = getTests(pos), tndx = 0; tndx < tests.length; tndx++) {
+                    if (tests[tndx].match && (tests[tndx].match.nativeDef === testDefinition.match[opts.shiftPositions ? "def" : "nativeDef"] || tests[tndx].match.nativeDef === testDefinition.match.nativeDef)) {
+                        valid = !0;
+                        break;
+                    }
+                    if (tests[tndx].match && tests[tndx].match.def === testDefinition.match.nativeDef) {
+                        valid = void 0;
+                        break;
+                    }
                 }
                 return !1 === valid && void 0 !== maskset.jitOffset[pos] && (valid = positionCanMatchDefinition(pos + maskset.jitOffset[pos], testDefinition, opts)), 
                 valid;
@@ -1081,7 +1087,7 @@
                     var positionsClone = $.extend(!0, {}, maskset.validPositions), lvp = getLastValidPosition(void 0, !0), i;
                     for (maskset.p = begin, i = lvp; begin <= i; i--) delete maskset.validPositions[i], 
                     void 0 === validTest && delete maskset.tests[i + 1];
-                    var valid = !0, j = validatedPos, posMatch = j, t;
+                    var valid = !0, j = validatedPos, posMatch = j, t, canMatch;
                     for (i = j, validTest && (maskset.validPositions[validatedPos] = $.extend(!0, {}, validTest), 
                     posMatch++, j++, begin < end && i++); i <= lvp; i++) {
                         if (void 0 !== (t = positionsClone[i]) && !0 !== t.generatedInput && (end <= i || begin <= i && IsEnclosedStatic(i, positionsClone, {
@@ -1089,10 +1095,10 @@
                             end: end
                         }))) {
                             for (;"" !== getTest(posMatch).match.def; ) {
-                                if (positionCanMatchDefinition(posMatch, t, opts) || "+" === t.match.def) {
+                                if (!1 !== (canMatch = positionCanMatchDefinition(posMatch, t, opts)) || "+" === t.match.def) {
                                     "+" === t.match.def && getBuffer(!0);
                                     var result = isValid(posMatch, t.input, "+" !== t.match.def, "+" !== t.match.def);
-                                    if (valid = !1 !== result, j = (result.pos || posMatch) + 1, !valid) break;
+                                    if (valid = !1 !== result, j = (result.pos || posMatch) + 1, !valid && canMatch) break;
                                 } else valid = !1;
                                 if (valid) {
                                     void 0 === validTest && t.match.static && i === pos.begin && offset++;
