@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2019 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.1-beta.12
+ * Version: 5.0.1
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -803,7 +803,7 @@
             }
             function positionCanMatchDefinition(pos, testDefinition, opts) {
                 for (var valid = !1, tests = getTests(pos), tndx = 0; tndx < tests.length; tndx++) {
-                    if (tests[tndx].match && (tests[tndx].match.nativeDef === testDefinition.match[opts.shiftPositions ? "def" : "nativeDef"] || tests[tndx].match.nativeDef === testDefinition.match.nativeDef)) {
+                    if (tests[tndx].match && (!(tests[tndx].match.nativeDef !== testDefinition.match[opts.shiftPositions ? "def" : "nativeDef"] || opts.shiftPositions && testDefinition.match.static) || tests[tndx].match.nativeDef === testDefinition.match.nativeDef)) {
                         valid = !0;
                         break;
                     }

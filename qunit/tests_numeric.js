@@ -2150,7 +2150,7 @@ export default function (qunit, Inputmask) {
 	qunit.test("initial 12345 - add new number at the end with positionCaretOnClick: select, using END key - #2223", function (assert) {
 		var done = assert.async(),
 			$fixture = $("#qunit-fixture");
-		$fixture.append("<input type=\"text\" id=\"testmask\" value=\"12345\" />");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal", {
 			positionCaretOnClick: "select",
@@ -2162,6 +2162,7 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 		testmask.focus();
 		$("#testmask").trigger("click");
+		$(testmask).Type("12345");
 		setTimeout(function () {
 			$("#testmask").SendKey(keyCode.END);
 			$(testmask).Type("6");
@@ -2196,7 +2197,7 @@ export default function (qunit, Inputmask) {
 	qunit.test("initial 12345 - add new number at the end with positionCaretOnClick: select, using RIGHT key - #2223", function (assert) {
 		var done = assert.async(),
 			$fixture = $("#qunit-fixture");
-		$fixture.append("<input type=\"text\" id=\"testmask\" value=\"12345\" />");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("decimal", {
 			positionCaretOnClick: "select",
@@ -2208,6 +2209,7 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 		testmask.focus();
 		$("#testmask").trigger("click");
+		$(testmask).Type("12345");
 		setTimeout(function () {
 			$("#testmask").SendKey(keyCode.RIGHT);
 			$(testmask).Type("6");

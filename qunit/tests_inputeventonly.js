@@ -31,7 +31,7 @@ export default function (qunit, Inputmask) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("(999) 999-9999", {inputEventOnly: true}).mask(testmask);
+		Inputmask("(999) 999-9999", { inputEventOnly: true }).mask(testmask);
 
 		testmask.focus();
 		//simulate input
@@ -44,7 +44,7 @@ export default function (qunit, Inputmask) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("(999) 999-9999", {inputEventOnly: true}).mask(testmask);
+		Inputmask("(999) 999-9999", { inputEventOnly: true }).mask(testmask);
 
 		testmask.focus();
 		//simulate input
@@ -63,7 +63,6 @@ export default function (qunit, Inputmask) {
 			"mask": "9999\\9\\9",
 			clearMaskOnLostFocus: false,
 			placeholder: "X",
-			colorMask: true,
 			inputEventOnly: true
 		}).mask(testmask);
 
@@ -84,10 +83,8 @@ export default function (qunit, Inputmask) {
 		Inputmask({
 			alias: "numeric",
 			placeholder: "0",
-			inputEventOnly: true,
-			colorMask: true,
-			androidHack: "rtfm"
-		}, {inputEventOnly: true}).mask(testmask);
+			inputEventOnly: true
+		}, { inputEventOnly: true }).mask(testmask);
 
 		testmask.focus();
 		setTimeout(function () {
@@ -112,6 +109,7 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 
 		testmask.focus();
+		$("#testmask").trigger("click");
 		setTimeout(function () {
 			$(testmask).Type("56,03");
 			$("#testmask").SendKey(keyCode.BACKSPACE);
@@ -145,11 +143,11 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 		testmask.focus();
 		$.caret(testmask, 3);
-		setTimeout(function() {
+		setTimeout(function () {
 			$(testmask).Type("123");
 			assert.equal(testmask.value, "$ 123.00", "Result " + testmask.value);
 			done();
-		},0);
+		}, 0);
 	});
 
 	qunit.test("currency type 1234.56 + backspace x4", function (assert) {
@@ -162,7 +160,7 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 		testmask.focus();
 		$.caret(testmask, 3);
-		setTimeout(function() {
+		setTimeout(function () {
 			$(testmask).Type("1234.56");
 			$("#testmask").SendKey(keyCode.BACKSPACE);
 			$("#testmask").SendKey(keyCode.BACKSPACE);
@@ -170,7 +168,7 @@ export default function (qunit, Inputmask) {
 			$("#testmask").SendKey(keyCode.BACKSPACE);
 			assert.equal(testmask.value, "$ 123.00", "Result " + testmask.value);
 			done();
-		},0);
+		}, 0);
 	});
 
 	qunit.test("datetime", function (assert) {

@@ -1,6 +1,6 @@
 # Change Log
 
-## [5.0.1 - UNRELEASED]
+## [5.0.1 - 18/12/2019]
 ### Added
 - ssn mask
 
@@ -10,6 +10,7 @@
 - jitMasking: autofill statics to improve the user experience
 
 ### Fixed
+- Backspace not removing characters in some cases #2246
 - jitMasking and caret position with static characters #2243
 - datetime does not working in IE11 #2238
 
