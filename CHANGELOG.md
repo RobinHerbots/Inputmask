@@ -1,5 +1,9 @@
 # Change Log
 
+## [5.0.2 - UNRELEASED]
+### Added
+- <input-mask> html element
+
 ## [5.0.1 - 18/12/2019]
 ### Added
 - ssn mask
