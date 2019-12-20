@@ -31,7 +31,7 @@ Highlights:
 - value formatting / validating without input element
 - AMD/CommonJS support
 - dependencyLibs: vanilla javascript, jQuery, jqlite
-- <input-mask> htmlelenent
+- \<input-mask\> htmlelenent
 
 Demo page see [http://robinherbots.github.io/Inputmask](http://robinherbots.github.io/Inputmask)
 
@@ -167,6 +167,14 @@ $(document).ready(function(){
   $("#example2").inputmask();
 });
 ```
+
+### via \<input-mask\> element
+Use the input-mask element in your html code and set the options as attributes.
+
+```html
+<input-mask alias="currency"></input-mask>
+```
+
 
 ### Allowed HTML-elements
 - `<input type="text">`

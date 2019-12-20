@@ -2,7 +2,7 @@
 
 ## [5.0.2 - UNRELEASED]
 ### Added
-- <input-mask> html element
+- <input-mask> html element #2247
 
 ## [5.0.1 - 18/12/2019]
 ### Added
