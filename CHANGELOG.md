@@ -4,6 +4,9 @@
 ### Added
 - <input-mask> html element #2247
 
+### Fixed
+- Numeric alias: cannot clear input on blur #2235
+
 ## [5.0.1 - 18/12/2019]
 ### Added
 - ssn mask
