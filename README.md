@@ -200,6 +200,11 @@ The allowed input types are defined in the supportsInputType option. Also see ([
 
 There are more definitions defined within the extensions.<br>You can find info within the js-files or by further exploring the options.
 
+###### Note:
+When your newly mask is acting strange and replaces some static chars with the mask, then there is a definition which uses the char as symbol.
+To solve this you need to [double escape the char](###escape-special-mask-chars).
+
+
 ## Masking types
 ### Static masks
 These are the very basic of masking.  The mask is defined and will not change during the input.
