@@ -202,7 +202,7 @@ There are more definitions defined within the extensions.<br>You can find info w
 
 ###### Note:
 When your newly mask is acting strange and replaces some static chars with the mask, then there is a definition which uses the char as symbol.
-To solve this you need to [double escape the char](###escape-special-mask-chars).
+To solve this you need to [double escape the char](#escape-special-mask-chars).
 
 
 ## Masking types
@@ -724,7 +724,7 @@ Definition of the symbols used to escape a part in the mask.
 escapeChar: "\\"
 ```
 
-See **escape special mask chars**
+See [escape special mask chars](#escape-special-mask-chars)
 
 ### mask
 The mask to use.
