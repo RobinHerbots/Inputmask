@@ -1162,6 +1162,7 @@ $(document).ready(function(){
   $("#months").inputmask("m \\months");
 });
 ```
+Extra example see https://github.com/RobinHerbots/Inputmask/issues/2251
 
 ### auto-casing inputmask
 You can define within a definition to automatically apply some casing on the entry in an input by giving the casing.<br>Casing can be null, "upper", "lower" or "title".
