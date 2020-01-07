@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.2-beta.3
+ * Version: 5.0.2-beta.4
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1674,7 +1674,7 @@
                     input.inputmask && input.inputmask.refreshValue && applyInputValue(input, input.inputmask._valueGet(!0));
                 }
                 var umValue = [], vps = maskset.validPositions;
-                for (var pndx in vps) vps[pndx] && vps[pndx].match && 1 != vps[pndx].match.static && umValue.push(vps[pndx].input);
+                for (var pndx in vps) vps[pndx] && vps[pndx].match && (1 != vps[pndx].match.static || !0 !== vps[pndx].match.generatedInput) && umValue.push(vps[pndx].input);
                 var unmaskedValue = 0 === umValue.length ? "" : (isRTL ? umValue.reverse() : umValue).join("");
                 if ($.isFunction(opts.onUnMask)) {
                     var bufferValue = (isRTL ? getBuffer().slice().reverse() : getBuffer()).join("");
