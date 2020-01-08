@@ -2262,4 +2262,19 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 		assert.equal(testmask.value, "123.40", "Result " + testmask.value);
 	});
+
+	qunit.test("numeric clear value - honboubao", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\"/>");
+		var testmask = document.getElementById("testmask");
+		Inputmask("numeric", {
+			radixPoint: ",",
+			placeholder: "_",
+			digits: 2,
+			digitsOptional: false
+		}).mask(testmask);
+		testmask.value = "";
+
+		assert.equal(testmask.value, "", "Result \"" + testmask.value + "\"");
+	});
 };
