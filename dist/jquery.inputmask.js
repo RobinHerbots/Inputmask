@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.2-beta.5
+ * Version: 5.0.2-beta.6
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -2104,7 +2104,7 @@
             return escapedTxt;
         }
         function alignDigits(buffer, digits, opts, force) {
-            if (0 < digits && (!opts.digitsOptional || force)) {
+            if (0 < buffer.length && 0 < digits && (!opts.digitsOptional || force)) {
                 var radixPosition = $.inArray(opts.radixPoint, buffer);
                 -1 === radixPosition && (buffer.push(opts.radixPoint), radixPosition = buffer.length - 1);
                 for (var i = 1; i <= digits; i++) isFinite(buffer[radixPosition + i]) || (buffer[radixPosition + i] = "0");
@@ -2337,7 +2337,7 @@
                     if ("" !== radixPoint && (digits = opts.digitsOptional ? opts.digits < decimalPart.length ? opts.digits : decimalPart.length : opts.digits, 
                     "" !== decimalPart || !opts.digitsOptional)) {
                         var digitsFactor = Math.pow(10, digits || 1);
-                        initialValue = initialValue.replace(Inputmask.escapeRegex(radixPoint), "."), isFinite(initialValue) && (initialValue = (opts.roundingFN(parseFloat(initialValue) * digitsFactor) / digitsFactor).toFixed(digits)), 
+                        initialValue = initialValue.replace(Inputmask.escapeRegex(radixPoint), "."), isNaN(parseFloat(initialValue)) || (initialValue = (opts.roundingFN(parseFloat(initialValue) * digitsFactor) / digitsFactor).toFixed(digits)), 
                         initialValue = initialValue.toString().replace(".", radixPoint);
                     }
                     if (0 === opts.digits && -1 !== initialValue.indexOf(radixPoint) && (initialValue = initialValue.substring(0, initialValue.indexOf(radixPoint))), 
