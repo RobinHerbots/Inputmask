@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.2-beta.4
+ * Version: 5.0.2-beta.5
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1549,7 +1549,7 @@
                     input.inputmask && input.inputmask.refreshValue && applyInputValue(input, input.inputmask._valueGet(!0));
                 }
                 var umValue = [], vps = maskset.validPositions;
-                for (var pndx in vps) vps[pndx] && vps[pndx].match && (1 != vps[pndx].match.static || !0 !== vps[pndx].match.generatedInput) && umValue.push(vps[pndx].input);
+                for (var pndx in vps) vps[pndx] && vps[pndx].match && (1 != vps[pndx].match.static || !0 !== vps[pndx].generatedInput) && umValue.push(vps[pndx].input);
                 var unmaskedValue = 0 === umValue.length ? "" : (isRTL ? umValue.reverse() : umValue).join("");
                 if ($.isFunction(opts.onUnMask)) {
                     var bufferValue = (isRTL ? getBuffer().slice().reverse() : getBuffer()).join("");
@@ -1988,13 +1988,17 @@
             return date;
         }
         function getTokenMatch(pos, opts) {
-            var calcPos = 0, targetMatch, match;
-            for (getTokenizer(opts).lastIndex = 0; match = getTokenizer(opts).exec(opts.inputFormat); ) if (calcPos += match[0].length, 
-            pos <= calcPos) {
-                targetMatch = match, match = getTokenizer(opts).exec(opts.inputFormat);
-                break;
+            var calcPos = 0, targetMatch, match, matchLength = 0;
+            for (getTokenizer(opts).lastIndex = 0; match = getTokenizer(opts).exec(opts.inputFormat); ) {
+                var dynMatches = new RegExp("\\d+$").exec(match[0]);
+                if (matchLength = dynMatches ? parseInt(dynMatches[0]) : match[0].length, calcPos += matchLength, 
+                pos <= calcPos) {
+                    targetMatch = match, match = getTokenizer(opts).exec(opts.inputFormat);
+                    break;
+                }
             }
             return {
+                targetMatchIndex: calcPos - matchLength,
                 nextMatch: match,
                 targetMatch: targetMatch
             };
@@ -2043,27 +2047,23 @@
                 },
                 postValidation: function postValidation(buffer, pos, c, currentResult, opts, maskset, strict) {
                     if (strict) return !0;
-                    var tokenMatch;
-                    if (!1 === currentResult) {
-                        if (tokenMatch = getTokenMatch(pos + 1, opts), tokenMatch.targetMatch && tokenMatch.targetMatch.index === pos && 1 < tokenMatch.targetMatch[0].length && void 0 !== formatCode[tokenMatch.targetMatch[0]]) {
-                            var validator = formatCode[tokenMatch.targetMatch[0]][0];
-                            if (new RegExp(validator).test("0" + c)) return {
-                                insert: [ {
-                                    pos: pos,
-                                    c: "0"
-                                }, {
-                                    pos: pos + 1,
-                                    c: c
-                                } ],
-                                pos: pos + 1
-                            };
-                        }
-                        return currentResult;
-                    }
+                    var tokenMatch, validator;
+                    if (!1 === currentResult) return tokenMatch = getTokenMatch(pos + 1, opts), tokenMatch.targetMatch && tokenMatch.targetMatchIndex === pos && 1 < tokenMatch.targetMatch[0].length && void 0 !== formatCode[tokenMatch.targetMatch[0]] && (validator = formatCode[tokenMatch.targetMatch[0]][0], 
+                    new RegExp(validator).test("0" + c)) ? {
+                        insert: [ {
+                            pos: pos,
+                            c: "0"
+                        }, {
+                            pos: pos + 1,
+                            c: c
+                        } ],
+                        pos: pos + 1
+                    } : currentResult;
                     if (currentResult.fuzzy && (buffer = currentResult.buffer, pos = currentResult.pos), 
                     tokenMatch = getTokenMatch(pos, opts), tokenMatch.targetMatch && tokenMatch.targetMatch[0] && void 0 !== formatCode[tokenMatch.targetMatch[0]]) {
-                        var validator = formatCode[tokenMatch.targetMatch[0]][0], part = buffer.slice(tokenMatch.targetMatch.index, tokenMatch.targetMatch.index + tokenMatch.targetMatch[0].length);
-                        !1 === new RegExp(validator).test(part.join("")) && 2 === tokenMatch.targetMatch[0].length && maskset.validPositions[tokenMatch.targetMatch.index] && maskset.validPositions[tokenMatch.targetMatch.index + 1] && (maskset.validPositions[tokenMatch.targetMatch.index + 1].input = "0");
+                        validator = formatCode[tokenMatch.targetMatch[0]][0];
+                        var part = buffer.slice(tokenMatch.targetMatchIndex, tokenMatch.targetMatchIndex + tokenMatch.targetMatch[0].length);
+                        !1 === new RegExp(validator).test(part.join("")) && 2 === tokenMatch.targetMatch[0].length && maskset.validPositions[tokenMatch.targetMatchIndex] && maskset.validPositions[tokenMatch.targetMatchIndex + 1] && (maskset.validPositions[tokenMatch.targetMatchIndex + 1].input = "0");
                     }
                     var result = currentResult, dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
                     return result && dateParts.date.getTime() == dateParts.date.getTime() && (result = isValidDate(dateParts, result), 

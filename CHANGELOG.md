@@ -6,6 +6,7 @@
 
 ### Fixed
 - Numeric alias: cannot clear input on blur #2235
+- Datetime alias H3:MM month validation fails #2239
 
 ## [5.0.1 - 18/12/2019]
 ### Added
