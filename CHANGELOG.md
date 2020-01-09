@@ -1,6 +1,6 @@
 # Change Log
 
-## [5.0.2 - UNRELEASED]
+## [5.0.2 - 09/01/2020]
 ### Added
 - <input-mask> html element #2247
 
