@@ -1,5 +1,10 @@
 # Change Log
 
+## [5.0.3 - UNRELEASED]
+### Fixed
+- Swapped digits on paste with specific prefix #2256
+
+
 ## [5.0.2 - 09/01/2020]
 ### Added
 - <input-mask> html element #2247
