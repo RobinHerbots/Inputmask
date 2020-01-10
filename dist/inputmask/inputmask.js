@@ -57,6 +57,7 @@
             autoUnmask: false,
             removeMaskOnSubmit: false,
             clearMaskOnLostFocus: true,
+            clearMaskOnEmpty: false,
             insertMode: true,
             clearIncomplete: false,
             alias: null,
@@ -1914,7 +1915,7 @@
                 value = value.toString().split("");
                 checkVal(input, true, false, value);
                 undoValue = getBuffer().join("");
-                if ((opts.clearMaskOnLostFocus || opts.clearIncomplete) && input.inputmask._valueGet() === getBufferTemplate().join("")) {
+                if ((opts.clearMaskOnLostFocus || opts.clearMaskOnEmpty || opts.clearIncomplete) && input.inputmask._valueGet() === getBufferTemplate().join("")) {
                     input.inputmask._valueSet("");
                 }
             },
@@ -2023,7 +2024,7 @@
                     HandleNativePlaceholder(input, originalPlaceholder);
                     var nptValue = input.inputmask._valueGet(), buffer = getBuffer().slice();
                     if (nptValue !== "" || colorMask !== undefined) {
-                        if (opts.clearMaskOnLostFocus) {
+                        if (opts.clearMaskOnLostFocus || opts.clearMaskOnEmpty) {
                             if (getLastValidPosition() === -1 && nptValue === getBufferTemplate().join("")) {
                                 buffer = [];
                             } else {
@@ -2036,7 +2037,7 @@
                             }, 0);
                             if (opts.clearIncomplete) {
                                 resetMaskSet();
-                                if (opts.clearMaskOnLostFocus) {
+                                if (opts.clearMaskOnLostFocus || opts.clearMaskOnEmpty) {
                                     buffer = [];
                                 } else {
                                     buffer = getBufferTemplate().slice();
@@ -2626,7 +2627,7 @@
                             resetMaskSet();
                         }
                     }
-                    if (opts.clearMaskOnLostFocus && document.activeElement !== el) {
+                    if ((opts.clearMaskOnLostFocus || opts.clearMaskOnEmpty) && document.activeElement !== el) {
                         if (getLastValidPosition() === -1) {
                             buffer = [];
                         } else {
