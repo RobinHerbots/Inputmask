@@ -256,4 +256,19 @@ export default function (qunit, Inputmask) {
 			done();
 		}, 0);
 	});
+
+	qunit.test("*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@\\d\\o\\m\\a\\i\\n\\n\\a\\m\\e\\.\\c\\o\\m ~ paste construct - twoeyessoftware", function (assert) {
+		var done = assert.async(), $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@\\d\\o\\m\\a\\i\\n\\n\\a\\m\\e\\.\\c\\o\\m", {
+		}).mask(testmask);
+		$("#testmask").trigger("click");
+		$("#testmask").paste("construct");
+
+		setTimeout(function () {
+			assert.equal(testmask.value, "construct@domainname.com", "Result " + testmask.value);
+			done();
+		}, 0);
+	});
 };
