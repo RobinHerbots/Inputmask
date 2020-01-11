@@ -92,17 +92,6 @@ var Inputmask = require('inputmask');
 import Inputmask from "inputmask";
 ```
 
-#### Selecting the dependencyLib
-By default the vanilla dependencyLib is used.  You can select another dependency
-by creating an alias in the webpack.config.
-
-```
- resolve: {
-        alias: {
-            "./dependencyLibs/inputmask.dependencyLib": "./dependencyLibs/inputmask.dependencyLib.jquery"
-        }
-    },
-```
 ## Usage
 ### via Inputmask class
 
