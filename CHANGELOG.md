@@ -1,6 +1,6 @@
 # Change Log
 
-## [5.0.3 - UNRELEASED]
+## [5.0.3 - 11/01/2020
 ### Fixed
 - Pasted value is getting mixed up #2255
 - Swapped digits on paste with specific prefix #2256
