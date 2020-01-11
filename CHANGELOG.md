@@ -2,6 +2,7 @@
 
 ## [5.0.3 - UNRELEASED]
 ### Fixed
+- Pasted value is getting mixed up #2255
 - Swapped digits on paste with specific prefix #2256
 
 
