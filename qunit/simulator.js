@@ -243,4 +243,4 @@ export default function ($, Inputmask) {
 		}
 		$(input).trigger("input");
 	};
-};
+}
