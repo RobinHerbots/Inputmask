@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.4-beta.0
+ * Version: 5.0.4-beta.1
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1484,8 +1484,7 @@
                         if (pasteValue = opts.onBeforePaste.call(inputmask, inputValue, opts), !1 === pasteValue) return e.preventDefault();
                         pasteValue = pasteValue || inputValue;
                     }
-                    return checkVal(this, !1, !1, pasteValue.toString().split("")), writeBuffer(this, getBuffer(), seekNext(getLastValidPosition()), e, inputmask.undoValue !== getBuffer().join("")), 
-                    e.preventDefault();
+                    return checkVal(this, !0, !1, pasteValue.toString().split(""), e), e.preventDefault();
                 },
                 inputFallBackEvent: function inputFallBackEvent(e) {
                     function ieMobileHandler(input, inputValue, caretPos) {
@@ -1673,7 +1672,7 @@
                     } else for (;sndx = staticMatches.pop(); ) validPos = maskset.validPositions[sndx], 
                     validPos && (validPos.generatedInput = !0);
                 }
-                if (writeOut) for (var vndx in writeBuffer(input, getBuffer(), result ? result.forwardPosition : void 0, initiatingEvent || new $.Event("checkval"), initiatingEvent && "input" === initiatingEvent.type), 
+                if (writeOut) for (var vndx in writeBuffer(input, getBuffer(), result ? result.forwardPosition : void 0, initiatingEvent || new $.Event("checkval"), initiatingEvent && "input" === initiatingEvent.type && inputmask.undoValue !== getBuffer().join("")), 
                 maskset.validPositions) !0 !== maskset.validPositions[vndx].match.generated && delete maskset.validPositions[vndx].generatedInput;
             }
             function unmaskedvalue(input) {
