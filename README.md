@@ -36,6 +36,10 @@ Highlights:
 Demo page see [http://robinherbots.github.io/Inputmask](http://robinherbots.github.io/Inputmask)
 
 Thanks to [Jetbrains](https://www.jetbrains.com/?from=inputmask) for providing a free license for their excellent Webstorm IDE.  
+<a href="https://www.jetbrains.com/?from=inputmask">
+  <img src="https://www.jetbrains.com/company/press/#images-logos" alt="Jetbrains">
+</a>
+    
 Thanks to [Browserstack](https://www.browserstack.com) for providing a free license, so we can start automating test in different browsers and devices.  
 <a href="https://www.browserstack.com">
   <img src="https://www.browserstack.com/images/layout/browserstack-logo-600x315.png" alt="Browserstack" width="150">
