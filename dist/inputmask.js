@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.4-beta.3
+ * Version: 5.0.4-beta.7
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -41,7 +41,8 @@
         }
         function importAttributeOptions(npt, opts, userOptions, dataAttribute) {
             function importOption(option, optionData) {
-                optionData = void 0 !== optionData ? optionData : npt.getAttribute(dataAttribute + option), 
+                var attrOption = "" === dataAttribute ? option : dataAttribute + "-" + option;
+                optionData = void 0 !== optionData ? optionData : npt.getAttribute(attrOption), 
                 null !== optionData && ("string" == typeof optionData && (0 === option.indexOf("on") ? optionData = window[optionData] : "false" === optionData ? optionData = !1 : "true" === optionData && (optionData = !0)), 
                 userOptions[option] = optionData);
             }
@@ -67,7 +68,7 @@
             opts.isRTL = !0), Object.keys(userOptions).length;
         }
         Inputmask.prototype = {
-            dataAttribute: "data-inputmask-",
+            dataAttribute: "data-inputmask",
             defaults: {
                 _maxTestPos: 500,
                 placeholder: "_",
@@ -2063,6 +2064,20 @@
             }
             return opts.tokenizer;
         }
+        function prefillYear(dateParts, currentResult, opts) {
+            if (dateParts.year !== dateParts.rawyear) {
+                var currentYear = new Date().getFullYear().toString(), enteredPart = dateParts.rawyear.replace(/[^0-9]/g, ""), currentYearPart = currentYear.slice(0, enteredPart.length), currentYearNextPart = currentYear.slice(enteredPart.length);
+                2 === enteredPart.length && enteredPart === currentYearPart && (!opts.max || opts.max.year >= currentYear) && (dateParts.date.setFullYear(currentYear), 
+                dateParts.year = currentYear, currentResult.insert = [ {
+                    pos: currentResult.pos + 1,
+                    c: currentYearNextPart[0]
+                }, {
+                    pos: currentResult.pos + 2,
+                    c: currentYearNextPart[1]
+                } ]);
+            }
+            return currentResult;
+        }
         function isValidDate(dateParts, currentResult) {
             return (!isFinite(dateParts.rawday) || "29" == dateParts.day && !isFinite(dateParts.rawyear) || new Date(dateParts.date.getFullYear(), isFinite(dateParts.rawmonth) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day) && currentResult;
         }
@@ -2105,23 +2120,19 @@
             var dateObj = {
                 date: new Date(1, 0, 1)
             }, targetProp, mask = maskString, match, dateOperation;
-            function extendProperty(value) {
-                var correctedValue = value.replace(/[^0-9]/g, "0");
-                return correctedValue;
-            }
             function setValue(dateObj, value, opts) {
-                dateObj[targetProp] = extendProperty(value), dateObj["raw" + targetProp] = value, 
+                dateObj[targetProp] = value.replace(/[^0-9]/g, "0"), dateObj["raw" + targetProp] = value, 
                 void 0 !== dateOperation && dateOperation.call(dateObj.date, "month" == targetProp ? parseInt(dateObj[targetProp]) - 1 : dateObj[targetProp]);
             }
             if ("string" == typeof mask) {
                 for (getTokenizer(opts).lastIndex = 0; match = getTokenizer(opts).exec(format); ) {
                     var value = mask.slice(0, match[0].length);
-                    formatCode.hasOwnProperty(match[0]) && (targetProp = formatCode[match[0]][2], dateOperation = formatCode[match[0]][1], 
-                    setValue(dateObj, value, opts)), mask = mask.slice(value.length);
+                    Object.prototype.hasOwnProperty.call(formatCode, match[0]) && (targetProp = formatCode[match[0]][2], 
+                    dateOperation = formatCode[match[0]][1], setValue(dateObj, value, opts)), mask = mask.slice(value.length);
                 }
                 return dateObj;
             }
-            if (mask && "object" === _typeof(mask) && mask.hasOwnProperty("date")) return mask;
+            if (mask && "object" === _typeof(mask) && Object.prototype.hasOwnProperty.call(mask, "date")) return mask;
         }
         function importDate(dateObj, opts) {
             var match, date = "";
@@ -2207,8 +2218,9 @@
                         !1 === new RegExp(validator).test(part.join("")) && 2 === tokenMatch.targetMatch[0].length && maskset.validPositions[tokenMatch.targetMatchIndex] && maskset.validPositions[tokenMatch.targetMatchIndex + 1] && (maskset.validPositions[tokenMatch.targetMatchIndex + 1].input = "0");
                     }
                     var result = currentResult, dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
-                    return result && dateParts.date.getTime() == dateParts.date.getTime() && (result = isValidDate(dateParts, result), 
-                    result = result && isDateInRange(dateParts, opts)), pos && result && currentResult.pos !== pos ? {
+                    return result && dateParts.date.getTime() == dateParts.date.getTime() && (result = prefillYear(dateParts, result, opts), 
+                    result = isValidDate(dateParts, result), result = result && isDateInRange(dateParts, opts)), 
+                    pos && result && currentResult.pos !== pos ? {
                         buffer: parse(opts.inputFormat, dateParts, opts).split(""),
                         refreshFromBuffer: {
                             start: pos,
