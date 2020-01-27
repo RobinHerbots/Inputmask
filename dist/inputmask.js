@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.4-beta.1
+ * Version: 5.0.4-beta.2
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -41,7 +41,7 @@
         }
         function importAttributeOptions(npt, opts, userOptions, dataAttribute) {
             function importOption(option, optionData) {
-                optionData = void 0 !== optionData ? optionData : npt.getAttribute(dataAttribute + "-" + option), 
+                optionData = void 0 !== optionData ? optionData : npt.getAttribute(dataAttribute + option), 
                 null !== optionData && ("string" == typeof optionData && (0 === option.indexOf("on") ? optionData = window[optionData] : "false" === optionData ? optionData = !1 : "true" === optionData && (optionData = !0)), 
                 userOptions[option] = optionData);
             }
@@ -67,7 +67,7 @@
             opts.isRTL = !0), Object.keys(userOptions).length;
         }
         Inputmask.prototype = {
-            dataAttribute: "data-inputmask",
+            dataAttribute: "data-inputmask-",
             defaults: {
                 _maxTestPos: 500,
                 placeholder: "_",
@@ -2698,8 +2698,9 @@
                     var attributeNames = _this.getAttributeNames(), shadow = _this.attachShadow({
                         mode: "closed"
                     }), input = document.createElement("input");
-                    for (var attr in input.type = "text", shadow.appendChild(input), attributeNames) Object.prototype.hasOwnProperty.call(attributeNames, attr) && input.setAttribute("data-inputmask-" + attributeNames[attr], _this.getAttribute(attributeNames[attr]));
-                    return new _inputmask.default().mask(input), input.inputmask.shadowRoot = shadow, 
+                    for (var attr in input.type = "text", shadow.appendChild(input), attributeNames) Object.prototype.hasOwnProperty.call(attributeNames, attr) && input.setAttribute(attributeNames[attr], _this.getAttribute(attributeNames[attr]));
+                    var im = new _inputmask.default();
+                    return im.dataAttribute = "", im.mask(input), input.inputmask.shadowRoot = shadow, 
                     _this;
                 }
                 return _inherits(InputmaskElement, _HTMLElement), InputmaskElement;

@@ -1,5 +1,9 @@
 # Change Log
 
+## [5.0.4 - UNRELEASED]
+### Updates
+- \<input-mask> enhance attribute handling
+
 ## [5.0.3 - 11/01/2020
 ### Fixed
 - Pasted value is getting mixed up #2255
