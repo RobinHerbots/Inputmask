@@ -233,6 +233,20 @@ export default function (qunit, Inputmask) {
 		assert.equal(testmask.value, "2d/mm/yyyy", "Result " + testmask.value);
 	});
 
+	qunit.test("Prefill year - DeepaSunil86 - #2266", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "dd/mm/yyyy"
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("23320");
+
+		assert.equal(testmask.value, "23/03/2020", "Result " + testmask.value);
+	});
+
 	qunit.module("Date.Extensions - mm/dd/yyyy");
 	qunit.test("valid entry", function (assert) {
 		var $fixture = $("#qunit-fixture");
@@ -437,6 +451,20 @@ export default function (qunit, Inputmask) {
 		$("#testmask").Type("882018");
 
 		assert.equal(testmask.value, "08/08/2018", "Result " + testmask.value);
+	});
+
+	qunit.test("Prefill year - DeepaSunil86 - #2266", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "mm/dd/yyyy"
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("32320");
+
+		assert.equal(testmask.value, "03/23/2020", "Result " + testmask.value);
 	});
 
 	qunit.module("Date.Extensions - dd.mm.yyyy");
