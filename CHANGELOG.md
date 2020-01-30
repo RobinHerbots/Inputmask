@@ -2,6 +2,9 @@
 
 ## [5.0.4 - UNRELEASED]
 ### Updates
+- datetime alias: add autofill logic to year
+    - complete with current year
+    - allow filled year be overtyped when min date is provided
 - \<input-mask> enhance attribute handling
 
 ## [5.0.3 - 11/01/2020
