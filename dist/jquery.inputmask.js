@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.4-beta.9
+ * Version: 5.0.4-beta.10
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1956,7 +1956,7 @@
         function isValidDate(dateParts, currentResult) {
             return (!isFinite(dateParts.rawday) || "29" == dateParts.day && !isFinite(dateParts.rawyear) || new Date(dateParts.date.getFullYear(), isFinite(dateParts.rawmonth) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day) && currentResult;
         }
-        function isDateInRange(dateParts, result, opts) {
+        function isDateInRange(dateParts, result, opts, maskset) {
             if (!result) return result;
             if (opts.min) {
                 if (dateParts.rawyear) {
@@ -1965,6 +1965,17 @@
                         var tokenMatch = getTokenMatch(result.pos, opts);
                         if (rawYear = dateParts.rawyear.substr(0, result.pos - tokenMatch.targetMatchIndex + 1), 
                         minYear = opts.min.year.substr(0, rawYear.length), minYear <= rawYear) return result.remove = tokenMatch.targetMatchIndex + rawYear.length, 
+                        result;
+                        if (rawYear = dateParts.rawyear.substr(0, result.pos - tokenMatch.targetMatchIndex), 
+                        minYear = opts.min.year.substr(2, 1), 1 === rawYear.length && minYear <= rawYear) return result.insert = [ {
+                            pos: result.pos + 1,
+                            c: opts.min.year[1],
+                            strict: !0
+                        }, {
+                            pos: result.pos + 2,
+                            c: rawYear,
+                            strict: !0
+                        } ], result.caret = result.pos + 3, maskset.validPositions[result.pos].input = opts.min.year[0], 
                         result;
                         result = !1;
                     }
@@ -2100,7 +2111,7 @@
                     }
                     var result = currentResult, dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
                     return result && dateParts.date.getTime() == dateParts.date.getTime() && (result = prefillYear(dateParts, result, opts), 
-                    result = isValidDate(dateParts, result), result = isDateInRange(dateParts, result, opts)), 
+                    result = isValidDate(dateParts, result), result = isDateInRange(dateParts, result, opts, maskset)), 
                     pos && result && currentResult.pos !== pos ? {
                         buffer: parse(opts.inputFormat, dateParts, opts).split(""),
                         refreshFromBuffer: {
