@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.4-beta.10
+ * Version: 5.0.4-beta.11
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1851,7 +1851,7 @@
                 return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
             }, _typeof(obj);
         }
-        var Inputmask = __webpack_require__(1), $ = Inputmask.dependencyLib, keyCode = __webpack_require__(0), formatCode = {
+        var Inputmask = __webpack_require__(1), $ = Inputmask.dependencyLib, keyCode = __webpack_require__(0), currentYear = new Date().getFullYear(), formatCode = {
             d: [ "[1-9]|[12][0-9]|3[01]", Date.prototype.setDate, "day", Date.prototype.getDate ],
             dd: [ "0[1-9]|[12][0-9]|3[01]", Date.prototype.setDate, "day", function() {
                 return pad(Date.prototype.getDate.call(this), 2);
@@ -1941,9 +1941,9 @@
         }
         function prefillYear(dateParts, currentResult, opts) {
             if (dateParts.year !== dateParts.rawyear) {
-                var currentYear = new Date().getFullYear().toString(), enteredPart = dateParts.rawyear.replace(/[^0-9]/g, ""), currentYearPart = currentYear.slice(0, enteredPart.length), currentYearNextPart = currentYear.slice(enteredPart.length);
-                2 === enteredPart.length && enteredPart === currentYearPart && (!opts.max || opts.max.year >= currentYear) && (dateParts.date.setFullYear(currentYear), 
-                dateParts.year = currentYear, currentResult.insert = [ {
+                var crrntyear = currentYear.toString(), enteredPart = dateParts.rawyear.replace(/[^0-9]/g, ""), currentYearPart = crrntyear.slice(0, enteredPart.length), currentYearNextPart = crrntyear.slice(enteredPart.length);
+                2 === enteredPart.length && enteredPart === currentYearPart && (!opts.max || opts.max.year >= crrntyear) && (dateParts.date.setFullYear(crrntyear), 
+                dateParts.year = crrntyear, currentResult.insert = [ {
                     pos: currentResult.pos + 1,
                     c: currentYearNextPart[0]
                 }, {
@@ -2027,9 +2027,9 @@
             if (mask && "object" === _typeof(mask) && Object.prototype.hasOwnProperty.call(mask, "date")) return mask;
         }
         function importDate(dateObj, opts) {
-            var match, date = "";
-            for (getTokenizer(opts).lastIndex = 0; match = getTokenizer(opts).exec(opts.inputFormat); ) "d" === match[0].charAt(0) ? date += pad(dateObj.getDate(), match[0].length) : "m" === match[0].charAt(0) ? date += pad(dateObj.getMonth() + 1, match[0].length) : "yyyy" === match[0] ? date += dateObj.getFullYear().toString() : "y" === match[0].charAt(0) && (date += pad(dateObj.getYear(), match[0].length));
-            return date;
+            return parse(opts.inputFormat, {
+                date: dateObj
+            }, opts);
         }
         function getTokenMatch(pos, opts) {
             var calcPos = 0, targetMatch, match, matchLength = 0;
@@ -2054,7 +2054,7 @@
                     opts.inputFormat = formatAlias[opts.inputFormat] || opts.inputFormat, opts.displayFormat = formatAlias[opts.displayFormat] || opts.displayFormat || opts.inputFormat, 
                     opts.outputFormat = formatAlias[opts.outputFormat] || opts.outputFormat || opts.inputFormat, 
                     opts.placeholder = "" !== opts.placeholder ? opts.placeholder : opts.inputFormat.replace(/[[\]]/, ""), 
-                    opts.regex = parse(opts.inputFormat, void 0, opts), opts.min = analyseMask(opts.min, opts.inputFormat, opts), 
+                    opts.regex = parse(opts.inputFormat, void 0, opts), opts.min = analyseMask(opts.min || importDate(new Date(currentYear - 2, 0, 1), opts), opts.inputFormat, opts), 
                     opts.max = analyseMask(opts.max, opts.inputFormat, opts), null;
                 },
                 placeholder: "",

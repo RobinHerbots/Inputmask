@@ -4,7 +4,9 @@
 ### Updates
 - datetime alias: add autofill logic to year
     - complete with current year
-    - allow filled year be overtyped when min date is provided
+    - allow filled year be overtyped when min date is provided,
+    - set default for min
+        - min: 1 of january current year minus 2 years
 - \<input-mask> enhance attribute handling
 
 ## [5.0.3 - 11/01/2020
