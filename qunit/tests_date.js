@@ -884,4 +884,20 @@ export default function (qunit, Inputmask) {
 
 		assert.equal(testmask.value, "2H:MM:ss", "Result " + testmask.value);
 	});
+
+	qunit.test("24 hour format with 24:00 inclusive - #2272", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "H2:MM",
+			max: "24:00",
+			placeholder: "HH:MM"
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("23:59");
+
+		assert.equal(testmask.value, "23:59", "Result " + testmask.value);
+	});
 };
