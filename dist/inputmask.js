@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.4-beta.13
+ * Version: 5.0.4-beta.14
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -22,7 +22,7 @@
                 return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
             }, _typeof(obj);
         }
-        var $ = __webpack_require__(2), window = __webpack_require__(3), document = window.document, generateMaskSet = __webpack_require__(4).generateMaskSet, analyseMask = __webpack_require__(4).analyseMask, maskScope = __webpack_require__(7);
+        var $ = __webpack_require__(3), window = __webpack_require__(2), document = window.document, generateMaskSet = __webpack_require__(4).generateMaskSet, analyseMask = __webpack_require__(4).analyseMask, maskScope = __webpack_require__(7);
         function Inputmask(alias, options, internal) {
             if (!(this instanceof Inputmask)) return new Inputmask(alias, options, internal);
             this.el = void 0, this.events = {}, this.maskset = void 0, !0 !== internal && ($.isPlainObject(alias) ? options = alias : (options = options || {}, 
@@ -245,6 +245,7 @@
         }, Inputmask.dependencyLib = $, window.Inputmask = Inputmask, module.exports = Inputmask;
     }, function(module, exports, __webpack_require__) {
         "use strict";
+        var __WEBPACK_AMD_DEFINE_RESULT__;
         function _typeof(obj) {
             return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function _typeof(obj) {
                 return typeof obj;
@@ -252,7 +253,19 @@
                 return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
             }, _typeof(obj);
         }
-        var window = __webpack_require__(3), document = window.document;
+        __WEBPACK_AMD_DEFINE_RESULT__ = function() {
+            return "undefined" != typeof window ? window : new (eval("require('jsdom').JSDOM"))("").window;
+        }.call(exports, __webpack_require__, exports, module), void 0 === __WEBPACK_AMD_DEFINE_RESULT__ || (module.exports = __WEBPACK_AMD_DEFINE_RESULT__);
+    }, function(module, exports, __webpack_require__) {
+        "use strict";
+        function _typeof(obj) {
+            return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function _typeof(obj) {
+                return typeof obj;
+            } : function _typeof(obj) {
+                return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+            }, _typeof(obj);
+        }
+        var window = __webpack_require__(2), document = window.document;
         function indexOf(list, elem) {
             for (var i = 0, len = list.length; i < len; i++) if (list[i] === elem) return i;
             return -1;
@@ -377,20 +390,7 @@
         }, DependencyLib.Event.prototype = window.Event.prototype), module.exports = DependencyLib;
     }, function(module, exports, __webpack_require__) {
         "use strict";
-        var __WEBPACK_AMD_DEFINE_RESULT__;
-        function _typeof(obj) {
-            return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function _typeof(obj) {
-                return typeof obj;
-            } : function _typeof(obj) {
-                return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-            }, _typeof(obj);
-        }
-        __WEBPACK_AMD_DEFINE_RESULT__ = function() {
-            return "undefined" != typeof window ? window : new (eval("require('jsdom').JSDOM"))("").window;
-        }.call(exports, __webpack_require__, exports, module), void 0 === __WEBPACK_AMD_DEFINE_RESULT__ || (module.exports = __WEBPACK_AMD_DEFINE_RESULT__);
-    }, function(module, exports, __webpack_require__) {
-        "use strict";
-        var $ = __webpack_require__(2);
+        var $ = __webpack_require__(3);
         function generateMaskSet(opts, nocache) {
             var ms;
             function generateMask(mask, metadata, opts) {
@@ -740,7 +740,7 @@
     }, function(module, exports, __webpack_require__) {
         "use strict";
         __webpack_require__(8);
-        var $ = __webpack_require__(2), window = __webpack_require__(3), document = window.document, ua = window.navigator && window.navigator.userAgent || "", ie = 0 < ua.indexOf("MSIE ") || 0 < ua.indexOf("Trident/"), mobile = "ontouchstart" in window, iemobile = /iemobile/i.test(ua), iphone = /iphone/i.test(ua) && !iemobile, keyCode = __webpack_require__(0);
+        var $ = __webpack_require__(3), window = __webpack_require__(2), document = window.document, ua = window.navigator && window.navigator.userAgent || "", ie = 0 < ua.indexOf("MSIE ") || 0 < ua.indexOf("Trident/"), mobile = "ontouchstart" in window, iemobile = /iemobile/i.test(ua), iphone = /iphone/i.test(ua) && !iemobile, keyCode = __webpack_require__(0);
         module.exports = function maskScope(actionObj) {
             var inputmask = this, maskset = inputmask.maskset, opts = inputmask.opts, el = inputmask.el, isRTL = inputmask.isRTL || (inputmask.isRTL = opts.numericInput);
             function getMaskTemplate(baseOnInput, minimalPos, includeMode, noJit, clearOptionalTail) {
@@ -2636,7 +2636,7 @@
         }), module.exports = Inputmask;
     }, function(module, exports, __webpack_require__) {
         "use strict";
-        var _inputmask = _interopRequireDefault(__webpack_require__(1));
+        var _window = _interopRequireDefault(__webpack_require__(2)), _inputmask = _interopRequireDefault(__webpack_require__(1));
         function _typeof(obj) {
             return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function _typeof(obj) {
                 return typeof obj;
@@ -2723,7 +2723,8 @@
                 default: obj
             };
         }
-        if (document.head.createShadowRoot || document.head.attachShadow) {
+        var document = _window.default.document;
+        if (document && document.head && document.head.attachShadow) {
             var InputmaskElement = function(_HTMLElement) {
                 function InputmaskElement() {
                     var _this;
