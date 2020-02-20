@@ -1,6 +1,9 @@
 # Change Log
 
 ## [5.0.4 - UNRELEASED]
+### Add
+- numeric alias
+    - SetMaxOnOverflow option
 ### Updates
 - datetime alias: add autofill logic to year
     - complete with current year

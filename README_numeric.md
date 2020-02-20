@@ -63,6 +63,11 @@ Default: undefined
 Maximum value  
 Default: undefined
 
+### SetMaxOnOverflow
+Set the maximum value when the user types a number which is greater that the value of max.
+
+Default: false
+
 ### step
 Define the step the ctrl-up & ctrl-down must take.  
 Default: 1
