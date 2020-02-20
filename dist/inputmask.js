@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.4-beta.20
+ * Version: 5.0.4-beta.21
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -129,7 +129,7 @@
             },
             definitions: {
                 9: {
-                    validator: "[0-9\uff11-\uff19]",
+                    validator: "[0-9\uff10-\uff19]",
                     definitionSymbol: "*"
                 },
                 a: {
@@ -137,7 +137,7 @@
                     definitionSymbol: "*"
                 },
                 "*": {
-                    validator: "[0-9\uff11-\uff19A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]"
+                    validator: "[0-9\uff10-\uff19A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]"
                 }
             },
             aliases: {},
