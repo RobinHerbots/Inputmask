@@ -90,7 +90,6 @@ Unmasking format
 ## min
 Minimum value.  
 This needs to be in the same format as the inputformat.  
-Default:  1 of january current year minus 2 years
 
 ## max
 Maximum value.   

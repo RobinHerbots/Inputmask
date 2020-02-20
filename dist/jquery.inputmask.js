@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.4-beta.16
+ * Version: 5.0.4-beta.19
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1966,8 +1966,12 @@
                         if (rawYear = dateParts.rawyear.substr(0, result.pos - tokenMatch.targetMatchIndex + 1), 
                         minYear = opts.min.year.substr(0, rawYear.length), minYear <= rawYear) return result.remove = tokenMatch.targetMatchIndex + rawYear.length, 
                         result;
-                        if (rawYear = dateParts.rawyear.substr(0, result.pos - tokenMatch.targetMatchIndex), 
-                        minYear = opts.min.year.substr(2, 1), 1 === rawYear.length && minYear <= rawYear) return result.insert = [ {
+                        if (rawYear = "yyyy" === tokenMatch.targetMatch[0] ? dateParts.rawyear.substr(1, 1) : dateParts.rawyear.substr(0, 1), 
+                        minYear = opts.min.year.substr(2, 1), 1 === rawYear.length && minYear <= rawYear) return "yyyy" === tokenMatch.targetMatch[0] ? (result.insert = [ {
+                            pos: result.pos + 1,
+                            c: rawYear,
+                            strict: !0
+                        } ], result.caret = result.pos + 2, maskset.validPositions[result.pos].input = opts.min.year[1]) : (result.insert = [ {
                             pos: result.pos + 1,
                             c: opts.min.year[1],
                             strict: !0
@@ -1975,7 +1979,7 @@
                             pos: result.pos + 2,
                             c: rawYear,
                             strict: !0
-                        } ], result.caret = result.pos + 3, maskset.validPositions[result.pos].input = opts.min.year[0], 
+                        } ], result.caret = result.pos + 3, maskset.validPositions[result.pos].input = opts.min.year[0]), 
                         result;
                         result = !1;
                     }

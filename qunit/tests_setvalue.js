@@ -32,7 +32,7 @@ export default function (qunit, Inputmask) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" disabled=\"disabled\" />");
 		var testmask = document.getElementById("testmask");
-		Inputmask("datetime", {inputFormat: "mm/yyyy"}).mask(testmask);
+		Inputmask("datetime", {inputFormat: "mm/yyyy", min: "01/1900"}).mask(testmask);
 		$("#testmask").val("031973");
 		assert.equal(testmask.value, "03/1973", "Result " + testmask.value);
 	});
