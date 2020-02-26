@@ -463,4 +463,18 @@ export default function (qunit, Inputmask) {
 		$("#testmask").Type(".");
 		assert.equal(testmask.value, "123.abc", "Result " + testmask.value);
 	});
+
+	qunit.test("email mask set email", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("email").mask(testmask);
+
+		testmask.focus();
+		$("#testmask").val("some.body@mymail.com");
+		$.caret(testmask, "some.body@m".length);
+		$("#testmask").SendKey(keyCode.DELETE);
+		$("#testmask").SendKey(keyCode.DELETE);
+		assert.equal(testmask.value, "some.body@mail.com", "Result " + testmask.value);
+	});
 };

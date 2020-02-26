@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.4-beta.23
+ * Version: 5.0.4-beta.24
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1675,11 +1675,9 @@
                         result = EventHandlers.keypressEvent.call(input, keypress, !0, !1, strict, nextSndx), 
                         result && void 0 !== result.pos && result.pos !== sndx && maskset.validPositions[result.pos] && !0 === maskset.validPositions[result.pos].match.static) staticMatches.push(result.pos); else if (!result) break;
                         nextSndx++;
-                    } else for (;sndx = staticMatches.pop(); ) validPos = maskset.validPositions[sndx], 
-                    validPos && (validPos.generatedInput = !0);
+                    }
                 }
-                if (writeOut) for (var vndx in writeBuffer(input, getBuffer(), result ? result.forwardPosition : inputmask.caretPos.begin, initiatingEvent || new $.Event("checkval"), initiatingEvent && "input" === initiatingEvent.type && inputmask.undoValue !== getBuffer().join("")), 
-                maskset.validPositions) !0 !== maskset.validPositions[vndx].match.generated && delete maskset.validPositions[vndx].generatedInput;
+                writeOut && writeBuffer(input, getBuffer(), result ? result.forwardPosition : inputmask.caretPos.begin, initiatingEvent || new $.Event("checkval"), initiatingEvent && "input" === initiatingEvent.type && inputmask.undoValue !== getBuffer().join(""));
             }
             function unmaskedvalue(input) {
                 if (input) {
