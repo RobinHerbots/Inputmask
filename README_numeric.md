@@ -72,6 +72,14 @@ Default: false
 Define the step the ctrl-up & ctrl-down must take.  
 Default: 1
 
+### inputType
+Specify that values which are set are in textform (radix point  is same as in the options) or in numberform (radixpoint = .)
+
+Default: "text"
+
+text: radixpoint should be the same as in the options  
+number: radixpoint should be a . as the default for a number in js
+
 ### unmaskAsNumber
 Make unmasking returning a number instead of a string.  
 Default: false

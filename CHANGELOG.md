@@ -10,6 +10,9 @@
     - allow filled year be overtyped when min date is provided,
 - \<input-mask> enhance attribute handling
 
+### Fixed
+- Cursor jumps to end of mask if changing value during typing #2274
+
 ## [5.0.3 - 11/01/2020
 ### Fixed
 - regex mask crashes for long input size #2276

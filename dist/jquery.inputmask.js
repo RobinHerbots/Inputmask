@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.4-beta.22
+ * Version: 5.0.4-beta.23
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1553,7 +1553,7 @@
                     } else for (;sndx = staticMatches.pop(); ) validPos = maskset.validPositions[sndx], 
                     validPos && (validPos.generatedInput = !0);
                 }
-                if (writeOut) for (var vndx in writeBuffer(input, getBuffer(), result ? result.forwardPosition : void 0, initiatingEvent || new $.Event("checkval"), initiatingEvent && "input" === initiatingEvent.type && inputmask.undoValue !== getBuffer().join("")), 
+                if (writeOut) for (var vndx in writeBuffer(input, getBuffer(), result ? result.forwardPosition : inputmask.caretPos.begin, initiatingEvent || new $.Event("checkval"), initiatingEvent && "input" === initiatingEvent.type && inputmask.undoValue !== getBuffer().join("")), 
                 maskset.validPositions) !0 !== maskset.validPositions[vndx].match.generated && delete maskset.validPositions[vndx].generatedInput;
             }
             function unmaskedvalue(input) {
@@ -2262,6 +2262,7 @@
                 max: null,
                 SetMaxOnOverflow: !1,
                 step: 1,
+                inputType: "text",
                 unmaskAsNumber: !1,
                 roundingFN: Math.round,
                 inputmode: "numeric",
