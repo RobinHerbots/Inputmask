@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.4-beta.25
+ * Version: 5.0.4-beta.26
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -2544,7 +2544,7 @@
                         return buffer;
                     }
                     var result, leadingzeroes = checkForLeadingZeroes(buffer, opts);
-                    if (leadingzeroes) for (var buf = buffer.slice().reverse(), caretNdx = buf.join("").indexOf(leadingzeroes[0]), i = leadingzeroes[0].length - 1; 0 < i; i--) delete this.maskset.validPositions[caretNdx + i], 
+                    if (leadingzeroes) for (var caretNdx = buffer.join("").lastIndexOf(leadingzeroes[0].split("").reverse().join("")) - (leadingzeroes[0] == leadingzeroes.input ? 0 : 1), offset = leadingzeroes[0] == leadingzeroes.input ? 1 : 0, i = leadingzeroes[0].length - offset; 0 < i; i--) delete this.maskset.validPositions[caretNdx + i], 
                     delete buffer[caretNdx + i];
                     if (e) switch (e.type) {
                       case "blur":
