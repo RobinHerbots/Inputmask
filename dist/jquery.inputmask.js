@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.4-beta.26
+ * Version: 5.0.4-beta.27
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -153,7 +153,7 @@
                         el.inputmask.remove()), el.inputmask = new Inputmask(void 0, void 0, !0), el.inputmask.opts = scopedOpts, 
                         el.inputmask.noMasksCache = that.noMasksCache, el.inputmask.userOptions = $.extend(!0, {}, that.userOptions), 
                         el.inputmask.isRTL = scopedOpts.isRTL || scopedOpts.numericInput, el.inputmask.el = el, 
-                        el.inputmask.$el = $(el), el.inputmask.maskset = maskset, $.data(el, "_inputmask_opts", scopedOpts), 
+                        el.inputmask.$el = $(el), el.inputmask.maskset = maskset, $.data(el, "_inputmask_opts", that.userOptions), 
                         maskScope.call(el.inputmask, {
                             action: "mask"
                         }));
@@ -1253,7 +1253,7 @@
                         var that = this, args, inputmask = that.inputmask;
                         if (void 0 === inputmask && "FORM" !== this.nodeName) {
                             var imOpts = $.data(that, "_inputmask_opts");
-                            imOpts ? new Inputmask(imOpts).mask(that) : EventRuler.off(that);
+                            $(that).off(), imOpts && new Inputmask(imOpts).mask(that);
                         } else {
                             if ("setvalue" === e.type || "FORM" === this.nodeName || !(that.disabled || that.readOnly && !("keydown" === e.type && e.ctrlKey && 67 === e.keyCode || !1 === opts.tabThrough && e.keyCode === keyCode.TAB))) {
                                 switch (e.type) {
