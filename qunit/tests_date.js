@@ -944,4 +944,38 @@ export default function (qunit, Inputmask) {
 
 		assert.equal(testmask.value, "23:59", "Result " + testmask.value);
 	});
-};
+
+	qunit.test("yearfill bug - hoesein - #1966", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat : "dd-mm-yyyy",
+			placeholder : "_",
+			clearIncomplete: true,
+			min : "09-09-0999", max : "04-02-2020"
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("01122019");
+
+		assert.equal(testmask.value, "01-12-2019", "Result " + testmask.value);
+	});
+
+	qunit.test("leapyear bug - #2286", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			"placeholder": "mm/dd/yyyy HH:MM",
+			"inputFormat": "mm/dd/yyyy HH:MM",
+			"min": "01/01/1753 00:00",
+			"max": "03/03/2020 23:59"
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("02/29/2012 10:25");
+
+		assert.equal(testmask.value, "02/29/2012 10:25", "Result " + testmask.value);
+	});
+}

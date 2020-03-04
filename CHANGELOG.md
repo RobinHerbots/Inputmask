@@ -11,6 +11,7 @@
 - \<input-mask> enhance attribute handling
 
 ### Fixed
+- Datetime alias 29/02/a valid year does not always allows #2286
 - 'input-mask' has already been defined as a custom element #2285
 - Using min with alias integer not working correctly because of postValidation #2284
 - fix double events when using jQuery.clone function
