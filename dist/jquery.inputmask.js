@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.4-beta.30
+ * Version: 5.0.4-beta.31
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1945,7 +1945,7 @@
         function prefillYear(dateParts, currentResult, opts) {
             if (dateParts.year !== dateParts.rawyear) {
                 var crrntyear = currentYear.toString(), enteredPart = dateParts.rawyear.replace(/[^0-9]/g, ""), currentYearPart = crrntyear.slice(0, enteredPart.length), currentYearNextPart = crrntyear.slice(enteredPart.length);
-                2 === enteredPart.length && enteredPart === currentYearPart && (!opts.max || opts.max.year >= crrntyear) && (dateParts.date.setFullYear(crrntyear), 
+                2 === enteredPart.length && enteredPart === currentYearPart && (!opts.max || opts.max.date.getTime() >= new Date(crrntyear, dateParts.month - 1, dateParts.day).getTime()) && (dateParts.date.setFullYear(crrntyear), 
                 dateParts.year = crrntyear, currentResult.insert = [ {
                     pos: currentResult.pos + 1,
                     c: currentYearNextPart[0]
