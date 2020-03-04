@@ -11,6 +11,7 @@
 - \<input-mask> enhance attribute handling
 
 ### Fixed
+- Using min with alias integer not working correctly because of postValidation #2284
 - fix double events when using jQuery.clone function
 - Alternative for removed integerDigits property? #2278
 - Incorrect mask operation when deleting the value set through "value", "val", "setvalue". #2279
