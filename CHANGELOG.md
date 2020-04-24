@@ -19,7 +19,7 @@
 - Incorrect mask operation when deleting the value set through "value", "val", "setvalue". #2279
 - Cursor jumps to end of mask if changing value during typing #2274
 
-## [5.0.3 - 11/01/2020
+## [5.0.3 - 11/01/2020]
 ### Fixed
 - regex mask crashes for long input size #2276
 - Pasted value is getting mixed up #2255
