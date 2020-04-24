@@ -361,7 +361,8 @@ The return value of a validator can be true,  false or a command object.
 - refreshFromBuffer :
   - true => refresh validPositions from the complete buffer
   - { start: , end: } => refresh from start to end
-- rewritePosition: rewrite the maskPos within the isvalid function
+- rewritePosition: rewrite the maskPos within the isvalid function  
+  See [preValidation option](#preValidation)
 
 ### definitionSymbol
 When you insert or delete characters, they are only shifted when the definition type is the same.  This behavior can be overridden by giving a definitionSymbol. (see example x, y, z, which can be used for ip-address masking, the validation is different, but it is allowed to shift the characters between the definitions)
@@ -1033,6 +1034,9 @@ Hook to postValidate the result from isValid.  Usefull for validating the entry 
 ### preValidation
 Hook to preValidate the input.  Useful for validating regardless the definition. Args => buffer, pos, char, isSelection, opts, maskset, caretPos, strict => return true/false/command object
 When return true, the normal validation kicks in, otherwise it is skipped.
+
+When returning a command object the actions are executed and futher validation is stopped.  
+If you want to continue further validation, you need to add the rewritePosition action.
 
 ### staticDefinitionSymbol
 The staticDefinitionSymbol option is used to indicate that the static entries in the mask can match a certain definition.  Especially usefull with alternators so that static element in the mask can match another alternation.
