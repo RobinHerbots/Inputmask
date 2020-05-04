@@ -293,7 +293,7 @@ ex: "a|9" => a or 9
 "(aaa)|(999)" => aaa or 999
 "(aaa|999|9AA)" => aaa or 999 or 9AA
 
-Also make sure to read about the keepStatic option.
+**Also make sure to read about the [keepStatic](#keepStatic) option.**
 
 ```javascript
 $("selector").inputmask("(99.9)|(X)", {
