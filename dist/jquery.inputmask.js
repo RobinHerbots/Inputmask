@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.4-beta.37
+ * Version: 5.0.4-beta.38
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -553,7 +553,8 @@
             },
             url: {
                 regex: "(https?|ftp)://.*",
-                autoUnmask: !1
+                autoUnmask: !1,
+                keepStatic: !1
             },
             ip: {
                 mask: "i[i[i]].j[j[j]].k[k[k]].l[l[l]]",
@@ -1569,7 +1570,7 @@
                     input.inputmask && input.inputmask.refreshValue && applyInputValue(input, input.inputmask._valueGet(!0));
                 }
                 var umValue = [], vps = maskset.validPositions;
-                for (var pndx in vps) vps[pndx] && vps[pndx].match && (1 != vps[pndx].match.static || !0 !== vps[pndx].generatedInput) && umValue.push(vps[pndx].input);
+                for (var pndx in vps) vps[pndx] && vps[pndx].match && (1 != vps[pndx].match.static || $.isArray(maskset.metadata) && !0 !== vps[pndx].generatedInput) && umValue.push(vps[pndx].input);
                 var unmaskedValue = 0 === umValue.length ? "" : (isRTL ? umValue.reverse() : umValue).join("");
                 if ($.isFunction(opts.onUnMask)) {
                     var bufferValue = (isRTL ? getBuffer().slice().reverse() : getBuffer()).join("");

@@ -11,6 +11,8 @@
 - \<input-mask> enhance attribute handling
 
 ### Fixed
+- unmask regression? #2315
+    - only keep significant parts when using multiple masks
 - Datetime alias 29/02/a valid year does not always allows #2286
 - 'input-mask' has already been defined as a custom element #2285
 - Using min with alias integer not working correctly because of postValidation #2284
