@@ -1230,10 +1230,7 @@ When cloning a inputmask, the inputmask reactivates on the first event (mouseent
 Be sure to pass true in the jQuery.clone fn to clone with data and events and use jQuery as dependencyLib
 (https://api.jquery.com/clone/)
 
-# Extensions
-## [date & datetime extensions](README_date.md)
-## [numeric extensions](README_numeric.md)
-## [other extensions](README_other.md)
+
 
 [npm-url]: https://npmjs.org/package/inputmask
 [npm-image]: https://img.shields.io/npm/v/inputmask.svg
