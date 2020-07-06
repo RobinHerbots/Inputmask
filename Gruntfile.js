@@ -4,7 +4,7 @@ module.exports = function (grunt) {
 // Project configuration.
 	grunt.initConfig({
 		pkg: grunt.file.readJSON("package.json"),
-		clean: ["dist/**"],
+		clean: ["dist"],
 		bump: {
 			options: {
 				files: ["package.json", "bower.json", "composer.json"],
