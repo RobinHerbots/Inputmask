@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.4-beta.41
+ * Version: 5.0.4-beta.43
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1375,9 +1375,9 @@
         }
         var EventRuler = {
             on: function on(input, eventName, eventHandler) {
-                var ev = function ev(e) {
+                var $ = input.inputmask.dependencyLib, ev = function ev(e) {
                     e.originalEvent && (e = e.originalEvent || e, arguments[0] = e);
-                    var that = this, args, inputmask = that.inputmask, opts = inputmask ? inputmask.opts : void 0;
+                    var that = this, args, inputmask = that.inputmask, opts = inputmask ? inputmask.opts : void 0, $ = inputmask.dependencyLib;
                     if (void 0 === inputmask && "FORM" !== this.nodeName) {
                         var imOpts = $.data(that, "_inputmask_opts");
                         $(that).off(), imOpts && new _inputmask.default(imOpts).mask(that);
@@ -1424,11 +1424,11 @@
             },
             off: function off(input, event) {
                 if (input.inputmask && input.inputmask.events) {
-                    var _$ = input.inputmask.dependencyLib, events = input.inputmask.events;
-                    event && (events = [], events[event] = input.inputmask.events[event]), _$.each(events, function(eventName, evArr) {
+                    var $ = input.inputmask.dependencyLib, events = input.inputmask.events;
+                    event && (events = [], events[event] = input.inputmask.events[event]), $.each(events, function(eventName, evArr) {
                         for (;0 < evArr.length; ) {
                             var ev = evArr.pop();
-                            -1 !== _$.inArray(eventName, [ "submit", "reset" ]) ? null !== input.form && _$(input.form).off(eventName, ev) : _$(input).off(eventName, ev);
+                            -1 !== $.inArray(eventName, [ "submit", "reset" ]) ? null !== input.form && $(input.form).off(eventName, ev) : $(input).off(eventName, ev);
                         }
                         delete input.inputmask.events[eventName];
                     });
