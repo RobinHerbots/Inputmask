@@ -212,7 +212,7 @@ export default function ($, Inputmask) {
 	$.fn.Type = function (inputStr) {
 		var input = this.nodeName ? this : this[0],
 			$input = $(input);
-		$.each(inputStr.split(""), function (ndx, lmnt) {
+		inputStr.split("").forEach(function ( lmnt, ndx) {
 			$input.SendKey(lmnt);
 		});
 	};
