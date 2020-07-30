@@ -1,6 +1,6 @@
 var webpack = require("webpack"),
 	UglifyJsPlugin = require("uglifyjs-webpack-plugin"),
-	$ = require("./lib/dependencyLibs/inputmask.dependencyLib");
+	_ = require("lodash");
 
 
 function createBanner() {
@@ -18,7 +18,7 @@ var rules = {
 		exclude: /(node_modules)/,
 		options: {
 			presets: ["@babel/preset-env"],
-			plugins: ["@babel/plugin-transform-modules-commonjs"],
+			//plugins: ["@babel/plugin-transform-modules-commonjs"],
 			passPerPreset: true,
 		},
 	},
@@ -123,9 +123,9 @@ module.exports = function (env, argv) {
 		mode: env === "production" ? "production" : "none"
 	};
 
-	var jqueryConfig = $.extend(true, {}, config);
+	var jqueryConfig = _.defaultsDeep({}, config);
 	jqueryConfig.entry = {};
-	$.extend(true, jqueryConfig, {
+	_.assignIn(jqueryConfig, {
 		name: "jquery",
 		resolve: {
 			alias: {
