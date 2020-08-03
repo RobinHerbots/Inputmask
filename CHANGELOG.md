@@ -2,6 +2,7 @@
 
 ## [5.0.4 - UNRELEASED]
 ### Add
+- usePrototypeDefinitions option
 - numeric alias
     - SetMaxOnOverflow option
 ### Updates

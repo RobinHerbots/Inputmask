@@ -1112,6 +1112,11 @@ Default: true
 true = shift on the "def" match
 false = shift on the "nativeDef" match
 
+### usePrototypeDefinitions
+Use the default defined definitions from the prototype.  
+
+Default: true 
+
 ## General
 ### set a value and apply mask
 this can be done with the traditional jquery.val function (all browsers) or JavaScript value property for browsers which implement lookupGetter or getOwnPropertyDescriptor

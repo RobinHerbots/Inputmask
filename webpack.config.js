@@ -1,14 +1,14 @@
 var webpack = require("webpack"),
 	UglifyJsPlugin = require("uglifyjs-webpack-plugin"),
-	_ = require("lodash");
-
+	_ = require("lodash"),
+	pkg = require("./package.json");
 
 function createBanner() {
 	return "[name]\n" +
-		"<%= pkg.homepage %>\n" +
-		"Copyright (c) 2010 - <%= grunt.template.today('yyyy') %> <%= pkg.author.name %>\n" +
-		"Licensed under the <%= pkg.license %> license\n" +
-		"Version: <%= pkg.version %>";
+		`${pkg.homepage}\n` +
+		`Copyright (c) 2010 - ${new Date().getFullYear()} ${pkg.author.name}\n` +
+		`Licensed under the ${pkg.license} license\n` +
+		`Version: ${pkg.version}`;
 }
 
 var rules = {
@@ -18,7 +18,7 @@ var rules = {
 		exclude: /(node_modules)/,
 		options: {
 			presets: ["@babel/preset-env"],
-			//plugins: ["@babel/plugin-transform-modules-commonjs"],
+			plugins: ["@babel/plugin-transform-modules-commonjs"],
 			passPerPreset: true,
 		},
 	},
