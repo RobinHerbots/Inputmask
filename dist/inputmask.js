@@ -393,10 +393,11 @@
                     caret.call(inputmask, input, e.shiftKey ? pos.begin : caretPos, caretPos, !0);
                 } else k === keycode.HOME && !e.shiftKey || k === keycode.PAGE_UP ? (e.preventDefault(), 
                 caret.call(inputmask, input, 0, e.shiftKey ? pos.begin : 0, !0)) : (opts.undoOnEscape && k === keycode.ESCAPE || 90 === k && e.ctrlKey) && !0 !== e.altKey ? (checkVal(input, !0, !1, inputmask.undoValue.split("")), 
-                $input.trigger("click")) : !0 === opts.tabThrough && k === keycode.TAB ? (!0 === e.shiftKey ? (!0 === getTest.call(inputmask, pos.begin).match.static && (pos.begin = seekNext.call(inputmask, pos.begin)), 
-                pos.end = seekPrevious.call(inputmask, pos.begin, !0), pos.begin = seekPrevious.call(inputmask, pos.end, !0)) : (pos.begin = seekNext.call(inputmask, pos.begin, !0), 
-                pos.end = seekNext.call(inputmask, pos.begin, !0), pos.end < maskset.maskLength && pos.end--), 
-                pos.begin < maskset.maskLength && (e.preventDefault(), caret.call(inputmask, input, pos.begin, pos.end))) : e.shiftKey || opts.insertModeVisual && !1 === opts.insertMode && (k === keycode.RIGHT ? setTimeout(function() {
+                $input.trigger("click")) : !0 === opts.tabThrough && k === keycode.TAB ? !0 === e.shiftKey ? (pos.end = seekPrevious.call(inputmask, pos.end, !0), 
+                !0 === getTest.call(inputmask, pos.end - 1).match.static && pos.end--, pos.begin = seekPrevious.call(inputmask, pos.end, !0), 
+                0 <= pos.begin && 0 < pos.end && (e.preventDefault(), caret.call(inputmask, input, pos.begin, pos.end))) : (pos.begin = seekNext.call(inputmask, pos.begin, !0), 
+                pos.end = seekNext.call(inputmask, pos.begin, !0), pos.end < maskset.maskLength && pos.end--, 
+                pos.begin <= maskset.maskLength && (e.preventDefault(), caret.call(inputmask, input, pos.begin, pos.end))) : e.shiftKey || opts.insertModeVisual && !1 === opts.insertMode && (k === keycode.RIGHT ? setTimeout(function() {
                     var caretPos = caret.call(inputmask, input);
                     caret.call(inputmask, input, caretPos.begin);
                 }, 0) : k === keycode.LEFT && setTimeout(function() {
@@ -938,7 +939,7 @@
             } : bl;
         }
         function determineNewCaretPosition(selectedCaret, tabbed) {
-            var inputmask = this, maskset = this.maskset, opts = this.opts, $ = this.dependencyLib;
+            var inputmask = this, maskset = this.maskset, opts = this.opts;
             function doRadixFocus(clickPos) {
                 if ("" !== opts.radixPoint && 0 !== opts.digits) {
                     var vps = maskset.validPositions;
@@ -978,10 +979,11 @@
                     }
 
                   default:
-                    var clickPosition = selectedCaret.begin, lvclickPosition = getLastValidPosition.call(inputmask, clickPosition, !0), lastPosition = seekNext.call(inputmask, -1 !== lvclickPosition || isMask.call(inputmask, 0) ? lvclickPosition : 0);
-                    if (clickPosition < lastPosition) selectedCaret.end = selectedCaret.begin = isMask.call(inputmask, clickPosition, !0) || isMask.call(inputmask, clickPosition - 1, !0) ? clickPosition : seekNext.call(inputmask, clickPosition); else {
+                    var clickPosition = selectedCaret.begin, lvclickPosition = getLastValidPosition.call(inputmask, clickPosition, !0), lastPosition = seekNext.call(inputmask, -1 !== lvclickPosition || isMask.call(inputmask, 0) ? lvclickPosition : -1);
+                    if (clickPosition <= lastPosition) selectedCaret.end = selectedCaret.begin = isMask.call(inputmask, clickPosition, !1, !0) ? clickPosition : seekNext.call(inputmask, clickPosition); else {
+                        console.log("case 2");
                         var lvp = maskset.validPositions[lvclickPosition], tt = getTestTemplate.call(inputmask, lastPosition, lvp ? lvp.match.locator : void 0, lvp), placeholder = getPlaceholder.call(inputmask, lastPosition, tt.match);
-                        if ("" !== placeholder && getBuffer.call(inputmask)[lastPosition] !== placeholder && !0 !== tt.match.optionalQuantifier && !0 !== tt.match.newBlockMarker || !isMask.call(inputmask, lastPosition, opts.keepStatic) && tt.match.def === placeholder) {
+                        if ("" !== placeholder && getBuffer.call(inputmask)[lastPosition] !== placeholder && !0 !== tt.match.optionalQuantifier && !0 !== tt.match.newBlockMarker || !isMask.call(inputmask, lastPosition, opts.keepStatic, !0) && tt.match.def === placeholder) {
                             var newPos = seekNext.call(inputmask, lastPosition);
                             (newPos <= clickPosition || clickPosition === lastPosition) && (lastPosition = newPos);
                         }
@@ -1035,10 +1037,9 @@
             return position;
         }
         function seekPrevious(pos, newBlock) {
-            var inputmask = this, position = pos, tests;
-            if (position <= 0) return 0;
-            for (;0 < --position && (!0 === newBlock && !0 !== getTest.call(this, position).match.newBlockMarker || !0 !== newBlock && !isMask.call(this, position, void 0, !0) && (tests = getTests.call(this, position), 
-            tests.length < 2 || 2 === tests.length && "" === tests[1].match.def)); ) ;
+            var inputmask = this, position = pos - 1;
+            if (pos <= 0) return 0;
+            for (;0 < position && (!0 === newBlock && (!0 !== getTest.call(this, position).match.newBlockMarker || !isMask.call(this, position, void 0, !0)) || !0 !== newBlock && !isMask.call(this, position, void 0, !0)); ) position--;
             return position;
         }
         function translatePosition(pos) {
@@ -1577,6 +1578,76 @@
             return 0 < currentToken.matches.length && (verifyGroupMarker(currentToken), maskTokens.push(currentToken)), 
             (opts.numericInput || opts.isRTL) && reverseTokens(maskTokens[0]), maskTokens;
         }
+        var definitions = {
+            9: {
+                validator: "[0-9\uff10-\uff19]",
+                definitionSymbol: "*"
+            },
+            a: {
+                validator: "[A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
+                definitionSymbol: "*"
+            },
+            "*": {
+                validator: "[0-9\uff10-\uff19A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]"
+            }
+        }, defaults = {
+            _maxTestPos: 500,
+            placeholder: "_",
+            optionalmarker: [ "[", "]" ],
+            quantifiermarker: [ "{", "}" ],
+            groupmarker: [ "(", ")" ],
+            alternatormarker: "|",
+            escapeChar: "\\",
+            mask: null,
+            regex: null,
+            oncomplete: function oncomplete() {},
+            onincomplete: function onincomplete() {},
+            oncleared: function oncleared() {},
+            repeat: 0,
+            greedy: !1,
+            autoUnmask: !1,
+            removeMaskOnSubmit: !1,
+            clearMaskOnLostFocus: !0,
+            insertMode: !0,
+            insertModeVisual: !0,
+            clearIncomplete: !1,
+            alias: null,
+            onKeyDown: function onKeyDown() {},
+            onBeforeMask: null,
+            onBeforePaste: function onBeforePaste(pastedValue, opts) {
+                return "function" == typeof opts.onBeforeMask ? opts.onBeforeMask.call(this, pastedValue, opts) : pastedValue;
+            },
+            onBeforeWrite: null,
+            onUnMask: null,
+            showMaskOnFocus: !0,
+            showMaskOnHover: !0,
+            onKeyValidation: function onKeyValidation() {},
+            skipOptionalPartCharacter: " ",
+            numericInput: !1,
+            rightAlign: !1,
+            undoOnEscape: !0,
+            radixPoint: "",
+            _radixDance: !1,
+            groupSeparator: "",
+            keepStatic: null,
+            positionCaretOnTab: !0,
+            tabThrough: !1,
+            supportsInputType: [ "text", "tel", "url", "password", "search" ],
+            ignorables: [ 8, 9, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 0, 229 ],
+            isComplete: null,
+            preValidation: null,
+            postValidation: null,
+            staticDefinitionSymbol: void 0,
+            jitMasking: !1,
+            nullable: !0,
+            inputEventOnly: !1,
+            noValuePatching: !1,
+            positionCaretOnClick: "lvp",
+            casing: null,
+            inputmode: "text",
+            importDataAttributes: !0,
+            shiftPositions: !0
+        };
         function inputmask_typeof(obj) {
             return inputmask_typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function _typeof(obj) {
                 return typeof obj;
@@ -1632,77 +1703,8 @@
         }
         inputmask_Inputmask.prototype = {
             dataAttribute: "data-inputmask",
-            defaults: {
-                _maxTestPos: 500,
-                placeholder: "_",
-                optionalmarker: [ "[", "]" ],
-                quantifiermarker: [ "{", "}" ],
-                groupmarker: [ "(", ")" ],
-                alternatormarker: "|",
-                escapeChar: "\\",
-                mask: null,
-                regex: null,
-                oncomplete: function oncomplete() {},
-                onincomplete: function onincomplete() {},
-                oncleared: function oncleared() {},
-                repeat: 0,
-                greedy: !1,
-                autoUnmask: !1,
-                removeMaskOnSubmit: !1,
-                clearMaskOnLostFocus: !0,
-                insertMode: !0,
-                insertModeVisual: !0,
-                clearIncomplete: !1,
-                alias: null,
-                onKeyDown: function onKeyDown() {},
-                onBeforeMask: null,
-                onBeforePaste: function onBeforePaste(pastedValue, opts) {
-                    return "function" == typeof opts.onBeforeMask ? opts.onBeforeMask.call(this, pastedValue, opts) : pastedValue;
-                },
-                onBeforeWrite: null,
-                onUnMask: null,
-                showMaskOnFocus: !0,
-                showMaskOnHover: !0,
-                onKeyValidation: function onKeyValidation() {},
-                skipOptionalPartCharacter: " ",
-                numericInput: !1,
-                rightAlign: !1,
-                undoOnEscape: !0,
-                radixPoint: "",
-                _radixDance: !1,
-                groupSeparator: "",
-                keepStatic: null,
-                positionCaretOnTab: !0,
-                tabThrough: !1,
-                supportsInputType: [ "text", "tel", "url", "password", "search" ],
-                ignorables: [ 8, 9, 19, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 0, 229 ],
-                isComplete: null,
-                preValidation: null,
-                postValidation: null,
-                staticDefinitionSymbol: void 0,
-                jitMasking: !1,
-                nullable: !0,
-                inputEventOnly: !1,
-                noValuePatching: !1,
-                positionCaretOnClick: "lvp",
-                casing: null,
-                inputmode: "text",
-                importDataAttributes: !0,
-                shiftPositions: !0
-            },
-            definitions: {
-                9: {
-                    validator: "[0-9\uff10-\uff19]",
-                    definitionSymbol: "*"
-                },
-                a: {
-                    validator: "[A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
-                    definitionSymbol: "*"
-                },
-                "*": {
-                    validator: "[0-9\uff10-\uff19A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]"
-                }
-            },
+            defaults: defaults,
+            definitions: definitions,
             aliases: {},
             masksCache: {},
             get isRTL() {
@@ -1865,7 +1867,8 @@
             url: {
                 regex: "(https?|ftp)://.*",
                 autoUnmask: !1,
-                keepStatic: !1
+                keepStatic: !1,
+                tabThrough: !0
             },
             ip: {
                 mask: "i[i[i]].j[j[j]].k[k[k]].l[l[l]]",
