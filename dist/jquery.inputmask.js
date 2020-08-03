@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.4-beta.54
+ * Version: 5.0.4-beta.55
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1540,8 +1540,12 @@
         }
     }, function(module, exports, __webpack_require__) {
         "use strict";
-        __webpack_require__(16), __webpack_require__(20), __webpack_require__(21), __webpack_require__(22), 
-        module.exports = __webpack_require__(1);
+        Object.defineProperty(exports, "__esModule", {
+            value: !0
+        }), exports.default = void 0, __webpack_require__(16), __webpack_require__(20), 
+        __webpack_require__(21), __webpack_require__(22);
+        var _default = "./lib/inputmask.js";
+        exports.default = _default;
     }, function(module, exports, __webpack_require__) {
         "use strict";
         var _inputmask = _interopRequireDefault(__webpack_require__(1));
@@ -2873,8 +2877,18 @@
         });
     }, function(module, exports, __webpack_require__) {
         "use strict";
-        var im = __webpack_require__(15), jQuery = __webpack_require__(8);
-        im.dependencyLib === jQuery && __webpack_require__(23), module.exports = im;
+        Object.defineProperty(exports, "__esModule", {
+            value: !0
+        }), exports.default = void 0;
+        var _bundle = _interopRequireDefault(__webpack_require__(15));
+        function _interopRequireDefault(obj) {
+            return obj && obj.__esModule ? obj : {
+                default: obj
+            };
+        }
+        __webpack_require__(23);
+        var _default = _bundle.default;
+        exports.default = _default;
     } ], installedModules = {}, __webpack_require__.m = modules, __webpack_require__.c = installedModules, 
     __webpack_require__.d = function(exports, name, getter) {
         __webpack_require__.o(exports, name) || Object.defineProperty(exports, name, {

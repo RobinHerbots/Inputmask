@@ -1,8 +1,5 @@
-var im = require("./bundle");
-var jQuery = require("jquery");
-if (im.dependencyLib === jQuery) {
-	require("./lib/jquery.inputmask");
-}
+import Inputmask from "./bundle";
+import "./lib/jquery.inputmask";
 
-module.exports = im;
+export default Inputmask;
 
