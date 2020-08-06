@@ -13,6 +13,7 @@
 - \<input-mask> enhance attribute handling
 
 ### Fixed
+- The fractional part cannot be typed if negative values are displayed in parentheses #1836
 - version 3.x to 4.x regex issue #1727
 - unmask regression? #2315
     - only keep significant parts when using multiple masks
