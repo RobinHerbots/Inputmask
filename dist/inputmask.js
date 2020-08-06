@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.4-beta.57
+ * Version: 5.0.4-beta.58
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jqlite")); else if ("function" == typeof define && define.amd) define([ "jqlite" ], factory); else {
@@ -609,7 +609,7 @@
                 mloc: {},
                 cd: cacheDependency
             }), void 0 !== ndxIntlzr && maskset.tests[pos] ? $.extend(!0, [], matches) : (maskset.tests[pos] = $.extend(!0, [], matches), 
-            console.log(pos + " - " + JSON.stringify(matches)), maskset.tests[pos]);
+            maskset.tests[pos]);
         }
         Object.defineProperty(exports, "__esModule", {
             value: !0
@@ -1969,6 +1969,11 @@
                     break;
                 }
                 if (escaped) defaultCase(); else switch (m.charAt(0)) {
+                  case "$":
+                  case "^":
+                    regexMask || defaultCase();
+                    break;
+
                   case "(?=":
                     break;
 

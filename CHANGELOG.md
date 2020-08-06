@@ -6,12 +6,14 @@
 - numeric alias
     - SetMaxOnOverflow option
 ### Updates
+- handle ^ and $ in regex masks
 - datetime alias: add autofill logic to year
     - complete with current year
     - allow filled year be overtyped when min date is provided,
 - \<input-mask> enhance attribute handling
 
 ### Fixed
+- version 3.x to 4.x regex issue #1727
 - unmask regression? #2315
     - only keep significant parts when using multiple masks
 - Datetime alias 29/02/a valid year does not always allows #2286
