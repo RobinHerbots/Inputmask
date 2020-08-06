@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.4-beta.58
+ * Version: 5.0.4-beta.59
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -2335,11 +2335,12 @@
         }
         function alignDigits(buffer, digits, opts, force) {
             if (0 < buffer.length && 0 < digits && (!opts.digitsOptional || force)) {
-                var radixPosition = buffer.indexOf(opts.radixPoint);
+                var radixPosition = buffer.indexOf(opts.radixPoint), negationBack = !1;
+                opts.negationSymbol.back === buffer[buffer.length - 1] && (negationBack = !0, buffer.length--), 
                 -1 === radixPosition && (buffer.push(opts.radixPoint), radixPosition = buffer.length - 1);
                 for (var i = 1; i <= digits; i++) isFinite(buffer[radixPosition + i]) || (buffer[radixPosition + i] = "0");
             }
-            return buffer;
+            return negationBack && buffer.push(opts.negationSymbol.back), buffer;
         }
         function findValidator(symbol, maskset) {
             var posNdx = 0;
@@ -2492,7 +2493,7 @@
                         var isNegative = !1, front = findValid("+", maskset), back = findValid("-", maskset);
                         return -1 !== front && (isNegative = [ front, back ]), !1 !== isNegative ? {
                             remove: isNegative,
-                            caret: initPos
+                            caret: initPos - opts.negationSymbol.front.length
                         } : {
                             insert: [ {
                                 pos: findValidator("+", maskset),
@@ -2506,6 +2507,9 @@
                             caret: initPos + opts.negationSymbol.back.length
                         };
                     }
+                    if (c === opts.groupSeparator) return {
+                        caret: initPos
+                    };
                     if (strict) return !0;
                     if (-1 !== radixPos && !0 === opts._radixDance && !1 === isSelection && c === opts.radixPoint && void 0 !== opts.digits && (isNaN(opts.digits) || 0 < parseInt(opts.digits)) && radixPos !== pos) return {
                         caret: opts._radixDance && pos === radixPos - 1 ? radixPos + 1 : radixPos
@@ -2573,7 +2577,7 @@
                 onBeforeMask: function onBeforeMask(initialValue, opts) {
                     var radixPoint = opts.radixPoint || ",";
                     isFinite(opts.digits) && (opts.digits = parseInt(opts.digits)), "number" != typeof initialValue && "number" !== opts.inputType || "" === radixPoint || (initialValue = initialValue.toString().replace(".", radixPoint));
-                    var valueParts = initialValue.split(radixPoint), integerPart = valueParts[0].replace(/[^\-0-9]/g, ""), decimalPart = 1 < valueParts.length ? valueParts[1].replace(/[^0-9]/g, "") : "", forceDigits = 1 < valueParts.length;
+                    var isNagtive = findValid("+", this.maskset) || findValid("-", this.maskset), valueParts = initialValue.split(radixPoint), integerPart = valueParts[0].replace(/[^\-0-9]/g, ""), decimalPart = 1 < valueParts.length ? valueParts[1].replace(/[^0-9]/g, "") : "", forceDigits = 1 < valueParts.length;
                     initialValue = integerPart + ("" !== decimalPart ? radixPoint + decimalPart : decimalPart);
                     var digits = 0;
                     if ("" !== radixPoint && (digits = opts.digitsOptional ? opts.digits < decimalPart.length ? opts.digits : decimalPart.length : opts.digits, 
@@ -2588,7 +2592,8 @@
                         var numberValue = initialValue.toString().replace(radixPoint, ".");
                         null !== opts.min && numberValue < opts.min ? initialValue = opts.min.toString().replace(".", radixPoint) : null !== opts.max && numberValue > opts.max && (initialValue = opts.max.toString().replace(".", radixPoint));
                     }
-                    return alignDigits(initialValue.toString().split(""), digits, opts, forceDigits).join("");
+                    return isNagtive && "-" !== initialValue.charAt(0) && (initialValue = "-" + initialValue), 
+                    alignDigits(initialValue.toString().split(""), digits, opts, forceDigits).join("");
                 },
                 onBeforeWrite: function onBeforeWrite(e, buffer, caretPos, opts) {
                     function stripBuffer(buffer, stripRadix) {

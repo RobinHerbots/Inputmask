@@ -2277,4 +2277,21 @@ export default function (qunit, Inputmask) {
 
 		assert.equal(testmask.value, "", "Result \"" + testmask.value + "\"");
 	});
+
+	qunit.test("Set negative value in percentage - estraschnov", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\"/>");
+		var testmask = document.getElementById("testmask");
+		Inputmask("decimal", {
+			radixPoint: ".",
+			groupSeparator: ",",
+			autoGroup: true,
+			suffix: " %",
+			clearMaskOnLostFocus: false
+		}).mask(testmask);
+
+		testmask.value = -54;
+
+		assert.equal(testmask.value, "-54 %", "Result \"" + testmask.value + "\"");
+	});
 };
