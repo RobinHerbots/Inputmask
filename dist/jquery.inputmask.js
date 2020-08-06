@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.4-beta.55
+ * Version: 5.0.4-beta.57
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -578,10 +578,10 @@
                 }
             }
             function mergeLocators(pos, tests) {
-                var locator = [];
+                var locator = [], alternation;
                 return Array.isArray(tests) || (tests = [ tests ]), 0 < tests.length && (void 0 === tests[0].alternation || !0 === opts.keepStatic ? (locator = determineTestTemplate.call(inputmask, pos, tests.slice()).locator.slice(), 
                 0 === locator.length && (locator = tests[0].locator.slice())) : tests.forEach(function(tst) {
-                    if ("" !== tst.def) if (0 === locator.length) locator = tst.locator.slice(); else for (var i = 0; i < locator.length; i++) tst.locator[i] && -1 === locator[i].toString().indexOf(tst.locator[i]) && (locator[i] += "," + tst.locator[i]);
+                    "" !== tst.def && (0 === locator.length ? (alternation = tst.alternation, locator = tst.locator.slice()) : tst.locator[alternation] && -1 === locator[alternation].toString().indexOf(tst.locator[alternation]) && (locator[alternation] += "," + tst.locator[alternation]));
                 })), locator;
             }
             if (-1 < pos && (void 0 === inputmask.maxLength || pos < inputmask.maxLength)) {
@@ -609,7 +609,7 @@
                 mloc: {},
                 cd: cacheDependency
             }), void 0 !== ndxIntlzr && maskset.tests[pos] ? $.extend(!0, [], matches) : (maskset.tests[pos] = $.extend(!0, [], matches), 
-            maskset.tests[pos]);
+            console.log(pos + " - " + JSON.stringify(matches)), maskset.tests[pos]);
         }
         Object.defineProperty(exports, "__esModule", {
             value: !0
@@ -1544,7 +1544,13 @@
             value: !0
         }), exports.default = void 0, __webpack_require__(16), __webpack_require__(20), 
         __webpack_require__(21), __webpack_require__(22);
-        var _default = "./lib/inputmask.js";
+        var _inputmask2 = _interopRequireDefault(__webpack_require__(1));
+        function _interopRequireDefault(obj) {
+            return obj && obj.__esModule ? obj : {
+                default: obj
+            };
+        }
+        var _default = _inputmask2.default;
         exports.default = _default;
     }, function(module, exports, __webpack_require__) {
         "use strict";
