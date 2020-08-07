@@ -1,6 +1,8 @@
 # Change Log
 
-## [5.0.4 - UNRELEASED]
+## [5.0.5 - UNRELEASED]
+
+## [5.0.4 - 07/08/2020]
 ### Add
 - usePrototypeDefinitions option
 - numeric alias
