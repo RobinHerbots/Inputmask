@@ -3,14 +3,14 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.4
+ * Version: 5.0.5-beta.0
  */
 !function webpackUniversalModuleDefinition(root, factory) {
-    if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jqlite")); else if ("function" == typeof define && define.amd) define([ "jqlite" ], factory); else {
-        var a = "object" == typeof exports ? factory(require("jqlite")) : factory(root.jqlite);
+    if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
+        var a = factory();
         for (var i in a) ("object" == typeof exports ? exports : root)[i] = a[i];
     }
-}(window, function(__WEBPACK_EXTERNAL_MODULE__19__) {
+}(window, function() {
     return modules = [ function(module) {
         module.exports = JSON.parse('{"BACKSPACE":8,"BACKSPACE_SAFARI":127,"DELETE":46,"DOWN":40,"END":35,"ENTER":13,"ESCAPE":27,"HOME":36,"INSERT":45,"LEFT":37,"PAGE_DOWN":34,"PAGE_UP":33,"RIGHT":39,"SPACE":32,"TAB":9,"UP":38,"X":88,"CONTROL":17,"KEY_229":229}');
     }, function(module, exports, __webpack_require__) {
@@ -18,7 +18,7 @@
         Object.defineProperty(exports, "__esModule", {
             value: !0
         }), exports.default = void 0, __webpack_require__(10);
-        var _mask = __webpack_require__(11), _inputmask = _interopRequireDefault(__webpack_require__(9)), _window = _interopRequireDefault(__webpack_require__(6)), _maskLexer = __webpack_require__(20), _validationTests = __webpack_require__(3), _positioning = __webpack_require__(2), _validation = __webpack_require__(4), _inputHandling = __webpack_require__(5), _eventruler = __webpack_require__(12), _definitions = _interopRequireDefault(__webpack_require__(21)), _defaults = _interopRequireDefault(__webpack_require__(22));
+        var _mask = __webpack_require__(11), _inputmask = _interopRequireDefault(__webpack_require__(9)), _window = _interopRequireDefault(__webpack_require__(6)), _maskLexer = __webpack_require__(19), _validationTests = __webpack_require__(3), _positioning = __webpack_require__(2), _validation = __webpack_require__(4), _inputHandling = __webpack_require__(5), _eventruler = __webpack_require__(12), _definitions = _interopRequireDefault(__webpack_require__(20)), _defaults = _interopRequireDefault(__webpack_require__(21));
         function _typeof(obj) {
             return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function _typeof(obj) {
                 return typeof obj;
@@ -1570,8 +1570,8 @@
         "use strict";
         Object.defineProperty(exports, "__esModule", {
             value: !0
-        }), exports.default = void 0, __webpack_require__(16), __webpack_require__(23), 
-        __webpack_require__(24), __webpack_require__(25);
+        }), exports.default = void 0, __webpack_require__(16), __webpack_require__(22), 
+        __webpack_require__(23), __webpack_require__(24);
         var _inputmask2 = _interopRequireDefault(__webpack_require__(1));
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
@@ -1694,7 +1694,7 @@
         Object.defineProperty(exports, "__esModule", {
             value: !0
         }), exports.on = on, exports.off = off, exports.trigger = trigger, exports.Event = void 0;
-        var _extend = _interopRequireDefault(__webpack_require__(13)), _window = _interopRequireDefault(__webpack_require__(6)), _inputmask = _interopRequireDefault(__webpack_require__(9)), _jqlite = _interopRequireDefault(__webpack_require__(19)), Event;
+        var _extend = _interopRequireDefault(__webpack_require__(13)), _window = _interopRequireDefault(__webpack_require__(6)), _inputmask = _interopRequireDefault(__webpack_require__(9)), Event;
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
                 default: obj
@@ -1782,8 +1782,6 @@
             return evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail), 
             evt;
         }, Event.prototype = _window.default.Event.prototype);
-    }, function(module, exports) {
-        module.exports = __WEBPACK_EXTERNAL_MODULE__19__;
     }, function(module, exports, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports, "__esModule", {
