@@ -109,7 +109,6 @@ module.exports = function (env, argv) {
 		resolve: {
 			alias: {
 				// "./dependencyLibs/inputmask.dependencyLib": "./dependencyLibs/inputmask.dependencyLib.jquery"
-				// "./dependencyLibs/inputmask.dependencyLib": "./dependencyLibs/inputmask.dependencyLib.jqlite"
 			}
 		},
 		devtool: "source-map",

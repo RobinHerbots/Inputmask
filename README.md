@@ -50,8 +50,6 @@ Inputmask can run against different javascript libraries.
 You can choose between:
 - inputmask.dependencyLib (vanilla)
 - inputmask.dependencyLib.jquery
-- inputmask.dependencyLib.jqlite
-- .... (others are welcome)
 
 ### Classic web with <script\> tag
 Include the js-files which you can find in the `dist` folder.
