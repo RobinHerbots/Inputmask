@@ -532,6 +532,20 @@ export default function (qunit, Inputmask) {
 		assert.equal(testmask.value, "03/23/2019", "Result " + testmask.value);
 	});
 
+	qunit.test("Datetime inputFormat mm/dd/yyyy allows entry of 02/3 without padding the day - Josh68 - #1922", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "mm/dd/yyyy",
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("232020");
+
+		assert.equal(testmask.value, "02/03/2020", "Result " + testmask.value);
+	});
+
 	qunit.module("Date.Extensions - dd.mm.yyyy");
 	qunit.test("valid entry", function (assert) {
 		var $fixture = $("#qunit-fixture");

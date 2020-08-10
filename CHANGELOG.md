@@ -1,10 +1,14 @@
 # Change Log
 
+## [5.0.6 - UNRELEASED]
+### Fixed
+- Datetime inputFormat mm/dd/yyyy allows entry of 02/3 without padding the day #1922
+
 ## [5.0.5 - 07/08/2020]
 
 HOT FIX: jqlite dependency error
 
-## [5.0.4 - 07/08/2020]
+#### [5.0.4 - 07/08/2020]
 ### Add
 - usePrototypeDefinitions option
 - numeric alias

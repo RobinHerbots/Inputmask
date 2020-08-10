@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.0
+ * Version: 5.0.6-beta.2
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1999,7 +1999,7 @@
         exports.default = _default;
     }, function(module, exports, __webpack_require__) {
         "use strict";
-        var _inputmask = _interopRequireDefault(__webpack_require__(1)), _keycode = _interopRequireDefault(__webpack_require__(0)), _escapeRegex = _interopRequireDefault(__webpack_require__(14));
+        var _inputmask = _interopRequireDefault(__webpack_require__(1)), _keycode = _interopRequireDefault(__webpack_require__(0)), _escapeRegex = _interopRequireDefault(__webpack_require__(14)), _positioning = __webpack_require__(2);
         function _typeof(obj) {
             return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function _typeof(obj) {
                 return typeof obj;
@@ -2118,12 +2118,20 @@
             return currentResult;
         }
         function isValidDate(dateParts, currentResult, opts) {
-            if (!isFinite(dateParts.rawday) || "29" == dateParts.day && !isFinite(dateParts.rawyear) || new Date(dateParts.date.getFullYear(), isFinite(dateParts.rawmonth) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day) return currentResult;
+            if (void 0 === dateParts.rawday || !isFinite(dateParts.rawday) && new Date(dateParts.date.getFullYear(), isFinite(dateParts.rawmonth) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day || "29" == dateParts.day && !isFinite(dateParts.rawyear) || new Date(dateParts.date.getFullYear(), isFinite(dateParts.rawmonth) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day) return currentResult;
             if ("29" == dateParts.day) {
                 var tokenMatch = getTokenMatch(currentResult.pos, opts);
                 if ("yyyy" === tokenMatch.targetMatch[0] && currentResult.pos - tokenMatch.targetMatchIndex == 2) return currentResult.remove = currentResult.pos + 1, 
                 currentResult;
-            }
+            } else if ("02" == dateParts.month && "30" == dateParts.day) return dateParts.day = "03", 
+            dateParts.date.setDate(3), dateParts.date.setMonth(1), currentResult.insert = [ {
+                pos: currentResult.pos,
+                c: "0"
+            }, {
+                pos: currentResult.pos + 1,
+                c: currentResult.c
+            } ], currentResult.caret = _positioning.seekNext.call(this, currentResult.pos + 1), 
+            currentResult;
             return !1;
         }
         function isDateInRange(dateParts, result, opts, maskset, fromCheckval) {
@@ -2290,7 +2298,7 @@
                     }
                     var result = currentResult, dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
                     return result && dateParts.date.getTime() == dateParts.date.getTime() && (result = prefillYear(dateParts, result, opts), 
-                    result = isValidDate(dateParts, result, opts), result = isDateInRange(dateParts, result, opts, maskset, fromCheckval)), 
+                    result = isValidDate.call(this.inputmask, dateParts, result, opts), result = isDateInRange(dateParts, result, opts, maskset, fromCheckval)), 
                     pos && result && currentResult.pos !== pos ? {
                         buffer: parse(opts.inputFormat, dateParts, opts).split(""),
                         refreshFromBuffer: {
