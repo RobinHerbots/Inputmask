@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.2
+ * Version: 5.0.6-beta.3
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -794,7 +794,7 @@
             var result = !0, positionsClone = $.extend(!0, {}, maskset.validPositions);
             if (!1 === opts.keepStatic && void 0 !== maskset.excludes[maskPos] && !0 !== fromAlternate && !0 !== fromIsValid) for (var i = maskPos; i < (inputmask.isRTL ? pos.begin : pos.end); i++) void 0 !== maskset.excludes[i] && (maskset.excludes[i] = void 0, 
             delete maskset.tests[i]);
-            if ("function" == typeof opts.preValidation && !0 !== fromIsValid && !0 !== validateOnly && (result = opts.preValidation.call(el, _positioning.getBuffer.call(inputmask), maskPos, c, isSelection(pos), opts, maskset, pos, strict || fromAlternate), 
+            if ("function" == typeof opts.preValidation && !0 !== fromIsValid && !0 !== validateOnly && (result = opts.preValidation.call(inputmask, _positioning.getBuffer.call(inputmask), maskPos, c, isSelection(pos), opts, maskset, pos, strict || fromAlternate), 
             result = processCommandObject(result)), !0 === result) {
                 if (void 0 === inputmask.maxLength || maskPos < inputmask.maxLength) {
                     if (result = _isValid(maskPos, c, strict), (!strict || !0 === fromIsValid) && !1 === result && !0 !== validateOnly) {
@@ -822,7 +822,7 @@
                 });
             }
             if ("function" == typeof opts.postValidation && !0 !== fromIsValid && !0 !== validateOnly) {
-                var postResult = opts.postValidation.call(el, _positioning.getBuffer.call(inputmask, !0), void 0 !== pos.begin ? inputmask.isRTL ? pos.end : pos.begin : pos, c, result, opts, maskset, strict, fromCheckval);
+                var postResult = opts.postValidation.call(inputmask, _positioning.getBuffer.call(inputmask, !0), void 0 !== pos.begin ? inputmask.isRTL ? pos.end : pos.begin : pos, c, result, opts, maskset, strict, fromCheckval);
                 void 0 !== postResult && (result = !0 === postResult ? result : postResult);
             }
             result && void 0 === result.pos && (result.pos = maskPos), !1 === result || !0 === validateOnly ? (_positioning.resetMaskSet.call(inputmask, !0), 
@@ -1298,7 +1298,7 @@
         Object.defineProperty(exports, "__esModule", {
             value: !0
         }), exports.default = void 0;
-        var _extend = _interopRequireDefault(__webpack_require__(13)), _window = _interopRequireDefault(__webpack_require__(6)), _data = _interopRequireDefault(__webpack_require__(17)), _events = __webpack_require__(18);
+        var _extend = _interopRequireDefault(__webpack_require__(13)), _window = _interopRequireDefault(__webpack_require__(6)), _data = _interopRequireDefault(__webpack_require__(14)), _events = __webpack_require__(18);
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
                 default: obj
@@ -1559,6 +1559,15 @@
         }), exports.default = extend;
     }, function(module, exports, __webpack_require__) {
         "use strict";
+        function _default(owner, key, value) {
+            if (void 0 === value) return owner.__data ? owner.__data[key] : null;
+            owner.__data = owner.__data || {}, owner.__data[key] = value;
+        }
+        Object.defineProperty(exports, "__esModule", {
+            value: !0
+        }), exports.default = _default;
+    }, function(module, exports, __webpack_require__) {
+        "use strict";
         Object.defineProperty(exports, "__esModule", {
             value: !0
         }), exports.default = _default;
@@ -1570,7 +1579,7 @@
         "use strict";
         Object.defineProperty(exports, "__esModule", {
             value: !0
-        }), exports.default = void 0, __webpack_require__(16), __webpack_require__(22), 
+        }), exports.default = void 0, __webpack_require__(17), __webpack_require__(22), 
         __webpack_require__(23), __webpack_require__(24);
         var _inputmask2 = _interopRequireDefault(__webpack_require__(2));
         function _interopRequireDefault(obj) {
@@ -1680,15 +1689,6 @@
                 }
             }
         });
-    }, function(module, exports, __webpack_require__) {
-        "use strict";
-        function _default(owner, key, value) {
-            if (void 0 === value) return owner.__data ? owner.__data[key] : null;
-            owner.__data = owner.__data || {}, owner.__data[key] = value;
-        }
-        Object.defineProperty(exports, "__esModule", {
-            value: !0
-        }), exports.default = _default;
     }, function(module, exports, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports, "__esModule", {
@@ -2129,7 +2129,7 @@
         exports.default = _default;
     }, function(module, exports, __webpack_require__) {
         "use strict";
-        var _inputmask = _interopRequireDefault(__webpack_require__(2)), _keycode = _interopRequireDefault(__webpack_require__(0)), _escapeRegex = _interopRequireDefault(__webpack_require__(14)), _positioning = __webpack_require__(1);
+        var _inputmask = _interopRequireDefault(__webpack_require__(2)), _keycode = _interopRequireDefault(__webpack_require__(0)), _escapeRegex = _interopRequireDefault(__webpack_require__(15)), _positioning = __webpack_require__(1), _data = _interopRequireDefault(__webpack_require__(14));
         function _typeof(obj) {
             return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function _typeof(obj) {
                 return typeof obj;
@@ -2271,12 +2271,12 @@
                     var rawYear = dateParts.rawyear.replace(/[^0-9]/g, ""), minYear = opts.min.year.substr(0, rawYear.length), maxYear;
                     if (rawYear < minYear) {
                         var tokenMatch = getTokenMatch(result.pos, opts);
-                        if (rawYear = dateParts.rawyear.substr(0, result.pos - tokenMatch.targetMatchIndex + 1), 
+                        if (rawYear = dateParts.rawyear.substr(0, result.pos - tokenMatch.targetMatchIndex + 1).replace(/[^0-9]/g, "0"), 
                         minYear = opts.min.year.substr(0, rawYear.length), minYear <= rawYear) return result.remove = tokenMatch.targetMatchIndex + rawYear.length, 
                         result;
                         if (rawYear = "yyyy" === tokenMatch.targetMatch[0] ? dateParts.rawyear.substr(1, 1) : dateParts.rawyear.substr(0, 1), 
                         minYear = opts.min.year.substr(2, 1), maxYear = opts.max ? opts.max.year.substr(2, 1) : rawYear, 
-                        1 === rawYear.length && minYear <= rawYear <= maxYear && !0 !== fromCheckval) return "yyyy" === tokenMatch.targetMatch[0] ? (result.insert = [ {
+                        1 === rawYear.length && minYear <= rawYear && rawYear <= maxYear && !0 !== fromCheckval) return "yyyy" === tokenMatch.targetMatch[0] ? (result.insert = [ {
                             pos: result.pos + 1,
                             c: rawYear,
                             strict: !0
@@ -2326,8 +2326,12 @@
                 date: new Date(1, 0, 1)
             }, targetProp, mask = maskString, match, dateOperation;
             function setValue(dateObj, value, opts) {
-                dateObj[targetProp] = value.replace(/[^0-9]/g, "0"), dateObj["raw" + targetProp] = value, 
-                void 0 !== dateOperation && dateOperation.call(dateObj.date, "month" == targetProp ? parseInt(dateObj[targetProp]) - 1 : dateObj[targetProp]);
+                if (dateObj[targetProp] = value.replace(/[^0-9]/g, "0"), dateObj["raw" + targetProp] = value, 
+                void 0 !== dateOperation) {
+                    var datavalue = dateObj[targetProp];
+                    "day" === targetProp && 0 === parseInt(datavalue) && (datavalue = 1), "month" === targetProp && (datavalue = parseInt(datavalue), 
+                    0 < datavalue) && (datavalue -= 1), dateOperation.call(dateObj.date, datavalue);
+                }
             }
             if ("string" == typeof mask) {
                 for (getTokenizer(opts).lastIndex = 0; match = getTokenizer(opts).exec(format); ) {
@@ -2407,8 +2411,8 @@
                     return !0;
                 },
                 postValidation: function postValidation(buffer, pos, c, currentResult, opts, maskset, strict, fromCheckval) {
+                    var inputmask = this, tokenMatch, validator;
                     if (strict) return !0;
-                    var tokenMatch, validator;
                     if (!1 === currentResult) return tokenMatch = getTokenMatch(pos + 1, opts), tokenMatch.targetMatch && tokenMatch.targetMatchIndex === pos && 1 < tokenMatch.targetMatch[0].length && void 0 !== formatCode[tokenMatch.targetMatch[0]] && (validator = formatCode[tokenMatch.targetMatch[0]][0], 
                     new RegExp(validator).test("0" + c)) ? {
                         insert: [ {
@@ -2428,7 +2432,7 @@
                     }
                     var result = currentResult, dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
                     return result && dateParts.date.getTime() == dateParts.date.getTime() && (result = prefillYear(dateParts, result, opts), 
-                    result = isValidDate.call(this.inputmask, dateParts, result, opts), result = isDateInRange(dateParts, result, opts, maskset, fromCheckval)), 
+                    result = isValidDate.call(this, dateParts, result, opts), result = isDateInRange(dateParts, result, opts, maskset, fromCheckval)), 
                     pos && result && currentResult.pos !== pos ? {
                         buffer: parse(opts.inputFormat, dateParts, opts).split(""),
                         refreshFromBuffer: {
@@ -2460,7 +2464,7 @@
         });
     }, function(module, exports, __webpack_require__) {
         "use strict";
-        var _inputmask = _interopRequireDefault(__webpack_require__(2)), _keycode = _interopRequireDefault(__webpack_require__(0)), _escapeRegex = _interopRequireDefault(__webpack_require__(14));
+        var _inputmask = _interopRequireDefault(__webpack_require__(2)), _keycode = _interopRequireDefault(__webpack_require__(0)), _escapeRegex = _interopRequireDefault(__webpack_require__(15));
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
                 default: obj
@@ -2992,7 +2996,7 @@
         return __webpack_require__.d(getter, "a", getter), getter;
     }, __webpack_require__.o = function(object, property) {
         return Object.prototype.hasOwnProperty.call(object, property);
-    }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 15);
+    }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 16);
     function __webpack_require__(moduleId) {
         if (installedModules[moduleId]) return installedModules[moduleId].exports;
         var module = installedModules[moduleId] = {

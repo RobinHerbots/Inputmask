@@ -2,6 +2,7 @@
 
 ## [5.0.6 - UNRELEASED]
 ### Fixed
+- date format yyyy-mm-dd doesn't work with min and max #2360
 - Datetime inputFormat mm/dd/yyyy allows entry of 02/3 without padding the day #1922
 
 ## [5.0.5 - 07/08/2020]

@@ -761,6 +761,59 @@ export default function (qunit, Inputmask) {
 		assert.equal(testmask.value, "08.08.2018", "Result " + testmask.value);
 	});
 
+	qunit.module("Date.Extensions - yyyy-mm-dd");
+	qunit.test("date format yyyy-mm-dd doesn't work with min and max #2360", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask({
+			alias: "datetime",
+			inputFormat: "yyyy-mm-dd",
+			min: "1950-01-01",
+			max: "1999-12-31",
+			clearIncomplete: true,
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("19500101");
+
+		assert.equal(testmask.value, "1950-01-01", "Result " + testmask.value);
+	});
+	qunit.test("date format yyyy-mm-dd doesn't work with min and max #2360", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask({
+			alias: "datetime",
+			inputFormat: "yyyy-mm-dd",
+			min: "1950-01-01",
+			max: "1999-12-31",
+			clearIncomplete: true,
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("20001231");
+
+		assert.equal(testmask.value, "1yyy-mm-dd", "Result " + testmask.value);
+	});
+
+	qunit.test("date format yyyy-mm-dd doesn't work with min and max #2360", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask({
+			alias: "datetime",
+			inputFormat: "yyyy-mm-dd",
+			min: "1950-01-01",
+			max: "1999-12-31",
+			clearIncomplete: true,
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("19991231");
+
+		assert.equal(testmask.value, "1999-12-31", "Result " + testmask.value);
+	});
 
 	qunit.module("Date.Extensions - HH:MM:ss");
 	qunit.test("HH:MM:SS - enter 111111", function (assert) {
