@@ -227,5 +227,10 @@ export default function (qunit, Inputmask) {
 		assert.equal(unmasked, "23031973", "Result " + unmasked);
 	});
 
+	qunit.test("Inputmask.unmask('(123)456-78-90', '(999)999-99-99')", function (assert) {
+		var unmasked = Inputmask.unmask("(123)456-78-90", "(999)999-99-99");
+		assert.equal(unmasked, "1234567890", "Result " + unmasked);
+	});
 
-};
+
+}

@@ -2,6 +2,7 @@
 
 ## [5.0.6 - UNRELEASED]
 ### Fixed
+- Error thrown in unmask after upgrade to 5.0.5 #2375
 - Inputmask.remove(document.getElementById(selector)) is not working in Node after version 5.0.5 update #2373
 - date format yyyy-mm-dd doesn't work with min and max #2360
 - Datetime inputFormat mm/dd/yyyy allows entry of 02/3 without padding the day #1922
