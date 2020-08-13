@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.4
+ * Version: 5.0.6-beta.5
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1448,7 +1448,7 @@
             on: function on(input, eventName, eventHandler) {
                 var $ = input.inputmask.dependencyLib, ev = function ev(e) {
                     e.originalEvent && (e = e.originalEvent || e, arguments[0] = e);
-                    var that = this, args, inputmask = that.inputmask, opts = inputmask ? inputmask.opts : void 0, $ = inputmask.dependencyLib;
+                    var that = this, args, inputmask = that.inputmask, opts = inputmask ? inputmask.opts : void 0;
                     if (void 0 === inputmask && "FORM" !== this.nodeName) {
                         var imOpts = $.data(that, "_inputmask_opts");
                         $(that).off(), imOpts && new _inputmask.default(imOpts).mask(that);
