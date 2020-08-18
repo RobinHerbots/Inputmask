@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.10
+ * Version: 5.0.6-beta.11
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -254,7 +254,8 @@
             mask: function mask(elems) {
                 var that = this;
                 return "string" == typeof elems && (elems = document.getElementById(elems) || document.querySelectorAll(elems)), 
-                elems = elems.nodeName ? [ elems ] : elems, elems.forEach(function(el, ndx) {
+                elems = elems.nodeName ? [ elems ] : Array.isArray(elems) ? elems : Array.from(elems), 
+                elems.forEach(function(el, ndx) {
                     var scopedOpts = _inputmask.default.extend(!0, {}, that.opts);
                     if (importAttributeOptions(el, scopedOpts, _inputmask.default.extend(!0, {}, that.userOptions), that.dataAttribute)) {
                         var maskset = (0, _maskLexer.generateMaskSet)(scopedOpts, that.noMasksCache);
