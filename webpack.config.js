@@ -108,6 +108,7 @@ module.exports = function (env, argv) {
 			]
 		},
 		resolve: {
+			extensions: [".wasm", ".mjs", ".js", ".ts", ".json"],
 			alias: {
 				// "./dependencyLibs/inputmask.dependencyLib": "./dependencyLibs/inputmask.dependencyLib.jquery"
 			}
@@ -128,6 +129,7 @@ module.exports = function (env, argv) {
 	_.assignIn(jqueryConfig, {
 		name: "jquery",
 		resolve: {
+			extensions: [".wasm", ".mjs", ".js", ".ts", ".json"],
 			alias: {
 				"./dependencyLibs/inputmask.dependencyLib": "./dependencyLibs/inputmask.dependencyLib.jquery"
 			}

@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.12
+ * Version: 5.0.6-beta.13
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1530,7 +1530,7 @@
         Object.defineProperty(exports, "__esModule", {
             value: !0
         }), exports.default = void 0, __webpack_require__(15), __webpack_require__(21), 
-        __webpack_require__(23), __webpack_require__(24);
+        __webpack_require__(22), __webpack_require__(23);
         var _inputmask2 = _interopRequireDefault(__webpack_require__(1));
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
@@ -2014,7 +2014,7 @@
         exports.default = _default;
     }, function(module, exports, __webpack_require__) {
         "use strict";
-        var _inputmask = _interopRequireDefault(__webpack_require__(1)), _keycode = _interopRequireDefault(__webpack_require__(0)), _escapeRegex = _interopRequireDefault(__webpack_require__(13)), _positioning = __webpack_require__(2), _data = _interopRequireDefault(__webpack_require__(22));
+        var _inputmask = _interopRequireDefault(__webpack_require__(1)), _keycode = _interopRequireDefault(__webpack_require__(0)), _escapeRegex = _interopRequireDefault(__webpack_require__(13)), _positioning = __webpack_require__(2);
         function _typeof(obj) {
             return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function _typeof(obj) {
                 return typeof obj;
@@ -2347,15 +2347,6 @@
                 inputmode: "numeric"
             }
         });
-    }, function(module, exports, __webpack_require__) {
-        "use strict";
-        function _default(owner, key, value) {
-            if (void 0 === value) return owner.__data ? owner.__data[key] : null;
-            owner.__data = owner.__data || {}, owner.__data[key] = value;
-        }
-        Object.defineProperty(exports, "__esModule", {
-            value: !0
-        }), exports.default = _default;
     }, function(module, exports, __webpack_require__) {
         "use strict";
         var _inputmask = _interopRequireDefault(__webpack_require__(1)), _keycode = _interopRequireDefault(__webpack_require__(0)), _escapeRegex = _interopRequireDefault(__webpack_require__(13));
@@ -2938,7 +2929,7 @@
                 default: obj
             };
         }
-        __webpack_require__(25);
+        __webpack_require__(24);
         var _default = _bundle.default;
         exports.default = _default;
     } ], installedModules = {}, __webpack_require__.m = modules, __webpack_require__.c = installedModules, 
@@ -2973,7 +2964,7 @@
         return __webpack_require__.d(getter, "a", getter), getter;
     }, __webpack_require__.o = function(object, property) {
         return Object.prototype.hasOwnProperty.call(object, property);
-    }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 26);
+    }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 25);
     function __webpack_require__(moduleId) {
         if (installedModules[moduleId]) return installedModules[moduleId].exports;
         var module = installedModules[moduleId] = {
