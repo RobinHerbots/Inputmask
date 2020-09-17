@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.15
+ * Version: 5.0.6-beta.16
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -175,7 +175,7 @@
         }
         function translatePosition(pos) {
             var inputmask = this, opts = this.opts, el = this.el;
-            return !this.isRTL || "number" != typeof pos || opts.greedy && "" === opts.placeholder || !el || (pos = this._valueGet().length - pos), 
+            return !this.isRTL || "number" != typeof pos || opts.greedy && "" === opts.placeholder || !el || (pos = Math.abs(this._valueGet().length - pos)), 
             pos;
         }
     }, function(module, exports, __webpack_require__) {
@@ -797,7 +797,7 @@
             delete maskset.tests[i]);
             if ("function" == typeof opts.preValidation && !0 !== fromIsValid && !0 !== validateOnly && (result = opts.preValidation.call(inputmask, _positioning.getBuffer.call(inputmask), maskPos, c, isSelection(pos), opts, maskset, pos, strict || fromAlternate), 
             result = processCommandObject(result)), !0 === result) {
-                if (void 0 === inputmask.maxLength || maskPos < inputmask.maxLength) {
+                if (void 0 === inputmask.maxLength || maskPos < _positioning.translatePosition.call(inputmask, inputmask.maxLength)) {
                     if (result = _isValid(maskPos, c, strict), (!strict || !0 === fromIsValid) && !1 === result && !0 !== validateOnly) {
                         var currentPosValid = maskset.validPositions[maskPos];
                         if (!currentPosValid || !0 !== currentPosValid.match.static || currentPosValid.match.def !== c && c !== opts.skipOptionalPartCharacter) {
@@ -2690,7 +2690,7 @@
                                 rewritePosition: caretPos.begin - 1
                             };
                         }
-                    } else if (!opts.showMaskOnHover && !opts.showMaskOnFocus && !opts.digitsOptional && 0 < opts.digits && "" === this.inputmask.__valueGet.call(this)) return {
+                    } else if (!opts.showMaskOnHover && !opts.showMaskOnFocus && !opts.digitsOptional && 0 < opts.digits && "" === this.__valueGet.call(this)) return {
                         rewritePosition: radixPos
                     };
                     return {
