@@ -10,15 +10,15 @@
         var a = "object" == typeof exports ? factory(require("jquery")) : factory(root.jQuery);
         for (var i in a) ("object" == typeof exports ? exports : root)[i] = a[i];
     }
-}(window, function(__WEBPACK_EXTERNAL_MODULE__8__) {
+}(this, function(__WEBPACK_EXTERNAL_MODULE__10__) {
     return modules = [ function(module) {
         module.exports = JSON.parse('{"BACKSPACE":8,"BACKSPACE_SAFARI":127,"DELETE":46,"DOWN":40,"END":35,"ENTER":13,"ESCAPE":27,"HOME":36,"INSERT":45,"LEFT":37,"PAGE_DOWN":34,"PAGE_UP":33,"RIGHT":39,"SPACE":32,"TAB":9,"UP":38,"X":88,"CONTROL":17,"KEY_229":229}');
     }, function(module, exports, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports, "__esModule", {
             value: !0
-        }), exports.default = void 0, __webpack_require__(16), __webpack_require__(17);
-        var _mask = __webpack_require__(9), _inputmask = _interopRequireDefault(__webpack_require__(11)), _window = _interopRequireDefault(__webpack_require__(12)), _maskLexer = __webpack_require__(18), _validationTests = __webpack_require__(3), _positioning = __webpack_require__(2), _validation = __webpack_require__(4), _inputHandling = __webpack_require__(5), _eventruler = __webpack_require__(10), _definitions = _interopRequireDefault(__webpack_require__(19)), _defaults = _interopRequireDefault(__webpack_require__(20));
+        }), exports.default = void 0, __webpack_require__(17), __webpack_require__(18);
+        var _mask = __webpack_require__(11), _inputmask = _interopRequireDefault(__webpack_require__(13)), _window = _interopRequireDefault(__webpack_require__(8)), _maskLexer = __webpack_require__(19), _validationTests = __webpack_require__(3), _positioning = __webpack_require__(2), _validation = __webpack_require__(4), _inputHandling = __webpack_require__(5), _eventruler = __webpack_require__(12), _definitions = _interopRequireDefault(__webpack_require__(20)), _defaults = _interopRequireDefault(__webpack_require__(21)), _canUseDOM = _interopRequireDefault(__webpack_require__(9));
         function _typeof(obj) {
             return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function _typeof(obj) {
                 return typeof obj;
@@ -33,15 +33,17 @@
         }
         var document = _window.default.document, dataKey = "_inputmask_opts";
         function Inputmask(alias, options, internal) {
-            if (!(this instanceof Inputmask)) return new Inputmask(alias, options, internal);
-            this.dependencyLib = _inputmask.default, this.el = void 0, this.events = {}, this.maskset = void 0, 
-            !0 !== internal && ("[object Object]" === Object.prototype.toString.call(alias) ? options = alias : (options = options || {}, 
-            alias && (options.alias = alias)), this.opts = _inputmask.default.extend(!0, {}, this.defaults, options), 
-            this.noMasksCache = options && void 0 !== options.definitions, this.userOptions = options || {}, 
-            resolveAlias(this.opts.alias, options, this.opts)), this.refreshValue = !1, this.undoValue = void 0, 
-            this.$el = void 0, this.skipKeyPressEvent = !1, this.skipInputEvent = !1, this.validationEvent = !1, 
-            this.ignorable = !1, this.maxLength, this.mouseEnter = !1, this.originalPlaceholder = void 0, 
-            this.isComposing = !1;
+            if (_canUseDOM.default) {
+                if (!(this instanceof Inputmask)) return new Inputmask(alias, options, internal);
+                this.dependencyLib = _inputmask.default, this.el = void 0, this.events = {}, this.maskset = void 0, 
+                !0 !== internal && ("[object Object]" === Object.prototype.toString.call(alias) ? options = alias : (options = options || {}, 
+                alias && (options.alias = alias)), this.opts = _inputmask.default.extend(!0, {}, this.defaults, options), 
+                this.noMasksCache = options && void 0 !== options.definitions, this.userOptions = options || {}, 
+                resolveAlias(this.opts.alias, options, this.opts)), this.refreshValue = !1, this.undoValue = void 0, 
+                this.$el = void 0, this.skipKeyPressEvent = !1, this.skipInputEvent = !1, this.validationEvent = !1, 
+                this.ignorable = !1, this.maxLength, this.mouseEnter = !1, this.originalPlaceholder = void 0, 
+                this.isComposing = !1;
+            }
         }
         function resolveAlias(aliasStr, options, opts) {
             var aliasDefinition = Inputmask.prototype.aliases[aliasStr];
@@ -207,7 +209,7 @@
         exports.getBufferTemplate = getBufferTemplate, exports.getLastValidPosition = getLastValidPosition, 
         exports.isMask = isMask, exports.resetMaskSet = resetMaskSet, exports.seekNext = seekNext, 
         exports.seekPrevious = seekPrevious, exports.translatePosition = translatePosition;
-        var _validationTests = __webpack_require__(3), _validation = __webpack_require__(4), _mask = __webpack_require__(9);
+        var _validationTests = __webpack_require__(3), _validation = __webpack_require__(4), _mask = __webpack_require__(11);
         function caret(input, begin, end, notranslate, isDelete) {
             var inputmask = this, opts = this.opts, range;
             if (void 0 === begin) return "selectionStart" in input && "selectionEnd" in input ? (begin = input.selectionStart, 
@@ -1284,17 +1286,43 @@
         Object.defineProperty(exports, "__esModule", {
             value: !0
         }), exports.iphone = exports.iemobile = exports.mobile = exports.ie = exports.ua = void 0;
-        var ua = window.navigator && window.navigator.userAgent || "", ie = 0 < ua.indexOf("MSIE ") || 0 < ua.indexOf("Trident/"), mobile = "ontouchstart" in window, iemobile = /iemobile/i.test(ua), iphone = /iphone/i.test(ua) && !iemobile;
+        var _window = _interopRequireDefault(__webpack_require__(8));
+        function _interopRequireDefault(obj) {
+            return obj && obj.__esModule ? obj : {
+                default: obj
+            };
+        }
+        var ua = _window.default.navigator && _window.default.navigator.userAgent || "", ie = 0 < ua.indexOf("MSIE ") || 0 < ua.indexOf("Trident/"), mobile = "ontouchstart" in _window.default, iemobile = /iemobile/i.test(ua), iphone = /iphone/i.test(ua) && !iemobile;
         exports.iphone = iphone, exports.iemobile = iemobile, exports.mobile = mobile, exports.ie = ie, 
         exports.ua = ua;
+    }, function(module, exports, __webpack_require__) {
+        "use strict";
+        Object.defineProperty(exports, "__esModule", {
+            value: !0
+        }), exports.default = void 0;
+        var _canUseDOM = _interopRequireDefault(__webpack_require__(9));
+        function _interopRequireDefault(obj) {
+            return obj && obj.__esModule ? obj : {
+                default: obj
+            };
+        }
+        var _default = _canUseDOM.default ? window : {};
+        exports.default = _default;
+    }, function(module, exports, __webpack_require__) {
+        "use strict";
+        Object.defineProperty(exports, "__esModule", {
+            value: !0
+        }), exports.default = void 0;
+        var canUseDOM = !("undefined" == typeof window || !window.document || !window.document.createElement), _default = canUseDOM;
+        exports.default = _default;
     }, function(module, exports) {
-        module.exports = __WEBPACK_EXTERNAL_MODULE__8__;
+        module.exports = __WEBPACK_EXTERNAL_MODULE__10__;
     }, function(module, exports, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports, "__esModule", {
             value: !0
         }), exports.mask = mask;
-        var _keycode = _interopRequireDefault(__webpack_require__(0)), _positioning = __webpack_require__(2), _inputHandling = __webpack_require__(5), _eventruler = __webpack_require__(10), _environment = __webpack_require__(7), _validation = __webpack_require__(4), _eventhandlers = __webpack_require__(6);
+        var _keycode = _interopRequireDefault(__webpack_require__(0)), _positioning = __webpack_require__(2), _inputHandling = __webpack_require__(5), _eventruler = __webpack_require__(12), _environment = __webpack_require__(7), _validation = __webpack_require__(4), _eventhandlers = __webpack_require__(6);
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
                 default: obj
@@ -1500,7 +1528,7 @@
         Object.defineProperty(exports, "__esModule", {
             value: !0
         }), exports.default = void 0;
-        var _jquery = _interopRequireDefault(__webpack_require__(8));
+        var _jquery = _interopRequireDefault(__webpack_require__(10));
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
                 default: obj
@@ -1508,13 +1536,6 @@
         }
         if (void 0 === _jquery.default) throw "jQuery not loaded!";
         var _default = _jquery.default;
-        exports.default = _default;
-    }, function(module, exports, __webpack_require__) {
-        "use strict";
-        Object.defineProperty(exports, "__esModule", {
-            value: !0
-        }), exports.default = void 0;
-        var _default = "undefined" != typeof window ? window : new (eval("require('jsdom').JSDOM"))("").window;
         exports.default = _default;
     }, function(module, exports, __webpack_require__) {
         "use strict";
@@ -1529,8 +1550,8 @@
         "use strict";
         Object.defineProperty(exports, "__esModule", {
             value: !0
-        }), exports.default = void 0, __webpack_require__(15), __webpack_require__(21), 
-        __webpack_require__(22), __webpack_require__(23);
+        }), exports.default = void 0, __webpack_require__(16), __webpack_require__(22), 
+        __webpack_require__(23), __webpack_require__(24);
         var _inputmask2 = _interopRequireDefault(__webpack_require__(1));
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
@@ -1672,7 +1693,7 @@
         Object.defineProperty(exports, "__esModule", {
             value: !0
         }), exports.generateMaskSet = generateMaskSet, exports.analyseMask = analyseMask;
-        var _inputmask = _interopRequireDefault(__webpack_require__(11));
+        var _inputmask = _interopRequireDefault(__webpack_require__(13));
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
                 default: obj
@@ -2014,7 +2035,7 @@
         exports.default = _default;
     }, function(module, exports, __webpack_require__) {
         "use strict";
-        var _inputmask = _interopRequireDefault(__webpack_require__(1)), _keycode = _interopRequireDefault(__webpack_require__(0)), _escapeRegex = _interopRequireDefault(__webpack_require__(13)), _positioning = __webpack_require__(2);
+        var _inputmask = _interopRequireDefault(__webpack_require__(1)), _keycode = _interopRequireDefault(__webpack_require__(0)), _escapeRegex = _interopRequireDefault(__webpack_require__(14)), _positioning = __webpack_require__(2);
         function _typeof(obj) {
             return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function _typeof(obj) {
                 return typeof obj;
@@ -2349,7 +2370,7 @@
         });
     }, function(module, exports, __webpack_require__) {
         "use strict";
-        var _inputmask = _interopRequireDefault(__webpack_require__(1)), _keycode = _interopRequireDefault(__webpack_require__(0)), _escapeRegex = _interopRequireDefault(__webpack_require__(13));
+        var _inputmask = _interopRequireDefault(__webpack_require__(1)), _keycode = _interopRequireDefault(__webpack_require__(0)), _escapeRegex = _interopRequireDefault(__webpack_require__(14));
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
                 default: obj
@@ -2731,7 +2752,7 @@
         });
     }, function(module, exports, __webpack_require__) {
         "use strict";
-        var _window = _interopRequireDefault(__webpack_require__(12)), _inputmask = _interopRequireDefault(__webpack_require__(1));
+        var _window = _interopRequireDefault(__webpack_require__(8)), _inputmask = _interopRequireDefault(__webpack_require__(1)), _canUseDOM = _interopRequireDefault(__webpack_require__(9));
         function _typeof(obj) {
             return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function _typeof(obj) {
                 return typeof obj;
@@ -2830,7 +2851,7 @@
             };
         }
         var document = _window.default.document;
-        if (document && document.head && document.head.attachShadow && _window.default.customElements && void 0 === _window.default.customElements.get("input-mask")) {
+        if (_canUseDOM.default && document && document.head && document.head.attachShadow && _window.default.customElements && void 0 === _window.default.customElements.get("input-mask")) {
             var InputmaskElement = function(_HTMLElement) {
                 _inherits(InputmaskElement, _HTMLElement);
                 var _super = _createSuper(InputmaskElement);
@@ -2851,7 +2872,7 @@
         }
     }, function(module, exports, __webpack_require__) {
         "use strict";
-        var _jquery = _interopRequireDefault(__webpack_require__(8)), _inputmask = _interopRequireDefault(__webpack_require__(1));
+        var _jquery = _interopRequireDefault(__webpack_require__(10)), _inputmask = _interopRequireDefault(__webpack_require__(1));
         function _typeof(obj) {
             return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function _typeof(obj) {
                 return typeof obj;
@@ -2923,13 +2944,13 @@
         Object.defineProperty(exports, "__esModule", {
             value: !0
         }), exports.default = void 0;
-        var _bundle = _interopRequireDefault(__webpack_require__(14));
+        var _bundle = _interopRequireDefault(__webpack_require__(15));
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
                 default: obj
             };
         }
-        __webpack_require__(24);
+        __webpack_require__(25);
         var _default = _bundle.default;
         exports.default = _default;
     } ], installedModules = {}, __webpack_require__.m = modules, __webpack_require__.c = installedModules, 
@@ -2964,7 +2985,7 @@
         return __webpack_require__.d(getter, "a", getter), getter;
     }, __webpack_require__.o = function(object, property) {
         return Object.prototype.hasOwnProperty.call(object, property);
-    }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 25);
+    }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 26);
     function __webpack_require__(moduleId) {
         if (installedModules[moduleId]) return installedModules[moduleId].exports;
         var module = installedModules[moduleId] = {
