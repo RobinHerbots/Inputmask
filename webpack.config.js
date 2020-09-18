@@ -45,7 +45,8 @@ module.exports = function (env, argv) {
 		output: {
 			path: __dirname,
 			filename: "[name].js",
-			libraryTarget: "umd"
+			libraryTarget: "umd",
+			globalObject: "this"
 		},
 		externals: {
 			"jquery": {
