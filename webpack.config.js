@@ -56,7 +56,8 @@ module.exports = function (env, argv) {
 				root: "jQuery"
 			},
 			"jqlite": "jqlite",
-			"qunit": "QUnit"
+			"qunit": "QUnit",
+			"window": "window"
 		},
 		optimization: {
 			minimize: env === "production",
