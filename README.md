@@ -6,20 +6,20 @@ Copyright (c) 2010 - 2020 Robin Herbots Licensed under the MIT license ([http://
   
 [![NPM Version][npm-image]][npm-url] [![Dependency Status][david-image]][david-url] [![devDependency Status][david-dev-image]][david-dev-url]
 
-Inputmask is a javascript library which creates an input mask.  Inputmask can run against vanilla javascript, jQuery and jqlite.
+Inputmask is a javascript library that creates an input mask.  Inputmask can run against vanilla javascript, jQuery, and jqlite.
 
 An inputmask helps the user with the input by ensuring a predefined format. This can be useful for dates, numerics, phone numbers, ...
 
 Highlights:
 - easy to use
-- optional parts anywere in the mask
-- possibility to define aliases which hide complexity
-- date / datetime masks
+- optional parts anywhere in the mask
+- possibility to define aliases which hide the complexity
+- date / DateTime masks
 - numeric masks
 - lots of callbacks
 - non-greedy masks
 - many features can be enabled/disabled/configured by options
-- supports readonly/disabled/dir="rtl" attributes
+- supports read-only/disabled/dir="rtl" attributes
 - support data-inputmask attribute(s)
 - alternator-mask
 - regex-mask
@@ -152,7 +152,7 @@ $(document).ready(function(){
 ```
 
 ### via \<input-mask\> element
-Use the input-mask element in your html code and set the options as attributes.
+Use the input-mask element in your HTML code and set the options as attributes.
 
 ```html
 <input-mask alias="currency"></input-mask>
@@ -179,13 +179,13 @@ The allowed input types are defined in the supportsInputType option. Also see ([
 There are more definitions defined within the extensions.<br>You can find info within the js-files or by further exploring the options.
 
 ###### Note:
-When your newly mask is acting strange and replaces some static chars with the mask, then there is a definition which uses the char as symbol.
+When your new mask is acting strange and replaces some static chars with the mask, then there is a definition that uses the char as a symbol.
 To solve this you need to [double escape the char](#escape-special-mask-chars).
 
 
 ## Masking types
 ### Static masks
-These are the very basic of masking.  The mask is defined and will not change during the input.
+These are the very basics of masking.  The mask is defined and will not change during the input.
 
 ```javascript
 $(document).ready(function(){
@@ -195,7 +195,7 @@ $(document).ready(function(){
 ```
 
 ### Optional masks
-It is possible to define some parts in the mask as optional.  This is done by using [ ].
+It is possible to define some parts in the mask is optional.  This is done by using [ ].
 
 Example:
 
@@ -203,14 +203,14 @@ Example:
 $('#test').inputmask('(99) 9999[9]-9999');
 ```
 
-This mask wil allow input like `(99) 99999-9999` or `(99) 9999-9999`.
+This mask will allow input like `(99) 99999-9999` or `(99) 9999-9999`.
 
 Input => 12123451234      mask => (12) 12345-1234    (trigger complete)<br>
 Input => 121234-1234      mask => (12) 1234-1234     (trigger complete)<br>
 Input => 1212341234       mask => (12) 12341-234_    (trigger incomplete)
 
 #### skipOptionalPartCharacter
-As an extra there is another configurable character which is used to skip an optional part in the mask.
+As an extra, there is another configurable character which is used to skip an optional part in the mask.
 
 ```javascript
 skipOptionalPartCharacter: " "
@@ -218,7 +218,7 @@ skipOptionalPartCharacter: " "
 
 Input => 121234 1234      mask => (12) 1234-1234     (trigger complete)
 
-When `clearMaskOnLostFocus: true` is set in the options (default), the mask will clear out the optional part when it is not filled in and this only in case the optional part is at the end of the mask.
+When `clearMaskOnLostFocus: true` is set in the options (default), the mask will clear out the optional part when it is not filled in, and this only in case the optional part is at the end of the mask.
 
 For example, given:
 
@@ -238,7 +238,7 @@ $(selector).inputmask({ mask: "9[-9999]", greedy: false });
 The initial mask shown will be "**_**" instead of "**_**-____".
 
 ### Dynamic masks
-Dynamic masks can change during the input.  To define a dynamic part use { }.
+Dynamic masks can change during input.  To define a dynamic part use { }.
 
 {n} => n repeats
 {n|j} => n repeats, with j jitmasking
@@ -319,14 +319,14 @@ $("selector").inputmask({
 ```
 
 ### Preprocessing masks
-You can define the mask as a function which can allow to preprocess the resulting mask.  Example sorting for multiple masks or retrieving mask definitions dynamically through ajax. The preprocessing fn should return a valid mask definition.
+You can define the mask as a function that can allow you to preprocess the resulting mask.  Example sorting for multiple masks or retrieving mask definitions dynamically through ajax. The preprocessing fn should return a valid mask definition.
 
 ```javascript
 $(selector).inputmask({ mask: function () { /* do stuff */ return ["[1-]AAA-999", "[1-]999-AAA"]; }});
 ```
 
 ### JIT Masking
-Just in time masking.  With the jitMasking option you can enable jit masking.  The mask will only be visible for the user entered characters.
+Just in time masking.  With the jitMasking option, you can enable jit masking.  The mask will only be visible for the user-entered characters.
 Default: false
 
 Value can be true or a threshold number or false.
@@ -339,9 +339,9 @@ Inputmask("datetime", { jitMasking: true }).mask(selector);
 You can define your own definitions to use in your mask.<br>Start by choosing a masksymbol.
 
 ### validator(chrs, maskset, pos, strict, opts)
-Next define your validator.  The validator can be a regular expression or a function.
+Next, define your validator.  The validator can be a regular expression or a function.
 
-The return value of a validator can be true,  false or a command object.
+The return value of a validator can be true,  false, or a command object.
 
 #### Options of the command object
 - pos : position to insert
@@ -363,7 +363,7 @@ The return value of a validator can be true,  false or a command object.
   See [preValidation option](#preValidation)
 
 ### definitionSymbol
-When you insert or delete characters, they are only shifted when the definition type is the same.  This behavior can be overridden by giving a definitionSymbol. (see example x, y, z, which can be used for ip-address masking, the validation is different, but it is allowed to shift the characters between the definitions)
+When you insert or delete characters, they are only shifted when the definition type is the same.  This behavior can be overridden by giving a definitionSymbol. (see example x, y, z, which can be used for IP-address masking, the validation is different, but it is allowed to shift the characters between the definitions)
 
 ```javascript
 Inputmask.extendDefinitions({
@@ -403,7 +403,7 @@ Inputmask.extendDefinitions({
 Specify a placeholder for a definition.  This can also be a function.
 
 ### set defaults
-Defaults can be set as below.
+The defaults can be set as below.
 
 ```javascript
 Inputmask.extendDefaults({
@@ -429,7 +429,7 @@ Inputmask.extendAliases({
 ```
 
 But if the property is defined within an alias you need to set it for the alias definition.
-This is also for default plugin options.  If the alias definitions extends on default options, you can only override it at alias level.
+This is also for default plugin options.  If the alias definitions extend on default options, you can only override it at alias level.
 
 ```javascript
 Inputmask.extendAliases({
@@ -441,7 +441,7 @@ Inputmask.extendAliases({
 });
 ```
 
-However, the preferred way to alter properties for an alias is by creating a new alias which inherits from the default alias definition.
+However, the preferred way to alter properties for an alias is by creating a new alias that inherits from the default alias definition.
 
 ```javascript
 Inputmask.extendAliases({
@@ -597,7 +597,7 @@ $(selector).inputmask("getmetadata");
 The setvalue functionality is to set a value to the inputmask like you would do with jQuery.val,
 BUT it will trigger the internal event used by the inputmask always, whatever the case.
 This is particular usefull when cloning an inputmask with jQuery.clone.  Cloning an inputmask is not a fully functional clone.
-On the first event (mouseenter, focus, ...) the inputmask can detect if it where cloned and can reactivate the masking.  However when setting the value with jQuery.val there is none of the events triggered in that case.  The setvalue functionality does this for you.
+On the first event (mouseenter, focus, ...) the inputmask can detect if it were cloned and can reactivate the masking.  However when setting the value with jQuery.val there is none of the events triggered in that case.  The setvalue functionality does this for you.
 
 ```
 $(selector).inputmask("setvalue", value);
@@ -633,7 +633,7 @@ $("#CellPhone").inputmask("option", {
 ```
 
 ### format
-Instead of masking an input element it is also possible to use the inputmask for formatting given values. Think of formatting values to show in jqGrid or on other elements then inputs.
+Instead of masking an input element, it is also possible to use the inputmask for formatting given values. Think of formatting values to show in jqGrid or on other elements then inputs.
 
 ```javascript
 var formattedDate = Inputmask.format("2331973", { alias: "datetime", inputFormat: "dd/mm/yyyy"});
@@ -783,7 +783,7 @@ Automatically unmask the value when retrieved.<br>Default: false.
 Remove the mask before submitting the form.<br>Default: false
 
 ### clearMaskOnLostFocus
-Remove the empty mask on blur or when not empty removes the optional trailing part Default: true
+Remove the empty mask on blur or when not empty remove the optional trailing part Default: true
 
 ```javascript
 $(document).ready(function(){
@@ -809,11 +809,11 @@ $(document).ready(function(){
 ### aliases
 Definitions of aliases.
 
-With an alias you can define a complex mask definition and call it by using an alias name.  So this is mainly to simplify the use of your masks.  Some aliases found in the extensions are: email, currency, decimal, integer, date, datetime, dd/mm/yyyy, etc.
+With an alias, you can define a complex mask definition and call it by using an alias name.  So this is mainly to simplify the use of your masks.  Some aliases found in the extensions are email, currency, decimal, integer, date, DateTime, dd/mm/yyyy, etc.
 
-First you have to create an alias definition.  The alias definition can contain options for the mask, custom definitions, the mask to use etc.
+First, you have to create an alias definition.  The alias definition can contain options for the mask, custom definitions, the mask to use, etc.
 
-When you pass in an alias, the alias is first resolved and then the other options are applied.  So you can call an alias and pass another mask to be applied over the alias. This also means that you can write aliases which "inherit" from another alias.
+When you pass in an alias, the alias is first resolved and then the other options are applied.  So you can call an alias and pass another mask to be applied over the alias. This also means that you can write aliases that "inherit" from another alias.
 
 Some examples can be found in jquery.inputmask.xxx.extensions.js
 
@@ -873,7 +873,7 @@ $(selector).inputmask({
 ```
 
 ### onBeforePaste
-This callback allows for preprocessing the pasted value before actually handling the value for masking.  This can be usefull for stripping away some characters before processing.
+This callback allows for preprocessing the pasted value before actually handling the value for masking.  This can be useful for stripping away some characters before processing.
 
 Function arguments: pastedValue, opts<br>Function return: processedValue
 
@@ -900,7 +900,7 @@ Default: Calls the onBeforeMask
 ### onBeforeWrite
 Executes before writing to the masked element
 
-Use this to do some extra processing of the input. This can be usefull when implementing an alias, ex. decimal alias, autofill the digits when leaving the inputfield.
+Use this to do some extra processing of the input. This can be useful when implementing an alias, ex. decimal alias, autofill the digits when leaving the inputfield.
 
 Function arguments: event, buffer, caretPos, opts<br>Function return: command object (see Define custom definitions)
 
@@ -939,7 +939,7 @@ $(document).ready(function(){
 ```
 
 ### onKeyValidation
-Callback function is executed on every keyvalidation with the key, result as parameter.
+Callback function is executed on every keyvalidation with the key, result as the parameter.
 
 ```javascript
 $(document).ready(function(){
@@ -965,7 +965,7 @@ $(document).ready(function(){
 ### rightAlign
 Align the input to the right
 
-By setting the rightAlign you can specify to right align an inputmask. This is only applied in combination op the numericInput option or the dir-attribute. Default is true.
+By setting the rightAlign you can specify to right-align an inputmask. This is only applied in combination op the numericInput option or the dir-attribute. The default is true.
 
 ```javascript
 $(document).ready(function(){
@@ -1030,16 +1030,16 @@ $(selector).inputmask({
 Hook to postValidate the result from isValid.  Usefull for validating the entry as a whole.  Args => buffer, pos, c, currentResult, opts, maskset, strict, fromCheckval<br>Return => true|false|command object
 
 ### preValidation
-Hook to preValidate the input.  Useful for validating regardless the definition. Args => buffer, pos, char, isSelection, opts, maskset, caretPos, strict => return true/false/command object
-When return true, the normal validation kicks in, otherwise it is skipped.
+Hook to preValidate the input.  Useful for validating regardless of the definition. Args => buffer, pos, char, isSelection, opts, maskset, caretPos, strict => return true/false/command object
+When returning true, the normal validation kicks in, otherwise, it is skipped.
 
-When returning a command object the actions are executed and futher validation is stopped.  
+When returning a command object the actions are executed and further validation is stopped.  
 If you want to continue further validation, you need to add the rewritePosition action.
 
 ### staticDefinitionSymbol
-The staticDefinitionSymbol option is used to indicate that the static entries in the mask can match a certain definition.  Especially usefull with alternators so that static element in the mask can match another alternation.
+The staticDefinitionSymbol option is used to indicate that the static entries in the mask can match a certain definition.  Especially useful with alternators so that the static element in the mask can match another alternation.
 
-In the example below we mark the spaces as a possible match for the "i" definition.  By doing so the mask can alternate to the second mask even when we typed already "12 3".
+In the example below, we mark the spaces as a possible match for the "i" definition.  By doing so the mask can alternate to the second mask even when we typed already "12 3".
 
 ```javascript
 Inputmask("(99 99 999999)|(i{+})", {
@@ -1116,7 +1116,7 @@ Use the default defined definitions from the prototype.
 Default: true 
 
 ## General
-### set a value and apply mask
+### set a value and apply the mask
 this can be done with the traditional jquery.val function (all browsers) or JavaScript value property for browsers which implement lookupGetter or getOwnPropertyDescriptor
 
 ```javascript
@@ -1152,7 +1152,7 @@ $(document).ready(function(){
 Extra example see https://github.com/RobinHerbots/Inputmask/issues/2251
 
 ### auto-casing inputmask
-You can define within a definition to automatically apply some casing on the entry in an input by giving the casing.<br>Casing can be null, "upper", "lower" or "title".
+You can define within a definition to automatically apply some casing on the entry in input by giving the casing.<br>Casing can be null, "upper", "lower" or "title".
 
 ```javascript
 Inputmask.extendDefinitions({
@@ -1201,7 +1201,7 @@ $(document).ready(function(){
 ```
 
 ### data-inputmask attribute
-You can also apply an inputmask by using the data-inputmask attribute.  In the attribute you specify the options wanted for the inputmask. This gets parsed with $.parseJSON (for the moment), so be sure to use a well-formed json-string without the {}.
+You can also apply an inputmask by using the data-inputmask attribute.  In the attribute, you specify the options wanted for the inputmask. This gets parsed with $.parseJSON (for the moment), so be sure to use a well-formed JSON-string without the {}.
 
 ```html
 <input data-inputmask="'alias': 'datetime'" />
