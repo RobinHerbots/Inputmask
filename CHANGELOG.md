@@ -25,7 +25,7 @@ HOT FIX: jqlite dependency error
 - datetime alias: add autofill logic to year
     - complete with current year
     - allow filled year be overtyped when min date is provided,
-- \<input-mask> enhance attribute handling
+- &lt;input-mask&gt; enhance attribute handling
 
 ### Fixed
 - The fractional part cannot be typed if negative values are displayed in parentheses #1836
@@ -49,7 +49,7 @@ HOT FIX: jqlite dependency error
 
 ## [5.0.2 - 09/01/2020]
 ### Added
-- <input-mask> html element #2247
+- &lt;input-mask&gt; html element #2247
 
 ### Fixed
 - Numeric alias: cannot clear input on blur #2235

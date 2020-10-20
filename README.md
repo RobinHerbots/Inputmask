@@ -103,7 +103,7 @@ im.mask(selector);
 
 //or
 
-Inputmask({"mask": "(999) 999-9999", .... other options .....}).mask(selector);
+Inputmask({"mask": "(999) 999-9999", ... other_options, ...}).mask(selector);
 Inputmask("9-a{1,3}9{1,3}").mask(selector);
 Inputmask("9", { repeat: 10 }).mask(selector);
 
