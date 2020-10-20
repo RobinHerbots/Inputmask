@@ -1,7 +1,11 @@
 # Change Log
 
 ## [5.0.6 - UNRELEASED]
+### Updates
+- enhance alternation logic
+ 
 ### Fixed
+- Country Code Problem #2397
 - Error thrown in unmask after upgrade to 5.0.5 #2375
 - Inputmask.remove(document.getElementById(selector)) is not working in Node after version 5.0.5 update #2373
 - date format yyyy-mm-dd doesn't work with min and max #2360
