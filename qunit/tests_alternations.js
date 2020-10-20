@@ -442,4 +442,35 @@ export default function (qunit, Inputmask) {
 		$("#testmask").Type("26");
 		assert.equal(testmask.inputmask._valueGet(), "2", "Result " + testmask.inputmask._valueGet());
 	});
-};
+
+	qunit.test("+(1|\\90|221) (999) 999 99-99 - type 1 - tcagkansokmen", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+
+		Inputmask("+(1|\\90|221) (999) 999 99-99").mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("1");
+		assert.equal(testmask.inputmask._valueGet(), "+1 (___) ___ __-__", "Result " + testmask.inputmask._valueGet());
+	});
+	qunit.test("+(1|\\90|221) (999) 999 99-99 - type 9 - tcagkansokmen", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+
+		Inputmask("+(1|\\90|221) (999) 999 99-99").mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("9");
+		assert.equal(testmask.inputmask._valueGet(), "+90 (___) ___ __-__", "Result " + testmask.inputmask._valueGet());
+	});
+	qunit.test("+(1|\\90|221) (999) 999 99-99 - type 2 - tcagkansokmen", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+
+		Inputmask("+(1|\\90|221) (999) 999 99-99").mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("2");
+		assert.equal(testmask.inputmask._valueGet(), "+221 (___) ___ __-__", "Result " + testmask.inputmask._valueGet());
+	});
+}
