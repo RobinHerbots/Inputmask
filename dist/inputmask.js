@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.18
+ * Version: 5.0.6-beta.19
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1528,8 +1528,8 @@
                         e.preventDefault();
                     }
                 };
-                input.inputmask.events[eventName] = input.inputmask.events[eventName] || [], input.inputmask.events[eventName].push(ev), 
-                [ "submit", "reset" ].includes(eventName) ? null !== input.form && $(input.form).on(eventName, ev.bind(input)) : $(input).on(eventName, ev);
+                [ "submit", "reset" ].includes(eventName) ? (ev = ev.bind(input), null !== input.form && $(input.form).on(eventName, ev)) : $(input).on(eventName, ev), 
+                input.inputmask.events[eventName] = input.inputmask.events[eventName] || [], input.inputmask.events[eventName].push(ev);
             },
             off: function off(input, event) {
                 if (input.inputmask && input.inputmask.events) {
@@ -1781,7 +1781,7 @@
                 });
                 return evts;
             }
-            if (isValidElement(this[0])) {
+            if (isValidElement(this[0]) && events) {
                 eventRegistry = this[0].eventRegistry, elem = this[0];
                 for (var _events = events.split(" "), endx = 0; endx < _events.length; endx++) for (var nsEvent = _events[endx].split("."), offEvents = resolveNamespace(nsEvent[0], nsEvent[1]), i = 0, offEventsL = offEvents.length; i < offEventsL; i++) removeEvent(offEvents[i].ev, offEvents[i].namespace, offEvents[i].handler);
             }

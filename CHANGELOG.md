@@ -5,6 +5,7 @@
 - enhance alternation logic
  
 ### Fixed
+- Removing the mask from Input results in TypeError: Cannot read property 'dependencyLib' of undefined #2403
 - Country Code Problem #2397
 - Error thrown in unmask after upgrade to 5.0.5 #2375
 - Inputmask.remove(document.getElementById(selector)) is not working in Node after version 5.0.5 update #2373

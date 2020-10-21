@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.18
+ * Version: 5.0.6-beta.19
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -1507,8 +1507,8 @@
                         e.preventDefault();
                     }
                 };
-                input.inputmask.events[eventName] = input.inputmask.events[eventName] || [], input.inputmask.events[eventName].push(ev), 
-                [ "submit", "reset" ].includes(eventName) ? null !== input.form && $(input.form).on(eventName, ev.bind(input)) : $(input).on(eventName, ev);
+                [ "submit", "reset" ].includes(eventName) ? (ev = ev.bind(input), null !== input.form && $(input.form).on(eventName, ev)) : $(input).on(eventName, ev), 
+                input.inputmask.events[eventName] = input.inputmask.events[eventName] || [], input.inputmask.events[eventName].push(ev);
             },
             off: function off(input, event) {
                 if (input.inputmask && input.inputmask.events) {
