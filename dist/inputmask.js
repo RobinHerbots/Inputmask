@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.19
+ * Version: 5.0.6-beta.20
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1592,7 +1592,7 @@
         exports.default = _default;
     }, function(module, exports, __webpack_require__) {
         "use strict";
-        var _inputmask = _interopRequireDefault(__webpack_require__(2));
+        var _inputmask = _interopRequireDefault(__webpack_require__(2)), _positioning = __webpack_require__(1), _validationTests = __webpack_require__(3);
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
                 default: obj
@@ -1686,7 +1686,8 @@
             ssn: {
                 mask: "999-99-9999",
                 postValidation: function postValidation(buffer, pos, c, currentResult, opts, maskset, strict) {
-                    return /^(?!219-09-9999|078-05-1120)(?!666|000|9.{2}).{3}-(?!00).{2}-(?!0{4}).{4}$/.test(buffer.join(""));
+                    var bffr = _validationTests.getMaskTemplate.call(this, !0, _positioning.getLastValidPosition.call(this), !0, !0);
+                    return /^(?!219-09-9999|078-05-1120)(?!666|000|9.{2}).{3}-(?!00).{2}-(?!0{4}).{4}$/.test(bffr.join(""));
                 }
             }
         });
