@@ -525,7 +525,7 @@ if (input.inputmask)
 Unmask a given value against the mask.
 
 ```javascript
-var unformattedDate = Inputmask.unmask("23/03/1973", { alias: "dd/mm/yyyy"}); //23031973
+var unformattedMask = Inputmask.unmask("123-45678-90", { mask: "999-99999-99" }); //1234567890
 ```
 
 ### remove
