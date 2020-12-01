@@ -5,6 +5,7 @@
 - enhance alternation logic
  
 ### Fixed
+- '0' getting added unnecessarily if navigating using arrow key for datetime input mask #2289
 - jitmasking ssn #2420
 - Removing the mask from Input results in TypeError: Cannot read property 'dependencyLib' of undefined #2403
 - Country Code Problem #2397
