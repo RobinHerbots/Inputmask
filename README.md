@@ -902,7 +902,7 @@ Executes before writing to the masked element
 
 Use this to do some extra processing of the input. This can be useful when implementing an alias, ex. decimal alias, autofill the digits when leaving the inputfield.
 
-Function arguments: event, buffer, caretPos, opts<br>Function return: command object (see [Define custom definitions](#Define custom definitions))
+Function arguments: event, buffer, caretPos, opts<br>Function return: command object (see [Define custom definitions](#define-custom-definitions))
 
 ### onUnMask
 Executes after unmasking to allow post-processing of the unmaskedvalue.
