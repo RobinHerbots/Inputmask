@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.22
+ * Version: 5.0.6-beta.23
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -22,7 +22,7 @@
         exports.getBufferTemplate = getBufferTemplate, exports.getLastValidPosition = getLastValidPosition, 
         exports.isMask = isMask, exports.resetMaskSet = resetMaskSet, exports.seekNext = seekNext, 
         exports.seekPrevious = seekPrevious, exports.translatePosition = translatePosition;
-        var _validationTests = __webpack_require__(3), _validation = __webpack_require__(4), _mask = __webpack_require__(11);
+        var _validationTests = __webpack_require__(3), _validation = __webpack_require__(4);
         function caret(input, begin, end, notranslate, isDelete) {
             var inputmask = this, opts = this.opts, range;
             if (void 0 === begin) return "selectionStart" in input && "selectionEnd" in input ? (begin = input.selectionStart, 
@@ -182,8 +182,8 @@
         "use strict";
         Object.defineProperty(exports, "__esModule", {
             value: !0
-        }), exports.default = void 0, __webpack_require__(17), __webpack_require__(18);
-        var _mask = __webpack_require__(11), _inputmask = _interopRequireDefault(__webpack_require__(10)), _window = _interopRequireDefault(__webpack_require__(5)), _maskLexer = __webpack_require__(21), _validationTests = __webpack_require__(3), _positioning = __webpack_require__(1), _validation = __webpack_require__(4), _inputHandling = __webpack_require__(7), _eventruler = __webpack_require__(12), _definitions = _interopRequireDefault(__webpack_require__(22)), _defaults = _interopRequireDefault(__webpack_require__(23)), _canUseDOM = _interopRequireDefault(__webpack_require__(6));
+        }), exports.default = void 0, __webpack_require__(16), __webpack_require__(17);
+        var _mask = __webpack_require__(18), _inputmask = _interopRequireDefault(__webpack_require__(10)), _window = _interopRequireDefault(__webpack_require__(5)), _maskLexer = __webpack_require__(21), _validationTests = __webpack_require__(3), _positioning = __webpack_require__(1), _validation = __webpack_require__(4), _inputHandling = __webpack_require__(7), _eventruler = __webpack_require__(11), _definitions = _interopRequireDefault(__webpack_require__(22)), _defaults = _interopRequireDefault(__webpack_require__(23)), _canUseDOM = _interopRequireDefault(__webpack_require__(6));
         function _typeof(obj) {
             return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function _typeof(obj) {
                 return typeof obj;
@@ -748,7 +748,7 @@
             }
         }
         function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromCheckval) {
-            var inputmask = this, $ = this.dependencyLib, opts = this.opts, el = inputmask.el, maskset = inputmask.maskset;
+            var inputmask = this, $ = this.dependencyLib, opts = this.opts, maskset = inputmask.maskset;
             function isSelection(posObj) {
                 return inputmask.isRTL ? 1 < posObj.begin - posObj.end || posObj.begin - posObj.end == 1 : 1 < posObj.end - posObj.begin || posObj.end - posObj.begin == 1;
             }
@@ -996,7 +996,7 @@
             };
             var staticMatches = [], prevCaretPos = inputmask.caretPos;
             if (inputValue.forEach(function(charCode, ndx) {
-                if (void 0 !== charCode) if (void 0 === maskset.validPositions[ndx] && inputValue[ndx] === _validationTests.getPlaceholder.call(inputmask, ndx) && _positioning.isMask.call(inputmask, ndx, !0) && !1 === _validation.isValid.call(inputmask, ndx, inputValue[ndx], !0, void 0, void 0, !0)) maskset.p++; else {
+                if (void 0 !== charCode) {
                     var keypress = new $.Event("_checkval");
                     keypress.which = charCode.toString().charCodeAt(0), charCodes += charCode;
                     var lvp = _positioning.getLastValidPosition.call(inputmask, void 0, !0);
@@ -1006,7 +1006,7 @@
                     inputmask.caretPos = {
                         begin: result.forwardPosition,
                         end: result.forwardPosition
-                    }, prevCaretPos = inputmask.caretPos) : inputmask.caretPos = prevCaretPos;
+                    }, prevCaretPos = inputmask.caretPos) : void 0 === maskset.validPositions[ndx] && inputValue[ndx] === _validationTests.getPlaceholder.call(inputmask, ndx) && _positioning.isMask.call(inputmask, ndx, !0) ? inputmask.caretPos.begin++ : inputmask.caretPos = prevCaretPos;
                 }
             }), 0 < staticMatches.length) {
                 var sndx, validPos, nextValid = _positioning.seekNext.call(inputmask, -1, void 0, !1);
@@ -1325,7 +1325,7 @@
         Object.defineProperty(exports, "__esModule", {
             value: !0
         }), exports.default = void 0;
-        var _extend = _interopRequireDefault(__webpack_require__(13)), _window = _interopRequireDefault(__webpack_require__(5)), _data = _interopRequireDefault(__webpack_require__(19)), _events = __webpack_require__(20);
+        var _extend = _interopRequireDefault(__webpack_require__(12)), _window = _interopRequireDefault(__webpack_require__(5)), _data = _interopRequireDefault(__webpack_require__(19)), _events = __webpack_require__(20);
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
                 default: obj
@@ -1343,137 +1343,6 @@
         }, DependencyLib.extend = _extend.default, DependencyLib.data = _data.default, DependencyLib.Event = _events.Event;
         var _default = DependencyLib;
         exports.default = _default;
-    }, function(module, exports, __webpack_require__) {
-        "use strict";
-        Object.defineProperty(exports, "__esModule", {
-            value: !0
-        }), exports.mask = mask;
-        var _keycode = _interopRequireDefault(__webpack_require__(0)), _positioning = __webpack_require__(1), _inputHandling = __webpack_require__(7), _eventruler = __webpack_require__(12), _environment = __webpack_require__(9), _validation = __webpack_require__(4), _eventhandlers = __webpack_require__(8);
-        function _interopRequireDefault(obj) {
-            return obj && obj.__esModule ? obj : {
-                default: obj
-            };
-        }
-        function mask() {
-            var inputmask = this, opts = this.opts, el = this.el, $ = this.dependencyLib;
-            function isElementTypeSupported(input, opts) {
-                function patchValueProperty(npt) {
-                    var valueGet, valueSet;
-                    function patchValhook(type) {
-                        if ($.valHooks && (void 0 === $.valHooks[type] || !0 !== $.valHooks[type].inputmaskpatch)) {
-                            var valhookGet = $.valHooks[type] && $.valHooks[type].get ? $.valHooks[type].get : function(elem) {
-                                return elem.value;
-                            }, valhookSet = $.valHooks[type] && $.valHooks[type].set ? $.valHooks[type].set : function(elem, value) {
-                                return elem.value = value, elem;
-                            };
-                            $.valHooks[type] = {
-                                get: function get(elem) {
-                                    if (elem.inputmask) {
-                                        if (elem.inputmask.opts.autoUnmask) return elem.inputmask.unmaskedvalue();
-                                        var result = valhookGet(elem);
-                                        return -1 !== _positioning.getLastValidPosition.call(inputmask, void 0, void 0, elem.inputmask.maskset.validPositions) || !0 !== opts.nullable ? result : "";
-                                    }
-                                    return valhookGet(elem);
-                                },
-                                set: function set(elem, value) {
-                                    var result = valhookSet(elem, value);
-                                    return elem.inputmask && (0, _inputHandling.applyInputValue)(elem, value), result;
-                                },
-                                inputmaskpatch: !0
-                            };
-                        }
-                    }
-                    function getter() {
-                        return this.inputmask ? this.inputmask.opts.autoUnmask ? this.inputmask.unmaskedvalue() : -1 !== _positioning.getLastValidPosition.call(inputmask) || !0 !== opts.nullable ? (this.inputmask.shadowRoot || document.activeElement) === this && opts.clearMaskOnLostFocus ? (inputmask.isRTL ? _inputHandling.clearOptionalTail.call(inputmask, _positioning.getBuffer.call(inputmask).slice()).reverse() : _inputHandling.clearOptionalTail.call(inputmask, _positioning.getBuffer.call(inputmask).slice())).join("") : valueGet.call(this) : "" : valueGet.call(this);
-                    }
-                    function setter(value) {
-                        valueSet.call(this, value), this.inputmask && (0, _inputHandling.applyInputValue)(this, value);
-                    }
-                    function installNativeValueSetFallback(npt) {
-                        _eventruler.EventRuler.on(npt, "mouseenter", function() {
-                            var input = this, value = this.inputmask._valueGet(!0);
-                            value !== (inputmask.isRTL ? _positioning.getBuffer.call(inputmask).reverse() : _positioning.getBuffer.call(inputmask)).join("") && (0, 
-                            _inputHandling.applyInputValue)(this, value);
-                        });
-                    }
-                    if (!npt.inputmask.__valueGet) {
-                        if (!0 !== opts.noValuePatching) {
-                            if (Object.getOwnPropertyDescriptor) {
-                                var valueProperty = Object.getPrototypeOf ? Object.getOwnPropertyDescriptor(Object.getPrototypeOf(npt), "value") : void 0;
-                                valueProperty && valueProperty.get && valueProperty.set ? (valueGet = valueProperty.get, 
-                                valueSet = valueProperty.set, Object.defineProperty(npt, "value", {
-                                    get: getter,
-                                    set: setter,
-                                    configurable: !0
-                                })) : "input" !== npt.tagName.toLowerCase() && (valueGet = function valueGet() {
-                                    return this.textContent;
-                                }, valueSet = function valueSet(value) {
-                                    this.textContent = value;
-                                }, Object.defineProperty(npt, "value", {
-                                    get: getter,
-                                    set: setter,
-                                    configurable: !0
-                                }));
-                            } else document.__lookupGetter__ && npt.__lookupGetter__("value") && (valueGet = npt.__lookupGetter__("value"), 
-                            valueSet = npt.__lookupSetter__("value"), npt.__defineGetter__("value", getter), 
-                            npt.__defineSetter__("value", setter));
-                            npt.inputmask.__valueGet = valueGet, npt.inputmask.__valueSet = valueSet;
-                        }
-                        npt.inputmask._valueGet = function(overruleRTL) {
-                            return inputmask.isRTL && !0 !== overruleRTL ? valueGet.call(this.el).split("").reverse().join("") : valueGet.call(this.el);
-                        }, npt.inputmask._valueSet = function(value, overruleRTL) {
-                            valueSet.call(this.el, null == value ? "" : !0 !== overruleRTL && inputmask.isRTL ? value.split("").reverse().join("") : value);
-                        }, void 0 === valueGet && (valueGet = function valueGet() {
-                            return this.value;
-                        }, valueSet = function valueSet(value) {
-                            this.value = value;
-                        }, patchValhook(npt.type), installNativeValueSetFallback(npt));
-                    }
-                }
-                "textarea" !== input.tagName.toLowerCase() && opts.ignorables.push(_keycode.default.ENTER);
-                var elementType = input.getAttribute("type"), isSupported = "input" === input.tagName.toLowerCase() && opts.supportsInputType.includes(elementType) || input.isContentEditable || "textarea" === input.tagName.toLowerCase();
-                if (!isSupported) if ("input" === input.tagName.toLowerCase()) {
-                    var el = document.createElement("input");
-                    el.setAttribute("type", elementType), isSupported = "text" === el.type, el = null;
-                } else isSupported = "partial";
-                return !1 !== isSupported ? patchValueProperty(input) : input.inputmask = void 0, 
-                isSupported;
-            }
-            _eventruler.EventRuler.off(el);
-            var isSupported = isElementTypeSupported(el, opts);
-            if (!1 !== isSupported) {
-                inputmask.originalPlaceholder = el.placeholder, inputmask.maxLength = void 0 !== el ? el.maxLength : void 0, 
-                -1 === inputmask.maxLength && (inputmask.maxLength = void 0), "inputMode" in el && null === el.getAttribute("inputmode") && (el.inputMode = opts.inputmode, 
-                el.setAttribute("inputmode", opts.inputmode)), !0 === isSupported && (opts.showMaskOnFocus = opts.showMaskOnFocus && -1 === [ "cc-number", "cc-exp" ].indexOf(el.autocomplete), 
-                _environment.iphone && (opts.insertModeVisual = !1), _eventruler.EventRuler.on(el, "submit", _eventhandlers.EventHandlers.submitEvent), 
-                _eventruler.EventRuler.on(el, "reset", _eventhandlers.EventHandlers.resetEvent), 
-                _eventruler.EventRuler.on(el, "blur", _eventhandlers.EventHandlers.blurEvent), _eventruler.EventRuler.on(el, "focus", _eventhandlers.EventHandlers.focusEvent), 
-                _eventruler.EventRuler.on(el, "invalid", _eventhandlers.EventHandlers.invalidEvent), 
-                _eventruler.EventRuler.on(el, "click", _eventhandlers.EventHandlers.clickEvent), 
-                _eventruler.EventRuler.on(el, "mouseleave", _eventhandlers.EventHandlers.mouseleaveEvent), 
-                _eventruler.EventRuler.on(el, "mouseenter", _eventhandlers.EventHandlers.mouseenterEvent), 
-                _eventruler.EventRuler.on(el, "paste", _eventhandlers.EventHandlers.pasteEvent), 
-                _eventruler.EventRuler.on(el, "cut", _eventhandlers.EventHandlers.cutEvent), _eventruler.EventRuler.on(el, "complete", opts.oncomplete), 
-                _eventruler.EventRuler.on(el, "incomplete", opts.onincomplete), _eventruler.EventRuler.on(el, "cleared", opts.oncleared), 
-                !0 !== opts.inputEventOnly && (_eventruler.EventRuler.on(el, "keydown", _eventhandlers.EventHandlers.keydownEvent), 
-                _eventruler.EventRuler.on(el, "keypress", _eventhandlers.EventHandlers.keypressEvent), 
-                _eventruler.EventRuler.on(el, "keyup", _eventhandlers.EventHandlers.keyupEvent)), 
-                (_environment.mobile || opts.inputEventOnly) && el.removeAttribute("maxLength"), 
-                _eventruler.EventRuler.on(el, "input", _eventhandlers.EventHandlers.inputFallBackEvent), 
-                _eventruler.EventRuler.on(el, "compositionend", _eventhandlers.EventHandlers.compositionendEvent)), 
-                _eventruler.EventRuler.on(el, "setvalue", _eventhandlers.EventHandlers.setValueEvent), 
-                inputmask.undoValue = _positioning.getBufferTemplate.call(inputmask).join("");
-                var activeElement = (el.inputmask.shadowRoot || document).activeElement;
-                if ("" !== el.inputmask._valueGet(!0) || !1 === opts.clearMaskOnLostFocus || activeElement === el) {
-                    (0, _inputHandling.applyInputValue)(el, el.inputmask._valueGet(!0), opts);
-                    var buffer = _positioning.getBuffer.call(inputmask).slice();
-                    !1 === _validation.isComplete.call(inputmask, buffer) && opts.clearIncomplete && _positioning.resetMaskSet.call(inputmask), 
-                    opts.clearMaskOnLostFocus && activeElement !== el && (-1 === _positioning.getLastValidPosition.call(inputmask) ? buffer = [] : _inputHandling.clearOptionalTail.call(inputmask, buffer)), 
-                    (!1 === opts.clearMaskOnLostFocus || opts.showMaskOnFocus && activeElement === el || "" !== el.inputmask._valueGet(!0)) && (0, 
-                    _inputHandling.writeBuffer)(el, buffer), activeElement === el && _positioning.caret.call(inputmask, el, _positioning.seekNext.call(inputmask, _positioning.getLastValidPosition.call(inputmask)));
-                }
-            }
-        }
     }, function(module, exports, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports, "__esModule", {
@@ -1583,7 +1452,7 @@
         "use strict";
         Object.defineProperty(exports, "__esModule", {
             value: !0
-        }), exports.default = void 0, __webpack_require__(16), __webpack_require__(24), 
+        }), exports.default = void 0, __webpack_require__(15), __webpack_require__(24), 
         __webpack_require__(25), __webpack_require__(26);
         var _inputmask2 = _interopRequireDefault(__webpack_require__(2));
         function _interopRequireDefault(obj) {
@@ -1724,6 +1593,137 @@
         });
     }, function(module, exports, __webpack_require__) {
         "use strict";
+        Object.defineProperty(exports, "__esModule", {
+            value: !0
+        }), exports.mask = mask;
+        var _keycode = _interopRequireDefault(__webpack_require__(0)), _positioning = __webpack_require__(1), _inputHandling = __webpack_require__(7), _eventruler = __webpack_require__(11), _environment = __webpack_require__(9), _validation = __webpack_require__(4), _eventhandlers = __webpack_require__(8);
+        function _interopRequireDefault(obj) {
+            return obj && obj.__esModule ? obj : {
+                default: obj
+            };
+        }
+        function mask() {
+            var inputmask = this, opts = this.opts, el = this.el, $ = this.dependencyLib;
+            function isElementTypeSupported(input, opts) {
+                function patchValueProperty(npt) {
+                    var valueGet, valueSet;
+                    function patchValhook(type) {
+                        if ($.valHooks && (void 0 === $.valHooks[type] || !0 !== $.valHooks[type].inputmaskpatch)) {
+                            var valhookGet = $.valHooks[type] && $.valHooks[type].get ? $.valHooks[type].get : function(elem) {
+                                return elem.value;
+                            }, valhookSet = $.valHooks[type] && $.valHooks[type].set ? $.valHooks[type].set : function(elem, value) {
+                                return elem.value = value, elem;
+                            };
+                            $.valHooks[type] = {
+                                get: function get(elem) {
+                                    if (elem.inputmask) {
+                                        if (elem.inputmask.opts.autoUnmask) return elem.inputmask.unmaskedvalue();
+                                        var result = valhookGet(elem);
+                                        return -1 !== _positioning.getLastValidPosition.call(inputmask, void 0, void 0, elem.inputmask.maskset.validPositions) || !0 !== opts.nullable ? result : "";
+                                    }
+                                    return valhookGet(elem);
+                                },
+                                set: function set(elem, value) {
+                                    var result = valhookSet(elem, value);
+                                    return elem.inputmask && (0, _inputHandling.applyInputValue)(elem, value), result;
+                                },
+                                inputmaskpatch: !0
+                            };
+                        }
+                    }
+                    function getter() {
+                        return this.inputmask ? this.inputmask.opts.autoUnmask ? this.inputmask.unmaskedvalue() : -1 !== _positioning.getLastValidPosition.call(inputmask) || !0 !== opts.nullable ? (this.inputmask.shadowRoot || document.activeElement) === this && opts.clearMaskOnLostFocus ? (inputmask.isRTL ? _inputHandling.clearOptionalTail.call(inputmask, _positioning.getBuffer.call(inputmask).slice()).reverse() : _inputHandling.clearOptionalTail.call(inputmask, _positioning.getBuffer.call(inputmask).slice())).join("") : valueGet.call(this) : "" : valueGet.call(this);
+                    }
+                    function setter(value) {
+                        valueSet.call(this, value), this.inputmask && (0, _inputHandling.applyInputValue)(this, value);
+                    }
+                    function installNativeValueSetFallback(npt) {
+                        _eventruler.EventRuler.on(npt, "mouseenter", function() {
+                            var input = this, value = this.inputmask._valueGet(!0);
+                            value !== (inputmask.isRTL ? _positioning.getBuffer.call(inputmask).reverse() : _positioning.getBuffer.call(inputmask)).join("") && (0, 
+                            _inputHandling.applyInputValue)(this, value);
+                        });
+                    }
+                    if (!npt.inputmask.__valueGet) {
+                        if (!0 !== opts.noValuePatching) {
+                            if (Object.getOwnPropertyDescriptor) {
+                                var valueProperty = Object.getPrototypeOf ? Object.getOwnPropertyDescriptor(Object.getPrototypeOf(npt), "value") : void 0;
+                                valueProperty && valueProperty.get && valueProperty.set ? (valueGet = valueProperty.get, 
+                                valueSet = valueProperty.set, Object.defineProperty(npt, "value", {
+                                    get: getter,
+                                    set: setter,
+                                    configurable: !0
+                                })) : "input" !== npt.tagName.toLowerCase() && (valueGet = function valueGet() {
+                                    return this.textContent;
+                                }, valueSet = function valueSet(value) {
+                                    this.textContent = value;
+                                }, Object.defineProperty(npt, "value", {
+                                    get: getter,
+                                    set: setter,
+                                    configurable: !0
+                                }));
+                            } else document.__lookupGetter__ && npt.__lookupGetter__("value") && (valueGet = npt.__lookupGetter__("value"), 
+                            valueSet = npt.__lookupSetter__("value"), npt.__defineGetter__("value", getter), 
+                            npt.__defineSetter__("value", setter));
+                            npt.inputmask.__valueGet = valueGet, npt.inputmask.__valueSet = valueSet;
+                        }
+                        npt.inputmask._valueGet = function(overruleRTL) {
+                            return inputmask.isRTL && !0 !== overruleRTL ? valueGet.call(this.el).split("").reverse().join("") : valueGet.call(this.el);
+                        }, npt.inputmask._valueSet = function(value, overruleRTL) {
+                            valueSet.call(this.el, null == value ? "" : !0 !== overruleRTL && inputmask.isRTL ? value.split("").reverse().join("") : value);
+                        }, void 0 === valueGet && (valueGet = function valueGet() {
+                            return this.value;
+                        }, valueSet = function valueSet(value) {
+                            this.value = value;
+                        }, patchValhook(npt.type), installNativeValueSetFallback(npt));
+                    }
+                }
+                "textarea" !== input.tagName.toLowerCase() && opts.ignorables.push(_keycode.default.ENTER);
+                var elementType = input.getAttribute("type"), isSupported = "input" === input.tagName.toLowerCase() && opts.supportsInputType.includes(elementType) || input.isContentEditable || "textarea" === input.tagName.toLowerCase();
+                if (!isSupported) if ("input" === input.tagName.toLowerCase()) {
+                    var el = document.createElement("input");
+                    el.setAttribute("type", elementType), isSupported = "text" === el.type, el = null;
+                } else isSupported = "partial";
+                return !1 !== isSupported ? patchValueProperty(input) : input.inputmask = void 0, 
+                isSupported;
+            }
+            _eventruler.EventRuler.off(el);
+            var isSupported = isElementTypeSupported(el, opts);
+            if (!1 !== isSupported) {
+                inputmask.originalPlaceholder = el.placeholder, inputmask.maxLength = void 0 !== el ? el.maxLength : void 0, 
+                -1 === inputmask.maxLength && (inputmask.maxLength = void 0), "inputMode" in el && null === el.getAttribute("inputmode") && (el.inputMode = opts.inputmode, 
+                el.setAttribute("inputmode", opts.inputmode)), !0 === isSupported && (opts.showMaskOnFocus = opts.showMaskOnFocus && -1 === [ "cc-number", "cc-exp" ].indexOf(el.autocomplete), 
+                _environment.iphone && (opts.insertModeVisual = !1), _eventruler.EventRuler.on(el, "submit", _eventhandlers.EventHandlers.submitEvent), 
+                _eventruler.EventRuler.on(el, "reset", _eventhandlers.EventHandlers.resetEvent), 
+                _eventruler.EventRuler.on(el, "blur", _eventhandlers.EventHandlers.blurEvent), _eventruler.EventRuler.on(el, "focus", _eventhandlers.EventHandlers.focusEvent), 
+                _eventruler.EventRuler.on(el, "invalid", _eventhandlers.EventHandlers.invalidEvent), 
+                _eventruler.EventRuler.on(el, "click", _eventhandlers.EventHandlers.clickEvent), 
+                _eventruler.EventRuler.on(el, "mouseleave", _eventhandlers.EventHandlers.mouseleaveEvent), 
+                _eventruler.EventRuler.on(el, "mouseenter", _eventhandlers.EventHandlers.mouseenterEvent), 
+                _eventruler.EventRuler.on(el, "paste", _eventhandlers.EventHandlers.pasteEvent), 
+                _eventruler.EventRuler.on(el, "cut", _eventhandlers.EventHandlers.cutEvent), _eventruler.EventRuler.on(el, "complete", opts.oncomplete), 
+                _eventruler.EventRuler.on(el, "incomplete", opts.onincomplete), _eventruler.EventRuler.on(el, "cleared", opts.oncleared), 
+                !0 !== opts.inputEventOnly && (_eventruler.EventRuler.on(el, "keydown", _eventhandlers.EventHandlers.keydownEvent), 
+                _eventruler.EventRuler.on(el, "keypress", _eventhandlers.EventHandlers.keypressEvent), 
+                _eventruler.EventRuler.on(el, "keyup", _eventhandlers.EventHandlers.keyupEvent)), 
+                (_environment.mobile || opts.inputEventOnly) && el.removeAttribute("maxLength"), 
+                _eventruler.EventRuler.on(el, "input", _eventhandlers.EventHandlers.inputFallBackEvent), 
+                _eventruler.EventRuler.on(el, "compositionend", _eventhandlers.EventHandlers.compositionendEvent)), 
+                _eventruler.EventRuler.on(el, "setvalue", _eventhandlers.EventHandlers.setValueEvent), 
+                inputmask.undoValue = _positioning.getBufferTemplate.call(inputmask).join("");
+                var activeElement = (el.inputmask.shadowRoot || document).activeElement;
+                if ("" !== el.inputmask._valueGet(!0) || !1 === opts.clearMaskOnLostFocus || activeElement === el) {
+                    (0, _inputHandling.applyInputValue)(el, el.inputmask._valueGet(!0), opts);
+                    var buffer = _positioning.getBuffer.call(inputmask).slice();
+                    !1 === _validation.isComplete.call(inputmask, buffer) && opts.clearIncomplete && _positioning.resetMaskSet.call(inputmask), 
+                    opts.clearMaskOnLostFocus && activeElement !== el && (-1 === _positioning.getLastValidPosition.call(inputmask) ? buffer = [] : _inputHandling.clearOptionalTail.call(inputmask, buffer)), 
+                    (!1 === opts.clearMaskOnLostFocus || opts.showMaskOnFocus && activeElement === el || "" !== el.inputmask._valueGet(!0)) && (0, 
+                    _inputHandling.writeBuffer)(el, buffer), activeElement === el && _positioning.caret.call(inputmask, el, _positioning.seekNext.call(inputmask, _positioning.getLastValidPosition.call(inputmask)));
+                }
+            }
+        }
+    }, function(module, exports, __webpack_require__) {
+        "use strict";
         function _default(owner, key, value) {
             if (void 0 === value) return owner.__data ? owner.__data[key] : null;
             owner.__data = owner.__data || {}, owner.__data[key] = value;
@@ -1736,7 +1736,7 @@
         Object.defineProperty(exports, "__esModule", {
             value: !0
         }), exports.on = on, exports.off = off, exports.trigger = trigger, exports.Event = void 0;
-        var _extend = _interopRequireDefault(__webpack_require__(13)), _window = _interopRequireDefault(__webpack_require__(5)), _inputmask = _interopRequireDefault(__webpack_require__(10)), _canUseDOM = _interopRequireDefault(__webpack_require__(6)), Event;
+        var _extend = _interopRequireDefault(__webpack_require__(12)), _window = _interopRequireDefault(__webpack_require__(5)), _inputmask = _interopRequireDefault(__webpack_require__(10)), _canUseDOM = _interopRequireDefault(__webpack_require__(6)), Event;
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
                 default: obj
@@ -2171,7 +2171,7 @@
         exports.default = _default;
     }, function(module, exports, __webpack_require__) {
         "use strict";
-        var _inputmask = _interopRequireDefault(__webpack_require__(2)), _keycode = _interopRequireDefault(__webpack_require__(0)), _escapeRegex = _interopRequireDefault(__webpack_require__(14)), _positioning = __webpack_require__(1);
+        var _inputmask = _interopRequireDefault(__webpack_require__(2)), _keycode = _interopRequireDefault(__webpack_require__(0)), _escapeRegex = _interopRequireDefault(__webpack_require__(13)), _positioning = __webpack_require__(1);
         function _typeof(obj) {
             return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function _typeof(obj) {
                 return typeof obj;
@@ -2506,7 +2506,7 @@
         });
     }, function(module, exports, __webpack_require__) {
         "use strict";
-        var _inputmask = _interopRequireDefault(__webpack_require__(2)), _keycode = _interopRequireDefault(__webpack_require__(0)), _escapeRegex = _interopRequireDefault(__webpack_require__(14));
+        var _inputmask = _interopRequireDefault(__webpack_require__(2)), _keycode = _interopRequireDefault(__webpack_require__(0)), _escapeRegex = _interopRequireDefault(__webpack_require__(13));
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
                 default: obj
@@ -3038,7 +3038,7 @@
         return __webpack_require__.d(getter, "a", getter), getter;
     }, __webpack_require__.o = function(object, property) {
         return Object.prototype.hasOwnProperty.call(object, property);
-    }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 15);
+    }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 14);
     function __webpack_require__(moduleId) {
         if (installedModules[moduleId]) return installedModules[moduleId].exports;
         var module = installedModules[moduleId] = {

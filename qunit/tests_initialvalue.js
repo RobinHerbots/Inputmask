@@ -113,7 +113,8 @@ export default function (qunit, Inputmask) {
 	qunit.test("inputmask(\"6703 9999 9999 9999 9\") ~ value=\"6703 1234 5678 9012 3\" - FransVdb", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" value=\"6703 1234 5678 9012 3\" />");
-		Inputmask("6703 9999 9999 9999 9");
+		var testmask = document.getElementById("testmask");
+		Inputmask("6703 9999 9999 9999 9").mask(testmask);
 		assert.equal(testmask.value, "6703 1234 5678 9012 3", "Result " + testmask.value);
 	});
 
@@ -268,4 +269,16 @@ export default function (qunit, Inputmask) {
 			done();
 		}, 5);
 	});
-};
+
+	qunit.test("partial filled searchfield - docwaremm", function (assert) {
+		var done = assert.async(),
+			$fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" value=\"___-__6789-9\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("999-999999-9").mask(testmask);
+		setTimeout(function () {
+			assert.equal(testmask.value, "___-__6789-9", "Result " + testmask.value);
+			done();
+		}, 5);
+	});
+}

@@ -5,6 +5,7 @@
 - enhance alternation logic
  
 ### Fixed
+- Input Mask for search fields (partially filled mask) #2425
 - HandleNativePlaceholder function prevents use of dynamic placeholders. #2433
 - '0' getting added unnecessarily if navigating using arrow key for datetime input mask #2289
 - jitmasking ssn #2420
