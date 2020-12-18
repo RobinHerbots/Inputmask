@@ -5,6 +5,7 @@
 - enhance alternation logic
  
 ### Fixed
+- Can't remove "placeholder" from datetime alias #2438
 - showMaskOnFocus: false causes 'Illegal invocation' error #2436
 - Input Mask for search fields (partially filled mask) #2425
 - HandleNativePlaceholder function prevents use of dynamic placeholders. #2433
