@@ -1,6 +1,6 @@
 # Inputmask
 
-Copyright (c) 2010 - 2020 Robin Herbots Licensed under the MIT license ([http://opensource.org/licenses/mit-license.php](http://opensource.org/licenses/mit-license.php))
+Copyright (c) 2010 - 2020 Robin Herbots Licensed under the MIT license (<https://opensource.org/licenses/MIT>)
 
 [![donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZNR3EB6JTMMSS)
   
@@ -31,7 +31,7 @@ Highlights:
 - dependencyLibs: vanilla javascript, jQuery, jqlite
 - \<input-mask\> htmlelenent
 
-Demo page see [http://robinherbots.github.io/Inputmask](http://robinherbots.github.io/Inputmask)
+Demo page see <https://robinherbots.github.io/Inputmask/>
 
 Thanks to [Jetbrains](https://www.jetbrains.com/?from=inputmask) for providing a free license for their excellent Webstorm IDE.  
 <a href="https://www.jetbrains.com/?from=inputmask">
