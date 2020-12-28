@@ -3,6 +3,7 @@
 ## [5.0.6 - UNRELEASED]
 ### Updates
 - enhance alternation logic
+- update datetime alias
  
 ### Fixed
 - Can't remove "placeholder" from datetime alias #2438

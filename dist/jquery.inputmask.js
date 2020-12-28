@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2020 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.25
+ * Version: 5.0.6-beta.26
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -426,6 +426,14 @@
             var inputmask = this, maskset = this.maskset;
             return maskset.validPositions[pos] ? maskset.validPositions[pos] : (tests || getTests.call(this, pos))[0];
         }
+        function isSubsetOf(source, target, opts) {
+            function expand(pattern) {
+                for (var expanded = [], start = -1, end, i = 0, l = pattern.length; i < l; i++) if ("-" === pattern.charAt(i)) for (end = pattern.charCodeAt(i + 1); ++start < end; ) expanded.push(String.fromCharCode(start)); else start = pattern.charCodeAt(i), 
+                expanded.push(pattern.charAt(i));
+                return expanded.join("");
+            }
+            return source.match.def === target.match.nativeDef || !(!(opts.regex || source.match.fn instanceof RegExp && target.match.fn instanceof RegExp) || !0 === source.match.static || !0 === target.match.static) && -1 !== expand(target.match.fn.toString().replace(/[[\]/]/g, "")).indexOf(expand(source.match.fn.toString().replace(/[[\]/]/g, "")));
+        }
         function getTests(pos, ndxIntlzr, tstPs) {
             var inputmask = this, $ = this.dependencyLib, maskset = this.maskset, opts = this.opts, el = this.el, maskTokens = maskset.maskToken, testPos = ndxIntlzr ? tstPs : 0, ndxInitializer = ndxIntlzr ? ndxIntlzr.slice() : [ 0 ], matches = [], insertStop = !1, latestMatch, cacheDependency = ndxIntlzr ? ndxIntlzr.join("") : "";
             function resolveTestFromToken(maskToken, ndxInitializer, loopNdx, quantifierRecurse) {
@@ -449,14 +457,6 @@
                             return locator.slice((void 0 !== targetAlternation ? targetAlternation : bestMatch.alternation) + 1);
                         }
                         return void 0 !== targetAlternation ? resolveNdxInitializer(pos, alternateNdx) : void 0;
-                    }
-                    function isSubsetOf(source, target) {
-                        function expand(pattern) {
-                            for (var expanded = [], start = -1, end, i = 0, l = pattern.length; i < l; i++) if ("-" === pattern.charAt(i)) for (end = pattern.charCodeAt(i + 1); ++start < end; ) expanded.push(String.fromCharCode(start)); else start = pattern.charCodeAt(i), 
-                            expanded.push(pattern.charAt(i));
-                            return expanded.join("");
-                        }
-                        return source.match.def === target.match.nativeDef || !(!(opts.regex || source.match.fn instanceof RegExp && target.match.fn instanceof RegExp) || !0 === source.match.static || !0 === target.match.static) && -1 !== expand(target.match.fn.toString().replace(/[[\]/]/g, "")).indexOf(expand(source.match.fn.toString().replace(/[[\]/]/g, "")));
                     }
                     function staticCanMatchDefinition(source, target) {
                         return !0 === source.match.static && !0 !== target.match.static && target.match.fn.test(source.match.def, maskset, pos, !1, opts, !1);
@@ -538,11 +538,11 @@
                                                     dropMatch = !0, setMergeLocators(altMatch2, altMatch);
                                                     break;
                                                 }
-                                                if (isSubsetOf(altMatch, altMatch2)) {
+                                                if (isSubsetOf(altMatch, altMatch2, opts)) {
                                                     setMergeLocators(altMatch, altMatch2) && (dropMatch = !0, malternateMatches.splice(malternateMatches.indexOf(altMatch2), 0, altMatch));
                                                     break;
                                                 }
-                                                if (isSubsetOf(altMatch2, altMatch)) {
+                                                if (isSubsetOf(altMatch2, altMatch, opts)) {
                                                     setMergeLocators(altMatch2, altMatch);
                                                     break;
                                                 }
@@ -620,7 +620,8 @@
             value: !0
         }), exports.determineTestTemplate = determineTestTemplate, exports.getDecisionTaker = getDecisionTaker, 
         exports.getMaskTemplate = getMaskTemplate, exports.getPlaceholder = getPlaceholder, 
-        exports.getTest = getTest, exports.getTests = getTests, exports.getTestTemplate = getTestTemplate;
+        exports.getTest = getTest, exports.getTests = getTests, exports.getTestTemplate = getTestTemplate, 
+        exports.isSubsetOf = isSubsetOf;
     }, function(module, exports, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports, "__esModule", {
@@ -837,7 +838,7 @@
         }
         function positionCanMatchDefinition(pos, testDefinition, opts) {
             for (var inputmask = this, maskset = this.maskset, valid = !1, tests = _validationTests.getTests.call(this, pos), tndx = 0; tndx < tests.length; tndx++) {
-                if (tests[tndx].match && (!(tests[tndx].match.nativeDef !== testDefinition.match[opts.shiftPositions ? "def" : "nativeDef"] || opts.shiftPositions && testDefinition.match.static) || tests[tndx].match.nativeDef === testDefinition.match.nativeDef)) {
+                if (tests[tndx].match && (tests[tndx].match.nativeDef === testDefinition.match[opts.shiftPositions ? "def" : "nativeDef"] && (!opts.shiftPositions || !testDefinition.match.static) || tests[tndx].match.nativeDef === testDefinition.match.nativeDef || opts.regex && !tests[tndx].match.static && tests[tndx].match.fn.test(testDefinition.input))) {
                     valid = !0;
                     break;
                 }
@@ -2325,17 +2326,11 @@
                 postValidation: function postValidation(buffer, pos, c, currentResult, opts, maskset, strict, fromCheckval) {
                     var inputmask = this, tokenMatch, validator;
                     if (strict) return !0;
-                    if (!1 === currentResult) return tokenMatch = getTokenMatch(pos + 1, opts), tokenMatch.targetMatch && tokenMatch.targetMatchIndex === pos && 1 < tokenMatch.targetMatch[0].length && void 0 !== formatCode[tokenMatch.targetMatch[0]] && (validator = formatCode[tokenMatch.targetMatch[0]][0], 
-                    new RegExp(validator).test("0" + c)) ? {
-                        insert: [ {
-                            pos: pos,
-                            c: "0"
-                        }, {
-                            pos: pos + 1,
-                            c: c
-                        } ],
-                        pos: pos + 1
-                    } : currentResult;
+                    if (!1 === currentResult && (tokenMatch = getTokenMatch(pos + 1, opts), tokenMatch.targetMatch && tokenMatch.targetMatchIndex === pos && 1 < tokenMatch.targetMatch[0].length && void 0 !== formatCode[tokenMatch.targetMatch[0]] && (validator = formatCode[tokenMatch.targetMatch[0]][0], 
+                    new RegExp(validator).test("0" + c) && (buffer[pos] = "0", buffer[pos + 1] = c, 
+                    currentResult = {
+                        pos: pos + 2
+                    })), !1 === currentResult)) return currentResult;
                     if (currentResult.fuzzy && (buffer = currentResult.buffer, pos = currentResult.pos), 
                     tokenMatch = getTokenMatch(pos, opts), tokenMatch.targetMatch && tokenMatch.targetMatch[0] && void 0 !== formatCode[tokenMatch.targetMatch[0]]) {
                         validator = formatCode[tokenMatch.targetMatch[0]][0];
@@ -2350,7 +2345,8 @@
                         refreshFromBuffer: {
                             start: pos,
                             end: currentResult.pos
-                        }
+                        },
+                        pos: currentResult.pos
                     } : result;
                 },
                 onKeyDown: function onKeyDown(e, buffer, caretPos, opts) {
