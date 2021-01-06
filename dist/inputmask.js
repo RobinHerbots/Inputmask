@@ -1,9 +1,9 @@
 /*!
  * dist/inputmask
  * https://github.com/RobinHerbots/Inputmask
- * Copyright (c) 2010 - 2020 Robin Herbots
+ * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.26
+ * Version: 5.0.6-beta.29
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -1803,7 +1803,14 @@
                     };
                     if (document.createEvent) {
                         try {
-                            evnt = new CustomEvent(ev, params);
+                            switch (ev) {
+                              case "input":
+                                evnt = new InputEvent(ev, params);
+                                break;
+
+                              default:
+                                evnt = new CustomEvent(ev, params);
+                            }
                         } catch (e) {
                             evnt = document.createEvent("CustomEvent"), evnt.initCustomEvent(ev, params.bubbles, params.cancelable, params.detail);
                         }
@@ -2457,7 +2464,11 @@
                     var inputmask = this, tokenMatch, validator;
                     if (strict) return !0;
                     if (!1 === currentResult && (tokenMatch = getTokenMatch(pos + 1, opts), tokenMatch.targetMatch && tokenMatch.targetMatchIndex === pos && 1 < tokenMatch.targetMatch[0].length && void 0 !== formatCode[tokenMatch.targetMatch[0]] && (validator = formatCode[tokenMatch.targetMatch[0]][0], 
-                    new RegExp(validator).test("0" + c) && (buffer[pos] = "0", buffer[pos + 1] = c, 
+                    void 0 !== maskset.validPositions[pos + 1] && new RegExp(validator).test(c + "0") ? (buffer[pos] = c, 
+                    buffer[pos + 1] = "0", currentResult = {
+                        pos: pos + 2,
+                        caret: pos
+                    }) : new RegExp(validator).test("0" + c) && (buffer[pos] = "0", buffer[pos + 1] = c, 
                     currentResult = {
                         pos: pos + 2
                     })), !1 === currentResult)) return currentResult;
@@ -2476,7 +2487,7 @@
                             start: pos,
                             end: currentResult.pos
                         },
-                        pos: currentResult.pos
+                        pos: currentResult.caret || currentResult.pos
                     } : result;
                 },
                 onKeyDown: function onKeyDown(e, buffer, caretPos, opts) {
