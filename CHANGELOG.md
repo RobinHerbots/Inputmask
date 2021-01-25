@@ -6,6 +6,7 @@
 - update datetime alias
  
 ### Fixed
+- cant enter the leap year using jit masking #2453
 - Basically the same issue appears also when you have a valid date in the input but want to change something. #2435
 - Can't remove "placeholder" from datetime alias #2438
 - showMaskOnFocus: false causes 'Illegal invocation' error #2436

@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.29
+ * Version: 5.0.6-beta.31
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -2298,7 +2298,7 @@
             return currentResult;
         }
         function isValidDate(dateParts, currentResult, opts) {
-            if (void 0 === dateParts.rawday || !isFinite(dateParts.rawday) && new Date(dateParts.date.getFullYear(), isFinite(dateParts.rawmonth) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day || "29" == dateParts.day && !isFinite(dateParts.rawyear) || new Date(dateParts.date.getFullYear(), isFinite(dateParts.rawmonth) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day) return currentResult;
+            if (void 0 === dateParts.rawday || !isFinite(dateParts.rawday) && new Date(dateParts.date.getFullYear(), isFinite(dateParts.rawmonth) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day || "29" == dateParts.day && (!isFinite(dateParts.rawyear) || void 0 === dateParts.rawyear || "" === dateParts.rawyear) || new Date(dateParts.date.getFullYear(), isFinite(dateParts.rawmonth) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day) return currentResult;
             if ("29" == dateParts.day) {
                 var tokenMatch = getTokenMatch(currentResult.pos, opts);
                 if ("yyyy" === tokenMatch.targetMatch[0] && currentResult.pos - tokenMatch.targetMatchIndex == 2) return currentResult.remove = currentResult.pos + 1, 
@@ -2367,8 +2367,8 @@
             } else fcode[2] ? mask += dateObjValue["raw" + fcode[2]] : mask += match[0]; else mask += match[0];
             return mask;
         }
-        function pad(val, len) {
-            for (val = String(val), len = len || 2; val.length < len; ) val = "0" + val;
+        function pad(val, len, right) {
+            for (val = String(val), len = len || 2; val.length < len; ) val = right ? val + "0" : "0" + val;
             return val;
         }
         function analyseMask(maskString, format, opts) {
@@ -2379,8 +2379,10 @@
                 if (dateObj[targetProp] = value.replace(/[^0-9]/g, "0"), dateObj["raw" + targetProp] = value, 
                 void 0 !== dateOperation) {
                     var datavalue = dateObj[targetProp];
+                    ("day" === targetProp && 29 === parseInt(datavalue) || "month" === targetProp && 2 === parseInt(datavalue)) && (29 !== parseInt(dateObj.day) || 2 !== parseInt(dateObj.month) || "" !== dateObj.year && void 0 !== dateObj.year || dateObj.date.setFullYear(2012, 1, 29)), 
                     "day" === targetProp && 0 === parseInt(datavalue) && (datavalue = 1), "month" === targetProp && (datavalue = parseInt(datavalue), 
-                    0 < datavalue) && (datavalue -= 1), dateOperation.call(dateObj.date, datavalue);
+                    0 < datavalue) && (datavalue -= 1), "year" === targetProp && datavalue.length < 4 && (datavalue = pad(datavalue, 4, !0)), 
+                    "" !== datavalue && dateOperation.call(dateObj.date, datavalue);
                 }
             }
             if ("string" == typeof mask) {
@@ -2481,7 +2483,7 @@
                     var result = currentResult, dateParts = analyseMask(buffer.join(""), opts.inputFormat, opts);
                     return result && dateParts.date.getTime() == dateParts.date.getTime() && (result = prefillYear(dateParts, result, opts), 
                     result = isValidDate.call(this, dateParts, result, opts), result = isDateInRange(dateParts, result, opts, maskset, fromCheckval)), 
-                    pos && result && currentResult.pos !== pos ? {
+                    void 0 !== pos && result && currentResult.pos !== pos ? {
                         buffer: parse(opts.inputFormat, dateParts, opts).split(""),
                         refreshFromBuffer: {
                             start: pos,
