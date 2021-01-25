@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.31
+ * Version: 5.0.6-beta.32
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -851,7 +851,7 @@
             valid;
         }
         function refreshFromBuffer(start, end, buffer) {
-            var inputmask = this, maskset = this.maskset, opts = this.opts, $ = this.dependencyLib, el = this.el, i, p, skipOptionalPartCharacter = opts.skipOptionalPartCharacter, bffr = this.isRTL ? buffer.slice().reverse() : buffer;
+            var inputmask = this, maskset = this.maskset, opts = this.opts, $ = this.dependencyLib, i, p, skipOptionalPartCharacter = opts.skipOptionalPartCharacter, bffr = this.isRTL ? buffer.slice().reverse() : buffer;
             if (opts.skipOptionalPartCharacter = "", !0 === start) _positioning.resetMaskSet.call(this), 
             maskset.tests = {}, start = 0, end = buffer.length, p = _positioning.determineNewCaretPosition.call(this, {
                 begin: 0,
@@ -863,7 +863,7 @@
             var keypress = new $.Event("keypress");
             for (i = start; i < end; i++) {
                 keypress.which = bffr[i].toString().charCodeAt(0), this.ignorable = !1;
-                var valResult = _eventhandlers.EventHandlers.keypressEvent.call(el, keypress, !0, !1, !1, p);
+                var valResult = _eventhandlers.EventHandlers.keypressEvent.call(this, keypress, !0, !1, !1, p);
                 !1 !== valResult && (p = valResult.forwardPosition);
             }
             opts.skipOptionalPartCharacter = skipOptionalPartCharacter;

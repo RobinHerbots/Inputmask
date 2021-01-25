@@ -269,7 +269,7 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		$("#testmask").Type("23320");
 
-		assert.equal(testmask.value, "23/03/2020", "Result " + testmask.value);
+		assert.equal(testmask.value, "23/03/" + new Date().getFullYear(), "Result " + testmask.value);
 	});
 
 	qunit.test("Prefill year - with min - DeepaSunil86 - #2266", function (assert) {
@@ -514,7 +514,7 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		$("#testmask").Type("32320");
 
-		assert.equal(testmask.value, "03/23/2020", "Result " + testmask.value);
+		assert.equal(testmask.value, "03/23/" + new Date().getFullYear(), "Result " + testmask.value);
 	});
 
 	qunit.test("Prefill year - with min - DeepaSunil86 - #2266", function (assert) {
@@ -1044,5 +1044,20 @@ export default function (qunit, Inputmask) {
 		$("#testmask").Type("02/29/2012 10:25");
 
 		assert.equal(testmask.value, "02/29/2012 10:25", "Result " + testmask.value);
+	});
+
+	qunit.test("leapyear bug jitMasking true - #2453", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			"inputFormat": "mm/dd/yyyy",
+			jitMasking: true
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("02/29/2020");
+
+		assert.equal(testmask.value, "02/29/2020", "Result " + testmask.value);
 	});
 }
