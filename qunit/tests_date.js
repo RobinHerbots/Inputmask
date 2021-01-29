@@ -1060,4 +1060,18 @@ export default function (qunit, Inputmask) {
 
 		assert.equal(testmask.value, "02/29/2020", "Result " + testmask.value);
 	});
+
+	qunit.test("dd/mm/yyyy type 3022 - #2456", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			"inputFormat": "dd/mm/yyyy"
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("3022");
+
+		assert.equal(testmask.value, "30/mm/yyyy", "Result " + testmask.value);
+	});
 }

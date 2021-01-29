@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.32
+ * Version: 5.0.6-beta.34
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -2303,7 +2303,7 @@
                 var tokenMatch = getTokenMatch(currentResult.pos, opts);
                 if ("yyyy" === tokenMatch.targetMatch[0] && currentResult.pos - tokenMatch.targetMatchIndex == 2) return currentResult.remove = currentResult.pos + 1, 
                 currentResult;
-            } else if ("02" == dateParts.month && "30" == dateParts.day) return dateParts.day = "03", 
+            } else if ("02" == dateParts.month && "30" == dateParts.day && void 0 !== currentResult.c) return dateParts.day = "03", 
             dateParts.date.setDate(3), dateParts.date.setMonth(1), currentResult.insert = [ {
                 pos: currentResult.pos,
                 c: "0"
