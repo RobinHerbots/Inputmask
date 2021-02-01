@@ -962,7 +962,7 @@ export default function (qunit, Inputmask) {
 
 	});
 
-	qunit.test("inputmask(\"decimal\ placeholder :\"\" digitsoptional: false) - 123 - loostro", function (assert) {
+	qunit.test("inputmask(\"decimal placeholder :\"\" digitsoptional: false) - 123 - loostro", function (assert) {
 		var done = assert.async(),
 			$fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" value=\"0,00\" />");
@@ -985,7 +985,7 @@ export default function (qunit, Inputmask) {
 		}, 5);
 	});
 
-	qunit.test("inputmask(\"decimal\ placeholder :\"0\" digitsoptional: false) - .12 - YodaJM", function (assert) {
+	qunit.test("inputmask(\"decimal placeholder :\"0\" digitsoptional: false) - .12 - YodaJM", function (assert) {
 		var done = assert.async(),
 			$fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
@@ -2294,4 +2294,20 @@ export default function (qunit, Inputmask) {
 
 		assert.equal(testmask.value, "-54 %", "Result \"" + testmask.value + "\"");
 	});
-};
+
+	qunit.test("setvalue() removes number before comma when positionCaretOnClick and digitsOptional are set. #2457", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\"/>");
+		var testmask = document.getElementById("testmask");
+		Inputmask({
+			alias:                  "numeric",
+			digits:                 2,
+			digitsOptional:         false,
+			positionCaretOnClick:   "select",
+			suffix:                 " €"
+		}).mask(testmask);
+		testmask.inputmask.setValue(12.36);
+
+		assert.equal(testmask.value, "12.36 €", "Result \"" + testmask.value + "\"");
+	});
+}

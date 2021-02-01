@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.34
+ * Version: 5.0.6-beta.35
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -69,7 +69,7 @@
                 def: positions[bl] ? positions[bl].match : void 0
             } : bl;
         }
-        function determineNewCaretPosition(selectedCaret, tabbed) {
+        function determineNewCaretPosition(selectedCaret, tabbed, positionCaretOnClick) {
             var inputmask = this, maskset = this.maskset, opts = this.opts;
             function doRadixFocus(clickPos) {
                 if ("" !== opts.radixPoint && 0 !== opts.digits) {
@@ -87,7 +87,8 @@
             }
             if (tabbed && (inputmask.isRTL ? selectedCaret.end = selectedCaret.begin : selectedCaret.begin = selectedCaret.end), 
             selectedCaret.begin === selectedCaret.end) {
-                switch (opts.positionCaretOnClick) {
+                switch (positionCaretOnClick = positionCaretOnClick || opts.positionCaretOnClick, 
+                positionCaretOnClick) {
                   case "none":
                     break;
 
@@ -972,7 +973,8 @@
             maskset.tests = {}, initialNdx = opts.radixPoint ? _positioning.determineNewCaretPosition.call(inputmask, {
                 begin: 0,
                 end: 0
-            }).begin : 0, maskset.p = initialNdx, inputmask.caretPos = {
+            }, !1, !1 === opts.__financeInput ? "radixFocus" : void 0).begin : 0, maskset.p = initialNdx, 
+            inputmask.caretPos = {
                 begin: initialNdx
             };
             var staticMatches = [], prevCaretPos = inputmask.caretPos;
@@ -2500,7 +2502,7 @@
                 inputType: "text",
                 unmaskAsNumber: !1,
                 roundingFN: Math.round,
-                inputmode: "numeric",
+                inputmode: "decimal",
                 shortcuts: {
                     k: "000",
                     m: "000000"
@@ -2736,6 +2738,7 @@
             },
             integer: {
                 alias: "numeric",
+                inputmode: "numeric",
                 digits: 0
             },
             percentage: {
