@@ -1088,9 +1088,10 @@ casing: function(elem, test, pos, validPositions) {
 Default: null
 
 ### inputmode
-Default: "verbatim"
-Specify the inputmode  - already in place for when browsers start to  support them
-https://html.spec.whatwg.org/#input-modalities:-the-inputmode-attribute
+Default: "text"  
+The inputmode hints at the type of data that might be entered by the user while editing the element or its contents.  
+
+https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/inputmode
 
 ### importDataAttributes
 Specify to use the data-inputmask attributes or to ignore them.
