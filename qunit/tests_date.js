@@ -3,7 +3,7 @@ import keyCode from "../lib/keycode";
 export default function (qunit, Inputmask) {
 	var $ = Inputmask.dependencyLib;
 
-	function pad(val, len) {
+	function pad (val, len) {
 		val = String(val);
 		len = len || 2;
 		while (val.length < len) val = "0" + val;
@@ -1017,10 +1017,10 @@ export default function (qunit, Inputmask) {
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 		Inputmask("datetime", {
-			inputFormat : "dd-mm-yyyy",
-			placeholder : "_",
+			inputFormat: "dd-mm-yyyy",
+			placeholder: "_",
 			clearIncomplete: true,
-			min : "09-09-0999", max : "04-02-2020"
+			min: "09-09-0999", max: "04-02-2020"
 		}).mask(testmask);
 
 		testmask.focus();
@@ -1073,5 +1073,35 @@ export default function (qunit, Inputmask) {
 		$("#testmask").Type("3022");
 
 		assert.equal(testmask.value, "30/mm/yyyy", "Result " + testmask.value);
+	});
+
+	qunit.test("leapyear bug - when placeholder is defined to space cant type 2 after type 20/0 - #2451", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			"placeholder": " ",
+			"inputFormat": "dd/mm/yyyy",
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("29/02/2012");
+
+		assert.equal(testmask.value, "29/02/2012", "Result " + testmask.value);
+	});
+
+	qunit.test("leapyear bug - when placeholder is defined cant type 2 after type 0 - #2451", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			"placeholder": " ",
+			"inputFormat": "mm/dd/yyyy",
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("02/29/2012");
+
+		assert.equal(testmask.value, "02/29/2012", "Result " + testmask.value);
 	});
 }
