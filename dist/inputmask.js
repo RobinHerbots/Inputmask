@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.37
+ * Version: 5.0.6-beta.38
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -2476,8 +2476,9 @@
                 postValidation: function postValidation(buffer, pos, c, currentResult, opts, maskset, strict, fromCheckval) {
                     var inputmask = this, tokenMatch, validator;
                     if (strict) return !0;
-                    if (!1 === currentResult && (tokenMatch = getTokenMatch(pos + 1, opts), tokenMatch.targetMatch && tokenMatch.targetMatchIndex === pos && 1 < tokenMatch.targetMatch[0].length && void 0 !== formatCode[tokenMatch.targetMatch[0]] && (validator = formatCode[tokenMatch.targetMatch[0]][0], 
-                    void 0 !== maskset.validPositions[pos + 1] && new RegExp(validator).test(c + "0") ? (buffer[pos] = c, 
+                    if (!1 === currentResult && (tokenMatch = getTokenMatch(pos + 1, opts), tokenMatch.targetMatch && tokenMatch.targetMatchIndex === pos && 1 < tokenMatch.targetMatch[0].length && void 0 !== formatCode[tokenMatch.targetMatch[0]] ? validator = formatCode[tokenMatch.targetMatch[0]][0] : (tokenMatch = getTokenMatch(pos + 2, opts), 
+                    tokenMatch.targetMatch && tokenMatch.targetMatchIndex === pos + 1 && 1 < tokenMatch.targetMatch[0].length && void 0 !== formatCode[tokenMatch.targetMatch[0]] && (validator = formatCode[tokenMatch.targetMatch[0]][0])), 
+                    void 0 !== validator && (void 0 !== maskset.validPositions[pos + 1] && new RegExp(validator).test(c + "0") ? (buffer[pos] = c, 
                     buffer[pos + 1] = "0", currentResult = {
                         pos: pos + 2,
                         caret: pos
