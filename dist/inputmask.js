@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.36
+ * Version: 5.0.6-beta.37
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -184,7 +184,7 @@
         Object.defineProperty(exports, "__esModule", {
             value: !0
         }), exports.default = void 0, __webpack_require__(16), __webpack_require__(17);
-        var _mask = __webpack_require__(18), _inputmask = _interopRequireDefault(__webpack_require__(10)), _window = _interopRequireDefault(__webpack_require__(5)), _maskLexer = __webpack_require__(21), _validationTests = __webpack_require__(3), _positioning = __webpack_require__(1), _validation = __webpack_require__(4), _inputHandling = __webpack_require__(7), _eventruler = __webpack_require__(11), _definitions = _interopRequireDefault(__webpack_require__(22)), _defaults = _interopRequireDefault(__webpack_require__(23)), _canUseDOM = _interopRequireDefault(__webpack_require__(6));
+        var _mask = __webpack_require__(18), _inputmask = _interopRequireDefault(__webpack_require__(10)), _window = _interopRequireDefault(__webpack_require__(5)), _maskLexer = __webpack_require__(21), _validationTests = __webpack_require__(3), _positioning = __webpack_require__(1), _validation = __webpack_require__(4), _inputHandling = __webpack_require__(7), _eventruler = __webpack_require__(11), _definitions = _interopRequireDefault(__webpack_require__(23)), _defaults = _interopRequireDefault(__webpack_require__(24)), _canUseDOM = _interopRequireDefault(__webpack_require__(6));
         function _typeof(obj) {
             return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function _typeof(obj) {
                 return typeof obj;
@@ -1455,8 +1455,8 @@
         "use strict";
         Object.defineProperty(exports, "__esModule", {
             value: !0
-        }), exports.default = void 0, __webpack_require__(15), __webpack_require__(24), 
-        __webpack_require__(25), __webpack_require__(26);
+        }), exports.default = void 0, __webpack_require__(15), __webpack_require__(25), 
+        __webpack_require__(26), __webpack_require__(27);
         var _inputmask2 = _interopRequireDefault(__webpack_require__(2));
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
@@ -1839,7 +1839,7 @@
         Object.defineProperty(exports, "__esModule", {
             value: !0
         }), exports.generateMaskSet = generateMaskSet, exports.analyseMask = analyseMask;
-        var _inputmask = _interopRequireDefault(__webpack_require__(10));
+        var _inputmask = _interopRequireDefault(__webpack_require__(10)), _masktoken = _interopRequireDefault(__webpack_require__(22));
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
                 default: obj
@@ -1886,15 +1886,7 @@
             ms;
         }
         function analyseMask(mask, regexMask, opts) {
-            var tokenizer = /(?:[?*+]|\{[0-9+*]+(?:,[0-9+*]*)?(?:\|[0-9+*]*)?\})|[^.?*+^${[]()|\\]+|./g, regexTokenizer = /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?[:=!]?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g, escaped = !1, currentToken = new MaskToken(), match, m, openenings = [], maskTokens = [], openingToken, currentOpeningToken, alternator, lastMatch, closeRegexGroup = !1;
-            function MaskToken(isGroup, isOptional, isQuantifier, isAlternator) {
-                this.matches = [], this.openGroup = isGroup || !1, this.alternatorGroup = !1, this.isGroup = isGroup || !1, 
-                this.isOptional = isOptional || !1, this.isQuantifier = isQuantifier || !1, this.isAlternator = isAlternator || !1, 
-                this.quantifier = {
-                    min: 1,
-                    max: 1
-                };
-            }
+            var tokenizer = /(?:[?*+]|\{[0-9+*]+(?:,[0-9+*]*)?(?:\|[0-9+*]*)?\})|[^.?*+^${[]()|\\]+|./g, regexTokenizer = /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?[:=!]?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g, escaped = !1, currentToken = new _masktoken.default(), match, m, openenings = [], maskTokens = [], openingToken, currentOpeningToken, alternator, lastMatch, closeRegexGroup = !1;
             function insertTestDefinition(mtoken, element, position) {
                 position = void 0 !== position ? position : mtoken.matches.length;
                 var prevMatch = mtoken.matches[position - 1];
@@ -1979,7 +1971,7 @@
                 return maskToken;
             }
             function groupify(matches) {
-                var groupToken = new MaskToken(!0);
+                var groupToken = new _masktoken.default(!0);
                 return groupToken.openGroup = !1, groupToken.matches = matches, groupToken;
             }
             function closeGroup() {
@@ -2025,15 +2017,19 @@
                     break;
 
                   case "(?=":
+                    openenings.push(new _masktoken.default(!0));
                     break;
 
                   case "(?!":
+                    openenings.push(new _masktoken.default(!0));
                     break;
 
                   case "(?<=":
+                    openenings.push(new _masktoken.default(!0));
                     break;
 
                   case "(?<!":
+                    openenings.push(new _masktoken.default(!0));
                     break;
 
                   case opts.escapeChar:
@@ -2046,15 +2042,15 @@
                     break;
 
                   case opts.optionalmarker[0]:
-                    openenings.push(new MaskToken(!1, !0));
+                    openenings.push(new _masktoken.default(!1, !0));
                     break;
 
                   case opts.groupmarker[0]:
-                    openenings.push(new MaskToken(!0));
+                    openenings.push(new _masktoken.default(!0));
                     break;
 
                   case opts.quantifiermarker[0]:
-                    var quantifier = new MaskToken(!1, !1, !0);
+                    var quantifier = new _masktoken.default(!1, !1, !0);
                     m = m.replace(/[{}]/g, "");
                     var mqj = m.split("|"), mq = mqj[0].split(","), mq0 = isNaN(mq[0]) ? mq[0] : parseInt(mq[0]), mq1 = 1 === mq.length ? mq0 : isNaN(mq[1]) ? mq[1] : parseInt(mq[1]);
                     "*" !== mq0 && "+" !== mq0 || (mq0 = "*" === mq1 ? 0 : 1), quantifier.quantifier = {
@@ -2065,7 +2061,7 @@
                     var matches = 0 < openenings.length ? openenings[openenings.length - 1].matches : currentToken.matches;
                     if (match = matches.pop(), match.isAlternator) {
                         matches.push(match), matches = match.matches;
-                        var groupToken = new MaskToken(!0), tmpMatch = matches.pop();
+                        var groupToken = new _masktoken.default(!0), tmpMatch = matches.pop();
                         matches.push(groupToken), matches = groupToken.matches, match = tmpMatch;
                     }
                     match.isGroup || (match = groupify([ match ])), matches.push(match), matches.push(quantifier);
@@ -2078,10 +2074,10 @@
                         lastMatch = currentOpeningToken.openGroup && (void 0 === subToken.matches || !1 === subToken.isGroup && !1 === subToken.isAlternator) ? openenings.pop() : groupQuantifier(currentOpeningToken.matches);
                     } else lastMatch = groupQuantifier(currentToken.matches);
                     if (lastMatch.isAlternator) openenings.push(lastMatch); else if (lastMatch.alternatorGroup ? (alternator = openenings.pop(), 
-                    lastMatch.alternatorGroup = !1) : alternator = new MaskToken(!1, !1, !1, !0), alternator.matches.push(lastMatch), 
-                    openenings.push(alternator), lastMatch.openGroup) {
+                    lastMatch.alternatorGroup = !1) : alternator = new _masktoken.default(!1, !1, !1, !0), 
+                    alternator.matches.push(lastMatch), openenings.push(alternator), lastMatch.openGroup) {
                         lastMatch.openGroup = !1;
-                        var alternatorGroup = new MaskToken(!0);
+                        var alternatorGroup = new _masktoken.default(!0);
                         alternatorGroup.alternatorGroup = !0, openenings.push(alternatorGroup);
                     }
                     break;
@@ -2095,6 +2091,19 @@
             return 0 < currentToken.matches.length && (verifyGroupMarker(currentToken), maskTokens.push(currentToken)), 
             (opts.numericInput || opts.isRTL) && reverseTokens(maskTokens[0]), maskTokens;
         }
+    }, function(module, exports, __webpack_require__) {
+        "use strict";
+        function _default(isGroup, isOptional, isQuantifier, isAlternator) {
+            this.matches = [], this.openGroup = isGroup || !1, this.alternatorGroup = !1, this.isGroup = isGroup || !1, 
+            this.isOptional = isOptional || !1, this.isQuantifier = isQuantifier || !1, this.isAlternator = isAlternator || !1, 
+            this.quantifier = {
+                min: 1,
+                max: 1
+            };
+        }
+        Object.defineProperty(exports, "__esModule", {
+            value: !0
+        }), exports.default = _default;
     }, function(module, exports, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports, "__esModule", {
@@ -2300,7 +2309,7 @@
             return currentResult;
         }
         function isValidDate(dateParts, currentResult, opts) {
-            if (void 0 === dateParts.rawday || !isFinite(dateParts.rawday) && new Date(dateParts.date.getFullYear(), isFinite(dateParts.rawmonth) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day || "29" == dateParts.day && (!isFinite(dateParts.rawyear) || void 0 === dateParts.rawyear || "" === dateParts.rawyear) || new Date(dateParts.date.getFullYear(), isFinite(dateParts.rawmonth) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day) return currentResult;
+            if (void 0 === dateParts.rawday || !isFinite(dateParts.rawday) && new Date(dateParts.date.getFullYear(), isFinite(dateParts.rawmonth) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day || "29" == dateParts.day && !Number.isFinite(dateParts.rawyear) || new Date(dateParts.date.getFullYear(), isFinite(dateParts.rawmonth) ? dateParts.month : dateParts.date.getMonth() + 1, 0).getDate() >= dateParts.day) return currentResult;
             if ("29" == dateParts.day) {
                 var tokenMatch = getTokenMatch(currentResult.pos, opts);
                 if ("yyyy" === tokenMatch.targetMatch[0] && currentResult.pos - tokenMatch.targetMatchIndex == 2) return currentResult.remove = currentResult.pos + 1, 

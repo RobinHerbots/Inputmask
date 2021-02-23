@@ -6,6 +6,7 @@
 - update datetime alias
  
 ### Fixed
+- Inputmask with a _space_ as a placeholder and leap year date #2451
 - setvalue() "removes" number before comma when "positionCaretOnClick" and "digitsOptional" are set. #2457
 - Date field results into buggy output: 30/02/yy0y #2456
 - cant enter the leap year using jit masking #2453
