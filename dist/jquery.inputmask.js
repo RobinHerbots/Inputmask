@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.38
+ * Version: 5.0.6-beta.39
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -44,7 +44,7 @@
                     begin: begin,
                     end: end
                 }, opts.insertModeVisual && !1 === opts.insertMode && begin === end && (isDelete || end++), 
-                input === (input.inputmask.shadowRoot || document).activeElement) if ("setSelectionRange" in input) input.setSelectionRange(begin, end); else if (window.getSelection) {
+                input === (input.inputmask.shadowRoot || input.ownerDocument).activeElement) if ("setSelectionRange" in input) input.setSelectionRange(begin, end); else if (window.getSelection) {
                     if (range = document.createRange(), void 0 === input.firstChild || null === input.firstChild) {
                         var textNode = document.createTextNode("");
                         input.appendChild(textNode);
@@ -1188,7 +1188,7 @@
                 if (buffer !== inputValue) {
                     inputValue = ieMobileHandler(input, inputValue, caretPos);
                     var changes = analyseChanges(inputValue, buffer, caretPos);
-                    switch ((input.inputmask.shadowRoot || document).activeElement !== input && input.focus(), 
+                    switch ((input.inputmask.shadowRoot || input.ownerDocument).activeElement !== input && input.focus(), 
                     (0, _inputHandling.writeBuffer)(input, _positioning.getBuffer.call(inputmask)), 
                     _positioning.caret.call(inputmask, input, caretPos.begin, caretPos.end, !0), changes.action) {
                       case "insertText":
@@ -1234,12 +1234,12 @@
             },
             mouseleaveEvent: function mouseleaveEvent() {
                 var inputmask = this.inputmask, opts = inputmask.opts, input = this;
-                inputmask.mouseEnter = !1, opts.clearMaskOnLostFocus && (this.inputmask.shadowRoot || document).activeElement !== this && (0, 
+                inputmask.mouseEnter = !1, opts.clearMaskOnLostFocus && (this.inputmask.shadowRoot || this.ownerDocument).activeElement !== this && (0, 
                 _inputHandling.HandleNativePlaceholder)(this, inputmask.originalPlaceholder);
             },
             clickEvent: function clickEvent(e, tabbed) {
                 var inputmask = this.inputmask, input = this;
-                if ((this.inputmask.shadowRoot || document).activeElement === this) {
+                if ((this.inputmask.shadowRoot || this.ownerDocument).activeElement === this) {
                     var newCaretPosition = _positioning.determineNewCaretPosition.call(inputmask, _positioning.caret.call(inputmask, this), tabbed);
                     void 0 !== newCaretPosition && _positioning.caret.call(inputmask, this, newCaretPosition);
                 }
@@ -1265,7 +1265,7 @@
             },
             mouseenterEvent: function mouseenterEvent() {
                 var inputmask = this.inputmask, opts = inputmask.opts, input = this;
-                if (inputmask.mouseEnter = !0, (this.inputmask.shadowRoot || document).activeElement !== this) {
+                if (inputmask.mouseEnter = !0, (this.inputmask.shadowRoot || this.ownerDocument).activeElement !== this) {
                     var bufferTemplate = (inputmask.isRTL ? _positioning.getBufferTemplate.call(inputmask).slice().reverse() : _positioning.getBufferTemplate.call(inputmask)).join("");
                     inputmask.placeholder !== bufferTemplate && this.placeholder !== inputmask.originalPlaceholder && (inputmask.originalPlaceholder = this.placeholder), 
                     opts.showMaskOnHover && (0, _inputHandling.HandleNativePlaceholder)(this, bufferTemplate);
@@ -1607,7 +1607,7 @@
                         }
                     }
                     function getter() {
-                        return this.inputmask ? this.inputmask.opts.autoUnmask ? this.inputmask.unmaskedvalue() : -1 !== _positioning.getLastValidPosition.call(inputmask) || !0 !== opts.nullable ? (this.inputmask.shadowRoot || document.activeElement) === this && opts.clearMaskOnLostFocus ? (inputmask.isRTL ? _inputHandling.clearOptionalTail.call(inputmask, _positioning.getBuffer.call(inputmask).slice()).reverse() : _inputHandling.clearOptionalTail.call(inputmask, _positioning.getBuffer.call(inputmask).slice())).join("") : valueGet.call(this) : "" : valueGet.call(this);
+                        return this.inputmask ? this.inputmask.opts.autoUnmask ? this.inputmask.unmaskedvalue() : -1 !== _positioning.getLastValidPosition.call(inputmask) || !0 !== opts.nullable ? (this.inputmask.shadowRoot || this.ownerDocument).activeElement === this && opts.clearMaskOnLostFocus ? (inputmask.isRTL ? _inputHandling.clearOptionalTail.call(inputmask, _positioning.getBuffer.call(inputmask).slice()).reverse() : _inputHandling.clearOptionalTail.call(inputmask, _positioning.getBuffer.call(inputmask).slice())).join("") : valueGet.call(this) : "" : valueGet.call(this);
                     }
                     function setter(value) {
                         valueSet.call(this, value), this.inputmask && (0, _inputHandling.applyInputValue)(this, value);
@@ -1686,7 +1686,7 @@
                 _eventruler.EventRuler.on(el, "compositionend", _eventhandlers.EventHandlers.compositionendEvent)), 
                 _eventruler.EventRuler.on(el, "setvalue", _eventhandlers.EventHandlers.setValueEvent), 
                 inputmask.undoValue = _positioning.getBufferTemplate.call(inputmask).join("");
-                var activeElement = (el.inputmask.shadowRoot || document).activeElement;
+                var activeElement = (el.inputmask.shadowRoot || el.ownerDocument).activeElement;
                 if ("" !== el.inputmask._valueGet(!0) || !1 === opts.clearMaskOnLostFocus || activeElement === el) {
                     (0, _inputHandling.applyInputValue)(el, el.inputmask._valueGet(!0), opts);
                     var buffer = _positioning.getBuffer.call(inputmask).slice();

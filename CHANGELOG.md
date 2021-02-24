@@ -6,6 +6,7 @@
 - update datetime alias
  
 ### Fixed
+- Bug in iframes #2461
 - stuck with cursor on / text of date with datetime extension #2464
 - Inputmask with a _space_ as a placeholder and leap year date #2451
 - setvalue() "removes" number before comma when "positionCaretOnClick" and "digitsOptional" are set. #2457
