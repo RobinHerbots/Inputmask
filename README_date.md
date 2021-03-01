@@ -93,4 +93,11 @@ This needs to be in the same format as the inputformat.
 
 ## max
 Maximum value.   
-This needs to be in the same format as the inputformat.  
+This needs to be in the same format as the inputformat.
+
+## prefillYear
+Enable/disable prefilling of the year.  
+Default: true
+
+Although you can just over type the proposed value without deleting, many seems to see a problem with the year prediction.  
+This options is to disable this feature.

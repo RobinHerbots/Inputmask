@@ -4,8 +4,13 @@
 ### Updates
 - enhance alternation logic
 - update datetime alias
+- datetime prefillYear option  
+    Enable/disable prefilling of the year.  
+    Although you can just over type the proposed value without deleting, many seems to see a problem with the year prediction.  
+    This options is to disable this feature.
  
 ### Fixed
+- Suppress DateTime year autocomplete? #2395
 - Bug in iframes #2461
 - stuck with cursor on / text of date with datetime extension #2464
 - Inputmask with a _space_ as a placeholder and leap year date #2451
