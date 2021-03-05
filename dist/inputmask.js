@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.41
+ * Version: 5.0.6-beta.42
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -2393,7 +2393,7 @@
                     ("day" === targetProp && 29 === parseInt(datavalue) || "month" === targetProp && 2 === parseInt(datavalue)) && (29 !== parseInt(dateObj.day) || 2 !== parseInt(dateObj.month) || "" !== dateObj.year && void 0 !== dateObj.year || dateObj.date.setFullYear(2012, 1, 29)), 
                     "day" === targetProp && 0 === parseInt(datavalue) && (datavalue = 1), "month" === targetProp && (datavalue = parseInt(datavalue), 
                     0 < datavalue) && (datavalue -= 1), "year" === targetProp && datavalue.length < 4 && (datavalue = pad(datavalue, 4, !0)), 
-                    "" !== datavalue && dateOperation.call(dateObj.date, datavalue);
+                    "" === datavalue || isNaN(datavalue) || dateOperation.call(dateObj.date, datavalue);
                 }
             }
             if ("string" == typeof mask) {
