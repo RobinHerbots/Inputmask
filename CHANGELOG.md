@@ -2,6 +2,7 @@
 
 ## [5.0.6 - UNRELEASED]
 ### Updates
+- Fix caret shift with negative numbers in numeric aliases
 - enhance alternation logic
 - update datetime alias
 - datetime prefillYear option  

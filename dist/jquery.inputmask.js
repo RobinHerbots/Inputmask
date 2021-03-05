@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.40
+ * Version: 5.0.6-beta.41
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], factory); else {
@@ -2461,7 +2461,7 @@
                 var dq = opts.digits.toString().split(",");
                 isFinite(dq[0]) && dq[1] && isFinite(dq[1]) ? mask += radixPointDef + decimalDef + "{" + opts.digits + "}" : (isNaN(opts.digits) || 0 < parseInt(opts.digits)) && (opts.digitsOptional ? (altMask = mask + radixPointDef + decimalDef + "{0," + opts.digits + "}", 
                 opts.keepStatic = !0) : mask += radixPointDef + decimalDef + "{" + opts.digits + "}");
-            }
+            } else opts.inputmode = "numeric";
             return mask += autoEscape(opts.suffix, opts), mask += "[-]", altMask && (mask = [ altMask + autoEscape(opts.suffix, opts) + "[-]", mask ]), 
             opts.greedy = !1, parseMinMaxOptions(opts), mask;
         }
@@ -2562,7 +2562,7 @@
                         var isNegative = !1, front = findValid("+", maskset), back = findValid("-", maskset);
                         return -1 !== front && (isNegative = [ front, back ]), !1 !== isNegative ? {
                             remove: isNegative,
-                            caret: initPos - opts.negationSymbol.front.length
+                            caret: initPos - opts.negationSymbol.back.length
                         } : {
                             insert: [ {
                                 pos: findValidator("+", maskset),
