@@ -11,6 +11,7 @@
     This options is to disable this feature.
  
 ### Fixed
+- Error thrown, if only insert radixpoint and leave field and placeholder = "" #2475
 - Datetime alias with day auto-fill problem #2480
 - Suppress DateTime year autocomplete? #2395
 - Bug in iframes #2461

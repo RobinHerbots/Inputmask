@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.42
+ * Version: 5.0.6-beta.43
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -865,7 +865,7 @@
             for (i = start; i < end; i++) {
                 keypress.which = bffr[i].toString().charCodeAt(0), this.ignorable = !1;
                 var valResult = _eventhandlers.EventHandlers.keypressEvent.call(this, keypress, !0, !1, !1, p);
-                !1 !== valResult && (p = valResult.forwardPosition);
+                !1 !== valResult && void 0 !== valResult && (p = valResult.forwardPosition);
             }
             opts.skipOptionalPartCharacter = skipOptionalPartCharacter;
         }
