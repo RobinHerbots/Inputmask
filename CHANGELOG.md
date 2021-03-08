@@ -11,6 +11,7 @@
     This options is to disable this feature.
  
 ### Fixed
+- Selecting all + backspace goes to the end of the input #2336
 - Error thrown, if only insert radixpoint and leave field and placeholder = "" #2475
 - Datetime alias with day auto-fill problem #2480
 - Suppress DateTime year autocomplete? #2395
