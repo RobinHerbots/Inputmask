@@ -29,7 +29,7 @@ Highlights:
 - value formatting / validating without input element
 - AMD/CommonJS support
 - dependencyLibs: vanilla javascript, jQuery, jqlite
-- \<input-mask\> htmlelenent
+- \<input-mask\> htmlelement
 
 Demo page see <https://robinherbots.github.io/Inputmask/>
 
