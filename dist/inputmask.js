@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.44
+ * Version: 5.0.6-beta.45
  */
 !function webpackUniversalModuleDefinition(root, factory) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = factory(); else if ("function" == typeof define && define.amd) define([], factory); else {
@@ -2532,7 +2532,7 @@
         });
     }, function(module, exports, __webpack_require__) {
         "use strict";
-        var _inputmask = _interopRequireDefault(__webpack_require__(2)), _keycode = _interopRequireDefault(__webpack_require__(0)), _escapeRegex = _interopRequireDefault(__webpack_require__(13));
+        var _inputmask = _interopRequireDefault(__webpack_require__(2)), _keycode = _interopRequireDefault(__webpack_require__(0)), _escapeRegex = _interopRequireDefault(__webpack_require__(13)), _positioning = __webpack_require__(1);
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
                 default: obj
@@ -2556,7 +2556,7 @@
             var posNdx = 0;
             if ("+" === symbol) {
                 for (posNdx in maskset.validPositions) ;
-                posNdx = parseInt(posNdx);
+                posNdx = _positioning.seekNext.call(this, parseInt(posNdx));
             }
             for (var tstNdx in maskset.tests) if (tstNdx = parseInt(tstNdx), posNdx <= tstNdx) for (var ndx = 0, ndxl = maskset.tests[tstNdx].length; ndx < ndxl; ndx++) if ((void 0 === maskset.validPositions[tstNdx] || "-" === symbol) && maskset.tests[tstNdx][ndx].match.def === symbol) return tstNdx + (void 0 !== maskset.validPositions[tstNdx] && "-" !== symbol ? 1 : 0);
             return posNdx;
@@ -2685,8 +2685,8 @@
                     }
                 },
                 preValidation: function preValidation(buffer, pos, c, isSelection, opts, maskset, caretPos, strict) {
+                    var inputmask = this, pattern;
                     if (!1 !== opts.__financeInput && c === opts.radixPoint) return !1;
-                    var pattern;
                     if (pattern = opts.shortcuts && opts.shortcuts[c]) {
                         if (1 < pattern.length) for (var inserts = [], i = 0; i < pattern.length; i++) inserts.push({
                             pos: pos + i,
@@ -2706,11 +2706,11 @@
                             caret: initPos - opts.negationSymbol.back.length
                         } : {
                             insert: [ {
-                                pos: findValidator("+", maskset),
+                                pos: findValidator.call(this, "+", maskset),
                                 c: opts.negationSymbol.front,
                                 fromIsValid: !0
                             }, {
-                                pos: findValidator("-", maskset),
+                                pos: findValidator.call(this, "-", maskset),
                                 c: opts.negationSymbol.back,
                                 fromIsValid: void 0
                             } ],

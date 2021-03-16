@@ -11,6 +11,7 @@
     This options is to disable this feature.
  
 ### Fixed
+- Issue with negative values and prefix in currency mask #2476
 - Selecting all + backspace goes to the end of the input #2336
 - Error thrown, if only insert radixpoint and leave field and placeholder = "" #2475
 - Datetime alias with day auto-fill problem #2480
