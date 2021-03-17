@@ -1117,6 +1117,11 @@ Use the default defined definitions from the prototype.
 
 Default: true 
 
+### validationEventTimeOut
+Time to show html5 validation error on form submit.
+
+Default: 3000
+
 ## General
 ### set a value and apply the mask
 this can be done with the traditional jquery.val function (all browsers) or JavaScript value property for browsers which implement lookupGetter or getOwnPropertyDescriptor

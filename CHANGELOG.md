@@ -1,6 +1,10 @@
 # Change Log
 
 ## [5.0.6 - UNRELEASED]
+
+### Addition
+- validationEventTimeOut option
+
 ### Updates
 - User Webpack/Terserplugin for minification
 - Fix caret shift with negative numbers in numeric aliases
@@ -42,7 +46,7 @@
 HOT FIX: jqlite dependency error
 
 #### [5.0.4 - 07/08/2020]
-### Add
+### Addition
 - usePrototypeDefinitions option
 - numeric alias
     - SetMaxOnOverflow option
@@ -74,7 +78,7 @@ HOT FIX: jqlite dependency error
 
 
 ## [5.0.2 - 09/01/2020]
-### Added
+### Addition
 - &lt;input-mask&gt; html element #2247
 
 ### Fixed
@@ -82,7 +86,7 @@ HOT FIX: jqlite dependency error
 - Datetime alias H3:MM month validation fails #2239
 
 ## [5.0.1 - 18/12/2019]
-### Added
+### Addition
 - ssn mask
 
 ### Updates

@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.49
+ * Version: 5.0.6-beta.50
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -95,7 +95,8 @@
                     inputmode: "text",
                     importDataAttributes: !0,
                     shiftPositions: !0,
-                    usePrototypeDefinitions: !0
+                    usePrototypeDefinitions: !0,
+                    validationEventTimeOut: 3e3
                 };
                 t.default = a;
             },
@@ -407,7 +408,7 @@
                                         return c.validationEvent ? (c.validationEvent = !1, e.blur(), (0, o.HandleNativePlaceholder)(e, (c.isRTL ? r.getBufferTemplate.call(c).slice().reverse() : r.getBufferTemplate.call(c)).join("")), 
                                         setTimeout((function() {
                                             e.focus();
-                                        }), 3e3), !1) : (l = arguments, setTimeout((function() {
+                                        }), f.validationEventTimeOut), !1) : (l = arguments, setTimeout((function() {
                                             e.inputmask && a.apply(u, l);
                                         }), 0), !1);
                                     }
