@@ -2,6 +2,7 @@
 
 ## [5.0.6 - UNRELEASED]
 ### Updates
+- User Webpack/Terserplugin for minification
 - Fix caret shift with negative numbers in numeric aliases
 - enhance alternation logic
 - update datetime alias
