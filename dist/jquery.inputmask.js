@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.50
+ * Version: 5.0.6-beta.51
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -11,13 +11,13 @@
         for (var i in a) ("object" == typeof exports ? exports : e)[i] = a[i];
     }
 }(this, (function(e) {
-    return (() => {
+    return function() {
         "use strict";
         var t = {
-            4528: e => {
+            4528: function(e) {
                 e.exports = JSON.parse('{"BACKSPACE":8,"BACKSPACE_SAFARI":127,"DELETE":46,"DOWN":40,"END":35,"ENTER":13,"ESCAPE":27,"HOME":36,"INSERT":45,"LEFT":37,"PAGE_DOWN":34,"PAGE_UP":33,"RIGHT":39,"SPACE":32,"TAB":9,"UP":38,"X":88,"CONTROL":17,"KEY_229":229}');
             },
-            3046: (e, t, a) => {
+            3046: function(e, t, a) {
                 var i;
                 Object.defineProperty(t, "__esModule", {
                     value: !0
@@ -27,14 +27,14 @@
                 }).default;
                 t.default = n;
             },
-            8741: (e, t) => {
+            8741: function(e, t) {
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.default = void 0;
                 var a = !("undefined" == typeof window || !window.document || !window.document.createElement);
                 t.default = a;
             },
-            3976: (e, t) => {
+            3976: function(e, t) {
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.default = void 0;
@@ -100,7 +100,7 @@
                 };
                 t.default = a;
             },
-            7392: (e, t) => {
+            7392: function(e, t) {
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.default = void 0;
@@ -118,7 +118,7 @@
                     }
                 };
             },
-            3287: (e, t, a) => {
+            3287: function(e, t, a) {
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.default = void 0;
@@ -129,7 +129,7 @@
                 var r = n.default;
                 t.default = r;
             },
-            9845: (e, t, a) => {
+            9845: function(e, t, a) {
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.iphone = t.iemobile = t.mobile = t.ie = t.ua = void 0;
@@ -139,7 +139,7 @@
                 var r = n.default.navigator && n.default.navigator.userAgent || "", o = r.indexOf("MSIE ") > 0 || r.indexOf("Trident/") > 0, s = "ontouchstart" in n.default, l = /iemobile/i.test(r), u = /iphone/i.test(r) && !l;
                 t.iphone = u, t.iemobile = l, t.mobile = s, t.ie = o, t.ua = r;
             },
-            7184: (e, t) => {
+            7184: function(e, t) {
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.default = function(e) {
@@ -147,7 +147,7 @@
                 };
                 var a = new RegExp("(\\" + [ "/", ".", "*", "+", "?", "|", "(", ")", "[", "]", "{", "}", "\\", "$", "^" ].join("|\\") + ")", "gim");
             },
-            6030: (e, t, a) => {
+            6030: function(e, t, a) {
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.EventHandlers = void 0;
@@ -363,7 +363,7 @@
                 };
                 t.EventHandlers = c;
             },
-            9716: (e, t, a) => {
+            9716: function(e, t, a) {
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.EventRuler = void 0;
@@ -436,7 +436,7 @@
                 };
                 t.EventRuler = l;
             },
-            219: (e, t, a) => {
+            219: function(e, t, a) {
                 var i = l(a(2394)), n = l(a(4528)), r = l(a(7184)), o = a(8711);
                 function s(e) {
                     return (s = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(e) {
@@ -757,7 +757,7 @@
                     }
                 });
             },
-            3851: (e, t, a) => {
+            3851: function(e, t, a) {
                 var i, n = (i = a(2394)) && i.__esModule ? i : {
                     default: i
                 }, r = a(8711), o = a(4713);
@@ -854,7 +854,7 @@
                     }
                 });
             },
-            207: (e, t, a) => {
+            207: function(e, t, a) {
                 var i = s(a(2394)), n = s(a(4528)), r = s(a(7184)), o = a(8711);
                 function s(e) {
                     return e && e.__esModule ? e : {
@@ -1222,7 +1222,7 @@
                     }
                 });
             },
-            9380: (e, t, a) => {
+            9380: function(e, t, a) {
                 var i;
                 Object.defineProperty(t, "__esModule", {
                     value: !0
@@ -1232,7 +1232,7 @@
                 }).default ? window : {};
                 t.default = n;
             },
-            7760: (e, t, a) => {
+            7760: function(e, t, a) {
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.applyInputValue = c, t.clearOptionalTail = f, t.checkVal = d, t.HandleNativePlaceholder = function(e, t) {
@@ -1341,7 +1341,7 @@
                     }
                 }
             },
-            2394: (e, t, a) => {
+            2394: function(e, t, a) {
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.default = void 0, a(7149), a(3194);
@@ -1519,7 +1519,7 @@
                 var x = y;
                 t.default = x;
             },
-            5296: (e, t, a) => {
+            5296: function(e, t, a) {
                 function i(e) {
                     return (i = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(e) {
                         return typeof e;
@@ -1629,7 +1629,7 @@
                     n.default.customElements.define("input-mask", m);
                 }
             },
-            443: (e, t, a) => {
+            443: function(e, t, a) {
                 var i = o(a(8254)), n = o(a(2394));
                 function r(e) {
                     return (r = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(e) {
@@ -1697,7 +1697,7 @@
                     }
                 });
             },
-            2391: (e, t, a) => {
+            2391: function(e, t, a) {
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.generateMaskSet = function(e, t) {
@@ -1930,7 +1930,7 @@
                     };
                 }
             },
-            157: (e, t, a) => {
+            157: function(e, t, a) {
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.mask = function() {
@@ -2043,7 +2043,7 @@
                     default: i
                 }, r = a(8711), o = a(7760), s = a(9716), l = a(9845), u = a(7215), c = a(6030);
             },
-            9695: (e, t) => {
+            9695: function(e, t) {
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.default = function(e, t, a, i) {
@@ -2055,7 +2055,7 @@
                     };
                 };
             },
-            3194: () => {
+            3194: function() {
                 Array.prototype.includes || Object.defineProperty(Array.prototype, "includes", {
                     value: function(e, t) {
                         if (null == this) throw new TypeError('"this" is null or not defined');
@@ -2069,7 +2069,7 @@
                     }
                 });
             },
-            7149: () => {
+            7149: function() {
                 function e(t) {
                     return (e = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(e) {
                         return typeof e;
@@ -2083,7 +2083,7 @@
                     return e.constructor.prototype;
                 });
             },
-            8711: (e, t, a) => {
+            8711: function(e, t, a) {
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.caret = function(e, t, a, i, n) {
@@ -2232,7 +2232,7 @@
                     e;
                 }
             },
-            4713: (e, t) => {
+            4713: function(e, t) {
                 function a(e, t) {
                     var a = (null != e.alternation ? e.mloc[i(e)] : e.locator).join("");
                     if ("" !== a) for (;a.length < t; ) a += "0";
@@ -2468,7 +2468,7 @@
                     return c.greedy = d, g;
                 }, t.getPlaceholder = n, t.getTest = s, t.getTests = u, t.getTestTemplate = r, t.isSubsetOf = l;
             },
-            7215: (e, t, a) => {
+            7215: function(e, t, a) {
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.alternate = l, t.checkAlternationMatch = function(e, t, a) {
@@ -2757,7 +2757,7 @@
                     return o.resetMaskSet.call(r, !0), p;
                 }
             },
-            8254: t => {
+            8254: function(t) {
                 t.exports = e;
             }
         }, a = {};
@@ -2770,7 +2770,7 @@
             return t[e](r, r.exports, i), r.exports;
         }
         var n = {};
-        return (() => {
+        return function() {
             var e = n;
             Object.defineProperty(e, "__esModule", {
                 value: !0
@@ -2781,7 +2781,7 @@
             i(443);
             var r = a.default;
             e.default = r;
-        })(), n;
-    })();
+        }(), n;
+    }();
 }));
 //# sourceMappingURL=jquery.inputmask.js.map

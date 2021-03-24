@@ -105,7 +105,8 @@ module.exports = function (env, argv) {
 			})
 		],
 		bail: true,
-		mode: env === "production" ? "production" : "none"
+		mode: env === "production" ? "production" : "none",
+		target: ["web", "es5"]
 	};
 
 	var jqueryConfig = _.defaultsDeep({}, config);
