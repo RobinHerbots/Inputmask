@@ -16,6 +16,10 @@
 	"TAB": 9,
 	"UP": 38,
 	"X": 88,
+	"Z": 90,
 	"CONTROL": 17,
+	"PAUSE/BREAK": 19,
+	"WINDOWS_LEFT": 91,
+	"WINDOWS_RIGHT": 92,
 	"KEY_229": 229
 }
