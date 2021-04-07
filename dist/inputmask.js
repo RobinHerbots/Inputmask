@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.52
+ * Version: 5.0.6-beta.54
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -293,7 +293,7 @@
                             var m = n.seekNext.call(t, n.getLastValidPosition.call(t));
                             n.caret.call(t, f, e.shiftKey ? h.begin : m, m, !0);
                         } else p === r.default.HOME && !e.shiftKey || p === r.default.PAGE_UP ? (e.preventDefault(), 
-                        n.caret.call(t, f, 0, e.shiftKey ? h.begin : 0, !0)) : (a.undoOnEscape && p === r.default.ESCAPE || 90 === p && e.ctrlKey) && !0 !== e.altKey ? ((0, 
+                        n.caret.call(t, f, 0, e.shiftKey ? h.begin : 0, !0)) : a.undoOnEscape && p === r.default.ESCAPE && !0 !== e.altKey ? ((0, 
                         l.checkVal)(f, !0, !1, t.undoValue.split("")), d.trigger("click")) : !0 === a.tabThrough && p === r.default.TAB ? !0 === e.shiftKey ? (h.end = n.seekPrevious.call(t, h.end, !0), 
                         !0 === u.getTest.call(t, h.end - 1).match.static && h.end--, h.begin = n.seekPrevious.call(t, h.end, !0), 
                         h.begin >= 0 && h.end > 0 && (e.preventDefault(), n.caret.call(t, f, h.begin, h.end))) : (h.begin = n.seekNext.call(t, h.begin, !0), 
@@ -1025,7 +1025,7 @@
                     return a;
                 }
                 function p(e, t, a, i, n) {
-                    var r = t.buffer ? t.buffer.indexOf(n.radixPoint) : -1, o = -1 !== r && new RegExp("[0-9\uff11-\uff19]").test(e);
+                    var r = t.buffer ? t.buffer.indexOf(n.radixPoint) : -1, o = -1 !== r && new RegExp(n.definitions[9].validator).test(e);
                     return n._radixDance && o && null == t.validPositions[r] ? {
                         insert: {
                             pos: r === a ? r + 1 : r,
@@ -1100,6 +1100,7 @@
                         insertMode: !0,
                         autoUnmask: !1,
                         skipOptionalPartCharacter: "",
+                        usePrototypeDefinitions: !1,
                         definitions: {
                             0: {
                                 validator: p
@@ -1107,6 +1108,10 @@
                             1: {
                                 validator: p,
                                 definitionSymbol: "9"
+                            },
+                            9: {
+                                validator: "[0-9\uff10-\uff19\u0660-\u0669\u06f0-\u06f9]",
+                                definitionSymbol: "*"
                             },
                             "+": {
                                 validator: function(e, t, a, i, n) {
