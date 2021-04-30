@@ -97,7 +97,7 @@ module.exports = function (env, argv) {
 				// "./dependencyLibs/inputmask.dependencyLib": "./dependencyLibs/inputmask.dependencyLib.jquery"
 			}
 		},
-		devtool: "source-map",
+		devtool: env === "production" ? undefined : "source-map",
 		plugins: [
 			new webpack.BannerPlugin({
 				banner: createBanner,
