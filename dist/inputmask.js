@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.56
+ * Version: 5.0.6-beta.57
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -2587,8 +2587,7 @@
                         delete S.validPositions[h];
                         for (-1 === A && void 0 !== t && (C.push(t), A = C.length - 1); void 0 !== S.excludes[m] && S.excludes[m].length < 10; ) {
                             for (S.tests = {}, o.resetMaskSet.call(x, !0), w = !0, h = 0; h < C.length && (g = w.caret || o.getLastValidPosition.call(x, void 0, !0) + 1, 
-                            k = C[h], g = o.translatePosition.call(x, g), w = f.call(x, g, k, !1, i, !0)); h++) h === A && (O = w), 
-                            1 == e && w && (O = {
+                            k = C[h], w = f.call(x, g, k, !1, i, !0)); h++) h === A && (O = w), 1 == e && w && (O = {
                                 caretPos: h
                             });
                             if (w) break;
