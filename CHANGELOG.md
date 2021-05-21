@@ -16,6 +16,7 @@
     This options is to disable this feature.
  
 ### Fixed
+- Issue with negative values and prefix in currency mask #2476
 - persian/arabic currency mask with regex #2472
 - Issue with negative values and prefix in currency mask #2476
 - Selecting all + backspace goes to the end of the input #2336
