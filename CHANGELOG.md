@@ -16,6 +16,7 @@
     This options is to disable this feature.
  
 ### Fixed
+- jitMasking removing a decimal after the comma #2494
 - Issue with negative values and prefix in currency mask #2476
 - persian/arabic currency mask with regex #2472
 - Issue with negative values and prefix in currency mask #2476

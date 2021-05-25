@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.59
+ * Version: 5.0.6-beta.60
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -1025,8 +1025,8 @@
                     return a;
                 }
                 function p(e, t, a, i, n) {
-                    var r = t.buffer ? t.buffer.indexOf(n.radixPoint) : -1, o = -1 !== r && new RegExp(n.definitions[9].validator).test(e);
-                    return n._radixDance && o && null == t.validPositions[r] ? {
+                    var r = t.buffer ? t.buffer.indexOf(n.radixPoint) : -1, o = (-1 !== r || i && n.jitMasking) && new RegExp(n.definitions[9].validator).test(e);
+                    return n._radixDance && -1 !== r && o && null == t.validPositions[r] ? {
                         insert: {
                             pos: r === a ? r + 1 : r,
                             c: n.radixPoint
@@ -1052,7 +1052,7 @@
                             e.definitions[e.groupSeparator].static = !0, e.definitions[e.groupSeparator].generated = !0), 
                             n += e._mask(e)) : n += "9{+}", void 0 !== e.digits && 0 !== e.digits) {
                                 var o = e.digits.toString().split(",");
-                                isFinite(o[0]) && o[1] && isFinite(o[1]) ? n += a + t + "{" + e.digits + "}" : (isNaN(e.digits) || parseInt(e.digits) > 0) && (e.digitsOptional ? (i = n + a + t + "{0," + e.digits + "}", 
+                                isFinite(o[0]) && o[1] && isFinite(o[1]) ? n += a + t + "{" + e.digits + "}" : (isNaN(e.digits) || parseInt(e.digits) > 0) && (e.digitsOptional || e.jitMasking ? (i = n + a + t + "{0," + e.digits + "}", 
                                 e.keepStatic = !0) : n += a + t + "{" + e.digits + "}");
                             } else e.inputmode = "numeric";
                             return n += u(e.suffix, e), n += "[-]", i && (n = [ i + u(e.suffix, e) + "[-]", n ]), 
@@ -2802,7 +2802,7 @@
                                 for (;"" !== n.getTest.call(r, E).match.def; ) {
                                     if (!1 !== (b = d.call(r, E, y, l)) || "+" === y.match.def) {
                                         "+" === y.match.def && o.getBuffer.call(r, !0);
-                                        var S = f.call(r, E, y.input, "+" !== y.match.def, "+" !== y.match.def);
+                                        var S = f.call(r, E, y.input, "+" !== y.match.def, !0);
                                         if (x = !1 !== S, P = (S.pos || E) + 1, !x && b) break;
                                     } else x = !1;
                                     if (x) {
