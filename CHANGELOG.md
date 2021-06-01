@@ -1,6 +1,6 @@
 # Change Log
 
-## [5.0.6 - UNRELEASED]
+## [5.0.6 - 01/06/2021]
 
 ### Addition
 - validationEventTimeOut option
