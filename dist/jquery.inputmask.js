@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.6-beta.62
+ * Version: 5.0.6-beta.63
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -762,6 +762,7 @@
                         shiftPositions: !1,
                         keepStatic: !1,
                         inputmode: "numeric",
+                        autoUnmask: !0,
                         prefillYear: !0
                     }
                 });
@@ -2649,23 +2650,21 @@
                     delete y.tests[M]);
                     if ("function" == typeof k.preValidation && !0 !== i && !0 !== s && (S = P(S = k.preValidation.call(v, o.getBuffer.call(v), x, t, b(e), k, y, e, a || r))), 
                     !0 === S) {
-                        if (void 0 === v.maxLength || x < v.maxLength) {
-                            if (S = E(x, t, a), (!a || !0 === i) && !1 === S && !0 !== s) {
-                                var _ = y.validPositions[x];
-                                if (!_ || !0 !== _.match.static || _.match.def !== t && t !== k.skipOptionalPartCharacter) {
-                                    if (k.insertMode || void 0 === y.validPositions[o.seekNext.call(v, x)] || e.end > x) {
-                                        var O = !1;
-                                        if (y.jitOffset[x] && void 0 === y.validPositions[o.seekNext.call(v, x)] && !1 !== (S = f.call(v, x + y.jitOffset[x], t, !0, !0)) && (!0 !== r && (S.caret = x), 
-                                        O = !0), e.end > x && (y.validPositions[x] = void 0), !O && !o.isMask.call(v, x, k.keepStatic && 0 === x)) for (var T = x + 1, A = o.seekNext.call(v, x, !1, 0 !== x); T <= A; T++) if (!1 !== (S = E(T, t, a))) {
-                                            S = h.call(v, x, void 0 !== S.pos ? S.pos : T) || S, x = T;
-                                            break;
-                                        }
+                        if (S = E(x, t, a), (!a || !0 === i) && !1 === S && !0 !== s) {
+                            var _ = y.validPositions[x];
+                            if (!_ || !0 !== _.match.static || _.match.def !== t && t !== k.skipOptionalPartCharacter) {
+                                if (k.insertMode || void 0 === y.validPositions[o.seekNext.call(v, x)] || e.end > x) {
+                                    var O = !1;
+                                    if (y.jitOffset[x] && void 0 === y.validPositions[o.seekNext.call(v, x)] && !1 !== (S = f.call(v, x + y.jitOffset[x], t, !0, !0)) && (!0 !== r && (S.caret = x), 
+                                    O = !0), e.end > x && (y.validPositions[x] = void 0), !O && !o.isMask.call(v, x, k.keepStatic && 0 === x)) for (var T = x + 1, A = o.seekNext.call(v, x, !1, 0 !== x); T <= A; T++) if (!1 !== (S = E(T, t, a))) {
+                                        S = h.call(v, x, void 0 !== S.pos ? S.pos : T) || S, x = T;
+                                        break;
                                     }
-                                } else S = {
-                                    caret: o.seekNext.call(v, x)
-                                };
-                            }
-                        } else S = !1;
+                                }
+                            } else S = {
+                                caret: o.seekNext.call(v, x)
+                            };
+                        }
                         !1 !== S || !k.keepStatic || !c.call(v, o.getBuffer.call(v)) && 0 !== x || a || !0 === r ? b(e) && y.tests[x] && y.tests[x].length > 1 && k.keepStatic && !a && !0 !== r && (S = l.call(v, !0)) : S = l.call(v, x, t, a, i, void 0, e), 
                         !0 === S && (S = {
                             pos: x
@@ -2675,8 +2674,12 @@
                         var C = k.postValidation.call(v, o.getBuffer.call(v, !0), void 0 !== e.begin ? v.isRTL ? e.end : e.begin : e, t, S, k, y, a, d);
                         void 0 !== C && (S = !0 === C ? S : C);
                     }
-                    return S && void 0 === S.pos && (S.pos = x), !1 === S || !0 === s ? (o.resetMaskSet.call(v, !0), 
-                    y.validPositions = g.extend(!0, {}, w)) : h.call(v, void 0, x, !0), P(S);
+                    S && void 0 === S.pos && (S.pos = x), !1 === S || !0 === s ? (o.resetMaskSet.call(v, !0), 
+                    y.validPositions = g.extend(!0, {}, w)) : h.call(v, void 0, x, !0);
+                    var D = P(S);
+                    void 0 !== v.maxLength && (o.getBuffer.call(v).length > v.maxLength && !i && (o.resetMaskSet.call(v, !0), 
+                    y.validPositions = g.extend(!0, {}, w), D = !1));
+                    return D;
                 }
                 function d(e, t, a) {
                     for (var i = this.maskset, r = !1, o = n.getTests.call(this, e), s = 0; s < o.length; s++) {

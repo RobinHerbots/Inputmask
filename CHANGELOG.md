@@ -17,6 +17,7 @@
 - better handle maxLength
  
 ### Fixed
+- Decimal mask with maxlength turns integer into real number on maximum length #2260
 - jitMasking removing a decimal after the comma #2494
 - Issue with negative values and prefix in currency mask #2476
 - persian/arabic currency mask with regex #2472
