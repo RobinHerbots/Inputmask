@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.7-beta.1
+ * Version: 5.0.7-beta.2
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -2478,7 +2478,10 @@
                                         }
                                         return i.jit && (s.jitOffset[e] = q.matches.length - q.matches.indexOf(i)), !0;
                                     }
-                                } else if (n = g(n, a, r, f)) return !0;
+                                } else if (n = g(n, a, r, f)) {
+                                    if (!0 !== (i = h[h.length - 1].match).optionality) return !0;
+                                    v = !0, d = e;
+                                }
                             } else d++;
                             var W, Q;
                         }
