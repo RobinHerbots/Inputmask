@@ -405,7 +405,20 @@ Inputmask.extendDefinitions({
 ### placeholder
 Specify a placeholder for a definition.  This can also be a function.
 
-### set defaults
+### optional
+Mark the definition as optional
+
+### static
+Mark the definition as static
+
+### casing (definition option)
+Specify casing options.  
+The options are the same as the [Casing option](#casing)
+
+### generated
+Mark the definition as generated
+
+## set defaults
 The defaults can be set as below.
 
 ```javascript

@@ -2,6 +2,13 @@
 
 ## [5.0.7 - UNRELEASED]
 
+### Addition
+- extend definition options - #2524
+  - optional
+  - static
+  - generated
+- add casing definition option to the readme
+
 ## [5.0.6 - 01/06/2021]
 
 ### Addition
