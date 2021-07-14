@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.7-beta.2
+ * Version: 5.0.7-beta.7
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -1786,7 +1786,7 @@
                                 } : new RegExp("."),
                                 static: o.static || !1,
                                 optionality: o.optional || !1,
-                                newBlockMarker: void 0 === r ? "master" : r.def !== (o.definitionSymbol || i),
+                                newBlockMarker: void 0 === r || o.optional ? "master" : r.def !== (o.definitionSymbol || i),
                                 casing: o.casing,
                                 def: o.definitionSymbol || i,
                                 placeholder: o.placeholder,
@@ -2345,13 +2345,15 @@
                                 return !0;
                             }
                             if (d > e + u._maxTestPos) throw "Inputmask: There is probably an error in your mask definition or in the code. Create an issue on github with an example of the mask you are using. " + s.mask;
-                            if (d === e && void 0 === n.matches) return h.push({
-                                match: n,
-                                locator: r.reverse(),
-                                cd: v,
-                                mloc: {}
-                            }), !0;
-                            if (void 0 !== n.matches) {
+                            if (d === e && void 0 === n.matches) {
+                                if (h.push({
+                                    match: n,
+                                    locator: r.reverse(),
+                                    cd: v,
+                                    mloc: {}
+                                }), !0 !== n.optionality || void 0 !== f || !(u.definitions && u.definitions[n.nativeDef] && u.definitions[n.nativeDef].optional || Inputmask.prototype.definitions[n.nativeDef] && Inputmask.prototype.definitions[n.nativeDef].optional)) return !0;
+                                m = !0, d = e;
+                            } else if (void 0 !== n.matches) {
                                 if (n.isGroup && f !== n) {
                                     if (n = o(t.matches[t.matches.indexOf(n) + 1], r, f)) return !0;
                                 } else if (n.isOptional) {
@@ -2420,10 +2422,7 @@
                                         }
                                         return i.jit && (s.jitOffset[e] = z.matches.length - z.matches.indexOf(i)), !0;
                                     }
-                                } else if (n = g(n, a, r, f)) {
-                                    if (!0 !== (i = h[h.length - 1].match).optionality) return !0;
-                                    m = !0, d = e;
-                                }
+                                } else if (n = g(n, a, r, f)) return !0;
                             } else d++;
                             var Q, W;
                         }
