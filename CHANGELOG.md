@@ -9,6 +9,9 @@
   - generated
 - add casing definition option to the readme
 
+### Updates
+- clear masktemplate before submitting regardsless of the clearMaskOnLostFocus option
+
 ## [5.0.6 - 01/06/2021]
 
 ### Addition
