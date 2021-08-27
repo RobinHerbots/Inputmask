@@ -1104,4 +1104,21 @@ export default function (qunit, Inputmask) {
 
 		assert.equal(testmask.value, "02/29/2012", "Result " + testmask.value);
 	});
+
+	qunit.test("H2:MM min 12:59- #2297", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "H2:MM",
+			placeholder: "0",
+			min: "12:59",
+			max: "33:33"
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("12:44");
+
+		assert.equal(testmask.value, "12:00", "Result " + testmask.value);
+	});
 }

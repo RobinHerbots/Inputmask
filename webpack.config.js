@@ -1,5 +1,5 @@
 var webpack = require("webpack"),
-    terserPlugin = require("terser-webpack-plugin"),
+	terserPlugin = require("terser-webpack-plugin"),
 	_ = require("lodash"),
 	fs = require("fs");
 
@@ -95,7 +95,7 @@ module.exports = function (env, argv) {
 			extensions: [".wasm", ".mjs", ".js", ".ts", ".json"],
 			alias: {
 				// "./dependencyLibs/inputmask.dependencyLib": "./dependencyLibs/inputmask.dependencyLib.jquery"
-			}
+			},
 		},
 		devtool: env === "production" ? undefined : "source-map",
 		plugins: [

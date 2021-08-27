@@ -10,6 +10,7 @@
 - add casing definition option to the readme
 
 ### Updates
+- alias \\d to [0-9] in regex masks
 - clear masktemplate before submitting regardsless of the clearMaskOnLostFocus option
 
 ## [5.0.6 - 01/06/2021]
