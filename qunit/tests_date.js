@@ -1136,7 +1136,7 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		$("#testmask").Type("30/03/2020 11:00:00 AM");
 
-		assert.equal(testmask.value, "30/03/2020 11:00:00 XM", "Result " + testmask.value);
+		assert.equal(testmask.value, "30/03/2020 11:00:00 AM", "Result " + testmask.value);
 	});
 
 	qunit.test("Min Max AMPM- #2297", function (assert) {
