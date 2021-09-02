@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.7-beta.14
+ * Version: 5.0.7-beta.15
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -1805,17 +1805,17 @@
                 }), t.generateMaskSet = function(e, t) {
                     var i;
                     function n(e, i, n) {
-                        var r, o, s = !1;
-                        if (null !== e && "" !== e || ((s = null !== n.regex) ? e = (e = n.regex).replace(/^(\^)(.*)(\$)$/, "$2") : (s = !0, 
+                        var o, s, l = !1;
+                        if (null !== e && "" !== e || ((l = null !== n.regex) ? e = (e = n.regex).replace(/^(\^)(.*)(\$)$/, "$2") : (l = !0, 
                         e = ".*")), 1 === e.length && !1 === n.greedy && 0 !== n.repeat && (n.placeholder = ""), 
                         n.repeat > 0 || "*" === n.repeat || "+" === n.repeat) {
-                            var l = "*" === n.repeat ? 0 : "+" === n.repeat ? 1 : n.repeat;
-                            e = n.groupmarker[0] + e + n.groupmarker[1] + n.quantifiermarker[0] + l + "," + n.repeat + n.quantifiermarker[1];
+                            var u = "*" === n.repeat ? 0 : "+" === n.repeat ? 1 : n.repeat;
+                            e = n.groupmarker[0] + e + n.groupmarker[1] + n.quantifiermarker[0] + u + "," + n.repeat + n.quantifiermarker[1];
                         }
-                        return o = s ? "regex_" + n.regex : n.numericInput ? e.split("").reverse().join("") : e, 
-                        !1 !== n.keepStatic && (o = "ks_" + o), void 0 === Inputmask.prototype.masksCache[o] || !0 === t ? (r = {
+                        return s = l ? "regex_" + n.regex : n.numericInput ? e.split("").reverse().join("") : e, 
+                        !1 !== n.keepStatic && (s = "ks_" + s), void 0 === r.default.prototype.masksCache[s] || !0 === t ? (o = {
                             mask: e,
-                            maskToken: Inputmask.prototype.analyseMask(e, s, n),
+                            maskToken: r.default.prototype.analyseMask(e, l, n),
                             validPositions: {},
                             _buffer: void 0,
                             buffer: void 0,
@@ -1824,18 +1824,18 @@
                             metadata: i,
                             maskLength: void 0,
                             jitOffset: {}
-                        }, !0 !== t && (Inputmask.prototype.masksCache[o] = r, r = a.default.extend(!0, {}, Inputmask.prototype.masksCache[o]))) : r = a.default.extend(!0, {}, Inputmask.prototype.masksCache[o]), 
-                        r;
+                        }, !0 !== t && (r.default.prototype.masksCache[s] = o, o = a.default.extend(!0, {}, r.default.prototype.masksCache[s]))) : o = a.default.extend(!0, {}, r.default.prototype.masksCache[s]), 
+                        o;
                     }
                     "function" == typeof e.mask && (e.mask = e.mask(e));
                     if (Array.isArray(e.mask)) {
                         if (e.mask.length > 1) {
                             null === e.keepStatic && (e.keepStatic = !0);
-                            var r = e.groupmarker[0];
+                            var o = e.groupmarker[0];
                             return (e.isRTL ? e.mask.reverse() : e.mask).forEach((function(t) {
-                                r.length > 1 && (r += e.groupmarker[1] + e.alternatormarker + e.groupmarker[0]), 
-                                void 0 !== t.mask && "function" != typeof t.mask ? r += t.mask : r += t;
-                            })), n(r += e.groupmarker[1], e.mask, e);
+                                o.length > 1 && (o += e.groupmarker[1] + e.alternatormarker + e.groupmarker[0]), 
+                                void 0 !== t.mask && "function" != typeof t.mask ? o += t.mask : o += t;
+                            })), n(o += e.groupmarker[1], e.mask, e);
                         }
                         e.mask = e.mask.pop();
                     }
@@ -1843,172 +1843,172 @@
                     i = e.mask && void 0 !== e.mask.mask && "function" != typeof e.mask.mask ? n(e.mask.mask, e.mask, e) : n(e.mask, e.mask, e);
                     return i;
                 }, t.analyseMask = function(e, t, i) {
-                    var a, r, o, s, l, u, c = /(?:[?*+]|\{[0-9+*]+(?:,[0-9+*]*)?(?:\|[0-9+*]*)?\})|[^.?*+^${[]()|\\]+|./g, f = /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?[:=!]?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g, d = !1, p = new n.default, h = [], v = [], m = !1;
-                    function g(e, a, n) {
+                    var a, o, s, l, u, c, f = /(?:[?*+]|\{[0-9+*]+(?:,[0-9+*]*)?(?:\|[0-9+*]*)?\})|[^.?*+^${[]()|\\]+|./g, d = /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?[:=!]?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g, p = !1, h = new n.default, v = [], m = [], g = !1;
+                    function k(e, a, n) {
                         n = void 0 !== n ? n : e.matches.length;
-                        var r = e.matches[n - 1];
-                        if (t) 0 === a.indexOf("[") || d && /\\d|\\s|\\w]/i.test(a) || "." === a ? e.matches.splice(n++, 0, {
+                        var o = e.matches[n - 1];
+                        if (t) 0 === a.indexOf("[") || p && /\\d|\\s|\\w]/i.test(a) || "." === a ? e.matches.splice(n++, 0, {
                             fn: new RegExp(a, i.casing ? "i" : ""),
                             static: !1,
                             optionality: !1,
-                            newBlockMarker: void 0 === r ? "master" : r.def !== a,
+                            newBlockMarker: void 0 === o ? "master" : o.def !== a,
                             casing: null,
                             def: a,
                             placeholder: void 0,
                             nativeDef: a
-                        }) : (d && (a = a[a.length - 1]), a.split("").forEach((function(t, a) {
-                            r = e.matches[n - 1], e.matches.splice(n++, 0, {
+                        }) : (p && (a = a[a.length - 1]), a.split("").forEach((function(t, a) {
+                            o = e.matches[n - 1], e.matches.splice(n++, 0, {
                                 fn: /[a-z]/i.test(i.staticDefinitionSymbol || t) ? new RegExp("[" + (i.staticDefinitionSymbol || t) + "]", i.casing ? "i" : "") : null,
                                 static: !0,
                                 optionality: !1,
-                                newBlockMarker: void 0 === r ? "master" : r.def !== t && !0 !== r.static,
+                                newBlockMarker: void 0 === o ? "master" : o.def !== t && !0 !== o.static,
                                 casing: null,
                                 def: i.staticDefinitionSymbol || t,
                                 placeholder: void 0 !== i.staticDefinitionSymbol ? t : void 0,
-                                nativeDef: (d ? "'" : "") + t
+                                nativeDef: (p ? "'" : "") + t
                             });
-                        }))), d = !1; else {
-                            var o = i.definitions && i.definitions[a] || i.usePrototypeDefinitions && Inputmask.prototype.definitions[a];
-                            o && !d ? e.matches.splice(n++, 0, {
-                                fn: o.validator ? "string" == typeof o.validator ? new RegExp(o.validator, i.casing ? "i" : "") : new function() {
-                                    this.test = o.validator;
+                        }))), p = !1; else {
+                            var s = i.definitions && i.definitions[a] || i.usePrototypeDefinitions && r.default.prototype.definitions[a];
+                            s && !p ? e.matches.splice(n++, 0, {
+                                fn: s.validator ? "string" == typeof s.validator ? new RegExp(s.validator, i.casing ? "i" : "") : new function() {
+                                    this.test = s.validator;
                                 } : new RegExp("."),
-                                static: o.static || !1,
-                                optionality: o.optional || !1,
-                                newBlockMarker: void 0 === r || o.optional ? "master" : r.def !== (o.definitionSymbol || a),
-                                casing: o.casing,
-                                def: o.definitionSymbol || a,
-                                placeholder: o.placeholder,
+                                static: s.static || !1,
+                                optionality: s.optional || !1,
+                                newBlockMarker: void 0 === o || s.optional ? "master" : o.def !== (s.definitionSymbol || a),
+                                casing: s.casing,
+                                def: s.definitionSymbol || a,
+                                placeholder: s.placeholder,
                                 nativeDef: a,
-                                generated: o.generated
+                                generated: s.generated
                             }) : (e.matches.splice(n++, 0, {
                                 fn: /[a-z]/i.test(i.staticDefinitionSymbol || a) ? new RegExp("[" + (i.staticDefinitionSymbol || a) + "]", i.casing ? "i" : "") : null,
                                 static: !0,
                                 optionality: !1,
-                                newBlockMarker: void 0 === r ? "master" : r.def !== a && !0 !== r.static,
+                                newBlockMarker: void 0 === o ? "master" : o.def !== a && !0 !== o.static,
                                 casing: null,
                                 def: i.staticDefinitionSymbol || a,
                                 placeholder: void 0 !== i.staticDefinitionSymbol ? a : void 0,
-                                nativeDef: (d ? "'" : "") + a
-                            }), d = !1);
+                                nativeDef: (p ? "'" : "") + a
+                            }), p = !1);
                         }
                     }
-                    function k() {
-                        if (h.length > 0) {
-                            if (g(s = h[h.length - 1], r), s.isAlternator) {
-                                l = h.pop();
-                                for (var e = 0; e < l.matches.length; e++) l.matches[e].isGroup && (l.matches[e].isGroup = !1);
-                                h.length > 0 ? (s = h[h.length - 1]).matches.push(l) : p.matches.push(l);
+                    function y() {
+                        if (v.length > 0) {
+                            if (k(l = v[v.length - 1], o), l.isAlternator) {
+                                u = v.pop();
+                                for (var e = 0; e < u.matches.length; e++) u.matches[e].isGroup && (u.matches[e].isGroup = !1);
+                                v.length > 0 ? (l = v[v.length - 1]).matches.push(u) : h.matches.push(u);
                             }
-                        } else g(p, r);
+                        } else k(h, o);
                     }
-                    function y(e) {
+                    function b(e) {
                         var t = new n.default(!0);
                         return t.openGroup = !1, t.matches = e, t;
                     }
-                    function b() {
-                        if ((o = h.pop()).openGroup = !1, void 0 !== o) if (h.length > 0) {
-                            if ((s = h[h.length - 1]).matches.push(o), s.isAlternator) {
-                                l = h.pop();
-                                for (var e = 0; e < l.matches.length; e++) l.matches[e].isGroup = !1, l.matches[e].alternatorGroup = !1;
-                                h.length > 0 ? (s = h[h.length - 1]).matches.push(l) : p.matches.push(l);
+                    function x() {
+                        if ((s = v.pop()).openGroup = !1, void 0 !== s) if (v.length > 0) {
+                            if ((l = v[v.length - 1]).matches.push(s), l.isAlternator) {
+                                u = v.pop();
+                                for (var e = 0; e < u.matches.length; e++) u.matches[e].isGroup = !1, u.matches[e].alternatorGroup = !1;
+                                v.length > 0 ? (l = v[v.length - 1]).matches.push(u) : h.matches.push(u);
                             }
-                        } else p.matches.push(o); else k();
+                        } else h.matches.push(s); else y();
                     }
-                    function x(e) {
+                    function P(e) {
                         var t = e.pop();
-                        return t.isQuantifier && (t = y([ e.pop(), t ])), t;
+                        return t.isQuantifier && (t = b([ e.pop(), t ])), t;
                     }
                     t && (i.optionalmarker[0] = void 0, i.optionalmarker[1] = void 0);
-                    for (;a = t ? f.exec(e) : c.exec(e); ) {
-                        if (r = a[0], t) {
-                            switch (r.charAt(0)) {
+                    for (;a = t ? d.exec(e) : f.exec(e); ) {
+                        if (o = a[0], t) {
+                            switch (o.charAt(0)) {
                               case "?":
-                                r = "{0,1}";
+                                o = "{0,1}";
                                 break;
 
                               case "+":
                               case "*":
-                                r = "{" + r + "}";
+                                o = "{" + o + "}";
                                 break;
 
                               case "|":
-                                if (0 === h.length) {
-                                    var P = y(p.matches);
-                                    P.openGroup = !0, h.push(P), p.matches = [], m = !0;
+                                if (0 === v.length) {
+                                    var E = b(h.matches);
+                                    E.openGroup = !0, v.push(E), h.matches = [], g = !0;
                                 }
                             }
-                            switch (r) {
+                            switch (o) {
                               case "\\d":
-                                r = "[0-9]";
+                                o = "[0-9]";
                             }
                         }
-                        if (d) k(); else switch (r.charAt(0)) {
+                        if (p) y(); else switch (o.charAt(0)) {
                           case "$":
                           case "^":
-                            t || k();
+                            t || y();
                             break;
 
                           case i.escapeChar:
-                            d = !0, t && k();
+                            p = !0, t && y();
                             break;
 
                           case i.optionalmarker[1]:
                           case i.groupmarker[1]:
-                            b();
+                            x();
                             break;
 
                           case i.optionalmarker[0]:
-                            h.push(new n.default(!1, !0));
+                            v.push(new n.default(!1, !0));
                             break;
 
                           case i.groupmarker[0]:
-                            h.push(new n.default(!0));
+                            v.push(new n.default(!0));
                             break;
 
                           case i.quantifiermarker[0]:
-                            var E = new n.default(!1, !1, !0), _ = (r = r.replace(/[{}]/g, "")).split("|"), S = _[0].split(","), w = isNaN(S[0]) ? S[0] : parseInt(S[0]), M = 1 === S.length ? w : isNaN(S[1]) ? S[1] : parseInt(S[1]), O = isNaN(_[1]) ? _[1] : parseInt(_[1]);
-                            "*" !== w && "+" !== w || (w = "*" === M ? 0 : 1), E.quantifier = {
-                                min: w,
-                                max: M,
-                                jit: O
+                            var _ = new n.default(!1, !1, !0), S = (o = o.replace(/[{}]/g, "")).split("|"), w = S[0].split(","), M = isNaN(w[0]) ? w[0] : parseInt(w[0]), O = 1 === w.length ? M : isNaN(w[1]) ? w[1] : parseInt(w[1]), T = isNaN(S[1]) ? S[1] : parseInt(S[1]);
+                            "*" !== M && "+" !== M || (M = "*" === O ? 0 : 1), _.quantifier = {
+                                min: M,
+                                max: O,
+                                jit: T
                             };
-                            var T = h.length > 0 ? h[h.length - 1].matches : p.matches;
-                            if ((a = T.pop()).isAlternator) {
-                                T.push(a), T = a.matches;
-                                var C = new n.default(!0), D = T.pop();
-                                T.push(C), T = C.matches, a = D;
+                            var C = v.length > 0 ? v[v.length - 1].matches : h.matches;
+                            if ((a = C.pop()).isAlternator) {
+                                C.push(a), C = a.matches;
+                                var D = new n.default(!0), A = C.pop();
+                                C.push(D), C = D.matches, a = A;
                             }
-                            a.isGroup || (a = y([ a ])), T.push(a), T.push(E);
+                            a.isGroup || (a = b([ a ])), C.push(a), C.push(_);
                             break;
 
                           case i.alternatormarker:
-                            if (h.length > 0) {
-                                var A = (s = h[h.length - 1]).matches[s.matches.length - 1];
-                                u = s.openGroup && (void 0 === A.matches || !1 === A.isGroup && !1 === A.isAlternator) ? h.pop() : x(s.matches);
-                            } else u = x(p.matches);
-                            if (u.isAlternator) h.push(u); else if (u.alternatorGroup ? (l = h.pop(), u.alternatorGroup = !1) : l = new n.default(!1, !1, !1, !0), 
-                            l.matches.push(u), h.push(l), u.openGroup) {
-                                u.openGroup = !1;
-                                var j = new n.default(!0);
-                                j.alternatorGroup = !0, h.push(j);
+                            if (v.length > 0) {
+                                var j = (l = v[v.length - 1]).matches[l.matches.length - 1];
+                                c = l.openGroup && (void 0 === j.matches || !1 === j.isGroup && !1 === j.isAlternator) ? v.pop() : P(l.matches);
+                            } else c = P(h.matches);
+                            if (c.isAlternator) v.push(c); else if (c.alternatorGroup ? (u = v.pop(), c.alternatorGroup = !1) : u = new n.default(!1, !1, !1, !0), 
+                            u.matches.push(c), v.push(u), c.openGroup) {
+                                c.openGroup = !1;
+                                var B = new n.default(!0);
+                                B.alternatorGroup = !0, v.push(B);
                             }
                             break;
 
                           default:
-                            k();
+                            y();
                         }
                     }
-                    m && b();
-                    for (;h.length > 0; ) o = h.pop(), p.matches.push(o);
-                    p.matches.length > 0 && (!function e(a) {
+                    g && x();
+                    for (;v.length > 0; ) s = v.pop(), h.matches.push(s);
+                    h.matches.length > 0 && (!function e(a) {
                         a && a.matches && a.matches.forEach((function(n, r) {
                             var o = a.matches[r + 1];
                             (void 0 === o || void 0 === o.matches || !1 === o.isQuantifier) && n && n.isGroup && (n.isGroup = !1, 
-                            t || (g(n, i.groupmarker[0], 0), !0 !== n.openGroup && g(n, i.groupmarker[1]))), 
+                            t || (k(n, i.groupmarker[0], 0), !0 !== n.openGroup && k(n, i.groupmarker[1]))), 
                             e(n);
                         }));
-                    }(p), v.push(p));
+                    }(h), m.push(h));
                     (i.numericInput || i.isRTL) && function e(t) {
                         for (var a in t.matches = t.matches.reverse(), t.matches) if (Object.prototype.hasOwnProperty.call(t.matches, a)) {
                             var n = parseInt(a);
@@ -2021,11 +2021,11 @@
                         }
                         var o;
                         return t;
-                    }(v[0]);
-                    return v;
+                    }(m[0]);
+                    return m;
                 };
-                var a = r(i(4963)), n = r(i(9695));
-                function r(e) {
+                var a = o(i(4963)), n = o(i(9695)), r = o(i(2394));
+                function o(e) {
                     return e && e.__esModule ? e : {
                         default: e
                     };
