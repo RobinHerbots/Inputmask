@@ -313,4 +313,20 @@ export default function (qunit, Inputmask) {
 		assert.equal(testmask.value, "4509 0946 4748", "Result " + testmask.value);
 	});
 
+	qunit.test("a{+} XYZ 9 - #2529", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask({
+			mask: "a{+} XYZ 9"
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("abcd1");
+		$.caret(testmask, 0, testmask.value.length - 2);
+		$("#testmask").SendKey(keyCode.DELETE);
+		$("#testmask").Type("abcd");
+
+		assert.equal(testmask.value, "abcd XYZ 1", "Result " + testmask.value);
+	});
 };

@@ -14,6 +14,7 @@
 - clear masktemplate before submitting regardsless of the clearMaskOnLostFocus option
 
 ### Fixed
+- crash the input value #2529 - part 1
 - fix datetime with jitmasking - #2297
 - min and max not working in datetime for 12 Hours format i.e. dd/mm/yyyy hh:MM:ss TT #2297
 
