@@ -25,11 +25,11 @@ export default function (qunit, Inputmask) {
 
 		Inputmask({
 			mask: "99-99-99",
-			clearMaskOnLostFocus: false
+			clearMaskOnLostFocus: true
 		}).mask(testmask);
 		testmask.blur();
 		setTimeout(function () {
-			assert.equal(testmask.value, "", "Result " + testmask.value);
+			assert.equal(testmask.inputmask._valueGet(), "", "Result " + testmask.inputmask._valueGet());
 			done();
 		}, 0);
 	});
