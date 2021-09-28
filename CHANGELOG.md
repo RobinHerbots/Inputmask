@@ -3,6 +3,7 @@
 ## [5.0.7 - UNRELEASED]
 
 ### Addition
+- character substitution
 - extend definition options - #2524
   - optional
   - static
@@ -10,10 +11,13 @@
 - add casing definition option to the readme
 
 ### Updates
+- currency alias: add character substitution for the radixpoint
 - alias \\d to [0-9] in regex masks
 - clear masktemplate before submitting regardsless of the clearMaskOnLostFocus option
 
 ### Fixed
+- Cant type dot on iphone #2541
+- How can I replace the dot for comma while tipping? #2542
 - Issue with global Inputmask.prototype reference (easy fix) #2544
 - crash the input value #2529 - part 1
 - fix datetime with jitmasking - #2297

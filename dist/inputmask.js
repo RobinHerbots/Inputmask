@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.7-beta.17
+ * Version: 5.0.7-beta.18
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -86,7 +86,8 @@
                     importDataAttributes: !0,
                     shiftPositions: !0,
                     usePrototypeDefinitions: !0,
-                    validationEventTimeOut: 3e3
+                    validationEventTimeOut: 3e3,
+                    substitutes: {}
                 };
                 t.default = r;
             },
@@ -363,7 +364,7 @@
                         t.ignorable = i.ignorables.includes(p);
                     },
                     keypressEvent: function(e, t, i, a, o) {
-                        var u = this.inputmask || this, c = u.opts, f = u.dependencyLib, d = u.maskset, p = u.el, v = f(p), h = e.which || e.charCode || e.keyCode;
+                        var u = this.inputmask || this, c = u.opts, f = u.dependencyLib, d = u.maskset, p = u.el, v = f(p), h = e.keyCode;
                         if (!(!0 === t || e.ctrlKey && e.altKey) && (e.ctrlKey || e.metaKey || u.ignorable)) return h === r.default.ENTER && u.undoValue !== u._valueGet(!0) && (u.undoValue = u._valueGet(!0), 
                         setTimeout((function() {
                             v.trigger("change");
@@ -374,7 +375,7 @@
                                 begin: o,
                                 end: o
                             } : n.caret.call(u, p), k = String.fromCharCode(h);
-                            d.writeOutBuffer = !0;
+                            k = c.substitutes[k] || k, d.writeOutBuffer = !0;
                             var y = s.isValid.call(u, g, k, a, void 0, void 0, void 0, t);
                             if (!1 !== y && (n.resetMaskSet.call(u, !0), m = void 0 !== y.caret ? y.caret : n.seekNext.call(u, y.pos.begin ? y.pos.begin : y.pos), 
                             d.p = m), m = c.numericInput && void 0 === y.caret ? n.seekPrevious.call(u, m) : m, 
@@ -1168,7 +1169,8 @@
                                 null !== e.max && (e.max = e.max.toString().replace(new RegExp((0, r.default)(e.groupSeparator), "g"), ""), 
                                 "," === e.radixPoint && (e.max = e.max.replace(e.radixPoint, ".")), e.max = isFinite(e.max) ? parseFloat(e.max) : NaN, 
                                 isNaN(e.max) && (e.max = Number.MAX_VALUE)), e.parseMinMaxOptions = "done");
-                            }(e), n;
+                            }(e), "" !== e.radixPoint && (e.substitutes["." == e.radixPoint ? "," : "."] = e.radixPoint), 
+                            n;
                         },
                         _mask: function(e) {
                             return "(" + e.groupSeparator + "999){+|1}";

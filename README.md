@@ -1138,6 +1138,15 @@ Time to show html5 validation error on form submit.
 
 Default: 3000
 
+### substitutes
+Define character substitutes.
+```
+substitutes: {
+  ",": "."
+}
+```
+Default: {}
+
 ## General
 ### set a value and apply the mask
 this can be done with the traditional jquery.val function (all browsers) or JavaScript value property for browsers which implement lookupGetter or getOwnPropertyDescriptor
