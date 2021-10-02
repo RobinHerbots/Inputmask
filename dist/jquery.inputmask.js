@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.7-beta.18
+ * Version: 5.0.7-beta.21
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -276,8 +276,9 @@
                             if (!e.clipboardData || !e.clipboardData.getData) return !0;
                             r = s + e.clipboardData.getData("text/plain") + u;
                         }
-                        var f = r = r.split("");
+                        var f = r;
                         if (i.isRTL) {
+                            f = f.split("");
                             var d, p = c(n.getBufferTemplate.call(i));
                             try {
                                 for (p.s(); !(d = p.n()).done; ) {
@@ -289,6 +290,7 @@
                             } finally {
                                 p.f();
                             }
+                            f = f.join("");
                         }
                         if ("function" == typeof a.onBeforePaste) {
                             if (!1 === (f = a.onBeforePaste.call(i, f, a))) return !1;
@@ -345,7 +347,7 @@
                               case "insertReplacementText":
                                 h.data.forEach((function(e, i) {
                                     var n = new a.Event("keypress");
-                                    n.which = e.charCodeAt(0), t.ignorable = !1, d.keypressEvent.call(s, n);
+                                    n.keyCode = e.charCodeAt(0), t.ignorable = !1, d.keypressEvent.call(s, n);
                                 })), setTimeout((function() {
                                     t.$el.trigger("keyup");
                                 }), 0);
@@ -1262,11 +1264,13 @@
                                         refreshFromBuffer: !0,
                                         buffer: [ 0 ]
                                     });
-                                } else "" !== a.radixPoint && t[0] === a.radixPoint && (o && o.buffer ? o.buffer.shift() : (t.shift(), 
-                                o = {
-                                    refreshFromBuffer: !0,
-                                    buffer: n(t)
-                                }));
+                                } else if ("" !== a.radixPoint) {
+                                    t.indexOf(a.radixPoint) === a.suffix.length && (o && o.buffer ? o.buffer.splice(0, 1 + a.suffix.length) : (t.splice(0, 1 + a.suffix.length), 
+                                    o = {
+                                        refreshFromBuffer: !0,
+                                        buffer: n(t)
+                                    }));
+                                }
                                 if (a.enforceDigitsOnBlur) {
                                     var v = (o = o || {}) && o.buffer || t.slice().reverse();
                                     o.refreshFromBuffer = !0, o.buffer = c(v, a.digits, a, !0).reverse();
@@ -1402,7 +1406,7 @@
                     if (h.forEach((function(e, t) {
                         if (void 0 !== e) {
                             var a = new d.Event("_checkval");
-                            a.which = e.toString().charCodeAt(0), v += e;
+                            a.keyCode = e.toString().charCodeAt(0), v += e;
                             var n = o.getLastValidPosition.call(l, void 0, !0);
                             !function(e, t) {
                                 for (var i = r.getMaskTemplate.call(l, !0, 0).slice(e, o.seekNext.call(l, e, !1, !1)).join("").replace(/'/g, ""), a = i.indexOf(t); a > 0 && " " === i[a - 1]; ) a--;
@@ -1426,7 +1430,7 @@
                         var x, P, E = o.seekNext.call(l, -1, void 0, !1);
                         if (!s.isComplete.call(l, o.getBuffer.call(l)) && y.length <= E || s.isComplete.call(l, o.getBuffer.call(l)) && y.length > 0 && y.length !== E && 0 === y[0]) for (var S = E; void 0 !== (x = y.shift()); ) {
                             var w = new d.Event("_checkval");
-                            if ((P = c.validPositions[x]).generatedInput = !0, w.which = P.input.charCodeAt(0), 
+                            if ((P = c.validPositions[x]).generatedInput = !0, w.keyCode = P.input.charCodeAt(0), 
                             (g = u.EventHandlers.keypressEvent.call(l, w, !0, !1, i, S)) && void 0 !== g.pos && g.pos !== x && c.validPositions[g.pos] && !0 === c.validPositions[g.pos].match.static) y.push(g.pos); else if (!g) break;
                             S++;
                         }
@@ -2810,7 +2814,7 @@
                     }
                     var p = new c.Event("keypress");
                     for (a = e; a < t; a++) {
-                        p.which = d[a].toString().charCodeAt(0), r.ignorable = !1;
+                        p.keyCode = d[a].toString().charCodeAt(0), r.ignorable = !1;
                         var h = s.EventHandlers.keypressEvent.call(r, p, !0, !1, !1, n);
                         !1 !== h && void 0 !== h && (n = h.forwardPosition);
                     }
