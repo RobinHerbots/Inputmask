@@ -1075,7 +1075,7 @@ export default function (qunit, Inputmask) {
 		assert.equal(testmask.value, "30/mm/yyyy", "Result " + testmask.value);
 	});
 
-	qunit.test("leapyear bug - when placeholder is defined to space cant type 2 after type 20/0 - #2451", function (assert) {
+	qunit.test("leapyear bug - when placeholder is defined to space cant type 2 after type 29/0 - #2451", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");

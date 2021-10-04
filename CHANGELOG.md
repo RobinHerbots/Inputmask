@@ -16,6 +16,7 @@
 - clear masktemplate before submitting regardsless of the clearMaskOnLostFocus option
 
 ### Fixed
+- Issue with leapday #2546
 - Not removing the decimal separator in suffixed inputs #2511
 - Cant type dot on iphone #2541
 - How can I replace the dot for comma while tipping? #2542
