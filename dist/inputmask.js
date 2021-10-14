@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.7-beta.23
+ * Version: 5.0.7-beta.24
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -1561,7 +1561,7 @@
                             _++;
                         }
                     }
-                    t && p.call(l, e, o.getBuffer.call(l), g ? g.forwardPosition : l.caretPos.begin, n || new d.Event("checkval"), n && ("input" === n.type || "paste" === n.type) && l.undoValue !== l._valueGet(!0)), 
+                    t && p.call(l, e, o.getBuffer.call(l), g ? g.forwardPosition : l.caretPos.begin, n || new d.Event("checkval"), n && ("input" === n.type || "paste" === n.type) && l.undoValue !== o.getBuffer.call(l).join("")), 
                     f.skipOptionalPartCharacter = k;
                 }
                 function p(e, t, i, a, r) {
