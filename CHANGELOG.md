@@ -16,6 +16,7 @@
 - clear masktemplate before submitting regardsless of the clearMaskOnLostFocus option
 
 ### Fixed
+- The requested module './inputmask.js' does not provide an export named 'default' #2560
 - Issue with leapday #2546
 - Not removing the decimal separator in suffixed inputs #2511
 - Cant type dot on iphone #2541

@@ -95,6 +95,11 @@ var Inputmask = require('inputmask');
 import Inputmask from "inputmask";
 ```
 
+### ES6
+```
+import Inputmask from "inputmask.es6.js";
+```
+
 ## Usage
 ### via Inputmask class
 

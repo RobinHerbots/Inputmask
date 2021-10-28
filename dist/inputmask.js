@@ -3,14 +3,14 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.7-beta.24
+ * Version: 5.0.7-beta.27
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
         var i = t();
         for (var a in i) ("object" == typeof exports ? exports : e)[a] = i[a];
     }
-}(this, (function() {
+}(self, (function() {
     return function() {
         "use strict";
         var e = {
@@ -1049,9 +1049,14 @@
                         inputmode: "numeric"
                     },
                     email: {
-                        mask: "*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@-{1,63}.-{1,63}[.-{1,63}][.-{1,63}]",
+                        mask: function(e) {
+                            var t = "*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@-{1,63}.-{1,63}[.-{1,63}][.-{1,63}]";
+                            return void 0 !== e.separator ? "".concat(t, "(").concat(e.separator).concat(t, "){*}") : t;
+                        },
                         greedy: !1,
                         casing: "lower",
+                        separator: void 0,
+                        skipOptionalPartCharacter: "",
                         onBeforePaste: function(e, t) {
                             return (e = e.toLowerCase()).replace("mailto:", "");
                         },

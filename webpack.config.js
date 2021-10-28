@@ -42,11 +42,16 @@ module.exports = function (env, argv) {
 			"dist/inputmask.min": "./bundle.js",
 			"qunit/qunit": "./qunit/index.js"
 		},
+		// experiments: {
+		// 	outputModule: true,
+		// },
 		output: {
 			path: __dirname,
 			filename: "[name].js",
-			libraryTarget: "umd",
-			globalObject: "this"
+			library: {
+				type: "umd"
+			},
+			globalObject: "self"
 		},
 		externals: {
 			"jquery": {
