@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.7-beta.29
+ * Version: 5.0.7-beta.30
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -1051,7 +1051,7 @@
                     email: {
                         mask: function(e) {
                             var t = "*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@-{1,63}.-{1,63}[.-{1,63}][.-{1,63}]";
-                            return void 0 !== e.separator ? "".concat(t, "(").concat(e.separator).concat(t, "){*}") : t;
+                            return void 0 !== e.separator ? "".concat(t, "[").concat(e.separator).concat(t, "]") : t;
                         },
                         greedy: !1,
                         casing: "lower",
@@ -2933,7 +2933,7 @@
                                         void 0 === t && b.match.static && g === e.begin && p++;
                                         break;
                                     }
-                                    if (!m && E > s.maskLength) break;
+                                    if (!m && o.getBuffer.call(r), E > s.maskLength) break;
                                     E++;
                                 }
                                 "" == n.getTest.call(r, E).match.def && (m = !1), E = P;
