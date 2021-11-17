@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.7-beta.30
+ * Version: 5.0.7-beta.32
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -755,8 +755,8 @@
                         },
                         placeholder: "",
                         inputFormat: "isoDateTime",
-                        displayFormat: void 0,
-                        outputFormat: void 0,
+                        displayFormat: null,
+                        outputFormat: null,
                         min: null,
                         max: null,
                         skipOptionalPartCharacter: "",
@@ -925,11 +925,11 @@
                     email: {
                         mask: function(e) {
                             var t = "*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@-{1,63}.-{1,63}[.-{1,63}][.-{1,63}]";
-                            return void 0 !== e.separator ? "".concat(t, "[").concat(e.separator).concat(t, "]") : t;
+                            return e.separator ? "".concat(t, "[").concat(e.separator).concat(t, "]") : t;
                         },
                         greedy: !1,
                         casing: "lower",
-                        separator: void 0,
+                        separator: null,
                         skipOptionalPartCharacter: "",
                         onBeforePaste: function(e, t) {
                             return (e = e.toLowerCase()).replace("mailto:", "");
