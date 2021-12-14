@@ -3,6 +3,7 @@
 ## [5.0.7 - UNRELEASED]
 
 ### Addition
+- Correctly handle nested optionals (email alias)
 - character substitution
 - extend definition options - #2524
   - optional

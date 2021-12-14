@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.7-beta.32
+ * Version: 5.0.7-beta.34
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -924,12 +924,14 @@
                     },
                     email: {
                         mask: function(e) {
-                            var t = "*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@-{1,63}.-{1,63}[.-{1,63}][.-{1,63}]";
-                            return e.separator ? "".concat(t, "[").concat(e.separator).concat(t, "]") : t;
+                            var t = "*{1,64}[.*{1,64}][.*{1,64}][.*{1,63}]@-{1,63}.-{1,63}[.-{1,63}][.-{1,63}]", i = t;
+                            if (e.separator) for (var a = 0; a < e.quantifier; a++) i += "[".concat(e.separator).concat(t, "]");
+                            return i;
                         },
                         greedy: !1,
                         casing: "lower",
                         separator: null,
+                        quantifier: 5,
                         skipOptionalPartCharacter: "",
                         onBeforePaste: function(e, t) {
                             return (e = e.toLowerCase()).replace("mailto:", "");
@@ -2365,7 +2367,7 @@
                     t = t || 0;
                     var p, h, v, m, g = [], k = 0;
                     do {
-                        if (!0 === e && c.validPositions[k]) v = n && !0 === c.validPositions[k].match.optionality && void 0 === c.validPositions[k + 1] && (!0 === c.validPositions[k].generatedInput || c.validPositions[k].input == o.skipOptionalPartCharacter && k > 0) ? u.call(r, k, d.call(r, k, p, k - 1)) : c.validPositions[k], 
+                        if (!0 === e && c.validPositions[k]) v = n && c.validPositions[k].match.optionality && void 0 === c.validPositions[k + 1] && (!0 === c.validPositions[k].generatedInput || c.validPositions[k].input == o.skipOptionalPartCharacter && k > 0) ? u.call(r, k, d.call(r, k, p, k - 1)) : c.validPositions[k], 
                         h = v.match, p = v.locator.slice(), g.push(!0 === i ? v.input : !1 === i ? h.nativeDef : s.call(r, k, h)); else {
                             v = l.call(r, k, p, k - 1), h = v.match, p = v.locator.slice();
                             var y = !0 !== a && (!1 !== o.jitMasking ? o.jitMasking : h.jit);
@@ -2406,16 +2408,22 @@
                     return this.maskset.validPositions[e] || u.call(this, e, d.call(this, e, t ? t.slice() : t, i));
                 }
                 function u(e, t) {
-                    var i = this.opts;
+                    var i = this.opts, a = function(e, t) {
+                        var i = 0, a = !1;
+                        t.forEach((function(e) {
+                            e.match.optionality && (0 !== i && i !== e.match.optionality && (a = !0), (0 === i || i > e.match.optionality) && (i = e.match.optionality));
+                        })), i && (0 == e || 1 == t.length ? i = 0 : a || (i = 0));
+                        return i;
+                    }(e, t);
                     e = e > 0 ? e - 1 : 0;
-                    for (var a, n, o, s = r(c.call(this, e)), l = 0; l < t.length; l++) {
-                        var u = t[l];
-                        a = r(u, s.length);
-                        var f = Math.abs(a - s);
-                        (void 0 === n || "" !== a && f < n || o && !i.greedy && o.match.optionality && "master" === o.match.newBlockMarker && (!u.match.optionality || !u.match.newBlockMarker) || o && o.match.optionalQuantifier && !u.match.optionalQuantifier) && (n = f, 
-                        o = u);
+                    for (var n, o, s, l = r(c.call(this, e)), u = 0; u < t.length; u++) {
+                        var f = t[u];
+                        n = r(f, l.length);
+                        var d = Math.abs(n - l);
+                        (void 0 === o || "" !== n && d < o || s && !i.greedy && s.match.optionality && s.match.optionality - a > 0 && "master" === s.match.newBlockMarker && (!f.match.optionality || f.match.optionality - a < 1 || !f.match.newBlockMarker) || s && s.match.optionalQuantifier && !f.match.optionalQuantifier) && (o = d, 
+                        s = f);
                     }
-                    return o;
+                    return s;
                 }
                 function c(e, t) {
                     var i = this.maskset;
@@ -2430,19 +2438,19 @@
                     return e.match.def === t.match.nativeDef || !(!(i.regex || e.match.fn instanceof RegExp && t.match.fn instanceof RegExp) || !0 === e.match.static || !0 === t.match.static) && -1 !== a(t.match.fn.toString().replace(/[[\]/]/g, "")).indexOf(a(e.match.fn.toString().replace(/[[\]/]/g, "")));
                 }
                 function d(e, t, i) {
-                    var a, r = this, o = this.dependencyLib, s = this.maskset, l = this.opts, c = this.el, d = s.maskToken, p = t ? i : 0, h = t ? t.slice() : [ 0 ], v = [], m = !1, g = t ? t.join("") : "";
-                    function k(t, i, r, o) {
-                        function u(r, o, d) {
-                            function h(e, t) {
+                    var a, r, o = this, s = this.dependencyLib, l = this.maskset, c = this.opts, d = this.el, p = l.maskToken, h = t ? i : 0, v = t ? t.slice() : [ 0 ], m = [], g = !1, k = t ? t.join("") : "";
+                    function y(t, i, r, o) {
+                        function s(r, o, u) {
+                            function p(e, t) {
                                 var i = 0 === t.matches.indexOf(e);
                                 return i || t.matches.every((function(a, n) {
-                                    return !0 === a.isQuantifier ? i = h(e, t.matches[n - 1]) : Object.prototype.hasOwnProperty.call(a, "matches") && (i = h(e, a)), 
+                                    return !0 === a.isQuantifier ? i = p(e, t.matches[n - 1]) : Object.prototype.hasOwnProperty.call(a, "matches") && (i = p(e, a)), 
                                     !i;
                                 })), i;
                             }
-                            function y(e, t, i) {
+                            function v(e, t, i) {
                                 var a, n;
-                                if ((s.tests[e] || s.validPositions[e]) && (s.tests[e] || [ s.validPositions[e] ]).every((function(e, r) {
+                                if ((l.tests[e] || l.validPositions[e]) && (l.tests[e] || [ l.validPositions[e] ]).every((function(e, r) {
                                     if (e.mloc[t]) return a = e, !1;
                                     var o = void 0 !== i ? i : e.alternation, s = void 0 !== e.locator[o] ? e.locator[o].toString().indexOf(t) : -1;
                                     return (void 0 === n || s < n) && -1 !== s && (a = e, n = s), !0;
@@ -2450,7 +2458,7 @@
                                     var r = a.locator[a.alternation];
                                     return (a.mloc[t] || a.mloc[r] || a.locator).slice((void 0 !== i ? i : a.alternation) + 1);
                                 }
-                                return void 0 !== i ? y(e, t) : void 0;
+                                return void 0 !== i ? v(e, t) : void 0;
                             }
                             function b(e, t) {
                                 var i = e.alternation, a = void 0 === t || i === t.alternation && -1 === e.locator[i].toString().indexOf(t.locator[i]);
@@ -2478,44 +2486,44 @@
                                 for (var i = e.alternation + 1; i < e.locator.length; i++) if (e.locator[i] !== t.locator[i]) return !1;
                                 return !0;
                             }
-                            if (p > e + l._maxTestPos) throw "Inputmask: There is probably an error in your mask definition or in the code. Create an issue on github with an example of the mask you are using. " + s.mask;
-                            if (p === e && void 0 === r.matches) {
-                                if (v.push({
+                            if (h > e + c._maxTestPos) throw "Inputmask: There is probably an error in your mask definition or in the code. Create an issue on github with an example of the mask you are using. " + l.mask;
+                            if (h === e && void 0 === r.matches) {
+                                if (m.push({
                                     match: r,
                                     locator: o.reverse(),
-                                    cd: g,
+                                    cd: k,
                                     mloc: {}
-                                }), !0 !== r.optionality || void 0 !== d || !(l.definitions && l.definitions[r.nativeDef] && l.definitions[r.nativeDef].optional || n.default.prototype.definitions[r.nativeDef] && n.default.prototype.definitions[r.nativeDef].optional)) return !0;
-                                m = !0, p = e;
+                                }), !r.optionality || void 0 !== u || !(c.definitions && c.definitions[r.nativeDef] && c.definitions[r.nativeDef].optional || n.default.prototype.definitions[r.nativeDef] && n.default.prototype.definitions[r.nativeDef].optional)) return !0;
+                                g = !0, h = e;
                             } else if (void 0 !== r.matches) {
-                                if (r.isGroup && d !== r) {
-                                    if (r = u(t.matches[t.matches.indexOf(r) + 1], o, d)) return !0;
+                                if (r.isGroup && u !== r) {
+                                    if (r = s(t.matches[t.matches.indexOf(r) + 1], o, u)) return !0;
                                 } else if (r.isOptional) {
-                                    var P = r, E = v.length;
-                                    if (r = k(r, i, o, d)) {
-                                        if (v.forEach((function(e, t) {
-                                            t >= E && (e.match.optionality = !0);
-                                        })), a = v[v.length - 1].match, void 0 !== d || !h(a, P)) return !0;
-                                        m = !0, p = e;
+                                    var P = r, E = m.length;
+                                    if (r = y(r, i, o, u)) {
+                                        if (m.forEach((function(e, t) {
+                                            t >= E && (e.match.optionality = e.match.optionality ? e.match.optionality + 1 : 1);
+                                        })), a = m[m.length - 1].match, void 0 !== u || !p(a, P)) return !0;
+                                        g = !0, h = e;
                                     }
                                 } else if (r.isAlternator) {
-                                    var S, w = r, _ = [], M = v.slice(), O = o.length, T = !1, A = i.length > 0 ? i.shift() : -1;
+                                    var S, w = r, _ = [], M = m.slice(), O = o.length, T = !1, A = i.length > 0 ? i.shift() : -1;
                                     if (-1 === A || "string" == typeof A) {
-                                        var C, D = p, j = i.slice(), B = [];
+                                        var C, D = h, j = i.slice(), B = [];
                                         if ("string" == typeof A) B = A.split(","); else for (C = 0; C < w.matches.length; C++) B.push(C.toString());
-                                        if (void 0 !== s.excludes[e]) {
-                                            for (var R = B.slice(), L = 0, I = s.excludes[e].length; L < I; L++) {
-                                                var F = s.excludes[e][L].toString().split(":");
+                                        if (void 0 !== l.excludes[e]) {
+                                            for (var R = B.slice(), L = 0, I = l.excludes[e].length; L < I; L++) {
+                                                var F = l.excludes[e][L].toString().split(":");
                                                 o.length == F[1] && B.splice(B.indexOf(F[0]), 1);
                                             }
-                                            0 === B.length && (delete s.excludes[e], B = R);
+                                            0 === B.length && (delete l.excludes[e], B = R);
                                         }
-                                        (!0 === l.keepStatic || isFinite(parseInt(l.keepStatic)) && D >= l.keepStatic) && (B = B.slice(0, 1));
+                                        (!0 === c.keepStatic || isFinite(parseInt(c.keepStatic)) && D >= c.keepStatic) && (B = B.slice(0, 1));
                                         for (var N = 0; N < B.length; N++) {
-                                            C = parseInt(B[N]), v = [], i = "string" == typeof A && y(p, C, O) || j.slice();
+                                            C = parseInt(B[N]), m = [], i = "string" == typeof A && v(h, C, O) || j.slice();
                                             var V = w.matches[C];
-                                            if (V && u(V, [ C ].concat(o), d)) r = !0; else if (0 === N && (T = !0), V && V.matches && V.matches.length > w.matches[0].matches.length) break;
-                                            S = v.slice(), p = D, v = [];
+                                            if (V && s(V, [ C ].concat(o), u)) r = !0; else if (0 === N && (T = !0), V && V.matches && V.matches.length > w.matches[0].matches.length) break;
+                                            S = m.slice(), h = D, m = [];
                                             for (var G = 0; G < S.length; G++) {
                                                 var H = S[G], K = !1;
                                                 H.match.jit = H.match.jit || T, H.alternation = H.alternation || O, b(H);
@@ -2526,16 +2534,16 @@
                                                             K = !0, b($, H);
                                                             break;
                                                         }
-                                                        if (f(H, $, l)) {
+                                                        if (f(H, $, c)) {
                                                             b(H, $) && (K = !0, _.splice(_.indexOf($), 0, H));
                                                             break;
                                                         }
-                                                        if (f($, H, l)) {
+                                                        if (f($, H, c)) {
                                                             b($, H);
                                                             break;
                                                         }
-                                                        if (Y = $, !0 === (W = H).match.static && !0 !== Y.match.static && Y.match.fn.test(W.match.def, s, e, !1, l, !1)) {
-                                                            x(H, $) || void 0 !== c.inputmask.userOptions.keepStatic ? b(H, $) && (K = !0, _.splice(_.indexOf($), 0, H)) : l.keepStatic = !0;
+                                                        if (Y = $, !0 === (W = H).match.static && !0 !== Y.match.static && Y.match.fn.test(W.match.def, l, e, !1, c, !1)) {
+                                                            x(H, $) || void 0 !== d.inputmask.userOptions.keepStatic ? b(H, $) && (K = !0, _.splice(_.indexOf($), 0, H)) : c.keepStatic = !0;
                                                             break;
                                                         }
                                                     }
@@ -2543,45 +2551,45 @@
                                                 K || _.push(H);
                                             }
                                         }
-                                        v = M.concat(_), p = e, m = v.length > 0, r = _.length > 0, i = j.slice();
-                                    } else r = u(w.matches[A] || t.matches[A], [ A ].concat(o), d);
+                                        m = M.concat(_), h = e, g = m.length > 0, r = _.length > 0, i = j.slice();
+                                    } else r = s(w.matches[A] || t.matches[A], [ A ].concat(o), u);
                                     if (r) return !0;
-                                } else if (r.isQuantifier && d !== t.matches[t.matches.indexOf(r) - 1]) for (var q = r, z = i.length > 0 ? i.shift() : 0; z < (isNaN(q.quantifier.max) ? z + 1 : q.quantifier.max) && p <= e; z++) {
+                                } else if (r.isQuantifier && u !== t.matches[t.matches.indexOf(r) - 1]) for (var q = r, z = i.length > 0 ? i.shift() : 0; z < (isNaN(q.quantifier.max) ? z + 1 : q.quantifier.max) && h <= e; z++) {
                                     var Q = t.matches[t.matches.indexOf(q) - 1];
-                                    if (r = u(Q, [ z ].concat(o), Q)) {
-                                        if ((a = v[v.length - 1].match).optionalQuantifier = z >= q.quantifier.min, a.jit = (z + 1) * (Q.matches.indexOf(a) + 1) > q.quantifier.jit, 
-                                        a.optionalQuantifier && h(a, Q)) {
-                                            m = !0, p = e;
+                                    if (r = s(Q, [ z ].concat(o), Q)) {
+                                        if ((a = m[m.length - 1].match).optionalQuantifier = z >= q.quantifier.min, a.jit = (z + 1) * (Q.matches.indexOf(a) + 1) > q.quantifier.jit, 
+                                        a.optionalQuantifier && p(a, Q)) {
+                                            g = !0, h = e;
                                             break;
                                         }
-                                        return a.jit && (s.jitOffset[e] = Q.matches.length - Q.matches.indexOf(a)), !0;
+                                        return a.jit && (l.jitOffset[e] = Q.matches.length - Q.matches.indexOf(a)), !0;
                                     }
-                                } else if (r = k(r, i, o, d)) return !0;
-                            } else p++;
+                                } else if (r = y(r, i, o, u)) return !0;
+                            } else h++;
                             var W, Y;
                         }
-                        for (var d = i.length > 0 ? i.shift() : 0; d < t.matches.length; d++) if (!0 !== t.matches[d].isQuantifier) {
-                            var h = u(t.matches[d], [ d ].concat(r), o);
-                            if (h && p === e) return h;
-                            if (p > e) break;
+                        for (var u = i.length > 0 ? i.shift() : 0; u < t.matches.length; u++) if (!0 !== t.matches[u].isQuantifier) {
+                            var p = s(t.matches[u], [ u ].concat(r), o);
+                            if (p && h === e) return p;
+                            if (h > e) break;
                         }
                     }
                     if (e > -1) {
                         if (void 0 === t) {
-                            for (var y, b = e - 1; void 0 === (y = s.validPositions[b] || s.tests[b]) && b > -1; ) b--;
-                            void 0 !== y && b > -1 && (h = function(e, t) {
+                            for (var b, x = e - 1; void 0 === (b = l.validPositions[x] || l.tests[x]) && x > -1; ) x--;
+                            void 0 !== b && x > -1 && (v = function(e, t) {
                                 var i, a = [];
-                                return Array.isArray(t) || (t = [ t ]), t.length > 0 && (void 0 === t[0].alternation || !0 === l.keepStatic ? 0 === (a = u.call(r, e, t.slice()).locator.slice()).length && (a = t[0].locator.slice()) : t.forEach((function(e) {
+                                return Array.isArray(t) || (t = [ t ]), t.length > 0 && (void 0 === t[0].alternation || !0 === c.keepStatic ? 0 === (a = u.call(o, e, t.slice()).locator.slice()).length && (a = t[0].locator.slice()) : t.forEach((function(e) {
                                     "" !== e.def && (0 === a.length ? (i = e.alternation, a = e.locator.slice()) : e.locator[i] && -1 === a[i].toString().indexOf(e.locator[i]) && (a[i] += "," + e.locator[i]));
                                 }))), a;
-                            }(b, y), g = h.join(""), p = b);
+                            }(x, b), k = v.join(""), h = x);
                         }
-                        if (s.tests[e] && s.tests[e][0].cd === g) return s.tests[e];
-                        for (var x = h.shift(); x < d.length; x++) {
-                            if (k(d[x], h, [ x ]) && p === e || p > e) break;
+                        if (l.tests[e] && l.tests[e][0].cd === k) return l.tests[e];
+                        for (var P = v.shift(); P < p.length; P++) {
+                            if (y(p[P], v, [ P ]) && h === e || h > e) break;
                         }
                     }
-                    return (0 === v.length || m) && v.push({
+                    return (0 === m.length || g) && m.push({
                         match: {
                             fn: null,
                             static: !0,
@@ -2592,9 +2600,11 @@
                         },
                         locator: [],
                         mloc: {},
-                        cd: g
-                    }), void 0 !== t && s.tests[e] ? o.extend(!0, [], v) : (s.tests[e] = o.extend(!0, [], v), 
-                    s.tests[e]);
+                        cd: k
+                    }), void 0 !== t && l.tests[e] ? r = s.extend(!0, [], m) : (l.tests[e] = s.extend(!0, [], m), 
+                    r = l.tests[e]), m.forEach((function(e) {
+                        e.match.optionality = !1;
+                    })), r;
                 }
             },
             7215: function(e, t, i) {
