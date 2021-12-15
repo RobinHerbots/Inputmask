@@ -12,11 +12,13 @@
 - add casing definition option to the readme
 
 ### Updates
+- fix error in mask-lexer for \\w in regex
 - currency alias: add character substitution for the radixpoint
 - alias \\d to [0-9] in regex masks
 - clear masktemplate before submitting regardsless of the clearMaskOnLostFocus option
 
 ### Fixed
+- Uncaught InternalError: too much recursion freezes the browser #2570 (Regex issue)
 - Different behaviour configuration by attribute vs initialization #2530
 - The requested module './inputmask.js' does not provide an export named 'default' #2560
 - Issue with leapday #2546
