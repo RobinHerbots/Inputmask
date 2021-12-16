@@ -203,7 +203,7 @@ $(document).ready(function(){
 ```
 
 ### Optional masks
-It is possible to define some parts in the mask is optional.  This is done by using [ ].
+It is possible to define some parts in the mask as optional.  This is done by using [ ].
 
 Example:
 
