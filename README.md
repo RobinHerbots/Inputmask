@@ -7,7 +7,7 @@ This will be appreciated very much.
 
 [![donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZNR3EB6JTMMSS)
   
-![npm](https://img.shields.io/npm/v/inputmask) ![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/npm/inputmask)
+![npm](https://img.shields.io/npm/v/inputmask) ![npm (tag)](https://img.shields.io/npm/v/inputmask/next) ![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/npm/inputmask)
 
 Inputmask is a javascript library that creates an input mask.  Inputmask can run against vanilla javascript, jQuery, and jqlite.
 
