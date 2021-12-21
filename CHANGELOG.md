@@ -20,6 +20,7 @@
 - clear masktemplate before submitting regardsless of the clearMaskOnLostFocus option
 
 ### Fixed
+- Fix backspace bug with insertMode: false #2572
 - InsertMode toggle not functioning #2565
 - Uncaught InternalError: too much recursion freezes the browser #2570 (Regex issue)
 - Different behaviour configuration by attribute vs initialization #2530
