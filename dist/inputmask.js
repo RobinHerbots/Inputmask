@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.7-beta.36
+ * Version: 5.0.7-beta.37
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -1025,7 +1025,7 @@
                         tabThrough: !0
                     },
                     ip: {
-                        mask: "i[i[i]].j[j[j]].k[k[k]].l[l[l]]",
+                        mask: "i{1,3}.j{1,3}.k{1,3}.l{1,3}",
                         definitions: {
                             i: {
                                 validator: s
@@ -2427,7 +2427,7 @@
                     value: !0
                 }), t.determineTestTemplate = u, t.getDecisionTaker = o, t.getMaskTemplate = function(e, t, i, a, n) {
                     var r = this, o = this.opts, c = this.maskset, f = o.greedy;
-                    n && (o.greedy = !1);
+                    n && o.greedy && (o.greedy = !1, r.maskset.tests = {});
                     t = t || 0;
                     var p, v, h, m, g = [], k = 0;
                     do {
@@ -2446,6 +2446,7 @@
                 var a, n = (a = i(2394)) && a.__esModule ? a : {
                     default: a
                 };
+                i(8711);
                 function r(e, t) {
                     var i = (null != e.alternation ? e.mloc[o(e)] : e.locator).join("");
                     if ("" !== i) for (;i.length < t; ) i += "0";
@@ -2480,11 +2481,13 @@
                         return i;
                     }(e, t);
                     e = e > 0 ? e - 1 : 0;
-                    for (var n, o, l, s = r(c.call(this, e)), u = 0; u < t.length; u++) {
+                    var n, o, l, s = r(c.call(this, e));
+                    i.greedy && t.length > 1 && "" === t[t.length - 1].match.def && t.pop();
+                    for (var u = 0; u < t.length; u++) {
                         var f = t[u];
                         n = r(f, s.length);
                         var d = Math.abs(n - s);
-                        (void 0 === o || "" !== n && d < o || l && !i.greedy && l.match.optionality && l.match.optionality - a > 0 && "master" === l.match.newBlockMarker && (!f.match.optionality || f.match.optionality - a < 1 || !f.match.newBlockMarker) || l && l.match.optionalQuantifier && !f.match.optionalQuantifier) && (o = d, 
+                        (void 0 === o || "" !== n && d < o || l && !i.greedy && l.match.optionality && l.match.optionality - a > 0 && "master" === l.match.newBlockMarker && (!f.match.optionality || f.match.optionality - a < 1 || !f.match.newBlockMarker) || l && !i.greedy && l.match.optionalQuantifier && !f.match.optionalQuantifier) && (o = d, 
                         l = f);
                     }
                     return l;

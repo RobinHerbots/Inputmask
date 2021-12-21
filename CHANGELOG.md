@@ -12,6 +12,8 @@
 - add casing definition option to the readme
 
 ### Updates
+- update ip alias to correctly handle the greedy: true option
+- fix greedy option with quantifiers
 - fix error in mask-lexer for \\w in regex
 - currency alias: add character substitution for the radixpoint
 - alias \\d to [0-9] in regex masks
