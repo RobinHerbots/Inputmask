@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.7-beta.38
+ * Version: 5.0.7-beta.39
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -665,7 +665,10 @@
                     var t = this.getHours();
                     e.toLowerCase().includes("p") ? this.setHours(t + 12) : e.toLowerCase().includes("a") && t >= 12 && this.setHours(t - 12);
                 }
-                function k() {}
+                function k() {
+                    var e = this.getHours();
+                    return (e = e || 12) >= 12 ? "PM" : "AM";
+                }
                 function y(e) {
                     var t = new RegExp("\\d+$").exec(e[0]);
                     if (t && void 0 !== t[0]) {
