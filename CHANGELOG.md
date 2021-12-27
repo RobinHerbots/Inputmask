@@ -20,6 +20,7 @@
 - clear masktemplate before submitting regardsless of the clearMaskOnLostFocus option
 
 ### Fixed
+- Numeric shortcut not working for decimal places #2553
 - Fix backspace bug with insertMode: false #2572
 - InsertMode toggle not functioning #2565
 - Uncaught InternalError: too much recursion freezes the browser #2570 (Regex issue)

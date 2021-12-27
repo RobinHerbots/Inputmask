@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.7-beta.40
+ * Version: 5.0.7-beta.41
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -1129,8 +1129,8 @@
                         roundingFN: Math.round,
                         inputmode: "decimal",
                         shortcuts: {
-                            k: "000",
-                            m: "000000"
+                            k: "1000",
+                            m: "1000000"
                         },
                         placeholder: "0",
                         greedy: !1,
@@ -1163,28 +1163,17 @@
                             }
                         },
                         preValidation: function(e, t, i, a, n, r, o, s) {
-                            var l;
                             if (!1 !== n.__financeInput && i === n.radixPoint) return !1;
-                            if (l = n.shortcuts && n.shortcuts[i]) {
-                                if (l.length > 1) for (var u = [], c = 0; c < l.length; c++) u.push({
-                                    pos: t + c,
-                                    c: l[c],
-                                    strict: !1
-                                });
-                                return {
-                                    insert: u
-                                };
-                            }
-                            var p = e.indexOf(n.radixPoint), h = t;
+                            var l = e.indexOf(n.radixPoint), u = t;
                             if (t = function(e, t, i, a, n) {
                                 return n._radixDance && n.numericInput && t !== n.negationSymbol.back && e <= i && (i > 0 || t == n.radixPoint) && (void 0 === a.validPositions[e - 1] || a.validPositions[e - 1].input !== n.negationSymbol.back) && (e -= 1), 
                                 e;
-                            }(t, i, p, r, n), "-" === i || i === n.negationSymbol.front) {
+                            }(t, i, l, r, n), "-" === i || i === n.negationSymbol.front) {
                                 if (!0 !== n.allowMinus) return !1;
-                                var v = !1, m = d("+", r), g = d("-", r);
-                                return -1 !== m && (v = [ m, g ]), !1 !== v ? {
-                                    remove: v,
-                                    caret: h - n.negationSymbol.back.length
+                                var c = !1, p = d("+", r), h = d("-", r);
+                                return -1 !== p && (c = [ p, h ]), !1 !== c ? {
+                                    remove: c,
+                                    caret: u - n.negationSymbol.back.length
                                 } : {
                                     insert: [ {
                                         pos: f.call(this, "+", r),
@@ -1195,37 +1184,37 @@
                                         c: n.negationSymbol.back,
                                         fromIsValid: void 0
                                     } ],
-                                    caret: h + n.negationSymbol.back.length
+                                    caret: u + n.negationSymbol.back.length
                                 };
                             }
                             if (i === n.groupSeparator) return {
-                                caret: h
+                                caret: u
                             };
                             if (s) return !0;
-                            if (-1 !== p && !0 === n._radixDance && !1 === a && i === n.radixPoint && void 0 !== n.digits && (isNaN(n.digits) || parseInt(n.digits) > 0) && p !== t) return {
-                                caret: n._radixDance && t === p - 1 ? p + 1 : p
+                            if (-1 !== l && !0 === n._radixDance && !1 === a && i === n.radixPoint && void 0 !== n.digits && (isNaN(n.digits) || parseInt(n.digits) > 0) && l !== t) return {
+                                caret: n._radixDance && t === l - 1 ? l + 1 : l
                             };
                             if (!1 === n.__financeInput) if (a) {
                                 if (n.digitsOptional) return {
                                     rewritePosition: o.end
                                 };
                                 if (!n.digitsOptional) {
-                                    if (o.begin > p && o.end <= p) return i === n.radixPoint ? {
+                                    if (o.begin > l && o.end <= l) return i === n.radixPoint ? {
                                         insert: {
-                                            pos: p + 1,
+                                            pos: l + 1,
                                             c: "0",
                                             fromIsValid: !0
                                         },
-                                        rewritePosition: p
+                                        rewritePosition: l
                                     } : {
-                                        rewritePosition: p + 1
+                                        rewritePosition: l + 1
                                     };
-                                    if (o.begin < p) return {
+                                    if (o.begin < l) return {
                                         rewritePosition: o.begin - 1
                                     };
                                 }
                             } else if (!n.showMaskOnHover && !n.showMaskOnFocus && !n.digitsOptional && n.digits > 0 && "" === this.__valueGet.call(this.el)) return {
-                                rewritePosition: p
+                                rewritePosition: l
                             };
                             return {
                                 rewritePosition: t
@@ -1334,28 +1323,30 @@
                             return o;
                         },
                         onKeyDown: function(e, t, i, a) {
-                            var r, o = l(this);
+                            var r, o, s = l(this), u = String.fromCharCode(e.keyCode).toLowerCase();
+                            if ((o = a.shortcuts && a.shortcuts[u]) && o.length > 1) return this.inputmask.__valueSet.call(this, parseFloat(this.inputmask.unmaskedvalue()) * parseInt(o)), 
+                            s.trigger("setvalue"), !1;
                             if (e.ctrlKey) switch (e.keyCode) {
                               case n.default.UP:
                                 return this.inputmask.__valueSet.call(this, parseFloat(this.inputmask.unmaskedvalue()) + parseInt(a.step)), 
-                                o.trigger("setvalue"), !1;
+                                s.trigger("setvalue"), !1;
 
                               case n.default.DOWN:
                                 return this.inputmask.__valueSet.call(this, parseFloat(this.inputmask.unmaskedvalue()) - parseInt(a.step)), 
-                                o.trigger("setvalue"), !1;
+                                s.trigger("setvalue"), !1;
                             }
                             if (!e.shiftKey && (e.keyCode === n.default.DELETE || e.keyCode === n.default.BACKSPACE || e.keyCode === n.default.BACKSPACE_SAFARI) && i.begin !== t.length) {
                                 if (t[e.keyCode === n.default.DELETE ? i.begin - 1 : i.end] === a.negationSymbol.front) return r = t.slice().reverse(), 
                                 "" !== a.negationSymbol.front && r.shift(), "" !== a.negationSymbol.back && r.pop(), 
-                                o.trigger("setvalue", [ r.join(""), i.begin ]), !1;
+                                s.trigger("setvalue", [ r.join(""), i.begin ]), !1;
                                 if (!0 === a._radixDance) {
-                                    var s = t.indexOf(a.radixPoint);
+                                    var f = t.indexOf(a.radixPoint);
                                     if (a.digitsOptional) {
-                                        if (0 === s) return (r = t.slice().reverse()).pop(), o.trigger("setvalue", [ r.join(""), i.begin >= r.length ? r.length : i.begin ]), 
+                                        if (0 === f) return (r = t.slice().reverse()).pop(), s.trigger("setvalue", [ r.join(""), i.begin >= r.length ? r.length : i.begin ]), 
                                         !1;
-                                    } else if (-1 !== s && (i.begin < s || i.end < s || e.keyCode === n.default.DELETE && i.begin === s)) return i.begin !== i.end || e.keyCode !== n.default.BACKSPACE && e.keyCode !== n.default.BACKSPACE_SAFARI || i.begin++, 
+                                    } else if (-1 !== f && (i.begin < f || i.end < f || e.keyCode === n.default.DELETE && i.begin === f)) return i.begin !== i.end || e.keyCode !== n.default.BACKSPACE && e.keyCode !== n.default.BACKSPACE_SAFARI || i.begin++, 
                                     (r = t.slice().reverse()).splice(r.length - i.begin, i.begin - i.end + 1), r = c(r, a.digits, a).join(""), 
-                                    o.trigger("setvalue", [ r, i.begin >= r.length ? s + 1 : i.begin ]), !1;
+                                    s.trigger("setvalue", [ r, i.begin >= r.length ? f + 1 : i.begin ]), !1;
                                 }
                             }
                         }
