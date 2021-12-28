@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.7-beta.41
+ * Version: 5.0.7-beta.42
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -2016,7 +2016,7 @@
                             break;
 
                           case i.alternatormarker:
-                            if (v.length > 0) {
+                            if (null === i.keepStatic && (i.keepStatic = !0), v.length > 0) {
                                 var j = (l = v[v.length - 1]).matches[l.matches.length - 1];
                                 c = l.openGroup && (void 0 === j.matches || !1 === j.isGroup && !1 === j.isAlternator) ? v.pop() : P(l.matches);
                             } else c = P(h.matches);
@@ -2084,7 +2084,6 @@
                     "function" == typeof e.mask && (e.mask = e.mask(e));
                     if (Array.isArray(e.mask)) {
                         if (e.mask.length > 1) {
-                            null === e.keepStatic && (e.keepStatic = !0);
                             var o = e.groupmarker[0];
                             return (e.isRTL ? e.mask.reverse() : e.mask).forEach((function(t) {
                                 o.length > 1 && (o += e.groupmarker[1] + e.alternatormarker + e.groupmarker[0]), 
@@ -2093,8 +2092,8 @@
                         }
                         e.mask = e.mask.pop();
                     }
-                    null === e.keepStatic && (e.keepStatic = !1);
                     i = e.mask && void 0 !== e.mask.mask && "function" != typeof e.mask.mask ? n(e.mask.mask, e.mask, e) : n(e.mask, e.mask, e);
+                    null === e.keepStatic && (e.keepStatic = !1);
                     return i;
                 };
                 var a = o(i(3287)), n = o(i(9695)), r = o(i(2394));

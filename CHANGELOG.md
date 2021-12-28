@@ -20,6 +20,7 @@
 - clear masktemplate before submitting regardsless of the clearMaskOnLostFocus option
 
 ### Fixed
+- Alternation like (9|999) shows extra placeholder #2277
 - Numeric shortcut not working for decimal places #2553
 - Fix backspace bug with insertMode: false #2572
 - InsertMode toggle not functioning #2565
