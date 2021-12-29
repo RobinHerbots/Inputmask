@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.7-beta.43
+ * Version: 5.0.7-beta.44
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -1139,6 +1139,7 @@
                         autoUnmask: !1,
                         skipOptionalPartCharacter: "",
                         usePrototypeDefinitions: !1,
+                        stripLeadingZeros: !0,
                         definitions: {
                             0: {
                                 validator: p
@@ -1279,14 +1280,14 @@
                                 if ("" !== a.groupSeparator) for (;-1 !== (i = e.indexOf(a.groupSeparator)); ) e.splice(i, 1);
                                 return e;
                             }
-                            var o, s = function(e, t) {
+                            var o, s;
+                            if (a.stripLeadingZeros && (s = function(e, t) {
                                 var i = new RegExp("(^" + ("" !== t.negationSymbol.front ? (0, r.default)(t.negationSymbol.front) + "?" : "") + (0, 
                                 r.default)(t.prefix) + ")(.*)(" + (0, r.default)(t.suffix) + ("" != t.negationSymbol.back ? (0, 
                                 r.default)(t.negationSymbol.back) + "?" : "") + "$)").exec(e.slice().reverse().join("")), a = i ? i[2] : "", n = !1;
                                 return a && (a = a.split(t.radixPoint.charAt(0))[0], n = new RegExp("^[0" + t.groupSeparator + "]*").exec(a)), 
                                 !(!n || !(n[0].length > 1 || n[0].length > 0 && n[0].length < a.length)) && n;
-                            }(t, a);
-                            if (s) for (var u = t.join("").lastIndexOf(s[0].split("").reverse().join("")) - (s[0] == s.input ? 0 : 1), f = s[0] == s.input ? 1 : 0, d = s[0].length - f; d > 0; d--) delete this.maskset.validPositions[u + d], 
+                            }(t, a))) for (var u = t.join("").lastIndexOf(s[0].split("").reverse().join("")) - (s[0] == s.input ? 0 : 1), f = s[0] == s.input ? 1 : 0, d = s[0].length - f; d > 0; d--) delete this.maskset.validPositions[u + d], 
                             delete t[u + d];
                             if (e) switch (e.type) {
                               case "blur":
@@ -2592,7 +2593,7 @@
                                                             b($, H);
                                                             break;
                                                         }
-                                                        if (Y = $, !0 === (W = H).match.static && !0 !== Y.match.static && Y.match.fn.test(W.match.def, l, e, !1, c, !1)) {
+                                                        if (Z = $, !0 === (W = H).match.static && !0 !== Z.match.static && Z.match.fn.test(W.match.def, l, e, !1, c, !1)) {
                                                             x(H, $) || void 0 !== d.inputmask.userOptions.keepStatic ? b(H, $) && (K = !0, _.splice(_.indexOf($), 0, H)) : c.keepStatic = !0;
                                                             break;
                                                         }
@@ -2616,7 +2617,7 @@
                                     }
                                 } else if (r = y(r, i, o, u)) return !0;
                             } else h++;
-                            var W, Y;
+                            var W, Z;
                         }
                         for (var u = i.length > 0 ? i.shift() : 0; u < t.matches.length; u++) if (!0 !== t.matches[u].isQuantifier) {
                             var p = s(t.matches[u], [ u ].concat(r), o);
