@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.7-beta.44
+ * Version: 5.0.7-beta.45
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -1139,7 +1139,7 @@
                         autoUnmask: !1,
                         skipOptionalPartCharacter: "",
                         usePrototypeDefinitions: !1,
-                        stripLeadingZeros: !0,
+                        stripLeadingZeroes: !0,
                         definitions: {
                             0: {
                                 validator: p
@@ -1281,7 +1281,7 @@
                                 return e;
                             }
                             var o, s;
-                            if (a.stripLeadingZeros && (s = function(e, t) {
+                            if (a.stripLeadingZeroes && (s = function(e, t) {
                                 var i = new RegExp("(^" + ("" !== t.negationSymbol.front ? (0, r.default)(t.negationSymbol.front) + "?" : "") + (0, 
                                 r.default)(t.prefix) + ")(.*)(" + (0, r.default)(t.suffix) + ("" != t.negationSymbol.back ? (0, 
                                 r.default)(t.negationSymbol.back) + "?" : "") + "$)").exec(e.slice().reverse().join("")), a = i ? i[2] : "", n = !1;

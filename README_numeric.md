@@ -108,10 +108,10 @@ This will allow typing 1k => 1000, 2m => 2000000
  
 To disable just pass shortcuts: null as option
 
-### stripLeadingZeros
+### stripLeadingZeroes
 Default: true
 
-Strip leading zeros.
+Strip leading zeroes.
 
 ### Setting initial values
 
