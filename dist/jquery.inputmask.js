@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2021 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.7-beta.45
+ * Version: 5.0.7-beta.46
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -968,7 +968,10 @@
                         onUnMask: function(e, t, i) {
                             return e;
                         },
-                        inputmode: "numeric"
+                        inputmode: "decimal",
+                        substitutes: {
+                            ",": "."
+                        }
                     },
                     email: {
                         mask: function(e) {
