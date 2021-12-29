@@ -297,7 +297,8 @@ The alternator syntax is like an **OR** statement.  The mask can be one of the 3
 To define an alternator use the |.
 ex: "a|9" => a or 9
 "(aaa)|(999)" => aaa or 999
-"(aaa|999|9AA)" => aaa or 999 or 9AA
+"(aaa|999|9AA)" => aaa or 999 or 9AA  
+"aaaa|9999" => aaa a or 9 999
 
 **Also make sure to read about the [keepStatic](#keepStatic) option.**
 
@@ -1011,7 +1012,11 @@ ex. $(selector).inputmask({ mask: ["+55-99-9999-9999", "+55-99-99999-9999", ], k
 
 typing 1212345123 => should result in +55-12-1234-5123 type extra 4 => switch to +55-12-12345-1234
 
-**When the option is not set, it will default to false, except for multiple masks it will default to true!!**
+**When the option is not set, it will default to false.**  
+**Except:**
+- for multiple masks it will default to true
+- when the first alternation is shorter then the next it will also default to true.
+  - ex: (9|999), (99)|(aaaa)
 
 ### positionCaretOnTab
 When enabled the caret position is set after the latest valid position on TAB Default: true

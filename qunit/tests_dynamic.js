@@ -360,7 +360,8 @@ export default function (qunit, Inputmask) {
 			clearMaskOnLostFocus: true,
 			showMaskOnHover: false,
 			placeholder: " ",
-			casing: "upper"
+			casing: "upper",
+			keepStatic: false
 		}).mask(testmask);
 
 		testmask.focus();
