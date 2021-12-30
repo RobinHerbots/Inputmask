@@ -1,6 +1,12 @@
 # Change Log
 
-## [5.0.7 - UNRELEASED]
+## [5.0.8 - UNRELEASED]
+
+### Addition
+### Updates
+### Fixed
+
+## [5.0.7 - 30/12/2021]
 
 ### Addition
 - Numeric alias
