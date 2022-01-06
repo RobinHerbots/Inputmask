@@ -51,7 +51,7 @@ module.exports = function (env, argv) {
 			library: {
 				type: "umd"
 			},
-			globalObject: "self"
+			globalObject: "this"
 		},
 		externals: {
 			"jquery": {

@@ -1,16 +1,16 @@
 /*!
  * dist/inputmask
  * https://github.com/RobinHerbots/Inputmask
- * Copyright (c) 2010 - 2021 Robin Herbots
+ * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.0
+ * Version: 5.0.8-beta.1
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
         var i = t();
         for (var a in i) ("object" == typeof exports ? exports : e)[a] = i[a];
     }
-}(self, (function() {
+}(this, (function() {
     return function() {
         "use strict";
         var e = {

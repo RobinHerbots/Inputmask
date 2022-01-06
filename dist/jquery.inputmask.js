@@ -1,16 +1,16 @@
 /*!
  * dist/jquery.inputmask
  * https://github.com/RobinHerbots/Inputmask
- * Copyright (c) 2010 - 2021 Robin Herbots
+ * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.0
+ * Version: 5.0.8-beta.1
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
         var i = "object" == typeof exports ? t(require("jquery")) : t(e.jQuery);
         for (var a in i) ("object" == typeof exports ? exports : e)[a] = i[a];
     }
-}(self, (function(e) {
+}(this, (function(e) {
     return function() {
         "use strict";
         var t = {
