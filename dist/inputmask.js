@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.1
+ * Version: 5.0.8-beta.2
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -1446,30 +1446,33 @@
                             return o;
                         },
                         onKeyDown: function(e, t, i, a) {
-                            var r, o, l = s(this), u = String.fromCharCode(e.keyCode).toLowerCase();
-                            if ((o = a.shortcuts && a.shortcuts[u]) && o.length > 1) return this.inputmask.__valueSet.call(this, parseFloat(this.inputmask.unmaskedvalue()) * parseInt(o)), 
-                            l.trigger("setvalue"), !1;
+                            var r, o = s(this);
+                            if (3 != e.location) {
+                                var l, u = String.fromCharCode(e.keyCode).toLowerCase();
+                                if ((l = a.shortcuts && a.shortcuts[u]) && l.length > 1) return this.inputmask.__valueSet.call(this, parseFloat(this.inputmask.unmaskedvalue()) * parseInt(l)), 
+                                o.trigger("setvalue"), !1;
+                            }
                             if (e.ctrlKey) switch (e.keyCode) {
                               case n.default.UP:
                                 return this.inputmask.__valueSet.call(this, parseFloat(this.inputmask.unmaskedvalue()) + parseInt(a.step)), 
-                                l.trigger("setvalue"), !1;
+                                o.trigger("setvalue"), !1;
 
                               case n.default.DOWN:
                                 return this.inputmask.__valueSet.call(this, parseFloat(this.inputmask.unmaskedvalue()) - parseInt(a.step)), 
-                                l.trigger("setvalue"), !1;
+                                o.trigger("setvalue"), !1;
                             }
                             if (!e.shiftKey && (e.keyCode === n.default.DELETE || e.keyCode === n.default.BACKSPACE || e.keyCode === n.default.BACKSPACE_SAFARI) && i.begin !== t.length) {
                                 if (t[e.keyCode === n.default.DELETE ? i.begin - 1 : i.end] === a.negationSymbol.front) return r = t.slice().reverse(), 
                                 "" !== a.negationSymbol.front && r.shift(), "" !== a.negationSymbol.back && r.pop(), 
-                                l.trigger("setvalue", [ r.join(""), i.begin ]), !1;
+                                o.trigger("setvalue", [ r.join(""), i.begin ]), !1;
                                 if (!0 === a._radixDance) {
                                     var f = t.indexOf(a.radixPoint);
                                     if (a.digitsOptional) {
-                                        if (0 === f) return (r = t.slice().reverse()).pop(), l.trigger("setvalue", [ r.join(""), i.begin >= r.length ? r.length : i.begin ]), 
+                                        if (0 === f) return (r = t.slice().reverse()).pop(), o.trigger("setvalue", [ r.join(""), i.begin >= r.length ? r.length : i.begin ]), 
                                         !1;
                                     } else if (-1 !== f && (i.begin < f || i.end < f || e.keyCode === n.default.DELETE && i.begin === f)) return i.begin !== i.end || e.keyCode !== n.default.BACKSPACE && e.keyCode !== n.default.BACKSPACE_SAFARI || i.begin++, 
                                     (r = t.slice().reverse()).splice(r.length - i.begin, i.begin - i.end + 1), r = c(r, a.digits, a).join(""), 
-                                    l.trigger("setvalue", [ r, i.begin >= r.length ? f + 1 : i.begin ]), !1;
+                                    o.trigger("setvalue", [ r, i.begin >= r.length ? f + 1 : i.begin ]), !1;
                                 }
                             }
                         }

@@ -5,6 +5,8 @@
 ### Addition
 ### Updates
 ### Fixed
+- Minus sign can't be entered into currency field #2583
+- ReferenceError: self is not defined #2581
 
 ## [5.0.7 - 30/12/2021]
 
