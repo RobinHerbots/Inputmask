@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.2
+ * Version: 5.0.8-beta.3
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -1351,9 +1351,13 @@
                                     if (a.digitsOptional) {
                                         if (0 === f) return (r = t.slice().reverse()).pop(), o.trigger("setvalue", [ r.join(""), i.begin >= r.length ? r.length : i.begin ]), 
                                         !1;
-                                    } else if (-1 !== f && (i.begin < f || i.end < f || e.keyCode === n.default.DELETE && i.begin === f)) return i.begin !== i.end || e.keyCode !== n.default.BACKSPACE && e.keyCode !== n.default.BACKSPACE_SAFARI || i.begin++, 
-                                    (r = t.slice().reverse()).splice(r.length - i.begin, i.begin - i.end + 1), r = c(r, a.digits, a).join(""), 
-                                    o.trigger("setvalue", [ r, i.begin >= r.length ? f + 1 : i.begin ]), !1;
+                                    } else if (-1 !== f && (i.begin < f || i.end < f || e.keyCode === n.default.DELETE && (i.begin === f || i.begin - 1 === f))) {
+                                        var d = void 0;
+                                        return i.begin === i.end && (e.keyCode === n.default.BACKSPACE || e.keyCode === n.default.BACKSPACE_SAFARI ? i.begin++ : e.keyCode === n.default.DELETE && i.begin - 1 === f && (d = l.extend({}, i), 
+                                        i.begin--, i.end--)), (r = t.slice().reverse()).splice(r.length - i.begin, i.begin - i.end + 1), 
+                                        r = c(r, a.digits, a).join(""), d && (i = d), o.trigger("setvalue", [ r, i.begin >= r.length ? f + 1 : i.begin ]), 
+                                        !1;
+                                    }
                                 }
                             }
                         }
@@ -2409,7 +2413,7 @@
                 }
                 function u(e) {
                     var t = this.opts, i = this.el;
-                    return !this.isRTL || "number" != typeof e || t.greedy && "" === t.placeholder || !i || (e = Math.abs(this._valueGet().length - e)), 
+                    return !this.isRTL || "number" != typeof e || t.greedy && "" === t.placeholder || !i || (e = this._valueGet().length - e) < 0 && (e = 0), 
                     e;
                 }
             },
@@ -2924,7 +2928,7 @@
                         return !1;
                     }
                     var f = 0, h = void 0 !== e.begin ? e.begin : e, m = void 0 !== e.end ? e.end : e, v = !0;
-                    if (e.begin > e.end && (h = e.end, m = e.begin), a = void 0 !== a ? a : h, h !== m || l.insertMode && void 0 !== s.validPositions[a] && void 0 === i || void 0 === t || t.match.optionalQuantifier || t.match.optionality) {
+                    if (e.begin > e.end && (h = e.end, m = e.begin), a = void 0 !== a ? a : h, void 0 === i && (h !== m || l.insertMode && void 0 !== s.validPositions[a] || void 0 === t || t.match.optionalQuantifier || t.match.optionality)) {
                         var g, k = u.extend(!0, {}, s.validPositions), y = o.getLastValidPosition.call(r, void 0, !0);
                         for (s.p = h, g = y; g >= h; g--) delete s.validPositions[g], void 0 === t && delete s.tests[g + 1];
                         var b, x, P = a, E = P;

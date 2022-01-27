@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.2
+ * Version: 5.0.8-beta.3
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -170,6 +170,7 @@
                             var f, d, p = {
                                 bubbles: !0,
                                 cancelable: !0,
+                                composed: !0,
                                 detail: arguments[1]
                             };
                             if (document.createEvent) {
@@ -199,6 +200,7 @@
                     t = t || {
                         bubbles: !1,
                         cancelable: !1,
+                        composed: !0,
                         detail: void 0
                     };
                     var i = document.createEvent("CustomEvent");
@@ -1470,9 +1472,13 @@
                                     if (a.digitsOptional) {
                                         if (0 === f) return (r = t.slice().reverse()).pop(), o.trigger("setvalue", [ r.join(""), i.begin >= r.length ? r.length : i.begin ]), 
                                         !1;
-                                    } else if (-1 !== f && (i.begin < f || i.end < f || e.keyCode === n.default.DELETE && i.begin === f)) return i.begin !== i.end || e.keyCode !== n.default.BACKSPACE && e.keyCode !== n.default.BACKSPACE_SAFARI || i.begin++, 
-                                    (r = t.slice().reverse()).splice(r.length - i.begin, i.begin - i.end + 1), r = c(r, a.digits, a).join(""), 
-                                    o.trigger("setvalue", [ r, i.begin >= r.length ? f + 1 : i.begin ]), !1;
+                                    } else if (-1 !== f && (i.begin < f || i.end < f || e.keyCode === n.default.DELETE && (i.begin === f || i.begin - 1 === f))) {
+                                        var d = void 0;
+                                        return i.begin === i.end && (e.keyCode === n.default.BACKSPACE || e.keyCode === n.default.BACKSPACE_SAFARI ? i.begin++ : e.keyCode === n.default.DELETE && i.begin - 1 === f && (d = s.extend({}, i), 
+                                        i.begin--, i.end--)), (r = t.slice().reverse()).splice(r.length - i.begin, i.begin - i.end + 1), 
+                                        r = c(r, a.digits, a).join(""), d && (i = d), o.trigger("setvalue", [ r, i.begin >= r.length ? f + 1 : i.begin ]), 
+                                        !1;
+                                    }
                                 }
                             }
                         }
@@ -2460,7 +2466,7 @@
                 }
                 function u(e) {
                     var t = this.opts, i = this.el;
-                    return !this.isRTL || "number" != typeof e || t.greedy && "" === t.placeholder || !i || (e = Math.abs(this._valueGet().length - e)), 
+                    return !this.isRTL || "number" != typeof e || t.greedy && "" === t.placeholder || !i || (e = this._valueGet().length - e) < 0 && (e = 0), 
                     e;
                 }
             },
@@ -2975,7 +2981,7 @@
                         return !1;
                     }
                     var f = 0, h = void 0 !== e.begin ? e.begin : e, v = void 0 !== e.end ? e.end : e, m = !0;
-                    if (e.begin > e.end && (h = e.end, v = e.begin), a = void 0 !== a ? a : h, h !== v || s.insertMode && void 0 !== l.validPositions[a] && void 0 === i || void 0 === t || t.match.optionalQuantifier || t.match.optionality) {
+                    if (e.begin > e.end && (h = e.end, v = e.begin), a = void 0 !== a ? a : h, void 0 === i && (h !== v || s.insertMode && void 0 !== l.validPositions[a] || void 0 === t || t.match.optionalQuantifier || t.match.optionality)) {
                         var g, k = u.extend(!0, {}, l.validPositions), y = o.getLastValidPosition.call(r, void 0, !0);
                         for (l.p = h, g = y; g >= h; g--) delete l.validPositions[g], void 0 === t && delete l.tests[g + 1];
                         var b, x, P = a, E = P;

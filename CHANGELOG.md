@@ -4,6 +4,8 @@
 
 ### Addition
 ### Updates
+- fix wrong caret positioning with RTL
+
 ### Fixed
 - Minus sign can't be entered into currency field #2583
 - ReferenceError: self is not defined #2581
