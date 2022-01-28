@@ -3,6 +3,8 @@
 ## [5.0.8 - UNRELEASED]
 
 ### Addition
+- Comma input turns to decimal #2577 => add substituteRadixPoint option to numeric alias
+
 ### Updates
 - fix wrong caret positioning with RTL
 

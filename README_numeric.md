@@ -73,7 +73,7 @@ Define the step the ctrl-up & ctrl-down must take.
 Default: 1
 
 ### inputType
-Specify that values which are set are in textform (radix point  is same as in the options) or in numberform (radixpoint = .)
+Specify that values which are set are in textform (radix point is same as in the options) or in numberform (radixpoint = .)
 
 Default: "text"
 
@@ -112,6 +112,11 @@ To disable just pass shortcuts: null as option
 Default: true
 
 Strip leading zeroes.
+
+### substituteRadixPoint
+Default: true
+
+Substitude the radixpoint to allow , for . and vice versa.
 
 ### Setting initial values
 
