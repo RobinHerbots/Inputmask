@@ -1,7 +1,7 @@
 // Karma configuration
 // Generated on Thu Feb 10 2022 10:05:16 GMT+0100 (GMT+01:00)
 
-module.exports = function(config) {
+module.exports = function (config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -56,7 +56,65 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://www.npmjs.com/search?q=keywords:karma-launcher
-    browsers: ['Chrome'],
+    // global config of your BrowserStack account
+    browserStack: {
+      username: 'BROWSERSTACK_USERNAME',
+      accessKey: 'BROWSERSTACK_ACCESS_KEY'
+    },
+
+    // define browsers
+    customLaunchers: {
+      bs_chrome96_win11: {
+        base: 'BrowserStack',
+        browser: 'chrome',
+        browser_version: '96',
+        os: 'Windows',
+        os_version: '11'
+      },
+      bs_chrome_win11: {
+        base: 'BrowserStack',
+        browser: 'chrome',
+        os: 'Windows',
+        os_version: '11'
+      },
+      bs_chrome_mac_Monterey: {
+        base: 'BrowserStack',
+        browser: 'chrome',
+        os: 'OS X',
+        os_version: 'Monterey'
+      },
+      bs_firefox_win11: {
+        base: 'BrowserStack',
+        browser: 'firefox',
+        os: 'Windows',
+        os_version: '11'
+      },
+      bs_edge_win11: {
+        base: 'BrowserStack',
+        browser: 'edge',
+        os: 'Windows',
+        os_version: '11'
+      },
+      bs_safari_mac_Monterey: {
+        base: 'BrowserStack',
+        browser: 'safari',
+        os: 'OS X',
+        os_version: 'Monterey'
+      },
+      bs_opera_win11: {
+        base: 'BrowserStack',
+        browser: 'opera',
+        os: 'Windows',
+        os_version: '11'
+      },
+      bs_iphone5: {
+        base: 'BrowserStack',
+        device: 'iPhone 5',
+        os: 'ios',
+        os_version: '6.0'
+      }
+    },
+    browsers: ['bs_chrome_win11', 'bs_chrome_mac_Monterey', 'bs_firefox_win11', 'bs_edge_win11', 'bs_safari_mac_Monterey', 'bs_opera_win11'],
 
 
     // Continuous Integration mode

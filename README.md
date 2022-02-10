@@ -41,7 +41,7 @@ Thanks to [Jetbrains](https://www.jetbrains.com/?from=inputmask) for providing a
   <img src="https://upload.wikimedia.org/wikipedia/commons/1/1a/JetBrains_Logo_2016.svg" alt="Jetbrains">
 </a>
     
-Thanks to [Browserstack](https://www.browserstack.com) for providing a free license, so we can start automating test in different browsers and devices.  
+Thanks to [Browserstack](https://www.browserstack.com) for providing a free license, so we can automate testing in different browsers and devices.  
 <a href="https://www.browserstack.com">
   <img src="https://www.browserstack.com/images/layout/browserstack-logo-600x315.png" alt="Browserstack" width="150">
 </a>
