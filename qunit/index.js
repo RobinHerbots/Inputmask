@@ -43,27 +43,29 @@ simulator(Inputmask.dependencyLib, Inputmask);
 simulator(jQuery, Inputmask);
 
 //load tests
-tests_alternations(qunit, Inputmask);
-tests_attributes(qunit, Inputmask);
-tests_base(qunit, Inputmask);
-tests_date(qunit, Inputmask);
-tests_dynamic(qunit, Inputmask);
-tests_escape(qunit, Inputmask);
-tests_formatvalidate(qunit, Inputmask);
-tests_initialvalue(qunit, Inputmask);
-tests_inputeventonly(qunit, Inputmask);
-tests_ip(qunit, Inputmask);
-tests_jitmasking(qunit, Inputmask);
-tests_jquery_inputmask(qunit, jQuery, Inputmask);
-tests_keepStatic(qunit, Inputmask);
-tests_multi(qunit, Inputmask);
-tests_numeric(qunit, Inputmask);
-tests_numericinput(qunit, Inputmask);
-tests_option(qunit, Inputmask);
-tests_optional(qunit, Inputmask);
-tests_paste(qunit, Inputmask);
-tests_regex(qunit, Inputmask);
-tests_setvalue(qunit, Inputmask);
+if (qunit) {
+    tests_alternations(qunit, Inputmask);
+    tests_attributes(qunit, Inputmask);
+    tests_base(qunit, Inputmask);
+    tests_date(qunit, Inputmask);
+    tests_dynamic(qunit, Inputmask);
+    tests_escape(qunit, Inputmask);
+    tests_formatvalidate(qunit, Inputmask);
+    tests_initialvalue(qunit, Inputmask);
+    tests_inputeventonly(qunit, Inputmask);
+    tests_ip(qunit, Inputmask);
+    tests_jitmasking(qunit, Inputmask);
+    tests_jquery_inputmask(qunit, jQuery, Inputmask);
+    tests_keepStatic(qunit, Inputmask);
+    tests_multi(qunit, Inputmask);
+    tests_numeric(qunit, Inputmask);
+    tests_numericinput(qunit, Inputmask);
+    tests_option(qunit, Inputmask);
+    tests_optional(qunit, Inputmask);
+    tests_paste(qunit, Inputmask);
+    tests_regex(qunit, Inputmask);
+    tests_setvalue(qunit, Inputmask);
 
-qunit.load();
-// qunit.start();
+    qunit.load();
+    // qunit.start();
+}

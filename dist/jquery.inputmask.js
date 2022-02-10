@@ -1564,7 +1564,7 @@
                     mask: function(e) {
                         var t = this;
                         return "string" == typeof e && (e = g.getElementById(e) || g.querySelectorAll(e)), 
-                        (e = e.nodeName ? [ e ] : Array.isArray(e) ? e : Array.from(e)).forEach((function(e, i) {
+                        (e = e.nodeName ? [ e ] : Array.isArray(e) ? e : [].slice.call(e)).forEach((function(e, i) {
                             var s = n.default.extend(!0, {}, t.opts);
                             if (function(e, t, i, a) {
                                 function o(t, n) {

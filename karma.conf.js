@@ -107,6 +107,12 @@ module.exports = function (config) {
         os: 'Windows',
         os_version: '11'
       },
+      bs_yandex_win11: {
+        base: 'BrowserStack',
+        browser: 'yandex',
+        os: 'Windows',
+        os_version: '11'
+      },
       bs_iphone5: {
         base: 'BrowserStack',
         device: 'iPhone 5',
@@ -114,7 +120,13 @@ module.exports = function (config) {
         os_version: '6.0'
       }
     },
-    browsers: ['bs_chrome_win11', 'bs_chrome_mac_Monterey', 'bs_firefox_win11', 'bs_edge_win11', 'bs_safari_mac_Monterey', 'bs_opera_win11'],
+    browsers: ['bs_chrome_win11',
+      'bs_chrome_mac_Monterey',
+      'bs_firefox_win11',
+      'bs_edge_win11',
+      'bs_safari_mac_Monterey',
+      'bs_opera_win11',
+  /* 'bs_yandex_win11'*/],
 
 
     // Continuous Integration mode
