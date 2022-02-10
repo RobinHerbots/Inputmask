@@ -9,6 +9,7 @@
 - fix wrong caret positioning with RTL
 
 ### Fixed
+- Propagation of the click event to the container #2423
 - Minus sign can't be entered into currency field #2583
 - ReferenceError: self is not defined #2581
 

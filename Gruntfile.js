@@ -56,6 +56,14 @@ module.exports = function (grunt) {
 				}
 			}
 		},
+		karma: {
+            options: {
+                configFile: 'karma.conf.js'
+            },
+            unit: {
+                singleRun: true,
+            }
+        },
 		eslint: {
 			target: "lib/*.js"
 		},
@@ -90,7 +98,7 @@ module.exports = function (grunt) {
 		grunt.config("release.options.npmtag", "next");
 		grunt.task.run("release");
 	});
-	grunt.registerTask("validate", ["webpack", "copy", "eslint"]);
+	grunt.registerTask("validate", ["webpack", "copy", "eslint", "karma"]);
 	grunt.registerTask("build", ["bump:prerelease", "clean", "webpack", "copy"]);
 	grunt.registerTask("build:patch", ["bump:patch", "clean", "webpack", "copy"]);
 	grunt.registerTask("build:minor", ["bump:minor", "clean", "webpack", "copy"]);
