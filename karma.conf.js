@@ -34,7 +34,7 @@ module.exports = function (config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://www.npmjs.com/search?q=keywords:karma-reporter
-    reporters: ['progress'],
+    reporters: ['progress', 'BrowserStack'],
 
 
     // web server port
@@ -113,20 +113,52 @@ module.exports = function (config) {
         os: 'Windows',
         os_version: '11'
       },
-      bs_iphone5: {
+      bs_ie_win10: {
         base: 'BrowserStack',
-        device: 'iPhone 5',
+        browser: 'ie',
+        browser_version: '11',
+        os: 'Windows',
+        os_version: '10'
+      },
+      bs_chrome_pixel6: {
+        base: 'BrowserStack',
+        device: 'Google Pixel 6',
+        browser: 'chrome',
+        os: 'Android',
+        os_version: '12.0',
+        realMobile : true
+      },
+      bs_chrome_samsung_galaxy_S21: {
+        base: 'BrowserStack',
+        device: 'Samsung Galaxy S21',
+        browser: 'chrome',
+        os: 'Android',
+        os_version: '11.0',
+        realMobile : true
+      },
+      bs_iphone12: {
+        base: 'BrowserStack',
+        device: 'iPhone 12',
+        browser: 'safari',
         os: 'ios',
-        os_version: '6.0'
+        os_version: '14',
+        realMobile : true
       }
     },
-    browsers: ['bs_chrome_win11',
+    browsers: [
+      'Chrome',
+      'bs_chrome_win11',
       'bs_chrome_mac_Monterey',
       'bs_firefox_win11',
       'bs_edge_win11',
       'bs_safari_mac_Monterey',
       'bs_opera_win11',
-  /* 'bs_yandex_win11'*/],
+      'bs_yandex_win11',
+      'bs_ie_win10',
+      'bs_chrome_pixel6',
+      'bs_chrome_samsung_galaxy_S21',
+      'bs_iphone12'
+    ],
 
 
     // Continuous Integration mode

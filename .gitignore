@@ -12,3 +12,4 @@ qunit/qunit.js.map
 **/*.map
 dist/*.LICENSE
 .vscode/
+local.log
