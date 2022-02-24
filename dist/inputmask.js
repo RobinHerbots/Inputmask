@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.7
+ * Version: 5.0.8-beta.15
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -254,12 +254,12 @@
             9845: function(e, t, i) {
                 Object.defineProperty(t, "__esModule", {
                     value: !0
-                }), t.ua = t.mobile = t.iphone = t.iemobile = t.ie = void 0;
+                }), t.mobile = t.iphone = t.iemobile = t.ie = void 0;
                 var a, n = (a = i(9380)) && a.__esModule ? a : {
                     default: a
                 };
-                var r = n.default.navigator && n.default.navigator.userAgent || "", o = r.indexOf("MSIE ") > 0 || r.indexOf("Trident/") > 0, l = "ontouchstart" in n.default, s = /iemobile/i.test(r), u = /iphone/i.test(r) && !s;
-                t.iphone = u, t.iemobile = s, t.mobile = l, t.ie = o, t.ua = r;
+                var r = n.default.navigator && n.default.navigator.userAgent || "", o = r.indexOf("MSIE ") > 0 || r.indexOf("Trident/") > 0, l = n.default.navigator.maxTouchPoints || "ontouchstart" in n.default, s = /iemobile/i.test(r), u = /iphone/i.test(r) && !s;
+                t.iphone = u, t.iemobile = s, t.mobile = l, t.ie = o;
             },
             7184: function(e, t) {
                 Object.defineProperty(t, "__esModule", {
@@ -1902,14 +1902,13 @@
                     var m = function(e) {
                         !function(e, t) {
                             if ("function" != typeof t && null !== t) throw new TypeError("Super expression must either be null or a function");
-                            Object.defineProperty(e, "prototype", {
-                                value: Object.create(t && t.prototype, {
-                                    constructor: {
-                                        value: e,
-                                        writable: !0,
-                                        configurable: !0
-                                    }
-                                }),
+                            e.prototype = Object.create(t && t.prototype, {
+                                constructor: {
+                                    value: e,
+                                    writable: !0,
+                                    configurable: !0
+                                }
+                            }), Object.defineProperty(e, "prototype", {
                                 writable: !1
                             }), t && d(e, t);
                         }(c, e);
@@ -1976,6 +1975,7 @@
                                 } : new RegExp("."),
                                 static: l.static || !1,
                                 optionality: l.optional || !1,
+                                defOptionality: l.optional || !1,
                                 newBlockMarker: void 0 === o || l.optional ? "master" : o.def !== (l.definitionSymbol || a),
                                 casing: l.casing,
                                 def: l.definitionSymbol || a,
@@ -2718,7 +2718,7 @@
                         cd: k
                     }), void 0 !== t && s.tests[e] ? r = l.extend(!0, [], m) : (s.tests[e] = l.extend(!0, [], m), 
                     r = s.tests[e]), m.forEach((function(e) {
-                        e.match.optionality = !1;
+                        e.match.optionality = e.match.defOptionality || !1;
                     })), r;
                 }
             },
