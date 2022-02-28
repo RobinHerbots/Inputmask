@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.15
+ * Version: 5.0.8-beta.16
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -385,8 +385,11 @@
                         }
                     },
                     keyupEvent: function(e) {
-                        var t = this.inputmask;
-                        !t.isComposing || e.keyCode !== r.default.KEY_229 && e.keyCode !== r.default.ENTER || t.$el.trigger("input");
+                        var t = this.inputmask, i = t.dependencyLib;
+                        if (t.isComposing) if (e.keyCode === r.default.KEY_229 || e.keyCode === r.default.ENTER) t.$el.trigger("input"); else {
+                            var a = new i.Event("keypress");
+                            a.keyCode = e.keyCode, t.ignorable = !1, d.keypressEvent.call(this, a);
+                        }
                     },
                     pasteEvent: function(e) {
                         var t, i = this.inputmask, a = i.opts, r = i._valueGet(!0), o = n.caret.call(i, this);
