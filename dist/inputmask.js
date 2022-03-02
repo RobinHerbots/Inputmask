@@ -258,7 +258,7 @@
                 var a, n = (a = i(9380)) && a.__esModule ? a : {
                     default: a
                 };
-                var r = n.default.navigator && n.default.navigator.userAgent || "", o = r.indexOf("MSIE ") > 0 || r.indexOf("Trident/") > 0, l = n.default.navigator.maxTouchPoints || "ontouchstart" in n.default, s = /iemobile/i.test(r), u = /iphone/i.test(r) && !s;
+                var r = n.default.navigator && n.default.navigator.userAgent || "", o = r.indexOf("MSIE ") > 0 || r.indexOf("Trident/") > 0, l = n.default.navigator && n.default.navigator.maxTouchPoints || "ontouchstart" in n.default, s = /iemobile/i.test(r), u = /iphone/i.test(r) && !s;
                 t.iphone = u, t.iemobile = s, t.mobile = l, t.ie = o;
             },
             7184: function(e, t) {
