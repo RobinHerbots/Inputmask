@@ -141,7 +141,7 @@ module.exports = function (config) {
                 os: "IOS",
                 os_version: "15",
                 realMobile: true
-            }
+            },
         },
         browsers: [
             "Chrome",

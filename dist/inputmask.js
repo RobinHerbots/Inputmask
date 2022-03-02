@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.16
+ * Version: 5.0.8-beta.17
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -258,7 +258,7 @@
                 var a, n = (a = i(9380)) && a.__esModule ? a : {
                     default: a
                 };
-                var r = n.default.navigator && n.default.navigator.userAgent || "", o = r.indexOf("MSIE ") > 0 || r.indexOf("Trident/") > 0, l = n.default.navigator.maxTouchPoints || "ontouchstart" in n.default, s = /iemobile/i.test(r), u = /iphone/i.test(r) && !s;
+                var r = n.default.navigator && n.default.navigator.userAgent || "", o = r.indexOf("MSIE ") > 0 || r.indexOf("Trident/") > 0, l = n.default.navigator && n.default.navigator.maxTouchPoints || "ontouchstart" in n.default, s = /iemobile/i.test(r), u = /iphone/i.test(r) && !s;
                 t.iphone = u, t.iemobile = s, t.mobile = l, t.ie = o;
             },
             7184: function(e, t) {
@@ -385,11 +385,9 @@
                         }
                     },
                     keyupEvent: function(e) {
-                        var t = this.inputmask, i = t.dependencyLib;
-                        if (t.isComposing) if (e.keyCode === r.default.KEY_229 || e.keyCode === r.default.ENTER) t.$el.trigger("input"); else {
-                            var a = new i.Event("keypress");
-                            a.keyCode = e.keyCode, t.ignorable = !1, d.keypressEvent.call(this, a);
-                        }
+                        var t = this.inputmask;
+                        t.dependencyLib;
+                        t.isComposing && (e.keyCode !== r.default.KEY_229 && e.keyCode !== r.default.ENTER || t.$el.trigger("input"));
                     },
                     pasteEvent: function(e) {
                         var t, i = this.inputmask, a = i.opts, r = i._valueGet(!0), o = n.caret.call(i, this);
