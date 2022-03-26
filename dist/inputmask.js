@@ -3,14 +3,14 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.17
+ * Version: 5.0.8-beta.18
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
         var i = t();
         for (var a in i) ("object" == typeof exports ? exports : e)[a] = i[a];
     }
-}(this, (function() {
+}(self || this, (function() {
     return function() {
         "use strict";
         var e = {
@@ -2850,7 +2850,7 @@
                         if (void 0 !== e) {
                             if (void 0 !== e.remove && (Array.isArray(e.remove) || (e.remove = [ e.remove ]), 
                             e.remove.sort((function(e, t) {
-                                return t.pos - e.pos;
+                                return g.isRTL ? e.pos - t.pos : t.pos - e.pos;
                             })).forEach((function(e) {
                                 m.call(g, {
                                     begin: e,
@@ -2858,7 +2858,7 @@
                                 });
                             })), e.remove = void 0), void 0 !== e.insert && (Array.isArray(e.insert) || (e.insert = [ e.insert ]), 
                             e.insert.sort((function(e, t) {
-                                return e.pos - t.pos;
+                                return g.isRTL ? t.pos - e.pos : e.pos - t.pos;
                             })).forEach((function(e) {
                                 "" !== e.c && d.call(g, e.pos, e.c, void 0 === e.strict || e.strict, void 0 !== e.fromIsValid ? e.fromIsValid : a);
                             })), e.insert = void 0), e.refreshFromBuffer && e.buffer) {

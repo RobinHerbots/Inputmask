@@ -9,6 +9,7 @@
 - fix wrong caret positioning with RTL
 
 ### Fixed
+- Negation symbol not working (12345) #2596
 - iPhone numeric keyboard not working - Keyboard: 日本語 かな入力 (Japanese Kana) #2551
 - Is it possible to create a definition for optional digits/characters? #2524 (regression)
 - Propagation of the click event to the container #2423

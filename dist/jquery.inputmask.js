@@ -3,14 +3,14 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.17
+ * Version: 5.0.8-beta.18
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
         var i = "object" == typeof exports ? t(require("jquery")) : t(e.jQuery);
         for (var a in i) ("object" == typeof exports ? exports : e)[a] = i[a];
     }
-}(this, (function(e) {
+}(self || this, (function(e) {
     return function() {
         "use strict";
         var t = {
@@ -123,7 +123,7 @@
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.default = void 0;
-                var a, n = (a = i(2047)) && a.__esModule ? a : {
+                var a, n = (a = i(7957)) && a.__esModule ? a : {
                     default: a
                 };
                 if (void 0 === n.default) throw "jQuery not loaded!";
@@ -1820,7 +1820,7 @@
                 }
             },
             443: function(e, t, i) {
-                var a = o(i(2047)), n = o(i(2394));
+                var a = o(i(7957)), n = o(i(2394));
                 function r(e) {
                     return r = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(e) {
                         return typeof e;
@@ -2797,7 +2797,7 @@
                         if (void 0 !== e) {
                             if (void 0 !== e.remove && (Array.isArray(e.remove) || (e.remove = [ e.remove ]), 
                             e.remove.sort((function(e, t) {
-                                return t.pos - e.pos;
+                                return g.isRTL ? e.pos - t.pos : t.pos - e.pos;
                             })).forEach((function(e) {
                                 m.call(g, {
                                     begin: e,
@@ -2805,7 +2805,7 @@
                                 });
                             })), e.remove = void 0), void 0 !== e.insert && (Array.isArray(e.insert) || (e.insert = [ e.insert ]), 
                             e.insert.sort((function(e, t) {
-                                return e.pos - t.pos;
+                                return g.isRTL ? t.pos - e.pos : e.pos - t.pos;
                             })).forEach((function(e) {
                                 "" !== e.c && d.call(g, e.pos, e.c, void 0 === e.strict || e.strict, void 0 !== e.fromIsValid ? e.fromIsValid : a);
                             })), e.insert = void 0), e.refreshFromBuffer && e.buffer) {
@@ -2962,7 +2962,7 @@
                     return o.resetMaskSet.call(r, !0), f;
                 }
             },
-            2047: function(t) {
+            7957: function(t) {
                 t.exports = e;
             },
             5581: function(e) {
