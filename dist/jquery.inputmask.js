@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.18
+ * Version: 5.0.8-beta.19
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -592,7 +592,7 @@
                                     if (a) {
                                         var o = P(t).lastIndex, s = O(i.index, t);
                                         P(t).lastIndex = o, r = e.slice(0, e.indexOf(s.nextMatch[0]));
-                                    } else r = e.slice(0, n.length);
+                                    } else r = e.slice(0, g[n] && g[n][4] || n.length);
                                     e = e.slice(r.length);
                                 }
                                 Object.prototype.hasOwnProperty.call(g, n) && this.setValue(this, r, n, g[n][2], g[n][1]);
@@ -680,10 +680,10 @@
                     } ],
                     l: [ "[0-9]{3}", Date.prototype.setMilliseconds, "milliseconds", function() {
                         return w(Date.prototype.getMilliseconds.call(this), 3);
-                    } ],
+                    }, 3 ],
                     L: [ "[0-9]{2}", Date.prototype.setMilliseconds, "milliseconds", function() {
                         return w(Date.prototype.getMilliseconds.call(this), 2);
-                    } ],
+                    }, 2 ],
                     t: [ "[ap]", y, "ampm", b, 1 ],
                     tt: [ "[ap]m", y, "ampm", b, 2 ],
                     T: [ "[AP]", y, "ampm", b, 1 ],
