@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.19
+ * Version: 5.0.8-beta.20
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -1630,7 +1630,7 @@
                     },
                     getemptymask: function() {
                         return this.maskset = this.maskset || (0, o.generateMaskSet)(this.opts, this.noMasksCache), 
-                        l.getBufferTemplate.call(this).join("");
+                        (this.isRTL ? l.getBufferTemplate.call(this).reverse() : l.getBufferTemplate.call(this)).join("");
                     },
                     hasMaskedValue: function() {
                         return !this.opts.autoUnmask;
@@ -2204,7 +2204,7 @@
                         e.originalPlaceholder = i.placeholder, e.maxLength = void 0 !== i ? i.maxLength : void 0, 
                         -1 === e.maxLength && (e.maxLength = void 0), "inputMode" in i && null === i.getAttribute("inputmode") && (i.inputMode = t.inputmode, 
                         i.setAttribute("inputmode", t.inputmode)), !0 === f && (t.showMaskOnFocus = t.showMaskOnFocus && -1 === [ "cc-number", "cc-exp" ].indexOf(i.autocomplete), 
-                        l.iphone && (t.insertModeVisual = !1), s.EventRuler.on(i, "submit", c.EventHandlers.submitEvent), 
+                        l.iphone && (t.insertModeVisual = !1, i.setAttribute("autocorrect", "off")), s.EventRuler.on(i, "submit", c.EventHandlers.submitEvent), 
                         s.EventRuler.on(i, "reset", c.EventHandlers.resetEvent), s.EventRuler.on(i, "blur", c.EventHandlers.blurEvent), 
                         s.EventRuler.on(i, "focus", c.EventHandlers.focusEvent), s.EventRuler.on(i, "invalid", c.EventHandlers.invalidEvent), 
                         s.EventRuler.on(i, "click", c.EventHandlers.clickEvent), s.EventRuler.on(i, "mouseleave", c.EventHandlers.mouseleaveEvent), 

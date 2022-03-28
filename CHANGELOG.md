@@ -9,9 +9,9 @@
 - fix wrong caret positioning with RTL
 
 ### Fixed
+- getemptymask returns a reversed string in 5.x #2605
 - DateTime milliseconds (unmaskedvalue) #2597
 - Negation symbol not working (12345) #2596
-- iPhone numeric keyboard not working - Keyboard: 日本語 かな入力 (Japanese Kana) #2551
 - Is it possible to create a definition for optional digits/characters? #2524 (regression)
 - Propagation of the click event to the container #2423
 - Minus sign can't be entered into currency field #2583
