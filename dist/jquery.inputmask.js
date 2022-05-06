@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.20
+ * Version: 5.0.8-beta.22
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -265,7 +265,6 @@
                     },
                     keyupEvent: function(e) {
                         var t = this.inputmask;
-                        t.dependencyLib;
                         t.isComposing && (e.keyCode !== r.default.KEY_229 && e.keyCode !== r.default.ENTER || t.$el.trigger("input"));
                     },
                     pasteEvent: function(e) {
@@ -854,7 +853,7 @@
                                 delete r.validPositions[h];
                             }
                             var m = a, k = _(e.join(""), n.inputFormat, n);
-                            return m && k.date.getTime() == k.date.getTime() && (n.prefillYear && (m = function(e, t, i) {
+                            return m && !isNaN(k.date.getTime()) && (n.prefillYear && (m = function(e, t, i) {
                                 if (e.year !== e.rawyear) {
                                     var a = v.toString(), n = e.rawyear.replace(/[^0-9]/g, ""), r = a.slice(0, n.length), o = a.slice(n.length);
                                     if (2 === n.length && n === r) {
@@ -872,7 +871,7 @@
                                 return t;
                             }(k, m, n)), m = function(e, t, i, a, n) {
                                 if (!t) return t;
-                                if (t && i.min && i.min.date.getTime() == i.min.date.getTime()) {
+                                if (t && i.min && !isNaN(i.min.date.getTime())) {
                                     var r;
                                     for (e.reset(), P(i).lastIndex = 0; r = P(i).exec(i.inputFormat); ) {
                                         var o;
@@ -885,7 +884,7 @@
                                     }
                                     t = i.min.date.getTime() <= e.date.getTime(), e.reInit();
                                 }
-                                return t && i.max && i.max.date.getTime() == i.max.date.getTime() && (t = i.max.date.getTime() >= e.date.getTime()), 
+                                return t && i.max && (isNaN(i.max.date.getTime()) || (t = i.max.date.getTime() >= e.date.getTime())), 
                                 t;
                             }(k, m = E.call(this, k, m, n), n, r)), void 0 !== t && m && a.pos !== t ? {
                                 buffer: S(n.inputFormat, k, n).split(""),
@@ -2432,7 +2431,7 @@
                         h = v.match, p = v.locator.slice(), g.push(!0 === i ? v.input : !1 === i ? h.nativeDef : s.call(r, k, h)); else {
                             v = l.call(r, k, p, k - 1), h = v.match, p = v.locator.slice();
                             var y = !0 !== a && (!1 !== o.jitMasking ? o.jitMasking : h.jit);
-                            (m = (m && h.static && h.def !== o.groupSeparator && null === h.fn || c.validPositions[k - 1] && h.static && h.def !== o.groupSeparator && null === h.fn) && c.tests[k] && 1 === c.tests[k].length) || !1 === y || void 0 === y || "number" == typeof y && isFinite(y) && y > k ? g.push(!1 === i ? h.nativeDef : s.call(r, k, h)) : m = !1;
+                            (m = (m && h.static && h.def !== o.groupSeparator && null === h.fn || c.validPositions[k - 1] && h.static && h.def !== o.groupSeparator && null === h.fn) && c.tests[k] && 1 === c.tests[k].length) || !1 === y || void 0 === y || "number" == typeof y && isFinite(y) && y > k ? g.push(!1 === i ? h.nativeDef : s.call(r, g.length, h)) : m = !1;
                         }
                         k++;
                     } while (!0 !== h.static || "" !== h.def || t > k);
