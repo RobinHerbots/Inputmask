@@ -6,6 +6,7 @@
 - Comma input turns to decimal #2577 => add substituteRadixPoint option to numeric alias
 
 ### Updates
+- add keepStatic behavior to optional parts - #2619
 - fix wrong caret positioning with RTL
 
 ### Fixed

@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.22
+ * Version: 5.0.8-beta.23
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -2072,17 +2072,26 @@
                 }, t.generateMaskSet = function(e, t) {
                     var i;
                     function n(e, i, n) {
-                        var o, s, l = !1;
-                        if (null !== e && "" !== e || ((l = null !== n.regex) ? e = (e = n.regex).replace(/^(\^)(.*)(\$)$/, "$2") : (l = !0, 
+                        var s, l, u = !1;
+                        return null !== e && "" !== e || ((u = null !== n.regex) ? e = (e = n.regex).replace(/^(\^)(.*)(\$)$/, "$2") : (u = !0, 
                         e = ".*")), 1 === e.length && !1 === n.greedy && 0 !== n.repeat && (n.placeholder = ""), 
-                        n.repeat > 0 || "*" === n.repeat || "+" === n.repeat) {
-                            var u = "*" === n.repeat ? 0 : "+" === n.repeat ? 1 : n.repeat;
-                            e = n.groupmarker[0] + e + n.groupmarker[1] + n.quantifiermarker[0] + u + "," + n.repeat + n.quantifiermarker[1];
-                        }
-                        return s = l ? "regex_" + n.regex : n.numericInput ? e.split("").reverse().join("") : e, 
-                        null !== n.keepStatic && (s = "ks_" + n.keepStatic + s), void 0 === r.default.prototype.masksCache[s] || !0 === t ? (o = {
+                        e = function(e, t) {
+                            if (t.repeat > 0 || "*" === t.repeat || "+" === t.repeat) {
+                                var i = "*" === t.repeat ? 0 : "+" === t.repeat ? 1 : t.repeat;
+                                e = t.groupmarker[0] + e + t.groupmarker[1] + t.quantifiermarker[0] + i + "," + t.repeat + t.quantifiermarker[1];
+                            }
+                            if (!0 === t.keepStatic) {
+                                var a = e.match(new RegExp("(?<p1>.)\\[(?<p2>[^\\]]*)\\]", "g"));
+                                a && a.forEach((function(t, i) {
+                                    var a = t.split("["), n = a[0], r = a[1].replace("]", "");
+                                    e = e.replace(new RegExp("".concat((0, o.default)(n), "\\[").concat((0, o.default)(r), "\\]")), n.charAt(0) === r.charAt(0) ? "(".concat(n, "|").concat(n).concat(r, ")") : "".concat(n, "[").concat(r, "]"));
+                                }));
+                            }
+                            return e;
+                        }(e, n), l = u ? "regex_" + n.regex : n.numericInput ? e.split("").reverse().join("") : e, 
+                        null !== n.keepStatic && (l = "ks_" + n.keepStatic + l), void 0 === r.default.prototype.masksCache[l] || !0 === t ? (s = {
                             mask: e,
-                            maskToken: r.default.prototype.analyseMask(e, l, n),
+                            maskToken: r.default.prototype.analyseMask(e, u, n),
                             validPositions: {},
                             _buffer: void 0,
                             buffer: void 0,
@@ -2091,17 +2100,17 @@
                             metadata: i,
                             maskLength: void 0,
                             jitOffset: {}
-                        }, !0 !== t && (r.default.prototype.masksCache[s] = o, o = a.default.extend(!0, {}, r.default.prototype.masksCache[s]))) : o = a.default.extend(!0, {}, r.default.prototype.masksCache[s]), 
-                        o;
+                        }, !0 !== t && (r.default.prototype.masksCache[l] = s, s = a.default.extend(!0, {}, r.default.prototype.masksCache[l]))) : s = a.default.extend(!0, {}, r.default.prototype.masksCache[l]), 
+                        s;
                     }
                     "function" == typeof e.mask && (e.mask = e.mask(e));
                     if (Array.isArray(e.mask)) {
                         if (e.mask.length > 1) {
                             null === e.keepStatic && (e.keepStatic = !0);
-                            var o = e.groupmarker[0];
+                            var s = e.groupmarker[0];
                             return (e.isRTL ? e.mask.reverse() : e.mask).forEach((function(t) {
-                                o.length > 1 && (o += e.alternatormarker), void 0 !== t.mask && "function" != typeof t.mask ? o += t.mask : o += t;
-                            })), n(o += e.groupmarker[1], e.mask, e);
+                                s.length > 1 && (s += e.alternatormarker), void 0 !== t.mask && "function" != typeof t.mask ? s += t.mask : s += t;
+                            })), n(s += e.groupmarker[1], e.mask, e);
                         }
                         e.mask = e.mask.pop();
                     }
@@ -2109,8 +2118,8 @@
                     null === e.keepStatic && (e.keepStatic = !1);
                     return i;
                 };
-                var a = o(i(3287)), n = o(i(9695)), r = o(i(2394));
-                function o(e) {
+                var a = s(i(3287)), n = s(i(9695)), r = s(i(2394)), o = s(i(7184));
+                function s(e) {
                     return e && e.__esModule ? e : {
                         default: e
                     };
