@@ -11,6 +11,7 @@
 - fix wrong caret positioning with RTL
 
 ### Fixed
+- fix iphone\ios bug for cyrillic keyboard
 - getemptymask returns a reversed string in 5.x #2605
 - DateTime milliseconds (unmaskedvalue) #2597
 - Negation symbol not working (12345) #2596
