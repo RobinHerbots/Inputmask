@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.24
+ * Version: 5.0.8-beta.25
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -2193,11 +2193,11 @@
                                             inputmaskpatch: !0
                                         };
                                     }
-                                }(t.type), function(t) {
-                                    s.EventRuler.on(t, "mouseenter", (function() {
-                                        var t = this.inputmask._valueGet(!0);
-                                        t !== (e.isRTL ? r.getBuffer.call(e).reverse() : r.getBuffer.call(e)).join("") && (0, 
-                                        o.applyInputValue)(this, t);
+                                }(t.type), function(e) {
+                                    s.EventRuler.on(e, "mouseenter", (function() {
+                                        var e = this, t = e.inputmask._valueGet(!0);
+                                        t != (e.inputmask.isRTL ? r.getBuffer.call(e.inputmask).slice().reverse() : r.getBuffer.call(e.inputmask)).join("") && (0, 
+                                        o.applyInputValue)(e, t);
                                     }));
                                 }(t));
                             }

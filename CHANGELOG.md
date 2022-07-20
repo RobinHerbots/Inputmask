@@ -9,6 +9,7 @@
 - refactor validPositions from object to array. - #2428
 - add keepStatic behavior to optional parts - #2619
 - fix wrong caret positioning with RTL
+- fix value reversing with noValuePatching & numericInput - #2629
 
 ### Fixed
 - getemptymask returns a reversed string in 5.x #2605
