@@ -1,4 +1,4 @@
-import keyCode from "../lib/keycode";
+import {keyCode} from "../lib/keycode";
 
 export default function (qunit, Inputmask) {
 	var $ = Inputmask.dependencyLib;
@@ -81,7 +81,7 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 
 		testmask.focus();
-		$("#testmask").SendKey(keyCode.RIGHT, keyCode.CONTROL);
+		$("#testmask").SendKey(keyCode.Right, keyCode.Control);
 		var today = new Date();
 		today = pad(today.getDate(), 2) + "/" + pad(parseInt(today.getMonth()) + 1, 2) + "/" + today.getFullYear();
 		assert.equal(testmask.value, today, "Result " + testmask.value);
@@ -97,10 +97,10 @@ export default function (qunit, Inputmask) {
 
 		testmask.focus();
 		$("#testmask").Type("2331973");
-		$("#testmask").SendKey(keyCode.BACKSPACE);
-		$("#testmask").SendKey(keyCode.BACKSPACE);
-		$("#testmask").SendKey(keyCode.BACKSPACE);
-		$("#testmask").SendKey(keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.Backspace);
+		$("#testmask").SendKey(keyCode.Backspace);
+		$("#testmask").SendKey(keyCode.Backspace);
+		$("#testmask").SendKey(keyCode.Backspace);
 
 		assert.equal(testmask.value, "23/03/yyyy", "Result " + testmask.value);
 	});
@@ -116,10 +116,10 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		$("#testmask").Type("2331973");
 		$.caret(testmask, "23/03/".length);
-		$("#testmask").SendKey(keyCode.DELETE);
-		$("#testmask").SendKey(keyCode.DELETE);
-		$("#testmask").SendKey(keyCode.DELETE);
-		$("#testmask").SendKey(keyCode.DELETE);
+		$("#testmask").SendKey(keyCode.Delete);
+		$("#testmask").SendKey(keyCode.Delete);
+		$("#testmask").SendKey(keyCode.Delete);
+		$("#testmask").SendKey(keyCode.Delete);
 
 		assert.equal(testmask.value, "23/03/yyyy", "Result " + testmask.value);
 	});
@@ -358,7 +358,7 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 
 		testmask.focus();
-		$("#testmask").SendKey(keyCode.RIGHT, keyCode.CONTROL);
+		$("#testmask").SendKey(keyCode.Right, keyCode.Control);
 		var today = new Date();
 		today = pad(parseInt(today.getMonth()) + 1, 2) + "/" + pad(today.getDate(), 2) + "/" + today.getFullYear();
 		assert.equal(testmask.value, today, "Result " + testmask.value);
@@ -374,10 +374,10 @@ export default function (qunit, Inputmask) {
 
 		testmask.focus();
 		$("#testmask").Type("3231973");
-		$("#testmask").SendKey(keyCode.BACKSPACE);
-		$("#testmask").SendKey(keyCode.BACKSPACE);
-		$("#testmask").SendKey(keyCode.BACKSPACE);
-		$("#testmask").SendKey(keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.Backspace);
+		$("#testmask").SendKey(keyCode.Backspace);
+		$("#testmask").SendKey(keyCode.Backspace);
+		$("#testmask").SendKey(keyCode.Backspace);
 
 		assert.equal(testmask.value, "03/23/yyyy", "Result " + testmask.value);
 	});
@@ -393,10 +393,10 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		$("#testmask").Type("3231973");
 		$.caret(testmask, "03/23/".length);
-		$("#testmask").SendKey(keyCode.DELETE);
-		$("#testmask").SendKey(keyCode.DELETE);
-		$("#testmask").SendKey(keyCode.DELETE);
-		$("#testmask").SendKey(keyCode.DELETE);
+		$("#testmask").SendKey(keyCode.Delete);
+		$("#testmask").SendKey(keyCode.Delete);
+		$("#testmask").SendKey(keyCode.Delete);
+		$("#testmask").SendKey(keyCode.Delete);
 
 		assert.equal(testmask.value, "03/23/yyyy", "Result " + testmask.value);
 	});
@@ -617,7 +617,7 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 
 		testmask.focus();
-		$("#testmask").SendKey(keyCode.RIGHT, keyCode.CONTROL);
+		$("#testmask").SendKey(keyCode.Right, keyCode.Control);
 		var today = new Date();
 		today = pad(today.getDate(), 2) + "." + pad(parseInt(today.getMonth()) + 1, 2) + "." + today.getFullYear();
 		assert.equal(testmask.value, today, "Result " + testmask.value);
@@ -633,10 +633,10 @@ export default function (qunit, Inputmask) {
 
 		testmask.focus();
 		$("#testmask").Type("2331973");
-		$("#testmask").SendKey(keyCode.BACKSPACE);
-		$("#testmask").SendKey(keyCode.BACKSPACE);
-		$("#testmask").SendKey(keyCode.BACKSPACE);
-		$("#testmask").SendKey(keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.Backspace);
+		$("#testmask").SendKey(keyCode.Backspace);
+		$("#testmask").SendKey(keyCode.Backspace);
+		$("#testmask").SendKey(keyCode.Backspace);
 
 		assert.equal(testmask.value, "23.03.yyyy", "Result " + testmask.value);
 	});
@@ -652,10 +652,10 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		$("#testmask").Type("2331973");
 		$.caret(testmask, "23.03.".length);
-		$("#testmask").SendKey(keyCode.DELETE);
-		$("#testmask").SendKey(keyCode.DELETE);
-		$("#testmask").SendKey(keyCode.DELETE);
-		$("#testmask").SendKey(keyCode.DELETE);
+		$("#testmask").SendKey(keyCode.Delete);
+		$("#testmask").SendKey(keyCode.Delete);
+		$("#testmask").SendKey(keyCode.Delete);
+		$("#testmask").SendKey(keyCode.Delete);
 
 		assert.equal(testmask.value, "23.03.yyyy", "Result " + testmask.value);
 	});
@@ -891,12 +891,12 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		$("#testmask").Type("235959");
 
-		$("#testmask").SendKey(keyCode.BACKSPACE);
-		$("#testmask").SendKey(keyCode.BACKSPACE);
-		$("#testmask").SendKey(keyCode.BACKSPACE);
-		$("#testmask").SendKey(keyCode.BACKSPACE);
-		$("#testmask").SendKey(keyCode.BACKSPACE);
-		$("#testmask").SendKey(keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.Backspace);
+		$("#testmask").SendKey(keyCode.Backspace);
+		$("#testmask").SendKey(keyCode.Backspace);
+		$("#testmask").SendKey(keyCode.Backspace);
+		$("#testmask").SendKey(keyCode.Backspace);
+		$("#testmask").SendKey(keyCode.Backspace);
 
 		assert.equal(testmask.value, "", "Result " + testmask.value);
 	});
@@ -986,10 +986,10 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		$("#testmask").Type("24");
 		$.caret(testmask, "HH:".length);
-		$("#testmask").SendKey(keyCode.BACKSPACE);
-		$("#testmask").SendKey(keyCode.BACKSPACE);
-		$("#testmask").SendKey(keyCode.BACKSPACE);
-		$("#testmask").SendKey(keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.Backspace);
+		$("#testmask").SendKey(keyCode.Backspace);
+		$("#testmask").SendKey(keyCode.Backspace);
+		$("#testmask").SendKey(keyCode.Backspace);
 		$("#testmask").Type("2");
 
 

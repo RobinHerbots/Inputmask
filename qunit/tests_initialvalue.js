@@ -1,4 +1,4 @@
-import keyCode from "../lib/keycode";
+import {keyCode} from "../lib/keycode";
 
 export default function (qunit, Inputmask) {
 	var $ = Inputmask.dependencyLib;
@@ -125,7 +125,7 @@ export default function (qunit, Inputmask) {
 		Inputmask("6703 9999 9999 9999 9").mask(testmask);
 		testmask.focus();
 		$("#testmask").Type("1234567890123");
-		$("#testmask").SendKey(keyCode.BACKSPACE);
+		$("#testmask").SendKey(keyCode.Backspace);
 
 		assert.equal(testmask.value, "6703 1234 5678 9012 _", "Result " + testmask.value);
 	});
@@ -140,7 +140,7 @@ export default function (qunit, Inputmask) {
 		$("#testmask").trigger("click");
 		setTimeout(function () {
 			$("#testmask").Type("6703670367036");
-			$("#testmask").SendKey(keyCode.BACKSPACE);
+			$("#testmask").SendKey(keyCode.Backspace);
 			assert.equal(testmask.value, "6703 6703 6703 6703 _", "Result " + testmask.value);
 			done();
 		}, 0);

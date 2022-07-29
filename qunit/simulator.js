@@ -1,4 +1,4 @@
-import keyCode from "../lib/keycode";
+import {keyCode} from "../lib/keycode";
 
 export default function ($, Inputmask) {
 	$.caret = function (input, begin, end) {
@@ -83,25 +83,25 @@ export default function ($, Inputmask) {
 		}
 
 		switch (keycode) {
-			case keyCode.HOME:
+			case keyCode.Home:
 				if (modifier == undefined) {
 					var pos = $.caret(this);
 					$.caret(this, 0);
 					break;
 				}
-			case keyCode.END:
+			case keyCode.End:
 				if (modifier == undefined) {
 					var pos = $.caret(this);
 					$.caret(this, elem.value.length);
 					break;
 				}
-			case keyCode.LEFT:
+			case keyCode.Left:
 				if (modifier == undefined) {
 					var pos = $.caret(this);
 					$.caret(this, pos.begin - 1);
 					break;
 				}
-			case keyCode.RIGHT:
+			case keyCode.Right:
 				if (modifier == undefined) {
 					var pos = $.caret(this);
 					$.caret(this, pos.end + 1);
@@ -122,13 +122,13 @@ export default function ($, Inputmask) {
 						newValue = currentValue;
 
 					switch (keycode) {
-						case keyCode.BACKSPACE:
+						case keyCode.Backspace:
 							if (caretPos.begin === caretPos.end) {
 								front = front.substr(0, front.length - 1);
 							}
 							newValue = front + back;
 							break;
-						case keyCode.DELETE:
+						case keyCode.Delete:
 							if (origCode !== ".") {
 								if (caretPos.begin === caretPos.end) {
 									back = back.slice(1);
@@ -156,20 +156,20 @@ export default function ($, Inputmask) {
 
 					if (!sendDummyKeydown) {
 						keydown.keyCode = keycode;
-						if (modifier == keyCode.CONTROL) {
+						if (modifier == keyCode.Control) {
 							keydown.ctrlKey = true;
 						}
 					}
 					trigger(elem, keydown);
 					if (!keydown.defaultPrevented) {
 						keypress.keyCode = keycode;
-						if (modifier == keyCode.CONTROL) {
+						if (modifier == keyCode.Control) {
 							keypress.ctrlKey = true;
 						}
 						trigger(elem, keypress);
 						//if (!keypress.isDefaultPrevented()) {
 						keyup.keyCode = keycode;
-						if (modifier == keyCode.CONTROL) {
+						if (modifier == keyCode.Control) {
 							keyup.ctrlKey = true;
 						}
 						trigger(elem, keyup);

@@ -12,7 +12,7 @@
 - fix value reversing with noValuePatching & numericInput - #2629
 
 ### Fixed
-- fix iphone\ios bug for cyrillic keyboard
+- fix iphone\ios bug for cyrillic keyboard - #2637
 - getemptymask returns a reversed string in 5.x #2605
 - DateTime milliseconds (unmaskedvalue) #2597
 - Negation symbol not working (12345) #2596
