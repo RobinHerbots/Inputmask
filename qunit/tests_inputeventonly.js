@@ -1,4 +1,4 @@
-import {keyCode} from "../lib/keycode";
+import {keys} from "../lib/keycode";
 
 export default function (qunit, Inputmask) {
 	var $ = Inputmask.dependencyLib;
@@ -112,10 +112,10 @@ export default function (qunit, Inputmask) {
 		$("#testmask").trigger("click");
 		setTimeout(function () {
 			$(testmask).Type("56,03");
-			$("#testmask").SendKey(keyCode.Backspace);
-			$("#testmask").SendKey(keyCode.Backspace);
-			$("#testmask").SendKey(keyCode.Backspace);
-			$("#testmask").SendKey(keyCode.Backspace);
+			$("#testmask").SendKey(keys.Backspace);
+			$("#testmask").SendKey(keys.Backspace);
+			$("#testmask").SendKey(keys.Backspace);
+			$("#testmask").SendKey(keys.Backspace);
 			$(testmask).Type("0,03");
 			assert.equal(testmask.value, "50,03", "Result " + testmask.value);
 			done();
@@ -162,10 +162,10 @@ export default function (qunit, Inputmask) {
 		$.caret(testmask, 3);
 		setTimeout(function () {
 			$(testmask).Type("1234.56");
-			$("#testmask").SendKey(keyCode.Backspace);
-			$("#testmask").SendKey(keyCode.Backspace);
-			$("#testmask").SendKey(keyCode.Backspace);
-			$("#testmask").SendKey(keyCode.Backspace);
+			$("#testmask").SendKey(keys.Backspace);
+			$("#testmask").SendKey(keys.Backspace);
+			$("#testmask").SendKey(keys.Backspace);
+			$("#testmask").SendKey(keys.Backspace);
 			assert.equal(testmask.value, "$ 123.00", "Result " + testmask.value);
 			done();
 		}, 0);
@@ -189,4 +189,4 @@ export default function (qunit, Inputmask) {
 			done();
 		}, 0);
 	});
-};
+}

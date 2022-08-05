@@ -1,4 +1,4 @@
-import {keyCode} from "../lib/keycode";
+import { keys} from "../lib/keycode";
 
 export default function (qunit, Inputmask) {
 	var $ = Inputmask.dependencyLib;
@@ -277,7 +277,7 @@ export default function (qunit, Inputmask) {
 
 		$("#testmask").Type("abc1234");
 		$.caret(testmask, 2);
-		$("#testmask").SendKey(keyCode.Delete);
+		$("#testmask").SendKey(keys.Delete);
 		assert.equal(document.getElementById("testmask").inputmask._valueGet(), "ab-1234", "Result " + document.getElementById("testmask").inputmask._valueGet());
 	});
 
@@ -335,7 +335,7 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		$("#testmask").Type("some.body@mail.com");
 		$.caret(testmask, 9);
-		$("#testmask").SendKey(keyCode.Delete);
+		$("#testmask").SendKey(keys.Delete);
 		assert.equal($.caret(testmask).begin, "some.body@".length, "Result " + $.caret(testmask).begin);
 	});
 
@@ -474,8 +474,8 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		$("#testmask").val("some.body@mymail.com");
 		$.caret(testmask, "some.body@m".length);
-		$("#testmask").SendKey(keyCode.Delete);
-		$("#testmask").SendKey(keyCode.Delete);
+		$("#testmask").SendKey(keys.Delete);
+		$("#testmask").SendKey(keys.Delete);
 		assert.equal(testmask.value, "some.body@mail.com", "Result " + testmask.value);
 	});
 };

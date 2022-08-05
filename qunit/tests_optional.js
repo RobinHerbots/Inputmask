@@ -1,4 +1,4 @@
-import {keyCode} from "../lib/keycode";
+import {keys} from "../lib/keycode";
 
 export default function (qunit, Inputmask) {
 	var $ = Inputmask.dependencyLib;
@@ -105,7 +105,7 @@ export default function (qunit, Inputmask) {
 
 		testmask.focus();
 		$("#testmask").Type("123123");
-		$("#testmask").SendKey(keyCode.Space);
+		$("#testmask").SendKey(keys.Space);
 		$("#testmask").Type("1234");
 		assert.equal(testmask.value, "123 123 1234", "Result " + testmask.value);
 	});
@@ -229,7 +229,7 @@ export default function (qunit, Inputmask) {
 
 		testmask.focus();
 		$("#testmask").Type("123456");
-		$("#testmask").SendKey(keyCode.Backspace);
+		$("#testmask").SendKey(keys.Backspace);
 		assert.equal(testmask.inputmask.isComplete(), true, "Result " + testmask.inputmask.isComplete());
 	});
 
@@ -244,7 +244,7 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		setTimeout(function () {
 			$("#testmask").Type("123456");
-			$("#testmask").SendKey(keyCode.Backspace);
+			$("#testmask").SendKey(keys.Backspace);
 			testmask.blur();
 			setTimeout(function () {
 				assert.equal($("#testmask")[0].inputmask._valueGet(), "12345", "Result " + $("#testmask")[0].inputmask._valueGet());
@@ -264,7 +264,7 @@ export default function (qunit, Inputmask) {
 
 		testmask.focus();
 		$("#testmask").Type("123456");
-		$("#testmask").SendKey(keyCode.Backspace);
+		$("#testmask").SendKey(keys.Backspace);
 		setTimeout(function () {
 			assert.equal(testmask.value, "12345", "Result " + testmask.value);
 			done();
@@ -279,7 +279,7 @@ export default function (qunit, Inputmask) {
 
 		testmask.focus();
 		$("#testmask").Type("12345678901");
-		$("#testmask").SendKey(keyCode.Backspace);
+		$("#testmask").SendKey(keys.Backspace);
 		assert.equal(testmask.inputmask.isComplete(), true, "Result " + testmask.inputmask.isComplete());
 	});
 
@@ -324,7 +324,7 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		$("#testmask").Type("abcd1");
 		$.caret(testmask, 0, testmask.value.length - 2);
-		$("#testmask").SendKey(keyCode.Delete);
+		$("#testmask").SendKey(keys.Delete);
 		$("#testmask").Type("abcd");
 
 		assert.equal(testmask.value, "abcd XYZ 1", "Result " + testmask.value);
