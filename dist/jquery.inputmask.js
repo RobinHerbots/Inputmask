@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.34
+ * Version: 5.0.8-beta.35
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -238,7 +238,7 @@
                         if (!(!0 === t || e.ctrlKey && e.altKey) && (e.ctrlKey || e.metaKey || c.ignorable)) return m === n.keys.Enter && c.undoValue !== c._valueGet(!0) && (c.undoValue = c._valueGet(!0), 
                         setTimeout((function() {
                             h.trigger("change");
-                        }), 0)), c.skipInputEvent = !0, !0;
+                        }), 0)), !1;
                         if (m) {
                             var v, g = t ? {
                                 begin: l,
@@ -1951,7 +1951,7 @@
                 }), {}), o = Object.entries(n).reduce((function(e, t) {
                     var a = i(t, 2), n = a[0];
                     a[1];
-                    return e[n] = n, e;
+                    return e[n] = "Space" === n ? " " : n, e;
                 }), {});
                 t.keys = o;
             },
@@ -2968,7 +2968,7 @@
                     }
                     var d = new u.Event("keypress");
                     for (a = e; a < t; a++) {
-                        d.key = p[a], s.ignorable = !1;
+                        d.key = p[a].toString(), s.ignorable = !1;
                         var h = o.EventHandlers.keypressEvent.call(s, d, !0, !1, !1, n);
                         !1 !== h && void 0 !== h && (n = h.forwardPosition);
                     }

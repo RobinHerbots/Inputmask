@@ -6,7 +6,7 @@
 - Comma input turns to decimal #2577 => add substituteRadixPoint option to numeric alias
 
 ### Updates
-- consolidate keydown, keypress & keyup into keyEvent (todo)
+- consolidate keydown, keypress & keyup into keyEvent (wip)
 - refactor keyboard event keycode to key
 - refactor validPositions from object to array. - #2428
 - add keepStatic behavior to optional parts - #2619
