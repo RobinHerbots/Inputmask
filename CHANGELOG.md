@@ -14,6 +14,7 @@
 - fix value reversing with noValuePatching & numericInput - #2629
 
 ### Fixed
+- error message: Cannot read properties of undefined (reading 'allowMinus') #2642
 - fix iphone\ios bug for cyrillic keyboard - #2637
 - getemptymask returns a reversed string in 5.x #2605
 - DateTime milliseconds (unmaskedvalue) #2597

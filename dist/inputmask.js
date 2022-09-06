@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.35
+ * Version: 5.0.8-beta.37
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -329,7 +329,7 @@
                     return a;
                 }
                 var f = {
-                    keydownEvent: function(e, t, i, c, u) {
+                    keyEvent: function(e, t, i, c, u) {
                         var p = this.inputmask, d = p.opts, h = p.dependencyLib, v = p.maskset, m = this, g = h(m), k = e.key, y = a.caret.call(p, m), b = d.onKeyDown.call(this, e, a.getBuffer.call(p), y, d);
                         if (void 0 !== b) return b;
                         if (k === n.keys.Backspace || k === n.keys.Delete || r.iphone && k === n.keys.BACKSPACE_SAFARI || e.ctrlKey && k === n.keys.x && !("oncut" in m)) e.preventDefault(), 
@@ -472,7 +472,7 @@
 
                               case "deleteContentBackward":
                                 var v = new o.Event("keydown");
-                                v.key = n.keys.Backspace, f.keydownEvent.call(c, v);
+                                v.key = n.keys.Backspace, f.keyEvent.call(c, v);
                                 break;
 
                               default:
@@ -2341,7 +2341,7 @@
                         o.EventRuler.on(i, "mouseenter", c.EventHandlers.mouseenterEvent), o.EventRuler.on(i, "paste", c.EventHandlers.pasteEvent), 
                         o.EventRuler.on(i, "cut", c.EventHandlers.cutEvent), o.EventRuler.on(i, "complete", t.oncomplete), 
                         o.EventRuler.on(i, "incomplete", t.onincomplete), o.EventRuler.on(i, "cleared", t.oncleared), 
-                        !0 !== t.inputEventOnly && (o.EventRuler.on(i, "keydown", c.EventHandlers.keydownEvent), 
+                        !0 !== t.inputEventOnly && (o.EventRuler.on(i, "keydown", c.EventHandlers.keyEvent), 
                         o.EventRuler.on(i, "keyup", c.EventHandlers.keyupEvent)), (s.mobile || t.inputEventOnly) && i.removeAttribute("maxLength"), 
                         o.EventRuler.on(i, "input", c.EventHandlers.inputFallBackEvent), o.EventRuler.on(i, "compositionend", c.EventHandlers.compositionendEvent)), 
                         o.EventRuler.on(i, "setvalue", c.EventHandlers.setValueEvent), n.getBufferTemplate.call(e).join(""), 
@@ -2997,7 +2997,7 @@
                 }
                 function p(e, t, i) {
                     for (var n = this.maskset, r = !1, o = a.getTests.call(this, e), s = 0; s < o.length; s++) {
-                        if (o[s].match && (o[s].match.nativeDef === t.match[i.shiftPositions ? "def" : "nativeDef"] && (!i.shiftPositions || !t.match.static) || o[s].match.nativeDef === t.match.nativeDef || i.regex && !o[s].match.static && o[s].match.fn.test(t.input))) {
+                        if (o[s].match && (o[s].match.nativeDef === t.match[i.shiftPositions ? "def" : "nativeDef"] && (!i.shiftPositions || !t.match.static) || o[s].match.nativeDef === t.match.nativeDef || i.regex && !o[s].match.static && o[s].match.fn.test(t.input, n, e, !1, i))) {
                             r = !0;
                             break;
                         }
