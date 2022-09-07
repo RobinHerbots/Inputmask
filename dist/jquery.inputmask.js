@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.37
+ * Version: 5.0.8-beta.38
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -2543,7 +2543,7 @@
                     return this.maskset.validPositions[e] || c.call(this, e, p.call(this, e, t ? t.slice() : t, i));
                 }
                 function c(e, t) {
-                    var i = this.opts, a = function(e, t) {
+                    var i = this.opts, a = 0, n = function(e, t) {
                         var i = 0, a = !1;
                         t.forEach((function(e) {
                             e.match.optionality && (0 !== i && i !== e.match.optionality && (a = !0), (0 === i || i > e.match.optionality) && (i = e.match.optionality));
@@ -2551,16 +2551,16 @@
                         return i;
                     }(e, t);
                     e = e > 0 ? e - 1 : 0;
-                    var n, o, s, l = r(u.call(this, e));
-                    i.greedy && t.length > 1 && "" === t[t.length - 1].match.def && t.pop();
-                    for (var c = 0; c < t.length; c++) {
-                        var f = t[c];
-                        n = r(f, l.length);
-                        var p = Math.abs(n - l);
-                        (void 0 === o || "" !== n && p < o || s && !i.greedy && s.match.optionality && s.match.optionality - a > 0 && "master" === s.match.newBlockMarker && (!f.match.optionality || f.match.optionality - a < 1 || !f.match.newBlockMarker) || s && !i.greedy && s.match.optionalQuantifier && !f.match.optionalQuantifier) && (o = p, 
-                        s = f);
+                    var o, s, l, c = r(u.call(this, e));
+                    i.greedy && t.length > 1 && "" === t[t.length - 1].match.def && a++;
+                    for (var f = 0; f < t.length - a; f++) {
+                        var p = t[f];
+                        o = r(p, c.length);
+                        var d = Math.abs(o - c);
+                        (void 0 === s || "" !== o && d < s || l && !i.greedy && l.match.optionality && l.match.optionality - n > 0 && "master" === l.match.newBlockMarker && (!p.match.optionality || p.match.optionality - n < 1 || !p.match.newBlockMarker) || l && !i.greedy && l.match.optionalQuantifier && !p.match.optionalQuantifier) && (s = d, 
+                        l = p);
                     }
-                    return s;
+                    return l;
                 }
                 function u(e, t) {
                     var i = this.maskset;
@@ -2696,7 +2696,8 @@
                                     if (r = s(Q, [ z ].concat(o), Q)) {
                                         if ((a = v[v.length - 1].match).optionalQuantifier = z >= q.quantifier.min, a.jit = (z + 1) * (Q.matches.indexOf(a) + 1) > q.quantifier.jit, 
                                         a.optionalQuantifier && d(a, Q)) {
-                                            g = !0, h = e;
+                                            g = !0, h = e, u.greedy && null == l.validPositions[e - 1] && z > q.quantifier.min && (v.pop(), 
+                                            k = void 0);
                                             break;
                                         }
                                         return a.jit && (l.jitOffset[e] = Q.matches.length - Q.matches.indexOf(a)), !0;
