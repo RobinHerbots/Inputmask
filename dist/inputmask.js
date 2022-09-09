@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.41
+ * Version: 5.0.8-beta.43
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -68,7 +68,7 @@
                     positionCaretOnTab: !0,
                     tabThrough: !1,
                     supportsInputType: [ "text", "tel", "url", "password", "search" ],
-                    ignorables: [ a.keys.Backspace, a.keys.Tab, a.keys.Pause, a.keys.Escape, a.keys.PageUp, a.keys.PageDown, a.keys.End, a.keys.Home, a.keys.Left, a.keys.Up, a.keys.Right, a.keys.Down, a.keys.Insert, a.keys.Delete, a.keys.ContextMenu, a.keys.F1, a.keys.F2, a.keys.F3, a.keys.F4, a.keys.F5, a.keys.F6, a.keys.F7, a.keys.F8, a.keys.F9, a.keys.F10, a.keys.F11, a.keys.F12, a.keys.KEY_229, a.keys.Shift, a.keys.Control, a.keys.Alt ],
+                    ignorables: [ a.keys.Backspace, a.keys.Tab, a.keys.Pause, a.keys.Escape, a.keys.PageUp, a.keys.PageDown, a.keys.End, a.keys.Home, a.keys.Left, a.keys.Up, a.keys.Right, a.keys.Down, a.keys.Insert, a.keys.Delete, a.keys.ContextMenu, a.keys.F1, a.keys.F2, a.keys.F3, a.keys.F4, a.keys.F5, a.keys.F6, a.keys.F7, a.keys.F8, a.keys.F9, a.keys.F10, a.keys.F11, a.keys.F12, a.keys.KEY_229, a.keys.Shift, a.keys.Control, a.keys.Alt, a.keys.Tab ],
                     isComplete: null,
                     preValidation: null,
                     postValidation: null,
@@ -356,27 +356,28 @@
                     },
                     keypressEvent: function(e, t, i, r, l) {
                         var c = this.inputmask || this, u = c.opts, f = c.dependencyLib, p = c.maskset, d = c.el, h = f(d), v = e.key;
-                        if (!(!0 === t || e.ctrlKey && e.altKey) && (e.ctrlKey || e.metaKey || c.ignorable)) return v === n.keys.Enter && c.undoValue !== c._valueGet(!0) && (c.undoValue = c._valueGet(!0), 
+                        if (!0 === t || e.ctrlKey && e.altKey || !(e.ctrlKey || e.metaKey || c.ignorable)) {
+                            if (v) {
+                                var m, g = t ? {
+                                    begin: l,
+                                    end: l
+                                } : a.caret.call(c, d);
+                                v = u.substitutes[v] || v, p.writeOutBuffer = !0;
+                                var k = o.isValid.call(c, g, v, r, void 0, void 0, void 0, t);
+                                if (!1 !== k && (a.resetMaskSet.call(c, !0), m = void 0 !== k.caret ? k.caret : a.seekNext.call(c, k.pos.begin ? k.pos.begin : k.pos), 
+                                p.p = m), m = u.numericInput && void 0 === k.caret ? a.seekPrevious.call(c, m) : m, 
+                                !1 !== i && (setTimeout((function() {
+                                    u.onKeyValidation.call(d, v, k);
+                                }), 0), p.writeOutBuffer && !1 !== k)) {
+                                    var y = a.getBuffer.call(c);
+                                    (0, s.writeBuffer)(d, y, m, e, !0 !== t);
+                                }
+                                if (e.preventDefault(), t) return !1 !== k && (k.forwardPosition = m), k;
+                            }
+                        } else v === n.keys.Enter && c.undoValue !== c._valueGet(!0) && (c.undoValue = c._valueGet(!0), 
                         setTimeout((function() {
                             h.trigger("change");
-                        }), 0)), !1;
-                        if (v) {
-                            var m, g = t ? {
-                                begin: l,
-                                end: l
-                            } : a.caret.call(c, d);
-                            v = u.substitutes[v] || v, p.writeOutBuffer = !0;
-                            var k = o.isValid.call(c, g, v, r, void 0, void 0, void 0, t);
-                            if (!1 !== k && (a.resetMaskSet.call(c, !0), m = void 0 !== k.caret ? k.caret : a.seekNext.call(c, k.pos.begin ? k.pos.begin : k.pos), 
-                            p.p = m), m = u.numericInput && void 0 === k.caret ? a.seekPrevious.call(c, m) : m, 
-                            !1 !== i && (setTimeout((function() {
-                                u.onKeyValidation.call(d, v, k);
-                            }), 0), p.writeOutBuffer && !1 !== k)) {
-                                var y = a.getBuffer.call(c);
-                                (0, s.writeBuffer)(d, y, m, e, !0 !== t);
-                            }
-                            if (e.preventDefault(), t) return !1 !== k && (k.forwardPosition = m), k;
-                        }
+                        }), 0));
                     },
                     keyupEvent: function(e) {
                         var t = this.inputmask;

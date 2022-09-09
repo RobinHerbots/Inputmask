@@ -15,6 +15,7 @@
 - fix value reversing with noValuePatching & numericInput - #2629
 
 ### Fixed
+- Tab not moving to next field #2644
 - Regex unicode categories cause RangeError: Maximum call stack size exceeded #2639
 - error message: Cannot read properties of undefined (reading 'allowMinus') #2642
 - fix iphone\ios bug for cyrillic keyboard - #2637
