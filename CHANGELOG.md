@@ -3,6 +3,7 @@
 ## [5.0.8 - UNRELEASED]
 
 ### Addition
+- Regex unicode categories
 - Comma input turns to decimal #2577 => add substituteRadixPoint option to numeric alias
 
 ### Updates
@@ -14,6 +15,7 @@
 - fix value reversing with noValuePatching & numericInput - #2629
 
 ### Fixed
+- Regex unicode categories cause RangeError: Maximum call stack size exceeded #2639
 - error message: Cannot read properties of undefined (reading 'allowMinus') #2642
 - fix iphone\ios bug for cyrillic keyboard - #2637
 - getemptymask returns a reversed string in 5.x #2605

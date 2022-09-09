@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.38
+ * Version: 5.0.8-beta.41
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -2016,41 +2016,47 @@
                     function k(e, a, n) {
                         n = void 0 !== n ? n : e.matches.length;
                         var o = e.matches[n - 1];
-                        if (t) 0 === a.indexOf("[") || d && /\\d|\\s|\\w/i.test(a) || "." === a ? e.matches.splice(n++, 0, {
-                            fn: new RegExp(a, i.casing ? "i" : ""),
-                            static: !1,
-                            optionality: !1,
-                            newBlockMarker: void 0 === o ? "master" : o.def !== a,
-                            casing: null,
-                            def: a,
-                            placeholder: void 0,
-                            nativeDef: a
-                        }) : (d && (a = a[a.length - 1]), a.split("").forEach((function(t, a) {
-                            o = e.matches[n - 1], e.matches.splice(n++, 0, {
-                                fn: /[a-z]/i.test(i.staticDefinitionSymbol || t) ? new RegExp("[" + (i.staticDefinitionSymbol || t) + "]", i.casing ? "i" : "") : null,
-                                static: !0,
-                                optionality: !1,
-                                newBlockMarker: void 0 === o ? "master" : o.def !== t && !0 !== o.static,
-                                casing: null,
-                                def: i.staticDefinitionSymbol || t,
-                                placeholder: void 0 !== i.staticDefinitionSymbol ? t : void 0,
-                                nativeDef: (d ? "'" : "") + t
-                            });
-                        }))), d = !1; else {
-                            var s = i.definitions && i.definitions[a] || i.usePrototypeDefinitions && r.default.prototype.definitions[a];
-                            s && !d ? e.matches.splice(n++, 0, {
-                                fn: s.validator ? "string" == typeof s.validator ? new RegExp(s.validator, i.casing ? "i" : "") : new function() {
-                                    this.test = s.validator;
+                        if (t) {
+                            if (0 === a.indexOf("[") || d && /\\d|\\s|\\w|\\p/i.test(a) || "." === a) {
+                                var s = i.casing ? "i" : "";
+                                /^\\p\{.*}$/i.test(a) && (s += "u"), e.matches.splice(n++, 0, {
+                                    fn: new RegExp(a, s),
+                                    static: !1,
+                                    optionality: !1,
+                                    newBlockMarker: void 0 === o ? "master" : o.def !== a,
+                                    casing: null,
+                                    def: a,
+                                    placeholder: void 0,
+                                    nativeDef: a
+                                });
+                            } else d && (a = a[a.length - 1]), a.split("").forEach((function(t, a) {
+                                o = e.matches[n - 1], e.matches.splice(n++, 0, {
+                                    fn: /[a-z]/i.test(i.staticDefinitionSymbol || t) ? new RegExp("[" + (i.staticDefinitionSymbol || t) + "]", i.casing ? "i" : "") : null,
+                                    static: !0,
+                                    optionality: !1,
+                                    newBlockMarker: void 0 === o ? "master" : o.def !== t && !0 !== o.static,
+                                    casing: null,
+                                    def: i.staticDefinitionSymbol || t,
+                                    placeholder: void 0 !== i.staticDefinitionSymbol ? t : void 0,
+                                    nativeDef: (d ? "'" : "") + t
+                                });
+                            }));
+                            d = !1;
+                        } else {
+                            var l = i.definitions && i.definitions[a] || i.usePrototypeDefinitions && r.default.prototype.definitions[a];
+                            l && !d ? e.matches.splice(n++, 0, {
+                                fn: l.validator ? "string" == typeof l.validator ? new RegExp(l.validator, i.casing ? "i" : "") : new function() {
+                                    this.test = l.validator;
                                 } : new RegExp("."),
-                                static: s.static || !1,
-                                optionality: s.optional || !1,
-                                defOptionality: s.optional || !1,
-                                newBlockMarker: void 0 === o || s.optional ? "master" : o.def !== (s.definitionSymbol || a),
-                                casing: s.casing,
-                                def: s.definitionSymbol || a,
-                                placeholder: s.placeholder,
+                                static: l.static || !1,
+                                optionality: l.optional || !1,
+                                defOptionality: l.optional || !1,
+                                newBlockMarker: void 0 === o || l.optional ? "master" : o.def !== (l.definitionSymbol || a),
+                                casing: l.casing,
+                                def: l.definitionSymbol || a,
+                                placeholder: l.placeholder,
                                 nativeDef: a,
-                                generated: s.generated
+                                generated: l.generated
                             }) : (e.matches.splice(n++, 0, {
                                 fn: /[a-z]/i.test(i.staticDefinitionSymbol || a) ? new RegExp("[" + (i.staticDefinitionSymbol || a) + "]", i.casing ? "i" : "") : null,
                                 static: !0,
@@ -2109,7 +2115,14 @@
                                     w.openGroup = !0, v.push(w), h.matches = [], g = !0;
                                 }
                             }
-                            if ("\\d" === o) o = "[0-9]";
+                            switch (o) {
+                              case "\\d":
+                                o = "[0-9]";
+                                break;
+
+                              case "\\p":
+                                o += p.exec(e)[0], o += p.exec(e)[0];
+                            }
                         }
                         if (d) y(); else switch (o.charAt(0)) {
                           case "$":
@@ -2605,7 +2618,7 @@
                     }(e, t);
                     e = e > 0 ? e - 1 : 0;
                     var o, s, l, c = r(u.call(this, e));
-                    i.greedy && t.length > 1 && "" === t[t.length - 1].match.def && a++;
+                    i.greedy && t.length > 1 && "" === t[t.length - 1].match.def && (a = 1);
                     for (var f = 0; f < t.length - a; f++) {
                         var p = t[f];
                         o = r(p, c.length);
@@ -2749,8 +2762,7 @@
                                     if (r = s(Q, [ z ].concat(o), Q)) {
                                         if ((a = m[m.length - 1].match).optionalQuantifier = z >= q.quantifier.min, a.jit = (z + 1) * (Q.matches.indexOf(a) + 1) > q.quantifier.jit, 
                                         a.optionalQuantifier && d(a, Q)) {
-                                            g = !0, h = e, u.greedy && null == l.validPositions[e - 1] && z > q.quantifier.min && (m.pop(), 
-                                            k = void 0);
+                                            g = !0, h = e, u.greedy && null == l.validPositions[e - 1] && q.quantifier.min;
                                             break;
                                         }
                                         return a.jit && (l.jitOffset[e] = Q.matches.length - Q.matches.indexOf(a)), !0;
