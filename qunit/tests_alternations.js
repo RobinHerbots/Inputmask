@@ -473,4 +473,15 @@ export default function (qunit, Inputmask) {
 		$("#testmask").Type("2");
 		assert.equal(testmask.inputmask._valueGet(), "+221 (___) ___ __-__", "Result " + testmask.inputmask._valueGet());
 	});
+
+	qunit.test("+(9| ){0,15} - #2125", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+
+		Inputmask("+(9| ){0,15}").mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("123 456");
+		assert.equal(testmask.value, "+123 456", "Result " + testmask.value);
+	});
 }
