@@ -463,9 +463,9 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 
 		$("#testmask").Type("12345.123");
-		$("#testmask").SendKey(keys.Left);
-		$("#testmask").SendKey(keys.Left);
-		$("#testmask").SendKey(keys.Left);
+		$("#testmask").SendKey(keys.ArrowLeft);
+		$("#testmask").SendKey(keys.ArrowLeft);
+		$("#testmask").SendKey(keys.ArrowLeft);
 		$("#testmask").SendKey(keys.Delete);
 		$("#testmask").SendKey(keys.Delete);
 		$("#testmask").SendKey(keys.Delete);
@@ -504,10 +504,10 @@ export default function (qunit, Inputmask) {
 
 		$("#testmask").Type("12345.123");
 		//$("#testmask").trigger("click");
-		$("#testmask").SendKey(keys.Left);
-		$("#testmask").SendKey(keys.Left);
-		$("#testmask").SendKey(keys.Left);
-		$("#testmask").SendKey(keys.Left);
+		$("#testmask").SendKey(keys.ArrowLeft);
+		$("#testmask").SendKey(keys.ArrowLeft);
+		$("#testmask").SendKey(keys.ArrowLeft);
+		$("#testmask").SendKey(keys.ArrowLeft);
 		$("#testmask").SendKey(keys.Delete);
 		$("#testmask").SendKey(keys.Delete);
 		$("#testmask").SendKey(keys.Delete);
@@ -526,10 +526,10 @@ export default function (qunit, Inputmask) {
 
 		$("#testmask").Type("12345.123");
 		//$("#testmask").trigger("click");
-		$("#testmask").SendKey(keys.Left);
-		$("#testmask").SendKey(keys.Left);
-		$("#testmask").SendKey(keys.Left);
-		$("#testmask").SendKey(keys.Left);
+		$("#testmask").SendKey(keys.ArrowLeft);
+		$("#testmask").SendKey(keys.ArrowLeft);
+		$("#testmask").SendKey(keys.ArrowLeft);
+		$("#testmask").SendKey(keys.ArrowLeft);
 		$("#testmask").SendKey(keys.Delete);
 		$("#testmask").SendKey(keys.Delete);
 		$("#testmask").SendKey(keys.Delete);
@@ -547,10 +547,10 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 
 		$("#testmask").Type("12345.123");
-		$("#testmask").SendKey(keys.Left);
-		$("#testmask").SendKey(keys.Left);
-		$("#testmask").SendKey(keys.Left);
-		$("#testmask").SendKey(keys.Left);
+		$("#testmask").SendKey(keys.ArrowLeft);
+		$("#testmask").SendKey(keys.ArrowLeft);
+		$("#testmask").SendKey(keys.ArrowLeft);
+		$("#testmask").SendKey(keys.ArrowLeft);
 		$("#testmask").SendKey(keys.Delete);
 		$("#testmask").SendKey(keys.Delete);
 		$("#testmask").SendKey(keys.Delete);
@@ -2211,7 +2211,7 @@ export default function (qunit, Inputmask) {
 		$("#testmask").trigger("click");
 		$(testmask).Type("12345");
 		setTimeout(function () {
-			$("#testmask").SendKey(keys.Right);
+			$("#testmask").SendKey(keys.ArrowRight);
 			$(testmask).Type("6");
 			assert.equal(testmask.value, "1234.56", "Result " + testmask.value);
 			done();
@@ -2233,7 +2233,7 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		$("#testmask").trigger("click");
 		setTimeout(function () {
-			$("#testmask").SendKey(keys.Right);
+			$("#testmask").SendKey(keys.ArrowRight);
 			$(testmask).Type("6");
 			assert.equal(testmask.value, "1234.56", "Result " + testmask.value);
 			done();

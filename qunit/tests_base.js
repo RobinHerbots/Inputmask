@@ -106,11 +106,11 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 
 		$("#testmask").Type("123");
-		$("#testmask").SendKey(keys.Left);
-		$("#testmask").SendKey(keys.Left);
+		$("#testmask").SendKey(keys.ArrowLeft);
+		$("#testmask").SendKey(keys.ArrowLeft);
 		$("#testmask").SendKey(keys.Backspace);
 		$("#testmask").Type("4");
-		$("#testmask").SendKey(keys.Right);
+		$("#testmask").SendKey(keys.ArrowRight);
 		$("#testmask").Type("56");
 
 		assert.equal(testmask.value, "143.56_.___", "Result " + testmask.value);
@@ -125,12 +125,12 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 
 		$("#testmask").Type("123");
-		$("#testmask").SendKey(keys.Left);
-		$("#testmask").SendKey(keys.Left);
-		$("#testmask").SendKey(keys.Left);
+		$("#testmask").SendKey(keys.ArrowLeft);
+		$("#testmask").SendKey(keys.ArrowLeft);
+		$("#testmask").SendKey(keys.ArrowLeft);
 		$("#testmask").SendKey(keys.Delete);
 		$("#testmask").Type("4");
-		$("#testmask").SendKey(keys.Right);
+		$("#testmask").SendKey(keys.ArrowRight);
 		$("#testmask").Type("56");
 
 		assert.equal(testmask.value, "143.56_.___", "Result " + testmask.value);
@@ -190,7 +190,7 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 
 		$("#testmask").Type("abe");
-		$("#testmask").SendKey(keys.Left);
+		$("#testmask").SendKey(keys.ArrowLeft);
 		$("#testmask").Type("cd");
 
 		assert.equal(testmask.value, "abcde", "Result " + testmask.value);

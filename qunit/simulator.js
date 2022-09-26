@@ -87,13 +87,13 @@ export default function ($, Inputmask) {
                     $.caret(this, elem.value.length);
                     break;
                 }
-            case keys.Left:
+            case keys.ArrowLeft:
                 if (modifier == undefined) {
                     var pos = $.caret(this);
                     $.caret(this, pos.begin - 1);
                     break;
                 }
-            case keys.Right:
+            case keys.ArrowRight:
                 if (modifier == undefined) {
                     var pos = $.caret(this);
                     $.caret(this, pos.end + 1);

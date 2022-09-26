@@ -81,7 +81,7 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 
 		testmask.focus();
-		$("#testmask").SendKey(keys.Right, keys.Control);
+		$("#testmask").SendKey(keys.ArrowRight, keys.Control);
 		var today = new Date();
 		today = pad(today.getDate(), 2) + "/" + pad(parseInt(today.getMonth()) + 1, 2) + "/" + today.getFullYear();
 		assert.equal(testmask.value, today, "Result " + testmask.value);
@@ -358,7 +358,7 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 
 		testmask.focus();
-		$("#testmask").SendKey(keys.Right, keys.Control);
+		$("#testmask").SendKey(keys.ArrowRight, keys.Control);
 		var today = new Date();
 		today = pad(parseInt(today.getMonth()) + 1, 2) + "/" + pad(today.getDate(), 2) + "/" + today.getFullYear();
 		assert.equal(testmask.value, today, "Result " + testmask.value);
@@ -617,7 +617,7 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 
 		testmask.focus();
-		$("#testmask").SendKey(keys.Right, keys.Control);
+		$("#testmask").SendKey(keys.ArrowRight, keys.Control);
 		var today = new Date();
 		today = pad(today.getDate(), 2) + "." + pad(parseInt(today.getMonth()) + 1, 2) + "." + today.getFullYear();
 		assert.equal(testmask.value, today, "Result " + testmask.value);

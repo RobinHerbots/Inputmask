@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.44
+ * Version: 5.0.8-beta.45
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -68,7 +68,7 @@
                     positionCaretOnTab: !0,
                     tabThrough: !1,
                     supportsInputType: [ "text", "tel", "url", "password", "search" ],
-                    ignorables: [ a.keys.Backspace, a.keys.Tab, a.keys.Pause, a.keys.Escape, a.keys.PageUp, a.keys.PageDown, a.keys.End, a.keys.Home, a.keys.Left, a.keys.Up, a.keys.Right, a.keys.Down, a.keys.Insert, a.keys.Delete, a.keys.ContextMenu, a.keys.F1, a.keys.F2, a.keys.F3, a.keys.F4, a.keys.F5, a.keys.F6, a.keys.F7, a.keys.F8, a.keys.F9, a.keys.F10, a.keys.F11, a.keys.F12, a.keys.KEY_229, a.keys.Shift, a.keys.Control, a.keys.Alt, a.keys.Tab, a.keys.AltGraph, a.keys.CapsLock ],
+                    ignorables: [ a.keys.Backspace, a.keys.Tab, a.keys.Pause, a.keys.Escape, a.keys.PageUp, a.keys.PageDown, a.keys.End, a.keys.Home, a.keys.ArrowLeft, a.keys.ArrowUp, a.keys.ArrowRight, a.keys.ArrowDown, a.keys.Insert, a.keys.Delete, a.keys.ContextMenu, a.keys.F1, a.keys.F2, a.keys.F3, a.keys.F4, a.keys.F5, a.keys.F6, a.keys.F7, a.keys.F8, a.keys.F9, a.keys.F10, a.keys.F11, a.keys.F12, a.keys.KEY_229, a.keys.Shift, a.keys.Control, a.keys.Alt, a.keys.Tab, a.keys.AltGraph, a.keys.CapsLock ],
                     isComplete: null,
                     preValidation: null,
                     postValidation: null,
@@ -343,10 +343,10 @@
                         !0 === l.getTest.call(p, y.end - 1).match.static && y.end--, y.begin = a.seekPrevious.call(p, y.end, !0), 
                         y.begin >= 0 && y.end > 0 && (e.preventDefault(), a.caret.call(p, m, y.begin, y.end))) : (y.begin = a.seekNext.call(p, y.begin, !0), 
                         y.end = a.seekNext.call(p, y.begin, !0), y.end < v.maskLength && y.end--, y.begin <= v.maskLength && (e.preventDefault(), 
-                        a.caret.call(p, m, y.begin, y.end))) : e.shiftKey || d.insertModeVisual && !1 === d.insertMode && (k === n.keys.Right ? setTimeout((function() {
+                        a.caret.call(p, m, y.begin, y.end))) : e.shiftKey || d.insertModeVisual && !1 === d.insertMode && (k === n.keys.ArrowRight ? setTimeout((function() {
                             var e = a.caret.call(p, m);
                             a.caret.call(p, m, e.begin);
-                        }), 0) : k === n.keys.Left && setTimeout((function() {
+                        }), 0) : k === n.keys.ArrowLeft && setTimeout((function() {
                             var e = a.translatePosition.call(p, m.inputmask.caretPos.begin);
                             a.translatePosition.call(p, m.inputmask.caretPos.end);
                             p.isRTL ? a.caret.call(p, m, e + (e === v.maskLength ? 0 : 1)) : a.caret.call(p, m, e - (0 === e ? 0 : 1));
@@ -1000,7 +1000,7 @@
                             } : m;
                         },
                         onKeyDown: function(e, t, i, a) {
-                            e.ctrlKey && e.key === n.keys.Right && (this.inputmask._valueSet(E(new Date, a)), 
+                            e.ctrlKey && e.key === n.keys.ArrowRight && (this.inputmask._valueSet(E(new Date, a)), 
                             d(this).trigger("setvalue"));
                         },
                         onUnMask: function(e, t, i) {
@@ -1435,11 +1435,11 @@
                                 r.trigger("setvalue"), !1;
                             }
                             if (e.ctrlKey) switch (e.key) {
-                              case o.keys.Up:
+                              case o.keys.ArrowUp:
                                 return this.inputmask.__valueSet.call(this, parseFloat(this.inputmask.unmaskedvalue()) + parseInt(a.step)), 
                                 r.trigger("setvalue"), !1;
 
-                              case o.keys.Down:
+                              case o.keys.ArrowDown:
                                 return this.inputmask.__valueSet.call(this, parseFloat(this.inputmask.unmaskedvalue()) - parseInt(a.step)), 
                                 r.trigger("setvalue"), !1;
                             }
@@ -1959,23 +1959,23 @@
                 };
                 var n = {
                     AltGraph: 18,
+                    ArrowDown: 40,
+                    ArrowLeft: 37,
+                    ArrowRight: 39,
+                    ArrowUp: 38,
                     Backspace: 8,
                     BACKSPACE_SAFARI: 127,
                     CapsLock: 20,
                     Delete: 46,
-                    Down: 40,
                     End: 35,
                     Enter: 13,
                     Escape: 27,
                     Home: 36,
                     Insert: 45,
-                    Left: 37,
                     PageDown: 34,
                     PageUp: 33,
-                    Right: 39,
                     Space: 32,
                     Tab: 9,
-                    Up: 38,
                     c: 67,
                     x: 88,
                     z: 90,
