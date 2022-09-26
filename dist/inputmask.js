@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.45
+ * Version: 5.0.8-beta.46
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -2214,7 +2214,7 @@
                                 e = t.groupmarker[0] + e + t.groupmarker[1] + t.quantifiermarker[0] + i + "," + t.repeat + t.quantifiermarker[1];
                             }
                             if (!0 === t.keepStatic) {
-                                var a = e.match(new RegExp("(?<p1>.)\\[(?<p2>[^\\]]*)\\]", "g"));
+                                var a = e.match(new RegExp("(.)\\[([^\\]]*)\\]", "g"));
                                 a && a.forEach((function(t, i) {
                                     var a = t.split("["), n = a[0], r = a[1].replace("]", "");
                                     e = e.replace(new RegExp("".concat((0, o.default)(n), "\\[").concat((0, o.default)(r), "\\]")), n.charAt(0) === r.charAt(0) ? "(".concat(n, "|").concat(n).concat(r, ")") : "".concat(n, "[").concat(r, "]"));
