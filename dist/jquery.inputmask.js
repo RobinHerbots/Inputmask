@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.46
+ * Version: 5.0.8-beta.47
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -384,7 +384,9 @@
                         s.HandleNativePlaceholder)(i, e.originalPlaceholder);
                     },
                     clickEvent: function(e, t) {
-                        var i = this.inputmask, n = this;
+                        var i = this.inputmask;
+                        i.clicked++;
+                        var n = this;
                         if ((n.inputmask.shadowRoot || n.ownerDocument).activeElement === n) {
                             var r = a.determineNewCaretPosition.call(i, a.caret.call(i, n), t);
                             void 0 !== r && a.caret.call(i, n, r);
@@ -396,16 +398,18 @@
                         o.handleRemove.call(t, r, n.keys.Delete, l), (0, s.writeBuffer)(r, a.getBuffer.call(t), i.p, e, t.undoValue !== t._valueGet(!0));
                     },
                     blurEvent: function(e) {
-                        var t = this.inputmask, i = t.opts, n = (0, t.dependencyLib)(this), r = this;
-                        if (r.inputmask) {
-                            (0, s.HandleNativePlaceholder)(r, t.originalPlaceholder);
-                            var l = r.inputmask._valueGet(), c = a.getBuffer.call(t).slice();
-                            "" !== l && (i.clearMaskOnLostFocus && (-1 === a.getLastValidPosition.call(t) && l === a.getBufferTemplate.call(t).join("") ? c = [] : s.clearOptionalTail.call(t, c)), 
-                            !1 === o.isComplete.call(t, c) && (setTimeout((function() {
-                                n.trigger("incomplete");
-                            }), 0), i.clearIncomplete && (a.resetMaskSet.call(t), c = i.clearMaskOnLostFocus ? [] : a.getBufferTemplate.call(t).slice())), 
-                            (0, s.writeBuffer)(r, c, void 0, e)), t.undoValue !== t._valueGet(!0) && (t.undoValue = t._valueGet(!0), 
-                            n.trigger("change"));
+                        var t = this.inputmask, i = t.opts, n = t.dependencyLib;
+                        t.clicked = 0;
+                        var r = n(this), l = this;
+                        if (l.inputmask) {
+                            (0, s.HandleNativePlaceholder)(l, t.originalPlaceholder);
+                            var c = l.inputmask._valueGet(), u = a.getBuffer.call(t).slice();
+                            "" !== c && (i.clearMaskOnLostFocus && (-1 === a.getLastValidPosition.call(t) && c === a.getBufferTemplate.call(t).join("") ? u = [] : s.clearOptionalTail.call(t, u)), 
+                            !1 === o.isComplete.call(t, u) && (setTimeout((function() {
+                                r.trigger("incomplete");
+                            }), 0), i.clearIncomplete && (a.resetMaskSet.call(t), u = i.clearMaskOnLostFocus ? [] : a.getBufferTemplate.call(t).slice())), 
+                            (0, s.writeBuffer)(l, u, void 0, e)), t.undoValue !== t._valueGet(!0) && (t.undoValue = t._valueGet(!0), 
+                            r.trigger("change"));
                         }
                     },
                     mouseenterEvent: function() {
@@ -1518,7 +1522,7 @@
                         e && (t.alias = e)), this.opts = n.default.extend(!0, {}, this.defaults, t), this.noMasksCache = t && void 0 !== t.definitions, 
                         this.userOptions = t || {}, b(this.opts.alias, t, this.opts)), this.refreshValue = !1, 
                         this.undoValue = void 0, this.$el = void 0, this.skipInputEvent = !1, this.validationEvent = !1, 
-                        this.ignorable = !1, this.maxLength, this.mouseEnter = !1, this.originalPlaceholder = void 0, 
+                        this.ignorable = !1, this.maxLength, this.mouseEnter = !1, this.clicked = 0, this.originalPlaceholder = void 0, 
                         this.isComposing = !1;
                     }
                 }
@@ -2420,6 +2424,7 @@
                             break;
 
                           case "radixFocus":
+                            if (n.clicked > 1 && 0 == c.validPositions.length) break;
                             if (function(e) {
                                 if ("" !== u.radixPoint && 0 !== u.digits) {
                                     var t = c.validPositions;
