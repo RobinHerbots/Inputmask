@@ -51,7 +51,7 @@ module.exports = function (env, argv) {
 			library: {
 				"type": "umd2",
 			},
-			globalObject: "self || this"
+			globalObject: "typeof self !== 'undefined' ? self : this"
 		},
 		externals: {
 			"jquery": {
