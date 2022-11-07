@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.49
+ * Version: 5.0.8-beta.50
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -222,7 +222,7 @@
                         !0 === l.getTest.call(p, y.end - 1).match.static && y.end--, y.begin = a.seekPrevious.call(p, y.end, !0), 
                         y.begin >= 0 && y.end > 0 && (e.preventDefault(), a.caret.call(p, v, y.begin, y.end))) : (y.begin = a.seekNext.call(p, y.begin, !0), 
                         y.end = a.seekNext.call(p, y.begin, !0), y.end < m.maskLength && y.end--, y.begin <= m.maskLength && (e.preventDefault(), 
-                        a.caret.call(p, v, y.begin, y.end))) : e.shiftKey || d.insertModeVisual && !1 === d.insertMode && (k === n.keys.ArrowRight ? setTimeout((function() {
+                        a.caret.call(p, v, y.begin, y.end))) : k == n.keys.Process ? p.isComposing = !0 : e.shiftKey || d.insertModeVisual && !1 === d.insertMode && (k === n.keys.ArrowRight ? setTimeout((function() {
                             var e = a.caret.call(p, v);
                             a.caret.call(p, v, e.begin);
                         }), 0) : k === n.keys.ArrowLeft && setTimeout((function() {
@@ -253,10 +253,10 @@
                                 }
                                 if (e.preventDefault(), t) return !1 !== k && (k.forwardPosition = v), k;
                             }
-                        } else m === n.keys.Enter && c.undoValue !== c._valueGet(!0) && (c.undoValue = c._valueGet(!0), 
+                        } else m === n.keys.Enter && (c.undoValue !== c._valueGet(!0) && (c.undoValue = c._valueGet(!0), 
                         setTimeout((function() {
                             h.trigger("change");
-                        }), 0));
+                        }), 0)), c.isComposing && (h.trigger("input"), c.isComposing = !1));
                     },
                     pasteEvent: function(e) {
                         var t, i = this.inputmask, n = i.opts, r = i._valueGet(!0), o = a.caret.call(i, this);
@@ -292,9 +292,9 @@
                     },
                     inputFallBackEvent: function(e) {
                         var t = this.inputmask, i = t.opts, o = t.dependencyLib;
-                        var c = this, u = c.inputmask._valueGet(!0), p = (t.isRTL ? a.getBuffer.call(t).slice().reverse() : a.getBuffer.call(t)).join(""), d = a.caret.call(t, c, void 0, void 0, !0);
-                        if (p !== u) {
-                            u = function(e, i, n) {
+                        var c, u = this, p = u.inputmask._valueGet(!0), d = (t.isRTL ? a.getBuffer.call(t).slice().reverse() : a.getBuffer.call(t)).join(""), h = a.caret.call(t, u, void 0, void 0, !0);
+                        if (d !== p && (void 0 === e.inputType || "insertCompositionText" !== e.inputType)) {
+                            switch (p = function(e, i, n) {
                                 if (r.iemobile) {
                                     var o = i.replace(a.getBuffer.call(t).join(""), "");
                                     if (1 === o.length) {
@@ -303,12 +303,7 @@
                                     }
                                 }
                                 return i;
-                            }(0, u, d);
-                            var h = e.inputType ? {
-                                action: "",
-                                data: u.split(""),
-                                caret: d
-                            } : function(e, n, r) {
+                            }(0, p, h), c = function(e, n, r) {
                                 for (var o, s, c, u = e.substr(0, r.begin).split(""), f = e.substr(r.begin).split(""), p = n.substr(0, r.begin).split(""), d = n.substr(r.begin).split(""), h = u.length >= p.length ? u.length : p.length, m = f.length >= d.length ? f.length : d.length, v = "", g = [], k = "~"; u.length < h; ) u.push(k);
                                 for (;p.length < h; ) p.push(k);
                                 for (;f.length < m; ) f.unshift(k);
@@ -336,15 +331,14 @@
                                     data: g,
                                     caret: r
                                 };
-                            }(u, p, d);
-                            switch ((c.inputmask.shadowRoot || c.ownerDocument).activeElement !== c && c.focus(), 
-                            (0, s.writeBuffer)(c, a.getBuffer.call(t)), a.caret.call(t, c, d.begin, d.end, !0), 
-                            h.action) {
+                            }(p, d, h), (u.inputmask.shadowRoot || u.ownerDocument).activeElement !== u && u.focus(), 
+                            (0, s.writeBuffer)(u, a.getBuffer.call(t)), a.caret.call(t, u, h.begin, h.end, !0), 
+                            c.action) {
                               case "insertText":
                               case "insertReplacementText":
-                                h.data.forEach((function(e, i) {
+                                c.data.forEach((function(e, i) {
                                     var a = new o.Event("keypress");
-                                    a.key = e, t.ignorable = !1, f.keypressEvent.call(c, a);
+                                    a.key = e, t.ignorable = !1, f.keypressEvent.call(u, a);
                                 })), setTimeout((function() {
                                     t.$el.trigger("keyup");
                                 }), 0);
@@ -352,11 +346,11 @@
 
                               case "deleteContentBackward":
                                 var m = new o.Event("keydown");
-                                m.key = n.keys.Backspace, f.keyEvent.call(c, m);
+                                m.key = n.keys.Backspace, f.keyEvent.call(u, m);
                                 break;
 
                               default:
-                                (0, s.applyInputValue)(c, u), a.caret.call(t, c, d.begin, d.end, !0);
+                                (0, s.applyInputValue)(u, p), a.caret.call(t, u, h.begin, h.end, !0);
                             }
                             e.preventDefault();
                         }
