@@ -7,6 +7,8 @@
 - Comma input turns to decimal #2577 => add substituteRadixPoint option to numeric alias
 
 ### Updates
+- datetime alias
+  - change default for insertModeVisual to false. - #2664
 - consolidate keydown, keypress & keyup into keyEvent (wip)
 - refactor keyboard event keycode to key
 - refactor validPositions from object to array. - #2428
