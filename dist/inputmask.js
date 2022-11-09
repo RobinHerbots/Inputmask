@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.51
+ * Version: 5.0.8-beta.52
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -68,7 +68,7 @@
                     positionCaretOnTab: !0,
                     tabThrough: !1,
                     supportsInputType: [ "text", "tel", "url", "password", "search" ],
-                    ignorables: [ a.keys.Backspace, a.keys.Tab, a.keys.Pause, a.keys.Escape, a.keys.PageUp, a.keys.PageDown, a.keys.End, a.keys.Home, a.keys.ArrowLeft, a.keys.ArrowUp, a.keys.ArrowRight, a.keys.ArrowDown, a.keys.Insert, a.keys.Delete, a.keys.ContextMenu, a.keys.F1, a.keys.F2, a.keys.F3, a.keys.F4, a.keys.F5, a.keys.F6, a.keys.F7, a.keys.F8, a.keys.F9, a.keys.F10, a.keys.F11, a.keys.F12, a.keys.Process, a.keys.Shift, a.keys.Control, a.keys.Alt, a.keys.Tab, a.keys.AltGraph, a.keys.CapsLock ],
+                    ignorables: [ a.keys.Backspace, a.keys.Tab, a.keys.Pause, a.keys.Escape, a.keys.PageUp, a.keys.PageDown, a.keys.End, a.keys.Home, a.keys.ArrowLeft, a.keys.ArrowUp, a.keys.ArrowRight, a.keys.ArrowDown, a.keys.Insert, a.keys.Delete, a.keys.ContextMenu, a.keys.F1, a.keys.F2, a.keys.F3, a.keys.F4, a.keys.F5, a.keys.F6, a.keys.F7, a.keys.F8, a.keys.F9, a.keys.F10, a.keys.F11, a.keys.F12, a.keys.Process, a.keys.Unidentified, a.keys.Shift, a.keys.Control, a.keys.Alt, a.keys.Tab, a.keys.AltGraph, a.keys.CapsLock ],
                     isComplete: null,
                     preValidation: null,
                     postValidation: null,
@@ -343,7 +343,7 @@
                         !0 === l.getTest.call(d, y.end - 1).match.static && y.end--, y.begin = a.seekPrevious.call(d, y.end, !0), 
                         y.begin >= 0 && y.end > 0 && (e.preventDefault(), a.caret.call(d, m, y.begin, y.end))) : (y.begin = a.seekNext.call(d, y.begin, !0), 
                         y.end = a.seekNext.call(d, y.begin, !0), y.end < v.maskLength && y.end--, y.begin <= v.maskLength && (e.preventDefault(), 
-                        a.caret.call(d, m, y.begin, y.end))) : k == n.keys.Process ? d.isComposing = !0 : e.shiftKey || p.insertModeVisual && !1 === p.insertMode && (k === n.keys.ArrowRight ? setTimeout((function() {
+                        a.caret.call(d, m, y.begin, y.end))) : k == n.keys.Process || k == n.keys.Unidentified ? d.isComposing = !0 : e.shiftKey || p.insertModeVisual && !1 === p.insertMode && (k === n.keys.ArrowRight ? setTimeout((function() {
                             var e = a.caret.call(d, m);
                             a.caret.call(d, m, e.begin);
                         }), 0) : k === n.keys.ArrowLeft && setTimeout((function() {
@@ -1976,6 +1976,7 @@
                     Meta_RIGHT: 92,
                     ContextMenu: 93,
                     Process: 229,
+                    Unidentified: 229,
                     F1: 112,
                     F2: 113,
                     F3: 114,
@@ -1991,8 +1992,8 @@
                 };
                 t.keyCode = n;
                 var r = Object.entries(n).reduce((function(e, t) {
-                    var a = i(t, 2), n = a[0];
-                    return e[a[1]] = n, e;
+                    var a = i(t, 2), n = a[0], r = a[1];
+                    return e[r] = void 0 === e[r] ? n : e[r], e;
                 }), {}), o = Object.entries(n).reduce((function(e, t) {
                     var a = i(t, 2), n = a[0];
                     a[1];
