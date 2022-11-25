@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.52
+ * Version: 5.0.8-beta.54
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -343,7 +343,7 @@
                         !0 === l.getTest.call(d, y.end - 1).match.static && y.end--, y.begin = a.seekPrevious.call(d, y.end, !0), 
                         y.begin >= 0 && y.end > 0 && (e.preventDefault(), a.caret.call(d, m, y.begin, y.end))) : (y.begin = a.seekNext.call(d, y.begin, !0), 
                         y.end = a.seekNext.call(d, y.begin, !0), y.end < v.maskLength && y.end--, y.begin <= v.maskLength && (e.preventDefault(), 
-                        a.caret.call(d, m, y.begin, y.end))) : k == n.keys.Process || k == n.keys.Unidentified ? d.isComposing = !0 : e.shiftKey || p.insertModeVisual && !1 === p.insertMode && (k === n.keys.ArrowRight ? setTimeout((function() {
+                        a.caret.call(d, m, y.begin, y.end))) : e.shiftKey || p.insertModeVisual && !1 === p.insertMode && (k === n.keys.ArrowRight ? setTimeout((function() {
                             var e = a.caret.call(d, m);
                             a.caret.call(d, m, e.begin);
                         }), 0) : k === n.keys.ArrowLeft && setTimeout((function() {
@@ -352,7 +352,8 @@
                             d.isRTL ? a.caret.call(d, m, e + (e === v.maskLength ? 0 : 1)) : a.caret.call(d, m, e - (0 === e ? 0 : 1));
                         }), 0)) : o.isSelection.call(d, y) ? p.insertMode = !p.insertMode : (p.insertMode = !p.insertMode, 
                         a.caret.call(d, m, y.begin, y.begin));
-                        return d.ignorable = p.ignorables.includes(k), f.keypressEvent.call(this, e, t, i, c, u);
+                        return d.isComposing = k == n.keys.Process || k == n.keys.Unidentified, d.ignorable = p.ignorables.includes(k), 
+                        f.keypressEvent.call(this, e, t, i, c, u);
                     },
                     keypressEvent: function(e, t, i, r, l) {
                         var c = this.inputmask || this, u = c.opts, f = c.dependencyLib, d = c.maskset, p = c.el, h = f(p), v = e.key;
@@ -374,10 +375,10 @@
                                 }
                                 if (e.preventDefault(), t) return !1 !== k && (k.forwardPosition = m), k;
                             }
-                        } else v === n.keys.Enter && (c.undoValue !== c._valueGet(!0) && (c.undoValue = c._valueGet(!0), 
+                        } else v === n.keys.Enter && c.undoValue !== c._valueGet(!0) && (c.undoValue = c._valueGet(!0), 
                         setTimeout((function() {
                             h.trigger("change");
-                        }), 0)), c.isComposing && (h.trigger("input"), c.isComposing = !1));
+                        }), 0));
                     },
                     pasteEvent: function(e) {
                         var t, i = this.inputmask, n = i.opts, r = i._valueGet(!0), o = a.caret.call(i, this);
@@ -414,8 +415,8 @@
                     inputFallBackEvent: function(e) {
                         var t = this.inputmask, i = t.opts, o = t.dependencyLib;
                         var c, u = this, d = u.inputmask._valueGet(!0), p = (t.isRTL ? a.getBuffer.call(t).slice().reverse() : a.getBuffer.call(t)).join(""), h = a.caret.call(t, u, void 0, void 0, !0);
-                        if (p !== d && (void 0 === e.inputType || "insertCompositionText" !== e.inputType)) {
-                            switch (d = function(e, i, n) {
+                        if (p !== d) {
+                            if (d = function(e, i, n) {
                                 if (r.iemobile) {
                                     var o = i.replace(a.getBuffer.call(t).join(""), "");
                                     if (1 === o.length) {
@@ -454,6 +455,8 @@
                                 };
                             }(d, p, h), (u.inputmask.shadowRoot || u.ownerDocument).activeElement !== u && u.focus(), 
                             (0, s.writeBuffer)(u, a.getBuffer.call(t)), a.caret.call(t, u, h.begin, h.end, !0), 
+                            t.skipNextInsert && "insertText" === e.inputType && "insertText" === c.action && t.isComposing) return !1;
+                            switch ("insertCompositionText" === e.inputType && "insertText" === c.action && t.isComposing ? t.skipNextInsert = !0 : t.skipNextInsert = !1, 
                             c.action) {
                               case "insertText":
                               case "insertReplacementText":
@@ -2704,16 +2707,16 @@
                                         if ("string" == typeof j) R = j.split(","); else for (A = 0; A < M.matches.length; A++) R.push(A.toString());
                                         if (void 0 !== l.excludes[e]) {
                                             for (var L = R.slice(), F = 0, I = l.excludes[e].length; F < I; F++) {
-                                                var V = l.excludes[e][F].toString().split(":");
-                                                o.length == V[1] && R.splice(R.indexOf(V[0]), 1);
+                                                var N = l.excludes[e][F].toString().split(":");
+                                                o.length == N[1] && R.splice(R.indexOf(N[0]), 1);
                                             }
                                             0 === R.length && (delete l.excludes[e], R = L);
                                         }
                                         (!0 === u.keepStatic || isFinite(parseInt(u.keepStatic)) && B >= u.keepStatic) && (R = R.slice(0, 1));
-                                        for (var N = 0; N < R.length; N++) {
-                                            A = parseInt(R[N]), m = [], i = "string" == typeof j && v(h, A, T) || C.slice();
+                                        for (var V = 0; V < R.length; V++) {
+                                            A = parseInt(R[V]), m = [], i = "string" == typeof j && v(h, A, T) || C.slice();
                                             var G = M.matches[A];
-                                            if (G && s(G, [ A ].concat(o), c)) r = !0; else if (0 === N && (D = !0), G && G.matches && G.matches.length > M.matches[0].matches.length) break;
+                                            if (G && s(G, [ A ].concat(o), c)) r = !0; else if (0 === V && (D = !0), G && G.matches && G.matches.length > M.matches[0].matches.length) break;
                                             _ = m.slice(), h = B, m = [];
                                             for (var H = 0; H < _.length; H++) {
                                                 var U = _[H], K = !1;
