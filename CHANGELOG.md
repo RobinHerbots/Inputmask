@@ -7,6 +7,7 @@
 - Comma input turns to decimal #2577 => add substituteRadixPoint option to numeric alias
 
 ### Updates
+- drop IE Mobile support
 - datetime alias
   - change default for insertModeVisual to false. - #2664
 - consolidate keydown, keypress & keyup into keyEvent (wip)
