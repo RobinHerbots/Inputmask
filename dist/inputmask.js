@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.56
+ * Version: 5.0.8-beta.57
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -551,7 +551,7 @@
                 var l = {
                     on: function(e, t, i) {
                         var a = e.inputmask.dependencyLib, l = function(t) {
-                            t.originalEvent && (t = t.originalEvent || t, arguments[0] = t), console.log(t.type);
+                            t.originalEvent && (t = t.originalEvent || t, arguments[0] = t);
                             var l, c = this, u = c.inputmask, f = u ? u.opts : void 0;
                             if (void 0 === u && "FORM" !== this.nodeName) {
                                 var d = a.data(c, "_inputmask_opts");
