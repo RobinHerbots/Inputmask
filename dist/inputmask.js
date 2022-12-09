@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.57
+ * Version: 5.0.8-beta.62
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -1612,7 +1612,7 @@
             2394: function(e, t, i) {
                 Object.defineProperty(t, "__esModule", {
                     value: !0
-                }), t.default = void 0, i(7149), i(3194);
+                }), t.default = void 0, i(7149), i(3194), i(9302), i(4013);
                 var a = i(157), n = m(i(4963)), r = m(i(9380)), o = i(2391), s = i(4713), l = i(8711), c = i(7215), u = i(7760), f = i(9716), d = m(i(7392)), p = m(i(3976)), h = m(i(8741));
                 function v(e) {
                     return v = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(e) {
@@ -2406,6 +2406,14 @@
                     }
                 });
             },
+            9302: function() {
+                var e = Function.bind.call(Function.call, Array.prototype.reduce), t = Function.bind.call(Function.call, Object.prototype.propertyIsEnumerable), i = Function.bind.call(Function.call, Array.prototype.concat), a = Object.keys;
+                Object.entries || (Object.entries = function(n) {
+                    return e(a(n), (function(e, a) {
+                        return i(e, "string" == typeof a && t(n, a) ? [ [ a, n[a] ] ] : []);
+                    }), []);
+                });
+            },
             7149: function() {
                 function e(t) {
                     return e = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(e) {
@@ -2418,6 +2426,11 @@
                     return e.__proto__;
                 } : function(e) {
                     return e.constructor.prototype;
+                });
+            },
+            4013: function() {
+                String.prototype.includes || (String.prototype.includes = function(e, t) {
+                    return "number" != typeof t && (t = 0), !(t + e.length > this.length) && -1 !== this.indexOf(e, t);
                 });
             },
             8711: function(e, t, i) {
