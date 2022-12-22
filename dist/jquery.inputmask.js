@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2022 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.62
+ * Version: 5.0.8-beta.66
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -18,7 +18,8 @@
                 var a;
                 Object.defineProperty(t, "__esModule", {
                     value: !0
-                }), t.default = void 0, i(3851), i(219), i(207), i(5296);
+                }), t.default = void 0, i(7149), i(3194), i(9302), i(4013), i(3851), i(219), i(207), 
+                i(5296);
                 var n = ((a = i(2394)) && a.__esModule ? a : {
                     default: a
                 }).default;
@@ -1491,7 +1492,7 @@
             2394: function(e, t, i) {
                 Object.defineProperty(t, "__esModule", {
                     value: !0
-                }), t.default = void 0, i(7149), i(3194), i(9302), i(4013);
+                }), t.default = void 0;
                 var a = i(157), n = v(i(3287)), r = v(i(9380)), o = i(2391), s = i(4713), l = i(8711), c = i(7215), u = i(7760), f = i(9716), p = v(i(7392)), d = v(i(3976)), h = v(i(8741));
                 function m(e) {
                     return m = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(e) {
