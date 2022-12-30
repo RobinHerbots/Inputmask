@@ -7,6 +7,7 @@
 - Comma input turns to decimal #2577 => add substituteRadixPoint option to numeric alias
 
 ### Updates
+- fix test resolving when using quantifiers within an optional group
 - drop IE Mobile support
 - datetime alias
   - change default for insertModeVisual to false. - #2664
