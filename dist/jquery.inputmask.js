@@ -1,9 +1,9 @@
 /*!
  * dist/jquery.inputmask
  * https://github.com/RobinHerbots/Inputmask
- * Copyright (c) 2010 - 2022 Robin Herbots
+ * Copyright (c) 2010 - 2023 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.69
+ * Version: 5.0.8-beta.70
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -293,10 +293,10 @@
                         (0, s.checkVal)(this, !0, !1, f.toString().split(""), e), e.preventDefault();
                     },
                     inputFallBackEvent: function(e) {
-                        var t = this.inputmask, i = t.opts, r = t.dependencyLib;
-                        var o, c = this, u = c.inputmask._valueGet(!0), p = (t.isRTL ? a.getBuffer.call(t).slice().reverse() : a.getBuffer.call(t)).join(""), d = a.caret.call(t, c, void 0, void 0, !0);
-                        if (p !== u) {
-                            if (o = function(e, n, r) {
+                        var t = this.inputmask, i = t.opts, o = t.dependencyLib;
+                        var c, u = this, p = u.inputmask._valueGet(!0), d = (t.isRTL ? a.getBuffer.call(t).slice().reverse() : a.getBuffer.call(t)).join(""), h = a.caret.call(t, u, void 0, void 0, !0);
+                        if (d !== p) {
+                            if (c = function(e, n, r) {
                                 for (var o, s, c, u = e.substr(0, r.begin).split(""), f = e.substr(r.begin).split(""), p = n.substr(0, r.begin).split(""), d = n.substr(r.begin).split(""), h = u.length >= p.length ? u.length : p.length, m = f.length >= d.length ? f.length : d.length, v = "", g = [], k = "~"; u.length < h; ) u.push(k);
                                 for (;p.length < h; ) p.push(k);
                                 for (;f.length < m; ) f.unshift(k);
@@ -324,28 +324,28 @@
                                     data: g,
                                     caret: r
                                 };
-                            }(u, p, d), (c.inputmask.shadowRoot || c.ownerDocument).activeElement !== c && c.focus(), 
-                            (0, s.writeBuffer)(c, a.getBuffer.call(t)), a.caret.call(t, c, d.begin, d.end, !0), 
-                            t.skipNextInsert && "insertText" === e.inputType && "insertText" === o.action && t.isComposing) return !1;
-                            switch ("insertCompositionText" === e.inputType && "insertText" === o.action && t.isComposing ? t.skipNextInsert = !0 : t.skipNextInsert = !1, 
-                            o.action) {
+                            }(p, d, h), (u.inputmask.shadowRoot || u.ownerDocument).activeElement !== u && u.focus(), 
+                            (0, s.writeBuffer)(u, a.getBuffer.call(t)), a.caret.call(t, u, h.begin, h.end, !0), 
+                            !r.mobile && t.skipNextInsert && "insertText" === e.inputType && "insertText" === c.action && t.isComposing) return !1;
+                            switch ("insertCompositionText" === e.inputType && "insertText" === c.action && t.isComposing ? t.skipNextInsert = !0 : t.skipNextInsert = !1, 
+                            c.action) {
                               case "insertText":
                               case "insertReplacementText":
-                                o.data.forEach((function(e, i) {
-                                    var a = new r.Event("keypress");
-                                    a.key = e, t.ignorable = !1, f.keypressEvent.call(c, a);
+                                c.data.forEach((function(e, i) {
+                                    var a = new o.Event("keypress");
+                                    a.key = e, t.ignorable = !1, f.keypressEvent.call(u, a);
                                 })), setTimeout((function() {
                                     t.$el.trigger("keyup");
                                 }), 0);
                                 break;
 
                               case "deleteContentBackward":
-                                var h = new r.Event("keydown");
-                                h.key = n.keys.Backspace, f.keyEvent.call(c, h);
+                                var m = new o.Event("keydown");
+                                m.key = n.keys.Backspace, f.keyEvent.call(u, m);
                                 break;
 
                               default:
-                                (0, s.applyInputValue)(c, u), a.caret.call(t, c, d.begin, d.end, !0);
+                                (0, s.applyInputValue)(u, p), a.caret.call(t, u, h.begin, h.end, !0);
                             }
                             e.preventDefault();
                         }
