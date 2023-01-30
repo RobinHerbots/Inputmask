@@ -1,3 +1,5 @@
+import {keys} from "../lib/keycode";
+
 export default function (qunit, Inputmask) {
 	var $ = Inputmask.dependencyLib;
 	qunit.module("Alternations");
@@ -272,7 +274,7 @@ export default function (qunit, Inputmask) {
 
 		Inputmask("(9)|(09)|(19)|(2f)", {
 			definitions: {
-				"f": { validator: "[0-3]" }
+				"f": {validator: "[0-3]"}
 			}
 		}).mask(testmask);
 		testmask.focus();
@@ -287,7 +289,7 @@ export default function (qunit, Inputmask) {
 
 		Inputmask("(9)|(09)|(19)|(2f)", {
 			definitions: {
-				"f": { validator: "[0-3]" }
+				"f": {validator: "[0-3]"}
 			}
 		}).mask(testmask);
 		testmask.focus();
@@ -301,7 +303,7 @@ export default function (qunit, Inputmask) {
 
 		Inputmask("(9)|(09)|(19)|(2f)", {
 			definitions: {
-				"f": { validator: "[0-3]" }
+				"f": {validator: "[0-3]"}
 			}
 		}).mask(testmask);
 		testmask.focus();
@@ -316,7 +318,7 @@ export default function (qunit, Inputmask) {
 
 		Inputmask("(9)|(09)|(19)|(2f)", {
 			definitions: {
-				"f": { validator: "[0-3]" }
+				"f": {validator: "[0-3]"}
 			}
 		}).mask(testmask);
 		testmask.focus();
@@ -331,7 +333,7 @@ export default function (qunit, Inputmask) {
 
 		Inputmask("(9|09|19|2f)", {
 			definitions: {
-				"f": { validator: "[0-3]" }
+				"f": {validator: "[0-3]"}
 			}
 		}).mask(testmask);
 		testmask.focus();
@@ -396,7 +398,7 @@ export default function (qunit, Inputmask) {
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
 		var testmask = document.getElementById("testmask");
 
-		Inputmask({ regex: "([0-9]{2})|([a-z0-9][a-z])" }).mask(testmask);
+		Inputmask({regex: "([0-9]{2})|([a-z0-9][a-z])"}).mask(testmask);
 		testmask.focus();
 		$("#testmask").Type("a2");
 		assert.equal(testmask.inputmask._valueGet(), "a_", "Result " + testmask.inputmask._valueGet());
@@ -420,7 +422,7 @@ export default function (qunit, Inputmask) {
 
 		Inputmask("([0]9)|(19)|(2f)", {
 			definitions: {
-				"f": { validator: "[0-3]" }
+				"f": {validator: "[0-3]"}
 			}
 		}).mask(testmask);
 		testmask.focus();
@@ -435,7 +437,7 @@ export default function (qunit, Inputmask) {
 
 		Inputmask("(0{0,1}9)|(19)|(2f)", {
 			definitions: {
-				"f": { validator: "[0-3]" }
+				"f": {validator: "[0-3]"}
 			}
 		}).mask(testmask);
 		testmask.focus();
@@ -483,5 +485,47 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		$("#testmask").Type("123 456");
 		assert.equal(testmask.value, "+123 456", "Result " + testmask.value);
+	});
+
+	qunit.test("Problems with deleting static chars in alternator mask type b - #2648", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+
+		Inputmask({
+			mask: [
+				"BE9{2} 9{3} 9",
+				"\\AT9{2} 9{2} 9{2}",
+			],
+			casing: "upper",
+			keepStatic: false
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("at121212");
+		$.caret(testmask, 2);
+		$("#testmask").SendKey(keys.Backspace);
+		$("#testmask").Type("b");
+		assert.equal(testmask.value, "BE12 121 2", "Result " + testmask.value);
+	});
+
+	qunit.test("Problems with deleting static chars in alternator mask type a - #2648", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+
+		Inputmask({
+			mask: [
+				"BE9{2} 9{3} 9",
+				"\\AT9{2} 9{2} 9{2}",
+			],
+			casing: "upper",
+			keepStatic: false
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("at121212");
+		$.caret(testmask, 2);
+		$("#testmask").SendKey(keys.Backspace);
+		$("#testmask").Type("a");
+		assert.equal(testmask.value, "AT12 12 12", "Result " + testmask.value);
 	});
 }
