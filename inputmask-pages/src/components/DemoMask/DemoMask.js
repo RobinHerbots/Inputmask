@@ -1,30 +1,34 @@
 import Inputmask from "inputmask";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 
 import styles from "./DemoMask.module.scss";
 
 export const DemoMask = (props) => {
   const { label, comment, maskOptions } = props,
     inputRef = useRef(),
-    complete = useRef(),
-    incomplete = useRef(),
-    cleared = useRef(),
-    keyValidation = useRef();
+    [Complete, setComplete] = useState(),
+    [Incomplete, setIncomplete] = useState(),
+    [Cleared, setCleared] = useState(),
+    [KeyValidation, setKeyValidation] = useState();
 
   useEffect(() => {
     Inputmask({
       ...maskOptions,
       oncomplete: () => {
-        complete.current = ".active";
+        setComplete("fired");
+        setIncomplete("");
       },
       onincomplete: () => {
-        incomplete.current = ".active";
+        setIncomplete("fired");
+        setComplete("");
       },
       oncleared: () => {
-        cleared.current = ".active";
+        setCleared("fired");
+        setComplete("");
+        setIncomplete("");
       },
-      onKeyValidation: () => {
-        keyValidation.current = ".active";
+      onKeyValidation: (key, result, opts) => {
+        setKeyValidation(result ? "fired" : "");
       }
     }).mask(inputRef.current);
   }, [maskOptions]);
@@ -35,10 +39,10 @@ export const DemoMask = (props) => {
       <input ref={inputRef} />
       <span className="comment">{comment}</span>
       <div className="eventIndicator">
-        <span className={complete.current}>Complete</span>
-        <span className={incomplete.current}>Incomplete</span>
-        <span className={cleared.current}>Cleared</span>
-        <span className={keyValidation.current}>Valid</span>
+        <span className={Complete}>Complete</span>
+        <span className={Incomplete}>Incomplete</span>
+        <span className={Cleared}>Cleared</span>
+        <span className={KeyValidation}>Valid</span>
       </div>
     </div>
   );
