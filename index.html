@@ -142,7 +142,7 @@
                                 }
                             });
                         },
-                        onKeyValidation: function (result, opts) {
+                        onKeyValidation: function (key, result, opts) {
                             var eventIdenticators = $(this).next().next(".eventIndicator").children("span");
                             $.each(eventIdenticators, function (ndx, lmnt) {
                                 var $lmnt = $(lmnt);

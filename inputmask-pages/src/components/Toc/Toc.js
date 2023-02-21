@@ -67,6 +67,7 @@ export const Toc = (props) => {
             const top = section.offsetTop,
               id = section.getAttribute("id"),
               link = document.querySelector(`.${styles.Toc} a[href="#${id}"]`);
+            console.log(styles.Toc);
             if (link) {
               if (
                 top >= container.scrollTop + container.offsetTop &&
