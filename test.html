@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+<div id="app">
+    <input id="test1"/>
+    <br/>
+    <input id="test2"/>
+    <br/>
+    <input id="test3"/>
+    <br/>
+    <input type="text" id="link" v-model="link"> {{ link }}
+    <br/>
+</div>
+<button id="btn" onclick="test()">Test</button>
+<script type="application/javascript" src="https://unpkg.com/vue">
+
+</script>
+<script type="application/javascript" src="node_modules/jquery/dist/jquery.js"></script>
+<script type="application/javascript" src="dist/inputmask.js"></script>
+<script>
+
+    // var test1 = document.getElementById("test1");
+    // test1.addEventListener("mouseenter", eventHandler);
+    // test1.addEventListener("keydown", eventHandler);
+    // test1.addEventListener("keypress", eventHandler);
+
+
+    function eventHandler(e) {
+        console.log(e.type);
+        console.log(e.keyCode);
+        console.log(e.key);
+        console.log(e.shiftKey);
+        console.log(e.location);
+        console.log("");
+    }
+
+    // Inputmask({
+    //     // regex: "([a-zA-Z0-9]([a-zA-Z0-9-]*)?\\.)+",
+    //     mask: "(a[a{*}].){+}",
+    // }).mask("test1");
+    // Inputmask(["9{10,40}", "aa99 9999 9999 9999 9999 99"], {
+    //     casing: "upper"
+    // }).mask("test1");
+    //
+    // Inputmask({
+    //     mask: "+(9| ){0,15}"
+    //     //  mask: "(9|999)"
+    //     // regex: '[0-9]*', greedy: true
+    // }).mask("test2");
+    //
+    Inputmask({
+        alias: "email",
+        // inputEventOnly: true
+        // placeholder:""
+    }).mask("test3");
+    //
+    Inputmask("decimal", {
+        placeholder: ""
+    }).mask("test1");
+    // Inputmask({
+    //     mask: "9{0,15}"
+    //     //  mask: "(9|999)"
+    //     // regex: '[0-9]*', greedy: true
+    // }).mask("test3");
+
+    // $("#app").on("click", function () {
+    //     im.el.value = new Date(1973, 2, 23);
+    // });
+    // Inputmask({
+    //     mask: "aaaaaaaaaaaaaaaa"
+    // }).mask("#link");
+
+    //
+    // Inputmask().mask("#test2");
+    //
+    // Inputmask().mask("#test3");
+    test = function (event) {
+        $("#link").trigger("focus");
+        $("#link").trigger("click");
+    };
+    // new Vue({
+    //     el: "#app",
+    //     data: {
+    //         url: "",
+    //         link: "",
+    //     },
+    //     methods: {
+    //         test: function (event) {
+    //
+    //             console.log("inpout");
+    //         }
+    //     },
+    //     mounted() {
+    //         setTimeout(function () {
+    //             Inputmask({
+    //                 alias: "currency",
+    //                 positionCaretOnTab: false
+    //                 // inputEventOnly: true,
+    //                 // substituteRadixPoint: false
+    //             }).mask("#link");
+    //         }, 0);
+    //     },
+    // });
+</script>
+</body>
+
+</html>

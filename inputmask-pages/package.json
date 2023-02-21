@@ -1,0 +1,70 @@
+{
+  "name": "inputmask-pages",
+  "version": "0.1.0",
+  "private": true,
+  "devDependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/react-hooks": "^3.4.2",
+    "@testing-library/user-event": "^13.5.0",
+    "eslint": "^8.34.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-header": "^3.1.1",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jest": "^27.1.7",
+    "eslint-plugin-n": "^15.6.1",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "inputmask": "^5.0.7",
+    "postcss-normalize": "^10.0.1",
+    "prettier": "2.8.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-remark": "^2.1.0",
+    "react-router-dom": "^6.6.1",
+    "react-scripts": "^5.0.1",
+    "rehype-autolink-headings": "^6.1.1",
+    "rehype-highlight": "^6.0.0",
+    "rehype-react": "^7.1.2",
+    "rehype-slug": "^5.1.0",
+    "remark-gfm": "^3.0.1",
+    "remark-parse": "^10.0.1",
+    "remark-rehype": "^10.1.0",
+    "sass": "^1.58.0",
+    "tocbot": "^4.20.1",
+    "unified": "^10.1.2",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "jest": {
+    "transformIgnorePatterns": [
+      "node_modules/(?!(rehype-autolink-headings))"
+    ]
+  }
+}
