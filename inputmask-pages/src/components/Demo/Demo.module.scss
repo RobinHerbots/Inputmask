@@ -1,0 +1,9 @@
+.Demo {
+  width: 100%;
+  & > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 15px;
+  }
+}

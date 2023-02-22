@@ -1,0 +1,65 @@
+@import "colors.scss";
+
+.content {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  overflow: auto;
+}
+
+.article {
+  display: flex;
+  flex-grow: 2;
+  flex-shrink: 0;
+  flex-basis: 34.375rem;
+  padding-left: 0.9375rem;
+  padding-right: 0.9375rem;
+  justify-content: right;
+}
+
+.asideright {
+  display: flex;
+  flex-grow: 1;
+  flex-basis: 200px;
+  border-left-style: solid;
+  border-left-width: 1px;
+  border-left-color: $main-color;
+  padding-left: 0.9375rem;
+  padding-right: 0.9375rem;
+}
+
+.scrollable {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: auto;
+  scrollbar-color: $scrollbar-thumb $scrollbar-track;
+  scrollbar-width: thin;
+  &::-webkit-scrollbar-thumb {
+    background-color: $scrollbar-thumb;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: $scrollbar-track;
+  }
+  &::-webkit-scrollbar-corner {
+    background-color: $scrollbar-track;
+  }
+  &::-webkit-scrollbar {
+    width: 0.5rem;
+    height: 0.5rem;
+  }
+  margin-right: 5px;
+}
+
+:global(#app) {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+:global(a) {
+  color: $link-color;
+  &:visited {
+    color: $link-color-visited;
+  }
+}

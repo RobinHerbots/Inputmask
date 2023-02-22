@@ -1,0 +1,37 @@
+@import "../../colors.scss";
+
+.DemoMask {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 15px;
+
+  :global {
+    & .comment {
+      margin: 0 5px 0 5px;
+      width: auto;
+
+      &>* {
+        white-space: nowrap;
+      }
+    }
+
+    & .eventIndicator {
+      display: inline-block;
+
+      &>span {
+        margin: 0 5px 0 5px;
+        padding: 2px 7px 2px 7px;
+        background-color: $main-background;
+        color: $main-color;
+        border-radius: 5px;
+
+        &.fired {
+          background-color: $fired-background !important;
+          color: $main-color !important;
+          font-weight: bold !important;
+        }
+      }
+    }
+  }
+}
