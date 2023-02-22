@@ -1,8 +1,8 @@
 {
   "files": {
-    "main.css": "/Inputmask/static/css/main.1c431230.css",
-    "main.js": "/Inputmask/static/js/main.71f926a0.js",
-    "static/js/496.421ded96.chunk.js": "/Inputmask/static/js/496.421ded96.chunk.js",
+    "main.css": "/Inputmask/static/css/main.f1fc9ce8.css",
+    "main.js": "/Inputmask/static/js/main.03607b56.js",
+    "static/js/522.ce392730.chunk.js": "/Inputmask/static/js/522.ce392730.chunk.js",
     "static/media/Changelog.md": "/Inputmask/static/media/Changelog.785caf439017a71165e3.md",
     "static/media/Documentation.md": "/Inputmask/static/media/Documentation.9c56b25db73830444913.md",
     "static/media/browserstack-logo-600x315.png": "/Inputmask/static/media/browserstack-logo-600x315.6d2b669584674591381c.png",
@@ -11,13 +11,10 @@
     "static/media/DatetimeExtension.md": "/Inputmask/static/media/DatetimeExtension.e9cb02449fe15bdd03cc.md",
     "static/media/Introduction.md": "/Inputmask/static/media/Introduction.9faddac5f6820bacbe2f.md",
     "static/media/OtherExtensions.md": "/Inputmask/static/media/OtherExtensions.90646b45ae895d040cc3.md",
-    "index.html": "/Inputmask/index.html",
-    "main.1c431230.css.map": "/Inputmask/static/css/main.1c431230.css.map",
-    "main.71f926a0.js.map": "/Inputmask/static/js/main.71f926a0.js.map",
-    "496.421ded96.chunk.js.map": "/Inputmask/static/js/496.421ded96.chunk.js.map"
+    "index.html": "/Inputmask/index.html"
   },
   "entrypoints": [
-    "static/css/main.1c431230.css",
-    "static/js/main.71f926a0.js"
+    "static/css/main.f1fc9ce8.css",
+    "static/js/main.03607b56.js"
   ]
 }
