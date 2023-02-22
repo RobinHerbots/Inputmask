@@ -1,4 +1,5 @@
 import { useEffect, useContext, useState, useCallback, useRef } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 import { MarkDownPageContext } from "../MarkDownPage/MarkDownPageContext";
 
@@ -50,7 +51,7 @@ export const Toc = (props) => {
             {node.tagName.toLowerCase() === selector.toLowerCase() && (
               <ul>
                 <li key={node.id} className={className}>
-                  <a href={`#${node.id}`}>{node.innerText}</a>
+                  <Link to={`#${node.id}`}>{node.innerText}</Link>
                   {tocBuilder(nodes, other)}
                 </li>
               </ul>
@@ -66,8 +67,7 @@ export const Toc = (props) => {
           sections.forEach((section) => {
             const top = section.offsetTop,
               id = section.getAttribute("id"),
-              link = document.querySelector(`.${styles.Toc} a[href="#${id}"]`);
-            console.log(styles.Toc);
+              link = document.querySelector(`.${styles.Toc} a[href$="#${id}"]`);
             if (link) {
               if (
                 top >= container.scrollTop + container.offsetTop &&
@@ -125,6 +125,22 @@ export const Toc = (props) => {
     scrollSpy,
     tocBuilder
   ]);
+
+  // eslint-disable-next-line one-var
+  const location = useLocation();
+
+  useEffect(() => {
+    const { hash } = location;
+    if (hash !== "") {
+      setTimeout(() => {
+        const id = hash.replace("#", ""),
+          element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView();
+        }
+      }, 0);
+    }
+  }, [location]);
 
   return (
     <div className={`${styles.Toc} ${className}`} data-testid="Toc">
