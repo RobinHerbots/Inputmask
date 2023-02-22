@@ -1,23 +1,23 @@
 {
   "files": {
-    "main.css": "/static/css/main.929caa98.css",
-    "main.js": "/static/js/main.0f70455e.js",
-    "static/js/496.421ded96.chunk.js": "/static/js/496.421ded96.chunk.js",
-    "static/media/Changelog.md": "/static/media/Changelog.785caf439017a71165e3.md",
-    "static/media/Documentation.md": "/static/media/Documentation.9c56b25db73830444913.md",
-    "static/media/browserstack-logo-600x315.png": "/static/media/browserstack-logo-600x315.6d2b669584674591381c.png",
-    "static/media/NumericExtension.md": "/static/media/NumericExtension.5d9305b89b951dce6380.md",
-    "static/media/jb_beam.svg": "/static/media/jb_beam.9f56ac0a73aad75eb327df8e5d36fa7f.svg",
-    "static/media/DatetimeExtension.md": "/static/media/DatetimeExtension.e9cb02449fe15bdd03cc.md",
-    "static/media/Introduction.md": "/static/media/Introduction.acbc779c5ad3e0369bd9.md",
-    "static/media/OtherExtensions.md": "/static/media/OtherExtensions.90646b45ae895d040cc3.md",
-    "index.html": "/index.html",
-    "main.929caa98.css.map": "/static/css/main.929caa98.css.map",
-    "main.0f70455e.js.map": "/static/js/main.0f70455e.js.map",
-    "496.421ded96.chunk.js.map": "/static/js/496.421ded96.chunk.js.map"
+    "main.css": "/Inputmask/static/css/main.ce664df5.css",
+    "main.js": "/Inputmask/static/js/main.6b5c2d2e.js",
+    "static/js/496.421ded96.chunk.js": "/Inputmask/static/js/496.421ded96.chunk.js",
+    "static/media/Changelog.md": "/Inputmask/static/media/Changelog.785caf439017a71165e3.md",
+    "static/media/Documentation.md": "/Inputmask/static/media/Documentation.9c56b25db73830444913.md",
+    "static/media/browserstack-logo-600x315.png": "/Inputmask/static/media/browserstack-logo-600x315.6d2b669584674591381c.png",
+    "static/media/NumericExtension.md": "/Inputmask/static/media/NumericExtension.5d9305b89b951dce6380.md",
+    "static/media/jb_beam.svg": "/Inputmask/static/media/jb_beam.9f56ac0a73aad75eb327df8e5d36fa7f.svg",
+    "static/media/DatetimeExtension.md": "/Inputmask/static/media/DatetimeExtension.e9cb02449fe15bdd03cc.md",
+    "static/media/Introduction.md": "/Inputmask/static/media/Introduction.9faddac5f6820bacbe2f.md",
+    "static/media/OtherExtensions.md": "/Inputmask/static/media/OtherExtensions.90646b45ae895d040cc3.md",
+    "index.html": "/Inputmask/index.html",
+    "main.ce664df5.css.map": "/Inputmask/static/css/main.ce664df5.css.map",
+    "main.6b5c2d2e.js.map": "/Inputmask/static/js/main.6b5c2d2e.js.map",
+    "496.421ded96.chunk.js.map": "/Inputmask/static/js/496.421ded96.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.929caa98.css",
-    "static/js/main.0f70455e.js"
+    "static/css/main.ce664df5.css",
+    "static/js/main.6b5c2d2e.js"
   ]
 }
