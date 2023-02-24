@@ -1,4 +1,4 @@
-@import "../../colors.scss";
+@import "../../Shared/colors.scss";
 
 .Header {
   display: flex;
@@ -10,7 +10,7 @@
   align-items: flex-end;
   justify-content: space-between;
 
-  & > H1 {
+  & > H1, > H3 {
     margin-left: 20px;
     cursor: pointer;
     & > a {

@@ -58,6 +58,6 @@
     ],
     "import/named": "error",
     "prettier/prettier": ["error", { "singleQuote": false }],
-    "one-var": ["error", "always"]
+    "one-var": ["error", "consecutive"]
   }
 }
