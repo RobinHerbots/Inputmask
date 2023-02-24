@@ -26,11 +26,13 @@
 }
 
 .navContainer {
-  border-color: $main-color;
-  border-style: solid;
-  border-width: 1px;
-  margin: 5px;
-  border-radius: 5px;
+  @media only screen and (min-width: ($ScreenThreshold + 0px)) {
+    border-color: $main-color;
+    border-style: solid;
+    border-width: 1px;
+    margin: 5px;
+    border-radius: 5px;
+  }
 
   & > ul {
     display: flex;

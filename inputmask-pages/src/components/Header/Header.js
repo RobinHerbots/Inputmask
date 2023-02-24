@@ -12,9 +12,23 @@ export const Header = () => {
   return (
     <div className={styles.Header} data-testid="Header">
       {width <= constants.ScreenThreshold && (
-        <h3>
-          <Link to={RouteNames.Home}>Inputmask</Link>
-        </h3>
+        <>
+          <h3>
+            <Link to={RouteNames.Home}>Inputmask</Link>
+          </h3>
+          <nav className={styles.navContainer}>
+            <ul>
+              <li>
+                <a
+                  href="https://github.com/RobinHerbots/inputmask"
+                  target="_blank"
+                  rel="noreferrer">
+                  View On <strong>GitHub</strong>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </>
       )}
       {width > constants.ScreenThreshold && (
         <>
