@@ -10,7 +10,9 @@
   border-bottom-width: 1px;
   border-bottom-color: $main-color;
   min-width: min-content;
+  align-self: center;
   @media only screen and (min-width: ($ScreenThreshold + 0px)) {
+    align-self: initial;
     flex-direction: column;
     border-bottom-style: none;
     border-right-style: solid;

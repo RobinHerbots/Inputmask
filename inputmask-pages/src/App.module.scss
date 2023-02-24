@@ -15,9 +15,11 @@
   display: flex;
   flex-grow: 2;
   flex-shrink: 0;
-  flex-basis: 34.375rem;
   padding-left: 0.9375rem;
   padding-right: 0.9375rem;
+  @media only screen and (min-width: ($ScreenThreshold + 0px)) {
+    flex-basis: 34.375rem;
+  }
 }
 
 .asideright {
