@@ -1,4 +1,5 @@
 @import "../../Shared/colors.scss";
+@import "../../Shared/constants.module.scss";
 
 .Header {
   display: flex;
@@ -6,11 +7,15 @@
   border-bottom-color: $main-color;
   border-bottom-style: solid;
   border-bottom-width: 1px;
-  margin: 0 15px 10px 15px;
+  margin: 0 15px 0 15px;
   align-items: flex-end;
   justify-content: space-between;
+  @media only screen and (min-width: ($ScreenThreshold + 0px)) {
+    margin-bottom: 10px;
+  }
 
-  & > H1, > H3 {
+  & > H1,
+  > H3 {
     margin-left: 20px;
     cursor: pointer;
     & > a {
