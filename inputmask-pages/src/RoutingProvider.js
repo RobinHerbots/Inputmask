@@ -13,6 +13,7 @@ import { ExtensionsToc } from "./components/Extensions/ExtensionsToc";
 import { Introduction } from "./components/Introduction/Introduction";
 import { NumericAlias } from "./components/NumericAlias/NumericAlias";
 import { NumericAliasToc } from "./components/NumericAlias/NumericAliasToc";
+import { HashFragments } from "./Shared/HashFragments";
 import RouteNames from "./Shared/RouteNames";
 
 export const RoutingContext = createContext({});
@@ -28,28 +29,48 @@ export const RoutingProvider = ({ children }) => {
       <Route
         key={RouteNames.Documentation}
         path={RouteNames.Documentation}
-        element={<Documentation />}
+        element={
+          <HashFragments>
+            <Documentation />
+          </HashFragments>
+        }
       />,
       <Route
         key={RouteNames.Documentation_Extensions}
         path={RouteNames.Documentation_Extensions}
-        element={<Extensions />}
+        element={
+          <HashFragments>
+            <Extensions />
+          </HashFragments>
+        }
       />,
       <Route
         key={RouteNames.Documentation_Datetime}
         path={RouteNames.Documentation_Datetime}
-        element={<DatetimeAlias />}
+        element={
+          <HashFragments>
+            <DatetimeAlias />
+          </HashFragments>
+        }
       />,
       <Route
         key={RouteNames.Documentation_Numeric}
         path={RouteNames.Documentation_Numeric}
-        element={<NumericAlias />}
+        element={
+          <HashFragments>
+            <NumericAlias />
+          </HashFragments>
+        }
       />,
       <Route key={RouteNames.Demo} path={RouteNames.Demo} element={<Demo />} />,
       <Route
         key={RouteNames.Changelog}
         path={RouteNames.Changelog}
-        element={<Changelog />}
+        element={
+          <HashFragments>
+            <Changelog />
+          </HashFragments>
+        }
       />,
       <Route
         key="fallback"

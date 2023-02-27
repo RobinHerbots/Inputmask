@@ -9,7 +9,7 @@ import { useViewPort } from "./components/ViewPort/ViewPort";
 import { RoutingContext } from "./RoutingProvider";
 import constants from "./Shared/constants.module.scss";
 
-function App(props) {
+function App() {
   const { routes, asideRoutes } = useContext(RoutingContext),
     { width } = useViewPort();
 

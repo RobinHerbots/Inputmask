@@ -55,6 +55,7 @@
   @media only screen and (min-width: ($ScreenThreshold + 0px)) {
     margin-right: 5px;
   }
+  scroll-behavior: smooth;
 }
 
 :global(#app) {

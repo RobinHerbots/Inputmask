@@ -1,5 +1,5 @@
 import { useEffect, useContext, useState, useCallback, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import { MarkDownPageContext } from "../MarkDownPage/MarkDownPageContext";
 
@@ -26,24 +26,6 @@ export const Toc = (props) => {
           return <></>;
         }
       }
-
-      // eslint-disable-next-line no-unused-vars
-      // function clickHandler(e) {
-      //   let target = e.target.closest("li, ul");
-      //   if (!target) return;
-
-      //   switch (target.tagName) {
-      //     case "A":
-      //       target = target.parentNode;
-      //       break;
-      //     case "UL":
-      //       target = target.firstChild;
-      //       break;
-      //   }
-
-      //   target.classList.toggle("open");
-      //   target.classList.toggle("close");
-      // }
 
       return (
         node && (
@@ -125,22 +107,6 @@ export const Toc = (props) => {
     scrollSpy,
     tocBuilder
   ]);
-
-  // eslint-disable-next-line one-var
-  const location = useLocation();
-
-  useEffect(() => {
-    const { hash } = location;
-    if (hash !== "") {
-      setTimeout(() => {
-        const id = hash.replace("#", ""),
-          element = document.getElementById(id);
-        if (element) {
-          element.scrollIntoView();
-        }
-      }, 0);
-    }
-  }, [location]);
 
   return (
     <div className={`${styles.Toc} ${className}`} data-testid="Toc">

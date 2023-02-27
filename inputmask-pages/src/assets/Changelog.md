@@ -9,6 +9,7 @@
 
 ### Updates
 
+- Update GH pages
 - fix test resolving when using quantifiers within an optional group
 - drop IE Mobile support
 - datetime alias
