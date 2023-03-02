@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Routes, HashRouter } from "react-router-dom";
+import { Routes } from "react-router-dom";
 
 import styles from "./App.module.scss";
 import { Footer } from "./components/Footer/Footer";
@@ -14,23 +14,21 @@ function App() {
     { width } = useViewPort();
 
   return (
-    <HashRouter>
-      <div id="app" data-testid="app-container">
-        <Header />
-        <div className={styles.content}>
-          <Navigation />
-          <article className={`${styles.article} ${styles.scrollable}`}>
-            <Routes>{routes}</Routes>
-          </article>
-          {width > constants.AsideThreshold && (
-            <aside className={`${styles.asideright} ${styles.scrollable}`}>
-              <Routes>{asideRoutes}</Routes>
-            </aside>
-          )}
-        </div>
-        <Footer />
+    <div id="app" data-testid="app-container">
+      <Header />
+      <div className={styles.content}>
+        <Navigation />
+        <article className={`${styles.article} ${styles.scrollable}`}>
+          <Routes>{routes}</Routes>
+        </article>
+        {width > constants.AsideThreshold && (
+          <aside className={`${styles.asideright} ${styles.scrollable}`}>
+            <Routes>{asideRoutes}</Routes>
+          </aside>
+        )}
       </div>
-    </HashRouter>
+      <Footer />
+    </div>
   );
 }
 

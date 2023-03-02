@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { Route, Navigate } from "react-router-dom";
+import { Route, Navigate, HashRouter } from "react-router-dom";
 
 import { Changelog } from "./components/Changelog/Changelog";
 import { ChangelogToc } from "./components/Changelog/ChangelogToc";
@@ -108,12 +108,14 @@ export const RoutingProvider = ({ children }) => {
     ];
 
   return (
-    <RoutingContext.Provider
-      value={{
-        routes,
-        asideRoutes
-      }}>
-      {children}
-    </RoutingContext.Provider>
+    <HashRouter>
+      <RoutingContext.Provider
+        value={{
+          routes,
+          asideRoutes
+        }}>
+        {children}
+      </RoutingContext.Provider>
+    </HashRouter>
   );
 };
