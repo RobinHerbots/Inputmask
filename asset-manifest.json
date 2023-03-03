@@ -3,7 +3,6 @@
     "main.css": "/Inputmask/static/css/main.f2e5271d.css",
     "main.js": "/Inputmask/static/js/main.e1cac6d3.js",
     "static/js/522.ce392730.chunk.js": "/Inputmask/static/js/522.ce392730.chunk.js",
-    "index.html": "/Inputmask/index.html",
     "static/media/Changelog.md": "/Inputmask/static/media/Changelog.babb2b7967e1ce836e3c.md",
     "static/media/Documentation.md": "/Inputmask/static/media/Documentation.9c56b25db73830444913.md",
     "static/media/browserstack-logo-600x315.png": "/Inputmask/static/media/browserstack-logo-600x315.6d2b669584674591381c.png",
@@ -11,7 +10,8 @@
     "static/media/jb_beam.svg": "/Inputmask/static/media/jb_beam.9f56ac0a73aad75eb327df8e5d36fa7f.svg",
     "static/media/DatetimeExtension.md": "/Inputmask/static/media/DatetimeExtension.e9cb02449fe15bdd03cc.md",
     "static/media/Introduction.md": "/Inputmask/static/media/Introduction.2b5213ec11debd51f16b.md",
-    "static/media/OtherExtensions.md": "/Inputmask/static/media/OtherExtensions.90646b45ae895d040cc3.md"
+    "static/media/OtherExtensions.md": "/Inputmask/static/media/OtherExtensions.90646b45ae895d040cc3.md",
+    "index.html": "/Inputmask/index.html"
   },
   "entrypoints": [
     "static/css/main.f2e5271d.css",
