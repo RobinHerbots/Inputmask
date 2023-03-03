@@ -43,6 +43,7 @@
 
     & > li {
       padding: 0;
+      user-select: none;
       & > a {
         padding: 5px 10px 5px 10px;
         text-decoration: none;

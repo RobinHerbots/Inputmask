@@ -16,6 +16,7 @@
 
   & > H1,
   > H3 {
+    user-select: none;
     margin-left: 20px;
     cursor: pointer;
     & > a {
@@ -43,6 +44,7 @@
     margin-bottom: 1px;
 
     & > li {
+      user-select: none;
       padding: 0;
       & > a {
         padding: 5px 10px 5px 10px;
