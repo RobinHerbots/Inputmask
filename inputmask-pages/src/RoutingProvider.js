@@ -1,18 +1,18 @@
 import { createContext } from "react";
 import { Route, Navigate, HashRouter } from "react-router-dom";
 
-import { Changelog } from "./components/Changelog/Changelog";
-import { ChangelogToc } from "./components/Changelog/ChangelogToc";
-import { DatetimeAlias } from "./components/DatetimeAlias/DatetimeAlias";
-import { DatetimeAliasToc } from "./components/DatetimeAlias/DatetimeAliasToc";
-import { Demo } from "./components/Demo/Demo";
-import { Documentation } from "./components/Documentation/Documentation";
-import { DocumentationToc } from "./components/Documentation/DocumentationToc";
-import { Extensions } from "./components/Extensions/Extensions";
-import { ExtensionsToc } from "./components/Extensions/ExtensionsToc";
-import { Introduction } from "./components/Introduction/Introduction";
-import { NumericAlias } from "./components/NumericAlias/NumericAlias";
-import { NumericAliasToc } from "./components/NumericAlias/NumericAliasToc";
+import { Changelog } from "./Components/Changelog/Changelog";
+import { ChangelogToc } from "./Components/Changelog/ChangelogToc";
+import { DatetimeAlias } from "./Components/DatetimeAlias/DatetimeAlias";
+import { DatetimeAliasToc } from "./Components/DatetimeAlias/DatetimeAliasToc";
+import { Demo } from "./Components/Demo/Demo";
+import { Documentation } from "./Components/Documentation/Documentation";
+import { DocumentationToc } from "./Components/Documentation/DocumentationToc";
+import { Extensions } from "./Components/Extensions/Extensions";
+import { ExtensionsToc } from "./Components/Extensions/ExtensionsToc";
+import { Introduction } from "./Components/Introduction/Introduction";
+import { NumericAlias } from "./Components/NumericAlias/NumericAlias";
+import { NumericAliasToc } from "./Components/NumericAlias/NumericAliasToc";
 import { HashFragments } from "./Shared/HashFragments";
 import RouteNames from "./Shared/RouteNames";
 

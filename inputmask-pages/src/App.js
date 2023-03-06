@@ -2,10 +2,10 @@ import { useContext } from "react";
 import { Routes } from "react-router-dom";
 
 import styles from "./App.module.scss";
-import { Footer } from "./components/Footer/Footer";
-import { Header } from "./components/Header/Header";
-import { Navigation } from "./components/Navigation/Navigation";
-import { useViewPort } from "./components/ViewPort/ViewPort";
+import { Footer } from "./Components/Footer/Footer";
+import { Header } from "./Components/Header/Header";
+import { Navigation } from "./Components/Navigation/Navigation";
+import { useViewPort } from "./Components/ViewPort/ViewPort";
 import { RoutingContext } from "./RoutingProvider";
 import constants from "./Shared/constants.module.scss";
 
