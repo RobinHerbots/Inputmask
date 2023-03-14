@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2023 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.73
+ * Version: 5.0.8-beta.76
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -2428,7 +2428,8 @@
                     var r, o = this, s = this.opts;
                     if (void 0 === t) return "selectionStart" in e && "selectionEnd" in e ? (t = e.selectionStart, 
                     i = e.selectionEnd) : window.getSelection ? (r = window.getSelection().getRangeAt(0)).commonAncestorContainer.parentNode !== e && r.commonAncestorContainer !== e || (t = r.startOffset, 
-                    i = r.endOffset) : document.selection && document.selection.createRange && (i = (t = 0 - (r = document.selection.createRange()).duplicate().moveStart("character", -e.inputmask._valueGet().length)) + r.text.length), 
+                    i = r.endOffset) : document.selection && document.selection.createRange && (r = document.selection.createRange(), 
+                    t = 0 - r.duplicate().moveStart("character", -e.inputmask._valueGet().length), i = t + r.text.length), 
                     {
                         begin: a ? t : c.call(o, t),
                         end: a ? i : c.call(o, i)
@@ -2456,7 +2457,7 @@
                     }
                 }, t.determineLastRequiredPosition = function(e) {
                     var t, i, r = this, s = r.maskset, l = r.dependencyLib, c = a.getMaskTemplate.call(r, !0, o.call(r), !0, !0), u = c.length, f = o.call(r), p = {}, d = s.validPositions[f], h = void 0 !== d ? d.locator.slice() : void 0;
-                    for (t = f + 1; t < c.length; t++) h = (i = a.getTestTemplate.call(r, t, h, t - 1)).locator.slice(), 
+                    for (t = f + 1; t < c.length; t++) i = a.getTestTemplate.call(r, t, h, t - 1), h = i.locator.slice(), 
                     p[t] = l.extend(!0, {}, i);
                     var m = d && void 0 !== d.alternation ? d.locator[d.alternation] : void 0;
                     for (t = u - 1; t > f && (((i = p[t]).match.optionality || i.match.optionalQuantifier && i.match.newBlockMarker || m && (m !== p[t].locator[d.alternation] && 1 != i.match.static || !0 === i.match.static && i.locator[d.alternation] && n.checkAlternationMatch.call(r, i.locator[d.alternation].toString().split(","), m.toString().split(",")) && "" !== a.getTests.call(r, t)[0].def)) && c[t] === a.getPlaceholder.call(r, t, i.match)); t--) u--;
@@ -2578,11 +2579,11 @@
                     t = t || 0;
                     var d, h, m, v, g = [], k = 0;
                     do {
-                        if (!0 === e && u.validPositions[k]) h = (m = n && u.validPositions[k].match.optionality && void 0 === u.validPositions[k + 1] && (!0 === u.validPositions[k].generatedInput || u.validPositions[k].input == o.skipOptionalPartCharacter && k > 0) ? c.call(r, k, p.call(r, k, d, k - 1)) : u.validPositions[k]).match, 
-                        d = m.locator.slice(), g.push(!0 === i ? m.input : !1 === i ? h.nativeDef : s.call(r, k, h)); else {
-                            h = (m = l.call(r, k, d, k - 1)).match, d = m.locator.slice();
+                        if (!0 === e && u.validPositions[k]) m = n && u.validPositions[k].match.optionality && void 0 === u.validPositions[k + 1] && (!0 === u.validPositions[k].generatedInput || u.validPositions[k].input == o.skipOptionalPartCharacter && k > 0) ? c.call(r, k, p.call(r, k, d, k - 1)) : u.validPositions[k], 
+                        h = m.match, d = m.locator.slice(), g.push(!0 === i ? m.input : !1 === i ? h.nativeDef : s.call(r, k, h)); else {
+                            m = l.call(r, k, d, k - 1), h = m.match, d = m.locator.slice();
                             var y = !0 !== a && (!1 !== o.jitMasking ? o.jitMasking : h.jit);
-                            (v = (v && h.static && h.def !== o.groupSeparator && null === h.fn || u.validPositions[k - 1] && h.static && h.def !== o.groupSeparator && null === h.fn) && u.tests[k] && 1 === u.tests[k].length) || !1 === y || void 0 === y || "number" == typeof y && isFinite(y) && y > k ? g.push(!1 === i ? h.nativeDef : s.call(r, g.length, h)) : v = !1;
+                            (v = (v && h.static && h.def !== o.groupSeparator && null === h.fn || u.validPositions[k - 1] && h.static && h.def !== o.groupSeparator && null === h.fn) && u.tests[k]) || !1 === y || void 0 === y || "number" == typeof y && isFinite(y) && y > k ? g.push(!1 === i ? h.nativeDef : s.call(r, g.length, h)) : v = !1;
                         }
                         k++;
                     } while (!0 !== h.static || "" !== h.def || t > k);
