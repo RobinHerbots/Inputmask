@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2023 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.76
+ * Version: 5.0.8-beta.77
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -524,10 +524,10 @@
                         void 0 === a && (a = i.inputmask._valueGet(!0)), (0, s.applyInputValue)(i, a), (e.detail && void 0 !== e.detail[1] || void 0 !== arguments[2]) && n.caret.call(t, i, e.detail ? e.detail[1] : arguments[2]);
                     },
                     focusEvent: function(e) {
-                        var t = this.inputmask, i = t.opts, a = this, r = a.inputmask._valueGet();
-                        i.showMaskOnFocus && r !== n.getBuffer.call(t).join("") && (0, s.writeBuffer)(a, n.getBuffer.call(t), n.seekNext.call(t, n.getLastValidPosition.call(t))), 
-                        !0 !== i.positionCaretOnTab || !1 !== t.mouseEnter || o.isComplete.call(t, n.getBuffer.call(t)) && -1 !== n.getLastValidPosition.call(t) || f.clickEvent.apply(a, [ e, !0 ]), 
-                        t.undoValue = t._valueGet(!0);
+                        var t = this.inputmask, i = t.opts, a = null == t ? void 0 : t._valueGet();
+                        i.showMaskOnFocus && a !== n.getBuffer.call(t).join("") && (0, s.writeBuffer)(this, n.getBuffer.call(t), n.seekNext.call(t, n.getLastValidPosition.call(t))), 
+                        !0 !== i.positionCaretOnTab || !1 !== t.mouseEnter || o.isComplete.call(t, n.getBuffer.call(t)) && -1 !== n.getLastValidPosition.call(t) || f.clickEvent.apply(this, [ e, !0 ]), 
+                        t.undoValue = null == t ? void 0 : t._valueGet(!0);
                     },
                     invalidEvent: function(e) {
                         this.inputmask.validationEvent = !0;
@@ -1587,7 +1587,8 @@
                 function c(e, t) {
                     var i = e ? e.inputmask : this, n = i.opts;
                     e.inputmask.refreshValue = !1, "function" == typeof n.onBeforeMask && (t = n.onBeforeMask.call(i, t, n) || t), 
-                    f(e, !0, !1, t = t.toString().split("")), i.undoValue = i._valueGet(!0), (n.clearMaskOnLostFocus || n.clearIncomplete) && e.inputmask._valueGet() === r.getBufferTemplate.call(i).join("") && -1 === r.getLastValidPosition.call(i) && e.inputmask._valueSet("");
+                    f(e, !0, !1, t = (t || "").toString().split("")), i.undoValue = i._valueGet(!0), 
+                    (n.clearMaskOnLostFocus || n.clearIncomplete) && e.inputmask._valueGet() === r.getBufferTemplate.call(i).join("") && -1 === r.getLastValidPosition.call(i) && e.inputmask._valueSet("");
                 }
                 function u(e) {
                     e.length = 0;
