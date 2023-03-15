@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/Inputmask/static/css/main.59f6e84e.css",
-    "main.js": "/Inputmask/static/js/main.baf85bc4.js",
+    "main.js": "/Inputmask/static/js/main.9fbb6930.js",
     "static/js/496.421ded96.chunk.js": "/Inputmask/static/js/496.421ded96.chunk.js",
     "static/media/Changelog.md": "/Inputmask/static/media/Changelog.01c09ca67323ee04176b.md",
     "static/media/Documentation.md": "/Inputmask/static/media/Documentation.bb91dc4fc41cb2e34c77.md",
@@ -13,11 +13,11 @@
     "static/media/OtherExtensions.md": "/Inputmask/static/media/OtherExtensions.d1ce0fe5791ff8870fcd.md",
     "index.html": "/Inputmask/index.html",
     "main.59f6e84e.css.map": "/Inputmask/static/css/main.59f6e84e.css.map",
-    "main.baf85bc4.js.map": "/Inputmask/static/js/main.baf85bc4.js.map",
+    "main.9fbb6930.js.map": "/Inputmask/static/js/main.9fbb6930.js.map",
     "496.421ded96.chunk.js.map": "/Inputmask/static/js/496.421ded96.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.59f6e84e.css",
-    "static/js/main.baf85bc4.js"
+    "static/js/main.9fbb6930.js"
   ]
 }
