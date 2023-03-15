@@ -1,6 +1,6 @@
 # Change Log
 
-## [5.0.8 - UNRELEASED]
+## [5.0.8 - 15/03/2023]
 
 ### Addition
 
@@ -23,6 +23,7 @@
 
 ### Fixed
 
+- Inputmask fails to handle null value #1485
 - crash the input value #2529
 - Problems with deleting static chars in alternator mask #2648
 - in firefox placeholders are not removed - not even on the demo page #2667
