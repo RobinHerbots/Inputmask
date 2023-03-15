@@ -1,9 +1,9 @@
 {
   "files": {
-    "main.css": "/Inputmask/static/css/main.f2e5271d.css",
-    "main.js": "/Inputmask/static/js/main.e1cac6d3.js",
+    "main.css": "/Inputmask/static/css/main.551d4dcf.css",
+    "main.js": "/Inputmask/static/js/main.e2341fd3.js",
     "static/js/522.ce392730.chunk.js": "/Inputmask/static/js/522.ce392730.chunk.js",
-    "static/media/Changelog.md": "/Inputmask/static/media/Changelog.babb2b7967e1ce836e3c.md",
+    "static/media/Changelog.md": "/Inputmask/static/media/Changelog.d9f728e1c3b0baec73e6.md",
     "static/media/Documentation.md": "/Inputmask/static/media/Documentation.9c56b25db73830444913.md",
     "static/media/browserstack-logo-600x315.png": "/Inputmask/static/media/browserstack-logo-600x315.6d2b669584674591381c.png",
     "static/media/NumericExtension.md": "/Inputmask/static/media/NumericExtension.5d9305b89b951dce6380.md",
@@ -14,7 +14,7 @@
     "index.html": "/Inputmask/index.html"
   },
   "entrypoints": [
-    "static/css/main.f2e5271d.css",
-    "static/js/main.e1cac6d3.js"
+    "static/css/main.551d4dcf.css",
+    "static/js/main.e2341fd3.js"
   ]
 }

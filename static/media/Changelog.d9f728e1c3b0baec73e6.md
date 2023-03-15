@@ -23,7 +23,8 @@
 
 ### Fixed
 
-- Problems with deleting static chars in alternator mask #2648 - WIP
+- crash the input value #2529
+- Problems with deleting static chars in alternator mask #2648
 - in firefox placeholders are not removed - not even on the demo page #2667
 - Tab not moving to next field #2644
 - Regex unicode categories cause RangeError: Maximum call stack size exceeded #2639
