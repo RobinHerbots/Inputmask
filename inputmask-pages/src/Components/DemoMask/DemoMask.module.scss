@@ -1,25 +1,34 @@
-@import "../../colors.scss";
+@import "../../Shared/colors.scss";
 
 .DemoMask {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  flex-flow: wrap;
   margin: 15px;
+  & > div {
+    margin: 5px;
+  }
 
   :global {
-    & .comment {
-      margin: 0 5px 0 5px;
-      width: auto;
-
-      &>* {
-        white-space: nowrap;
+    & .demoField {
+      display: flex;
+      flex-direction: column;
+      & > div {
+        & > span {
+          display: inline-block;
+          width: 150px;
+        }
+        & > input {
+          width: 250px;
+        }
       }
     }
 
     & .eventIndicator {
-      display: inline-block;
-
-      &>span {
+      display: flex;
+      flex-flow: wrap;
+      & > span {
         margin: 0 5px 0 5px;
         padding: 2px 7px 2px 7px;
         background-color: $main-background;

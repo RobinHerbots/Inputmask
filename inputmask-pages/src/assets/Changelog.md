@@ -1,6 +1,6 @@
 # Change Log
 
-## [5.0.8 - UNRELEASED]
+## [5.0.8 - 15/03/2023]
 
 ### Addition
 
@@ -9,6 +9,7 @@
 
 ### Updates
 
+- Update GH pages
 - fix test resolving when using quantifiers within an optional group
 - drop IE Mobile support
 - datetime alias
@@ -22,7 +23,9 @@
 
 ### Fixed
 
-- Problems with deleting static chars in alternator mask #2648 - WIP
+- Inputmask fails to handle null value #1485
+- crash the input value #2529
+- Problems with deleting static chars in alternator mask #2648
 - in firefox placeholders are not removed - not even on the demo page #2667
 - Tab not moving to next field #2644
 - Regex unicode categories cause RangeError: Maximum call stack size exceeded #2639

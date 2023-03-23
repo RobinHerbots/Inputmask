@@ -1,20 +1,24 @@
-@import "colors.scss";
+@import "Shared/colors.scss";
+@import "Shared/constants.module.scss";
 
 .content {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   flex-grow: 1;
-  overflow: auto;
+  overflow: hidden;
+  @media only screen and (min-width: ($ScreenThreshold + 0px)) {
+    flex-direction: row;
+  }
 }
 
 .article {
   display: flex;
   flex-grow: 2;
-  flex-shrink: 0;
-  flex-basis: 34.375rem;
   padding-left: 0.9375rem;
   padding-right: 0.9375rem;
-  justify-content: right;
+  @media only screen and (min-width: ($ScreenThreshold + 0px)) {
+    flex-basis: 34.375rem;
+  }
 }
 
 .asideright {
@@ -26,6 +30,7 @@
   border-left-color: $main-color;
   padding-left: 0.9375rem;
   padding-right: 0.9375rem;
+  min-width: min-content;
 }
 
 .scrollable {
@@ -47,7 +52,10 @@
     width: 0.5rem;
     height: 0.5rem;
   }
-  margin-right: 5px;
+  @media only screen and (min-width: ($ScreenThreshold + 0px)) {
+    margin-right: 5px;
+  }
+  scroll-behavior: smooth;
 }
 
 :global(#app) {

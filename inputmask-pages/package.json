@@ -21,7 +21,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "gh-pages": "^5.0.0",
     "history": "^5.3.0",
-    "inputmask": "^5.0.7",
+    "inputmask": "^5.0.8",
     "postcss-normalize": "^10.0.1",
     "prettier": "2.8.4",
     "react": "^18.2.0",

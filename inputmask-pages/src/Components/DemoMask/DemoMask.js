@@ -35,9 +35,13 @@ export const DemoMask = (props) => {
 
   return (
     <div className={styles.DemoMask} data-testid="DemoMask">
-      <span>{label}</span>
-      <input ref={inputRef} />
-      <span className="comment">{comment}</span>
+      <div className="demoField">
+        <div>
+          <span>{label}</span>
+          <input ref={inputRef} />
+        </div>
+        <span className="comment">{comment}</span>
+      </div>
       <div className="eventIndicator">
         <span className={Complete}>Complete</span>
         <span className={Incomplete}>Incomplete</span>

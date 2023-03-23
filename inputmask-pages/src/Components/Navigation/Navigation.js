@@ -1,10 +1,13 @@
 import { Link } from "react-router-dom";
 
-import RouteNames from "../../RouteNames";
+import constants from "../../Shared/constants.module.scss";
+import RouteNames from "../../Shared/RouteNames";
+import { useViewPort } from "../ViewPort/ViewPort";
 
 import styles from "./Navigation.module.scss";
 
 export const Navigation = () => {
+  const { width } = useViewPort();
   return (
     <nav className={styles.Navigation} data-testid="Navigation">
       <ul>
@@ -30,7 +33,7 @@ export const Navigation = () => {
             </Link>
           </li>
         </ul>
-        <hr />
+        {width > constants.ScreenThreshold && <hr />}
       </ul>
       <ul>
         <li>
@@ -38,6 +41,8 @@ export const Navigation = () => {
             Open <strong>Demo</strong>
           </Link>
         </li>
+      </ul>
+      <ul>
         <li>
           <Link to={RouteNames.Changelog}>
             Open <strong>Changelog</strong>

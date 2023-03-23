@@ -1,33 +1,49 @@
-@import "../../colors.scss";
+@import "../../Shared/colors.scss";
+@import "../../Shared/constants.module.scss";
 
 .Navigation {
   display: flex;
   flex-grow: 1;
-  flex-direction: column;
-  border-right-style: solid;
-  border-right-width: 1px;
-  border-right-color: $main-color;
+  flex-direction: row;
   margin: 5px;
-  padding-right: 0.9375rem;
-  align-items: center;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: $main-color;
+  min-width: min-content;
+  align-self: center;
+  @media only screen and (min-width: ($ScreenThreshold + 0px)) {
+    align-self: initial;
+    flex-direction: column;
+    border-bottom-style: none;
+    border-right-style: solid;
+    border-right-width: 1px;
+    border-right-color: $main-color;
+    padding-right: 10px;
+  }
 
   & ul {
     & > hr {
       width: 100%;
     }
     & > ul {
-      margin-top: 10px;
+      flex-direction: row;
+      @media only screen and (min-width: ($ScreenThreshold + 0px)) {
+        flex-direction: column;
+        margin-top: 10px;
+      }
     }
     display: flex;
     flex-direction: column;
     list-style-type: none;
     padding: 0;
     margin: 0;
-    margin-bottom: 15px;
-    min-width: 9.375rem;
+    @media only screen and (min-width: ($ScreenThreshold + 0px)) {
+      margin-bottom: 15px;
+    }
 
     & > li {
       padding: 0;
+      user-select: none;
       & > a {
         padding: 5px 10px 5px 10px;
         text-decoration: none;

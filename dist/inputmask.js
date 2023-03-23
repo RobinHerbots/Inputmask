@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2023 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.8-beta.73
+ * Version: 5.0.8
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -186,8 +186,8 @@
                         } else if (void 0 !== i[c]) {
                             arguments[0] = arguments[0].type ? arguments[0] : o.default.Event(arguments[0]), 
                             arguments[0].detail = arguments.slice(1);
-                            var h = i[c], v = "global" === u ? Object.values(h).flat() : h[u];
-                            v.forEach((function(e) {
+                            var h = i[c];
+                            ("global" === u ? Object.values(h).flat() : h[u]).forEach((function(e) {
                                 return e.apply(n, t);
                             }));
                         }
@@ -523,10 +523,10 @@
                         void 0 === a && (a = i.inputmask._valueGet(!0)), (0, s.applyInputValue)(i, a), (e.detail && void 0 !== e.detail[1] || void 0 !== arguments[2]) && n.caret.call(t, i, e.detail ? e.detail[1] : arguments[2]);
                     },
                     focusEvent: function(e) {
-                        var t = this.inputmask, i = t.opts, a = this, r = a.inputmask._valueGet();
-                        i.showMaskOnFocus && r !== n.getBuffer.call(t).join("") && (0, s.writeBuffer)(a, n.getBuffer.call(t), n.seekNext.call(t, n.getLastValidPosition.call(t))), 
-                        !0 !== i.positionCaretOnTab || !1 !== t.mouseEnter || o.isComplete.call(t, n.getBuffer.call(t)) && -1 !== n.getLastValidPosition.call(t) || f.clickEvent.apply(a, [ e, !0 ]), 
-                        t.undoValue = t._valueGet(!0);
+                        var t = this.inputmask, i = t.opts, a = null == t ? void 0 : t._valueGet();
+                        i.showMaskOnFocus && a !== n.getBuffer.call(t).join("") && (0, s.writeBuffer)(this, n.getBuffer.call(t), n.seekNext.call(t, n.getLastValidPosition.call(t))), 
+                        !0 !== i.positionCaretOnTab || !1 !== t.mouseEnter || o.isComplete.call(t, n.getBuffer.call(t)) && -1 !== n.getLastValidPosition.call(t) || f.clickEvent.apply(this, [ e, !0 ]), 
+                        t.undoValue = null == t ? void 0 : t._valueGet(!0);
                     },
                     invalidEvent: function(e) {
                         this.inputmask.validationEvent = !0;
@@ -1586,7 +1586,8 @@
                 function c(e, t) {
                     var i = e ? e.inputmask : this, n = i.opts;
                     e.inputmask.refreshValue = !1, "function" == typeof n.onBeforeMask && (t = n.onBeforeMask.call(i, t, n) || t), 
-                    f(e, !0, !1, t = t.toString().split("")), i.undoValue = i._valueGet(!0), (n.clearMaskOnLostFocus || n.clearIncomplete) && e.inputmask._valueGet() === r.getBufferTemplate.call(i).join("") && -1 === r.getLastValidPosition.call(i) && e.inputmask._valueSet("");
+                    f(e, !0, !1, t = (t || "").toString().split("")), i.undoValue = i._valueGet(!0), 
+                    (n.clearMaskOnLostFocus || n.clearIncomplete) && e.inputmask._valueGet() === r.getBufferTemplate.call(i).join("") && -1 === r.getLastValidPosition.call(i) && e.inputmask._valueSet("");
                 }
                 function u(e) {
                     e.length = 0;
@@ -1861,13 +1862,23 @@
                     }
                     var r, o;
                 }
-                function l(e, t) {
-                    if (t && ("object" === n(t) || "function" == typeof t)) return t;
-                    if (void 0 !== t) throw new TypeError("Derived constructors may only return object or undefined");
-                    return function(e) {
-                        if (void 0 === e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-                        return e;
-                    }(e);
+                function l(e) {
+                    var t = f();
+                    return function() {
+                        var i, a = p(e);
+                        if (t) {
+                            var r = p(this).constructor;
+                            i = Reflect.construct(a, arguments, r);
+                        } else i = a.apply(this, arguments);
+                        return function(e, t) {
+                            if (t && ("object" === n(t) || "function" == typeof t)) return t;
+                            if (void 0 !== t) throw new TypeError("Derived constructors may only return object or undefined");
+                            return function(e) {
+                                if (void 0 === e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+                                return e;
+                            }(e);
+                        }(this, i);
+                    };
                 }
                 function c(e) {
                     var t = "function" == typeof Map ? new Map : void 0;
@@ -1940,30 +1951,23 @@
                             }), Object.defineProperty(e, "prototype", {
                                 writable: !1
                             }), t && d(e, t);
-                        }(u, e);
-                        var t, i, n, a, o, c = (t = u, i = f(), function() {
-                            var e, n = p(t);
-                            if (i) {
-                                var a = p(this).constructor;
-                                e = Reflect.construct(n, arguments, a);
-                            } else e = n.apply(this, arguments);
-                            return l(this, e);
-                        });
-                        function u() {
+                        }(o, e);
+                        var t, i, n, a = l(o);
+                        function o() {
                             var e;
                             !function(e, t) {
                                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function");
-                            }(this, u);
-                            var t = (e = c.call(this)).getAttributeNames(), i = e.attachShadow({
+                            }(this, o);
+                            var t = (e = a.call(this)).getAttributeNames(), i = e.attachShadow({
                                 mode: "closed"
                             }), n = v.createElement("input");
-                            for (var a in n.type = "text", i.appendChild(n), t) Object.prototype.hasOwnProperty.call(t, a) && n.setAttribute(t[a], e.getAttribute(t[a]));
-                            var o = new r.default;
-                            return o.dataAttribute = "", o.mask(n), n.inputmask.shadowRoot = i, e;
+                            for (var s in n.type = "text", i.appendChild(n), t) Object.prototype.hasOwnProperty.call(t, s) && n.setAttribute(t[s], e.getAttribute(t[s]));
+                            var l = new r.default;
+                            return l.dataAttribute = "", l.mask(n), n.inputmask.shadowRoot = i, e;
                         }
-                        return n = u, a && s(n.prototype, a), o && s(n, o), Object.defineProperty(n, "prototype", {
+                        return t = o, i && s(t.prototype, i), n && s(t, n), Object.defineProperty(t, "prototype", {
                             writable: !1
-                        }), n;
+                        }), t;
                     }(c(HTMLElement));
                     a.default.customElements.define("input-mask", m);
                 }
@@ -2682,7 +2686,7 @@
                         p = v.locator.slice(), g.push(!0 === i ? v.input : !1 === i ? h.nativeDef : s.call(r, y, h)); else {
                             h = (v = l.call(r, y, p, y - 1)).match, p = v.locator.slice();
                             var k = !0 !== n && (!1 !== o.jitMasking ? o.jitMasking : h.jit);
-                            (m = (m && h.static && h.def !== o.groupSeparator && null === h.fn || u.validPositions[y - 1] && h.static && h.def !== o.groupSeparator && null === h.fn) && u.tests[y] && 1 === u.tests[y].length) || !1 === k || void 0 === k || "number" == typeof k && isFinite(k) && k > y ? g.push(!1 === i ? h.nativeDef : s.call(r, g.length, h)) : m = !1;
+                            (m = (m && h.static && h.def !== o.groupSeparator && null === h.fn || u.validPositions[y - 1] && h.static && h.def !== o.groupSeparator && null === h.fn) && u.tests[y]) || !1 === k || void 0 === k || "number" == typeof k && isFinite(k) && k > y ? g.push(!1 === i ? h.nativeDef : s.call(r, g.length, h)) : m = !1;
                         }
                         y++;
                     } while (!0 !== h.static || "" !== h.def || t > y);

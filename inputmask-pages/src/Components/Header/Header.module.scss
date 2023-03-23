@@ -1,4 +1,5 @@
-@import "../../colors.scss";
+@import "../../Shared/colors.scss";
+@import "../../Shared/constants.module.scss";
 
 .Header {
   display: flex;
@@ -6,11 +7,16 @@
   border-bottom-color: $main-color;
   border-bottom-style: solid;
   border-bottom-width: 1px;
-  margin: 0 15px 10px 15px;
+  margin: 0 15px 0 15px;
   align-items: flex-end;
   justify-content: space-between;
+  @media only screen and (min-width: ($ScreenThreshold + 0px)) {
+    margin-bottom: 10px;
+  }
 
-  & > H1 {
+  & > H1,
+  > H3 {
+    user-select: none;
     margin-left: 20px;
     cursor: pointer;
     & > a {
@@ -21,11 +27,13 @@
 }
 
 .navContainer {
-  border-color: $main-color;
-  border-style: solid;
-  border-width: 1px;
-  margin: 5px;
-  border-radius: 5px;
+  @media only screen and (min-width: ($ScreenThreshold + 0px)) {
+    border-color: $main-color;
+    border-style: solid;
+    border-width: 1px;
+    margin: 5px;
+    border-radius: 5px;
+  }
 
   & > ul {
     display: flex;
@@ -36,6 +44,7 @@
     margin-bottom: 1px;
 
     & > li {
+      user-select: none;
       padding: 0;
       & > a {
         padding: 5px 10px 5px 10px;
