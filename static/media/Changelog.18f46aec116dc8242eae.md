@@ -1,5 +1,11 @@
 # Change Log
 
+## [5.0.9 - UNRELEASED]
+
+### Fixed
+
+- type "dead" characters actually set Dead in the textbox #2701
+
 ## [5.0.8 - 15/03/2023]
 
 ### Addition
