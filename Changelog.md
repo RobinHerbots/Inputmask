@@ -4,6 +4,7 @@
 
 ### Fixed
 
+- fix ssr issues when navigator is not defined #2704
 - type "dead" characters actually set Dead in the textbox #2701
 
 ## [5.0.8 - 15/03/2023]
