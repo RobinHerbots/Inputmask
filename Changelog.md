@@ -4,6 +4,7 @@
 
 ### Fixed
 
+- Change Event fired on Blur even if value has not changed #2691
 - fix ssr issues when navigator is not defined #2704
 - type "dead" characters actually set Dead in the textbox #2701
 
