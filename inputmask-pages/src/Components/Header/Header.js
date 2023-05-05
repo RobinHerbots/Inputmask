@@ -35,7 +35,7 @@ export const Header = () => {
         <>
           <h1>
             <Link to={RouteNames.Home}>
-              <img src={logo} alt="Inputmask" width={160} />
+              <img src={logo} alt="Inputmask" width={120} />
             </Link>
           </h1>
           <nav className={styles.navContainer}>

@@ -14,3 +14,4 @@ dist/*.LICENSE
 .vscode/
 local.log
 browserstack.err
+nodetest.js
