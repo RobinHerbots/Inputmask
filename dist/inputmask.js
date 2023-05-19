@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2023 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.9-beta.7
+ * Version: 5.0.9-beta.8
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -557,7 +557,7 @@
                             "" !== c && (i.clearMaskOnLostFocus && (-1 === n.getLastValidPosition.call(t) && c === n.getBufferTemplate.call(t).join("") ? u = [] : l.clearOptionalTail.call(t, u)), 
                             !1 === s.isComplete.call(t, u) && (setTimeout((function() {
                                 r.trigger("incomplete");
-                            }), 0), i.clearIncomplete && (n.resetMaskSet.call(t), u = i.clearMaskOnLostFocus ? [] : n.getBufferTemplate.call(t).slice())), 
+                            }), 0), i.clearIncomplete && (n.resetMaskSet.call(t, !1), u = i.clearMaskOnLostFocus ? [] : n.getBufferTemplate.call(t).slice())), 
                             (0, l.writeBuffer)(o, u, void 0, e)), c = t._valueGet(!0), t.undoValue !== c && ("" != c || t.undoValue != n.getBufferTemplate.call(t).join("") || t.undoValue == n.getBufferTemplate.call(t).join("") && t.maskset.validPositions.length > 0) && (t.undoValue = c, 
                             r.trigger("change"));
                         }
@@ -1590,7 +1590,7 @@
                 }
                 function f(e, t, i, a, s) {
                     var c = e ? e.inputmask : this, u = c.maskset, f = c.opts, p = c.dependencyLib, h = a.slice(), v = "", m = -1, g = void 0, y = f.skipOptionalPartCharacter;
-                    f.skipOptionalPartCharacter = "", r.resetMaskSet.call(c), u.tests = {}, m = f.radixPoint ? r.determineNewCaretPosition.call(c, {
+                    f.skipOptionalPartCharacter = "", r.resetMaskSet.call(c, !1), m = f.radixPoint ? r.determineNewCaretPosition.call(c, {
                         begin: 0,
                         end: 0
                     }, !1, !1 === f.__financeInput ? "radixFocus" : void 0).begin : 0, u.p = m, c.caretPos = {
@@ -2454,7 +2454,8 @@
                         if ("" !== i.inputmask._valueGet(!0) || !1 === t.clearMaskOnLostFocus || d === i) {
                             (0, r.applyInputValue)(i, i.inputmask._valueGet(!0), t);
                             var p = n.getBuffer.call(e).slice();
-                            !1 === l.isComplete.call(e, p) && t.clearIncomplete && n.resetMaskSet.call(e), t.clearMaskOnLostFocus && d !== i && (-1 === n.getLastValidPosition.call(e) ? p = [] : r.clearOptionalTail.call(e, p)), 
+                            !1 === l.isComplete.call(e, p) && t.clearIncomplete && n.resetMaskSet.call(e, !1), 
+                            t.clearMaskOnLostFocus && d !== i && (-1 === n.getLastValidPosition.call(e) ? p = [] : r.clearOptionalTail.call(e, p)), 
                             (!1 === t.clearMaskOnLostFocus || t.showMaskOnFocus && d === i || "" !== i.inputmask._valueGet(!0)) && (0, 
                             r.writeBuffer)(i, p), d === i && n.caret.call(e, i, n.seekNext.call(e, n.getLastValidPosition.call(e)));
                         }
@@ -2619,6 +2620,7 @@
                 }, t.getLastValidPosition = l, t.isMask = c, t.resetMaskSet = function(e) {
                     var t = this.maskset;
                     t.buffer = void 0, !0 !== e && (t.validPositions = [], t.p = 0);
+                    !1 === e && (t.tests = {});
                 }, t.seekNext = u, t.seekPrevious = function(e, t) {
                     var i = this, a = e - 1;
                     if (e <= 0) return 0;
@@ -3144,8 +3146,8 @@
                 }
                 function p(e, t, i) {
                     var a, n, s = this, l = this.maskset, c = this.opts, u = this.dependencyLib, f = c.skipOptionalPartCharacter, d = s.isRTL ? i.slice().reverse() : i;
-                    if (c.skipOptionalPartCharacter = "", !0 === e) r.resetMaskSet.call(s), l.tests = {}, 
-                    e = 0, t = i.length, n = r.determineNewCaretPosition.call(s, {
+                    if (c.skipOptionalPartCharacter = "", !0 === e) r.resetMaskSet.call(s, !1), e = 0, 
+                    t = i.length, n = r.determineNewCaretPosition.call(s, {
                         begin: 0,
                         end: 0
                     }, !1).begin; else {
