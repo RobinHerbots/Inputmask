@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2023 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.9-beta.10
+ * Version: 5.0.9-beta.14
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -2570,22 +2570,22 @@
                 Object.defineProperty(t, "__esModule", {
                     value: !0
                 }), t.determineTestTemplate = c, t.getDecisionTaker = o, t.getMaskTemplate = function(e, t, i, a, n) {
-                    var r = this, o = this.opts, u = this.maskset, f = o.greedy;
+                    var r = this, o = this.opts, f = this.maskset, d = o.greedy;
                     n && o.greedy && (o.greedy = !1, r.maskset.tests = {});
                     t = t || 0;
-                    var d, h, m, v, g = [], k = 0;
+                    var h, m, v, g, k = [], y = 0;
                     do {
-                        if (!0 === e && u.validPositions[k]) m = n && u.validPositions[k].match.optionality && void 0 === u.validPositions[k + 1] && (!0 === u.validPositions[k].generatedInput || u.validPositions[k].input == o.skipOptionalPartCharacter && k > 0) ? c.call(r, k, p.call(r, k, d, k - 1)) : u.validPositions[k], 
-                        h = m.match, d = m.locator.slice(), g.push(!0 === i ? m.input : !1 === i ? h.nativeDef : s.call(r, k, h)); else {
-                            m = l.call(r, k, d, k - 1), h = m.match, d = m.locator.slice();
-                            var y = !0 !== a && (!1 !== o.jitMasking ? o.jitMasking : h.jit);
-                            (v = (v && h.static && h.def !== o.groupSeparator && null === h.fn || u.validPositions[k - 1] && h.static && h.def !== o.groupSeparator && null === h.fn) && u.tests[k]) || !1 === y || void 0 === y || "number" == typeof y && isFinite(y) && y > k ? g.push(!1 === i ? h.nativeDef : s.call(r, g.length, h)) : v = !1;
+                        if (!0 === e && f.validPositions[y]) v = n && f.validPositions[y].match.optionality && void 0 === f.validPositions[y + 1] && (!0 === f.validPositions[y].generatedInput || f.validPositions[y].input == o.skipOptionalPartCharacter && y > 0) ? c.call(r, y, p.call(r, y, h, y - 1)) : f.validPositions[y], 
+                        m = v.match, h = v.locator.slice(), k.push(!0 === i ? v.input : !1 === i ? m.nativeDef : s.call(r, y, m)); else {
+                            v = l.call(r, y, h, y - 1), m = v.match, h = v.locator.slice();
+                            var b = !0 !== a && (!1 !== o.jitMasking ? o.jitMasking : m.jit);
+                            (g = (g || f.validPositions[y - 1] && "" == u.call(r, y + 1).match.def) && m.static && m.def !== o.groupSeparator && null === m.fn) || !1 === b || void 0 === b || "number" == typeof b && isFinite(b) && b > y ? k.push(!1 === i ? m.nativeDef : s.call(r, k.length, m)) : g = !1;
                         }
-                        k++;
-                    } while (!0 !== h.static || "" !== h.def || t > k);
-                    "" === g[g.length - 1] && g.pop();
-                    !1 === i && void 0 !== u.maskLength || (u.maskLength = k - 1);
-                    return o.greedy = f, g;
+                        y++;
+                    } while (!0 !== m.static || "" !== m.def || t > y);
+                    "" === k[k.length - 1] && k.pop();
+                    !1 === i && void 0 !== f.maskLength || (f.maskLength = y - 1);
+                    return o.greedy = d, k;
                 }, t.getPlaceholder = s, t.getTest = u, t.getTestTemplate = l, t.getTests = p, t.isSubsetOf = f;
                 var a, n = (a = i(2394)) && a.__esModule ? a : {
                     default: a
