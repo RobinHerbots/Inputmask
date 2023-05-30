@@ -548,4 +548,49 @@ export default function (qunit, Inputmask) {
 		$("#testmask").SendKey(keys.Backspace);
 		assert.equal(testmask.value, "_1 2", "Result " + testmask.value);
 	});
+
+	qunit.test("Optional parts not working as expected - type 123456789 - #2710", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+
+		Inputmask({
+			mask: "*-******[-**]",
+			clearIncomplete: true
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("123456789");
+		testmask.blur();
+		assert.equal(testmask.value, "1-234567-89", "Result " + testmask.value);
+	});
+
+	qunit.test("Optional parts not working as expected - type 1234567 - #2710", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+
+		Inputmask({
+			mask: "*-******[-**]",
+			clearIncomplete: true
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("1234567");
+		testmask.blur();
+		assert.equal(testmask.value, "1-234567", "Result " + testmask.value);
+	});
+
+	qunit.test("Optional parts not working as expected - type 12345678 - #2710", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+
+		Inputmask({
+			mask: "*-******[-**]",
+			clearIncomplete: true
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("12345678");
+		testmask.blur();
+		assert.equal(testmask.value, "", "Result " + testmask.value);
+	});
 }

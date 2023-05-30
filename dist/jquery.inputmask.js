@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2023 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.9-beta.8
+ * Version: 5.0.9-beta.10
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -2929,12 +2929,12 @@
                     var t = this, i = this.opts, n = this.maskset;
                     if ("function" == typeof i.isComplete) return i.isComplete(e, i);
                     if ("*" !== i.repeat) {
-                        var o = !1, s = r.determineLastRequiredPosition.call(t, !0), l = r.seekPrevious.call(t, s.l);
+                        var o = !1, s = r.determineLastRequiredPosition.call(t, !0), l = s.l;
                         if (void 0 === s.def || s.def.newBlockMarker || s.def.optionality || s.def.optionalQuantifier) {
                             o = !0;
                             for (var c = 0; c <= l; c++) {
                                 var u = a.getTestTemplate.call(t, c).match;
-                                if (!0 !== u.static && void 0 === n.validPositions[c] && !0 !== u.optionality && !0 !== u.optionalQuantifier || !0 === u.static && e[c] !== a.getPlaceholder.call(t, c, u)) {
+                                if (!0 !== u.static && void 0 === n.validPositions[c] && (!1 === u.optionality || void 0 === u.optionality || u.optionality && 0 == u.newBlockMarker) && (!1 === u.optionalQuantifier || void 0 === u.optionalQuantifier) || !0 === u.static && "" != u.def && e[c] !== a.getPlaceholder.call(t, c, u)) {
                                     o = !1;
                                     break;
                                 }
