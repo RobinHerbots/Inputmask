@@ -4,6 +4,7 @@
 
 ### Fixed
 
+- Paste value when all select in inputfield not working good #2603
 - Optional parts not working as expected #2710
 - State of alternator not reset with clearIncomplete = true #2712
 - Change Event fired on Blur even if value has not changed #2691
