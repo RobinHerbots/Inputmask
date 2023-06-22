@@ -271,4 +271,32 @@ export default function (qunit, Inputmask) {
 			done();
 		}, 0);
 	});
+
+	qunit.test("decimal select all paste - #2603", function (assert) {
+		var done = assert.async(), $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask({
+			alias: "decimal",
+			allowMinus: true,
+			autoGroup: true,
+			clearMaskOnLostFocus: false,
+			digits: 2,
+			digitsOptional: false,
+			greedy: false,
+			groupSeparator: "",
+			groupSize: 3,
+			max: "99999.99",
+			min: -99999.99,}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("987.23");
+		$.caret(testmask, 0, testmask.value.length);
+		$("#testmask").paste("1234.56");
+
+		setTimeout(function () {
+			$(testmask).trigger("blur");
+			assert.equal(testmask.value, "1234.56", "Result " + testmask.value);
+			done();
+		}, 0);
+	});
 };
