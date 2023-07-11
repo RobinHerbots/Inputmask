@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2023 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.9-beta.18
+ * Version: 5.0.9-beta.20
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -1474,58 +1474,63 @@
                             }
                         },
                         preValidation: function(e, t, i, n, a, r, o, s) {
+                            var l = this;
                             if (!1 !== a.__financeInput && i === a.radixPoint) return !1;
-                            var l = e.indexOf(a.radixPoint), c = t;
+                            var c = e.indexOf(a.radixPoint), u = t;
                             if (t = function(e, t, i, n, a) {
                                 return a._radixDance && a.numericInput && t !== a.negationSymbol.back && e <= i && (i > 0 || t == a.radixPoint) && (void 0 === n.validPositions[e - 1] || n.validPositions[e - 1].input !== a.negationSymbol.back) && (e -= 1), 
                                 e;
-                            }(t, i, l, r, a), "-" === i || i === a.negationSymbol.front) {
+                            }(t, i, c, r, a), "-" === i || i === a.negationSymbol.front) {
                                 if (!0 !== a.allowMinus) return !1;
-                                var u = !1, d = p("+", r), h = p("-", r);
-                                return -1 !== d && (u = [ d, h ]), !1 !== u ? {
-                                    remove: u,
-                                    caret: c - a.negationSymbol.back.length
+                                var d = !1, h = p("+", r), v = p("-", r);
+                                return -1 !== h && (d = [ h, v ]), !1 !== d ? {
+                                    remove: d,
+                                    caret: u - a.negationSymbol.back.length
                                 } : {
                                     insert: [ {
-                                        pos: f.call(this, "+", r),
+                                        pos: f.call(l, "+", r),
                                         c: a.negationSymbol.front,
                                         fromIsValid: !0
                                     }, {
-                                        pos: f.call(this, "-", r),
+                                        pos: f.call(l, "-", r),
                                         c: a.negationSymbol.back,
                                         fromIsValid: void 0
                                     } ],
-                                    caret: c + a.negationSymbol.back.length
+                                    caret: u + a.negationSymbol.back.length
                                 };
                             }
                             if (i === a.groupSeparator) return {
-                                caret: c
+                                caret: u
                             };
                             if (s) return !0;
-                            if (-1 !== l && !0 === a._radixDance && !1 === n && i === a.radixPoint && void 0 !== a.digits && (isNaN(a.digits) || parseInt(a.digits) > 0) && l !== t) return {
-                                caret: a._radixDance && t === l - 1 ? l + 1 : l
-                            };
+                            if (-1 !== c && !0 === a._radixDance && !1 === n && i === a.radixPoint && void 0 !== a.digits && (isNaN(a.digits) || parseInt(a.digits) > 0) && c !== t) {
+                                var m = f.call(l, a.radixPoint, r);
+                                return r.validPositions[m] && (r.validPositions[m].generatedInput = r.validPositions[m].generated || !1), 
+                                {
+                                    caret: a._radixDance && t === c - 1 ? c + 1 : c
+                                };
+                            }
                             if (!1 === a.__financeInput) if (n) {
                                 if (a.digitsOptional) return {
                                     rewritePosition: o.end
                                 };
                                 if (!a.digitsOptional) {
-                                    if (o.begin > l && o.end <= l) return i === a.radixPoint ? {
+                                    if (o.begin > c && o.end <= c) return i === a.radixPoint ? {
                                         insert: {
-                                            pos: l + 1,
+                                            pos: c + 1,
                                             c: "0",
                                             fromIsValid: !0
                                         },
-                                        rewritePosition: l
+                                        rewritePosition: c
                                     } : {
-                                        rewritePosition: l + 1
+                                        rewritePosition: c + 1
                                     };
-                                    if (o.begin < l) return {
+                                    if (o.begin < c) return {
                                         rewritePosition: o.begin - 1
                                     };
                                 }
                             } else if (!a.showMaskOnHover && !a.showMaskOnFocus && !a.digitsOptional && a.digits > 0 && "" === this.__valueGet.call(this.el)) return {
-                                rewritePosition: l
+                                rewritePosition: c
                             };
                             return {
                                 rewritePosition: t
@@ -3380,7 +3385,7 @@
                         })), s;
                     }
                     void 0 !== e.begin && (x = g.isRTL ? e.end : e.begin);
-                    var S = !0, O = y.extend(!0, {}, b.validPositions);
+                    var S = !0, O = y.extend(!0, [], b.validPositions);
                     if (!1 === k.keepStatic && void 0 !== b.excludes[x] && !0 !== o && !0 !== a) for (var _ = x; _ < (g.isRTL ? e.begin : e.end); _++) void 0 !== b.excludes[_] && (b.excludes[_] = void 0, 
                     delete b.tests[_]);
                     if ("function" == typeof k.preValidation && !0 !== a && !0 !== p && (S = P(S = k.preValidation.call(g, r.getBuffer.call(g), x, t, u.call(g, e), k, b, e, i || o))), 
@@ -3477,7 +3482,7 @@
                     }
                     var d = 0, h = void 0 !== e.begin ? e.begin : e, v = void 0 !== e.end ? e.end : e, m = !0;
                     if (e.begin > e.end && (h = e.end, v = e.begin), a = void 0 !== a ? a : h, void 0 === i && (h !== v || l.insertMode && void 0 !== s.validPositions[a] || void 0 === t || t.match.optionalQuantifier || t.match.optionality)) {
-                        var g, y = c.extend(!0, {}, s.validPositions), k = r.getLastValidPosition.call(o, void 0, !0);
+                        var g, y = c.extend(!0, [], s.validPositions), k = r.getLastValidPosition.call(o, void 0, !0);
                         for (s.p = h, g = k; g >= h; g--) s.validPositions.splice(g, 1), void 0 === t && delete s.tests[g + 1];
                         var b, x, P = a, w = P;
                         for (t && (s.validPositions[a] = c.extend(!0, {}, t), w++, P++), g = t ? v : v - 1; g <= k; g++) {
