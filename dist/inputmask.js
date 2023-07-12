@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2023 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.9-beta.20
+ * Version: 5.0.9-beta.21
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -3587,7 +3587,8 @@
                         var g, y = c.extend(!0, [], l.validPositions), k = r.getLastValidPosition.call(o, void 0, !0);
                         for (l.p = h, g = k; g >= h; g--) l.validPositions.splice(g, 1), void 0 === t && delete l.tests[g + 1];
                         var b, x, P = a, w = P;
-                        for (t && (l.validPositions[a] = c.extend(!0, {}, t), w++, P++), g = t ? v : v - 1; g <= k; g++) {
+                        for (t && (l.validPositions[a] = c.extend(!0, {}, t), w++, P++), null == y[v] && l.jitOffset[v] && (v += l.jitOffset[v] + 1), 
+                        g = t ? v : v - 1; g <= k; g++) {
                             if (void 0 !== (b = y[g]) && !0 !== b.generatedInput && (g >= v || g >= h && u(g, y, {
                                 begin: h,
                                 end: v
