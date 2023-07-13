@@ -2310,4 +2310,20 @@ export default function (qunit, Inputmask) {
 
 		assert.equal(testmask.value, "12.36 €", "Result \"" + testmask.value + "\"");
 	});
+
+	qunit.test("Highlighting Values with Negative Numbers #2714", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\"/>");
+		var testmask = document.getElementById("testmask");
+		Inputmask('numeric',
+			{
+				digits:0,
+				groupSeparator: ',',
+				shortcuts: null,
+			}).mask(testmask);
+		$(testmask).Type("-3");
+		$.caret(testmask, 0, 2);
+		$(testmask).Type("4");
+		assert.equal(testmask.value, "4", "Result \"" + testmask.value + "\"");
+	});
 }
