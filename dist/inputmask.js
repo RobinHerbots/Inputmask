@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2023 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.9-beta.21
+ * Version: 5.0.9-beta.22
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -1930,7 +1930,7 @@
                 }
                 function f(e, t, n, i, l) {
                     var c = e ? e.inputmask : this, u = c.maskset, f = c.opts, d = c.dependencyLib, h = i.slice(), v = "", m = -1, g = void 0, y = f.skipOptionalPartCharacter;
-                    f.skipOptionalPartCharacter = "", r.resetMaskSet.call(c, !1), m = f.radixPoint ? r.determineNewCaretPosition.call(c, {
+                    f.skipOptionalPartCharacter = "", r.resetMaskSet.call(c, !1), c.clicked = 0, m = f.radixPoint ? r.determineNewCaretPosition.call(c, {
                         begin: 0,
                         end: 0
                     }, !1, !1 === f.__financeInput ? "radixFocus" : void 0).begin : 0, u.p = m, c.caretPos = {

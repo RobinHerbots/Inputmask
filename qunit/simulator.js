@@ -119,6 +119,7 @@ export default function ($, Inputmask) {
                                 front = front.substr(0, front.length - 1);
                             }
                             newValue = front + back;
+                            // console.log("backspace " + newValue);
                             break;
                         case keys.Delete:
                             if (origCode !== ".") {
@@ -133,6 +134,7 @@ export default function ($, Inputmask) {
                             caretOffset = front.length > 0 ? 1 : 0;
                             break;
                     }
+
 
                     if (elem.inputmask && elem.inputmask.__valueSet) {
                         elem.inputmask.__valueSet.call(elem, newValue);
@@ -157,13 +159,13 @@ export default function ($, Inputmask) {
                             keypress.ctrlKey = true;
                         }
                         trigger(elem, keypress);
-                        //if (!keypress.isDefaultPrevented()) {
-                        keyup.key = key;
-                        if (modifier == keys.Control) {
-                            keyup.ctrlKey = true;
+                        if (!keypress.defaultPrevented) {
+                            keyup.key = key;
+                            if (modifier == keys.Control) {
+                                keyup.ctrlKey = true;
+                            }
+                            trigger(elem, keyup);
                         }
-                        trigger(elem, keyup);
-                        //}
                     }
                 }
         }
