@@ -3,8 +3,9 @@
 ## [5.0.9 - UNRELEASED]
 
 ### Fixed
-
--"NumLock", "ScrollLock" strings as input value while "A" mask using. #2720
+- dd.mm.yyyy can't enter a day greater than the 9 #2723
+- Highlighting Values with Negative Numbers #2714
+- "NumLock", "ScrollLock" strings as input value while "A" mask using. #2720
 - Paste value when all select in inputfield not working good #2603
 - Optional parts not working as expected #2710
 - State of alternator not reset with clearIncomplete = true #2712
