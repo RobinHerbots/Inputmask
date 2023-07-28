@@ -3,7 +3,8 @@
 ## [5.0.9 - UNRELEASED]
 
 ### Fixed
-- dd.mm.yyyy can't enter a day greater than the 9 #2723
+- Add exports field #2690
+- dd.mm.yyyy can't enter a day greater than the 9 #2723 (WIP)
 - Highlighting Values with Negative Numbers #2714
 - "NumLock", "ScrollLock" strings as input value while "A" mask using. #2720
 - Paste value when all select in inputfield not working good #2603
@@ -27,7 +28,7 @@
 - drop IE Mobile support
 - datetime alias
   - change default for insertModeVisual to false. - #2664
-- consolidate keydown, keypress & keyup into keyEvent (wip)
+- consolidate keydown, keypress & keyup into keyEvent
 - refactor keyboard event keycode to key
 - refactor validPositions from object to array. - #2428
 - add keepStatic behavior to optional parts - #2619
