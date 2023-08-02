@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2023 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.9-beta.25
+ * Version: 5.0.9-beta.28
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -2024,13 +2024,23 @@
                     }
                     var r, o;
                 }
-                function s(e, t) {
-                    if (t && ("object" === n(t) || "function" == typeof t)) return t;
-                    if (void 0 !== t) throw new TypeError("Derived constructors may only return object or undefined");
-                    return function(e) {
-                        if (void 0 === e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-                        return e;
-                    }(e);
+                function s(e) {
+                    var t = u();
+                    return function() {
+                        var i, a = p(e);
+                        if (t) {
+                            var r = p(this).constructor;
+                            i = Reflect.construct(a, arguments, r);
+                        } else i = a.apply(this, arguments);
+                        return function(e, t) {
+                            if (t && ("object" === n(t) || "function" == typeof t)) return t;
+                            if (void 0 !== t) throw new TypeError("Derived constructors may only return object or undefined");
+                            return function(e) {
+                                if (void 0 === e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+                                return e;
+                            }(e);
+                        }(this, i);
+                    };
                 }
                 function l(e) {
                     var t = "function" == typeof Map ? new Map : void 0;
@@ -2103,30 +2113,23 @@
                             }), Object.defineProperty(e, "prototype", {
                                 writable: !1
                             }), t && f(e, t);
-                        }(d, e);
-                        var t, i, n, a, l, c = (t = d, i = u(), function() {
-                            var e, n = p(t);
-                            if (i) {
-                                var a = p(this).constructor;
-                                e = Reflect.construct(n, arguments, a);
-                            } else e = n.apply(this, arguments);
-                            return s(this, e);
-                        });
-                        function d() {
+                        }(l, e);
+                        var t, i, n, a = s(l);
+                        function l() {
                             var e;
                             !function(e, t) {
                                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function");
-                            }(this, d);
-                            var t = (e = c.call(this)).getAttributeNames(), i = e.attachShadow({
+                            }(this, l);
+                            var t = (e = a.call(this)).getAttributeNames(), i = e.attachShadow({
                                 mode: "closed"
                             }), n = h.createElement("input");
-                            for (var a in n.type = "text", i.appendChild(n), t) Object.prototype.hasOwnProperty.call(t, a) && n.setAttribute(t[a], e.getAttribute(t[a]));
-                            var o = new r.default;
-                            return o.dataAttribute = "", o.mask(n), n.inputmask.shadowRoot = i, e;
+                            for (var o in n.type = "text", i.appendChild(n), t) Object.prototype.hasOwnProperty.call(t, o) && n.setAttribute(t[o], e.getAttribute(t[o]));
+                            var s = new r.default;
+                            return s.dataAttribute = "", s.mask(n), n.inputmask.shadowRoot = i, e;
                         }
-                        return n = d, a && o(n.prototype, a), l && o(n, l), Object.defineProperty(n, "prototype", {
+                        return t = l, i && o(t.prototype, i), n && o(t, n), Object.defineProperty(t, "prototype", {
                             writable: !1
-                        }), n;
+                        }), t;
                     }(l(HTMLElement));
                     a.default.customElements.define("input-mask", v);
                 }
@@ -2814,8 +2817,7 @@
                     var o, s = this, l = this.opts;
                     if (void 0 === t) return "selectionStart" in e && "selectionEnd" in e ? (t = e.selectionStart, 
                     i = e.selectionEnd) : a.default.getSelection ? (o = a.default.getSelection().getRangeAt(0)).commonAncestorContainer.parentNode !== e && o.commonAncestorContainer !== e || (t = o.startOffset, 
-                    i = o.endOffset) : document.selection && document.selection.createRange && (o = document.selection.createRange(), 
-                    t = 0 - o.duplicate().moveStart("character", -e.inputmask._valueGet().length), i = t + o.text.length), 
+                    i = o.endOffset) : document.selection && document.selection.createRange && (i = (t = 0 - (o = document.selection.createRange()).duplicate().moveStart("character", -e.inputmask._valueGet().length)) + o.text.length), 
                     {
                         begin: n ? t : f.call(s, t),
                         end: n ? i : f.call(s, i)
@@ -2843,7 +2845,7 @@
                     }
                 }, t.determineLastRequiredPosition = function(e) {
                     var t, i, n = this, a = n.maskset, s = n.dependencyLib, c = r.getMaskTemplate.call(n, !0, l.call(n), !0, !0), u = c.length, f = l.call(n), p = {}, d = a.validPositions[f], h = void 0 !== d ? d.locator.slice() : void 0;
-                    for (t = f + 1; t < c.length; t++) i = r.getTestTemplate.call(n, t, h, t - 1), h = i.locator.slice(), 
+                    for (t = f + 1; t < c.length; t++) h = (i = r.getTestTemplate.call(n, t, h, t - 1)).locator.slice(), 
                     p[t] = s.extend(!0, {}, i);
                     var v = d && void 0 !== d.alternation ? d.locator[d.alternation] : void 0;
                     for (t = u - 1; t > f && (((i = p[t]).match.optionality || i.match.optionalQuantifier && i.match.newBlockMarker || v && (v !== p[t].locator[d.alternation] && 1 != i.match.static || !0 === i.match.static && i.locator[d.alternation] && o.checkAlternationMatch.call(n, i.locator[d.alternation].toString().split(","), v.toString().split(",")) && "" !== r.getTests.call(n, t)[0].def)) && c[t] === r.getPlaceholder.call(n, t, i.match)); t--) u--;
@@ -2968,9 +2970,9 @@
                     t = t || 0;
                     var d, h, v, m, g = [], y = 0;
                     do {
-                        if (!0 === e && u.validPositions[y]) v = a && u.validPositions[y].match.optionality && void 0 === u.validPositions[y + 1] && (!0 === u.validPositions[y].generatedInput || u.validPositions[y].input == o.skipOptionalPartCharacter && y > 0) ? c.call(r, y, p.call(r, y, d, y - 1)) : u.validPositions[y], 
-                        h = v.match, d = v.locator.slice(), g.push(!0 === i ? v.input : !1 === i ? h.nativeDef : s.call(r, y, h)); else {
-                            v = l.call(r, y, d, y - 1), h = v.match, d = v.locator.slice();
+                        if (!0 === e && u.validPositions[y]) h = (v = a && u.validPositions[y].match.optionality && void 0 === u.validPositions[y + 1] && (!0 === u.validPositions[y].generatedInput || u.validPositions[y].input == o.skipOptionalPartCharacter && y > 0) ? c.call(r, y, p.call(r, y, d, y - 1)) : u.validPositions[y]).match, 
+                        d = v.locator.slice(), g.push(!0 === i ? v.input : !1 === i ? h.nativeDef : s.call(r, y, h)); else {
+                            h = (v = l.call(r, y, d, y - 1)).match, d = v.locator.slice();
                             var k = !0 !== n && (!1 !== o.jitMasking ? o.jitMasking : h.jit);
                             (m = (m || u.validPositions[y - 1]) && h.static && h.def !== o.groupSeparator && null === h.fn) || !1 === k || void 0 === k || "number" == typeof k && isFinite(k) && k > y ? g.push(!1 === i ? h.nativeDef : s.call(r, g.length, h)) : m = !1;
                         }
@@ -3274,7 +3276,7 @@
                         D = T.length - 1), (v = S.validPositions[m]) && !0 !== v.generatedInput && (void 0 === l || h < k || h >= b) && T.push(v.input), 
                         S.validPositions.splice(m, 1);
                         for (-1 === D && void 0 !== t && (T.push(t), D = T.length - 1); void 0 !== S.excludes[m] && S.excludes[m].length < 10; ) {
-                            for (S.tests = {}, r.resetMaskSet.call(x, !0), M = !0, h = 0; h < T.length && (g = M.caret || r.getLastValidPosition.call(x, void 0, !0) + 1, 
+                            for (S.tests = {}, r.resetMaskSet.call(x, !0), M = !0, h = 0; h < T.length && (g = M.caret || 0 == w.insertMode && null != g ? r.seekNext.call(x, g) : r.getLastValidPosition.call(x, void 0, !0) + 1, 
                             y = T[h], M = f.call(x, g, y, !1, a, !0)); h++) h === D && (E = M), 1 == e && M && (E = {
                                 caretPos: h
                             });

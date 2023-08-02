@@ -2,9 +2,14 @@
 
 ## [5.0.9 - UNRELEASED]
 
+### Addition
+- Add exports field in package.json #2690
+
+### Updates
+- Properly handle insertMode false in alternation logic.
+
 ### Fixed
-- Add exports field #2690
-- dd.mm.yyyy can't enter a day greater than the 9 #2723 (WIP)
+- dd.mm.yyyy can't enter a day greater than the 9 #2723
 - Highlighting Values with Negative Numbers #2714
 - "NumLock", "ScrollLock" strings as input value while "A" mask using. #2720
 - Paste value when all select in inputfield not working good #2603

@@ -1172,4 +1172,20 @@ export default function (qunit, Inputmask) {
 
 		assert.equal(testmask.value, "30/03/2020 11:00:00 PM", "Result " + testmask.value);
 	});
+
+	qunit.test("dd/mm/yyyy can't enter a day greater than the 9 #2723", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "dd/mm/yyyy",
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("9920");
+		$.caret(testmask, 0);
+		$("#testmask").Type("1");
+
+		assert.equal(testmask.value, "19/09/2023", "Result " + testmask.value);
+	});
 }
