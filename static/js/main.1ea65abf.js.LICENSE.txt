@@ -10,7 +10,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2023 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.9-beta.25
+ * Version: 5.0.9-beta.28
  */
 
 /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
@@ -56,7 +56,7 @@
  */
 
 /**
- * @remix-run/router v1.3.2
+ * @remix-run/router v1.7.2
  *
  * Copyright (c) Remix Software Inc.
  *
@@ -67,7 +67,7 @@
  */
 
 /**
- * React Router DOM v6.8.1
+ * React Router DOM v6.14.2
  *
  * Copyright (c) Remix Software Inc.
  *
@@ -78,7 +78,7 @@
  */
 
 /**
- * React Router v6.8.1
+ * React Router v6.14.2
  *
  * Copyright (c) Remix Software Inc.
  *
