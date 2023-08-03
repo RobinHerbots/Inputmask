@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2023 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.9-beta.28
+ * Version: 5.0.9-beta.30
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -1213,7 +1213,7 @@
                     if (void 0 === e.rawday || !isFinite(e.rawday) && new Date(e.date.getFullYear(), isFinite(e.rawmonth) ? e.month : e.date.getMonth() + 1, 0).getDate() >= e.day || "29" == e.day && (!isFinite(e.rawyear) || void 0 === e.rawyear || "" === e.rawyear) || new Date(e.date.getFullYear(), isFinite(e.rawmonth) ? e.month : e.date.getMonth() + 1, 0).getDate() >= e.day) return t;
                     if ("29" == e.day) {
                         var i = M(t.pos, n);
-                        if ("yyyy" === i.targetMatch[0] && t.pos - i.targetMatchIndex == 2) return t.remove = t.pos + 1, 
+                        if (i.targetMatch && "yyyy" === i.targetMatch[0] && t.pos - i.targetMatchIndex == 2) return t.remove = t.pos + 1, 
                         t;
                     } else if ("02" == e.month && "30" == e.day && void 0 !== t.c) return e.day = "03", 
                     e.date.setDate(3), e.date.setMonth(1), t.insert = [ {
@@ -3387,12 +3387,14 @@
                                 M = l.call(x, e, t, n, a, m - 1, s);
                                 break;
                             }
-                            var D = (0, i.getDecisionTaker)(d);
-                            if (-1 !== S.excludes[m].indexOf(D + ":" + d.alternation)) {
-                                M = l.call(x, e, t, n, a, m - 1, s);
-                                break;
-                            }
-                            for (S.excludes[m].push(D + ":" + d.alternation), h = m; h < r.getLastValidPosition.call(x, void 0, !0) + 1; h++) S.validPositions.splice(m);
+                            if (null != d.alternation) {
+                                var D = (0, i.getDecisionTaker)(d);
+                                if (-1 !== S.excludes[m].indexOf(D + ":" + d.alternation)) {
+                                    M = l.call(x, e, t, n, a, m - 1, s);
+                                    break;
+                                }
+                                for (S.excludes[m].push(D + ":" + d.alternation), h = m; h < r.getLastValidPosition.call(x, void 0, !0) + 1; h++) S.validPositions.splice(m);
+                            } else delete S.excludes[m];
                         }
                     }
                     return M && !1 === w.keepStatic || delete S.excludes[m], M;
