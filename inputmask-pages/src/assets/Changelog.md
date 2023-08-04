@@ -9,6 +9,7 @@
 - Properly handle insertMode false in alternation logic.
 
 ### Fixed
+- The leap year doesn't play well with jitMasking parameter #2647
 - dd.mm.yyyy can't enter a day greater than the 9 #2723
 - Highlighting Values with Negative Numbers #2714
 - "NumLock", "ScrollLock" strings as input value while "A" mask using. #2720

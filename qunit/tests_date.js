@@ -1188,4 +1188,67 @@ export default function (qunit, Inputmask) {
 
 		assert.equal(testmask.value, "19/09/2023", "Result " + testmask.value);
 	});
+
+	qunit.test("dd/mm/yyyy 9929 home 2 2 - #2723", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "dd/mm/yyyy",
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("9920");
+		$.caret(testmask, 0);
+		$("#testmask").Type("2");
+		$.caret(testmask, 3);
+		$("#testmask").Type("2");
+
+		assert.equal(testmask.value, "29/09/2023", "Result " + testmask.value);
+	});
+
+	qunit.test("dd/mm/yyyy 9929 home 282 - #2723", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "dd/mm/yyyy",
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("9920");
+		$.caret(testmask, 0);
+		$("#testmask").Type("282");
+
+		assert.equal(testmask.value, "28/02/2023", "Result " + testmask.value);
+	});
+
+	qunit.test("leapyear normal - #2647", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "dd/mm/yyyy",
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("2922024");
+
+		assert.equal(testmask.value, "29/02/2024", "Result " + testmask.value);
+	});
+
+	qunit.test("leapyear jitMasking - #2647", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "dd/mm/yyyy",
+			jitMasking: true
+		}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("2922024");
+
+		assert.equal(testmask.value, "29/02/2024", "Result " + testmask.value);
+	});
 }
