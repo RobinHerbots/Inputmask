@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2023 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.9-beta.31
+ * Version: 5.0.9-beta.32
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -545,7 +545,7 @@
                     },
                     keypressEvent: function(e, t, i, n, a) {
                         var s = this.inputmask || this, u = s.opts, f = s.dependencyLib, p = s.maskset, d = s.el, h = f(d), v = e.key;
-                        if (!0 === t || e.ctrlKey && e.altKey || !(e.ctrlKey || e.metaKey || s.ignorable)) {
+                        if (!0 === t || e.ctrlKey && e.altKey && !s.ignorable || !(e.ctrlKey || e.metaKey || s.ignorable)) {
                             if (v) {
                                 var m, g = t ? {
                                     begin: a,
