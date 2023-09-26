@@ -9,6 +9,7 @@
 - Properly handle insertMode false in alternation logic.
 
 ### Fixed
+- Unicode categories such as \p{P} or \p{S} does not work in regexp property #2741
 - When user press Ctrl+Alt / Alt+Ctrl key in the field, Can input characters with restricted formatting #2736
 - The leap year doesn't play well with jitMasking parameter #2647
 - dd.mm.yyyy can't enter a day greater than the 9 #2723
