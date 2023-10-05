@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2023 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.9-beta.32
+ * Version: 5.0.9-beta.33
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -2369,7 +2369,7 @@
                         if (t) {
                             if (0 === n.indexOf("[") || d && /\\d|\\s|\\w|\\p/i.test(n) || "." === n) {
                                 var s = i.casing ? "i" : "";
-                                /^\\p\{.*}$/i.test(n) && (s += "u"), e.matches.splice(a++, 0, {
+                                /\\p\{.*}/i.test(n) && (s += "u"), e.matches.splice(a++, 0, {
                                     fn: new RegExp(n, s),
                                     static: !1,
                                     optionality: !1,
@@ -2987,7 +2987,7 @@
                 };
                 function r(e, t) {
                     var i = (null != e.alternation ? e.mloc[o(e)] : e.locator).join("");
-                    if ("" !== i) for (;i.length < t; ) i += "0";
+                    if ("" !== i) for (i = i.split(":")[0]; i.length < t; ) i += "0";
                     return i;
                 }
                 function o(e) {
@@ -3055,36 +3055,36 @@
                             }
                             function x(e, t, i) {
                                 var n, a;
-                                if ((l.tests[e] || l.validPositions[e]) && (l.tests[e] || [ l.validPositions[e] ]).every((function(e, r) {
+                                if ((l.tests[e] || l.validPositions[e]) && (l.validPositions[e] ? [ l.validPositions[e] ] : l.tests[e]).every((function(e, r) {
                                     if (e.mloc[t]) return n = e, !1;
                                     var o = void 0 !== i ? i : e.alternation, s = void 0 !== e.locator[o] ? e.locator[o].toString().indexOf(t) : -1;
                                     return (void 0 === a || s < a) && -1 !== s && (n = e, a = s), !0;
                                 })), n) {
-                                    var r = n.locator[n.alternation];
-                                    return (n.mloc[t] || n.mloc[r] || n.locator).slice((void 0 !== i ? i : n.alternation) + 1);
+                                    var r = n.locator[n.alternation], o = n.mloc[t] || n.mloc[r] || n.locator;
+                                    if (-1 !== o[o.length - 1].toString().indexOf(":")) o.pop();
+                                    return o.slice((void 0 !== i ? i : n.alternation) + 1);
                                 }
                                 return void 0 !== i ? x(e, t) : void 0;
                             }
                             function P(e, t) {
-                                var i = e.alternation, n = void 0 === t || i === t.alternation && -1 === e.locator[i].toString().indexOf(t.locator[i]);
-                                if (!n && i > t.alternation) for (var a = t.alternation; a < i; a++) if (e.locator[a] !== t.locator[a]) {
+                                var i = e.alternation, n = void 0 === t || i <= t.alternation && -1 === e.locator[i].toString().indexOf(t.locator[i]);
+                                if (!n && i > t.alternation) for (var a = 0; a < i; a++) if (e.locator[a] !== t.locator[a]) {
                                     i = a, n = !0;
                                     break;
                                 }
-                                if (n) {
+                                return !!n && function(i) {
                                     e.mloc = e.mloc || {};
-                                    var r = e.locator[i];
-                                    if (void 0 !== r) {
-                                        if ("string" == typeof r && (r = r.split(",")[0]), void 0 === e.mloc[r] && (e.mloc[r] = e.locator.slice()), 
-                                        void 0 !== t) {
-                                            for (var o in t.mloc) "string" == typeof o && (o = o.split(",")[0]), void 0 === e.mloc[o] && (e.mloc[o] = t.mloc[o]);
+                                    var n = e.locator[i];
+                                    if (void 0 !== n) {
+                                        if ("string" == typeof n && (n = n.split(",")[0]), void 0 === e.mloc[n] && (e.mloc[n] = e.locator.slice(), 
+                                        e.mloc[n].push(":".concat(e.alternation))), void 0 !== t) {
+                                            for (var a in t.mloc) "string" == typeof a && (a = parseInt(a.split(",")[0])), e.mloc[a + 0] = t.mloc[a];
                                             e.locator[i] = Object.keys(e.mloc).join(",");
                                         }
-                                        return !0;
+                                        return e.alternation > i && (e.alternation = i), !0;
                                     }
-                                    e.alternation = void 0;
-                                }
-                                return !1;
+                                    return e.alternation = void 0, !1;
+                                }(i);
                             }
                             function w(e, t) {
                                 if (e.locator.length !== t.locator.length) return !1;
