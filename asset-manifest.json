@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/Inputmask/static/css/main.551d4dcf.css",
-    "main.js": "/Inputmask/static/js/main.66ef043c.js",
-    "static/js/522.35e2d51c.chunk.js": "/Inputmask/static/js/522.35e2d51c.chunk.js",
+    "main.js": "/Inputmask/static/js/main.79756ddb.js",
+    "static/js/522.0566e6df.chunk.js": "/Inputmask/static/js/522.0566e6df.chunk.js",
     "static/media/Changelog.md": "/Inputmask/static/media/Changelog.53c23bd33c41a2a91bb4.md",
     "static/media/Documentation.md": "/Inputmask/static/media/Documentation.9c56b25db73830444913.md",
     "static/media/browserstack-logo-600x315.png": "/Inputmask/static/media/browserstack-logo-600x315.6d2b669584674591381c.png",
@@ -16,6 +16,6 @@
   },
   "entrypoints": [
     "static/css/main.551d4dcf.css",
-    "static/js/main.66ef043c.js"
+    "static/js/main.79756ddb.js"
   ]
 }
