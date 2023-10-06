@@ -1,16 +1,9 @@
 /*!
- * Determine if an object is a Buffer
- *
- * @author   Feross Aboukhadijeh <https://feross.org>
- * @license  MIT
- */
-
-/*!
  * dist/inputmask
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2023 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.9-beta.32
+ * Version: 5.0.9-beta.33
  */
 
 /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
@@ -56,7 +49,7 @@
  */
 
 /**
- * @remix-run/router v1.7.2
+ * @remix-run/router v1.9.0
  *
  * Copyright (c) Remix Software Inc.
  *
@@ -67,7 +60,7 @@
  */
 
 /**
- * React Router DOM v6.14.2
+ * React Router DOM v6.16.0
  *
  * Copyright (c) Remix Software Inc.
  *
@@ -78,7 +71,7 @@
  */
 
 /**
- * React Router v6.14.2
+ * React Router v6.16.0
  *
  * Copyright (c) Remix Software Inc.
  *
