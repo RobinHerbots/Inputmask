@@ -7,8 +7,10 @@
 
 ### Updates
 - Properly handle insertMode false in alternation logic.
+- Enhance resolving of the ndxInitializer to determine the alternating tests.
 
 ### Fixed
+- Timezone mask #2730
 - Unicode categories such as \p{P} or \p{S} does not work in regexp property #2741
 - When user press Ctrl+Alt / Alt+Ctrl key in the field, Can input characters with restricted formatting #2736
 - The leap year doesn't play well with jitMasking parameter #2647
