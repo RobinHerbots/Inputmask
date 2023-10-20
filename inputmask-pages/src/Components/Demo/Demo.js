@@ -34,7 +34,11 @@ export const Demo = () => {
         maskOptions={{ alias: "decimal", groupSeparator: "," }}
         comment="Group separator: , RadixPoint: ."
       />
-      <DemoMask label="IP address:" maskOptions={{ alias: "ip" }} />
+      <DemoMask
+        label="IP address:"
+        maskOptions={{ alias: "ip", greedy: true }}
+        comment="greedy: true"
+      />
       <DemoMask label="Email address:" maskOptions={{ alias: "email" }} />
     </div>
   );
