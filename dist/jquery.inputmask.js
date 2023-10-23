@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2023 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.9-beta.35
+ * Version: 5.0.9-beta.36
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -1267,12 +1267,16 @@
                 });
                 var c = new RegExp("25[0-5]|2[0-4][0-9]|[01][0-9][0-9]");
                 function u(e, t, i, n, a) {
-                    return i - 1 > -1 && "." !== t.buffer[i - 1] ? (e = t.buffer[i - 1] + e, e = i - 2 > -1 && "." !== t.buffer[i - 2] ? t.buffer[i - 2] + e : "0" + e) : e = "00" + e, 
-                    a.greedy && parseInt(e) > 255 && c.test("00" + e.charAt(2)) ? {
-                        refreshFromBuffer: !0,
-                        buffer: [].concat(s(t.buffer.slice(0, i)), [ ".", e.charAt(2) ]),
-                        caret: i + 2
-                    } : c.test(e);
+                    if (i - 1 > -1 && "." !== t.buffer[i - 1] ? (e = t.buffer[i - 1] + e, e = i - 2 > -1 && "." !== t.buffer[i - 2] ? t.buffer[i - 2] + e : "0" + e) : e = "00" + e, 
+                    a.greedy && parseInt(e) > 255 && c.test("00" + e.charAt(2))) {
+                        var r = [].concat(s(t.buffer.slice(0, i)), [ ".", e.charAt(2) ]);
+                        if (r.join("").match(/\./g).length < 4) return {
+                            refreshFromBuffer: !0,
+                            buffer: r,
+                            caret: i + 2
+                        };
+                    }
+                    return c.test(e);
                 }
                 a.default.extendAliases({
                     cssunit: {
