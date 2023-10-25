@@ -6,11 +6,12 @@
 - Add exports field in package.json #2690
 
 ### Updates
-- Update IP extension to support greedy option. #2748
+- Update IP extension to support greedy option. #2749
 - Properly handle insertMode false in alternation logic.
 - Enhance resolving of the ndxInitializer to determine the alternating tests.
 
 ### Fixed
+- Remove unused mask - Take2 #2748
 - [Question] How to custom placeholder in "ip" alias? #2749
 - Timezone mask #2730
 - Unicode categories such as \p{P} or \p{S} does not work in regexp property #2741

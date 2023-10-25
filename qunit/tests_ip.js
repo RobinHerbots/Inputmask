@@ -148,4 +148,22 @@ export default function (qunit, Inputmask) {
 			done();
 		}, 0);
 	});
+
+	qunit.test("ip - greedy: true 99999999", function (assert) {
+		var done = assert.async(),
+			$fixture = $("#qunit-fixture");
+		$fixture.append('<input type="text" id="testmask" />');
+		var testmask = document.getElementById("testmask");
+		Inputmask("ip",
+			{
+				greedy: true
+			}).mask(testmask);
+
+		testmask.focus();
+		$("#testmask").Type("99999999");
+		setTimeout(function () {
+			assert.equal(testmask.value, "99.99.99.99", "Result " + testmask.value);
+			done();
+		}, 0);
+	});
 };
