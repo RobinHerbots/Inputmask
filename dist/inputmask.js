@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2023 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.9-beta.38
+ * Version: 5.0.9-beta.39
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -2317,14 +2317,28 @@
                             }(this, s);
                             var t = (e = a.call(this)).getAttributeNames(), n = e.attachShadow({
                                 mode: "closed"
-                            }), i = h.createElement("input");
-                            for (var o in i.type = "text", n.appendChild(i), t) Object.prototype.hasOwnProperty.call(t, o) && i.setAttribute(t[o], e.getAttribute(t[o]));
-                            var l = new r.default;
-                            return l.dataAttribute = "", l.mask(i), i.inputmask.shadowRoot = n, e;
+                            });
+                            for (var i in e.input = h.createElement("input"), e.input.type = "text", n.appendChild(e.input), 
+                            t) Object.prototype.hasOwnProperty.call(t, i) && e.input.setAttribute(t[i], e.getAttribute(t[i]));
+                            var o = new r.default;
+                            return o.dataAttribute = "", o.mask(e.input), o.shadowRoot = n, e;
                         }
-                        return t = s, n && o(t.prototype, n), i && o(t, i), Object.defineProperty(t, "prototype", {
+                        return t = s, (n = [ {
+                            key: "attributeChangedCallback",
+                            value: function(e, t, n) {
+                                this.input.setAttribute(e, n);
+                            }
+                        }, {
+                            key: "value",
+                            get: function() {
+                                return this.input.value;
+                            },
+                            set: function(e) {
+                                this.input.value = e;
+                            }
+                        } ]) && o(t.prototype, n), i && o(t, i), Object.defineProperty(t, "prototype", {
                             writable: !1
-                        }), t;
+                        }), s;
                     }(s(HTMLElement));
                     a.default.customElements.define("input-mask", v);
                 }

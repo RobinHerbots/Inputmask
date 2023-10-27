@@ -11,6 +11,7 @@
 - Enhance resolving of the ndxInitializer to determine the alternating tests.
 
 ### Fixed
+- how to get value from input-mask element? #2702
 - Problem with seconds in format 'HH:MM:ss' #2745
 - Remove unused mask - Take2 #2748
 - [Question] How to custom placeholder in "ip" alias? #2749
