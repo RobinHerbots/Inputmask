@@ -3,7 +3,7 @@ import {keys} from "../lib/keycode";
 export default function (qunit, Inputmask) {
 	var $ = Inputmask.dependencyLib;
 
-	function pad (val, len) {
+	function pad(val, len) {
 		val = String(val);
 		len = len || 2;
 		while (val.length < len) val = "0" + val;
@@ -1250,5 +1250,19 @@ export default function (qunit, Inputmask) {
 		$("#testmask").Type("2922024");
 
 		assert.equal(testmask.value, "29/02/2024", "Result " + testmask.value);
+	});
+
+	qunit.test("Problem with seconds in format 'HH:MM:ss' - #2745", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" value='11:11' />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "HH:MM:ss",
+			placeholder:"HH:MM:SS"
+		}).mask(testmask);
+
+		testmask.focus();
+
+		assert.equal(testmask.value, "11:11:SS", "Result " + testmask.value);
 	});
 }
