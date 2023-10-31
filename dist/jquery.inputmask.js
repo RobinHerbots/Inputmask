@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2023 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.9-beta.40
+ * Version: 5.0.9-beta.41
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -876,6 +876,7 @@
                         default: e
                     };
                 }
+                i(1313);
                 var d = n.default.dependencyLib, h = function() {
                     function e(t, i, n) {
                         !function(e, t) {
@@ -930,11 +931,7 @@
                     } ]) && f(t.prototype, i), n && f(t, n), Object.defineProperty(t, "prototype", {
                         writable: !1
                     }), e;
-                }(), v = (new Date).getFullYear(), m = {
-                    dayNames: [ "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" ],
-                    monthNames: [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ],
-                    ordinalSuffix: [ "st", "nd", "rd", "th" ]
-                }, g = !1, y = {
+                }(), v = (new Date).getFullYear(), m = n.default.prototype.i18n, g = !1, y = {
                     d: [ "[1-9]|[12][0-9]|3[01]", Date.prototype.setDate, "day", Date.prototype.getDate ],
                     dd: [ "0[1-9]|[12][0-9]|3[01]", Date.prototype.setDate, "day", function() {
                         return M(Date.prototype.getDate.call(this), 2);
@@ -953,16 +950,16 @@
                     }, "month", function() {
                         return M(Date.prototype.getMonth.call(this) + 1, 2);
                     } ],
-                    mmm: [ m.monthNames.slice(0, 11).join("|"), function(e) {
-                        var t = m.monthNames.slice(0, 11).findIndex((function(t) {
+                    mmm: [ m.monthNames.slice(0, 12).join("|"), function(e) {
+                        var t = m.monthNames.slice(0, 12).findIndex((function(t) {
                             return e.toLowerCase() === t.toLowerCase();
                         }));
                         return Date.prototype.setMonth.call(this, t);
                     }, "month", function() {
                         return M(Date.prototype.getMonth.call(this) + 1, 2);
                     } ],
-                    mmmm: [ m.monthNames.slice(12, 23).join("|"), function(e) {
-                        var t = m.monthNames.slice(12, 23).findIndex((function(t) {
+                    mmmm: [ m.monthNames.slice(12, 24).join("|"), function(e) {
+                        var t = m.monthNames.slice(12, 24).findIndex((function(t) {
                             return e.toLowerCase() === t.toLowerCase();
                         }));
                         return Date.prototype.setMonth.call(this, t);
@@ -1121,7 +1118,7 @@
                 n.default.extendAliases({
                     datetime: {
                         mask: function(e) {
-                            return e.numericInput = !1, y.S = e.i18n.ordinalSuffix.join("|"), e.inputFormat = k[e.inputFormat] || e.inputFormat, 
+                            return e.numericInput = !1, y.S = m.ordinalSuffix.join("|"), e.inputFormat = k[e.inputFormat] || e.inputFormat, 
                             e.displayFormat = k[e.displayFormat] || e.displayFormat || e.inputFormat, e.outputFormat = k[e.outputFormat] || e.outputFormat || e.inputFormat, 
                             e.placeholder = "" !== e.placeholder ? e.placeholder : e.inputFormat.replace(/[[\]]/, ""), 
                             e.regex = O(e.inputFormat, void 0, e), e.min = _(e.min, e.inputFormat, e), e.max = _(e.max, e.inputFormat, e), 
@@ -1134,7 +1131,6 @@
                         min: null,
                         max: null,
                         skipOptionalPartCharacter: "",
-                        i18n: m,
                         preValidation: function(e, t, i, n, a, r, o, s) {
                             if (s) return !0;
                             if (isNaN(i) && e[t] !== i) {
@@ -1237,6 +1233,16 @@
                         inputmode: "numeric",
                         prefillYear: !0
                     }
+                });
+            },
+            1313: function(e, t, i) {
+                var n, a = (n = i(2394)) && n.__esModule ? n : {
+                    default: n
+                };
+                a.default.dependencyLib.extend(!0, a.default.prototype.i18n, {
+                    dayNames: [ "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" ],
+                    monthNames: [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ],
+                    ordinalSuffix: [ "st", "nd", "rd", "th" ]
                 });
             },
             3851: function(e, t, i) {
@@ -1903,6 +1909,7 @@
                     definitions: p.default,
                     aliases: {},
                     masksCache: {},
+                    i18n: {},
                     get isRTL() {
                         return this.opts.isRTL || this.opts.numericInput;
                     },
