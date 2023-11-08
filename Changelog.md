@@ -6,11 +6,14 @@
 - Add exports field in package.json #2690
 
 ### Updates
+- datetime alias
+  - add support for mmm & mmmm #2751 (WIP)
 - Update IP extension to support greedy option. #2749
 - Properly handle insertMode false in alternation logic.
 - Enhance resolving of the ndxInitializer to determine the alternating tests.
 
 ### Fixed
+- d/mm/yyyy is converted to d/m//yyyd #2394 (WIP)
 - how to get value from input-mask element? #2702
 - Problem with seconds in format 'HH:MM:ss' #2745
 - Remove unused mask - Take2 #2748
