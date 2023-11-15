@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2023 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.9-beta.44
+ * Version: 5.0.9-beta.45
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -1960,8 +1960,7 @@
                 function c(e, t) {
                     var n = e ? e.inputmask : this, i = n.opts;
                     e.inputmask.refreshValue = !1, "function" == typeof i.onBeforeMask && (t = i.onBeforeMask.call(n, t, i) || t), 
-                    f(e, !0, !1, t = (t || "").toString().split("")), n.undoValue = n._valueGet(!0), 
-                    (i.clearMaskOnLostFocus || i.clearIncomplete) && e.inputmask._valueGet() === r.getBufferTemplate.call(n).join("") && -1 === r.getLastValidPosition.call(n) && e.inputmask._valueSet("");
+                    f(e, !0, !1, t = (t || "").toString().split("")), (i.clearMaskOnLostFocus || i.clearIncomplete) && e.inputmask._valueGet() === r.getBufferTemplate.call(n).join("") && -1 === r.getLastValidPosition.call(n) && e.inputmask._valueSet("");
                 }
                 function u(e) {
                     e.length = 0;

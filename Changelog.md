@@ -13,6 +13,7 @@
 - Enhance resolving of the ndxInitializer to determine the alternating tests.
 
 ### Fixed
+- Do not update undoValue in applyInputValue. #2757 
 - d/mm/yyyy is converted to d/m//yyyd #2394 (WIP)
 - how to get value from input-mask element? #2702
 - Problem with seconds in format 'HH:MM:ss' #2745
