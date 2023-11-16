@@ -1258,11 +1258,67 @@ export default function (qunit, Inputmask) {
 		var testmask = document.getElementById("testmask");
 		Inputmask("datetime", {
 			inputFormat: "HH:MM:ss",
-			placeholder:"HH:MM:SS"
+			placeholder: "HH:MM:SS"
 		}).mask(testmask);
 
 		testmask.focus();
 
 		assert.equal(testmask.value, "11:11:SS", "Result " + testmask.value);
+	});
+
+	qunit.test("mm/dd/yyyy + min/max - 09 - #2754", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "mm/dd/yyyy",
+			min: "10/25/2023",
+			max: "11/25/2023",
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("09");
+		assert.equal(testmask.value, "", "Result " + testmask.value);
+	});
+
+
+	qunit.test("mm/dd/yyyy + min/max - enter 9 - #2754", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "mm/dd/yyyy",
+			min: "10/25/2023",
+			max: "11/25/2023",
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("9");
+		assert.equal(testmask.value, "", "Result " + testmask.value);
+	});
+
+	qunit.test("mm/dd/yyyy + min/max - enter min - #2754", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "mm/dd/yyyy",
+			min: "10/25/2023",
+			max: "11/25/2023",
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("10252023");
+		assert.equal(testmask.value, "10/25/2023", "Result " + testmask.value);
+	});
+	qunit.test("mm/dd/yyyy + min/max - enter max - #2754", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "mm/dd/yyyy",
+			min: "10/25/2023",
+			max: "11/25/2023",
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("11252023");
+		assert.equal(testmask.value, "11/25/2023", "Result " + testmask.value);
 	});
 }

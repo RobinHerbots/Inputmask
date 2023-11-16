@@ -6,6 +6,7 @@
 - Add exports field in package.json #2690
 
 ### Updates
+- better handle unmatching alternations - #2277
 - datetime alias
   - add support for mmm & mmmm #2751 (WIP)
 - Update IP extension to support greedy option. #2749
