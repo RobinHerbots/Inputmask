@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2023 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.9-beta.45
+ * Version: 5.0.9-beta.46
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -947,7 +947,7 @@
                         }));
                         return Date.prototype.setMonth.call(this, t);
                     }, "month", function() {
-                        return M(Date.prototype.getMonth.call(this) + 1, 2);
+                        return v.monthNames.slice(0, 12)[Date.prototype.getMonth.call(this)];
                     } ],
                     mmmm: [ v.monthNames.slice(12, 24).join("|"), function(e) {
                         var t = v.monthNames.slice(12, 24).findIndex((function(t) {
@@ -955,7 +955,7 @@
                         }));
                         return Date.prototype.setMonth.call(this, t);
                     }, "month", function() {
-                        return M(Date.prototype.getMonth.call(this) + 1, 2);
+                        return v.monthNames.slice(12, 24)[Date.prototype.getMonth.call(this)];
                     } ],
                     yy: [ "[0-9]{2}", Date.prototype.setFullYear, "year", function() {
                         return M(Date.prototype.getFullYear.call(this), 2);
