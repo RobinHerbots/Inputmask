@@ -131,5 +131,14 @@ module.exports = function (env, argv) {
 		}
 	});
 
-	return [config, jqueryConfig];
+	var colorMaskConfig = _.defaultsDeep({}, config);
+	colorMaskConfig.entry = {};
+	_.assignIn(colorMaskConfig, {
+		name: "colormask",
+		entry: {
+			"dist/colormask": "./bundle.colormask.js",
+			"dist/colormask.min": "./bundle.colormask.js"
+		}
+	});
+	return [config, jqueryConfig, colorMaskConfig];
 };

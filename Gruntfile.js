@@ -78,7 +78,8 @@ module.exports = function (grunt) {
 		},
 		webpack: {
 			main: webpackConfig("production")[0],
-			jquery: webpackConfig("production")[1]
+			jquery: webpackConfig("production")[1],
+			colormask: webpackConfig("production")[2]
 		},
 		copy: {
 			extensions: {

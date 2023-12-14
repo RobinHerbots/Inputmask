@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2023 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.9-beta.46
+ * Version: 5.0.9-beta.50
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -524,14 +524,14 @@
                         !0 === u.getTest.call(f, k.end - 1).match.static && k.end--, k.begin = r.seekPrevious.call(f, k.end, !0), 
                         k.begin >= 0 && k.end > 0 && (e.preventDefault(), r.caret.call(f, m, k.begin, k.end))) : (k.begin = r.seekNext.call(f, k.begin, !0), 
                         k.end = r.seekNext.call(f, k.begin, !0), k.end < h.maskLength && k.end--, k.begin <= h.maskLength && (e.preventDefault(), 
-                        r.caret.call(f, m, k.begin, k.end))) : e.shiftKey || p.insertModeVisual && !1 === p.insertMode && (g === o.keys.ArrowRight ? setTimeout((function() {
+                        r.caret.call(f, m, k.begin, k.end))) : e.shiftKey || (p.insertModeVisual && !1 === p.insertMode ? g === o.keys.ArrowRight ? setTimeout((function() {
                             var e = r.caret.call(f, m);
                             r.caret.call(f, m, e.begin);
                         }), 0) : g === o.keys.ArrowLeft && setTimeout((function() {
                             var e = r.translatePosition.call(f, m.inputmask.caretPos.begin);
                             r.translatePosition.call(f, m.inputmask.caretPos.end);
                             f.isRTL ? r.caret.call(f, m, e + (e === h.maskLength ? 0 : 1)) : r.caret.call(f, m, e - (0 === e ? 0 : 1));
-                        }), 0)) : l.isSelection.call(f, k) ? p.insertMode = !p.insertMode : (p.insertMode = !p.insertMode, 
+                        }), 0) : void 0 === f.keyEventHook || f.keyEventHook.call(f, e)) : l.isSelection.call(f, k) ? p.insertMode = !p.insertMode : (p.insertMode = !p.insertMode, 
                         r.caret.call(f, m, k.begin, k.begin));
                         return f.isComposing = g == o.keys.Process || g == o.keys.Unidentified, f.ignorable = p.ignorables.includes(g), 
                         y.keypressEvent.call(this, e, t, n, i, a);
@@ -1854,7 +1854,7 @@
                         }
                     }
                     if (void 0 !== e && (e.inputmask._valueSet(t.join("")), void 0 === n || void 0 !== a && "blur" === a.type || r.caret.call(l, e, n, void 0, void 0, void 0 !== a && "keydown" === a.type && (a.key === i.keys.Delete || a.key === i.keys.Backspace)), 
-                    !0 === s)) {
+                    void 0 === e.inputmask.writeBufferHook || e.inputmask.writeBufferHook(n), !0 === s)) {
                         var d = u(e), h = e.inputmask._valueGet();
                         e.inputmask.skipInputEvent = !0, d.trigger("input"), setTimeout((function() {
                             h === r.getBufferTemplate.call(l).join("") ? d.trigger("cleared") : !0 === o.isComplete.call(l, t) && d.trigger("complete");
@@ -2805,8 +2805,8 @@
                         o.EventRuler.on(n, "incomplete", t.onincomplete), o.EventRuler.on(n, "cleared", t.oncleared), 
                         !0 !== t.inputEventOnly && o.EventRuler.on(n, "keydown", c.EventHandlers.keyEvent), 
                         (s.mobile || t.inputEventOnly) && n.removeAttribute("maxLength"), o.EventRuler.on(n, "input", c.EventHandlers.inputFallBackEvent)), 
-                        o.EventRuler.on(n, "setvalue", c.EventHandlers.setValueEvent), a.getBufferTemplate.call(e).join(""), 
-                        e.undoValue = e._valueGet(!0);
+                        o.EventRuler.on(n, "setvalue", c.EventHandlers.setValueEvent), void 0 === e.applyMaskHook || e.applyMaskHook.call(e), 
+                        a.getBufferTemplate.call(e).join(""), e.undoValue = e._valueGet(!0);
                         var p = (n.inputmask.shadowRoot || n.ownerDocument).activeElement;
                         if ("" !== n.inputmask._valueGet(!0) || !1 === t.clearMaskOnLostFocus || p === n) {
                             (0, r.applyInputValue)(n, n.inputmask._valueGet(!0), t);
@@ -2893,18 +2893,24 @@
                         if (e.scrollLeft = c > e.scrollWidth ? c : 0, e.inputmask.caretPos = {
                             begin: t,
                             end: n
-                        }, l.insertModeVisual && !1 === l.insertMode && t === n && (r || n++), e === (e.inputmask.shadowRoot || e.ownerDocument).activeElement) if ("setSelectionRange" in e) e.setSelectionRange(t, n); else if (a.default.getSelection) {
-                            if (o = document.createRange(), void 0 === e.firstChild || null === e.firstChild) {
-                                var u = document.createTextNode("");
-                                e.appendChild(u);
-                            }
-                            o.setStart(e.firstChild, t < e.inputmask._valueGet().length ? t : e.inputmask._valueGet().length), 
-                            o.setEnd(e.firstChild, n < e.inputmask._valueGet().length ? n : e.inputmask._valueGet().length), 
-                            o.collapse(!0);
-                            var p = a.default.getSelection();
-                            p.removeAllRanges(), p.addRange(o);
-                        } else e.createTextRange && ((o = e.createTextRange()).collapse(!0), o.moveEnd("character", n), 
-                        o.moveStart("character", t), o.select());
+                        }, l.insertModeVisual && !1 === l.insertMode && t === n && (r || n++), e === (e.inputmask.shadowRoot || e.ownerDocument).activeElement) {
+                            if ("setSelectionRange" in e) e.setSelectionRange(t, n); else if (a.default.getSelection) {
+                                if (o = document.createRange(), void 0 === e.firstChild || null === e.firstChild) {
+                                    var u = document.createTextNode("");
+                                    e.appendChild(u);
+                                }
+                                o.setStart(e.firstChild, t < e.inputmask._valueGet().length ? t : e.inputmask._valueGet().length), 
+                                o.setEnd(e.firstChild, n < e.inputmask._valueGet().length ? n : e.inputmask._valueGet().length), 
+                                o.collapse(!0);
+                                var p = a.default.getSelection();
+                                p.removeAllRanges(), p.addRange(o);
+                            } else e.createTextRange && ((o = e.createTextRange()).collapse(!0), o.moveEnd("character", n), 
+                            o.moveStart("character", t), o.select());
+                            void 0 === e.inputmask.caretHook || e.inputmask.caretHook.call(s, {
+                                begin: t,
+                                end: n
+                            });
+                        }
                     }
                 }, t.determineLastRequiredPosition = function(e) {
                     var t, n, i = this, a = i.maskset, s = i.dependencyLib, c = r.getMaskTemplate.call(i, !0, l.call(i), !0, !0), u = c.length, f = l.call(i), p = {}, d = a.validPositions[f], h = void 0 !== d ? d.locator.slice() : void 0;

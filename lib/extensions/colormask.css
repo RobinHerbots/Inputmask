@@ -11,7 +11,8 @@ mark.im-caret-select {
         border-right-color: black;
     }
     50% {
-        border-right-color: transparent;
+        /*border-right-color: transparent;*/
+        border-right-color: white;
     }
 }
 
@@ -21,8 +22,8 @@ span.im-static {
 
 div.im-colormask {
     display: inline-block;
-    border-style: inset;
-    border-width: 2px;
+    border-style: groove;
+    border-width: 1px;
     appearance: textfield;
     cursor: text;
 }
@@ -54,7 +55,7 @@ div.im-colormask > input::-moz-selection {
 }
 
 div.im-colormask > input:-webkit-autofill ~ div {
-    background-color: rgb(250, 255, 189);
+    background-color: rgb(255, 255, 255);
 }
 
 div.im-colormask > div {
