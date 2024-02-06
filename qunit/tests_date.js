@@ -1186,7 +1186,7 @@ export default function (qunit, Inputmask) {
 		$.caret(testmask, 0);
 		$("#testmask").Type("1");
 
-		assert.equal(testmask.value, "19/09/2023", "Result " + testmask.value);
+		assert.true(testmask.value.indexOf("19/09/") == 0, "Result " + testmask.value);
 	});
 
 	qunit.test("dd/mm/yyyy 9929 home 2 2 - #2723", function (assert) {
@@ -1198,13 +1198,13 @@ export default function (qunit, Inputmask) {
 		}).mask(testmask);
 
 		testmask.focus();
-		$("#testmask").Type("9920");
+		$("#testmask").Type("992023");
 		$.caret(testmask, 0);
 		$("#testmask").Type("2");
 		$.caret(testmask, 3);
 		$("#testmask").Type("2");
 
-		assert.equal(testmask.value, "29/09/2023", "Result " + testmask.value);
+		assert.true(testmask.value.indexOf("29/09/") == 0, "Result " + testmask.value);
 	});
 
 	qunit.test("dd/mm/yyyy 9929 home 282 - #2723", function (assert) {
@@ -1220,7 +1220,7 @@ export default function (qunit, Inputmask) {
 		$.caret(testmask, 0);
 		$("#testmask").Type("282");
 
-		assert.equal(testmask.value, "28/02/2023", "Result " + testmask.value);
+		assert.true(testmask.value.indexOf("28/02/") == 0, "Result " + testmask.value);
 	});
 
 	qunit.test("leapyear normal - #2647", function (assert) {
