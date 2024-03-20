@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2024 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.9-beta.51
+ * Version: 5.0.9-beta.52
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -713,7 +713,7 @@
                             f.isRTL ? r.caret.call(f, v, e + (e === h.maskLength ? 0 : 1)) : r.caret.call(f, v, e - (0 === e ? 0 : 1));
                         }), 0) : void 0 === f.keyEventHook || f.keyEventHook.call(f, e)) : s.isSelection.call(f, k) ? p.insertMode = !p.insertMode : (p.insertMode = !p.insertMode, 
                         r.caret.call(f, v, k.begin, k.begin));
-                        return f.isComposing = g == o.keys.Process || g == o.keys.Unidentified, f.ignorable = p.ignorables.includes(g), 
+                        return f.isComposing = g == o.keys.Process || g == o.keys.Unidentified, f.ignorable = g.length > 1, 
                         y.keypressEvent.call(this, e, t, n, i, a);
                     },
                     keypressEvent: function(e, t, n, i, a) {
