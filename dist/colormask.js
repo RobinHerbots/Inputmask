@@ -1,9 +1,9 @@
 /*!
  * dist/colormask
  * https://github.com/RobinHerbots/Inputmask
- * Copyright (c) 2010 - 2023 Robin Herbots
+ * Copyright (c) 2010 - 2024 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.9-beta.50
+ * Version: 5.0.9-beta.51
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -1155,44 +1155,65 @@
                 }
                 n(313);
                 var d = i.default.dependencyLib, h = function() {
-                    function e(t, n, i) {
+                    function e(t, n, i, a) {
                         !function(e, t) {
                             if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function");
-                        }(this, e), this.mask = t, this.format = n, this.opts = i, this._date = new Date(1, 0, 1), 
-                        this.initDateObject(t, this.opts);
+                        }(this, e), this.mask = t, this.format = n, this.opts = i, this.inputmask = a, this._date = new Date(1, 0, 1), 
+                        this.initDateObject(t, this.opts, this.inputmask);
                     }
                     var t, n, i;
                     return t = e, (n = [ {
                         key: "date",
                         get: function() {
-                            return void 0 === this._date && (this._date = new Date(1, 0, 1), this.initDateObject(void 0, this.opts)), 
+                            return void 0 === this._date && (this._date = new Date(1, 0, 1), this.initDateObject(void 0, this.opts, this.inputmask)), 
                             this._date;
                         }
                     }, {
                         key: "initDateObject",
-                        value: function(e, t) {
-                            var n;
-                            for (P(t).lastIndex = 0; n = P(t).exec(this.format); ) {
-                                var i = new RegExp("\\d+$").exec(n[0]), a = i ? n[0][0] + "x" : n[0], r = void 0;
+                        value: function(e, t, n) {
+                            var i;
+                            for (P(t).lastIndex = 0; i = P(t).exec(this.format); ) {
+                                var a = new RegExp("\\d+$").exec(i[0]), r = a ? i[0][0] + "x" : i[0], o = void 0;
                                 if (void 0 !== e) {
-                                    if (i) {
-                                        var o = P(t).lastIndex, l = j(n.index, t);
-                                        P(t).lastIndex = o, r = e.slice(0, e.indexOf(l.nextMatch[0]));
-                                    } else r = e.slice(0, y[a] && y[a][4] || a.length);
-                                    e = e.slice(r.length);
+                                    if (console.log("mask", e), a) {
+                                        var s = P(t).lastIndex, c = j(i.index, t, n && n.maskset);
+                                        P(t).lastIndex = s, o = e.slice(0, e.indexOf(c.nextMatch[0]));
+                                    } else {
+                                        for (var u = i[0][0], f = i.index; n && l.getTest.call(n, f).match.placeholder === u; ) f++;
+                                        var p = f - i.index;
+                                        o = e.slice(0, p || y[r] && y[r][4] || r.length);
+                                    }
+                                    e = e.slice(o.length);
                                 }
-                                Object.prototype.hasOwnProperty.call(y, a) && this.setValue(this, r, a, y[a][2], y[a][1]);
+                                Object.prototype.hasOwnProperty.call(y, r) && this.setValue(this, o, r, y[r][2], y[r][1]);
                             }
                         }
                     }, {
                         key: "setValue",
                         value: function(e, t, n, i, a) {
-                            if (void 0 !== t && (e[i] = "ampm" === i || "mmm" === n || "mmmm" === n ? t : t.replace(/[^0-9]/g, "0"), 
-                            e["raw" + i] = t.replace(/\s/g, "_")), void 0 !== a) {
+                            if (void 0 !== t) switch (i) {
+                              case "ampm":
+                                e[i] = t, e["raw" + i] = t.replace(/\s/g, "_");
+                                break;
+
+                              case "month":
+                                if ("mmm" === n || "mmmm" === n) {
+                                    e[i] = _("mmm" === n ? m.monthNames.slice(0, 12).findIndex((function(e) {
+                                        return t.toLowerCase() === e.toLowerCase();
+                                    })) + 1 : m.monthNames.slice(12, 24).findIndex((function(e) {
+                                        return t.toLowerCase() === e.toLowerCase();
+                                    })) + 1, 2), e[i] = "00" === e[i] ? "" : e[i].toString(), e["raw" + i] = e[i];
+                                    break;
+                                }
+
+                              default:
+                                e[i] = t.replace(/[^0-9]/g, "0"), e["raw" + i] = t.replace(/\s/g, "_");
+                            }
+                            if (void 0 !== a) {
                                 var r = e[i];
                                 ("day" === i && 29 === parseInt(r) || "month" === i && 2 === parseInt(r)) && (29 !== parseInt(e.day) || 2 !== parseInt(e.month) || "" !== e.year && void 0 !== e.year || e._date.setFullYear(2012, 1, 29)), 
                                 "day" === i && (g = !0, 0 === parseInt(r) && (r = 1)), "month" === i && (g = !0), 
-                                "year" === i && (g = !0, r.length < 4 && (r = _(r, 4, !0))), ("" !== r && !isNaN(r) || "ampm" === i || "mmm" === n || "mmmm" === n) && a.call(e._date, r);
+                                "year" === i && (g = !0, r.length < 4 && (r = _(r, 4, !0))), ("" !== r && !isNaN(r) || "ampm" === i) && a.call(e._date, r);
                             }
                         }
                     }, {
@@ -1231,7 +1252,7 @@
                         var t = m.monthNames.slice(0, 12).findIndex((function(t) {
                             return e.toLowerCase() === t.toLowerCase();
                         }));
-                        return Date.prototype.setMonth.call(this, t);
+                        return -1 !== t && Date.prototype.setMonth.call(this, t);
                     }, "month", function() {
                         return m.monthNames.slice(0, 12)[Date.prototype.getMonth.call(this)];
                     } ],
@@ -1239,7 +1260,7 @@
                         var t = m.monthNames.slice(12, 24).findIndex((function(t) {
                             return e.toLowerCase() === t.toLowerCase();
                         }));
-                        return Date.prototype.setMonth.call(this, t);
+                        return -1 !== t && Date.prototype.setMonth.call(this, t);
                     }, "month", function() {
                         return m.monthNames.slice(12, 24)[Date.prototype.getMonth.call(this)];
                     } ],
@@ -1334,7 +1355,7 @@
                     if (!g) return !0;
                     if (void 0 === e.rawday || !isFinite(e.rawday) && new Date(e.date.getFullYear(), isFinite(e.rawmonth) ? e.month : e.date.getMonth() + 1, 0).getDate() >= e.day || "29" == e.day && (!isFinite(e.rawyear) || void 0 === e.rawyear || "" === e.rawyear) || new Date(e.date.getFullYear(), isFinite(e.rawmonth) ? e.month : e.date.getMonth() + 1, 0).getDate() >= e.day) return t;
                     if ("29" == e.day) {
-                        var i = j(t.pos, n);
+                        var i = j(t.pos, n, this.maskset);
                         if (i.targetMatch && "yyyy" === i.targetMatch[0] && t.pos - i.targetMatchIndex == 2) return t.remove = t.pos + 1, 
                         t;
                     } else if (2 == e.date.getMonth() && "30" == e.day && void 0 !== t.c) return e.day = "03", 
@@ -1371,26 +1392,26 @@
                     return e;
                 }
                 function M(e, t, n) {
-                    return "string" == typeof e ? new h(e, t, n) : e && "object" === u(e) && Object.prototype.hasOwnProperty.call(e, "date") ? e : void 0;
+                    return "string" == typeof e ? new h(e, t, n, this) : e && "object" === u(e) && Object.prototype.hasOwnProperty.call(e, "date") ? e : void 0;
                 }
                 function E(e, t) {
                     return O(t.inputFormat, {
                         date: e
                     }, t);
                 }
-                function j(e, t) {
-                    var n, i, a = 0, r = 0;
-                    for (P(t).lastIndex = 0; i = P(t).exec(t.inputFormat); ) {
-                        var o = new RegExp("\\d+$").exec(i[0]);
-                        if ((a += r = o ? parseInt(o[0]) : i[0].length) >= e + 1) {
-                            n = i, i = P(t).exec(t.inputFormat);
+                function j(e, t, n) {
+                    var i, a, r = n && n.tests[e] ? n.tests[e][0].match.placeholder : "", o = 0, l = 0;
+                    for (P(t).lastIndex = 0; a = P(t).exec(t.inputFormat); ) {
+                        var s = new RegExp("\\d+$").exec(a[0]);
+                        if (o += l = s ? parseInt(s[0]) : a[0].length, -1 != a[0].indexOf(r) || o >= e + 1) {
+                            i = a, a = P(t).exec(t.inputFormat);
                             break;
                         }
                     }
                     return {
-                        targetMatchIndex: a - r,
-                        nextMatch: i,
-                        targetMatch: n
+                        targetMatchIndex: o - l,
+                        nextMatch: a,
+                        targetMatch: i
                     };
                 }
                 i.default.extendAliases({
@@ -1413,7 +1434,7 @@
                             if (isNaN(n) && e[t] !== n) {
                                 var s = j(t, a);
                                 if (s.nextMatch && s.nextMatch[0] === n && s.targetMatch[0].length > 1) {
-                                    var c = y[s.targetMatch[0]][0];
+                                    var c = w(s.targetMatch)[0];
                                     if (new RegExp(c).test("0" + e[t - 1])) return e[t] = e[t - 1], e[t - 1] = "0", 
                                     {
                                         fuzzy: !0,
@@ -1429,9 +1450,9 @@
                             return !0;
                         },
                         postValidation: function(e, t, n, i, a, r, o, s) {
-                            var c, u;
+                            var c, u, f = this;
                             if (o) return !0;
-                            if (!1 === i && (((c = j(t + 1, a)).targetMatch && c.targetMatchIndex === t && c.targetMatch[0].length > 1 && void 0 !== y[c.targetMatch[0]] || (c = j(t + 2, a)).targetMatch && c.targetMatchIndex === t + 1 && c.targetMatch[0].length > 1 && void 0 !== y[c.targetMatch[0]]) && (u = y[c.targetMatch[0]][0]), 
+                            if (!1 === i && (((c = j(t + 1, a, r)).targetMatch && c.targetMatchIndex === t && c.targetMatch[0].length > 1 && void 0 !== y[c.targetMatch[0]] || (c = j(t + 2, a, r)).targetMatch && c.targetMatchIndex === t + 1 && c.targetMatch[0].length > 1 && void 0 !== y[c.targetMatch[0]]) && (u = w(c.targetMatch)[0]), 
                             void 0 !== u && (void 0 !== r.validPositions[t + 1] && new RegExp(u).test(n + "0") ? (e[t] = n, 
                             e[t + 1] = "0", i = {
                                 pos: t + 2,
@@ -1439,16 +1460,16 @@
                             }) : new RegExp(u).test("0" + n) && (e[t] = "0", e[t + 1] = n, i = {
                                 pos: t + 2
                             })), !1 === i)) return i;
-                            if (i.fuzzy && (e = i.buffer, t = i.pos), (c = j(t, a)).targetMatch && c.targetMatch[0] && void 0 !== y[c.targetMatch[0]]) {
-                                var f = y[c.targetMatch[0]];
-                                u = f[0];
-                                var p = e.slice(c.targetMatchIndex, c.targetMatchIndex + c.targetMatch[0].length);
-                                if (!1 === new RegExp(u).test(p.join("")) && 2 === c.targetMatch[0].length && r.validPositions[c.targetMatchIndex] && r.validPositions[c.targetMatchIndex + 1] && (r.validPositions[c.targetMatchIndex + 1].input = "0"), 
-                                "year" == f[2]) for (var d = l.getMaskTemplate.call(this, !1, 1, void 0, !0), h = t + 1; h < e.length; h++) e[h] = d[h], 
+                            if (i.fuzzy && (e = i.buffer, t = i.pos), (c = j(t, a, r)).targetMatch && c.targetMatch[0] && void 0 !== y[c.targetMatch[0]]) {
+                                var p = w(c.targetMatch);
+                                u = p[0];
+                                var d = e.slice(c.targetMatchIndex, c.targetMatchIndex + c.targetMatch[0].length);
+                                if (!1 === new RegExp(u).test(d.join("")) && 2 === c.targetMatch[0].length && r.validPositions[c.targetMatchIndex] && r.validPositions[c.targetMatchIndex + 1] && (r.validPositions[c.targetMatchIndex + 1].input = "0"), 
+                                "year" == p[2]) for (var h = l.getMaskTemplate.call(f, !1, 1, void 0, !0), m = t + 1; m < e.length; m++) e[m] = h[m], 
                                 r.validPositions.splice(t + 1, 1);
                             }
-                            var m = i, g = M(e.join(""), a.inputFormat, a);
-                            return m && !isNaN(g.date.getTime()) && (a.prefillYear && (m = function(e, t, n) {
+                            var g = i, k = M.call(f, e.join(""), a.inputFormat, a);
+                            return g && !isNaN(k.date.getTime()) && (a.prefillYear && (g = function(e, t, n) {
                                 if (e.year !== e.rawyear) {
                                     var i = v.toString(), a = e.rawyear.replace(/[^0-9]/g, ""), r = i.slice(0, a.length), o = i.slice(a.length);
                                     if (2 === a.length && a === r) {
@@ -1464,7 +1485,7 @@
                                     }
                                 }
                                 return t;
-                            }(g, m, a)), m = function(e, t, n, i, a) {
+                            }(k, g, a)), g = function(e, t, n, i, a) {
                                 if (!t) return t;
                                 if (t && n.min && !isNaN(n.min.date.getTime())) {
                                     var r;
@@ -1482,24 +1503,27 @@
                                 }
                                 return t && n.max && (isNaN(n.max.date.getTime()) || (t = n.max.date.getTime() >= e.date.getTime())), 
                                 t;
-                            }(g, m = S.call(this, g, m, a), a, r)), void 0 !== t && m && i.pos !== t ? {
-                                buffer: O(a.inputFormat, g, a).split(""),
+                            }(k, g = S.call(f, k, g, a), a, r)), void 0 !== t && g && i.pos !== t ? {
+                                buffer: O(a.inputFormat, k, a).split(""),
                                 refreshFromBuffer: {
                                     start: t,
                                     end: i.pos
                                 },
                                 pos: i.caret || i.pos
-                            } : m;
+                            } : g;
                         },
                         onKeyDown: function(e, t, n, i) {
                             e.ctrlKey && e.key === a.keys.ArrowRight && (this.inputmask._valueSet(E(new Date, i)), 
                             d(this).trigger("setvalue"));
                         },
                         onUnMask: function(e, t, n) {
-                            return t ? O(n.outputFormat, M(e, n.inputFormat, n), n, !0) : t;
+                            return t ? O(n.outputFormat, M.call(this, e, n.inputFormat, n), n, !0) : t;
                         },
                         casing: function(e, t, n, i) {
-                            return 0 == t.nativeDef.indexOf("[ap]") ? e.toLowerCase() : 0 == t.nativeDef.indexOf("[AP]") ? e.toUpperCase() : e;
+                            if (0 == t.nativeDef.indexOf("[ap]")) return e.toLowerCase();
+                            if (0 == t.nativeDef.indexOf("[AP]")) return e.toUpperCase();
+                            var r = l.getTest.call(this, [ n - 1 ]);
+                            return 0 === n || r && r.input === String.fromCharCode(a.keyCode.Space) || r && r.match.def === String.fromCharCode(a.keyCode.Space) ? e.toUpperCase() : e.toLowerCase();
                         },
                         onBeforeMask: function(e, t) {
                             return "[object Date]" === Object.prototype.toString.call(e) && (e = E(e, t)), e;
