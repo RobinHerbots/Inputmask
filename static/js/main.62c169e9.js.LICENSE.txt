@@ -8,9 +8,9 @@
 /*!
  * dist/inputmask
  * https://github.com/RobinHerbots/Inputmask
- * Copyright (c) 2010 - 2023 Robin Herbots
+ * Copyright (c) 2010 - 2024 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.9-beta.36
+ * Version: 5.0.9-beta.52
  */
 
 /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
