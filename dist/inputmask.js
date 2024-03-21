@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2024 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.9-beta.52
+ * Version: 5.0.9-beta.53
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -1060,8 +1060,8 @@
                             for (P(t).lastIndex = 0; i = P(t).exec(this.format); ) {
                                 var a = new RegExp("\\d+$").exec(i[0]), r = a ? i[0][0] + "x" : i[0], o = void 0;
                                 if (void 0 !== e) {
-                                    if (console.log("mask", e), a) {
-                                        var s = P(t).lastIndex, c = j(i.index, t, n && n.maskset);
+                                    if (a) {
+                                        var s = P(t).lastIndex, c = j.call(n, i.index, t, n && n.maskset);
                                         P(t).lastIndex = s, o = e.slice(0, e.indexOf(c.nextMatch[0]));
                                     } else {
                                         for (var u = i[0][0], f = i.index; n && l.getTest.call(n, f).match.placeholder === u; ) f++;
@@ -1240,7 +1240,7 @@
                     if (!g) return !0;
                     if (void 0 === e.rawday || !isFinite(e.rawday) && new Date(e.date.getFullYear(), isFinite(e.rawmonth) ? e.month : e.date.getMonth() + 1, 0).getDate() >= e.day || "29" == e.day && (!isFinite(e.rawyear) || void 0 === e.rawyear || "" === e.rawyear) || new Date(e.date.getFullYear(), isFinite(e.rawmonth) ? e.month : e.date.getMonth() + 1, 0).getDate() >= e.day) return t;
                     if ("29" == e.day) {
-                        var i = j(t.pos, n, this.maskset);
+                        var i = j.call(this, t.pos, n, this.maskset);
                         if (i.targetMatch && "yyyy" === i.targetMatch[0] && t.pos - i.targetMatchIndex == 2) return t.remove = t.pos + 1, 
                         t;
                     } else if (2 == e.date.getMonth() && "30" == e.day && void 0 !== t.c) return e.day = "03", 
@@ -1285,16 +1285,20 @@
                     }, t);
                 }
                 function j(e, t, n) {
-                    var i, a, r = n && n.tests[e] ? n.tests[e][0].match.placeholder : "", o = 0, l = 0;
+                    var i, a, r = n && n.tests[e] ? n.tests[e][0].match.placeholder : "", o = 0, s = 0;
                     for (P(t).lastIndex = 0; a = P(t).exec(t.inputFormat); ) {
-                        var s = new RegExp("\\d+$").exec(a[0]);
-                        if (o += l = s ? parseInt(s[0]) : a[0].length, -1 != a[0].indexOf(r) || o >= e + 1) {
+                        var c = new RegExp("\\d+$").exec(a[0]);
+                        if (c) s = parseInt(c[0]); else {
+                            for (var u = a[0][0], f = o; this && l.getTest.call(this, f).match.placeholder === u; ) f++;
+                            0 === (s = f - o) && (s = a[0].length);
+                        }
+                        if (o += s, -1 != a[0].indexOf(r) || o >= e + 1) {
                             i = a, a = P(t).exec(t.inputFormat);
                             break;
                         }
                     }
                     return {
-                        targetMatchIndex: o - l,
+                        targetMatchIndex: o - s,
                         nextMatch: a,
                         targetMatch: i
                     };
@@ -1317,7 +1321,7 @@
                         preValidation: function(e, t, n, i, a, r, o, l) {
                             if (l) return !0;
                             if (isNaN(n) && e[t] !== n) {
-                                var s = j(t, a);
+                                var s = j.call(this, t, a, r);
                                 if (s.nextMatch && s.nextMatch[0] === n && s.targetMatch[0].length > 1) {
                                     var c = w(s.targetMatch)[0];
                                     if (new RegExp(c).test("0" + e[t - 1])) return e[t] = e[t - 1], e[t - 1] = "0", 
@@ -1337,7 +1341,7 @@
                         postValidation: function(e, t, n, i, a, r, o, s) {
                             var c, u, f = this;
                             if (o) return !0;
-                            if (!1 === i && (((c = j(t + 1, a, r)).targetMatch && c.targetMatchIndex === t && c.targetMatch[0].length > 1 && void 0 !== y[c.targetMatch[0]] || (c = j(t + 2, a, r)).targetMatch && c.targetMatchIndex === t + 1 && c.targetMatch[0].length > 1 && void 0 !== y[c.targetMatch[0]]) && (u = w(c.targetMatch)[0]), 
+                            if (!1 === i && (((c = j.call(f, t + 1, a, r)).targetMatch && c.targetMatchIndex === t && c.targetMatch[0].length > 1 && void 0 !== y[c.targetMatch[0]] || (c = j.call(f, t + 2, a, r)).targetMatch && c.targetMatchIndex === t + 1 && c.targetMatch[0].length > 1 && void 0 !== y[c.targetMatch[0]]) && (u = w(c.targetMatch)[0]), 
                             void 0 !== u && (void 0 !== r.validPositions[t + 1] && new RegExp(u).test(n + "0") ? (e[t] = n, 
                             e[t + 1] = "0", i = {
                                 pos: t + 2,
@@ -1345,7 +1349,7 @@
                             }) : new RegExp(u).test("0" + n) && (e[t] = "0", e[t + 1] = n, i = {
                                 pos: t + 2
                             })), !1 === i)) return i;
-                            if (i.fuzzy && (e = i.buffer, t = i.pos), (c = j(t, a, r)).targetMatch && c.targetMatch[0] && void 0 !== y[c.targetMatch[0]]) {
+                            if (i.fuzzy && (e = i.buffer, t = i.pos), (c = j.call(f, t, a, r)).targetMatch && c.targetMatch[0] && void 0 !== y[c.targetMatch[0]]) {
                                 var p = w(c.targetMatch);
                                 u = p[0];
                                 var d = e.slice(c.targetMatchIndex, c.targetMatchIndex + c.targetMatch[0].length);

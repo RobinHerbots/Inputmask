@@ -14,7 +14,9 @@
 - Enhance resolving of the ndxInitializer to determine the alternating tests.
 
 ### Fixed
-- d/mm/yyyy is converted to d/m//yyyd #2394 (WIP)
+- ALT codes #2779
+- Pressing the Win button #2780
+- d/mm/yyyy is converted to d/m//yyyd #2394
 - how to get value from input-mask element? #2702
 - Problem with seconds in format 'HH:MM:ss' #2745
 - Remove unused mask - Take2 #2748

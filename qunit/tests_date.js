@@ -1334,6 +1334,18 @@ export default function (qunit, Inputmask) {
 		assert.equal(testmask.value, "29 February 2024", "Result " + testmask.value);
 	});
 
+	qunit.test("mmmm dd yyyy - #2751", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "mmmm dd yyyy",
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("february292024");
+		assert.equal(testmask.value, "February 29 2024", "Result " + testmask.value);
+	});
+
 	qunit.test("dd mmm yyyy - #2751", function (assert) {
 		var $fixture = $("#qunit-fixture");
 		$fixture.append("<input type=\"text\" id=\"testmask\" />");
@@ -1344,5 +1356,17 @@ export default function (qunit, Inputmask) {
 		testmask.focus();
 		$("#testmask").Type("29feb2024");
 		assert.equal(testmask.value, "29 Feb 2024", "Result " + testmask.value);
+	});
+
+	qunit.test("mmm dd yyyy - #2751", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "mmm dd yyyy",
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("feb292024");
+		assert.equal(testmask.value, "Feb 29 2024", "Result " + testmask.value);
 	});
 }

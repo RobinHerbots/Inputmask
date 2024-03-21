@@ -74,6 +74,9 @@ module.exports = function (env, argv) {
 						ascii_only: true,
 						beautify: false,
 						comments: /^!/
+					},
+					compress: {
+						drop_console: env === "production",
 					}
 				},
 				extractComments: false
@@ -85,7 +88,10 @@ module.exports = function (env, argv) {
 						ascii_only: true,
 						beautify: true,
 						comments: /^!/
-					}
+					},
+					compress: {
+						drop_console: env === "production",
+					},
 				},
 				extractComments: false
 			})]
