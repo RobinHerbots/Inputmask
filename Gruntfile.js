@@ -86,6 +86,7 @@ module.exports = function (grunt) {
 				files: [
 					{src: "lib/bindings/inputmask.binding.js", dest: "dist/bindings/inputmask.binding.js"},
 					{src: "lib/bindings/inputmask.es6.js", dest: "dist/inputmask.es6.js"},
+					{src: "lib/extensions/colormask.css", dest: "dist/colormask.css"},
 					{src: "Changelog.md", dest: "inputmask-pages/src/assets/Changelog.md"}
 				]
 			}
