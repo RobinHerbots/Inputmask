@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2024 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.9-beta.54
+ * Version: 5.0.9-beta.55
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -1097,7 +1097,8 @@
                         } else if (o = w(a)) if (!0 !== i && o[3]) s += o[3].call(t.date); else o[2] ? s += t["raw" + o[2]] : s += a[0]; else s += a[0];
                         l++;
                     }
-                    return void 0 === t && "" === n.placeholder && (n.placeholder = c), s;
+                    return void 0 !== t || "" !== n.placeholder && -1 == n.inputFormat.indexOf("mmmm") || (n.placeholder = c), 
+                    s;
                 }
                 function M(e, t, n) {
                     for (e = String(e), t = t || 2; e.length < t; ) e = n ? e + "0" : "0" + e;
