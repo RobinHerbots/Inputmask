@@ -14,6 +14,7 @@
 - Enhance resolving of the ndxInitializer to determine the alternating tests.
 
 ### Fixed
+- Inputmask datetime alias mm/yy min value bug #2744
 - ALT codes #2779
 - Pressing the Win button #2780
 - d/mm/yyyy is converted to d/m//yyyd #2394

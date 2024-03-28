@@ -1,4 +1,4 @@
 import "./bundle";
-import Colormask from "./lib/extensions/colorMask";
+import Colormask from "./lib/extensions/colormask";
 export default Colormask;
 
