@@ -14,6 +14,7 @@
 - Enhance resolving of the ndxInitializer to determine the alternating tests.
 
 ### Fixed
+- Invalid state after editing datetime #2708
 - Inputmask datetime alias mm/yy min value bug #2744
 - ALT codes #2779
 - Pressing the Win button #2780
