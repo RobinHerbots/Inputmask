@@ -1369,4 +1369,31 @@ export default function (qunit, Inputmask) {
 		$("#testmask").Type("feb292024");
 		assert.equal(testmask.value, "Feb 29 2024", "Result " + testmask.value);
 	});
+
+	qunit.test("mm/yy + min/max - 09 - #2744", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "mm/yy",
+			min: "10/23",
+			max: "10/33",
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("09");
+		assert.equal(testmask.value, "09/yy", "Result " + testmask.value);
+	});
+	qunit.test("mm/yy + min/max - 0924 - #2744", function (assert) {
+		var $fixture = $("#qunit-fixture");
+		$fixture.append("<input type=\"text\" id=\"testmask\" />");
+		var testmask = document.getElementById("testmask");
+		Inputmask("datetime", {
+			inputFormat: "mm/yy",
+			min: "10/23",
+			max: "10/33",
+		}).mask(testmask);
+		testmask.focus();
+		$("#testmask").Type("0924");
+		assert.equal(testmask.value, "09/24", "Result " + testmask.value);
+	});
 }
