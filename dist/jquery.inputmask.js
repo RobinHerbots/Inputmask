@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2025 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.10-beta.22
+ * Version: 5.0.10-beta.27
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -1054,8 +1054,8 @@
                 }, k = {
                     isoDate: "yyyy-mm-dd",
                     isoTime: "HH:MM:ss",
-                    isoDateTime: "yyyy-mm-dd'T'HH:MM:ss",
-                    isoUtcDateTime: "UTC:yyyy-mm-dd'T'HH:MM:ss'Z'"
+                    isoDateTime: "yyyy-mm-dd\\THH:MM:ss",
+                    isoUtcDateTime: "UTC:yyyy-mm-dd\\THH:MM:ss\\Z"
                 };
                 function b(e) {
                     var t = this.getHours();
@@ -1102,25 +1102,25 @@
                     } ], t.caret = s.seekNext.call(this, t.pos + 1), t;
                     return !1;
                 }
-                function O(e, t, n, i) {
-                    var r, o, s = "", l = 0, c = !1, u = {};
-                    for (S(n).lastIndex = 0; r = S(n).exec(e); ) if ("\\" === r[0]) c = !0; else {
-                        if (void 0 === t) if (!c && (o = P(r))) s += "(" + o[0] + ")", n.placeholder && "" !== n.placeholder ? (u[l] = n.placeholder[r.index % n.placeholder.length], 
-                        u["".concat(r.index, "'").concat(n.placeholder[r.index % n.placeholder.length])] = r[0].charAt(0)) : u[l] = r[0].charAt(0); else switch (r[0]) {
+                function O(e, t, n) {
+                    var i, r, o = "", s = 0, l = !1, c = {};
+                    for (S(n).lastIndex = 0; i = S(n).exec(e); ) if (i[0] === n.escapeChar) l = !0; else {
+                        if (void 0 === t) if (!l && (r = P(i))) o += "(" + r[0] + ")", n.placeholder && "" !== n.placeholder ? (c[s] = n.placeholder[i.index % n.placeholder.length], 
+                        c["".concat(i.index, "'").concat(n.placeholder[i.index % n.placeholder.length])] = i[0].charAt(0)) : c[s] = i[0].charAt(0); else switch (i[0]) {
                           case "[":
-                            s += "(";
+                            o += "(";
                             break;
 
                           case "]":
-                            s += ")?";
+                            o += ")?";
                             break;
 
                           default:
-                            s += (0, a.escapeRegex)(r[0]), u[l] = r[0].charAt(0);
-                        } else if (!c && (o = P(r))) if (!0 !== i && o[3]) s += o[3].call(t.date); else o[2] ? s += t["raw" + o[2]] : s += r[0]; else s += "".concat(c ? "\\" : "").concat(r[0]);
-                        l++, c = !1;
+                            o += (0, a.escapeRegex)(i[0]), c[s] = i[0].charAt(0);
+                        } else if (!l && (r = P(i))) if (r[3]) o += r[3].call(t.date); else r[2] && void 0 !== t["raw" + r[2]] ? o += t["raw" + r[2]] : o += i[0]; else o += i[0];
+                        s++, l = !1;
                     }
-                    return void 0 === t && (n.placeholder = u), s;
+                    return void 0 === t && (n.placeholder = c), o;
                 }
                 function M(e, t, n) {
                     for (e = String(e), t = t || 2; e.length < t; ) e = n ? e + "0" : "0" + e;
@@ -1270,13 +1270,13 @@
                             d(this).trigger("setvalue"));
                         },
                         onUnMask: function(e, t, n) {
-                            return t ? O(n.outputFormat, _.call(this, e, n.inputFormat, n), n, !0) : t;
+                            return t ? O(n.outputFormat, _.call(this, e, n.inputFormat, n), n) : t;
                         },
                         casing: function(e, t, n, i) {
                             if (0 == t.nativeDef.indexOf("[ap]")) return e.toLowerCase();
                             if (0 == t.nativeDef.indexOf("[AP]")) return e.toUpperCase();
                             var a = l.getTest.call(this, [ n - 1 ]);
-                            return 0 == a.match.def.indexOf("[AP]") || 0 === n || a && a.input === String.fromCharCode(o.keyCode.Space) || a && a.match.def === String.fromCharCode(o.keyCode.Space) ? e.toUpperCase() : e.toLowerCase();
+                            return 0 == a.match.def.indexOf("[AP]") || 0 === n || a && a.input === String.fromCharCode(o.keyCode.Space) || a && a.match.def === String.fromCharCode(o.keyCode.Space) || t.static && t.def === t.def.toUpperCase() ? e.toUpperCase() : e.toLowerCase();
                         },
                         onBeforeMask: function(e, t) {
                             return "[object Date]" === Object.prototype.toString.call(e) && (e = j(e, t)), e;

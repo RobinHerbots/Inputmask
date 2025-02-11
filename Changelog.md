@@ -13,6 +13,7 @@
 
 ### Fixed
 
+- Datetime alias with incorrect submitted value (outputFormat) #2826
 - FormData values are not unmasked #2409
 - Cannot change the mask on multiple masks when the input is already filled. #2820
 - Negative limits for numeric inputs #2796
