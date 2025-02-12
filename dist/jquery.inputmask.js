@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2025 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.10-beta.27
+ * Version: 5.0.10-beta.29
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -2943,7 +2943,7 @@
                             !1 === l.isComplete.call(e, p) && t.clearIncomplete && s.resetMaskSet.call(e, !1), 
                             t.clearMaskOnLostFocus && f !== n && (-1 === s.getLastValidPosition.call(e) ? p = [] : o.clearOptionalTail.call(e, p)), 
                             (!1 === t.clearMaskOnLostFocus || t.showMaskOnFocus && f === n || "" !== n.inputmask._valueGet(!0)) && (0, 
-                            o.writeBuffer)(n, p), f === n && s.caret.call(e, n, s.seekNext.call(e, s.getLastValidPosition.call(e)));
+                            o.writeBuffer)(n, p), f === n ? s.caret.call(e, n, s.seekNext.call(e, s.getLastValidPosition.call(e))) : s.caret.call(e, n, 0);
                         }
                     }
                 };

@@ -44,6 +44,7 @@
 
 ### Fixed
 
+- The default value is not shown completely with the "text-overflow: ellipsis" style #2828
 - Two-character time marker AM or PM doesn't work #2794
 - Input freezes after changing decimal value symbol twice #2731
 - Poor performance on decimal input mask #1505
