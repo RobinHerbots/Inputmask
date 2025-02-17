@@ -9,10 +9,17 @@
 
 ### Updates
 
+- datetime alias
+  - adjust month/minutes definition to match standard defined at unicode.org
+    - month: M, MM, MMM, MMMM
+    - minutes: m, mm
+    - day: d, dd, D, DD
+    - year: yy, yyyy, YY, YYYY
 - fix: Inputmask works weird under ShadowDOM #2753
 
 ### Fixed
 
+- Wrong standard unicode for Minutes #2834 #2835
 - Datetime alias with incorrect submitted value (outputFormat) #2826
 - FormData values are not unmasked #2409
 - Cannot change the mask on multiple masks when the input is already filled. #2820

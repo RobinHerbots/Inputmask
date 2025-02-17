@@ -14,9 +14,9 @@ Format used to input the date
 
 ex:
 
-- dd/mm/yyyy  
-- mm/dd/yyyy  
-- dd.mm.yyyy HH:MM:ss  
+- dd/MM/yyyy  
+- MM/dd/yyyy  
+- dd.MM.yyyy HH:MM:ss  
 
 ### Supported symbols
 
@@ -30,11 +30,11 @@ Day of the week as a three-letter abbreviation.
 Day of the week as its full name.
 - m  
 Month as digits; no leading zero for single-digit months.
-- mm  
+- MM  
 Month as digits; leading zero for single-digit months.
-- mmm  
+- MMM  
 Month as a three-letter abbreviation.
-- mmmm  
+- MMMM  
 Month as its full name.
 - yy  
 Year as last two digits; leading zero for years less than 10.
@@ -52,10 +52,10 @@ Hours; no leading zero for single-digit hours (24-hour clock).
 Hours; leading zero for single-digit hours (24-hour clock).
 - Hx  
 Hours; no limit; x = number of digits ~ use as H2, H3, ...
-- M  
-Minutes; no leading zero for single-digit minutes. Uppercase M unlike CF timeFormat's m to avoid conflict with months.
-- MM  
-Minutes; leading zero for single-digit minutes. Uppercase MM unlike CF timeFormat's mm to avoid conflict with months.
+- m  
+Minutes; no leading zero for single-digit minutes.
+- mm  
+Minutes; leading zero for single-digit minutes.
 - s  
 Seconds; no leading zero for single-digit seconds.
 - ss  
@@ -84,7 +84,7 @@ The date's ordinal suffix (st, nd, rd, or th). Works well with d.
 To mark a part of the inputFormat as optional, use the [] as you would for other masks.
 
 Ex.
-inputFormat: "dd/mm/yyyy [HH]"
+inputFormat: "dd/MM/yyyy [HH]"
 
 ### displayFormat
 

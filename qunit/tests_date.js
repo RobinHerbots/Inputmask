@@ -10,13 +10,13 @@ export default function (qunit, Inputmask) {
     return val;
   }
 
-  qunit.module("Date.Extensions - dd/mm/yyyy");
+  qunit.module("Date.Extensions - dd/MM/yyyy");
   qunit.test("valid entry", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd/mm/yyyy",
+      inputFormat: "dd/MM/yyyy",
       min: "01/01/1900"
     }).mask(testmask);
 
@@ -30,7 +30,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd/mm/yyyy",
+      inputFormat: "dd/MM/yyyy",
       min: "01/01/1900"
     }).mask(testmask);
 
@@ -44,7 +44,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd/mm/yyyy",
+      inputFormat: "dd/MM/yyyy",
       min: "01/01/1900"
     }).mask(testmask);
 
@@ -60,7 +60,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd/mm/yyyy",
+      inputFormat: "dd/MM/yyyy",
       min: "01/01/1900"
     }).mask(testmask);
 
@@ -76,7 +76,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd/mm/yyyy",
+      inputFormat: "dd/MM/yyyy",
       min: "01/01/1900"
     }).mask(testmask);
 
@@ -96,7 +96,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd/mm/yyyy",
+      inputFormat: "dd/MM/yyyy",
       min: "01/01/1900"
     }).mask(testmask);
 
@@ -114,7 +114,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd/mm/yyyy",
+      inputFormat: "dd/MM/yyyy",
       min: "01/01/1900"
     }).mask(testmask);
 
@@ -133,7 +133,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd/mm/yyyy",
+      inputFormat: "dd/MM/yyyy",
       min: "01/01/1900"
     }).mask(testmask);
 
@@ -148,7 +148,7 @@ export default function (qunit, Inputmask) {
       $fixture.append('<input type="text" id="testmask" />');
       var testmask = document.getElementById("testmask");
       Inputmask("datetime", {
-        inputFormat: "dd/mm/yyyy",
+        inputFormat: "dd/MM/yyyy",
         min: "01/01/1900",
         max: "31/12/2017"
       }).mask(testmask);
@@ -165,7 +165,7 @@ export default function (qunit, Inputmask) {
       $fixture.append('<input type="text" id="testmask" />');
       var testmask = document.getElementById("testmask");
       Inputmask("datetime", {
-        inputFormat: "dd/mm/yyyy",
+        inputFormat: "dd/MM/yyyy",
         min: "01/01/1900",
         max: "31/12/1900"
       }).mask(testmask);
@@ -180,7 +180,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd/mm/yyyy",
+      inputFormat: "dd/MM/yyyy",
       min: "01/01/1900",
       max: "31/12/2017"
     }).mask(testmask);
@@ -194,7 +194,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd/mm/yyyy",
+      inputFormat: "dd/MM/yyyy",
       min: "01/01/1900",
       max: "31/12/2017"
     }).mask(testmask);
@@ -208,7 +208,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd/mm/yyyy",
+      inputFormat: "dd/MM/yyyy",
       min: "01/01/1900",
       max: "31/12/2017"
     }).mask(testmask);
@@ -223,7 +223,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd/mm/yyyy",
+      inputFormat: "dd/MM/yyyy",
       min: "14/02/1938",
       max: "14/02/2038"
     }).mask(testmask);
@@ -238,7 +238,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd/mm/yyyy",
+      inputFormat: "dd/MM/yyyy",
       min: "01/01/1900"
     }).mask(testmask);
 
@@ -255,16 +255,16 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd/mm/yyyy",
+      inputFormat: "dd/MM/yyyy",
       min: "01/01/1900"
     }).mask(testmask);
 
     testmask.focus();
     $("#testmask").Type("4");
-    $.caret(testmask, 0, "dd/mm/yyyy".length);
+    $.caret(testmask, 0, "dd/MM/yyyy".length);
     $("#testmask").Type("2");
 
-    assert.equal(testmask.value, "2d/mm/yyyy", "Result " + testmask.value);
+    assert.equal(testmask.value, "2d/MM/yyyy", "Result " + testmask.value);
   });
 
   qunit.test("Prefill year - DeepaSunil86 - #2266", function (assert) {
@@ -272,7 +272,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd/mm/yyyy",
+      inputFormat: "dd/MM/yyyy",
       min: "01/01/1900"
     }).mask(testmask);
 
@@ -293,7 +293,7 @@ export default function (qunit, Inputmask) {
       $fixture.append('<input type="text" id="testmask" />');
       var testmask = document.getElementById("testmask");
       Inputmask("datetime", {
-        inputFormat: "dd/mm/yyyy",
+        inputFormat: "dd/MM/yyyy",
         min: "01/01/2019"
       }).mask(testmask);
 
@@ -304,13 +304,13 @@ export default function (qunit, Inputmask) {
     }
   );
 
-  qunit.module("Date.Extensions - mm/dd/yyyy");
+  qunit.module("Date.Extensions - MM/dd/yyyy");
   qunit.test("valid entry", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "mm/dd/yyyy",
+      inputFormat: "MM/dd/yyyy",
       min: "01/01/1900"
     }).mask(testmask);
 
@@ -324,7 +324,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "mm/dd/yyyy",
+      inputFormat: "MM/dd/yyyy",
       min: "01/01/1900"
     }).mask(testmask);
 
@@ -338,7 +338,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "mm/dd/yyyy",
+      inputFormat: "MM/dd/yyyy",
       min: "01/01/1900"
     }).mask(testmask);
 
@@ -354,7 +354,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "mm/dd/yyyy",
+      inputFormat: "MM/dd/yyyy",
       min: "01/01/1900"
     }).mask(testmask);
 
@@ -370,7 +370,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "mm/dd/yyyy",
+      inputFormat: "MM/dd/yyyy",
       min: "01/01/1900"
     }).mask(testmask);
 
@@ -390,7 +390,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "mm/dd/yyyy",
+      inputFormat: "MM/dd/yyyy",
       min: "01/01/1900"
     }).mask(testmask);
 
@@ -408,7 +408,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "mm/dd/yyyy",
+      inputFormat: "MM/dd/yyyy",
       min: "01/01/1900"
     }).mask(testmask);
 
@@ -427,7 +427,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "mm/dd/yyyy",
+      inputFormat: "MM/dd/yyyy",
       min: "01/01/1900"
     }).mask(testmask);
 
@@ -440,7 +440,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "mm/dd/yyyy",
+      inputFormat: "MM/dd/yyyy",
       min: "01/01/1900",
       max: "12/31/2017"
     }).mask(testmask);
@@ -454,7 +454,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "mm/dd/yyyy",
+      inputFormat: "MM/dd/yyyy",
       min: "01/01/1900",
       max: "12/31/2017"
     }).mask(testmask);
@@ -468,7 +468,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "mm/dd/yyyy",
+      inputFormat: "MM/dd/yyyy",
       min: "01/01/1900",
       max: "12/31/2017"
     }).mask(testmask);
@@ -482,7 +482,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "mm/dd/yyyy",
+      inputFormat: "MM/dd/yyyy",
       min: "01/01/1900",
       max: "12/31/2017"
     }).mask(testmask);
@@ -497,7 +497,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "mm/dd/yyyy",
+      inputFormat: "MM/dd/yyyy",
       min: "02/14/1938",
       max: "02/14/2038"
     }).mask(testmask);
@@ -512,7 +512,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "mm/dd/yyyy",
+      inputFormat: "MM/dd/yyyy",
       min: "01/01/1900"
     }).mask(testmask);
 
@@ -529,7 +529,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "mm/dd/yyyy",
+      inputFormat: "MM/dd/yyyy",
       min: "01/01/1900"
     }).mask(testmask);
 
@@ -550,7 +550,7 @@ export default function (qunit, Inputmask) {
       $fixture.append('<input type="text" id="testmask" />');
       var testmask = document.getElementById("testmask");
       Inputmask("datetime", {
-        inputFormat: "mm/dd/yyyy",
+        inputFormat: "MM/dd/yyyy",
         min: "01/01/2019"
       }).mask(testmask);
 
@@ -562,13 +562,13 @@ export default function (qunit, Inputmask) {
   );
 
   qunit.test(
-    "Datetime inputFormat mm/dd/yyyy allows entry of 02/3 without padding the day - Josh68 - #1922",
+    "Datetime inputFormat MM/dd/yyyy allows entry of 02/3 without padding the day - Josh68 - #1922",
     function (assert) {
       var $fixture = $("#qunit-fixture");
       $fixture.append('<input type="text" id="testmask" />');
       var testmask = document.getElementById("testmask");
       Inputmask("datetime", {
-        inputFormat: "mm/dd/yyyy"
+        inputFormat: "MM/dd/yyyy"
       }).mask(testmask);
 
       testmask.focus();
@@ -578,13 +578,13 @@ export default function (qunit, Inputmask) {
     }
   );
 
-  qunit.module("Date.Extensions - dd.mm.yyyy");
+  qunit.module("Date.Extensions - dd.MM.yyyy");
   qunit.test("valid entry", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd.mm.yyyy",
+      inputFormat: "dd.MM.yyyy",
       min: "01.01.1900"
     }).mask(testmask);
 
@@ -598,7 +598,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd.mm.yyyy",
+      inputFormat: "dd.MM.yyyy",
       min: "01.01.1900"
     }).mask(testmask);
 
@@ -612,7 +612,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd.mm.yyyy",
+      inputFormat: "dd.MM.yyyy",
       min: "01.01.1900"
     }).mask(testmask);
 
@@ -628,7 +628,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd.mm.yyyy",
+      inputFormat: "dd.MM.yyyy",
       min: "01.01.1900"
     }).mask(testmask);
 
@@ -644,7 +644,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd.mm.yyyy",
+      inputFormat: "dd.MM.yyyy",
       min: "01.01.1900"
     }).mask(testmask);
 
@@ -664,7 +664,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd.mm.yyyy",
+      inputFormat: "dd.MM.yyyy",
       min: "01.01.1900"
     }).mask(testmask);
 
@@ -682,7 +682,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd.mm.yyyy",
+      inputFormat: "dd.MM.yyyy",
       min: "01.01.1900"
     }).mask(testmask);
 
@@ -701,7 +701,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd.mm.yyyy",
+      inputFormat: "dd.MM.yyyy",
       min: "01.01.1900"
     }).mask(testmask);
 
@@ -714,7 +714,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd.mm.yyyy",
+      inputFormat: "dd.MM.yyyy",
       min: "01.01.1900",
       max: "31.12.2017"
     }).mask(testmask);
@@ -728,7 +728,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd.mm.yyyy",
+      inputFormat: "dd.MM.yyyy",
       min: "01.01.1900",
       max: "31.12.2017"
     }).mask(testmask);
@@ -742,7 +742,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd.mm.yyyy",
+      inputFormat: "dd.MM.yyyy",
       min: "01.01.1900",
       max: "31.12.2017"
     }).mask(testmask);
@@ -756,7 +756,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd.mm.yyyy",
+      inputFormat: "dd.MM.yyyy",
       min: "01.01.1900",
       max: "31.12.2017"
     }).mask(testmask);
@@ -771,7 +771,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd.mm.yyyy",
+      inputFormat: "dd.MM.yyyy",
       min: "14.02.1938",
       max: "14.02.2038"
     }).mask(testmask);
@@ -786,7 +786,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd.mm.yyyy",
+      inputFormat: "dd.MM.yyyy",
       min: "01.01.1900"
     }).mask(testmask);
 
@@ -798,16 +798,16 @@ export default function (qunit, Inputmask) {
     assert.equal(testmask.value, "08.08.2018", "Result " + testmask.value);
   });
 
-  qunit.module("Date.Extensions - yyyy-mm-dd");
+  qunit.module("Date.Extensions - yyyy-MM-dd");
   qunit.test(
-    "date format yyyy-mm-dd doesn't work with min and max #2360",
+    "date format yyyy-MM-dd doesn't work with min and max #2360",
     function (assert) {
       var $fixture = $("#qunit-fixture");
       $fixture.append('<input type="text" id="testmask" />');
       var testmask = document.getElementById("testmask");
       Inputmask({
         alias: "datetime",
-        inputFormat: "yyyy-mm-dd",
+        inputFormat: "yyyy-MM-dd",
         min: "1950-01-01",
         max: "1999-12-31",
         clearIncomplete: true
@@ -820,14 +820,14 @@ export default function (qunit, Inputmask) {
     }
   );
   qunit.test(
-    "date format yyyy-mm-dd doesn't work with min and max #2360",
+    "date format yyyy-MM-dd doesn't work with min and max #2360",
     function (assert) {
       var $fixture = $("#qunit-fixture");
       $fixture.append('<input type="text" id="testmask" />');
       var testmask = document.getElementById("testmask");
       Inputmask({
         alias: "datetime",
-        inputFormat: "yyyy-mm-dd",
+        inputFormat: "yyyy-MM-dd",
         min: "1950-01-01",
         max: "1999-12-31",
         clearIncomplete: true
@@ -836,19 +836,19 @@ export default function (qunit, Inputmask) {
       testmask.focus();
       $("#testmask").Type("20001231");
 
-      assert.equal(testmask.value, "1yyy-mm-dd", "Result " + testmask.value);
+      assert.equal(testmask.value, "1yyy-MM-dd", "Result " + testmask.value);
     }
   );
 
   qunit.test(
-    "date format yyyy-mm-dd doesn't work with min and max #2360",
+    "date format yyyy-MM-dd doesn't work with min and max #2360",
     function (assert) {
       var $fixture = $("#qunit-fixture");
       $fixture.append('<input type="text" id="testmask" />');
       var testmask = document.getElementById("testmask");
       Inputmask({
         alias: "datetime",
-        inputFormat: "yyyy-mm-dd",
+        inputFormat: "yyyy-MM-dd",
         min: "1950-01-01",
         max: "1999-12-31",
         clearIncomplete: true
@@ -861,13 +861,13 @@ export default function (qunit, Inputmask) {
     }
   );
 
-  qunit.module("Date.Extensions - HH:MM:ss");
-  qunit.test("HH:MM:SS - enter 111111", function (assert) {
+  qunit.module("Date.Extensions - HH:mm:ss");
+  qunit.test("HH:mm:SS - enter 111111", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "HH:MM:ss"
+      inputFormat: "HH:mm:ss"
     }).mask(testmask);
 
     testmask.focus();
@@ -875,24 +875,24 @@ export default function (qunit, Inputmask) {
     assert.equal(testmask.value, "11:11:11", "Result " + testmask.value);
   });
 
-  qunit.test("HH:MM:SS - enter 222222", function (assert) {
+  qunit.test("HH:mm:SS - enter 222222", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "HH:MM:ss"
+      inputFormat: "HH:mm:ss"
     }).mask(testmask);
 
     testmask.focus();
     $("#testmask").Type("222222");
     assert.equal(testmask.value, "22:22:22", "Result " + testmask.value);
   });
-  qunit.test("HH:MM:SS - enter 333333", function (assert) {
+  qunit.test("HH:mm:SS - enter 333333", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "HH:MM:ss"
+      inputFormat: "HH:mm:ss"
     }).mask(testmask);
 
     testmask.focus();
@@ -900,12 +900,12 @@ export default function (qunit, Inputmask) {
     assert.equal(testmask.value, "03:33:33", "Result " + testmask.value);
   });
 
-  qunit.test("HH:MM:SS - enter 235959", function (assert) {
+  qunit.test("HH:mm:SS - enter 235959", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "HH:MM:ss"
+      inputFormat: "HH:mm:ss"
     }).mask(testmask);
 
     testmask.focus();
@@ -913,25 +913,25 @@ export default function (qunit, Inputmask) {
     assert.equal(testmask.value, "23:59:59", "Result " + testmask.value);
   });
 
-  qunit.test("HH:MM:SS - enter 245959", function (assert) {
+  qunit.test("HH:mm:SS - enter 245959", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "HH:MM:ss"
+      inputFormat: "HH:mm:ss"
     }).mask(testmask);
 
     testmask.focus();
     $("#testmask").Type("245959");
-    assert.equal(testmask.value, "2H:MM:ss", "Result " + testmask.value);
+    assert.equal(testmask.value, "2H:mm:ss", "Result " + testmask.value);
   });
 
-  qunit.test("HH:MM:SS - enter 235959 - backspace all", function (assert) {
+  qunit.test("HH:mm:SS - enter 235959 - backspace all", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "HH:MM:ss"
+      inputFormat: "HH:mm:ss"
     }).mask(testmask);
 
     testmask.focus();
@@ -947,24 +947,24 @@ export default function (qunit, Inputmask) {
     assert.equal(testmask.value, "", "Result " + testmask.value);
   });
 
-  qunit.test("HH:MM - setval 14:02", function (assert) {
+  qunit.test("HH:mm - setval 14:02", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "HH:MM"
+      inputFormat: "HH:mm"
     }).mask(testmask);
 
     $("#testmask").val("14:02");
     assert.equal(testmask.value, "14:02", "Result " + testmask.value);
   });
   qunit.module("Date.Extensions - misc");
-  qunit.test("HH:MM minmax 10:00 - 11:10 enter 1059", function (assert) {
+  qunit.test("HH:mm minmax 10:00 - 11:10 enter 1059", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "HH:MM",
+      inputFormat: "HH:mm",
       min: "10:00",
       max: "11:10"
     }).mask(testmask);
@@ -974,27 +974,27 @@ export default function (qunit, Inputmask) {
     assert.equal(testmask.value, "10:59", "Result " + testmask.value);
   });
 
-  qunit.test("HH:MM minmax 10:00 - 11:10 enter 1230", function (assert) {
+  qunit.test("HH:mm minmax 10:00 - 11:10 enter 1230", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "HH:MM",
+      inputFormat: "HH:mm",
       min: "10:00",
       max: "11:10"
     }).mask(testmask);
 
     testmask.focus();
     $("#testmask").val("1230");
-    assert.equal(testmask.value, "10:MM", "Result " + testmask.value);
+    assert.equal(testmask.value, "10:mm", "Result " + testmask.value);
   });
 
-  qunit.test("hh:MM TT type 99a - goto first pos - type 1", function (assert) {
+  qunit.test("hh:mm TT type 99a - goto first pos - type 1", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "hh:MM TT"
+      inputFormat: "hh:mm TT"
     }).mask(testmask);
 
     testmask.focus();
@@ -1004,30 +1004,30 @@ export default function (qunit, Inputmask) {
     assert.equal(testmask.value, "10:09 AM", "Result " + testmask.value);
   });
 
-  qunit.test("HH:MM:ss - Autocorrect, select all type 2", function (assert) {
+  qunit.test("HH:mm:ss - Autocorrect, select all type 2", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "HH:MM:ss"
+      inputFormat: "HH:mm:ss"
     }).mask(testmask);
 
     testmask.focus();
     $("#testmask").Type("24");
-    $.caret(testmask, 0, "HH:MM:ss".length);
+    $.caret(testmask, 0, "HH:mm:ss".length);
     $("#testmask").Type("2");
 
-    assert.equal(testmask.value, "2H:MM:ss", "Result " + testmask.value);
+    assert.equal(testmask.value, "2H:mm:ss", "Result " + testmask.value);
   });
 
   qunit.test(
-    "HH:MM:ss - Autocorrect, backspace all type 2 - #2194",
+    "HH:mm:ss - Autocorrect, backspace all type 2 - #2194",
     function (assert) {
       var $fixture = $("#qunit-fixture");
       $fixture.append('<input type="text" id="testmask" />');
       var testmask = document.getElementById("testmask");
       Inputmask("datetime", {
-        inputFormat: "HH:MM:ss"
+        inputFormat: "HH:mm:ss"
       }).mask(testmask);
 
       testmask.focus();
@@ -1039,7 +1039,7 @@ export default function (qunit, Inputmask) {
       $("#testmask").SendKey(keys.Backspace);
       $("#testmask").Type("2");
 
-      assert.equal(testmask.value, "2H:MM:ss", "Result " + testmask.value);
+      assert.equal(testmask.value, "2H:mm:ss", "Result " + testmask.value);
     }
   );
 
@@ -1048,9 +1048,9 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "H2:MM",
+      inputFormat: "H2:mm",
       max: "24:00",
-      placeholder: "HH:MM"
+      placeholder: "HH:mm"
     }).mask(testmask);
 
     testmask.focus();
@@ -1064,7 +1064,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd-mm-yyyy",
+      inputFormat: "dd-MM-yyyy",
       placeholder: "_",
       clearIncomplete: true,
       min: "09-09-0999",
@@ -1082,8 +1082,8 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      placeholder: "mm/dd/yyyy HH:MM",
-      inputFormat: "mm/dd/yyyy HH:MM",
+      placeholder: "MM/dd/yyyy HH:mm",
+      inputFormat: "MM/dd/yyyy HH:mm",
       min: "01/01/1753 00:00",
       max: "03/03/2020 23:59"
     }).mask(testmask);
@@ -1103,7 +1103,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "mm/dd/yyyy",
+      inputFormat: "MM/dd/yyyy",
       jitMasking: true
     }).mask(testmask);
 
@@ -1113,18 +1113,18 @@ export default function (qunit, Inputmask) {
     assert.equal(testmask.value, "02/29/2020", "Result " + testmask.value);
   });
 
-  qunit.test("dd/mm/yyyy type 3022 - #2456", function (assert) {
+  qunit.test("dd/MM/yyyy type 3022 - #2456", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd/mm/yyyy"
+      inputFormat: "dd/MM/yyyy"
     }).mask(testmask);
 
     testmask.focus();
     $("#testmask").Type("3022");
 
-    assert.equal(testmask.value, "30/mm/yyyy", "Result " + testmask.value);
+    assert.equal(testmask.value, "30/MM/yyyy", "Result " + testmask.value);
   });
 
   qunit.test(
@@ -1135,7 +1135,7 @@ export default function (qunit, Inputmask) {
       var testmask = document.getElementById("testmask");
       Inputmask("datetime", {
         placeholder: " ",
-        inputFormat: "dd/mm/yyyy"
+        inputFormat: "dd/MM/yyyy"
       }).mask(testmask);
 
       testmask.focus();
@@ -1153,7 +1153,7 @@ export default function (qunit, Inputmask) {
       var testmask = document.getElementById("testmask");
       Inputmask("datetime", {
         placeholder: " ",
-        inputFormat: "mm/dd/yyyy"
+        inputFormat: "MM/dd/yyyy"
       }).mask(testmask);
 
       testmask.focus();
@@ -1163,12 +1163,12 @@ export default function (qunit, Inputmask) {
     }
   );
 
-  qunit.test("H2:MM min 12:59- #2297", function (assert) {
+  qunit.test("H2:mm min 12:59- #2297", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "H2:MM",
+      inputFormat: "H2:mm",
       placeholder: "0",
       min: "12:59",
       max: "33:33"
@@ -1185,7 +1185,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd/mm/yyyy hh:MM:ss TT",
+      inputFormat: "dd/MM/yyyy hh:mm:ss TT",
       placeholder: "DD/MM/YYYY hh:mm:ss XM",
       min: "30/03/2020 12:00:00 AM",
       max: "30/03/2020 11:59:59 PM"
@@ -1206,7 +1206,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd/mm/yyyy hh:MM:ss TT",
+      inputFormat: "dd/MM/yyyy hh:mm:ss TT",
       placeholder: "DD/MM/YYYY hh:mm:ss XM",
       min: "30/03/2020 12:00:00 AM",
       max: "30/03/2020 11:59:59 PM"
@@ -1227,7 +1227,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd/mm/yyyy hh:MM:ss TT",
+      inputFormat: "dd/MM/yyyy hh:mm:ss TT",
       placeholder: "DD/MM/YYYY hh:mm:ss XM",
       min: "30/03/2020 12:00:00 AM",
       max: "30/03/2020 11:59:59 PM"
@@ -1244,13 +1244,13 @@ export default function (qunit, Inputmask) {
   });
 
   qunit.test(
-    "dd/mm/yyyy can't enter a day greater than the 9 #2723",
+    "dd/MM/yyyy can't enter a day greater than the 9 #2723",
     function (assert) {
       var $fixture = $("#qunit-fixture");
       $fixture.append('<input type="text" id="testmask" />');
       var testmask = document.getElementById("testmask");
       Inputmask("datetime", {
-        inputFormat: "dd/mm/yyyy"
+        inputFormat: "dd/MM/yyyy"
       }).mask(testmask);
 
       testmask.focus();
@@ -1265,12 +1265,12 @@ export default function (qunit, Inputmask) {
     }
   );
 
-  qunit.test("dd/mm/yyyy 9929 home 2 2 - #2723", function (assert) {
+  qunit.test("dd/MM/yyyy 9929 home 2 2 - #2723", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd/mm/yyyy"
+      inputFormat: "dd/MM/yyyy"
     }).mask(testmask);
 
     testmask.focus();
@@ -1286,12 +1286,12 @@ export default function (qunit, Inputmask) {
     );
   });
 
-  qunit.test("dd/mm/yyyy 9929 home 282 - #2723", function (assert) {
+  qunit.test("dd/MM/yyyy 9929 home 282 - #2723", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd/mm/yyyy"
+      inputFormat: "dd/MM/yyyy"
     }).mask(testmask);
 
     testmask.focus();
@@ -1310,7 +1310,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd/mm/yyyy"
+      inputFormat: "dd/MM/yyyy"
     }).mask(testmask);
 
     testmask.focus();
@@ -1324,7 +1324,7 @@ export default function (qunit, Inputmask) {
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd/mm/yyyy",
+      inputFormat: "dd/MM/yyyy",
       jitMasking: true
     }).mask(testmask);
 
@@ -1335,14 +1335,14 @@ export default function (qunit, Inputmask) {
   });
 
   qunit.test(
-    "Problem with seconds in format 'HH:MM:ss' - #2745",
+    "Problem with seconds in format 'HH:mm:ss' - #2745",
     function (assert) {
       var $fixture = $("#qunit-fixture");
       $fixture.append('<input type="text" id="testmask" value=\'11:11\' />');
       var testmask = document.getElementById("testmask");
       Inputmask("datetime", {
-        inputFormat: "HH:MM:ss",
-        placeholder: "HH:MM:SS"
+        inputFormat: "HH:mm:ss",
+        placeholder: "HH:mm:SS"
       }).mask(testmask);
 
       testmask.focus();
@@ -1351,12 +1351,12 @@ export default function (qunit, Inputmask) {
     }
   );
 
-  qunit.test("mm/dd/yyyy + min/max - 09 - #2754", function (assert) {
+  qunit.test("MM/dd/yyyy + min/max - 09 - #2754", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "mm/dd/yyyy",
+      inputFormat: "MM/dd/yyyy",
       min: "10/25/2023",
       max: "11/25/2023"
     }).mask(testmask);
@@ -1365,12 +1365,12 @@ export default function (qunit, Inputmask) {
     assert.equal(testmask.value, "", "Result " + testmask.value);
   });
 
-  qunit.test("mm/dd/yyyy + min/max - enter 9 - #2754", function (assert) {
+  qunit.test("MM/dd/yyyy + min/max - enter 9 - #2754", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "mm/dd/yyyy",
+      inputFormat: "MM/dd/yyyy",
       min: "10/25/2023",
       max: "11/25/2023"
     }).mask(testmask);
@@ -1379,12 +1379,12 @@ export default function (qunit, Inputmask) {
     assert.equal(testmask.value, "", "Result " + testmask.value);
   });
 
-  qunit.test("mm/dd/yyyy + min/max - enter min - #2754", function (assert) {
+  qunit.test("MM/dd/yyyy + min/max - enter min - #2754", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "mm/dd/yyyy",
+      inputFormat: "MM/dd/yyyy",
       min: "10/25/2023",
       max: "11/25/2023"
     }).mask(testmask);
@@ -1392,12 +1392,12 @@ export default function (qunit, Inputmask) {
     $("#testmask").Type("10252023");
     assert.equal(testmask.value, "10/25/2023", "Result " + testmask.value);
   });
-  qunit.test("mm/dd/yyyy + min/max - enter max - #2754", function (assert) {
+  qunit.test("MM/dd/yyyy + min/max - enter max - #2754", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "mm/dd/yyyy",
+      inputFormat: "MM/dd/yyyy",
       min: "10/25/2023",
       max: "11/25/2023"
     }).mask(testmask);
@@ -1406,12 +1406,12 @@ export default function (qunit, Inputmask) {
     assert.equal(testmask.value, "11/25/2023", "Result " + testmask.value);
   });
 
-  qunit.test("dd mmmm yyyy - #2751", function (assert) {
+  qunit.test("dd MMMM yyyy - #2751", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd mmmm yyyy"
+      inputFormat: "dd MMMM yyyy"
     }).mask(testmask);
     testmask.focus();
     $("#testmask").Type("29february2024");
@@ -1422,12 +1422,12 @@ export default function (qunit, Inputmask) {
     );
   });
 
-  qunit.test("mmmm dd yyyy - #2751", function (assert) {
+  qunit.test("MMMM dd yyyy - #2751", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "mmmm dd yyyy"
+      inputFormat: "MMMM dd yyyy"
     }).mask(testmask);
     testmask.focus();
     $("#testmask").Type("february292024");
@@ -1438,36 +1438,36 @@ export default function (qunit, Inputmask) {
     );
   });
 
-  qunit.test("dd mmm yyyy - #2751", function (assert) {
+  qunit.test("dd MMM yyyy - #2751", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "dd mmm yyyy"
+      inputFormat: "dd MMM yyyy"
     }).mask(testmask);
     testmask.focus();
     $("#testmask").Type("29feb2024");
     assert.equal(testmask.value, "29 Feb 2024", "Result " + testmask.value);
   });
 
-  qunit.test("mmm dd yyyy - #2751", function (assert) {
+  qunit.test("MMM dd yyyy - #2751", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "mmm dd yyyy"
+      inputFormat: "MMM dd yyyy"
     }).mask(testmask);
     testmask.focus();
     $("#testmask").Type("feb292024");
     assert.equal(testmask.value, "Feb 29 2024", "Result " + testmask.value);
   });
 
-  qunit.test("mm/yy + min/max - 09 - #2744", function (assert) {
+  qunit.test("MM/yy + min/max - 09 - #2744", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "mm/yy",
+      inputFormat: "MM/yy",
       min: "10/23",
       max: "10/33"
     }).mask(testmask);
@@ -1475,12 +1475,12 @@ export default function (qunit, Inputmask) {
     $("#testmask").Type("09");
     assert.equal(testmask.value, "09/yy", "Result " + testmask.value);
   });
-  qunit.test("mm/yy + min/max - 0924 - #2744", function (assert) {
+  qunit.test("MM/yy + min/max - 0924 - #2744", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
     Inputmask("datetime", {
-      inputFormat: "mm/yy",
+      inputFormat: "MM/yy",
       min: "10/23",
       max: "10/33"
     }).mask(testmask);
@@ -1490,14 +1490,14 @@ export default function (qunit, Inputmask) {
   });
 
   qunit.test(
-    "Custom placeholder ~ dd mmmm yyyy HH:MM:MM - 29feb2024202122 - #2751",
+    "Custom placeholder ~ dd MMMM yyyy HH:mm:ss - 29feb2024202122 - #2751",
     function (assert) {
       var $fixture = $("#qunit-fixture");
       $fixture.append('<input type="text" id="testmask" />');
       var testmask = document.getElementById("testmask");
       Inputmask("datetime", {
-        inputFormat: "dd mmmm yyyy HH:MM:ss",
-        placeholder: "dd mmmm yyyy HH:MM:SS"
+        inputFormat: "dd MMMM yyyy HH:mm:ss",
+        placeholder: "dd MMMM yyyy HH:mm:SS"
       }).mask(testmask);
       testmask.focus();
       $("#testmask").Type("29feb2024202122");

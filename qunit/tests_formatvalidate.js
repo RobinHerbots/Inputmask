@@ -5,7 +5,7 @@ export default function (qunit, Inputmask) {
     function (assert) {
       var formattedValue = Inputmask.format("2331973", {
         alias: "datetime",
-        inputFormat: "dd/mm/yyyy",
+        inputFormat: "dd/MM/yyyy",
         min: "01/01/1900"
       });
       assert.equal(formattedValue, "23/03/1973", "Result " + formattedValue);
