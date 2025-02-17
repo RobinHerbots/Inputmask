@@ -535,7 +535,7 @@ Unmask a given value against the mask.
 
 ```javascript
 var unformattedMask = Inputmask.unmask("123-45678-90", { mask: "999-99999-99" }); //1234567890
-var unformattedDate = Inputmask.unmask("23/03/1973", { alias: "datetime", inputFormat: "dd/mm/yyyy", outputFormat: "ddmmyyyy"});//23031973
+var unformattedDate = Inputmask.unmask("23/03/1973", { alias: "datetime", inputFormat: "dd/MM/yyyy", outputFormat: "ddMMyyyy"});//23031973
 ```
 
 ### remove
@@ -654,7 +654,7 @@ $("#CellPhone").inputmask("option", {
 Instead of masking an input element, it is also possible to use the inputmask for formatting given values. Think of formatting values to show in jqGrid or on other elements then inputs.
 
 ```javascript
-var formattedDate = Inputmask.format("2331973", { alias: "datetime", inputFormat: "dd/mm/yyyy"});
+var formattedDate = Inputmask.format("2331973", { alias: "datetime", inputFormat: "dd/MM/yyyy"});
 ```
 
 ### isValid
@@ -662,7 +662,7 @@ var formattedDate = Inputmask.format("2331973", { alias: "datetime", inputFormat
 Validate a given value against the mask.
 
 ```javascript
-var isValid = Inputmask.isValid("23/03/1973", { alias: "datetime", inputFormat: "dd/mm/yyyy"});
+var isValid = Inputmask.isValid("23/03/1973", { alias: "datetime", inputFormat: "dd/MM/yyyy"});
 ```
 
 ## Options
@@ -685,7 +685,7 @@ or a multi-char placeholder
 
 ```javascript
 $(document).ready(function(){
-  $("#date").inputmask("99/99/9999",{ "placeholder": "dd/mm/yyyy" });
+  $("#date").inputmask("99/99/9999",{ "placeholder": "dd/MM/yyyy" });
 });
 ```
 
@@ -850,7 +850,7 @@ $(document).ready(function(){
 
 Definitions of aliases.
 
-With an alias, you can define a complex mask definition and call it by using an alias name.  So this is mainly to simplify the use of your masks.  Some aliases found in the extensions are email, currency, decimal, integer, date, DateTime, dd/mm/yyyy, etc.
+With an alias, you can define a complex mask definition and call it by using an alias name.  So this is mainly to simplify the use of your masks.  Some aliases found in the extensions are email, currency, decimal, integer, date, DateTime, dd/MM/yyyy, etc.
 
 First, you have to create an alias definition.  The alias definition can contain options for the mask, custom definitions, the mask to use, etc.
 
