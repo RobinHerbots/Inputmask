@@ -4,11 +4,13 @@
 
 ### Addition
 
+- set regex unicode flag when using \p{.\*}
 - add outputFormat option #2526
 - add FormData support for inputmask #2409
 
 ### Updates
 
+- update definitions for beter matching letters & numbers
 - datetime alias
   - adjust month/minutes definition to match standard defined at unicode.org
     - month: M, MM, MMM, MMMM

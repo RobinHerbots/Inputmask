@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2025 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.10-beta.32
+ * Version: 5.0.10-beta.33
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -110,15 +110,15 @@
                 }), t.default = void 0;
                 t.default = {
                     9: {
-                        validator: "[0-9\uff10-\uff19]",
+                        validator: "\\p{N}",
                         definitionSymbol: "*"
                     },
                     a: {
-                        validator: "[A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]",
+                        validator: "\\p{L}",
                         definitionSymbol: "*"
                     },
                     "*": {
-                        validator: "[0-9\uff10-\uff19A-Za-z\u0410-\u044f\u0401\u0451\xc0-\xff\xb5]"
+                        validator: "[\\p{L}\\p{N}]"
                     }
                 };
             },
@@ -550,7 +550,7 @@
                             o.isRTL ? c.caret.call(o, m, e + (e === h.maskLength ? 0 : 1)) : c.caret.call(o, m, e - (0 === e ? 0 : 1));
                         }), 0) : void 0 === o.keyEventHook || o.keyEventHook(e)) : u.isSelection.call(o, k) ? p.insertMode = !p.insertMode : (p.insertMode = !p.insertMode, 
                         c.caret.call(o, m, k.begin, k.begin));
-                        return o.isComposing = g == l.keys.Process || g == l.keys.Unidentified, o.ignorable = void 0 === g || g.length > 1 && !("textarea" === m.tagName.toLowerCase() && g == l.keys.Enter), 
+                        return o.isComposing = g == l.keys.Process || g == l.keys.Unidentified, o.ignorable = void 0 === g || g.length > 1, 
                         y.keypressEvent.call(this, e, t, n, i, a);
                     },
                     keypressEvent: function(e, t, n, i, a) {
@@ -2611,37 +2611,33 @@
                     var i, a, l, c, u, f, p = /(?:[?*+]|\{[0-9+*]+(?:,[0-9+*]*)?(?:\|[0-9+*]*)?\})|[^.?*+^${[]()|\\]+|./g, d = /\[\^?]?(?:[^\\\]]+|\\[\S\s]?)*]?|\\(?:0(?:[0-3][0-7]{0,2}|[4-7][0-7]?)?|[1-9][0-9]*|x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|c[A-Za-z]|[\S\s]?)|\((?:\?[:=!]?)?|(?:[?*+]|\{[0-9]+(?:,[0-9]*)?\})\??|[^.?*+^${[()|\\]+|./g, h = new o.default, m = [], v = [], g = !1, y = !1;
                     function k(e, i, a) {
                         a = void 0 !== a ? a : e.matches.length;
-                        var o = e.matches[a - 1];
-                        if (t) {
-                            if (0 === i.indexOf("[") || g && /\\d|\\s|\\w|\\p/i.test(i) || "." === i) {
-                                var l = n.casing ? "i" : "";
-                                /\\p\{.*}/i.test(i) && (l += "u"), e.matches.splice(a++, 0, {
-                                    fn: new RegExp(i, l),
-                                    static: !1,
-                                    optionality: !1,
-                                    newBlockMarker: void 0 === o ? "master" : o.def !== i,
-                                    casing: null,
-                                    def: i,
-                                    placeholder: "object" === s(n.placeholder) ? n.placeholder[h.matches.length] : void 0,
-                                    nativeDef: i
-                                });
-                            } else g && (i = i[i.length - 1]), i.split("").forEach((function(t, i) {
-                                o = e.matches[a - 1], e.matches.splice(a++, 0, {
-                                    fn: /[a-z]/i.test(n.staticDefinitionSymbol || t) ? new RegExp("[" + (n.staticDefinitionSymbol || t) + "]", n.casing ? "i" : "") : null,
-                                    static: !0,
-                                    optionality: !1,
-                                    newBlockMarker: void 0 === o ? "master" : o.def !== t && !0 !== o.static,
-                                    casing: null,
-                                    def: n.staticDefinitionSymbol || t,
-                                    placeholder: void 0 !== n.staticDefinitionSymbol ? t : "object" === s(n.placeholder) ? n.placeholder[h.matches.length] : void 0,
-                                    nativeDef: (g ? "'" : "") + t
-                                });
-                            }));
-                            g = !1;
-                        } else {
+                        var o = e.matches[a - 1], l = n.casing ? "i" : "";
+                        if (t) 0 === i.indexOf("[") || g && /\\d|\\s|\\w|\\p/i.test(i) || "." === i ? (/\\p\{.*}/i.test(i) && (l += "u"), 
+                        e.matches.splice(a++, 0, {
+                            fn: new RegExp(i, l),
+                            static: !1,
+                            optionality: !1,
+                            newBlockMarker: void 0 === o ? "master" : o.def !== i,
+                            casing: null,
+                            def: i,
+                            placeholder: "object" === s(n.placeholder) ? n.placeholder[h.matches.length] : void 0,
+                            nativeDef: i
+                        })) : (g && (i = i[i.length - 1]), i.split("").forEach((function(t, i) {
+                            o = e.matches[a - 1], e.matches.splice(a++, 0, {
+                                fn: /[a-z]/i.test(n.staticDefinitionSymbol || t) ? new RegExp("[" + (n.staticDefinitionSymbol || t) + "]", l) : null,
+                                static: !0,
+                                optionality: !1,
+                                newBlockMarker: void 0 === o ? "master" : o.def !== t && !0 !== o.static,
+                                casing: null,
+                                def: n.staticDefinitionSymbol || t,
+                                placeholder: void 0 !== n.staticDefinitionSymbol ? t : "object" === s(n.placeholder) ? n.placeholder[h.matches.length] : void 0,
+                                nativeDef: (g ? "'" : "") + t
+                            });
+                        }))), g = !1; else {
                             var c = n.definitions && n.definitions[i] || n.usePrototypeDefinitions && r.default.prototype.definitions[i];
-                            c && !g ? e.matches.splice(a++, 0, {
-                                fn: c.validator ? "string" == typeof c.validator ? new RegExp(c.validator, n.casing ? "i" : "") : new function() {
+                            c && !g ? ("string" == typeof c.validator && /\\p\{.*}/i.test(c.validator) && (l += "u"), 
+                            e.matches.splice(a++, 0, {
+                                fn: c.validator ? "string" == typeof c.validator ? new RegExp(c.validator, l) : new function() {
                                     this.test = c.validator;
                                 } : /./,
                                 static: c.static || !1,
@@ -2653,8 +2649,8 @@
                                 placeholder: c.placeholder,
                                 nativeDef: i,
                                 generated: c.generated
-                            }) : (e.matches.splice(a++, 0, {
-                                fn: /[a-z]/i.test(n.staticDefinitionSymbol || i) ? new RegExp("[" + (n.staticDefinitionSymbol || i) + "]", n.casing ? "i" : "") : null,
+                            })) : (e.matches.splice(a++, 0, {
+                                fn: /[a-z]/i.test(n.staticDefinitionSymbol || i) ? new RegExp("[" + (n.staticDefinitionSymbol || i) + "]", l) : null,
                                 static: !0,
                                 optionality: !1,
                                 newBlockMarker: void 0 === o ? "master" : o.def !== i && !0 !== o.static,
