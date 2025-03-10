@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2025 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.10-beta.34
+ * Version: 5.0.10-beta.36
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -89,8 +89,8 @@
                             "radixFocus" === e.positionCaretOnClick && "" === e.placeholder && (e.positionCaretOnClick = "lvp");
                             var t = "0", n = e.radixPoint;
                             !0 === e.numericInput && void 0 === e.__financeInput ? (t = "1", e.positionCaretOnClick = "radixFocus" === e.positionCaretOnClick ? "lvp" : e.positionCaretOnClick, 
-                            e.digitsOptional = !1, isNaN(e.digits) && (e.digits = e.digits.split(",")[0]), e._radixDance = !1, 
-                            n = "," === e.radixPoint ? "?" : "!", "" !== e.radixPoint && void 0 === e.definitions[n] && (e.definitions[n] = {}, 
+                            e.digitsOptional = !1, isNaN(e.digits) && (e.digits = -1 !== e.digits.indexOf(",") ? e.digits.split(",")[0] : 2), 
+                            e._radixDance = !1, n = "," === e.radixPoint ? "?" : "!", "" !== e.radixPoint && void 0 === e.definitions[n] && (e.definitions[n] = {}, 
                             e.definitions[n].validator = "[" + e.radixPoint + "]", e.definitions[n].placeholder = e.radixPoint, 
                             e.definitions[n].static = !0, e.definitions[n].generated = !0)) : (e.__financeInput = !1, 
                             e.numericInput = !0);
@@ -983,8 +983,9 @@
                                 t.preventDefault();
                             }
                         };
-                        [ "submit", "reset" ].includes(t) ? (s = s.bind(e), null !== e.form && i(e.form).on(t, s)) : i(e).on(t, s), 
-                        e.inputmask.events[t] = e.inputmask.events[t] || [], e.inputmask.events[t].push(s);
+                        t = "".concat(t, ".inputmask"), [ "submit.inputmask", "reset.inputmask" ].includes(t) ? (s = s.bind(e), 
+                        null !== e.form && i(e.form).on(t, s)) : i(e).on(t, s), e.inputmask.events[t] = e.inputmask.events[t] || [], 
+                        e.inputmask.events[t].push(s);
                     },
                     off: function(e, t) {
                         if (e.inputmask && e.inputmask.events) {
@@ -992,7 +993,7 @@
                             for (var a in t && ((i = [])[t] = e.inputmask.events[t]), i) {
                                 for (var r = i[a]; r.length > 0; ) {
                                     var o = r.pop();
-                                    [ "submit", "reset" ].includes(a) ? null !== e.form && n(e.form).off(a, o) : n(e).off(a, o);
+                                    [ "submit.inputmask", "reset.inputmask" ].includes(a) ? null !== e.form && n(e.form).off(a, o) : n(e).off(a, o);
                                 }
                                 delete e.inputmask.events[a];
                             }
@@ -2120,23 +2121,21 @@
                     })));
                     return this;
                 }, t.on = function(e, t) {
-                    if (u(this[0])) {
-                        var n = this[0].eventRegistry, i = this[0];
-                        e.split(" ").forEach((function(e) {
-                            var a = o(e.split("."), 2), r = a[0], l = a[1];
-                            !function(e, a) {
-                                i.addEventListener ? i.addEventListener(e, t, !1) : i.attachEvent && i.attachEvent("on".concat(e), t), 
-                                n[e] = n[e] || {}, n[e][a] = n[e][a] || [], n[e][a].push(t);
-                            }(r, void 0 === l ? "global" : l);
-                        }));
-                    }
-                    return this;
+                    if (!this[0] || !u(this[0])) return this;
+                    var n = this[0], i = n.eventRegistry;
+                    return e.split(" ").forEach((function(e) {
+                        var a = o(e.split("."), 2), r = a[0], l = a[1];
+                        !function(e, a) {
+                            n.addEventListener ? n.addEventListener(e, t, !1) : n.attachEvent && n.attachEvent("on".concat(e), t);
+                            i[e] = i[e] || {}, i[e][a] = i[e][a] || [], i[e][a].push(t);
+                        }(r, void 0 === l ? "global" : l);
+                    })), this;
                 }, t.trigger = function(e) {
                     var t = arguments;
                     if (u(this[0])) for (var n = this[0].eventRegistry, i = this[0], o = "string" == typeof e ? e.split(" ") : [ e.type ], l = 0; l < o.length; l++) {
                         var s = o[l].split("."), f = s[0], p = s[1] || "global";
-                        if (void 0 !== c && "global" === p) {
-                            var d, h = {
+                        if (void 0 !== c) {
+                            var d = void 0, h = {
                                 bubbles: !0,
                                 cancelable: !0,
                                 composed: !0,
@@ -2208,7 +2207,7 @@
                 }
                 var c = i.default.document;
                 function u(e) {
-                    return e instanceof Element;
+                    return e instanceof Element && e.eventRegistry;
                 }
                 var f = t.Event = void 0;
                 "function" == typeof i.default.CustomEvent ? t.Event = f = i.default.CustomEvent : i.default.Event && c && c.createEvent ? (t.Event = f = function(e, t) {

@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2025 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.10-beta.34
+ * Version: 5.0.10-beta.36
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -89,8 +89,8 @@
                             "radixFocus" === e.positionCaretOnClick && "" === e.placeholder && (e.positionCaretOnClick = "lvp");
                             var t = "0", n = e.radixPoint;
                             !0 === e.numericInput && void 0 === e.__financeInput ? (t = "1", e.positionCaretOnClick = "radixFocus" === e.positionCaretOnClick ? "lvp" : e.positionCaretOnClick, 
-                            e.digitsOptional = !1, isNaN(e.digits) && (e.digits = e.digits.split(",")[0]), e._radixDance = !1, 
-                            n = "," === e.radixPoint ? "?" : "!", "" !== e.radixPoint && void 0 === e.definitions[n] && (e.definitions[n] = {}, 
+                            e.digitsOptional = !1, isNaN(e.digits) && (e.digits = -1 !== e.digits.indexOf(",") ? e.digits.split(",")[0] : 2), 
+                            e._radixDance = !1, n = "," === e.radixPoint ? "?" : "!", "" !== e.radixPoint && void 0 === e.definitions[n] && (e.definitions[n] = {}, 
                             e.definitions[n].validator = "[" + e.radixPoint + "]", e.definitions[n].placeholder = e.radixPoint, 
                             e.definitions[n].static = !0, e.definitions[n].generated = !0)) : (e.__financeInput = !1, 
                             e.numericInput = !0);
@@ -955,8 +955,9 @@
                                 t.preventDefault();
                             }
                         };
-                        [ "submit", "reset" ].includes(t) ? (l = l.bind(e), null !== e.form && i(e.form).on(t, l)) : i(e).on(t, l), 
-                        e.inputmask.events[t] = e.inputmask.events[t] || [], e.inputmask.events[t].push(l);
+                        t = "".concat(t, ".inputmask"), [ "submit.inputmask", "reset.inputmask" ].includes(t) ? (l = l.bind(e), 
+                        null !== e.form && i(e.form).on(t, l)) : i(e).on(t, l), e.inputmask.events[t] = e.inputmask.events[t] || [], 
+                        e.inputmask.events[t].push(l);
                     },
                     off: function(e, t) {
                         if (e.inputmask && e.inputmask.events) {
@@ -964,7 +965,7 @@
                             for (var a in t && ((i = [])[t] = e.inputmask.events[t]), i) {
                                 for (var r = i[a]; r.length > 0; ) {
                                     var o = r.pop();
-                                    [ "submit", "reset" ].includes(a) ? null !== e.form && n(e.form).off(a, o) : n(e).off(a, o);
+                                    [ "submit.inputmask", "reset.inputmask" ].includes(a) ? null !== e.form && n(e.form).off(a, o) : n(e).off(a, o);
                                 }
                                 delete e.inputmask.events[a];
                             }
