@@ -20,7 +20,7 @@ const rules = {
     loader: "babel-loader",
     exclude: /(node_modules)/,
     options: {
-      presets: ["@babel/preset-env"],
+      presets: ["@babel/preset-env", "@babel/preset-typescript"],
       plugins: ["@babel/plugin-transform-modules-commonjs"],
       passPerPreset: true
     }

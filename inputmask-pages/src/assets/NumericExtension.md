@@ -26,6 +26,9 @@ Default: "\*"
 The value can be a number, \*, or a quantifier syntax like 2,4
 When the quantifier syntax is used, the digitsOptional option is ignored
 
+Setting the numericInput option will make the digits a fixed length.  
+Ex: passing digits: 2,4 will make the digits set to 2.
+
 ### digitsOptional
 
 Specify wheter the digits are optional.
