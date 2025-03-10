@@ -1,0 +1,8 @@
+.Demo {
+  width: 100%;
+  & > div {
+    display: flex;
+    flex-direction: row;
+    margin: 15px;
+  }
+}

@@ -1,0 +1,46 @@
+@import "../../Shared/colors.scss";
+
+.DemoMask {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-flow: wrap;
+  margin: 15px;
+  & > div {
+    margin: 5px;
+  }
+
+  :global {
+    & .demoField {
+      display: flex;
+      flex-direction: column;
+      & > div {
+        & > span {
+          display: inline-block;
+          width: 150px;
+        }
+        & > input {
+          width: 250px;
+        }
+      }
+    }
+
+    & .eventIndicator {
+      display: flex;
+      flex-flow: wrap;
+      & > span {
+        margin: 0 5px 0 5px;
+        padding: 2px 7px 2px 7px;
+        background-color: $main-background;
+        color: $main-color;
+        border-radius: 5px;
+
+        &.fired {
+          background-color: $fired-background !important;
+          color: $main-color !important;
+          font-weight: bold !important;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,73 @@
+@import "Shared/colors.scss";
+@import "Shared/constants.module.scss";
+
+.content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: hidden;
+  @media only screen and (min-width: ($ScreenThreshold + 0px)) {
+    flex-direction: row;
+  }
+}
+
+.article {
+  display: flex;
+  flex-grow: 2;
+  padding-left: 0.9375rem;
+  padding-right: 0.9375rem;
+  @media only screen and (min-width: ($ScreenThreshold + 0px)) {
+    flex-basis: 34.375rem;
+  }
+}
+
+.asideright {
+  display: flex;
+  flex-grow: 1;
+  flex-basis: 200px;
+  border-left-style: solid;
+  border-left-width: 1px;
+  border-left-color: $main-color;
+  padding-left: 0.9375rem;
+  padding-right: 0.9375rem;
+  min-width: min-content;
+}
+
+.scrollable {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: auto;
+  scrollbar-color: $scrollbar-thumb $scrollbar-track;
+  scrollbar-width: thin;
+  &::-webkit-scrollbar-thumb {
+    background-color: $scrollbar-thumb;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: $scrollbar-track;
+  }
+  &::-webkit-scrollbar-corner {
+    background-color: $scrollbar-track;
+  }
+  &::-webkit-scrollbar {
+    width: 0.5rem;
+    height: 0.5rem;
+  }
+  @media only screen and (min-width: ($ScreenThreshold + 0px)) {
+    margin-right: 5px;
+  }
+  scroll-behavior: smooth;
+}
+
+:global(#app) {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+:global(a) {
+  color: $link-color;
+  &:visited {
+    color: $link-color-visited;
+  }
+}

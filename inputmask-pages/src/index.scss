@@ -1,0 +1,29 @@
+@import-normalize;
+@import "Shared/colors.scss";
+
+html {
+  background-color: $main-background;
+  color: $main-color;
+  height: 100vh;
+}
+
+body {
+  height: inherit;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+#root {
+  height: inherit;
+  display: flex;
+}

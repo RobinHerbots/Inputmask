@@ -1,0 +1,33 @@
+@import "../../Shared/colors.scss";
+
+.Toc {
+  :global {
+    & ul {
+      color: $main-color;
+      & > li {
+        &:hover {
+          color: cyan;
+        }
+        &.close {
+          list-style-type: disclosure-closed;
+          & > ul {
+            display: none;
+          }
+        }
+        &.open {
+          list-style-type: disclosure-open;
+          color: cyan;
+        }
+        &.active {
+          color: cyan;
+        }
+        list-style-type: square;
+      }
+    }
+
+    & a {
+      color: $main-color;
+      text-decoration: none;
+    }
+  }
+}

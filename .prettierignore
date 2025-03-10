@@ -1,0 +1,10 @@
+.husky
+build
+node_modules
+public
+*.svg
+package.json
+package-lock.json
+*.snap
+*.ttf
+*.otf

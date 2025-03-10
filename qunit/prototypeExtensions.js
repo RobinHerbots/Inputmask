@@ -1,3 +1,4 @@
+/* eslint-disable no-extend-native */
 /*
 
 These are dummy prototype extensions to test that the inputmask code can deal with an extension
@@ -5,9 +6,9 @@ These are dummy prototype extensions to test that the inputmask code can deal wi
 */
 
 Array.prototype.dummy = function () {
-	return false;
+  return false;
 };
 
 String.prototype.dummy = function () {
-	return false;
+  return false;
 };

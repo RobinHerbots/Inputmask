@@ -1,0 +1,12 @@
+@import "../../Shared/colors.scss";
+
+.Footer {
+  display: flex;
+  flex-direction: row;
+  border-top-color: $main-color;
+  border-top-style: solid;
+  border-top-width: 1px;
+  margin: 10px 15px 0 15px;
+  align-items: flex-end;
+  justify-content: space-between;
+}

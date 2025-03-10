@@ -1,0 +1,79 @@
+@import "../../Shared/colors.scss";
+@import "../../Shared/constants.module.scss";
+
+.Header {
+  display: flex;
+  flex-direction: row;
+  border-bottom-color: $main-color;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  margin: 0 15px 0 15px;
+  align-items: flex-end;
+  justify-content: space-between;
+  @media only screen and (min-width: ($ScreenThreshold + 0px)) {
+    margin-bottom: 10px;
+  }
+
+  & > H1,
+  > H3 {
+    user-select: none;
+    margin-left: 20px;
+    cursor: pointer;
+    & > a {
+      color: $main-color;
+      text-decoration: none;
+    }
+  }
+}
+
+.navContainer {
+  @media only screen and (min-width: ($ScreenThreshold + 0px)) {
+    border-color: $main-color;
+    border-style: solid;
+    border-width: 1px;
+    margin: 5px;
+    border-radius: 5px;
+  }
+
+  & > ul {
+    display: flex;
+    flex-direction: row;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    margin-bottom: 1px;
+
+    & > li {
+      user-select: none;
+      padding: 0;
+      & > a {
+        padding: 5px 10px 5px 10px;
+        text-decoration: none;
+        line-height: 1;
+        font-size: 11px;
+        color: $nav-link;
+        display: block;
+        text-align: center;
+        & > strong {
+          display: block;
+          color: lighten($nav-link, 10);
+        }
+        & > img {
+          height: 25px;
+          width: 25px;
+          vertical-align: middle;
+        }
+      }
+
+      &:hover {
+        background-color: $nav-background-hover;
+      }
+    }
+  }
+
+  & > a > img {
+    height: 25px;
+    width: 25px;
+    vertical-align: middle;
+  }
+}
