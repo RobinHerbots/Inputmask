@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2025 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.10-beta.36
+ * Version: 5.0.10-beta.37
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -908,9 +908,8 @@
                 }, y.isValid = function(e, t) {
                     return y(t).isValid(e);
                 }, y.remove = function(e) {
-                    "string" == typeof e && (e = v.getElementById(e) || v.querySelectorAll(e)), (e = e.nodeName ? [ e ] : e).forEach((function(e) {
-                        e.inputmask && e.inputmask.remove();
-                    }));
+                    "string" == typeof e && (e = v.getElementById(e) || v.querySelectorAll(e)), e = e.nodeName ? [ e ] : e;
+                    for (var t = 0; t < e.length; t++) e[t].inputmask && e[t].inputmask.remove();
                 }, y.setValue = function(e, t) {
                     "string" == typeof e && (e = v.getElementById(e) || v.querySelectorAll(e)), (e = e.nodeName ? [ e ] : e).forEach((function(e) {
                         e.inputmask ? e.inputmask.setValue(t) : (0, r.default)(e).trigger("setvalue", [ t ]);
@@ -956,20 +955,10 @@
                             }
                         };
                         t = "".concat(t, ".inputmask"), [ "submit.inputmask", "reset.inputmask" ].includes(t) ? (l = l.bind(e), 
-                        null !== e.form && i(e.form).on(t, l)) : i(e).on(t, l), e.inputmask.events[t] = e.inputmask.events[t] || [], 
-                        e.inputmask.events[t].push(l);
+                        null !== e.form && i(e.form).on(t, l)) : i(e).on(t, l);
                     },
                     off: function(e, t) {
-                        if (e.inputmask && e.inputmask.events) {
-                            var n = e.inputmask.dependencyLib, i = e.inputmask.events;
-                            for (var a in t && ((i = [])[t] = e.inputmask.events[t]), i) {
-                                for (var r = i[a]; r.length > 0; ) {
-                                    var o = r.pop();
-                                    [ "submit.inputmask", "reset.inputmask" ].includes(a) ? null !== e.form && n(e.form).off(a, o) : n(e).off(a, o);
-                                }
-                                delete e.inputmask.events[a];
-                            }
-                        }
+                        e.inputmask && (0, e.inputmask.dependencyLib)(e).off(t || ".inputmask");
                     }
                 };
             },

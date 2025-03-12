@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2025 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.10-beta.36
+ * Version: 5.0.10-beta.37
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -1005,20 +1005,10 @@
                             }
                         };
                         t = "".concat(t, ".inputmask"), [ "submit.inputmask", "reset.inputmask" ].includes(t) ? (s = s.bind(e), 
-                        null !== e.form && i(e.form).on(t, s)) : i(e).on(t, s), e.inputmask.events[t] = e.inputmask.events[t] || [], 
-                        e.inputmask.events[t].push(s);
+                        null !== e.form && i(e.form).on(t, s)) : i(e).on(t, s);
                     },
                     off: function(e, t) {
-                        if (e.inputmask && e.inputmask.events) {
-                            var n = e.inputmask.dependencyLib, i = e.inputmask.events;
-                            for (var a in t && ((i = [])[t] = e.inputmask.events[t]), i) {
-                                for (var r = i[a]; r.length > 0; ) {
-                                    var o = r.pop();
-                                    [ "submit.inputmask", "reset.inputmask" ].includes(a) ? null !== e.form && n(e.form).off(a, o) : n(e).off(a, o);
-                                }
-                                delete e.inputmask.events[a];
-                            }
-                        }
+                        e.inputmask && (0, e.inputmask.dependencyLib)(e).off(t || ".inputmask");
                     }
                 };
             },
@@ -1714,7 +1704,8 @@
                 var s = i.default.document;
                 function c(e) {
                     return e instanceof c ? e : this instanceof c ? void (null != e && e !== i.default && (this[0] = e.nodeName ? e : void 0 !== e[0] && e[0].nodeName ? e[0] : s.querySelector(e), 
-                    void 0 !== this[0] && null !== this[0] && (this[0].eventRegistry = this[0].eventRegistry || {}))) : new c(e);
+                    void 0 !== this[0] && null !== this[0] && (0, a.default)(this[0], "events", (0, 
+                    a.default)(this[0], "events") || {}))) : new c(e);
                 }
                 c.prototype = {
                     on: r.on,
@@ -2934,26 +2925,30 @@
                     value: !0
                 }), t.Event = void 0, t.off = function(e, t) {
                     var n, i;
-                    u(this[0]) && e && (n = this[0].eventRegistry, i = this[0], e.split(" ").forEach((function(e) {
-                        var a = o(e.split("."), 2);
+                    f(this[0]) && (n = (0, a.default)(this[0], "events"), i = this[0], "" !== (e = e || Object.keys(n).join(" ")) && e.split(" ").forEach((function(e) {
+                        var a = l(e.split("."), 2);
                         (function(e, i) {
                             var a, r, o = [];
-                            if (e.length > 0) if (void 0 === t) for (a = 0, r = n[e][i].length; a < r; a++) o.push({
+                            if (e.length > 0) for (var l = i ? [ i ] : Object.keys(n[e]), s = 0; s < l.length; s++) if (i = l[s], 
+                            void 0 === t) for (a = 0, r = (null === (c = n[e][i]) || void 0 === c ? void 0 : c.length) || 0; a < r; a++) {
+                                var c;
+                                o.push({
+                                    ev: e,
+                                    namespace: i,
+                                    handler: n[e][i][a]
+                                });
+                            } else o.push({
                                 ev: e,
-                                namespace: i && i.length > 0 ? i : "global",
-                                handler: n[e][i][a]
-                            }); else o.push({
-                                ev: e,
-                                namespace: i && i.length > 0 ? i : "global",
+                                namespace: i,
                                 handler: t
-                            }); else if (i.length > 0) for (var l in n) for (var s in n[l]) if (s === i) if (void 0 === t) for (a = 0, 
-                            r = n[l][s].length; a < r; a++) o.push({
-                                ev: l,
-                                namespace: s,
-                                handler: n[l][s][a]
+                            }); else if (i.length > 0) for (var u in n) if (n[u][i]) if (void 0 === t) for (a = 0, 
+                            r = n[u][i].length; a < r; a++) o.push({
+                                ev: u,
+                                namespace: i,
+                                handler: n[u][i][a]
                             }); else o.push({
-                                ev: l,
-                                namespace: s,
+                                ev: u,
+                                namespace: i,
                                 handler: t
                             });
                             return o;
@@ -2967,48 +2962,48 @@
                     })));
                     return this;
                 }, t.on = function(e, t) {
-                    if (!this[0] || !u(this[0])) return this;
-                    var n = this[0], i = n.eventRegistry;
+                    if (!this[0] || !f(this[0])) return this;
+                    var n = this[0], i = (0, a.default)(n, "events");
                     return e.split(" ").forEach((function(e) {
-                        var a = o(e.split("."), 2), r = a[0], l = a[1];
+                        var a = l(e.split("."), 2), r = a[0], o = a[1];
                         !function(e, a) {
                             n.addEventListener ? n.addEventListener(e, t, !1) : n.attachEvent && n.attachEvent("on".concat(e), t);
                             i[e] = i[e] || {}, i[e][a] = i[e][a] || [], i[e][a].push(t);
-                        }(r, void 0 === l ? "global" : l);
+                        }(r, void 0 === o ? "global" : o);
                     })), this;
                 }, t.trigger = function(e) {
                     var t = arguments;
-                    if (u(this[0])) for (var n = this[0].eventRegistry, i = this[0], o = "string" == typeof e ? e.split(" ") : [ e.type ], l = 0; l < o.length; l++) {
-                        var s = o[l].split("."), f = s[0], p = s[1] || "global";
-                        if (void 0 !== c) {
-                            var d = void 0, h = {
+                    if (f(this[0])) for (var n = (0, a.default)(this[0], "events"), i = this[0], l = "string" == typeof e ? e.split(" ") : [ e.type ], s = 0; s < l.length; s++) {
+                        var c = l[s].split("."), p = c[0], d = c[1] || "global";
+                        if (void 0 !== u) {
+                            var h = void 0, v = {
                                 bubbles: !0,
                                 cancelable: !0,
                                 composed: !0,
                                 detail: arguments[1]
                             };
-                            if (c.createEvent) {
+                            if (u.createEvent) {
                                 try {
-                                    if ("input" === f) h.inputType = "insertText", d = new InputEvent(f, h); else d = new CustomEvent(f, h);
+                                    if ("input" === p) v.inputType = "insertText", h = new InputEvent(p, v); else h = new CustomEvent(p, v);
                                 } catch (e) {
-                                    (d = c.createEvent("CustomEvent")).initCustomEvent(f, h.bubbles, h.cancelable, h.detail);
+                                    (h = u.createEvent("CustomEvent")).initCustomEvent(p, v.bubbles, v.cancelable, v.detail);
                                 }
-                                e.type && (0, a.default)(d, e), i.dispatchEvent(d);
-                            } else (d = c.createEventObject()).eventType = f, d.detail = arguments[1], e.type && (0, 
-                            a.default)(d, e), i.fireEvent("on" + d.eventType, d);
-                        } else if (void 0 !== n[f]) {
-                            arguments[0] = arguments[0].type ? arguments[0] : r.default.Event(arguments[0]), 
+                                e.type && (0, r.default)(h, e), i.dispatchEvent(h);
+                            } else (h = u.createEventObject()).eventType = p, h.detail = arguments[1], e.type && (0, 
+                            r.default)(h, e), i.fireEvent("on" + h.eventType, h);
+                        } else if (void 0 !== n[p]) {
+                            arguments[0] = arguments[0].type ? arguments[0] : o.default.Event(arguments[0]), 
                             arguments[0].detail = arguments.slice(1);
-                            var v = n[f];
-                            ("global" === p ? Object.values(v).flat() : v[p]).forEach((function(e) {
+                            var m = n[p];
+                            ("global" === d ? Object.values(m).flat() : m[d]).forEach((function(e) {
                                 return e.apply(i, t);
                             }));
                         }
                     }
                     return this;
                 };
-                var i = s(n(266)), a = s(n(672)), r = s(n(332));
-                function o(e, t) {
+                var i = c(n(266)), a = c(n(88)), r = c(n(672)), o = c(n(332));
+                function l(e, t) {
                     return function(e) {
                         if (Array.isArray(e)) return e;
                     }(e) || function(e, t) {
@@ -3033,39 +3028,39 @@
                         }
                     }(e, t) || function(e, t) {
                         if (e) {
-                            if ("string" == typeof e) return l(e, t);
+                            if ("string" == typeof e) return s(e, t);
                             var n = {}.toString.call(e).slice(8, -1);
-                            return "Object" === n && e.constructor && (n = e.constructor.name), "Map" === n || "Set" === n ? Array.from(e) : "Arguments" === n || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n) ? l(e, t) : void 0;
+                            return "Object" === n && e.constructor && (n = e.constructor.name), "Map" === n || "Set" === n ? Array.from(e) : "Arguments" === n || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n) ? s(e, t) : void 0;
                         }
                     }(e, t) || function() {
                         throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
                     }();
                 }
-                function l(e, t) {
+                function s(e, t) {
                     (null == t || t > e.length) && (t = e.length);
                     for (var n = 0, i = Array(t); n < t; n++) i[n] = e[n];
                     return i;
                 }
-                function s(e) {
+                function c(e) {
                     return e && e.__esModule ? e : {
                         default: e
                     };
                 }
-                var c = i.default.document;
-                function u(e) {
-                    return e instanceof Element && e.eventRegistry;
+                var u = i.default.document;
+                function f(e) {
+                    return e instanceof Element && (0, a.default)(e, "events");
                 }
-                var f = t.Event = void 0;
-                "function" == typeof i.default.CustomEvent ? t.Event = f = i.default.CustomEvent : i.default.Event && c && c.createEvent ? (t.Event = f = function(e, t) {
+                var p = t.Event = void 0;
+                "function" == typeof i.default.CustomEvent ? t.Event = p = i.default.CustomEvent : i.default.Event && u && u.createEvent ? (t.Event = p = function(e, t) {
                     t = t || {
                         bubbles: !1,
                         cancelable: !1,
                         composed: !0,
                         detail: void 0
                     };
-                    var n = c.createEvent("CustomEvent");
+                    var n = u.createEvent("CustomEvent");
                     return n.initCustomEvent(e, t.bubbles, t.cancelable, t.detail), n;
-                }, f.prototype = i.default.Event.prototype) : "undefined" != typeof Event && (t.Event = f = Event);
+                }, p.prototype = i.default.Event.prototype) : "undefined" != typeof Event && (t.Event = p = Event);
             },
             888: function(e, t, n) {
                 Object.defineProperty(t, "__esModule", {
@@ -3969,9 +3964,8 @@
                 }, y.isValid = function(e, t) {
                     return y(t).isValid(e);
                 }, y.remove = function(e) {
-                    "string" == typeof e && (e = m.getElementById(e) || m.querySelectorAll(e)), (e = e.nodeName ? [ e ] : e).forEach((function(e) {
-                        e.inputmask && e.inputmask.remove();
-                    }));
+                    "string" == typeof e && (e = m.getElementById(e) || m.querySelectorAll(e)), e = e.nodeName ? [ e ] : e;
+                    for (var t = 0; t < e.length; t++) e[t].inputmask && e[t].inputmask.remove();
                 }, y.setValue = function(e, t) {
                     "string" == typeof e && (e = m.getElementById(e) || m.querySelectorAll(e)), (e = e.nodeName ? [ e ] : e).forEach((function(e) {
                         e.inputmask ? e.inputmask.setValue(t) : (0, r.default)(e).trigger("setvalue", [ t ]);

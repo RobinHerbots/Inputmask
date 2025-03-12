@@ -21,6 +21,7 @@
 
 ### Fixed
 
+- Events: Use "mask" namespace so events can be removed #2672
 - Wrong standard unicode for Minutes #2834 #2835
 - Datetime alias with incorrect submitted value (outputFormat) #2826
 - FormData values are not unmasked #2409
