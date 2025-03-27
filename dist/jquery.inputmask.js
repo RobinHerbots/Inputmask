@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2025 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.10-beta.37
+ * Version: 5.0.10-beta.38
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -26,8 +26,8 @@
                 var e = FormData;
                 void 0 === FormData.InputMask && (FormData = function(t) {
                     for (var n, i = new e(t), a = i.entries(); !1 === (n = a.next()).done; ) {
-                        var r = document.getElementById(n.value[0]);
-                        void 0 !== r.inputmask && i.set(n.value[0], r.value);
+                        var r = n.value[0], o = n.value[1], s = document.getElementById(r);
+                        !s || void 0 === s.inputmask || o instanceof File || i.set(r, s.value);
                     }
                     return i;
                 }, FormData.InputMask = !0);
