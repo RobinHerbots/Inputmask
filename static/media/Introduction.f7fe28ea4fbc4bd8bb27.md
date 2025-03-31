@@ -33,6 +33,4 @@ Highlights:
 - dependencyLibs: vanilla javascript, jQuery, jqlite
 - \<input-mask\> htmlelement
 
-Thanks to [Jetbrains](https://www.jetbrains.com/?from=inputmask) for providing a free license for their excellent Webstorm IDE.
-
 Thanks to [Browserstack](https://www.browserstack.com) for providing a free license, so we can automate testing in different browsers and devices.  

@@ -4,11 +4,13 @@
 
 ### Addition
 
+- set regex unicode flag when using \p{.\*}
 - add outputFormat option #2526
 - add FormData support for inputmask #2409
 
 ### Updates
 
+- update definitions for beter matching letters & numbers
 - datetime alias
   - adjust month/minutes definition to match standard defined at unicode.org
     - month: M, MM, MMM, MMMM
@@ -19,6 +21,7 @@
 
 ### Fixed
 
+- Events: Use "mask" namespace so events can be removed #2672
 - Wrong standard unicode for Minutes #2834 #2835
 - Datetime alias with incorrect submitted value (outputFormat) #2826
 - FormData values are not unmasked #2409
