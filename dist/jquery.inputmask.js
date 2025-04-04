@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2025 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.10-beta.39
+ * Version: 5.0.10-beta.41
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -449,7 +449,7 @@
                                     }));
                                 }
                                 if (i.enforceDigitsOnBlur) {
-                                    var m = (o = o || {}) && o.buffer || t.slice().reverse();
+                                    var m = ((o = o || {}) && o.buffer || t).slice().reverse();
                                     o.refreshFromBuffer = !0, o.buffer = u(m, i.digits, i, !0).reverse();
                                 }
                             }
