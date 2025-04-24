@@ -780,4 +780,71 @@ export default function (qunit, Inputmask) {
       assert.equal(testmask.value, "", "Result " + testmask.value);
     }
   );
+
+  qunit.test(
+    "Regex Input Mask - ^([0][1-6]5)|(([0][7-9]6)|(107))$ - #2845",
+    function (assert) {
+      var $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      var testmask = document.getElementById("testmask");
+
+      // Apply the regex input mask
+      Inputmask({
+        regex: "^([0][1-6]5)|(([0][7-9]6)|(107))$",
+        clearIncomplete: true
+      }).mask(testmask);
+
+      // Test pattern [0][1-6]5
+      function testInput(input, message, inputValue) {
+        testmask.value = "";
+        testmask.focus();
+        $(testmask).Type(input);
+        testmask.blur();
+        assert.equal(testmask.value, inputValue || input, message);
+      }
+
+      // Test pattern [0][1-6]5
+      testInput("015", "Should accept 015");
+      testInput("025", "Should accept 025");
+      testInput("035", "Should accept 035");
+      testInput("045", "Should accept 045");
+      testInput("055", "Should accept 055");
+      testInput("065", "Should accept 065");
+
+      // Test pattern [0][7-9]6
+      testInput("076", "Should accept 076");
+      testInput("086", "Should accept 086");
+      testInput("096", "Should accept 096");
+
+      // Test pattern 107
+      testInput("107", "Should accept 107");
+
+      // Invalid first digit
+      testInput("115", "Should enforce 107 - first digit 1", 107);
+
+      // Invalid second digit for pattern [0][1-6]5
+      testInput(
+        "075",
+        "Should enforce 076 - second digit 7 doesn't match with last digit 5",
+        "076"
+      );
+      testInput(
+        "085",
+        "Should enforce 086 - second digit 8 doesn't match with last digit 5",
+        "086"
+      );
+
+      // Invalid last digit for pattern [0][7-9]6
+      testInput("077", "Should reject 077 - last digit must be 6", "076");
+      testInput("087", "Should reject 087 - last digit must be 6", "086");
+
+      // Invalid for 107 pattern
+      testInput("106", "Should reject 106 - not matching 107 pattern", "107");
+      testInput("108", "Should reject 108 - not matching 107 pattern", "107");
+
+      // Too many/few digits
+      testInput("0155", "Should reject 0155 - too many digits", "015");
+      testInput("01", "Should reject 01 - too few digits", "01_");
+    }
+  );
 }
