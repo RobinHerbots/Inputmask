@@ -784,26 +784,35 @@ export default function (qunit, Inputmask) {
   qunit.test(
     "Regex Input Mask - ^([0][1-6]5)|(([0][7-9]6)|(107))$ - #2845",
     function (assert) {
-      var $fixture = $("#qunit-fixture");
-      $fixture.append('<input type="text" id="testmask" />');
-      var testmask = document.getElementById("testmask");
+      const $fixture = $("#qunit-fixture");
 
-      // Apply the regex input mask
-      Inputmask({
-        regex: "^([0][1-6]5)|(([0][7-9]6)|(107))$",
-        clearIncomplete: true
-      }).mask(testmask);
-
-      // Test pattern [0][1-6]5
       function testInput(input, message, inputValue) {
-        testmask.value = "";
+        const done = assert.async(),
+          testmask = document.createElement("input");
+        testmask.id = "testmask-" + Date.now(); // Unique ID
+        $fixture[0].appendChild(testmask); // Append to fixture
+
+        // Apply the regex input mask
+        Inputmask({
+          regex: "^([0][1-6]5)|(([0][7-9]6)|(107))$",
+          clearIncomplete: true
+        }).mask(testmask);
+
         testmask.focus();
         $(testmask).Type(input);
         testmask.blur();
-        assert.equal(testmask.value, inputValue || input, message);
+
+        // **Create a new scope to preserve expectedValue**
+        (function (expected, inputmask) {
+          setTimeout(() => {
+            assert.equal(inputmask.value, expected, message);
+            $fixture[0].removeChild(inputmask); // Clean up fixture
+            done();
+          }, 0); // Increased timeout
+        })(inputValue || input, testmask); // Pass in the current expectedValue
       }
 
-      // Test pattern [0][1-6]5
+      // // Test pattern [0][1-6]5
       testInput("015", "Should accept 015");
       testInput("025", "Should accept 025");
       testInput("035", "Should accept 035");
@@ -811,7 +820,7 @@ export default function (qunit, Inputmask) {
       testInput("055", "Should accept 055");
       testInput("065", "Should accept 065");
 
-      // Test pattern [0][7-9]6
+      // // Test pattern [0][7-9]6
       testInput("076", "Should accept 076");
       testInput("086", "Should accept 086");
       testInput("096", "Should accept 096");
@@ -822,7 +831,7 @@ export default function (qunit, Inputmask) {
       // Invalid first digit
       testInput("115", "Should enforce 107 - first digit 1", 107);
 
-      // Invalid second digit for pattern [0][1-6]5
+      // // Invalid second digit for pattern [0][1-6]5
       testInput(
         "075",
         "Should enforce 076 - second digit 7 doesn't match with last digit 5",
@@ -834,17 +843,17 @@ export default function (qunit, Inputmask) {
         "086"
       );
 
-      // Invalid last digit for pattern [0][7-9]6
+      // // Invalid last digit for pattern [0][7-9]6
       testInput("077", "Should reject 077 - last digit must be 6", "076");
       testInput("087", "Should reject 087 - last digit must be 6", "086");
 
-      // Invalid for 107 pattern
+      // // Invalid for 107 pattern
       testInput("106", "Should reject 106 - not matching 107 pattern", "107");
       testInput("108", "Should reject 108 - not matching 107 pattern", "107");
 
-      // Too many/few digits
+      // // Too many/few digits
       testInput("0155", "Should reject 0155 - too many digits", "015");
-      testInput("01", "Should reject 01 - too few digits", "01_");
+      testInput("01", "Incomplete - too few digits", "01_");
     }
   );
 }
