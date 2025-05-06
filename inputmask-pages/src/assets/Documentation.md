@@ -736,7 +736,7 @@ See [escape special mask chars](#escape-special-mask-chars)
 The mask to use.
 
 ```
-Inputmask({ mask: "9{*}").mask(selector);
+Inputmask({ mask: "9{*}"}).mask(selector);
 ```
 
 ### regex
