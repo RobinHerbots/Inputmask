@@ -21,6 +21,7 @@
 
 ### Fixed
 
+- Regex problem ~ recursive alternations #2845
 - Incorrect numeric mask value reverse on blur #2844
 - Sending FormData POST in Angular is not working since 5.0.10-beta.14 #2842
 - Events: Use "mask" namespace so events can be removed #2672

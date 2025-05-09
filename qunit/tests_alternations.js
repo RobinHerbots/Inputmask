@@ -809,7 +809,7 @@ export default function (qunit, Inputmask) {
             $fixture[0].removeChild(inputmask); // Clean up fixture
             done();
           }, 0); // Increased timeout
-        })(inputValue || input, testmask); // Pass in the current expectedValue
+        })(inputValue !== undefined ? inputValue : input, testmask); // Pass in the current expectedValue
       }
 
       // // Test pattern [0][1-6]5
@@ -853,7 +853,7 @@ export default function (qunit, Inputmask) {
 
       // // Too many/few digits
       testInput("0155", "Should reject 0155 - too many digits", "015");
-      testInput("01", "Incomplete - too few digits", "01_");
+      testInput("0", "Incomplete - too few digits", "");
     }
   );
 }
