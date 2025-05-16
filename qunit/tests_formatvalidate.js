@@ -97,7 +97,7 @@ export default function (qunit, Inputmask) {
     }
   );
 
-  qunit.test("Inputmask.isValid email => false", function (assert) {
+  qunit.test("Inputmask.isValid email => true", function (assert) {
     var isValid = Inputmask.isValid("some.body@mail.c", {
       alias: "email"
     });
@@ -111,7 +111,7 @@ export default function (qunit, Inputmask) {
     assert.equal(isValid, true, "Result " + isValid);
   });
 
-  qunit.test("Inputmask.isValid email greedy => false", function (assert) {
+  qunit.test("Inputmask.isValid email greedy => true", function (assert) {
     var isValid = Inputmask.isValid("some.body@mail.c", {
       alias: "email",
       greedy: true
