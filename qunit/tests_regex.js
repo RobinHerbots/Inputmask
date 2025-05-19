@@ -153,6 +153,7 @@ export default function (qunit, Inputmask) {
 
       testmask.focus();
       $("#testmask").Type("some.body@mail.com");
+      testmask.blur();
 
       assert.equal(
         testmask.value,
@@ -175,6 +176,7 @@ export default function (qunit, Inputmask) {
 
       testmask.focus();
       $("#testmask").Type("denise.van.de.cruys@mail.com");
+      testmask.blur();
 
       assert.equal(
         testmask.value,
