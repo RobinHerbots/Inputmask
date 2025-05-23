@@ -64,7 +64,7 @@ export default function (qunit, Inputmask) {
       groupmarker: ["<", ">"]
     }).mask(testmask);
 
-    $("#testmask").Type("03411212");
+    $("#testmask").input("03411212");
 
     assert.equal(
       testmask.inputmask._valueGet(),
@@ -82,7 +82,7 @@ export default function (qunit, Inputmask) {
       groupmarker: ["<", ">"]
     }).mask(testmask);
 
-    $("#testmask").Type("03511212");
+    $("#testmask").input("03511212");
 
     assert.equal(
       testmask.inputmask._valueGet(),
@@ -100,7 +100,7 @@ export default function (qunit, Inputmask) {
       groupmarker: ["<", ">"]
     }).mask(testmask);
 
-    $("#testmask").Type("03611212");
+    $("#testmask").input("03611212");
 
     assert.equal(
       testmask.inputmask._valueGet(),
