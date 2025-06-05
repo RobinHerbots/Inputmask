@@ -1306,7 +1306,7 @@ export default function (qunit, Inputmask) {
     setTimeout(function () {
       $("#testmask").trigger("blur");
       setTimeout(function () {
-        assert.equal(testmask.value, "$ 1,000.00", "Result " + testmask.value);
+        assert.equal(testmask.value, "", "Result " + testmask.value);
         done();
       }, 0);
     }, 0);

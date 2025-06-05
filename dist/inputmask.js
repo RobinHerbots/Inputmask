@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2025 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.10-beta.44
+ * Version: 5.0.10-beta.45
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -393,7 +393,7 @@
                                 e = e.toString().replace(".", n);
                             }
                             if (0 === t.digits && -1 !== e.indexOf(n) && (e = e.substring(0, e.indexOf(n))), 
-                            null !== t.min || null !== t.max) {
+                            "" !== e && (null !== t.min || null !== t.max)) {
                                 var p = e.toString().replace(n, ".");
                                 null !== t.min && p < t.min ? e = t.min.toString().replace(".", n) : null !== t.max && p > t.max && (e = t.max.toString().replace(".", n));
                             }
@@ -424,7 +424,7 @@
                                     var d = i.onUnMask(t.slice().reverse().join(""), void 0, s.extend({}, i, {
                                         unmaskAsNumber: !0
                                     }));
-                                    if (null !== i.min && d < i.min) return {
+                                    if (null !== i.min && d < i.min && "" !== t.join()) return {
                                         refreshFromBuffer: !0,
                                         buffer: u(i.min.toString().replace(".", i.radixPoint).split(""), i.digits, i).reverse()
                                     };
