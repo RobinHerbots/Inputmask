@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2025 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.10-beta.45
+ * Version: 5.0.10-beta.47
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -1526,10 +1526,10 @@
                             var c, u, f = this;
                             if (o) return !0;
                             if (!1 === i && ((c = D.call(f, t + 1, r, a)).targetMatch && c.targetMatchIndex === t && c.targetMatch[0].length > 1 && void 0 !== O(c.targetMatch[0]) ? u = O(c.targetMatch[0])[0] : (c = D.call(f, t + 2, r, a)).targetMatch && c.targetMatchIndex === t + 1 && c.targetMatch[0].length > 1 && void 0 !== O(c.targetMatch[0]) && (u = O(c.targetMatch[0])), 
-                            void 0 !== u && (void 0 !== a.validPositions[t + 1] && new RegExp(u).test(n + "0") ? (e[t] = n, 
+                            void 0 !== u && (t = c.targetMatchIndex, void 0 !== a.validPositions[t + 1] && new RegExp(u).test(n + "0") ? (e[t] = n, 
                             e[t + 1] = "0", i = {
                                 pos: t + 2,
-                                caret: t
+                                caret: t + 1
                             }) : new RegExp(u).test("0" + n) && (e[t] = "0", e[t + 1] = n, i = {
                                 pos: t + 2
                             })), !1 === i)) return i;
@@ -1582,7 +1582,7 @@
                                     start: t,
                                     end: i.pos
                                 },
-                                pos: i.caret || i.pos
+                                pos: void 0 !== i.caret ? i.caret : i.pos
                             } : v;
                         },
                         onKeyDown: function(e, t, n, i) {
@@ -3716,7 +3716,7 @@
                                 caret: a.seekNext.call(g, x)
                             };
                         }
-                        if (g.hasAlternator && !0 !== r && !n && (r = !0, !1 === w && k.keepStatic && (c.call(g, a.getBuffer.call(g)) || 0 === x) ? w = s.call(g, x, t, n, i, void 0, e) : (u.call(g, e) && b.tests[x] && b.tests[x].length > 1 && k.keepStatic || !0 === w && !0 !== k.numericInput && b.tests[x] && b.tests[x].length > 1 && a.getLastValidPosition.call(g, void 0, !0) > x) && (w = s.call(g, !0))), 
+                        if (g.hasAlternator && !0 !== r && !n && (r = !0, !1 === w && k.keepStatic && (c.call(g, a.getBuffer.call(g)) || 0 === x) ? w = s.call(g, x, t, n, i, void 0, e) : (u.call(g, e) && b.tests[x] && b.tests[x].length > 1 && k.keepStatic || !0 === w && !0 !== k.numericInput && b.tests[x] && b.tests[x].length > 1 && a.getLastValidPosition.call(g, void 0, !0) > x) && (w = s.call(g, !0) || w)), 
                         !0 === w && (w = {
                             pos: x
                         }), "function" == typeof k.postValidation && !0 !== i && !0 !== p) {
@@ -3752,7 +3752,7 @@
                         begin: 0,
                         end: 0
                     }, !1).begin; else {
-                        for (r = e; r < t; r++) l.validPositions.splice(e, 0);
+                        for (r = e; r < t; r++) delete l.validPositions[r];
                         o = e;
                     }
                     var d = new u.Event("keypress");
