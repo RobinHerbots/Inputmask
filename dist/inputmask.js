@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2025 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.10-beta.47
+ * Version: 5.0.10-beta.48
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -3358,12 +3358,15 @@
                         if (a.inputmask) {
                             (0, o.HandleNativePlaceholder)(a, t.originalPlaceholder);
                             var l = a.inputmask._valueGet(), u = s.getBuffer.call(t).slice();
-                            "" !== l && (n.clearMaskOnLostFocus && (-1 === s.getLastValidPosition.call(t) && l === s.getBufferTemplate.call(t).join("") ? u = [] : o.clearOptionalTail.call(t, u)), 
+                            if ("" !== l && (n.clearMaskOnLostFocus && (-1 === s.getLastValidPosition.call(t) && l === s.getBufferTemplate.call(t).join("") ? u = [] : o.clearOptionalTail.call(t, u)), 
                             !1 === c.isComplete.call(t, u) && (setTimeout((function() {
                                 r.trigger("incomplete");
                             }), 0), n.clearIncomplete && (s.resetMaskSet.call(t, !1), u = n.clearMaskOnLostFocus ? [] : s.getBufferTemplate.call(t).slice())), 
-                            (0, o.writeBuffer)(a, u, void 0, e)), l = t._valueGet(!0), t.undoValue !== l && ("" != l || t.undoValue != s.getBufferTemplate.call(t).join("") || t.undoValue == s.getBufferTemplate.call(t).join("") && t.maskset.validPositions.length > 0) && (t.undoValue = l, 
-                            r.trigger("change"));
+                            (0, o.writeBuffer)(a, u, void 0, e)), l = t._valueGet(!0), t.undoValue !== l) {
+                                var f = (t.isRTL ? s.getBufferTemplate.call(t).slice().reverse() : s.getBufferTemplate.call(t)).join("");
+                                ("" !== l || t.undoValue !== f || t.undoValue === f && t.maskset.validPositions.length > 0) && (t.undoValue = l, 
+                                r.trigger("change"));
+                            }
                         }
                     },
                     mouseenterEvent: function() {

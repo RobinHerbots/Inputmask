@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2025 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.10-beta.47
+ * Version: 5.0.10-beta.48
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -3191,12 +3191,15 @@
                         if (a.inputmask) {
                             (0, o.HandleNativePlaceholder)(a, t.originalPlaceholder);
                             var s = a.inputmask._valueGet(), u = l.getBuffer.call(t).slice();
-                            "" !== s && (n.clearMaskOnLostFocus && (-1 === l.getLastValidPosition.call(t) && s === l.getBufferTemplate.call(t).join("") ? u = [] : o.clearOptionalTail.call(t, u)), 
+                            if ("" !== s && (n.clearMaskOnLostFocus && (-1 === l.getLastValidPosition.call(t) && s === l.getBufferTemplate.call(t).join("") ? u = [] : o.clearOptionalTail.call(t, u)), 
                             !1 === c.isComplete.call(t, u) && (setTimeout((function() {
                                 r.trigger("incomplete");
                             }), 0), n.clearIncomplete && (l.resetMaskSet.call(t, !1), u = n.clearMaskOnLostFocus ? [] : l.getBufferTemplate.call(t).slice())), 
-                            (0, o.writeBuffer)(a, u, void 0, e)), s = t._valueGet(!0), t.undoValue !== s && ("" != s || t.undoValue != l.getBufferTemplate.call(t).join("") || t.undoValue == l.getBufferTemplate.call(t).join("") && t.maskset.validPositions.length > 0) && (t.undoValue = s, 
-                            r.trigger("change"));
+                            (0, o.writeBuffer)(a, u, void 0, e)), s = t._valueGet(!0), t.undoValue !== s) {
+                                var f = (t.isRTL ? l.getBufferTemplate.call(t).slice().reverse() : l.getBufferTemplate.call(t)).join("");
+                                ("" !== s || t.undoValue !== f || t.undoValue === f && t.maskset.validPositions.length > 0) && (t.undoValue = s, 
+                                r.trigger("change"));
+                            }
                         }
                     },
                     mouseenterEvent: function() {
