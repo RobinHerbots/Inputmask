@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2025 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.10-beta.48
+ * Version: 5.0.10-beta.49
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -481,7 +481,8 @@
                                         if (0 === p) return (r = t.slice().reverse()).pop(), a.trigger("setvalue", [ r.join(""), n.begin >= r.length ? r.length : n.begin ]), 
                                         !1;
                                     } else if (-1 !== p && (n.begin < p || n.end < p || e.key === o.keys.Delete && (n.begin === p || n.begin - 1 === p))) return n.begin === n.end && (e.key === o.keys.Backspace || e.key === o.keys.BACKSPACE_SAFARI ? n.begin++ : e.key === o.keys.Delete && n.begin - 1 === p && (f = s.extend({}, n), 
-                                    n.begin--, n.end--)), (r = t.slice().reverse()).splice(r.length - n.begin, n.begin - n.end + 1), 
+                                    n.begin--, n.end--)), (r = t.slice().reverse()).splice(r.length - n.begin, n.begin - n.end || 1), 
+                                    e.key !== o.keys.Backspace && e.key !== o.keys.BACKSPACE_SAFARI || r.splice(r.length - n.end + 1, 0, "0"), 
                                     r = u(r, i.digits, i).join(""), f && (n = f), a.trigger("setvalue", [ r, n.begin >= r.length ? p + 1 : n.begin ]), 
                                     !1;
                                 }
@@ -2555,11 +2556,11 @@
                                         (!0 === c.keepStatic || isFinite(parseInt(c.keepStatic)) && E >= c.keepStatic) && (T = T.slice(0, 1));
                                         for (var R = 0; R < T.length; R++) {
                                             _ = parseInt(T[R]), m = [], n = "string" == typeof M && P(p, _, S) || j.slice();
-                                            var I = y.matches[_];
-                                            if (I && f(I, [ _ ].concat(l), d)) a = !0; else if (b = r(y), I && I.matches && I.matches.length > y.matches[0].matches.length) break;
+                                            var L = y.matches[_];
+                                            if (L && f(L, [ _ ].concat(l), d)) a = !0; else if (b = r(y), L && L.matches && L.matches.length > y.matches[0].matches.length) break;
                                             h = m.slice(), p = E, m = [];
-                                            for (var L = 0; L < h.length; L++) {
-                                                var F = h[L], N = !1;
+                                            for (var I = 0; I < h.length; I++) {
+                                                var F = h[I], N = !1;
                                                 F.alternation = F.alternation || S, O(F);
                                                 for (var V = 0; V < k.length; V++) {
                                                     var G = k[V];
@@ -3734,16 +3735,16 @@
                     var i = this.opts, a = this.maskset;
                     switch (i.casing || t.casing) {
                       case "upper":
-                        e = e.toUpperCase();
+                        e = e.toLocaleUpperCase();
                         break;
 
                       case "lower":
-                        e = e.toLowerCase();
+                        e = e.toLocaleLowerCase();
                         break;
 
                       case "title":
                         var o = a.validPositions[n - 1];
-                        e = 0 === n || o && o.input === String.fromCharCode(r.keyCode.Space) ? e.toUpperCase() : e.toLowerCase();
+                        e = 0 === n || o && o.input === String.fromCharCode(r.keyCode.Space) ? e.toLocaleUpperCase() : e.toLocaleLowerCase();
                         break;
 
                       default:
