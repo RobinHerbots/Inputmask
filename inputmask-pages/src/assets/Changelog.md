@@ -21,6 +21,7 @@
 
 ### Fixed
 
+- Chinese IME input causes character duplication on Safari
 - Turkish Locale for Uppercase, Lowercase and Title #2853
 - Change event fired even no value entered in decimal masked input #2852
 - Numeric field value cannot be reset to empty from outside of input. #2829
