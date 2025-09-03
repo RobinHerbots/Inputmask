@@ -583,4 +583,64 @@ export default function (qunit, Inputmask) {
       );
     }
   );
+
+  qunit.test("Multi mask test - #2854", function (assert) {
+    const $fixture = $("#qunit-fixture");
+
+    function testInput(input, message, inputValue) {
+      const done = assert.async(),
+        testmask = document.createElement("input");
+      testmask.id = "testmask-" + Date.now(); // Unique ID
+      $fixture[0].appendChild(testmask); // Append to fixture
+
+      Inputmask({
+        mask: [
+          "aaa-9999-*", // 3 letters, dash, 4 digits, dash, alphanumeric
+          "01-16149999999999999999-9", // Specific numeric pattern
+          "E00*************" // E00 followed by 13 alphanumeric chars
+        ],
+        casing: "upper"
+      }).mask(testmask);
+
+      testmask.focus();
+      $(testmask).Type(input);
+      testmask.blur();
+
+      // **Create a new scope to preserve expectedValue**
+      (function (expected, inputmask) {
+        setTimeout(() => {
+          assert.equal(inputmask.value, expected, message);
+          $fixture[0].removeChild(inputmask); // Clean up fixture
+          done();
+        }, 0); // Increased timeout
+      })(inputValue !== undefined ? inputValue : input, testmask); // Pass in the current expectedValue
+    }
+
+    testInput(
+      "abc-1234-x",
+      "Alphanumeric mask with lowercase input",
+      "ABC-1234-X"
+    );
+    testInput(
+      "09999999999999999-9",
+      "Specific numeric pattern full match",
+      "01-16149999999999999999-9"
+    );
+    testInput(
+      "EABC123DEF456D",
+      "E00 mask with 13 alphanumeric characters",
+      "E00ABC123DEF456D"
+    );
+
+    testInput(
+      "abc-1234-xyz",
+      "Input exceeding max length should be switch to mask3 as this is valid",
+      "ABC-1234-X"
+    );
+    testInput(
+      "etest1234567890",
+      "E00 mask with lowercase and exceeding length",
+      "E00TEST123456789"
+    );
+  });
 }

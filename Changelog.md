@@ -21,6 +21,8 @@
 
 ### Fixed
 
+- Cannot read properties of null (reading 'inputmask') FormData patch #2841
+- Issue with Multiple Mask Patterns in Inputmask 5.0.10-beta.49 #2854
 - Having percentage with quantifier syntax always defaults to two digits #2837
 - Turkish Locale for Uppercase, Lowercase and Title #2853
 - Change event fired even no value entered in decimal masked input #2852
