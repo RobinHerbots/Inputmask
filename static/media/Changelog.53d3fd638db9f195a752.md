@@ -21,6 +21,14 @@
 
 ### Fixed
 
+- Issue with Multiple Mask Patterns in Inputmask 5.0.10-beta.49 #2854
+- Having percentage with quantifier syntax always defaults to two digits #2837
+- Turkish Locale for Uppercase, Lowercase and Title #2853
+- Change event fired even no value entered in decimal masked input #2852
+- Numeric field value cannot be reset to empty from outside of input. #2829
+- Regex problem ~ recursive alternations #2845
+- Incorrect numeric mask value reverse on blur #2844
+- Sending FormData POST in Angular is not working since 5.0.10-beta.14 #2842
 - Events: Use "mask" namespace so events can be removed #2672
 - Wrong standard unicode for Minutes #2834 #2835
 - Datetime alias with incorrect submitted value (outputFormat) #2826
