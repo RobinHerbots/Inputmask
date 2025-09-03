@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2025 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.10-beta.52
+ * Version: 5.0.10-beta.54
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -118,7 +118,7 @@
                                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function");
                             }(this, n), o = this, c = [ e, t ], l = s(l = n);
                             for (var u, f = (a = i(o, r() ? Reflect.construct(l, c || [], s(o).constructor) : l.apply(o, c))).entries(); !1 === (u = f.next()).done; ) {
-                                var p = u.value[0], d = u.value[1], h = document.getElementById(p);
+                                var p = u.value[0], d = u.value[1], h = e[p];
                                 !h || void 0 === h.inputmask || d instanceof File || a.set(p, h.value);
                             }
                             return i(a, a);
@@ -2389,11 +2389,11 @@
                                         (!0 === c.keepStatic || isFinite(parseInt(c.keepStatic)) && j >= c.keepStatic) && (T = T.slice(0, 1));
                                         for (var R = 0; R < T.length; R++) {
                                             _ = parseInt(T[R]), v = [], n = "string" == typeof M && S(p, _, P) || E.slice();
-                                            var I = y.matches[_];
-                                            if (I && f(I, [ _ ].concat(s), d)) r = !0; else if (k = a(y), I && I.matches && I.matches.length > y.matches[0].matches.length) break;
+                                            var L = y.matches[_];
+                                            if (L && f(L, [ _ ].concat(s), d)) r = !0; else if (k = a(y), L && L.matches && L.matches.length > y.matches[0].matches.length) break;
                                             h = v.slice(), p = j, v = [];
-                                            for (var L = 0; L < h.length; L++) {
-                                                var F = h[L], N = !1;
+                                            for (var I = 0; I < h.length; I++) {
+                                                var F = h[I], N = !1;
                                                 F.alternation = F.alternation || P, O(F);
                                                 for (var V = 0; V < b.length; V++) {
                                                     var G = b[V];

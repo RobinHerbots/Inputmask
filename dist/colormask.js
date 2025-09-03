@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2025 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.10-beta.52
+ * Version: 5.0.10-beta.54
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -1814,7 +1814,7 @@
                                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function");
                             }(this, n), o = this, c = [ e, t ], s = l(s = n);
                             for (var u, f = (r = i(o, a() ? Reflect.construct(s, c || [], l(o).constructor) : s.apply(o, c))).entries(); !1 === (u = f.next()).done; ) {
-                                var p = u.value[0], d = u.value[1], h = document.getElementById(p);
+                                var p = u.value[0], d = u.value[1], h = e[p];
                                 !h || void 0 === h.inputmask || d instanceof File || r.set(p, h.value);
                             }
                             return i(r, r);

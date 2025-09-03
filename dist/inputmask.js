@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2025 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.10-beta.52
+ * Version: 5.0.10-beta.54
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(); else if ("function" == typeof define && define.amd) define([], t); else {
@@ -118,7 +118,7 @@
                                 if (!(e instanceof t)) throw new TypeError("Cannot call a class as a function");
                             }(this, n), o = this, c = [ e, t ], s = l(s = n);
                             for (var u, f = (r = i(o, a() ? Reflect.construct(s, c || [], l(o).constructor) : s.apply(o, c))).entries(); !1 === (u = f.next()).done; ) {
-                                var p = u.value[0], d = u.value[1], h = document.getElementById(p);
+                                var p = u.value[0], d = u.value[1], h = e[p];
                                 !h || void 0 === h.inputmask || d instanceof File || r.set(p, h.value);
                             }
                             return i(r, r);
@@ -2556,11 +2556,11 @@
                                         (!0 === c.keepStatic || isFinite(parseInt(c.keepStatic)) && E >= c.keepStatic) && (T = T.slice(0, 1));
                                         for (var R = 0; R < T.length; R++) {
                                             _ = parseInt(T[R]), m = [], n = "string" == typeof M && P(p, _, S) || j.slice();
-                                            var I = y.matches[_];
-                                            if (I && f(I, [ _ ].concat(l), d)) a = !0; else if (b = r(y), I && I.matches && I.matches.length > y.matches[0].matches.length) break;
+                                            var L = y.matches[_];
+                                            if (L && f(L, [ _ ].concat(l), d)) a = !0; else if (b = r(y), L && L.matches && L.matches.length > y.matches[0].matches.length) break;
                                             h = m.slice(), p = E, m = [];
-                                            for (var L = 0; L < h.length; L++) {
-                                                var F = h[L], N = !1;
+                                            for (var I = 0; I < h.length; I++) {
+                                                var F = h[I], N = !1;
                                                 F.alternation = F.alternation || S, O(F);
                                                 for (var V = 0; V < k.length; V++) {
                                                     var G = k[V];
