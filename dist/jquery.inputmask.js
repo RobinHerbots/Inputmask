@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2025 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.10-beta.56
+ * Version: 5.0.10-beta.58
  */
 !function(e, t) {
     if ("object" == typeof exports && "object" == typeof module) module.exports = t(require("jquery")); else if ("function" == typeof define && define.amd) define([ "jquery" ], t); else {
@@ -879,7 +879,7 @@
                     this.userOptions = t || {}, k(this.opts.alias, t, this.opts)), this.refreshValue = !1, 
                     this.undoValue = void 0, this.$el = void 0, this.skipInputEvent = !1, this.validationEvent = !1, 
                     this.ignorable = !1, this.maxLength, this.mouseEnter = !1, this.clicked = 0, this.originalPlaceholder = void 0, 
-                    this.isComposing = !1, this.lastInputProcessed = null, this.hasAlternator = !1;
+                    this.isComposing = !1, this.lastInputEvent = null, this.hasAlternator = !1;
                 }
                 function k(e, t, n) {
                     var i = y.prototype.aliases[e];
@@ -1048,6 +1048,14 @@
                                     switch (t.type) {
                                       case "input":
                                         if (!0 === u.skipInputEvent) return u.skipInputEvent = !1, t.preventDefault();
+                                        u.lastInputEvent = {
+                                            time: Date.now(),
+                                            data: t.data
+                                        };
+                                        break;
+
+                                      case "keydown":
+                                        if (u.lastInputEvent && Date.now() - u.lastInputEvent.time < 10 && u.lastInputEvent.data === t.key) return !1;
                                         break;
 
                                       case "click":
@@ -2387,10 +2395,10 @@
                                             0 === T.length && (delete l.excludes[e], T = A);
                                         }
                                         (!0 === c.keepStatic || isFinite(parseInt(c.keepStatic)) && j >= c.keepStatic) && (T = T.slice(0, 1));
-                                        for (var I = 0; I < T.length; I++) {
-                                            _ = parseInt(T[I]), v = [], n = "string" == typeof M && S(p, _, P) || E.slice();
-                                            var R = y.matches[_];
-                                            if (R && f(R, [ _ ].concat(s), d)) r = !0; else if (k = a(y), R && R.matches && R.matches.length > y.matches[0].matches.length) break;
+                                        for (var R = 0; R < T.length; R++) {
+                                            _ = parseInt(T[R]), v = [], n = "string" == typeof M && S(p, _, P) || E.slice();
+                                            var I = y.matches[_];
+                                            if (I && f(I, [ _ ].concat(s), d)) r = !0; else if (k = a(y), I && I.matches && I.matches.length > y.matches[0].matches.length) break;
                                             h = v.slice(), p = j, v = [];
                                             for (var L = 0; L < h.length; L++) {
                                                 var F = h[L], N = !1;
@@ -3013,8 +3021,8 @@
                             f.isRTL ? l.caret.call(f, m, e + (e === h.maskLength ? 0 : 1)) : l.caret.call(f, m, e - (0 === e ? 0 : 1));
                         }), 0) : void 0 === f.keyEventHook || f.keyEventHook(e)) : c.isSelection.call(f, k) ? p.insertMode = !p.insertMode : (p.insertMode = !p.insertMode, 
                         l.caret.call(f, m, k.begin, k.begin));
-                        return f.isComposing = g == s.keys.Process || g == s.keys.Unidentified, !(f.lastInputProcessed && Date.now() - f.lastInputProcessed.time < 10 && f.lastInputProcessed.data === g) && (f.ignorable = void 0 === g || g.length > 1, 
-                        y.keypressEvent.call(this, e, t, n, i, r));
+                        return f.isComposing = g === s.keys.Process || g === s.keys.Unidentified, f.ignorable = void 0 === g || g.length > 1, 
+                        y.keypressEvent.call(this, e, t, n, i, r);
                     },
                     keypressEvent: function(e, t, n, i, a) {
                         var r = this.inputmask || this, u = r.opts, f = r.dependencyLib, p = r.maskset, d = r.el, h = f(d), m = e.key;
@@ -3097,64 +3105,59 @@
                     }),
                     inputFallBackEvent: function(e) {
                         var t = this.inputmask, n = t.opts, i = t.dependencyLib;
-                        if (!(t.lastInputProcessed && Date.now() - t.lastInputProcessed.time < 10 && t.lastInputProcessed.data === e.data)) {
-                            var r, c = this, f = c.inputmask._valueGet(!0), p = (t.isRTL ? l.getBuffer.call(t).slice().reverse() : l.getBuffer.call(t)).join(""), d = l.caret.call(t, c, void 0, void 0, !0);
-                            if (p !== f) {
-                                if (r = function(e, i, a) {
-                                    for (var r, o, s, c = e.substr(0, a.begin).split(""), f = e.substr(a.begin).split(""), p = i.substr(0, a.begin).split(""), d = i.substr(a.begin).split(""), h = c.length >= p.length ? c.length : p.length, m = f.length >= d.length ? f.length : d.length, v = "", g = [], y = "~"; c.length < h; ) c.push(y);
-                                    for (;p.length < h; ) p.push(y);
-                                    for (;f.length < m; ) f.unshift(y);
-                                    for (;d.length < m; ) d.unshift(y);
-                                    var k = c.concat(f), b = p.concat(d);
-                                    for (o = 0, r = k.length; o < r; o++) switch (s = u.getPlaceholder.call(t, l.translatePosition.call(t, o)), 
-                                    v) {
-                                      case "insertText":
-                                        b[o - 1] === k[o] && a.begin == k.length - 1 && g.push(k[o]), o = r;
-                                        break;
-
-                                      case "insertReplacementText":
-                                      case "deleteContentBackward":
-                                        k[o] === y ? a.end++ : o = r;
-                                        break;
-
-                                      default:
-                                        k[o] !== b[o] && (k[o + 1] !== y && k[o + 1] !== s && void 0 !== k[o + 1] || (b[o] !== s || b[o + 1] !== y) && b[o] !== y ? b[o + 1] === y && b[o] === k[o + 1] ? (v = "insertText", 
-                                        g.push(k[o]), a.begin--, a.end--) : k[o] !== s && k[o] !== y && (k[o + 1] === y || b[o] !== k[o] && b[o + 1] === k[o + 1]) ? (v = "insertReplacementText", 
-                                        g.push(k[o]), a.begin--) : k[o] === y ? (v = "deleteContentBackward", (l.isMask.call(t, l.translatePosition.call(t, o), !0) || b[o] === n.radixPoint) && a.end++) : o = r : (v = "insertText", 
-                                        g.push(k[o]), a.begin--, a.end--));
-                                    }
-                                    return {
-                                        action: v,
-                                        data: g,
-                                        caret: a
-                                    };
-                                }(f, p, d), c.getRootNode().activeElement !== c && c.focus(), (0, o.writeBuffer)(c, l.getBuffer.call(t)), 
-                                l.caret.call(t, c, d.begin, d.end, !0), !a.mobile && t.skipNextInsert && "insertText" === e.inputType && "insertText" === r.action && t.isComposing) return !1;
-                                switch ("insertCompositionText" === e.inputType && "insertText" === r.action && t.isComposing ? t.skipNextInsert = !0 : t.skipNextInsert = !1, 
-                                r.action) {
+                        var r, c = this, f = c.inputmask._valueGet(!0), p = (t.isRTL ? l.getBuffer.call(t).slice().reverse() : l.getBuffer.call(t)).join(""), d = l.caret.call(t, c, void 0, void 0, !0);
+                        if (p !== f) {
+                            if (r = function(e, i, a) {
+                                for (var r, o, s, c = e.substr(0, a.begin).split(""), f = e.substr(a.begin).split(""), p = i.substr(0, a.begin).split(""), d = i.substr(a.begin).split(""), h = c.length >= p.length ? c.length : p.length, m = f.length >= d.length ? f.length : d.length, v = "", g = [], y = "~"; c.length < h; ) c.push(y);
+                                for (;p.length < h; ) p.push(y);
+                                for (;f.length < m; ) f.unshift(y);
+                                for (;d.length < m; ) d.unshift(y);
+                                var k = c.concat(f), b = p.concat(d);
+                                for (o = 0, r = k.length; o < r; o++) switch (s = u.getPlaceholder.call(t, l.translatePosition.call(t, o)), 
+                                v) {
                                   case "insertText":
-                                  case "insertReplacementText":
-                                    r.data.forEach((function(e, n) {
-                                        var a = new i.Event("keypress");
-                                        a.key = e, t.ignorable = !1, y.keypressEvent.call(c, a);
-                                    })), setTimeout((function() {
-                                        t.$el.trigger("keyup");
-                                    }), 0);
+                                    b[o - 1] === k[o] && a.begin == k.length - 1 && g.push(k[o]), o = r;
                                     break;
 
+                                  case "insertReplacementText":
                                   case "deleteContentBackward":
-                                    var h = new i.Event("keydown");
-                                    h.key = s.keys.Backspace, y.keyEvent.call(c, h);
+                                    k[o] === y ? a.end++ : o = r;
                                     break;
 
                                   default:
-                                    (0, o.applyInputValue)(c, f), l.caret.call(t, c, d.begin, d.end, !0);
+                                    k[o] !== b[o] && (k[o + 1] !== y && k[o + 1] !== s && void 0 !== k[o + 1] || (b[o] !== s || b[o + 1] !== y) && b[o] !== y ? b[o + 1] === y && b[o] === k[o + 1] ? (v = "insertText", 
+                                    g.push(k[o]), a.begin--, a.end--) : k[o] !== s && k[o] !== y && (k[o + 1] === y || b[o] !== k[o] && b[o + 1] === k[o + 1]) ? (v = "insertReplacementText", 
+                                    g.push(k[o]), a.begin--) : k[o] === y ? (v = "deleteContentBackward", (l.isMask.call(t, l.translatePosition.call(t, o), !0) || b[o] === n.radixPoint) && a.end++) : o = r : (v = "insertText", 
+                                    g.push(k[o]), a.begin--, a.end--));
                                 }
-                                t.lastInputProcessed = {
-                                    time: Date.now(),
-                                    data: e.data
-                                }, e.preventDefault();
+                                return {
+                                    action: v,
+                                    data: g,
+                                    caret: a
+                                };
+                            }(f, p, d), c.getRootNode().activeElement !== c && c.focus(), (0, o.writeBuffer)(c, l.getBuffer.call(t)), 
+                            l.caret.call(t, c, d.begin, d.end, !0), !a.mobile && t.skipNextInsert && "insertText" === e.inputType && "insertText" === r.action && t.isComposing) return !1;
+                            switch ("insertCompositionText" === e.inputType && "insertText" === r.action && t.isComposing ? t.skipNextInsert = !0 : t.skipNextInsert = !1, 
+                            r.action) {
+                              case "insertText":
+                              case "insertReplacementText":
+                                r.data.forEach((function(e, n) {
+                                    var a = new i.Event("keypress");
+                                    a.key = e, t.ignorable = !1, y.keypressEvent.call(c, a);
+                                })), setTimeout((function() {
+                                    t.$el.trigger("keyup");
+                                }), 0);
+                                break;
+
+                              case "deleteContentBackward":
+                                var h = new i.Event("keydown");
+                                h.key = s.keys.Backspace, y.keyEvent.call(c, h);
+                                break;
+
+                              default:
+                                (0, o.applyInputValue)(c, f), l.caret.call(t, c, d.begin, d.end, !0);
                             }
+                            e.preventDefault();
                         }
                     },
                     setValueEvent: function(e) {
