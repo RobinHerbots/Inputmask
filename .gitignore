@@ -13,3 +13,4 @@ qunit/qunit.js.map
 dist/*.LICENSE
 local.log
 browserstack.err
+package-lock.json
