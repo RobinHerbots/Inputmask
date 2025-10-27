@@ -21,6 +21,7 @@
 
 ### Fixed
 
+- Backspace on controlled input adds "backspace" text to the value #2865
 - Cannot read properties of null (reading 'inputmask') FormData patch #2841
 - Issue with Multiple Mask Patterns in Inputmask 5.0.10-beta.49 #2854
 - Having percentage with quantifier syntax always defaults to two digits #2837
