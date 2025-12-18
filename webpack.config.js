@@ -67,34 +67,19 @@ module.exports = function (env, argv) {
         window: "window"
       },
       optimization: {
-        minimize: env === "production",
+        minimize: env.production === true,
         minimizer: [
           new terserPlugin({
             include: /\.min\.js$/,
             terserOptions: {
-              sourceMap: env !== "production",
+              sourceMap: env.production !== true,
               format: {
                 ascii_only: true,
                 beautify: false,
                 comments: /^!/
               },
               compress: {
-                drop_console: env === "production"
-              }
-            },
-            extractComments: false
-          }),
-          new terserPlugin({
-            exclude: /\.min\.js$/,
-            terserOptions: {
-              sourceMap: env !== "production",
-              format: {
-                ascii_only: true,
-                beautify: true,
-                comments: /^!/
-              },
-              compress: {
-                drop_console: env === "production"
+                drop_console: env.production === true
               }
             },
             extractComments: false
@@ -110,7 +95,7 @@ module.exports = function (env, argv) {
           // "./dependencyLibs/inputmask.dependencyLib": "./dependencyLibs/inputmask.dependencyLib.jquery"
         }
       },
-      devtool: env === "production" ? undefined : "source-map",
+      devtool: env.production === true ? undefined : "source-map",
       plugins: [
         new webpack.BannerPlugin({
           banner: createBanner,
@@ -118,7 +103,7 @@ module.exports = function (env, argv) {
         })
       ],
       bail: true,
-      mode: env === "production" ? "production" : "none",
+      mode: env.production === true ? "production" : "none",
       target: ["web", "es5"]
     },
     jqueryConfig = _.defaultsDeep({}, config);
