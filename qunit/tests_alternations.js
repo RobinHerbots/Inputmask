@@ -687,6 +687,35 @@ export default function (qunit, Inputmask) {
   );
 
   qunit.test(
+    "Problems with deleting static chars in alternator mask type b - #2648",
+    function (assert) {
+      var $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      var testmask = document.getElementById("testmask");
+
+      Inputmask({
+        mask: [
+          "DK9{2} 9{4} 9{4} 9{4} 9{2}",
+          "DE9{2} 9{4} 9{2}",
+          "\\AT9{2} 9{4} 9{4}"
+        ],
+        casing: "upper",
+        keepStatic: false
+      }).mask(testmask);
+      testmask.focus();
+      $("#testmask").Type("at1212341234");
+      $.caret(testmask, 2);
+      $("#testmask").SendKey(keys.Backspace);
+      $("#testmask").Type("dk");
+      assert.equal(
+        testmask.value,
+        "DK12 1234 1234 ____ __",
+        "Result " + testmask.value
+      );
+    }
+  );
+
+  qunit.test(
     "Problems with deleting static chars in alternator mask type a - #2648",
     function (assert) {
       var $fixture = $("#qunit-fixture");

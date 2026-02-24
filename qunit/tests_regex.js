@@ -252,7 +252,7 @@ export default function (qunit, Inputmask) {
       testmask.focus();
       $("#testmask").Type("70-12-34");
 
-      assert.equal(testmask.value, "70-123-4__", "Result " + testmask.value);
+      assert.equal(testmask.value, "70-123-4___", "Result " + testmask.value);
     }
   );
 

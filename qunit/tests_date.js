@@ -1286,7 +1286,7 @@ export default function (qunit, Inputmask) {
     );
   });
 
-  qunit.test("dd/MM/yyyy 9929 home 282 - #2723", function (assert) {
+  qunit.test("dd/MM/yyyy 992025 home 282 - #2723", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
@@ -1295,7 +1295,7 @@ export default function (qunit, Inputmask) {
     }).mask(testmask);
 
     testmask.focus();
-    $("#testmask").Type("9920");
+    $("#testmask").Type("992025");
     $.caret(testmask, 0);
     $("#testmask").Type("282");
 
