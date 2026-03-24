@@ -1,9 +1,9 @@
 {
   "files": {
-    "main.css": "/Inputmask/static/css/main.6b2c889b.css",
-    "main.js": "/Inputmask/static/js/main.36bd5471.js",
-    "static/js/522.0566e6df.chunk.js": "/Inputmask/static/js/522.0566e6df.chunk.js",
-    "static/media/Changelog.md": "/Inputmask/static/media/Changelog.3ebf80280de83a1fbbf2.md",
+    "main.css": "/Inputmask/static/css/main.0e2ff974.css",
+    "main.js": "/Inputmask/static/js/main.c646c601.js",
+    "static/js/522.e177ee66.chunk.js": "/Inputmask/static/js/522.e177ee66.chunk.js",
+    "static/media/Changelog.md": "/Inputmask/static/media/Changelog.cca38b0af9d019936f33.md",
     "static/media/Documentation.md": "/Inputmask/static/media/Documentation.973fa48a4528972df3cd.md",
     "static/media/browserstack-logo-600x315.png": "/Inputmask/static/media/browserstack-logo-600x315.6d2b669584674591381c.png",
     "static/media/inputmask.svg": "/Inputmask/static/media/inputmask.6fe5e4943b8c73acfbe8bcda7b7fa072.svg",
@@ -15,7 +15,7 @@
     "static/media/Colormask.md": "/Inputmask/static/media/Colormask.6ade0ed63f174ac58fa4.md"
   },
   "entrypoints": [
-    "static/css/main.6b2c889b.css",
-    "static/js/main.36bd5471.js"
+    "static/css/main.0e2ff974.css",
+    "static/js/main.c646c601.js"
   ]
 }
