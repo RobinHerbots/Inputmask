@@ -7,17 +7,17 @@ export const Demo = () => {
     <div className={styles.Demo} data-testid="Demo">
       <DemoMask
         label="Date:"
-        maskOptions={{ alias: "datetime", inputFormat: "dd/mm/yyyy" }}
+        maskOptions={{ alias: "datetime", inputFormat: "dd/MM/yyyy" }}
       />
       <DemoMask
         label="Date:"
-        maskOptions={{ alias: "datetime", inputFormat: "mm/dd/yyyy" }}
+        maskOptions={{ alias: "datetime", inputFormat: "MM/dd/yyyy" }}
       />
       <DemoMask
         label="Date:"
         maskOptions={{
           alias: "datetime",
-          inputFormat: "dd mmm yyyy",
+          inputFormat: "dd MMM yyyy",
           inputmode: "text"
         }}
       />
@@ -25,7 +25,7 @@ export const Demo = () => {
         label="Date:"
         maskOptions={{
           alias: "datetime",
-          inputFormat: "dd mmmm yyyy",
+          inputFormat: "dd MMM yyyy",
           inputmode: "text"
         }}
       />
