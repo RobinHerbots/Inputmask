@@ -25,7 +25,7 @@ export const Demo = () => {
         label="Date:"
         maskOptions={{
           alias: "datetime",
-          inputFormat: "dd MMM yyyy",
+          inputFormat: "dd MMMM yyyy",
           inputmode: "text"
         }}
       />
