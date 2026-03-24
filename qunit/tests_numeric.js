@@ -2558,4 +2558,22 @@ export default function (qunit, Inputmask) {
     testmask.value = null;
     assert.equal(testmask.value, "", 'Result "' + testmask.value + '"');
   });
+
+  qunit.test(
+    "Minus is being deleted with the first digit #2860",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask"/>');
+      const testmask = document.getElementById("testmask");
+      Inputmask("numeric", {
+        digits: 0,
+        groupSeparator: ",",
+        shortcuts: null
+      }).mask(testmask);
+      $(testmask).Type("-1234");
+      $.caret(testmask, 2, 2);
+      $("#testmask").SendKey(keys.Backspace);
+      assert.equal(testmask.value, "-234", 'Result "' + testmask.value + '"');
+    }
+  );
 }
