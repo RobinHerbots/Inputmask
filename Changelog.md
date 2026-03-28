@@ -21,6 +21,7 @@
 
 ### Fixed
 
+- Auto-complete select error when input is empty (TypeError: Cannot read properties of undefined (reading 'length'))
 - Minus is being deleted with the first digit #2860
 - Problems with deleting static chars in alternator mask #2648
 - Backspace on controlled input adds "backspace" text to the value #2865
