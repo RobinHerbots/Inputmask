@@ -14,7 +14,7 @@
 		var a = typeof exports === 'object' ? factory(require("jquery")) : factory(root["jQuery"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(typeof self !== 'undefined' ? self : this, function(__WEBPACK_EXTERNAL_MODULE__12__) {
+})(Object(typeof self !== 'undefined' ? self : this), function(__WEBPACK_EXTERNAL_MODULE__12__) {
 return /******/ (function() { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ([
@@ -324,6 +324,9 @@ _inputmask["default"].extendAliases({
       "-": {
         validator: "[0-9A-Za-z-]"
       }
+    },
+    isComplete: function isComplete(buffer, opts) {
+      return /^[^@]+@[^@]+\.[^@.]+$/.test(buffer.join(""));
     },
     onUnMask: function onUnMask(maskedValue, unmaskedValue, opts) {
       return maskedValue;

@@ -127,6 +127,23 @@ export default function (qunit, Inputmask) {
     assert.equal(isValid, true, "Result " + isValid);
   });
 
+  qunit.test("Inputmask.isValid email trailing dot => false", function (assert) {
+    var isValid = Inputmask.isValid("some.body@mail.com.", {
+      alias: "email"
+    });
+    assert.equal(isValid, false, "Result " + isValid);
+  });
+
+  qunit.test(
+    "Inputmask.isValid email two trailing dots => false",
+    function (assert) {
+      var isValid = Inputmask.isValid("some.body@mail.com..", {
+        alias: "email"
+      });
+      assert.equal(isValid, false, "Result " + isValid);
+    }
+  );
+
   qunit.test(
     'YoussefTaghlabi isValid("100", { alias: "integer" }',
     function (assert) {
