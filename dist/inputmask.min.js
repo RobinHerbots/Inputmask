@@ -14,7 +14,7 @@
 		var a = factory();
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(Object(typeof self !== 'undefined' ? self : this), function() {
+})(typeof self !== 'undefined' ? self : this, function() {
 return /******/ (function() { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ([
@@ -1979,18 +1979,9 @@ var EventHandlers = exports.EventHandlers = {
           }, 0);
           break;
         case "deleteContentBackward":
-          if (e.inputType && e.inputType.startsWith("insert")) {
-            // e.inputType indicates an insert operation (e.g. browser autocomplete
-            // with insertReplacementText) but analyseChanges incorrectly detected
-            // a deletion due to caret position / buffer length mismatch.
-            // Apply the value directly instead of dispatching a backspace event.
-            (0, _inputHandling.applyInputValue)(input, inputValue);
-            _positioning.caret.call(inputmask, input, caretPos.begin, caretPos.end, true);
-          } else {
-            var keydown = new $.Event("keydown");
-            keydown.key = _keycode.keys.Backspace;
-            EventHandlers.keyEvent.call(input, keydown);
-          }
+          var keydown = new $.Event("keydown");
+          keydown.key = _keycode.keys.Backspace;
+          EventHandlers.keyEvent.call(input, keydown);
           break;
         default:
           (0, _inputHandling.applyInputValue)(input, inputValue);
