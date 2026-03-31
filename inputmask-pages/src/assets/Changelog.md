@@ -21,6 +21,8 @@
 
 ### Fixed
 
+- Vue property not updated on autocomplete - trigger input event after processing in default inputFallBackEvent case
+- Minus is being deleted with the first digit #2860
 - Problems with deleting static chars in alternator mask #2648
 - Backspace on controlled input adds "backspace" text to the value #2865
 - Cannot read properties of null (reading 'inputmask') FormData patch #2841
