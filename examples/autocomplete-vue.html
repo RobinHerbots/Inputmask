@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Inputmask - Vue autocomplete example</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 600px; }
+    label { display: block; margin-bottom: 4px; font-weight: bold; }
+    input { padding: 6px 8px; font-size: 14px; width: 220px; }
+    .result { margin-top: 16px; padding: 12px; background: #f4f4f4; border-radius: 4px; }
+    .result span { font-family: monospace; color: #333; }
+    .buttons { margin-top: 12px; }
+    button { padding: 6px 14px; margin-right: 8px; cursor: pointer; }
+    .note { margin-top: 16px; color: #555; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <h2>Inputmask + Vue: autocomplete / programmatic value update</h2>
+  <p>
+    Demonstrates that a value set programmatically (simulating browser
+    autocomplete) correctly updates the bound Vue property via a triggered
+    <code>input</code> event.
+  </p>
+
+  <div id="app">
+    <label for="phone">Phone number:</label>
+    <input id="phone" ref="phone" type="text" autocomplete="tel" />
+
+    <div class="buttons">
+      <button @click="simulateAutocomplete">Simulate autocomplete</button>
+      <button @click="clear">Clear</button>
+    </div>
+
+    <div class="result">
+      Vue property value: <span>{{ phoneValue || '(empty)' }}</span>
+    </div>
+  </div>
+
+  <p class="note">
+    <strong>How it works:</strong> "Simulate autocomplete" sets the raw DOM
+    value via the native setter (bypassing Inputmask's patched setter, the same
+    way browsers do during autocomplete) and then dispatches a native
+    <code>input</code> event. Inputmask processes the value and fires a second
+    <code>input</code> event that Vue picks up, keeping the property in sync.
+  </p>
+
+  <!-- Vue 2 from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <!-- Inputmask from local dist -->
+  <script src="../dist/inputmask.js"></script>
+
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        phoneValue: ''
+      },
+      mounted: function () {
+        var self = this;
+        var input = this.$refs.phone;
+
+        // Apply the mask
+        Inputmask('+1 (999) 999-9999').mask(input);
+
+        // Keep phoneValue in sync via the input event
+        input.addEventListener('input', function () {
+          self.phoneValue = input.value;
+        });
+      },
+      methods: {
+        simulateAutocomplete: function () {
+          var input = this.$refs.phone;
+
+          // Simulate what browsers do during autocomplete:
+          // 1. Set the value via the native (un-patched) property descriptor
+          var nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+            Object.getPrototypeOf(input), 'value'
+          ).set;
+          nativeInputValueSetter.call(input, '+12125550199');
+
+          // 2. Dispatch a native input event (no clipboardData, no key info)
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+        },
+        clear: function () {
+          var input = this.$refs.phone;
+          input.value = '';
+          this.phoneValue = '';
+        }
+      }
+    });
+  </script>
+</body>
+</html>

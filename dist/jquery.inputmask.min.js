@@ -14,7 +14,7 @@
 		var a = typeof exports === 'object' ? factory(require("jquery")) : factory(root["jQuery"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(Object(typeof self !== 'undefined' ? self : this), function(__WEBPACK_EXTERNAL_MODULE__12__) {
+})(typeof self !== 'undefined' ? self : this, function(__WEBPACK_EXTERNAL_MODULE__12__) {
 return /******/ (function() { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ([
@@ -1671,7 +1671,7 @@ var EventHandlers = exports.EventHandlers = {
           EventHandlers.keyEvent.call(input, keydown);
           break;
         default:
-          (0, _inputHandling.applyInputValue)(input, inputValue, e);
+          (0, _inputHandling.applyInputValue)(input, inputValue);
           _positioning.caret.call(inputmask, input, caretPos.begin, caretPos.end, true);
           break;
       }
