@@ -300,6 +300,12 @@ _inputmask["default"].extendAliases({
       },
       "-": {
         validator: "[0-9A-Za-z-]"
+      },
+      // "." is defined as a definition token (not static) so that optional groups
+      // like [.-{1,63}] require explicit input after the dot, preventing trailing dots
+      ".": {
+        validator: "\\.",
+        placeholder: "."
       }
     },
     isComplete: function isComplete(buffer, opts) {
