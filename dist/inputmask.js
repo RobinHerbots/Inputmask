@@ -3719,6 +3719,13 @@ function getTests(pos, ndxIntlzr, tstPs) {
           matches.forEach(function (mtch, ndx) {
             if (ndx >= mtchsNdx) {
               mtch.match.optionality = mtch.match.optionality ? mtch.match.optionality + 1 : 1;
+              // When a quantifier is nested inside an optional group, the first required
+              // position of the quantifier (optionalQuantifier === false) gets newBlockMarker = true
+              // because it follows a different character (e.g. "."). This prevents isComplete from
+              // detecting it as required. Reset newBlockMarker so isComplete works correctly.
+              if (mtch.match.optionalQuantifier === false && mtch.match.newBlockMarker !== "master") {
+                mtch.match.newBlockMarker = false;
+              }
             }
           });
           latestMatch = matches[matches.length - 1].match;
