@@ -14,7 +14,7 @@
 		var a = typeof exports === 'object' ? factory(require("jquery")) : factory(root["jQuery"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(typeof self !== 'undefined' ? self : this, function(__WEBPACK_EXTERNAL_MODULE__12__) {
+})(Object(typeof self !== 'undefined' ? self : this), function(__WEBPACK_EXTERNAL_MODULE__12__) {
 return /******/ (function() { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ([
@@ -4817,7 +4817,10 @@ var currentYear = new Date().getFullYear(),
     DDDD: "dddd",
     YY: "yy",
     YYYY: "yyyy",
-    sss: "L"
+    sss: "L",
+    mmm: "MMM",
+    // Month as a three-letter abbreviation (lowercase alias for MMM).
+    mmmm: "MMMM" // Month as its full name (lowercase alias for MMMM).
   },
   formatAlias = {
     isoDate: "yyyy-MM-dd",
@@ -5305,7 +5308,7 @@ _inputmask["default"].extendAliases({
       if (test.nativeDef.indexOf("[AP]") == 0) return elem.toUpperCase();
       var posBefore = _validationTests.getTest.call(this, [pos - 1]);
       if (posBefore.match.def.indexOf("[AP]") == 0) return elem.toUpperCase();
-      if (pos === 0 || posBefore && posBefore.input === String.fromCharCode(_keycode.keyCode.Space) || posBefore && posBefore.match.def === String.fromCharCode(_keycode.keyCode.Space)) {
+      if (pos === 0 || posBefore && posBefore.input === String.fromCharCode(_keycode.keyCode.Space) || posBefore && posBefore.match["static"]) {
         return elem.toUpperCase();
       }
       if (test["static"] && test.def === test.def.toUpperCase()) return elem.toUpperCase();

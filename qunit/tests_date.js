@@ -1508,4 +1508,40 @@ export default function (qunit, Inputmask) {
       );
     }
   );
+
+  qunit.test("dd-MMM-yyyy - month title case after dash separator", function (assert) {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    var testmask = document.getElementById("testmask");
+    Inputmask("datetime", {
+      inputFormat: "dd-MMM-yyyy"
+    }).mask(testmask);
+    testmask.focus();
+    $("#testmask").Type("29feb2024");
+    assert.equal(testmask.value, "29-Feb-2024", "Result " + testmask.value);
+  });
+
+  qunit.test("dd-mmm-yyyy - lowercase alias for MMM with dash separator", function (assert) {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    var testmask = document.getElementById("testmask");
+    Inputmask("datetime", {
+      inputFormat: "dd-mmm-yyyy"
+    }).mask(testmask);
+    testmask.focus();
+    $("#testmask").Type("29feb2024");
+    assert.equal(testmask.value, "29-Feb-2024", "Result " + testmask.value);
+  });
+
+  qunit.test("dd-mmmm-yyyy - lowercase alias for MMMM with dash separator", function (assert) {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    var testmask = document.getElementById("testmask");
+    Inputmask("datetime", {
+      inputFormat: "dd-mmmm-yyyy"
+    }).mask(testmask);
+    testmask.focus();
+    $("#testmask").Type("29february2024");
+    assert.equal(testmask.value, "29-February-2024", "Result " + testmask.value);
+  });
 }
