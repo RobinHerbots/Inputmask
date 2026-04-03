@@ -14,7 +14,7 @@
 		var a = factory();
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(typeof self !== 'undefined' ? self : this, function() {
+})(Object(typeof self !== 'undefined' ? self : this), function() {
 return /******/ (function() { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ([
@@ -2568,10 +2568,14 @@ function resetMaskSet(soft) {
 
 // tobe put on prototype?
 function seekNext(pos, newBlock, fuzzy) {
-  var inputmask = this;
+  var inputmask = this,
+    opts = inputmask.opts;
   if (fuzzy === undefined) fuzzy = true;
   var position = pos + 1;
   while (_validationTests.getTest.call(inputmask, position).match.def !== "" && (newBlock === true && (_validationTests.getTest.call(inputmask, position).match.newBlockMarker !== true || !isMask.call(inputmask, position, undefined, true)) || newBlock !== true && !isMask.call(inputmask, position, undefined, fuzzy))) {
+    if (position > pos + opts._maxTestPos) {
+      break;
+    }
     position++;
   }
   return position;
@@ -3557,8 +3561,13 @@ function getTests(pos, ndxIntlzr, tstPs) {
           tokenGroup.matches.every(function (match, ndx) {
             if (match.isQuantifier === true) {
               firstMatch = isFirstMatch(latestMatch, tokenGroup.matches[ndx - 1]);
-            } else if (Object.prototype.hasOwnProperty.call(match, "matches")) firstMatch = isFirstMatch(latestMatch, match);
-            if (firstMatch) return false;
+            } else if (Object.prototype.hasOwnProperty.call(match, "matches")) {
+              firstMatch = isFirstMatch(latestMatch, match);
+            }
+            if (firstMatch) {
+              firstMatch = ndx === 0;
+              return false;
+            }
             return true;
           });
         }
@@ -3849,7 +3858,7 @@ function getTests(pos, ndxIntlzr, tstPs) {
           }
           matches = currentMatches.concat(malternateMatches);
           testPos = pos;
-          insertStop = matches.length > 0 && unMatchedAlternation; // insert a stopelemnt when there is an alternate - needed for non-greedy option
+          insertStop = insertStop || matches.length > 0 && unMatchedAlternation; // insert a stopelemnt when there is an alternate - needed for non-greedy option
           match = malternateMatches.length > 0 && !unMatchedAlternation; // set correct match state
 
           if (unMatchedAlternation && insertStop && !match) {
