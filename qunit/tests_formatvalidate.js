@@ -127,23 +127,6 @@ export default function (qunit, Inputmask) {
     assert.equal(isValid, true, "Result " + isValid);
   });
 
-  qunit.test("Inputmask.isValid email trailing dot => false", function (assert) {
-    var isValid = Inputmask.isValid("some.body@mail.com.", {
-      alias: "email"
-    });
-    assert.equal(isValid, false, "Result " + isValid);
-  });
-
-  qunit.test(
-    "Inputmask.isValid email two trailing dots => false",
-    function (assert) {
-      var isValid = Inputmask.isValid("some.body@mail.com..", {
-        alias: "email"
-      });
-      assert.equal(isValid, false, "Result " + isValid);
-    }
-  );
-
   qunit.test(
     'YoussefTaghlabi isValid("100", { alias: "integer" }',
     function (assert) {
@@ -293,6 +276,42 @@ export default function (qunit, Inputmask) {
       var isValid = Inputmask.isValid("some_body@mail.com", {
         alias: "email"
       });
+      assert.equal(isValid, true, "Result " + isValid);
+    }
+  );
+
+  qunit.test(
+    'isValid("some.body@mail.com.", {alias:"email"}) - trailing dot #1908',
+    function (assert) {
+      var isValid = Inputmask.isValid("some.body@mail.com.", {
+        alias: "email"
+      });
+      assert.equal(isValid, false, "Result " + isValid);
+    }
+  );
+
+  qunit.test(
+    'isValid("some.body@mail.com..", {alias:"email"}) - double trailing dot #1908',
+    function (assert) {
+      var isValid = Inputmask.isValid("some.body@mail.com..", {
+        alias: "email"
+      });
+      assert.equal(isValid, false, "Result " + isValid);
+    }
+  );
+
+  qunit.test(
+    'Inputmask("(99[ ]){1,3}").isValid("99 99") - space in quantifier-nested optional group',
+    function (assert) {
+      var isValid = Inputmask("(99[ ]){1,3}").isValid("99 99");
+      assert.equal(isValid, true, "Result " + isValid);
+    }
+  );
+
+  qunit.test(
+    'Inputmask("(99[ ]){1,3}").isValid("99 99 99") - space in quantifier-nested optional group',
+    function (assert) {
+      var isValid = Inputmask("(99[ ]){1,3}").isValid("99 99 99");
       assert.equal(isValid, true, "Result " + isValid);
     }
   );

@@ -300,16 +300,7 @@ _inputmask["default"].extendAliases({
       },
       "-": {
         validator: "[0-9A-Za-z-]"
-      },
-      // "." is defined as a definition token (not static) so that optional groups
-      // like [.-{1,63}] require explicit input after the dot, preventing trailing dots
-      ".": {
-        validator: "\\.",
-        placeholder: "."
       }
-    },
-    isComplete: function isComplete(buffer, opts) {
-      return /^[^@]+@[^@]+\.[^@.]+$/.test(buffer.join(""));
     },
     onUnMask: function onUnMask(maskedValue, unmaskedValue, opts) {
       return maskedValue;
@@ -3570,7 +3561,9 @@ function getTests(pos, ndxIntlzr, tstPs) {
               firstMatch = isFirstMatch(latestMatch, match);
             }
             if (firstMatch) {
-              firstMatch = ndx === 0;
+              if (tokenGroup.matches[ndx + 1] && tokenGroup.matches[ndx + 1].isQuantifier) {
+                firstMatch = ndx === 0;
+              }
               return false;
             }
             return true;
