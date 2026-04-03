@@ -3474,7 +3474,7 @@ function determineTestTemplate(pos, tests) {
       return tst.unMatchedAlternationStopped !== true;
     }).length <= 1) {
       // only skip when there are choices outside the alternation
-      if (closest === undefined || tstLocator !== "" && distance < closest || bestMatch && !opts.greedy && bestMatch.match.optionality && bestMatch.match.optionality - optionalityLevel > 0 && bestMatch.match.newBlockMarker === "master" && (!tst.match.optionality || tst.match.optionality - optionalityLevel < 1 || !tst.match.newBlockMarker) || bestMatch && !opts.greedy && bestMatch.match.optionalQuantifier && !tst.match.optionalQuantifier) {
+      if (closest === undefined || tstLocator !== "" && distance < closest || bestMatch && !opts.greedy && bestMatch.match.optionality && bestMatch.match.optionality - optionalityLevel > 0 && bestMatch.match.newBlockMarker === "master" && (!tst.match.optionality || tst.match.optionality - optionalityLevel < 1 || !tst.match.newBlockMarker) || bestMatch && !opts.greedy && (bestMatch.match.optionalQuantifier || bestMatch.match.optionality) && !tst.match.optionalQuantifier) {
         closest = distance;
         bestMatch = tst;
       }
@@ -3891,7 +3891,7 @@ function getTests(pos, ndxIntlzr, tstPs) {
                 // console.log(pos + " " + qt.quantifier.min + " " + latestMatch.optionalQuantifier);
                 // qndx + 1 as the index starts from 0
                 latestMatch.jit = (qndx + 1) * (tokenGroup.matches.indexOf(latestMatch) + 1) > qt.quantifier.jit;
-                if (latestMatch.optionalQuantifier && isFirstMatch(latestMatch, tokenGroup)) {
+                if ((latestMatch.optionalQuantifier || latestMatch.optionality) && isFirstMatch(latestMatch, tokenGroup)) {
                   insertStop = true;
                   testPos = pos; // match the position after the group
                   if (opts.greedy && maskset.validPositions[pos - 1] == undefined && qndx > qt.quantifier.min && ["*", "+"].indexOf(qt.quantifier.max) != -1) {

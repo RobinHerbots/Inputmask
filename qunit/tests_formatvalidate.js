@@ -317,6 +317,14 @@ export default function (qunit, Inputmask) {
   );
 
   qunit.test(
+    'Inputmask("(99[ ]){1,3}").isValid("99") - first repetition without optional space',
+    function (assert) {
+      var isValid = Inputmask("(99[ ]){1,3}").isValid("99");
+      assert.equal(isValid, true, "Result " + isValid);
+    }
+  );
+
+  qunit.test(
     'Inputmask("99-99[ 99/99]").isValid("03-11") - pricejt',
     function (assert) {
       var isValid = Inputmask("99-99[ 99/99]").isValid("03-11");
