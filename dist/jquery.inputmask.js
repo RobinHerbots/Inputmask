@@ -3253,8 +3253,13 @@ function getTests(pos, ndxIntlzr, tstPs) {
           tokenGroup.matches.every(function (match, ndx) {
             if (match.isQuantifier === true) {
               firstMatch = isFirstMatch(latestMatch, tokenGroup.matches[ndx - 1]);
-            } else if (Object.prototype.hasOwnProperty.call(match, "matches")) firstMatch = isFirstMatch(latestMatch, match);
-            if (firstMatch) return false;
+            } else if (Object.prototype.hasOwnProperty.call(match, "matches")) {
+              firstMatch = isFirstMatch(latestMatch, match);
+            }
+            if (firstMatch) {
+              firstMatch = ndx === 0;
+              return false;
+            }
             return true;
           });
         }
@@ -3406,13 +3411,6 @@ function getTests(pos, ndxIntlzr, tstPs) {
           matches.forEach(function (mtch, ndx) {
             if (ndx >= mtchsNdx) {
               mtch.match.optionality = mtch.match.optionality ? mtch.match.optionality + 1 : 1;
-              // When a quantifier is nested inside an optional group, the first required
-              // position of the quantifier (optionalQuantifier === false) gets newBlockMarker = true
-              // because it follows a different character (e.g. "."). This prevents isComplete from
-              // detecting it as required. Reset newBlockMarker so isComplete works correctly.
-              if (mtch.match.optionalQuantifier === false && mtch.match.newBlockMarker !== "master") {
-                mtch.match.newBlockMarker = false;
-              }
             }
           });
           latestMatch = matches[matches.length - 1].match;
