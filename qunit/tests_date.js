@@ -1508,4 +1508,65 @@ export default function (qunit, Inputmask) {
       );
     }
   );
+
+  qunit.module("Date.Extensions - datepicker issue #550 diagnostics");
+
+  qunit.test(
+    "datepicker issue: val 04/07/2014, caret at pos 3, type 1",
+    function (assert) {
+      var $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      var testmask = document.getElementById("testmask");
+      Inputmask("datetime", {
+        inputFormat: "dd/MM/yyyy",
+        min: "01/01/1900"
+      }).mask(testmask);
+      testmask.focus();
+      $("#testmask").val("04/07/2014");
+      $.caret(testmask, 3);
+      $("#testmask").Type("1");
+      assert.ok(true, "scenario A result: " + testmask.value);
+    }
+  );
+
+  qunit.test(
+    "datepicker issue: val 04/07/2014, caret at pos 0, type 3",
+    function (assert) {
+      var $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      var testmask = document.getElementById("testmask");
+      Inputmask("datetime", {
+        inputFormat: "dd/MM/yyyy",
+        min: "01/01/1900"
+      }).mask(testmask);
+      testmask.focus();
+      $("#testmask").val("04/07/2014");
+      $.caret(testmask, 0);
+      $("#testmask").Type("3");
+      assert.ok(true, "scenario B result: " + testmask.value);
+    }
+  );
+
+  qunit.test(
+    "datepicker issue: val 04/07/2014, type 12 then 1 (month)",
+    function (assert) {
+      var $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      var testmask = document.getElementById("testmask");
+      Inputmask("datetime", {
+        inputFormat: "dd/MM/yyyy",
+        min: "01/01/1900"
+      }).mask(testmask);
+      testmask.focus();
+      $("#testmask").val("04/07/2014");
+      $.caret(testmask, 0);
+      $("#testmask").Type("12");
+      var afterDay = testmask.value;
+      $("#testmask").Type("1");
+      assert.ok(
+        true,
+        "scenario C: after 12=" + afterDay + ", after 1=" + testmask.value
+      );
+    }
+  );
 }
