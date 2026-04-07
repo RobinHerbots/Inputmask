@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.10-beta.64
+ * Version: 5.0.10-beta.65
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -14,7 +14,7 @@
 		var a = factory();
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(typeof self !== 'undefined' ? self : this, function() {
+})(Object(typeof self !== 'undefined' ? self : this), function() {
 return /******/ (function() { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ([
@@ -3557,8 +3557,15 @@ function getTests(pos, ndxIntlzr, tstPs) {
           tokenGroup.matches.every(function (match, ndx) {
             if (match.isQuantifier === true) {
               firstMatch = isFirstMatch(latestMatch, tokenGroup.matches[ndx - 1]);
-            } else if (Object.prototype.hasOwnProperty.call(match, "matches")) firstMatch = isFirstMatch(latestMatch, match);
-            if (firstMatch) return false;
+            } else if (Object.prototype.hasOwnProperty.call(match, "matches")) {
+              firstMatch = isFirstMatch(latestMatch, match);
+            }
+            if (firstMatch) {
+              if (tokenGroup.matches[ndx + 1] && tokenGroup.matches[ndx + 1].isQuantifier) {
+                firstMatch = ndx === 0;
+              }
+              return false;
+            }
             return true;
           });
         }
@@ -3884,7 +3891,7 @@ function getTests(pos, ndxIntlzr, tstPs) {
                 // console.log(pos + " " + qt.quantifier.min + " " + latestMatch.optionalQuantifier);
                 // qndx + 1 as the index starts from 0
                 latestMatch.jit = (qndx + 1) * (tokenGroup.matches.indexOf(latestMatch) + 1) > qt.quantifier.jit;
-                if (latestMatch.optionalQuantifier && isFirstMatch(latestMatch, tokenGroup)) {
+                if ((latestMatch.optionalQuantifier || latestMatch.optionality) && isFirstMatch(latestMatch, tokenGroup)) {
                   insertStop = true;
                   testPos = pos; // match the position after the group
                   if (opts.greedy && maskset.validPositions[pos - 1] == undefined && qndx > qt.quantifier.min && ["*", "+"].indexOf(qt.quantifier.max) != -1) {
