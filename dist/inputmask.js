@@ -2568,14 +2568,10 @@ function resetMaskSet(soft) {
 
 // tobe put on prototype?
 function seekNext(pos, newBlock, fuzzy) {
-  var inputmask = this,
-    opts = inputmask.opts;
+  var inputmask = this;
   if (fuzzy === undefined) fuzzy = true;
   var position = pos + 1;
   while (_validationTests.getTest.call(inputmask, position).match.def !== "" && (newBlock === true && (_validationTests.getTest.call(inputmask, position).match.newBlockMarker !== true || !isMask.call(inputmask, position, undefined, true)) || newBlock !== true && !isMask.call(inputmask, position, undefined, fuzzy))) {
-    if (position > pos + opts._maxTestPos) {
-      break;
-    }
     position++;
   }
   return position;
@@ -4048,7 +4044,9 @@ function getTests(pos, ndxIntlzr, tstPs) {
       // this will result in the least distance to select the correct test result in determineTestTemplate
       locator: unMatchedAlternation && matches.filter(function (tst) {
         return tst.unMatchedAlternationStopped !== true;
-      }).length === 0 ? [0] : [],
+      }).length === 0 ? [0] : insertStop && matches.some(function (m) {
+        return m.match.optionalQuantifier;
+      }) ? [0] : [],
       mloc: {},
       cd: cacheDependency
     });
