@@ -281,6 +281,50 @@ export default function (qunit, Inputmask) {
   );
 
   qunit.test(
+    'isValid("some.body@mail.com.", {alias:"email"}) - trailing dot #1908',
+    function (assert) {
+      var isValid = Inputmask.isValid("some.body@mail.com.", {
+        alias: "email"
+      });
+      assert.equal(isValid, false, "Result " + isValid);
+    }
+  );
+
+  qunit.test(
+    'isValid("some.body@mail.com..", {alias:"email"}) - double trailing dot #1908',
+    function (assert) {
+      var isValid = Inputmask.isValid("some.body@mail.com..", {
+        alias: "email"
+      });
+      assert.equal(isValid, false, "Result " + isValid);
+    }
+  );
+
+  qunit.test(
+    'Inputmask("(99[ ]){1,3}").isValid("99 99") - space in quantifier-nested optional group',
+    function (assert) {
+      var isValid = Inputmask("(99[ ]){1,3}").isValid("99 99");
+      assert.equal(isValid, true, "Result " + isValid);
+    }
+  );
+
+  qunit.test(
+    'Inputmask("(99[ ]){1,3}").isValid("99 99 99") - space in quantifier-nested optional group',
+    function (assert) {
+      var isValid = Inputmask("(99[ ]){1,3}").isValid("99 99 99");
+      assert.equal(isValid, true, "Result " + isValid);
+    }
+  );
+
+  qunit.test(
+    'Inputmask("(99[ ]){1,3}").isValid("99") - first repetition without optional space',
+    function (assert) {
+      var isValid = Inputmask("(99[ ]){1,3}").isValid("99");
+      assert.equal(isValid, true, "Result " + isValid);
+    }
+  );
+
+  qunit.test(
     'Inputmask("99-99[ 99/99]").isValid("03-11") - pricejt',
     function (assert) {
       var isValid = Inputmask("99-99[ 99/99]").isValid("03-11");
