@@ -4044,9 +4044,7 @@ function getTests(pos, ndxIntlzr, tstPs) {
       // this will result in the least distance to select the correct test result in determineTestTemplate
       locator: unMatchedAlternation && matches.filter(function (tst) {
         return tst.unMatchedAlternationStopped !== true;
-      }).length === 0 ? [0] : insertStop && matches.some(function (m) {
-        return m.match.optionalQuantifier;
-      }) ? [0] : [],
+      }).length === 0 ? [0] : [],
       mloc: {},
       cd: cacheDependency
     });
