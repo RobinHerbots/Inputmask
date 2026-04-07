@@ -3254,7 +3254,7 @@ function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
       end += maskset.jitOffset[end] + (validTest ? 1 : 0);
     }
     for (i = validTest ? end : end - 1; i <= lvp; i++) {
-      if ((t = positionsClone[i]) !== undefined && t.generatedInput !== true && (i >= end || i >= begin && IsEnclosedStatic(i, positionsClone, {
+      if ((t = positionsClone[i]) !== undefined && (opts.shiftPositions !== true || t.generatedInput !== true) && (i >= end || i >= begin && IsEnclosedStatic(i, positionsClone, {
         begin: begin,
         end: end
       }))) {

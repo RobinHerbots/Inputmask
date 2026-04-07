@@ -2941,7 +2941,7 @@ function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
       end += maskset.jitOffset[end] + (validTest ? 1 : 0);
     }
     for (i = validTest ? end : end - 1; i <= lvp; i++) {
-      if ((t = positionsClone[i]) !== undefined && t.generatedInput !== true && (i >= end || i >= begin && IsEnclosedStatic(i, positionsClone, {
+      if ((t = positionsClone[i]) !== undefined && (opts.shiftPositions !== true || t.generatedInput !== true) && (i >= end || i >= begin && IsEnclosedStatic(i, positionsClone, {
         begin: begin,
         end: end
       }))) {
@@ -3232,6 +3232,7 @@ function getTests(pos, ndxIntlzr, tstPs) {
     ndxInitializer = ndxIntlzr ? ndxIntlzr.slice() : [0],
     matches = [],
     insertStop = false,
+    insertStopFromAlternation = false,
     latestMatch,
     cacheDependency = ndxIntlzr ? ndxIntlzr.join("") : "",
     unMatchedAlternation = false;
@@ -3543,7 +3544,8 @@ function getTests(pos, ndxIntlzr, tstPs) {
           }
           matches = currentMatches.concat(malternateMatches);
           testPos = pos;
-          insertStop = matches.length > 0 && unMatchedAlternation; // insert a stopelemnt when there is an alternate - needed for non-greedy option
+          insertStop = insertStop || matches.length > 0 && unMatchedAlternation; // insert a stopelemnt when there is an alternate - needed for non-greedy option
+          if (!unMatchedAlternation && insertStop) insertStopFromAlternation = true; // track insertStop set inside a symmetric alternation
           match = malternateMatches.length > 0 && !unMatchedAlternation; // set correct match state
 
           if (unMatchedAlternation && insertStop && !match) {
@@ -3733,7 +3735,11 @@ function getTests(pos, ndxIntlzr, tstPs) {
       // this will result in the least distance to select the correct test result in determineTestTemplate
       locator: unMatchedAlternation && matches.filter(function (tst) {
         return tst.unMatchedAlternationStopped !== true;
-      }).length === 0 ? [0] : [],
+      }).length === 0 ? [0] : insertStopFromAlternation && matches.length > 0 && matches.filter(function (tst) {
+        return !tst.match["static"];
+      }).every(function (tst) {
+        return tst.match.optionalQuantifier;
+      }) ? [0] : [],
       mloc: {},
       cd: cacheDependency
     });

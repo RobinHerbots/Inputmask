@@ -109,6 +109,44 @@ export default function (qunit, Inputmask) {
 
     assert.equal(testmask.value, "23/03/yyyy", "Result " + testmask.value);
   });
+  qunit.test(
+    "backspace middle of year - #2163",
+    function (assert) {
+      var $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      var testmask = document.getElementById("testmask");
+      Inputmask("datetime", {
+        inputFormat: "dd/MM/yyyy"
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("25052019");
+      // cursor is after '1' in "25/05/2019" → position 9
+      $.caret(testmask, "25/05/201".length);
+      $("#testmask").SendKey(keys.Backspace);
+
+      assert.equal(testmask.value, "25/05/20y9", "Result " + testmask.value);
+    }
+  );
+  qunit.test(
+    "backspace second digit of month - #2163",
+    function (assert) {
+      var $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      var testmask = document.getElementById("testmask");
+      Inputmask("datetime", {
+        inputFormat: "dd/MM/yyyy"
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("25052019");
+      // cursor is after '5' in month "25/05|/2019" → position 5
+      $.caret(testmask, "25/05".length);
+      $("#testmask").SendKey(keys.Backspace);
+
+      assert.equal(testmask.value, "25/0m/2019", "Result " + testmask.value);
+    }
+  );
   qunit.test("delete year", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
