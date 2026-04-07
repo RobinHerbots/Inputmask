@@ -249,4 +249,18 @@ export default function ($, Inputmask) {
     }
     $(input).trigger("input");
   };
+
+  // Simulate a browser autocomplete selection on a masked input.
+  // Sets the native value and fires an input event with inputType "insertReplacementText",
+  // matching the browser behavior when the user selects a suggestion from the autocomplete list.
+  $.fn.autocomplete = function (value, caretBegin, caretEnd) {
+    const input = this.nodeName ? this : this[0];
+    input.inputmask.__valueSet.call(input, value);
+    if (caretBegin !== undefined) {
+      $.caret(input, caretBegin, caretEnd !== undefined ? caretEnd : caretBegin);
+    }
+    const evt = $.Event("input");
+    evt.inputType = "insertReplacementText";
+    $(input).trigger(evt);
+  };
 }
