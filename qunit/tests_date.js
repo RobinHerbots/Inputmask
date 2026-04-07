@@ -110,7 +110,7 @@ export default function (qunit, Inputmask) {
     assert.equal(testmask.value, "23/03/yyyy", "Result " + testmask.value);
   });
   qunit.test(
-    "backspace middle of year - #2163",
+    "backspace middle of year shifts within field - #2163",
     function (assert) {
       var $fixture = $("#qunit-fixture");
       $fixture.append('<input type="text" id="testmask" />');
@@ -125,7 +125,8 @@ export default function (qunit, Inputmask) {
       $.caret(testmask, "25/05/201".length);
       $("#testmask").SendKey(keys.Backspace);
 
-      assert.equal(testmask.value, "25/05/20y9", "Result " + testmask.value);
+      // '9' shifts left within the year field, last year position becomes placeholder
+      assert.equal(testmask.value, "25/05/209y", "Result " + testmask.value);
     }
   );
   qunit.test(
