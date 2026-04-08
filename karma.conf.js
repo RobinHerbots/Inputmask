@@ -11,7 +11,7 @@ module.exports = function (config) {
     frameworks: ["qunit"],
 
     // list of files / patterns to load in the browser
-    files: ["node_modules/jquery/dist/jquery.js", "qunit/qunit.js"],
+    files: ["node_modules/jquery/dist/jquery.js", "node_modules/jquery-ui/dist/jquery-ui.js", "qunit/qunit.js"],
 
     // list of files / patterns to exclude
     exclude: [],

@@ -5585,12 +5585,22 @@ _inputmask["default"].extendAliases({
         validator = fcode[0];
         var part = buffer.slice(tokenMatch.targetMatchIndex, tokenMatch.targetMatchIndex + tokenMatch.targetMatch[0].length);
         if (new RegExp(validator).test(part.join("")) === false && tokenMatch.targetMatch[0].length === 2 && maskset.validPositions[tokenMatch.targetMatchIndex] && maskset.validPositions[tokenMatch.targetMatchIndex + 1]) {
-          maskset.validPositions[tokenMatch.targetMatchIndex + 1].input = "0";
+          if (pos === tokenMatch.targetMatchIndex) {
+            // Typing first char of a 2-char group (e.g. day or month) with a
+            // pre-existing second char that produces an invalid combination:
+            // clear the second position so the user can type it freely instead
+            // of immediately auto-correcting to "0" (issue #550).
+            var _buffer = _validationTests.getMaskTemplate.call(inputmask, false, 1, undefined, true);
+            delete maskset.validPositions[tokenMatch.targetMatchIndex + 1];
+            buffer[tokenMatch.targetMatchIndex + 1] = _buffer[tokenMatch.targetMatchIndex + 1];
+          } else {
+            maskset.validPositions[tokenMatch.targetMatchIndex + 1].input = "0";
+          }
         }
         if (fcode[2] == "year") {
-          var _buffer = _validationTests.getMaskTemplate.call(inputmask, false, 1, undefined, true);
+          var _buffer2 = _validationTests.getMaskTemplate.call(inputmask, false, 1, undefined, true);
           for (var i = pos + 1; i < buffer.length; i++) {
-            buffer[i] = _buffer[i];
+            buffer[i] = _buffer2[i];
             maskset.validPositions.splice(pos + 1, 1);
           }
         }

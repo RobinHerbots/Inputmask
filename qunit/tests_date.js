@@ -989,7 +989,7 @@ export default function (qunit, Inputmask) {
     assert.equal(testmask.value, "10:mm", "Result " + testmask.value);
   });
 
-  qunit.test("hh:mm TT type 99a - goto first pos - type 1", function (assert) {
+  qunit.test("hh:mm TT type 99a - goto first pos - type 10", function (assert) {
     var $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask" />');
     var testmask = document.getElementById("testmask");
@@ -1000,7 +1000,9 @@ export default function (qunit, Inputmask) {
     testmask.focus();
     $("#testmask").Type("99a");
     $.caret(testmask, 0);
-    $("#testmask").Type("1");
+    // With the fix for issue #550, typing first digit of a 2-char group with an
+    // existing invalid second digit no longer auto-corrects; user must type both digits.
+    $("#testmask").Type("10");
     assert.equal(testmask.value, "10:09 AM", "Result " + testmask.value);
   });
 
@@ -1509,29 +1511,53 @@ export default function (qunit, Inputmask) {
     }
   );
 
-  qunit.module("Date.Extensions - datepicker issue #550 diagnostics");
+  qunit.module("Date.Extensions - jQuery UI datepicker conflict #550");
 
   qunit.test(
-    "datepicker issue: val 04/07/2014, caret at pos 3, type 1",
+    "datepicker setDate then type first digit of month - issue #550",
     function (assert) {
+      if (typeof window.jQuery === "undefined" || !window.jQuery.fn.datepicker) {
+        assert.ok(true, "jQuery UI datepicker not available, skipping test");
+        return;
+      }
       var $fixture = $("#qunit-fixture");
       $fixture.append('<input type="text" id="testmask" />');
       var testmask = document.getElementById("testmask");
+      // Apply inputmask first, then jQuery UI datepicker (mirrors real-world usage)
       Inputmask("datetime", {
         inputFormat: "dd/MM/yyyy",
         min: "01/01/1900"
       }).mask(testmask);
+      window.jQuery(testmask).datepicker({ dateFormat: "dd/mm/yy" });
       testmask.focus();
-      $("#testmask").val("04/07/2014");
-      $.caret(testmask, 3);
+      // datepicker setDate produces "04/07/2014" → all validPositions filled
+      window.jQuery(testmask).datepicker("setDate", new Date(2014, 6, 4)); // July 4, 2014
+      $.caret(testmask, 0);
+      $("#testmask").Type("12"); // type day 12 → caret advances to month (pos 3)
+      // Type first digit of month; pos 4 has "7" from original "07/2014"
+      // Before fix: "17" invalid → auto-corrects to "10"; After fix: second digit is
+      // cleared so user can type it freely
       $("#testmask").Type("1");
-      assert.ok(true, "scenario A result: " + testmask.value);
+      assert.equal(
+        testmask.value.charAt(3),
+        "1",
+        "Month first digit should be '1', result: " + testmask.value
+      );
+      assert.notEqual(
+        testmask.value,
+        "12/01/2014",
+        "Should not auto-correct month to '01': " + testmask.value
+      );
     }
   );
 
   qunit.test(
-    "datepicker issue: val 04/07/2014, caret at pos 0, type 3",
+    "datepicker setDate then type '3' at day pos 0 - issue #550",
     function (assert) {
+      if (typeof window.jQuery === "undefined" || !window.jQuery.fn.datepicker) {
+        assert.ok(true, "jQuery UI datepicker not available, skipping test");
+        return;
+      }
       var $fixture = $("#qunit-fixture");
       $fixture.append('<input type="text" id="testmask" />');
       var testmask = document.getElementById("testmask");
@@ -1539,17 +1565,29 @@ export default function (qunit, Inputmask) {
         inputFormat: "dd/MM/yyyy",
         min: "01/01/1900"
       }).mask(testmask);
+      window.jQuery(testmask).datepicker({ dateFormat: "dd/mm/yy" });
       testmask.focus();
-      $("#testmask").val("04/07/2014");
+      // "04/07/2014" → second digit of day is "4"; typing "3" gives "34" (invalid)
+      // Before fix: forced to "30" immediately; After fix: second digit cleared so
+      // user can type "30" or "31" freely
+      window.jQuery(testmask).datepicker("setDate", new Date(2014, 6, 4));
       $.caret(testmask, 0);
       $("#testmask").Type("3");
-      assert.ok(true, "scenario B result: " + testmask.value);
+      assert.equal(
+        testmask.value.charAt(0),
+        "3",
+        "Day first digit should be '3', result: " + testmask.value
+      );
     }
   );
 
   qunit.test(
-    "datepicker issue: val 04/07/2014, type 12 then 1 (month)",
+    "datepicker setDate then type full new date - issue #550",
     function (assert) {
+      if (typeof window.jQuery === "undefined" || !window.jQuery.fn.datepicker) {
+        assert.ok(true, "jQuery UI datepicker not available, skipping test");
+        return;
+      }
       var $fixture = $("#qunit-fixture");
       $fixture.append('<input type="text" id="testmask" />');
       var testmask = document.getElementById("testmask");
@@ -1557,16 +1595,12 @@ export default function (qunit, Inputmask) {
         inputFormat: "dd/MM/yyyy",
         min: "01/01/1900"
       }).mask(testmask);
+      window.jQuery(testmask).datepicker({ dateFormat: "dd/mm/yy" });
       testmask.focus();
-      $("#testmask").val("04/07/2014");
-      $.caret(testmask, 0);
-      $("#testmask").Type("12");
-      var afterDay = testmask.value;
-      $("#testmask").Type("1");
-      assert.ok(
-        true,
-        "scenario C: after 12=" + afterDay + ", after 1=" + testmask.value
-      );
+      window.jQuery(testmask).datepicker("setDate", new Date(2014, 6, 4)); // 04/07/2014
+      $.caret(testmask, 0, testmask.value.length); // select all
+      $("#testmask").Type("30112020"); // type 30/11/2020
+      assert.equal(testmask.value, "30/11/2020", "Result " + testmask.value);
     }
   );
 }
