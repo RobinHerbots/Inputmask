@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.10-beta.65
+ * Version: 5.0.10-beta.67
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -2007,7 +2007,7 @@ var EventHandlers = exports.EventHandlers = {
           EventHandlers.keyEvent.call(input, keydown);
           break;
         default:
-          (0, _inputHandling.applyInputValue)(input, inputValue);
+          (0, _inputHandling.applyInputValue)(input, inputValue, e);
           _positioning.caret.call(inputmask, input, caretPos.begin, caretPos.end, true);
           break;
       }
@@ -3277,7 +3277,7 @@ function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
       end += maskset.jitOffset[end] + (validTest ? 1 : 0);
     }
     for (i = validTest ? end : end - 1; i <= lvp; i++) {
-      if ((t = positionsClone[i]) !== undefined && t.generatedInput !== true && (i >= end || i >= begin && IsEnclosedStatic(i, positionsClone, {
+      if ((t = positionsClone[i]) !== undefined && (opts.shiftPositions !== true || t.generatedInput !== true) && (i >= end || i >= begin && IsEnclosedStatic(i, positionsClone, {
         begin: begin,
         end: end
       }))) {
@@ -3568,6 +3568,7 @@ function getTests(pos, ndxIntlzr, tstPs) {
     ndxInitializer = ndxIntlzr ? ndxIntlzr.slice() : [0],
     matches = [],
     insertStop = false,
+    insertStopFromAlternation = false,
     latestMatch,
     cacheDependency = ndxIntlzr ? ndxIntlzr.join("") : "",
     unMatchedAlternation = false;
@@ -3879,7 +3880,8 @@ function getTests(pos, ndxIntlzr, tstPs) {
           }
           matches = currentMatches.concat(malternateMatches);
           testPos = pos;
-          insertStop = matches.length > 0 && unMatchedAlternation; // insert a stopelemnt when there is an alternate - needed for non-greedy option
+          insertStop = insertStop || matches.length > 0 && unMatchedAlternation; // insert a stopelemnt when there is an alternate - needed for non-greedy option
+          if (!unMatchedAlternation && insertStop) insertStopFromAlternation = true; // track insertStop set inside a symmetric alternation
           match = malternateMatches.length > 0 && !unMatchedAlternation; // set correct match state
 
           if (unMatchedAlternation && insertStop && !match) {
@@ -4069,7 +4071,11 @@ function getTests(pos, ndxIntlzr, tstPs) {
       // this will result in the least distance to select the correct test result in determineTestTemplate
       locator: unMatchedAlternation && matches.filter(function (tst) {
         return tst.unMatchedAlternationStopped !== true;
-      }).length === 0 ? [0] : [],
+      }).length === 0 ? [0] : insertStopFromAlternation && matches.length > 0 && matches.filter(function (tst) {
+        return !tst.match["static"];
+      }).every(function (tst) {
+        return tst.match.optionalQuantifier;
+      }) ? [0] : [],
       mloc: {},
       cd: cacheDependency
     });

@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.10-beta.65
+ * Version: 5.0.10-beta.67
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -1984,7 +1984,7 @@ var EventHandlers = exports.EventHandlers = {
           EventHandlers.keyEvent.call(input, keydown);
           break;
         default:
-          (0, _inputHandling.applyInputValue)(input, inputValue);
+          (0, _inputHandling.applyInputValue)(input, inputValue, e);
           _positioning.caret.call(inputmask, input, caretPos.begin, caretPos.end, true);
           break;
       }
@@ -3254,7 +3254,7 @@ function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
       end += maskset.jitOffset[end] + (validTest ? 1 : 0);
     }
     for (i = validTest ? end : end - 1; i <= lvp; i++) {
-      if ((t = positionsClone[i]) !== undefined && t.generatedInput !== true && (i >= end || i >= begin && IsEnclosedStatic(i, positionsClone, {
+      if ((t = positionsClone[i]) !== undefined && (opts.shiftPositions !== true || t.generatedInput !== true) && (i >= end || i >= begin && IsEnclosedStatic(i, positionsClone, {
         begin: begin,
         end: end
       }))) {
