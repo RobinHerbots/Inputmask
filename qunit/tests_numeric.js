@@ -2576,4 +2576,157 @@ export default function (qunit, Inputmask) {
       assert.equal(testmask.value, "-234", 'Result "' + testmask.value + '"');
     }
   );
+
+  function decimal2615Test(name, opts, actions, expected) {
+    qunit.test("decimal $ - " + name + " - #2615", function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("decimal", {
+        digits: 2,
+        prefix: "$",
+        ...opts
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").trigger("click");
+      setTimeout(function () {
+        actions(testmask);
+        assert.equal(testmask.value, expected, "Result " + testmask.value);
+        done();
+      }, 0);
+    });
+  }
+
+  decimal2615Test(
+    "cursor at 0, type 5",
+    {},
+    function (testmask) {
+      $.caret(testmask, 0);
+      $("#testmask").SendKey("5");
+    },
+    "$5"
+  );
+
+  decimal2615Test(
+    "type -, cursor at 0, type 5",
+    {},
+    function (testmask) {
+      $("#testmask").SendKey("-");
+      $.caret(testmask, 0);
+      $("#testmask").SendKey("5");
+    },
+    "-$5"
+  );
+
+  decimal2615Test(
+    "delete all, cursor at 0, type 5",
+    {},
+    function (testmask) {
+      $("#testmask").Type("123");
+      $.caret(testmask, 0, testmask.value.length);
+      $("#testmask").SendKey(keys.Delete);
+      $.caret(testmask, 0);
+      $("#testmask").SendKey("5");
+    },
+    "$5"
+  );
+
+  decimal2615Test(
+    "digitsOptional:false, cursor at 0, type 5",
+    { digitsOptional: false },
+    function (testmask) {
+      $.caret(testmask, 0);
+      $("#testmask").SendKey("5");
+    },
+    "$5.00"
+  );
+
+  decimal2615Test(
+    "type 12345, cursor at 0, type 6 - non-regression",
+    {},
+    function (testmask) {
+      $("#testmask").Type("12345");
+      $.caret(testmask, 0);
+      $("#testmask").SendKey("6");
+    },
+    "$6123.45"
+  );
+
+  decimal2615Test(
+    "cursor at 0, type 56",
+    {},
+    function (testmask) {
+      $.caret(testmask, 0);
+      $("#testmask").SendKey("5");
+      $("#testmask").SendKey("6");
+    },
+    "$56"
+  );
+
+  decimal2615Test(
+    "radixPoint ',' groupSeparator ' ', cursor at 0, type 5",
+    { radixPoint: ",", groupSeparator: " " },
+    function (testmask) {
+      $.caret(testmask, 0);
+      $("#testmask").SendKey("5");
+    },
+    "$5"
+  );
+
+  decimal2615Test(
+    "cursor at 0, type full-width digit \uFF15",
+    {},
+    function (testmask) {
+      $.caret(testmask, 0);
+      $("#testmask").SendKey("\uFF15");
+    },
+    "$\uFF15"
+  );
+
+  // Probe tests for prefix "$ " and cursor inside prefix
+  decimal2615Test(
+    "prefix '$ ' - cursor at 0, type 5",
+    { prefix: "$ " },
+    function (testmask) {
+      $.caret(testmask, 0);
+      $("#testmask").SendKey("5");
+    },
+    "$ 5"
+  );
+
+  decimal2615Test(
+    "prefix '$ ' - cursor at 1 (middle of prefix), type 5",
+    { prefix: "$ " },
+    function (testmask) {
+      $.caret(testmask, 1);
+      $("#testmask").SendKey("5");
+    },
+    "$ 5"
+  );
+
+  decimal2615Test(
+    "type 12345, cursor at 0, type 67",
+    {},
+    function (testmask) {
+      $("#testmask").Type("12345");
+      $.caret(testmask, 0);
+      $("#testmask").SendKey("6");
+      $("#testmask").SendKey("7");
+    },
+    "$67123.45"
+  );
+
+  decimal2615Test(
+    "prefix '$ ' - type 12345, cursor at 0, type 67",
+    { prefix: "$ " },
+    function (testmask) {
+      $("#testmask").Type("12345");
+      $.caret(testmask, 0);
+      $("#testmask").SendKey("6");
+      $("#testmask").SendKey("7");
+    },
+    "$ 67123.45"
+  );
 }
