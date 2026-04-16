@@ -2729,4 +2729,819 @@ export default function (qunit, Inputmask) {
     },
     "$ 67123.45"
   );
+
+  // ---- min/max bug reproductions ----
+
+  [
+    {
+      label:
+        "numeric min=-100 max=30 digits=3 SMOO=true - Type '-77777' clamps to min #2846",
+      alias: "numeric",
+      opts: {
+        min: -100,
+        max: 30,
+        digits: 3,
+        SetMaxOnOverflow: true
+      },
+      type: "-77777",
+      expected: "-100"
+    },
+    {
+      label: "numeric min=120 max=2345 - Type '1111' passes through",
+      alias: "numeric",
+      opts: { min: 120, max: 2345, digits: 0 },
+      type: "1111",
+      expected: "1111"
+    },
+    {
+      label: "integer min=250 - Type '1500' passes through #2284",
+      alias: "integer",
+      opts: { min: 250 },
+      type: "1500",
+      expected: "1500"
+    },
+    {
+      label:
+        "numeric min=-100 max=30 digits=3 - Type '-32' passes through #2846",
+      alias: "numeric",
+      opts: { min: -100, max: 30, digits: 3 },
+      type: "-32",
+      expected: "-32"
+    },
+    {
+      label:
+        "numeric min=-100 max=30 digits=3 - Type '-32.123' passes through #2846",
+      alias: "numeric",
+      opts: { min: -100, max: 30, digits: 3 },
+      type: "-32.123",
+      expected: "-32.123"
+    },
+    {
+      label:
+        "numeric min=-100 max=30 - Type '50' rejects '0' (would exceed max 30) #2846",
+      alias: "numeric",
+      opts: { min: -100, max: 30, digits: 0 },
+      type: "50",
+      expected: "5"
+    },
+    {
+      label: "numeric min=-100 max=30 - Type '-30' at exact max boundary #2846",
+      alias: "numeric",
+      opts: { min: -100, max: 30, digits: 0 },
+      type: "-30",
+      expected: "-30"
+    },
+    {
+      label:
+        "numeric max=30 digits=3 no min - Type '-5.5' passes through #2846",
+      alias: "numeric",
+      opts: { max: 30, digits: 3 },
+      type: "-5.5",
+      expected: "-5.5"
+    },
+    {
+      label:
+        "numeric max=30 digits=3 - Type '30.1' rejects '1' (would exceed max 30)",
+      alias: "numeric",
+      opts: { max: 30, digits: 3 },
+      type: "30.1",
+      expected: "30."
+    },
+    {
+      label:
+        "numeric min=-100 max=30 digits=3 - Type '99999' rejected (above max) #2846",
+      alias: "numeric",
+      opts: { min: -100, max: 30, digits: 3 },
+      type: "99999",
+      expected: "9"
+    },
+    {
+      label:
+        "decimal allowMinus min=-999 SMOO=true - Type '-1000' clamps to min #951",
+      alias: "decimal",
+      opts: { min: -999, digits: 0, SetMaxOnOverflow: true },
+      type: "-1000",
+      expected: "-999"
+    },
+    {
+      label: "numeric min=-100 max=30 SMOO=true - Type '-777' clamps to min",
+      alias: "numeric",
+      opts: {
+        min: -100,
+        max: 30,
+        digits: 0,
+        SetMaxOnOverflow: true
+      },
+      type: "-777",
+      expected: "-100"
+    },
+    {
+      label:
+        "numeric min=-100 SMOO=false - Type '-777' rejects keystroke below min, symmetric to above max #2846",
+      alias: "numeric",
+      opts: {
+        min: -100,
+        max: 30,
+        digits: 0,
+        SetMaxOnOverflow: false
+      },
+      type: "-777",
+      expected: "-77"
+    },
+    {
+      label:
+        "numeric min=-100 default SMOO - Type '-777' rejects (default SMOO is false) #2846",
+      alias: "numeric",
+      opts: { min: -100, max: 30, digits: 0 },
+      type: "-777",
+      expected: "-77"
+    },
+    {
+      label:
+        "numeric min=-10 max=-1 SMOO=false - Type '-50' rejects below min in negative-only range #2846",
+      alias: "numeric",
+      opts: {
+        min: -10,
+        max: -1,
+        digits: 0,
+        SetMaxOnOverflow: false
+      },
+      type: "-50",
+      expected: "-5"
+    },
+    {
+      label:
+        "numeric min=-10 max=-1 SMOO=true - Type '-50' clamps to min in negative-only range #2846",
+      alias: "numeric",
+      opts: {
+        min: -10,
+        max: -1,
+        digits: 0,
+        SetMaxOnOverflow: true
+      },
+      type: "-50",
+      expected: "-10"
+    },
+    {
+      label:
+        "numeric min=0 allowMinus SMOO=false - Type '-5' rejects (negation disallowed) #2846",
+      alias: "numeric",
+      opts: {
+        min: 0,
+        max: 100,
+        digits: 0,
+        SetMaxOnOverflow: false
+      },
+      type: "-5",
+      expected: "5"
+    },
+    {
+      label: "numeric min=0 allowMinus SMOO=true - Type '-5' clamps to 0 #2846",
+      alias: "numeric",
+      opts: {
+        min: 0,
+        max: 100,
+        digits: 0,
+        SetMaxOnOverflow: true
+      },
+      type: "-5",
+      expected: "0"
+    },
+    {
+      label: "numeric min=-100 max=30 - Type '-100' at exact min boundary",
+      alias: "numeric",
+      opts: { min: -100, max: 30, digits: 0 },
+      type: "-100",
+      expected: "-100"
+    },
+    {
+      label:
+        "numeric min=-100 max=30 digits=3 SMOO=true - Type '-100.5' clamps to min",
+      alias: "numeric",
+      opts: {
+        min: -100,
+        max: 30,
+        digits: 3,
+        SetMaxOnOverflow: true
+      },
+      type: "-100.5",
+      expected: "-100"
+    },
+    // #2846 negation-ambiguity guard: a '-' that comes from a literal
+    // (suffix, groupSeparator) in the buffer must not be reparsed as unary
+    // minus. Otherwise an above-max positive could sneak past as its negation
+    // within min — so |min| > max below, making the bypass observable (50 vs
+    // -50, 100000 vs -100000 both fit their respective mins).
+    {
+      label:
+        "numeric min=-100 max=30 suffix='-' - Type '50' must not bypass max via suffix negation check",
+      alias: "numeric",
+      opts: { min: -100, max: 30, suffix: "-", digits: 0 },
+      type: "50",
+      expected: "5-"
+    },
+    // Expected "100" (not "99999") because an insertable groupSeparator of '-'
+    // is refused past the first thousands boundary: building "1-000" would be
+    // the exact ambiguous buffer the guard rejects, so typing stops at 999.
+    {
+      label:
+        "numeric min=-200000 max=99999 groupSeparator='-' - Type '100000' must not bypass max via groupSeparator negation check",
+      alias: "numeric",
+      opts: { min: -200000, max: 99999, groupSeparator: "-", digits: 0 },
+      type: "100000",
+      expected: "100"
+    },
+    {
+      label:
+        "numeric prefix='$' groupSeparator='.' radixPoint=',' min=-4000 digits=3 - Type '-3578' formats correctly",
+      alias: "numeric",
+      opts: {
+        prefix: "$",
+        groupSeparator: ".",
+        radixPoint: ",",
+        digits: 3,
+        min: -4000,
+        max: 4000,
+        allowMinus: true
+      },
+      type: "-3578",
+      expected: "-$3.578"
+    },
+    {
+      label:
+        "numeric prefix='$' groupSeparator='.' radixPoint=',' min=-4000 digits=3 - Type '-3578,965' (manual radix) formats correctly",
+      alias: "numeric",
+      opts: {
+        prefix: "$",
+        groupSeparator: ".",
+        radixPoint: ",",
+        digits: 3,
+        min: -4000,
+        max: 4000,
+        allowMinus: true
+      },
+      type: "-3578,965",
+      expected: "-$3.578,965"
+    },
+    {
+      label:
+        "numeric min=0 SMOO=false - Type '-5' rejects '-' upfront, no orphan '-0'",
+      alias: "numeric",
+      opts: { min: 0, max: 100, digits: 0 },
+      type: "-5",
+      expected: "5"
+    },
+    {
+      label:
+        "integer max=0 SMOO=false - toggle '-' off on '-0' normalizes to '0'",
+      alias: "integer",
+      opts: { max: 0 },
+      type: "-0-",
+      expected: "0"
+    }
+  ].forEach(function (tc) {
+    qunit.test(tc.label, function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask(tc.alias, tc.opts).mask(testmask);
+      testmask.focus();
+      setTimeout(function () {
+        $("#testmask").Type(tc.type);
+        const msg = tc.label + " - got " + testmask.value;
+        assert.equal(testmask.value, tc.expected, msg);
+        done();
+      }, 0);
+    });
+  });
+
+  // ---- blur entry path (focus → optional Type → blur → assert) ----
+
+  [
+    {
+      label: "numeric min=120 - value below min is clamped on blur",
+      alias: "numeric",
+      opts: { min: 120, max: 2345, digits: 0 },
+      type: "50",
+      expected: "120"
+    },
+    {
+      label: "numeric min=120 - empty field stays empty on blur",
+      alias: "numeric",
+      opts: { min: 120, max: 2345, digits: 0 },
+      type: "",
+      expected: ""
+    },
+    {
+      label: "numeric min=-100 max=30 - negative value clamped on blur #2846",
+      alias: "numeric",
+      opts: { min: -100, max: 30, digits: 0 },
+      type: "-50",
+      expected: "-50"
+    },
+    // https://github.com/RobinHerbots/Inputmask/issues/2863
+    {
+      label: "numeric min=1 - focus then blur empty field stays empty #2863",
+      alias: "numeric",
+      opts: { min: 1, digits: 0 },
+      type: "",
+      expected: ""
+    },
+    {
+      label: "integer min=0 max=10 - empty field stays empty on blur",
+      alias: "integer",
+      opts: { min: 0, max: 10, rightAlign: false, clearIncomplete: true },
+      type: "",
+      expected: ""
+    }
+  ].forEach(function (tc) {
+    qunit.test(tc.label, function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask(tc.alias, tc.opts).mask(testmask);
+      testmask.focus();
+      setTimeout(function () {
+        if (tc.type) $("#testmask").Type(tc.type);
+        testmask.blur();
+        setTimeout(function () {
+          assert.equal(
+            testmask.value,
+            tc.expected,
+            tc.label + " - got " + testmask.value
+          );
+          done();
+        }, 0);
+      }, 0);
+    });
+  });
+
+  // https://github.com/RobinHerbots/Inputmask/issues/1763
+  qunit.test(
+    "integer min=1 max=255 - clear via val('') should stay empty #1763",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("integer", {
+        min: 1,
+        max: 255
+      }).mask(testmask);
+      testmask.focus();
+      setTimeout(function () {
+        $("#testmask").Type("100");
+        testmask.blur();
+        setTimeout(function () {
+          assert.equal(testmask.value, "100", "Value should be 100");
+          $("#testmask").val("");
+          assert.equal(
+            testmask.value,
+            "",
+            "After val('') field should be empty - got " + testmask.value
+          );
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
+  qunit.test(
+    "integer min=1 max=255 - val('') then blur stays empty #1763",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("integer", {
+        min: 1,
+        max: 255
+      }).mask(testmask);
+      testmask.focus();
+      setTimeout(function () {
+        $("#testmask").Type("100");
+        testmask.blur();
+        setTimeout(function () {
+          $("#testmask").val("");
+          testmask.focus();
+          testmask.blur();
+          setTimeout(function () {
+            assert.equal(
+              testmask.value,
+              "",
+              "After val('') + blur field should stay empty - got " +
+                testmask.value
+            );
+            done();
+          }, 0);
+        }, 0);
+      }, 0);
+    }
+  );
+
+  qunit.test(
+    "numeric min=-10 max=-1 - val('') stays empty not clamped to max #1763",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("numeric", {
+        min: -10,
+        max: -1,
+        digits: 0
+      }).mask(testmask);
+      testmask.focus();
+      setTimeout(function () {
+        $("#testmask").Type("-5");
+        testmask.blur();
+        setTimeout(function () {
+          assert.equal(testmask.value, "-5", "Value should be -5");
+          $("#testmask").val("");
+          assert.equal(
+            testmask.value,
+            "",
+            "After val('') field should be empty - got " + testmask.value
+          );
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
+  qunit.test(
+    "numeric min=-100 max=30 - val('50') clamped to max",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("numeric", {
+        min: -100,
+        max: 30,
+        digits: 0
+      }).mask(testmask);
+      $("#testmask").val("50");
+      setTimeout(function () {
+        assert.equal(
+          testmask.value,
+          "30",
+          "val('50') should clamp to max 30 - got " + testmask.value
+        );
+        done();
+      }, 0);
+    }
+  );
+
+  qunit.test(
+    "numeric min=-100 max=30 - toggle negation from -50 rejected (|50| > max)",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("numeric", {
+        min: -100,
+        max: 30,
+        digits: 0
+      }).mask(testmask);
+      testmask.focus();
+      setTimeout(function () {
+        $("#testmask").Type("-50");
+        assert.equal(testmask.value, "-50", "Should have -50");
+        // Toggle negation off - blocked because 50 > max 30
+        $("#testmask").Type("-");
+        setTimeout(function () {
+          assert.equal(
+            testmask.value,
+            "-50",
+            "Negation removal blocked because |50| > max 30 - got " +
+              testmask.value
+          );
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
+  // ---- reproductions from GitHub issues ----
+
+  // https://github.com/RobinHerbots/Inputmask/issues/2829
+  qunit.test(
+    "numeric min=1 - programmatic input.value='' stays empty #2829",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("numeric", { min: 1 }).mask(testmask);
+      testmask.focus();
+      setTimeout(function () {
+        $("#testmask").Type("5");
+        testmask.blur();
+        setTimeout(function () {
+          assert.equal(testmask.value, "5", "Value should be 5");
+          $("#testmask").val("");
+          assert.equal(
+            testmask.value,
+            "",
+            "Programmatic val('') should clear - got " + testmask.value
+          );
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
+  // https://github.com/RobinHerbots/Inputmask/issues/2863
+  qunit.test(
+    "numeric min=1 - whitespace-only value stays empty on blur #2863",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("numeric", { min: 1, digits: 0 }).mask(testmask);
+      testmask.focus();
+      setTimeout(function () {
+        $("#testmask").val(" ");
+        testmask.blur();
+        setTimeout(function () {
+          assert.equal(
+            testmask.value,
+            "",
+            "Whitespace-only field should stay empty on blur - got " +
+              testmask.value
+          );
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
+
+  // ---- setvalue min/max clamping (#2846) ----
+  // applyInputValue invokes onBeforeMask with __skipRounding on the setvalue
+  // path: the alias parser clamps before checkval while the bignum-unsafe
+  // parseFloat round-trip (#2715) is suppressed.
+
+  [
+    // ---- above-max clamping with SMOO=false ----
+    {
+      label:
+        "integer min=-999 max=999 SMOO=false - setvalue('10000') clamps to max #2846",
+      alias: "integer",
+      opts: { min: -999, max: 999, SetMaxOnOverflow: false },
+      value: "10000",
+      expected: "999"
+    },
+    {
+      label:
+        "integer min=0 max=50 SMOO=false - setvalue('99') clamps to max #2846",
+      alias: "integer",
+      opts: { min: 0, max: 50, SetMaxOnOverflow: false },
+      value: "99",
+      expected: "50"
+    },
+    {
+      label:
+        "integer min=0 max=500 SMOO=false - setvalue('123456') clamps to max #2846",
+      alias: "integer",
+      opts: { min: 0, max: 500, SetMaxOnOverflow: false },
+      value: "123456",
+      expected: "500"
+    },
+    {
+      label:
+        "numeric max=30.5 digits=1 SMOO=false - setvalue('99.9') clamps to max #2846",
+      alias: "numeric",
+      opts: { max: 30.5, digits: 1, SetMaxOnOverflow: false },
+      value: "99.9",
+      expected: "30.5"
+    },
+
+    // Bignum precision (#2715): values beyond Number.MAX_SAFE_INTEGER must
+    // round-trip through setvalue intact, not collapse through parseFloat.
+    {
+      label:
+        "numeric digits=2 - setvalue preserves bignum precision (no #2715 regression)",
+      alias: "numeric",
+      opts: { digits: 2, groupSeparator: ",", radixPoint: "." },
+      value: "99,999,999,999,999,999,999,999.00",
+      expected: "99,999,999,999,999,999,999,999.00"
+    },
+
+    // ---- below-min clamping ----
+    // Negative-below-min and positive-below-min hit different branches in
+    // postValidation, so each is covered.
+    {
+      label:
+        "integer min=-999 max=999 SMOO=false - setvalue('-10000') clamps to min #2846",
+      alias: "integer",
+      opts: { min: -999, max: 999, SetMaxOnOverflow: false },
+      value: "-10000",
+      expected: "-999"
+    },
+    // Positive-below-min: postValidation's min branch only refreshes for
+    // negative values, so positive-below-min relies on the onBeforeMask
+    // clamp running on the setvalue path.
+    {
+      label:
+        "integer min=10 max=999 SMOO=false - setvalue('5') clamps to min #2846",
+      alias: "integer",
+      opts: { min: 10, max: 999, SetMaxOnOverflow: false },
+      value: "5",
+      expected: "10"
+    },
+    {
+      label: "numeric digits=0 min=100 - setvalue('50') clamps to min #2846",
+      alias: "numeric",
+      opts: { digits: 0, min: 100 },
+      value: "50",
+      expected: "100"
+    },
+
+    // The pre-checkval onBeforeMask clamp absorbs most overflows; SMOO=true
+    // exercises the postValidation SMO branch directly.
+    {
+      label: "integer max=999 SMOO=true - setvalue('5000') clamps to max",
+      alias: "integer",
+      opts: { min: 0, max: 999, SetMaxOnOverflow: true },
+      value: "5000",
+      expected: "999"
+    },
+
+    // ---- formatted input (prefix + groupSeparator + radix) ----
+    // The numeric parser strips prefix/suffix/groupSeparator before the
+    // min/max comparison, so formatted programmatic values clamp correctly
+    // instead of NaN-passing through.
+    {
+      label:
+        "numeric prefix='$' groupSeparator=',' max=1000 SMOO=false - setvalue clamps to max #2846",
+      alias: "numeric",
+      opts: {
+        prefix: "$",
+        groupSeparator: ",",
+        radixPoint: ".",
+        digits: 2,
+        min: 0,
+        max: 1000,
+        SetMaxOnOverflow: false
+      },
+      value: "12345",
+      expected: "$1,000"
+    },
+    {
+      label:
+        "numeric prefix='$' groupSeparator=',' max=1000 SMOO=false - setvalue('$5,000.00') clamps to max #2846",
+      alias: "numeric",
+      opts: {
+        prefix: "$",
+        groupSeparator: ",",
+        radixPoint: ".",
+        digits: 2,
+        min: 0,
+        max: 1000,
+        SetMaxOnOverflow: false
+      },
+      value: "$5,000.00",
+      expected: "$1,000.00"
+    },
+    // Symmetric counterpart of the "$5,000.00" above-max test: formatted
+    // below-min input must also clamp (not coerce to NaN and pass through).
+    {
+      label:
+        "numeric groupSeparator=',' min=10000 - setvalue('1,234') clamps to min #2846",
+      alias: "numeric",
+      opts: {
+        groupSeparator: ",",
+        radixPoint: ".",
+        digits: 2,
+        min: 10000,
+        max: 99999
+      },
+      value: "1,234",
+      expected: "10,000"
+    },
+
+    // Setvalue must not throw when onBeforeMask is null (frameworks
+    // sometimes nullify alias hooks).
+    {
+      label: "numeric onBeforeMask=null - setvalue does not throw #2846",
+      alias: "numeric",
+      opts: { digits: 0, max: 50, onBeforeMask: null },
+      value: "10",
+      expected: "10"
+    },
+
+    // European locale: JS Number.toString() yields "1234.56", but with
+    // radixPoint="," and groupSeparator=".", a naive unmask would treat the
+    // dot as a thousands separator and read 123456 instead of 1234.56.
+    // Mirror onBeforeMask's number→radixPoint normalization.
+    {
+      label:
+        "numeric radixPoint=',' groupSeparator='.' - setValue(1234.56) preserves in-range value #2846",
+      alias: "numeric",
+      opts: {
+        radixPoint: ",",
+        groupSeparator: ".",
+        digits: 2,
+        min: 0,
+        max: 2000
+      },
+      value: 1234.56,
+      expected: "1.234,56"
+    },
+
+    // ---- baseline pass-through cases ----
+    // In-range setvalue must pass through unchanged.
+    {
+      label:
+        "numeric min=0 max=100 - setvalue('50') passes through in-range #2846",
+      alias: "numeric",
+      opts: { digits: 0, min: 0, max: 100 },
+      value: "50",
+      expected: "50"
+    },
+    // Empty input must not trigger the min clamp — parseNumeric returns ""
+    // and the clamp block is guarded by `initialValue !== ""`.
+    {
+      label: "numeric min=10 - setvalue('') leaves field empty #2846",
+      alias: "numeric",
+      opts: { digits: 0, min: 10, max: 999 },
+      value: "",
+      expected: ""
+    },
+    // Number arg below min: covers typeof==="number" normalization plus
+    // the clamp branch in one path.
+    {
+      label: "numeric min=100 - setvalue(50) as number clamps to min #2846",
+      alias: "numeric",
+      opts: { digits: 0, min: 100, max: 999 },
+      value: 50,
+      expected: "100"
+    },
+
+    // After clamping a negative input up to a non-negative min, the
+    // original "-" must not be re-prepended onto the boundary.
+    {
+      label:
+        "integer min=10 max=100 - setvalue('-5') clamps to '10' (no stray '-' re-prepended)",
+      alias: "integer",
+      opts: { min: 10, max: 100 },
+      value: "-5",
+      expected: "10"
+    }
+  ].forEach(function (tc) {
+    qunit.test(tc.label, function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask(tc.alias, tc.opts).mask(testmask);
+      testmask.inputmask.setValue(tc.value);
+      assert.equal(
+        testmask.value,
+        tc.expected,
+        tc.label + " - got " + testmask.value
+      );
+    });
+  });
+
+  // Internal numeric rewrites (negation-delete, radix-dance) push their
+  // already-clean buffer back with onBeforeMask bypassed — must not be
+  // re-clamped through the alias parser. Deleting "-" from "-50" with
+  // {max:30, SMOO:false} leaves keyboard validation to settle on "5";
+  // re-clamping would coerce that to "30".
+  qunit.test(
+    "numeric min=-100 max=30 SMOO=false - Backspace on '-' of '-50' does not clamp to max #2846",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("numeric", {
+        min: -100,
+        max: 30,
+        digits: 0,
+        SetMaxOnOverflow: false
+      }).mask(testmask);
+      testmask.focus();
+      setTimeout(function () {
+        $("#testmask").Type("-50");
+        assert.equal(testmask.value, "-50", "Should have -50");
+        $.caret(testmask, 1);
+        $("#testmask").SendKey(keys.Backspace);
+        setTimeout(function () {
+          assert.equal(
+            testmask.value,
+            "5",
+            "Internal buffer rewrite from negation-delete should keep keyboard validation - got " +
+              testmask.value
+          );
+          done();
+        }, 0);
+      }, 0);
+    }
+  );
 }

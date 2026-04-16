@@ -218,6 +218,116 @@ export default function (qunit, Inputmask) {
     }
   );
 
+  // https://github.com/RobinHerbots/Inputmask/issues/2846
+  qunit.test(
+    'isValid("-32", { alias: "numeric", min: -100, max: 30 }) - element-less negative #2846',
+    function (assert) {
+      var isValid = Inputmask.isValid("-32", {
+        alias: "numeric",
+        min: -100,
+        max: 30,
+        allowMinus: true,
+        digits: 3
+      });
+      assert.equal(isValid, true, "Result " + isValid);
+    }
+  );
+
+  qunit.test(
+    'isValid("-32.123", { alias: "numeric", min: -100, max: 30 }) - element-less negative decimal #2846',
+    function (assert) {
+      var isValid = Inputmask.isValid("-32.123", {
+        alias: "numeric",
+        min: -100,
+        max: 30,
+        allowMinus: true,
+        digits: 3
+      });
+      assert.equal(isValid, true, "Result " + isValid);
+    }
+  );
+
+  qunit.test(
+    'isValid("32.1", { alias: "numeric", min: -100, max: 30 }) - exceeds max even with min<0 #2846',
+    function (assert) {
+      var isValid = Inputmask.isValid("32.1", {
+        alias: "numeric",
+        min: -100,
+        max: 30,
+        digits: 3
+      });
+      assert.equal(isValid, false, "Result " + isValid);
+    }
+  );
+
+  qunit.test(
+    'isValid("50", { alias: "numeric", max: 30 }) - element-less exceeds max',
+    function (assert) {
+      var isValid = Inputmask.isValid("50", {
+        alias: "numeric",
+        max: 30
+      });
+      assert.equal(isValid, false, "Result " + isValid);
+    }
+  );
+
+  // https://github.com/RobinHerbots/Inputmask/issues/951
+  qunit.test(
+    'format("-1000", { alias: "decimal", min: -999, allowMinus: true, digits: 0 }) #951',
+    function (assert) {
+      var formatted = Inputmask.format("-1000", {
+        alias: "decimal",
+        min: -999,
+        allowMinus: true,
+        digits: 0
+      });
+      assert.equal(formatted, "-999", "Result " + formatted);
+    }
+  );
+
+  // https://github.com/RobinHerbots/Inputmask/issues/2485
+  qunit.test(
+    'isValid("-$3.578,965", { prefix: "$", groupSeparator: ".", radixPoint: ",", min: -4000, digits: 3 }) #2485',
+    function (assert) {
+      var isValid = Inputmask.isValid("-$3.578,965", {
+        alias: "numeric",
+        prefix: "$",
+        groupSeparator: ".",
+        radixPoint: ",",
+        digits: 3,
+        min: -4000,
+        max: 4000,
+        allowMinus: true
+      });
+      assert.equal(isValid, true, "Result " + isValid);
+    }
+  );
+
+  qunit.test(
+    'format("50", { alias: "numeric", min: -100, max: 30 }) - positive above max clamped',
+    function (assert) {
+      var formatted = Inputmask.format("50", {
+        alias: "numeric",
+        min: -100,
+        max: 30
+      });
+      assert.equal(formatted, "30", "Result " + formatted);
+    }
+  );
+
+  qunit.test(
+    'format("-150", { min: -100, max: 30, allowMinus }) - clamps to -100',
+    function (assert) {
+      var formatted = Inputmask.format("-150", {
+        alias: "numeric",
+        min: -100,
+        max: 30,
+        allowMinus: true
+      });
+      assert.equal(formatted, "-100", "Result " + formatted);
+    }
+  );
+
   qunit.test(
     'thomstark isValid("12lbs", {mask:"99[9]lb\\s", greedy:false, skipOptionalPartCharacter: "", "clearIncomplete":true}',
     function (assert) {
