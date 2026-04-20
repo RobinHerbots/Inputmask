@@ -21,6 +21,8 @@
 
 ### Fixed
 
+- Currency alias. Move carret before prefix by arrows, input not work. #2615
+- Numeric input with prefix (currency) caret issue #1367
 - Update Vue property on autocomplite #2304
 - Minus is being deleted with the first digit #2860
 - Alternating mask gets stuck when typing alphanumeric value after starting with digits (CPF/CNPJ case) #2871
