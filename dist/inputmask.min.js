@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.10-beta.67
+ * Version: 5.0.10-beta.68
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -6043,10 +6043,26 @@ _inputmask["default"].extendAliases({
               };
             }
           }
-        } else if (!opts.showMaskOnHover && !opts.showMaskOnFocus && !opts.digitsOptional && opts.digits > 0 && this.__valueGet.call(this.el) === "") {
-          return {
-            rewritePosition: radixPos
-          };
+        } else {
+          if (!opts.showMaskOnHover && !opts.showMaskOnFocus && !opts.digitsOptional && opts.digits > 0 && this.__valueGet.call(this.el) === "") {
+            return {
+              rewritePosition: radixPos
+            };
+          }
+
+          // Cursor placed at or before the prefix on a field with no digits
+          // would otherwise fall through to alternation switching and land
+          // in the decimal part (#2615)
+          if (pos >= buffer.length - opts.prefix.length && opts.radixPoint !== "") {
+            var digitTest = new RegExp(opts.definitions["9"].validator);
+            if (!maskset.validPositions.some(function (vp) {
+              return vp && !vp.generatedInput && digitTest.test(vp.input);
+            })) {
+              return {
+                rewritePosition: radixPos !== -1 ? radixPos : 0
+              };
+            }
+          }
         }
       }
       return {
