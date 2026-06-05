@@ -17,6 +17,7 @@
     - minutes: m, mm
     - day: d, dd, D, DD
     - year: yy, yyyy, YY, YYYY
+  - add alias for month names (mmm, mmmm)
 - fix: Inputmask works weird under ShadowDOM #2753
 
 ### Fixed
