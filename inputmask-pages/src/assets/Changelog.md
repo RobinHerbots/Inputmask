@@ -7,6 +7,7 @@
 - set regex unicode flag when using \p{.\*}
 - add outputFormat option #2526
 - add FormData support for inputmask #2409
+- add "follow" casing option
 
 ### Updates
 
@@ -17,10 +18,13 @@
     - minutes: m, mm
     - day: d, dd, D, DD
     - year: yy, yyyy, YY, YYYY
+  - add alias for month names (mmm, mmmm)
 - fix: Inputmask works weird under ShadowDOM #2753
 
 ### Fixed
 
+- Currency alias. Move carret before prefix by arrows, input not work. #2615
+- Numeric input with prefix (currency) caret issue #1367
 - Update Vue property on autocomplite #2304
 - Minus is being deleted with the first digit #2860
 - Alternating mask gets stuck when typing alphanumeric value after starting with digits (CPF/CNPJ case) #2871

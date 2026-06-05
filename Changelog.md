@@ -7,6 +7,7 @@
 - set regex unicode flag when using \p{.\*}
 - add outputFormat option #2526
 - add FormData support for inputmask #2409
+- add "follow" casing option
 
 ### Updates
 

@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.10-beta.68
+ * Version: 5.0.10-beta.69
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -815,7 +815,7 @@ var _default = exports["default"] = {
   positionCaretOnClick: "lvp",
   // none, lvp (based on the last valid position (default), radixFocus (position caret to radixpoint on initial click), select (select the whole input), ignore (ignore the click and continue the mask)
   casing: null,
-  // mask-level casing. Options: null, "upper", "lower" or "title" or callback args => elem, test, pos, validPositions return charValue
+  // mask-level casing. Options: null, "upper", "lower" or "title" or "follow" or callback args => elem, test, pos, validPositions return charValue
   inputmode: "text",
   // specify the inputmode
   importDataAttributes: true,
@@ -2444,8 +2444,9 @@ function determineNewCaretPosition(selectedCaret, tabbed, positionCaretOnClick) 
         if (clickPos < seekNext.call(inputmask, -1)) return true;
         var radixPos = getBuffer.call(inputmask).indexOf(opts.radixPoint);
         if (radixPos !== -1) {
-          for (var vp = 0, vpl = vps.length; vp < vpl; vp++) {
-            if (vps[vp] && radixPos < vp && vps[vp].input !== _validationTests.getPlaceholder.call(inputmask, vp)) {
+          for (var vp in vps) {
+            var pos = Number(vp);
+            if (radixPos < pos && vps[vp].input !== _validationTests.getPlaceholder.call(inputmask, pos)) {
               return false;
             }
           }
@@ -2807,6 +2808,13 @@ function casing(elem, test, pos) {
       if (pos === 0 || posBefore && posBefore.input === String.fromCharCode(_keycode.keyCode.Space)) {
         elem = elem.toLocaleUpperCase();
       } else {
+        elem = elem.toLocaleLowerCase();
+      }
+      break;
+    case "follow":
+      if (test.def && test.def !== test.def.toLocaleLowerCase()) {
+        elem = elem.toLocaleUpperCase();
+      } else if (test.def && test.def !== test.def.toLocaleUpperCase()) {
         elem = elem.toLocaleLowerCase();
       }
       break;
@@ -3395,7 +3403,7 @@ function getPlaceholder(pos, test, returnPL) {
             staticAlternations.push(tests[i]);
             if (tests[i].match["static"] === true) prevTest = tests[i];
             if (staticAlternations.length > 1) {
-              if (/[0-9a-bA-Z]/.test(staticAlternations[0].match.def)) {
+              if (/[0-9a-zA-Z]/.test(staticAlternations[0].match.def)) {
                 return opts.placeholder.charAt(pos % opts.placeholder.length);
               }
             }
@@ -5164,6 +5172,8 @@ var currentYear = new Date().getFullYear(),
     DD: "dd",
     DDD: "ddd",
     DDDD: "dddd",
+    mmm: "MMM",
+    mmmm: "MMMM",
     YY: "yy",
     YYYY: "yyyy",
     sss: "L"
@@ -5649,17 +5659,7 @@ _inputmask["default"].extendAliases({
       var inputmask = this;
       return unmaskedValue ? parse(opts.outputFormat, analyseMask.call(inputmask, maskedValue, opts.inputFormat, opts), opts) : unmaskedValue;
     },
-    casing: function casing(elem, test, pos, validPositions) {
-      if (test.nativeDef.indexOf("[ap]") == 0) return elem.toLowerCase();
-      if (test.nativeDef.indexOf("[AP]") == 0) return elem.toUpperCase();
-      var posBefore = _validationTests.getTest.call(this, [pos - 1]);
-      if (posBefore.match.def.indexOf("[AP]") == 0) return elem.toUpperCase();
-      if (pos === 0 || posBefore && posBefore.input === String.fromCharCode(_keycode.keyCode.Space) || posBefore && posBefore.match.def === String.fromCharCode(_keycode.keyCode.Space)) {
-        return elem.toUpperCase();
-      }
-      if (test["static"] && test.def === test.def.toUpperCase()) return elem.toUpperCase();
-      return elem.toLowerCase();
-    },
+    casing: "follow",
     onBeforeMask: function onBeforeMask(initialValue, opts) {
       if (Object.prototype.toString.call(initialValue) === "[object Date]") {
         initialValue = importDate(initialValue, opts);
@@ -6475,8 +6475,8 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default":
 var $ = _inputmask["default"].dependencyLib;
 function Colormask(alias, options, internal) {
   // allow instanciating without new
-  if (!(this instanceof _inputmask["default"])) {
-    return new _inputmask["default"](alias, options, internal);
+  if (!(this instanceof Colormask)) {
+    return new Colormask(alias, options, internal);
   }
   this.colorMask = undefined;
   Object.getOwnPropertyNames(_inputmask["default"]).forEach(function (key) {
