@@ -59,7 +59,7 @@ import Inputmask from "inputmask";
 ### ES6
 
 ```
-import Inputmask from "inputmask.es6.js";
+import Inputmask from "inputmask.mjs";
 ```
 
 ## Usage

@@ -89,8 +89,8 @@ module.exports = function (grunt) {
             dest: "dist/bindings/inputmask.binding.js"
           },
           {
-            src: "lib/bindings/inputmask.es6.js",
-            dest: "dist/inputmask.es6.js"
+            src: "lib/bindings/inputmask._mjs",
+            dest: "dist/inputmask.mjs"
           },
           { src: "lib/extensions/colormask.css", dest: "dist/colormask.css" },
           {
