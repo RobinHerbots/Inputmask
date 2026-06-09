@@ -8,6 +8,7 @@
 - add outputFormat option #2526
 - add FormData support for inputmask #2409
 - add "follow" casing option
+- add mjs export
 
 ### Updates
 
@@ -24,6 +25,7 @@
 
 ### Fixed
 
+- Incompatibility with vite 8 #2884
 - Also one thing: If I have a date pattern dd-mmm-yyyy, month name is always lowercase. #2870
 - Currency alias. Move carret before prefix by arrows, input not work. #2615
 - Numeric input with prefix (currency) caret issue #1367
