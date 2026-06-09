@@ -1508,4 +1508,38 @@ export default function (qunit, Inputmask) {
       );
     }
   );
+
+  qunit.test("dd.MMM.yyyy HH:mm TT - casing upper", function (assert) {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    var testmask = document.getElementById("testmask");
+    Inputmask("datetime", {
+      inputFormat: "dd.MMM.yyyy HH:mm TT",
+      casing: "upper"
+    }).mask(testmask);
+    testmask.focus();
+    $("#testmask").Type("29jan20241000am");
+    assert.equal(
+      testmask.value,
+      "29.JAN.2024 10:00 AM",
+      "Result " + testmask.value
+    );
+  });
+
+  qunit.test("dd.MMM.yyyy HH:mm TT - casing lower", function (assert) {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    var testmask = document.getElementById("testmask");
+    Inputmask("datetime", {
+      inputFormat: "dd.MMM.yyyy HH:mm TT",
+      casing: "lower"
+    }).mask(testmask);
+    testmask.focus();
+    $("#testmask").Type("29jan20241000am");
+    assert.equal(
+      testmask.value,
+      "29.jan.2024 10:00 am",
+      "Result " + testmask.value
+    );
+  });
 }

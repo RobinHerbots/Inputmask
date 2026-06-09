@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.10-beta.69
+ * Version: 5.0.10-beta.70
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -2634,6 +2634,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.alternate = alternate;
+exports.casing = casing;
 exports.checkAlternationMatch = checkAlternationMatch;
 exports.handleRemove = handleRemove;
 exports.isComplete = isComplete;
@@ -3349,6 +3350,7 @@ exports.getTests = getTests;
 exports.isSubsetOf = isSubsetOf;
 var _inputmask = _interopRequireDefault(__webpack_require__(8));
 var _positioning = __webpack_require__(21);
+var _validation = __webpack_require__(22);
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -3388,7 +3390,7 @@ function getPlaceholder(pos, test, returnPL) {
       // static and not dynamically generated ~ does not occur in regex mask ~ numeric alias def is not a valid entry
       var lvp = _positioning.getLastValidPosition.call(inputmask, pos),
         nextPos = _positioning.seekNext.call(inputmask, lvp);
-      return (returnPL ? pos <= nextPos : pos < nextPos) ? opts.staticDefinitionSymbol && test["static"] ? test.nativeDef : test.def : typeof test.placeholder === "function" ? test.placeholder(opts) : test.placeholder;
+      return (returnPL ? pos <= nextPos : pos < nextPos) ? _validation.casing.call(inputmask, opts.staticDefinitionSymbol && test["static"] ? test.nativeDef : test.def, test, pos) : typeof test.placeholder === "function" ? test.placeholder(opts) : test.placeholder;
     } else {
       return typeof test.placeholder === "function" ? test.placeholder(opts) : test.placeholder;
     }
