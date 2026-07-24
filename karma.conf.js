@@ -2,6 +2,31 @@
 // Generated on Thu Feb 10 2022 10:05:16 GMT+0100 (GMT+01:00)
 
 module.exports = function (config) {
+  const isCI = process.env.CI === "true" || process.env.CI === "1",
+    browsers = [
+      "bs_chrome_win11",
+      "bs_chrome_mac_Monterey",
+      "bs_chrome_mac_Sonoma",
+      "bs_firefox_win11",
+      "bs_firefox_mac_Sonoma",
+      "bs_edge_win11",
+      "bs_edge_latest_win11",
+      "bs_safari_mac_Monterey",
+      "bs_safari_mac_Sonoma",
+      "bs_opera_win11",
+      // "bs_yandex_win11",
+      // "bs_ie_win10",
+      "bs_chrome_pixel6",
+      "bs_chrome_samsung_galaxy_S21",
+      "bs_chrome_pixel7",
+      "bs_iPhoneXS",
+      "bs_iPhone14"
+    ];
+
+  if (!isCI) {
+    browsers.splice(1, 0, "Chrome");
+  }
+
   config.set({
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: "",
@@ -67,15 +92,36 @@ module.exports = function (config) {
         os: "OS X",
         os_version: "Monterey"
       },
+      bs_chrome_mac_Sonoma: {
+        base: "BrowserStack",
+        browser: "chrome",
+        browser_version: "latest",
+        os: "OS X",
+        os_version: "Sonoma"
+      },
       bs_firefox_win11: {
         base: "BrowserStack",
         browser: "firefox",
         os: "Windows",
         os_version: "11"
       },
+      bs_firefox_mac_Sonoma: {
+        base: "BrowserStack",
+        browser: "firefox",
+        browser_version: "latest",
+        os: "OS X",
+        os_version: "Sonoma"
+      },
       bs_edge_win11: {
         base: "BrowserStack",
         browser: "edge",
+        os: "Windows",
+        os_version: "11"
+      },
+      bs_edge_latest_win11: {
+        base: "BrowserStack",
+        browser: "edge",
+        browser_version: "latest",
         os: "Windows",
         os_version: "11"
       },
@@ -84,6 +130,13 @@ module.exports = function (config) {
         browser: "safari",
         os: "OS X",
         os_version: "Monterey"
+      },
+      bs_safari_mac_Sonoma: {
+        base: "BrowserStack",
+        browser: "safari",
+        browser_version: "latest",
+        os: "OS X",
+        os_version: "Sonoma"
       },
       bs_opera_win11: {
         base: "BrowserStack",
@@ -120,6 +173,14 @@ module.exports = function (config) {
         os_version: "11.0",
         realMobile: true
       },
+      bs_chrome_pixel7: {
+        base: "BrowserStack",
+        device: "Google Pixel 7",
+        browser: "chrome",
+        os: "Android",
+        os_version: "13.0",
+        realMobile: true
+      },
       bs_iPhoneXS: {
         base: "BrowserStack",
         device: "iPhone XS",
@@ -127,22 +188,17 @@ module.exports = function (config) {
         os: "IOS",
         os_version: "15",
         realMobile: true
+      },
+      bs_iPhone14: {
+        base: "BrowserStack",
+        device: "iPhone 14",
+        browser: "safari",
+        os: "IOS",
+        os_version: "16",
+        realMobile: true
       }
     },
-    browsers: [
-      "Chrome",
-      "bs_chrome_win11",
-      "bs_chrome_mac_Monterey",
-      "bs_firefox_win11",
-      "bs_edge_win11",
-      "bs_safari_mac_Monterey",
-      "bs_opera_win11",
-      // "bs_yandex_win11",
-      "bs_ie_win10",
-      "bs_chrome_pixel6",
-      "bs_chrome_samsung_galaxy_S21",
-      "bs_iPhoneXS"
-    ],
+    browsers,
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
