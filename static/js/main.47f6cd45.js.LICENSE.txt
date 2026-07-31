@@ -10,10 +10,10 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.0.10-beta.64
+ * Version: 5.0.10
  */
 
-/*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */
+/*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
 
 /**
  * @license React
