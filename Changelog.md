@@ -1,6 +1,6 @@
 # Change Log
 
-## [5.0.10 - UNRELEASED]
+## [5.0.10 - 31/07/2026]
 
 ### Addition
 
@@ -202,9 +202,9 @@
 - enhance alternation logic
 - update datetime alias
 - datetime prefillYear option  
-   Enable/disable prefilling of the year.  
-   Although you can just over type the proposed value without deleting, many seems to see a problem with the year prediction.  
-   This options is to disable this feature.
+  Enable/disable prefilling of the year.  
+  Although you can just over type the proposed value without deleting, many seems to see a problem with the year prediction.  
+  This options is to disable this feature.
 - better handle maxLength
 
 ### Fixed
