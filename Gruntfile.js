@@ -77,9 +77,10 @@ module.exports = function (grunt) {
       }
     },
     webpack: {
-      main: webpackConfig({ env: { production: true } })[0],
-      jquery: webpackConfig({ env: { production: true } })[1],
-      colormask: webpackConfig({ env: { production: true } })[2]
+      main: webpackConfig({ production: true })[0],
+      jquery: webpackConfig({ production: true })[1],
+      colormask: webpackConfig({ production: true })[2],
+      modern: webpackConfig({ production: true })[3]
     },
     copy: {
       extensions: {
@@ -87,10 +88,6 @@ module.exports = function (grunt) {
           {
             src: "lib/bindings/inputmask.binding.js",
             dest: "dist/bindings/inputmask.binding.js"
-          },
-          {
-            src: "lib/bindings/inputmask._mjs",
-            dest: "dist/inputmask.mjs"
           },
           { src: "lib/extensions/colormask.css", dest: "dist/colormask.css" },
           {

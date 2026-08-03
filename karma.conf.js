@@ -19,7 +19,7 @@ module.exports = function (config) {
       "bs_chrome_pixel6",
       "bs_chrome_samsung_galaxy_S21",
       "bs_chrome_pixel7",
-      "bs_iPhoneXS",
+      "bs_iPhoneSE2022",
       "bs_iPhone14"
     ];
 
@@ -181,9 +181,9 @@ module.exports = function (config) {
         os_version: "13.0",
         realMobile: true
       },
-      bs_iPhoneXS: {
+      bs_iPhoneSE2022: {
         base: "BrowserStack",
-        device: "iPhone XS",
+        device: "iPhone SE 2022",
         browser: "safari",
         os: "IOS",
         os_version: "15",

@@ -56,10 +56,22 @@ var Inputmask = require('inputmask');
 import Inputmask from "inputmask";
 ```
 
-### ES6
+### Modern ES Modules (tree-shakable)
+
+Inputmask exposes a modern, tree-shakable ES Module build. You can import the core functionality and then include only the extensions you need:
+
+```javascript
+import Inputmask from "inputmask";
+import "inputmask/inputmask.date.extensions";
+import "inputmask/inputmask.numeric.extensions";
+
+Inputmask({"mask": "99/99/9999"}).mask(document.getElementById("myInput"));
+```
+
+### Legacy ES6 via explicit path
 
 ```
-import Inputmask from "inputmask.mjs";
+import Inputmask from "inputmask/dist/esm/inputmask.mjs";
 ```
 
 ## Usage

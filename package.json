@@ -1,13 +1,29 @@
 {
   "name": "inputmask",
-  "version": "5.0.10",
+  "version": "5.0.11-beta.0",
   "description": "Inputmask is a javascript library which creates an input mask.  Inputmask can run against vanilla javascript, jQuery and jqlite.",
   "main": "dist/inputmask.js",
-  "module": "dist/inputmask.mjs",
+  "module": "dist/esm/inputmask.mjs",
   "exports": {
     ".": {
-      "import": "./dist/inputmask.mjs",
+      "import": "./dist/esm/inputmask.mjs",
       "require": "./dist/inputmask.js"
+    },
+    "./inputmask.date.extensions": {
+      "import": "./dist/esm/inputmask.date.extensions.mjs"
+    },
+    "./inputmask.numeric.extensions": {
+      "import": "./dist/esm/inputmask.numeric.extensions.mjs"
+    },
+    "./inputmask.extensions": {
+      "import": "./dist/esm/inputmask.extensions.mjs"
+    },
+    "./colormask": {
+      "import": "./dist/esm/colormask.mjs",
+      "require": "./dist/colormask.js"
+    },
+    "./inputmaskElement": {
+      "import": "./dist/esm/inputmaskElement.mjs"
     },
     "./dist/*": "./dist/*",
     "./lib/*": "./lib/*",
@@ -27,6 +43,7 @@
     "start": "webpack --progress --watch --config-name main --config webpack.config.js",
     "jquery": "webpack --progress --watch --config-name jquery --config webpack.config.js",
     "colormask": "webpack --progress --watch --config-name colormask --config webpack.config.js",
+    "modern": "webpack --progress --watch --config-name modern --config webpack.config.js",
     "test": "grunt validate"
   },
   "repository": {
