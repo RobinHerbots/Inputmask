@@ -1,4 +1,5 @@
 const webpackConfig = require("./webpack.config");
+const { execSync } = require("child_process");
 
 module.exports = function (grunt) {
   // Project configuration.
@@ -118,34 +119,47 @@ module.exports = function (grunt) {
     grunt.config("release.options.npmtag", "next");
     grunt.task.run("release");
   });
-  grunt.registerTask("validate", ["webpack", "copy", "eslint", "karma"]);
+  grunt.registerTask("types", function () {
+    execSync("npm run types", { stdio: "inherit" });
+  });
+  grunt.registerTask("validate", [
+    "webpack",
+    "copy",
+    "types",
+    "eslint",
+    "karma"
+  ]);
   grunt.registerTask("build", [
     "updateYear",
     "bump:prerelease",
     "clean",
     "webpack",
-    "copy"
+    "copy",
+    "types"
   ]);
   grunt.registerTask("build:patch", [
     "updateYear",
     "bump:patch",
     "clean",
     "webpack",
-    "copy"
+    "copy",
+    "types"
   ]);
   grunt.registerTask("build:minor", [
     "updateYear",
     "bump:minor",
     "clean",
     "webpack",
-    "copy"
+    "copy",
+    "types"
   ]);
   grunt.registerTask("build:major", [
     "updateYear",
     "bump:major",
     "clean",
     "webpack",
-    "copy"
+    "copy",
+    "types"
   ]);
   grunt.registerTask("default", ["availabletasks"]);
 };

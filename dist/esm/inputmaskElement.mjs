@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.1
+ * Version: 5.1.0-beta.3
  */
 export const __webpack_esm_id__ = 272;
 export const __webpack_esm_ids__ = [272];
@@ -22,6 +22,8 @@ const document = _global_window__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A
 // integrate shadowroot into maskcope
 if (document && document.head && document.head.attachShadow && _global_window__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.customElements && _global_window__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.customElements.get("input-mask") === undefined) {
   class InputmaskElement extends HTMLElement {
+    /** @type {HTMLInputElement} */
+    input;
     constructor() {
       super();
       const attributeNames = this.getAttributeNames(),
@@ -40,6 +42,12 @@ if (document && document.head && document.head.attachShadow && _global_window__W
       im.dataAttribute = "";
       im.mask(this.input);
     }
+
+    /**
+     * @param {string} attrName
+     * @param {string | null} oldVal
+     * @param {string | null} newVal
+     */
     attributeChangedCallback(attrName, oldVal, newVal) {
       this.input.setAttribute(attrName, newVal);
     }
@@ -48,6 +56,8 @@ if (document && document.head && document.head.attachShadow && _global_window__W
     get value() {
       return this.input.value;
     }
+
+    /** @param {string} value */
     set value(value) {
       this.input.value = value;
     }

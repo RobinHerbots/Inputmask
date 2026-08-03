@@ -1,49 +1,63 @@
 {
   "name": "inputmask",
-  "version": "5.1.0-beta.1",
+  "version": "5.1.0-beta.3",
   "description": "Inputmask is a javascript library which creates an input mask.  Inputmask can run against vanilla javascript, jQuery and jqlite.",
   "main": "dist/inputmask.js",
   "module": "dist/esm/inputmask.mjs",
+  "types": "dist/types/inputmask.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/types/inputmask.d.ts",
       "import": "./dist/esm/inputmask.mjs",
       "require": "./dist/inputmask.js"
     },
     "./extensions/date": {
+      "types": "./lib/extensions/date.d.ts",
       "import": "./dist/esm/date.mjs"
     },
     "./extensions/numeric": {
+      "types": "./lib/extensions/numeric.d.ts",
       "import": "./dist/esm/numeric.mjs"
     },
     "./extensions/definitions": {
+      "types": "./dist/types/extensions/definitions.d.ts",
       "import": "./dist/esm/definitions.mjs"
     },
     "./extensions/cssunit": {
+      "types": "./dist/types/extensions/cssunit.d.ts",
       "import": "./dist/esm/cssunit.mjs"
     },
     "./extensions/url": {
+      "types": "./dist/types/extensions/url.d.ts",
       "import": "./dist/esm/url.mjs"
     },
     "./extensions/ip": {
+      "types": "./dist/types/extensions/ip.d.ts",
       "import": "./dist/esm/ip.mjs"
     },
     "./extensions/email": {
+      "types": "./dist/types/extensions/email.d.ts",
       "import": "./dist/esm/email.mjs"
     },
     "./extensions/mac": {
+      "types": "./dist/types/extensions/mac.d.ts",
       "import": "./dist/esm/mac.mjs"
     },
     "./extensions/vin": {
+      "types": "./dist/types/extensions/vin.d.ts",
       "import": "./dist/esm/vin.mjs"
     },
     "./extensions/ssn": {
+      "types": "./dist/types/extensions/ssn.d.ts",
       "import": "./dist/esm/ssn.mjs"
     },
     "./colormask": {
+      "types": "./dist/types/extensions/colormask.d.ts",
       "import": "./dist/esm/colormask.mjs",
       "require": "./dist/colormask.js"
     },
     "./inputmaskElement": {
+      "types": "./dist/types/inputmaskElement.d.ts",
       "import": "./dist/esm/inputmaskElement.mjs"
     },
     "./dist/*": "./dist/*",
@@ -51,7 +65,6 @@
     "./micromasks/*": "./micromasks/*"
   },
   "files": [
-    "bundle.js",
     "Changelog.md",
     "dist/",
     "lib/",
@@ -65,6 +78,7 @@
     "jquery": "webpack --progress --watch --config-name jquery --config webpack.config.js",
     "colormask": "webpack --progress --watch --config-name colormask --config webpack.config.js",
     "modern": "webpack --progress --watch --config-name modern --config webpack.config.js",
+    "types": "tsc -p tsconfig.types.json --emitDeclarationOnly",
     "test": "grunt validate"
   },
   "repository": {
@@ -102,6 +116,7 @@
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-header": "^3.1.1",
     "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jsdoc": "^61.7.1",
     "eslint-plugin-n": "^18.2.2",
     "eslint-plugin-prettier": "^5.5.6",
     "eslint-plugin-promise": "^7.3.0",
@@ -123,6 +138,7 @@
     "prettier": "3.9.6",
     "qunit": "^2.26.0",
     "terser-webpack-plugin": "^5.6.1",
+    "typescript": "^5.9.3",
     "webpack": "^5.108.4",
     "webpack-cli": "^7.2.1"
   }

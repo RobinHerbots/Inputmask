@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.1
+ * Version: 5.1.0-beta.3
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -59,7 +59,71 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports["default"] = void 0;
-var _default = exports["default"] = {
+/**
+ * Public options surface for Inputmask instances.
+ *
+ * @typedef {Object} InputmaskOptions
+ * @property {number} [_maxTestPos]
+ * @property {string} [placeholder]
+ * @property {string[] | [string, string]} [optionalmarker]
+ * @property {string[] | [string, string]} [quantifiermarker]
+ * @property {string[] | [string, string]} [groupmarker]
+ * @property {string} [alternatormarker]
+ * @property {string} [escapeChar]
+ * @property {string | null} [mask]
+ * @property {string | null} [regex]
+ * @property {(event?: Event) => void} [oncomplete]
+ * @property {(event?: Event) => void} [onincomplete]
+ * @property {(event?: Event) => void} [oncleared]
+ * @property {number | string} [repeat]
+ * @property {boolean} [greedy]
+ * @property {boolean} [autoUnmask]
+ * @property {boolean} [removeMaskOnSubmit]
+ * @property {boolean} [clearMaskOnLostFocus]
+ * @property {boolean} [insertMode]
+ * @property {boolean} [insertModeVisual]
+ * @property {boolean} [clearIncomplete]
+ * @property {string | null} [alias]
+ * @property {(event: Event, buffer: string[], caretPos: number, opts: InputmaskOptions) => void} [onKeyDown]
+ * @property {((initialValue: string, opts: InputmaskOptions) => string) | null} [onBeforeMask]
+ * @property {(pastedValue: string, opts: InputmaskOptions) => string} [onBeforePaste]
+ * @property {((event: Event | undefined, buffer: string[], caretPos: number, opts: InputmaskOptions) => any) | null} [onBeforeWrite]
+ * @property {((maskedValue: string, unmaskedValue: string, opts: InputmaskOptions) => string) | null} [onUnMask]
+ * @property {string | null} [outputMask]
+ * @property {boolean} [showMaskOnFocus]
+ * @property {boolean} [showMaskOnHover]
+ * @property {(key: string, result: boolean, opts: InputmaskOptions) => void} [onKeyValidation]
+ * @property {string} [skipOptionalPartCharacter]
+ * @property {boolean} [numericInput]
+ * @property {boolean} [rightAlign]
+ * @property {boolean} [undoOnEscape]
+ * @property {string} [radixPoint]
+ * @property {boolean} [_radixDance]
+ * @property {string} [groupSeparator]
+ * @property {boolean | null} [keepStatic]
+ * @property {boolean} [positionCaretOnTab]
+ * @property {boolean} [tabThrough]
+ * @property {string[]} [supportsInputType]
+ * @property {((buffer: string[], opts: InputmaskOptions) => boolean) | null} [isComplete]
+ * @property {((buffer: string[], pos: number, char: string, isSelection: boolean, opts: InputmaskOptions, maskset: any, caretPos: number, strict: boolean) => boolean | Object) | null} [preValidation]
+ * @property {((buffer: string[], pos: number, char: string, currentResult: boolean | Object, opts: InputmaskOptions, maskset: any, strict: boolean, fromCheckval: boolean, fromAlternate: boolean) => boolean | Object) | null} [postValidation]
+ * @property {string | undefined} [staticDefinitionSymbol]
+ * @property {boolean | number} [jitMasking]
+ * @property {boolean} [nullable]
+ * @property {boolean} [inputEventOnly]
+ * @property {boolean} [noValuePatching]
+ * @property {"none" | "lvp" | "radixFocus" | "select" | "ignore"} [positionCaretOnClick]
+ * @property {"upper" | "lower" | "title" | "follow" | ((elem: HTMLElement, test: any, pos: number, validPositions: any) => string) | null} [casing]
+ * @property {string} [inputmode]
+ * @property {boolean} [importDataAttributes]
+ * @property {boolean} [shiftPositions]
+ * @property {boolean} [usePrototypeDefinitions]
+ * @property {number} [validationEventTimeOut]
+ * @property {Record<string, string>} [substitutes]
+ */
+
+/** @type {InputmaskOptions} */
+const defaults = {
   _maxTestPos: 500,
   placeholder: "_",
   optionalmarker: ["[", "]"],
@@ -169,6 +233,7 @@ var _default = exports["default"] = {
   // Time to show validation error on form submit
   substitutes: {} // define character substitutes
 };
+var _default = exports["default"] = defaults;
 
 /***/ }),
 
@@ -2949,6 +3014,46 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e
 
 const document = _window.default.document,
   dataKey = "_inputmask_opts";
+
+/** @typedef {import("./defaults.js").default} InputmaskOptions */
+/** @typedef {Element | Element[] | NodeList | string} InputmaskElements */
+
+/**
+ * @typedef {Object} InputmaskInstance
+ * @property {boolean} isRTL
+ * @property {(elems: InputmaskElements) => InputmaskInstance | any} mask
+ * @property {(options: keyof InputmaskOptions | InputmaskOptions, noremask?: boolean) => any} option
+ * @property {(value?: string) => string} unmaskedvalue
+ * @property {() => Element | undefined} remove
+ * @property {() => string} getemptymask
+ * @property {() => boolean} hasMaskedValue
+ * @property {() => boolean} isComplete
+ * @property {() => any} getmetadata
+ * @property {(value?: string) => boolean} isValid
+ * @property {(value: string, metadata?: boolean) => string | { value: string; metadata: any }} format
+ * @property {(value: string) => void} setValue
+ */
+
+/**
+ * @typedef {((alias?: string | InputmaskOptions, options?: InputmaskOptions, internal?: boolean) => InputmaskInstance) & {
+ *   extendDefaults: (options: InputmaskOptions) => void;
+ *   extendDefinitions: (definition: Record<string, any>) => void;
+ *   extendAliases: (alias: Record<string, InputmaskOptions>) => void;
+ *   format: (value: string, options?: InputmaskOptions, metadata?: boolean) => string | { value: string; metadata: any };
+ *   unmask: (value: string, options?: InputmaskOptions) => string;
+ *   isValid: (value: string, options?: InputmaskOptions) => boolean;
+ *   remove: (elems: InputmaskElements) => void;
+ *   setValue: (elems: InputmaskElements, value: string) => void;
+ *   dependencyLib: any;
+ * }} InputmaskStatic
+ */
+
+/**
+ * @param {string | InputmaskOptions} [alias]
+ * @param {InputmaskOptions} [options]
+ * @param {boolean} [internal]
+ * @returns {InputmaskInstance}
+ */
 function Inputmask(alias, options, internal) {
   // allow instanciating without new
   if (!(this instanceof Inputmask)) {
@@ -2988,6 +3093,8 @@ function Inputmask(alias, options, internal) {
   this.lastInputEvent = null; // track last input event to prevent duplicates #2855
   this.hasAlternator = false;
 }
+
+/** @type {any} */
 Inputmask.prototype = {
   dataAttribute: "data-inputmask",
   // data attribute prefix used for attribute binding
@@ -3225,25 +3332,57 @@ function importAttributeOptions(npt, opts, userOptions, dataAttribute) {
 }
 
 // apply defaults, definitions, aliases
+/**
+ * @param {InputmaskOptions} options
+ * @returns {void}
+ */
 Inputmask.extendDefaults = function (options) {
   _inputmask.default.extend(true, Inputmask.prototype.defaults, options);
 };
+/**
+ * @param {Record<string, any>} definition
+ * @returns {void}
+ */
 Inputmask.extendDefinitions = function (definition) {
   _inputmask.default.extend(true, Inputmask.prototype.definitions, definition);
 };
+/**
+ * @param {Record<string, InputmaskOptions>} alias
+ * @returns {void}
+ */
 Inputmask.extendAliases = function (alias) {
   _inputmask.default.extend(true, Inputmask.prototype.aliases, alias);
 };
 // static fn on inputmask
+/**
+ * @param {string} value
+ * @param {InputmaskOptions} [options]
+ * @param {boolean} [metadata]
+ * @returns {string | { value: string; metadata: any }}
+ */
 Inputmask.format = function (value, options, metadata) {
   return Inputmask(options).format(value, metadata);
 };
+/**
+ * @param {string} value
+ * @param {InputmaskOptions} [options]
+ * @returns {string}
+ */
 Inputmask.unmask = function (value, options) {
   return Inputmask(options).unmaskedvalue(value);
 };
+/**
+ * @param {string} value
+ * @param {InputmaskOptions} [options]
+ * @returns {boolean}
+ */
 Inputmask.isValid = function (value, options) {
   return Inputmask(options).isValid(value);
 };
+/**
+ * @param {InputmaskElements} elems
+ * @returns {void}
+ */
 Inputmask.remove = function (elems) {
   if (typeof elems === "string") {
     elems = document.getElementById(elems) || document.querySelectorAll(elems);
@@ -3253,6 +3392,11 @@ Inputmask.remove = function (elems) {
     if (elems[i].inputmask) elems[i].inputmask.remove();
   }
 };
+/**
+ * @param {InputmaskElements} elems
+ * @param {string} value
+ * @returns {void}
+ */
 Inputmask.setValue = function (elems, value) {
   if (typeof elems === "string") {
     elems = document.getElementById(elems) || document.querySelectorAll(elems);
@@ -3266,7 +3410,8 @@ Inputmask.dependencyLib = _inputmask.default;
 
 // make inputmask available
 _window.default.Inputmask = Inputmask;
-var _default = exports["default"] = Inputmask;
+const InputmaskExport = /** @type {InputmaskStatic} */Inputmask;
+var _default = exports["default"] = InputmaskExport;
 
 /***/ }),
 
@@ -3284,6 +3429,8 @@ const document = _window.default.document;
 // integrate shadowroot into maskcope
 if (document && document.head && document.head.attachShadow && _window.default.customElements && _window.default.customElements.get("input-mask") === undefined) {
   class InputmaskElement extends HTMLElement {
+    /** @type {HTMLInputElement} */
+    input;
     constructor() {
       super();
       const attributeNames = this.getAttributeNames(),
@@ -3302,6 +3449,12 @@ if (document && document.head && document.head.attachShadow && _window.default.c
       im.dataAttribute = "";
       im.mask(this.input);
     }
+
+    /**
+     * @param {string} attrName
+     * @param {string | null} oldVal
+     * @param {string | null} newVal
+     */
     attributeChangedCallback(attrName, oldVal, newVal) {
       this.input.setAttribute(attrName, newVal);
     }
@@ -3310,6 +3463,8 @@ if (document && document.head && document.head.attachShadow && _window.default.c
     get value() {
       return this.input.value;
     }
+
+    /** @param {string} value */
     set value(value) {
       this.input.value = value;
     }

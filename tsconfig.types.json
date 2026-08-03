@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationMap": false,
+    "outDir": "./dist/types",
+    "stripInternal": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "target": "ES5",
+    "module": "ESNext",
+    "moduleResolution": "Bundler"
+  },
+  "include": ["lib/**/*.js"],
+  "exclude": ["dist/**", "qunit/**", "inputmask-pages/**", "node_modules/**"]
+}
