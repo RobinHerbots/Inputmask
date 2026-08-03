@@ -13,8 +13,8 @@ import "./lib/extensions/email";
 import "./lib/extensions/mac";
 import "./lib/extensions/vin";
 import "./lib/extensions/ssn";
-import "./lib/extensions/date.extensions";
-import "./lib/extensions/numeric.extensions";
+import "./lib/extensions/date";
+import "./lib/extensions/numeric";
 import "./lib/inputmaskElement";
 import Inputmask from "./lib/inputmask";
 

@@ -9,11 +9,11 @@
       "import": "./dist/esm/inputmask.mjs",
       "require": "./dist/inputmask.js"
     },
-    "./date.extensions": {
-      "import": "./dist/esm/date.extensions.mjs"
+    "./extensions/date": {
+      "import": "./dist/esm/date.mjs"
     },
-    "./numeric.extensions": {
-      "import": "./dist/esm/numeric.extensions.mjs"
+    "./extensions/numeric": {
+      "import": "./dist/esm/numeric.mjs"
     },
     "./extensions/definitions": {
       "import": "./dist/esm/definitions.mjs"

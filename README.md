@@ -11,7 +11,36 @@ This will be appreciated very much.
 
 Inputmask is a javascript library that creates an input mask. Inputmask can run against vanilla javascript, jQuery, and jqlite.
 
-An inputmask helps the user with the input by ensuring a predefined format. This can be useful for dates, numerics, phone numbers, etc.
+An inputmask helps the user with the input by ensuring a predefined format. This can be useful for dates, numerics, phone numbers, ...
+
+## Usage
+
+### Modern ES Modules
+
+Inputmask exposes a modern, tree-shakable ES Module build. You can import the core functionality and then include only the extensions you need:
+
+```javascript
+import Inputmask from "inputmask";
+import "inputmask/extensions/url"; // and/or ip, email, mac, vin, ssn, cssunit
+import "inputmask/extensions/date";
+import "inputmask/extensions/numeric";
+
+Inputmask({"mask": "99/99/9999"}).mask(document.getElementById("myInput"));
+```
+
+Each alias and the `A`, `&`, `#` definitions are available as a separate module under `inputmask/extensions/<name>` (`ip`, `email`, `url`, `cssunit`, `mac`, `vin`, `ssn`, `date`, `numeric`, `definitions`), so you can import only the ones you use.
+
+### Legacy UMD
+
+If you are using script tags or need the legacy UMD build containing all features natively bundled:
+
+```html
+<script src="node_modules/inputmask/dist/inputmask.min.js"></script>
+```
+
+```javascript
+Inputmask({"mask": "99/99/9999"}).mask(document.getElementById("myInput"));
+```
 
 ## Documentation and demo page
 

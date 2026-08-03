@@ -63,8 +63,8 @@ Inputmask exposes a modern, tree-shakable ES Module build. You can import the co
 ```javascript
 import Inputmask from "inputmask";
 import "inputmask/extensions/url"; // and/or ip, email, mac, vin, ssn, cssunit
-import "inputmask/date.extensions";
-import "inputmask/numeric.extensions";
+import "inputmask/extensions/date";
+import "inputmask/extensions/numeric";
 
 Inputmask({"mask": "99/99/9999"}).mask(document.getElementById("myInput"));
 ```
@@ -78,6 +78,8 @@ Each alias and the `A`, `&`, `#` definitions are available as a separate module 
 - `inputmask/extensions/mac`
 - `inputmask/extensions/vin`
 - `inputmask/extensions/ssn`
+- `inputmask/extensions/date`
+- `inputmask/extensions/numeric`
 - `inputmask/extensions/definitions`
 
 ### Legacy ES6 via explicit path

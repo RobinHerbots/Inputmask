@@ -58,4 +58,4 @@ An SSN mask for entering valid SSN numbers.
 Inputmask("ssn").mask(selector);
 ```
 
-You can find/modify/extend these aliases in lib/extensions/ (ip, email, url, cssunit, mac, vin, ssn and definitions modules).
+You can find/modify/extend these aliases in lib/extensions/ (ip, email, url, cssunit, mac, vin, ssn, date, numeric and definitions modules).
