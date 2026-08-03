@@ -15,9 +15,6 @@
     "./numeric.extensions": {
       "import": "./dist/esm/numeric.extensions.mjs"
     },
-    "./extensions": {
-      "import": "./dist/esm/extensions.mjs"
-    },
     "./extensions/definitions": {
       "import": "./dist/esm/definitions.mjs"
     },

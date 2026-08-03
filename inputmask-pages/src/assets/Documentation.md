@@ -62,18 +62,11 @@ Inputmask exposes a modern, tree-shakable ES Module build. You can import the co
 
 ```javascript
 import Inputmask from "inputmask";
-import "inputmask/extensions"; // url, ip, email, mac, vin, ssn + A, &, # definitions
+import "inputmask/extensions/url"; // and/or ip, email, mac, vin, ssn, cssunit
 import "inputmask/date.extensions";
 import "inputmask/numeric.extensions";
 
 Inputmask({"mask": "99/99/9999"}).mask(document.getElementById("myInput"));
-```
-
-The `inputmask/extensions` module is an aggregate of smaller modules, so you can also import only the ones you use:
-
-```javascript
-import "inputmask/extensions/ip";
-import "inputmask/extensions/email";
 ```
 
 Each alias and the `A`, `&`, `#` definitions are available as a separate module under `inputmask/extensions/<name>`:
@@ -1350,7 +1343,7 @@ Inputmask.extendDefinitions({
 });
 ```
 
-Include jquery.inputmask.extensions.js for using the A and # definitions. With the modern ES Module build, import "inputmask/extensions" or "inputmask/extensions/definitions" instead.
+Include jquery.inputmask.extensions.js for using the A and # definitions. With the modern ES Module build, import "inputmask/extensions/definitions" instead.
 
 ```javascript
 $(document).ready(function () {

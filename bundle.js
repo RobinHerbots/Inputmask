@@ -5,7 +5,14 @@ import "./lib/polyfills/String.includes";
 
 import "./lib/global/FormData";
 
-import "./lib/extensions/extensions";
+import "./lib/extensions/definitions";
+import "./lib/extensions/cssunit";
+import "./lib/extensions/url";
+import "./lib/extensions/ip";
+import "./lib/extensions/email";
+import "./lib/extensions/mac";
+import "./lib/extensions/vin";
+import "./lib/extensions/ssn";
 import "./lib/extensions/date.extensions";
 import "./lib/extensions/numeric.extensions";
 import "./lib/inputmaskElement";
