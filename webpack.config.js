@@ -87,6 +87,38 @@ module.exports = function (env, argv) {
           import: "./lib/extensions/extensions.js",
           dependOn: "dist/esm/inputmask.mjs"
         },
+        "dist/esm/definitions.mjs": {
+          import: "./lib/extensions/definitions.js",
+          dependOn: "dist/esm/inputmask.mjs"
+        },
+        "dist/esm/cssunit.mjs": {
+          import: "./lib/extensions/cssunit.js",
+          dependOn: "dist/esm/inputmask.mjs"
+        },
+        "dist/esm/url.mjs": {
+          import: "./lib/extensions/url.js",
+          dependOn: "dist/esm/inputmask.mjs"
+        },
+        "dist/esm/ip.mjs": {
+          import: "./lib/extensions/ip.js",
+          dependOn: "dist/esm/inputmask.mjs"
+        },
+        "dist/esm/email.mjs": {
+          import: "./lib/extensions/email.js",
+          dependOn: "dist/esm/inputmask.mjs"
+        },
+        "dist/esm/mac.mjs": {
+          import: "./lib/extensions/mac.js",
+          dependOn: "dist/esm/inputmask.mjs"
+        },
+        "dist/esm/vin.mjs": {
+          import: "./lib/extensions/vin.js",
+          dependOn: "dist/esm/inputmask.mjs"
+        },
+        "dist/esm/ssn.mjs": {
+          import: "./lib/extensions/ssn.js",
+          dependOn: "dist/esm/inputmask.mjs"
+        },
         "dist/esm/date.extensions.mjs": {
           import: "./lib/extensions/date.extensions.js",
           dependOn: "dist/esm/inputmask.mjs"

@@ -878,6 +878,28 @@ const EventRuler = exports.EventRuler = {
 
 /***/ }),
 
+/***/ 4408:
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+
+
+
+var _inputmask = _interopRequireDefault(__webpack_require__(3978));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+/*
+ Input Mask plugin extensions
+ http://github.com/RobinHerbots/inputmask
+ Copyright (c) Robin Herbots
+ Licensed under the MIT license
+ */
+
+_inputmask.default.extendAliases({
+  cssunit: {
+    regex: "[+-]?[0-9]+\\.?([0-9]+)?(px|em|rem|ex|%|in|cm|mm|pt|pc)"
+  }
+});
+
+/***/ }),
+
 /***/ 4413:
 /***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
 
@@ -1614,14 +1636,12 @@ _inputmask.default.extendAliases({
 
 /***/ }),
 
-/***/ 6959:
+/***/ 2735:
 /***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
 
 
 
 var _inputmask = _interopRequireDefault(__webpack_require__(3978));
-var _positioning = __webpack_require__(7539);
-var _validationTests = __webpack_require__(5895);
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /*
  Input Mask plugin extensions
@@ -1647,62 +1667,24 @@ _inputmask.default.extendDefinitions({
     casing: "upper"
   }
 });
-const ipValidatorRegex = /25[0-5]|2[0-4][0-9]|[01][0-9][0-9]/;
-function ipValidator(chrs, maskset, pos, strict, opts) {
-  if (pos - 1 > -1 && maskset.buffer[pos - 1] !== ".") {
-    chrs = maskset.buffer[pos - 1] + chrs;
-    if (pos - 2 > -1 && maskset.buffer[pos - 2] !== ".") {
-      chrs = maskset.buffer[pos - 2] + chrs;
-    } else chrs = "0" + chrs;
-  } else chrs = "00" + chrs;
-  if (opts.greedy && parseInt(chrs) > 255 && ipValidatorRegex.test("00" + chrs.charAt(2))) {
-    const buffer = [...maskset.buffer.slice(0, pos), ".", chrs.charAt(2)];
-    if (buffer.join("").match(/\./g).length < 4) {
-      return {
-        refreshFromBuffer: true,
-        buffer,
-        caret: pos + 2
-      };
-    }
-  }
-  return ipValidatorRegex.test(chrs);
-}
+
+/***/ }),
+
+/***/ 6009:
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+
+
+
+var _inputmask = _interopRequireDefault(__webpack_require__(3978));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+/*
+ Input Mask plugin extensions
+ http://github.com/RobinHerbots/inputmask
+ Copyright (c) Robin Herbots
+ Licensed under the MIT license
+ */
+
 _inputmask.default.extendAliases({
-  cssunit: {
-    regex: "[+-]?[0-9]+\\.?([0-9]+)?(px|em|rem|ex|%|in|cm|mm|pt|pc)"
-  },
-  url: {
-    // needs update => https://en.wikipedia.org/wiki/URL
-    regex: "(https?|ftp)://.*",
-    autoUnmask: false,
-    keepStatic: false,
-    tabThrough: true
-  },
-  ip: {
-    // ip-address mask
-    mask: "i{1,3}.j{1,3}.k{1,3}.l{1,3}",
-    definitions: {
-      i: {
-        validator: ipValidator
-      },
-      j: {
-        validator: ipValidator
-      },
-      k: {
-        validator: ipValidator
-      },
-      l: {
-        validator: ipValidator
-      }
-    },
-    onUnMask: function (maskedValue, unmaskedValue, opts) {
-      return maskedValue;
-    },
-    inputmode: "decimal",
-    substitutes: {
-      ",": "."
-    }
-  },
   email: {
     // https://en.wikipedia.org/wiki/Domain_name#Domain_name_space
     // https://en.wikipedia.org/wiki/Hostname#Restrictions_on_valid_host_names
@@ -1741,33 +1723,24 @@ _inputmask.default.extendAliases({
       return maskedValue;
     },
     inputmode: "email"
-  },
-  mac: {
-    mask: "##:##:##:##:##:##"
-  },
-  // https://en.wikipedia.org/wiki/Vehicle_identification_number
-  // see issue #1199
-  vin: {
-    mask: "V{13}9{4}",
-    definitions: {
-      V: {
-        validator: "[A-HJ-NPR-Za-hj-npr-z\\d]",
-        casing: "upper"
-      }
-    },
-    clearIncomplete: true,
-    autoUnmask: true
-  },
-  // http://rion.io/2013/09/10/validating-social-security-numbers-through-regular-expressions-2/
-  // https://en.wikipedia.org/wiki/Social_Security_number
-  ssn: {
-    mask: "999-99-9999",
-    postValidation: function (buffer, pos, c, currentResult, opts, maskset, strict) {
-      const bffr = _validationTests.getMaskTemplate.call(this, true, _positioning.getLastValidPosition.call(this), true, true);
-      return /^(?!219-09-9999|078-05-1120)(?!666|000|9.{2}).{3}-(?!00).{2}-(?!0{4}).{4}$/.test(bffr.join(""));
-    }
   }
 });
+
+/***/ }),
+
+/***/ 6959:
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+
+
+
+__webpack_require__(2735);
+__webpack_require__(4408);
+__webpack_require__(8776);
+__webpack_require__(56);
+__webpack_require__(6009);
+__webpack_require__(38);
+__webpack_require__(1328);
+__webpack_require__(8605);
 
 /***/ }),
 
@@ -1790,6 +1763,93 @@ $.extend(true, _inputmask.default.prototype.i18n, {
   dayNames: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
   monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
   ordinalSuffix: ["st", "nd", "rd", "th"]
+});
+
+/***/ }),
+
+/***/ 56:
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+
+
+
+var _inputmask = _interopRequireDefault(__webpack_require__(3978));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+/*
+ Input Mask plugin extensions
+ http://github.com/RobinHerbots/inputmask
+ Copyright (c) Robin Herbots
+ Licensed under the MIT license
+ */
+
+const ipValidatorRegex = /25[0-5]|2[0-4][0-9]|[01][0-9][0-9]/;
+function ipValidator(chrs, maskset, pos, strict, opts) {
+  if (pos - 1 > -1 && maskset.buffer[pos - 1] !== ".") {
+    chrs = maskset.buffer[pos - 1] + chrs;
+    if (pos - 2 > -1 && maskset.buffer[pos - 2] !== ".") {
+      chrs = maskset.buffer[pos - 2] + chrs;
+    } else chrs = "0" + chrs;
+  } else chrs = "00" + chrs;
+  if (opts.greedy && parseInt(chrs) > 255 && ipValidatorRegex.test("00" + chrs.charAt(2))) {
+    const buffer = [...maskset.buffer.slice(0, pos), ".", chrs.charAt(2)];
+    if (buffer.join("").match(/\./g).length < 4) {
+      return {
+        refreshFromBuffer: true,
+        buffer,
+        caret: pos + 2
+      };
+    }
+  }
+  return ipValidatorRegex.test(chrs);
+}
+_inputmask.default.extendAliases({
+  ip: {
+    // ip-address mask
+    mask: "i{1,3}.j{1,3}.k{1,3}.l{1,3}",
+    definitions: {
+      i: {
+        validator: ipValidator
+      },
+      j: {
+        validator: ipValidator
+      },
+      k: {
+        validator: ipValidator
+      },
+      l: {
+        validator: ipValidator
+      }
+    },
+    onUnMask: function (maskedValue, unmaskedValue, opts) {
+      return maskedValue;
+    },
+    inputmode: "decimal",
+    substitutes: {
+      ",": "."
+    }
+  }
+});
+
+/***/ }),
+
+/***/ 38:
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+
+
+
+var _inputmask = _interopRequireDefault(__webpack_require__(3978));
+__webpack_require__(2735);
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+/*
+ Input Mask plugin extensions
+ http://github.com/RobinHerbots/inputmask
+ Copyright (c) Robin Herbots
+ Licensed under the MIT license
+ */
+
+_inputmask.default.extendAliases({
+  mac: {
+    mask: "##:##:##:##:##:##"
+  }
 });
 
 /***/ }),
@@ -2466,6 +2526,94 @@ _inputmask.default.extendAliases({
     placeholder: "0",
     digits: 2,
     digitsOptional: false
+  }
+});
+
+/***/ }),
+
+/***/ 8605:
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+
+
+
+var _inputmask = _interopRequireDefault(__webpack_require__(3978));
+var _positioning = __webpack_require__(7539);
+var _validationTests = __webpack_require__(5895);
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+/*
+ Input Mask plugin extensions
+ http://github.com/RobinHerbots/inputmask
+ Copyright (c) Robin Herbots
+ Licensed under the MIT license
+ */
+
+_inputmask.default.extendAliases({
+  // http://rion.io/2013/09/10/validating-social-security-numbers-through-regular-expressions-2/
+  // https://en.wikipedia.org/wiki/Social_Security_number
+  ssn: {
+    mask: "999-99-9999",
+    postValidation: function (buffer, pos, c, currentResult, opts, maskset, strict) {
+      const bffr = _validationTests.getMaskTemplate.call(this, true, _positioning.getLastValidPosition.call(this), true, true);
+      return /^(?!219-09-9999|078-05-1120)(?!666|000|9.{2}).{3}-(?!00).{2}-(?!0{4}).{4}$/.test(bffr.join(""));
+    }
+  }
+});
+
+/***/ }),
+
+/***/ 8776:
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+
+
+
+var _inputmask = _interopRequireDefault(__webpack_require__(3978));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+/*
+ Input Mask plugin extensions
+ http://github.com/RobinHerbots/inputmask
+ Copyright (c) Robin Herbots
+ Licensed under the MIT license
+ */
+
+_inputmask.default.extendAliases({
+  url: {
+    // needs update => https://en.wikipedia.org/wiki/URL
+    regex: "(https?|ftp)://.*",
+    autoUnmask: false,
+    keepStatic: false,
+    tabThrough: true
+  }
+});
+
+/***/ }),
+
+/***/ 1328:
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+
+
+
+var _inputmask = _interopRequireDefault(__webpack_require__(3978));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+/*
+ Input Mask plugin extensions
+ http://github.com/RobinHerbots/inputmask
+ Copyright (c) Robin Herbots
+ Licensed under the MIT license
+ */
+
+_inputmask.default.extendAliases({
+  // https://en.wikipedia.org/wiki/Vehicle_identification_number
+  // see issue #1199
+  vin: {
+    mask: "V{13}9{4}",
+    definitions: {
+      V: {
+        validator: "[A-HJ-NPR-Za-hj-npr-z\\d]",
+        casing: "upper"
+      }
+    },
+    clearIncomplete: true,
+    autoUnmask: true
   }
 });
 

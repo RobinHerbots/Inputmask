@@ -18,6 +18,30 @@
     "./extensions": {
       "import": "./dist/esm/extensions.mjs"
     },
+    "./extensions/definitions": {
+      "import": "./dist/esm/definitions.mjs"
+    },
+    "./extensions/cssunit": {
+      "import": "./dist/esm/cssunit.mjs"
+    },
+    "./extensions/url": {
+      "import": "./dist/esm/url.mjs"
+    },
+    "./extensions/ip": {
+      "import": "./dist/esm/ip.mjs"
+    },
+    "./extensions/email": {
+      "import": "./dist/esm/email.mjs"
+    },
+    "./extensions/mac": {
+      "import": "./dist/esm/mac.mjs"
+    },
+    "./extensions/vin": {
+      "import": "./dist/esm/vin.mjs"
+    },
+    "./extensions/ssn": {
+      "import": "./dist/esm/ssn.mjs"
+    },
     "./colormask": {
       "import": "./dist/esm/colormask.mjs",
       "require": "./dist/colormask.js"

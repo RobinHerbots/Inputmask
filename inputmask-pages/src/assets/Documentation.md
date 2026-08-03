@@ -62,11 +62,30 @@ Inputmask exposes a modern, tree-shakable ES Module build. You can import the co
 
 ```javascript
 import Inputmask from "inputmask";
+import "inputmask/extensions"; // url, ip, email, mac, vin, ssn + A, &, # definitions
 import "inputmask/date.extensions";
 import "inputmask/numeric.extensions";
 
 Inputmask({"mask": "99/99/9999"}).mask(document.getElementById("myInput"));
 ```
+
+The `inputmask/extensions` module is an aggregate of smaller modules, so you can also import only the ones you use:
+
+```javascript
+import "inputmask/extensions/ip";
+import "inputmask/extensions/email";
+```
+
+Each alias and the `A`, `&`, `#` definitions are available as a separate module under `inputmask/extensions/<name>`:
+
+- `inputmask/extensions/ip`
+- `inputmask/extensions/email`
+- `inputmask/extensions/url`
+- `inputmask/extensions/cssunit`
+- `inputmask/extensions/mac`
+- `inputmask/extensions/vin`
+- `inputmask/extensions/ssn`
+- `inputmask/extensions/definitions`
 
 ### Legacy ES6 via explicit path
 
@@ -900,7 +919,7 @@ First, you have to create an alias definition. The alias definition can contain 
 
 When you pass in an alias, the alias is first resolved and then the other options are applied. So you can call an alias and pass another mask to be applied over the alias. This also means that you can write aliases that "inherit" from another alias.
 
-Some examples can be found in jquery.inputmask.xxx.extensions.js
+Some examples can be found in lib/extensions/*.js
 
 use:
 
@@ -1331,7 +1350,7 @@ Inputmask.extendDefinitions({
 });
 ```
 
-Include jquery.inputmask.extensions.js for using the A and # definitions.
+Include jquery.inputmask.extensions.js for using the A and # definitions. With the modern ES Module build, import "inputmask/extensions" or "inputmask/extensions/definitions" instead.
 
 ```javascript
 $(document).ready(function () {
