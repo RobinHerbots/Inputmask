@@ -102,15 +102,26 @@ module.exports = function (grunt) {
   // Load the plugin that provides the tasks.
   require("load-grunt-tasks")(grunt);
 
+  grunt.registerTask("updateYear", function () {
+    const year = new Date().getFullYear();
+    const readme = grunt.file.read("README.md");
+    const updated = readme.replace(
+      /Copyright \(c\) 2010 - (?:\{\{year\}\}|\d{4})/,
+      `Copyright (c) 2010 - ${year}`
+    );
+    grunt.file.write("README.md", updated);
+    grunt.log.ok("README.md copyright year updated to " + year);
+  });
+
   grunt.registerTask("publish", ["release", "nugetpack", "nugetpush"]);
   grunt.registerTask("publishnext", function () {
     grunt.config("release.options.npmtag", "next");
     grunt.task.run("release");
   });
   grunt.registerTask("validate", ["webpack", "copy", "eslint", "karma"]);
-  grunt.registerTask("build", ["bump:prerelease", "clean", "webpack", "copy"]);
-  grunt.registerTask("build:patch", ["bump:patch", "clean", "webpack", "copy"]);
-  grunt.registerTask("build:minor", ["bump:minor", "clean", "webpack", "copy"]);
-  grunt.registerTask("build:major", ["bump:major", "clean", "webpack", "copy"]);
+  grunt.registerTask("build", ["updateYear", "bump:prerelease", "clean", "webpack", "copy"]);
+  grunt.registerTask("build:patch", ["updateYear", "bump:patch", "clean", "webpack", "copy"]);
+  grunt.registerTask("build:minor", ["updateYear", "bump:minor", "clean", "webpack", "copy"]);
+  grunt.registerTask("build:major", ["updateYear", "bump:major", "clean", "webpack", "copy"]);
   grunt.registerTask("default", ["availabletasks"]);
 };
