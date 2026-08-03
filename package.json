@@ -9,14 +9,14 @@
       "import": "./dist/esm/inputmask.mjs",
       "require": "./dist/inputmask.js"
     },
-    "./inputmask.date.extensions": {
-      "import": "./dist/esm/inputmask.date.extensions.mjs"
+    "./date.extensions": {
+      "import": "./dist/esm/date.extensions.mjs"
     },
-    "./inputmask.numeric.extensions": {
-      "import": "./dist/esm/inputmask.numeric.extensions.mjs"
+    "./numeric.extensions": {
+      "import": "./dist/esm/numeric.extensions.mjs"
     },
-    "./inputmask.extensions": {
-      "import": "./dist/esm/inputmask.extensions.mjs"
+    "./extensions": {
+      "import": "./dist/esm/extensions.mjs"
     },
     "./colormask": {
       "import": "./dist/esm/colormask.mjs",

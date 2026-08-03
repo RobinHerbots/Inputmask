@@ -1,15 +1,15 @@
 /*!
- * dist/esm/inputmask.date.extensions.mjs
+ * dist/esm/date.extensions.mjs
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
  * Version: 5.0.11-beta.0
  */
-export const __webpack_esm_id__ = 174;
-export const __webpack_esm_ids__ = [174];
+export const __webpack_esm_id__ = 236;
+export const __webpack_esm_ids__ = [236];
 export const __webpack_esm_modules__ = {
 
-/***/ 634
+/***/ 851
 (__unused_webpack_module, __unused_webpack___webpack_exports__, __webpack_require__) {
 
 
@@ -37,7 +37,7 @@ $.extend(true, inputmask/* default */.A.prototype.i18n, {
   monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
   ordinalSuffix: ["st", "nd", "rd", "th"]
 });
-;// ./lib/extensions/inputmask.date.extensions.js
+;// ./lib/extensions/date.extensions.js
 /*
  Input Mask plugin extensions
  http://github.com/RobinHerbots/inputmask
@@ -50,7 +50,7 @@ $.extend(true, inputmask/* default */.A.prototype.i18n, {
 
 
 
-const inputmask_date_extensions_$ = inputmask/* default */.A.dependencyLib;
+const date_extensions_$ = inputmask/* default */.A.dependencyLib;
 class DateObject {
   constructor(mask, format, opts, inputmask) {
     this.mask = mask;
@@ -742,7 +742,7 @@ inputmask/* default */.A.extendAliases({
       const input = this;
       if (e.ctrlKey && e.key === keycode/* keys */.HP.ArrowRight) {
         input.inputmask._valueSet(importDate(new Date(), opts));
-        inputmask_date_extensions_$(input).trigger("setvalue");
+        date_extensions_$(input).trigger("setvalue");
       }
     },
     onUnMask: function (maskedValue, unmaskedValue, opts) {
@@ -774,6 +774,6 @@ inputmask/* default */.A.extendAliases({
 import { __webpack_require__ } from "./inputmask.mjs";
 var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
 
-import * as __webpack_chunk_1__ from "./inputmask.date.extensions.mjs";
+import * as __webpack_chunk_1__ from "./date.extensions.mjs";
 __webpack_require__.C(__webpack_chunk_1__);
-var __webpack_exports__ = __webpack_exec__(634);
+var __webpack_exports__ = __webpack_exec__(851);

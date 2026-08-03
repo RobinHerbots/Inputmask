@@ -62,8 +62,8 @@ Inputmask exposes a modern, tree-shakable ES Module build. You can import the co
 
 ```javascript
 import Inputmask from "inputmask";
-import "inputmask/inputmask.date.extensions";
-import "inputmask/inputmask.numeric.extensions";
+import "inputmask/date.extensions";
+import "inputmask/numeric.extensions";
 
 Inputmask({"mask": "99/99/9999"}).mask(document.getElementById("myInput"));
 ```

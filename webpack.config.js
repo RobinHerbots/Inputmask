@@ -83,16 +83,16 @@ module.exports = function (env, argv) {
           import: "./lib/inputmaskElement.js",
           dependOn: "dist/esm/inputmask.mjs"
         },
-        "dist/esm/inputmask.extensions.mjs": {
-          import: "./lib/extensions/inputmask.extensions.js",
+        "dist/esm/extensions.mjs": {
+          import: "./lib/extensions/extensions.js",
           dependOn: "dist/esm/inputmask.mjs"
         },
-        "dist/esm/inputmask.date.extensions.mjs": {
-          import: "./lib/extensions/inputmask.date.extensions.js",
+        "dist/esm/date.extensions.mjs": {
+          import: "./lib/extensions/date.extensions.js",
           dependOn: "dist/esm/inputmask.mjs"
         },
-        "dist/esm/inputmask.numeric.extensions.mjs": {
-          import: "./lib/extensions/inputmask.numeric.extensions.js",
+        "dist/esm/numeric.extensions.mjs": {
+          import: "./lib/extensions/numeric.extensions.js",
           dependOn: "dist/esm/inputmask.mjs"
         },
         "dist/esm/colormask.mjs": {

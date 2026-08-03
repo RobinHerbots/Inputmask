@@ -58,4 +58,4 @@ An SSN mask for entering valid SSN numbers.
 Inputmask("ssn").mask(selector);
 ```
 
-You can find/modify/extend these aliases in the inputmask.extensions.js
+You can find/modify/extend these aliases in the extensions.js
