@@ -3,16 +3,21 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.6
+ * Version: 5.1.0-beta.11
  */
 export const __webpack_esm_id__ = 384;
 export const __webpack_esm_ids__ = [384];
 export const __webpack_esm_modules__ = {
 
 /***/ 9
-(__unused_webpack_module, __unused_webpack___webpack_exports__, __webpack_require__) {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-/* harmony import */ var _inputmask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(327);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   R: () => (/* binding */ email),
+/* harmony export */   Y: () => (/* binding */ registerEmail)
+/* harmony export */ });
+/* harmony import */ var _inputmask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(375);
+/* harmony import */ var _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(123);
 /*
  Input Mask plugin extensions
  http://github.com/RobinHerbots/inputmask
@@ -20,8 +25,10 @@ export const __webpack_esm_modules__ = {
  Licensed under the MIT license
  */
 
-_inputmask__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.extendAliases({
-  email: {
+
+
+function email(options) {
+  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend(true, {
     // https://en.wikipedia.org/wiki/Domain_name#Domain_name_space
     // https://en.wikipedia.org/wiki/Hostname#Restrictions_on_valid_host_names
     // should be extended with the toplevel domains at the end
@@ -59,8 +66,13 @@ _inputmask__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.extendAliases({
       return maskedValue;
     },
     inputmode: "email"
-  }
-});
+  }, options);
+}
+function registerEmail() {
+  _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend(true, _inputmask__WEBPACK_IMPORTED_MODULE_0__/* .aliases */ .z2, {
+    email: email()
+  });
+}
 
 /***/ }
 
@@ -74,3 +86,6 @@ var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s 
 import * as __webpack_chunk_1__ from "./email.mjs";
 __webpack_require__.C(__webpack_chunk_1__);
 var __webpack_exports__ = __webpack_exec__(9);
+const __webpack_exports__email = __webpack_exports__.R;
+const __webpack_exports__registerEmail = __webpack_exports__.Y;
+export { __webpack_exports__email as email, __webpack_exports__registerEmail as registerEmail };

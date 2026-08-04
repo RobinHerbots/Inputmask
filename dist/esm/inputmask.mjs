@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.6
+ * Version: 5.1.0-beta.11
  */
 /******/ var __webpack_modules__ = ({
 
@@ -27,6 +27,325 @@
 /* harmony export */   "A", 0, /* export default binding */ __WEBPACK_DEFAULT_EXPORT__
 /* harmony export */ ]);
 
+
+/***/ },
+
+/***/ 123
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  A: () => (/* binding */ inputmask_dependencyLib)
+});
+
+// EXTERNAL MODULE: ./lib/global/window.js
+var global_window = __webpack_require__(266);
+;// ./lib/dependencyLibs/data.js
+/* harmony default export */ function data(owner, key, value) {
+  if (value === undefined) {
+    return owner.__data ? owner.__data[key] : null;
+  } else {
+    owner.__data = owner.__data || {};
+    owner.__data[key] = value;
+  }
+}
+;// ./lib/dependencyLibs/extend.js
+function extend() {
+  let options,
+    name,
+    src,
+    copy,
+    copyIsArray,
+    clone,
+    target = arguments[0] || {},
+    i = 1,
+    length = arguments.length,
+    deep = false;
+
+  // Handle a deep copy situation
+  if (typeof target === "boolean") {
+    deep = target;
+
+    // Skip the boolean and the target
+    target = arguments[i] || {};
+    i++;
+  }
+
+  // Handle case when target is a string or something (possible in deep copy)
+  if (typeof target !== "object" && typeof target !== "function") {
+    target = {};
+  }
+  for (; i < length; i++) {
+    // Only deal with non-null/undefined values
+    if ((options = arguments[i]) != null) {
+      // Extend the base object
+      for (name in options) {
+        src = target[name];
+        copy = options[name];
+
+        // Prevent never-ending loop
+        if (target === copy) {
+          continue;
+        }
+
+        // Recurse if we're merging plain objects or arrays
+        if (deep && copy && (Object.prototype.toString.call(copy) === "[object Object]" || (copyIsArray = Array.isArray(copy)))) {
+          if (copyIsArray) {
+            copyIsArray = false;
+            clone = src && Array.isArray(src) ? src : [];
+          } else {
+            clone = src && Object.prototype.toString.call(src) === "[object Object]" ? src : {};
+          }
+
+          // Never move original objects, clone them
+          target[name] = extend(deep, clone, copy);
+
+          // Don't bring in undefined values
+        } else if (copy !== undefined) {
+          target[name] = copy;
+        }
+      }
+    }
+  }
+
+  // Return the modified object
+  return target;
+}
+;// ./lib/dependencyLibs/events.js
+
+
+
+
+
+const events_document = global_window/* default */.A.document;
+function isValidElement(elem) {
+  return elem instanceof Element && data(elem, "events");
+}
+let Evnt;
+if (typeof global_window/* default */.A.CustomEvent === "function") {
+  Evnt = global_window/* default */.A.CustomEvent;
+} else if (global_window/* default */.A.Event && events_document && events_document.createEvent) {
+  Evnt = function (event, params) {
+    params = params || {
+      bubbles: false,
+      cancelable: false,
+      composed: true,
+      detail: undefined
+    };
+    const evt = events_document.createEvent("CustomEvent");
+    evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+    return evt;
+  };
+  Evnt.prototype = global_window/* default */.A.Event.prototype;
+} else if (typeof Event !== "undefined") {
+  // nodejs
+  Evnt = Event;
+}
+function on(events, handler) {
+  if (!this[0] || !isValidElement(this[0])) {
+    return this; // Early return if no valid element
+  }
+  const elem = this[0],
+    eventRegistry = data(elem, "events"),
+    addEvent = (ev, namespace) => {
+      // register domevent
+      if (elem.addEventListener) {
+        // all browsers except IE before version 9
+        elem.addEventListener(ev, handler, false);
+      } else if (elem.attachEvent) {
+        // IE before version 9
+        elem.attachEvent(`on${ev}`, handler);
+      }
+      eventRegistry[ev] = eventRegistry[ev] || {};
+      eventRegistry[ev][namespace] = eventRegistry[ev][namespace] || [];
+      eventRegistry[ev][namespace].push(handler);
+    };
+  events.split(" ").forEach(event => {
+    const [ev, namespace = "global"] = event.split(".");
+    addEvent(ev, namespace);
+  });
+  return this;
+}
+function off(events, handler) {
+  let eventRegistry, elem;
+  function removeEvent(ev, namespace, handler) {
+    if (ev in eventRegistry === true) {
+      // unbind to dom events
+      if (elem.removeEventListener) {
+        // all browsers except IE before version 9
+        elem.removeEventListener(ev, handler, false);
+      } else if (elem.detachEvent) {
+        // IE before version 9
+        elem.detachEvent(`on${ev}`, handler);
+      }
+      // when the namespace is not defined (global namespace), we need to clean up all events in all namespaces
+      if (namespace === "global") {
+        for (const nmsp in eventRegistry[ev]) {
+          eventRegistry[ev][nmsp].splice(eventRegistry[ev][nmsp].indexOf(handler), 1);
+        }
+      } else {
+        eventRegistry[ev][namespace].splice(eventRegistry[ev][namespace].indexOf(handler), 1);
+      }
+    }
+  }
+  function resolveNamespace(ev, namespace) {
+    const evts = [];
+    let hndx, hndL;
+    if (ev.length > 0) {
+      const namespaces = namespace ? [namespace] : Object.keys(eventRegistry[ev]);
+      for (let nsi = 0; nsi < namespaces.length; nsi++) {
+        namespace = namespaces[nsi];
+        if (handler === undefined) {
+          for (hndx = 0, hndL = eventRegistry[ev][namespace]?.length || 0; hndx < hndL; hndx++) {
+            evts.push({
+              ev,
+              namespace,
+              handler: eventRegistry[ev][namespace][hndx]
+            });
+          }
+        } else {
+          evts.push({
+            ev,
+            namespace,
+            handler
+          });
+        }
+      }
+    } else if (namespace.length > 0) {
+      for (const evNdx in eventRegistry) {
+        if (eventRegistry[evNdx][namespace]) {
+          if (handler === undefined) {
+            for (hndx = 0, hndL = eventRegistry[evNdx][namespace].length; hndx < hndL; hndx++) {
+              evts.push({
+                ev: evNdx,
+                namespace,
+                handler: eventRegistry[evNdx][namespace][hndx]
+              });
+            }
+          } else {
+            evts.push({
+              ev: evNdx,
+              namespace,
+              handler
+            });
+          }
+        }
+      }
+    }
+    return evts;
+  }
+  if (isValidElement(this[0])) {
+    eventRegistry = data(this[0], "events");
+    elem = this[0];
+    // if no events defined, remove all events
+    events = events || Object.keys(eventRegistry).join(" ");
+    if (events !== "") {
+      events.split(" ").forEach(event => {
+        const [ev, namespace] = event.split(".");
+        resolveNamespace(ev, namespace).forEach(({
+          ev: ev1,
+          handler: handler1,
+          namespace: namespace1
+        }) => {
+          removeEvent(ev1, namespace1, handler1);
+        });
+      });
+    }
+  }
+  return this;
+}
+function trigger(events /* , args... */) {
+  if (isValidElement(this[0])) {
+    const eventRegistry = data(this[0], "events"),
+      elem = this[0],
+      _events = typeof events === "string" ? events.split(" ") : [events.type];
+    for (let endx = 0; endx < _events.length; endx++) {
+      const nsEvent = _events[endx].split("."),
+        ev = nsEvent[0],
+        namespace = nsEvent[1] || "global";
+      if (events_document !== undefined) {
+        // trigger domevent
+        let evnt;
+        const params = {
+          bubbles: true,
+          cancelable: true,
+          composed: true,
+          detail: arguments[1]
+        };
+        // The custom event that will be created
+        if (events_document.createEvent) {
+          try {
+            switch (ev) {
+              case "input":
+                params.inputType = "insertText";
+                evnt = new InputEvent(ev, params);
+                break;
+              default:
+                evnt = new CustomEvent(ev, params);
+            }
+          } catch (e) {
+            evnt = events_document.createEvent("CustomEvent");
+            evnt.initCustomEvent(ev, params.bubbles, params.cancelable, params.detail);
+          }
+          if (events.type) extend(evnt, events);
+          elem.dispatchEvent(evnt);
+        } else {
+          evnt = events_document.createEventObject();
+          evnt.eventType = ev;
+          evnt.detail = arguments[1];
+          if (events.type) extend(evnt, events);
+          elem.fireEvent("on" + evnt.eventType, evnt);
+        }
+      } else if (eventRegistry[ev] !== undefined) {
+        arguments[0] = arguments[0].type ? arguments[0] : inputmask_dependencyLib.Event(arguments[0]);
+        arguments[0].detail = arguments.slice(1);
+        const registry = eventRegistry[ev],
+          handlers = namespace === "global" ? Object.values(registry).flat() : registry[namespace];
+        handlers.forEach(handler => handler.apply(elem, arguments));
+      }
+    }
+  }
+  return this;
+}
+;// ./lib/dependencyLibs/inputmask.dependencyLib.js
+/*
+ Input Mask plugin dependencyLib
+ http://github.com/RobinHerbots/jquery.inputmask
+ Copyright (c) Robin Herbots
+ Licensed under the MIT license
+ */
+
+
+
+
+
+const inputmask_dependencyLib_document = global_window/* default */.A.document;
+function DependencyLib(elem) {
+  if (elem instanceof DependencyLib) {
+    return elem;
+  }
+  if (!(this instanceof DependencyLib)) {
+    return new DependencyLib(elem);
+  }
+  if (elem !== undefined && elem !== null && elem !== global_window/* default */.A) {
+    this[0] = elem.nodeName ? elem : elem[0] !== undefined && elem[0].nodeName ? elem[0] : inputmask_dependencyLib_document.querySelector(elem);
+    if (this[0] !== undefined && this[0] !== null) {
+      data(this[0], "events", data(this[0], "events") || {});
+    }
+  }
+}
+DependencyLib.prototype = {
+  on: on,
+  off: off,
+  trigger: trigger
+};
+
+// static
+DependencyLib.extend = extend;
+DependencyLib.data = data;
+DependencyLib.Event = Evnt;
+/* harmony default export */ const inputmask_dependencyLib = (DependencyLib);
 
 /***/ },
 
@@ -592,7 +911,7 @@ const canUseDOM = !!(typeof window !== "undefined" && window.document && window.
 /* harmony export */ });
 /* harmony import */ var _environment__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(351);
 /* harmony import */ var _eventhandlers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(47);
-/* harmony import */ var _inputmask_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(327);
+/* harmony import */ var _inputmask_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(375);
 /* harmony import */ var _keycode_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(32);
 /* harmony import */ var _positioning__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(539);
 /* harmony import */ var _validation__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(687);
@@ -797,7 +1116,7 @@ function unmaskedvalue(input) {
     unmaskedValue = opts.onUnMask.call(inputmask, bufferValue, unmaskedValue, opts);
   }
   if (opts.outputMask && unmaskedValue.length > 0) {
-    return _inputmask_js__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .A.format(unmaskedValue, {
+    return _inputmask_js__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .Ay.format(unmaskedValue, {
       ...opts,
       mask: opts.outputMask,
       alias: null
@@ -847,14 +1166,15 @@ function writeBuffer(input, buffer, caretPos, event, triggerEvents) {
 
 /***/ },
 
-/***/ 327
+/***/ 375
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
-  A: () => (/* binding */ lib_inputmask),
-  s: () => (/* binding */ masksCache)
+  z2: () => (/* binding */ aliases),
+  Ay: () => (/* binding */ lib_inputmask),
+  st: () => (/* binding */ masksCache)
 });
 
 ;// ./lib/defaults.js
@@ -1035,313 +1355,8 @@ const defaults = {
 /* harmony default export */ const lib_defaults = (defaults);
 // EXTERNAL MODULE: ./lib/definitions.js
 var definitions = __webpack_require__(472);
-// EXTERNAL MODULE: ./lib/global/window.js
-var global_window = __webpack_require__(266);
-;// ./lib/dependencyLibs/data.js
-/* harmony default export */ function data(owner, key, value) {
-  if (value === undefined) {
-    return owner.__data ? owner.__data[key] : null;
-  } else {
-    owner.__data = owner.__data || {};
-    owner.__data[key] = value;
-  }
-}
-;// ./lib/dependencyLibs/extend.js
-function extend() {
-  let options,
-    name,
-    src,
-    copy,
-    copyIsArray,
-    clone,
-    target = arguments[0] || {},
-    i = 1,
-    length = arguments.length,
-    deep = false;
-
-  // Handle a deep copy situation
-  if (typeof target === "boolean") {
-    deep = target;
-
-    // Skip the boolean and the target
-    target = arguments[i] || {};
-    i++;
-  }
-
-  // Handle case when target is a string or something (possible in deep copy)
-  if (typeof target !== "object" && typeof target !== "function") {
-    target = {};
-  }
-  for (; i < length; i++) {
-    // Only deal with non-null/undefined values
-    if ((options = arguments[i]) != null) {
-      // Extend the base object
-      for (name in options) {
-        src = target[name];
-        copy = options[name];
-
-        // Prevent never-ending loop
-        if (target === copy) {
-          continue;
-        }
-
-        // Recurse if we're merging plain objects or arrays
-        if (deep && copy && (Object.prototype.toString.call(copy) === "[object Object]" || (copyIsArray = Array.isArray(copy)))) {
-          if (copyIsArray) {
-            copyIsArray = false;
-            clone = src && Array.isArray(src) ? src : [];
-          } else {
-            clone = src && Object.prototype.toString.call(src) === "[object Object]" ? src : {};
-          }
-
-          // Never move original objects, clone them
-          target[name] = extend(deep, clone, copy);
-
-          // Don't bring in undefined values
-        } else if (copy !== undefined) {
-          target[name] = copy;
-        }
-      }
-    }
-  }
-
-  // Return the modified object
-  return target;
-}
-;// ./lib/dependencyLibs/events.js
-
-
-
-
-
-const events_document = global_window/* default */.A.document;
-function isValidElement(elem) {
-  return elem instanceof Element && data(elem, "events");
-}
-let Evnt;
-if (typeof global_window/* default */.A.CustomEvent === "function") {
-  Evnt = global_window/* default */.A.CustomEvent;
-} else if (global_window/* default */.A.Event && events_document && events_document.createEvent) {
-  Evnt = function (event, params) {
-    params = params || {
-      bubbles: false,
-      cancelable: false,
-      composed: true,
-      detail: undefined
-    };
-    const evt = events_document.createEvent("CustomEvent");
-    evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
-    return evt;
-  };
-  Evnt.prototype = global_window/* default */.A.Event.prototype;
-} else if (typeof Event !== "undefined") {
-  // nodejs
-  Evnt = Event;
-}
-function on(events, handler) {
-  if (!this[0] || !isValidElement(this[0])) {
-    return this; // Early return if no valid element
-  }
-  const elem = this[0],
-    eventRegistry = data(elem, "events"),
-    addEvent = (ev, namespace) => {
-      // register domevent
-      if (elem.addEventListener) {
-        // all browsers except IE before version 9
-        elem.addEventListener(ev, handler, false);
-      } else if (elem.attachEvent) {
-        // IE before version 9
-        elem.attachEvent(`on${ev}`, handler);
-      }
-      eventRegistry[ev] = eventRegistry[ev] || {};
-      eventRegistry[ev][namespace] = eventRegistry[ev][namespace] || [];
-      eventRegistry[ev][namespace].push(handler);
-    };
-  events.split(" ").forEach(event => {
-    const [ev, namespace = "global"] = event.split(".");
-    addEvent(ev, namespace);
-  });
-  return this;
-}
-function off(events, handler) {
-  let eventRegistry, elem;
-  function removeEvent(ev, namespace, handler) {
-    if (ev in eventRegistry === true) {
-      // unbind to dom events
-      if (elem.removeEventListener) {
-        // all browsers except IE before version 9
-        elem.removeEventListener(ev, handler, false);
-      } else if (elem.detachEvent) {
-        // IE before version 9
-        elem.detachEvent(`on${ev}`, handler);
-      }
-      // when the namespace is not defined (global namespace), we need to clean up all events in all namespaces
-      if (namespace === "global") {
-        for (const nmsp in eventRegistry[ev]) {
-          eventRegistry[ev][nmsp].splice(eventRegistry[ev][nmsp].indexOf(handler), 1);
-        }
-      } else {
-        eventRegistry[ev][namespace].splice(eventRegistry[ev][namespace].indexOf(handler), 1);
-      }
-    }
-  }
-  function resolveNamespace(ev, namespace) {
-    const evts = [];
-    let hndx, hndL;
-    if (ev.length > 0) {
-      const namespaces = namespace ? [namespace] : Object.keys(eventRegistry[ev]);
-      for (let nsi = 0; nsi < namespaces.length; nsi++) {
-        namespace = namespaces[nsi];
-        if (handler === undefined) {
-          for (hndx = 0, hndL = eventRegistry[ev][namespace]?.length || 0; hndx < hndL; hndx++) {
-            evts.push({
-              ev,
-              namespace,
-              handler: eventRegistry[ev][namespace][hndx]
-            });
-          }
-        } else {
-          evts.push({
-            ev,
-            namespace,
-            handler
-          });
-        }
-      }
-    } else if (namespace.length > 0) {
-      for (const evNdx in eventRegistry) {
-        if (eventRegistry[evNdx][namespace]) {
-          if (handler === undefined) {
-            for (hndx = 0, hndL = eventRegistry[evNdx][namespace].length; hndx < hndL; hndx++) {
-              evts.push({
-                ev: evNdx,
-                namespace,
-                handler: eventRegistry[evNdx][namespace][hndx]
-              });
-            }
-          } else {
-            evts.push({
-              ev: evNdx,
-              namespace,
-              handler
-            });
-          }
-        }
-      }
-    }
-    return evts;
-  }
-  if (isValidElement(this[0])) {
-    eventRegistry = data(this[0], "events");
-    elem = this[0];
-    // if no events defined, remove all events
-    events = events || Object.keys(eventRegistry).join(" ");
-    if (events !== "") {
-      events.split(" ").forEach(event => {
-        const [ev, namespace] = event.split(".");
-        resolveNamespace(ev, namespace).forEach(({
-          ev: ev1,
-          handler: handler1,
-          namespace: namespace1
-        }) => {
-          removeEvent(ev1, namespace1, handler1);
-        });
-      });
-    }
-  }
-  return this;
-}
-function trigger(events /* , args... */) {
-  if (isValidElement(this[0])) {
-    const eventRegistry = data(this[0], "events"),
-      elem = this[0],
-      _events = typeof events === "string" ? events.split(" ") : [events.type];
-    for (let endx = 0; endx < _events.length; endx++) {
-      const nsEvent = _events[endx].split("."),
-        ev = nsEvent[0],
-        namespace = nsEvent[1] || "global";
-      if (events_document !== undefined) {
-        // trigger domevent
-        let evnt;
-        const params = {
-          bubbles: true,
-          cancelable: true,
-          composed: true,
-          detail: arguments[1]
-        };
-        // The custom event that will be created
-        if (events_document.createEvent) {
-          try {
-            switch (ev) {
-              case "input":
-                params.inputType = "insertText";
-                evnt = new InputEvent(ev, params);
-                break;
-              default:
-                evnt = new CustomEvent(ev, params);
-            }
-          } catch (e) {
-            evnt = events_document.createEvent("CustomEvent");
-            evnt.initCustomEvent(ev, params.bubbles, params.cancelable, params.detail);
-          }
-          if (events.type) extend(evnt, events);
-          elem.dispatchEvent(evnt);
-        } else {
-          evnt = events_document.createEventObject();
-          evnt.eventType = ev;
-          evnt.detail = arguments[1];
-          if (events.type) extend(evnt, events);
-          elem.fireEvent("on" + evnt.eventType, evnt);
-        }
-      } else if (eventRegistry[ev] !== undefined) {
-        arguments[0] = arguments[0].type ? arguments[0] : inputmask_dependencyLib.Event(arguments[0]);
-        arguments[0].detail = arguments.slice(1);
-        const registry = eventRegistry[ev],
-          handlers = namespace === "global" ? Object.values(registry).flat() : registry[namespace];
-        handlers.forEach(handler => handler.apply(elem, arguments));
-      }
-    }
-  }
-  return this;
-}
-;// ./lib/dependencyLibs/inputmask.dependencyLib.js
-/*
- Input Mask plugin dependencyLib
- http://github.com/RobinHerbots/jquery.inputmask
- Copyright (c) Robin Herbots
- Licensed under the MIT license
- */
-
-
-
-
-
-const inputmask_dependencyLib_document = global_window/* default */.A.document;
-function DependencyLib(elem) {
-  if (elem instanceof DependencyLib) {
-    return elem;
-  }
-  if (!(this instanceof DependencyLib)) {
-    return new DependencyLib(elem);
-  }
-  if (elem !== undefined && elem !== null && elem !== global_window/* default */.A) {
-    this[0] = elem.nodeName ? elem : elem[0] !== undefined && elem[0].nodeName ? elem[0] : inputmask_dependencyLib_document.querySelector(elem);
-    if (this[0] !== undefined && this[0] !== null) {
-      data(this[0], "events", data(this[0], "events") || {});
-    }
-  }
-}
-DependencyLib.prototype = {
-  on: on,
-  off: off,
-  trigger: trigger
-};
-
-// static
-DependencyLib.extend = extend;
-DependencyLib.data = data;
-DependencyLib.Event = Evnt;
-/* harmony default export */ const inputmask_dependencyLib = (DependencyLib);
+// EXTERNAL MODULE: ./lib/dependencyLibs/inputmask.dependencyLib.js + 3 modules
+var inputmask_dependencyLib = __webpack_require__(123);
 // EXTERNAL MODULE: ./lib/inputHandling.js
 var inputHandling = __webpack_require__(507);
 // EXTERNAL MODULE: ./lib/keycode.js
@@ -1465,6 +1480,8 @@ const EventRuler = {
     }
   }
 };
+// EXTERNAL MODULE: ./lib/global/window.js
+var global_window = __webpack_require__(266);
 // EXTERNAL MODULE: ./lib/environment.js
 var environment = __webpack_require__(351);
 // EXTERNAL MODULE: ./lib/eventhandlers.js
@@ -1798,10 +1815,10 @@ function generateMaskSet(opts, nocache) {
       };
       if (nocache !== true) {
         masksCache[maskdefKey] = masksetDefinition;
-        masksetDefinition = inputmask_dependencyLib.extend(true, {}, masksCache[maskdefKey]);
+        masksetDefinition = inputmask_dependencyLib/* default */.A.extend(true, {}, masksCache[maskdefKey]);
       }
     } else {
-      masksetDefinition = inputmask_dependencyLib.extend(true, {}, masksCache[maskdefKey]);
+      masksetDefinition = inputmask_dependencyLib/* default */.A.extend(true, {}, masksCache[maskdefKey]);
     }
     return masksetDefinition;
   }
@@ -2281,7 +2298,7 @@ function Inputmask(alias, options, internal) {
   if (!(this instanceof Inputmask)) {
     return new Inputmask(alias, options, internal);
   }
-  this.dependencyLib = inputmask_dependencyLib;
+  this.dependencyLib = inputmask_dependencyLib/* default */.A;
   this.el = undefined;
   this.events = {};
   this.maskset = undefined;
@@ -2293,7 +2310,7 @@ function Inputmask(alias, options, internal) {
       options = options || {};
       if (alias) options.alias = alias;
     }
-    this.opts = inputmask_dependencyLib.extend(true, {}, lib_defaults, options);
+    this.opts = inputmask_dependencyLib/* default */.A.extend(true, {}, lib_defaults, options);
     this.noMasksCache = options && options.definitions !== undefined;
     this.userOptions = options || {}; // user passed options
     resolveAlias(this.opts.alias, options, this.opts);
@@ -2331,8 +2348,8 @@ Inputmask.prototype = {
     }
     elems = elems.nodeName ? [elems] : Array.isArray(elems) ? elems : [].slice.call(elems); // [].slice as alternate for Array.from (Yandex browser)
     elems.forEach(function (el, ndx) {
-      const scopedOpts = inputmask_dependencyLib.extend(true, {}, that.opts);
-      if (importAttributeOptions(el, scopedOpts, inputmask_dependencyLib.extend(true, {}, that.userOptions), that.dataAttribute)) {
+      const scopedOpts = inputmask_dependencyLib/* default */.A.extend(true, {}, that.opts);
+      if (importAttributeOptions(el, scopedOpts, inputmask_dependencyLib/* default */.A.extend(true, {}, that.userOptions), that.dataAttribute)) {
         const maskset = generateMaskSet(scopedOpts, that.noMasksCache);
         if (maskset !== undefined) {
           if (el.inputmask !== undefined) {
@@ -2343,12 +2360,12 @@ Inputmask.prototype = {
           el.inputmask = new Inputmask(undefined, undefined, true);
           el.inputmask.opts = scopedOpts;
           el.inputmask.noMasksCache = that.noMasksCache;
-          el.inputmask.userOptions = inputmask_dependencyLib.extend(true, {}, that.userOptions);
+          el.inputmask.userOptions = inputmask_dependencyLib/* default */.A.extend(true, {}, that.userOptions);
           // el.inputmask.isRTL = scopedOpts.isRTL || scopedOpts.numericInput;
           el.inputmask.el = el;
-          el.inputmask.$el = inputmask_dependencyLib(el);
+          el.inputmask.$el = (0,inputmask_dependencyLib/* default */.A)(el);
           el.inputmask.maskset = maskset;
-          inputmask_dependencyLib.data(el, dataKey, that.userOptions);
+          inputmask_dependencyLib/* default */.A.data(el, dataKey, that.userOptions);
           mask.call(el.inputmask);
         }
       }
@@ -2360,7 +2377,7 @@ Inputmask.prototype = {
     if (typeof options === "string") {
       return this.opts[options];
     } else if (typeof options === "object") {
-      inputmask_dependencyLib.extend(this.userOptions, options); // user passed options
+      inputmask_dependencyLib/* default */.A.extend(this.userOptions, options); // user passed options
       // remask
       if (this.el && noremask !== true) {
         this.mask(this.el);
@@ -2379,7 +2396,7 @@ Inputmask.prototype = {
   },
   remove: function () {
     if (this.el) {
-      inputmask_dependencyLib.data(this.el, dataKey, null); // invalidate
+      inputmask_dependencyLib/* default */.A.data(this.el, dataKey, null); // invalidate
       // writeout the value
       const cv = this.opts.autoUnmask ? (0,inputHandling/* unmaskedvalue */.q4)(this.el) : this._valueGet(this.opts.autoUnmask);
       if (cv !== positioning/* getBufferTemplate */.Tc.call(this).join("")) this._valueSet(cv, this.opts.autoUnmask);else this._valueSet("");
@@ -2462,7 +2479,7 @@ Inputmask.prototype = {
   },
   setValue: function (value) {
     if (this.el) {
-      inputmask_dependencyLib(this.el).trigger("setvalue", [value]);
+      (0,inputmask_dependencyLib/* default */.A)(this.el).trigger("setvalue", [value]);
     }
   }
 };
@@ -2470,8 +2487,8 @@ function resolveAlias(aliasStr, options, opts) {
   const aliasDefinition = aliases[aliasStr];
   if (aliasDefinition) {
     if (aliasDefinition.alias) resolveAlias(aliasDefinition.alias, undefined, opts); // alias is another alias
-    inputmask_dependencyLib.extend(true, opts, aliasDefinition); // merge alias definition in the options
-    inputmask_dependencyLib.extend(true, opts, options); // reapply extra given options
+    inputmask_dependencyLib/* default */.A.extend(true, opts, aliasDefinition); // merge alias definition in the options
+    inputmask_dependencyLib/* default */.A.extend(true, opts, options); // reapply extra given options
     return true;
   } // alias not found - try as mask
   else if (opts.mask === null) {
@@ -2532,7 +2549,7 @@ function importAttributeOptions(npt, opts, userOptions, dataAttribute) {
       importOption(option, optionData);
     }
   }
-  inputmask_dependencyLib.extend(true, opts, userOptions);
+  inputmask_dependencyLib/* default */.A.extend(true, opts, userOptions);
 
   // handle dir=rtl
   if (npt.dir === "rtl" || opts.rightAlign) {
@@ -2552,21 +2569,21 @@ function importAttributeOptions(npt, opts, userOptions, dataAttribute) {
  * @returns {void}
  */
 Inputmask.extendDefaults = function (options) {
-  inputmask_dependencyLib.extend(true, lib_defaults, options);
+  inputmask_dependencyLib/* default */.A.extend(true, lib_defaults, options);
 };
 /**
  * @param {Record<string, any>} definition
  * @returns {void}
  */
 Inputmask.extendDefinitions = function (definition) {
-  inputmask_dependencyLib.extend(true, definitions/* default */.A, definition);
+  inputmask_dependencyLib/* default */.A.extend(true, definitions/* default */.A, definition);
 };
 /**
  * @param {Record<string, InputmaskOptions>} alias
  * @returns {void}
  */
 Inputmask.extendAliases = function (alias) {
-  inputmask_dependencyLib.extend(true, aliases, alias);
+  inputmask_dependencyLib/* default */.A.extend(true, aliases, alias);
 };
 // static fn on inputmask
 /**
@@ -2618,10 +2635,10 @@ Inputmask.setValue = function (elems, value) {
   }
   elems = elems.nodeName ? [elems] : elems;
   elems.forEach(function (el) {
-    if (el.inputmask) el.inputmask.setValue(value);else inputmask_dependencyLib(el).trigger("setvalue", [value]);
+    if (el.inputmask) el.inputmask.setValue(value);else (0,inputmask_dependencyLib/* default */.A)(el).trigger("setvalue", [value]);
   });
 };
-Inputmask.dependencyLib = inputmask_dependencyLib;
+Inputmask.dependencyLib = inputmask_dependencyLib/* default */.A;
 
 // make inputmask available
 global_window/* default */.A.Inputmask = Inputmask;
@@ -4641,8 +4658,9 @@ function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
 /******/ // startup
 /******/ // Load entry module and return exports
 /******/ // This entry module is referenced by other modules so it can't be inlined
-/******/ let __webpack_exports__ = __webpack_require__(327);
-/******/ const __webpack_exports__default = __webpack_exports__.A;
-/******/ const __webpack_exports__masksCache = __webpack_exports__.s;
-/******/ export { __webpack_exports__default as default, __webpack_exports__masksCache as masksCache };
+/******/ let __webpack_exports__ = __webpack_require__(375);
+/******/ const __webpack_exports__aliases = __webpack_exports__.z2;
+/******/ const __webpack_exports__default = __webpack_exports__.Ay;
+/******/ const __webpack_exports__masksCache = __webpack_exports__.st;
+/******/ export { __webpack_exports__aliases as aliases, __webpack_exports__default as default, __webpack_exports__masksCache as masksCache };
 /******/ 

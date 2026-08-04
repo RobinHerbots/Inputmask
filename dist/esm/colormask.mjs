@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.6
+ * Version: 5.1.0-beta.11
  */
 export const __webpack_esm_id__ = 153;
 export const __webpack_esm_ids__ = [153];
@@ -16,7 +16,7 @@ export const __webpack_esm_modules__ = {
 /* harmony export */   y: () => (/* binding */ renderColorMask)
 /* harmony export */ });
 /* harmony import */ var _eventhandlers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(47);
-/* harmony import */ var _inputmask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(327);
+/* harmony import */ var _inputmask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(375);
 /* harmony import */ var _keycode_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(32);
 /* harmony import */ var _positioning__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(539);
 /* harmony import */ var _validation_tests__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(895);
@@ -31,20 +31,20 @@ export const __webpack_esm_modules__ = {
 
 
 
-const $ = _inputmask__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.dependencyLib;
+const $ = _inputmask__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .Ay.dependencyLib;
 function Colormask(alias, options, internal) {
   // allow instanciating without new
   if (!(this instanceof Colormask)) {
     return new Colormask(alias, options, internal);
   }
   this.colorMask = undefined;
-  Object.getOwnPropertyNames(_inputmask__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A).forEach(function (key) {
+  Object.getOwnPropertyNames(_inputmask__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .Ay).forEach(function (key) {
     if (!Object.prototype.hasOwnProperty.call(this, key)) {
-      this[key] = _inputmask__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A[key];
+      this[key] = _inputmask__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .Ay[key];
     }
   }, this);
 }
-Colormask.prototype = _inputmask__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.prototype;
+Colormask.prototype = _inputmask__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .Ay.prototype;
 Colormask.prototype.writeBufferHook = function (caretPos) {
   renderColorMask.call(this, this.el, caretPos, false);
 };

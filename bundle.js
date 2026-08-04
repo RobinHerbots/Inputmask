@@ -5,17 +5,28 @@ import "./lib/polyfills/String.includes";
 
 import "./lib/global/FormData";
 
-import "./lib/extensions/definitions";
-import "./lib/extensions/cssunit";
-import "./lib/extensions/url";
-import "./lib/extensions/ip";
-import "./lib/extensions/email";
-import "./lib/extensions/mac";
-import "./lib/extensions/vin";
-import "./lib/extensions/ssn";
-import "./lib/extensions/date";
-import "./lib/extensions/numeric";
+import { registerDefinitions } from "./lib/extensions/definitions";
+import { registerCssunit } from "./lib/extensions/cssunit";
+import { registerUrl } from "./lib/extensions/url";
+import { registerIp } from "./lib/extensions/ip";
+import { registerEmail } from "./lib/extensions/email";
+import { registerMac } from "./lib/extensions/mac";
+import { registerVin } from "./lib/extensions/vin";
+import { registerSsn } from "./lib/extensions/ssn";
+import { registerDatetime } from "./lib/extensions/date";
+import { registerNumeric } from "./lib/extensions/numeric";
 import "./lib/inputmaskElement";
 import Inputmask from "./lib/inputmask";
+
+registerDefinitions();
+registerCssunit();
+registerUrl();
+registerIp();
+registerEmail();
+registerMac();
+registerVin();
+registerSsn();
+registerDatetime();
+registerNumeric();
 
 export default Inputmask;

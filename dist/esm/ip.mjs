@@ -3,22 +3,29 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.6
+ * Version: 5.1.0-beta.11
  */
 export const __webpack_esm_id__ = 851;
 export const __webpack_esm_ids__ = [851];
 export const __webpack_esm_modules__ = {
 
 /***/ 56
-(__unused_webpack_module, __unused_webpack___webpack_exports__, __webpack_require__) {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-/* harmony import */ var _inputmask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(327);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   L: () => (/* binding */ registerIp),
+/* harmony export */   ip: () => (/* binding */ ip)
+/* harmony export */ });
+/* harmony import */ var _inputmask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(375);
+/* harmony import */ var _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(123);
 /*
  Input Mask plugin extensions
  http://github.com/RobinHerbots/inputmask
  Copyright (c) Robin Herbots
  Licensed under the MIT license
  */
+
+
 
 const ipValidatorRegex = /25[0-5]|2[0-4][0-9]|[01][0-9][0-9]/;
 function ipValidator(chrs, maskset, pos, strict, opts) {
@@ -40,8 +47,8 @@ function ipValidator(chrs, maskset, pos, strict, opts) {
   }
   return ipValidatorRegex.test(chrs);
 }
-_inputmask__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.extendAliases({
-  ip: {
+function ip(options) {
+  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend(true, {
     // ip-address mask
     mask: "i{1,3}.j{1,3}.k{1,3}.l{1,3}",
     definitions: {
@@ -65,8 +72,13 @@ _inputmask__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.extendAliases({
     substitutes: {
       ",": "."
     }
-  }
-});
+  }, options);
+}
+function registerIp() {
+  _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend(true, _inputmask__WEBPACK_IMPORTED_MODULE_0__/* .aliases */ .z2, {
+    ip: ip()
+  });
+}
 
 /***/ }
 
@@ -80,3 +92,6 @@ var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s 
 import * as __webpack_chunk_1__ from "./ip.mjs";
 __webpack_require__.C(__webpack_chunk_1__);
 var __webpack_exports__ = __webpack_exec__(56);
+const __webpack_exports__ip = __webpack_exports__.ip;
+const __webpack_exports__registerIp = __webpack_exports__.L;
+export { __webpack_exports__ip as ip, __webpack_exports__registerIp as registerIp };

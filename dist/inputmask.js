@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.6
+ * Version: 5.1.0-beta.11
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -1248,11 +1248,17 @@ const EventRuler = exports.EventRuler = {
 /***/ }),
 
 /***/ 4408:
-/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
 
-var _inputmask = _interopRequireDefault(__webpack_require__(3978));
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.cssunit = cssunit;
+exports.registerCssunit = registerCssunit;
+var _inputmask = __webpack_require__(3978);
+var _inputmask2 = _interopRequireDefault(__webpack_require__(7332));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /*
  Input Mask plugin extensions
@@ -1261,26 +1267,38 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e
  Licensed under the MIT license
  */
 
-_inputmask.default.extendAliases({
-  cssunit: {
+function cssunit(options) {
+  return _inputmask2.default.extend(true, {
     regex: "[+-]?[0-9]+\\.?([0-9]+)?(px|em|rem|ex|%|in|cm|mm|pt|pc)"
-  }
-});
+  }, options);
+}
+function registerCssunit() {
+  _inputmask2.default.extend(true, _inputmask.aliases, {
+    cssunit: cssunit()
+  });
+}
 
 /***/ }),
 
 /***/ 7641:
-/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
 
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.datetime = datetime;
+exports.registerDatetime = registerDatetime;
 var _escapeRegex = __webpack_require__(340);
-var _inputmask = _interopRequireDefault(__webpack_require__(3978));
+var _inputmask = _interopRequireWildcard(__webpack_require__(3978));
 var _keycode = __webpack_require__(6032);
 var _positioning = __webpack_require__(7539);
 var _validationTests = __webpack_require__(5895);
 __webpack_require__(7153);
+var _inputmask2 = _interopRequireDefault(__webpack_require__(7332));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function (e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, default: e }; if (null === e || "object" != typeof e && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (const t in e) "default" !== t && {}.hasOwnProperty.call(e, t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, t)) && (i.get || i.set) ? o(f, t, i) : f[t] = e[t]); return f; })(e, t); }
 /*
  Input Mask plugin extensions
  http://github.com/RobinHerbots/inputmask
@@ -1288,7 +1306,6 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e
  Licensed under the MIT license
  */
 
-const $ = _inputmask.default.dependencyLib;
 class DateObject {
   constructor(mask, format, opts, inputmask) {
     this.mask = mask;
@@ -1830,187 +1847,199 @@ function getTokenMatch(pos, opts, maskset) {
     targetMatch
   };
 }
-_inputmask.default.extendAliases({
-  datetime: {
-    mask: function (opts) {
-      // do not allow numeric input in datetime alias
-      opts.numericInput = false;
+const datetimeAlias = {
+  mask: function (opts) {
+    // do not allow numeric input in datetime alias
+    opts.numericInput = false;
 
-      // localize
-      formatCode.S = i18n.ordinalSuffix.join("|");
-      opts.inputFormat = formatAlias[opts.inputFormat] || opts.inputFormat; // resolve possible formatAlias
-      if (opts.repeat) {
-        opts.repeat = parseInt(opts.repeat.toString());
-        if (opts.repeat > 0) {
-          let inputFormat = "";
-          for (let i = 0; i < opts.repeat; i++) {
-            inputFormat = inputFormat + opts.inputFormat;
-          }
-          opts.inputFormat = inputFormat;
-          opts.repeat = 0;
+    // localize
+    formatCode.S = i18n.ordinalSuffix.join("|");
+    opts.inputFormat = formatAlias[opts.inputFormat] || opts.inputFormat; // resolve possible formatAlias
+    if (opts.repeat) {
+      opts.repeat = parseInt(opts.repeat.toString());
+      if (opts.repeat > 0) {
+        let inputFormat = "";
+        for (let i = 0; i < opts.repeat; i++) {
+          inputFormat = inputFormat + opts.inputFormat;
+        }
+        opts.inputFormat = inputFormat;
+        opts.repeat = 0;
+      }
+    }
+    opts.displayFormat = formatAlias[opts.displayFormat] || opts.displayFormat || opts.inputFormat; // resolve possible formatAlias
+    opts.outputFormat = formatAlias[opts.outputFormat] || opts.outputFormat || opts.inputFormat; // resolve possible formatAlias
+    // opts.placeholder = opts.placeholder !== "" ? opts.placeholder : opts.inputFormat.replace(/[[\]]/, "");
+    opts.regex = parse(opts.inputFormat, undefined, opts);
+    // console.log("inputFormat", opts.regex);
+    opts.min = analyseMask(opts.min, opts.inputFormat, opts);
+    opts.max = analyseMask(opts.max, opts.inputFormat, opts);
+    return null; // migrate to regex mask
+  },
+  placeholder: "",
+  // set default as none (~ auto); when a custom placeholder is passed it will be used
+  inputFormat: "isoDateTime",
+  // format used to input the date
+  displayFormat: null,
+  // visual format when the input looses focus
+  outputFormat: null,
+  // unmasking format
+  min: null,
+  // needs to be in the same format as the inputfornat
+  max: null,
+  // needs to be in the same format as the inputfornat,
+  skipOptionalPartCharacter: "",
+  preValidation: function (buffer, pos, c, isSelection, opts, maskset, caretPos, strict) {
+    const inputmask = this;
+    if (strict) return true;
+    if (isNaN(c) && buffer[pos] !== c) {
+      const tokenMatch = getTokenMatch.call(inputmask, pos, opts, maskset);
+      if (tokenMatch.nextMatch && tokenMatch.nextMatch[0] === c && tokenMatch.targetMatch[0].length > 1) {
+        const validator = formatcode(tokenMatch.targetMatch[0])[0];
+        if (new RegExp(validator).test("0" + buffer[pos - 1])) {
+          buffer[pos] = buffer[pos - 1];
+          buffer[pos - 1] = "0";
+          return {
+            fuzzy: true,
+            buffer,
+            refreshFromBuffer: {
+              start: pos - 1,
+              end: pos + 1
+            },
+            pos: pos + 1
+          };
         }
       }
-      opts.displayFormat = formatAlias[opts.displayFormat] || opts.displayFormat || opts.inputFormat; // resolve possible formatAlias
-      opts.outputFormat = formatAlias[opts.outputFormat] || opts.outputFormat || opts.inputFormat; // resolve possible formatAlias
-      // opts.placeholder = opts.placeholder !== "" ? opts.placeholder : opts.inputFormat.replace(/[[\]]/, "");
-      opts.regex = parse(opts.inputFormat, undefined, opts);
-      // console.log("inputFormat", opts.regex);
-      opts.min = analyseMask(opts.min, opts.inputFormat, opts);
-      opts.max = analyseMask(opts.max, opts.inputFormat, opts);
-      return null; // migrate to regex mask
-    },
-    placeholder: "",
-    // set default as none (~ auto); when a custom placeholder is passed it will be used
-    inputFormat: "isoDateTime",
-    // format used to input the date
-    displayFormat: null,
-    // visual format when the input looses focus
-    outputFormat: null,
-    // unmasking format
-    min: null,
-    // needs to be in the same format as the inputfornat
-    max: null,
-    // needs to be in the same format as the inputfornat,
-    skipOptionalPartCharacter: "",
-    preValidation: function (buffer, pos, c, isSelection, opts, maskset, caretPos, strict) {
-      const inputmask = this;
-      if (strict) return true;
-      if (isNaN(c) && buffer[pos] !== c) {
-        const tokenMatch = getTokenMatch.call(inputmask, pos, opts, maskset);
-        if (tokenMatch.nextMatch && tokenMatch.nextMatch[0] === c && tokenMatch.targetMatch[0].length > 1) {
-          const validator = formatcode(tokenMatch.targetMatch[0])[0];
-          if (new RegExp(validator).test("0" + buffer[pos - 1])) {
-            buffer[pos] = buffer[pos - 1];
-            buffer[pos - 1] = "0";
-            return {
-              fuzzy: true,
-              buffer,
-              refreshFromBuffer: {
-                start: pos - 1,
-                end: pos + 1
-              },
-              pos: pos + 1
-            };
-          }
+    }
+    return true;
+  },
+  postValidation: function (buffer, pos, c, currentResult, opts, maskset, strict, fromCheckval) {
+    const inputmask = this;
+    if (strict) return true;
+    let tokenMatch, validator;
+    if (currentResult === false) {
+      // try some shifting
+      tokenMatch = getTokenMatch.call(inputmask, pos + 1, opts, maskset);
+      if (tokenMatch.targetMatch && tokenMatch.targetMatchIndex === pos && tokenMatch.targetMatch[0].length > 1 && formatcode(tokenMatch.targetMatch[0]) !== undefined) {
+        validator = formatcode(tokenMatch.targetMatch[0])[0];
+      } else {
+        tokenMatch = getTokenMatch.call(inputmask, pos + 2, opts, maskset);
+        if (tokenMatch.targetMatch && tokenMatch.targetMatchIndex === pos + 1 && tokenMatch.targetMatch[0].length > 1 && formatcode(tokenMatch.targetMatch[0]) !== undefined) {
+          validator = formatcode(tokenMatch.targetMatch[0]);
         }
       }
-      return true;
-    },
-    postValidation: function (buffer, pos, c, currentResult, opts, maskset, strict, fromCheckval) {
-      const inputmask = this;
-      if (strict) return true;
-      let tokenMatch, validator;
-      if (currentResult === false) {
-        // try some shifting
-        tokenMatch = getTokenMatch.call(inputmask, pos + 1, opts, maskset);
-        if (tokenMatch.targetMatch && tokenMatch.targetMatchIndex === pos && tokenMatch.targetMatch[0].length > 1 && formatcode(tokenMatch.targetMatch[0]) !== undefined) {
-          validator = formatcode(tokenMatch.targetMatch[0])[0];
-        } else {
-          tokenMatch = getTokenMatch.call(inputmask, pos + 2, opts, maskset);
-          if (tokenMatch.targetMatch && tokenMatch.targetMatchIndex === pos + 1 && tokenMatch.targetMatch[0].length > 1 && formatcode(tokenMatch.targetMatch[0]) !== undefined) {
-            validator = formatcode(tokenMatch.targetMatch[0]);
-          }
+      if (validator !== undefined) {
+        // correct position ~ pos in front of shifted targetMatch
+        pos = tokenMatch.targetMatchIndex;
+        if (maskset.validPositions[pos + 1] !== undefined && new RegExp(validator).test(c + "0")) {
+          buffer[pos] = c;
+          buffer[pos + 1] = "0";
+          currentResult = {
+            // insert: [{pos: pos, c: "0"}, {pos: pos + 1, c: c}],
+            pos: pos + 2,
+            // this will triggeer a refreshfrombuffer
+            caret: pos + 1
+          };
+        } else if (new RegExp(validator).test("0" + c)) {
+          buffer[pos] = "0";
+          buffer[pos + 1] = c;
+          currentResult = {
+            // insert: [{pos: pos, c: "0"}, {pos: pos + 1, c: c}],
+            pos: pos + 2 // this will triggeer a refreshfrombuffer
+          };
         }
-        if (validator !== undefined) {
-          // correct position ~ pos in front of shifted targetMatch
-          pos = tokenMatch.targetMatchIndex;
-          if (maskset.validPositions[pos + 1] !== undefined && new RegExp(validator).test(c + "0")) {
-            buffer[pos] = c;
-            buffer[pos + 1] = "0";
-            currentResult = {
-              // insert: [{pos: pos, c: "0"}, {pos: pos + 1, c: c}],
-              pos: pos + 2,
-              // this will triggeer a refreshfrombuffer
-              caret: pos + 1
-            };
-          } else if (new RegExp(validator).test("0" + c)) {
-            buffer[pos] = "0";
-            buffer[pos + 1] = c;
-            currentResult = {
-              // insert: [{pos: pos, c: "0"}, {pos: pos + 1, c: c}],
-              pos: pos + 2 // this will triggeer a refreshfrombuffer
-            };
-          }
-        }
-        if (currentResult === false) return currentResult;
       }
-      if (currentResult.fuzzy) {
-        buffer = currentResult.buffer;
-        pos = currentResult.pos;
-      }
+      if (currentResult === false) return currentResult;
+    }
+    if (currentResult.fuzzy) {
+      buffer = currentResult.buffer;
+      pos = currentResult.pos;
+    }
 
-      // full validate target
-      tokenMatch = getTokenMatch.call(inputmask, pos, opts, maskset);
-      if (tokenMatch.targetMatch && tokenMatch.targetMatch[0] && formatcode(tokenMatch.targetMatch[0]) !== undefined) {
-        const fcode = formatcode(tokenMatch.targetMatch[0]);
-        validator = fcode[0];
-        const part = buffer.slice(tokenMatch.targetMatchIndex, tokenMatch.targetMatchIndex + tokenMatch.targetMatch[0].length);
-        if (new RegExp(validator).test(part.join("")) === false && tokenMatch.targetMatch[0].length === 2 && maskset.validPositions[tokenMatch.targetMatchIndex] && maskset.validPositions[tokenMatch.targetMatchIndex + 1]) {
-          maskset.validPositions[tokenMatch.targetMatchIndex + 1].input = "0";
+    // full validate target
+    tokenMatch = getTokenMatch.call(inputmask, pos, opts, maskset);
+    if (tokenMatch.targetMatch && tokenMatch.targetMatch[0] && formatcode(tokenMatch.targetMatch[0]) !== undefined) {
+      const fcode = formatcode(tokenMatch.targetMatch[0]);
+      validator = fcode[0];
+      const part = buffer.slice(tokenMatch.targetMatchIndex, tokenMatch.targetMatchIndex + tokenMatch.targetMatch[0].length);
+      if (new RegExp(validator).test(part.join("")) === false && tokenMatch.targetMatch[0].length === 2 && maskset.validPositions[tokenMatch.targetMatchIndex] && maskset.validPositions[tokenMatch.targetMatchIndex + 1]) {
+        maskset.validPositions[tokenMatch.targetMatchIndex + 1].input = "0";
+      }
+      if (fcode[2] == "year") {
+        const _buffer = _validationTests.getMaskTemplate.call(inputmask, false, 1, undefined, true);
+        for (let i = pos + 1; i < buffer.length; i++) {
+          buffer[i] = _buffer[i];
+          maskset.validPositions.splice(pos + 1, 1);
         }
-        if (fcode[2] == "year") {
-          const _buffer = _validationTests.getMaskTemplate.call(inputmask, false, 1, undefined, true);
-          for (let i = pos + 1; i < buffer.length; i++) {
-            buffer[i] = _buffer[i];
-            maskset.validPositions.splice(pos + 1, 1);
-          }
-        }
       }
-      let result = currentResult,
-        dateParts = analyseMask.call(inputmask, buffer.join(""), opts.inputFormat, opts);
-      if (result && !isNaN(dateParts.date.getTime())) {
-        // check for a valid date ~ an invalid date returns NaN which isn't equal
-        if (opts.prefillYear) result = prefillYear(dateParts, result, opts);
-        result = isValidDate.call(inputmask, dateParts, result, opts);
-        result = isDateInRange(dateParts, result, opts, maskset, fromCheckval);
-      }
-      if (pos !== undefined && result && currentResult.pos !== pos) {
-        return {
-          buffer: parse(opts.inputFormat, dateParts, opts).split(""),
-          refreshFromBuffer: {
-            start: pos,
-            end: currentResult.pos
-          },
-          pos: currentResult.caret !== undefined ? currentResult.caret : currentResult.pos // correct caret position
-        };
-      }
-      return result;
-    },
-    onKeyDown: function (e, buffer, caretPos, opts) {
-      const input = this;
-      if (e.ctrlKey && e.key === _keycode.keys.ArrowRight) {
-        input.inputmask._valueSet(importDate(new Date(), opts));
-        $(input).trigger("setvalue");
-      }
-    },
-    onUnMask: function (maskedValue, unmaskedValue, opts) {
-      const inputmask = this;
-      return unmaskedValue ? parse(opts.outputFormat, analyseMask.call(inputmask, maskedValue, opts.inputFormat, opts), opts) : unmaskedValue;
-    },
-    casing: "follow",
-    onBeforeMask: function (initialValue, opts) {
-      if (Object.prototype.toString.call(initialValue) === "[object Date]") {
-        initialValue = importDate(initialValue, opts);
-      }
-      return initialValue;
-    },
-    insertMode: false,
-    insertModeVisual: false,
-    shiftPositions: false,
-    keepStatic: false,
-    inputmode: "numeric",
-    prefillYear: true // Allows to disable prefill for datetime year.
-  }
-});
+    }
+    let result = currentResult,
+      dateParts = analyseMask.call(inputmask, buffer.join(""), opts.inputFormat, opts);
+    if (result && !isNaN(dateParts.date.getTime())) {
+      // check for a valid date ~ an invalid date returns NaN which isn't equal
+      if (opts.prefillYear) result = prefillYear(dateParts, result, opts);
+      result = isValidDate.call(inputmask, dateParts, result, opts);
+      result = isDateInRange(dateParts, result, opts, maskset, fromCheckval);
+    }
+    if (pos !== undefined && result && currentResult.pos !== pos) {
+      return {
+        buffer: parse(opts.inputFormat, dateParts, opts).split(""),
+        refreshFromBuffer: {
+          start: pos,
+          end: currentResult.pos
+        },
+        pos: currentResult.caret !== undefined ? currentResult.caret : currentResult.pos // correct caret position
+      };
+    }
+    return result;
+  },
+  onKeyDown: function (e, buffer, caretPos, opts) {
+    const input = this;
+    if (e.ctrlKey && e.key === _keycode.keys.ArrowRight) {
+      input.inputmask._valueSet(importDate(new Date(), opts));
+      (0, _inputmask2.default)(input).trigger("setvalue");
+    }
+  },
+  onUnMask: function (maskedValue, unmaskedValue, opts) {
+    const inputmask = this;
+    return unmaskedValue ? parse(opts.outputFormat, analyseMask.call(inputmask, maskedValue, opts.inputFormat, opts), opts) : unmaskedValue;
+  },
+  casing: "follow",
+  onBeforeMask: function (initialValue, opts) {
+    if (Object.prototype.toString.call(initialValue) === "[object Date]") {
+      initialValue = importDate(initialValue, opts);
+    }
+    return initialValue;
+  },
+  insertMode: false,
+  insertModeVisual: false,
+  shiftPositions: false,
+  keepStatic: false,
+  inputmode: "numeric",
+  prefillYear: true // Allows to disable prefill for datetime year.
+};
+function datetime(options) {
+  return _inputmask2.default.extend(true, {}, datetimeAlias, options);
+}
+function registerDatetime() {
+  _inputmask2.default.extend(true, _inputmask.aliases, {
+    datetime: datetime()
+  });
+}
 
 /***/ }),
 
 /***/ 2735:
-/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
 
-var _inputmask = _interopRequireDefault(__webpack_require__(3978));
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.definitions = definitions;
+exports.registerDefinitions = registerDefinitions;
+var _definitions = _interopRequireDefault(__webpack_require__(9472));
+var _inputmask = _interopRequireDefault(__webpack_require__(7332));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /*
  Input Mask plugin extensions
@@ -2020,31 +2049,42 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e
  */
 
 // extra definitions
-_inputmask.default.extendDefinitions({
-  A: {
-    validator: "[A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
-    casing: "upper" // auto uppercasing
-  },
-  "&": {
-    // alfanumeric uppercasing
-    validator: "[0-9A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
-    casing: "upper"
-  },
-  "#": {
-    // hexadecimal
-    validator: "[0-9A-Fa-f]",
-    casing: "upper"
-  }
-});
+function definitions(options) {
+  return _inputmask.default.extend(true, {
+    A: {
+      validator: "[A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
+      casing: "upper" // auto uppercasing
+    },
+    "&": {
+      // alfanumeric uppercasing
+      validator: "[0-9A-Za-z\u0410-\u044F\u0401\u0451\u00C0-\u00FF\u00B5]",
+      casing: "upper"
+    },
+    "#": {
+      // hexadecimal
+      validator: "[0-9A-Fa-f]",
+      casing: "upper"
+    }
+  }, options);
+}
+function registerDefinitions() {
+  _inputmask.default.extend(true, _definitions.default, definitions());
+}
 
 /***/ }),
 
 /***/ 6009:
-/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
 
-var _inputmask = _interopRequireDefault(__webpack_require__(3978));
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.email = email;
+exports.registerEmail = registerEmail;
+var _inputmask = __webpack_require__(3978);
+var _inputmask2 = _interopRequireDefault(__webpack_require__(7332));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /*
  Input Mask plugin extensions
@@ -2053,8 +2093,8 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e
  Licensed under the MIT license
  */
 
-_inputmask.default.extendAliases({
-  email: {
+function email(options) {
+  return _inputmask2.default.extend(true, {
     // https://en.wikipedia.org/wiki/Domain_name#Domain_name_space
     // https://en.wikipedia.org/wiki/Hostname#Restrictions_on_valid_host_names
     // should be extended with the toplevel domains at the end
@@ -2092,8 +2132,13 @@ _inputmask.default.extendAliases({
       return maskedValue;
     },
     inputmode: "email"
-  }
-});
+  }, options);
+}
+function registerEmail() {
+  _inputmask2.default.extend(true, _inputmask.aliases, {
+    email: email()
+  });
+}
 
 /***/ }),
 
@@ -2121,11 +2166,17 @@ $.extend(true, _inputmask.default.prototype.i18n, {
 /***/ }),
 
 /***/ 56:
-/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
 
-var _inputmask = _interopRequireDefault(__webpack_require__(3978));
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.ip = ip;
+exports.registerIp = registerIp;
+var _inputmask = __webpack_require__(3978);
+var _inputmask2 = _interopRequireDefault(__webpack_require__(7332));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /*
  Input Mask plugin extensions
@@ -2154,8 +2205,8 @@ function ipValidator(chrs, maskset, pos, strict, opts) {
   }
   return ipValidatorRegex.test(chrs);
 }
-_inputmask.default.extendAliases({
-  ip: {
+function ip(options) {
+  return _inputmask2.default.extend(true, {
     // ip-address mask
     mask: "i{1,3}.j{1,3}.k{1,3}.l{1,3}",
     definitions: {
@@ -2179,18 +2230,29 @@ _inputmask.default.extendAliases({
     substitutes: {
       ",": "."
     }
-  }
-});
+  }, options);
+}
+function registerIp() {
+  _inputmask2.default.extend(true, _inputmask.aliases, {
+    ip: ip()
+  });
+}
 
 /***/ }),
 
 /***/ 38:
-/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
 
-var _inputmask = _interopRequireDefault(__webpack_require__(3978));
-__webpack_require__(2735);
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.mac = mac;
+exports.registerMac = registerMac;
+var _inputmask = __webpack_require__(3978);
+var _inputmask2 = _interopRequireDefault(__webpack_require__(7332));
+var _definitions = __webpack_require__(2735);
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /*
  Input Mask plugin extensions
@@ -2199,25 +2261,43 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e
  Licensed under the MIT license
  */
 
-_inputmask.default.extendAliases({
-  mac: {
+function mac(options) {
+  return _inputmask2.default.extend(true, {
     mask: "##:##:##:##:##:##"
-  }
-});
+  }, options);
+}
+function registerMac() {
+  (0, _definitions.registerDefinitions)();
+  _inputmask2.default.extend(true, _inputmask.aliases, {
+    mac: mac()
+  });
+}
 
 /***/ }),
 
 /***/ 9574:
-/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
 
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.currency = currency;
+exports.decimal = decimal;
+exports.indianns = indianns;
+exports.integer = integer;
+exports.numeric = numeric;
+exports.percentage = percentage;
+exports.registerNumeric = registerNumeric;
 var _escapeRegex = __webpack_require__(340);
-var _inputmask = _interopRequireDefault(__webpack_require__(3978));
+var _inputmask = _interopRequireWildcard(__webpack_require__(3978));
 var _keycode = __webpack_require__(6032);
 var _positioning = __webpack_require__(7539);
 var _definitions = _interopRequireDefault(__webpack_require__(9472));
+var _inputmask2 = _interopRequireDefault(__webpack_require__(7332));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function (e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, default: e }; if (null === e || "object" != typeof e && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (const t in e) "default" !== t && {}.hasOwnProperty.call(e, t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, t)) && (i.get || i.set) ? o(f, t, i) : f[t] = e[t]); return f; })(e, t); }
 /*
  Input Mask plugin extensions
  http://github.com/RobinHerbots/inputmask
@@ -2225,7 +2305,6 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e
  Licensed under the MIT license
  */
 
-const $ = _inputmask.default.dependencyLib;
 function autoEscape(txt, opts) {
   let escapedTxt = "";
   for (let i = 0; i < txt.length; i++) {
@@ -2430,470 +2509,518 @@ function checkForLeadingZeroes(buffer, opts) {
 }
 
 // number aliases
-_inputmask.default.extendAliases({
-  numeric: {
-    mask: genMask,
-    _mask: function (opts) {
-      return "(" + opts.groupSeparator + "999){+|1}";
+const numericAlias = {
+  mask: genMask,
+  _mask: function (opts) {
+    return "(" + opts.groupSeparator + "999){+|1}";
+  },
+  digits: "*",
+  // number of fractionalDigits
+  digitsOptional: true,
+  enforceDigitsOnBlur: false,
+  radixPoint: ".",
+  positionCaretOnClick: "radixFocus",
+  _radixDance: true,
+  groupSeparator: "",
+  allowMinus: true,
+  negationSymbol: {
+    front: "-",
+    // "("
+    back: "" // ")"
+  },
+  prefix: "",
+  suffix: "",
+  min: null,
+  // minimum value
+  max: null,
+  // maximum value
+  SetMaxOnOverflow: false,
+  step: 1,
+  inputType: "text",
+  // number ~ specify that values which are set are in textform (radix point  is same as in the options) or in numberform (radixpoint = .)
+  unmaskAsNumber: false,
+  roundingFN: Math.round,
+  // Math.floor ,  fn(x)
+  inputmode: "decimal",
+  shortcuts: {
+    k: "1000",
+    m: "1000000"
+  },
+  // global options
+  placeholder: "0",
+  greedy: false,
+  rightAlign: true,
+  insertMode: true,
+  autoUnmask: false,
+  skipOptionalPartCharacter: "",
+  usePrototypeDefinitions: false,
+  stripLeadingZeroes: true,
+  substituteRadixPoint: true,
+  definitions: {
+    0: {
+      validator: decimalValidator
     },
-    digits: "*",
-    // number of fractionalDigits
-    digitsOptional: true,
-    enforceDigitsOnBlur: false,
-    radixPoint: ".",
-    positionCaretOnClick: "radixFocus",
-    _radixDance: true,
-    groupSeparator: "",
-    allowMinus: true,
-    negationSymbol: {
-      front: "-",
-      // "("
-      back: "" // ")"
+    1: {
+      validator: decimalValidator,
+      definitionSymbol: "9"
     },
-    prefix: "",
-    suffix: "",
-    min: null,
-    // minimum value
-    max: null,
-    // maximum value
-    SetMaxOnOverflow: false,
-    step: 1,
-    inputType: "text",
-    // number ~ specify that values which are set are in textform (radix point  is same as in the options) or in numberform (radixpoint = .)
-    unmaskAsNumber: false,
-    roundingFN: Math.round,
-    // Math.floor ,  fn(x)
-    inputmode: "decimal",
-    shortcuts: {
-      k: "1000",
-      m: "1000000"
+    9: {
+      // \uFF11-\uFF19 #1606
+      validator: "[0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9]",
+      definitionSymbol: "*"
     },
-    // global options
-    placeholder: "0",
-    greedy: false,
-    rightAlign: true,
-    insertMode: true,
-    autoUnmask: false,
-    skipOptionalPartCharacter: "",
-    usePrototypeDefinitions: false,
-    stripLeadingZeroes: true,
-    substituteRadixPoint: true,
-    definitions: {
-      0: {
-        validator: decimalValidator
-      },
-      1: {
-        validator: decimalValidator,
-        definitionSymbol: "9"
-      },
-      9: {
-        // \uFF11-\uFF19 #1606
-        validator: "[0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9]",
-        definitionSymbol: "*"
-      },
-      "+": {
-        validator: function (chrs, maskset, pos, strict, opts) {
-          return opts.allowMinus && (chrs === "-" || chrs === opts.negationSymbol.front);
-        }
-      },
-      "-": {
-        validator: function (chrs, maskset, pos, strict, opts) {
-          return opts.allowMinus && chrs === opts.negationSymbol.back;
-        }
+    "+": {
+      validator: function (chrs, maskset, pos, strict, opts) {
+        return opts.allowMinus && (chrs === "-" || chrs === opts.negationSymbol.front);
       }
     },
-    preValidation: function (buffer, pos, c, isSelection, opts, maskset, caretPos, strict) {
-      const inputmask = this;
-      if (opts.__financeInput !== false && c === opts.radixPoint) return false;
-      const radixPos = buffer.indexOf(opts.radixPoint),
-        initPos = pos;
-      pos = handleRadixDance(pos, c, radixPos, maskset, opts);
-      if (c === "-" || c === opts.negationSymbol.front) {
-        if (opts.allowMinus !== true) return false;
-        let isNegative = false,
-          front = findValid("+", maskset),
-          back = findValid("-", maskset);
-        if (front !== -1) {
-          isNegative = [front];
-          if (back !== -1) isNegative.push(back);
-        }
-        return isNegative !== false ? {
-          remove: isNegative,
-          caret: initPos - opts.negationSymbol.back.length
-        } : {
-          insert: [{
-            pos: findValidator.call(inputmask, "+", maskset),
-            c: opts.negationSymbol.front,
-            fromIsValid: true
-          }, {
-            pos: findValidator.call(inputmask, "-", maskset),
-            c: opts.negationSymbol.back,
-            fromIsValid: undefined
-          }],
-          caret: initPos + opts.negationSymbol.back.length
-        };
+    "-": {
+      validator: function (chrs, maskset, pos, strict, opts) {
+        return opts.allowMinus && chrs === opts.negationSymbol.back;
       }
-      if (c === opts.groupSeparator) {
-        return {
-          caret: initPos
-        };
+    }
+  },
+  preValidation: function (buffer, pos, c, isSelection, opts, maskset, caretPos, strict) {
+    const inputmask = this;
+    if (opts.__financeInput !== false && c === opts.radixPoint) return false;
+    const radixPos = buffer.indexOf(opts.radixPoint),
+      initPos = pos;
+    pos = handleRadixDance(pos, c, radixPos, maskset, opts);
+    if (c === "-" || c === opts.negationSymbol.front) {
+      if (opts.allowMinus !== true) return false;
+      let isNegative = false,
+        front = findValid("+", maskset),
+        back = findValid("-", maskset);
+      if (front !== -1) {
+        isNegative = [front];
+        if (back !== -1) isNegative.push(back);
       }
-      if (strict) return true;
-      if (radixPos !== -1 && opts._radixDance === true && isSelection === false && c === opts.radixPoint && opts.digits !== undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0) && radixPos !== pos) {
-        const radixValidatorPos = findValidator.call(inputmask, opts.radixPoint, maskset);
-        if (maskset.validPositions[radixValidatorPos]) {
-          maskset.validPositions[radixValidatorPos].generatedInput = maskset.validPositions[radixValidatorPos].generated || false;
-        }
-        return {
-          caret: opts._radixDance && pos === radixPos - 1 ? radixPos + 1 : radixPos
-        };
-      }
-      if (opts.__financeInput === false) {
-        if (isSelection) {
-          if (opts.digitsOptional) {
-            return {
-              rewritePosition: caretPos.end
-            };
-          } else if (!opts.digitsOptional) {
-            if (caretPos.begin > radixPos && caretPos.end <= radixPos) {
-              if (c === opts.radixPoint) {
-                return {
-                  insert: {
-                    pos: radixPos + 1,
-                    c: "0",
-                    fromIsValid: true
-                  },
-                  rewritePosition: radixPos
-                };
-              } else {
-                return {
-                  rewritePosition: radixPos + 1
-                };
-              }
-            } else if (caretPos.begin < radixPos) {
-              return {
-                rewritePosition: caretPos.begin - 1
-              };
-            }
-          }
-        } else {
-          if (!opts.showMaskOnHover && !opts.showMaskOnFocus && !opts.digitsOptional && opts.digits > 0 && this.__valueGet.call(this.el) === "") {
-            return {
-              rewritePosition: radixPos
-            };
-          }
-
-          // Cursor placed at or before the prefix on a field with no digits
-          // would otherwise fall through to alternation switching and land
-          // in the decimal part (#2615)
-          if (pos >= buffer.length - opts.prefix.length && opts.radixPoint !== "") {
-            const digitTest = new RegExp(opts.definitions["9"].validator);
-            if (!maskset.validPositions.some(vp => vp && !vp.generatedInput && digitTest.test(vp.input))) {
-              return {
-                rewritePosition: radixPos !== -1 ? radixPos : 0
-              };
-            }
-          }
-        }
+      return isNegative !== false ? {
+        remove: isNegative,
+        caret: initPos - opts.negationSymbol.back.length
+      } : {
+        insert: [{
+          pos: findValidator.call(inputmask, "+", maskset),
+          c: opts.negationSymbol.front,
+          fromIsValid: true
+        }, {
+          pos: findValidator.call(inputmask, "-", maskset),
+          c: opts.negationSymbol.back,
+          fromIsValid: undefined
+        }],
+        caret: initPos + opts.negationSymbol.back.length
+      };
+    }
+    if (c === opts.groupSeparator) {
+      return {
+        caret: initPos
+      };
+    }
+    if (strict) return true;
+    if (radixPos !== -1 && opts._radixDance === true && isSelection === false && c === opts.radixPoint && opts.digits !== undefined && (isNaN(opts.digits) || parseInt(opts.digits) > 0) && radixPos !== pos) {
+      const radixValidatorPos = findValidator.call(inputmask, opts.radixPoint, maskset);
+      if (maskset.validPositions[radixValidatorPos]) {
+        maskset.validPositions[radixValidatorPos].generatedInput = maskset.validPositions[radixValidatorPos].generated || false;
       }
       return {
-        rewritePosition: pos
+        caret: opts._radixDance && pos === radixPos - 1 ? radixPos + 1 : radixPos
       };
-    },
-    postValidation: function (buffer, pos, c, currentResult, opts, maskset, strict, fromCheckval, fromAlternate) {
-      if (currentResult === false) return currentResult;
-      if (strict) return true;
-      if (opts.min !== null || opts.max !== null) {
-        const unmasked = opts.onUnMask(buffer.slice().reverse().join(""), undefined, $.extend({}, opts, {
-          unmaskAsNumber: true
-        }));
-        if (opts.min !== null && unmasked < opts.min && fromAlternate !== true && (unmasked.toString().length > opts.min.toString().length ||
-        // > instead of >= because we want to allow to type a bigger number
-        buffer[0] === opts.radixPoint ||
-        // disallow radixpoint when value is smaller than min
-        unmasked < 0)) {
-          return false;
-          // return {
-          // 	refreshFromBuffer: true,
-          // 	buffer: alignDigits(opts.min.toString().replace(".", opts.radixPoint).split(""), opts.digits, opts).reverse()
-          // };
+    }
+    if (opts.__financeInput === false) {
+      if (isSelection) {
+        if (opts.digitsOptional) {
+          return {
+            rewritePosition: caretPos.end
+          };
+        } else if (!opts.digitsOptional) {
+          if (caretPos.begin > radixPos && caretPos.end <= radixPos) {
+            if (c === opts.radixPoint) {
+              return {
+                insert: {
+                  pos: radixPos + 1,
+                  c: "0",
+                  fromIsValid: true
+                },
+                rewritePosition: radixPos
+              };
+            } else {
+              return {
+                rewritePosition: radixPos + 1
+              };
+            }
+          } else if (caretPos.begin < radixPos) {
+            return {
+              rewritePosition: caretPos.begin - 1
+            };
+          }
         }
-        if (opts.max !== null && opts.max >= 0 && unmasked > opts.max) {
-          return opts.SetMaxOnOverflow ? {
-            refreshFromBuffer: true,
-            buffer: alignDigits(opts.max.toString().replace(".", opts.radixPoint).split(""), opts.digits, opts).reverse()
-          } : false;
+      } else {
+        if (!opts.showMaskOnHover && !opts.showMaskOnFocus && !opts.digitsOptional && opts.digits > 0 && this.__valueGet.call(this.el) === "") {
+          return {
+            rewritePosition: radixPos
+          };
         }
-      }
-      return currentResult;
-    },
-    onUnMask: function (maskedValue, unmaskedValue, opts) {
-      if (unmaskedValue === "" && opts.nullable === true) {
-        return unmaskedValue;
-      }
-      let processValue = maskedValue.replace(opts.prefix, "");
-      processValue = processValue.replace(opts.suffix, "");
-      processValue = processValue.replace(new RegExp((0, _escapeRegex.escapeRegex)(opts.groupSeparator), "g"), "");
-      if (opts.placeholder.charAt(0) !== "") {
-        processValue = processValue.replace(new RegExp(opts.placeholder.charAt(0), "g"), "0");
-      }
-      if (opts.unmaskAsNumber) {
-        if (opts.radixPoint !== "" && processValue.indexOf(opts.radixPoint) !== -1) processValue = processValue.replace(_escapeRegex.escapeRegex.call(this, opts.radixPoint), ".");
-        processValue = processValue.replace(new RegExp("^" + (0, _escapeRegex.escapeRegex)(opts.negationSymbol.front)), "-");
-        processValue = processValue.replace(new RegExp((0, _escapeRegex.escapeRegex)(opts.negationSymbol.back) + "$"), "");
-        return Number(processValue);
-      }
-      return processValue;
-    },
-    isComplete: function (buffer, opts) {
-      let maskedValue = (opts.numericInput ? buffer.slice().reverse() : buffer).join("");
-      maskedValue = maskedValue.replace(new RegExp("^" + (0, _escapeRegex.escapeRegex)(opts.negationSymbol.front)), "-");
-      maskedValue = maskedValue.replace(new RegExp((0, _escapeRegex.escapeRegex)(opts.negationSymbol.back) + "$"), "");
-      maskedValue = maskedValue.replace(opts.prefix, "");
-      maskedValue = maskedValue.replace(opts.suffix, "");
-      maskedValue = maskedValue.replace(new RegExp((0, _escapeRegex.escapeRegex)(opts.groupSeparator) + "([0-9]{3})", "g"), "$1");
-      if (opts.radixPoint === ",") maskedValue = maskedValue.replace((0, _escapeRegex.escapeRegex)(opts.radixPoint), ".");
-      return isFinite(maskedValue);
-    },
-    onBeforeMask: function (initialValue, opts) {
-      initialValue = initialValue ?? "";
-      const radixPoint = opts.radixPoint || ",";
-      if (isFinite(opts.digits)) opts.digits = parseInt(opts.digits);
-      if ((typeof initialValue === "number" || opts.inputType === "number") && radixPoint !== "") {
-        initialValue = initialValue.toString().replace(".", radixPoint);
-      }
-      const isNegative = initialValue.charAt(0) === "-" || initialValue.charAt(0) === opts.negationSymbol.front,
-        valueParts = initialValue.split(radixPoint),
-        integerPart = valueParts[0].replace(/[^\-0-9]/g, ""),
-        decimalPart = valueParts.length > 1 ? valueParts[1].replace(/[^0-9]/g, "") : "",
-        forceDigits = valueParts.length > 1;
-      initialValue = integerPart + (decimalPart !== "" ? radixPoint + decimalPart : decimalPart);
-      let digits = 0;
-      if (radixPoint !== "") {
-        digits = !opts.digitsOptional ? opts.digits : opts.digits < decimalPart.length ? opts.digits : decimalPart.length;
-        if (decimalPart !== "" || !opts.digitsOptional) {
-          const digitsFactor = Math.pow(10, digits || 1);
 
-          // make the initialValue a valid javascript number for the parsefloat
-          initialValue = initialValue.replace((0, _escapeRegex.escapeRegex)(radixPoint), ".");
-          if (!isNaN(parseFloat(initialValue))) {
-            initialValue = (opts.roundingFN(parseFloat(initialValue) * digitsFactor) / digitsFactor).toFixed(digits);
-          }
-          initialValue = initialValue.toString().replace(".", radixPoint);
-        }
-      }
-      // this needs to be in a separate part and not directly in decimalPart to allow rounding
-      if (opts.digits === 0 && initialValue.indexOf(radixPoint) !== -1) {
-        initialValue = initialValue.substring(0, initialValue.indexOf(radixPoint));
-      }
-      if (initialValue !== "" && (opts.min !== null || opts.max !== null)) {
-        const numberValue = initialValue.toString().replace(radixPoint, ".");
-        if (opts.min !== null && numberValue < opts.min) {
-          initialValue = opts.min.toString().replace(".", radixPoint);
-        } else if (opts.max !== null && numberValue > opts.max) {
-          initialValue = opts.max.toString().replace(".", radixPoint);
-        }
-      }
-      if (isNegative && initialValue.charAt(0) !== "-") {
-        initialValue = "-" + initialValue;
-      }
-      return alignDigits(initialValue.toString().split(""), digits, opts, forceDigits).join("");
-    },
-    onBeforeWrite: function (e, buffer, caretPos, opts) {
-      function stripBuffer(buffer, stripRadix) {
-        if (opts.__financeInput !== false || stripRadix) {
-          var position = buffer.indexOf(opts.radixPoint);
-          if (position !== -1) {
-            buffer.splice(position, 1);
-          }
-        }
-        if (opts.groupSeparator !== "") {
-          while ((position = buffer.indexOf(opts.groupSeparator)) !== -1) {
-            buffer.splice(position, 1);
-          }
-        }
-        return buffer;
-      }
-      let result, leadingzeroes;
-      if (opts.stripLeadingZeroes && (leadingzeroes = checkForLeadingZeroes(buffer, opts))) {
-        const caretNdx = buffer.join("").lastIndexOf(leadingzeroes[0].split("").reverse().join("")) - (leadingzeroes[0] == leadingzeroes.input ? 0 : 1),
-          offset = leadingzeroes[0] == leadingzeroes.input ? 1 : 0;
-        for (let i = leadingzeroes[0].length - offset; i > 0; i--) {
-          this.maskset.validPositions.splice(caretNdx + i, 1);
-          delete buffer[caretNdx + i];
-        }
-      }
-      if (e) {
-        switch (e.type) {
-          case "blur":
-          case "checkval":
-            if (opts.min !== null || opts.max !== null) {
-              const unmasked = opts.onUnMask(buffer.slice().reverse().join(""), undefined, $.extend({}, opts, {
-                unmaskAsNumber: true
-              }));
-              if (opts.min !== null && unmasked < opts.min && buffer.join() !== "") {
-                return {
-                  refreshFromBuffer: true,
-                  buffer: alignDigits(opts.min.toString().replace(".", opts.radixPoint).split(""), opts.digits, opts).reverse()
-                };
-              } else if (opts.max !== null && unmasked > opts.max) {
-                return {
-                  refreshFromBuffer: true,
-                  buffer: alignDigits(opts.max.toString().replace(".", opts.radixPoint).split(""), opts.digits, opts).reverse()
-                };
-              }
-            }
-            if (buffer[buffer.length - 1] === opts.negationSymbol.front) {
-              // strip negation symbol on blur when value is 0
-              const nmbrMtchs = new RegExp("(^" + (opts.negationSymbol.front != "" ? (0, _escapeRegex.escapeRegex)(opts.negationSymbol.front) + "?" : "") + (0, _escapeRegex.escapeRegex)(opts.prefix) + ")(.*)(" + (0, _escapeRegex.escapeRegex)(opts.suffix) + (opts.negationSymbol.back != "" ? (0, _escapeRegex.escapeRegex)(opts.negationSymbol.back) + "?" : "") + "$)").exec(stripBuffer(buffer.slice(), true).reverse().join("")),
-                number = nmbrMtchs ? nmbrMtchs[2] : "";
-              if (number == 0) {
-                result = {
-                  refreshFromBuffer: true,
-                  buffer: [0]
-                };
-              }
-            } else if (opts.radixPoint !== "") {
-              // strip radixpoint on blur when it is the latest char
-              const radixNDX = buffer.indexOf(opts.radixPoint);
-              if (radixNDX === opts.suffix.length) {
-                if (result && result.buffer) {
-                  result.buffer.splice(0, 1 + opts.suffix.length);
-                } else {
-                  buffer.splice(0, 1 + opts.suffix.length);
-                  result = {
-                    refreshFromBuffer: true,
-                    buffer: stripBuffer(buffer)
-                  };
-                }
-              }
-            }
-            if (opts.enforceDigitsOnBlur) {
-              result = result || {};
-              const bffr = (result && result.buffer || buffer).slice().reverse();
-              result.refreshFromBuffer = true;
-              result.buffer = alignDigits(bffr, opts.digits, opts, true).reverse();
-            }
-        }
-      }
-      return result;
-    },
-    onKeyDown: function (e, buffer, caretPos, opts) {
-      let $input = $(this),
-        bffr;
-      if (e.location != 3) {
-        let pattern,
-          c = e.key;
-        if (pattern = opts.shortcuts && opts.shortcuts[c]) {
-          if (pattern.length > 1) {
-            this.inputmask.__valueSet.call(this, parseFloat(this.inputmask.unmaskedvalue()) * parseInt(pattern));
-            $input.trigger("setvalue");
-            return false;
-          }
-        }
-      }
-      if (e.ctrlKey) {
-        switch (e.key) {
-          case _keycode.keys.ArrowUp:
-            this.inputmask.__valueSet.call(this, parseFloat(this.inputmask.unmaskedvalue()) + parseInt(opts.step));
-            $input.trigger("setvalue");
-            return false;
-          case _keycode.keys.ArrowDown:
-            this.inputmask.__valueSet.call(this, parseFloat(this.inputmask.unmaskedvalue()) - parseInt(opts.step));
-            $input.trigger("setvalue");
-            return false;
-        }
-      }
-      if (!e.shiftKey && (e.key === _keycode.keys.Delete || e.key === _keycode.keys.Backspace || e.key === _keycode.keys.BACKSPACE_SAFARI) && caretPos.begin !== buffer.length) {
-        if (buffer[e.key === _keycode.keys.Delete ? caretPos.begin - 1 : caretPos.end] === opts.negationSymbol.front) {
-          bffr = buffer.slice().reverse();
-          if (opts.negationSymbol.front !== "") bffr.shift();
-          if (opts.negationSymbol.back !== "") bffr.pop();
-          $input.trigger("setvalue", [bffr.join(""), caretPos.begin]);
-          return false;
-        } else if (opts._radixDance === true) {
-          const radixPos = buffer.indexOf(opts.radixPoint);
-          if (!opts.digitsOptional) {
-            if (radixPos !== -1 && (caretPos.begin < radixPos || caretPos.end < radixPos || e.key === _keycode.keys.Delete && (caretPos.begin === radixPos || caretPos.begin - 1 === radixPos))) {
-              let restoreCaretPos;
-              if (caretPos.begin === caretPos.end) {
-                // only adjust when not a selection
-                if (e.key === _keycode.keys.Backspace || e.key === _keycode.keys.BACKSPACE_SAFARI) caretPos.begin++;else if (e.key === _keycode.keys.Delete && caretPos.begin - 1 === radixPos) {
-                  restoreCaretPos = $.extend({}, caretPos);
-                  caretPos.begin--;
-                  caretPos.end--;
-                }
-              }
-              bffr = buffer.slice().reverse();
-              bffr.splice(bffr.length - caretPos.begin, caretPos.begin - caretPos.end || 1);
-              if (e.key === _keycode.keys.Backspace || e.key === _keycode.keys.BACKSPACE_SAFARI) bffr.splice(bffr.length - caretPos.end + 1, 0, "0");
-              // console.log(caretPos);
-              bffr = alignDigits(bffr, opts.digits, opts).join("");
-              if (restoreCaretPos) {
-                caretPos = restoreCaretPos;
-              }
-              $input.trigger("setvalue", [bffr, caretPos.begin >= bffr.length ? radixPos + 1 : caretPos.begin]);
-              return false;
-            }
-          } else if (radixPos === 0) {
-            bffr = buffer.slice().reverse();
-            bffr.pop();
-            $input.trigger("setvalue", [bffr.join(""), caretPos.begin >= bffr.length ? bffr.length : caretPos.begin]);
-            return false;
+        // Cursor placed at or before the prefix on a field with no digits
+        // would otherwise fall through to alternation switching and land
+        // in the decimal part (#2615)
+        if (pos >= buffer.length - opts.prefix.length && opts.radixPoint !== "") {
+          const digitTest = new RegExp(opts.definitions["9"].validator);
+          if (!maskset.validPositions.some(vp => vp && !vp.generatedInput && digitTest.test(vp.input))) {
+            return {
+              rewritePosition: radixPos !== -1 ? radixPos : 0
+            };
           }
         }
       }
     }
+    return {
+      rewritePosition: pos
+    };
   },
-  currency: {
-    prefix: "",
-    // "$ ",
-    groupSeparator: ",",
-    alias: "numeric",
-    digits: 2,
-    digitsOptional: false
+  postValidation: function (buffer, pos, c, currentResult, opts, maskset, strict, fromCheckval, fromAlternate) {
+    if (currentResult === false) return currentResult;
+    if (strict) return true;
+    if (opts.min !== null || opts.max !== null) {
+      const unmasked = opts.onUnMask(buffer.slice().reverse().join(""), undefined, _inputmask2.default.extend({}, opts, {
+        unmaskAsNumber: true
+      }));
+      if (opts.min !== null && unmasked < opts.min && fromAlternate !== true && (unmasked.toString().length > opts.min.toString().length ||
+      // > instead of >= because we want to allow to type a bigger number
+      buffer[0] === opts.radixPoint ||
+      // disallow radixpoint when value is smaller than min
+      unmasked < 0)) {
+        return false;
+        // return {
+        // 	refreshFromBuffer: true,
+        // 	buffer: alignDigits(opts.min.toString().replace(".", opts.radixPoint).split(""), opts.digits, opts).reverse()
+        // };
+      }
+      if (opts.max !== null && opts.max >= 0 && unmasked > opts.max) {
+        return opts.SetMaxOnOverflow ? {
+          refreshFromBuffer: true,
+          buffer: alignDigits(opts.max.toString().replace(".", opts.radixPoint).split(""), opts.digits, opts).reverse()
+        } : false;
+      }
+    }
+    return currentResult;
   },
-  decimal: {
-    alias: "numeric"
+  onUnMask: function (maskedValue, unmaskedValue, opts) {
+    if (unmaskedValue === "" && opts.nullable === true) {
+      return unmaskedValue;
+    }
+    let processValue = maskedValue.replace(opts.prefix, "");
+    processValue = processValue.replace(opts.suffix, "");
+    processValue = processValue.replace(new RegExp((0, _escapeRegex.escapeRegex)(opts.groupSeparator), "g"), "");
+    if (opts.placeholder.charAt(0) !== "") {
+      processValue = processValue.replace(new RegExp(opts.placeholder.charAt(0), "g"), "0");
+    }
+    if (opts.unmaskAsNumber) {
+      if (opts.radixPoint !== "" && processValue.indexOf(opts.radixPoint) !== -1) processValue = processValue.replace(_escapeRegex.escapeRegex.call(this, opts.radixPoint), ".");
+      processValue = processValue.replace(new RegExp("^" + (0, _escapeRegex.escapeRegex)(opts.negationSymbol.front)), "-");
+      processValue = processValue.replace(new RegExp((0, _escapeRegex.escapeRegex)(opts.negationSymbol.back) + "$"), "");
+      return Number(processValue);
+    }
+    return processValue;
   },
-  integer: {
-    alias: "numeric",
-    inputmode: "numeric",
-    digits: 0
+  isComplete: function (buffer, opts) {
+    let maskedValue = (opts.numericInput ? buffer.slice().reverse() : buffer).join("");
+    maskedValue = maskedValue.replace(new RegExp("^" + (0, _escapeRegex.escapeRegex)(opts.negationSymbol.front)), "-");
+    maskedValue = maskedValue.replace(new RegExp((0, _escapeRegex.escapeRegex)(opts.negationSymbol.back) + "$"), "");
+    maskedValue = maskedValue.replace(opts.prefix, "");
+    maskedValue = maskedValue.replace(opts.suffix, "");
+    maskedValue = maskedValue.replace(new RegExp((0, _escapeRegex.escapeRegex)(opts.groupSeparator) + "([0-9]{3})", "g"), "$1");
+    if (opts.radixPoint === ",") maskedValue = maskedValue.replace((0, _escapeRegex.escapeRegex)(opts.radixPoint), ".");
+    return isFinite(maskedValue);
   },
-  percentage: {
-    alias: "numeric",
-    min: 0,
-    max: 100,
-    suffix: " %",
-    digits: 0,
-    allowMinus: false
+  onBeforeMask: function (initialValue, opts) {
+    initialValue = initialValue ?? "";
+    const radixPoint = opts.radixPoint || ",";
+    if (isFinite(opts.digits)) opts.digits = parseInt(opts.digits);
+    if ((typeof initialValue === "number" || opts.inputType === "number") && radixPoint !== "") {
+      initialValue = initialValue.toString().replace(".", radixPoint);
+    }
+    const isNegative = initialValue.charAt(0) === "-" || initialValue.charAt(0) === opts.negationSymbol.front,
+      valueParts = initialValue.split(radixPoint),
+      integerPart = valueParts[0].replace(/[^\-0-9]/g, ""),
+      decimalPart = valueParts.length > 1 ? valueParts[1].replace(/[^0-9]/g, "") : "",
+      forceDigits = valueParts.length > 1;
+    initialValue = integerPart + (decimalPart !== "" ? radixPoint + decimalPart : decimalPart);
+    let digits = 0;
+    if (radixPoint !== "") {
+      digits = !opts.digitsOptional ? opts.digits : opts.digits < decimalPart.length ? opts.digits : decimalPart.length;
+      if (decimalPart !== "" || !opts.digitsOptional) {
+        const digitsFactor = Math.pow(10, digits || 1);
+
+        // make the initialValue a valid javascript number for the parsefloat
+        initialValue = initialValue.replace((0, _escapeRegex.escapeRegex)(radixPoint), ".");
+        if (!isNaN(parseFloat(initialValue))) {
+          initialValue = (opts.roundingFN(parseFloat(initialValue) * digitsFactor) / digitsFactor).toFixed(digits);
+        }
+        initialValue = initialValue.toString().replace(".", radixPoint);
+      }
+    }
+    // this needs to be in a separate part and not directly in decimalPart to allow rounding
+    if (opts.digits === 0 && initialValue.indexOf(radixPoint) !== -1) {
+      initialValue = initialValue.substring(0, initialValue.indexOf(radixPoint));
+    }
+    if (initialValue !== "" && (opts.min !== null || opts.max !== null)) {
+      const numberValue = initialValue.toString().replace(radixPoint, ".");
+      if (opts.min !== null && numberValue < opts.min) {
+        initialValue = opts.min.toString().replace(".", radixPoint);
+      } else if (opts.max !== null && numberValue > opts.max) {
+        initialValue = opts.max.toString().replace(".", radixPoint);
+      }
+    }
+    if (isNegative && initialValue.charAt(0) !== "-") {
+      initialValue = "-" + initialValue;
+    }
+    return alignDigits(initialValue.toString().split(""), digits, opts, forceDigits).join("");
   },
-  indianns: {
-    // indian numbering system
-    alias: "numeric",
-    _mask: function (opts) {
-      return "(" + opts.groupSeparator + "99){*|1}(" + opts.groupSeparator + "999){1|1}";
-    },
-    groupSeparator: ",",
-    radixPoint: ".",
-    placeholder: "0",
-    digits: 2,
-    digitsOptional: false
+  onBeforeWrite: function (e, buffer, caretPos, opts) {
+    function stripBuffer(buffer, stripRadix) {
+      if (opts.__financeInput !== false || stripRadix) {
+        var position = buffer.indexOf(opts.radixPoint);
+        if (position !== -1) {
+          buffer.splice(position, 1);
+        }
+      }
+      if (opts.groupSeparator !== "") {
+        while ((position = buffer.indexOf(opts.groupSeparator)) !== -1) {
+          buffer.splice(position, 1);
+        }
+      }
+      return buffer;
+    }
+    let result, leadingzeroes;
+    if (opts.stripLeadingZeroes && (leadingzeroes = checkForLeadingZeroes(buffer, opts))) {
+      const caretNdx = buffer.join("").lastIndexOf(leadingzeroes[0].split("").reverse().join("")) - (leadingzeroes[0] == leadingzeroes.input ? 0 : 1),
+        offset = leadingzeroes[0] == leadingzeroes.input ? 1 : 0;
+      for (let i = leadingzeroes[0].length - offset; i > 0; i--) {
+        this.maskset.validPositions.splice(caretNdx + i, 1);
+        delete buffer[caretNdx + i];
+      }
+    }
+    if (e) {
+      switch (e.type) {
+        case "blur":
+        case "checkval":
+          if (opts.min !== null || opts.max !== null) {
+            const unmasked = opts.onUnMask(buffer.slice().reverse().join(""), undefined, _inputmask2.default.extend({}, opts, {
+              unmaskAsNumber: true
+            }));
+            if (opts.min !== null && unmasked < opts.min && buffer.join() !== "") {
+              return {
+                refreshFromBuffer: true,
+                buffer: alignDigits(opts.min.toString().replace(".", opts.radixPoint).split(""), opts.digits, opts).reverse()
+              };
+            } else if (opts.max !== null && unmasked > opts.max) {
+              return {
+                refreshFromBuffer: true,
+                buffer: alignDigits(opts.max.toString().replace(".", opts.radixPoint).split(""), opts.digits, opts).reverse()
+              };
+            }
+          }
+          if (buffer[buffer.length - 1] === opts.negationSymbol.front) {
+            // strip negation symbol on blur when value is 0
+            const nmbrMtchs = new RegExp("(^" + (opts.negationSymbol.front != "" ? (0, _escapeRegex.escapeRegex)(opts.negationSymbol.front) + "?" : "") + (0, _escapeRegex.escapeRegex)(opts.prefix) + ")(.*)(" + (0, _escapeRegex.escapeRegex)(opts.suffix) + (opts.negationSymbol.back != "" ? (0, _escapeRegex.escapeRegex)(opts.negationSymbol.back) + "?" : "") + "$)").exec(stripBuffer(buffer.slice(), true).reverse().join("")),
+              number = nmbrMtchs ? nmbrMtchs[2] : "";
+            if (number == 0) {
+              result = {
+                refreshFromBuffer: true,
+                buffer: [0]
+              };
+            }
+          } else if (opts.radixPoint !== "") {
+            // strip radixpoint on blur when it is the latest char
+            const radixNDX = buffer.indexOf(opts.radixPoint);
+            if (radixNDX === opts.suffix.length) {
+              if (result && result.buffer) {
+                result.buffer.splice(0, 1 + opts.suffix.length);
+              } else {
+                buffer.splice(0, 1 + opts.suffix.length);
+                result = {
+                  refreshFromBuffer: true,
+                  buffer: stripBuffer(buffer)
+                };
+              }
+            }
+          }
+          if (opts.enforceDigitsOnBlur) {
+            result = result || {};
+            const bffr = (result && result.buffer || buffer).slice().reverse();
+            result.refreshFromBuffer = true;
+            result.buffer = alignDigits(bffr, opts.digits, opts, true).reverse();
+          }
+      }
+    }
+    return result;
+  },
+  onKeyDown: function (e, buffer, caretPos, opts) {
+    let $input = (0, _inputmask2.default)(this),
+      bffr;
+    if (e.location != 3) {
+      let pattern,
+        c = e.key;
+      if (pattern = opts.shortcuts && opts.shortcuts[c]) {
+        if (pattern.length > 1) {
+          this.inputmask.__valueSet.call(this, parseFloat(this.inputmask.unmaskedvalue()) * parseInt(pattern));
+          $input.trigger("setvalue");
+          return false;
+        }
+      }
+    }
+    if (e.ctrlKey) {
+      switch (e.key) {
+        case _keycode.keys.ArrowUp:
+          this.inputmask.__valueSet.call(this, parseFloat(this.inputmask.unmaskedvalue()) + parseInt(opts.step));
+          $input.trigger("setvalue");
+          return false;
+        case _keycode.keys.ArrowDown:
+          this.inputmask.__valueSet.call(this, parseFloat(this.inputmask.unmaskedvalue()) - parseInt(opts.step));
+          $input.trigger("setvalue");
+          return false;
+      }
+    }
+    if (!e.shiftKey && (e.key === _keycode.keys.Delete || e.key === _keycode.keys.Backspace || e.key === _keycode.keys.BACKSPACE_SAFARI) && caretPos.begin !== buffer.length) {
+      if (buffer[e.key === _keycode.keys.Delete ? caretPos.begin - 1 : caretPos.end] === opts.negationSymbol.front) {
+        bffr = buffer.slice().reverse();
+        if (opts.negationSymbol.front !== "") bffr.shift();
+        if (opts.negationSymbol.back !== "") bffr.pop();
+        $input.trigger("setvalue", [bffr.join(""), caretPos.begin]);
+        return false;
+      } else if (opts._radixDance === true) {
+        const radixPos = buffer.indexOf(opts.radixPoint);
+        if (!opts.digitsOptional) {
+          if (radixPos !== -1 && (caretPos.begin < radixPos || caretPos.end < radixPos || e.key === _keycode.keys.Delete && (caretPos.begin === radixPos || caretPos.begin - 1 === radixPos))) {
+            let restoreCaretPos;
+            if (caretPos.begin === caretPos.end) {
+              // only adjust when not a selection
+              if (e.key === _keycode.keys.Backspace || e.key === _keycode.keys.BACKSPACE_SAFARI) caretPos.begin++;else if (e.key === _keycode.keys.Delete && caretPos.begin - 1 === radixPos) {
+                restoreCaretPos = _inputmask2.default.extend({}, caretPos);
+                caretPos.begin--;
+                caretPos.end--;
+              }
+            }
+            bffr = buffer.slice().reverse();
+            bffr.splice(bffr.length - caretPos.begin, caretPos.begin - caretPos.end || 1);
+            if (e.key === _keycode.keys.Backspace || e.key === _keycode.keys.BACKSPACE_SAFARI) bffr.splice(bffr.length - caretPos.end + 1, 0, "0");
+            // console.log(caretPos);
+            bffr = alignDigits(bffr, opts.digits, opts).join("");
+            if (restoreCaretPos) {
+              caretPos = restoreCaretPos;
+            }
+            $input.trigger("setvalue", [bffr, caretPos.begin >= bffr.length ? radixPos + 1 : caretPos.begin]);
+            return false;
+          }
+        } else if (radixPos === 0) {
+          bffr = buffer.slice().reverse();
+          bffr.pop();
+          $input.trigger("setvalue", [bffr.join(""), caretPos.begin >= bffr.length ? bffr.length : caretPos.begin]);
+          return false;
+        }
+      }
+    }
   }
-});
+};
+const currencyAlias = {
+  prefix: "",
+  // "$ ",
+  groupSeparator: ",",
+  // alias: "numeric",
+  digits: 2,
+  digitsOptional: false
+};
+const decimalAlias = {
+  // alias: "numeric"
+};
+const integerAlias = {
+  // alias: "numeric",
+  inputmode: "numeric",
+  digits: 0
+};
+const percentageAlias = {
+  // alias: "numeric",
+  min: 0,
+  max: 100,
+  suffix: " %",
+  digits: 0,
+  allowMinus: false
+};
+const indiannsAlias = {
+  // indian numbering system
+  // alias: "numeric",
+  _mask: function (opts) {
+    return "(" + opts.groupSeparator + "99){*|1}(" + opts.groupSeparator + "999){1|1}";
+  },
+  groupSeparator: ",",
+  radixPoint: ".",
+  placeholder: "0",
+  digits: 2,
+  digitsOptional: false
+};
+function numeric(options) {
+  return _inputmask2.default.extend(true, {}, numericAlias, options);
+}
+function currency(options) {
+  return _inputmask2.default.extend(true, {}, numericAlias, currencyAlias, options);
+}
+function decimal(options) {
+  return _inputmask2.default.extend(true, {}, numericAlias, decimalAlias, options);
+}
+function integer(options) {
+  return _inputmask2.default.extend(true, {}, numericAlias, integerAlias, options);
+}
+function percentage(options) {
+  return _inputmask2.default.extend(true, {}, numericAlias, percentageAlias, options);
+}
+function indianns(options) {
+  return _inputmask2.default.extend(true, {}, numericAlias, indiannsAlias, options);
+}
+function registerNumeric() {
+  _inputmask2.default.extend(true, _inputmask.aliases, {
+    numeric: numericAlias,
+    currency: {
+      alias: "numeric",
+      ...currencyAlias
+    },
+    decimal: {
+      alias: "numeric",
+      ...decimalAlias
+    },
+    integer: {
+      alias: "numeric",
+      ...integerAlias
+    },
+    percentage: {
+      alias: "numeric",
+      ...percentageAlias
+    },
+    indianns: {
+      alias: "numeric",
+      ...indiannsAlias
+    }
+  });
+}
 
 /***/ }),
 
 /***/ 8605:
-/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
 
-var _inputmask = _interopRequireDefault(__webpack_require__(3978));
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.registerSsn = registerSsn;
+exports.ssn = ssn;
+var _inputmask = _interopRequireWildcard(__webpack_require__(3978));
+var _inputmask2 = _interopRequireDefault(__webpack_require__(7332));
 var _positioning = __webpack_require__(7539);
 var _validationTests = __webpack_require__(5895);
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function (e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, default: e }; if (null === e || "object" != typeof e && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (const t in e) "default" !== t && {}.hasOwnProperty.call(e, t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, t)) && (i.get || i.set) ? o(f, t, i) : f[t] = e[t]); return f; })(e, t); }
 /*
  Input Mask plugin extensions
  http://github.com/RobinHerbots/inputmask
@@ -2901,26 +3028,37 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e
  Licensed under the MIT license
  */
 
-_inputmask.default.extendAliases({
-  // http://rion.io/2013/09/10/validating-social-security-numbers-through-regular-expressions-2/
-  // https://en.wikipedia.org/wiki/Social_Security_number
-  ssn: {
+function ssn(options) {
+  _inputmask2.default.extend(true, {
     mask: "999-99-9999",
     postValidation: function (buffer, pos, c, currentResult, opts, maskset, strict) {
       const bffr = _validationTests.getMaskTemplate.call(this, true, _positioning.getLastValidPosition.call(this), true, true);
       return /^(?!219-09-9999|078-05-1120)(?!666|000|9.{2}).{3}-(?!00).{2}-(?!0{4}).{4}$/.test(bffr.join(""));
     }
-  }
-});
+  }, options);
+}
+function registerSsn() {
+  _inputmask2.default.extend(true, _inputmask.aliases, {
+    // http://rion.io/2013/09/10/validating-social-security-numbers-through-regular-expressions-2/
+    // https://en.wikipedia.org/wiki/Social_Security_number
+    ssn: ssn()
+  });
+}
 
 /***/ }),
 
 /***/ 8776:
-/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
 
-var _inputmask = _interopRequireDefault(__webpack_require__(3978));
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.registerUrl = registerUrl;
+exports.url = url;
+var _inputmask = __webpack_require__(3978);
+var _inputmask2 = _interopRequireDefault(__webpack_require__(7332));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /*
  Input Mask plugin extensions
@@ -2929,24 +3067,35 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e
  Licensed under the MIT license
  */
 
-_inputmask.default.extendAliases({
-  url: {
+function url(options) {
+  return _inputmask2.default.extend(true, {
     // needs update => https://en.wikipedia.org/wiki/URL
     regex: "(https?|ftp)://.*",
     autoUnmask: false,
     keepStatic: false,
     tabThrough: true
-  }
-});
+  }, options);
+}
+function registerUrl() {
+  _inputmask2.default.extend(true, _inputmask.aliases, {
+    url: url()
+  });
+}
 
 /***/ }),
 
 /***/ 1328:
-/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
 
-var _inputmask = _interopRequireDefault(__webpack_require__(3978));
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.registerVin = registerVin;
+exports.vin = vin;
+var _inputmask = __webpack_require__(3978);
+var _inputmask2 = _interopRequireDefault(__webpack_require__(7332));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /*
  Input Mask plugin extensions
@@ -2955,10 +3104,10 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e
  Licensed under the MIT license
  */
 
-_inputmask.default.extendAliases({
-  // https://en.wikipedia.org/wiki/Vehicle_identification_number
-  // see issue #1199
-  vin: {
+function vin(options) {
+  return _inputmask2.default.extend(true, {
+    // https://en.wikipedia.org/wiki/Vehicle_identification_number
+    // see issue #1199
     mask: "V{13}9{4}",
     definitions: {
       V: {
@@ -2968,8 +3117,13 @@ _inputmask.default.extendAliases({
     },
     clearIncomplete: true,
     autoUnmask: true
-  }
-});
+  }, options);
+}
+function registerVin() {
+  _inputmask2.default.extend(true, _inputmask.aliases, {
+    vin: vin()
+  });
+}
 
 /***/ }),
 
@@ -3290,7 +3444,7 @@ function writeBuffer(input, buffer, caretPos, event, triggerEvents) {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.masksCache = exports["default"] = void 0;
+exports.masksCache = exports["default"] = exports.aliases = void 0;
 var _defaults = _interopRequireDefault(__webpack_require__(7042));
 var _definitions = _interopRequireDefault(__webpack_require__(9472));
 var _inputmask = _interopRequireDefault(__webpack_require__(7332));
@@ -3312,7 +3466,7 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e
 
 const document = _window.default.document,
   dataKey = "_inputmask_opts",
-  aliases = {},
+  aliases = exports.aliases = {},
   masksCache = exports.masksCache = {};
 
 /** @typedef {import("./defaults.js").default} InputmaskOptions */
@@ -6577,19 +6731,29 @@ __webpack_require__(1669);
 __webpack_require__(1960);
 __webpack_require__(493);
 __webpack_require__(472);
-__webpack_require__(2735);
-__webpack_require__(4408);
-__webpack_require__(8776);
-__webpack_require__(56);
-__webpack_require__(6009);
-__webpack_require__(38);
-__webpack_require__(1328);
-__webpack_require__(8605);
-__webpack_require__(7641);
-__webpack_require__(9574);
+var _definitions = __webpack_require__(2735);
+var _cssunit = __webpack_require__(4408);
+var _url = __webpack_require__(8776);
+var _ip = __webpack_require__(56);
+var _email = __webpack_require__(6009);
+var _mac = __webpack_require__(38);
+var _vin = __webpack_require__(1328);
+var _ssn = __webpack_require__(8605);
+var _date = __webpack_require__(7641);
+var _numeric = __webpack_require__(9574);
 __webpack_require__(2952);
 var _inputmask = _interopRequireDefault(__webpack_require__(3978));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+(0, _definitions.registerDefinitions)();
+(0, _cssunit.registerCssunit)();
+(0, _url.registerUrl)();
+(0, _ip.registerIp)();
+(0, _email.registerEmail)();
+(0, _mac.registerMac)();
+(0, _vin.registerVin)();
+(0, _ssn.registerSsn)();
+(0, _date.registerDatetime)();
+(0, _numeric.registerNumeric)();
 var _default = exports["default"] = _inputmask.default;
 }();
 /******/ 	return __webpack_exports__;

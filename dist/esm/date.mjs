@@ -3,20 +3,26 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.6
+ * Version: 5.1.0-beta.11
  */
 export const __webpack_esm_id__ = 552;
 export const __webpack_esm_ids__ = [552];
 export const __webpack_esm_modules__ = {
 
 /***/ 505
-(__unused_webpack_module, __unused_webpack___webpack_exports__, __webpack_require__) {
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  w: () => (/* binding */ datetime),
+  H: () => (/* binding */ registerDatetime)
+});
 
 // EXTERNAL MODULE: ./lib/escapeRegex.js
 var escapeRegex = __webpack_require__(340);
-// EXTERNAL MODULE: ./lib/inputmask.js + 9 modules
-var inputmask = __webpack_require__(327);
+// EXTERNAL MODULE: ./lib/inputmask.js + 5 modules
+var inputmask = __webpack_require__(375);
 // EXTERNAL MODULE: ./lib/keycode.js
 var keycode = __webpack_require__(32);
 // EXTERNAL MODULE: ./lib/positioning.js
@@ -31,12 +37,14 @@ var validation_tests = __webpack_require__(895);
  Licensed under the MIT license
  */
 
-const $ = inputmask/* default */.A.dependencyLib;
-$.extend(true, inputmask/* default */.A.prototype.i18n, {
+const $ = inputmask/* default */.Ay.dependencyLib;
+$.extend(true, inputmask/* default */.Ay.prototype.i18n, {
   dayNames: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
   monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
   ordinalSuffix: ["st", "nd", "rd", "th"]
 });
+// EXTERNAL MODULE: ./lib/dependencyLibs/inputmask.dependencyLib.js + 3 modules
+var inputmask_dependencyLib = __webpack_require__(123);
 ;// ./lib/extensions/date.js
 /*
  Input Mask plugin extensions
@@ -50,7 +58,7 @@ $.extend(true, inputmask/* default */.A.prototype.i18n, {
 
 
 
-const date_$ = inputmask/* default */.A.dependencyLib;
+
 class DateObject {
   constructor(mask, format, opts, inputmask) {
     this.mask = mask;
@@ -152,7 +160,7 @@ class DateObject {
 }
 let useDateObject = false;
 const currentYear = new Date().getFullYear(),
-  i18n = inputmask/* default */.A.prototype.i18n,
+  i18n = inputmask/* default */.Ay.prototype.i18n,
   // supported codes for formatting
   // https://tc39.es/ecma262/multipage/numbers-and-dates.html#sec-date-time-string-format
   // https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings?view=netframework-4.7
@@ -592,178 +600,185 @@ function getTokenMatch(pos, opts, maskset) {
     targetMatch
   };
 }
-inputmask/* default */.A.extendAliases({
-  datetime: {
-    mask: function (opts) {
-      // do not allow numeric input in datetime alias
-      opts.numericInput = false;
 
-      // localize
-      formatCode.S = i18n.ordinalSuffix.join("|");
-      opts.inputFormat = formatAlias[opts.inputFormat] || opts.inputFormat; // resolve possible formatAlias
-      if (opts.repeat) {
-        opts.repeat = parseInt(opts.repeat.toString());
-        if (opts.repeat > 0) {
-          let inputFormat = "";
-          for (let i = 0; i < opts.repeat; i++) {
-            inputFormat = inputFormat + opts.inputFormat;
-          }
-          opts.inputFormat = inputFormat;
-          opts.repeat = 0;
-        }
-      }
-      opts.displayFormat = formatAlias[opts.displayFormat] || opts.displayFormat || opts.inputFormat; // resolve possible formatAlias
-      opts.outputFormat = formatAlias[opts.outputFormat] || opts.outputFormat || opts.inputFormat; // resolve possible formatAlias
-      // opts.placeholder = opts.placeholder !== "" ? opts.placeholder : opts.inputFormat.replace(/[[\]]/, "");
-      opts.regex = parse(opts.inputFormat, undefined, opts);
-      // console.log("inputFormat", opts.regex);
-      opts.min = analyseMask(opts.min, opts.inputFormat, opts);
-      opts.max = analyseMask(opts.max, opts.inputFormat, opts);
-      return null; // migrate to regex mask
-    },
-    placeholder: "",
-    // set default as none (~ auto); when a custom placeholder is passed it will be used
-    inputFormat: "isoDateTime",
-    // format used to input the date
-    displayFormat: null,
-    // visual format when the input looses focus
-    outputFormat: null,
-    // unmasking format
-    min: null,
-    // needs to be in the same format as the inputfornat
-    max: null,
-    // needs to be in the same format as the inputfornat,
-    skipOptionalPartCharacter: "",
-    preValidation: function (buffer, pos, c, isSelection, opts, maskset, caretPos, strict) {
-      const inputmask = this;
-      if (strict) return true;
-      if (isNaN(c) && buffer[pos] !== c) {
-        const tokenMatch = getTokenMatch.call(inputmask, pos, opts, maskset);
-        if (tokenMatch.nextMatch && tokenMatch.nextMatch[0] === c && tokenMatch.targetMatch[0].length > 1) {
-          const validator = formatcode(tokenMatch.targetMatch[0])[0];
-          if (new RegExp(validator).test("0" + buffer[pos - 1])) {
-            buffer[pos] = buffer[pos - 1];
-            buffer[pos - 1] = "0";
-            return {
-              fuzzy: true,
-              buffer,
-              refreshFromBuffer: {
-                start: pos - 1,
-                end: pos + 1
-              },
-              pos: pos + 1
-            };
-          }
-        }
-      }
-      return true;
-    },
-    postValidation: function (buffer, pos, c, currentResult, opts, maskset, strict, fromCheckval) {
-      const inputmask = this;
-      if (strict) return true;
-      let tokenMatch, validator;
-      if (currentResult === false) {
-        // try some shifting
-        tokenMatch = getTokenMatch.call(inputmask, pos + 1, opts, maskset);
-        if (tokenMatch.targetMatch && tokenMatch.targetMatchIndex === pos && tokenMatch.targetMatch[0].length > 1 && formatcode(tokenMatch.targetMatch[0]) !== undefined) {
-          validator = formatcode(tokenMatch.targetMatch[0])[0];
-        } else {
-          tokenMatch = getTokenMatch.call(inputmask, pos + 2, opts, maskset);
-          if (tokenMatch.targetMatch && tokenMatch.targetMatchIndex === pos + 1 && tokenMatch.targetMatch[0].length > 1 && formatcode(tokenMatch.targetMatch[0]) !== undefined) {
-            validator = formatcode(tokenMatch.targetMatch[0]);
-          }
-        }
-        if (validator !== undefined) {
-          // correct position ~ pos in front of shifted targetMatch
-          pos = tokenMatch.targetMatchIndex;
-          if (maskset.validPositions[pos + 1] !== undefined && new RegExp(validator).test(c + "0")) {
-            buffer[pos] = c;
-            buffer[pos + 1] = "0";
-            currentResult = {
-              // insert: [{pos: pos, c: "0"}, {pos: pos + 1, c: c}],
-              pos: pos + 2,
-              // this will triggeer a refreshfrombuffer
-              caret: pos + 1
-            };
-          } else if (new RegExp(validator).test("0" + c)) {
-            buffer[pos] = "0";
-            buffer[pos + 1] = c;
-            currentResult = {
-              // insert: [{pos: pos, c: "0"}, {pos: pos + 1, c: c}],
-              pos: pos + 2 // this will triggeer a refreshfrombuffer
-            };
-          }
-        }
-        if (currentResult === false) return currentResult;
-      }
-      if (currentResult.fuzzy) {
-        buffer = currentResult.buffer;
-        pos = currentResult.pos;
-      }
+const datetimeAlias = {
+  mask: function (opts) {
+    // do not allow numeric input in datetime alias
+    opts.numericInput = false;
 
-      // full validate target
-      tokenMatch = getTokenMatch.call(inputmask, pos, opts, maskset);
-      if (tokenMatch.targetMatch && tokenMatch.targetMatch[0] && formatcode(tokenMatch.targetMatch[0]) !== undefined) {
-        const fcode = formatcode(tokenMatch.targetMatch[0]);
-        validator = fcode[0];
-        const part = buffer.slice(tokenMatch.targetMatchIndex, tokenMatch.targetMatchIndex + tokenMatch.targetMatch[0].length);
-        if (new RegExp(validator).test(part.join("")) === false && tokenMatch.targetMatch[0].length === 2 && maskset.validPositions[tokenMatch.targetMatchIndex] && maskset.validPositions[tokenMatch.targetMatchIndex + 1]) {
-          maskset.validPositions[tokenMatch.targetMatchIndex + 1].input = "0";
+    // localize
+    formatCode.S = i18n.ordinalSuffix.join("|");
+    opts.inputFormat = formatAlias[opts.inputFormat] || opts.inputFormat; // resolve possible formatAlias
+    if (opts.repeat) {
+      opts.repeat = parseInt(opts.repeat.toString());
+      if (opts.repeat > 0) {
+        let inputFormat = "";
+        for (let i = 0; i < opts.repeat; i++) {
+          inputFormat = inputFormat + opts.inputFormat;
         }
-        if (fcode[2] == "year") {
-          const _buffer = validation_tests/* getMaskTemplate */.XR.call(inputmask, false, 1, undefined, true);
-          for (let i = pos + 1; i < buffer.length; i++) {
-            buffer[i] = _buffer[i];
-            maskset.validPositions.splice(pos + 1, 1);
-          }
+        opts.inputFormat = inputFormat;
+        opts.repeat = 0;
+      }
+    }
+    opts.displayFormat = formatAlias[opts.displayFormat] || opts.displayFormat || opts.inputFormat; // resolve possible formatAlias
+    opts.outputFormat = formatAlias[opts.outputFormat] || opts.outputFormat || opts.inputFormat; // resolve possible formatAlias
+    // opts.placeholder = opts.placeholder !== "" ? opts.placeholder : opts.inputFormat.replace(/[[\]]/, "");
+    opts.regex = parse(opts.inputFormat, undefined, opts);
+    // console.log("inputFormat", opts.regex);
+    opts.min = analyseMask(opts.min, opts.inputFormat, opts);
+    opts.max = analyseMask(opts.max, opts.inputFormat, opts);
+    return null; // migrate to regex mask
+  },
+  placeholder: "",
+  // set default as none (~ auto); when a custom placeholder is passed it will be used
+  inputFormat: "isoDateTime",
+  // format used to input the date
+  displayFormat: null,
+  // visual format when the input looses focus
+  outputFormat: null,
+  // unmasking format
+  min: null,
+  // needs to be in the same format as the inputfornat
+  max: null,
+  // needs to be in the same format as the inputfornat,
+  skipOptionalPartCharacter: "",
+  preValidation: function (buffer, pos, c, isSelection, opts, maskset, caretPos, strict) {
+    const inputmask = this;
+    if (strict) return true;
+    if (isNaN(c) && buffer[pos] !== c) {
+      const tokenMatch = getTokenMatch.call(inputmask, pos, opts, maskset);
+      if (tokenMatch.nextMatch && tokenMatch.nextMatch[0] === c && tokenMatch.targetMatch[0].length > 1) {
+        const validator = formatcode(tokenMatch.targetMatch[0])[0];
+        if (new RegExp(validator).test("0" + buffer[pos - 1])) {
+          buffer[pos] = buffer[pos - 1];
+          buffer[pos - 1] = "0";
+          return {
+            fuzzy: true,
+            buffer,
+            refreshFromBuffer: {
+              start: pos - 1,
+              end: pos + 1
+            },
+            pos: pos + 1
+          };
         }
       }
-      let result = currentResult,
-        dateParts = analyseMask.call(inputmask, buffer.join(""), opts.inputFormat, opts);
-      if (result && !isNaN(dateParts.date.getTime())) {
-        // check for a valid date ~ an invalid date returns NaN which isn't equal
-        if (opts.prefillYear) result = prefillYear(dateParts, result, opts);
-        result = isValidDate.call(inputmask, dateParts, result, opts);
-        result = isDateInRange(dateParts, result, opts, maskset, fromCheckval);
+    }
+    return true;
+  },
+  postValidation: function (buffer, pos, c, currentResult, opts, maskset, strict, fromCheckval) {
+    const inputmask = this;
+    if (strict) return true;
+    let tokenMatch, validator;
+    if (currentResult === false) {
+      // try some shifting
+      tokenMatch = getTokenMatch.call(inputmask, pos + 1, opts, maskset);
+      if (tokenMatch.targetMatch && tokenMatch.targetMatchIndex === pos && tokenMatch.targetMatch[0].length > 1 && formatcode(tokenMatch.targetMatch[0]) !== undefined) {
+        validator = formatcode(tokenMatch.targetMatch[0])[0];
+      } else {
+        tokenMatch = getTokenMatch.call(inputmask, pos + 2, opts, maskset);
+        if (tokenMatch.targetMatch && tokenMatch.targetMatchIndex === pos + 1 && tokenMatch.targetMatch[0].length > 1 && formatcode(tokenMatch.targetMatch[0]) !== undefined) {
+          validator = formatcode(tokenMatch.targetMatch[0]);
+        }
       }
-      if (pos !== undefined && result && currentResult.pos !== pos) {
-        return {
-          buffer: parse(opts.inputFormat, dateParts, opts).split(""),
-          refreshFromBuffer: {
-            start: pos,
-            end: currentResult.pos
-          },
-          pos: currentResult.caret !== undefined ? currentResult.caret : currentResult.pos // correct caret position
-        };
+      if (validator !== undefined) {
+        // correct position ~ pos in front of shifted targetMatch
+        pos = tokenMatch.targetMatchIndex;
+        if (maskset.validPositions[pos + 1] !== undefined && new RegExp(validator).test(c + "0")) {
+          buffer[pos] = c;
+          buffer[pos + 1] = "0";
+          currentResult = {
+            // insert: [{pos: pos, c: "0"}, {pos: pos + 1, c: c}],
+            pos: pos + 2,
+            // this will triggeer a refreshfrombuffer
+            caret: pos + 1
+          };
+        } else if (new RegExp(validator).test("0" + c)) {
+          buffer[pos] = "0";
+          buffer[pos + 1] = c;
+          currentResult = {
+            // insert: [{pos: pos, c: "0"}, {pos: pos + 1, c: c}],
+            pos: pos + 2 // this will triggeer a refreshfrombuffer
+          };
+        }
       }
-      return result;
-    },
-    onKeyDown: function (e, buffer, caretPos, opts) {
-      const input = this;
-      if (e.ctrlKey && e.key === keycode/* keys */.HP.ArrowRight) {
-        input.inputmask._valueSet(importDate(new Date(), opts));
-        date_$(input).trigger("setvalue");
+      if (currentResult === false) return currentResult;
+    }
+    if (currentResult.fuzzy) {
+      buffer = currentResult.buffer;
+      pos = currentResult.pos;
+    }
+
+    // full validate target
+    tokenMatch = getTokenMatch.call(inputmask, pos, opts, maskset);
+    if (tokenMatch.targetMatch && tokenMatch.targetMatch[0] && formatcode(tokenMatch.targetMatch[0]) !== undefined) {
+      const fcode = formatcode(tokenMatch.targetMatch[0]);
+      validator = fcode[0];
+      const part = buffer.slice(tokenMatch.targetMatchIndex, tokenMatch.targetMatchIndex + tokenMatch.targetMatch[0].length);
+      if (new RegExp(validator).test(part.join("")) === false && tokenMatch.targetMatch[0].length === 2 && maskset.validPositions[tokenMatch.targetMatchIndex] && maskset.validPositions[tokenMatch.targetMatchIndex + 1]) {
+        maskset.validPositions[tokenMatch.targetMatchIndex + 1].input = "0";
       }
-    },
-    onUnMask: function (maskedValue, unmaskedValue, opts) {
-      const inputmask = this;
-      return unmaskedValue ? parse(opts.outputFormat, analyseMask.call(inputmask, maskedValue, opts.inputFormat, opts), opts) : unmaskedValue;
-    },
-    casing: "follow",
-    onBeforeMask: function (initialValue, opts) {
-      if (Object.prototype.toString.call(initialValue) === "[object Date]") {
-        initialValue = importDate(initialValue, opts);
+      if (fcode[2] == "year") {
+        const _buffer = validation_tests/* getMaskTemplate */.XR.call(inputmask, false, 1, undefined, true);
+        for (let i = pos + 1; i < buffer.length; i++) {
+          buffer[i] = _buffer[i];
+          maskset.validPositions.splice(pos + 1, 1);
+        }
       }
-      return initialValue;
-    },
-    insertMode: false,
-    insertModeVisual: false,
-    shiftPositions: false,
-    keepStatic: false,
-    inputmode: "numeric",
-    prefillYear: true // Allows to disable prefill for datetime year.
-  }
-});
+    }
+    let result = currentResult,
+      dateParts = analyseMask.call(inputmask, buffer.join(""), opts.inputFormat, opts);
+    if (result && !isNaN(dateParts.date.getTime())) {
+      // check for a valid date ~ an invalid date returns NaN which isn't equal
+      if (opts.prefillYear) result = prefillYear(dateParts, result, opts);
+      result = isValidDate.call(inputmask, dateParts, result, opts);
+      result = isDateInRange(dateParts, result, opts, maskset, fromCheckval);
+    }
+    if (pos !== undefined && result && currentResult.pos !== pos) {
+      return {
+        buffer: parse(opts.inputFormat, dateParts, opts).split(""),
+        refreshFromBuffer: {
+          start: pos,
+          end: currentResult.pos
+        },
+        pos: currentResult.caret !== undefined ? currentResult.caret : currentResult.pos // correct caret position
+      };
+    }
+    return result;
+  },
+  onKeyDown: function (e, buffer, caretPos, opts) {
+    const input = this;
+    if (e.ctrlKey && e.key === keycode/* keys */.HP.ArrowRight) {
+      input.inputmask._valueSet(importDate(new Date(), opts));
+      (0,inputmask_dependencyLib/* default */.A)(input).trigger("setvalue");
+    }
+  },
+  onUnMask: function (maskedValue, unmaskedValue, opts) {
+    const inputmask = this;
+    return unmaskedValue ? parse(opts.outputFormat, analyseMask.call(inputmask, maskedValue, opts.inputFormat, opts), opts) : unmaskedValue;
+  },
+  casing: "follow",
+  onBeforeMask: function (initialValue, opts) {
+    if (Object.prototype.toString.call(initialValue) === "[object Date]") {
+      initialValue = importDate(initialValue, opts);
+    }
+    return initialValue;
+  },
+  insertMode: false,
+  insertModeVisual: false,
+  shiftPositions: false,
+  keepStatic: false,
+  inputmode: "numeric",
+  prefillYear: true // Allows to disable prefill for datetime year.
+};
+function datetime(options) {
+  return inputmask_dependencyLib/* default */.A.extend(true, {}, datetimeAlias, options);
+}
+function registerDatetime() {
+  inputmask_dependencyLib/* default */.A.extend(true, inputmask/* aliases */.z2, {
+    datetime: datetime()
+  });
+}
 
 /***/ }
 
@@ -777,3 +792,6 @@ var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s 
 import * as __webpack_chunk_1__ from "./date.mjs";
 __webpack_require__.C(__webpack_chunk_1__);
 var __webpack_exports__ = __webpack_exec__(505);
+const __webpack_exports__datetime = __webpack_exports__.w;
+const __webpack_exports__registerDatetime = __webpack_exports__.H;
+export { __webpack_exports__datetime as datetime, __webpack_exports__registerDatetime as registerDatetime };
