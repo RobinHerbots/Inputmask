@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.3
+ * Version: 5.1.0-beta.6
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -2216,6 +2216,7 @@ var _escapeRegex = __webpack_require__(340);
 var _inputmask = _interopRequireDefault(__webpack_require__(3978));
 var _keycode = __webpack_require__(6032);
 var _positioning = __webpack_require__(7539);
+var _definitions = _interopRequireDefault(__webpack_require__(9472));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /*
  Input Mask plugin extensions
@@ -2228,7 +2229,7 @@ const $ = _inputmask.default.dependencyLib;
 function autoEscape(txt, opts) {
   let escapedTxt = "";
   for (let i = 0; i < txt.length; i++) {
-    if (_inputmask.default.prototype.definitions[txt.charAt(i)] || opts.definitions[txt.charAt(i)] || opts.optionalmarker[0] === txt.charAt(i) || opts.optionalmarker[1] === txt.charAt(i) || opts.quantifiermarker[0] === txt.charAt(i) || opts.quantifiermarker[1] === txt.charAt(i) || opts.groupmarker[0] === txt.charAt(i) || opts.groupmarker[1] === txt.charAt(i) || opts.alternatormarker === txt.charAt(i)) {
+    if (_definitions.default[txt.charAt(i)] || opts.definitions[txt.charAt(i)] || opts.optionalmarker[0] === txt.charAt(i) || opts.optionalmarker[1] === txt.charAt(i) || opts.quantifiermarker[0] === txt.charAt(i) || opts.quantifiermarker[1] === txt.charAt(i) || opts.groupmarker[0] === txt.charAt(i) || opts.groupmarker[1] === txt.charAt(i) || opts.alternatormarker === txt.charAt(i)) {
       escapedTxt += "\\" + txt.charAt(i);
     } else {
       escapedTxt += txt.charAt(i);
@@ -3289,7 +3290,7 @@ function writeBuffer(input, buffer, caretPos, event, triggerEvents) {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports["default"] = void 0;
+exports.masksCache = exports["default"] = void 0;
 var _defaults = _interopRequireDefault(__webpack_require__(7042));
 var _definitions = _interopRequireDefault(__webpack_require__(9472));
 var _inputmask = _interopRequireDefault(__webpack_require__(7332));
@@ -3310,7 +3311,9 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e
  */
 
 const document = _window.default.document,
-  dataKey = "_inputmask_opts";
+  dataKey = "_inputmask_opts",
+  aliases = {},
+  masksCache = exports.masksCache = {};
 
 /** @typedef {import("./defaults.js").default} InputmaskOptions */
 /** @typedef {Element | Element[] | NodeList | string} InputmaskElements */
@@ -3368,7 +3371,7 @@ function Inputmask(alias, options, internal) {
       options = options || {};
       if (alias) options.alias = alias;
     }
-    this.opts = _inputmask.default.extend(true, {}, this.defaults, options);
+    this.opts = _inputmask.default.extend(true, {}, _defaults.default, options);
     this.noMasksCache = options && options.definitions !== undefined;
     this.userOptions = options || {}; // user passed options
     resolveAlias(this.opts.alias, options, this.opts);
@@ -3395,12 +3398,6 @@ function Inputmask(alias, options, internal) {
 Inputmask.prototype = {
   dataAttribute: "data-inputmask",
   // data attribute prefix used for attribute binding
-  // options default
-  defaults: _defaults.default,
-  definitions: _definitions.default,
-  aliases: {},
-  // aliases definitions
-  masksCache: {},
   i18n: {},
   get isRTL() {
     return this.opts.isRTL || this.opts.numericInput;
@@ -3545,11 +3542,10 @@ Inputmask.prototype = {
     if (this.el) {
       (0, _inputmask.default)(this.el).trigger("setvalue", [value]);
     }
-  },
-  analyseMask: _maskLexer.analyseMask
+  }
 };
 function resolveAlias(aliasStr, options, opts) {
-  const aliasDefinition = Inputmask.prototype.aliases[aliasStr];
+  const aliasDefinition = aliases[aliasStr];
   if (aliasDefinition) {
     if (aliasDefinition.alias) resolveAlias(aliasDefinition.alias, undefined, opts); // alias is another alias
     _inputmask.default.extend(true, opts, aliasDefinition); // merge alias definition in the options
@@ -3634,21 +3630,21 @@ function importAttributeOptions(npt, opts, userOptions, dataAttribute) {
  * @returns {void}
  */
 Inputmask.extendDefaults = function (options) {
-  _inputmask.default.extend(true, Inputmask.prototype.defaults, options);
+  _inputmask.default.extend(true, _defaults.default, options);
 };
 /**
  * @param {Record<string, any>} definition
  * @returns {void}
  */
 Inputmask.extendDefinitions = function (definition) {
-  _inputmask.default.extend(true, Inputmask.prototype.definitions, definition);
+  _inputmask.default.extend(true, _definitions.default, definition);
 };
 /**
  * @param {Record<string, InputmaskOptions>} alias
  * @returns {void}
  */
 Inputmask.extendAliases = function (alias) {
-  _inputmask.default.extend(true, Inputmask.prototype.aliases, alias);
+  _inputmask.default.extend(true, aliases, alias);
 };
 // static fn on inputmask
 /**
@@ -3856,11 +3852,11 @@ function toKeyCode(key) {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.analyseMask = analyseMask;
 exports.generateMaskSet = generateMaskSet;
+var _definitions = _interopRequireDefault(__webpack_require__(9472));
 var _inputmask = _interopRequireDefault(__webpack_require__(7332));
 var _escapeRegex = __webpack_require__(340);
-var _inputmask2 = _interopRequireDefault(__webpack_require__(3978));
+var _inputmask2 = __webpack_require__(3978);
 var _masktoken = _interopRequireDefault(__webpack_require__(9439));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 function generateMaskSet(opts, nocache) {
@@ -3924,10 +3920,10 @@ function generateMaskSet(opts, nocache) {
       // placeholder object modifies the output from the testdefinitions ~ so differentiate in the maskcache
       maskdefKey = "ph_" + JSON.stringify(opts.placeholder) + maskdefKey;
     }
-    if (_inputmask2.default.prototype.masksCache[maskdefKey] === undefined || nocache === true) {
+    if (_inputmask2.masksCache[maskdefKey] === undefined || nocache === true) {
       masksetDefinition = {
         mask,
-        maskToken: _inputmask2.default.prototype.analyseMask(mask, regexMask, opts),
+        maskToken: analyseMask(mask, regexMask, opts),
         validPositions: [],
         _buffer: undefined,
         buffer: undefined,
@@ -3939,11 +3935,11 @@ function generateMaskSet(opts, nocache) {
         jitOffset: {}
       };
       if (nocache !== true) {
-        _inputmask2.default.prototype.masksCache[maskdefKey] = masksetDefinition;
-        masksetDefinition = _inputmask.default.extend(true, {}, _inputmask2.default.prototype.masksCache[maskdefKey]);
+        _inputmask2.masksCache[maskdefKey] = masksetDefinition;
+        masksetDefinition = _inputmask.default.extend(true, {}, _inputmask2.masksCache[maskdefKey]);
       }
     } else {
-      masksetDefinition = _inputmask.default.extend(true, {}, _inputmask2.default.prototype.masksCache[maskdefKey]);
+      masksetDefinition = _inputmask.default.extend(true, {}, _inputmask2.masksCache[maskdefKey]);
     }
     return masksetDefinition;
   }
@@ -4040,7 +4036,7 @@ function analyseMask(mask, regexMask, opts) {
       }
       escaped = false;
     } else {
-      const maskdef = opts.definitions && opts.definitions[element] || opts.usePrototypeDefinitions && _inputmask2.default.prototype.definitions[element];
+      const maskdef = opts.definitions && opts.definitions[element] || opts.usePrototypeDefinitions && _definitions.default[element];
       if (maskdef && !escaped) {
         if (typeof maskdef.validator === "string" && /\\p\{.*}/i.test(maskdef.validator)) flag += "u";
         mtoken.matches.splice(position++, 0, {
@@ -5101,7 +5097,7 @@ exports.getTest = getTest;
 exports.getTestTemplate = getTestTemplate;
 exports.getTests = getTests;
 exports.isSubsetOf = isSubsetOf;
-var _inputmask = _interopRequireDefault(__webpack_require__(3978));
+var _definitions = _interopRequireDefault(__webpack_require__(9472));
 var _positioning = __webpack_require__(7539);
 var _validation = __webpack_require__(7687);
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
@@ -5692,7 +5688,7 @@ function getTests(pos, ndxIntlzr, tstPs) {
           cd: cacheDependency,
           mloc: {}
         });
-        if (match.optionality && quantifierRecurse === undefined && (opts.definitions && opts.definitions[match.nativeDef] && opts.definitions[match.nativeDef].optional || _inputmask.default.prototype.definitions[match.nativeDef] && _inputmask.default.prototype.definitions[match.nativeDef].optional)) {
+        if (match.optionality && quantifierRecurse === undefined && (opts.definitions && opts.definitions[match.nativeDef] && opts.definitions[match.nativeDef].optional || _definitions.default[match.nativeDef] && _definitions.default[match.nativeDef].optional)) {
           // prevent loop see #698
           insertStop = true; // insert a stop
           testPos = pos; // match the position after the group

@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.3
+ * Version: 5.1.0-beta.6
  */
 export const __webpack_esm_id__ = 272;
 export const __webpack_esm_ids__ = [272];
@@ -13,7 +13,7 @@ export const __webpack_esm_modules__ = {
 (__unused_webpack_module, __unused_webpack___webpack_exports__, __webpack_require__) {
 
 /* harmony import */ var _global_window__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(266);
-/* harmony import */ var _inputmask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(205);
+/* harmony import */ var _inputmask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(327);
 
 
 const document = _global_window__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.document;

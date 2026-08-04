@@ -1,5 +1,6 @@
 /* eslint-disable no-fallthrough */
 import { keys } from "../lib/keycode";
+import defaultSettings from "../lib/defaults";
 
 export default function ($, Inputmask) {
   $.caret = function (input, begin, end) {
@@ -110,8 +111,7 @@ export default function ($, Inputmask) {
         }
       default:
         if (
-          (window.Inputmask &&
-            window.Inputmask.prototype.defaults.inputEventOnly === true) ||
+          defaultSettings.inputEventOnly === true ||
           (elem.inputmask && elem.inputmask.opts.inputEventOnly === true)
         ) {
           let input = new $.Event("input"),

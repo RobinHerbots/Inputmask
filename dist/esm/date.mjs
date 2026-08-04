@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.3
+ * Version: 5.1.0-beta.6
  */
 export const __webpack_esm_id__ = 552;
 export const __webpack_esm_ids__ = [552];
@@ -15,8 +15,8 @@ export const __webpack_esm_modules__ = {
 
 // EXTERNAL MODULE: ./lib/escapeRegex.js
 var escapeRegex = __webpack_require__(340);
-// EXTERNAL MODULE: ./lib/inputmask.js + 10 modules
-var inputmask = __webpack_require__(205);
+// EXTERNAL MODULE: ./lib/inputmask.js + 9 modules
+var inputmask = __webpack_require__(327);
 // EXTERNAL MODULE: ./lib/keycode.js
 var keycode = __webpack_require__(32);
 // EXTERNAL MODULE: ./lib/positioning.js

@@ -32,4 +32,5 @@ export type InputmaskStatic = ((alias?: string | InputmaskOptions, options?: Inp
     setValue: (elems: InputmaskElements, value: string) => void;
     dependencyLib: any;
 };
+export const masksCache: {};
 declare const InputmaskExport: InputmaskStatic;

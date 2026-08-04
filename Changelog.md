@@ -4,9 +4,13 @@
 
 ### Addition
 
+- Provide TypeScript definitions #1939
+
 ### Updates
 
 ### Fixed
+
+- Prototype pollution in extendDefaults() via unsafe deep merge #2885
 
 ## [5.0.10 - 31/07/2026]
 

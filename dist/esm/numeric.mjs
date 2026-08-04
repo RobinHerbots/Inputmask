@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.3
+ * Version: 5.1.0-beta.6
  */
 export const __webpack_esm_id__ = 69;
 export const __webpack_esm_ids__ = [69];
@@ -13,9 +13,10 @@ export const __webpack_esm_modules__ = {
 (__unused_webpack_module, __unused_webpack___webpack_exports__, __webpack_require__) {
 
 /* harmony import */ var _escapeRegex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(340);
-/* harmony import */ var _inputmask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(205);
+/* harmony import */ var _inputmask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(327);
 /* harmony import */ var _keycode__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(32);
 /* harmony import */ var _positioning__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(539);
+/* harmony import */ var _definitions__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(472);
 /*
  Input Mask plugin extensions
  http://github.com/RobinHerbots/inputmask
@@ -26,11 +27,12 @@ export const __webpack_esm_modules__ = {
 
 
 
+
 const $ = _inputmask__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.dependencyLib;
 function autoEscape(txt, opts) {
   let escapedTxt = "";
   for (let i = 0; i < txt.length; i++) {
-    if (_inputmask__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.prototype.definitions[txt.charAt(i)] || opts.definitions[txt.charAt(i)] || opts.optionalmarker[0] === txt.charAt(i) || opts.optionalmarker[1] === txt.charAt(i) || opts.quantifiermarker[0] === txt.charAt(i) || opts.quantifiermarker[1] === txt.charAt(i) || opts.groupmarker[0] === txt.charAt(i) || opts.groupmarker[1] === txt.charAt(i) || opts.alternatormarker === txt.charAt(i)) {
+    if (_definitions__WEBPACK_IMPORTED_MODULE_4__/* ["default"] */ .A[txt.charAt(i)] || opts.definitions[txt.charAt(i)] || opts.optionalmarker[0] === txt.charAt(i) || opts.optionalmarker[1] === txt.charAt(i) || opts.quantifiermarker[0] === txt.charAt(i) || opts.quantifiermarker[1] === txt.charAt(i) || opts.groupmarker[0] === txt.charAt(i) || opts.groupmarker[1] === txt.charAt(i) || opts.alternatormarker === txt.charAt(i)) {
       escapedTxt += "\\" + txt.charAt(i);
     } else {
       escapedTxt += txt.charAt(i);

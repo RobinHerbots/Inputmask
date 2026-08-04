@@ -3,9 +3,32 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.3
+ * Version: 5.1.0-beta.6
  */
 /******/ var __webpack_modules__ = ({
+
+/***/ 472
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  9: {
+    validator: "\\p{N}",
+    definitionSymbol: "*"
+  },
+  a: {
+    validator: "\\p{L}",
+    definitionSymbol: "*"
+  },
+  "*": {
+    validator: "[\\p{L}\\p{N}]"
+  }
+});
+/* harmony export */ __webpack_require__.d(__webpack_exports__, [
+/* harmony export */   "A", 0, /* export default binding */ __WEBPACK_DEFAULT_EXPORT__
+/* harmony export */ ]);
+
+
+/***/ },
 
 /***/ 351
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
@@ -569,7 +592,7 @@ const canUseDOM = !!(typeof window !== "undefined" && window.document && window.
 /* harmony export */ });
 /* harmony import */ var _environment__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(351);
 /* harmony import */ var _eventhandlers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(47);
-/* harmony import */ var _inputmask_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(205);
+/* harmony import */ var _inputmask_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(327);
 /* harmony import */ var _keycode_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(32);
 /* harmony import */ var _positioning__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(539);
 /* harmony import */ var _validation__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(687);
@@ -824,13 +847,14 @@ function writeBuffer(input, buffer, caretPos, event, triggerEvents) {
 
 /***/ },
 
-/***/ 205
+/***/ 327
 (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
-  A: () => (/* binding */ lib_inputmask)
+  A: () => (/* binding */ lib_inputmask),
+  s: () => (/* binding */ masksCache)
 });
 
 ;// ./lib/defaults.js
@@ -1009,20 +1033,8 @@ const defaults = {
   substitutes: {} // define character substitutes
 };
 /* harmony default export */ const lib_defaults = (defaults);
-;// ./lib/definitions.js
-/* harmony default export */ const definitions = ({
-  9: {
-    validator: "\\p{N}",
-    definitionSymbol: "*"
-  },
-  a: {
-    validator: "\\p{L}",
-    definitionSymbol: "*"
-  },
-  "*": {
-    validator: "[\\p{L}\\p{N}]"
-  }
-});
+// EXTERNAL MODULE: ./lib/definitions.js
+var definitions = __webpack_require__(472);
 // EXTERNAL MODULE: ./lib/global/window.js
 var global_window = __webpack_require__(266);
 ;// ./lib/dependencyLibs/data.js
@@ -1708,6 +1720,7 @@ var escapeRegex = __webpack_require__(340);
 
 
 
+
 function generateMaskSet(opts, nocache) {
   let ms;
   function preProcessMask(mask, {
@@ -1769,10 +1782,10 @@ function generateMaskSet(opts, nocache) {
       // placeholder object modifies the output from the testdefinitions ~ so differentiate in the maskcache
       maskdefKey = "ph_" + JSON.stringify(opts.placeholder) + maskdefKey;
     }
-    if (lib_inputmask.prototype.masksCache[maskdefKey] === undefined || nocache === true) {
+    if (masksCache[maskdefKey] === undefined || nocache === true) {
       masksetDefinition = {
         mask,
-        maskToken: lib_inputmask.prototype.analyseMask(mask, regexMask, opts),
+        maskToken: analyseMask(mask, regexMask, opts),
         validPositions: [],
         _buffer: undefined,
         buffer: undefined,
@@ -1784,11 +1797,11 @@ function generateMaskSet(opts, nocache) {
         jitOffset: {}
       };
       if (nocache !== true) {
-        lib_inputmask.prototype.masksCache[maskdefKey] = masksetDefinition;
-        masksetDefinition = inputmask_dependencyLib.extend(true, {}, lib_inputmask.prototype.masksCache[maskdefKey]);
+        masksCache[maskdefKey] = masksetDefinition;
+        masksetDefinition = inputmask_dependencyLib.extend(true, {}, masksCache[maskdefKey]);
       }
     } else {
-      masksetDefinition = inputmask_dependencyLib.extend(true, {}, lib_inputmask.prototype.masksCache[maskdefKey]);
+      masksetDefinition = inputmask_dependencyLib.extend(true, {}, masksCache[maskdefKey]);
     }
     return masksetDefinition;
   }
@@ -1885,7 +1898,7 @@ function analyseMask(mask, regexMask, opts) {
       }
       escaped = false;
     } else {
-      const maskdef = opts.definitions && opts.definitions[element] || opts.usePrototypeDefinitions && lib_inputmask.prototype.definitions[element];
+      const maskdef = opts.definitions && opts.definitions[element] || opts.usePrototypeDefinitions && definitions/* default */.A[element];
       if (maskdef && !escaped) {
         if (typeof maskdef.validator === "string" && /\\p\{.*}/i.test(maskdef.validator)) flag += "u";
         mtoken.matches.splice(position++, 0, {
@@ -2218,8 +2231,11 @@ var validation_tests = __webpack_require__(895);
 
 
 
+
 const inputmask_document = global_window/* default */.A.document,
-  dataKey = "_inputmask_opts";
+  dataKey = "_inputmask_opts",
+  aliases = {},
+  masksCache = {};
 
 /** @typedef {import("./defaults.js").default} InputmaskOptions */
 /** @typedef {Element | Element[] | NodeList | string} InputmaskElements */
@@ -2277,7 +2293,7 @@ function Inputmask(alias, options, internal) {
       options = options || {};
       if (alias) options.alias = alias;
     }
-    this.opts = inputmask_dependencyLib.extend(true, {}, this.defaults, options);
+    this.opts = inputmask_dependencyLib.extend(true, {}, lib_defaults, options);
     this.noMasksCache = options && options.definitions !== undefined;
     this.userOptions = options || {}; // user passed options
     resolveAlias(this.opts.alias, options, this.opts);
@@ -2304,12 +2320,6 @@ function Inputmask(alias, options, internal) {
 Inputmask.prototype = {
   dataAttribute: "data-inputmask",
   // data attribute prefix used for attribute binding
-  // options default
-  defaults: lib_defaults,
-  definitions: definitions,
-  aliases: {},
-  // aliases definitions
-  masksCache: {},
   i18n: {},
   get isRTL() {
     return this.opts.isRTL || this.opts.numericInput;
@@ -2454,11 +2464,10 @@ Inputmask.prototype = {
     if (this.el) {
       inputmask_dependencyLib(this.el).trigger("setvalue", [value]);
     }
-  },
-  analyseMask: analyseMask
+  }
 };
 function resolveAlias(aliasStr, options, opts) {
-  const aliasDefinition = Inputmask.prototype.aliases[aliasStr];
+  const aliasDefinition = aliases[aliasStr];
   if (aliasDefinition) {
     if (aliasDefinition.alias) resolveAlias(aliasDefinition.alias, undefined, opts); // alias is another alias
     inputmask_dependencyLib.extend(true, opts, aliasDefinition); // merge alias definition in the options
@@ -2543,21 +2552,21 @@ function importAttributeOptions(npt, opts, userOptions, dataAttribute) {
  * @returns {void}
  */
 Inputmask.extendDefaults = function (options) {
-  inputmask_dependencyLib.extend(true, Inputmask.prototype.defaults, options);
+  inputmask_dependencyLib.extend(true, lib_defaults, options);
 };
 /**
  * @param {Record<string, any>} definition
  * @returns {void}
  */
 Inputmask.extendDefinitions = function (definition) {
-  inputmask_dependencyLib.extend(true, Inputmask.prototype.definitions, definition);
+  inputmask_dependencyLib.extend(true, definitions/* default */.A, definition);
 };
 /**
  * @param {Record<string, InputmaskOptions>} alias
  * @returns {void}
  */
 Inputmask.extendAliases = function (alias) {
-  inputmask_dependencyLib.extend(true, Inputmask.prototype.aliases, alias);
+  inputmask_dependencyLib.extend(true, aliases, alias);
 };
 // static fn on inputmask
 /**
@@ -3073,7 +3082,7 @@ function translatePosition(pos) {
 /* harmony export */   t: () => (/* binding */ getTestTemplate)
 /* harmony export */ });
 /* unused harmony export isSubsetOf */
-/* harmony import */ var _inputmask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(205);
+/* harmony import */ var _definitions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(472);
 /* harmony import */ var _positioning__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(539);
 /* harmony import */ var _validation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(687);
 
@@ -3667,7 +3676,7 @@ function getTests(pos, ndxIntlzr, tstPs) {
           cd: cacheDependency,
           mloc: {}
         });
-        if (match.optionality && quantifierRecurse === undefined && (opts.definitions && opts.definitions[match.nativeDef] && opts.definitions[match.nativeDef].optional || _inputmask__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.prototype.definitions[match.nativeDef] && _inputmask__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.prototype.definitions[match.nativeDef].optional)) {
+        if (match.optionality && quantifierRecurse === undefined && (opts.definitions && opts.definitions[match.nativeDef] && opts.definitions[match.nativeDef].optional || _definitions__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A[match.nativeDef] && _definitions__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A[match.nativeDef].optional)) {
           // prevent loop see #698
           insertStop = true; // insert a stop
           testPos = pos; // match the position after the group
@@ -4632,7 +4641,8 @@ function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
 /******/ // startup
 /******/ // Load entry module and return exports
 /******/ // This entry module is referenced by other modules so it can't be inlined
-/******/ let __webpack_exports__ = __webpack_require__(205);
+/******/ let __webpack_exports__ = __webpack_require__(327);
 /******/ const __webpack_exports__default = __webpack_exports__.A;
-/******/ export { __webpack_exports__default as default };
+/******/ const __webpack_exports__masksCache = __webpack_exports__.s;
+/******/ export { __webpack_exports__default as default, __webpack_exports__masksCache as masksCache };
 /******/ 
