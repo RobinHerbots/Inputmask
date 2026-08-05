@@ -2,11 +2,11 @@
 
 ## Definitions
 
-- ### A   :     alphabetical uppercasing
+- ### A : alphabetical uppercasing
 
-- ### &   :     alfanumeric uppercasing
+- ### & : alfanumeric uppercasing
 
-- ### \#  :     hexadecimal
+- ### \# : hexadecimal
 
 ## Setup
 
@@ -79,13 +79,10 @@ Inputmask("email").mask(selector);
 
 An MAC mask for entering valid MAC addresses.
 
-The `mac()` mask uses the `#` hexadecimal definition from the definitions module:
-
 ```javascript
 import { mac } from "inputmask/extensions/mac";
-import { definitions } from "inputmask/extensions/definitions";
 
-Inputmask(mac({ definitions: definitions() })).mask(selector);
+Inputmask(mac()).mask(selector);
 ```
 
 Or with the registered alias (which includes the definitions):
