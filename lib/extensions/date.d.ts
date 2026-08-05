@@ -21,4 +21,9 @@ export interface DateAliasOptions extends InputmaskOptions {
   placeholder?: string | Record<string, string>;
 }
 
-export {};
+/** Returns the options for a datetime/date mask without registering the alias. */
+export declare function datetime(
+  options?: Partial<DateAliasOptions>
+): DateAliasOptions;
+/** Registers the `datetime` alias globally. */
+export declare function registerDatetime(): void;

@@ -1,5 +1,30 @@
 # numeric extensions
 
+## Setup
+
+With the modern ES Module build, import the numeric module and use its factories to build the mask options. No alias registration is needed:
+
+```javascript
+import Inputmask from "inputmask";
+import {
+  numeric,
+  currency,
+  decimal,
+  integer,
+  percentage,
+  indianns
+} from "inputmask/extensions/numeric";
+
+Inputmask(numeric()).mask(selector);
+Inputmask(currency({ prefix: "$ " })).mask(selector);
+Inputmask(decimal({ radixPoint: ",", digits: 2 })).mask(selector);
+Inputmask(integer()).mask(selector);
+Inputmask(percentage({ suffix: " %" })).mask(selector);
+Inputmask(indianns()).mask(selector);
+```
+
+The classic string aliases (`Inputmask("numeric")`, ...) require the global registration build instead.
+
 ## Aliases
 
 - ### numeric
@@ -11,6 +36,8 @@
 - ### integer
 
 - ### percentage
+
+- ### indianns
 
 The defaults are those defined in the base numeric alias.
 The currency alias and others are derived from the numeric alias and can have other defaults.

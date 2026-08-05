@@ -27,4 +27,29 @@ export interface NumericAliasOptions extends InputmaskOptions {
   substituteRadixPoint?: boolean;
 }
 
-export {};
+/** Returns the options for a numeric mask without registering the alias. */
+export declare function numeric(
+  options?: Partial<NumericAliasOptions>
+): NumericAliasOptions;
+/** Returns the options for a currency mask without registering the alias. */
+export declare function currency(
+  options?: Partial<NumericAliasOptions>
+): NumericAliasOptions;
+/** Returns the options for a decimal mask without registering the alias. */
+export declare function decimal(
+  options?: Partial<NumericAliasOptions>
+): NumericAliasOptions;
+/** Returns the options for an integer mask without registering the alias. */
+export declare function integer(
+  options?: Partial<NumericAliasOptions>
+): NumericAliasOptions;
+/** Returns the options for a percentage mask without registering the alias. */
+export declare function percentage(
+  options?: Partial<NumericAliasOptions>
+): NumericAliasOptions;
+/** Returns the options for an Indian numbering system mask without registering the alias. */
+export declare function indianns(
+  options?: Partial<NumericAliasOptions>
+): NumericAliasOptions;
+/** Registers the numeric-related aliases globally. */
+export declare function registerNumeric(): void;

@@ -58,29 +58,79 @@ import Inputmask from "inputmask";
 
 ### Modern ES Modules (tree-shakable)
 
-Inputmask exposes a modern, tree-shakable ES Module build. You can import the core functionality and then include only the extensions you need:
+Inputmask exposes a modern, tree-shakable ES Module build. Import only the modules you need and use the exported factories to build the options for your mask. No global registration is required:
 
 ```javascript
 import Inputmask from "inputmask";
-import "inputmask/extensions/url"; // and/or ip, email, mac, vin, ssn, cssunit
-import "inputmask/extensions/date";
-import "inputmask/extensions/numeric";
+import { url } from "inputmask/extensions/url";
+import { email } from "inputmask/extensions/email";
+import { numeric } from "inputmask/extensions/numeric";
+import { datetime } from "inputmask/extensions/date";
 
-Inputmask({"mask": "99/99/9999"}).mask(document.getElementById("myInput"));
+Inputmask(url()).mask(document.getElementById("linkInput"));
+Inputmask(email()).mask(document.getElementById("mailInput"));
+Inputmask(numeric({ digits: 2, prefix: "€ " })).mask(
+  document.getElementById("amountInput")
+);
+Inputmask(datetime({ inputFormat: "dd/MM/yyyy" })).mask(
+  document.getElementById("dateInput")
+);
 ```
 
-Each alias and the `A`, `&`, `#` definitions are available as a separate module under `inputmask/extensions/<name>`:
+Every factory accepts an options object to customize the mask, e.g. `Inputmask(numeric({ radixPoint: ",", digits: 2 }))`.
 
-- `inputmask/extensions/ip`
-- `inputmask/extensions/email`
-- `inputmask/extensions/url`
-- `inputmask/extensions/cssunit`
-- `inputmask/extensions/mac`
-- `inputmask/extensions/vin`
-- `inputmask/extensions/ssn`
-- `inputmask/extensions/date`
-- `inputmask/extensions/numeric`
-- `inputmask/extensions/definitions`
+Each extension is available as a separate module under `inputmask/extensions/<name>` and exports a factory that returns the options for that mask:
+
+| module | factory exports | alias(es) |
+|---|---|---|
+| `inputmask/extensions/url` | `url()` | `url` |
+| `inputmask/extensions/ip` | `ip()` | `ip` |
+| `inputmask/extensions/email` | `email()` | `email` |
+| `inputmask/extensions/mac` | `mac()` | `mac` |
+| `inputmask/extensions/vin` | `vin()` | `vin` |
+| `inputmask/extensions/ssn` | `ssn()` | `ssn` |
+| `inputmask/extensions/cssunit` | `cssunit()` | `cssunit` |
+| `inputmask/extensions/date` | `datetime()` | `datetime` |
+| `inputmask/extensions/numeric` | `numeric()`, `currency()`, `decimal()`, `integer()`, `percentage()`, `indianns()` | `numeric`, `currency`, `decimal`, `integer`, `percentage`, `indianns` |
+| `inputmask/extensions/definitions` | `definitions()` | the `A`, `&` and `#` definitions |
+
+The `A`, `&` and `#` definitions are not registered automatically. Merge them into the `definitions` option instead:
+
+```javascript
+import Inputmask from "inputmask";
+import { definitions } from "inputmask/extensions/definitions";
+
+Inputmask({ mask: "999-AAA", definitions: definitions() }).mask(selector);
+```
+
+The `mac` mask uses the `#` hexadecimal definition, so it needs them as well:
+
+```javascript
+import Inputmask from "inputmask";
+import { mac } from "inputmask/extensions/mac";
+import { definitions } from "inputmask/extensions/definitions";
+
+Inputmask(mac({ definitions: definitions() })).mask(selector);
+```
+
+If you prefer the classic string aliases (`Inputmask("email")`, `Inputmask("numeric")`, ...), each module also exports a `register*` function (`registerEmail`, `registerNumeric`, `registerDatetime`, `registerDefinitions`, ...) that registers the aliases globally. Registering is optional.
+
+### Colormask
+
+```javascript
+import "inputmask/colormask.css";
+import Colormask from "inputmask/colormask";
+
+Colormask({ mask: "999-999-9999" }).mask(selector);
+```
+
+### InputmaskElement (custom element)
+
+```javascript
+import "inputmask/inputmaskElement";
+
+<input-mask mask="999-999-9999" />;
+```
 
 ### Legacy ES6 via explicit path
 
@@ -1345,7 +1395,14 @@ Inputmask.extendDefinitions({
 });
 ```
 
-Include jquery.inputmask.extensions.js for using the A and # definitions. With the modern ES Module build, import "inputmask/extensions/definitions" instead.
+Include jquery.inputmask.extensions.js for using the A and # definitions. With the modern ES Module build, merge them in via the `definitions()` factory instead:
+
+```javascript
+import Inputmask from "inputmask";
+import { definitions } from "inputmask/extensions/definitions";
+
+Inputmask({ mask: "999-AAA", definitions: definitions() }).mask(selector);
+```
 
 ```javascript
 $(document).ready(function () {

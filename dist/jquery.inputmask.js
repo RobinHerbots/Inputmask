@@ -3095,7 +3095,7 @@ function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r
  */
 
 function ssn(options) {
-  _inputmask2.default.extend(true, {
+  return _inputmask2.default.extend(true, {
     mask: "999-99-9999",
     postValidation: function (buffer, pos, c, currentResult, opts, maskset, strict) {
       const bffr = _validationTests.getMaskTemplate.call(this, true, _positioning.getLastValidPosition.call(this), true, true);

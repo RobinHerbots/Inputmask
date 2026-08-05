@@ -33,7 +33,7 @@ export const __webpack_esm_modules__ = {
 
 
 function ssn(options) {
-  _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend(true, {
+  return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend(true, {
     mask: "999-99-9999",
     postValidation: function (buffer, pos, c, currentResult, opts, maskset, strict) {
       const bffr = _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getMaskTemplate */ .XR.call(this, true, _positioning__WEBPACK_IMPORTED_MODULE_2__/* .getLastValidPosition */ .SE.call(this), true, true);
