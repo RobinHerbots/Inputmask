@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.11
+ * Version: 5.1.0-beta.12
  */
 export const __webpack_esm_id__ = 272;
 export const __webpack_esm_ids__ = [272];
