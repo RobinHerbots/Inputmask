@@ -974,6 +974,7 @@ function checkVal(input, writeOut, strict, nptvl, initiatingEvent) {
     }
     return match;
   }
+  inputmask._displayValueCache = maskset.validPositions.slice();
   _positioning__WEBPACK_IMPORTED_MODULE_4__/* .resetMaskSet */ .eo.call(inputmask, false);
   inputmask.clicked = 0; // reset click counter to correctly determine the caretposition in checkval
   initialNdx = opts.radixPoint ? _positioning__WEBPACK_IMPORTED_MODULE_4__/* .determineNewCaretPosition */ .wD.call(inputmask, {
@@ -1065,6 +1066,7 @@ function checkVal(input, writeOut, strict, nptvl, initiatingEvent) {
     // 	}
     // }
   }
+  inputmask._displayValueCache = undefined;
   opts.skipOptionalPartCharacter = skipOptionalPartCharacter;
 }
 function HandleNativePlaceholder(npt, value) {
@@ -1768,6 +1770,7 @@ const tokenizer = /(?:[?*+]|\{[0-9+*]+(?:,[0-9+*]*)?(?:\|[0-9+*]*)?\})|[^.?*+^${
  * @property {"upper" | "lower" | "title" | "follow" | null | ((elem: HTMLElement, test: MaskTest, pos: number, validPositions: any) => string)} [casing]
  * @property {string} def
  * @property {string} [placeholder]
+ * @property {string} [displayChar]
  * @property {string} nativeDef
  * @property {boolean} [generated]
  */
@@ -1999,6 +2002,7 @@ function analyseMask(mask, regexMask, opts) {
           casing: maskdef.casing,
           def: maskdef.definitionSymbol || element,
           placeholder: maskdef.placeholder,
+          displayChar: maskdef.displayChar,
           nativeDef: element,
           generated: maskdef.generated
         });
@@ -3285,7 +3289,7 @@ function getMaskTemplate(baseOnInput, minimalPos, includeMode, noJit, clearOptio
       testPos = clearOptionalTail && maskset.validPositions[pos].match.optionality && maskset.validPositions[pos + 1] === undefined && (maskset.validPositions[pos].generatedInput === true || maskset.validPositions[pos].input == opts.skipOptionalPartCharacter && pos > 0) ? determineTestTemplate.call(inputmask, pos, getTests.call(inputmask, pos, ndxIntlzr, pos - 1)) : maskset.validPositions[pos];
       test = testPos.match;
       ndxIntlzr = testPos.locator.slice();
-      maskTemplate.push(includeMode === true ? testPos.input : includeMode === false ? test.nativeDef : getPlaceholder.call(inputmask, pos, test));
+      maskTemplate.push(includeMode === true ? testPos.match.displayChar !== undefined ? testPos.match.displayChar : testPos.input : includeMode === false ? test.nativeDef : getPlaceholder.call(inputmask, pos, test));
     } else {
       testPos = getTestTemplate.call(inputmask, pos, ndxIntlzr, pos - 1);
       test = testPos.match;
@@ -4302,11 +4306,20 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
         rslt = false;
       } else {
         // return is false or a json object => { pos: ??, c: ??} or true
-        rslt = test.fn != null ? test.fn.test(c, maskset, position, strict, opts, isSelection.call(inputmask, pos)) : (c === test.def || c === opts.skipOptionalPartCharacter) && test.def !== "" // non mask
-        ? {
-          c: _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getPlaceholder */ .G_.call(inputmask, position, test, true) || test.def,
-          pos: position
-        } : false;
+        if (test.displayChar !== undefined && c === test.displayChar) {
+          // display char (re-read from a masked value): restore the native input when available
+          const cached = inputmask._displayValueCache ? inputmask._displayValueCache[position] : undefined;
+          rslt = {
+            c: cached !== undefined && cached.input !== undefined ? cached.input : c,
+            pos: position
+          };
+        } else {
+          rslt = test.fn != null ? test.fn.test(c, maskset, position, strict, opts, isSelection.call(inputmask, pos)) : (c === test.def || c === opts.skipOptionalPartCharacter) && test.def !== "" // non mask
+          ? {
+            c: _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getPlaceholder */ .G_.call(inputmask, position, test, true) || test.def,
+            pos: position
+          } : false;
+        }
       }
       if (rslt !== false) {
         let elem = rslt.c !== undefined ? rslt.c : c,

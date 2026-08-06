@@ -9,6 +9,7 @@ import testsAlternations from "./tests_alternations";
 import testsAttributes from "./tests_attributes";
 import testsBase from "./tests_base";
 import testsDate from "./tests_date";
+import testsDisplaychar from "./tests_displaychar";
 import testsDynamic from "./tests_dynamic";
 import testsEscape from "./tests_escape";
 import testsFormatvalidate from "./tests_formatvalidate";
@@ -46,6 +47,7 @@ if (qunit) {
   testsAttributes(qunit, Inputmask);
   testsBase(qunit, Inputmask);
   testsDate(qunit, Inputmask);
+  testsDisplaychar(qunit, Inputmask);
   testsDynamic(qunit, Inputmask);
   testsEscape(qunit, Inputmask);
   testsFormatvalidate(qunit, Inputmask);

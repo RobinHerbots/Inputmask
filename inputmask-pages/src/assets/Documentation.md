@@ -475,6 +475,28 @@ Inputmask.extendDefinitions({
 
 Specify a placeholder for a definition. This can also be a function.
 
+### displayChar
+
+Specify a character that is shown in the masked element instead of the entered character. The entered (native) value is still stored and can be retrieved via `unmaskedvalue()` or the `autoUnmask` option.
+
+For example, hide all but the last 4 digits of a US social security number (see [#2402](https://github.com/RobinHerbots/Inputmask/issues/2402)):
+
+```javascript
+$("#ssn").inputmask({
+  mask: "999-99-9999",
+  definitions: {
+    "9": {
+      validator: "\\d",
+      displayChar: "*" // hide the entered digits
+    }
+  },
+  autoUnmask: true
+});
+```
+
+Entering `123-45-6789` shows `***-**-6789` in the field, while `$(selector).val()` (and `unmaskedvalue()`) returns `123-45-6789`.  
+The `displayChar` must be a single character. The native value is preserved when a masked value is re-read (e.g. on form reset or paste).
+
 ### optional
 
 Mark the definition as optional

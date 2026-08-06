@@ -15,6 +15,7 @@ export type MaskTest = {
     casing?: "upper" | "lower" | "title" | "follow" | null | ((elem: HTMLElement, test: MaskTest, pos: number, validPositions: any) => string);
     def: string;
     placeholder?: string;
+    displayChar?: string;
     nativeDef: string;
     generated?: boolean;
 };
@@ -48,6 +49,7 @@ export type Maskset = {
  * @property {"upper" | "lower" | "title" | "follow" | null | ((elem: HTMLElement, test: MaskTest, pos: number, validPositions: any) => string)} [casing]
  * @property {string} def
  * @property {string} [placeholder]
+ * @property {string} [displayChar]
  * @property {string} nativeDef
  * @property {boolean} [generated]
  */

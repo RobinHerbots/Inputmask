@@ -5,6 +5,7 @@
 ### Addition
 
 - Provide TypeScript definitions #1939
+- add displayChar option to mask definitions (masked display, native value) #2402
 
 ### Updates
 
