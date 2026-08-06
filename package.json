@@ -1,6 +1,6 @@
 {
   "name": "inputmask",
-  "version": "5.1.0-beta.12",
+  "version": "5.1.0-beta.16",
   "description": "Inputmask is a javascript library which creates an input mask.  Inputmask can run against vanilla javascript, jQuery and jqlite.",
   "main": "dist/inputmask.js",
   "module": "dist/esm/inputmask.mjs",
@@ -70,6 +70,15 @@
     "lib/",
     "micromasks/"
   ],
+  "sideEffects": [
+    "./bundle.js",
+    "./bundle.jquery.js",
+    "./bundle.colormask.js",
+    "./lib/global/FormData.js",
+    "./lib/inputmaskElement.js",
+    "./lib/extensions/inputmask.date.i18n.js",
+    "./lib/bindings/inputmask.binding.js"
+  ],
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
   },
@@ -79,7 +88,8 @@
     "colormask": "webpack --progress --watch --config-name colormask --config webpack.config.js",
     "modern": "webpack --progress --watch --config-name modern --config webpack.config.js",
     "types": "tsc -p tsconfig.types.json --emitDeclarationOnly",
-    "test": "grunt validate"
+    "test": "grunt validate",
+    "update-browserlist": "npx update-browserslist-db@latest"
   },
   "repository": {
     "type": "git",
@@ -103,6 +113,9 @@
     "url": "https://github.com/RobinHerbots/Inputmask/issues"
   },
   "homepage": "https://github.com/RobinHerbots/Inputmask",
+  "dependencies": {
+    "core-js": "3.50.0"
+  },
   "devDependencies": {
     "@babel/core": "^8.0.1",
     "@babel/eslint-parser": "^8.0.1",
@@ -111,6 +124,7 @@
     "@robinherbots/grunt-available-tasks": "^0.6.4",
     "@robinherbots/grunt-nuget": "^0.3.3",
     "babel-loader": "^10.1.1",
+    "babel-plugin-polyfill-corejs3": "^1.0.0",
     "eslint": "^10.7.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-config-standard": "^17.1.0",
@@ -141,5 +155,10 @@
     "typescript": "^5.9.3",
     "webpack": "^5.108.4",
     "webpack-cli": "^7.2.1"
-  }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
 }

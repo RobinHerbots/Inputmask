@@ -15,8 +15,28 @@ function createBanner() {
 }
 
 const rules = {
+  // ESM build: no polyfills injected, the consumer is responsible for its own
   js: {
-    test: /\.js$/,
+    test: /\.(js|ts)x?$/,
+    loader: "babel-loader",
+    exclude: /(node_modules)/,
+    options: {
+      presets: [
+        [
+          "@babel/preset-env",
+          {
+            targets: { esmodules: true },
+            modules: false
+          }
+        ],
+        "@babel/preset-typescript"
+      ],
+      passPerPreset: true
+    }
+  },
+  // UMD flavour, needed for the legacy UMD bundles
+  jsCommonjs: {
+    test: /\.(js|ts)x?$/,
     loader: "babel-loader",
     exclude: /(node_modules)/,
     options: {
@@ -29,26 +49,16 @@ const rules = {
         ],
         "@babel/preset-typescript"
       ],
-      passPerPreset: true
-    }
-  },
-  // commonjs flavour, needed for the legacy UMD bundles
-  jsCommonjs: {
-    test: /\.js$/,
-    loader: "babel-loader",
-    exclude: /(node_modules)/,
-    options: {
-      presets: ["@babel/preset-env", "@babel/preset-typescript"],
-      plugins: ["@babel/plugin-transform-modules-commonjs"],
-      passPerPreset: true
-    }
-  },
-  ts: {
-    test: /\.tsx?$/,
-    loader: "babel-loader",
-    exclude: /(node_modules)/,
-    options: {
-      presets: ["@babel/preset-typescript"],
+      plugins: [
+        // UMD build: inject only the polyfills required by the browserslist targets
+        [
+          "polyfill-corejs3",
+          {
+            method: "usage-global",
+            version: require("./package.json").dependencies["core-js"]
+          }
+        ]
+      ],
       passPerPreset: true
     }
   }
@@ -58,14 +68,22 @@ function createMinimizer(pattern, env) {
   return new terserPlugin({
     include: pattern,
     terserOptions: {
+      ecma: 2015,
       sourceMap: env.production !== true,
       format: {
+        ecma: 2015,
         ascii_only: true,
         beautify: false,
         comments: /^!/
       },
       compress: {
+        ecma: 2015,
+        passes: 2,
+        toplevel: true,
         drop_console: env.production === true
+      },
+      mangle: {
+        toplevel: true
       }
     },
     extractComments: false
@@ -153,7 +171,7 @@ module.exports = function (env, argv) {
         minimize: false
       },
       module: {
-        rules: [rules.js, rules.ts]
+        rules: [rules.js]
       },
       resolve: {
         extensions: [".wasm", ".mjs", ".js", ".ts", ".json"],
@@ -179,8 +197,7 @@ module.exports = function (env, argv) {
     name: "main",
     entry: {
       "dist/inputmask": "./bundle.js",
-      "dist/inputmask.min": "./bundle.js",
-      "qunit/qunit": "./qunit/index.js"
+      "dist/inputmask.min": "./bundle.js"
     },
     experiments: {},
     output: {
@@ -196,7 +213,7 @@ module.exports = function (env, argv) {
       minimizer: [createMinimizer(/\.min\.js$/, env)]
     },
     module: {
-      rules: [rules.jsCommonjs, rules.ts]
+      rules: [rules.jsCommonjs]
     },
     resolve: {
       extensions: [".wasm", ".mjs", ".js", ".ts", ".json"],
@@ -204,7 +221,7 @@ module.exports = function (env, argv) {
         // "./dependencyLibs/inputmask.dependencyLib": "./dependencyLibs/inputmask.dependencyLib.jquery"
       }
     },
-    target: ["web", "es5"]
+    target: ["web", "es2015"]
   });
 
   const jqueryConfig = _.defaultsDeep({}, config);
@@ -220,8 +237,7 @@ module.exports = function (env, argv) {
     },
     entry: {
       "dist/jquery.inputmask": "./bundle.jquery.js",
-      "dist/jquery.inputmask.min": "./bundle.jquery.js",
-      "qunit/qunit": "./qunit/index.js"
+      "dist/jquery.inputmask.min": "./bundle.jquery.js"
     }
   });
 
@@ -235,5 +251,18 @@ module.exports = function (env, argv) {
     }
   });
 
-  return [config, jqueryConfig, colorMaskConfig, modernConfig];
+  // Test bundle, dev only
+  const testConfig = _.defaultsDeep({}, config);
+  testConfig.entry = {};
+  _.assignIn(testConfig, {
+    name: "test",
+    entry: {
+      "qunit/qunit": "./qunit/index.js"
+    },
+    optimization: {
+      minimize: false
+    }
+  });
+
+  return [config, jqueryConfig, colorMaskConfig, modernConfig, testConfig];
 };

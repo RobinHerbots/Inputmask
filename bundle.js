@@ -1,8 +1,3 @@
-import "./lib/polyfills/Object.getPrototypeOf";
-import "./lib/polyfills/Array.includes";
-import "./lib/polyfills/Object.entries";
-import "./lib/polyfills/String.includes";
-
 import "./lib/global/FormData";
 
 import { registerDefinitions } from "./lib/extensions/definitions";

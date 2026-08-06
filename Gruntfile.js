@@ -81,7 +81,8 @@ module.exports = function (grunt) {
       main: webpackConfig({ production: true })[0],
       jquery: webpackConfig({ production: true })[1],
       colormask: webpackConfig({ production: true })[2],
-      modern: webpackConfig({ production: true })[3]
+      modern: webpackConfig({ production: true })[3],
+      test: webpackConfig({ production: true })[4]
     },
     copy: {
       extensions: {

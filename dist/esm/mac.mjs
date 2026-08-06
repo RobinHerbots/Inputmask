@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.12
+ * Version: 5.1.0-beta.16
  */
 export const __webpack_esm_id__ = 877;
 export const __webpack_esm_ids__ = [554,877];
@@ -76,7 +76,7 @@ function registerDefinitions() {
 function mac(options) {
   return _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend(true, {
     mask: "##:##:##:##:##:##"
-  }, options);
+  }, _definitions__WEBPACK_IMPORTED_MODULE_2__/* .definitions */ .B, options);
 }
 function registerMac() {
   (0,_definitions__WEBPACK_IMPORTED_MODULE_2__/* .registerDefinitions */ .I)();
