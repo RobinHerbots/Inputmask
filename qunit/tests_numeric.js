@@ -2577,6 +2577,279 @@ export default function (qunit, Inputmask) {
     }
   );
 
+  qunit.test("Clearing value leaves sticky minus #2890", function (assert) {
+    const $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask"/>');
+    const testmask = document.getElementById("testmask");
+    Inputmask("currency", {
+      autoUnmask: true,
+      digitsOptional: true,
+      placeholder: "",
+      rightAlign: false,
+      substituteRadixPoint: false,
+      enforceDigitsOnBlur: true
+    }).mask(testmask);
+    $(testmask).Type("-123");
+    $("#testmask").SendKey(keys.Backspace);
+    $("#testmask").SendKey(keys.Backspace);
+    $("#testmask").SendKey(keys.Backspace);
+    assert.equal(testmask.value, "-", 'Result "' + testmask.value + '"');
+    $("#testmask").SendKey(keys.Backspace);
+    assert.equal(testmask.value, "", 'Result "' + testmask.value + '"');
+  });
+
+  qunit.test(
+    "Clearing value leaves sticky minus on select-all + backspace #2890",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask"/>');
+      const testmask = document.getElementById("testmask");
+      Inputmask("currency", {
+        autoUnmask: true,
+        digitsOptional: true,
+        placeholder: "",
+        rightAlign: false,
+        substituteRadixPoint: false,
+        enforceDigitsOnBlur: true
+      }).mask(testmask);
+      $(testmask).Type("-123");
+      $("#testmask").SendKey(keys.Backspace);
+      $("#testmask").SendKey(keys.Backspace);
+      $("#testmask").SendKey(keys.Backspace);
+      assert.equal(testmask.value, "-", 'Result "' + testmask.value + '"');
+      $.caret(testmask, 0, testmask.value.length);
+      $("#testmask").SendKey(keys.Backspace);
+      assert.equal(testmask.value, "", 'Result "' + testmask.value + '"');
+    }
+  );
+
+  function currency2890Options() {
+    return {
+      autoUnmask: true,
+      digitsOptional: true,
+      placeholder: "",
+      rightAlign: false,
+      substituteRadixPoint: false,
+      enforceDigitsOnBlur: true
+    };
+  }
+
+  qunit.test(
+    "Clearing value leaves lone radix on select-all + delete #2890",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask"/>');
+      const testmask = document.getElementById("testmask");
+      Inputmask("currency", currency2890Options()).mask(testmask);
+      $(testmask).Type("100.");
+      testmask.blur();
+      assert.equal(testmask.value, "100.00", 'Result "' + testmask.value + '"');
+      testmask.focus();
+      $.caret(testmask, 0, testmask.value.length);
+      $("#testmask").SendKey(keys.Delete);
+      const masked = testmask.inputmask._valueGet();
+      assert.equal(
+        masked,
+        "",
+        'masked "' + masked + '" value "' + testmask.value + '"'
+      );
+    }
+  );
+
+  qunit.test(
+    "Clearing value leaves lone radix on select-all + backspace #2890",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask"/>');
+      const testmask = document.getElementById("testmask");
+      Inputmask("currency", currency2890Options()).mask(testmask);
+      $(testmask).Type("100.");
+      testmask.blur();
+      assert.equal(testmask.value, "100.00", 'Result "' + testmask.value + '"');
+      testmask.focus();
+      $.caret(testmask, 0, testmask.value.length);
+      $("#testmask").SendKey(keys.Backspace);
+      assert.equal(testmask.value, "", 'Result "' + testmask.value + '"');
+    }
+  );
+
+  qunit.test(
+    "Clearing value leaves lone radix on backspace digits #2890",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask"/>');
+      const testmask = document.getElementById("testmask");
+      Inputmask("currency", currency2890Options()).mask(testmask);
+      $(testmask).Type("100.");
+      testmask.blur();
+      assert.equal(testmask.value, "100.00", 'Result "' + testmask.value + '"');
+      testmask.focus();
+      $.caret(testmask, testmask.value.length, testmask.value.length);
+      for (let i = 0; i < 6; i++) {
+        $("#testmask").SendKey(keys.Backspace);
+      }
+      assert.equal(testmask.value, "", 'Result "' + testmask.value + '"');
+    }
+  );
+
+  qunit.test(
+    "Clearing value leaves lone radix on select-all + delete without blur #2890",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask"/>');
+      const testmask = document.getElementById("testmask");
+      Inputmask("currency", currency2890Options()).mask(testmask);
+      $(testmask).Type("100.");
+      assert.equal(testmask.value, "100.", 'Result "' + testmask.value + '"');
+      $.caret(testmask, 0, testmask.value.length);
+      $("#testmask").SendKey(keys.Delete);
+      assert.equal(testmask.value, "", 'Result "' + testmask.value + '"');
+    }
+  );
+
+  qunit.test(
+    "Clearing value leaves lone radix on backspace the radix #2890",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask"/>');
+      const testmask = document.getElementById("testmask");
+      Inputmask("currency", currency2890Options()).mask(testmask);
+      $(testmask).Type("100.");
+      assert.equal(testmask.value, "100.", 'Result "' + testmask.value + '"');
+      $.caret(testmask, 0, testmask.value.length);
+      $("#testmask").SendKey(keys.Backspace);
+      assert.equal(testmask.value, "", 'Result "' + testmask.value + '"');
+    }
+  );
+
+  qunit.test(
+    "Clearing value leaves lone radix without autoUnmask #2890",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask"/>');
+      const testmask = document.getElementById("testmask");
+      Inputmask("currency", {
+        digitsOptional: true,
+        placeholder: "",
+        rightAlign: false,
+        substituteRadixPoint: false,
+        enforceDigitsOnBlur: true
+      }).mask(testmask);
+      $(testmask).Type("100.");
+      testmask.blur();
+      assert.equal(testmask.value, "100.00", 'Result "' + testmask.value + '"');
+      testmask.focus();
+      $.caret(testmask, 0, testmask.value.length);
+      $("#testmask").SendKey(keys.Delete);
+      const masked = testmask.inputmask._valueGet();
+      assert.equal(
+        masked,
+        "",
+        'masked "' + masked + '" value "' + testmask.value + '"'
+      );
+    }
+  );
+
+  qunit.test(
+    "Clearing value leaves lone radix after click focus #2890",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask"/>');
+      const testmask = document.getElementById("testmask");
+      Inputmask("currency", currency2890Options()).mask(testmask);
+      $(testmask).Type("100.");
+      testmask.blur();
+      assert.equal(testmask.value, "100.00", 'Result "' + testmask.value + '"');
+      testmask.focus();
+      $("#testmask").trigger("click");
+      setTimeout(function () {
+        $.caret(testmask, 0, testmask.value.length);
+        $("#testmask").SendKey(keys.Delete);
+        assert.equal(testmask.value, "", 'Result "' + testmask.value + '"');
+        done();
+      }, 50);
+    }
+  );
+
+  qunit.test(
+    "Clearing value leaves lone radix on select digits around radix #2890",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask"/>');
+      const testmask = document.getElementById("testmask");
+      Inputmask("currency", currency2890Options()).mask(testmask);
+      $(testmask).Type("100.");
+      testmask.blur();
+      assert.equal(testmask.value, "100.00", 'Result "' + testmask.value + '"');
+      testmask.focus();
+      $.caret(testmask, 0, 3);
+      $("#testmask").SendKey(keys.Delete);
+      assert.equal(
+        testmask.value,
+        ".00",
+        'after delete 100 -> value "' + testmask.value + '"'
+      );
+      $.caret(testmask, 0, testmask.value.length);
+      $("#testmask").SendKey(keys.Delete);
+      assert.equal(
+        testmask.value,
+        "",
+        'after delete .00 -> value "' + testmask.value + '"'
+      );
+    }
+  );
+
+  qunit.test(
+    "Clearing value leaves sticky minus typed alone #2890",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask"/>');
+      const testmask = document.getElementById("testmask");
+      Inputmask("currency", currency2890Options()).mask(testmask);
+      $(testmask).Type("-");
+      assert.equal(testmask.value, "-", 'Result "' + testmask.value + '"');
+      $("#testmask").SendKey(keys.Backspace);
+      assert.equal(testmask.value, "", 'Result "' + testmask.value + '"');
+    }
+  );
+
+  qunit.test(
+    "Clearing value leaves sticky minus paren negationSymbol #2890",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask"/>');
+      const testmask = document.getElementById("testmask");
+      Inputmask("currency", {
+        ...currency2890Options(),
+        negationSymbol: { front: "(", back: ")" }
+      }).mask(testmask);
+      $(testmask).Type("(1");
+      assert.equal(testmask.value, "(1)", 'Result "' + testmask.value + '"');
+      $("#testmask").SendKey(keys.Backspace);
+      assert.equal(testmask.value, "()", 'Result "' + testmask.value + '"');
+      $("#testmask").SendKey(keys.Backspace);
+      assert.equal(testmask.value, "", 'Result "' + testmask.value + '"');
+      $("#testmask").SendKey(keys.Backspace);
+      assert.equal(testmask.value, "", 'Result "' + testmask.value + '"');
+    }
+  );
+
+  qunit.test(
+    "Clearing value leaves sticky minus on select-all + delete #2890",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask"/>');
+      const testmask = document.getElementById("testmask");
+      Inputmask("currency", currency2890Options()).mask(testmask);
+      $(testmask).Type("-123");
+      assert.equal(testmask.value, "-123", 'Result "' + testmask.value + '"');
+      $.caret(testmask, 0, testmask.value.length);
+      $("#testmask").SendKey(keys.Delete);
+      assert.equal(testmask.value, "", 'Result "' + testmask.value + '"');
+    }
+  );
+
   function decimal2615Test(name, opts, actions, expected) {
     qunit.test("decimal $ - " + name + " - #2615", function (assert) {
       const done = assert.async(),
