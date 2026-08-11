@@ -1542,7 +1542,7 @@ export default function (qunit, Inputmask) {
       "Result " + testmask.value
     );
   });
-qunit.test(
+  qunit.test(
     "Maximum call stack size exceeded - prefilled value cursor at start #2825",
     function (assert) {
       const $fixture = $("#qunit-fixture");
@@ -1651,8 +1651,6 @@ qunit.test(
     }
   );
 
-
-
   // Typing into one segment must leave the other segments alone. That holds for every segment
   // except the year: date.js rewrites all positions after the year from the mask template on
   // every keystroke, so everything behind the year is wiped. See mcve/year-edit-clears-time/
@@ -1660,9 +1658,9 @@ qunit.test(
   qunit.test(
     "dd.MM.yyyy HH:mm - typing in the year keeps the time",
     function (assert) {
-      var $fixture = $("#qunit-fixture");
+      const $fixture = $("#qunit-fixture");
       $fixture.append('<input type="text" id="testmask" />');
-      var testmask = document.getElementById("testmask");
+      const testmask = document.getElementById("testmask");
       Inputmask("datetime", {
         inputFormat: "dd.MM.yyyy HH:mm"
       }).mask(testmask);
@@ -1684,9 +1682,9 @@ qunit.test(
   qunit.test(
     "yyyy-MM-dd - typing in the year keeps month and day",
     function (assert) {
-      var $fixture = $("#qunit-fixture");
+      const $fixture = $("#qunit-fixture");
       $fixture.append('<input type="text" id="testmask" />');
-      var testmask = document.getElementById("testmask");
+      const testmask = document.getElementById("testmask");
       Inputmask("datetime", {
         inputFormat: "yyyy-MM-dd"
       }).mask(testmask);
@@ -1704,9 +1702,9 @@ qunit.test(
   qunit.test(
     "dd.MM.yy HH:mm - typing in the two digit year keeps the time",
     function (assert) {
-      var $fixture = $("#qunit-fixture");
+      const $fixture = $("#qunit-fixture");
       $fixture.append('<input type="text" id="testmask" />');
-      var testmask = document.getElementById("testmask");
+      const testmask = document.getElementById("testmask");
       Inputmask("datetime", {
         inputFormat: "dd.MM.yy HH:mm"
       }).mask(testmask);
@@ -1716,16 +1714,20 @@ qunit.test(
       $.caret(testmask, 6);
       $("#testmask").Type("9");
 
-      assert.equal(testmask.value, "03.08.9y 14:30", "Result " + testmask.value);
+      assert.equal(
+        testmask.value,
+        "03.08.9y 14:30",
+        "Result " + testmask.value
+      );
     }
   );
 
   qunit.test(
     "dd.MM.yyyy HH:mm - retyping the year keeps the time",
     function (assert) {
-      var $fixture = $("#qunit-fixture");
+      const $fixture = $("#qunit-fixture");
       $fixture.append('<input type="text" id="testmask" />');
-      var testmask = document.getElementById("testmask");
+      const testmask = document.getElementById("testmask");
       Inputmask("datetime", {
         inputFormat: "dd.MM.yyyy HH:mm"
       }).mask(testmask);
@@ -1746,9 +1748,9 @@ qunit.test(
   qunit.test(
     "dd.MM.yyyy HH:mm - retyping the whole year keeps the time",
     function (assert) {
-      var $fixture = $("#qunit-fixture");
+      const $fixture = $("#qunit-fixture");
       $fixture.append('<input type="text" id="testmask" />');
-      var testmask = document.getElementById("testmask");
+      const testmask = document.getElementById("testmask");
       Inputmask("datetime", {
         inputFormat: "dd.MM.yyyy HH:mm"
       }).mask(testmask);
@@ -1770,9 +1772,9 @@ qunit.test(
   qunit.test(
     "dd.MM.yyyy HH:mm - retyping the month keeps the time",
     function (assert) {
-      var $fixture = $("#qunit-fixture");
+      const $fixture = $("#qunit-fixture");
       $fixture.append('<input type="text" id="testmask" />');
-      var testmask = document.getElementById("testmask");
+      const testmask = document.getElementById("testmask");
       Inputmask("datetime", {
         inputFormat: "dd.MM.yyyy HH:mm"
       }).mask(testmask);
@@ -1789,5 +1791,4 @@ qunit.test(
       );
     }
   );
-
 }
