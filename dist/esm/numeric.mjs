@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.17
+ * Version: 5.1.0-beta.18
  */
 export const __webpack_esm_id__ = 69;
 export const __webpack_esm_ids__ = [69];
@@ -187,9 +187,12 @@ function genMask(opts) {
     } else if (isNaN(opts.digits) || parseInt(opts.digits) > 0) {
       if (opts.digitsOptional || opts.jitMasking) {
         altMask = mask + radixPointDef + decimalDef + "{0," + opts.digits + "}";
-        // mask += "[" + opts.radixPoint + "]";
-        opts.keepStatic = true;
       } else {
+        // deliberately no optional digits when digitsOptional = false
+        // this is to allow the core handle the deletion of  the digits
+        // onBeforeWrite will take care of the alignment of the digits and positioning of the caret
+        if (opts.__financeInput !== false) altMask = mask + radixPointDef + decimalDef + "{0," + opts.digits + "}";
+        // shows the correct number of digits when initially masking the value
         mask += radixPointDef + decimalDef + "{" + opts.digits + "}";
       }
     }
@@ -199,6 +202,7 @@ function genMask(opts) {
   mask += autoEscape(opts.suffix, opts);
   mask += "[-]";
   if (altMask) {
+    opts.keepStatic = true;
     mask = [altMask + autoEscape(opts.suffix, opts) + "[-]", mask];
   }
   opts.greedy = false; // enforce greedy false
@@ -218,7 +222,7 @@ function handleRadixDance(pos, c, radixPos, maskset, opts) {
 }
 function decimalValidator(chrs, maskset, pos, strict, opts) {
   const radixPos = maskset.buffer ? maskset.buffer.indexOf(opts.radixPoint) : -1,
-    result = (radixPos !== -1 || strict && opts.jitMasking) && new RegExp(opts.definitions["9"].validator).test(chrs);
+    result = (radixPos !== -1 || strict && opts.jitMasking) && new RegExp(_definitions__WEBPACK_IMPORTED_MODULE_4__/* ["default"] */ .A["9"].validator, "u").test(chrs);
   if (!strict && opts._radixDance && radixPos !== -1 && result && maskset.validPositions[radixPos] == undefined) {
     return {
       insert: {
@@ -287,7 +291,6 @@ const numericAlias = {
   insertMode: true,
   autoUnmask: false,
   skipOptionalPartCharacter: "",
-  usePrototypeDefinitions: false,
   stripLeadingZeroes: true,
   substituteRadixPoint: true,
   definitions: {
@@ -297,11 +300,6 @@ const numericAlias = {
     1: {
       validator: decimalValidator,
       definitionSymbol: "9"
-    },
-    9: {
-      // \uFF11-\uFF19 #1606
-      validator: "[0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9]",
-      definitionSymbol: "*"
     },
     "+": {
       validator: function (chrs, maskset, pos, strict, opts) {
@@ -399,7 +397,7 @@ const numericAlias = {
         // would otherwise fall through to alternation switching and land
         // in the decimal part (#2615)
         if (pos >= buffer.length - opts.prefix.length && opts.radixPoint !== "") {
-          const digitTest = new RegExp(opts.definitions["9"].validator);
+          const digitTest = new RegExp(_definitions__WEBPACK_IMPORTED_MODULE_4__/* ["default"] */ .A["9"].validator, "u");
           if (!maskset.validPositions.some(vp => vp && !vp.generatedInput && digitTest.test(vp.input))) {
             return {
               rewritePosition: radixPos !== -1 ? radixPos : 0
@@ -532,7 +530,7 @@ const numericAlias = {
         offset = leadingzeroes[0] == leadingzeroes.input ? 1 : 0;
       for (let i = leadingzeroes[0].length - offset; i > 0; i--) {
         this.maskset.validPositions.splice(caretNdx + i, 1);
-        delete buffer[caretNdx + i];
+        buffer.splice(caretNdx + i, 1);
       }
     }
     if (e) {
@@ -580,12 +578,16 @@ const numericAlias = {
               }
             }
           }
-          if (opts.enforceDigitsOnBlur) {
-            result = result || {};
-            const bffr = (result && result.buffer || buffer).slice().reverse();
-            result.refreshFromBuffer = true;
-            result.buffer = alignDigits(bffr, opts.digits, opts, true).reverse();
-          }
+      }
+    }
+    if (e && (e.type === "blur" || e.type === "checkval") && opts.enforceDigitsOnBlur || opts.digitsOptional === false) {
+      result = result || {};
+      const bffr = (result && result.buffer || buffer).slice().reverse();
+      result.refreshFromBuffer = true;
+      result.buffer = alignDigits(bffr.slice(), opts.digits, opts, true).reverse();
+      const delta = result.buffer.length - bffr.length;
+      if (delta > 0 && caretPos !== undefined) {
+        result.caret = (caretPos.begin || caretPos) + delta;
       }
     }
     return result;
@@ -614,45 +616,6 @@ const numericAlias = {
           this.inputmask.__valueSet.call(this, parseFloat(this.inputmask.unmaskedvalue()) - parseInt(opts.step));
           $input.trigger("setvalue");
           return false;
-      }
-    }
-    if (!e.shiftKey && (e.key === _keycode__WEBPACK_IMPORTED_MODULE_2__/* .keys */ .HP.Delete || e.key === _keycode__WEBPACK_IMPORTED_MODULE_2__/* .keys */ .HP.Backspace || e.key === _keycode__WEBPACK_IMPORTED_MODULE_2__/* .keys */ .HP.BACKSPACE_SAFARI) && caretPos.begin !== buffer.length) {
-      if (buffer[e.key === _keycode__WEBPACK_IMPORTED_MODULE_2__/* .keys */ .HP.Delete ? caretPos.begin - 1 : caretPos.end] === opts.negationSymbol.front) {
-        bffr = buffer.slice().reverse();
-        if (opts.negationSymbol.front !== "") bffr.shift();
-        if (opts.negationSymbol.back !== "") bffr.pop();
-        $input.trigger("setvalue", [bffr.join(""), caretPos.begin]);
-        return false;
-      } else if (opts._radixDance === true) {
-        const radixPos = buffer.indexOf(opts.radixPoint);
-        if (!opts.digitsOptional) {
-          if (radixPos !== -1 && (caretPos.begin < radixPos || caretPos.end < radixPos || e.key === _keycode__WEBPACK_IMPORTED_MODULE_2__/* .keys */ .HP.Delete && (caretPos.begin === radixPos || caretPos.begin - 1 === radixPos))) {
-            let restoreCaretPos;
-            if (caretPos.begin === caretPos.end) {
-              // only adjust when not a selection
-              if (e.key === _keycode__WEBPACK_IMPORTED_MODULE_2__/* .keys */ .HP.Backspace || e.key === _keycode__WEBPACK_IMPORTED_MODULE_2__/* .keys */ .HP.BACKSPACE_SAFARI) caretPos.begin++;else if (e.key === _keycode__WEBPACK_IMPORTED_MODULE_2__/* .keys */ .HP.Delete && caretPos.begin - 1 === radixPos) {
-                restoreCaretPos = _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .A.extend({}, caretPos);
-                caretPos.begin--;
-                caretPos.end--;
-              }
-            }
-            bffr = buffer.slice().reverse();
-            bffr.splice(bffr.length - caretPos.begin, caretPos.begin - caretPos.end || 1);
-            if (e.key === _keycode__WEBPACK_IMPORTED_MODULE_2__/* .keys */ .HP.Backspace || e.key === _keycode__WEBPACK_IMPORTED_MODULE_2__/* .keys */ .HP.BACKSPACE_SAFARI) bffr.splice(bffr.length - caretPos.end + 1, 0, "0");
-            // console.log(caretPos);
-            bffr = alignDigits(bffr, opts.digits, opts).join("");
-            if (restoreCaretPos) {
-              caretPos = restoreCaretPos;
-            }
-            $input.trigger("setvalue", [bffr, caretPos.begin >= bffr.length ? radixPos + 1 : caretPos.begin]);
-            return false;
-          }
-        } else if (radixPos === 0) {
-          bffr = buffer.slice().reverse();
-          bffr.pop();
-          $input.trigger("setvalue", [bffr.join(""), caretPos.begin >= bffr.length ? bffr.length : caretPos.begin]);
-          return false;
-        }
       }
     }
   }

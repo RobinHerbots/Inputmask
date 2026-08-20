@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.17
+ * Version: 5.1.0-beta.18
  */
 /******/ var __webpack_modules__ = ({
 
@@ -4200,6 +4200,11 @@ function handleRemove(input, c, pos, strict, fromIsValid) {
       // TODO NEEDS BETTER CHECK WHEN TO ALTERNATE  ~ opts regex isn"t good enough
       alternate.call(inputmask, true);
     }
+    if (_positioning__WEBPACK_IMPORTED_MODULE_2__/* .getLastValidPosition */ .SE.call(inputmask) === -1) {
+      // full clear: reset the tests cache so dynamic mask definitions
+      // (numeric radix/negation) don't leave a stale residue in the template #2890
+      _positioning__WEBPACK_IMPORTED_MODULE_2__/* .resetMaskSet */ .eo.call(inputmask, false);
+    }
     if (strict !== true) {
       maskset.p = c === _keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Delete ? pos.begin + offset : pos.begin;
       maskset.p = _positioning__WEBPACK_IMPORTED_MODULE_2__/* .determineNewCaretPosition */ .wD.call(inputmask, {
@@ -4571,6 +4576,25 @@ function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
     }
     return false;
   }
+  function IsJitCollapsedTail(pos, valids) {
+    // a position directly following a jit group (s + jitOffset[s] === pos)
+    // collapses when the deletion removed the content of the group feeding it:
+    // the group spans [sMin - 1, pos) where sMin is the smallest group position
+    // with a jitOffset (the group's first position itself carries none) #2890
+    let sMin;
+    for (let s = 0; s < pos; s++) {
+      if (maskset.jitOffset[s] !== undefined && s + maskset.jitOffset[s] === pos) {
+        sMin = s;
+        break;
+      }
+    }
+    if (sMin === undefined) return false;
+    const groupStart = Math.max(0, sMin - 1);
+    for (let m = groupStart; m < pos; m++) {
+      if (valids[m] !== undefined) return false;
+    }
+    return true;
+  }
   let offset = 0,
     begin = pos.begin !== undefined ? pos.begin : pos,
     end = pos.end !== undefined ? pos.end : pos,
@@ -4610,6 +4634,20 @@ function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
         begin,
         end
       }))) {
+        if (validTest === undefined && IsJitCollapsedTail(i, positionsClone)) {
+          // the jit group feeding this position was fully removed by the deletion:
+          // drop the tail position instead of re-inserting it #2890
+          if (!maskset.validPositions.some((vp, p) => vp && maskset.jitOffset[p] !== undefined)) {
+            // nothing inside the jit domain survives: the deletion emptied the
+            // mask, so also drop the positions the reprocess window never
+            // reached below the group (e.g. the ")" back symbol of a "( )"
+            // pair) #2890
+            for (let p = 0; p < i; p++) {
+              maskset.validPositions[p] = undefined;
+            }
+          }
+          continue;
+        }
         while (test = _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getTest */ .bm.call(inputmask, posMatch), test.match.def !== "") {
           // loop needed to match further positions
           if ((canMatch = positionCanMatchDefinition.call(inputmask, posMatch, t, opts)) !== false || t.match.def === "+") {

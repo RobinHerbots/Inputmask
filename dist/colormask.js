@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.17
+ * Version: 5.1.0-beta.18
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -3672,6 +3672,8 @@ function toKeyCode(key) {
 }
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es.iterator.every.js
 var es_iterator_every = __webpack_require__(1148);
+// EXTERNAL MODULE: ./node_modules/core-js/modules/es.iterator.some.js
+var es_iterator_some = __webpack_require__(3579);
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es.iterator.filter.js
 var es_iterator_filter = __webpack_require__(2489);
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es.iterator.find.js
@@ -4426,6 +4428,7 @@ function getTests(pos, ndxIntlzr, tstPs) {
 
 
 
+
 // tobe put on prototype?
 function alternate(maskPos, c, strict, fromIsValid, rAltPos, selection) {
   // pos == true => generalize
@@ -4668,6 +4671,11 @@ function handleRemove(input, c, pos, strict, fromIsValid) {
     if (strict !== true && opts.keepStatic !== false || opts.regex !== null && getTest.call(inputmask, pos.begin).match.def.indexOf("|") !== -1) {
       // TODO NEEDS BETTER CHECK WHEN TO ALTERNATE  ~ opts regex isn"t good enough
       alternate.call(inputmask, true);
+    }
+    if (getLastValidPosition.call(inputmask) === -1) {
+      // full clear: reset the tests cache so dynamic mask definitions
+      // (numeric radix/negation) don't leave a stale residue in the template #2890
+      resetMaskSet.call(inputmask, false);
     }
     if (strict !== true) {
       maskset.p = c === keys.Delete ? pos.begin + offset : pos.begin;
@@ -5040,6 +5048,25 @@ function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
     }
     return false;
   }
+  function IsJitCollapsedTail(pos, valids) {
+    // a position directly following a jit group (s + jitOffset[s] === pos)
+    // collapses when the deletion removed the content of the group feeding it:
+    // the group spans [sMin - 1, pos) where sMin is the smallest group position
+    // with a jitOffset (the group's first position itself carries none) #2890
+    let sMin;
+    for (let s = 0; s < pos; s++) {
+      if (maskset.jitOffset[s] !== undefined && s + maskset.jitOffset[s] === pos) {
+        sMin = s;
+        break;
+      }
+    }
+    if (sMin === undefined) return false;
+    const groupStart = Math.max(0, sMin - 1);
+    for (let m = groupStart; m < pos; m++) {
+      if (valids[m] !== undefined) return false;
+    }
+    return true;
+  }
   let offset = 0,
     begin = pos.begin !== undefined ? pos.begin : pos,
     end = pos.end !== undefined ? pos.end : pos,
@@ -5079,6 +5106,20 @@ function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
         begin,
         end
       }))) {
+        if (validTest === undefined && IsJitCollapsedTail(i, positionsClone)) {
+          // the jit group feeding this position was fully removed by the deletion:
+          // drop the tail position instead of re-inserting it #2890
+          if (!maskset.validPositions.some((vp, p) => vp && maskset.jitOffset[p] !== undefined)) {
+            // nothing inside the jit domain survives: the deletion emptied the
+            // mask, so also drop the positions the reprocess window never
+            // reached below the group (e.g. the ")" back symbol of a "( )"
+            // pair) #2890
+            for (let p = 0; p < i; p++) {
+              maskset.validPositions[p] = undefined;
+            }
+          }
+          continue;
+        }
         while (test = getTest.call(inputmask, posMatch), test.match.def !== "") {
           // loop needed to match further positions
           if ((canMatch = positionCanMatchDefinition.call(inputmask, posMatch, t, opts)) !== false || t.match.def === "+") {
@@ -8585,8 +8626,6 @@ function registerDatetime() {
     datetime: datetime()
   });
 }
-// EXTERNAL MODULE: ./node_modules/core-js/modules/es.iterator.some.js
-var es_iterator_some = __webpack_require__(3579);
 ;// ./lib/extensions/numeric.js
 /* unused harmony import specifier */ var numeric_$;
 
@@ -8752,9 +8791,12 @@ function genMask(opts) {
     } else if (isNaN(opts.digits) || parseInt(opts.digits) > 0) {
       if (opts.digitsOptional || opts.jitMasking) {
         altMask = mask + radixPointDef + decimalDef + "{0," + opts.digits + "}";
-        // mask += "[" + opts.radixPoint + "]";
-        opts.keepStatic = true;
       } else {
+        // deliberately no optional digits when digitsOptional = false
+        // this is to allow the core handle the deletion of  the digits
+        // onBeforeWrite will take care of the alignment of the digits and positioning of the caret
+        if (opts.__financeInput !== false) altMask = mask + radixPointDef + decimalDef + "{0," + opts.digits + "}";
+        // shows the correct number of digits when initially masking the value
         mask += radixPointDef + decimalDef + "{" + opts.digits + "}";
       }
     }
@@ -8764,6 +8806,7 @@ function genMask(opts) {
   mask += autoEscape(opts.suffix, opts);
   mask += "[-]";
   if (altMask) {
+    opts.keepStatic = true;
     mask = [altMask + autoEscape(opts.suffix, opts) + "[-]", mask];
   }
   opts.greedy = false; // enforce greedy false
@@ -8783,7 +8826,7 @@ function handleRadixDance(pos, c, radixPos, maskset, opts) {
 }
 function decimalValidator(chrs, maskset, pos, strict, opts) {
   const radixPos = maskset.buffer ? maskset.buffer.indexOf(opts.radixPoint) : -1,
-    result = (radixPos !== -1 || strict && opts.jitMasking) && new RegExp(opts.definitions["9"].validator).test(chrs);
+    result = (radixPos !== -1 || strict && opts.jitMasking) && new RegExp(definitions["9"].validator, "u").test(chrs);
   if (!strict && opts._radixDance && radixPos !== -1 && result && maskset.validPositions[radixPos] == undefined) {
     return {
       insert: {
@@ -8852,7 +8895,6 @@ const numericAlias = {
   insertMode: true,
   autoUnmask: false,
   skipOptionalPartCharacter: "",
-  usePrototypeDefinitions: false,
   stripLeadingZeroes: true,
   substituteRadixPoint: true,
   definitions: {
@@ -8862,11 +8904,6 @@ const numericAlias = {
     1: {
       validator: decimalValidator,
       definitionSymbol: "9"
-    },
-    9: {
-      // \uFF11-\uFF19 #1606
-      validator: "[0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9]",
-      definitionSymbol: "*"
     },
     "+": {
       validator: function (chrs, maskset, pos, strict, opts) {
@@ -8964,7 +9001,7 @@ const numericAlias = {
         // would otherwise fall through to alternation switching and land
         // in the decimal part (#2615)
         if (pos >= buffer.length - opts.prefix.length && opts.radixPoint !== "") {
-          const digitTest = new RegExp(opts.definitions["9"].validator);
+          const digitTest = new RegExp(definitions["9"].validator, "u");
           if (!maskset.validPositions.some(vp => vp && !vp.generatedInput && digitTest.test(vp.input))) {
             return {
               rewritePosition: radixPos !== -1 ? radixPos : 0
@@ -9097,7 +9134,7 @@ const numericAlias = {
         offset = leadingzeroes[0] == leadingzeroes.input ? 1 : 0;
       for (let i = leadingzeroes[0].length - offset; i > 0; i--) {
         this.maskset.validPositions.splice(caretNdx + i, 1);
-        delete buffer[caretNdx + i];
+        buffer.splice(caretNdx + i, 1);
       }
     }
     if (e) {
@@ -9145,12 +9182,16 @@ const numericAlias = {
               }
             }
           }
-          if (opts.enforceDigitsOnBlur) {
-            result = result || {};
-            const bffr = (result && result.buffer || buffer).slice().reverse();
-            result.refreshFromBuffer = true;
-            result.buffer = alignDigits(bffr, opts.digits, opts, true).reverse();
-          }
+      }
+    }
+    if (e && (e.type === "blur" || e.type === "checkval") && opts.enforceDigitsOnBlur || opts.digitsOptional === false) {
+      result = result || {};
+      const bffr = (result && result.buffer || buffer).slice().reverse();
+      result.refreshFromBuffer = true;
+      result.buffer = alignDigits(bffr.slice(), opts.digits, opts, true).reverse();
+      const delta = result.buffer.length - bffr.length;
+      if (delta > 0 && caretPos !== undefined) {
+        result.caret = (caretPos.begin || caretPos) + delta;
       }
     }
     return result;
@@ -9179,45 +9220,6 @@ const numericAlias = {
           this.inputmask.__valueSet.call(this, parseFloat(this.inputmask.unmaskedvalue()) - parseInt(opts.step));
           $input.trigger("setvalue");
           return false;
-      }
-    }
-    if (!e.shiftKey && (e.key === keys.Delete || e.key === keys.Backspace || e.key === keys.BACKSPACE_SAFARI) && caretPos.begin !== buffer.length) {
-      if (buffer[e.key === keys.Delete ? caretPos.begin - 1 : caretPos.end] === opts.negationSymbol.front) {
-        bffr = buffer.slice().reverse();
-        if (opts.negationSymbol.front !== "") bffr.shift();
-        if (opts.negationSymbol.back !== "") bffr.pop();
-        $input.trigger("setvalue", [bffr.join(""), caretPos.begin]);
-        return false;
-      } else if (opts._radixDance === true) {
-        const radixPos = buffer.indexOf(opts.radixPoint);
-        if (!opts.digitsOptional) {
-          if (radixPos !== -1 && (caretPos.begin < radixPos || caretPos.end < radixPos || e.key === keys.Delete && (caretPos.begin === radixPos || caretPos.begin - 1 === radixPos))) {
-            let restoreCaretPos;
-            if (caretPos.begin === caretPos.end) {
-              // only adjust when not a selection
-              if (e.key === keys.Backspace || e.key === keys.BACKSPACE_SAFARI) caretPos.begin++;else if (e.key === keys.Delete && caretPos.begin - 1 === radixPos) {
-                restoreCaretPos = inputmask_dependencyLib.extend({}, caretPos);
-                caretPos.begin--;
-                caretPos.end--;
-              }
-            }
-            bffr = buffer.slice().reverse();
-            bffr.splice(bffr.length - caretPos.begin, caretPos.begin - caretPos.end || 1);
-            if (e.key === keys.Backspace || e.key === keys.BACKSPACE_SAFARI) bffr.splice(bffr.length - caretPos.end + 1, 0, "0");
-            // console.log(caretPos);
-            bffr = alignDigits(bffr, opts.digits, opts).join("");
-            if (restoreCaretPos) {
-              caretPos = restoreCaretPos;
-            }
-            $input.trigger("setvalue", [bffr, caretPos.begin >= bffr.length ? radixPos + 1 : caretPos.begin]);
-            return false;
-          }
-        } else if (radixPos === 0) {
-          bffr = buffer.slice().reverse();
-          bffr.pop();
-          $input.trigger("setvalue", [bffr.join(""), caretPos.begin >= bffr.length ? bffr.length : caretPos.begin]);
-          return false;
-        }
       }
     }
   }

@@ -16,8 +16,8 @@ module.exports = [
   ...compat.extends(
     "eslint:recommended",
     "standard",
-    "plugin:import/errors",
-    "plugin:import/warnings",
+    "plugin:import-x/errors",
+    "plugin:import-x/warnings",
     "plugin:prettier/recommended"
   ),
   {
@@ -55,7 +55,7 @@ module.exports = [
         }
       ],
       "comma-dangle": "off",
-      "import/order": [
+      "import-x/order": [
         "error",
         {
           "newlines-between": "always",
@@ -65,7 +65,7 @@ module.exports = [
           }
         }
       ],
-      "import/named": "error",
+      "import-x/named": "error",
       "prettier/prettier": ["error", { singleQuote: false }],
       "one-var": ["error", "consecutive"],
       "no-use-before-define": "off",
