@@ -1,5 +1,5 @@
-const webpackConfig = require("./webpack.config");
-const { execSync } = require("child_process");
+const { execSync } = require("child_process"),
+  webpackConfig = require("./webpack.config");
 
 module.exports = function (grunt) {
   // Project configuration.

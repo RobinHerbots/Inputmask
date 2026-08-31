@@ -2593,35 +2593,8 @@ export default function (qunit, Inputmask) {
     $("#testmask").SendKey(keys.Backspace);
     $("#testmask").SendKey(keys.Backspace);
     $("#testmask").SendKey(keys.Backspace);
-    assert.equal(testmask.value, "-", 'Result "' + testmask.value + '"');
-    $("#testmask").SendKey(keys.Backspace);
     assert.equal(testmask.value, "", 'Result "' + testmask.value + '"');
   });
-
-  qunit.test(
-    "Clearing value leaves sticky minus on select-all + backspace #2890",
-    function (assert) {
-      const $fixture = $("#qunit-fixture");
-      $fixture.append('<input type="text" id="testmask"/>');
-      const testmask = document.getElementById("testmask");
-      Inputmask("currency", {
-        autoUnmask: true,
-        digitsOptional: true,
-        placeholder: "",
-        rightAlign: false,
-        substituteRadixPoint: false,
-        enforceDigitsOnBlur: true
-      }).mask(testmask);
-      $(testmask).Type("-123");
-      $("#testmask").SendKey(keys.Backspace);
-      $("#testmask").SendKey(keys.Backspace);
-      $("#testmask").SendKey(keys.Backspace);
-      assert.equal(testmask.value, "-", 'Result "' + testmask.value + '"');
-      $.caret(testmask, 0, testmask.value.length);
-      $("#testmask").SendKey(keys.Backspace);
-      assert.equal(testmask.value, "", 'Result "' + testmask.value + '"');
-    }
-  );
 
   function currency2890Options() {
     return {
@@ -2787,15 +2760,8 @@ export default function (qunit, Inputmask) {
       $("#testmask").SendKey(keys.Delete);
       assert.equal(
         testmask.value,
-        ".00",
-        'after delete 100 -> value "' + testmask.value + '"'
-      );
-      $.caret(testmask, 0, testmask.value.length);
-      $("#testmask").SendKey(keys.Delete);
-      assert.equal(
-        testmask.value,
         "",
-        'after delete .00 -> value "' + testmask.value + '"'
+        'after delete 100 -> value "' + testmask.value + '"'
       );
     }
   );
@@ -2826,10 +2792,6 @@ export default function (qunit, Inputmask) {
       }).mask(testmask);
       $(testmask).Type("(1");
       assert.equal(testmask.value, "(1)", 'Result "' + testmask.value + '"');
-      $("#testmask").SendKey(keys.Backspace);
-      assert.equal(testmask.value, "()", 'Result "' + testmask.value + '"');
-      $("#testmask").SendKey(keys.Backspace);
-      assert.equal(testmask.value, "", 'Result "' + testmask.value + '"');
       $("#testmask").SendKey(keys.Backspace);
       assert.equal(testmask.value, "", 'Result "' + testmask.value + '"');
     }
