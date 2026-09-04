@@ -2535,18 +2535,47 @@ export default function (qunit, Inputmask) {
   qunit.test(
     "Highlighting Values with Negative Numbers #2714",
     function (assert) {
-      const $fixture = $("#qunit-fixture");
-      $fixture.append('<input type="text" id="testmask"/>');
-      const testmask = document.getElementById("testmask");
-      Inputmask("numeric", {
-        digits: 0,
-        groupSeparator: ",",
-        shortcuts: null
-      }).mask(testmask);
-      $(testmask).Type("-3");
-      $.caret(testmask, 0, 2);
-      $(testmask).Type("4");
-      assert.equal(testmask.value, "4", 'Result "' + testmask.value + '"');
+      runNegativeSelectionOverwriteCase(assert, "-3");
+    }
+  );
+
+  function runNegativeSelectionOverwriteCase(assert, initialValue) {
+    const $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask"/>');
+    const testmask = document.getElementById("testmask");
+    Inputmask("numeric", {
+      digits: 0,
+      groupSeparator: ",",
+      shortcuts: null
+    }).mask(testmask);
+
+    $(testmask).Type(initialValue);
+    $.caret(testmask, 0, testmask.value.length);
+
+    $(testmask).Type("4");
+    assert.equal(
+      testmask.value,
+      "4",
+      'Result "' + testmask.value + '" for ' + initialValue
+    );
+  }
+
+  qunit.test("Highlighting Values with Negative Numbers -30 #2714", function (
+    assert
+  ) {
+    runNegativeSelectionOverwriteCase(assert, "-30");
+  });
+
+  qunit.test("Highlighting Values with Negative Numbers -300 #2714", function (
+    assert
+  ) {
+    runNegativeSelectionOverwriteCase(assert, "-300");
+  });
+
+  qunit.test(
+    "Highlighting Values with Negative Numbers -3000 #2714",
+    function (assert) {
+      runNegativeSelectionOverwriteCase(assert, "-3000");
     }
   );
 
