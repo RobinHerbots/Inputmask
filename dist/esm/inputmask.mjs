@@ -420,7 +420,7 @@ const EventHandlers = {
       // backspace/delete
       e.preventDefault(); // stop default action but allow propagation
       _validation__WEBPACK_IMPORTED_MODULE_5__/* .handleRemove */ .Nr.call(inputmask, input, c, pos);
-      (0,_inputHandling__WEBPACK_IMPORTED_MODULE_2__/* .writeBuffer */ .Au)(input, _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBuffer */ .Zo.call(inputmask, true), maskset.p, e, input.inputmask._valueGet() !== _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBuffer */ .Zo.call(inputmask).join(""));
+      (0,_inputHandling__WEBPACK_IMPORTED_MODULE_2__/* .writeBuffer */ .Au)(input, _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBuffer */ .Zo.call(inputmask, true), pos, e, input.inputmask._valueGet() !== _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBuffer */ .Zo.call(inputmask).join(""));
     } else if (c === _keycode_js__WEBPACK_IMPORTED_MODULE_3__/* .keys */ .HP.End || c === _keycode_js__WEBPACK_IMPORTED_MODULE_3__/* .keys */ .HP.PageDown) {
       // when END or PAGE_DOWN pressed set position at lastmatch
       e.preventDefault();
@@ -772,7 +772,7 @@ const EventHandlers = {
   },
   clickEvent: function (e, tabbed) {
     const inputmask = this.inputmask;
-    inputmask.clicked++;
+    if (e.type === "click") inputmask.clicked++;
     const input = this;
     if (input.getRootNode().activeElement === input) {
       const newCaretPosition = _positioning__WEBPACK_IMPORTED_MODULE_4__/* .determineNewCaretPosition */ .wD.call(inputmask, _positioning__WEBPACK_IMPORTED_MODULE_4__/* .caret */ .OW.call(inputmask, input), tabbed);
@@ -1015,10 +1015,10 @@ function checkVal(input, writeOut, strict, nptvl, initiatingEvent) {
             result.forwardPosition = result.pos + 1;
           }
         }
-        writeBuffer.call(inputmask, undefined, _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBuffer */ .Zo.call(inputmask), result.forwardPosition, keypress, false);
+        const onbeforeWriteResult = writeBuffer.call(inputmask, undefined, _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBuffer */ .Zo.call(inputmask), result.forwardPosition, keypress, false);
         inputmask.caretPos = {
-          begin: result.forwardPosition,
-          end: result.forwardPosition
+          begin: onbeforeWriteResult?.caret || result.forwardPosition,
+          end: onbeforeWriteResult?.caret || result.forwardPosition
         };
         prevCaretPos = inputmask.caretPos;
       } else {
@@ -1127,19 +1127,20 @@ function unmaskedvalue(input) {
   return unmaskedValue;
 }
 function writeBuffer(input, buffer, caretPos, event, triggerEvents) {
+  let onBeforeWriteResult;
   const inputmask = input ? input.inputmask : this,
     opts = inputmask.opts,
     $ = inputmask.dependencyLib;
   if (event && typeof opts.onBeforeWrite === "function") {
     //    buffer = buffer.slice(); //prevent uncontrolled manipulation of the internal buffer
-    const result = opts.onBeforeWrite.call(inputmask, event, buffer, caretPos, opts);
-    if (result) {
-      if (result.refreshFromBuffer) {
-        const refresh = result.refreshFromBuffer;
-        _validation__WEBPACK_IMPORTED_MODULE_5__/* .refreshFromBuffer */ .m5.call(inputmask, refresh === true ? refresh : refresh.start, refresh.end, result.buffer || buffer);
+    onBeforeWriteResult = opts.onBeforeWrite.call(inputmask, event, buffer, caretPos, opts);
+    if (onBeforeWriteResult) {
+      if (onBeforeWriteResult.refreshFromBuffer) {
+        const refresh = onBeforeWriteResult.refreshFromBuffer;
+        _validation__WEBPACK_IMPORTED_MODULE_5__/* .refreshFromBuffer */ .m5.call(inputmask, refresh === true ? refresh : refresh.start, refresh.end, onBeforeWriteResult.buffer || buffer);
         buffer = _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBuffer */ .Zo.call(inputmask, true);
       }
-      if (caretPos !== undefined) caretPos = result.caret !== undefined ? result.caret : caretPos;
+      if (caretPos !== undefined) caretPos = onBeforeWriteResult.caret !== undefined ? onBeforeWriteResult.caret : caretPos;
     }
   }
   if (input !== undefined) {
@@ -1164,6 +1165,7 @@ function writeBuffer(input, buffer, caretPos, event, triggerEvents) {
       }, 0);
     }
   }
+  return event && event.type === "_checkval" ? onBeforeWriteResult : undefined;
 }
 
 /***/ },
@@ -2862,6 +2864,9 @@ function caret(input, begin, end, notranslate, isDelete) {
       end = inputmask.isRTL ? begin.begin : begin.end;
       begin = inputmask.isRTL ? begin.end : begin.begin;
     }
+    if (isDelete && begin !== end) {
+      if (begin < end) end = begin;else begin = end;
+    }
     if (typeof begin === "number") {
       begin = notranslate ? begin : translatePosition.call(inputmask, begin);
       end = notranslate ? end : translatePosition.call(inputmask, end);
@@ -3006,7 +3011,7 @@ function determineNewCaretPosition(selectedCaret, tabbed, positionCaretOnClick) 
         if (radixPos !== -1) {
           for (const vp in vps) {
             const pos = Number(vp);
-            if (radixPos < pos && vps[vp].input !== _validation_tests__WEBPACK_IMPORTED_MODULE_2__/* .getPlaceholder */ .G_.call(inputmask, pos)) {
+            if (radixPos < pos && vps[vp] !== undefined && vps[vp].input !== _validation_tests__WEBPACK_IMPORTED_MODULE_2__/* .getPlaceholder */ .G_.call(inputmask, pos)) {
               return false;
             }
           }
@@ -4044,6 +4049,13 @@ function alternate(maskPos, c, strict, fromIsValid, rAltPos, selection) {
         input = validInputs[i];
         if (targetTemplate[nextPos + 1] === input && opts.numericInput !== true) {
           nextPos++;
+        } else if (nextPos === -1 && i === 0 && opts.digitsOptional === false) {
+          nextPos = _positioning__WEBPACK_IMPORTED_MODULE_2__/* .determineNewCaretPosition */ .wD.call(inputmask, {
+            begin: nextPos,
+            end: nextPos
+          }, false, opts.positionCaretOnClick).begin;
+
+          // console.log("nextPos " + nextPos);
         } else if (i === 0 || returnRslt.caretPos !== undefined || opts.insertMode === false) {
           nextPos = _positioning__WEBPACK_IMPORTED_MODULE_2__/* .seekNext */ .u4.call(inputmask, nextPos);
         } else {
@@ -4206,10 +4218,10 @@ function handleRemove(input, c, pos, strict, fromIsValid) {
       _positioning__WEBPACK_IMPORTED_MODULE_2__/* .resetMaskSet */ .eo.call(inputmask, false);
     }
     if (strict !== true) {
-      maskset.p = c === _keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Delete ? pos.begin + offset : pos.begin;
+      pos.begin = c === _keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Delete ? pos.begin + offset : pos.begin;
       maskset.p = _positioning__WEBPACK_IMPORTED_MODULE_2__/* .determineNewCaretPosition */ .wD.call(inputmask, {
-        begin: maskset.p,
-        end: maskset.p
+        begin: pos.begin,
+        end: pos.begin
       }, false, opts.insertMode === false && c === _keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Backspace ? "none" : undefined).begin;
     }
   }
@@ -4576,25 +4588,6 @@ function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
     }
     return false;
   }
-  function IsJitCollapsedTail(pos, valids) {
-    // a position directly following a jit group (s + jitOffset[s] === pos)
-    // collapses when the deletion removed the content of the group feeding it:
-    // the group spans [sMin - 1, pos) where sMin is the smallest group position
-    // with a jitOffset (the group's first position itself carries none) #2890
-    let sMin;
-    for (let s = 0; s < pos; s++) {
-      if (maskset.jitOffset[s] !== undefined && s + maskset.jitOffset[s] === pos) {
-        sMin = s;
-        break;
-      }
-    }
-    if (sMin === undefined) return false;
-    const groupStart = Math.max(0, sMin - 1);
-    for (let m = groupStart; m < pos; m++) {
-      if (valids[m] !== undefined) return false;
-    }
-    return true;
-  }
   let offset = 0,
     begin = pos.begin !== undefined ? pos.begin : pos,
     end = pos.end !== undefined ? pos.end : pos,
@@ -4626,34 +4619,20 @@ function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
       posMatch++;
       j++;
     }
-    if (positionsClone[end] == undefined && maskset.jitOffset[end]) {
-      end += maskset.jitOffset[end] + (validTest ? 1 : 0);
-    }
     for (i = validTest ? end : end - 1; i <= lvp; i++) {
       if ((t = positionsClone[i]) !== undefined && (opts.shiftPositions !== true || t.generatedInput !== true) && (i >= end || i >= begin && IsEnclosedStatic(i, positionsClone, {
         begin,
         end
       }))) {
-        if (validTest === undefined && IsJitCollapsedTail(i, positionsClone)) {
-          // the jit group feeding this position was fully removed by the deletion:
-          // drop the tail position instead of re-inserting it #2890
-          if (!maskset.validPositions.some((vp, p) => vp && maskset.jitOffset[p] !== undefined)) {
-            // nothing inside the jit domain survives: the deletion emptied the
-            // mask, so also drop the positions the reprocess window never
-            // reached below the group (e.g. the ")" back symbol of a "( )"
-            // pair) #2890
-            for (let p = 0; p < i; p++) {
-              maskset.validPositions[p] = undefined;
-            }
-          }
-          continue;
-        }
         while (test = _validation_tests__WEBPACK_IMPORTED_MODULE_3__/* .getTest */ .bm.call(inputmask, posMatch), test.match.def !== "") {
           // loop needed to match further positions
           if ((canMatch = positionCanMatchDefinition.call(inputmask, posMatch, t, opts)) !== false || t.match.def === "+") {
             // validated match //we still need some hackery for the + validator (numeric alias)
             if (t.match.def === "+") _positioning__WEBPACK_IMPORTED_MODULE_2__/* .getBuffer */ .Zo.call(inputmask, true);
-            const result = isValid.call(inputmask, posMatch, t.input, t.match.def !== "+", /* t.match.def !== "+" */true);
+            const result = isValid.call(inputmask, posMatch, t.input, true,
+            // t.match.def !== "+",
+            true // t.match.def !== "+"
+            );
             valid = result !== false;
             j = (result.pos || posMatch) + 1;
             if (!valid && canMatch) break;

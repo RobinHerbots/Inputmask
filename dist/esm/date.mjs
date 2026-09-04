@@ -19,6 +19,8 @@ __webpack_require__.d(__webpack_exports__, {
   H: () => (/* binding */ registerDatetime)
 });
 
+// EXTERNAL MODULE: ./lib/dependencyLibs/inputmask.dependencyLib.js + 3 modules
+var inputmask_dependencyLib = __webpack_require__(123);
 // EXTERNAL MODULE: ./lib/escapeRegex.js
 var escapeRegex = __webpack_require__(340);
 // EXTERNAL MODULE: ./lib/inputmask.js + 5 modules
@@ -43,8 +45,6 @@ $.extend(true, inputmask/* default */.Ay.prototype.i18n, {
   monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
   ordinalSuffix: ["st", "nd", "rd", "th"]
 });
-// EXTERNAL MODULE: ./lib/dependencyLibs/inputmask.dependencyLib.js + 3 modules
-var inputmask_dependencyLib = __webpack_require__(123);
 ;// ./lib/extensions/date.js
 /*
  Input Mask plugin extensions

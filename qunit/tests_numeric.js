@@ -2760,8 +2760,15 @@ export default function (qunit, Inputmask) {
       $("#testmask").SendKey(keys.Delete);
       assert.equal(
         testmask.value,
-        "",
+        ".00",
         'after delete 100 -> value "' + testmask.value + '"'
+      );
+      $.caret(testmask, 0, testmask.value.length);
+      $("#testmask").SendKey(keys.Delete);
+      assert.equal(
+        testmask.value,
+        "",
+        'after delete .00 -> value "' + testmask.value + '"'
       );
     }
   );
