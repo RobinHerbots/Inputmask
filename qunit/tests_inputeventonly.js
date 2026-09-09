@@ -135,6 +135,33 @@ export default function (qunit, Inputmask) {
     }, 0);
   });
 
+  qunit.test("numeric 1b - #1617", function (assert) {
+    const done = assert.async(),
+      $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    const testmask = document.getElementById("testmask");
+    Inputmask("numeric", {
+      groupSeparator: ".",
+      radixPoint: ",",
+      placeholder: "0",
+      digits: 2,
+      digitsOptional: false,
+      clearMaskOnLostFocus: false,
+      inputEventOnly: true
+    }).mask(testmask);
+
+    testmask.focus();
+    $("#testmask").trigger("click");
+    setTimeout(function () {
+      $("#testmask").Type("56,03");
+      $("#testmask").SendKey(keys.Backspace);
+      $("#testmask").SendKey(keys.Backspace);
+      $("#testmask").Type("12");
+      assert.equal(testmask.value, "56,12", "Result " + testmask.value);
+      done();
+    }, 0);
+  });
+
   qunit.test("integer autofill 50", function (assert) {
     const $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask"/>');

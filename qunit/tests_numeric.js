@@ -2313,6 +2313,34 @@ export default function (qunit, Inputmask) {
     }, 0);
   });
 
+  qunit.test("numeric 1 - #1617 - inputEventOnly false", function (assert) {
+    const done = assert.async(),
+      $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    const testmask = document.getElementById("testmask");
+    Inputmask("numeric", {
+      groupSeparator: ".",
+      radixPoint: ",",
+      placeholder: "0",
+      digits: 2,
+      digitsOptional: false,
+      clearMaskOnLostFocus: false,
+      inputEventOnly: false
+    }).mask(testmask);
+
+    testmask.focus();
+    $("#testmask").trigger("click");
+    setTimeout(function () {
+      $(testmask).Type("56,03");
+      $("#testmask").SendKey(keys.Backspace);
+      $("#testmask").SendKey(keys.Backspace);
+      $("#testmask").SendKey(keys.Backspace);
+      $("#testmask").SendKey(keys.Backspace);
+      assert.equal(testmask.value, "5,00", "Result " + testmask.value);
+      done();
+    }, 0);
+  });
+
   qunit.test(
     "digitsOptional: true + suffix not working as expected. can't enter decimal digits #2212",
     function (assert) {
@@ -2560,17 +2588,19 @@ export default function (qunit, Inputmask) {
     );
   }
 
-  qunit.test("Highlighting Values with Negative Numbers -30 #2714", function (
-    assert
-  ) {
-    runNegativeSelectionOverwriteCase(assert, "-30");
-  });
+  qunit.test(
+    "Highlighting Values with Negative Numbers -30 #2714",
+    function (assert) {
+      runNegativeSelectionOverwriteCase(assert, "-30");
+    }
+  );
 
-  qunit.test("Highlighting Values with Negative Numbers -300 #2714", function (
-    assert
-  ) {
-    runNegativeSelectionOverwriteCase(assert, "-300");
-  });
+  qunit.test(
+    "Highlighting Values with Negative Numbers -300 #2714",
+    function (assert) {
+      runNegativeSelectionOverwriteCase(assert, "-300");
+    }
+  );
 
   qunit.test(
     "Highlighting Values with Negative Numbers -3000 #2714",
