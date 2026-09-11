@@ -139,11 +139,8 @@ Use BrowserStack ONLY when reproducing or verifying browser-specific or OS-speci
 
 ## Known Pre-existing Failures
 
-The following numeric tests are known to fail deterministically in certain test bundle configurations (e.g., numeric-only bundles or specific run orders) but pass in the full suite. They are NOT regressions:
+The following numeric test is known to fail in the current HEAD (a WIP refactor regression — it passes at `9dfeac29f`, "fix clearing value leaves sticky minus or lone radix on currency/numeric #2890"). It is NOT something to chase while working on unrelated numeric issues unless asked:
 
-- **Currency digits and delete #1351** — Delete key handling with `Inputmask({...})` object form
-- **negationSymbol parentheses + clearIncomplete** — Radix vs groupSeparator after `.val()` + blur
-- **currency type 1234.56 + backspace x4** — Backspace not affecting masked value in async setTimeout
-- **Highlighting Values with Negative Numbers #2714** — Type-replace over negative number selection
+- **negationSymbol parentheses + clearIncomplete** — `numeric + (negationSymbol = parentheses) + (clearIncomplete = true) + type -123. then blur`: expected `"(123.000)"`, actual `"(123,000)"` (radix renders as group separator after `.val()` + blur).
 
-These are pre-existing issues in the test suite and unrelated to other changes.
+> Note: `Currency digits and delete #1351`, `highlighting values with negative numbers #2714`, and `currency type 1234.56 + backspace x4` were previously on this list but are now FIXED on HEAD via the `revalidateMask` replay fix in `lib/validation.js` and a fractional-delete realignment branch in the numeric `onBeforeWrite` keydown handler (`lib/extensions/numeric.js`, the `caret.end > radixNdx` `else` branch): it guards on `e.key === Delete && numericInput && _radixDance && buffer[caret.begin-1]` is a digit, then splices the reversed buffer, `alignDigits` re-pads to `opts.digits`, and returns `refreshFromBuffer` + corrected internal-order buffer so `writeBuffer` fully re-validates validPositions (orphaned radix gets rebuilt).

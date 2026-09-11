@@ -36,6 +36,14 @@ JavaScript input-mask library. Source in `lib/` (plain JS, ES modules). TypeScri
 - Tests import from `../bundle` (the vanilla bundle entry), not from `dist/`
 - To run a focused test: edit `qunit/index.js` to import only the test module you need, then run `npm test`
 
+## Numeric input gotchas
+
+- `numericInput` is auto-set to `true` in the numeric alias when the user doesn't provide it (`genMask` in `lib/extensions/numeric.js`). It flips `isRTL` to `true` (`inputmask.js`: `get isRTL() { return this.opts.isRTL || this.opts.numericInput; }`).
+- When `isRTL`/`numericInput` is active, buffers and caret positions are **reversed** relative to what the user sees: the mask is reversed in the mask-lexer, `getBuffer()` returns mask-order (reversed from display), `handleRemove` swaps Backspace↔Delete and swaps `pos.begin`/`pos.end`, and `refreshFromBuffer` reverses via `bffr = inputmask.isRTL ? buffer.slice().reverse() : buffer`.
+- Always read buffers with the display orientation in mind (e.g. internal `00,65` displays as `56,00`).
+- `inputEventOnly: true` does not bind keydown; the input event fires `inputFallBackEvent`, which maps `deleteContentBackward` to a synthetic Backspace `keyEvent`.
+- In the numeric `onBeforeWrite` keydown branch, a normal backspace triggers `refreshFromBuffer` via the `checkAlignment` path (digit realignment), not via the `buffer: []` negation-symbol branch — the negation branch can stay cold.
+
 ## Code style
 
 - Prettier: double quotes, no trailing commas, 2-space indent

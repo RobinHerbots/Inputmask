@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.18
+ * Version: 5.1.0-beta.25
  */
 /******/ var __webpack_modules__ = ({
 
@@ -588,22 +588,23 @@ const EventHandlers = {
     // fallback when keypress is not triggered
     const inputmask = this.inputmask,
       opts = inputmask.opts,
-      $ = inputmask.dependencyLib;
+      $ = inputmask.dependencyLib,
+      charPlaceholder = "\x1F";
 
     // console.log(e.inputType);
 
     function analyseChanges(inputValue, buffer, caretPos) {
-      let frontPart = inputValue.substr(0, caretPos.begin).split(""),
+      const frontPart = inputValue.substr(0, caretPos.begin).split(""),
         backPart = inputValue.substr(caretPos.begin).split(""),
         frontBufferPart = buffer.substr(0, caretPos.begin).split(""),
         backBufferPart = buffer.substr(caretPos.begin).split(""),
         fpl = frontPart.length >= frontBufferPart.length ? frontPart.length : frontBufferPart.length,
         bpl = backPart.length >= backBufferPart.length ? backPart.length : backBufferPart.length,
-        bl,
+        data = [],
+        marker = "\x1E";
+      let bl,
         i,
         action = "",
-        data = [],
-        marker = "~",
         placeholder;
 
       // align buffers
@@ -683,9 +684,15 @@ const EventHandlers = {
       inputValue = input.inputmask._valueGet(true),
       buffer = (inputmask.isRTL ? _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBuffer */ .Zo.call(inputmask).slice().reverse() : _positioning__WEBPACK_IMPORTED_MODULE_4__/* .getBuffer */ .Zo.call(inputmask)).join(""),
       caretPos = _positioning__WEBPACK_IMPORTED_MODULE_4__/* .caret */ .OW.call(inputmask, input, undefined, undefined, true),
-      changes;
+      changes,
+      keydown;
     if (buffer !== inputValue) {
-      changes = analyseChanges(inputValue, buffer, caretPos);
+      const charBeforeCaret = inputValue.charAt(caretPos.begin - 1),
+        nptValue = inputValue.split("");
+      if (charBeforeCaret !== "" && nptValue.length > buffer.length) {
+        nptValue[caretPos.begin - 1] = charPlaceholder;
+      }
+      changes = analyseChanges(nptValue.join(""), buffer, caretPos);
       if (input.getRootNode().activeElement !== input) {
         input.focus();
       }
@@ -706,7 +713,7 @@ const EventHandlers = {
         case "insertReplacementText":
           changes.data.forEach(function (entry, ndx) {
             const keypress = new $.Event("keypress");
-            keypress.key = entry;
+            keypress.key = entry === charPlaceholder ? charBeforeCaret : entry;
             inputmask.ignorable = false; // make sure ignorable is ignored ;-)
             EventHandlers.keypressEvent.call(input, keypress);
           });
@@ -716,7 +723,7 @@ const EventHandlers = {
           }, 0);
           break;
         case "deleteContentBackward":
-          var keydown = new $.Event("keydown");
+          keydown = new $.Event("keydown");
           keydown.key = _keycode_js__WEBPACK_IMPORTED_MODULE_3__/* .keys */ .HP.Backspace;
           EventHandlers.keyEvent.call(input, keydown);
           break;
@@ -2864,7 +2871,7 @@ function caret(input, begin, end, notranslate, isDelete) {
       end = inputmask.isRTL ? begin.begin : begin.end;
       begin = inputmask.isRTL ? begin.end : begin.begin;
     }
-    if (isDelete && begin !== end) {
+    if (isDelete && begin !== end && end !== undefined) {
       if (begin < end) end = begin;else begin = end;
     }
     if (typeof begin === "number") {
@@ -4619,7 +4626,23 @@ function revalidateMask(pos, validTest, fromIsValid, validatedPos) {
       posMatch++;
       j++;
     }
-    for (i = validTest ? end : end - 1; i <= lvp; i++) {
+    let replayStart = validTest ? end : end - 1;
+    if (validTest && begin !== end) {
+      const jitAnchor = Object.keys(maskset.jitOffset || {}).map(key => parseInt(key, 10)).filter(key => !isNaN(key)).sort((a, b) => a - b)[0];
+      if (jitAnchor !== undefined && maskset.jitOffset[jitAnchor] !== undefined) {
+        const newReplayStart = end + maskset.jitOffset[jitAnchor];
+        for (let i = end; i < newReplayStart; i++) {
+          const vp = positionsClone[i];
+          if (vp !== undefined) {
+            if ((vp.match.def === "+" || vp.match.def === "-") && vp.input !== undefined) {
+              replayStart = i + 1;
+            }
+            break;
+          }
+        }
+      }
+    }
+    for (i = replayStart; i <= lvp; i++) {
       if ((t = positionsClone[i]) !== undefined && (opts.shiftPositions !== true || t.generatedInput !== true) && (i >= end || i >= begin && IsEnclosedStatic(i, positionsClone, {
         begin,
         end

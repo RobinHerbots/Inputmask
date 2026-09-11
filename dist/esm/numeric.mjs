@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.18
+ * Version: 5.1.0-beta.25
  */
 export const __webpack_esm_id__ = 69;
 export const __webpack_esm_ids__ = [69];
@@ -222,7 +222,8 @@ function decimalValidator(chrs, maskset, pos, strict, opts) {
     return {
       insert: {
         pos: radixPos === pos ? radixPos + 1 : radixPos,
-        c: opts.radixPoint
+        c: opts.radixPoint,
+        fromIsValid: true
       },
       pos
     };
@@ -607,7 +608,7 @@ const numericAlias = {
               if (buffer[e.key === _keycode__WEBPACK_IMPORTED_MODULE_4__/* .keys */ .HP.Delete ? caretPos.begin - 1 : caretPos.end] === opts.negationSymbol.front || buffer.length - _buffer.length === opts.negationSymbol.front.length + opts.negationSymbol.back.length && buffer.join("").indexOf(_buffer.join("")) >= 0) {
                 result = {
                   refreshFromBuffer: true,
-                  buffer: _buffer.splice(),
+                  buffer: [],
                   caret: caretPos.begin
                 };
               }
@@ -620,7 +621,7 @@ const numericAlias = {
                 let reAlign = false,
                   radixNdx = buffer.indexOf(opts.radixPoint);
                 if (caret.end <= radixNdx) {
-                  for (let i = caret.begin; i <= end; i++) {
+                  for (let i = caret.begin; i < end; i++) {
                     radixNdx = buffer.indexOf(opts.radixPoint) - 1;
                     if (buffer[radixNdx] === "0") {
                       buffer.splice(radixNdx, 1);
@@ -631,6 +632,13 @@ const numericAlias = {
                 } else {
                   result = result || {};
                   result.caret = radixNdx + 1;
+                  if (e.key === _keycode__WEBPACK_IMPORTED_MODULE_4__/* .keys */ .HP.Delete && opts.numericInput && opts._radixDance === true && buffer[caret.begin - 1] !== undefined && /\d/.test(buffer[caret.begin - 1])) {
+                    let bffr = buffer.slice().reverse();
+                    bffr.splice(bffr.length - caret.begin, 1);
+                    bffr = alignDigits(bffr, opts.digits, opts);
+                    result.refreshFromBuffer = true;
+                    result.buffer = bffr.reverse();
+                  }
                 }
               }
             }

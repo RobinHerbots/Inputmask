@@ -13,6 +13,7 @@
 
 - Prototype pollution in extendDefaults() via unsafe deep merge #2885
 - clearing value leaves sticky `-` or lone `.` on currency/numeric #2890
+- correct deletion of the digit immediately before the radix point on currency/numeric
 
 ## [5.0.10 - 31/07/2026]
 
