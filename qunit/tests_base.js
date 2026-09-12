@@ -648,4 +648,27 @@ export default function (qunit, Inputmask) {
       }, 0);
     }
   );
+
+  qunit.test(
+    "keydown event with no key (e.g. browser autofill) should not throw",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("999.999.999").mask(testmask);
+
+      testmask.focus();
+
+      let threw = false;
+      try {
+        // a bare autofill/password-manager keydown has no `key` (or any
+        // other KeyboardEvent property) set on it
+        testmask.dispatchEvent(new Event("keydown"));
+      } catch (e) {
+        threw = true;
+      }
+
+      assert.notOk(threw, "keydown without a key should not throw");
+    }
+  );
 }
