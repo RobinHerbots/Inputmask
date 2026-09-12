@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.27
+ * Version: 5.1.0-beta.28
  */
 export const __webpack_esm_id__ = 69;
 export const __webpack_esm_ids__ = [69];
@@ -359,6 +359,13 @@ const numericAlias = {
       if (opts.__financeInput === false) {
         if (isSelection) {
           if (opts.digitsOptional) {
+            // Full selection overwrite (covers entire value including suffix) lands on suffix position
+            // in RTL. Target base mask units position instead.
+            if (caretPos.end <= opts.suffix.length) {
+              return {
+                rewritePosition: opts.suffix.length
+              };
+            }
             return {
               rewritePosition: caretPos.end
             };

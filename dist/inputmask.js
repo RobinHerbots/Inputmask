@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.27
+ * Version: 5.1.0-beta.28
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -3418,6 +3418,18 @@ function registerDefinitions() {
 }
 ;// ./lib/defaults.js
 /**
+ * fromAlternate tells whether the current validation runs as part of an alternation
+ * (mask branch switch).
+ * - `undefined` (or `false`): not alternating
+ * - `true`: validating after an alternation decision was already made at the top level
+ * - a number: an alternation re-insert is in progress; the value is the number of inputs
+ *   still to be written, including the current one (`validInputs.length - i`, where `i` is
+ *   the index of the input being re-inserted). A count of `1` marks the final write, so
+ *   final constraints (e.g. numeric min/max) must be enforced on it.
+ * @typedef {boolean | number | undefined} FromAlternate
+ */
+
+/**
  * Public options surface for Inputmask instances.
  *
  * @typedef {Object} InputmaskOptions
@@ -3464,7 +3476,7 @@ function registerDefinitions() {
  * @property {string[]} [supportsInputType]
  * @property {((buffer: string[], opts: InputmaskOptions) => boolean) | null} [isComplete]
  * @property {((buffer: string[], pos: number, char: string, isSelection: boolean, opts: InputmaskOptions, maskset: any, caretPos: number, strict: boolean) => boolean | Object) | null} [preValidation]
- * @property {((buffer: string[], pos: number, char: string, currentResult: boolean | Object, opts: InputmaskOptions, maskset: any, strict: boolean, fromCheckval: boolean, fromAlternate: boolean | number) => boolean | Object) | null} [postValidation]
+ * @property {((buffer: string[], pos: number, char: string, currentResult: boolean | Object, opts: InputmaskOptions, maskset: any, strict: boolean, fromCheckval: boolean, fromAlternate: FromAlternate) => boolean | Object) | null} [postValidation]
  * @property {string | undefined} [staticDefinitionSymbol]
  * @property {boolean | number} [jitMasking]
  * @property {boolean} [nullable]
@@ -8978,6 +8990,13 @@ const numericAlias = {
       if (opts.__financeInput === false) {
         if (isSelection) {
           if (opts.digitsOptional) {
+            // Full selection overwrite (covers entire value including suffix) lands on suffix position
+            // in RTL. Target base mask units position instead.
+            if (caretPos.end <= opts.suffix.length) {
+              return {
+                rewritePosition: opts.suffix.length
+              };
+            }
             return {
               rewritePosition: caretPos.end
             };
