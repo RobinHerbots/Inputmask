@@ -14,12 +14,6 @@
 - Prototype pollution in extendDefaults() via unsafe deep merge #2885
 - clearing value leaves sticky `-` or lone `.` on currency/numeric #2890
 - correct deletion of the digit immediately before the radix point on currency/numeric
-- `matchMedia`/`navigator` bare globals causing crashes in Node/SSR environments (#2894)
-
-### Tests
-
-- Add Node/SSR smoke test to validate pipeline
-- Add regression test for percentage select-all overwrite issue (#2893)
 
 ## [5.0.10 - 31/07/2026]
 

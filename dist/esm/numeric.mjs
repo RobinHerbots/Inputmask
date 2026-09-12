@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.25
+ * Version: 5.1.0-beta.27
  */
 export const __webpack_esm_id__ = 69;
 export const __webpack_esm_ids__ = [69];
@@ -304,7 +304,7 @@ const numericAlias = {
       },
       "-": {
         validator: function (chrs, maskset, pos, strict, opts) {
-          return opts.allowMinus && (chrs === "-" || chrs === opts.negationSymbol.back) && maskset.validPositions.length > 0;
+          return opts.allowMinus && (chrs === "-" || chrs === opts.negationSymbol.back);
         }
       }
     },

@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.25
+ * Version: 5.1.0-beta.27
  */
 /******/ var __webpack_modules__ = ({
 
@@ -354,9 +354,17 @@ DependencyLib.Event = Evnt;
 
 /* harmony import */ var _global_window__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(266);
 
-const ua = _global_window__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.navigator && _global_window__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.navigator.userAgent || "",
+const nav = _global_window__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.navigator || {},
+  ua = nav.userAgent || "",
   ie = ua.indexOf("MSIE ") > 0 || ua.indexOf("Trident/") > 0,
-  mobile = !!(navigator.userAgentData?.mobile ?? ((matchMedia("(pointer:coarse)").matches || navigator.maxTouchPoints) && innerWidth <= 1024 || /Mobi|Android|iPhone/i.test(ua))),
+  mobile = (() => {
+    try {
+      const coarsePointer = typeof _global_window__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.matchMedia === "function" ? _global_window__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.matchMedia("(pointer:coarse)").matches : false;
+      return !!(nav.userAgentData?.mobile ?? ((coarsePointer || nav.maxTouchPoints) && (_global_window__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A.innerWidth || 0) <= 1024 || /Mobi|Android|iPhone/i.test(ua)));
+    } catch (e) {
+      return /Mobi|Android|iPhone/i.test(ua);
+    }
+  })(),
   iphone = /iphone/i.test(ua);
 
 /* harmony export */ __webpack_require__.d(__webpack_exports__, [

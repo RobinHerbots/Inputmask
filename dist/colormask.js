@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.25
+ * Version: 5.1.0-beta.27
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -3596,9 +3596,17 @@ const defaults = {
 var es_array_includes = __webpack_require__(4423);
 ;// ./lib/environment.js
 
-const ua = global_window.navigator && global_window.navigator.userAgent || "",
+const nav = global_window.navigator || {},
+  ua = nav.userAgent || "",
   ie = ua.indexOf("MSIE ") > 0 || ua.indexOf("Trident/") > 0,
-  mobile = !!(navigator.userAgentData?.mobile ?? ((matchMedia("(pointer:coarse)").matches || navigator.maxTouchPoints) && innerWidth <= 1024 || /Mobi|Android|iPhone/i.test(ua))),
+  mobile = (() => {
+    try {
+      const coarsePointer = typeof global_window.matchMedia === "function" ? global_window.matchMedia("(pointer:coarse)").matches : false;
+      return !!(nav.userAgentData?.mobile ?? ((coarsePointer || nav.maxTouchPoints) && (global_window.innerWidth || 0) <= 1024 || /Mobi|Android|iPhone/i.test(ua)));
+    } catch (e) {
+      return /Mobi|Android|iPhone/i.test(ua);
+    }
+  })(),
   iphone = /iphone/i.test(ua);
 
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es.iterator.reduce.js
@@ -8912,7 +8920,7 @@ const numericAlias = {
       },
       "-": {
         validator: function (chrs, maskset, pos, strict, opts) {
-          return opts.allowMinus && (chrs === "-" || chrs === opts.negationSymbol.back) && maskset.validPositions.length > 0;
+          return opts.allowMinus && (chrs === "-" || chrs === opts.negationSymbol.back);
         }
       }
     },
