@@ -1,5 +1,16 @@
 export default defaults;
 /**
+ * fromAlternate tells whether the current validation runs as part of an alternation
+ * (mask branch switch).
+ * - `undefined` (or `false`): not alternating
+ * - `true`: validating after an alternation decision was already made at the top level
+ * - a number: an alternation re-insert is in progress; the value is the number of inputs
+ *   still to be written, including the current one (`validInputs.length - i`, where `i` is
+ *   the index of the input being re-inserted). A count of `1` marks the final write, so
+ *   final constraints (e.g. numeric min/max) must be enforced on it.
+ */
+export type FromAlternate = boolean | number | undefined;
+/**
  * Public options surface for Inputmask instances.
  */
 export type InputmaskOptions = {
@@ -46,7 +57,7 @@ export type InputmaskOptions = {
     supportsInputType?: string[];
     isComplete?: ((buffer: string[], opts: InputmaskOptions) => boolean) | null;
     preValidation?: ((buffer: string[], pos: number, char: string, isSelection: boolean, opts: InputmaskOptions, maskset: any, caretPos: number, strict: boolean) => boolean | any) | null;
-    postValidation?: ((buffer: string[], pos: number, char: string, currentResult: boolean | any, opts: InputmaskOptions, maskset: any, strict: boolean, fromCheckval: boolean, fromAlternate: boolean) => boolean | any) | null;
+    postValidation?: ((buffer: string[], pos: number, char: string, currentResult: boolean | any, opts: InputmaskOptions, maskset: any, strict: boolean, fromCheckval: boolean, fromAlternate: FromAlternate) => boolean | any) | null;
     staticDefinitionSymbol?: string | undefined;
     jitMasking?: boolean | number;
     nullable?: boolean;
@@ -61,6 +72,17 @@ export type InputmaskOptions = {
     validationEventTimeOut?: number;
     substitutes?: Record<string, string>;
 };
+/**
+ * fromAlternate tells whether the current validation runs as part of an alternation
+ * (mask branch switch).
+ * - `undefined` (or `false`): not alternating
+ * - `true`: validating after an alternation decision was already made at the top level
+ * - a number: an alternation re-insert is in progress; the value is the number of inputs
+ *   still to be written, including the current one (`validInputs.length - i`, where `i` is
+ *   the index of the input being re-inserted). A count of `1` marks the final write, so
+ *   final constraints (e.g. numeric min/max) must be enforced on it.
+ * @typedef {boolean | number | undefined} FromAlternate
+ */
 /**
  * Public options surface for Inputmask instances.
  *
@@ -108,7 +130,7 @@ export type InputmaskOptions = {
  * @property {string[]} [supportsInputType]
  * @property {((buffer: string[], opts: InputmaskOptions) => boolean) | null} [isComplete]
  * @property {((buffer: string[], pos: number, char: string, isSelection: boolean, opts: InputmaskOptions, maskset: any, caretPos: number, strict: boolean) => boolean | Object) | null} [preValidation]
- * @property {((buffer: string[], pos: number, char: string, currentResult: boolean | Object, opts: InputmaskOptions, maskset: any, strict: boolean, fromCheckval: boolean, fromAlternate: boolean) => boolean | Object) | null} [postValidation]
+ * @property {((buffer: string[], pos: number, char: string, currentResult: boolean | Object, opts: InputmaskOptions, maskset: any, strict: boolean, fromCheckval: boolean, fromAlternate: FromAlternate) => boolean | Object) | null} [postValidation]
  * @property {string | undefined} [staticDefinitionSymbol]
  * @property {boolean | number} [jitMasking]
  * @property {boolean} [nullable]

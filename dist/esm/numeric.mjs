@@ -415,7 +415,7 @@ const numericAlias = {
         const unmasked = opts.onUnMask(buffer.slice().reverse().join(""), undefined, _dependencyLibs_inputmask_dependencyLib__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A.extend({}, opts, {
           unmaskAsNumber: true
         }));
-        if (opts.min !== null && unmasked < opts.min && fromAlternate !== true && (unmasked.toString().length > opts.min.toString().length ||
+        if (opts.min !== null && unmasked < opts.min && fromAlternate !== true && typeof fromAlternate !== "number" && (unmasked.toString().length > opts.min.toString().length ||
         // > instead of >= because we want to allow to type a bigger number
         buffer[0] === opts.radixPoint ||
         // disallow radixpoint when value is smaller than min
@@ -426,7 +426,7 @@ const numericAlias = {
           // 	buffer: alignDigits(opts.min.toString().replace(".", opts.radixPoint).split(""), opts.digits, opts).reverse()
           // };
         }
-        if (opts.max !== null && opts.max >= 0 && unmasked > opts.max) {
+        if (opts.max !== null && opts.max >= 0 && unmasked > opts.max && !(typeof fromAlternate === "number" && fromAlternate > 1)) {
           return opts.SetMaxOnOverflow ? {
             refreshFromBuffer: true,
             buffer: alignDigits(opts.max.toString().replace(".", opts.radixPoint).split(""), opts.digits, opts).reverse()

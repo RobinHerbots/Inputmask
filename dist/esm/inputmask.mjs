@@ -1244,7 +1244,7 @@ __webpack_require__.d(__webpack_exports__, {
  * @property {string[]} [supportsInputType]
  * @property {((buffer: string[], opts: InputmaskOptions) => boolean) | null} [isComplete]
  * @property {((buffer: string[], pos: number, char: string, isSelection: boolean, opts: InputmaskOptions, maskset: any, caretPos: number, strict: boolean) => boolean | Object) | null} [preValidation]
- * @property {((buffer: string[], pos: number, char: string, currentResult: boolean | Object, opts: InputmaskOptions, maskset: any, strict: boolean, fromCheckval: boolean, fromAlternate: boolean) => boolean | Object) | null} [postValidation]
+ * @property {((buffer: string[], pos: number, char: string, currentResult: boolean | Object, opts: InputmaskOptions, maskset: any, strict: boolean, fromCheckval: boolean, fromAlternate: boolean | number) => boolean | Object) | null} [postValidation]
  * @property {string | undefined} [staticDefinitionSymbol]
  * @property {boolean | number} [jitMasking]
  * @property {boolean} [nullable]
@@ -1344,7 +1344,7 @@ const defaults = {
   preValidation: null,
   // hook to preValidate the input.  Usefull for validating regardless the definition.	args => buffer, pos, char, isSelection, opts, maskset, caretPos, strict => return true/false/command object
   postValidation: null,
-  // hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, pos, c, currentResult, opts, maskset, strict, fromCheckval, fromAlternate => return true/false/json
+  // hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, pos, c, currentResult, opts, maskset, strict, fromCheckval, fromAlternate (number of inputs still to write during an alternation, otherwise undefined) => return true/false/json
   staticDefinitionSymbol: undefined,
   // specify a definitionSymbol for static content, used to make matches for alternators
   jitMasking: false,
@@ -3060,7 +3060,7 @@ function determineNewCaretPosition(selectedCaret, tabbed, positionCaretOnClick) 
       case "radixFocus":
         if (inputmask.clicked > 1 && maskset.validPositions.length === 0) break;
         if (doRadixFocus(selectedCaret.begin)) {
-          const radixPos = getBuffer.call(inputmask).join("").indexOf(opts.radixPoint);
+          const radixPos = getBuffer.call(inputmask).indexOf(opts.radixPoint);
           selectedCaret.end = selectedCaret.begin = opts.numericInput ? seekNext.call(inputmask, radixPos) : radixPos;
           break;
         }
@@ -4078,7 +4078,7 @@ function alternate(maskPos, c, strict, fromIsValid, rAltPos, selection) {
         }
 
         // nextPos = translatePosition.call(inputmask, nextPos);
-        if (!(isValidRslt = isValid.call(inputmask, nextPos, input, false, fromIsValid, true))) {
+        if (!(isValidRslt = isValid.call(inputmask, nextPos, input, false, fromIsValid, validInputs.length - i))) {
           // if (isComplete.call(inputmask, getBuffer.call(inputmask))) {
           // isValidRslt = returnRslt; // keep previous result if any
           // }
@@ -4206,6 +4206,9 @@ function handleRemove(input, c, pos, strict, fromIsValid) {
       pos.end = pos.begin;
       pos.begin = pend;
     }
+  }
+  if (opts.numericInput && c === _keycode_js__WEBPACK_IMPORTED_MODULE_1__/* .keys */ .HP.Backspace && pos.begin === 0 && pos.end === 0 && _positioning__WEBPACK_IMPORTED_MODULE_2__/* .isMask */ .$b.call(inputmask, 0, true, true)) {
+    pos.end = 1;
   }
   const lvp = _positioning__WEBPACK_IMPORTED_MODULE_2__/* .getLastValidPosition */ .SE.call(inputmask, undefined, true);
   if (pos.end >= _positioning__WEBPACK_IMPORTED_MODULE_2__/* .getBuffer */ .Zo.call(inputmask).length && lvp >= pos.end) {
@@ -4379,7 +4382,7 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
   let result = true,
     positionsClone = $.extend(true, [], maskset.validPositions); // clone the currentPositions
 
-  if (opts.keepStatic === false && maskset.excludes[maskPos] !== undefined && fromAlternate !== true && fromIsValid !== true) {
+  if (opts.keepStatic === false && maskset.excludes[maskPos] !== undefined && fromAlternate !== true && typeof fromAlternate !== "number" && fromIsValid !== true) {
     for (let i = maskPos; i < (inputmask.isRTL ? pos.begin : pos.end); i++) {
       if (maskset.excludes[i] !== undefined) {
         maskset.excludes[i] = undefined;
@@ -4388,7 +4391,7 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
     }
   }
   if (typeof opts.preValidation === "function" && fromIsValid !== true && validateOnly !== true) {
-    result = opts.preValidation.call(inputmask, _positioning__WEBPACK_IMPORTED_MODULE_2__/* .getBuffer */ .Zo.call(inputmask), maskPos, c, isSelection.call(inputmask, pos), opts, maskset, pos, strict || fromAlternate);
+    result = opts.preValidation.call(inputmask, _positioning__WEBPACK_IMPORTED_MODULE_2__/* .getBuffer */ .Zo.call(inputmask), maskPos, c, isSelection.call(inputmask, pos), opts, maskset, pos, strict || typeof fromAlternate === "number");
     result = processCommandObject(result);
   }
   if (result === true) {
@@ -4407,7 +4410,7 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
           if (maskset.jitOffset[maskPos] && maskset.validPositions[_positioning__WEBPACK_IMPORTED_MODULE_2__/* .seekNext */ .u4.call(inputmask, maskPos)] === undefined) {
             result = isValid.call(inputmask, maskPos + maskset.jitOffset[maskPos], c, true, true);
             if (result !== false) {
-              if (fromAlternate !== true) result.caret = maskPos;
+              if (fromAlternate !== true && typeof fromAlternate !== "number") result.caret = maskPos;
               skip = true;
             }
           }
@@ -4430,7 +4433,7 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
         }
       }
     }
-    if (inputmask.hasAlternator && fromAlternate !== true && !strict) {
+    if (inputmask.hasAlternator && fromAlternate !== true && typeof fromAlternate !== "number" && !strict) {
       fromAlternate = true; // stop possible loop
       if (result === false) {
         // try alternating when the validation fails

@@ -14,6 +14,9 @@
 - Prototype pollution in extendDefaults() via unsafe deep merge #2885
 - clearing value leaves sticky `-` or lone `.` on currency/numeric #2890
 - correct deletion of the digit immediately before the radix point on currency/numeric
+- radix point is kept when typing a negative value with min/max #2846
+- deleted digits right of the radix point can be typed again on numeric #2801
+- caret focus lands on the radix point when setting a grouped initial value #2850
 
 ## [5.0.10 - 31/07/2026]
 

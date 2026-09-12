@@ -2633,6 +2633,114 @@ export default function (qunit, Inputmask) {
     }
   );
 
+  qunit.test(
+    "Numeric field value resets to min value if min > 0 and value is blank - #2863",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask"/>');
+      const testmask = document.getElementById("testmask");
+      Inputmask("numeric", {
+        min: 10,
+        max: 100,
+        digits: 2,
+        shortcuts: null
+      }).mask(testmask);
+      // blank value on focus should NOT reset to min
+      $(testmask).Type("");
+      $(testmask).trigger("blur");
+      assert.equal(
+        testmask.value,
+        "",
+        "Blank value should stay blank, not reset to min"
+      );
+      // whitespace value should also NOT reset to min
+      $(testmask).Type("   ");
+      $(testmask).trigger("blur");
+      assert.equal(
+        testmask.value,
+        "",
+        "Whitespace value should stay blank, not reset to min"
+      );
+    }
+  );
+
+  qunit.test(
+    "Initial value with group separator and radix point - #2850",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask"/>');
+      const testmask = document.getElementById("testmask");
+      Inputmask("decimal", {
+        alias: "numeric",
+        groupSeparator: ",",
+        autoGroup: true,
+        digits: 2,
+        radixPoint: ".",
+        digitsOptional: false,
+        allowMinus: false,
+        prefix: "",
+        placeholder: ""
+      }).mask(testmask);
+      testmask.inputmask.setValue("10000.23");
+      assert.equal(
+        testmask.value,
+        "10,000.23",
+        'Result "' + testmask.value + '"'
+      );
+    }
+  );
+
+  qunit.test(
+    "decimal min/max - type negative value with radix - #2846",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("numeric", {
+        digits: 3,
+        min: -100,
+        max: 30,
+        shortcuts: null
+      }).mask(testmask);
+      testmask.focus();
+      $("#testmask").Type("-32.123");
+      setTimeout(function () {
+        assert.equal(
+          $(testmask).val(),
+          "-32.123",
+          'Result "' + $(testmask).val() + '"'
+        );
+        done();
+      }, 100);
+    }
+  );
+
+  qunit.test(
+    "Unable to replace deleted characters right of decimal with placeholder - #2801",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask"/>');
+      const testmask = document.getElementById("testmask");
+      Inputmask("numeric", {
+        digits: 2,
+        groupSeparator: "",
+        radixPoint: ".",
+        shortcuts: null,
+        placeholder: "0"
+      }).mask(testmask);
+      $(testmask).Type("12.34");
+      // Position caret after radix point
+      $.caret(testmask, 4, 4);
+      // Delete "34"
+      $("#testmask").SendKey(keys.Delete);
+      $("#testmask").SendKey(keys.Delete);
+      // Should be able to type new digits
+      $(testmask).Type("56");
+      assert.equal(testmask.value, "12.56", 'Result "' + testmask.value + '"');
+    }
+  );
+
   qunit.test("Currency set null value - #2789", function (assert) {
     const $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask"/>');

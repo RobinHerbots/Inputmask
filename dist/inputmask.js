@@ -3464,7 +3464,7 @@ function registerDefinitions() {
  * @property {string[]} [supportsInputType]
  * @property {((buffer: string[], opts: InputmaskOptions) => boolean) | null} [isComplete]
  * @property {((buffer: string[], pos: number, char: string, isSelection: boolean, opts: InputmaskOptions, maskset: any, caretPos: number, strict: boolean) => boolean | Object) | null} [preValidation]
- * @property {((buffer: string[], pos: number, char: string, currentResult: boolean | Object, opts: InputmaskOptions, maskset: any, strict: boolean, fromCheckval: boolean, fromAlternate: boolean) => boolean | Object) | null} [postValidation]
+ * @property {((buffer: string[], pos: number, char: string, currentResult: boolean | Object, opts: InputmaskOptions, maskset: any, strict: boolean, fromCheckval: boolean, fromAlternate: boolean | number) => boolean | Object) | null} [postValidation]
  * @property {string | undefined} [staticDefinitionSymbol]
  * @property {boolean | number} [jitMasking]
  * @property {boolean} [nullable]
@@ -3564,7 +3564,7 @@ const defaults = {
   preValidation: null,
   // hook to preValidate the input.  Usefull for validating regardless the definition.	args => buffer, pos, char, isSelection, opts, maskset, caretPos, strict => return true/false/command object
   postValidation: null,
-  // hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, pos, c, currentResult, opts, maskset, strict, fromCheckval, fromAlternate => return true/false/json
+  // hook to postValidate the result from isValid.	Usefull for validating the entry as a whole.	args => buffer, pos, c, currentResult, opts, maskset, strict, fromCheckval, fromAlternate (number of inputs still to write during an alternation, otherwise undefined) => return true/false/json
   staticDefinitionSymbol: undefined,
   // specify a definitionSymbol for static content, used to make matches for alternators
   jitMasking: false,
@@ -4537,7 +4537,7 @@ function alternate(maskPos, c, strict, fromIsValid, rAltPos, selection) {
         }
 
         // nextPos = translatePosition.call(inputmask, nextPos);
-        if (!(isValidRslt = isValid.call(inputmask, nextPos, input, false, fromIsValid, true))) {
+        if (!(isValidRslt = isValid.call(inputmask, nextPos, input, false, fromIsValid, validInputs.length - i))) {
           // if (isComplete.call(inputmask, getBuffer.call(inputmask))) {
           // isValidRslt = returnRslt; // keep previous result if any
           // }
@@ -4665,6 +4665,9 @@ function handleRemove(input, c, pos, strict, fromIsValid) {
       pos.end = pos.begin;
       pos.begin = pend;
     }
+  }
+  if (opts.numericInput && c === keys.Backspace && pos.begin === 0 && pos.end === 0 && isMask.call(inputmask, 0, true, true)) {
+    pos.end = 1;
   }
   const lvp = getLastValidPosition.call(inputmask, undefined, true);
   if (pos.end >= getBuffer.call(inputmask).length && lvp >= pos.end) {
@@ -4838,7 +4841,7 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
   let result = true,
     positionsClone = $.extend(true, [], maskset.validPositions); // clone the currentPositions
 
-  if (opts.keepStatic === false && maskset.excludes[maskPos] !== undefined && fromAlternate !== true && fromIsValid !== true) {
+  if (opts.keepStatic === false && maskset.excludes[maskPos] !== undefined && fromAlternate !== true && typeof fromAlternate !== "number" && fromIsValid !== true) {
     for (let i = maskPos; i < (inputmask.isRTL ? pos.begin : pos.end); i++) {
       if (maskset.excludes[i] !== undefined) {
         maskset.excludes[i] = undefined;
@@ -4847,7 +4850,7 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
     }
   }
   if (typeof opts.preValidation === "function" && fromIsValid !== true && validateOnly !== true) {
-    result = opts.preValidation.call(inputmask, getBuffer.call(inputmask), maskPos, c, isSelection.call(inputmask, pos), opts, maskset, pos, strict || fromAlternate);
+    result = opts.preValidation.call(inputmask, getBuffer.call(inputmask), maskPos, c, isSelection.call(inputmask, pos), opts, maskset, pos, strict || typeof fromAlternate === "number");
     result = processCommandObject(result);
   }
   if (result === true) {
@@ -4866,7 +4869,7 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
           if (maskset.jitOffset[maskPos] && maskset.validPositions[seekNext.call(inputmask, maskPos)] === undefined) {
             result = isValid.call(inputmask, maskPos + maskset.jitOffset[maskPos], c, true, true);
             if (result !== false) {
-              if (fromAlternate !== true) result.caret = maskPos;
+              if (fromAlternate !== true && typeof fromAlternate !== "number") result.caret = maskPos;
               skip = true;
             }
           }
@@ -4889,7 +4892,7 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
         }
       }
     }
-    if (inputmask.hasAlternator && fromAlternate !== true && !strict) {
+    if (inputmask.hasAlternator && fromAlternate !== true && typeof fromAlternate !== "number" && !strict) {
       fromAlternate = true; // stop possible loop
       if (result === false) {
         // try alternating when the validation fails
@@ -5358,7 +5361,7 @@ function determineNewCaretPosition(selectedCaret, tabbed, positionCaretOnClick) 
       case "radixFocus":
         if (inputmask.clicked > 1 && maskset.validPositions.length === 0) break;
         if (doRadixFocus(selectedCaret.begin)) {
-          const radixPos = getBuffer.call(inputmask).join("").indexOf(opts.radixPoint);
+          const radixPos = getBuffer.call(inputmask).indexOf(opts.radixPoint);
           selectedCaret.end = selectedCaret.begin = opts.numericInput ? seekNext.call(inputmask, radixPos) : radixPos;
           break;
         }
@@ -9031,7 +9034,7 @@ const numericAlias = {
         const unmasked = opts.onUnMask(buffer.slice().reverse().join(""), undefined, inputmask_dependencyLib.extend({}, opts, {
           unmaskAsNumber: true
         }));
-        if (opts.min !== null && unmasked < opts.min && fromAlternate !== true && (unmasked.toString().length > opts.min.toString().length ||
+        if (opts.min !== null && unmasked < opts.min && fromAlternate !== true && typeof fromAlternate !== "number" && (unmasked.toString().length > opts.min.toString().length ||
         // > instead of >= because we want to allow to type a bigger number
         buffer[0] === opts.radixPoint ||
         // disallow radixpoint when value is smaller than min
@@ -9042,7 +9045,7 @@ const numericAlias = {
           // 	buffer: alignDigits(opts.min.toString().replace(".", opts.radixPoint).split(""), opts.digits, opts).reverse()
           // };
         }
-        if (opts.max !== null && opts.max >= 0 && unmasked > opts.max) {
+        if (opts.max !== null && opts.max >= 0 && unmasked > opts.max && !(typeof fromAlternate === "number" && fromAlternate > 1)) {
           return opts.SetMaxOnOverflow ? {
             refreshFromBuffer: true,
             buffer: alignDigits(opts.max.toString().replace(".", opts.radixPoint).split(""), opts.digits, opts).reverse()
