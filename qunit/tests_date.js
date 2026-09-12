@@ -1542,4 +1542,25 @@ export default function (qunit, Inputmask) {
       "Result " + testmask.value
     );
   });
+
+  qunit.test("Maximum call stack size exceeded - prefilled value cursor at start #2825", function (assert) {
+    var $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" value="24.10.2024" />');
+    var testmask = document.getElementById("testmask");
+    Inputmask.extendAliases({
+      mydate: {
+        inputFormat: "dd.mm.yyyy",
+        placeholder: "TT.MM.JJJJ",
+        alias: "datetime"
+      }
+    });
+    Inputmask("mydate").mask(testmask);
+    testmask.focus();
+    // Place cursor at start (before first char)
+    $.caret(testmask, 0, 0);
+    // Type "1" - should not cause infinite recursion
+    $("#testmask").Type("1");
+    // Should handle gracefully (not throw stack overflow)
+    assert.ok(true, "No stack overflow when typing at start of prefilled date");
+  });
 }
