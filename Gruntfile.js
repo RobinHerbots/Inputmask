@@ -123,10 +123,14 @@ module.exports = function (grunt) {
   grunt.registerTask("types", function () {
     execSync("npm run types", { stdio: "inherit" });
   });
+  grunt.registerTask("nodetest", function () {
+    execSync("node nodetest.js", { stdio: "inherit" });
+  });
   grunt.registerTask("validate", [
     "webpack",
     "copy",
     "types",
+    "nodetest",
     "eslint",
     "karma"
   ]);

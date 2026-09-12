@@ -2609,6 +2609,30 @@ export default function (qunit, Inputmask) {
     }
   );
 
+  qunit.test(
+    "Typing over selected value with decimal digits - #2893",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask"/>');
+      const testmask = document.getElementById("testmask");
+      Inputmask("percentage", {
+        digits: 1,
+        clearMaskOnEmpty: true,
+        showMaskOnHover: false,
+        inputType: "number",
+        radixPoint: ".",
+        groupSeparator: ","
+      }).mask(testmask);
+
+      $(testmask).Type("5.0");
+      $.caret(testmask, 0, testmask.value.length);
+      $(testmask).Type("4");
+      assert.equal(testmask.value, "4 %", 'Result "' + testmask.value + '"');
+      $(testmask).Type(".2");
+      assert.equal(testmask.value, "4.2 %", 'Result "' + testmask.value + '"');
+    }
+  );
+
   qunit.test("Currency set null value - #2789", function (assert) {
     const $fixture = $("#qunit-fixture");
     $fixture.append('<input type="text" id="testmask"/>');
