@@ -3162,4 +3162,70 @@ export default function (qunit, Inputmask) {
     },
     "$ 67123.45"
   );
+
+  qunit.test(
+    "native change/input events fire when backspacing fractional part - #2793",
+    function (assert) {
+      const done = assert.async();
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      let keydownFired = 0;
+      let changeFired = 0;
+      let inputFired = 0;
+
+      // Use digitsOptional: false to ensure value stays "0.00" when fractional part deleted
+      Inputmask("numeric", {
+        digits: 2,
+        digitsOptional: false,
+        radixPoint: ".",
+        onKeyDown: function (e) {
+          keydownFired++;
+        }
+      }).mask(testmask);
+
+      // Track native events
+      $(testmask).on("change", function () {
+        changeFired++;
+      });
+      $(testmask).on("input", function () {
+        inputFired++;
+      });
+
+      testmask.focus();
+      // Type ".45" - only fractional part
+      $(testmask).Type(".45");
+      assert.equal(testmask.value, "0.45", "After typing .45");
+
+      // Backspace twice to delete "45"
+      $(testmask).SendKey("Backspace");
+      $(testmask).SendKey("Backspace");
+
+      setTimeout(function () {
+        console.log("DBG2793 value:", testmask.value);
+        console.log("DBG2793 keydownFired:", keydownFired);
+        console.log("DBG2793 changeFired:", changeFired);
+        console.log("DBG2793 inputFired:", inputFired);
+        assert.equal(
+          testmask.value,
+          "0.00",
+          "After backspacing twice with digitsOptional: false"
+        );
+        assert.ok(
+          keydownFired >= 2,
+          "onKeyDown should fire for each backspace, got " + keydownFired
+        );
+        assert.ok(
+          changeFired >= 2,
+          "native change event should fire for each backspace, got " +
+            changeFired
+        );
+        assert.ok(
+          inputFired >= 2,
+          "native input event should fire for each backspace, got " + inputFired
+        );
+        done();
+      }, 0);
+    }
+  );
 }

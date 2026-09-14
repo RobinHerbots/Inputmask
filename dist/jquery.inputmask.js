@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.28
+ * Version: 5.1.0-beta.29
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -6297,6 +6297,10 @@ function writeBuffer(input, buffer, caretPos, event, triggerEvents) {
         nptVal = input.inputmask._valueGet();
       input.inputmask.skipInputEvent = true;
       $input.trigger("input");
+      if (inputmask.undoValue !== nptVal) {
+        inputmask.undoValue = nptVal;
+        $input.trigger("change");
+      }
       setTimeout(function () {
         // timeout needed for IE
         if (nptVal === getBufferTemplate.call(inputmask).join("")) {

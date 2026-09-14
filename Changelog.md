@@ -11,6 +11,7 @@
 
 ### Fixed
 
+- native change event not fired when backspacing fractional part on numeric #2793
 - Prototype pollution in extendDefaults() via unsafe deep merge #2885
 - clearing value leaves sticky `-` or lone `.` on currency/numeric #2890
 - correct deletion of the digit immediately before the radix point on currency/numeric
