@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.28
+ * Version: 5.1.0-beta.29
  */
 export const __webpack_esm_id__ = 552;
 export const __webpack_esm_ids__ = [552];
@@ -169,7 +169,7 @@ const currentYear = new Date().getFullYear(),
     // regex, valueSetter, type, displayformatter, #entries (optional)
     d: ["[1-9]|[12][0-9]|3[01]", Date.prototype.setDate, "day", Date.prototype.getDate],
     // Day of the month as digits; no leading zero for single-digit days.
-    dd: ["0[1-9]|[12][0-9]|3[01]", Date.prototype.setDate, "day", function () {
+    dd: ["[0][1-9]|[12][0-9]|3[01]", Date.prototype.setDate, "day", function () {
       return pad(Date.prototype.getDate.call(this), 2);
     }],
     // Day of the month as digits; leading zero for single-digit days.
@@ -185,7 +185,7 @@ const currentYear = new Date().getFullYear(),
       return Date.prototype.getMonth.call(this) + 1;
     }],
     // Month as digits; no leading zero for single-digit months.
-    MM: ["0[1-9]|1[012]", function (val) {
+    MM: ["[0][1-9]|1[012]", function (val) {
       let mval = val ? parseInt(val) : 0;
       if (mval > 0) mval--;
       return Date.prototype.setMonth.call(this, mval);
@@ -219,7 +219,7 @@ const currentYear = new Date().getFullYear(),
     }, 4],
     h: ["[1-9]|1[0-2]", Date.prototype.setHours, "hours", Date.prototype.getHours],
     // Hours; no leading zero for single-digit hours (12-hour clock).
-    hh: ["0[1-9]|1[0-2]", Date.prototype.setHours, "hours", function () {
+    hh: ["[0][1-9]|1[0-2]", Date.prototype.setHours, "hours", function () {
       return pad(Date.prototype.getHours.call(this), 2);
     }],
     // Hours; leading zero for single-digit hours (12-hour clock).
@@ -231,7 +231,7 @@ const currentYear = new Date().getFullYear(),
     // Hours; no limit; set maximum digits
     H: ["1?[0-9]|2[0-3]", Date.prototype.setHours, "hours", Date.prototype.getHours],
     // Hours; no leading zero for single-digit hours (24-hour clock).
-    HH: ["0[0-9]|1[0-9]|2[0-3]", Date.prototype.setHours, "hours", function () {
+    HH: ["[0][0-9]|1[0-9]|2[0-3]", Date.prototype.setHours, "hours", function () {
       return pad(Date.prototype.getHours.call(this), 2);
     }],
     // Hours; leading zero for single-digit hours (24-hour clock).
@@ -245,13 +245,13 @@ const currentYear = new Date().getFullYear(),
     // Hours; no limit; set maximum digits
     m: ["[1-5]?[0-9]", Date.prototype.setMinutes, "minutes", Date.prototype.getMinutes],
     // Minutes; no leading zero for single-digit minutes. Uppercase M unlike CF timeFormat's m to avoid conflict with months.
-    mm: ["0[0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]", Date.prototype.setMinutes, "minutes", function () {
+    mm: ["[0][0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]", Date.prototype.setMinutes, "minutes", function () {
       return pad(Date.prototype.getMinutes.call(this), 2);
     }],
     // Minutes; leading zero for single-digit minutes. Uppercase MM unlike CF timeFormat's mm to avoid conflict with months.
     s: ["[1-5]?[0-9]", Date.prototype.setSeconds, "seconds", Date.prototype.getSeconds],
     // Seconds; no leading zero for single-digit seconds.
-    ss: ["0[0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]", Date.prototype.setSeconds, "seconds", function () {
+    ss: ["[0][0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]", Date.prototype.setSeconds, "seconds", function () {
       return pad(Date.prototype.getSeconds.call(this), 2);
     }],
     // Seconds; leading zero for single-digit seconds.
