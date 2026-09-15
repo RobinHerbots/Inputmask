@@ -19,6 +19,7 @@
 - deleted digits right of the radix point can be typed again on numeric #2801
 - caret focus lands on the radix point when setting a grouped initial value #2850
 - typing over a fully-selected numeric value with digitsOptional no longer inserts into decimal slot #2893
+- deleting the month in a datetime mask re-adds a leading zero #2002
 
 ## [5.0.10 - 31/07/2026]
 
