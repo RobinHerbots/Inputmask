@@ -1617,4 +1617,38 @@ export default function (qunit, Inputmask) {
     $("#testmask").SendKey(keys.Backspace);
     assert.equal(testmask.value, "MM/16/2021", "Result " + testmask.value);
   });
+
+  qunit.test(
+    "mindate overtype selection should behave like start typing",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", {
+        inputFormat: "dd/MM/yyyy",
+        min: "01/01/1900"
+      }).mask(testmask);
+      testmask.focus();
+
+      // start typing a single digit
+      $("#testmask").Type("8");
+      assert.equal(
+        testmask.value,
+        "08/MM/yyyy",
+        "start typing Result " + testmask.value
+      );
+
+      // select-all overtype after full date populated
+      $("#testmask").val("");
+      $("#testmask").Type("17092026");
+      testmask.focus();
+      $.caret(testmask, 0, "dd/MM/yyyy".length);
+      $("#testmask").Type("8");
+      assert.equal(
+        testmask.value,
+        "08/MM/yyyy",
+        "overtype Result " + testmask.value
+      );
+    }
+  );
 }
