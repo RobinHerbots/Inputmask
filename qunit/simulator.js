@@ -241,12 +241,52 @@ export default function ($, Inputmask) {
     $input.trigger("paste");
   };
 
-  $.fn.input = function (inputStr, caretBegin, caretEnd) {
+  $.fn.input = function (inputStr, caretBegin, caretEnd, inputType) {
+    // allow inputType as 3rd argument
+    if (typeof caretEnd === "string") {
+      inputType = caretEnd;
+      caretEnd = undefined;
+    }
     const input = this.nodeName ? this : this[0];
     input.inputmask.__valueSet.call(input, inputStr);
     if (caretBegin !== undefined) {
       $.caret(input, caretBegin, caretEnd);
     }
-    $(input).trigger("input");
+    if (inputType) {
+      const evt = new InputEvent("input", {
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+        inputType
+      });
+      input.dispatchEvent(evt);
+    } else {
+      $(input).trigger("input");
+    }
+    return this;
+  };
+
+  // Simulate a browser autocomplete selection: set the native value and fire
+  // an input event with inputType "insertReplacementText", matching the
+  // browser behavior when the user picks a suggestion from the autocomplete list.
+  $.fn.autocomplete = function (value, caretBegin, caretEnd) {
+    const input = this.nodeName ? this : this[0];
+    input.inputmask.__valueSet.call(input, value);
+    if (caretBegin !== undefined) {
+      $.caret(
+        input,
+        caretBegin,
+        caretEnd !== undefined ? caretEnd : caretBegin
+      );
+    }
+    const evt = new InputEvent("input", {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      inputType: "insertReplacementText",
+      data: value
+    });
+    input.dispatchEvent(evt);
+    return this;
   };
 }

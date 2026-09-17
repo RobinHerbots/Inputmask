@@ -54,7 +54,7 @@ export default function (qunit, Inputmask) {
     // simulate input
     $(testmask).input("123");
     // simulate backspace
-    $(testmask).input("(12) ___-____", 3);
+    $(testmask).input("(12) ___-____", 3, "deleteContentBackward");
     assert.ok($.caret(testmask).begin == 3, "Caret " + $.caret(testmask).begin);
   });
 
@@ -75,7 +75,7 @@ export default function (qunit, Inputmask) {
       // simulate input
       $(testmask).input("123499");
       // simulate backspace
-      $(testmask).input("12399", 3);
+      $(testmask).input("12399", 3, "deleteContentBackward");
       assert.ok(
         $.caret(testmask).begin == 3,
         "Caret " + $.caret(testmask).begin + " : " + testmask.value
@@ -256,4 +256,42 @@ export default function (qunit, Inputmask) {
       done();
     }, 0);
   });
+
+  // Regression test: selecting a browser autocomplete suggestion on an empty
+  // masked input must not throw TypeError. analyseChanges can misdetect the
+  // insertion as a deletion (deleteContentBackward) when the caret is at 0 and
+  // the autocomplete value is shorter than the mask template.
+  qunit.test(
+    "(999) 999-9999 - autocomplete on empty input (insertReplacementText)",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("(999) 999-9999", { inputEventOnly: true }).mask(testmask);
+
+      testmask.focus();
+      setTimeout(function () {
+        // Simulate browser autocomplete: native value set to "1231231234",
+        // caret at 0, input event fires with inputType "insertReplacementText".
+        assert.ok(
+          (function () {
+            try {
+              $(testmask).autocomplete("1231231234", 0, 0);
+              return true;
+            } catch (e) {
+              return false;
+            }
+          })(),
+          "No error thrown on autocomplete"
+        );
+        assert.equal(
+          testmask.value,
+          "(123) 123-1234",
+          "Result " + testmask.value
+        );
+        done();
+      }, 0);
+    }
+  );
 }
