@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.29
+ * Version: 5.1.0-beta.30
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -4932,7 +4932,7 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
       };
     }
     if (typeof opts.postValidation === "function" && fromIsValid !== true && validateOnly !== true) {
-      const postResult = opts.postValidation.call(inputmask, getBuffer.call(inputmask, true), pos.begin !== undefined ? inputmask.isRTL ? pos.end : pos.begin : pos, c, result, opts, maskset, strict, fromCheckval, fromAlternate);
+      const postResult = opts.postValidation.call(inputmask, getBuffer.call(inputmask, true), pos, c, result, opts, maskset, strict, fromCheckval, fromAlternate);
       if (postResult !== undefined) {
         result = postResult === true ? result : postResult;
       }
@@ -5791,7 +5791,7 @@ const EventHandlers = {
                 action = "insertReplacementText";
                 data.push(newBuffer[i]);
                 caretPos.begin--;
-              } else if (newBuffer[i] === marker) {
+              } else if (newBuffer[i] === marker && !e.inputType?.startsWith("insert")) {
                 // delete~backspace
                 action = "deleteContentBackward";
                 if (isMask.call(inputmask, translatePosition.call(inputmask, i), true) || oldBuffer[i] === opts.radixPoint) caretPos.end++;
@@ -8542,38 +8542,58 @@ const datetimeAlias = {
     return true;
   },
   postValidation: function (buffer, pos, c, currentResult, opts, maskset, strict, fromCheckval) {
-    const inputmask = this;
+    const inputmask = this,
+      {
+        _buffer
+      } = inputmask.maskset,
+      posBegin = typeof pos === "object" ? pos.begin : pos,
+      posEnd = typeof pos === "object" ? pos.end : pos,
+      selectionReplace = posEnd - posBegin;
+    pos = {
+      begin: posBegin,
+      end: posEnd
+    };
     if (strict) return true;
     let tokenMatch, validator;
     if (currentResult === false) {
       // try some shifting
-      tokenMatch = getTokenMatch.call(inputmask, pos + 1, opts, maskset);
-      if (tokenMatch.targetMatch && tokenMatch.targetMatchIndex === pos && tokenMatch.targetMatch[0].length > 1 && formatcode(tokenMatch.targetMatch[0]) !== undefined) {
+      tokenMatch = getTokenMatch.call(inputmask, pos.begin + 1, opts, maskset);
+      if (tokenMatch.targetMatch && tokenMatch.targetMatchIndex === pos.begin && tokenMatch.targetMatch[0].length > 1 && formatcode(tokenMatch.targetMatch[0]) !== undefined) {
         validator = formatcode(tokenMatch.targetMatch[0])[0];
       } else {
-        tokenMatch = getTokenMatch.call(inputmask, pos + 2, opts, maskset);
-        if (tokenMatch.targetMatch && tokenMatch.targetMatchIndex === pos + 1 && tokenMatch.targetMatch[0].length > 1 && formatcode(tokenMatch.targetMatch[0]) !== undefined) {
+        tokenMatch = getTokenMatch.call(inputmask, pos.begin + 2, opts, maskset);
+        if (tokenMatch.targetMatch && tokenMatch.targetMatchIndex === pos.begin + 1 && tokenMatch.targetMatch[0].length > 1 && formatcode(tokenMatch.targetMatch[0]) !== undefined) {
           validator = formatcode(tokenMatch.targetMatch[0]);
         }
       }
       if (validator !== undefined) {
         // correct position ~ pos in front of shifted targetMatch
-        pos = tokenMatch.targetMatchIndex;
-        if (maskset.validPositions[pos + 1] !== undefined && new RegExp(validator).test(c + "0")) {
-          buffer[pos] = c;
-          buffer[pos + 1] = "0";
+        pos.begin = tokenMatch.targetMatchIndex;
+        if (maskset.validPositions[pos.begin + 1] !== undefined && new RegExp(validator).test(c + "0")) {
+          if (selectionReplace > 0) {
+            // restore the template for the replaced selection and drop stale positions
+            buffer.splice(pos.begin, selectionReplace, ..._buffer.slice(pos.begin, pos.begin + selectionReplace));
+            for (let i = pos.begin; i < pos.begin + selectionReplace; i++) delete maskset.validPositions[i];
+          }
+          buffer[pos.begin] = c;
+          buffer[pos.begin + 1] = "0";
           currentResult = {
             // insert: [{pos: pos, c: "0"}, {pos: pos + 1, c: c}],
-            pos: pos + 2,
+            pos: pos.begin + 2,
             // this will triggeer a refreshfrombuffer
-            caret: pos + 1
+            caret: pos.begin + 1
           };
         } else if (new RegExp(validator).test("0" + c)) {
-          buffer[pos] = "0";
-          buffer[pos + 1] = c;
+          // remove selection and refill with _buffer template
+          if (selectionReplace > 0) {
+            buffer.splice(pos.begin, selectionReplace, ..._buffer.slice(pos.begin, pos.begin + selectionReplace));
+            for (let i = pos.begin; i < pos.begin + selectionReplace; i++) delete maskset.validPositions[i];
+          }
+          buffer[pos.begin] = "0";
+          buffer[pos.begin + 1] = c;
           currentResult = {
             // insert: [{pos: pos, c: "0"}, {pos: pos + 1, c: c}],
-            pos: pos + 2 // this will triggeer a refreshfrombuffer
+            pos: pos.begin + 2 // this will triggeer a refreshfrombuffer
           };
         }
       }
@@ -8581,11 +8601,14 @@ const datetimeAlias = {
     }
     if (currentResult.fuzzy) {
       buffer = currentResult.buffer;
-      pos = currentResult.pos;
+      pos = {
+        begin: currentResult.pos,
+        end: currentResult.pos
+      };
     }
 
     // full validate target
-    tokenMatch = getTokenMatch.call(inputmask, pos, opts, maskset);
+    tokenMatch = getTokenMatch.call(inputmask, pos.begin, opts, maskset);
     if (tokenMatch.targetMatch && tokenMatch.targetMatch[0] && formatcode(tokenMatch.targetMatch[0]) !== undefined) {
       const fcode = formatcode(tokenMatch.targetMatch[0]);
       validator = fcode[0];
@@ -8595,9 +8618,9 @@ const datetimeAlias = {
       }
       if (fcode[2] == "year") {
         const _buffer = getMaskTemplate.call(inputmask, false, 1, undefined, true);
-        for (let i = pos + 1; i < buffer.length; i++) {
+        for (let i = pos.begin + 1; i < buffer.length; i++) {
           buffer[i] = _buffer[i];
-          maskset.validPositions.splice(pos + 1, 1);
+          maskset.validPositions.splice(pos.begin + 1, 1);
         }
       }
     }
@@ -8609,11 +8632,11 @@ const datetimeAlias = {
       result = isValidDate.call(inputmask, dateParts, result, opts);
       result = isDateInRange(dateParts, result, opts, maskset, fromCheckval);
     }
-    if (pos !== undefined && result && currentResult.pos !== pos) {
+    if (pos !== undefined && result && currentResult.pos !== pos.begin) {
       return {
         buffer: parse(opts.inputFormat, dateParts, opts).split(""),
         refreshFromBuffer: {
-          start: pos,
+          start: pos.begin,
           end: currentResult.pos
         },
         pos: currentResult.caret !== undefined ? currentResult.caret : currentResult.pos // correct caret position

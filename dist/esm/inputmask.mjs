@@ -3,7 +3,7 @@
  * https://github.com/RobinHerbots/Inputmask
  * Copyright (c) 2010 - 2026 Robin Herbots
  * Licensed under the MIT license
- * Version: 5.1.0-beta.29
+ * Version: 5.1.0-beta.30
  */
 /******/ var __webpack_modules__ = ({
 
@@ -671,7 +671,7 @@ const EventHandlers = {
                 action = "insertReplacementText";
                 data.push(newBuffer[i]);
                 caretPos.begin--;
-              } else if (newBuffer[i] === marker) {
+              } else if (newBuffer[i] === marker && !e.inputType?.startsWith("insert")) {
                 // delete~backspace
                 action = "deleteContentBackward";
                 if (_positioning__WEBPACK_IMPORTED_MODULE_4__/* .isMask */ .$b.call(inputmask, _positioning__WEBPACK_IMPORTED_MODULE_4__/* .translatePosition */ .Mu.call(inputmask, i), true) || oldBuffer[i] === opts.radixPoint) caretPos.end++;
@@ -4477,7 +4477,7 @@ function isValid(pos, c, strict, fromIsValid, fromAlternate, validateOnly, fromC
       };
     }
     if (typeof opts.postValidation === "function" && fromIsValid !== true && validateOnly !== true) {
-      const postResult = opts.postValidation.call(inputmask, _positioning__WEBPACK_IMPORTED_MODULE_2__/* .getBuffer */ .Zo.call(inputmask, true), pos.begin !== undefined ? inputmask.isRTL ? pos.end : pos.begin : pos, c, result, opts, maskset, strict, fromCheckval, fromAlternate);
+      const postResult = opts.postValidation.call(inputmask, _positioning__WEBPACK_IMPORTED_MODULE_2__/* .getBuffer */ .Zo.call(inputmask, true), pos, c, result, opts, maskset, strict, fromCheckval, fromAlternate);
       if (postResult !== undefined) {
         result = postResult === true ? result : postResult;
       }
