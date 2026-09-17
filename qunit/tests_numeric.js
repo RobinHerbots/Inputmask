@@ -3166,13 +3166,13 @@ export default function (qunit, Inputmask) {
   qunit.test(
     "native change/input events fire when backspacing fractional part - #2793",
     function (assert) {
-      const done = assert.async();
-      const $fixture = $("#qunit-fixture");
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
       $fixture.append('<input type="text" id="testmask" />');
       const testmask = document.getElementById("testmask");
-      let keydownFired = 0;
-      let changeFired = 0;
-      let inputFired = 0;
+      let keydownFired = 0,
+        changeFired = 0,
+        inputFired = 0;
 
       // Use digitsOptional: false to ensure value stays "0.00" when fractional part deleted
       Inputmask("numeric", {
@@ -3202,10 +3202,6 @@ export default function (qunit, Inputmask) {
       $(testmask).SendKey("Backspace");
 
       setTimeout(function () {
-        console.log("DBG2793 value:", testmask.value);
-        console.log("DBG2793 keydownFired:", keydownFired);
-        console.log("DBG2793 changeFired:", changeFired);
-        console.log("DBG2793 inputFired:", inputFired);
         assert.equal(
           testmask.value,
           "0.00",
