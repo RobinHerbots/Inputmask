@@ -1,6 +1,6 @@
 /* eslint-disable no-fallthrough */
-import { keys } from "../lib/keycode";
 import defaultSettings from "../lib/defaults";
+import { keys } from "../lib/keycode";
 
 export default function ($, Inputmask) {
   $.caret = function (input, begin, end) {
@@ -59,12 +59,11 @@ export default function ($, Inputmask) {
         begin = 0 - range.duplicate().moveStart("character", -100000);
         end = begin + range.text.length;
       }
-      /* eslint-disable consistent-return */
+
       return {
         begin,
         end
       };
-      /* eslint-enable consistent-return */
     }
   };
   $.fn = $.fn || $.prototype;
@@ -99,13 +98,13 @@ export default function ($, Inputmask) {
         }
       case keys.ArrowLeft:
         if (modifier == undefined) {
-          var pos = $.caret(this);
+          const pos = $.caret(this);
           $.caret(this, pos.begin - 1);
           break;
         }
       case keys.ArrowRight:
         if (modifier == undefined) {
-          var pos2 = $.caret(this);
+          const pos2 = $.caret(this);
           $.caret(this, pos2.end + 1);
           break;
         }
@@ -286,6 +285,15 @@ export default function ($, Inputmask) {
       inputType: "insertReplacementText",
       data: value
     });
+    // WebKit ignores inputType in the InputEvent init dictionary
+    // (https://bugs.webkit.org/show_bug.cgi?id=170416), so on Safari it stays
+    // "" on synthetic events and inputFallBackEvent would misdetect the
+    // autocomplete as a backspace. Patch the read-only property on the event.
+    if (evt.inputType !== "insertReplacementText") {
+      Object.defineProperty(evt, "inputType", {
+        value: "insertReplacementText"
+      });
+    }
     input.dispatchEvent(evt);
     return this;
   };
