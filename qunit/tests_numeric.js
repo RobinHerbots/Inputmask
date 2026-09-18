@@ -3661,6 +3661,50 @@ export default function (qunit, Inputmask) {
 
   // ---- reproductions from GitHub issues ----
 
+  // https://github.com/RobinHerbots/Inputmask/issues/2485
+  // Currency-prefixed decimal (groupSeparator ".", radixPoint ",") with a
+  // negative min: typing the fractional part (with a manual separator) must
+  // not raise a RangeError. NOTE: the issue's auto-grouping part (raw digits
+  // without a manual separator) is still broken on 5.x and uncovered here.
+  qunit.test(
+    "numeric prefix='$' groupSeparator='.' radixPoint=',' min=-4000 digits=3 - Type '-3578,965' no RangeError #2485",
+    function (assert) {
+      const done = assert.async(),
+        $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("numeric", {
+        prefix: "$",
+        groupSeparator: ".",
+        radixPoint: ",",
+        digits: 3,
+        min: -4000,
+        max: 4000,
+        allowMinus: true
+      }).mask(testmask);
+      testmask.focus();
+      setTimeout(function () {
+        assert.ok(
+          (function () {
+            try {
+              $("#testmask").Type("-3578,965");
+              return true;
+            } catch (e) {
+              return false;
+            }
+          })(),
+          "No RangeError while typing -3578,965"
+        );
+        assert.equal(
+          testmask.value,
+          "-$3.578,965",
+          "Result " + testmask.value
+        );
+        done();
+      }, 0);
+    }
+  );
+
   // https://github.com/RobinHerbots/Inputmask/issues/2829
   qunit.test(
     "numeric min=1 - programmatic input.value='' stays empty #2829",
@@ -3755,8 +3799,9 @@ export default function (qunit, Inputmask) {
       expected: "30.5"
     },
 
-    // Bignum precision (#2715): values beyond Number.MAX_SAFE_INTEGER must
-    // round-trip through setvalue intact, not collapse through parseFloat.
+    // Bignum precision (#2715, #2775 duplicate): values beyond
+    // Number.MAX_SAFE_INTEGER must round-trip through setvalue intact,
+    // not collapse through parseFloat.
     {
       label:
         "numeric digits=2 - setvalue preserves bignum precision (no #2715 regression)",
