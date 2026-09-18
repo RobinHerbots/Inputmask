@@ -3695,11 +3695,7 @@ export default function (qunit, Inputmask) {
           })(),
           "No RangeError while typing -3578,965"
         );
-        assert.equal(
-          testmask.value,
-          "-$3.578,965",
-          "Result " + testmask.value
-        );
+        assert.equal(testmask.value, "-$3.578,965", "Result " + testmask.value);
         done();
       }, 0);
     }
