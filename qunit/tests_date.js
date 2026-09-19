@@ -1991,4 +1991,78 @@ export default function (qunit, Inputmask) {
       assert.equal(testmask.value, "30/11/2020", "Result " + testmask.value);
     }
   );
+
+  qunit.module("Dates - partial date does not unmask a fabricated value");
+  qunit.test(
+    "partially typed date returns incomplete input via val()",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", {
+        inputFormat: "dd/MM/yyyy",
+        outputFormat: "yyyy-MM-dd",
+        autoUnmask: true
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("2512");
+      assert.equal(
+        testmask.inputmask._valueGet(true),
+        "25/12/yyyy",
+        "native value " + testmask.inputmask._valueGet(true)
+      );
+      assert.equal(
+        $(testmask).val(),
+        "yyyy-12-25",
+        "val() " + $(testmask).val()
+      );
+    }
+  );
+  qunit.test(
+    "partially typed year returns incomplete input via val()",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("datetime", {
+        inputFormat: "dd/MM/yyyy",
+        outputFormat: "yyyy-MM-dd",
+        autoUnmask: true,
+        prefillYear: false
+      }).mask(testmask);
+
+      testmask.focus();
+      $("#testmask").Type("251220");
+      assert.equal(
+        testmask.inputmask._valueGet(true),
+        "25/12/20yy",
+        "native value " + testmask.inputmask._valueGet(true)
+      );
+      assert.equal(
+        $(testmask).val(),
+        "yyyy-12-25",
+        "val() " + $(testmask).val()
+      );
+    }
+  );
+  qunit.test("complete date still unmasks to outputFormat", function (assert) {
+    const $fixture = $("#qunit-fixture");
+    $fixture.append('<input type="text" id="testmask" />');
+    const testmask = document.getElementById("testmask");
+    Inputmask("datetime", {
+      inputFormat: "dd/MM/yyyy",
+      outputFormat: "yyyy-MM-dd",
+      autoUnmask: true
+    }).mask(testmask);
+
+    testmask.focus();
+    $("#testmask").Type("25122014");
+    assert.equal(
+      testmask.inputmask._valueGet(true),
+      "25/12/2014",
+      "native value " + testmask.inputmask._valueGet(true)
+    );
+    assert.equal($(testmask).val(), "2014-12-25", "val() " + $(testmask).val());
+  });
 }
