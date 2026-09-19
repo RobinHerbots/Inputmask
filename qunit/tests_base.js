@@ -671,4 +671,31 @@ export default function (qunit, Inputmask) {
       assert.notOk(threw, "keydown without a key should not throw");
     }
   );
+
+  qunit.module("IME composition during typing - #2551");
+
+  qunit.test(
+    "numeric input while composing (iPhone Japanese Kana) lands masked digits",
+    function (assert) {
+      const $fixture = $("#qunit-fixture");
+      $fixture.append('<input type="text" id="testmask" />');
+      const testmask = document.getElementById("testmask");
+      Inputmask("(999) 999-9999").mask(testmask);
+
+      testmask.focus();
+      testmask.inputmask.isComposing = true; // keyCode 229 / compositionstart
+      // simulate the input events a composing keyboard produces for the digits
+      $(testmask).input("", 0, "insertCompositionText");
+      $(testmask).input("1", 0, "insertCompositionText");
+      $(testmask).input("12", 0, "insertCompositionText");
+      $(testmask).input("123", 0, "insertCompositionText");
+
+      assert.equal(
+        testmask.value,
+        "(123) ___-____",
+        "Result " + testmask.value
+      );
+      testmask.inputmask.isComposing = false;
+    }
+  );
 }
